@@ -638,6 +638,7 @@ module Chouette
 
     def apply(timetable)
       Applier.new(self, timetable).apply
+      self
     end
 
     class Applier

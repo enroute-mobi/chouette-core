@@ -5,7 +5,9 @@ class Timetable
   end
 
   def initialize(attributes = {})
+    periods << attributes[:period] if attributes[:period]
     periods.merge Array(attributes[:periods])
+
     included_dates.merge Array(attributes[:included_dates])
     excluded_dates.merge Array(attributes[:excluded_dates])
   end
@@ -178,7 +180,7 @@ class Timetable
     end
 
     def self.from(date_range, days_of_week = DaysOfWeek.all)
-      new date_range.min, date_range.max, days_of_week
+      new date_range.min, date_range.max, days_of_week if date_range
     end
 
     def self.shift periods, days

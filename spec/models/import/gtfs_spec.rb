@@ -1,5 +1,6 @@
-RSpec.describe Import::Gtfs do
+# frozen_string_literal: true
 
+RSpec.describe Import::Gtfs do
   let(:workbench) do
     create :workbench do |workbench|
       workbench.line_referential.update objectid_format: "netex"
@@ -608,7 +609,7 @@ RSpec.describe Import::Gtfs do
 
       it "should have correct time of day values" do
         import.prepare_referential
-        import.import_calendars
+        import.import_services
         import.import_stop_times
 
         expected_attributes = [
@@ -632,7 +633,7 @@ RSpec.describe Import::Gtfs do
 
       it "should have correct time of day values" do
         import.prepare_referential
-        import.import_calendars
+        import.import_services
         import.import_stop_times
 
         expected_attributes = [
@@ -657,7 +658,7 @@ RSpec.describe Import::Gtfs do
 
     before do
       import.prepare_referential
-      import.import_calendars
+      import.import_services
       allow_any_instance_of(Chouette::Route).to receive(:has_tomtom_features?){ true }
     end
 
@@ -1243,6 +1244,226 @@ RSpec.describe Import::Gtfs do
         let(:company) { double('Company with agency_id as registration_number') }
 
         it { is_expected.to eq(company) }
+      end
+    end
+  end
+
+  describe Import::Gtfs::Services::Decorator do
+    subject(:decorator) { described_class.new(service) }
+
+    let(:service) { GTFS::Service.new }
+
+    describe '#days_of_week' do
+      subject { decorator.days_of_week }
+
+      %i[monday tuesday wednesday thursday friday saturday sunday].each do |day|
+        context "when GTFS Service includes #{day}" do
+          before { allow(service).to receive("#{day}?").and_return(true) }
+
+          it { is_expected.to send("be_#{day}") }
+        end
+
+        context "when GTFS Service excludes #{day}" do
+          before { allow(service).to receive("#{day}?").and_return(false) }
+
+          it { is_expected.to_not send("be_#{day}") }
+        end
+      end
+    end
+
+    describe '#period' do
+      subject { decorator.period }
+
+      context 'when GTFS Service date_range is nil' do
+        before { allow(service).to receive(:date_range).and_return(nil) }
+
+        it { is_expected.to be_nil }
+      end
+
+      context 'when GTFS Service date_range is 2030-01-01..2030-01-31' do
+        before { allow(service).to receive(:date_range).and_return(Period.parse('2030-01-01..2030-01-31')) }
+
+        it { is_expected.to eq(Period.parse('2030-01-01..2030-01-31')) }
+      end
+    end
+
+    describe '#included_dates' do
+      subject { decorator.included_dates }
+
+      context 'when no GTFS date is present' do
+        before { allow(service).to receive(:calendar_dates).and_return([]) }
+
+        it { is_expected.to be_empty }
+      end
+
+      context 'when a GTFS date is added on 2030-01-01' do
+        let(:gtfs_date) { GTFS::CalendarDate.new(date: '2030-01-01', exception_type: GTFS::CalendarDate::ADDED) }
+        before { allow(service).to receive(:calendar_dates).and_return([gtfs_date]) }
+
+        it { is_expected.to contain_exactly(Date.parse('2030-01-01')) }
+      end
+
+      context 'when two GTFS dates are added on 2030-01-01 and 2030-01-31' do
+        let(:gtfs_dates) do
+          %w[2030-01-01 2030-01-31].map do |value|
+            GTFS::CalendarDate.new(date: value, exception_type: GTFS::CalendarDate::ADDED)
+          end
+        end
+
+        before { allow(service).to receive(:calendar_dates).and_return(gtfs_dates) }
+
+        it { is_expected.to contain_exactly(Date.parse('2030-01-01'), Date.parse('2030-01-31')) }
+      end
+
+      context 'when a GTFS date is removed' do
+        let(:gtfs_date) { GTFS::CalendarDate.new(exception_type: GTFS::CalendarDate::REMOVED) }
+        before { allow(service).to receive(:calendar_dates).and_return([gtfs_date]) }
+
+        it { is_expected.to be_empty }
+      end
+
+      context 'when a GTFS date is invalid' do
+        let(:gtfs_date) { GTFS::CalendarDate.new(date: 'invalid', exception_type: GTFS::CalendarDate::ADDED) }
+        before { allow(service).to receive(:calendar_dates).and_return([gtfs_date]) }
+
+        it { is_expected.to be_empty }
+      end
+    end
+
+    describe '#excluded_dates' do
+      subject { decorator.excluded_dates }
+
+      context 'when no GTFS date is present' do
+        before { allow(service).to receive(:calendar_dates).and_return([]) }
+
+        it { is_expected.to be_empty }
+      end
+
+      context 'when a GTFS date is removed on 2030-01-01' do
+        let(:gtfs_date) { GTFS::CalendarDate.new(date: '2030-01-01', exception_type: GTFS::CalendarDate::REMOVED) }
+        before { allow(service).to receive(:calendar_dates).and_return([gtfs_date]) }
+
+        it { is_expected.to contain_exactly(Date.parse('2030-01-01')) }
+      end
+
+      context 'when two GTFS dates are removed on 2030-01-01 and 2030-01-31' do
+        let(:gtfs_dates) do
+          %w[2030-01-01 2030-01-31].map do |value|
+            GTFS::CalendarDate.new(date: value, exception_type: GTFS::CalendarDate::REMOVED)
+          end
+        end
+
+        before { allow(service).to receive(:calendar_dates).and_return(gtfs_dates) }
+
+        it { is_expected.to contain_exactly(Date.parse('2030-01-01'), Date.parse('2030-01-31')) }
+      end
+
+      context 'when a GTFS date is added' do
+        let(:gtfs_date) { GTFS::CalendarDate.new(exception_type: GTFS::CalendarDate::ADDED) }
+        before { allow(service).to receive(:calendar_dates).and_return([gtfs_date]) }
+
+        it { is_expected.to be_empty }
+      end
+
+      context 'when a GTFS date is invalid' do
+        let(:gtfs_date) { GTFS::CalendarDate.new(date: 'invalid', exception_type: GTFS::CalendarDate::REMOVED) }
+        before { allow(service).to receive(:calendar_dates).and_return([gtfs_date]) }
+
+        it { is_expected.to be_empty }
+      end
+    end
+
+    describe '#memory_timetable' do
+      subject(:memory_timetable) { decorator.memory_timetable }
+
+      it 'should be normalized' do
+        # Timetable.new.normalize! returns a double which #normalized? => true
+        allow(Timetable).to receive_message_chain(:new, :normalize!).and_return(double(normalized?: true))
+
+        is_expected.to be_normalized
+      end
+
+      describe '#periods' do
+        subject { memory_timetable.periods }
+
+        context 'when Decorator period is not defined' do
+          before { allow(decorator).to receive(:period).and_return(nil) }
+
+          it { is_expected.to be_empty }
+        end
+
+        context 'when Decorator period is 2030-01-01..2030-01-31' do
+          before { allow(decorator).to receive(:period).and_return(Period.parse('2030-01-01..2030-01-31')) }
+
+          it { is_expected.to contain_exactly(an_object_having_attributes(date_range: decorator.period)) }
+        end
+
+        context 'when Decorator days of week is Monday and Saturday' do
+          before do
+            allow(decorator).to receive(:period).and_return(Period.parse('2030-01-01..2030-01-31'))
+            allow(decorator).to receive(:days_of_week).and_return(double('Monday and Saturday'))
+          end
+
+          it { is_expected.to contain_exactly(an_object_having_attributes(days_of_week: decorator.days_of_week)) }
+        end
+      end
+
+      describe '#included_dates' do
+        subject { memory_timetable.included_dates }
+
+        context 'when Decorator included dates are [2030-01-01, 2030-01-15]' do
+          before do
+            allow(decorator).to receive(:included_dates).and_return([Date.parse('2030-01-01'),
+                                                                     Date.parse('2030-01-15')])
+          end
+
+          it { is_expected.to match_array(decorator.included_dates) }
+        end
+      end
+
+      describe '#excluded_dates' do
+        subject { memory_timetable.excluded_dates }
+
+        context 'when Decorator included dates are [2030-01-01, 2030-01-15]' do
+          before do
+            allow(decorator).to receive(:excluded_dates).and_return([Date.parse('2030-01-01'),
+                                                                     Date.parse('2030-01-15')])
+          end
+
+          it { is_expected.to match_array(decorator.excluded_dates) }
+        end
+      end
+    end
+
+    describe '#empty' do
+      context 'when memory timetable is empty' do
+        before { allow(decorator).to receive(:memory_timetable).and_return(double(empty?: true)) }
+        it { is_expected.to be_empty }
+      end
+
+      context 'when memory timetable is not empty' do
+        before { allow(decorator).to receive(:memory_timetable).and_return(double(empty?: false)) }
+        it { is_expected.to_not be_empty }
+      end
+    end
+
+    describe '#time_table' do
+      subject { decorator.time_table }
+
+      it { is_expected.to be_a(Chouette::TimeTable) }
+
+      context 'when Decorator name is "dummy"' do
+        before { allow(decorator).to receive(:name).and_return('dummy') }
+
+        it { is_expected.to have_attributes(comment: decorator.name) }
+      end
+
+      it 'should apply memory timetable periods and in/excluded_dates' do
+        time_table = Chouette::TimeTable.new
+        allow(Chouette::TimeTable).to receive(:new).and_return(time_table)
+
+        expect(time_table).to receive(:apply).with(decorator.memory_timetable).and_return(time_table)
+        is_expected.to be(time_table)
       end
     end
   end

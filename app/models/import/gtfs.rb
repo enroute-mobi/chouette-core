@@ -71,10 +71,7 @@ class Import::Gtfs < Import::Base # rubocop:disable Metrics/ClassLength
   def import_without_status
     prepare_referential
 
-    if check_calendar_files_missing_and_create_message
-    else
-      import_resources :calendars, :calendar_dates
-    end
+    check_calendar_files_missing_and_create_message || import_resources(:services)
 
     import_resources :transfers if source.entries.include?('transfers.txt')
 
@@ -794,7 +791,7 @@ class Import::Gtfs < Import::Base # rubocop:disable Metrics/ClassLength
     TimeOfDay.create(t, time_zone: default_time_zone).without_utc_offset
   end
 
-# for each service_id we store an array of TimeTables for each needed starting day offset
+  # for each service_id we store an array of TimeTables for each needed starting day offset
   def time_tables_by_service_id
     @time_tables_by_service_id ||= {}
   end
@@ -1297,6 +1294,89 @@ class Import::Gtfs < Import::Base # rubocop:disable Metrics/ClassLength
         else
           expressions.first
         end
+      end
+    end
+  end
+
+  def import_services
+    resource = create_resource(:services)
+    # TODO: any performance impact ?
+    resource.rows_count = source.services.count
+    resource.save!
+
+    Services.new(WithResource.new(self, resource)).import!
+
+    resource.update_status_from_messages
+  end
+
+  class Services
+    def initialize(import)
+      @import = import
+    end
+
+    attr_reader :import
+
+    delegate :source, :time_tables_by_service_id, to: :import
+
+    def import!
+      # Retrieve both calendar and associated calendar_dates into a single GTFS::Service model
+      source.services.each do |service|
+        decorator = Decorator.new(service)
+
+        # unless decorator.valid?
+        #   # Error ?
+        #   next
+        # end
+
+        time_table = decorator.time_table
+
+        # TODO: use inserter
+        next unless time_table.save
+
+        # TODO: replace by an index
+        time_tables_by_service_id[decorator.service_id] = [time_table.id]
+      end
+    end
+
+    class Decorator < SimpleDelegator
+      # Returns a Timetable::DaysOfWeek according to GTFS Service monday?/.../sunday?
+      def days_of_week
+        Timetable::DaysOfWeek.new.tap do |days_of_week|
+          %i[monday tuesday wednesday thursday friday saturday sunday].each do |day|
+            days_of_week.enable day if send "#{day}?"
+          end
+        end
+      end
+
+      # Returns a Period according to GTFS Service date_range
+      def period
+        Period.for_range date_range
+      end
+
+      def included_dates
+        calendar_dates.select(&:included?).map(&:ruby_date).compact
+      end
+
+      def excluded_dates
+        calendar_dates.select(&:excluded?).map(&:ruby_date).compact
+      end
+
+      def memory_timetable
+        @memory_timetable ||= Timetable.new(
+          period: Timetable::Period.from(period, days_of_week),
+          included_dates: included_dates,
+          excluded_dates: excluded_dates
+        ).normalize!
+      end
+
+      def name
+        service_id
+      end
+
+      delegate :empty?, to: :memory_timetable
+
+      def time_table
+        @time_table ||= Chouette::TimeTable.new(comment: name).apply(memory_timetable)
       end
     end
   end

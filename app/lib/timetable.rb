@@ -81,7 +81,7 @@ class Timetable
   # TODO Create a Timetable::Optimizer::Chouette instead a normalize! method.
   # We'll need a Timetable::Optimizer::GTFS, Timetable::Optimizer::Netex, etc
   def normalize!
-    # TODO move these different logics into a dedicated objects ?
+    # TODO: move these different logics into a dedicated objects ?
 
     # Disabled to avoid expected changes in Chouette::TimeTable
     # Merge continuous periods
@@ -103,11 +103,32 @@ class Timetable
       if period_day_count > 1
         false
       else
-        if period_day_count == 1
-          included_dates << period.first
-        end
+        included_dates << period.first if period_day_count == 1
 
         true
+      end
+    end
+
+    # Remove both excluded and included dates
+    both_included_excluded_dates = excluded_dates & included_dates
+
+    included_dates.subtract both_included_excluded_dates
+    excluded_dates.subtract both_included_excluded_dates
+
+    # Remove excluded dates not included in a period
+    excluded_dates.delete_if do |excluded_date|
+      !periods.any? { |period| period.include? excluded_date }
+    end
+
+    # Remove included dates already included in a period
+    included_dates.delete_if do |included_date|
+      periods.any? { |period| period.include? included_date }
+    end
+
+    # Remove period where all (effective) dates are excluded
+    periods.delete_if do |period|
+      period.enumerator.all? do |date|
+        excluded_dates.include? date
       end
     end
 
@@ -197,6 +218,10 @@ class Timetable
       Range.new first, last
     end
 
+    def include?(date)
+      days_of_week.match_date?(date) && date_range.include?(date)
+    end
+
     # Returns the number of days between first and last dates
     # ignoring the selected days of week
     def length
@@ -233,7 +258,17 @@ class Timetable
       end
 
       # TODO
-      return length
+      length
+    end
+
+    def enumerator
+      enum_for(:each_date)
+    end
+
+    def each_date(&block)
+      date_range.each do |date|
+        block.call date if days_of_week.match_date?(date)
+      end
     end
 
     def eql?(other)
@@ -505,6 +540,7 @@ class Timetable
     def included_date(definition)
       timetable.included_dates << date(definition)
     end
+
     def excluded_date(definition)
       timetable.excluded_dates << date(definition)
     end

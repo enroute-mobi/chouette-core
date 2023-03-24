@@ -197,6 +197,75 @@ RSpec.describe Timetable do
       end.to change(timetable,:periods).to([]) and change(timetable,:empty?).to(true)
     end
 
+    it 'removes excluded dates outside a period' do
+      timetable = create do
+        period '10/05', '20/05'
+        excluded_date '09/05'
+        excluded_date '21/05'
+      end
+
+      expect do
+        timetable.normalize!
+      end.to change(timetable, :excluded_dates).to([])
+    end
+
+    it 'removes excluded dates outside a period days of week' do
+      timetable = create do
+        period '10/05/2030', '20/05/2030', 'LT.TFSS'
+        excluded_date '15/05/2030'
+      end
+
+      expect do
+        timetable.normalize!
+      end.to change(timetable, :excluded_dates).to([])
+    end
+
+    it 'removes included dates inside a period' do
+      timetable = create do
+        period '10/05', '20/05'
+        included_date '15/05'
+      end
+
+      expect do
+        timetable.normalize!
+      end.to change(timetable, :included_dates).to([])
+    end
+
+    it 'removes included dates inside a period days of week' do
+      timetable = create do
+        period '10/05/2030', '20/05/2030', '..WT...'
+        included_date '15/05/2030'
+      end
+
+      expect do
+        timetable.normalize!
+      end.to change(timetable, :included_dates).to([])
+    end
+
+    it 'removes included & excluded dates on the same date' do
+      timetable = create do
+        excluded_date '15/05'
+        included_date '15/05'
+      end
+
+      expect do
+        timetable.normalize!
+      end.to change(timetable, :included_dates).to([]) and change(timetable, :excluded_dates).to([])
+    end
+
+    it 'removes fully excluded periods' do
+      timetable = create do
+        period '10/05/2030', '20/05/2030', '..W..S.'
+        excluded_date '11/05/2030'
+        excluded_date '15/05/2030'
+        excluded_date '18/05/2030'
+      end
+
+      expect do
+        timetable.normalize!
+      end.to change(timetable, :periods).to([])
+    end
+
     # Merge has been disabled in normalize!
     it "merge continuous periods", skip: true do
       timetable = create do

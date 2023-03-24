@@ -417,7 +417,35 @@ RSpec.describe Timetable::Period do
         end
       end
     end
+  end
 
+  describe '#empty?' do
+    context "when the single date isn't selected in the days of week" do
+      subject { period('1/1/2030', '1/1/2030', 'L......') }
+      it { is_expected.to be_empty }
+    end
+
+    context 'when the single date is selected in the days of week' do
+      subject { period('1/1/2030', '1/1/2030', '.T.....') }
+      it { is_expected.to_not be_empty }
+    end
+  end
+
+  describe '#single_day?' do
+    context "when the single date isn't selected in the days of week" do
+      subject { period('1/1/2030', '1/1/2030', 'L......') }
+      it { is_expected.to_not be_single_day }
+    end
+
+    context 'when the single date is selected in the days of week' do
+      subject { period('1/1/2030', '1/1/2030', '.T.....') }
+      it { is_expected.to be_single_day }
+    end
+
+    context 'when the two dates are selected' do
+      subject { period('1/1/2030', '1/2/2030', '.TW....') }
+      it { is_expected.to_not be_single_day }
+    end
   end
 
   describe "#intersects?" do

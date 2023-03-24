@@ -98,14 +98,13 @@ class Timetable
     # Delete empty periods
     # Transform single day period in a included date
     periods.delete_if do |period|
-      period_day_count = period.day_count
-
-      if period_day_count > 1
-        false
-      else
-        included_dates << period.first if period_day_count == 1
-
+      if period.empty?
         true
+      elsif period.single_day?
+        included_dates << period.first
+        true
+      else
+        false
       end
     end
 
@@ -250,15 +249,33 @@ class Timetable
 
     # Returns the number of days between first and last dates
     # *selected* by the days of week
+    #
+    # TODO: compute day_count with week count
     def day_count
-      return length unless days_of_week
+      return length if days_of_week.nil? || days_of_week.all?
 
-      if length == 1
-        return days_of_week.match_date?(first) ? 1 : 0
+      count = 0
+      each_date { count += 1 }
+      count
+    end
+
+    def empty?
+      each_date do
+        return false
       end
 
-      # TODO
-      length
+      true
+    end
+
+    def single_day?
+      count = 0
+
+      each_date do
+        count += 1
+        return false if count > 1
+      end
+
+      count == 1
     end
 
     def enumerator

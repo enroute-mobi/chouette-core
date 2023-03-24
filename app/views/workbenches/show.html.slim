@@ -31,7 +31,7 @@
               ), \
               TableBuilderHelper::Column.new( \
                 key: :status, \
-                attribute: Proc.new {|referential| referential_status(referential) } \
+                attribute: Proc.new {|referential| referential_status(referential) }, \
                 sortable: false \
               ), \
               TableBuilderHelper::Column.new( \

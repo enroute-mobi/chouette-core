@@ -12,6 +12,7 @@ module Control
       end
     end
 
+    has_many :processing_rules, class_name: 'ProcessingRule::Base', as: :processable, dependent: :restrict_with_error
     has_many :control_list_runs, class_name: 'Control::List::Run', foreign_key: :original_control_list_id
 
     accepts_nested_attributes_for :controls, allow_destroy: true, reject_if: :all_blank

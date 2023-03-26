@@ -36,25 +36,7 @@ class Import::Gtfs < Import::Base # rubocop:disable Metrics/ClassLength
     registration_numbers = source.routes.map(&:id)
     line_ids = lines.where(registration_number: registration_numbers).pluck(:id)
 
-    start_dates = []
-    end_dates = []
-
-    if source.entries.include?('calendar.txt')
-      start_dates, end_dates = source.calendars.map { |c| [c.start_date, c.end_date] }.transpose
-    end
-
-    included_dates = []
-    if source.entries.include?('calendar_dates.txt')
-      included_dates = source.calendar_dates.select { |d| d.exception_type == "1" }.map(&:date)
-    end
-
-    min_date = Date.parse (start_dates + [included_dates.min]).compact.min
-    min_date = [min_date, Date.current.beginning_of_year - PERIOD_EXTREME_VALUE].max
-
-    max_date = Date.parse (end_dates + [included_dates.max]).compact.max
-    max_date = [max_date, Date.current.end_of_year + PERIOD_EXTREME_VALUE].min
-
-    ReferentialMetadata.new line_ids: line_ids, periodes: [min_date..max_date]
+    ReferentialMetadata.new line_ids: line_ids, periodes: [source.validity_period]
   end
 
   def source
@@ -1350,7 +1332,7 @@ class Import::Gtfs < Import::Base # rubocop:disable Metrics/ClassLength
 
       # Returns a Period according to GTFS Service date_range
       def period
-        Period.for_range date_range
+        Period.for_range date_range if date_range
       end
 
       def included_dates
@@ -1361,9 +1343,13 @@ class Import::Gtfs < Import::Base # rubocop:disable Metrics/ClassLength
         calendar_dates.select(&:excluded?).map(&:ruby_date).compact
       end
 
+      def memory_timetable_period
+        Timetable::Period.from(period, days_of_week) if period
+      end
+
       def memory_timetable
         @memory_timetable ||= Timetable.new(
-          period: Timetable::Period.from(period, days_of_week),
+          period: memory_timetable_period,
           included_dates: included_dates,
           excluded_dates: excluded_dates
         ).normalize!

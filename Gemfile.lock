@@ -6,7 +6,7 @@ GIT
 
 GIT
   remote: https://bitbucket.org/enroute-mobi/gtfs.git
-  revision: 4aae221c5f6276ae50bcd16cad4e1c8de4904ccc
+  revision: 1bc59261861dcf1d02685dcc6e8142b5e1088ebc
   branch: GTFS-38-gtfs-service
   specs:
     gtfs (0.3.6)

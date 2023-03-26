@@ -1049,33 +1049,15 @@ RSpec.describe Import::Gtfs do
     end
   end
 
-  describe "#referential_metadata" do
-    let(:import) { create_import "google-sample-feed.zip" }
-    let(:start_date_limit) { Date.current.beginning_of_year - Import::Base::PERIOD_EXTREME_VALUE }
-    let(:end_date_limit) { Date.current.end_of_year + Import::Base::PERIOD_EXTREME_VALUE }
+  describe '#referential_metadata' do
+    subject { import.referential_metadata }
 
-    context "when dates are over the extremes" do
-      before do
-        allow(import.source).to receive(:calendars).and_return([
-          double(start_date: (Date.current - 30.years).to_s, end_date: (Date.current + 30.years).to_s)
-        ])
-      end
+    let(:import) { create_import 'google-sample-feed.zip' }
 
-      it "sets periodes within the allowed limit" do
-        expect(import.referential_metadata.periodes).to eq([start_date_limit..end_date_limit])
-      end
-    end
+    context 'when Source validity period is 20300101-20301231' do
+      before { allow(import.source).to receive(:validity_period).and_return(Period.parse('20300101..20301231')) }
 
-    context "when dates are inside the extremes" do
-      before do
-        allow(import.source).to receive(:calendars).and_return([
-          double(start_date: 1.month.ago.to_date.to_s, end_date: 1.year.since.to_date.to_s)
-        ])
-      end
-
-      it "sets periodes within the allowed limit" do
-        expect(import.referential_metadata.periodes).to eq([1.month.ago.to_date..1.year.since.to_date])
-      end
+      it { is_expected.to have_attributes(periodes: contain_exactly(import.source.validity_period)) }
     end
   end
 

@@ -29,7 +29,7 @@ module Query
       where(value, :in, :transport_mode)
     end
 
-    def line_status(status)
+    def statuses(status)
       change_scope(if: status.present?) do |scope|
         if status == "deactivated"
           scope.where(deactivated: true)

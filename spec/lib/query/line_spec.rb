@@ -133,8 +133,8 @@ RSpec.describe Query::Line do
       it { is_expected.to be_truthy }
     end
 
-    describe '#line_status' do
-      let(:criteria_id) { 'line_status' }
+    describe '#statuses' do
+      let(:criteria_id) { 'statuses' }
 
       context 'when value is deactivated' do
         before do

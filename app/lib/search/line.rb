@@ -8,12 +8,12 @@ module Search
     attribute :company_id
     attribute :line_provider_id
     attribute :transport_mode
-    attribute :line_status
+    attribute :statuses
 		attribute :valid_after_date, type: Date
     attribute :valid_before_date, type: Date
 
     enumerize :transport_mode, in: TransportModeEnumerations.transport_modes, multiple: true
-		enumerize :line_status, in: ::Chouette::Line.statuses
+		enumerize :statuses, in: ::Chouette::Line.statuses, i18n_scope: 'lines.statuses'
 
 		attr_accessor :line_referential
 
@@ -30,7 +30,7 @@ module Search
 				.company_id(company_id)
 				.line_provider_id(line_provider_id)
 				.transport_mode(transport_mode)
-				.line_status(line_status)
+				.statuses(statuses)
 				.in_period(period)
     end
 

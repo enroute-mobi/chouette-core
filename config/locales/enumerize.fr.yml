@@ -151,10 +151,6 @@ fr:
       kind:
         commercial: Commercial
         non_commercial: Non commercial
-      status: &stop_area_status
-        in_creation: En création
-        confirmed: Activé
-        deactivated: Désactivé
       mobility_impaired_accessibility:
         unknown: Inconnu
         'yes': Oui
@@ -426,7 +422,6 @@ fr:
       disabled: Désactivé
     search:
       rule_type: *notification_rule_rule_type
-      statuses: *stop_area_status
       line_status: *line_status
     control:
       criticity:

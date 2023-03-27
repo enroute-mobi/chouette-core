@@ -52,6 +52,10 @@ en:
       zip_code: Enter a zip code...
       city_name: Enter a city name...
       area_type: Enter an area type...
+    statuses:
+      in_creation: In creation
+      confirmed: Activated
+      deactivated: Deactivated
     new:
       title: "Add a new stop"
     update:

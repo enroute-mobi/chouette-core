@@ -7,8 +7,8 @@ module Control
 
       included do
         option :passing_time_scope
-        option :before, serialize: Proc.new { |t| TimeOfDay.parse(t).without_utc_offset }
-        option :after,  serialize: Proc.new { |t| TimeOfDay.parse(t).without_utc_offset }
+        option :before, serialize: TimeOfDay::Type::SecondOffset
+        option :after,  serialize: TimeOfDay::Type::SecondOffset
 
         enumerize :passing_time_scope, in: %w[all first last]
 
@@ -18,7 +18,7 @@ module Control
               time_of_day = TimeOfDay.new(time_of_day[1], time_of_day[2]).without_utc_offset
             end
 
-            options[option] = time_of_day.to_s
+            super time_of_day
           end
         end
       end

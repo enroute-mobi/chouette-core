@@ -199,7 +199,6 @@ class TimeOfDay
       ([0-5]\d)?
       :?
       ([0-5]\d)?
-      (\sday:\d)?
       \z
     /x
 
@@ -233,6 +232,23 @@ class TimeOfDay
       def serialize(value)
         return unless value.present?
         value.to_hms
+      end
+
+      def changed_in_place?(raw_old_value, new_value)
+        raw_old_value != serialize(new_value)
+      end
+    end
+
+    class SecondOffset < ActiveRecord::Type::Value
+      def cast(value)
+        return unless value.present?
+
+        TimeOfDay.from_second_offset(value)
+      end
+
+      def serialize(value)
+        return unless value.present?
+        value.second_offset
       end
 
       def changed_in_place?(raw_old_value, new_value)

@@ -26,7 +26,7 @@ RSpec.describe Control::PassingTimesInTimeRange do
     before do
       referential.switch
 
-      at_stop_in_time_range.update arrival_time: "2000-01-01 17:00:00" , departure_time: "2000-01-01  17:00:00"
+      at_stop_in_time_range.update arrival_time: "2000-01-01 17:00:00" , departure_time: "2000-01-01 17:00:00"
       at_stop_not_in_time_range.update arrival_time: "2000-01-01 22:00:00" , departure_time: "2000-01-01 23:00:00"
 
       control_run.run
@@ -34,8 +34,8 @@ RSpec.describe Control::PassingTimesInTimeRange do
 
     describe '#run' do
 
-      let(:after) { "16:10 day:0" }
-      let(:before) { "20:10 day:0" }
+      let(:after) { 58200 }
+      let(:before) { 72600 }
 
       let(:expected_message) do
         an_object_having_attributes(

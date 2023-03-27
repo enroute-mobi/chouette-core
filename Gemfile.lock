@@ -65,7 +65,8 @@ GIT
 
 GIT
   remote: https://bitbucket.org/enroute-mobi/netex.git
-  revision: 56ef4965e0353ed8b6c054747f54452b78b8f5be
+  revision: b2eca53ce79e718135b50057422c8a270cbdec5d
+  branch: bugfix/NETEX-74-contactdetails-object-has-versi
   specs:
     netex (0.1.2)
       activesupport

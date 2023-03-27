@@ -1452,7 +1452,7 @@ RSpec.describe Export::NetexGeneric do
 
           it 'uses Point of interest\'s postal_address' do
             expect(subject).to have_attributes(
-              id: point_of_interest.uuid,
+              id: "Address:#{point_of_interest.uuid}",
               address_line_1: point_of_interest.address_line_1,
               post_code: point_of_interest.zip_code,
               town: point_of_interest.city_name,

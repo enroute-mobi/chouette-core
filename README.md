@@ -1,7 +1,7 @@
 # Chouette
 
-[![Codacy Badge](https://app.codacy.com/project/badge/Grade/815b2721c0334346a5ee4f252d23a68e)](https://www.codacy.com?utm_source=bitbucket.org&amp;utm_medium=referral&amp;utm_content=enroute-mobi/chouette-core&amp;utm_campaign=Badge_Grade)
-[![Codacy Badge](https://app.codacy.com/project/badge/Coverage/815b2721c0334346a5ee4f252d23a68e)](https://www.codacy.com?utm_source=bitbucket.org&utm_medium=referral&utm_content=enroute-mobi/chouette-core&utm_campaign=Badge_Coverage)
+[![Codacy Badge](https://app.codacy.com/project/badge/Grade/fbcefb3203e240fe8b1cec019ec6a147)](https://app.codacy.com/bb/enroute-mobi/chouette-core/dashboard?utm_source=bb&utm_medium=referral&utm_content=&utm_campaign=Badge_grade)
+[![Codacy Badge](https://app.codacy.com/project/badge/Coverage/fbcefb3203e240fe8b1cec019ec6a147)](https://app.codacy.com/bb/enroute-mobi/chouette-core/dashboard?utm_source=bb&utm_medium=referral&utm_content=&utm_campaign=Badge_coverage)
 
 Chouette is a [SaaS platform](https://chouette.enroute.mobi/) dedicated to schedule public transit data : NeTEx, GTFS, Neptune...
 
@@ -18,10 +18,6 @@ Chouette covers many use cases for your transit data :
 
 This repository is the open source version of Chouette project. Use this project to fork and maintain your own Chouette project.
 
-## Requirements
-
-[Import, Export and Validation Operations](https://bitbucket.org/enroute-mobi/chouette-core-iev) are in the Java part of the project
-
 ## Install
 
 Install steps are available [here](https://bitbucket.org/enroute-mobi/chouette-core/src/master/INSTALL.md)
@@ -36,7 +32,7 @@ Our Roadmap and Features are available on [enRoute products wiki](https://enrout
 
 ## User Manual
 
-Our User Manual is available on [https://docs.enroute.mobi/fr/chouette/user-manual/](https://docs.enroute.mobi/fr/chouette/user-manual/)
+The [Chouette SaaS User Manual](https://enroute.atlassian.net/wiki/spaces/PUBLIC/pages/1887600645/Chouette+User+Manual) is online.
 
 ## Support
 

@@ -1,31 +1,70 @@
 # frozen_string_literal: true
 
 describe MailerHelper, type: :helper do
+  before { allow(helper.class).to receive(:name).and_return('test') }
+
+  describe '#subject_prefix' do
+    subject { helper.subject_prefix }
+
+    context 'when Chouette::Config.mailer.subject_prefix is "dummy"' do
+      before { allow(Chouette::Config.mailer).to receive(:subject_prefix).and_return('dummy') }
+      it { is_expected.to eq('dummy') }
+    end
+  end
+
   describe '#mail_subject' do
-    let(:i18n) { "mailers.#{action}.#{method}.subject" }
-    let(:subject_prefix) { Chouette::Config.mailer.subject_prefix }
-    let(:subject_mailer) { [subject_prefix, I18n.t(i18n, attributes)].join(' ') }
+    context 'when i18n key is given' do
+      subject { helper.mail_subject(i18n: '18n key') }
 
-    subject { mail_subject(i18n: i18n, method: method, attributes: attributes) }
+      let(:i18n_subject) { 'i18n translation of given key' }
+      before { allow(helper).to receive(:translate).with('18n key', {}).and_return(i18n_subject) }
 
-    context 'when mail_subject has no attributes' do
-      let(:method) { 'finished' }
-      let(:action) { 'import_mailer' }
-      let(:attributes) { {} }
+      it { is_expected.to eq(i18n_subject) }
+    end
 
-      it 'return subject mailer' do
-        is_expected.to eq(subject_mailer)
+    context 'when no i18n key is given' do
+      context 'when a method is given' do
+        subject { helper.mail_subject(method: '<method>') }
+
+        let(:i18n_subject) { "i18n translation of 'mailers.<class>.<method>.subject'" }
+        before do
+          allow(helper).to receive(:translate).with('mailers.test.<method>.subject', {}).and_return(i18n_subject)
+        end
+
+        it { is_expected.to eq(i18n_subject) }
+      end
+
+      context 'when no method is given' do
+        subject { helper.mail_subject }
+
+        let(:i18n_subject) { "i18n translation of 'mailers.<class>.finished.subject'" }
+        before do
+          allow(helper).to receive(:translate).with('mailers.test.finished.subject', {}).and_return(i18n_subject)
+        end
+
+        it { is_expected.to eq(i18n_subject) }
       end
     end
 
-    context 'when mail_subject has attributes' do
-      let(:method) { 'invitation_from_user' }
-      let(:action) { 'user_mailer' }
-      let(:attributes) { { app_name: 'App name' } }
+    context 'when i18n attributes are given' do
+      subject { helper.mail_subject(attributes: attributes) }
 
-      it 'return subject mailer with attributes' do
-        is_expected.to eq(subject_mailer)
+      let(:attributes) { { dummy: true } }
+
+      let(:i18n_subject) { "i18n translation with attributes" }
+      before do
+        allow(helper).to receive(:translate).with(a_value, attributes).and_return(i18n_subject)
       end
+
+      it { is_expected.to eq(i18n_subject) }
+    end
+
+    context 'when subject_prefix is "prefix"' do
+      subject { helper.mail_subject }
+
+      before { allow(helper).to receive(:subject_prefix).and_return('prefix') }
+
+      it { is_expected.to start_with(helper.subject_prefix) }
     end
   end
 end

@@ -14,9 +14,7 @@ class ControlListsController < ChouetteController
   def index
     index! do |format|
       format.html do
-        if collection.out_of_bounds?
-          redirect_to params.merge(:page => 1)
-        end
+        redirect_to params.merge(page: 1) if collection.out_of_bounds?
         @control_lists = collection
       end
     end
@@ -28,17 +26,20 @@ class ControlListsController < ChouetteController
   alias workbench parent
 
   def collection
-    get_collection_ivar || set_collection_ivar(ControlListDecorator.decorate(end_of_association_chain.paginate(:page => params[:page], per_page: 30),
-    context: {
-      workbench: @workbench
-      })
-    )
+    get_collection_ivar || set_collection_ivar(ControlListDecorator.decorate(end_of_association_chain.paginate(page: params[:page], per_page: 30),
+                                                                             context: {
+                                                                               workbench: @workbench
+                                                                             }))
   end
 
   private
 
   def decorate_control_list
-    object = control_list rescue build_resource
+    object = begin
+      control_list
+    rescue StandardError
+      build_resource
+    end
     @control_list = ControlListDecorator.decorate(
       object,
       context: {

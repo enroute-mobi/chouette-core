@@ -76,7 +76,7 @@ module Chouette
       attr_reader :env
 
       def subject_prefix
-        env.array('MAILER_SUBJECT_PREFIX')
+        env.string('MAILER_SUBJECT_PREFIX')
       end
 
       def from
@@ -100,6 +100,13 @@ module Chouette
 
       def value(name)
         @values["CHOUETTE_#{name}"] || @values[name]
+      end
+
+      def string(name)
+        raw_value = value(name)
+        return nil unless raw_value.present?
+
+        raw_value.strip
       end
 
       BOOLEAN_VALUES = %w[true TRUE 1].freeze

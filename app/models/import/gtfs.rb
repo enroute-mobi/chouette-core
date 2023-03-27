@@ -1289,6 +1289,8 @@ class Import::Gtfs < Import::Base # rubocop:disable Metrics/ClassLength
     Services.new(WithResource.new(self, resource)).import!
 
     resource.update_status_from_messages
+    # TODO: why the import status must be changed manually ?!
+    @status = 'failed' if resource.status == :ERROR
   end
 
   class Services
@@ -1305,22 +1307,38 @@ class Import::Gtfs < Import::Base # rubocop:disable Metrics/ClassLength
       source.services.each do |service|
         decorator = Decorator.new(service)
 
-        # unless decorator.valid?
-        #   # Error ?
-        #   next
-        # end
+        # Decorator can have errors but provides a TimeTable
+        decorator.errors.each { |error| create_message error } unless decorator.valid?
 
         time_table = decorator.time_table
+        next unless time_table&.valid?
 
         # TODO: use inserter
-        next unless time_table.save
+        time_table.save!
 
-        # TODO: replace by an index
-        time_tables_by_service_id[decorator.service_id] = [time_table.id]
+        index.register_service_id decorator.service_id, time_table
       end
     end
 
+    def create_message(attributes)
+      attributes[:criticity] ||= :error
+      attributes[:message_key] = "gtfs.services.#{attributes[:message_key]}"
+      import.create_message attributes
+    end
+
+    def index
+      # TODO: replace by a real index
+      @index ||= Index.new time_tables_by_service_id
+    end
+
     class Decorator < SimpleDelegator
+      def initialize(service, index: nil)
+        super service
+        @index = index
+      end
+
+      attr_accessor :index
+
       # Returns a Timetable::DaysOfWeek according to GTFS Service monday?/.../sunday?
       def days_of_week
         Timetable::DaysOfWeek.new.tap do |days_of_week|
@@ -1362,7 +1380,39 @@ class Import::Gtfs < Import::Base # rubocop:disable Metrics/ClassLength
       delegate :empty?, to: :memory_timetable
 
       def time_table
+        return nil if name.blank?
+
         @time_table ||= Chouette::TimeTable.new(comment: name).apply(memory_timetable)
+      end
+
+      def errors
+        @errors ||= []
+      end
+
+      def valid?
+        errors.clear
+
+        errors << { message_key: :service_without_id } if service_id.blank?
+        errors << { message_key: :duplicated_service_id, message_attributes: { service_id: service_id } } if index&.service_id?(service_id)
+        errors << { message_key: :invalid_service, message_attributes: { service_id: service_id } } if memory_timetable.empty? || !time_table&.valid?
+
+        errors.empty?
+      end
+    end
+
+    class Index
+      def initialize(time_tables_by_service_id)
+        @time_tables_by_service_id = time_tables_by_service_id
+      end
+
+      attr_reader :time_tables_by_service_id
+
+      def register_service_id(service_id, time_table)
+        time_tables_by_service_id[service_id] = [time_table.id]
+      end
+
+      def service_id?(service_id)
+        time_tables_by_service_id.key? service_id
       end
     end
   end

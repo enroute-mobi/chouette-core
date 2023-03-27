@@ -1438,20 +1438,28 @@ RSpec.describe Import::Gtfs do
     describe '#time_table' do
       subject { decorator.time_table }
 
-      it { is_expected.to be_a(Chouette::TimeTable) }
+      context 'when service_id is defined' do
+        before { allow(decorator).to receive(:service_id).and_return('service_id') }
 
-      context 'when Decorator name is "dummy"' do
-        before { allow(decorator).to receive(:name).and_return('dummy') }
+        it { is_expected.to be_a(Chouette::TimeTable) }
 
-        it { is_expected.to have_attributes(comment: decorator.name) }
+        context 'when Decorator name is "dummy"' do
+          before { allow(decorator).to receive(:name).and_return('dummy') }
+
+          it { is_expected.to have_attributes(comment: decorator.name) }
+        end
+
+        it 'should apply memory timetable periods and in/excluded_dates' do
+          time_table = Chouette::TimeTable.new
+          allow(Chouette::TimeTable).to receive(:new).and_return(time_table)
+
+          expect(time_table).to receive(:apply).with(decorator.memory_timetable).and_return(time_table)
+          is_expected.to be(time_table)
+        end
       end
 
-      it 'should apply memory timetable periods and in/excluded_dates' do
-        time_table = Chouette::TimeTable.new
-        allow(Chouette::TimeTable).to receive(:new).and_return(time_table)
-
-        expect(time_table).to receive(:apply).with(decorator.memory_timetable).and_return(time_table)
-        is_expected.to be(time_table)
+      context "when service_id isn't defined" do
+        it { is_expected.to be_nil }
       end
     end
   end

@@ -122,7 +122,7 @@ fr:
         data_format_restrictions: "Format d'export privilégié"
         data_format: "Format d'export privilégié"
         routing_constraint_zone: Zone de contrainte
-        validity_period: "Période de validité englobante"
+        validity_period: "Période de validité"
         updated_at: "Edité le"
         created_at: "Créé le"
         merged_at: "Finalisé le"

@@ -42,9 +42,9 @@ module Search
     class Order < ::Search::Order
       attribute :name, default: :asc
       # attribute :status
-      attribute :organisation_name, joins: :workbench, column: 'workbenches.name'
+      attribute :workbench, joins: :workbench, column: 'workbenches.name'
       attribute :created_at
-      attribute :updated_at
+      attribute :merged_at
     end
   end
 end

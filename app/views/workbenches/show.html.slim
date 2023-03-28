@@ -35,7 +35,7 @@
                 sortable: false \
               ), \
               TableBuilderHelper::Column.new( \
-                key: :organisation_name, \
+                key: :workbench, \
                 name: Referential.tmf('workbench'), \
                 attribute: Proc.new {|referential| referential.workbench.name} \
               ), \
@@ -46,7 +46,7 @@
               ), \
               TableBuilderHelper::Column.new( \
                 key: :lines, \
-                name: Referential.tmf('number_of_lines'), \
+                name: Referential.tmf('lines'), \
                 attribute: Proc.new {|w| w.lines.count}, \
                 sortable: false \
               ), \
@@ -55,9 +55,9 @@
                 attribute: Proc.new {|w| l(w.created_at)} \
               ), \
               TableBuilderHelper::Column.new( \
-                key: :updated_at, \
-                attribute: Proc.new {|w| l(w.updated_at)} \
-              ), \
+                key: :merged_at, \
+                attribute: Proc.new {|w| w.merged_at ? l(w.merged_at) : '-'} \
+              ) \
             ],
             selectable: ->(ref) { \
               @workbench.referentials.include?(ref) && \

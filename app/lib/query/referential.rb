@@ -30,9 +30,9 @@ module Query
       end
     end
 
-    def workbenches(workbench_ids)
-      change_scope(unless: workbench_ids.blank?) do |scope|
-        scope.where(workbench_id: workbench_ids)
+    def workbenches(workbenches)
+      change_scope(if: workbenches.present?) do |scope|
+        scope.where(workbench_id: workbenches)
       end
     end
 

@@ -45,7 +45,7 @@ RSpec.describe Query::Referential do
     let(:query) { Query::Referential.new(selected_workbench.all_referentials) }
 
     context 'when workbench is the referentials workbench' do
-      subject { query.workbenches([selected_workbench.id]).scope }
+      subject { query.workbenches([selected_workbench]).scope }
 
       it 'includes 2 referentials' do
         is_expected.to contain_exactly(first_referential, second_referential)

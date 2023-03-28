@@ -27,7 +27,7 @@ module Search
                         .text(text)
                         .line(line)
                         .statuses(statuses)
-                        .workbenches(workbench_ids)
+                        .workbenches(workbenches)
                         .in_period(period)
     end
 
@@ -37,6 +37,10 @@ module Search
 
     def candidate_workbenches
       workgroup.workbenches.order(:name)
+    end
+
+    def workbenches
+      candidate_workbenches.where(id: workbench_ids)
     end
 
     class Order < ::Search::Order

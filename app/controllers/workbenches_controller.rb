@@ -9,6 +9,8 @@ class WorkbenchesController < ChouetteController
   end
 
   def show
+    @single_workbench = @workbench.workgroup.workbenches.one?
+
     @wbench_refs = ReferentialDecorator.decorate(
       collection,
       context: {

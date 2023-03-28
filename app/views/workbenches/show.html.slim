@@ -34,11 +34,11 @@
                 attribute: Proc.new {|referential| referential_status(referential) }, \
                 sortable: false \
               ), \
-              TableBuilderHelper::Column.new( \
+              (TableBuilderHelper::Column.new( \
                 key: :workbench, \
                 name: Referential.tmf('workbench'), \
                 attribute: Proc.new {|referential| referential.workbench.name} \
-              ), \
+              ) unless @single_workbench), \
               TableBuilderHelper::Column.new( \
                 key: :validity_period, \
                 attribute: Proc.new {|w| w.validity_period.nil? ? '-' : t('validity_range', debut: l(w.try(:validity_period).try(:begin)), end: l(w.try(:validity_period).try(:end)))}, \
@@ -58,7 +58,7 @@
                 key: :merged_at, \
                 attribute: Proc.new {|w| w.merged_at ? l(w.merged_at) : '-'} \
               ) \
-            ],
+            ].compact,
             selectable: ->(ref) { \
               @workbench.referentials.include?(ref) && \
                 policy(ref).destroy? \

@@ -5,7 +5,9 @@ class Timetable
   end
 
   def initialize(attributes = {})
+    periods << attributes[:period] if attributes[:period]
     periods.merge Array(attributes[:periods])
+
     included_dates.merge Array(attributes[:included_dates])
     excluded_dates.merge Array(attributes[:excluded_dates])
   end
@@ -79,7 +81,7 @@ class Timetable
   # TODO Create a Timetable::Optimizer::Chouette instead a normalize! method.
   # We'll need a Timetable::Optimizer::GTFS, Timetable::Optimizer::Netex, etc
   def normalize!
-    # TODO move these different logics into a dedicated objects ?
+    # TODO: move these different logics into a dedicated objects ?
 
     # Disabled to avoid expected changes in Chouette::TimeTable
     # Merge continuous periods
@@ -96,16 +98,36 @@ class Timetable
     # Delete empty periods
     # Transform single day period in a included date
     periods.delete_if do |period|
-      period_day_count = period.day_count
-
-      if period_day_count > 1
-        false
-      else
-        if period_day_count == 1
-          included_dates << period.first
-        end
-
+      if period.empty?
         true
+      elsif period.single_day?
+        included_dates << period.first
+        true
+      else
+        false
+      end
+    end
+
+    # Remove both excluded and included dates
+    both_included_excluded_dates = excluded_dates & included_dates
+
+    included_dates.subtract both_included_excluded_dates
+    excluded_dates.subtract both_included_excluded_dates
+
+    # Remove excluded dates not included in a period
+    excluded_dates.delete_if do |excluded_date|
+      !periods.any? { |period| period.include? excluded_date }
+    end
+
+    # Remove included dates already included in a period
+    included_dates.delete_if do |included_date|
+      periods.any? { |period| period.include? included_date }
+    end
+
+    # Remove period where all (effective) dates are excluded
+    periods.delete_if do |period|
+      period.enumerator.all? do |date|
+        excluded_dates.include? date
       end
     end
 
@@ -178,7 +200,7 @@ class Timetable
     end
 
     def self.from(date_range, days_of_week = DaysOfWeek.all)
-      new date_range.min, date_range.max, days_of_week
+      new date_range.min, date_range.max, days_of_week if date_range
     end
 
     def self.shift periods, days
@@ -193,6 +215,10 @@ class Timetable
     # Returns the date range between first and last dates
     def date_range
       Range.new first, last
+    end
+
+    def include?(date)
+      days_of_week.match_date?(date) && date_range.include?(date)
     end
 
     # Returns the number of days between first and last dates
@@ -223,15 +249,43 @@ class Timetable
 
     # Returns the number of days between first and last dates
     # *selected* by the days of week
+    #
+    # TODO: compute day_count with week count
     def day_count
-      return length unless days_of_week
+      return length if days_of_week.nil? || days_of_week.all?
 
-      if length == 1
-        return days_of_week.match_date?(first) ? 1 : 0
+      count = 0
+      each_date { count += 1 }
+      count
+    end
+
+    def empty?
+      each_date do
+        return false
       end
 
-      # TODO
-      return length
+      true
+    end
+
+    def single_day?
+      count = 0
+
+      each_date do
+        count += 1
+        return false if count > 1
+      end
+
+      count == 1
+    end
+
+    def enumerator
+      enum_for(:each_date)
+    end
+
+    def each_date(&block)
+      date_range.each do |date|
+        block.call date if days_of_week.match_date?(date)
+      end
     end
 
     def eql?(other)
@@ -503,6 +557,7 @@ class Timetable
     def included_date(definition)
       timetable.included_dates << date(definition)
     end
+
     def excluded_date(definition)
       timetable.excluded_dates << date(definition)
     end

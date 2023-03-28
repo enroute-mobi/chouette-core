@@ -27,6 +27,8 @@ fr:
     shapefile_geometry_parsing_error: "Impossible de parser le tracé de l'objet situé à l'index #%{shape_index} de votre fichier"
     invalid_model_attribute: "L'attribut %{attribute_name} ne peut avoir la valeur '%{attribute_value}'"
     unreasonable_shape: 'Le tracé %{shape_id} est ignoré à cause de son trop grand nombre de points'
+    
+
     gtfs:
       agencies:
         imported: "%{count} agence(s) importée(s)"
@@ -40,6 +42,10 @@ fr:
         unknown_service_id: Identifiant du service inconnu
       calendars:
         imported: "%{count} calendrier(s) importé(s)"
+      services:
+        service_without_id: Le service n'est pas d'identifiant
+        duplicated_service_id: Un service %{service_id} existe déjà
+        invalid_service: Le service %{service_id} contient des données invalides
       transfers:
         missing_stop_id: "L'arrêt %{stop_id} est introuvable"
         replacing_duration: "Une nouvelle valeur a été définie pour la durée de transit pour la correspondance %{from_id} => %{to_id}"

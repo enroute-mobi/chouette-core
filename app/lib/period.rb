@@ -91,7 +91,7 @@ class Period < Range
   end
 
   def self.for_range(range)
-    RangeDecorator.new(range).period
+    RangeDecorator.new(range).period if range
   end
 
   def self.for_date(date)

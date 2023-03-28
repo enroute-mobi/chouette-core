@@ -40,6 +40,10 @@ en:
         unknown_service_id: Identifiant du service inconnu
       calendars:
         imported: "%{count} calendar(s) imported"
+      services:
+        service_without_id: The GTFS service has no identifier
+        duplicated_service_id: The GTFS service %{service_id} already exists
+        invalid_service: The GTFS service %{service_id} contains invalid data
       transfers:
         missing_stop_id: "The stop %{stop_id} cannot be found"
         replacing_duration: "Replacing the default duration for the connection %{from_id} => %{to_id}"

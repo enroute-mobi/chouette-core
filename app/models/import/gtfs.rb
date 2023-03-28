@@ -36,25 +36,7 @@ class Import::Gtfs < Import::Base # rubocop:disable Metrics/ClassLength
     registration_numbers = source.routes.map(&:id)
     line_ids = lines.where(registration_number: registration_numbers).pluck(:id)
 
-    start_dates = []
-    end_dates = []
-
-    if source.entries.include?('calendar.txt')
-      start_dates, end_dates = source.calendars.map { |c| [c.start_date, c.end_date] }.transpose
-    end
-
-    included_dates = []
-    if source.entries.include?('calendar_dates.txt')
-      included_dates = source.calendar_dates.select { |d| d.exception_type == "1" }.map(&:date)
-    end
-
-    min_date = Date.parse (start_dates + [included_dates.min]).compact.min
-    min_date = [min_date, Date.current.beginning_of_year - PERIOD_EXTREME_VALUE].max
-
-    max_date = Date.parse (end_dates + [included_dates.max]).compact.max
-    max_date = [max_date, Date.current.end_of_year + PERIOD_EXTREME_VALUE].min
-
-    ReferentialMetadata.new line_ids: line_ids, periodes: [min_date..max_date]
+    ReferentialMetadata.new line_ids: line_ids, periodes: [source.validity_period]
   end
 
   def source
@@ -71,10 +53,7 @@ class Import::Gtfs < Import::Base # rubocop:disable Metrics/ClassLength
   def import_without_status
     prepare_referential
 
-    if check_calendar_files_missing_and_create_message
-    else
-      import_resources :calendars, :calendar_dates
-    end
+    check_calendar_files_missing_and_create_message || import_resources(:services)
 
     import_resources :transfers if source.entries.include?('transfers.txt')
 
@@ -794,54 +773,9 @@ class Import::Gtfs < Import::Base # rubocop:disable Metrics/ClassLength
     TimeOfDay.create(t, time_zone: default_time_zone).without_utc_offset
   end
 
-# for each service_id we store an array of TimeTables for each needed starting day offset
+  # for each service_id we store an array of TimeTables for each needed starting day offset
   def time_tables_by_service_id
     @time_tables_by_service_id ||= {}
-  end
-
-  def import_calendars
-    return unless source.entries.include?('calendar.txt')
-
-    Chouette::TimeTable.skipping_objectid_uniqueness do
-      create_resource(:calendars).each(source.calendars, slice: 500, transaction: true) do |calendar, resource|
-        time_table = referential.time_tables.build comment: calendar.service_id
-        Chouette::TimeTable.all_days.each do |day|
-          time_table.send("#{day}=", calendar.send(day))
-        end
-        if calendar.start_date == calendar.end_date
-          time_table.dates.build date: calendar.start_date, in_out: true
-        else
-          time_table.periods.build period_start: calendar.start_date, period_end: calendar.end_date
-        end
-        time_table.shortcuts_update
-        time_table.skip_save_shortcuts = true
-        save_model time_table, resource: resource
-
-        time_tables_by_service_id[calendar.service_id] = [time_table.id]
-      end
-    end
-  end
-
-  def import_calendar_dates
-    return unless source.entries.include?('calendar_dates.txt')
-
-    positions = Hash.new{ |h, k| h[k] = 0 }
-    Chouette::TimeTableDate.bulk_insert do |worker|
-      create_resource(:calendar_dates).each(source.calendar_dates, slice: 500, transaction: true) do |calendar_date, resource|
-        comment = "#{calendar_date.service_id}"
-        unless_parent_model_in_error(Chouette::TimeTable, comment, resource) do
-          time_table_id = time_tables_by_service_id[calendar_date.service_id]&.first
-          time_table_id ||= begin
-                              tt = referential.time_tables.build comment: comment
-                              save_model tt, resource: resource
-                              time_tables_by_service_id[calendar_date.service_id] = [tt.id]
-                              tt.id
-                            end
-          worker.add position: positions[time_table_id], date: Date.parse(calendar_date.date), in_out: calendar_date.exception_type == "1", time_table_id: time_table_id
-          positions[time_table_id] += 1
-        end
-      end
-    end
   end
 
   def find_stop_parent_or_create_message(stop_area_name, parent_station, resource)
@@ -1297,6 +1231,143 @@ class Import::Gtfs < Import::Base # rubocop:disable Metrics/ClassLength
         else
           expressions.first
         end
+      end
+    end
+  end
+
+  def import_services
+    resource = create_resource(:services)
+    # TODO: any performance impact ?
+    resource.rows_count = source.services.count
+    resource.save!
+
+    Services.new(WithResource.new(self, resource)).import!
+
+    resource.update_status_from_messages
+    # TODO: why the import status must be changed manually ?!
+    @status = 'failed' if resource.status == :ERROR
+  end
+
+  class Services
+    def initialize(import)
+      @import = import
+    end
+
+    attr_reader :import
+
+    delegate :source, :time_tables_by_service_id, to: :import
+
+    def import!
+      # Retrieve both calendar and associated calendar_dates into a single GTFS::Service model
+      source.services.each do |service|
+        decorator = Decorator.new(service)
+
+        # Decorator can have errors but provides a TimeTable
+        decorator.errors.each { |error| create_message error } unless decorator.valid?
+
+        time_table = decorator.time_table
+        next unless time_table&.valid?
+
+        # TODO: use inserter
+        time_table.save!
+
+        index.register_service_id decorator.service_id, time_table
+      end
+    end
+
+    def create_message(attributes)
+      attributes[:criticity] ||= :error
+      attributes[:message_key] = "gtfs.services.#{attributes[:message_key]}"
+      import.create_message attributes
+    end
+
+    def index
+      # TODO: replace by a real index
+      @index ||= Index.new time_tables_by_service_id
+    end
+
+    class Decorator < SimpleDelegator
+      def initialize(service, index: nil)
+        super service
+        @index = index
+      end
+
+      attr_accessor :index
+
+      # Returns a Timetable::DaysOfWeek according to GTFS Service monday?/.../sunday?
+      def days_of_week
+        Timetable::DaysOfWeek.new.tap do |days_of_week|
+          %i[monday tuesday wednesday thursday friday saturday sunday].each do |day|
+            days_of_week.enable day if send "#{day}?"
+          end
+        end
+      end
+
+      # Returns a Period according to GTFS Service date_range
+      def period
+        Period.for_range date_range if date_range
+      end
+
+      def included_dates
+        calendar_dates.select(&:included?).map(&:ruby_date).compact
+      end
+
+      def excluded_dates
+        calendar_dates.select(&:excluded?).map(&:ruby_date).compact
+      end
+
+      def memory_timetable_period
+        Timetable::Period.from(period, days_of_week) if period
+      end
+
+      def memory_timetable
+        @memory_timetable ||= Timetable.new(
+          period: memory_timetable_period,
+          included_dates: included_dates,
+          excluded_dates: excluded_dates
+        ).normalize!
+      end
+
+      def name
+        service_id
+      end
+
+      delegate :empty?, to: :memory_timetable
+
+      def time_table
+        return nil if name.blank?
+
+        @time_table ||= Chouette::TimeTable.new(comment: name).apply(memory_timetable)
+      end
+
+      def errors
+        @errors ||= []
+      end
+
+      def valid?
+        errors.clear
+
+        errors << { message_key: :service_without_id } if service_id.blank?
+        errors << { message_key: :duplicated_service_id, message_attributes: { service_id: service_id } } if index&.service_id?(service_id)
+        errors << { message_key: :invalid_service, message_attributes: { service_id: service_id } } if memory_timetable.empty? || !time_table&.valid?
+
+        errors.empty?
+      end
+    end
+
+    class Index
+      def initialize(time_tables_by_service_id)
+        @time_tables_by_service_id = time_tables_by_service_id
+      end
+
+      attr_reader :time_tables_by_service_id
+
+      def register_service_id(service_id, time_table)
+        time_tables_by_service_id[service_id] = [time_table.id]
+      end
+
+      def service_id?(service_id)
+        time_tables_by_service_id.key? service_id
       end
     end
   end

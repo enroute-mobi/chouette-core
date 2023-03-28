@@ -20,7 +20,7 @@ class ReferentialVehicleJourneysController < ChouetteController
   protected
 
   def scope
-    parent.vehicle_journeys
+    parent.vehicle_journeys.with_departure_arrival_second_offsets
   end
 
   def search

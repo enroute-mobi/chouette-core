@@ -72,6 +72,8 @@ module Search
 
     class Order < ::Search::Order
       attribute :published_journey_name, default: :asc
+      attribute :departure_time, column: :departure_second_offset
+      attribute :arrival_time, column: :arrival_second_offset
     end
   end
 end

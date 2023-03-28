@@ -3,6 +3,7 @@ module Macro
     # Should be automatic to provide an ordered list
     # Could use groups in the future
     [
+      Macro::Dummy,
       Macro::CreateCode,
       Macro::AssociateShape,
       Macro::CreateShape,
@@ -14,7 +15,7 @@ module Macro
       Macro::ComputeJourneyPatternDurations,
       Macro::ComputeJourneyPatternDistances,
       Macro::AssociateShapeAccordingWaypoints,
-      Macro::Dummy
+      Macro::DeleteVehicleJourneys,
     ]
   end
 end

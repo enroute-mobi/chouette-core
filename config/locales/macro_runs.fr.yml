@@ -29,6 +29,8 @@ fr:
         one: Définir les distances des missions à partir du tracé
       macro/associate_shape_according_waypoints/run:
         one: Associer les Tracés selon les arrêts
+      macro/delete_vehicle_journeys/run:
+        one: Supprimer des courses
     attributes:
       macro/base/run:
         name: Nom

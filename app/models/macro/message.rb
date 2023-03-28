@@ -12,9 +12,11 @@ module Macro
     enumerize :criticity, in: %w[info warning error], default: 'info', scope: :shallow
 
     def full_message
+      message_attributes.merge!(target_model: source_type.constantize.model_name.human) if source
+
       I18n.t(
         "#{macro_run.class.name.underscore}.messages.#{message_key || 'default'}",
-        message_attributes.merge(target_model: source_type.constantize.model_name.human).symbolize_keys
+        message_attributes.symbolize_keys
       )
     end
   end

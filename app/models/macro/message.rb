@@ -6,7 +6,7 @@ module Macro
 
     def self.policy_class; MacroListRunPolicy end
 
-    belongs_to :source, polymorphic: true, optional: false
+    belongs_to :source, polymorphic: true, optional: true
     belongs_to :macro_run, class_name: "Macro::Base::Run", optional: false
 
     enumerize :criticity, in: %w[info warning error], default: 'info', scope: :shallow

@@ -38,6 +38,10 @@ module Chouette
       @subscription ||= Subscription.new(env)
     end
 
+    def mailer
+      @mailer ||= Mailer.new(env)
+    end
+
     # See Feature.additionals
     def additional_features
       @additional_features ||= env.array('FEATURES_ADDITIONAL')
@@ -65,6 +69,23 @@ module Chouette
       end
     end
 
+    class Mailer
+      def initialize(env)
+        @env = env
+      end
+      attr_reader :env
+
+      def subject_prefix
+        env.string('MAILER_SUBJECT_PREFIX')
+      end
+
+      def from
+        return TEST_FROM if env.test?
+
+        env.string('MAILER_FROM') || env.string('MAIL_FROM')
+      end
+    end
+
     class Environment
       def initialize(values = ENV)
         @values = values
@@ -79,6 +100,13 @@ module Chouette
 
       def value(name)
         @values["CHOUETTE_#{name}"] || @values[name]
+      end
+
+      def string(name)
+        raw_value = value(name)
+        return nil unless raw_value.present?
+
+        raw_value.strip
       end
 
       BOOLEAN_VALUES = %w[true TRUE 1].freeze

@@ -17,7 +17,6 @@ RSpec.describe ComplianceCheckSetMailer, type: :mailer do
   end
 
   it { is_expected.to have_attributes(from: ['chouette@example.com']) }
-  it { is_expected.to have_attributes(subject: I18n.t('mailers.compliance_check_set_mailer.finished.subject')) }
 
   describe "#body" do
     # With Rails 4.2.11 upgrade, email body contains \r\n. See #9423

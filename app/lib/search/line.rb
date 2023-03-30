@@ -55,6 +55,7 @@ module Search
     class Order < ::Search::Order
       attribute :name, default: :asc
       attribute :number
+      attribute :registration_number
       attribute :deactivated
       attribute :transport_mode
       attribute :transport_submode

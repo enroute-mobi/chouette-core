@@ -17,7 +17,7 @@
         = simple_block_for @stop_area, title: t("stop_areas.form.sections.hierarchy") do |d|
           = d.attribute :area_type, value: "#{Chouette::AreaType.find(@stop_area.area_type).try(:label)} (#{@stop_area.kind})"
           = d.attribute :parent, as: :association, link: ->(parent) { workbench_stop_area_referential_stop_area_path(@workbench, parent) }
-          = d.attribute :children, as: :count, value: @stop_area.children, link: workbench_stop_area_referential_stop_areas_path(@workbench, :'q[parent_id_eq]' => @stop_area.id)
+          = d.attribute :children, as: :count, value: @stop_area.children, link: workbench_stop_area_referential_stop_areas_path(@workbench, :'search[parent_id]' => @stop_area.id)
         - if @stop_area.children.present?
           table.table.table-bordered
             thead
@@ -39,11 +39,11 @@
                     - if c.distance
                       = "#{c.distance.round(2)} m"
           - if @stop_area.children.count > 5
-            = link_to t('stop_areas.show.more', count: (@stop_area.children.count - 5)), workbench_stop_area_referential_stop_areas_path(@workbench, :'q[parent_id_eq]' => @stop_area.id), class: 'btn btn-link pull-right'
+            = link_to t('stop_areas.show.more', count: (@stop_area.children.count - 5)), workbench_stop_area_referential_stop_areas_path(@workbench, :'search[parent_id]' => @stop_area.id), class: 'btn btn-link pull-right'
 
         = simple_block_for @stop_area, title: Chouette::StopArea.tmf('referent') do |d|
           - if @stop_area.is_referent
-            = d.attribute :specific_stops, as: :count, value: @stop_area.specific_stops, link: workbench_stop_area_referential_stop_areas_path(@workbench, :'q[referent_id_eq]' => @stop_area.id)
+            = d.attribute :specific_stops, as: :count, value: @stop_area.specific_stops, link: workbench_stop_area_referential_stop_areas_path(@workbench, :'search[referent_id]' => @stop_area.id)
             - if @stop_area.closest_specific_stops.present?
               table.table.table-bordered
                 thead

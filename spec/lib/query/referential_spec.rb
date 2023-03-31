@@ -100,7 +100,7 @@ RSpec.describe Query::Referential do
     let(:query) { Query::Referential.new(workbench.all_referentials) }
 
     context 'when period intersects with at least one period of referential' do
-      let(:date_range) { metadata_begin - 10..metadata_begin + 2 }
+      let(:date_range) { Period.new(from: metadata_begin - 10, to: metadata_begin + 2) }
       subject { query.in_period(date_range).scope }
 
       it 'includes referential' do
@@ -109,7 +109,7 @@ RSpec.describe Query::Referential do
     end
 
     context 'when period never intersects with at least one period of referential' do
-      let(:date_range) { metadata_begin - 10..metadata_begin - 2 }
+      let(:date_range) { Period.new(from: metadata_begin - 10, to: metadata_begin - 2) }
       subject { query.in_period(date_range).scope }
 
       it 'should not include referential' do

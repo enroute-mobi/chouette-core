@@ -22,9 +22,9 @@ module Query
         query = []
 
         query << '(ready = false AND failed_at IS NOT NULL)' if statuses.include?('failed')
-        query << '(archived_at IS NOT NULL)' if statuses.include?('archived')
+        query << '(archived_at IS NOT NULL AND failed_at IS NULL)' if statuses.include?('archived')
         query << '(ready = false AND failed_at IS NULL AND archived_at IS NULL)' if statuses.include?('pending')
-        query << '(ready = true)' if statuses.include?('active')
+        query << '(ready = true AND failed_at IS NULL AND archived_at IS NULL)' if statuses.include?('active')
 
         scope.where(query.join(' OR '))
       end
@@ -38,7 +38,7 @@ module Query
 
     def in_period(period)
       change_scope(if: period.present?) do |scope|
-        scope.include_metadatas_period(period)
+        scope.joins(:metadatas).where('? && ANY(referential_metadata.periodes)', period.to_postgresql_daterange)
       end
     end
   end

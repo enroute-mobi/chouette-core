@@ -456,7 +456,7 @@ ChouetteIhm::Application.routes.draw do
   end
 
   if ENV['COVERBAND_REDIS_URL']
-    Rails.application.routes.draw { mount Coverband::Reporters::Web.new, at: "/coverband" if Rails.env.development? }
+    mount Coverband::Reporters::Web.new, at: "/coverband"
   end
 
   match '/404', to: 'errors#not_found', via: :all, as: 'not_found'
@@ -465,5 +465,4 @@ ChouetteIhm::Application.routes.draw do
   match '/500', to: 'errors#server_error', via: :all, as: 'server_error'
 
   match '/status', to: 'statuses#index', via: :get
-
 end

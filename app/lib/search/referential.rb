@@ -44,10 +44,10 @@ module Search
     end
 
     class Order < ::Search::Order
-      attribute :name, default: :asc
+      attribute :name
       # attribute :status
       attribute :workbench, joins: :workbench, column: 'workbenches.name'
-      attribute :created_at
+      attribute :created_at, default: :desc
       attribute :merged_at
     end
   end

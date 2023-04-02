@@ -8,12 +8,15 @@ en:
         statuses: Status
         line_status: Status
         workbench_ids: Workbench
+        workbench_id: Workbench
+        workbench: Workbench
         start_date: "After : "
         end_date: "Before : "
         per_page: "Display per"
         text: "Search by name or id"
         company_id: "Company"
         line_id: "Line"
+        line: "Line"
         timetable: "Timetable"
         stop_area: "Stop area"
         area_type: "Area type"
@@ -39,3 +42,4 @@ en:
         stop_area_id: "Specify a stop area name"
         document_id: "Specify a document name"
         document_type_id: "Select a document type"
+        workbench_id: "Specify a Workbench name"

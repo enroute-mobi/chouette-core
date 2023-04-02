@@ -13,75 +13,64 @@
 
 .page_content
   .container-fluid
-    - if params[:q].present? or @wbench_refs.any?
-      .row
-        .col-lg-12
-          = render 'filters'
+    .row
+      .col-lg-12
+        = render 'filters'
 
-    - if @wbench_refs.any?
-      .row
-        .col-lg-12
-          .select_table
-            = table_builder_2 @wbench_refs,
-              [ \
-                TableBuilderHelper::Column.new( \
-                  key: :urgent, \
-                  name: false, \
-                  attribute: lambda do |referential| \
-                    referential.contains_urgent_offer? ? render_urgent_referential_icon : nil \
-                  end, \
-                  sortable: false\
-                ), \
-                TableBuilderHelper::Column.new( \
-                  key: :name, \
-                  attribute: lambda do |referential| \
-                    link_to(referential.name, referential_path(referential)) \
-                  end \
-                ), \
-                TableBuilderHelper::Column.new( \
-                  key: :state, \
-                  name: Referential.tmf('status'), \
-                  attribute: Proc.new {|w| referential_status(w) } \
-                ), \
-                TableBuilderHelper::Column.new( \
-                  key: :organisation_name, \
-                  name: Referential.tmf('workbench'), \
-                  attribute: Proc.new {|referential| referential.workbench.name} \
-                ), \
-                TableBuilderHelper::Column.new( \
-                  key: :validity_period, \
-                  attribute: Proc.new {|w| w.validity_period.nil? ? '-' : t('validity_range', debut: l(w.try(:validity_period).try(:begin)), end: l(w.try(:validity_period).try(:end)))} \
-                ), \
-                TableBuilderHelper::Column.new( \
-                  key: :lines, \
-                  name: Referential.tmf('number_of_lines'), \
-                  attribute: Proc.new {|w| w.lines.count} \
-                ), \
-                TableBuilderHelper::Column.new( \
-                  key: :created_at, \
-                  attribute: Proc.new {|w| l(w.created_at)} \
-                ), \
-                TableBuilderHelper::Column.new( \
-                  key: :updated_at, \
-                  attribute: Proc.new {|w| l(w.updated_at)} \
-                ), \
-                TableBuilderHelper::Column.new( \
-                  key: :merged_at, \
-                  attribute: Proc.new {|w| w.merged_at ? l(w.merged_at) : '-'} \
-                ) \
-              ],
-              selectable: ->(ref) { \
-                @workbench.referentials.include?(ref) && \
-                  policy(ref).destroy? \
-              },
-              cls: 'table has-filter has-search',
-              action: :index
+  - if @wbench_refs.any?
+    .row
+      .col-lg-12
+        .select_table
+          = table_builder_2 @wbench_refs,
+            [ \
+              TableBuilderHelper::Column.new( \
+                key: :name, \
+                attribute: lambda do |referential| \
+                  link_to(referential.name, referential_path(referential)) \
+                end \
+              ), \
+              TableBuilderHelper::Column.new( \
+                key: :status, \
+                attribute: Proc.new {|referential| referential_status(referential) }, \
+                sortable: false \
+              ), \
+              (TableBuilderHelper::Column.new( \
+                key: :workbench, \
+                name: Referential.tmf('workbench'), \
+                attribute: Proc.new {|referential| referential.workbench.name} \
+              ) unless @single_workbench), \
+              TableBuilderHelper::Column.new( \
+                key: :validity_period, \
+                attribute: Proc.new {|w| w.validity_period.nil? ? '-' : t('validity_range', debut: l(w.try(:validity_period).try(:begin)), end: l(w.try(:validity_period).try(:end)))}, \
+                sortable: false \
+              ), \
+              TableBuilderHelper::Column.new( \
+                key: :lines, \
+                name: Referential.tmf('lines'), \
+                attribute: Proc.new {|w| w.lines.count}, \
+                sortable: false \
+              ), \
+              TableBuilderHelper::Column.new( \
+                key: :created_at, \
+                attribute: Proc.new {|w| l(w.created_at)} \
+              ), \
+              TableBuilderHelper::Column.new( \
+                key: :merged_at, \
+                attribute: Proc.new {|w| w.merged_at ? l(w.merged_at) : '-'} \
+              ) \
+            ].compact,
+            selectable: ->(ref) { \
+              @workbench.referentials.include?(ref) && \
+                policy(ref).destroy? \
+            },
+            cls: 'table has-filter has-search',
+            action: :index
 
-            = multiple_selection_toolbox([:delete], collection_name: 'referentials')
+          = multiple_selection_toolbox([:delete], collection_name: 'referentials')
 
-          = new_pagination @wbench_refs, 'pull-right'
+        = new_pagination @wbench_refs, 'pull-right'
 
-    - unless @wbench_refs.any?
-      .row.mt-xs
-        .col-lg-12
-          = replacement_msg t('referentials.search_no_results')
+  - unless @wbench_refs.any?
+    .row.mt-xs
+      .col-lg-12
+        = replacement_msg t('referentials.search_no_results')

@@ -12,14 +12,17 @@ module Control
         enumerize :target_model, in: %w{Line StopArea JourneyPattern VehicleJourney Company}
         validates :target_model, :target_attribute, :expected_format, :model_attribute, presence: true
 
-        delegate :resource_name, :collection_name, to: :model_attribute
-
-        def model_attribute_code
-          @model_attribute_code ||= "#{target_model&.underscore}##{target_attribute}"
-        end
+        delegate :collection_name, to: :model_attribute
 
         def model_attribute
-          @model_attribute ||= ::ModelAttribute.find_by_code(model_attribute_code)
+          candidate_target_attributes.find_by(model_name: target_model, name: target_attribute)
+        end
+
+        def candidate_target_attributes # rubocop:disable Metrics/MethodLength
+          Chouette::ModelAttribute.for(self.class.target_model.values).all do
+            exclude 'StopArea', :parent
+            exclude 'StopArea', :referent
+          end
         end
       end
     end

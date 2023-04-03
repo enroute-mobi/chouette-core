@@ -12,7 +12,6 @@ RSpec.describe Control::FormatAttribute do
 
 			valid_control_run.valid?
 
-			expect(valid_control_run.model_attribute_code).to eq('line#name')
 			expect(valid_control_run.model_attribute).to be
 			expect(valid_control_run.errors.details[:model_attribute]).to be_empty
 
@@ -20,7 +19,6 @@ RSpec.describe Control::FormatAttribute do
 
 			invalid_control_run.valid?
 
-			expect(invalid_control_run.model_attribute_code).to eq('line#names')
 			expect(invalid_control_run.model_attribute).to be_nil
 			expect(invalid_control_run.errors.details[:model_attribute]).not_to be_empty
 		end

@@ -417,8 +417,6 @@ fr:
       disabled: Désactivé
     search:
       rule_type: *notification_rule_rule_type
-      line_status: *line_status
-      statuses: *stop_area_status
     control:
       criticity:
         warning: Avertissement

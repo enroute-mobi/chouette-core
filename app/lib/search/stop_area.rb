@@ -13,7 +13,7 @@ module Search
     attribute :stop_area_provider_id
 
 		enumerize :area_type, in: ::Chouette::AreaType::ALL
-		enumerize :statuses, in: ::Chouette::StopArea.statuses, multiple: true
+		enumerize :statuses, in: ::Chouette::StopArea.statuses, multiple: true, i18n_scope: 'stop_areas.statuses'
 
 		validates :parent_stop_area, inclusion: { in: ->(search) { search.candidate_parents } }, allow_blank: true, allow_nil: true
 

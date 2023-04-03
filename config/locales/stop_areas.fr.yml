@@ -53,6 +53,10 @@ fr:
       zip_code: Indiquez un code postal...
       city_name: Indiquez un nom de commune...
       area_type: "Indiquez un type d'arrêt..."
+    statuses:
+      in_creation: En création
+      confirmed: Activé
+      deactivated: Désactivé
     new:
       title: "Ajouter un arrêt"
     create:

@@ -36,11 +36,6 @@ fr:
       workbench:  Tous les utilisateurs de l'espace de travail
       none:       Aucune notification
       workgroup:  Tous les utilisateurs du groupe de travail
-    line:
-      status: &line_status
-        all: Tous
-        activated: Activée
-        deactivated: Désactivée
     import:
       status:
         new: Nouveau
@@ -422,7 +417,6 @@ fr:
       disabled: Désactivé
     search:
       rule_type: *notification_rule_rule_type
-      line_status: *line_status
     control:
       criticity:
         warning: Avertissement

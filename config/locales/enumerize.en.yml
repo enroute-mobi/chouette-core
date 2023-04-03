@@ -36,11 +36,6 @@ en:
       workbench:  All workbench's users
       none:       None
       workgroup:  All workgroup's users
-    line:
-      status: &line_status
-        all: Tous
-        activated: Activated
-        deactivated: Deactivated
     import:
       status:
         new: New
@@ -422,7 +417,6 @@ en:
       disabled: Disabled
     search:
       rule_type: *notification_rule_rule_type
-      line_status: *line_status
     control:
       criticity:
         warning: Warning

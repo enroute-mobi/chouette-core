@@ -6,7 +6,6 @@ fr:
     attributes:
       search:
         statuses: État
-        line_status: État
         workbench_ids: Espaces de travail
         workbench_id: Espace de travail
         workbench: Espace de travail

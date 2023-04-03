@@ -26,6 +26,9 @@ fr:
       name_or_short_id_cont: "Indiquez un nom d'itinéraire ou un ID..."
       status_from: "À partir du"
       status_to: "Jusqu'au"
+    statuses:
+      activated: Activée
+      deactivated: Désactivée
     new:
       title: "Ajouter une ligne"
     create:

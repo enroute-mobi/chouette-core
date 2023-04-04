@@ -2,7 +2,7 @@ ChouetteIhm::Application.routes.draw do
   resource :dashboard
   resource :subscriptions, only: :create
 
-  # FIXME See CHOUETTE-207
+  # FIXME: See CHOUETTE-207
   resources :exports, only: :upload do
     post :upload, on: :member, controller: :export_uploads
   end
@@ -19,7 +19,7 @@ ChouetteIhm::Application.routes.draw do
     resources :imports do
       get :download, on: :member
       get :internal_download, on: :member
-      resources :import_resources, only: [:index, :show] do
+      resources :import_resources, only: %i[index show] do
         resources :import_messages, only: [:index]
       end
     end
@@ -34,7 +34,8 @@ ChouetteIhm::Application.routes.draw do
     delete :referentials, on: :member, action: :delete_referentials
     resources :api_keys
 
-    resources :autocomplete, only: %i[lines companies line_providers line_notices stop_areas parent_stop_areas stop_area_providers] do
+    resources :autocomplete,
+              only: %i[lines companies line_providers line_notices stop_areas parent_stop_areas stop_area_providers] do
       get :lines, on: :collection, defaults: { format: 'json' }
       get :companies, on: :collection, defaults: { format: 'json' }
       get :line_providers, on: :collection, defaults: { format: 'json' }
@@ -47,7 +48,7 @@ ChouetteIhm::Application.routes.draw do
       get :control_lists, on: :collection, defaults: { format: 'json' }
     end
 
-    resources :compliance_check_sets, only: [:index, :show] do
+    resources :compliance_check_sets, only: %i[index show] do
       get :executed, on: :member
       resources :compliance_checks, only: [:show]
       resources :compliance_check_messages, only: [:index]
@@ -63,11 +64,11 @@ ChouetteIhm::Application.routes.draw do
       end
     end
 
-    resources :referentials, only: %w(new create index)
+    resources :referentials, only: %w[new create index]
     resources :notification_rules
     resources :macro_lists do
       get :fetch_object_html, on: :collection, defaults: { format: 'json' }
-      resources :macro_list_runs, only: %w(new create)
+      resources :macro_list_runs, only: %w[new create]
     end
 
     resources :sources do
@@ -80,13 +81,13 @@ ChouetteIhm::Application.routes.draw do
       end
     end
 
-    resources :macro_list_runs, only: %w(new create show index), concerns: :macro_runs do
+    resources :macro_list_runs, only: %w[new create show index], concerns: :macro_runs do
       resources :macro_context_runs, only: [], concerns: :macro_runs
     end
 
     resources :control_lists do
       get :fetch_object_html, on: :collection, defaults: { format: 'json' }
-      resources :control_list_runs, only: %w(new create)
+      resources :control_list_runs, only: %w[new create]
     end
 
     concern :control_runs do
@@ -95,24 +96,24 @@ ChouetteIhm::Application.routes.draw do
       end
     end
 
-    resources :control_list_runs, only: %w(new create show index), concerns: :control_runs do
+    resources :control_list_runs, only: %w[new create show index], concerns: :control_runs do
       resources :control_context_runs, only: [], concerns: :control_runs
     end
 
-    resource :stop_area_referential, :only => [:show, :edit, :update] do
+    resource :stop_area_referential, only: %i[show edit update] do
       post :sync, on: :member
       resources :stop_area_routing_constraints
       resources :entrances
 
       resources :stop_area_providers
 
-      # TODO Delete this route and use autocomplete below
+      # TODO: Delete this route and use autocomplete below
       resources :stop_areas do
         get :autocomplete, on: :collection
         get :fetch_connection_links, on: :member, defaults: { format: 'geojson' }
       end
 
-      resources :autocomplete, only: %i[stop_areas parent_stop_areas stop_area_providers ] do
+      resources :autocomplete, only: %i[stop_areas parent_stop_areas stop_area_providers] do
         get :stop_areas, on: :collection, defaults: { format: 'json' }
         get :parent_stop_areas, on: :collection, defaults: { format: 'json' }
         get :stop_area_providers, on: :collection, defaults: { format: 'json' }
@@ -122,7 +123,7 @@ ChouetteIhm::Application.routes.draw do
       end
     end
 
-    resource :line_referential, :only => [:show, :edit, :update] do
+    resource :line_referential, only: %i[show edit update] do
       post :sync
       resources :line_routing_constraint_zones
 
@@ -139,7 +140,7 @@ ChouetteIhm::Application.routes.draw do
           end
         end
 
-        resources :document_memberships, :only => [:index, :create, :destroy]
+        resources :document_memberships, only: %i[index create destroy]
       end
       resources :companies do
         get :autocomplete, on: :collection
@@ -169,7 +170,7 @@ ChouetteIhm::Application.routes.draw do
     resources :processing_rules, as: 'processing_rule_workbenches'
   end
 
-  resource :workbench_confirmation, only: [:new, :create]
+  resource :workbench_confirmation, only: %i[new create]
 
   resources :workgroups, except: [:destroy], concerns: :iev_interfaces do
     put :setup_deletion, on: :member
@@ -188,13 +189,13 @@ ChouetteIhm::Application.routes.draw do
     resources :document_types
     resources :processing_rules, as: 'processing_rule_workgroups', controller: 'workgroup_processing_rules'
 
-    resources :compliance_check_sets, only: [:index, :show] do
+    resources :compliance_check_sets, only: %i[index show] do
       get :executed, on: :member
       resources :compliance_checks, only: [:show]
       resources :compliance_check_messages, only: [:index]
     end
 
-    resources :workbenches, controller: :workgroup_workbenches, only: [:new, :create, :show, :edit, :update]
+    resources :workbenches, controller: :workgroup_workbenches, only: %i[new create show edit update]
 
     resource :output, controller: :workgroup_outputs
     resources :aggregates do
@@ -218,13 +219,14 @@ ChouetteIhm::Application.routes.draw do
       end
     end
 
-    resources :control_list_runs, controller: :workgroup_control_list_runs, only: %w(show index) do
+    resources :control_list_runs, controller: :workgroup_control_list_runs, only: %w[show index] do
       resources :control_runs, only: [] do
         resources :control_messages, controller: :workgroup_control_messages, only: :index
       end
     end
 
-    resources :autocomplete, only: %i[lines companies line_providers stop_areas parent_stop_areas stop_area_providers] do
+    resources :autocomplete,
+              only: %i[lines companies line_providers stop_areas parent_stop_areas stop_area_providers] do
       get :lines, on: :collection, defaults: { format: 'json' }
       get :companies, on: :collection, defaults: { format: 'json' }
       get :line_providers, on: :collection, defaults: { format: 'json' }
@@ -235,18 +237,18 @@ ChouetteIhm::Application.routes.draw do
     end
   end
 
-  resources :referentials, except: %w(new create index) do
+  resources :referentials, except: %w[new create index] do
     resources :autocomplete, controller: 'referential_autocomplete', only: [] do
       defaults format: :json do
-      collection do
-        get :companies
-        get :lines
-        get :journey_patterns
-        get :time_tables
-        get :vehicle_journeys
+        collection do
+          get :companies
+          get :lines
+          get :journey_patterns
+          get :time_tables
+          get :vehicle_journeys
+        end
       end
     end
-  end
 
     member do
       put :archive
@@ -257,12 +259,12 @@ ChouetteIhm::Application.routes.draw do
       get :journey_patterns
     end
 
-    resources :autocomplete_stop_areas, only: [:show, :index] do
+    resources :autocomplete_stop_areas, only: %i[show index] do
       get 'around', on: :member
     end
-    resources :autocomplete_time_tables, only: [:index]
 
-    resources :autocomplete, only: %i[lines companies line_providers stop_areas parent_stop_areas stop_area_providers] do
+    resources :autocomplete,
+              only: %i[lines companies line_providers stop_areas parent_stop_areas stop_area_providers] do
       get :lines, on: :collection, defaults: { format: 'json' }
       get :companies, on: :collection, defaults: { format: 'json' }
       get :line_providers, on: :collection, defaults: { format: 'json' }
@@ -271,9 +273,8 @@ ChouetteIhm::Application.routes.draw do
       get :stop_area_providers, on: :collection, defaults: { format: 'json' }
     end
 
-
     match 'lines' => 'lines#destroy_all', :via => :delete
-    resources :lines, controller: "referential_lines", except: :index do
+    resources :lines, controller: 'referential_lines', except: :index do
       defaults format: :json do
         collection do
           get :autocomplete, to: 'autocomplete_lines#index'
@@ -302,7 +303,7 @@ ChouetteIhm::Application.routes.draw do
           get 'fetch_opposite_routes'
           get 'fetch_user_permissions'
         end
-        resource :journey_patterns_collection, :only => [:show, :update]
+        resource :journey_patterns_collection, only: %i[show update]
         resources :journey_patterns do
           member do
             get 'new_vehicle_journey'
@@ -320,7 +321,7 @@ ChouetteIhm::Application.routes.draw do
             end
           end
         end
-        resource :vehicle_journeys_collection, :only => [:show, :update]
+        resource :vehicle_journeys_collection, only: %i[show update]
         resources :vehicle_journeys
         resources :stop_points, only: :index, controller: 'route_stop_points'
       end
@@ -345,7 +346,7 @@ ChouetteIhm::Application.routes.draw do
     resources :clean_ups
   end
 
-  devise_for :users, :controllers => {
+  devise_for :users, controllers: {
     confirmations: 'users/confirmations',
     invitations: 'users/invitations',
     passwords: 'users/passwords',
@@ -354,17 +355,15 @@ ChouetteIhm::Application.routes.draw do
 
   devise_scope :user do
     authenticated :user do
-      root :to => 'workbenches#index', as: :authenticated_root
+      root to: 'workbenches#index', as: :authenticated_root
     end
 
     unauthenticated :user do
       target = 'devise/sessions#new'
 
-      if Rails.application.config.chouette_authentication_settings[:type] == "cas"
-        target = 'devise/cas_sessions#new'
-      end
+      target = 'devise/cas_sessions#new' if Rails.application.config.chouette_authentication_settings[:type] == 'cas'
 
-      root :to => target, as: :unauthenticated_root
+      root to: target, as: :unauthenticated_root
     end
   end
 
@@ -375,16 +374,17 @@ ChouetteIhm::Application.routes.draw do
       # Don't move after get 'datas/:slug/*key' CHOUETTE-1105
       get 'datas/:slug/lines', to: 'datas#lines', as: :lines
 
-      get 'datas/:slug/documents/lines/:registration_number/:document_type', to: redirect('/api/v1/datas/%{slug}/lines/%{registration_number}/documents/%{document_type}')
+      get 'datas/:slug/documents/lines/:registration_number/:document_type',
+          to: redirect('/api/v1/datas/%<slug>s/lines/%<registration_number>s/documents/%<document_type>s')
       get 'datas/:slug/lines/:line_registration_number/documents/:document_type', to: 'publication_api/documents#show'
 
-      post 'datas/:slug/graphql', to: "datas#graphql", as: :graphql
+      post 'datas/:slug/graphql', to: 'datas#graphql', as: :graphql
 
-      get 'datas/:slug/*key', to: 'datas#download', :format => false
-      get 'datas/:slug.*key', to: 'datas#redirect', :format => false
+      get 'datas/:slug/*key', to: 'datas#download', format: false
+      get 'datas/:slug.*key', to: 'datas#redirect', format: false
 
       resources :workbenches, only: [] do
-        resources :imports, only: [:index, :show, :create]
+        resources :imports, only: %i[index show create]
         resources :documents, only: [:create]
         member do
           post 'stop_area_referential/webhook', to: 'stop_area_referentials#webhook'
@@ -411,7 +411,7 @@ ChouetteIhm::Application.routes.draw do
     end
   end
 
-  resource :organisation, :only => [:show, :edit, :update] do
+  resource :organisation, only: %i[show edit update] do
     resources :users do
       member do
         put :block
@@ -433,7 +433,7 @@ ChouetteIhm::Application.routes.draw do
     resources :compliance_controls, except: :index do
       get :select_type, on: :collection
     end
-    resources :compliance_control_blocks, :except => [:show, :index]
+    resources :compliance_control_blocks, except: %i[show index]
   end
 
   resources :companies do
@@ -447,17 +447,17 @@ ChouetteIhm::Application.routes.draw do
     end
   end
 
-  mount LetterOpenerWeb::Engine, at: "/letter_opener" if %i[letter_opener_web letter_opener].include?(Rails.application.config.action_mailer.delivery_method)
+  mount LetterOpenerWeb::Engine, at: '/letter_opener' if %i[letter_opener_web
+                                                            letter_opener].include?(Rails.application.config.action_mailer.delivery_method)
 
-  root :to => "dashboards#show"
+  root to: 'dashboards#show'
 
-  if Rails.env.development? || Rails.env.test?
-    get "/snap" => "snapshots#show"
-  end
+  get '/snap' => 'snapshots#show' if Rails.env.development? || Rails.env.test?
 
   if ENV['COVERBAND_REDIS_URL']
     mount Coverband::Reporters::Web.new, at: "/coverband"
   end
+  mount GraphiQL::Rails::Engine, at: '/graphiql', graphql_path: '/graphql' if Rails.env.development?
 
   match '/404', to: 'errors#not_found', via: :all, as: 'not_found'
   match '/403', to: 'errors#forbidden', via: :all, as: 'forbidden'

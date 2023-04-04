@@ -152,6 +152,8 @@ gem 'sentry-delayed_job'
 gem 'sentry-ruby'
 gem 'sentry-rails'
 
+gem "coverband"
+
 gem 'nest', en_route: 'nest'
 
 group :development do
@@ -163,7 +165,6 @@ group :development do
   gem 'better_errors'
   gem 'binding_of_caller'
   gem 'derailed_benchmarks'
-  gem "coverband"
 
   gem 'bummr'
   gem 'graphiql-rails', '>= 1.8.0'

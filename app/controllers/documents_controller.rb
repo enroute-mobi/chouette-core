@@ -30,7 +30,7 @@ class DocumentsController < ChouetteController
   protected
 
   def scope
-    parent.documents
+    workbench.workgroup.documents
   end
 
   def search

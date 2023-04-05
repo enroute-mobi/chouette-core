@@ -156,26 +156,6 @@ module Chouette
         define Chouette::Company, :private_contact_url
         define Chouette::Company, :private_contact_more
 
-        # Chouette::Line
-        define Chouette::Line, :name
-        define Chouette::Line, :color
-        define Chouette::Line, :number
-        define Chouette::Line, :published_name
-        define Chouette::Line, :registration_number
-        define Chouette::Line, :text_color
-        define Chouette::Line, :transport_mode
-        define Chouette::Line, :transport_submode
-        define Chouette::Line, :url
-
-        # Chouette::JourneyPattern
-        define Chouette::JourneyPattern, :name
-        define Chouette::JourneyPattern, :published_name
-
-        # Chouette::VehicleJourney
-        define Chouette::VehicleJourney, :published_journey_name
-        define Chouette::VehicleJourney, :transport_mode
-        define Chouette::VehicleJourney, :published_journey_identifier
-
         self
       end
 

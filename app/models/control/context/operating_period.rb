@@ -69,6 +69,10 @@ class Control::Context::OperatingPeriod < Control::Context
       context.shapes.where(id: journey_patterns.select(:shape_id))
     end
 
+    def point_of_interests
+      context.point_of_interests.joins(shape_provider: :shapes).where('shapes.id': shapes).distinct
+    end
+
     def entrances
       context.entrances.where(stop_area: stop_areas)
     end
@@ -80,6 +84,14 @@ class Control::Context::OperatingPeriod < Control::Context
     def data_range
       date = Date.current
       date..(date + next_days)
+    end
+
+    def documents
+      context.documents
+    end
+
+    def connection_links
+      context.connection_links.where(stop_area_provider_id: stop_areas.select(:stop_area_provider_id))
     end
   end
 end

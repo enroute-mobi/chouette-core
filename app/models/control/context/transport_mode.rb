@@ -20,6 +20,10 @@ class Control::Context::TransportMode < Control::Context
       context.stop_areas.where(id: stop_points.select(:stop_area_id))
     end
 
+    def entrances
+      context.entrances.where(stop_area: stop_areas)
+    end
+
     def journey_patterns
       context.journey_patterns.where(route: routes)
     end
@@ -28,8 +32,28 @@ class Control::Context::TransportMode < Control::Context
       context.vehicle_journeys.where(journey_pattern: journey_patterns)
     end
 
+    def shapes
+      context.shapes.where(id: journey_patterns.select(:shape_id))
+    end
+
     def service_counts
       context.service_counts.where(line: lines)
+    end
+
+    def networks
+      context.networks.where(id: lines.where.not(network_id: nil).select(:network_id))
+    end
+
+    def documents
+      context.documents
+    end
+
+    def point_of_interests
+      context.point_of_interests.joins(shape_provider: :shapes).where('shapes.id': shapes).distinct
+    end
+
+    def connection_links
+      context.connection_links.where(stop_area_provider_id: stop_areas.select(:stop_area_provider_id))
     end
   end
 end

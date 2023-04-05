@@ -5,7 +5,9 @@ RSpec.describe Control::FormatAttribute do
 		it { should validate_presence_of :target_model }
   	it { should validate_presence_of :target_attribute }
   	it { should validate_presence_of :expected_format }
-		it { should enumerize(:target_model).in(%w{Line StopArea JourneyPattern VehicleJourney Company}) }
+		it do should enumerize(:target_model).in(
+      %w{Line StopArea JourneyPattern VehicleJourney Company Entrance PointOfInterest Document Shape Network ConnectionLink})
+    end
 
 		it 'should validate_presence of :model_attribute' do
 			valid_control_run = described_class.new target_model: 'Line', target_attribute: 'name'
@@ -70,12 +72,29 @@ RSpec.describe Control::FormatAttribute do
         let(:source) { context.stop_area(:with_a_bad_name) }
         let(:stop_area_with_a_good_name) { context.stop_area(:with_a_good_name) }
 
-        let(:message_for_good_name) { control_run.control_messages.find{ |msg| msg.source == stop_area_with_a_good_name } }
-
         it 'should create messages for stop areas without good attribute format' do
           subject
 
           expect(control_run.control_messages.length).to eq(1)
+          expect(control_run.control_messages).to include(expected_message)
+        end
+      end
+
+      describe "#Entrance" do
+        let(:context) do
+          Chouette.create do
+            entrance :good_name, name: 'B9999-AAA'
+            entrance :bad_name, name: 'BAD_NAME'
+
+            referential
+          end
+        end
+
+        let(:target_model) { "Entrance" }
+        let(:source) { context.entrance(:bad_name) }
+
+        it 'should create messages for entrances with bad attribute format' do
+          expect { subject }.to change { control_run.control_messages.count }.from(0).to(1)
           expect(control_run.control_messages).to include(expected_message)
         end
       end

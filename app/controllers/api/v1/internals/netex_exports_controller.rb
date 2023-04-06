@@ -14,27 +14,23 @@ module Api
             @netex_export.successful!
             @netex_export.notify_publication
             render json: {
-              status: "ok",
-              message:"File successfully uploaded for #{@netex_export.type} (id: #{@netex_export.id})"
+              status: 'ok',
+              message: "File successfully uploaded for #{@netex_export.type} (id: #{@netex_export.id})"
             }
           else
             @netex_export.failed!
             @netex_export.notify_publication
-            render_unauthorized("Access denied")
+            render_unauthorized('Access denied')
           end
         end
 
         def notify_parent
           if @netex_export.notify_publication
-            render json: {
-              status: "ok",
-              message:"#{@netex_export.parent_type} (id: #{@netex_export.parent_id}) successfully notified at #{l(@netex_export.notified_parent_at)}"
-            }
+            render json: { status: 'ok' }
           else
-            render json: {status: "error", message: @netex_export.errors.full_messages }
+            render json: { status: 'error' }
           end
         end
-
 
         private
 
@@ -42,8 +38,8 @@ module Api
           @netex_export = Export::Netex.find(params[:id])
         rescue ActiveRecord::RecordNotFound
           render json: {
-            status: "error",
-            message: "Record not found"
+            status: 'error',
+            message: 'Record not found'
           }, status: 404
           finish_action!
         end

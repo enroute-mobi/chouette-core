@@ -30,14 +30,21 @@ class DocumentsController < ChouetteController
   protected
 
   def scope
-    workbench.workgroup.documents
+    @scope ||= workbench.workgroup.documents
+  end
+
+  def resource
+    @resource ||= scope.find_by_id(params[:id])
+  end
+
+  def document
+    resource
   end
 
   def search
     @search ||= Search::Document.new(scope, params, workgroup: workbench.workgroup)
   end
 
-  alias document resource
   alias workbench parent
   delegate :collection, to: :search
 

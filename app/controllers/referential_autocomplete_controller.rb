@@ -16,7 +16,7 @@ class ReferentialAutocompleteController < ChouetteController
 
   def time_tables
     scope = route || referential
-    @time_tables = scope.time_tables.by_text(text).limit(50)
+    @time_tables = scope.time_tables.includes(:periods, :dates).by_text(text).limit(50)
   end
 
   def vehicle_journeys

@@ -140,8 +140,9 @@ module Delayed
         def metrics
           latencies_per_organisation.map do |code, latency|
             label = code || 'none'
-            Metric::Base.new(name: "jobs.organisation_#{label}.latency", value: latency)
-          end
+            latency = latency.to_i
+            Metric::Base.new(name: "jobs.organisation_#{label}.latency", value: latency) if latency > 10
+          end.compact
         end
 
         def latencies_per_organisation
@@ -160,7 +161,7 @@ module Delayed
       # Publish metrics via Rails.logger (with a limit of a message per 30 seconds)
       class Log
         mattr_accessor :duration_between_messages, default: 1.minute
-        attr_accessor :logged_at
+        mattr_accessor :logged_at
 
         def cool_down?
           logged_at.present? && logged_at > duration_between_messages.ago
@@ -172,7 +173,7 @@ module Delayed
           message = metrics.join(',')
           Rails.logger.info "[Delayed::Job] Metrics: #{message}"
 
-          self.logged_at = Time.current
+          self.class.logged_at = Time.current
         end
       end
     end

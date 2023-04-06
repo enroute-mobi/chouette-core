@@ -1,4 +1,9 @@
+# frozen_string_literal: true
+
 if ENV['COVERBAND_REDIS_URL']
+  puts 'Enable Coverband'
+  require 'coverband'
+
   Coverband.configure do |config|
     config.track_views = true
     config.track_routes = true

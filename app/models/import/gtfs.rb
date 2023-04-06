@@ -330,10 +330,14 @@ class Import::Gtfs < Import::Base # rubocop:disable Metrics/ClassLength
         if stop.parent_station.present?
           if check_parent_is_valid_or_create_message(Chouette::StopArea, stop.parent_station, resource)
             parent = find_stop_parent_or_create_message(stop.name, stop.parent_station, resource)
-            stop_area.parent = parent
-            stop_area.time_zone = parent.try(:time_zone)
+            if parent
+              stop_area.parent = parent
+              stop_area.time_zone = parent.time_zone if parent.time_zone
+            end
           end
-        elsif stop.timezone.present?
+        end
+
+        if stop.timezone.present?
           time_zone = ActiveSupport::TimeZone[stop.timezone]
           if time_zone
             stop_area.time_zone = time_zone.tzinfo.name
@@ -790,6 +794,26 @@ class Import::Gtfs < Import::Base # rubocop:disable Metrics/ClassLength
 
   def find_stop_parent_or_create_message(stop_area_name, parent_station, resource)
     parent = stop_areas.find_by(registration_number: parent_station)
+
+    unless parent
+      parent = stop_area_referential.stop_areas.find_by(registration_number: parent_station)
+
+      if parent
+        create_message(
+          {
+            criticity: :warning,
+            message_key: :stop_area_parent_in_workgroup,
+            message_attributes: {
+              parent: parent.registration_number,
+              # TODO: We should use the registration number to identify Stop Areas in message
+              stop_area: stop_area_name
+            }
+          },
+          resource: resource, commit: true
+        )
+      end
+    end
+
     unless parent
       create_message(
         {
@@ -797,7 +821,7 @@ class Import::Gtfs < Import::Base # rubocop:disable Metrics/ClassLength
           message_key: :parent_not_found,
           message_attributes: {
             parent_name: parent_station,
-            stop_area_name: stop_area_name,
+            stop_area_name: stop_area_name
           },
           resource_attributes: {
             filename: "#{resource.name}.txt",
@@ -808,7 +832,7 @@ class Import::Gtfs < Import::Base # rubocop:disable Metrics/ClassLength
         resource: resource, commit: true
       )
     end
-    return parent
+    parent
   end
 
   def check_calendar_files_missing_and_create_message

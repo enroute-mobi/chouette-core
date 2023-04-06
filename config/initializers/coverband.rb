@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-if ENV['COVERBAND_REDIS_URL']
+if ENV['COVERBAND_REDIS_URL'].present?
   puts 'Enable Coverband'
   require 'coverband'
 

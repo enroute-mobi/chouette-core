@@ -455,7 +455,7 @@ ChouetteIhm::Application.routes.draw do
     get "/snap" => "snapshots#show"
   end
 
-  if ENV['COVERBAND_REDIS_URL']
+  if ENV['COVERBAND_REDIS_URL'].present?
     mount Coverband::Reporters::Web.new, at: "/coverband"
   end
 

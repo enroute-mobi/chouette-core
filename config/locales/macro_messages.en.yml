@@ -48,7 +48,7 @@ en:
       error: "Shape '%{shape}' can't be associated to Journey pattern '%{name}'"
   macro/delete_vehicle_journeys/run:
     messages:
-      default: "The number of deleted vehicle journeys is %{number_of_deleted_vehicle_journeys}"
+      default: "%{count} Vehicle Journeys have been deleted"
   macro_messages: 
     search_no_results_for_filter: "No messages found"
     no_address: "No address"

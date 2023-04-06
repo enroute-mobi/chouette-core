@@ -39,7 +39,7 @@ en:
       macro/associate_shape_according_waypoints:
         one: Associate Shapes according Stop Areas
       macro/delete_vehicle_journeys:
-        one: Delete Vehicle journeys
+        one: Delete all Vehicle Journeys
     attributes:
       macro/base:
         name: Name

@@ -48,7 +48,7 @@ fr:
       error: "Le tracé '%{shape}' n'a pas pu être associé à la Mission '%{name}'" 
   macro/delete_vehicle_journeys/run:
     messages:
-      default: "Le nombre de courses supprimés est de %{number_of_deleted_vehicle_journeys}"
+      default: "%{count} course(s) ont été supprimée(s)"
   macro_messages:
     search_no_results_for_filter: "Aucun messages"
     no_address: "Aucune adresse"

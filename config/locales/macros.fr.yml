@@ -39,7 +39,7 @@ fr:
       macro/associate_shape_according_waypoints:
         one: Associer les Tracés selon les arrêts
       macro/delete_vehicle_journeys:
-        one: Supprimer des courses
+        one: Supprimer toutes les courses
     attributes:
       macro/base:
         name: Nom

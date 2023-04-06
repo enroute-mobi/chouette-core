@@ -159,7 +159,7 @@ module Delayed
     module Publisher
       # Publish metrics via Rails.logger (with a limit of a message per 30 seconds)
       class Log
-        mattr_accessor :duration_between_messages, default: 30.seconds
+        mattr_accessor :duration_between_messages, default: 1.minute
         attr_accessor :logged_at
 
         def cool_down?

@@ -16,6 +16,9 @@ end
 # Restart worker when too much memory is used
 Delayed::Worker.plugins << Delayed::AutoKillPlugin
 
+# Enable metrics report
+Delayed::Worker.plugins << Delayed::Metrics
+
 Delayed::Worker.max_run_time = SmartEnv[:DELAYED_JOB_MAX_RUN_TIME].hours
 
 Delayed::Heartbeat.configure do |configuration|
@@ -36,6 +39,4 @@ if Rails.env.development?
 
   # Reload code before each job
   # Delayed::Worker.plugins << Delayed::ReloaderPlugin
-
-  Delayed::Worker.plugins << Delayed::Metrics
 end

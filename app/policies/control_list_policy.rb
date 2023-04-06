@@ -6,7 +6,7 @@ class ControlListPolicy < ApplicationPolicy
   end
 
   def show
-    current_workbench.control_lists.exists?(record.id)
+    workbench_matches?
   end
 
   def create?
@@ -14,14 +14,18 @@ class ControlListPolicy < ApplicationPolicy
   end
 
   def destroy?
-    user.has_permission?('control_lists.destroy') && current_workbench.control_lists.exists?(record.id)
+    user.has_permission?('control_lists.destroy') && workbench_matches? && without_processing_rules?
   end
 
   def update?
-    user.has_permission?('control_lists.update') && current_workbench.control_lists.exists?(record.id)
+    user.has_permission?('control_lists.update') && workbench_matches?
   end
 
   def execute?
-     user.has_permission?('control_list_runs.create')
+    user.has_permission?('control_list_runs.create')
+  end
+
+  def without_processing_rules?
+    record.processing_rules.none?
   end
 end

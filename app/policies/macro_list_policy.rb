@@ -10,7 +10,7 @@ class MacroListPolicy < ApplicationPolicy
   end
 
   def destroy?
-    user.has_permission?('macro_lists.destroy')
+    user.has_permission?('macro_lists.destroy') && without_processing_rules?
   end
 
   def update?
@@ -18,6 +18,10 @@ class MacroListPolicy < ApplicationPolicy
   end
 
   def execute?
-     user.has_permission?('macro_list_runs.create')
+    user.has_permission?('macro_list_runs.create')
+  end
+
+  def without_processing_rules?
+    record.processing_rules.none?
   end
 end

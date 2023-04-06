@@ -30,7 +30,11 @@ class DocumentsController < ChouetteController
   protected
 
   def scope
-    workbench.workgroup.documents
+    @scope ||= workbench.workgroup.documents
+  end
+
+  def resource
+    @resource ||= scope.find_by_id(params[:id])
   end
 
   def search

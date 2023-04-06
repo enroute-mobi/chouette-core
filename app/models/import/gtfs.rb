@@ -62,6 +62,16 @@ class Import::Gtfs < Import::Base # rubocop:disable Metrics/ClassLength
     import_resources :attributions
 
     calculate_route_costs
+
+    # TODO: why the resource statuses are not checked automaticaly ??
+    # See CHOUETTE-2747
+    resource_status = resources.map(&:status).uniq
+    Rails.logger.debug "resource_status: #{resource_status.inspect}"
+    if resource_status.include?(:ERROR)
+      @status ||= 'failed'
+    elsif resource_status.include?(:WARNING)
+      @status ||= 'warning'
+    end
   end
 
   def calculate_route_costs

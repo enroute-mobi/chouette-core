@@ -4,10 +4,8 @@ module Macro
   class DeleteVehicleJourneys < Base
     class Run < Macro::Base::Run
       def run
-        number_of_deleted_vehicle_journeys = vehicle_journeys.count
-
         vehicle_journeys.transaction do
-          vehicle_journeys.clean!
+          number_of_deleted_vehicle_journeys = vehicle_journeys.clean!
 
           macro_messages.create(
             message_attributes: {

@@ -34,7 +34,7 @@ RSpec.describe Macro::DeleteVehicleJourneys do
       let(:expected_message) do
         an_object_having_attributes({
           message_attributes: {
-            'number_of_deleted_vehicle_journeys' => 2,
+            'count' => 2,
           }
         })
       end

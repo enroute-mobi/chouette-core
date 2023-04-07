@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 RSpec.describe ControlListPolicy, type: :policy do
   let(:context) do
     Chouette.create do

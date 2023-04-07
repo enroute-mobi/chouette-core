@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 RSpec.describe MacroListPolicy, type: :policy do
   let(:context) do
     Chouette.create do

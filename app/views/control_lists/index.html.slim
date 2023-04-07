@@ -33,6 +33,11 @@
                 sortable: false \
               ), \
               TableBuilderHelper::Column.new( \
+                name: ProcessingRule::Base.model_name.human(count: 2), \
+                attribute: ->(p){ processing_rules_names(p.processing_rules) }, \
+                sortable: false \
+              ), \
+              TableBuilderHelper::Column.new( \
                 key: :updated_at, \
                 attribute: Proc.new { |n| l(n.updated_at, format: :short_with_time) if n.updated_at }, \
                 sortable: false,\

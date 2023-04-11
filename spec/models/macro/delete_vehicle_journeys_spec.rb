@@ -32,11 +32,7 @@ RSpec.describe Macro::DeleteVehicleJourneys do
       before { referential.switch }
 
       let(:expected_message) do
-        an_object_having_attributes({
-          message_attributes: {
-            'count' => 2,
-          }
-        })
+        an_object_having_attributes(message_attributes: { 'count' => 2 })
       end
 
       it 'should clean all vehicle journeys' do

@@ -647,6 +647,7 @@ module Chouette
     def self.clean!
       current_scope = self.current_scope || all
 
+      return 0 unless current_scope.present?
       # There are several "DELETE CASCADE" in the schema like:
       #
       # TABLE "vehicle_journey_at_stops" CONSTRAINT "vjas_vj_fkey" FOREIGN KEY (vehicle_journey_id) REFERENCES vehicle_journeys(id) ON DELETE CASCADE

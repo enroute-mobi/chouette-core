@@ -107,7 +107,10 @@ module Chouette
           model :macro_list do 
             attribute(:name) { |n| "Macro List #{n}" }
             model :macro do
-              attribute(:name) { |n| "Marco #{n}" }
+              attribute(:name) { |n| "Dummy #{n}" }
+              attribute :type, "Macro::Dummy"
+              attribute :target_model, "StopArea"
+              attribute :expected_result, "info"
             end
           end
 

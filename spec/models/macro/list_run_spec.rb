@@ -12,8 +12,8 @@ RSpec.describe Macro::List::Run do
         stop_area
 
         macro_list :original_macro_list do
-          macro type: 'Macro::Dummy', target_model: 'StopArea', expected_result: 'error', target_model: 'StopArea'
-          macro type: 'Macro::Dummy', target_model: 'Line', expected_result: 'error', target_model: 'Line'
+          macro expected_result: 'error', target_model: 'StopArea'
+          macro expected_result: 'error', target_model: 'Line'
         end
 
         macro_list_run original_macro_list: :original_macro_list, referential: :target

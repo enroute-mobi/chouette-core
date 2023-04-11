@@ -465,9 +465,7 @@ RSpec.describe Import::Gtfs do
         GTFS::Stop.new(
           id: 'child_id',
           name: 'child',
-          parent_station: 'parent_id',
-          location_type: '2',
-          timezone: 'Europe/Paris'
+          parent_station: 'parent_id'
         )
       end
 

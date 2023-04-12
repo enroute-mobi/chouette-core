@@ -731,11 +731,11 @@ class Referential < ApplicationModel
   end
 
   def aggregate_output?
-    referential_suite? && !merged?
+    referential_suite && workgroup&.output == referential_suite
   end
 
   def merge_output?
-    merged?
+    referential_suite && workbench&.output == referential_suite
   end
 
   def self.not_merged

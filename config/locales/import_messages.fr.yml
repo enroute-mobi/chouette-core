@@ -6,6 +6,7 @@ fr:
     missing_calendar_in_zip_file: "Le dossier %{source_filename} ne contient pas de calendrier"
     invalid_parent: Parent invalide
     parent_not_found: Le parent %{parent_name} de l'arrêt %{stop_area_name} n'a pas pu être trouvé
+    stop_area_parent_in_workgroup: L'arrêt %{stop_area} utilise l'arrêt parent %{parent} provenant d'un autre fournisseur d'arrêt
     multiple_networks_in_file: "Le fichier %{source_filename} contient plusieurs réseaux, les lignes importées n'ont donc pas étées associées."
     multiple_companies_in_file: "Le fichier %{source_filename} contient plusieurs transporteurs, les lignes importées n'ont donc pas étées associées."
     referential_creation_missing_lines_in_files: "Le référentiel %{referential_name} n'a pas pu être créé car aucune donnée d'offre n'est présente dans le fichier"
@@ -35,6 +36,7 @@ fr:
         missing_agency_id: Identifiant d'agence non renseigné
       stops:
         imported: "%{count} arrêt(s) importé(s)"
+
       routes:
         imported: "%{count} itinéraire(s) importé(s)"
       trips:

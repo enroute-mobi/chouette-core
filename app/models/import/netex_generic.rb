@@ -158,6 +158,26 @@ class Import::NetexGeneric < Import::Base
     def default_provider
       line_provider
     end
+
+    def import!
+      super
+
+      target
+        .lines
+        .left_joins(:network)
+        .where("networks.id": nil)
+        .where.not(network_id: nil)
+        .in_batches
+        .update_all(network_id: nil)
+
+      target
+        .lines
+        .left_joins(:company)
+        .where("companies.id": nil)
+        .where.not(company_id: nil)
+        .in_batches
+        .update_all(company_id: nil)
+    end
   end
 
   class ShapeReferential < SynchronizedPart

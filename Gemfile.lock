@@ -513,12 +513,12 @@ GEM
       net-protocol
     net-ssh (7.0.1)
     nio4r (2.5.8)
-    nokogiri (1.14.0)
+    nokogiri (1.14.3)
       mini_portile2 (~> 2.8.0)
       racc (~> 1.4)
-    nokogiri (1.14.0-x86_64-darwin)
+    nokogiri (1.14.3-x86_64-darwin)
       racc (~> 1.4)
-    nokogiri (1.14.0-x86_64-linux)
+    nokogiri (1.14.3-x86_64-linux)
       racc (~> 1.4)
     notiffany (0.1.3)
       nenv (~> 0.1)
@@ -904,7 +904,7 @@ DEPENDENCIES
   nest!
   net-sftp
   netex!
-  nokogiri (>= 1.13.2)
+  nokogiri (>= 1.14.3)
   parallel_tests
   pg
   phantomjs

@@ -722,6 +722,22 @@ class Referential < ApplicationModel
     merged_at.present?
   end
 
+  def referential_suite?
+    referential_suite.present?
+  end
+
+  def editable?
+    !referential_suite? && !merged?
+  end
+
+  def aggregate_output?
+    referential_suite && workgroup&.output == referential_suite
+  end
+
+  def merge_output?
+    referential_suite && workbench&.output == referential_suite
+  end
+
   def self.not_merged
     where merged_at: nil
   end

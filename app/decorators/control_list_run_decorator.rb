@@ -32,4 +32,29 @@ class ControlListRunDecorator < AF83::Decorator
 	define_instance_method(:workbench) { context[:workbench] }
 
 	define_instance_method(:control_list) { context[:control_list] }
+
+  define_instance_method :group_referentials do
+    [].tap do |groups|
+      if editable = candidate_referentials.select(&:editable?).presence
+        groups << [
+          I18n.translate(:editable_datasets, scope: 'control_list_run.referentials'),
+          editable.sort_by(&:name).pluck(:name, :id)
+        ]
+      end
+
+      if merge_output = candidate_referentials.select(&:merge_output?).presence
+        groups << [
+          I18n.translate(:merged_datasets, scope: 'control_list_run.referentials'),
+          merge_output.sort_by(&:created_at).reverse.pluck(:name, :id)
+        ]
+      end
+
+      if aggregate_output = candidate_referentials.select(&:aggregate_output?).presence
+        groups << [
+          I18n.translate(:aggregated_datasets, scope: 'control_list_run.referentials'),
+          candidate_referentials.select(&:aggregate_output?).sort_by(&:created_at).reverse.pluck(:name, :id)
+        ]
+      end
+    end
+  end
 end

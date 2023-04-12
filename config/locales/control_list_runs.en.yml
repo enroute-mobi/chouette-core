@@ -32,6 +32,10 @@ en:
     search_no_results: "No Control Runs Reports matching your search"
     filters:
       name: Search by name
+    referentials:
+      editable_datasets: 'In Edition'
+      merged_datasets: 'Merged datasets'
+      aggregated_datasets: 'Aggregated datasets'
   activerecord:
     models:
       control/list/run:

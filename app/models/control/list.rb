@@ -61,6 +61,18 @@ module Control
 
       scope :having_status, ->(statuses) { where(user_status: statuses) }
 
+      validates :referential, inclusion: { in: :candidate_referentials }, allow_nil: true
+
+      def candidate_referentials
+        [].tap do |candidate_referentials|
+          candidate_referentials.concat workbench.referentials.editable
+          candidate_referentials.concat workbench.output.referentials
+          if workbench.workgroup_owner?
+            candidate_referentials.concat workgroup.output.referentials
+          end
+        end
+      end
+
       def build_with_original_control_list
         return unless original_control_list
 

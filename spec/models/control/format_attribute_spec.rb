@@ -6,7 +6,7 @@ RSpec.describe Control::FormatAttribute do
   	it { should validate_presence_of :target_attribute }
   	it { should validate_presence_of :expected_format }
 		it do should enumerize(:target_model).in(
-      %w{Line StopArea JourneyPattern VehicleJourney Company Entrance PointOfInterest Document Shape Network ConnectionLink})
+      %w{Line StopArea Route JourneyPattern VehicleJourney Company Entrance PointOfInterest Document Shape Network ConnectionLink})
     end
 
 		it 'should validate_presence of :model_attribute' do

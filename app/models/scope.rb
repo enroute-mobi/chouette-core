@@ -10,7 +10,7 @@ module Scope
     end
 
     delegate :lines, :companies, :stop_areas, :entrances, :networks,
-             :point_of_interests, :shapes, :connection_links, to: :workbench
+             :point_of_interests, :shapes, :documents, :connection_links, to: :workbench
 
     def routes
       Chouette::Route.none
@@ -62,7 +62,7 @@ module Scope
     delegate :lines, :companies, :stop_areas, :routes, :stop_points,
              :journey_patterns, :journey_pattern_stop_points, :vehicle_journeys,
              :time_tables, :time_table_periods, :time_table_dates, :service_counts, to: :referential
-    delegate :entrances, :point_of_interests, :shapes, :connection_links, :networks, to: :workbench
+    delegate :entrances, :point_of_interests, :shapes, :documents, :connection_links, :networks, to: :workbench
 
     private
 

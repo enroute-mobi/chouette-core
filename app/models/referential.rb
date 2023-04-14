@@ -80,11 +80,8 @@ class Referential < ApplicationModel
   has_many :stop_area_providers, through: :stop_area_referential
 
   belongs_to :workbench
-  has_many :documents, through: :workbench
 
   belongs_to :referential_suite
-
-  belongs_to :shape_referential
 
   scope :pending, -> { where(ready: false, failed_at: nil, archived_at: nil) }
   scope :active, -> { where(ready: true, failed_at: nil, archived_at: nil) }
@@ -329,10 +326,6 @@ class Referential < ApplicationModel
     Stat::JourneyPatternCoursesByDate.all
   end
   alias journey_pattern_courses_by_date service_counts
-
-  def point_of_interests
-    (shape_referential || workgroup.shape_referential)&.point_of_interests
-  end
 
   def workgroup
     @workgroup = begin

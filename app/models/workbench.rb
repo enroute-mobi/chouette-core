@@ -70,6 +70,8 @@ class Workbench < ApplicationModel
   has_many :connection_links, through: :stop_area_providers
   has_many :entrances, through: :stop_area_providers
 
+  has_many :shapes, through: :shape_providers
+
   before_validation :create_dependencies, on: :create
   before_validation :create_default_prefix
 

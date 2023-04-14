@@ -3,6 +3,58 @@ RSpec.describe Macro::List::Run do
     subject { described_class.table_name }
     it { is_expected.to eq('public.macro_list_runs') }
   end
+
+  describe "#perform" do
+    let(:context) do
+      Chouette.create do
+
+        referential :target
+        stop_area
+
+        macro_list :original_macro_list do
+          macro expected_result: 'error', target_model: 'StopArea'
+          macro expected_result: 'error', target_model: 'Line'
+        end
+
+        macro_list_run original_macro_list: :original_macro_list, referential: :target
+      end
+    end
+
+    let(:macro_list_run) { context.macro_list_run }
+    let(:stop_area) { context.stop_area }
+    let(:line) { context.referential(:target).lines.first }
+
+    before do
+      macro_list_run.build_with_original_macro_list
+      context.macro_list_run.perform
+    end
+
+    let(:expected_message_stop_area) do
+      an_object_having_attributes({
+        criticity: 'error',
+        message_attributes: {
+          'name' => stop_area.name,
+          'result' => 'error'
+        }
+      })
+    end
+
+    let(:expected_message_line) do
+      an_object_having_attributes({
+        criticity: 'error',
+        message_attributes: {
+          'name' => line.name,
+          'result' => 'error'
+        }
+      })
+    end
+
+    let(:macro_messages) { Macro::Message.all }
+
+    it 'should perform all macro runs and create messages' do
+      expect(macro_messages).to contain_exactly(expected_message_stop_area, expected_message_line)
+    end
+  end
 end
 
 RSpec.describe Macro::List::Run::UserStatusFinalizer do

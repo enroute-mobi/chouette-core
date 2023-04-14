@@ -94,8 +94,9 @@ RSpec.describe Control::FormatAttribute do
         let(:source) { context.entrance(:bad_name) }
 
         it 'should create messages for entrances with bad attribute format' do
-          expect { subject }.to change { control_run.control_messages.count }.from(0).to(1)
-          expect(control_run.control_messages).to include(expected_message)
+          subject
+
+          expect(control_run.control_messages).to contain_exactly(expected_message)
         end
       end
     end

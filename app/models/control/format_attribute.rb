@@ -126,16 +126,19 @@ module Control
 
       def run
         faulty_models.find_each do |model|
-          control_messages.create!({
-            message_attributes: {
-              name: (model.name rescue model.id),
-              target_attribute: target_attribute,
-              expected_format: expected_format
-            },
-            criticity: criticity,
-            source: model,
-          })
+          create_message model
         end
+      end
+
+      def create_message(model)
+        model_name = model.try(:name) || model.try(:uuid) || model.try(:get_objectid)&.local_id
+        attributes = {
+          message_attributes: { name: model_name, target_attribute: target_attribute,
+                                expected_format: expected_format },
+            criticity: criticity,
+          source: model
+        }
+        control_messages.create! attributes
       end
 
       def faulty_models

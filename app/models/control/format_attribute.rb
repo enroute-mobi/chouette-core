@@ -1,15 +1,18 @@
+# frozen_string_literal: true
+
 module Control
   class FormatAttribute < Control::Base
-
     module Options
       extend ActiveSupport::Concern
 
-      included do
+      included do # rubocop:disable Metrics/BlockLength
         option :target_model
         option :target_attribute
         option :expected_format
 
-        enumerize :target_model, in: %w{Line StopArea JourneyPattern VehicleJourney Company Entrance PointOfInterest Document Shape Network ConnectionLink}
+        enumerize :target_model,
+                  in: %w[Line StopArea Route JourneyPattern VehicleJourney Company Entrance PointOfInterest Document
+                         Shape Network ConnectionLink]
         validates :target_model, :target_attribute, :expected_format, :model_attribute, presence: true
 
         delegate :collection_name, to: :model_attribute
@@ -18,8 +21,8 @@ module Control
           candidate_target_attributes.find_by(model_name: target_model, name: target_attribute)
         end
 
-        def candidate_target_attributes # rubocop:disable Metrics/MethodLength
-          Chouette::ModelAttribute.empty do
+        def candidate_target_attributes # rubocop:disable Metrics/MethodLength,Metrics/AbcSize
+          Chouette::ModelAttribute.empty do # rubocop:disable Metrics/BlockLength
             # Chouette::StopArea
             define Chouette::StopArea, :name
             define Chouette::StopArea, :country_code
@@ -33,7 +36,7 @@ module Control
             define Chouette::StopArea, :public_code
             define Chouette::StopArea, :fare_code
             define Chouette::StopArea, :accessibility_limitation_description
-        
+
             # Chouette::Company
             define Chouette::Company, :name
             define Chouette::Company, :short_name
@@ -64,7 +67,7 @@ module Control
             define Chouette::Company, :private_contact_phone
             define Chouette::Company, :private_contact_url
             define Chouette::Company, :private_contact_more
-        
+
             # Chouette::Line
             define Chouette::Line, :name
             define Chouette::Line, :color
@@ -75,45 +78,45 @@ module Control
             define Chouette::Line, :url
             # Temporary
             define Chouette::Line, :transport_mode
-            define Chouette::Line, :transport_submode   
-            
+            define Chouette::Line, :transport_submode
+
             # Chouette::Route
             define Chouette::Route, :name
             define Chouette::Route, :published_name
-            
+
             # Chouette::JourneyPattern
             define Chouette::JourneyPattern, :name
             define Chouette::JourneyPattern, :published_name
-        
+
             # Chouette::VehicleJourney
             define Chouette::VehicleJourney, :published_journey_name
             define Chouette::VehicleJourney, :published_journey_identifier
             define Chouette::VehicleJourney, :transport_mode # Temporary
-            
+
             # Need to check that the Control context provides these models/collections
-            
+
             define Entrance, :name
             define Entrance, :short_name
-            define Entrance, :address_line_1
+            define Entrance, :address_line_1 # rubocop:disable Naming/VariableNumber
             define Entrance, :zip_code
             define Entrance, :city_name
             define Entrance, :country
-            
+
             define PointOfInterest::Base, :name
             define PointOfInterest::Base, :url
-            define PointOfInterest::Base,:address_line_1
-            define PointOfInterest::Base,:zip_code
-            define PointOfInterest::Base,:city_name
-            define PointOfInterest::Base,:country
-            define PointOfInterest::Base,:email
-            define PointOfInterest::Base,:phone
-            define PointOfInterest::Base,:postal_region
-            
-            define Document, :name    
+            define PointOfInterest::Base, :address_line_1 # rubocop:disable Naming/VariableNumber
+            define PointOfInterest::Base, :zip_code
+            define PointOfInterest::Base, :city_name
+            define PointOfInterest::Base, :country
+            define PointOfInterest::Base, :email
+            define PointOfInterest::Base, :phone
+            define PointOfInterest::Base, :postal_region
+
+            define Document, :name
             define Shape, :name
-            
+
             define Chouette::Network, :name
-            define Chouette::ConnectionLink, :name    
+            define Chouette::ConnectionLink, :name
           end
         end
       end
@@ -135,7 +138,7 @@ module Control
         attributes = {
           message_attributes: { name: model_name, target_attribute: target_attribute,
                                 expected_format: expected_format },
-            criticity: criticity,
+          criticity: criticity,
           source: model
         }
         control_messages.create! attributes

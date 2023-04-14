@@ -412,6 +412,9 @@ en:
       Route: Route
       TimeTable: Timetable
       Referential: DataSet
+      Shape: Shape
+      Network: Network
+      ConnectionLink: Connection
     expected_status:
       enabled: Enabled
       disabled: Disabled

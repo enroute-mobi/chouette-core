@@ -26,6 +26,7 @@ RSpec.describe Macro::List::Run do
 
     before do
       macro_list_run.build_with_original_macro_list
+      context.macro_list_run.perform
     end
 
     let(:expected_message_stop_area) do
@@ -50,12 +51,8 @@ RSpec.describe Macro::List::Run do
 
     let(:macro_messages) { Macro::Message.all }
 
-    subject { context.macro_list_run.perform }
-
     it 'should perform all macro runs and create messages' do
-      expect { subject }.to change { macro_messages.count }.from(0).to(2)
-      expect(macro_messages).to include(expected_message_stop_area)
-      expect(macro_messages).to include(expected_message_line)
+      expect(macro_messages).to contain_exactly(expected_message_stop_area, expected_message_line)
     end
   end
 end

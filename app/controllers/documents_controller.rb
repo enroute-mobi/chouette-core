@@ -5,8 +5,6 @@ class DocumentsController < ChouetteController
 
   defaults resource_class: Document
 
-  before_action :decorate_document, only: %i[show new edit create update]
-
   belongs_to :workbench
 
   def index
@@ -15,7 +13,7 @@ class DocumentsController < ChouetteController
         @documents = DocumentDecorator.decorate(
           collection,
           context: {
-            workbench: @workbench,
+            workbench: @workbench
           }
         )
       end
@@ -29,32 +27,28 @@ class DocumentsController < ChouetteController
 
   protected
 
+  alias document resource
+  alias workbench parent
+
   def scope
     @scope ||= workbench.workgroup.documents
   end
 
   def resource
-    @resource ||= scope.find_by_id(params[:id])
+    get_resource_ivar || set_resource_ivar(scope.find_by_id(params[:id]).decorate(context: { workbench: @workbench }))
+  end
+
+  def build_resource
+    get_resource_ivar || set_resource_ivar(end_of_association_chain.send(method_for_build,
+                                                                         *resource_params).decorate(context: { workbench: @workbench }))
   end
 
   def search
     @search ||= Search::Document.new(scope, params, workgroup: workbench.workgroup)
   end
-
-  alias document resource
-  alias workbench parent
   delegate :collection, to: :search
 
   private
-
-  def decorate_document
-    @document = DocumentDecorator.decorate(
-      params.key?(:id) ? document : build_resource,
-      context: {
-        workbench: @workbench
-      }
-    )
-  end
 
   def document_params
     params.require(:document).permit(
@@ -64,8 +58,8 @@ class DocumentsController < ChouetteController
       :file_cache,
       :document_type_id,
       :document_provider_id,
-      validity_period_attributes: [:from, :to],
-      codes_attributes: [:id, :code_space_id, :value, :_destroy],
+      validity_period_attributes: %i[from to],
+      codes_attributes: %i[id code_space_id value _destroy]
     )
   end
 end

@@ -13,6 +13,8 @@ module Macro
     has_many :macro_list_runs, class_name: 'Macro::List::Run', foreign_key: :original_macro_list_id
     has_many :macro_contexts, class_name: 'Macro::Context', foreign_key: 'macro_list_id', inverse_of: :macro_list
 
+    has_many :processing_rules, class_name: 'ProcessingRule::Base', as: :processable, dependent: :restrict_with_error
+
     accepts_nested_attributes_for :macros, allow_destroy: true, reject_if: :all_blank
     accepts_nested_attributes_for :macro_contexts, allow_destroy: true, reject_if: :all_blank
 

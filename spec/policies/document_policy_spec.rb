@@ -1,5 +1,4 @@
 RSpec.describe DocumentPolicy, type: :policy do
-
   let(:context) do
     Chouette.create do
       organisation(:owner_organisation) { user :owner }
@@ -24,7 +23,7 @@ RSpec.describe DocumentPolicy, type: :policy do
 
   subject { described_class.new UserContext.new(user, workbench: workbench), context.document }
 
-  describe "for edit and update actions" do
+  describe 'for edit and update actions' do
     context 'when user is Workgroup owner and has the permission "documents.update"' do
       let(:user) { owner_user }
       let(:workbench) { owner_workbench }
@@ -54,13 +53,12 @@ RSpec.describe DocumentPolicy, type: :policy do
     end
   end
 
-
-  describe "for destroy action" do
+  describe 'for destroy action' do
     context 'when user is Workgroup owner and has the permission "documents.destroy"' do
       let(:user) { owner_user }
       let(:workbench) { owner_workbench }
 
-      before { user.permissions << 'documents.update' }
+      before { user.permissions << 'documents.destroy' }
 
       it { is_expected.to forbid_action(:destroy) }
     end
@@ -81,5 +79,4 @@ RSpec.describe DocumentPolicy, type: :policy do
       it { is_expected.to forbid_action(:destroy) }
     end
   end
-
 end

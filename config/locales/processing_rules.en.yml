@@ -35,17 +35,17 @@ en:
   activerecord:
     models:
       processing_rule/base:
-        zero: Processings rules
-        one: Processing rules
-        other: Processings rules
+        zero: Processings rule
+        one: Processing rule
+        other: Processing rules
       processing_rule/workbench:
-        zero: Processings rules
-        one: Processing rules
-        other: Processings rules
+        zero: Processings rule
+        one: Processing rule
+        other: Processing rules
       processing_rule/workgroup:
-        zero: Processings rules
-        one: Processing rules
-        other: Processings rules
+        zero: Processing rule
+        one: Processing rule
+        other: Processing rules
     attributes:
       processing_rule/workbench:
         processable_type: Processing Type

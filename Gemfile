@@ -234,3 +234,7 @@ gem 'activerecord-nulldb-adapter', require: (ENV['RAILS_DB_ADAPTER'] == 'nulldb'
 
 gem 'google-cloud-storage', '> 1.4.0'
 gem 'net-sftp'
+# Required by net-ssh to support various key types
+gem 'ed25519'
+gem 'x25519'
+gem 'bcrypt_pbkdf'

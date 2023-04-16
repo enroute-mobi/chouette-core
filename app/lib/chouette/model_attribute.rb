@@ -14,6 +14,11 @@ module Chouette
       @resource_name ||= model_name.underscore.to_sym
     end
 
+    # "stop_areas", "lines", "journey_patterns"
+    def collection_name
+      @collection_name ||= model_name.underscore.pluralize
+    end
+
     # "stop_area#name", "line#name", ...
     def code
       @code ||= "#{resource_name}##{name}"
@@ -93,6 +98,7 @@ module Chouette
       end
 
       def all # rubocop:disable Metrics/MethodLength,Metrics/AbcSize
+        # Chouette::StopArea
         define Chouette::StopArea, :name
         define Chouette::StopArea, :parent
         define Chouette::StopArea, :referent
@@ -119,6 +125,7 @@ module Chouette
         define Chouette::StopArea, :audible_signals_availability
         define Chouette::StopArea, :visual_signs_availability
 
+        # Chouette::Company
         define Chouette::Company, :name
         define Chouette::Company, :short_name
         define Chouette::Company, :code

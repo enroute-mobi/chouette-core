@@ -38,6 +38,7 @@ class Workbench < ApplicationModel
   has_many :api_keys, dependent: :destroy
   has_many :source_retrievals, class_name: "Source::Retrieval"
   has_many :processing_rules, class_name: "ProcessingRule::Workbench"
+  has_many :point_of_interests, through: :shape_referential
 
   validates :name, presence: true
   validates :organisation, presence: true, unless: :pending?
@@ -65,6 +66,11 @@ class Workbench < ApplicationModel
 
   has_many :document_providers
   has_many :documents, through: :document_providers
+
+  has_many :connection_links, through: :stop_area_providers
+  has_many :entrances, through: :stop_area_providers
+
+  has_many :shapes, through: :shape_providers
 
   before_validation :create_dependencies, on: :create
   before_validation :create_default_prefix

@@ -412,6 +412,9 @@ fr:
       Route: Itinéraire
       TimeTable: Calendrier
       Referential: Jeu de donnée
+      Shape: Tracé
+      Network: Réseau
+      ConnectionLink: Correspondance
     expected_status:
       enabled: Activé
       disabled: Désactivé

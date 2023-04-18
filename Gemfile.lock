@@ -65,7 +65,7 @@ GIT
 
 GIT
   remote: https://bitbucket.org/enroute-mobi/netex.git
-  revision: 2093e3f6a76b07f1b6e7bccc947ce4e7897accd2
+  revision: 35301241fbb4e07cb8dac39083fed81d65e21072
   specs:
     netex (0.1.2)
       activesupport
@@ -529,7 +529,7 @@ GEM
     open4 (1.3.4)
     orm_adapter (0.5.0)
     os (1.1.4)
-    ox (2.14.15)
+    ox (2.14.16)
     parallel (1.22.1)
     parallel_tests (4.0.0)
       parallel

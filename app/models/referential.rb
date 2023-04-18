@@ -727,7 +727,7 @@ class Referential < ApplicationModel
   end
 
   def editable?
-    !referential_suite? && !merged?
+    !referential_suite? && state == :active
   end
 
   def aggregate_output?

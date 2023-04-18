@@ -66,7 +66,7 @@ module Control
 
       def candidate_referentials
         [].tap do |candidate_referentials|
-          candidate_referentials.concat workbench.referentials.editable
+          candidate_referentials.concat workbench.referentials
           candidate_referentials.concat workbench.output.referentials
           if workbench.workgroup_owner?
             candidate_referentials.concat workgroup.output.referentials

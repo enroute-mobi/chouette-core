@@ -675,7 +675,9 @@ class Import::Gtfs < Import::Base # rubocop:disable Metrics/ClassLength
       journey_pattern.shape = shape
 
       # Define Shape name when empty (to make it more user friendly)
-      shape.update name: journey_pattern.name if shape.name.nil? 
+      if shape && shape.name.blank?
+        shape.update name: journey_pattern.name
+      end
     end
 
     raise InvalidTripTimesError unless consistent_stop_times(stop_times)

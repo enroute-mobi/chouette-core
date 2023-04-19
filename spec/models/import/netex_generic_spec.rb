@@ -698,19 +698,19 @@ RSpec.describe Import::NetexGeneric do
           subject { model.pluck(:registration_number) }
 
           context "when model is Line" do
-            let(:model) { Chouette::Line }
+            let(:model) { import.workbench.line_referential.lines }
 
             it { is_expected.to match_array(["line-1", "line-2","line-3", "line-4", "line-5" ]) }
           end
 
           context "when model is LineNotice" do
-            let(:model) { Chouette::LineNotice }
+            let(:model) { import.workbench.line_referential.line_notices }
 
             it { is_expected.to match_array(["notice-1", "notice-2" ]) }
           end
 
           context "when model is Company" do
-            let(:model) { Chouette::Company }
+            let(:model) { import.workbench.line_referential.companies }
 
             it { is_expected.to match_array(["company-1" ]) }
           end
@@ -719,13 +719,13 @@ RSpec.describe Import::NetexGeneric do
       describe "#associations" do
 
         context "when model is Line and association is company" do
-          let(:company_registration_numbers) { Chouette::Line.all.map{ |line| line.company.registration_number }.uniq }
+          let(:company_registration_numbers) { import.workbench.line_referential.lines.map{ |line| line.company.registration_number }.uniq }
 
           it { expect(company_registration_numbers).to match_array(["company-1"]) }
         end
 
         context "when model is Company and association is Line" do
-          let(:line_registration_numbers) { Chouette::Company.first.lines.map{ |line| line.registration_number } }
+          let(:line_registration_numbers) { import.workbench.line_referential.companies.first.lines.map { |line| line.registration_number } }
 
           it { expect(line_registration_numbers).to match_array(["line-1", "line-2","line-3", "line-4", "line-5" ]) }
         end

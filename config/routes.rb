@@ -375,7 +375,7 @@ ChouetteIhm::Application.routes.draw do
       get 'datas/:slug/lines', to: 'datas#lines', as: :lines
 
       get 'datas/:slug/documents/lines/:registration_number/:document_type',
-          to: redirect('/api/v1/datas/%<slug>s/lines/%<registration_number>s/documents/%<document_type>s')
+          to: redirect('/api/v1/datas/%{slug}/lines/%{registration_number}/documents/%{document_type}')
       get 'datas/:slug/lines/:line_registration_number/documents/:document_type', to: 'publication_api/documents#show'
 
       post 'datas/:slug/graphql', to: 'datas#graphql', as: :graphql

@@ -21,3 +21,12 @@
         = simple_block_for @line_routing_constraint_zone.stop_areas, title: LineRoutingConstraintZone.tmf(:stop_areas) do |d|
           - @line_routing_constraint_zone.stop_areas.each do |c|
             = d.attribute :name, object: c, value: "#{c.name} - #{c.get_objectid.short_id}"
+
+      .col-lg-6.col-md-6.col-sm-12.col-xs-12
+        = simple_block_for @company, title: LineRoutingConstraintZone.tmf(:codes) do |d|
+          - if @line_routing_constraint_zone.codes.empty?
+            .mb-xs
+              = replacement_msg t('line_routing_constraint_zones.no_codes')
+          - else
+            - @line_routing_constraint_zone.codes.each do |c|
+              = d.attribute :value, label: c.code_space.short_name, object: c

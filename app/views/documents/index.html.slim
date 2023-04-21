@@ -27,6 +27,11 @@
                 link_to: -> (doc) { workgroup_document_type_path(@workbench.workgroup, doc.document_type) } \
               ), \
               TableBuilderHelper::Column.new( \
+                key: :document_provider_id, \
+                attribute: Proc.new { |s| s.document_provider&.name }, \
+                sortable: false \
+              ), \
+              TableBuilderHelper::Column.new( \
                 key: :from, \
                 attribute: -> (doc) { doc.validity_period&.from.present? ? l(doc.validity_period.from) : '-' }, \
                 sortable: false,\

@@ -12,6 +12,10 @@ module Query
       end
     end
 
+    def document_provider_id(value)
+      where(value, :eq, :document_provider_id)
+    end
+
     def in_period(period)
       change_scope(if: period.present?) do |scope|
         scope.where('validity_period && ? OR validity_period IS NULL', period.to_postgresql_daterange)

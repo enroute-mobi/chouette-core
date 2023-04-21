@@ -27,6 +27,7 @@ fr:
         parent_id: "Parent"
         stop_area_provider_id: Fournisseur d'arrêts
         line_provider_id: Fournisseur de lignes
+        document_provider_id: Fournisseur de documents
         from_stop_area_id: "de"
         to_stop_area_id: "à"
         document_type: "Type de Document"

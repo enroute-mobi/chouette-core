@@ -5,20 +5,27 @@ module Export::Scope
   end
 
   class Builder
-    attr_reader :scope
 
     def initialize(referential)
       @scope = All.new(referential)
       yield self if block_given?
     end
 
+    def internal_scopes
+      @internal_scopes ||= []
+    end
+
+    def current_scope
+      internal_scopes.last || @scope
+    end
+
     def scheduled
-      @scope = Scheduled.new(@scope)
+      internal_scopes << Scheduled.new(current_scope)
       self
     end
 
     def lines(line_ids)
-      @scope = Lines.new(@scope, line_ids)
+      internal_scopes << Lines.new(current_scope, line_ids)
       self
     end
 
@@ -31,6 +38,19 @@ module Export::Scope
       @scope = Cache.new(@scope)
       self
     end
+
+    def scope
+      @scope = current_scope
+
+      internal_scopes.each do |scope|
+        if scope.respond_to? :final_scope=
+          scope.final_scope = @scope
+        end
+      end
+
+      @scope
+    end
+
   end
 
   class Options
@@ -133,13 +153,19 @@ module Export::Scope
   end
 
   class Scheduled < Base
+    attr_writer :final_scope
+
+    def final_scope
+      @final_scope || current_scope
+    end
+
     def vehicle_journeys
       @vehicle_journeys ||= current_scope.vehicle_journeys.scheduled
     end
 
     def lines
       current_scope.lines.distinct.joins(routes: :vehicle_journeys)
-        .where("vehicle_journeys.id" => vehicle_journeys)
+        .where("vehicle_journeys.id" => final_scope.vehicle_journeys)
     end
 
     def companies
@@ -151,11 +177,11 @@ module Export::Scope
     end
 
     def time_tables
-      current_scope.time_tables.joins(:vehicle_journeys).where("vehicle_journeys.id" => vehicle_journeys).distinct
+      current_scope.time_tables.joins(:vehicle_journeys).where("vehicle_journeys.id" => final_scope.vehicle_journeys).distinct
     end
 
     def vehicle_journey_at_stops
-      current_scope.vehicle_journey_at_stops.where(vehicle_journey: vehicle_journeys)
+      current_scope.vehicle_journey_at_stops.where(vehicle_journey: final_scope.vehicle_journeys)
     end
 
     def routes

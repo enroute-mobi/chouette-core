@@ -55,6 +55,9 @@ RSpec.shared_examples_for 'Export::Scope::Base' do
     end
 
 		let(:selected_vj) { context.vehicle_journey(:in_scope1) }
+    let(:selected_lines) { [ selected_vj.line ] }
+    let(:line_scope) { Export::Scope::Lines.new(default_scope, selected_lines) }
+    let(:vehicle_journey_at_stops_via_selected_vj) { selected_vj.line.routes.map(&:vehicle_journey_at_stops).flatten.uniq }
 
     describe "stop_areas" do
 
@@ -164,10 +167,9 @@ RSpec.shared_examples_for 'Export::Scope::Base' do
       it "select lines associated to vehicle journeys" do
         expect(scope.lines).to eq(lines_in_scope)
 
-				allow(scope).to receive(:vehicle_journeys) { [selected_vj] }
-
+        scope.final_scope = line_scope
 				expect(scope.lines).not_to match_array(lines_in_scope)
-				expect(scope.lines).to match_array([selected_vj.line])
+				expect(scope.lines).to match_array(selected_lines)
       end
 
       it "doesn't provide a line twice" do
@@ -189,10 +191,9 @@ RSpec.shared_examples_for 'Export::Scope::Base' do
       it "select all VehicleJourneyAtStops associated to vehicle journeys" do
         expect(scope.vehicle_journey_at_stops).to match_array(vehicle_journey_at_stops_in_scope)
 
-				allow(scope).to receive(:vehicle_journeys) { [selected_vj] }
-
-				expect(scope.vehicle_journey_at_stops).not_to match_array(vehicle_journey_at_stops_in_scope)
-				expect(scope.vehicle_journey_at_stops).to match_array(selected_vj.vehicle_journey_at_stops)
+        scope.final_scope = line_scope
+        expect(scope.vehicle_journey_at_stops).not_to match_array(vehicle_journey_at_stops_in_scope)
+				expect(scope.vehicle_journey_at_stops).to match_array( vehicle_journey_at_stops_via_selected_vj )
       end
 
       it "doesn't provide a VehicleJourneyAtStop twice" do

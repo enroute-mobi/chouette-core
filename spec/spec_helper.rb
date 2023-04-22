@@ -19,6 +19,16 @@ ENV["RAILS_ENV"] = 'test'
 require File.expand_path("../../config/environment", __FILE__)
 require 'rspec/rails'
 
+if ENV['DD_ENV']
+  require 'datadog/ci'
+
+  Datadog.configure do |c|
+    c.ci.enabled = true
+    c.service = ENV.fetch 'BITBUCKET_REPO_SLUG', 'chouette-core'
+    c.ci.instrument :rspec
+  end
+end
+
 # Add additional requires below this line. Rails is not loaded until this point!
 # Add this to load Capybara integration:
 require 'capybara/rspec'

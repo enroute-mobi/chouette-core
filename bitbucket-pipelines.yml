@@ -15,6 +15,13 @@ definitions:
         POSTGRES_USER: chouette
         POSTGRES_PASSWORD: chouette
       memory: 2048
+    datadog-agent:
+      image:
+        name: datadog/agent:latest
+      environment:
+        DD_INSIDE_CI: 'true'
+        DD_HOSTNAME: 'none'
+        DD_API_KEY: $DATADOG_KEY
   caches:
     bundler: ./vendor/bundle
     yarn: ./node_modules
@@ -42,6 +49,7 @@ definitions:
           - bundle exec rake ci
         services:
           - postgres
+          - datadog-agent
 
 pipelines:
   custom:

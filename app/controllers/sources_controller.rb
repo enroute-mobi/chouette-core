@@ -74,6 +74,7 @@ class SourcesController < ChouetteController
       :import_option_update_workgroup_providers,
       :import_option_store_xml,
       :import_option_disable_missing_resources,
+      :import_option_strict_mode,
       :created_at,
       :updated_at,
       :downloader_type,

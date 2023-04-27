@@ -85,6 +85,16 @@ class Import::Base < ApplicationModel
     end
   end
 
+  def strict_mode?
+    if options['strict_mode']
+      true
+    elsif (parent_options = parent&.options).present?
+      parent_options['strict_mode'] == 'true'
+    else
+      false
+    end
+  end
+
   PERIOD_EXTREME_VALUE = 25.years
 
   after_create :purge_imports

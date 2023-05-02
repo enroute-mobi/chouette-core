@@ -1,17 +1,19 @@
+# frozen_string_literal: true
+
 RSpec.describe Destination::Ara, type: :model do
-  subject { destination.use_ssl? }
+  describe '#use_ssl?' do
+    subject { destination.use_ssl? }
 
-  context 'url with http' do
-    let(:destination) { Destination::Ara.new ara_url: 'http://test.com' }
+    context 'when URL is http://test.com' do
+      let(:destination) { Destination::Ara.new ara_url: 'http://test.com' }
 
-    it { is_expected.to be_falsey }
-  end
+      it { is_expected.to be_falsey }
+    end
 
-  context 'url with https' do
-    let(:destination) { Destination::Ara.new ara_url: 'https://test.com' }
+    context 'when URL is https://test.com' do
+      let(:destination) { Destination::Ara.new ara_url: 'https://test.com' }
 
-    it { is_expected.to be_truthy }
+      it { is_expected.to be_truthy }
+    end
   end
 end
-
-

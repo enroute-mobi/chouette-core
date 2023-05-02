@@ -18,9 +18,16 @@ class Destination::Ara < ::Destination
     "#{ara_url}/import"
   end
 
+  def uri
+    @uri ||= URI(ara_import_url)
+  end
+
+  def use_ssl?
+    uri.instance_of?(URI::HTTPS)
+  end
+
   def send_to_ara(file, report)
     payload = { "force": true }
-    uri = URI(ara_import_url)
 
     request = Net::HTTP::Post.new(uri)
     request['Authorization'] = "Token token=#{credentials}"
@@ -30,7 +37,7 @@ class Destination::Ara < ::Destination
 
     Rails.logger.info "Send file to Ara on #{ara_import_url}"
 
-    response = Net::HTTP.start(uri.hostname, uri.port, use_ssl: true) do |http|
+    response = Net::HTTP.start(uri.hostname, uri.port, use_ssl: use_ssl?) do |http|
       http.request(request)
     end
 

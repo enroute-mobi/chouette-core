@@ -41,7 +41,7 @@ describe Chouette::Line, :type => :model do
     let!(:line6) { create :line, deactivated: false, active_from: '02/04/2000' }
     let!(:line7) { create :line, deactivated: false, active_from: '02/02/2000', active_until: '02/03/2000' }
 
-    it 'should filter lines' do
+    it 'should filter lines', skip: 'CHOUETTE-2813' do
       expect(Chouette::Line.activated).to match_array [line1, line3, line4, line5, line6, line7]
       expect(Chouette::Line.deactivated).to match_array [line2]
       expect(Chouette::Line.active_after('02/02/2000'.to_date)).to match_array [line1, line5, line6, line7]

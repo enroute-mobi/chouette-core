@@ -12,8 +12,10 @@ module Query
       end
     end
 
-    def document_provider_id(value)
-      where(value, :eq, :document_provider_id)
+    def document_provider(value)
+      change_scope(if: value.present?) do |scope|
+        scope.where(document_provider: value)
+      end
     end
 
     def in_period(period)

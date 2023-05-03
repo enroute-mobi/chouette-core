@@ -1,5 +1,6 @@
 class LineRoutingConstraintZone < ApplicationModel
   include LineReferentialSupport
+  include CodeSupport
 
   validates :name, :lines, :stop_areas, presence: true
 

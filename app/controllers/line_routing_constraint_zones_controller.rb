@@ -53,6 +53,7 @@ class LineRoutingConstraintZonesController < ChouetteController
       :updated_at,
       lines: [],
       stop_areas: [],
+      codes_attributes: [:id, :code_space_id, :value, :_destroy]
     )
   end
 end

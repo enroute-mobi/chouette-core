@@ -30,16 +30,18 @@ module Export::Scope
     end
 
     def period(date_range)
-      @scope = DateRange.new(@scope, date_range)
+      internal_scopes <<  DateRange.new(current_scope, date_range)
       self
     end
 
-    def cache
-      @scope = Cache.new(@scope)
+    def stateful
+      internal_scopes <<  Stateful.new(current_scope)
       self
     end
 
     def scope
+      return @scope if @scope
+
       @scope = current_scope
 
       internal_scopes.each do |scope|
@@ -79,9 +81,7 @@ module Export::Scope
         builder.lines(line_ids) if line_ids
         builder.period(date_range) if date_range
         builder.scheduled
-
-        # CHOUETTE-1077
-        # builder.cache
+        builder.stateful
       end
     end
 
@@ -280,25 +280,33 @@ module Export::Scope
     end
   end
 
-  class Cache < Base
-    RESOURCES = %w(
-      vehicle_journeys
-      vehicle_journey_at_stops
-      journey_patterns
-      routes
-      stop_points
-      time_tables
-      organisations
-      lines
-      stop_areas
-    ).freeze
+  class Stateful < Base
 
-    RESOURCES.each do |name|
-      define_method(name) do
-        value = instance_variable_get("@#{name}")
+    def vehicle_journeys
+      unless @loaded
+        constants = [uuid, 1, "Chouette::VehicleJourney"]
+        models = current_scope.vehicle_journeys.select(constants.map { |constant| "'#{constant}'" }, :id)
 
-        value || instance_variable_set("@#{name}", current_scope.send(name))
+        query = <<~SQL
+          INSERT INTO exportables (uuid, export_id, model_type, model_id)
+          #{models.to_sql}
+        SQL
+        ActiveRecord::Base.connection.execute query
+
+        @loaded = true
       end
+
+      exportable_vehicle_journeys
+    end
+
+    def exportable_vehicle_journeys
+      Chouette::VehicleJourney.where(id: Exportable.where(uuid: uuid, model_type: 'Chouette::VehicleJourney').select(:model_id))
+    end
+
+    private
+
+    def uuid
+      @uuid ||= SecureRandom.uuid
     end
   end
 end

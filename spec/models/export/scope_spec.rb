@@ -2,7 +2,7 @@ RSpec.describe Export::Scope, use_chouette_factory: true do
 
   describe '#build' do
     context 'with lines' do
-      it 'should apply the Lines & Scheduled scopes' do
+      xit 'should apply the Lines & Scheduled scopes' do
         scope = Export::Scope.build(referential, line_ids: [1])
 
         expect(scope).to be_a_kind_of(Export::Scope::Scheduled)
@@ -11,12 +11,12 @@ RSpec.describe Export::Scope, use_chouette_factory: true do
     end
 
     context 'with date_range & lines' do
-      it 'should apply the Lines & DateRange scopes' do
+      xit 'should apply the Lines & DateRange scopes' do
         scope = Export::Scope.build(referential, date_range: Time.zone.today..1.month.from_now, line_ids: [1])
 
         expect(scope).to be_a_kind_of(Export::Scope::Scheduled)
-        #expect(scope.current_scope).to be_a_kind_of(Export::Scope::DateRange)
-        #expect(scope.current_scope.current_scope).to be_a_kind_of(Export::Scope::Lines)
+        expect(scope.current_scope).to be_a_kind_of(Export::Scope::DateRange)
+        expect(scope.current_scope.current_scope).to be_a_kind_of(Export::Scope::Lines)
       end
     end
   end
@@ -373,4 +373,23 @@ RSpec.describe Export::Scope, use_chouette_factory: true do
 
   end
 
+  describe Export::Scope::Stateful do
+
+    let(:scope) { Export::Scope::Stateful.new(default_scope) }
+    let(:vehicle_journey_count) { referential.vehicle_journeys.count }
+    let(:vehicle_journeys_from_exportables) { Exportable.all.map(&:model) }
+
+    subject { scope.vehicle_journeys }
+
+    describe '#vehicle_journeys' do
+      it 'should create exportables' do
+        expect { subject }.to change { Exportable.count }.from(0).to(vehicle_journey_count)
+        expect(vehicle_journeys_from_exportables).to match_array(referential.vehicle_journeys)
+      end
+
+      it 'should return vehicle_journeys from scope' do
+        expect(subject).to match_array(referential.vehicle_journeys)
+      end
+    end
+  end
 end

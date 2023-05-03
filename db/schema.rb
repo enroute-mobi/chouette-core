@@ -602,6 +602,15 @@ ActiveRecord::Schema.define(version: 2023_05_17_140119) do
     t.index ["export_id"], name: "index_export_resources_on_export_id"
   end
 
+  create_table "exportables", force: :cascade do |t|
+    t.bigint "export_id"
+    t.string "uuid"
+    t.string "model_type"
+    t.bigint "model_id"
+    t.index ["export_id"], name: "index_exportables_on_export_id"
+    t.index ["model_type", "model_id"], name: "index_exportables_on_model_type_and_model_id"
+  end
+
   create_table "exports", force: :cascade do |t|
     t.string "status"
     t.string "current_step_id"

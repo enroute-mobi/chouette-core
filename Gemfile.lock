@@ -65,7 +65,7 @@ GIT
 
 GIT
   remote: https://bitbucket.org/enroute-mobi/netex.git
-  revision: 35301241fbb4e07cb8dac39083fed81d65e21072
+  revision: 4194a05a4b3889a3a32807e3efa74b1137d283a6
   specs:
     netex (0.1.2)
       activesupport
@@ -416,7 +416,7 @@ GEM
     htmlbeautifier (1.4.2)
     htmlentities (4.3.4)
     httpclient (2.8.3)
-    i18n (1.12.0)
+    i18n (1.13.0)
       concurrent-ruby (~> 1.0)
     i18n-js (3.9.2)
       i18n (>= 0.6.6)

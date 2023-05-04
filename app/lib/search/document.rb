@@ -17,8 +17,8 @@ module Search
     end
 
     def candidate_document_providers
-			workgroup.document_providers
-		end
+      workgroup.document_providers
+    end
 
     def document_provider
       candidate_document_providers.find_by(id: document_provider_id)
@@ -27,7 +27,8 @@ module Search
     validates :period, valid: true
 
     def query
-      Query::Document.new(scope).name(name).document_type(document_type).document_provider(document_provider).in_period(period)
+      Query::Document.new(scope).name(name).document_type(document_type)
+                     .document_provider(document_provider).in_period(period)
     end
 
     class Order < ::Search::Order

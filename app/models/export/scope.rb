@@ -30,18 +30,16 @@ module Export::Scope
     end
 
     def period(date_range)
-      internal_scopes <<  DateRange.new(current_scope, date_range)
+      internal_scopes << DateRange.new(current_scope, date_range)
       self
     end
 
-    def stateful
-      internal_scopes <<  Stateful.new(current_scope)
+    def stateful(export_id)
+      internal_scopes << Stateful.new(current_scope, export_id)
       self
     end
 
     def scope
-      return @scope if @scope
-
       @scope = current_scope
 
       internal_scopes.each do |scope|
@@ -57,7 +55,7 @@ module Export::Scope
 
   class Options
     attr_reader :referential
-    attr_accessor :duration, :date_range, :line_ids, :line_provider_ids, :company_ids
+    attr_accessor :duration, :date_range, :line_ids, :line_provider_ids, :company_ids, :export_id
 
     def initialize(referential, attributes = {})
       @referential = referential
@@ -81,7 +79,7 @@ module Export::Scope
         builder.lines(line_ids) if line_ids
         builder.period(date_range) if date_range
         builder.scheduled
-        builder.stateful
+        builder.stateful(export_id)
       end
     end
 
@@ -282,14 +280,21 @@ module Export::Scope
 
   class Stateful < Base
 
+    attr_reader :export_id
+
+    def initialize(current_scope, export_id=nil)
+      super current_scope
+      @export_id = export_id
+    end
+
     def vehicle_journeys
       unless @loaded
-        constants = [uuid, 1, "Chouette::VehicleJourney"]
+        columns = ['uuid', 'export_id', 'model_type', 'model_id'].reject{ |c| c == 'export_id' && export_id.nil? }.join(',')
+        constants = [uuid, export_id, 'Chouette::VehicleJourney'].compact
         models = current_scope.vehicle_journeys.select(constants.map { |constant| "'#{constant}'" }, :id)
 
         query = <<~SQL
-          INSERT INTO exportables (uuid, export_id, model_type, model_id)
-          #{models.to_sql}
+          INSERT INTO exportables (#{columns}) #{models.to_sql}
         SQL
         ActiveRecord::Base.connection.execute query
 

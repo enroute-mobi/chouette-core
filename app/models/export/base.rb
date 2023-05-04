@@ -125,7 +125,7 @@ class Export::Base < ApplicationModel
   end
 
   def export_scope
-    @export_scope ||= Export::Scope.build(referential, date_range: date_range, line_ids: line_ids)
+    @export_scope ||= Export::Scope.build(referential, date_range: date_range, line_ids: line_ids, export_id: self.id)
   end
   attr_writer :export_scope
 

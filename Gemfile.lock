@@ -65,7 +65,8 @@ GIT
 
 GIT
   remote: https://bitbucket.org/enroute-mobi/netex.git
-  revision: 11945364c4f32da865e5bacb16489596169bc4c4
+  revision: 3857f52bcab0b00b0d0a94b3743dc8e054db6272
+  branch: bugfix/NETEX-80-fix-members-and-lines-in-routin
   specs:
     netex (0.1.2)
       activesupport

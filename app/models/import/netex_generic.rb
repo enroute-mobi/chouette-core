@@ -56,6 +56,7 @@ class Import::NetexGeneric < Import::Base
       StopAreaReferential,
       LineReferential,
       ShapeReferential,
+      RoutingConstraintZonesPart
     ].each do |part_class|
       part(part_class).import!
     end
@@ -192,6 +193,146 @@ class Import::NetexGeneric < Import::Base
 
     def default_provider
       shape_provider
+    end
+  end
+
+  def scheduled_stop_points
+    @scheduled_stop_points ||=
+      begin
+        scheduled_stop_points_part = part(ScheduledStopPointsPart)
+        scheduled_stop_points_part.import!
+        scheduled_stop_points_part.scheduled_stop_points
+      end
+  end
+
+  class ScheduledStopPointsPart < Part
+    delegate :netex_source, :code_space, :stop_area_provider, to: :import
+
+    def import!
+      netex_source.passenger_stop_assignments.each do |stop_assignment|
+        scheduled_stop_point_id = stop_assignment.scheduled_stop_point_ref&.ref
+        stop_area_code = (stop_assignment.quay_ref || stop_assignment.stop_place_ref)&.ref
+
+        unless stop_area_code
+        # if blank ... error message and skip this ScheduledStopPoint
+          return
+        end
+
+        if stop_area = stop_area_provider.stop_areas.find_by(registration_number: stop_area_code)
+          scheduled_stop_point = ScheduledStopPoint.new(id: scheduled_stop_point_id, stop_area_id: stop_area.id)
+          scheduled_stop_points << scheduled_stop_point
+        else
+          # if no stop area is found ... error message and skip this ScheduledStopPoint
+          return
+        end
+      end
+    end
+
+    def scheduled_stop_points
+      @scheduled_stop_points ||= []
+    end
+
+    class ScheduledStopPoint
+      def initialize(id:, stop_area_id:)
+        @id = id
+        @stop_area_id = stop_area_id
+      end
+
+      attr_accessor :id, :stop_area_id
+    end
+  end
+
+  class RoutingConstraintZonesPart < Part
+    delegate :netex_source, :code_space, :scheduled_stop_points, :line_provider, :stop_area_provider, to: :import
+
+    def import!
+
+      netex_source.routing_constraint_zones.each do |zone|
+
+        # We need line_provider, code_space, scheduled_stop_points
+        decorator = Decorator.new(zone, line_provider, stop_area_provider, code_space, scheduled_stop_points)
+
+        unless decorator.valid?
+          # create import messages
+          next
+        end
+
+        line_routing_constraint_zone = decorator.line_routing_constraint_zone
+
+        unless line_routing_constraint_zone.valid?
+          # Manage model errors as import messages (like syncro events do)
+        end
+
+        line_routing_constraint_zone.save
+      end
+    end
+
+    class Decorator < SimpleDelegator
+      def initialize(zone, line_provider, stop_area_provider, code_space, scheduled_stop_points)
+        super zone
+        @line_provider = line_provider
+        @stop_area_provider = stop_area_provider
+        @code_space = code_space
+        @scheduled_stop_points = scheduled_stop_points
+      end
+      attr_accessor :zone, :line_provider, :code_space, :scheduled_stop_points, :stop_area_provider
+
+      def code_value
+        id
+      end
+
+      def line_codes
+        lines.map(&:ref)
+      end
+
+      def chouette_lines
+        # line_scope is something like line_provider.lines
+        line_provider.lines.where(registration_number: line_codes)
+      end
+
+      def schedule_stop_point_ids
+        members.map(&:ref)
+      end
+
+      def stop_areas
+        # Find Stop Areas according Scheduler Stop Point identifiers
+        @stop_areas ||=
+          begin
+            stop_area_ids = scheduled_stop_points
+              .select { |scheduled_stop_point| schedule_stop_point_ids.include? scheduled_stop_point.id }
+              .map(&:stop_area_id)
+
+            stop_area_provider.stop_areas.where(id: stop_area_ids)
+          end
+      end
+
+      # Should false if NeTEx resource is invalid / unprocessable
+      # We should not "pre-validate" the Chouette model
+      def valid?
+        # false if code_value is blank
+        # false if line_codes is blank
+        # false if schedule_stop_point_ids is blank
+        code_value.present? && line_codes.present? && schedule_stop_point_ids.present?
+      end
+
+      def attributes
+        {
+          name: name,
+          stop_areas: stop_areas,
+          lines: chouette_lines,
+          line_referential: line_referential
+        }
+      end
+
+      def line_referential
+        line_provider.line_referential
+      end
+
+      def line_routing_constraint_zone
+        line_provider.line_routing_constraint_zones.first_or_initialize_by_code(code_space, code_value) do |zone|
+          zone.attributes = attributes
+        end
+      end
     end
   end
 

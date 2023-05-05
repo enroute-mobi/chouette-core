@@ -214,7 +214,6 @@ class Import::NetexGeneric < Import::Base
         stop_area_code = (stop_assignment.quay_ref || stop_assignment.stop_place_ref)&.ref
 
         unless stop_area_code
-        # if blank ... error message and skip this ScheduledStopPoint
           return
         end
 
@@ -222,7 +221,6 @@ class Import::NetexGeneric < Import::Base
           scheduled_stop_point = ScheduledStopPoint.new(id: scheduled_stop_point_id, stop_area_id: stop_area.id)
           scheduled_stop_points << scheduled_stop_point
         else
-          # if no stop area is found ... error message and skip this ScheduledStopPoint
           return
         end
       end
@@ -243,13 +241,12 @@ class Import::NetexGeneric < Import::Base
   end
 
   class RoutingConstraintZonesPart < Part
-    delegate :netex_source, :code_space, :scheduled_stop_points, :line_provider, :stop_area_provider, to: :import
+    delegate :netex_source, :code_space, :scheduled_stop_points, :line_provider, :stop_area_provider, :event_handler, to: :import
 
     def import!
 
       netex_source.routing_constraint_zones.each do |zone|
 
-        # We need line_provider, code_space, scheduled_stop_points
         decorator = Decorator.new(zone, line_provider, stop_area_provider, code_space, scheduled_stop_points)
 
         unless decorator.valid?
@@ -260,7 +257,10 @@ class Import::NetexGeneric < Import::Base
         line_routing_constraint_zone = decorator.line_routing_constraint_zone
 
         unless line_routing_constraint_zone.valid?
-          # Manage model errors as import messages (like syncro events do)
+          event = Event.new :update, model: line_routing_constraint_zone, resource: zone
+          event_handler.event event
+
+          next
         end
 
         line_routing_constraint_zone.save
@@ -286,7 +286,6 @@ class Import::NetexGeneric < Import::Base
       end
 
       def chouette_lines
-        # line_scope is something like line_provider.lines
         line_provider.lines.where(registration_number: line_codes)
       end
 
@@ -295,7 +294,6 @@ class Import::NetexGeneric < Import::Base
       end
 
       def stop_areas
-        # Find Stop Areas according Scheduler Stop Point identifiers
         @stop_areas ||=
           begin
             stop_area_ids = scheduled_stop_points
@@ -306,12 +304,7 @@ class Import::NetexGeneric < Import::Base
           end
       end
 
-      # Should false if NeTEx resource is invalid / unprocessable
-      # We should not "pre-validate" the Chouette model
       def valid?
-        # false if code_value is blank
-        # false if line_codes is blank
-        # false if schedule_stop_point_ids is blank
         code_value.present? && line_codes.present? && schedule_stop_point_ids.present?
       end
 

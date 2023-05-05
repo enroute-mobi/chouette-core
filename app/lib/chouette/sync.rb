@@ -1,11 +1,11 @@
 module Chouette
   module Sync
     class Base
+      attr_accessor :source, :target, :default_provider, :delete_batch_size, :update_batch_size,
+                    :resource_type, :resource_id_attribute, :resource_decorator, :model_type,
+                    :model_id_attribute, :code_space, :strict_mode
 
-      attr_accessor :source, :target, :default_provider
-      attr_accessor :delete_batch_size, :update_batch_size
-      attr_accessor :resource_type, :resource_id_attribute, :resource_decorator
-      attr_accessor :model_type, :model_id_attribute, :code_space
+      alias strict_mode? strict_mode
 
       class_attribute :default_model_id_attribute, default: :registration_number
       include Event::HandlerSupport
@@ -77,6 +77,7 @@ module Chouette
           event_handler: event_handler,
           code_space: code_space,
           default_provider: default_provider,
+          strict_mode: strict_mode?
         }.delete_if { |_,v| v.nil? }
         options = default_options.merge(options)
         updater_class.new options

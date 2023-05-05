@@ -8,9 +8,11 @@ module Chouette
         options.each { |k,v| send "#{k}=", v }
       end
 
-      attr_accessor :source, :target, :update_batch_size, :default_provider
-      attr_accessor :resource_type, :resource_id_attribute, :resource_decorator
-      attr_accessor :model_type, :model_id_attribute, :code_space
+      attr_accessor :source, :target, :update_batch_size, :default_provider, :resource_type, :resource_id_attribute,
+                    :resource_decorator, :model_type, :model_id_attribute, :code_space, :strict_mode
+
+      alias strict_mode? strict_mode
+
       include Event::HandlerSupport
 
       delegate :workgroup, to: :target
@@ -93,7 +95,6 @@ module Chouette
       end
 
       class Models
-
         attr_accessor :scope, :updater
 
         def initialize(scope, updater: nil)
@@ -101,7 +102,8 @@ module Chouette
           @updater = updater
         end
 
-        delegate :model_id_attribute, :event_handler, :workgroup, :code_space, :target, :provider, to: :updater
+        delegate :model_id_attribute, :event_handler, :workgroup, :code_space, :target, :provider, :strict_mode?,
+                 to: :updater
 
         def with_resource_ids(resource_ids)
           scope.where(model_id_attribute => resource_ids).find_each do |model|
@@ -128,10 +130,7 @@ module Chouette
           end
 
           if model_id_attribute == :codes
-            attributes[:codes_attributes] = [{
-              value: resource.id,
-              code_space: code_space
-            }]
+            attributes[:codes_attributes] = [{value: resource.id, code_space: code_space}]
           else
             attributes[model_id_attribute] = resource.id
           end
@@ -139,7 +138,7 @@ module Chouette
           # Could be conditionnal
           attributes.delete_if do |_, value|
             IGNORED_ATTRIBUTE_VALUES.include? value
-          end
+          end unless strict_mode?
 
           attributes
         end

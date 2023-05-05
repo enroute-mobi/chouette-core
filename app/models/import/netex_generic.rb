@@ -81,7 +81,7 @@ class Import::NetexGeneric < Import::Base
   class SynchronizedPart < Part
     include Measurable
 
-    delegate :netex_source, :event_handler, :code_space, :disable_missing_resources?, to: :import
+    delegate :netex_source, :event_handler, :code_space, :disable_missing_resources?, :strict_mode?, to: :import
 
     def import!
       synchronization.tap do |sync|
@@ -89,6 +89,7 @@ class Import::NetexGeneric < Import::Base
         sync.event_handler = event_handler
         sync.code_space = code_space
         sync.default_provider = default_provider
+        sync.strict_mode = strict_mode?
 
         sync.update_or_create
         sync.delete_after_update_or_create if disable_missing_resources?

@@ -86,7 +86,7 @@ class Import::Base < ApplicationModel
   end
 
   def strict_mode?
-    if options['strict_mode']
+    if options['strict_mode'] == 'true'
       true
     elsif (parent_options = parent&.options).present?
       parent_options['strict_mode'] == 'true'

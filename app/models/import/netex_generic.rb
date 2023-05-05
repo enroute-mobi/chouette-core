@@ -214,14 +214,27 @@ class Import::NetexGeneric < Import::Base
         stop_area_code = (stop_assignment.quay_ref || stop_assignment.stop_place_ref)&.ref
 
         unless stop_area_code
-          return
+          import.messages.new(
+            criticity: :error,
+            message_key: 'stop_area_code_empty',
+          )
+
+          next
         end
 
-        if stop_area = stop_area_provider.stop_areas.find_by(registration_number: stop_area_code)
+        if stop_area = stop_area_provider.stop_areas.find_by(registration_number: stop_area_code).presence
           scheduled_stop_point = ScheduledStopPoint.new(id: scheduled_stop_point_id, stop_area_id: stop_area.id)
           scheduled_stop_points << scheduled_stop_point
         else
-          return
+          import.messages.new(
+            criticity: :error,
+            message_key: 'stop_area_not_found',
+            message_attributes: {
+              registration_number: stop_area_code
+            }
+          )
+
+          next
         end
       end
     end
@@ -250,14 +263,18 @@ class Import::NetexGeneric < Import::Base
         decorator = Decorator.new(zone, line_provider, stop_area_provider, code_space, scheduled_stop_points)
 
         unless decorator.valid?
-          # create import messages
+          import.messages.new(
+            criticity: :error,
+            message_key: 'invalid_netex_source_routing_constraint_zone',
+          )
+
           next
         end
 
         line_routing_constraint_zone = decorator.line_routing_constraint_zone
 
         unless line_routing_constraint_zone.valid?
-          event = Event.new :update, model: line_routing_constraint_zone, resource: zone
+          event = Chouette::Sync::Event.new :update, model: line_routing_constraint_zone, resource: zone
           event_handler.event event
 
           next

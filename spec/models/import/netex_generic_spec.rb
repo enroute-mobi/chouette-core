@@ -897,6 +897,33 @@ RSpec.describe Import::NetexGeneric do
 
       it { is_expected.to include(expected_attributes) }
     end
+
+    context "when there is not stop place that has the id '123456'" do
+      let(:xml) do
+        <<~XML
+          <PassengerStopAssignment>
+            <ScheduledStopPointRef ref="A"/>
+            <QuayRef ref="123456" />
+          </PassengerStopAssignment>
+        XML
+      end
+
+      let(:expected_message) do
+        an_object_having_attributes(
+          criticity: "error",
+          message_key: "stop_area_not_found",
+          message_attributes: {
+            "registration_number" => "123456"
+          }
+        )
+      end
+
+      it 'Should create a message' do
+         subject
+
+         expect(import.messages).to include(expected_message)
+      end
+    end
   end
 
   describe 'Routing Constraint Zones part' do

@@ -1,9 +1,7 @@
 RSpec.describe Chouette::Sync::Updater do
-
-  subject(:updater) { Test.new  }
+  subject(:updater) { Test.new }
 
   class Test < Chouette::Sync::Updater
-
   end
 
   let(:context) do
@@ -22,25 +20,22 @@ RSpec.describe Chouette::Sync::Updater do
     identifiers.map { |id| resource id }
   end
 
-  describe "#resources" do
-
-    it "uses resources provided by source according to resource_type" do
+  describe '#resources' do
+    it 'uses resources provided by source according to resource_type' do
       source = double(items: double)
       updater.source = source
       updater.resource_type = :item
 
       expect(updater.resources).to eq(source.items)
     end
-
   end
 
-  describe "#resources_in_batches" do
-
-    it "invokes the given block with a Batch for each resource slice (controled by update_batch_size)" do
+  describe '#resources_in_batches' do
+    it 'invokes the given block with a Batch for each resource slice (controled by update_batch_size)' do
       updater.update_batch_size = 1
       updater.resource_id_attribute = :id
 
-      all_resources = resources(1,2,3)
+      all_resources = resources(1, 2, 3)
       allow(updater).to receive(:resources).and_return(all_resources)
 
       batched_resources = []
@@ -49,65 +44,52 @@ RSpec.describe Chouette::Sync::Updater do
       end
       expect(batched_resources).to eq(all_resources)
     end
-
   end
 
   describe Chouette::Sync::Updater::Batch do
-
     def create_batch(resources = nil, updater: nil)
-      resources ||= self.resources(1,2,3)
+      resources ||= self.resources(1, 2, 3)
       updater ||= double resource_id_attribute: :id
       Chouette::Sync::Updater::Batch.new resources, updater: updater
     end
 
-    describe "#resource_id_attribute" do
-
+    describe '#resource_id_attribute' do
       let(:updater) { double resource_id_attribute: :dummy }
 
-      it "uses resource_id_attribute provided by Updater" do
+      it 'uses resource_id_attribute provided by Updater' do
         batch = create_batch updater: updater
         expect(batch.resource_id_attribute).to eq(updater.resource_id_attribute)
       end
-
     end
 
-    describe "#resource_ids" do
-
+    describe '#resource_ids' do
       let(:expected_identifiers) { (1..3).to_a }
 
-      it "returns the identifiers of Batch resources (as string)" do
+      it 'returns the identifiers of Batch resources (as string)' do
         batch = create_batch resources(*expected_identifiers)
         expect(batch.resource_ids).to match_array(expected_identifiers.map(&:to_s))
       end
-
     end
 
-    describe "#models" do
-
+    describe '#models' do
       let(:updater) { double models: double }
 
-      it "returns the identifiers of Batch resources" do
+      it 'returns the identifiers of Batch resources' do
         batch = create_batch updater: updater
         expect(batch.models).to eq(updater.models)
       end
-
     end
-
   end
 
-  describe "with real target" do
-
-
+  describe 'with real target' do
     let(:source) { double resources: [] }
 
     class TestDecorator < Chouette::Sync::Updater::ResourceDecorator
-
       def model_attributes
         {
           name: name
         }
       end
-
     end
 
     let(:updater) do
@@ -117,15 +99,14 @@ RSpec.describe Chouette::Sync::Updater do
                                   model_type: :stop_area, model_id_attribute: :registration_number
     end
 
-    context "when the source provides a new Model" do
-
+    context 'when the source provides a new Model' do
       before { source.resources << resource(1) }
 
-      it "creates the associated Model" do
+      it 'creates the associated Model' do
         expect { updater.update_or_create }.to change { target.stop_areas.count }.by(1)
       end
 
-      describe "emitted events" do
+      describe 'emitted events' do
         subject(:events) { [] }
 
         before do
@@ -136,7 +117,7 @@ RSpec.describe Chouette::Sync::Updater do
         it do
           is_expected.to include(
                            an_object_having_attributes(
-                             type: "create",
+              type: 'create',
                              resource: source.resources.first,
                              model: target.stop_areas.first,
                              count: 1,
@@ -147,37 +128,34 @@ RSpec.describe Chouette::Sync::Updater do
       end
     end
 
-    context "when the source provides several new Models" do
-
+    context 'when the source provides several new Models' do
       let(:resource_count) { 10 }
       before { resource_count.times { |n| source.resources << resource(n) } }
 
-      it "creates the associated Model" do
+      it 'creates the associated Model' do
         expect { updater.update_or_create }.to change { target.stop_areas.count }.by(resource_count)
       end
 
-      it "sends events with created model counts" do
+      it 'sends events with created model counts' do
         create_count = 0
         updater.event_handler = Chouette::Sync::Event::Handler.new { |event| create_count += event.count }
-        expect { updater.update_or_create }.to change{ create_count }.by(resource_count)
+        expect { updater.update_or_create }.to change { create_count }.by(resource_count)
       end
-
     end
 
-    context "when the source provides an existing Model" do
-
+    context 'when the source provides an existing Model' do
       let!(:existing_model) do
-        target.stop_areas.create! name: "Old name", registration_number: "test"
+        target.stop_areas.create! name: 'Old name', registration_number: 'test'
       end
 
-      let(:source_resource) { resource("test") }
+      let(:source_resource) { resource('test') }
       before { source.resources << source_resource }
 
-      it "updates the associated StopArea" do
+      it 'updates the associated StopArea' do
         expect { updater.update_or_create }.to change { existing_model.reload.name }.to(source_resource.name)
       end
 
-      describe "emitted events" do
+      describe 'emitted events' do
         subject(:events) { [] }
 
         before do
@@ -188,7 +166,7 @@ RSpec.describe Chouette::Sync::Updater do
         it do
           is_expected.to include(
                            an_object_having_attributes(
-                             type: "update",
+              type: 'update',
                              resource: source.resources.first,
                              model: target.stop_areas.first,
                              count: 1,
@@ -199,10 +177,9 @@ RSpec.describe Chouette::Sync::Updater do
       end
     end
 
-    context "when the source provides several existing Models" do
-
+    context 'when the source provides several existing Models' do
       let(:resource_count) { 10 }
-      let(:old_name) { "Old name" }
+      let(:old_name) { 'Old name' }
 
       before do
         resource_count.times do |n|
@@ -211,24 +188,21 @@ RSpec.describe Chouette::Sync::Updater do
         end
       end
 
-      it "updates the associated StopArea" do
+      it 'updates the associated StopArea' do
         expect { updater.update_or_create }.to change {
           target.stop_areas.where(name: old_name).count
         }.from(resource_count).to(0)
       end
 
-      it "sends events with updated model counts" do
+      it 'sends events with updated model counts' do
         update_count = 0
         updater.event_handler = Chouette::Sync::Event::Handler.new { |event| update_count += event.count }
-        expect { updater.update_or_create }.to change{ update_count }.by(resource_count)
+        expect { updater.update_or_create }.to change { update_count }.by(resource_count)
       end
-
     end
-
   end
 
   describe Chouette::Sync::Updater::Provider do
-
     let(:context) { Chouette.create { workbench } }
     let(:workbench) { context.workbench }
     let(:workgroup) { context.workgroup }
@@ -236,13 +210,13 @@ RSpec.describe Chouette::Sync::Updater do
     let(:default_provider) { workbench.default_stop_area_provider }
     let!(:provider) { Chouette::Sync::Updater::Provider.new target, default_provider }
 
-    describe "#scope" do
-      subject {provider.scope }
+    describe '#scope' do
+      subject { provider.scope }
       it { is_expected.to eq(target.stop_area_providers) }
     end
 
-    describe "#target_is_provider?" do
-      subject {provider.target_is_provider? }
+    describe '#target_is_provider?' do
+      subject { provider.target_is_provider? }
       it { is_expected.to eq(false) }
     end
   end

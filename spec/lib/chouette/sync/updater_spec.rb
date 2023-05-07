@@ -116,14 +116,14 @@ RSpec.describe Chouette::Sync::Updater do
 
         it do
           is_expected.to include(
-                           an_object_having_attributes(
+            an_object_having_attributes(
               type: 'create',
-                             resource: source.resources.first,
-                             model: target.stop_areas.first,
-                             count: 1,
-                             errors: {}
-                           )
-                         )
+              resource: source.resources.first,
+              model: target.stop_areas.first,
+              count: 1,
+              errors: {}
+            )
+          )
         end
       end
     end
@@ -165,14 +165,14 @@ RSpec.describe Chouette::Sync::Updater do
 
         it do
           is_expected.to include(
-                           an_object_having_attributes(
+            an_object_having_attributes(
               type: 'update',
-                             resource: source.resources.first,
-                             model: target.stop_areas.first,
-                             count: 1,
-                             errors: {}
-                           )
-                         )
+              resource: source.resources.first,
+              model: target.stop_areas.first,
+              count: 1,
+              errors: {}
+            )
+          )
         end
       end
     end
@@ -218,6 +218,38 @@ RSpec.describe Chouette::Sync::Updater do
     describe '#target_is_provider?' do
       subject { provider.target_is_provider? }
       it { is_expected.to eq(false) }
+    end
+  end
+end
+
+RSpec.describe Chouette::Sync::Updater::Models do
+  subject(:models) { Chouette::Sync::Updater::Models.new(scope) }
+  let(:scope) { double }
+
+  describe '#prepare_attributes' do
+    subject { models.prepare_attributes(resource) }
+
+    let(:resource) { double id: 42, model_attributes: model_attributes }
+    let(:model_attributes) { {} }
+
+    before { allow(models).to receive(:model_id_attribute).and_return(:registration_number) }
+
+    [nil, '', []].each do |empty_value|
+      context "when model attributes contains dummy: #{empty_value.inspect}" do
+        before { model_attributes[:dummy] = empty_value }
+
+        context 'when strict mode is disabled' do
+          before { allow(models).to receive(:strict_mode?).and_return(false) }
+
+          it { is_expected.to_not have_key(:dummy) }
+        end
+
+        context 'when strict mode is enabled' do
+          before { allow(models).to receive(:strict_mode?).and_return(true) }
+
+          it { is_expected.to have_key(:dummy) }
+        end
+      end
     end
   end
 end

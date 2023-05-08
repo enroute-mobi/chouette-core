@@ -56,17 +56,43 @@ class Import::NetexGeneric < Import::Base
       StopAreaReferential,
       LineReferential,
       ShapeReferential,
-      RoutingConstraintZonesPart
+      ScheduledStopPoints,
+      RoutingConstraintZones
     ].each do |part_class|
       part(part_class).import!
     end
+
+    update_import_status
+  end
+
+  # TODO: why the resource statuses are not checked automaticaly ??
+  # See CHOUETTE-2747
+  def update_import_status
+    resource_status = resources.map(&:status).uniq.map(&:to_s)
+    Rails.logger.debug "resource_status: #{resource_status.inspect}"
+
+    if resource_status.include?('ERROR')
+      self.status = 'failed'
+    elsif resource_status.include?('WARNING')
+      self.status = 'warning'
+    end
+
+    Rails.logger.debug "@status: #{@status.inspect}"
   end
 
   def part(part_class)
     # For test, accept a symbol/name in argument
     # For example: part(:line_referential).import!
     unless part_class.is_a?(Class)
-      part_class = self.class.const_get(part_class.to_s.classify)
+      part_class = part_class.to_s
+
+      # :line_referential -> LineReferential
+      # :scheduled_stop_points -> ScheduledStopPoints
+      plural = part_class.ends_with?('s')
+      part_class_name = part_class.classify
+      part_class_name = "#{part_class_name}s" if plural
+
+      part_class = self.class.const_get(part_class_name)
     end
 
     part_class.new(self)
@@ -77,6 +103,65 @@ class Import::NetexGeneric < Import::Base
       @import = import
     end
     attr_reader :import
+
+    # To define callback in import!
+    include AroundMethod
+    around_method :import!
+
+    extend ActiveModel::Callbacks
+    define_model_callbacks :import
+
+    def around_import!(&block)
+      run_callbacks :import do
+        block.call
+      end
+    end
+
+    # Save all resources after Part import
+    after_import :update_resources
+
+    def update_resources
+      import.resources.each do |resource|
+        resource.update_metrics
+        resource.save
+      end
+    end
+
+    # Save import after Part import
+    # after_import :save_import
+
+    # def save_import
+    #   import.save
+    # end
+
+    include Measurable
+    measure :import!, as: ->(part) { part.class.name.demodulize }
+  end
+
+  class WithResourcePart < Part
+    after_import :save_resource
+
+    def save_resource
+      @import_resource&.save
+    end
+
+    # TODO: manage a given NeTEx resource to save tags
+    def create_message(message_key, message_attributes = {})
+      attributes = { criticity: :error, message_key: message_key, message_attributes: message_attributes }
+      import_resource.messages.build attributes
+      import_resource.status = 'ERROR'
+    end
+
+    def import_resource_name
+      @import_resource_name ||= self.class.name.demodulize
+    end
+
+    def import_resource
+      @import_resource ||= import.resources.find_or_initialize_by(resource_type: import_resource_name) do |resource|
+        resource.name = import_resource_name
+        resource.status = 'OK'
+      end
+    end
   end
 
   class SynchronizedPart < Part
@@ -96,16 +181,7 @@ class Import::NetexGeneric < Import::Base
         sync.delete_after_update_or_create if disable_missing_resources?
         sync.after_synchronisation
       end
-
-      import.resources.each do |resource|
-        resource.update_metrics
-        resource.save
-      end
-    ensure
-      import.save
     end
-
-    measure :import!, as: ->(part) { part.class.name.demodulize }
   end
 
   # Synchronize models in the StopAreaReferential (StopArea, Entrances, etc)
@@ -197,16 +273,19 @@ class Import::NetexGeneric < Import::Base
   end
 
   def scheduled_stop_points
-    @scheduled_stop_points ||=
-      begin
-        scheduled_stop_points_part = part(ScheduledStopPointsPart)
-        scheduled_stop_points_part.import!
-        scheduled_stop_points_part.scheduled_stop_points
-      end
+    @scheduled_stop_points ||= {}
+  end
+  class ScheduledStopPoint
+    def initialize(id:, stop_area_id:)
+      @id = id
+      @stop_area_id = stop_area_id
+    end
+
+    attr_accessor :id, :stop_area_id
   end
 
-  class ScheduledStopPointsPart < Part
-    delegate :netex_source, :code_space, :stop_area_provider, to: :import
+  class ScheduledStopPoints < WithResourcePart
+    delegate :netex_source, :code_space, :stop_area_provider, :scheduled_stop_points, to: :import
 
     def import!
       netex_source.passenger_stop_assignments.each do |stop_assignment|
@@ -214,69 +293,50 @@ class Import::NetexGeneric < Import::Base
         stop_area_code = (stop_assignment.quay_ref || stop_assignment.stop_place_ref)&.ref
 
         unless stop_area_code
-          import.messages.new(
-            criticity: :error,
-            message_key: 'stop_area_code_empty',
-          )
-
+          create_message :stop_area_code_empty
           next
         end
 
-        if stop_area = stop_area_provider.stop_areas.find_by(registration_number: stop_area_code).presence
+        if (stop_area = stop_area_provider.stop_areas.find_by(registration_number: stop_area_code).presence)
           scheduled_stop_point = ScheduledStopPoint.new(id: scheduled_stop_point_id, stop_area_id: stop_area.id)
-          scheduled_stop_points << scheduled_stop_point
+          scheduled_stop_points[scheduled_stop_point.id] = scheduled_stop_point
         else
-          import.messages.new(
-            criticity: :error,
-            message_key: 'stop_area_not_found',
-            message_attributes: {
-              registration_number: stop_area_code
-            }
-          )
-
+          create_message :stop_area_not_found, code: stop_area_code
           next
         end
       end
-    end
-
-    def scheduled_stop_points
-      @scheduled_stop_points ||= []
-    end
-
-    class ScheduledStopPoint
-      def initialize(id:, stop_area_id:)
-        @id = id
-        @stop_area_id = stop_area_id
-      end
-
-      attr_accessor :id, :stop_area_id
     end
   end
 
-  class RoutingConstraintZonesPart < Part
-    delegate :netex_source, :code_space, :scheduled_stop_points, :line_provider, :stop_area_provider, :event_handler, to: :import
+  class RoutingConstraintZones < WithResourcePart
+    delegate :netex_source, :code_space, :scheduled_stop_points, :line_provider,
+             :stop_area_provider, :event_handler, to: :import
 
     def import!
-
       netex_source.routing_constraint_zones.each do |zone|
-
-        decorator = Decorator.new(zone, line_provider, stop_area_provider, code_space, scheduled_stop_points)
+        decorator = Decorator.new(zone, line_provider: line_provider, 
+                                        stop_area_provider: stop_area_provider, 
+                                        code_space: code_space, 
+                                        scheduled_stop_points: scheduled_stop_points)
 
         unless decorator.valid?
-          import.messages.new(
-            criticity: :error,
-            message_key: 'invalid_netex_source_routing_constraint_zone',
-          )
-
+          create_message :invalid_netex_source_routing_constraint_zone
           next
         end
 
+        
         line_routing_constraint_zone = decorator.line_routing_constraint_zone
 
+        # TODO: share error creating from model errors
         unless line_routing_constraint_zone.valid?
-          event = Chouette::Sync::Event.new :update, model: line_routing_constraint_zone, resource: zone
-          event_handler.event event
+          line_routing_constraint_zone.errors.each do |attribute, _|
+            attribute_value = line_routing_constraint_zone.send(attribute)
 
+            # FIXME: little trick to avoid message like:
+            # L'attribut lines ne peut avoir la valeur '#<HasArrayOf::AssociatedArray::Relation:0x00007f82be1a03e0>'
+            attribute_value = '' if attribute_value.blank?
+            create_message :invalid_model_attribute, attribute_name: attribute, attribute_value: attribute_value
+          end
           next
         end
 
@@ -285,7 +345,7 @@ class Import::NetexGeneric < Import::Base
     end
 
     class Decorator < SimpleDelegator
-      def initialize(zone, line_provider, stop_area_provider, code_space, scheduled_stop_points)
+      def initialize(zone, line_provider: nil, stop_area_provider: nil, code_space: nil, scheduled_stop_points: nil)
         super zone
         @line_provider = line_provider
         @stop_area_provider = stop_area_provider
@@ -306,23 +366,24 @@ class Import::NetexGeneric < Import::Base
         line_provider.lines.where(registration_number: line_codes)
       end
 
-      def schedule_stop_point_ids
+      def scheduled_stop_point_ids
         members.map(&:ref)
       end
 
-      def stop_areas
-        @stop_areas ||=
-          begin
-            stop_area_ids = scheduled_stop_points
-              .select { |scheduled_stop_point| schedule_stop_point_ids.include? scheduled_stop_point.id }
-              .map(&:stop_area_id)
+      def member_scheduled_stop_points
+        scheduled_stop_points.values_at(*scheduled_stop_point_ids).compact
+      end
 
-            stop_area_provider.stop_areas.where(id: stop_area_ids)
-          end
+      def stop_area_ids
+        member_scheduled_stop_points.map(&:stop_area_id)
+      end
+
+      def stop_areas
+        stop_area_provider.stop_areas.where(id: stop_area_ids)
       end
 
       def valid?
-        code_value.present? && line_codes.present? && schedule_stop_point_ids.present?
+        code_value.present? && line_codes.present? && scheduled_stop_point_ids.present?
       end
 
       def attributes

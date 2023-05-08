@@ -856,8 +856,13 @@ RSpec.describe Import::NetexGeneric do
   end
 
   describe 'Scheduled Stop Points part' do
+    let(:part) { import.part(:scheduled_stop_points) }
 
-    subject { import.scheduled_stop_points }
+    subject do
+      part.import!
+      import.scheduled_stop_points
+    end
+
     let(:context) do
       Chouette.create { stop_area registration_number: '123' }
     end
@@ -872,7 +877,7 @@ RSpec.describe Import::NetexGeneric do
 
     before { import.stop_area_provider = stop_area.stop_area_provider }
 
-    context "when XML contains QuayRef in PassengerStopAssignment" do
+    context 'when XML contains QuayRef in PassengerStopAssignment' do
       let(:xml) do
         <<~XML
           <PassengerStopAssignment>
@@ -882,10 +887,10 @@ RSpec.describe Import::NetexGeneric do
         XML
       end
 
-      it { is_expected.to include(expected_attributes) }
+      it { is_expected.to include('A' => expected_attributes) }
     end
 
-    context "when XML contains StopPlaceRef in PassengerStopAssignment" do
+    context 'when XML contains StopPlaceRef in PassengerStopAssignment' do
       let(:xml) do
         <<~XML
           <PassengerStopAssignment>
@@ -895,7 +900,7 @@ RSpec.describe Import::NetexGeneric do
         XML
       end
 
-      it { is_expected.to include(expected_attributes) }
+      it { is_expected.to include('A' => expected_attributes) }
     end
 
     context "when there is not stop place that has the id '123456'" do
@@ -910,24 +915,23 @@ RSpec.describe Import::NetexGeneric do
 
       let(:expected_message) do
         an_object_having_attributes(
-          criticity: "error",
-          message_key: "stop_area_not_found",
+          criticity: 'error',
+          message_key: 'stop_area_not_found',
           message_attributes: {
-            "registration_number" => "123456"
+            'code' => '123456'
           }
         )
       end
 
-      it 'Should create a message' do
-         subject
+      it 'should create a message' do
+        subject
 
-         expect(import.messages).to include(expected_message)
+        expect(part.import_resource.messages).to include(expected_message)
       end
     end
   end
 
   describe 'Routing Constraint Zones part' do
-
     let(:xml) do
       <<~XML
         <root>
@@ -941,29 +945,29 @@ RSpec.describe Import::NetexGeneric do
               <LineRef ref="1" />
             </lines>
           </RoutingConstraintZone>
-        
+
           <ScheduledStopPoint id="A"/>
-        
+
           <PassengerStopAssignment id="A">
             <ScheduledStopPointRef ref="A"/>
             <QuayRef ref="A" />
           </PassengerStopAssignment>
-        
+
           <Quay id="A">
             <Name>Quay A</Name>
           </Quay>
-        
+
           <ScheduledStopPoint id="B"/>
-        
+
           <PassengerStopAssignment id="B">
             <ScheduledStopPointRef ref="B"/>
             <QuayRef ref="B" />
           </PassengerStopAssignment>
-        
+
           <Quay id="B">
             <Name>Quay B</Name>
           </Quay>
-        
+
           <Line id="1">
             <Name>Line Sample</Name>
           </Line>
@@ -971,28 +975,28 @@ RSpec.describe Import::NetexGeneric do
       XML
     end
 
-    let(:line) { Chouette::Line.find_by_registration_number("1") }
-    let(:line_provider) { line.line_provider }
-    let(:line_referential) { line_provider.line_referential }
+    let(:line_provider) { import.line_provider }
+    let(:line) { line_provider.lines.find_by_registration_number('1') }
     let(:line_routing_constraint_zones) { line_provider.line_routing_constraint_zones }
-    let(:stop_area_ids) { Chouette::StopArea.where(registration_number: ['A', 'B']).pluck(:id) }
+    let(:stop_area_ids) { import.stop_area_provider.stop_areas.where(registration_number: %w[A B]).pluck(:id) }
 
     before do
-      import.part(:stop_area_referential).import! 
-      import.part(:line_referential).import! 
-    end 
+      import.part(:stop_area_referential).import!
+      import.part(:line_referential).import!
+      import.part(:scheduled_stop_points).import!
+    end
 
     let(:expected_attributes) do
       an_object_having_attributes(
-        name: "Test",
+        name: 'Test',
         line_ids: [line.id],
         stop_area_ids: stop_area_ids
       )
     end
 
-    subject { import.part(:routing_constraint_zones_part).import! }
+    subject { import.part(:routing_constraint_zones).import! }
 
-    it 'Should import routing constraint_zones' do
+    it 'should import routing constraint_zones' do
       expect { subject }.to change { line_routing_constraint_zones.count }.from(0).to(1)
       expect(line_routing_constraint_zones).to include(expected_attributes)
     end

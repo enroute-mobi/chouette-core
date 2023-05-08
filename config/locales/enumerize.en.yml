@@ -373,6 +373,7 @@ en:
       only_next_days: Only next days
     profile:
       none: None
+      french: French (beta)
       european: European
       'idfm/line': IdFM Publication Line
       'idfm/full': IdFM Publication Full

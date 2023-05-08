@@ -1,12 +1,13 @@
+# frozen_string_literal: true
 class Import::NetexGeneric < Import::Base
   include LocalImportSupport
   include Imports::WithoutReferentialSupport
 
   def self.accepts_file?(file)
     case File.extname(file)
-    when ".xml"
+    when '.xml'
       true
-    when ".zip"
+    when '.zip'
       Zip::File.open(file) do |zip_file|
         files_count = zip_file.glob('*').size
         zip_file.glob('*.xml').size == files_count
@@ -14,42 +15,38 @@ class Import::NetexGeneric < Import::Base
     else
       false
     end
-  rescue => e
+  rescue StandardError => e
     Chouette::Safe.capture "Error in testing NeTEx (Generic) file: #{file}", e
     false
   end
 
   def file_extension_whitelist
-    %w(zip xml)
+    %w[zip xml]
   end
 
   # stop_areas
   def stop_area_provider
     @stop_area_provider ||= workbench.default_stop_area_provider
   end
-  attr_writer :stop_area_provider
+  attr_writer :stop_area_provider, :stop_area_referential, :line_provider, :line_referential, :shape_provider
 
   def stop_area_referential
     @stop_area_referential ||= workbench.stop_area_referential
   end
-  attr_writer :stop_area_referential
 
   # lines
   def line_provider
     @line_provider ||= workbench.default_line_provider
   end
-  attr_writer :line_provider
 
   def line_referential
     @line_referential ||= workbench.line_referential
   end
-  attr_writer :line_referential
 
   # shapes
   def shape_provider
     @shape_provider ||= workbench.default_shape_provider
   end
-  attr_writer :shape_provider
 
   def import_without_status
     [
@@ -275,6 +272,7 @@ class Import::NetexGeneric < Import::Base
   def scheduled_stop_points
     @scheduled_stop_points ||= {}
   end
+
   class ScheduledStopPoint
     def initialize(id:, stop_area_id:)
       @id = id
@@ -314,9 +312,9 @@ class Import::NetexGeneric < Import::Base
 
     def import!
       netex_source.routing_constraint_zones.each do |zone|
-        decorator = Decorator.new(zone, line_provider: line_provider, 
-                                        stop_area_provider: stop_area_provider, 
-                                        code_space: code_space, 
+        decorator = Decorator.new(zone, line_provider: line_provider,
+                                        stop_area_provider: stop_area_provider,
+                                        code_space: code_space,
                                         scheduled_stop_points: scheduled_stop_points)
 
         unless decorator.valid?
@@ -324,7 +322,6 @@ class Import::NetexGeneric < Import::Base
           next
         end
 
-        
         line_routing_constraint_zone = decorator.line_routing_constraint_zone
 
         # TODO: share error creating from model errors
@@ -412,7 +409,6 @@ class Import::NetexGeneric < Import::Base
   end
 
   class EventHandler < Chouette::Sync::Event::Handler
-
     def initialize(import)
       @import = import
     end
@@ -425,9 +421,7 @@ class Import::NetexGeneric < Import::Base
       EventProcessor.new(event, resource(event.resource.class)).tap do |processor|
         processor.process
 
-        if processor.has_error?
-          import.status = 'failed'
-        end
+        import.status = 'failed' if processor.has_error?
       end
     end
 
@@ -438,12 +432,11 @@ class Import::NetexGeneric < Import::Base
 
       import.resources.find_or_initialize_by(resource_type: human_netex_resource_name) do |resource|
         resource.name = human_netex_resource_name
-        resource.status = "OK"
+        resource.status = 'OK'
       end
     end
 
     class EventProcessor
-
       def initialize(event, resource)
         @event = event
         @resource = resource
@@ -458,15 +451,13 @@ class Import::NetexGeneric < Import::Base
       end
 
       def process
-        unless event.has_error?
-          if event.type.create? || event.type.update?
-            process_create_or_update
-          end
-        else
+        if event.has_error?
           process_error
+        elsif event.type.create? || event.type.update?
+          process_create_or_update
         end
 
-        # TODO As ugly as necessary
+        # TODO: As ugly as necessary
         # Need to save resource because it's used in resource method
         resource.save
       end
@@ -477,7 +468,7 @@ class Import::NetexGeneric < Import::Base
 
       def process_error
         self.has_error = true
-        resource.status = "ERROR"
+        resource.status = 'ERROR'
         event.errors.each do |attribute, errors|
           errors.each do |error|
             resource.messages.build(

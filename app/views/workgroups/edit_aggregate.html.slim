@@ -39,7 +39,7 @@
               - workbenches.each_with_index do |w,i|
                 .cell
                   = hidden_field_tag "workgroup[workbenches_attributes][#{i}][id]", w.id
-                  = select_tag "workgroup[workbenches_attributes][#{i}][locked_referential_to_aggregate_id]", options_from_collection_for_select(w.output.referentials_created_before_current, :id, :name, w.locked_referential_to_aggregate_id), include_blank: true, data: { select2ed: true, 'select2ed-allow-clear' => true, 'select2ed-placeholder' => I18n.t('workbenches.current_offer') }
+                  = select_tag "workgroup[workbenches_attributes][#{i}][locked_referential_to_aggregate_id]", options_from_collection_for_select(w.output.referentials_created_before_current, :id, :name, w.locked_referential_to_aggregate_id), include_blank: true, data: { select2ed: true, 'select2ed-allow-clear' => true, 'select2ed-placeholder' => I18n.t('workbenches.current_offer') }, class: 'w-full'
             .col.medium
               - workbenches.each_with_index do |w,i|
                .cell.organisation-name

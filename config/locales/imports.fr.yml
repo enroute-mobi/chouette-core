@@ -131,6 +131,7 @@ fr:
           update_workgroup_providers: Autorisation des changements sur les ressources de l'Espace de travail
           store_xml: Conserver les definitions XML originelles
           disable_missing_resources: Désactiver les arrêts et lignes manquantes
+          strict_mode: Mode strict (tout attribut non défini est réinitialisé)
           merge_method: Méthode de finalisation
           shape_attribute_as_id: Attribut utilisé comme identifiant
           import_category: Type d'import

@@ -7,7 +7,9 @@ module Chouette
         @target = target
         @options = options
       end
-      attr_accessor :source, :code_space, :default_provider, :event_handler
+
+      attr_accessor :source, :code_space, :strict_mode, :default_provider, :event_handler
+      alias strict_mode? strict_mode
 
       def synchronize_with(sync_class)
         sync_classes << sync_class
@@ -63,7 +65,8 @@ module Chouette
                         target: target,
                         source: source,
                         code_space: code_space,
-                        default_provider: default_provider
+                        default_provider: default_provider,
+                        strict_mode: strict_mode?
                       })
       end
 

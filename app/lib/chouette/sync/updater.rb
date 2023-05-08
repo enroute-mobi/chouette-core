@@ -5,12 +5,14 @@ module Chouette
 
       def initialize(options = {})
         options.reverse_merge!(update_batch_size: 1000)
-        options.each { |k,v| send "#{k}=", v }
+        options.each { |k, v| send "#{k}=", v }
       end
 
-      attr_accessor :source, :target, :update_batch_size, :default_provider
-      attr_accessor :resource_type, :resource_id_attribute, :resource_decorator
-      attr_accessor :model_type, :model_id_attribute, :code_space
+      attr_accessor :source, :target, :update_batch_size, :default_provider, :resource_type, :resource_id_attribute,
+                    :resource_decorator, :model_type, :model_id_attribute, :code_space, :strict_mode
+
+      alias strict_mode? strict_mode
+
       include Event::HandlerSupport
 
       delegate :workgroup, to: :target
@@ -93,7 +95,6 @@ module Chouette
       end
 
       class Models
-
         attr_accessor :scope, :updater
 
         def initialize(scope, updater: nil)
@@ -101,7 +102,8 @@ module Chouette
           @updater = updater
         end
 
-        delegate :model_id_attribute, :event_handler, :workgroup, :code_space, :target, :provider, to: :updater
+        delegate :model_id_attribute, :event_handler, :workgroup, :code_space, :target, :provider, :strict_mode?,
+                 to: :updater
 
         def with_resource_ids(resource_ids)
           scope.where(model_id_attribute => resource_ids).find_each do |model|
@@ -117,28 +119,25 @@ module Chouette
           end
         end
 
-        IGNORED_ATTRIBUTE_VALUES = [nil, "", []].freeze
+        IGNORED_ATTRIBUTE_VALUES = [nil, '', []].freeze
 
         def prepare_attributes(resource)
           attributes = resource.model_attributes
 
           # To avoid problem if resource returns by mistake an id attribute
-          if attributes.delete(:id)
-            Rails.logger.warn "Can't update primary key with resource: #{resource.class}"
-          end
+          Rails.logger.warn "Can't update primary key with resource: #{resource.class}" if attributes.delete(:id)
 
           if model_id_attribute == :codes
-            attributes[:codes_attributes] = [{
-              value: resource.id,
-              code_space: code_space
-            }]
+            attributes[:codes_attributes] = [{ value: resource.id, code_space: code_space }]
           else
             attributes[model_id_attribute] = resource.id
           end
 
           # Could be conditionnal
-          attributes.delete_if do |_, value|
-            IGNORED_ATTRIBUTE_VALUES.include? value
+          unless strict_mode?
+            attributes.delete_if do |_, value|
+              IGNORED_ATTRIBUTE_VALUES.include? value
+            end
           end
 
           attributes
@@ -237,16 +236,14 @@ module Chouette
           end
 
           def find_provider_by_codes
-            if scope.respond_to? :by_code
-              scope.by_code(code_space, data_source_ref).first
-            end
+            return unless scope.respond_to? :by_code
+
+            scope.by_code(code_space, data_source_ref).first
           end
 
           def find_provider_by_columns
-            if scope.column_names.include? 'objectid'
-              if (p = scope.find_by(objectid: data_source_ref)).present?
-                return p
-              end
+            if scope.column_names.include?('objectid') && (p = scope.find_by(objectid: data_source_ref)).present?
+              return p
             end
 
             nil
@@ -275,7 +272,6 @@ module Chouette
               (event.errors[:custom_fields] ||= []) << { error: :invalid_custom_field, value: code }
             end
           end
-
         end
       end
 
@@ -300,7 +296,7 @@ module Chouette
         end
 
         def resources_by_id
-          @resources_by_id ||=  Hash[resources.map { |r| [ r.send(resource_id_attribute).to_s, r ] }]
+          @resources_by_id ||=  Hash[resources.map { |r| [r.send(resource_id_attribute).to_s, r] }]
         end
 
         def resource_by_id(resource_id)
@@ -309,9 +305,9 @@ module Chouette
 
         def with_model_ids
           if model_id_attribute == :codes
-            "with_codes"
+            'with_codes'
           else
-            "with_resource_ids"
+            'with_resource_ids'
           end
         end
 
@@ -386,10 +382,10 @@ module Chouette
             return [] if resource_ids.empty? || !model_ref
 
             ids = if support_model_id_attribute?
-              model_ref.where(model_id_attribute => resource_ids).pluck(:id)
-            elsif support_codes?
-              model_ref.by_code(code_space, resource_ids).pluck(:id)
-            end
+                    model_ref.where(model_id_attribute => resource_ids).pluck(:id)
+                  elsif support_codes?
+                    model_ref.by_code(code_space, resource_ids).pluck(:id)
+                  end
 
             unless ids.present?
               key_field = model_id_attribute_from_reference_type(reference_type)
@@ -403,9 +399,9 @@ module Chouette
 
           def model_ref
             collection = reference_type.to_s.pluralize
-            if updater.target.respond_to? collection
-              updater.target.send(collection)
-            end
+            return unless updater.target.respond_to? collection
+
+            updater.target.send(collection)
           end
 
           def support_codes?
@@ -417,18 +413,15 @@ module Chouette
           end
 
           def model_id_attribute_from_reference_type(reference_type)
-            begin
-            "Chouette::Sync::#{reference_type.to_s.classify}::Netex".
-              constantize.default_model_id_attribute
-            rescue
-              ::Chouette::Sync::Base.default_model_id_attribute
-            end
+            "Chouette::Sync::#{reference_type.to_s.classify}::Netex"
+              .constantize.default_model_id_attribute
+          rescue StandardError
+            ::Chouette::Sync::Base.default_model_id_attribute
           end
         end
       end
 
       class ResourceDecorator < SimpleDelegator
-
         attr_reader :batch
 
         # Batch is optionnal .. for tests
@@ -451,9 +444,7 @@ module Chouette
             resource_or_decorator
           end
         end
-
       end
-
     end
   end
 end

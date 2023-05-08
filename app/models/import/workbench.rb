@@ -12,6 +12,7 @@ class Import::Workbench < Import::Base
   option :update_workgroup_providers, default_value: false, type: :boolean
   option :store_xml, default_value: false, type: :boolean
   option :disable_missing_resources, default_value: false, type: :boolean
+  option :strict_mode, default_value: false, type: :boolean
 
   has_many :compliance_check_sets, -> { where(parent_type: "Import::Workbench") }, foreign_key: :parent_id, dependent: :destroy
 

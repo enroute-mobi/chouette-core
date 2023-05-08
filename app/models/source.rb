@@ -160,6 +160,10 @@ class Source < ApplicationModel
     import_options["disable_missing_resources"]
   end
 
+  def import_option_strict_mode
+    import_options["strict_mode"]
+  end
+
   def import_option_automatic_merge=(value)
     import_options["automatic_merge"] = value
   end
@@ -178,6 +182,10 @@ class Source < ApplicationModel
 
   def import_option_disable_missing_resources=(value)
     import_options["disable_missing_resources"] = value
+  end
+
+  def import_option_strict_mode=(value)
+    import_options["strict_mode"] = value
   end
 
   def update_workgroup_providers?

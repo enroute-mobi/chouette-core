@@ -1,7 +1,7 @@
 class Export::NetexGeneric < Export::Base
   include LocalExportSupport
 
-  option :profile, enumerize: %w(none european idfm/line idfm/full), default: :none
+  option :profile, enumerize: %w[none french european idfm/line idfm/full], default: :none
   option :duration
   option :line_ids, serialize: :map_ids
   option :company_ids, serialize: :map_ids

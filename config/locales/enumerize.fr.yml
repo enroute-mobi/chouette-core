@@ -373,6 +373,7 @@ fr:
       only_next_days: Seulement les jours suivants
     profile:
       none: Aucun
+      french: France (beta)
       european: Européen
       'idfm/line': IdFM Publication Ligne
       'idfm/full': IdFM Publication Complet

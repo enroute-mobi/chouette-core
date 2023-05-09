@@ -15,8 +15,8 @@ module Chouette
           attribute(:name) { |n| "chouette#{n}" }
           attribute(:username) { |n| "chouette#{n}" }
           attribute(:email) { |n| "chouette+#{n}@enroute.mobi" }
-          attribute :password, "secret"
-          attribute :password_confirmation, "secret"
+          attribute :password, 'secret'
+          attribute :password_confirmation, 'secret'
 
           # FIXED User#permissions should be [] by default
           attribute(:permissions) { [] }
@@ -63,21 +63,19 @@ module Chouette
           transient :without_key
 
           after do
-            unless new_instance.public? || transient(:without_key)
-              new_instance.api_keys.build name: "Test"
-            end
+            new_instance.api_keys.build name: 'Test' unless new_instance.public? || transient(:without_key)
           end
         end
 
         model :custom_field do
-          attribute(:name) { |n| "Custom Field #{n}"}
+          attribute(:name) { |n| "Custom Field #{n}" }
           attribute(:code) { |n| "field_#{n}" }
           attribute(:field_type) { :string }
-          attribute(:resource_type) { "StopArea" }
+          attribute(:resource_type) { 'StopArea' }
         end
 
         model :document_type do
-          attribute(:name) { |n| "Document Type #{n}"}
+          attribute(:name) { |n| "Document Type #{n}" }
           attribute(:short_name) { |n| "document_type_#{n}" }
         end
 
@@ -100,17 +98,17 @@ module Chouette
             end
           end
 
-          model :control_list do 
+          model :control_list do
             attribute(:name) { |n| "Control List #{n}" }
           end
 
-          model :macro_list do 
+          model :macro_list do
             attribute(:name) { |n| "Macro List #{n}" }
             model :macro do
               attribute(:name) { |n| "Dummy #{n}" }
-              attribute :type, "Macro::Dummy"
-              attribute :target_model, "StopArea"
-              attribute :expected_result, "info"
+              attribute :type, 'Macro::Dummy'
+              attribute :target_model, 'StopArea'
+              attribute :expected_result, 'info'
             end
           end
 
@@ -127,8 +125,8 @@ module Chouette
 
             after do
               processable = transient(:macro_list, resolve_instances: true) ||
-                transient(:control_list, resolve_instances: true) ||
-                new_instance.workbench.control_lists.create!(name: 'Default')
+                            transient(:control_list, resolve_instances: true) ||
+                            new_instance.workbench.control_lists.create!(name: 'Default')
 
               new_instance.processable = processable
             end
@@ -140,8 +138,8 @@ module Chouette
 
             model :line do
               attribute(:name) { |n| "Line #{n}" }
-              attribute :transport_mode, "bus"
-              attribute :transport_submode, "undefined"
+              attribute :transport_mode, 'bus'
+              attribute :transport_submode, 'undefined'
               attribute(:number) { |n| n }
 
               transient :codes
@@ -171,6 +169,11 @@ module Chouette
               attribute(:name) { |n| "Group of Line #{n}" }
             end
 
+            # model :line_routing_constraint_zone do
+            #   attribute(:name) { |n| "Line routing constraint zone #{n}" }
+
+            # end
+
             model :line_notice do
               transient :lines
 
@@ -193,8 +196,8 @@ module Chouette
 
             model :stop_area do
               attribute(:name) { |n| "Stop Area #{n}" }
-              attribute :kind, "commercial"
-              attribute :area_type, "zdep"
+              attribute :kind, 'commercial'
+              attribute :area_type, 'zdep'
 
               attribute(:latitude) { 48.8584 - 5 + 10 * rand }
               attribute(:longitude) { 2.2945 - 2 + 4 * rand }
@@ -217,6 +220,17 @@ module Chouette
                 end
               end
             end
+
+            model :connection_link do
+              attribute(:name) { |n| "Connection link #{n}" }
+              # transient departure
+              # transient arrival
+
+              # after do
+              #   new_instance.departure = departure
+              #   new_instance.arrival = arrival
+              # end
+            end
           end
 
           model :shape_provider do
@@ -227,7 +241,7 @@ module Chouette
 
             model :shape do
               attribute(:name) { |n| "Shape #{n}" }
-              attribute(:geometry) { |n| "LINESTRING(48.8584 2.2945,48.859 2.295)" }
+              attribute(:geometry) { |_n| 'LINESTRING(48.8584 2.2945,48.859 2.295)' }
             end
 
             model :point_of_interest_category do
@@ -248,7 +262,6 @@ module Chouette
                 end
               end
             end
-
           end
 
           model :document_provider do
@@ -263,8 +276,9 @@ module Chouette
                 file_path = File.expand_path("spec/fixtures/#{transient(:file)}")
                 new_instance.file = File.new(file_path)
 
-                document_type = transient(:document_type, resolve_instances: true) || 
-                  parent.workbench.workgroup.document_types.create!(name: 'Default', short_name: 'default')
+                document_type = transient(:document_type, resolve_instances: true) ||
+                                parent.workbench.workgroup.document_types.create!(name: 'Default',
+                                                                                  short_name: 'default')
 
                 new_instance.document_type = document_type
               end
@@ -302,19 +316,20 @@ module Chouette
             attribute(:name) { |n| "Referential #{n}" }
 
             transient(:lines) do
-              # TODO create a Line with Factory::Model ?
-              line = parent.default_line_provider.lines.create!(name: "Line #{sequence_number}", transport_mode: "bus", transport_submode: "undefined", number: sequence_number)
-              [ line ]
+              # TODO: create a Line with Factory::Model ?
+              line = parent.default_line_provider.lines.create!(name: "Line #{sequence_number}", transport_mode: 'bus',
+                                                                transport_submode: 'undefined', number: sequence_number)
+              [line]
             end
-            transient :periods, [ Period.from(:today).during(30.days) ]
+            transient :periods, [Period.from(:today).during(30.days)]
 
             transient :with_metadatas, true
 
             after do
-              # TODO shouldn't be explicit but managed by Workbench/Referential model
+              # TODO: shouldn't be explicit but managed by Workbench/Referential model
               new_instance.stop_area_referential = parent.stop_area_referential
               new_instance.line_referential = parent.line_referential
-              new_instance.prefix = parent.respond_to?(:prefix) ? parent.prefix : "chouette"
+              new_instance.prefix = parent.respond_to?(:prefix) ? parent.prefix : 'chouette'
               new_instance.organisation = parent.organisation
               new_instance.ready = true
 
@@ -345,13 +360,13 @@ module Chouette
 
               model :stop_point do
                 attribute(:stop_area) do
-                  # TODO create a StopArea with Factory::Model ?
+                  # TODO: create a StopArea with Factory::Model ?
                   stop_area_referential = parent.referential.stop_area_referential
 
                   attributes = {
                     name: "Stop Area #{sequence_number}",
-                    kind: "commercial",
-                    area_type: "zdep",
+                    kind: 'commercial',
+                    area_type: 'zdep',
                     latitude: 48.8584 - 5 + 10 * rand,
                     longitude: 2.2945 - 2 + 4 * rand,
                     stop_area_referential: stop_area_referential
@@ -370,9 +385,11 @@ module Chouette
                   route.stop_points << stop_point
                 end
 
-                transient(:stop_count).times do
-                  route.stop_points << build_model(:stop_point)
-                end if transient(:stop_areas).blank? && transient(:with_stops)
+                if transient(:stop_areas).blank? && transient(:with_stops)
+                  transient(:stop_count).times do
+                    route.stop_points << build_model(:stop_point)
+                  end
+                end
               end
 
               model :journey_pattern do
@@ -386,7 +403,7 @@ module Chouette
                   attribute(:published_journey_name) { |n| "Vehicle Journey #{n}" }
 
                   after do |vehicle_journey|
-                    # TODO move this in the VehicleJourney model
+                    # TODO: move this in the VehicleJourney model
                     vehicle_journey.route = vehicle_journey.journey_pattern.route
                   end
 
@@ -397,18 +414,20 @@ module Chouette
                   after do
                     first_departure_time = Time.parse(transient(:departure_time))
 
-                    parent.stop_points.each_with_index do |stop_point, index|
-                      arrival_time = first_departure_time + index * 5.minute
-                      departure_time = arrival_time + 1.minute
+                    if transient(:with_stops)
+                      parent.stop_points.each_with_index do |stop_point, index|
+                        arrival_time = first_departure_time + index * 5.minute
+                        departure_time = arrival_time + 1.minute
 
-                      attributes = {
-                        stop_point: stop_point,
-                        arrival_time: "2000-01-01 #{arrival_time.strftime("%H:%M:%S")} UTC",
-                        departure_time: "2000-01-01 #{departure_time.strftime("%H:%M:%S")} UTC"
-                      }
+                        attributes = {
+                          stop_point: stop_point,
+                          arrival_time: "2000-01-01 #{arrival_time.strftime('%H:%M:%S')} UTC",
+                          departure_time: "2000-01-01 #{departure_time.strftime('%H:%M:%S')} UTC"
+                        }
 
-                      new_instance.vehicle_journey_at_stops.build attributes
-                    end if transient(:with_stops)
+                        new_instance.vehicle_journey_at_stops.build attributes
+                      end
+                    end
 
                     transient(:time_tables, resolve_instances: true).each do |time_table|
                       new_instance.time_tables << time_table
@@ -434,7 +453,7 @@ module Chouette
             model :time_table do
               transient :dates_included, []
               transient :dates_excluded, []
-              transient :periods, [ Period.from(:today).during(30.days) ]
+              transient :periods, [Period.from(:today).during(30.days)]
 
               attribute(:comment) { |n| "TimeTable #{n}" }
               attribute :int_day_types, TimeTable::EVERYDAY
@@ -476,14 +495,12 @@ module Chouette
       # Avoid false tests with our models where #empty? method is defined
       return instances if instances.is_a?(::ActiveRecord::Base)
 
-      if instances.present?
-        return instances
-      end
+      return instances if instances.present?
 
       super
     end
 
-    def evaluate(options = {}, &block)
+    def evaluate(_options = {}, &block)
       root_context.evaluate(&block)
       root_context.debug
       root_context.create_instance
@@ -492,6 +509,5 @@ module Chouette
     attr_reader :root_context
 
     class Error < StandardError; end
-
   end
 end

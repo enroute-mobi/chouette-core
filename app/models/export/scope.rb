@@ -290,11 +290,11 @@ module Export::Scope
     def vehicle_journeys
       unless @loaded
         columns = ['uuid', 'export_id', 'model_type', 'model_id'].reject{ |c| c == 'export_id' && export_id.nil? }.join(',')
-        constants = [uuid, export_id, 'Chouette::VehicleJourney'].compact
-        models = current_scope.vehicle_journeys.select(constants.map { |constant| "'#{constant}'" }, :id)
+        constants = ["'#{uuid}'", export_id, "'Chouette::VehicleJourney'"].compact
+        models = current_scope.vehicle_journeys.select(constants, :id)
 
         query = <<~SQL
-          INSERT INTO exportables (#{columns}) #{models.to_sql}
+          INSERT INTO public.exportables (#{columns}) #{models.to_sql}
         SQL
         ActiveRecord::Base.connection.execute query
 

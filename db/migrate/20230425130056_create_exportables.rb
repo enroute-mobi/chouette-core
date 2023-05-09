@@ -4,7 +4,8 @@ class CreateExportables < ActiveRecord::Migration[5.2]
       create_table :exportables do |t|
         t.references :export
         t.string :uuid
-        t.references :model, polymorphic: true
+        t.references :model, polymorphic: true, index: false
+        t.index %i[uuid model_type]
       end
     end
   end

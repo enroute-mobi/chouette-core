@@ -57,6 +57,7 @@ Apartment.configure do |config|
     'Entrance',
     'Export::Base',
     'Export::Message',
+    'Exportable',
     'Fare::Product',
     'Fare::ProductValidity',
     'Fare::Provider',

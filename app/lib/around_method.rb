@@ -2,7 +2,7 @@
 # Allow to wrap a method which will be provided by subclasses:
 #
 #   class Example
-#     extend AroundMethod
+#     include AroundMethod
 #     around_method :sample
 #
 #     def around_sample(&block)

@@ -1,12 +1,13 @@
+# frozen_string_literal: true
 class Import::NetexGeneric < Import::Base
   include LocalImportSupport
   include Imports::WithoutReferentialSupport
 
   def self.accepts_file?(file)
     case File.extname(file)
-    when ".xml"
+    when '.xml'
       true
-    when ".zip"
+    when '.zip'
       Zip::File.open(file) do |zip_file|
         files_count = zip_file.glob('*').size
         zip_file.glob('*.xml').size == files_count
@@ -14,58 +15,81 @@ class Import::NetexGeneric < Import::Base
     else
       false
     end
-  rescue => e
+  rescue StandardError => e
     Chouette::Safe.capture "Error in testing NeTEx (Generic) file: #{file}", e
     false
   end
 
   def file_extension_whitelist
-    %w(zip xml)
+    %w[zip xml]
   end
 
   # stop_areas
   def stop_area_provider
     @stop_area_provider ||= workbench.default_stop_area_provider
   end
-  attr_writer :stop_area_provider
+  attr_writer :stop_area_provider, :stop_area_referential, :line_provider, :line_referential, :shape_provider
 
   def stop_area_referential
     @stop_area_referential ||= workbench.stop_area_referential
   end
-  attr_writer :stop_area_referential
 
   # lines
   def line_provider
     @line_provider ||= workbench.default_line_provider
   end
-  attr_writer :line_provider
 
   def line_referential
     @line_referential ||= workbench.line_referential
   end
-  attr_writer :line_referential
 
   # shapes
   def shape_provider
     @shape_provider ||= workbench.default_shape_provider
   end
-  attr_writer :shape_provider
 
   def import_without_status
     [
       StopAreaReferential,
       LineReferential,
       ShapeReferential,
+      ScheduledStopPoints,
+      RoutingConstraintZones
     ].each do |part_class|
       part(part_class).import!
     end
+
+    update_import_status
+  end
+
+  # TODO: why the resource statuses are not checked automaticaly ??
+  # See CHOUETTE-2747
+  def update_import_status
+    resource_status = resources.map(&:status).uniq.map(&:to_s)
+    Rails.logger.debug "resource_status: #{resource_status.inspect}"
+
+    if resource_status.include?('ERROR')
+      self.status = 'failed'
+    elsif resource_status.include?('WARNING')
+      self.status = 'warning'
+    end
+
+    Rails.logger.debug "@status: #{@status.inspect}"
   end
 
   def part(part_class)
     # For test, accept a symbol/name in argument
     # For example: part(:line_referential).import!
     unless part_class.is_a?(Class)
-      part_class = self.class.const_get(part_class.to_s.classify)
+      part_class = part_class.to_s
+
+      # :line_referential -> LineReferential
+      # :scheduled_stop_points -> ScheduledStopPoints
+      plural = part_class.ends_with?('s')
+      part_class_name = part_class.classify
+      part_class_name = "#{part_class_name}s" if plural
+
+      part_class = self.class.const_get(part_class_name)
     end
 
     part_class.new(self)
@@ -76,6 +100,65 @@ class Import::NetexGeneric < Import::Base
       @import = import
     end
     attr_reader :import
+
+    # To define callback in import!
+    include AroundMethod
+    around_method :import!
+
+    extend ActiveModel::Callbacks
+    define_model_callbacks :import
+
+    def around_import!(&block)
+      run_callbacks :import do
+        block.call
+      end
+    end
+
+    # Save all resources after Part import
+    after_import :update_resources
+
+    def update_resources
+      import.resources.each do |resource|
+        resource.update_metrics
+        resource.save
+      end
+    end
+
+    # Save import after Part import
+    # after_import :save_import
+
+    # def save_import
+    #   import.save
+    # end
+
+    include Measurable
+    measure :import!, as: ->(part) { part.class.name.demodulize }
+  end
+
+  class WithResourcePart < Part
+    after_import :save_resource
+
+    def save_resource
+      @import_resource&.save
+    end
+
+    # TODO: manage a given NeTEx resource to save tags
+    def create_message(message_key, message_attributes = {})
+      attributes = { criticity: :error, message_key: message_key, message_attributes: message_attributes }
+      import_resource.messages.build attributes
+      import_resource.status = 'ERROR'
+    end
+
+    def import_resource_name
+      @import_resource_name ||= self.class.name.demodulize
+    end
+
+    def import_resource
+      @import_resource ||= import.resources.find_or_initialize_by(resource_type: import_resource_name) do |resource|
+        resource.name = import_resource_name
+        resource.status = 'OK'
+      end
+    end
   end
 
   class SynchronizedPart < Part
@@ -95,16 +178,7 @@ class Import::NetexGeneric < Import::Base
         sync.delete_after_update_or_create if disable_missing_resources?
         sync.after_synchronisation
       end
-
-      import.resources.each do |resource|
-        resource.update_metrics
-        resource.save
-      end
-    ensure
-      import.save
     end
-
-    measure :import!, as: ->(part) { part.class.name.demodulize }
   end
 
   # Synchronize models in the StopAreaReferential (StopArea, Entrances, etc)
@@ -195,12 +269,146 @@ class Import::NetexGeneric < Import::Base
     end
   end
 
+  def scheduled_stop_points
+    @scheduled_stop_points ||= {}
+  end
+
+  class ScheduledStopPoint
+    def initialize(id:, stop_area_id:)
+      @id = id
+      @stop_area_id = stop_area_id
+    end
+
+    attr_accessor :id, :stop_area_id
+  end
+
+  class ScheduledStopPoints < WithResourcePart
+    delegate :netex_source, :code_space, :stop_area_provider, :scheduled_stop_points, to: :import
+
+    def import!
+      netex_source.passenger_stop_assignments.each do |stop_assignment|
+        scheduled_stop_point_id = stop_assignment.scheduled_stop_point_ref&.ref
+        stop_area_code = (stop_assignment.quay_ref || stop_assignment.stop_place_ref)&.ref
+
+        unless stop_area_code
+          create_message :stop_area_code_empty
+          next
+        end
+
+        if (stop_area = stop_area_provider.stop_areas.find_by(registration_number: stop_area_code).presence)
+          scheduled_stop_point = ScheduledStopPoint.new(id: scheduled_stop_point_id, stop_area_id: stop_area.id)
+          scheduled_stop_points[scheduled_stop_point.id] = scheduled_stop_point
+        else
+          create_message :stop_area_not_found, code: stop_area_code
+          next
+        end
+      end
+    end
+  end
+
+  class RoutingConstraintZones < WithResourcePart
+    delegate :netex_source, :code_space, :scheduled_stop_points, :line_provider,
+             :stop_area_provider, :event_handler, to: :import
+
+    def import!
+      netex_source.routing_constraint_zones.each do |zone|
+        decorator = Decorator.new(zone, line_provider: line_provider,
+                                        stop_area_provider: stop_area_provider,
+                                        code_space: code_space,
+                                        scheduled_stop_points: scheduled_stop_points)
+
+        unless decorator.valid?
+          create_message :invalid_netex_source_routing_constraint_zone
+          next
+        end
+
+        line_routing_constraint_zone = decorator.line_routing_constraint_zone
+
+        # TODO: share error creating from model errors
+        unless line_routing_constraint_zone.valid?
+          line_routing_constraint_zone.errors.each do |attribute, _|
+            attribute_value = line_routing_constraint_zone.send(attribute)
+
+            # FIXME: little trick to avoid message like:
+            # L'attribut lines ne peut avoir la valeur '#<HasArrayOf::AssociatedArray::Relation:0x00007f82be1a03e0>'
+            attribute_value = '' if attribute_value.blank?
+            create_message :invalid_model_attribute, attribute_name: attribute, attribute_value: attribute_value
+          end
+          next
+        end
+
+        line_routing_constraint_zone.save
+      end
+    end
+
+    class Decorator < SimpleDelegator
+      def initialize(zone, line_provider: nil, stop_area_provider: nil, code_space: nil, scheduled_stop_points: nil)
+        super zone
+        @line_provider = line_provider
+        @stop_area_provider = stop_area_provider
+        @code_space = code_space
+        @scheduled_stop_points = scheduled_stop_points
+      end
+      attr_accessor :zone, :line_provider, :code_space, :scheduled_stop_points, :stop_area_provider
+
+      def code_value
+        id
+      end
+
+      def line_codes
+        lines.map(&:ref)
+      end
+
+      def chouette_lines
+        line_provider.lines.where(registration_number: line_codes)
+      end
+
+      def scheduled_stop_point_ids
+        members.map(&:ref)
+      end
+
+      def member_scheduled_stop_points
+        scheduled_stop_points.values_at(*scheduled_stop_point_ids).compact
+      end
+
+      def stop_area_ids
+        member_scheduled_stop_points.map(&:stop_area_id)
+      end
+
+      def stop_areas
+        stop_area_provider.stop_areas.where(id: stop_area_ids)
+      end
+
+      def valid?
+        code_value.present? && line_codes.present? && scheduled_stop_point_ids.present?
+      end
+
+      def attributes
+        {
+          name: name,
+          stop_areas: stop_areas,
+          lines: chouette_lines,
+          line_referential: line_referential
+        }
+      end
+
+      def line_referential
+        line_provider.line_referential
+      end
+
+      def line_routing_constraint_zone
+        line_provider.line_routing_constraint_zones.first_or_initialize_by_code(code_space, code_value) do |zone|
+          zone.attributes = attributes
+        end
+      end
+    end
+  end
+
   def event_handler
     @event_handler ||= EventHandler.new self
   end
 
   class EventHandler < Chouette::Sync::Event::Handler
-
     def initialize(import)
       @import = import
     end
@@ -213,9 +421,7 @@ class Import::NetexGeneric < Import::Base
       EventProcessor.new(event, resource(event.resource.class)).tap do |processor|
         processor.process
 
-        if processor.has_error?
-          import.status = 'failed'
-        end
+        import.status = 'failed' if processor.has_error?
       end
     end
 
@@ -226,12 +432,11 @@ class Import::NetexGeneric < Import::Base
 
       import.resources.find_or_initialize_by(resource_type: human_netex_resource_name) do |resource|
         resource.name = human_netex_resource_name
-        resource.status = "OK"
+        resource.status = 'OK'
       end
     end
 
     class EventProcessor
-
       def initialize(event, resource)
         @event = event
         @resource = resource
@@ -246,15 +451,13 @@ class Import::NetexGeneric < Import::Base
       end
 
       def process
-        unless event.has_error?
-          if event.type.create? || event.type.update?
-            process_create_or_update
-          end
-        else
+        if event.has_error?
           process_error
+        elsif event.type.create? || event.type.update?
+          process_create_or_update
         end
 
-        # TODO As ugly as necessary
+        # TODO: As ugly as necessary
         # Need to save resource because it's used in resource method
         resource.save
       end
@@ -265,7 +468,7 @@ class Import::NetexGeneric < Import::Base
 
       def process_error
         self.has_error = true
-        resource.status = "ERROR"
+        resource.status = 'ERROR'
         event.errors.each do |attribute, errors|
           errors.each do |error|
             resource.messages.build(

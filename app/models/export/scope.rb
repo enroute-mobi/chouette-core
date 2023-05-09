@@ -184,12 +184,12 @@ module Export::Scope
 
     def routes
       current_scope.routes.joins(:vehicle_journeys).distinct
-        .where("vehicle_journeys.id" => vehicle_journeys)
+        .where("vehicle_journeys.id" => final_scope.vehicle_journeys)
     end
 
     def journey_patterns
       current_scope.journey_patterns.joins(:vehicle_journeys).distinct
-        .where("vehicle_journeys.id" => vehicle_journeys)
+        .where("vehicle_journeys.id" => final_scope.vehicle_journeys)
     end
 
     def shapes
@@ -198,7 +198,7 @@ module Export::Scope
 
     def stop_points
       current_scope.stop_points.distinct.joins(route: :vehicle_journeys)
-        .where("vehicle_journeys.id" => vehicle_journeys)
+        .where("vehicle_journeys.id" => final_scope.vehicle_journeys)
     end
 
     def stop_areas
@@ -212,12 +212,12 @@ module Export::Scope
 
     def stop_areas_in_routes
       current_scope.stop_areas.joins(routes: :vehicle_journeys).distinct
-                   .where('vehicle_journeys.id' => vehicle_journeys)
+                   .where('vehicle_journeys.id' => final_scope.vehicle_journeys)
     end
 
     def stop_areas_in_specific_vehicle_journey_at_stops
       current_scope.stop_areas.joins(:specific_vehicle_journey_at_stops).distinct
-                   .where('vehicle_journey_at_stops.vehicle_journey_id' => vehicle_journeys)
+                   .where('vehicle_journey_at_stops.vehicle_journey_id' => final_scope.vehicle_journeys)
     end
 
     def entrances

@@ -10,6 +10,11 @@ RSpec.describe Export::Gtfs, type: [:model, :with_exportable_referential] do
       Export::Gtfs::Companies.new export
     end
 
+    before do
+      context.referential.switch
+      part.export!
+    end
+
     let(:context) do
       Chouette.create do
         line_provider :first do
@@ -33,12 +38,7 @@ RSpec.describe Export::Gtfs, type: [:model, :with_exportable_referential] do
     let(:first_company) {context.company(:c1)}
     let(:second_company) {context.company(:c2)}
 
-    before do
-      context.referential.switch
-    end
-
     it "should use companies objectid when their registration_number is not unique" do
-      part.export!
       expect(export.target.agencies.map(&:id)).to match_array([first_company.objectid, second_company.objectid])
     end
 
@@ -83,13 +83,43 @@ RSpec.describe Export::Gtfs, type: [:model, :with_exportable_referential] do
       let(:third_company) {context.company(:c3)}
       let(:referent_company) {context.company(:referent)}
 
-      before do
-        context.referential.switch
+      it "should not export several times the same Company Referent" do
+        expect(export.target.agencies.map(&:id)).to match_array([referent_company.objectid, third_company.objectid])
+      end
+    end
+
+    describe "#default_company" do
+      let!(:context) do
+        Chouette.create do
+          line_provider :first do
+            company :c1, name: 'C1', time_zone: "Europe/Paris"
+            company :c2, name: 'C2', time_zone: "Europe/Paris"
+
+            line :l1, company: :c1
+            line :l2, company: :c1
+
+            line :l3, company: :c2
+          end
+
+          route line: :l1 do
+            vehicle_journey
+          end
+
+          route line: :l2 do
+            vehicle_journey
+          end
+
+          route line: :l3 do
+            vehicle_journey
+          end
+        end
       end
 
-      it "should not export several times the same Company Referent" do
-        part.export!
-        expect(export.target.agencies.map(&:id)).to match_array([referent_company.objectid, third_company.objectid])
+      let(:expected_default_company) { context.company(:c1) }
+
+      it "Should compute default company" do
+        expect(part.default_company).to eq(expected_default_company)
+        expect(index.default_company).to eq(expected_default_company)
       end
     end
   end

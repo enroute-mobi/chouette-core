@@ -497,7 +497,7 @@ class Export::Gtfs < Export::Base
     end
 
     def most_used_company_id
-      vehicle_journey_count_by_company.max_by{|k,v| v}.first
+      vehicle_journey_count_by_company.max_by{|k,v| v}&.first
     end
 
     def default_company

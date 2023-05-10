@@ -248,6 +248,12 @@ class Export::Gtfs < Export::Base
       @shape_ids = {}
     end
 
+    attr_reader :default_company
+
+    def default_company=(value)
+      @default_company ||= value
+    end
+
     def stop_id(stop_area_id)
       @stop_ids[stop_area_id]
     end
@@ -463,6 +469,10 @@ class Export::Gtfs < Export::Base
 
     delegate :vehicle_journeys, to: :export_scope
 
+    def vehicle_journey_count_by_company
+      @vehicle_journey_count_by_company ||= Hash.new { |h,k| h[k] = 0 }
+    end
+
     def company_ids
       ids = Set.new
       # OPTIMIZEME pluck is great bu can consume a lot of memory for very large Vehicle Journey collection
@@ -478,10 +488,20 @@ class Export::Gtfs < Export::Base
           time_zone = referent.time_zone
         end
 
+        vehicle_journey_count_by_company[company_id] += 1
+
         ids << company_id
         index.register_vehicle_journey_time_zone vehicle_journey_id, time_zone if time_zone
       end
       ids
+    end
+
+    def most_used_company_id
+      vehicle_journey_count_by_company.max_by{|k,v| v}.first
+    end
+
+    def default_company
+      referential.companies.find(most_used_company_id)
     end
 
     def referents
@@ -533,6 +553,8 @@ class Export::Gtfs < Export::Base
           timezone: DEFAULT_TIMEZONE,
         }
       end
+
+      index.default_company = default_company
     end
 
     class Decorator < SimpleDelegator
@@ -1252,7 +1274,7 @@ class Export::Gtfs < Export::Base
     end
 
     def company
-      companies.first
+      index.default_company
     end
 
     class Decorator

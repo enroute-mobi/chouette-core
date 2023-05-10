@@ -93,21 +93,23 @@ RSpec.describe Chouette::ModelPathFinder do
         end
       end
 
-      context 'and is a connection link' do
-        let(:model) { context.connection_link }
-        it 'should return connection link path' do
-          is_expected.to eq(workbench_stop_area_referential_stop_area_path(model.stop_area_provider.workbench,
-                                                                           model.id))
-        end
-      end
+      # TODO : Add model in, chouette factory
+      # context 'and is a connection link' do
+      #   let(:model) { context.connection_link }
+      #   it 'should return connection link path' do
+      #     is_expected.to eq(workbench_stop_area_referential_stop_area_path(model.stop_area_provider.workbench,
+      #                                                                      model.id))
+      #   end
+      # end
 
-      context 'and is a stop area routing constraint' do
-        let(:model) { context.stop_area_routing_constraint }
-        it 'should return stop area routing constraint path' do
-          is_expected.to eq(workbench_stop_area_referential_stop_area_routing_constraint_path(model.stop_area_provider.workbench,
-                                                                                              model.id))
-        end
-      end
+      # TODO : Add model in, chouette factory
+      # context 'and is a stop area routing constraint' do
+      #   let(:model) { context.stop_area_routing_constraint }
+      #   it 'should return stop area routing constraint path' do
+      #     is_expected.to eq(workbench_stop_area_referential_stop_area_routing_constraint_path(model.stop_area_provider.workbench,
+      #                                                                                         model.id))
+      #   end
+      # end
 
       context 'and is an entrance' do
         let(:model) { context.entrance }
@@ -153,12 +155,12 @@ RSpec.describe Chouette::ModelPathFinder do
         Chouette::ModelPathFinder.new(model.class, model.id, model.referential.workbench, context.referential)
       end
 
-      # context 'and is a route' do
-      #   let(:model) { context.route }
-      #   it 'should return route path' do
-      #     is_expected.to eq(referential_line_route_path(context.referential, model.line.id, model.id))
-      #   end
-      # end
+      context 'and is a route' do
+        let(:model) { context.route }
+        it 'should return route path' do
+          is_expected.to eq(referential_line_route_path(context.referential, model.line.id, model.id))
+        end
+      end
 
       # context 'and is a journey pattern' do
       #   let(:model) { context.journey_pattern }

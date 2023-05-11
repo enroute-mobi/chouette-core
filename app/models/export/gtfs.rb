@@ -501,7 +501,7 @@ class Export::Gtfs < Export::Base
     end
 
     def default_company
-      referential.companies.find(most_used_company_id)
+      referential.companies.find_by(id: most_used_company_id)
     end
 
     def referents

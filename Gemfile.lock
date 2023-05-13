@@ -192,6 +192,9 @@ GEM
     builder (3.2.4)
     bulk_insert (1.9.0)
       activerecord (>= 3.2.0)
+    bullet (7.0.7)
+      activesupport (>= 3.0.0)
+      uniform_notifier (~> 1.11)
     bummr (0.6.0)
       rainbow
       thor
@@ -798,6 +801,7 @@ GEM
       execjs (>= 0.3.0)
       json (>= 1.8.0)
     unicode-display_width (2.3.0)
+    uniform_notifier (1.16.0)
     warden (1.2.9)
       rack (>= 2.0.9)
     webmock (3.18.1)
@@ -842,6 +846,7 @@ DEPENDENCIES
   binding_of_caller
   bootsnap
   bulk_insert
+  bullet
   bummr
   bundler-audit
   calendar_helper (= 0.2.5)

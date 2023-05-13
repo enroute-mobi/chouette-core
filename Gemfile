@@ -216,6 +216,7 @@ group :test, :development do
   gem 'phantomjs'
 
   gem 'dotenv-rails', '>= 2.7.6'
+  gem 'bullet'
 end
 
 # I18n

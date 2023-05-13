@@ -117,10 +117,11 @@ class Export::NetexGeneric < Export::Base
 
     def export_part
       Chouette::Benchmark.measure part_name do
-        export!
+        Bullet.profile do
+          export!
+        end
       end
     end
-
   end
 
   class ResourceTagger

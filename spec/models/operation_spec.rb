@@ -381,6 +381,18 @@ RSpec.describe Operation::Benchmarker do
   end
 end
 
+RSpec.describe Operation::Bullet do
+  subject(:callback) { described_class.new(operation) }
+  let(:operation) { double }
+
+  describe '#around' do
+    it 'invokes the given block with Bullet profiling' do
+      expect(::Bullet).to receive(:profile).and_call_original
+      callback.around {}
+    end
+  end
+end
+
 RSpec.describe Operation::StatusChanger do
   subject(:callback) { described_class.new(operation) }
   let(:operation) { double error_uuid: error_uuid }

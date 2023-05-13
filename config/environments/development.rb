@@ -89,6 +89,10 @@ Rails.application.configure do
     Chouette::ChecksumManager.cleanup
   end
 
+  config.after_initialize do    
+    Bullet.enable = ENV['CHOUETTE_BULLET_ENABLED'] == 'true'
+    Bullet.rails_logger = true
+  end
 end
 
 Dir[File.join(File.dirname(__FILE__), File.basename(__FILE__, ".rb"), "*.rb")].each do |f|

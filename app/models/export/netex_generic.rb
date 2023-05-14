@@ -1353,12 +1353,7 @@ class Export::NetexGeneric < Export::Base
         scope = vehicle_journeys.joins(journey_pattern: :route).select(selected)
 
         scope = scope.left_joins(:codes).select(vehicle_journey_codes).group(group_by)
-
-        if vehicle_journeys.joins_values.include? :time_tables
-          scope = scope.select(time_table_objectids)
-        end
-
-        scope
+        scope.joins(:time_tables).select(time_table_objectids)
       end
 
       private
@@ -1710,13 +1705,13 @@ class Export::NetexGeneric < Export::Base
       end
 
       def candidate_excluded_dates
-        dates.excluded.select do |date|
+        dates.select(&:excluded?).select do |date|
           candidate_periods.any? { |period| period.include? date.date }
         end
       end
 
       def candidate_included_dates
-        dates.included.select { |date| validity_period.include? date.date }
+        dates.select(&:included?).select { |date| validity_period.include? date.date }
       end
 
       def candidate_dates

@@ -128,7 +128,7 @@ module Export::Scope
     end
 
     def validity_period
-      Period.for_range(referential.validity_period)
+      @validity_period ||= Period.for_range(referential.validity_period)
     end
   end
 

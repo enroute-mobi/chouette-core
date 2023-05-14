@@ -234,5 +234,15 @@ RSpec.describe TimeOfDay do
 
   end
 
+  describe 'performance' do
+    it 'create a TimeOfDay from a string time, day offset and time zone', :performance do
+      time = '12:13:14'
+      day_offset = 1
+      time_zone = 'Europe/Paris'
 
+      expect do
+        TimeOfDay.parse(time, day_offset: day_offset).with_zone(time_zone)
+      end.to perform_at_least(100_000).within(1.second).ips
+    end
+  end
 end

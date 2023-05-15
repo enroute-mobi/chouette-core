@@ -13,6 +13,11 @@ ChouetteIhm::Application.routes.draw do
     resources :lines, only: :show
     resources :companies, only: :show
     resources :stop_areas, only: :show
+    resources :referentials, only: :show do
+      resources :routes, only: :show
+      resources :journey_patterns, only: :show
+      resources :vehicle_journeys, only: :show
+    end
   end
 
   concern :iev_interfaces do
@@ -65,6 +70,7 @@ ChouetteIhm::Application.routes.draw do
     end
 
     resources :referentials, only: %w[new create index]
+
     resources :notification_rules
     resources :macro_lists do
       get :fetch_object_html, on: :collection, defaults: { format: 'json' }
@@ -375,7 +381,7 @@ ChouetteIhm::Application.routes.draw do
       get 'datas/:slug/lines', to: 'datas#lines', as: :lines
 
       get 'datas/:slug/documents/lines/:registration_number/:document_type',
-          to: redirect('/api/v1/datas/%{slug}/lines/%{registration_number}/documents/%{document_type}')
+          to: redirect('/api/v1/datas/%<slug>s/lines/%<registration_number>s/documents/%<document_type>s')
       get 'datas/:slug/lines/:line_registration_number/documents/:document_type', to: 'publication_api/documents#show'
 
       post 'datas/:slug/graphql', to: 'datas#graphql', as: :graphql
@@ -454,9 +460,7 @@ ChouetteIhm::Application.routes.draw do
 
   get '/snap' => 'snapshots#show' if Rails.env.development? || Rails.env.test?
 
-  if ENV['COVERBAND_REDIS_URL'].present?
-    mount Coverband::Reporters::Web.new, at: "/coverband"
-  end
+  mount Coverband::Reporters::Web.new, at: '/coverband' if ENV['COVERBAND_REDIS_URL'].present?
   mount GraphiQL::Rails::Engine, at: '/graphiql', graphql_path: '/graphql' if Rails.env.development?
 
   match '/404', to: 'errors#not_found', via: :all, as: 'not_found'

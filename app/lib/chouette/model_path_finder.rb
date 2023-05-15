@@ -40,12 +40,14 @@ module Chouette
         workbench_shape_referential_point_of_interest_path(workbench, model_id)
       elsif model_class == PointOfInterest::Category
         workbench_shape_referential_point_of_interest_category_path(workbench, model_id)
-      # elsif model_class == Chouette::Route
-      #   referential_line_route_path(referential, model.line, model_id)
-      # elsif model_class == Chouette::JourneyPattern
-      #   referential_line_journey_pattern_path(referential, model_id)
-      # elsif model_class == Chouette::VehicleJourney
-      #   referential_vehicle_journey_path(referential, model_id)
+      elsif model_class == Document
+        workbench_document_path(workbench, model_id)
+      elsif model_class == Chouette::Route
+        redirect_referential_route_path(referential, model_id)
+      elsif model_class == Chouette::JourneyPattern
+        redirect_referential_journey_pattern_path(referential, model_id)
+      elsif model_class == Chouette::VehicleJourney
+        redirect_referential_vehicle_journey_path(referential, model_id)
       elsif model_class == Chouette::TimeTable
         referential_time_table_path(referential, model_id)
       else

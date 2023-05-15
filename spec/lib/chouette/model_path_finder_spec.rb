@@ -26,6 +26,9 @@ RSpec.describe Chouette::ModelPathFinder do
           point_of_interest
         end
 
+        # Document provider
+        document
+
         # Referential
         referential do
           route
@@ -150,6 +153,19 @@ RSpec.describe Chouette::ModelPathFinder do
       end
     end
 
+    context 'when model is inside a document provider' do
+      let(:model_path_finder) do
+        Chouette::ModelPathFinder.new(model.class, model.id, model.document_provider.workbench)
+      end
+
+      context 'and is a document' do
+        let(:model) { context.document }
+        it 'should return document path' do
+          is_expected.to eq(workbench_document_path(model.document_provider.workbench, model.id))
+        end
+      end
+    end
+
     context 'when model is inside a referential' do
       let(:model_path_finder) do
         Chouette::ModelPathFinder.new(model.class, model.id, model.referential.workbench, context.referential)
@@ -158,23 +174,23 @@ RSpec.describe Chouette::ModelPathFinder do
       context 'and is a route' do
         let(:model) { context.route }
         it 'should return route path' do
-          is_expected.to eq(referential_line_route_path(context.referential, model.line.id, model.id))
+          is_expected.to eq(redirect_referential_route_path(context.referential, model.id))
         end
       end
 
-      # context 'and is a journey pattern' do
-      #   let(:model) { context.journey_pattern }
-      #   it 'should return journey pattern path' do
-      #     is_expected.to eq(referential_journey_pattern_path(context.referential, model.id))
-      #   end
-      # end
+      context 'and is a journey pattern' do
+        let(:model) { context.journey_pattern }
+        it 'should return journey pattern path' do
+          is_expected.to eq(redirect_referential_journey_pattern_path(context.referential, model.id))
+        end
+      end
 
-      # context 'and is a vehicle journey' do
-      #   let(:model) { context.vehicle_journey }
-      #   it 'should return vehicle journey path' do
-      #     is_expected.to eq(referential_vehicle_journey_path(context.referential, model.id))
-      #   end
-      # end
+      context 'and is a vehicle journey' do
+        let(:model) { context.vehicle_journey }
+        it 'should return vehicle journey path' do
+          is_expected.to eq(redirect_referential_vehicle_journey_path(context.referential, model.id))
+        end
+      end
 
       context 'and is a time table' do
         let(:model) { context.time_table }

@@ -12,7 +12,7 @@ class DocumentMembershipsController < ChouetteController
 
 	def index
 			@document_memberships = DocumentMembershipDecorator.decorate(document_memberships, context: decorator_context.merge(pagination_param_name: :document_memberships_page))
-			@unassociated_documents_search = Search::Document.new(unassociated_documents, params)
+			@unassociated_documents_search = Search::Document.new(unassociated_documents, params, workgroup: workbench.workgroup)
 			@unassociated_documents = DocumentDocumentMembershipDecorator.decorate(@unassociated_documents_search.collection, context: decorator_context.merge(pagination_param_name: :unassociated_documents_page))
 			index!
 	end

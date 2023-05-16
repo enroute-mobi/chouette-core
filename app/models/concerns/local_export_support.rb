@@ -43,32 +43,43 @@ module LocalExportSupport
     raise
   end
 
+  def clean_exportables
+    self.exportables.in_batches.destroy_all
+  end
+
   def export
-    Chouette::Benchmark.measure "export_#{export_type}", export: id do
-      referential.switch
+    begin
+      Chouette::Benchmark.measure "export_#{export_type}", export: id do
+        referential.switch
 
-      if self.class.skip_empty_exports && export_scope.empty?
-        self.update status: :failed, ended_at: Time.now
-        vals = {}
-        vals[:criticity] = :info
-        vals[:message_key] = :no_matching_journey
-        self.messages.create vals
-        return
+        if self.class.skip_empty_exports && export_scope.empty?
+          self.update status: :failed, ended_at: Time.now
+          vals = {}
+          vals[:criticity] = :info
+          vals[:message_key] = :no_matching_journey
+          self.messages.create vals
+
+          clean_exportables
+
+          return
+        end
+
+        CustomFieldsSupport.within_workgroup(referential.workgroup) do
+          self.file = generate_export_file
+        end
+
+        self.status = :successful
+        self.ended_at = Time.now
+        self.save!
       end
-
-      CustomFieldsSupport.within_workgroup(referential.workgroup) do
-        self.file = generate_export_file
-      end
-
-      self.status = :successful
+    rescue => e
+      Chouette::Safe.capture "#{self.class.name} ##{id} failed", e
+      self.status = :failed
       self.ended_at = Time.now
       self.save!
     end
-  rescue => e
-    Chouette::Safe.capture "#{self.class.name} ##{id} failed", e
-    self.status = :failed
-    self.ended_at = Time.now
-    self.save!
+
+    clean_exportables
   end
 
   def worker_died

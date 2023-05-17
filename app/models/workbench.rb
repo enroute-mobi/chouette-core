@@ -190,7 +190,7 @@ class Workbench < ApplicationModel
   end
 
   def default_document_provider
-    @default_document_provider ||= document_providers.find_or_initialize_by(name: DEFAULT_PROVIDER_SHORT_NAME)
+    @default_document_provider ||= document_providers.first || create_default_document_provider
   end
 
   def create_default_stop_area_provider
@@ -259,7 +259,9 @@ class Workbench < ApplicationModel
   end
 
   def create_default_document_provider
-    default_document_provider.save
+    document_providers.find_or_initialize_by(short_name: DEFAULT_PROVIDER_SHORT_NAME) do |p|
+      p.name = DEFAULT_PROVIDER_NAME
+    end
   end
 
   def workgroup_owner?
@@ -283,9 +285,9 @@ class Workbench < ApplicationModel
       default_shape_provider
       default_line_provider
       default_stop_area_provider
-      
+      default_document_provider
+
       create_default_fare_provider
-      create_default_document_provider
     end
   end
 end

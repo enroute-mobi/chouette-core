@@ -55,9 +55,9 @@ fr:
         weeks_after: Nombre de semaines après
         maximum_difference: Différence maximale en pourcentage
       control/journey_pattern_speed:
-        minimum_speed: Vitesse minimale
-        maximum_speed: Vitesse maximale
-        minimum_distance: Distance minimale
+        minimum_speed: Vitesse minimale (km/h)
+        maximum_speed: Vitesse maximale (km/h)
+        minimum_distance: Distance minimale (mètres)
       control/presence_associated_model:
         collection: Modèles associés
         minimum: Nombre minimal

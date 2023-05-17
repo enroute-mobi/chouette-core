@@ -55,9 +55,9 @@ en:
         weeks_after: Weeks after
         maximum_difference: Maximum difference in percentage
       control/journey_pattern_speed:
-        minimum_speed: Minimum Speed
-        maximum_speed: Maximum Speed
-        minimum_distance: Minimum Distance
+        minimum_speed: Minimum Speed (km/h)
+        maximum_speed: Maximum Speed (km/h)
+        minimum_distance: Minimum Distance (meters)
       control/presence_associated_model:
         collection: Associated Models
         minimum: Minimum count

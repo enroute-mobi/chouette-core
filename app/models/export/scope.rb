@@ -292,12 +292,12 @@ module Export::Scope
     end
 
     def vehicle_journeys
+      return [] unless current_scope.vehicle_journeys.present?
+
       unless @loaded
         columns = ['uuid', 'export_id', 'model_type', 'model_id'].reject{ |c| c == 'export_id' && export_id.nil? }.join(',')
         constants = ["'#{uuid}'", export_id, "'Chouette::VehicleJourney'"].compact
         models = current_scope.vehicle_journeys.select(constants, :id)
-
-        return [] unless models.present?
 
         query = <<~SQL
           INSERT INTO public.exportables (#{columns}) #{models.to_sql}

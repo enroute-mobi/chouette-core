@@ -253,6 +253,7 @@ module Chouette
 
           model :document_provider do
             attribute(:name) { |n| "Document Provider #{n}" }
+            attribute(:short_name) { |n| "DP_#{n}" }
 
             model :document do
               attribute(:name) { |n| "Document #{n}" }

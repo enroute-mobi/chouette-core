@@ -14,7 +14,7 @@ RSpec.describe Query::Document do
 
     let(:workbench) { context.workbench }
 
-    let(:document_provider) { workbench.document_providers.create(name: 'document_provider_name') }
+    let(:document_provider) { workbench.document_providers.create(name: 'document_provider_name', short_name: 'DP') }
     let(:document_type_1) do
       workbench.workgroup.document_types.create(name: 'document_type_name 1', short_name: 'type1')
     end

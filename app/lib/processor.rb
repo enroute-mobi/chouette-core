@@ -55,15 +55,19 @@ class Processor
     workbench.processing_rules.where(operation_step: operation_step).order(processable_type: :desc)
   end
 
+  # Retrieve all processing rules for a workgroup
+  def all_workgroup_processing_rules(operation_step)
+    workgroup.processing_rules.where(operation_step: operation_step)
+  end
+
+  # Retrieve processing rules for a workgroup and filter by workbench if needed
   def workgroup_processing_rules(operation_step)
-    # Specific case when operation step is "after_aggregate" and operation is "Aggregate"
-    return workgroup.processing_rules.where(operation_step: operation_step) if workbench.blank?
+    processing_rules = all_workgroup_processing_rules(operation_step)
+    return processing_rules if workbench.blank?
 
-    dedicated_processing_rules = workgroup.processing_rules.where(operation_step: operation_step).with_target_workbenches_containing(workbench.id)
-
-    return dedicated_processing_rules if dedicated_processing_rules.present?
-
-    workgroup.processing_rules.where(operation_step: operation_step, target_workbench_ids: [])
+    processing_rules.where(
+      'target_workbench_ids && ARRAY[?]::bigint[] OR ARRAY_LENGTH(target_workbench_ids, 1) IS NULL', workbench
+    )
   end
 
   def before_operation_step

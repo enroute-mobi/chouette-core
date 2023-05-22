@@ -121,38 +121,14 @@ RSpec.describe Processor do
       let(:processor) { Processor.new import }
 
       it 'if workbench has processing rules' do
-        expect(processor.workbench_processing_rules('after_import')).to eq([macro_processing_rule, control_processing_rule])
+        expect(processor.workbench_processing_rules('after_import')).to eq([macro_processing_rule,
+                                                                            control_processing_rule])
       end
     end
   end
 
-  context '#workgroup_processing_rules' do
-    context 'returns no processing rules' do
-      let(:context) do
-        Chouette.create do
-          workgroup :without_processing_rules
-
-          workgroup :with_processing_rules do
-            control_list shared: true
-          end
-        end
-      end
-
-      let(:workgroup) { context.workgroup(:with_processing_rules) }
-      let(:control_list) { context.control_list }
-      let(:processing_rule) do
-        workgroup.processing_rules.create operation_step: 'after_import', control_list: control_list
-      end
-      let(:workgroup_without_processing_rules) { context.workgroup(:without_processing_rules) }
-      let(:import) { create :gtfs_import, workbench: workgroup.workbenches.first }
-      let(:processor) { Processor.new import }
-
-      it 'if workgroup has no processing rules' do
-        expect(processor.workgroup_processing_rules('after_import')).to be_empty
-      end
-    end
-
-    context 'return processing rules' do
+  context '#all_workgroup_processing_rules' do
+    context 'when a processing rule exists with operation_step after_import' do
       let(:context) do
         Chouette.create do
           workgroup do
@@ -165,21 +141,86 @@ RSpec.describe Processor do
       let(:control_list) { context.control_list }
       let(:import) { create :gtfs_import, workbench: workgroup.workbenches.first }
       let(:processor) { Processor.new import }
-
-      it 'if workgroup has processing rules' do
-        processing_rule = workgroup.processing_rules.create operation_step: 'after_import',
-                                                            processable: control_list
-        expect(processor.workgroup_processing_rules('after_import')).to eq([processing_rule])
+      let!(:processing_rule) do
+        workgroup.processing_rules.create operation_step: 'after_import', processable: control_list
       end
+      subject { processor.all_workgroup_processing_rules('after_import') }
 
-      it 'if workgroup has processing rules affected to a target workbench' do
-        processing_rule = workgroup.processing_rules.create operation_step: 'after_import',
-                                                            processable: control_list,
-                                                            target_workbenches: [workgroup.workbenches.first.id]
-
-        expect(processor.workgroup_processing_rules('after_import')).to eq([processing_rule])
-      end
+      it { is_expected.to contain_exactly processing_rule }
     end
   end
 
+  context '#workgroup_processing_rules' do
+    context 'when a processing rule exist without target workbench' do
+      let(:context) do
+        Chouette.create do
+          workgroup do
+            control_list shared: true
+          end
+        end
+      end
+
+      let(:workgroup) { context.workgroup }
+      let(:control_list) { context.control_list }
+      let(:import) { create :gtfs_import, workbench: workgroup.workbenches.first }
+      let(:processor) { Processor.new import }
+      let!(:processing_rule) do
+        workgroup.processing_rules.create operation_step: 'after_import', processable: control_list
+      end
+      subject { processor.workgroup_processing_rules('after_import') }
+
+      it { is_expected.to contain_exactly processing_rule }
+    end
+
+    context 'when a processing rule exist with target workbench 1 equals to processor workbench' do
+      let(:context) do
+        Chouette.create do
+          workgroup do
+            workbench do
+              control_list shared: true
+            end
+          end
+        end
+      end
+
+      let(:workgroup) { context.workgroup }
+      let(:control_list) { context.control_list }
+      let(:import) { create :gtfs_import, workbench: workgroup.workbenches.first }
+      let(:processor) { Processor.new import }
+      let!(:processing_rule) do
+        workgroup.processing_rules.create operation_step: 'after_import', processable: control_list,
+                                          target_workbench_ids: []
+      end
+      subject { processor.workgroup_processing_rules('after_import') }
+
+      it { is_expected.to contain_exactly processing_rule }
+    end
+
+    context 'when a processing rule exist with target workbench 1 not equals to processor workbench' do
+      let(:context) do
+        Chouette.create do
+          workgroup do
+            workbench :import_workbench do
+              control_list shared: true
+            end
+            workbench :other_workbench
+          end
+        end
+      end
+
+      let(:workgroup) { context.workgroup }
+      let(:import_workbench) { context.workbench :import_workbench }
+      let(:other_workbench) { context.workbench :other_workbench }
+      let(:control_list) { context.control_list }
+      let(:import) { create :gtfs_import, workbench: import_workbench }
+      let(:processor) { Processor.new import }
+      let!(:processing_rule) do
+        workgroup.processing_rules.create operation_step: 'after_import', processable: control_list,
+                                          target_workbench_ids: [other_workbench]
+      end
+      subject { processor.workgroup_processing_rules('after_import') }
+
+      it { is_expected.to be_empty }
+    end
+  end
 end

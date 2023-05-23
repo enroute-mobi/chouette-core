@@ -1,16 +1,14 @@
 module Redirect
   class VehicleJourneysController < BaseController
-    def referential
-      Referential.find(params[:referential_id])
-    end
+    include ReferentialSupport
 
     def vehicle_journey
-      referential.switch
       Chouette::VehicleJourney.find(params[:id])
     end
 
     def show
-      redirect_to default_vehicle_journey_path(referential, vehicle_journey)
+      redirect_to referential_line_route_vehicle_journeys_path referential, vehicle_journey.route.line,
+                                                               vehicle_journey.route
     end
   end
 end

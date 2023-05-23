@@ -1,16 +1,13 @@
 module Redirect
   class RoutesController < BaseController
-    def referential
-      Referential.find(params[:referential_id])
-    end
+    include ReferentialSupport
 
     def route
-      referential.switch
       Chouette::Route.find(params[:id])
     end
 
     def show
-      redirect_to default_route_path(referential, route)
+      redirect_to referential_line_route_path referential, route.line, route
     end
   end
 end

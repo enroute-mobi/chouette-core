@@ -4,7 +4,7 @@ module Chouette
   class ModelPathFinder
     include Rails.application.routes.url_helpers
 
-    attr_accessor :model_class, :model_id, :workbench, :referential
+    attr_reader :model_class, :model_id, :workbench, :referential
 
     def initialize(model_class, model_id, workbench, referential = nil)
       @model_class = model_class
@@ -43,13 +43,13 @@ module Chouette
       elsif model_class == Document
         workbench_document_path(workbench, model_id)
       elsif model_class == Chouette::Route
-        redirect_referential_route_path(referential, model_id)
+        workbench_referential_route_path(workbench, referential, model_id)
       elsif model_class == Chouette::JourneyPattern
-        redirect_referential_journey_pattern_path(referential, model_id)
+        workbench_referential_journey_pattern_path(workbench, referential, model_id)
       elsif model_class == Chouette::VehicleJourney
-        redirect_referential_vehicle_journey_path(referential, model_id)
+        workbench_referential_vehicle_journey_path(workbench, referential, model_id)
       elsif model_class == Chouette::TimeTable
-        referential_time_table_path(referential, model_id)
+        workbench_referential_time_table_path(workbench, referential, model_id)
       else
         Rails.logger.error "Path not found for class #{model_class}"
         nil

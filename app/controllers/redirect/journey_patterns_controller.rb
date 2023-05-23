@@ -1,16 +1,14 @@
 module Redirect
   class JourneyPatternsController < BaseController
-    def referential
-      Referential.find(params[:referential_id])
-    end
+    include ReferentialSupport
 
     def journey_pattern
-      referential.switch
       Chouette::JourneyPattern.find(params[:id])
     end
 
     def show
-      redirect_to default_journey_pattern_path(referential, journey_pattern)
+      redirect_to referential_line_route_journey_patterns_collection_path referential, journey_pattern.route.line,
+                                                                          journey_pattern.route
     end
   end
 end

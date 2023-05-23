@@ -65,28 +65,6 @@ module DefaultPathHelper
     end
   end
 
-  #####################
-  #  Referential
-  #####################
-  def default_route_path(referential, route)
-    # with_default_workbench do
-    referential_line_route_path referential, route.line, route
-    # end
-  end
-
-  def default_journey_pattern_path(referential, journey_pattern)
-    # with_default_workbench do
-    referential_line_route_journey_patterns_collection_path referential, journey_pattern.route.line,
-                                                            journey_pattern.route
-    # end
-  end
-
-  def default_vehicle_journey_path(referential, vehicle_journey)
-    #   with_default_workbench do
-    referential_line_route_vehicle_journeys_path referential, vehicle_journey.route.line, vehicle_journey.route
-    #   end
-  end
-
   private
 
   def default_workbench(attributes = {})
@@ -114,7 +92,7 @@ module DefaultPathHelper
       attributes.each { |k, v| send "#{k}=", v }
     end
 
-    attr_accessor :resource, :current_organisation, :referential
+    attr_accessor :resource, :current_organisation
 
     def candidate_workbenches
       current_organisation.workbenches
@@ -174,15 +152,8 @@ module DefaultPathHelper
       candidate_workbenches.find_by(workgroup_id: shape_referential.workgroup.id)
     end
 
-    # Find the workbench associated to the referential
-    def referential_workbench
-      return unless referential
-
-      candidate_workbenches.find(referential.workbench.id)
-    end
-
     def workbench
-      @workbench ||= (resource_workbench || line_referential_workbench || stop_area_referential_workbench || shape_referential_workbench || referential_workbench)
+      @workbench ||= (resource_workbench || line_referential_workbench || stop_area_referential_workbench || shape_referential_workbench)
     end
 
     def workbench!

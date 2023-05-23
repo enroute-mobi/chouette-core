@@ -36,7 +36,6 @@ ChouetteIhm::Application.routes.draw do
   end
 
   resources :workbenches, except: [:destroy], concerns: :iev_interfaces do
-    delete :referentials, on: :member, action: :delete_referentials
     resources :api_keys
 
     resources :autocomplete,
@@ -69,7 +68,29 @@ ChouetteIhm::Application.routes.draw do
       end
     end
 
-    resources :referentials, only: %w[new create index]
+    delete :referentials, on: :member, action: :delete_referentials
+    resources :referentials, only: %w[new create index show] do
+      resources :routes, only: :show do
+        member do
+          get :show, to: 'redirect/routes#show'
+        end
+      end
+      resources :journey_patterns, only: :show do
+        member do
+          get :show, to: 'redirect/journey_patterns#show'
+        end
+      end
+      resources :vehicle_journeys, only: :show do
+        member do
+          get :show, to: 'redirect/vehicle_journeys#show'
+        end
+      end
+      resources :time_tables, only: :show do
+        member do
+          get :show, to: 'redirect/time_tables#show'
+        end
+      end
+    end
 
     resources :notification_rules
     resources :macro_lists do
@@ -381,7 +402,8 @@ ChouetteIhm::Application.routes.draw do
       get 'datas/:slug/lines', to: 'datas#lines', as: :lines
 
       get 'datas/:slug/documents/lines/:registration_number/:document_type',
-          to: redirect('/api/v1/datas/%<slug>s/lines/%<registration_number>s/documents/%<document_type>s')
+        to: redirect('/api/v1/datas/%{slug}/lines/%{registration_number}/documents/%{document_type}')
+
       get 'datas/:slug/lines/:line_registration_number/documents/:document_type', to: 'publication_api/documents#show'
 
       post 'datas/:slug/graphql', to: 'datas#graphql', as: :graphql

@@ -3,12 +3,12 @@ class OperationRunFacade
   include ActionView::Helpers::TagHelper
   include ActionView::Helpers::UrlHelper
 
-  attr_reader :resource, :workbench, :display_referential_links
+  attr_reader :resource, :current_workbench, :display_referential_links
 
-  def initialize(resource, display_referential_links: true)
+  def initialize(resource, current_workbench, display_referential_links: true)
     @resource = resource
+    @current_workbench = current_workbench
     @display_referential_links = display_referential_links
-    @workbench = resource.workbench
   end
 
   def criticity_span(criticity)
@@ -55,7 +55,7 @@ class OperationRunFacade
   end
 
   def source_link(message)
-    Chouette::ModelPathFinder.new(message.source_type.constantize, message.source_id, workbench,
+    Chouette::ModelPathFinder.new(message.source_type.constantize, message.source_id, current_workbench,
                                   resource.referential.present? ? resource.referential : nil).path
   end
 

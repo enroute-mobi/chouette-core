@@ -1,0 +1,39 @@
+fr:
+  document_providers:
+    index:
+      title: Fournisseurs de documents
+    show:
+      title: "%{name}"
+    new:
+      title: "Créer un Fournisseur de document"
+    edit:
+      title: "Editer %{name}"
+    actions:
+      show: "Afficher ce Fournisseur de document"
+      new: "Créer un Fournisseur de document"
+      edit: "Editer ce Fournisseur de document"
+      destroy: "Supprimer ce Fournisseur de document"
+      destroy_confirm: "Etes vous sûr de supprimer ce Fournisseur de document ?"
+    form:
+      sections:
+        identification: "Identification"
+        internal: "Interne"
+        associated_resources: "Ressources associées"
+    search_no_results: "Aucun Fournisseur de document ne correspond à votre recherche"
+    errors:
+    filters:
+  activerecord:
+    models:
+      document_provider:
+        zero:  "Fournisseur de document"
+        one: "Fournisseur de document"
+        other: "Fournisseurs de document"
+    attributes:
+      document_provider:
+        id: "ID"
+        name: "Nom"
+        short_name: "Nom court"
+        documents: "Documents"
+        workbench: "Espace de travail"
+        updated_at: "Edité le"
+        creator_id: "Créé par"

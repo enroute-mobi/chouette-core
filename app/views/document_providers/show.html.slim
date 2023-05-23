@@ -1,0 +1,20 @@
+- breadcrumb :document_provider, @workbench, @document_provider
+- page_header_content_for @document_provider
+
+.page_content
+  .container-fluid
+    .row
+      .col-lg-6.col-md-6.col-sm-12.col-xs-12
+        = simple_block_for @document_provider, title: t('document_providers.form.sections.identification') do |d|
+          = d.attribute :name
+          / = d.attribute :short_name
+          = d.attribute :workbench, as: :association
+
+      .col-lg-6.col-md-6.col-sm-12.col-xs-12
+        = simple_block_for @document_provider, title: t('document_providers.form.sections.associated_resources') do |d|
+          = d.attribute :documents, as: :count
+    .row
+      .col-lg-6.col-md-6.col-sm-12.col-xs-12
+          = simple_block_for @document_provider, title: t('document_providers.form.sections.internal') do |d|
+            = d.attribute :created_at, as: :datetime
+            = d.attribute :updated_at, as: :datetime

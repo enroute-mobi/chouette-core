@@ -3,7 +3,7 @@ module Redirect
     include ReferentialSupport
 
     def route
-      Chouette::Route.find(params[:id])
+      referential.routes.find(params[:id])
     end
 
     def show

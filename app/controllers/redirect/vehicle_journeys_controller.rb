@@ -3,7 +3,7 @@ module Redirect
     include ReferentialSupport
 
     def vehicle_journey
-      Chouette::VehicleJourney.find(params[:id])
+      referential.vehicle_journeys.find(params[:id])
     end
 
     def show

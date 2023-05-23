@@ -3,7 +3,7 @@ module Redirect
     include ReferentialSupport
 
     def journey_pattern
-      Chouette::JourneyPattern.find(params[:id])
+      referential.journey_patterns.find(params[:id])
     end
 
     def show

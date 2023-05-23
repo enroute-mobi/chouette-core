@@ -13,11 +13,6 @@ ChouetteIhm::Application.routes.draw do
     resources :lines, only: :show
     resources :companies, only: :show
     resources :stop_areas, only: :show
-    resources :referentials, only: :show do
-      resources :routes, only: :show
-      resources :journey_patterns, only: :show
-      resources :vehicle_journeys, only: :show
-    end
   end
 
   concern :iev_interfaces do
@@ -70,25 +65,11 @@ ChouetteIhm::Application.routes.draw do
 
     delete :referentials, on: :member, action: :delete_referentials
     resources :referentials, only: %w[new create index show] do
-      resources :routes, only: :show do
-        member do
-          get :show, to: 'redirect/routes#show'
-        end
-      end
-      resources :journey_patterns, only: :show do
-        member do
-          get :show, to: 'redirect/journey_patterns#show'
-        end
-      end
-      resources :vehicle_journeys, only: :show do
-        member do
-          get :show, to: 'redirect/vehicle_journeys#show'
-        end
-      end
-      resources :time_tables, only: :show do
-        member do
-          get :show, to: 'redirect/time_tables#show'
-        end
+      scope module: 'redirect', only: :show do
+        resources :routes
+        resources :journey_patterns
+        resources :vehicle_journeys
+        resources :time_tables
       end
     end
 

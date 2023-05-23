@@ -3,7 +3,7 @@ module Redirect
     include ReferentialSupport
 
     def time_table
-      Chouette::TimeTable.find(params[:id])
+      referential.time_tables.find(params[:id])
     end
 
     def show

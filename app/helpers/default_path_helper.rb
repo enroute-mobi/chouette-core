@@ -2,9 +2,7 @@
 # See CHOUETTE-797
 # Provides legacy path helpers to link a Line, a Company without the required Workbench
 module DefaultPathHelper
-  #####################
-  #  Stop area referential
-  #####################
+
   def default_stop_area_path(stop_area)
     with_default_workbench { default_stop_area_path!(stop_area) }
   end
@@ -19,9 +17,6 @@ module DefaultPathHelper
     end
   end
 
-  #####################
-  #  Line referential
-  #####################
   def default_company_path(company)
     with_default_workbench { default_company_path!(company) }
   end
@@ -56,9 +51,6 @@ module DefaultPathHelper
     end
   end
 
-  #####################
-  #  Shape referential
-  #####################
   def default_shapes_path(shape_referential)
     with_default_workbench do
       workbench_shape_referential_shapes_path default_workbench(shape_referential: shape_referential)
@@ -76,10 +68,12 @@ module DefaultPathHelper
   def with_default_workbench
     yield
   rescue NoDefaultWorkbenchError => e
-    raise e if raise_error_without_default_workbench?
-
-    Chouette::Safe.capture "Can't create default path", e
-    '#'
+    if raise_error_without_default_workbench?
+      raise e
+    else
+      Chouette::Safe.capture "Can't create default path", e
+      '#'
+    end
   end
 
   def raise_error_without_default_workbench?
@@ -88,8 +82,9 @@ module DefaultPathHelper
 
   # Find the best Workbench from: current_organisation, given resource and/or given line_referential
   class WorkbenchLookup
+
     def initialize(attributes = {})
-      attributes.each { |k, v| send "#{k}=", v }
+      attributes.each { |k,v| send "#{k}=", v }
     end
 
     attr_accessor :resource, :current_organisation
@@ -120,7 +115,6 @@ module DefaultPathHelper
     # Find the workbench associated to the line referential
     def line_referential_workbench
       return unless line_referential_id
-
       candidate_workbenches.find_by line_referential_id: line_referential_id
     end
 
@@ -135,7 +129,6 @@ module DefaultPathHelper
     # Find the workbench associated to the stop_area referential
     def stop_area_referential_workbench
       return unless stop_area_referential_id
-
       candidate_workbenches.find_by stop_area_referential_id: stop_area_referential_id
     end
 
@@ -143,12 +136,13 @@ module DefaultPathHelper
       @shape_referential ||= resource.try(:shape_referential)
     end
 
-    attr_writer :shape_referential
+    def shape_referential=(shape_referential)
+      @shape_referential = shape_referential
+    end
 
     # Find the workbench associated to the shape referential
     def shape_referential_workbench
       return unless shape_referential
-
       candidate_workbenches.find_by(workgroup_id: shape_referential.workgroup.id)
     end
 
@@ -157,11 +151,15 @@ module DefaultPathHelper
     end
 
     def workbench!
-      raise NoDefaultWorkbenchError, "Can't find a default workbench for #{inspect}" unless workbench
-
-      workbench
+      if workbench
+        workbench
+      else
+        raise NoDefaultWorkbenchError, "Can't find a default workbench for #{inspect}"
+      end
     end
+
   end
 
   class NoDefaultWorkbenchError < StandardError; end
+
 end

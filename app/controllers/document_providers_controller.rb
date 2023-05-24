@@ -4,6 +4,11 @@ class DocumentProvidersController < ChouetteController
 
   defaults resource_class: DocumentProvider
 
+  before_action :decorate_document_provider, only: %i[show new edit]
+  after_action :decorate_document_provider, only: %i[create update]
+
+  before_action :document_provider_params, only: [:create, :update]
+
   belongs_to :workbench
 
   def index
@@ -36,16 +41,17 @@ class DocumentProvidersController < ChouetteController
     @document_providers = parent.document_providers.paginate(page: params[:page], per_page: 30)
   end
 
-  def resource
-    get_resource_ivar || set_resource_ivar(scope.find_by_id(params[:id]).decorate(context: { workbench: @workbench }))
-  end
-
-  def build_resource
-    get_resource_ivar || set_resource_ivar(end_of_association_chain.send(method_for_build,
-                                                                         *resource_params).decorate(context: { workbench: @workbench }))
-  end
-
   private
+
+  def decorate_document_provider
+    object = document_provider rescue build_resource
+    @document_provider = DocumentProviderDecorator.decorate(
+      object,
+      context: {
+        workbench: @workbench
+      }
+    )
+  end
 
   def document_provider_params
     params.require(:document_provider).permit(

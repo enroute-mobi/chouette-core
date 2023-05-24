@@ -23,6 +23,11 @@
                 end \
               ), \
               TableBuilderHelper::Column.new( \
+                key: :short_name, \
+                attribute: :short_name, \
+                sortable: false, \
+              ), \
+              TableBuilderHelper::Column.new( \
                 key: :documents, \
                 attribute: Proc.new { |document_provider| document_provider.documents.count }, \
                 sortable: false \

@@ -7,7 +7,7 @@
       .col-lg-6.col-md-6.col-sm-12.col-xs-12
         = simple_block_for @document_provider, title: t('document_providers.form.sections.identification') do |d|
           = d.attribute :name
-          / = d.attribute :short_name
+          = d.attribute :short_name
           = d.attribute :workbench, as: :association
 
       .col-lg-6.col-md-6.col-sm-12.col-xs-12

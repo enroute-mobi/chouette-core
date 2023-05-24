@@ -10,7 +10,7 @@ class DocumentProviderPolicy < ApplicationPolicy
   end
 
   def destroy?
-    user.has_permission?('document_providers.destroy')
+    user.has_permission?('document_providers.destroy') && !record.used?
   end
 
   def update?

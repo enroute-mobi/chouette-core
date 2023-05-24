@@ -1,3 +1,6 @@
+require:
+  - rubocop-rails
+
 Metrics/ClassLength:
   Max: 200
 

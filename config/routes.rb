@@ -1,4 +1,6 @@
-ChouetteIhm::Application.routes.draw do
+# frozen_string_literal: true
+
+ChouetteIhm::Application.routes.draw do # rubocop:disable Metrics/BlockLength
   resource :dashboard
   resource :subscriptions, only: :create
 
@@ -30,7 +32,7 @@ ChouetteIhm::Application.routes.draw do
     end
   end
 
-  resources :workbenches, except: [:destroy], concerns: :iev_interfaces do
+  resources :workbenches, except: [:destroy], concerns: :iev_interfaces do # rubocop:disable Metrics/BlockLength
     resources :api_keys
 
     resources :autocomplete,
@@ -183,7 +185,7 @@ ChouetteIhm::Application.routes.draw do
 
   resource :workbench_confirmation, only: %i[new create]
 
-  resources :workgroups, except: [:destroy], concerns: :iev_interfaces do
+  resources :workgroups, except: [:destroy], concerns: :iev_interfaces do # rubocop:disable Metrics/BlockLength
     put :setup_deletion, on: :member
     put :remove_deletion, on: :member
 
@@ -248,7 +250,7 @@ ChouetteIhm::Application.routes.draw do
     end
   end
 
-  resources :referentials, except: %w[new create index] do
+  resources :referentials, except: %w[new create index] do # rubocop:disable Metrics/BlockLength
     resources :autocomplete, controller: 'referential_autocomplete', only: [] do
       defaults format: :json do
         collection do
@@ -285,7 +287,7 @@ ChouetteIhm::Application.routes.draw do
     end
 
     match 'lines' => 'lines#destroy_all', :via => :delete
-    resources :lines, controller: 'referential_lines', except: :index do
+    resources :lines, controller: 'referential_lines', except: :index do # rubocop:disable Metrics/BlockLength
       defaults format: :json do
         collection do
           get :autocomplete, to: 'autocomplete_lines#index'
@@ -302,7 +304,7 @@ ChouetteIhm::Application.routes.draw do
       collection do
         get 'name_filter'
       end
-      resources :routes do
+      resources :routes do # rubocop:disable Metrics/BlockLength
         member do
           get 'edit_boarding_alighting'
           put 'save_boarding_alighting'
@@ -378,15 +380,15 @@ ChouetteIhm::Application.routes.draw do
     end
   end
 
-  namespace :api do
-    namespace :v1 do
+  namespace :api do # rubocop:disable Metrics/BlockLength
+    namespace :v1 do # rubocop:disable Metrics/BlockLength
       get 'datas/:slug', to: 'datas#infos', as: :infos
 
       # Don't move after get 'datas/:slug/*key' CHOUETTE-1105
       get 'datas/:slug/lines', to: 'datas#lines', as: :lines
 
       get 'datas/:slug/documents/lines/:registration_number/:document_type',
-        to: redirect('/api/v1/datas/%{slug}/lines/%{registration_number}/documents/%{document_type}')
+          to: redirect('/api/v1/datas/%{slug}/lines/%{registration_number}/documents/%{document_type}')
 
       get 'datas/:slug/lines/:line_registration_number/documents/:document_type', to: 'publication_api/documents#show'
 

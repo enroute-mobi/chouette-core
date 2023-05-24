@@ -26,6 +26,9 @@ module Chouette
       in_out == false || in_out.nil?
     end
 
+    alias included? in?
+    alias excluded? out?
+
     def checksum_attributes(db_lookup = true)
       attrs = ['date', 'in_out']
       self.slice(*attrs).values

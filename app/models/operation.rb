@@ -207,6 +207,12 @@ class Operation < ApplicationModel
     end
   end
 
+  class Bullet < Callback
+    def around(&block)
+      ::Bullet.profile(&block)
+    end
+  end
+
   class Benchmarker < Callback
     delegate :id, to: :operation
     def around(&block)
@@ -301,6 +307,7 @@ class Operation < ApplicationModel
   callback LogTagger
   callback CustomFieldLoader
   callback PerformedSkipper
+  callback Bullet
   callback Benchmarker
   callback Notifier
   callback Referential

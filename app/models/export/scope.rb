@@ -1,41 +1,59 @@
+# frozen_string_literal: true
+
 # Selects which models need to be included into an Export
 module Export::Scope
-  def self.build referential, **options
+  def self.build(referential, **options)
     Options.new(referential, options).scope
   end
 
   class Builder
-    attr_reader :scope
-
     def initialize(referential)
       @scope = All.new(referential)
       yield self if block_given?
     end
 
+    def internal_scopes
+      @internal_scopes ||= []
+    end
+
+    def current_scope
+      internal_scopes.last || @scope
+    end
+
     def scheduled
-      @scope = Scheduled.new(@scope)
+      internal_scopes << Scheduled.new(current_scope)
       self
     end
 
     def lines(line_ids)
-      @scope = Lines.new(@scope, line_ids)
+      internal_scopes << Lines.new(current_scope, line_ids)
       self
     end
 
     def period(date_range)
-      @scope = DateRange.new(@scope, date_range)
+      internal_scopes << DateRange.new(current_scope, date_range)
       self
     end
 
-    def cache
-      @scope = Cache.new(@scope)
+    def stateful(export_id)
+      internal_scopes << Stateful.new(current_scope, export_id)
       self
+    end
+
+    def scope
+      @scope = current_scope
+
+      internal_scopes.each do |scope|
+        scope.final_scope = @scope if scope.respond_to? :final_scope=
+      end
+
+      @scope
     end
   end
 
   class Options
     attr_reader :referential
-    attr_accessor :duration, :date_range, :line_ids, :line_provider_ids, :company_ids
+    attr_accessor :duration, :date_range, :line_ids, :line_provider_ids, :company_ids, :export_id
 
     def initialize(referential, attributes = {})
       @referential = referential
@@ -59,9 +77,7 @@ module Export::Scope
         builder.lines(line_ids) if line_ids
         builder.period(date_range) if date_range
         builder.scheduled
-
-        # CHOUETTE-1077
-        # builder.cache
+        builder.stateful(export_id)
       end
     end
 
@@ -110,7 +126,7 @@ module Export::Scope
     end
 
     def validity_period
-      Period.for_range(referential.validity_period)
+      @validity_period ||= Period.for_range(referential.validity_period)
     end
   end
 
@@ -133,13 +149,23 @@ module Export::Scope
   end
 
   class Scheduled < Base
+    attr_writer :final_scope
+
+    def final_scope
+      @final_scope || current_scope
+    end
+
     def vehicle_journeys
-      @vehicle_journeys ||= current_scope.vehicle_journeys.scheduled
+      current_scope.vehicle_journeys.scheduled
+    end
+
+    def final_scope_vehicle_journeys
+      final_scope.vehicle_journeys
     end
 
     def lines
       current_scope.lines.distinct.joins(routes: :vehicle_journeys)
-        .where("vehicle_journeys.id" => vehicle_journeys)
+                   .where('vehicle_journeys.id' => final_scope_vehicle_journeys)
     end
 
     def companies
@@ -151,21 +177,22 @@ module Export::Scope
     end
 
     def time_tables
-      current_scope.time_tables.joins(:vehicle_journeys).where("vehicle_journeys.id" => vehicle_journeys).distinct
+      current_scope.time_tables.joins(:vehicle_journeys)
+                   .where('vehicle_journeys.id' => final_scope_vehicle_journeys).distinct
     end
 
     def vehicle_journey_at_stops
-      current_scope.vehicle_journey_at_stops.where(vehicle_journey: vehicle_journeys)
+      current_scope.vehicle_journey_at_stops.where(vehicle_journey: final_scope_vehicle_journeys)
     end
 
     def routes
       current_scope.routes.joins(:vehicle_journeys).distinct
-        .where("vehicle_journeys.id" => vehicle_journeys)
+                   .where('vehicle_journeys.id' => final_scope_vehicle_journeys)
     end
 
     def journey_patterns
       current_scope.journey_patterns.joins(:vehicle_journeys).distinct
-        .where("vehicle_journeys.id" => vehicle_journeys)
+                   .where('vehicle_journeys.id' => final_scope_vehicle_journeys)
     end
 
     def shapes
@@ -174,7 +201,7 @@ module Export::Scope
 
     def stop_points
       current_scope.stop_points.distinct.joins(route: :vehicle_journeys)
-        .where("vehicle_journeys.id" => vehicle_journeys)
+                   .where('vehicle_journeys.id' => final_scope_vehicle_journeys)
     end
 
     def stop_areas
@@ -188,12 +215,12 @@ module Export::Scope
 
     def stop_areas_in_routes
       current_scope.stop_areas.joins(routes: :vehicle_journeys).distinct
-                   .where('vehicle_journeys.id' => vehicle_journeys)
+                   .where('vehicle_journeys.id' => final_scope_vehicle_journeys)
     end
 
     def stop_areas_in_specific_vehicle_journey_at_stops
       current_scope.stop_areas.joins(:specific_vehicle_journey_at_stops).distinct
-                   .where('vehicle_journey_at_stops.vehicle_journey_id' => vehicle_journeys)
+                   .where('vehicle_journey_at_stops.vehicle_journey_id' => final_scope_vehicle_journeys)
     end
 
     def entrances
@@ -254,25 +281,47 @@ module Export::Scope
     end
   end
 
-  class Cache < Base
-    RESOURCES = %w(
-      vehicle_journeys
-      vehicle_journey_at_stops
-      journey_patterns
-      routes
-      stop_points
-      time_tables
-      organisations
-      lines
-      stop_areas
-    ).freeze
+  class Stateful < Base
+    attr_reader :export_id
 
-    RESOURCES.each do |name|
-      define_method(name) do
-        value = instance_variable_get("@#{name}")
+    def initialize(current_scope, export_id = nil)
+      super current_scope
+      @export_id = export_id
+    end
 
-        value || instance_variable_set("@#{name}", current_scope.send(name))
+    def vehicle_journeys
+      unless @loaded
+        model_scope = current_scope.vehicle_journeys
+
+        if model_scope.exists?
+          columns = ['uuid', 'export_id', 'model_type', 'model_id'].reject{ |c| c == 'export_id' && export_id.nil? }.join(',')
+          constants = ["'#{uuid}'", export_id, "'Chouette::VehicleJourney'"].compact
+          models = model_scope.select(constants, :id)
+
+          query = <<~SQL
+            INSERT INTO public.exportables (#{columns}) #{models.to_sql}
+          SQL
+          ActiveRecord::Base.connection.execute query
+        end
+
+        @loaded = true
       end
+
+      exportable_vehicle_journeys
+    end
+
+    def exportable_vehicle_journeys
+      @exportable_vehicle_journeys ||=
+        begin
+          exportables = Exportable.where(uuid: uuid, model_type: 'Chouette::VehicleJourney')
+          Chouette::VehicleJourney.where(id: exportables.select(:model_id))
+        end
+    end
+
+    private
+
+    def uuid
+      @uuid ||= SecureRandom.uuid
     end
   end
 end

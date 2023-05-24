@@ -77,7 +77,24 @@ RSpec.describe Export::Base, type: :model do
 
       expect(Export::Message.count).to eq(0)
     end
+  end
 
+  describe "#clean_exportables" do
+
+    let(:export) { create(:gtfs_export) }
+    before(:each) { export.exportables.create export: export }
+
+    context 'when export is destroyed' do
+      it "must destroy all associated Exportables" do
+        expect{ export.destroy }.to change { Exportable.count }.from(1).to(0)
+      end
+    end
+
+    context 'when export run' do
+      it "must destroy all associated Exportables" do
+        expect{ export.run }.to change { Exportable.count }.from(1).to(0)
+      end
+    end
   end
 
   describe "#notify_publication" do

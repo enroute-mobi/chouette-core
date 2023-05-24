@@ -1076,7 +1076,10 @@ RSpec.describe Export::NetexGeneric do
     let(:context) do
       Chouette.create do
         code_space
-        3.times { vehicle_journey }
+        time_table :first
+        time_table :second
+
+        3.times { vehicle_journey time_tables: %i[first second] }
       end
     end
 

@@ -55,6 +55,9 @@ RSpec.shared_examples_for 'Export::Scope::Base' do
     end
 
 		let(:selected_vj) { context.vehicle_journey(:in_scope1) }
+    let(:selected_lines) { [ selected_vj.line ] }
+    let(:line_scope) { Export::Scope::Lines.new(default_scope, selected_lines) }
+    let(:vehicle_journey_at_stops_via_selected_vj) { selected_vj.line.routes.map(&:vehicle_journey_at_stops).flatten.uniq }
 
     describe "stop_areas" do
 
@@ -65,9 +68,9 @@ RSpec.shared_examples_for 'Export::Scope::Base' do
       end
 
       it "select stop areas associated with routes through vehicle journeys (2)" do
-        allow(scope).to receive(:vehicle_journeys) { [selected_vj] }
+        allow(scope).to receive(:final_scope_vehicle_journeys) { [selected_vj] }
 
-				expect(scope.stop_areas).not_to match_array(stop_areas_in_scope)
+        expect(scope.stop_areas).not_to match_array(stop_areas_in_scope)
 				expect(scope.stop_areas).to match_array(selected_vj.route.stop_areas)
       end
 
@@ -103,7 +106,7 @@ RSpec.shared_examples_for 'Export::Scope::Base' do
       it "select stop points associated with routes through vehicle_journeys" do
         expect(scope.stop_points).to match_array(stop_points_in_scope)
 
-				allow(scope).to receive(:vehicle_journeys) { [selected_vj] }
+        allow(scope).to receive(:final_scope_vehicle_journeys) { [selected_vj] }
 
 				expect(scope.stop_points).not_to match_array(stop_points_in_scope)
 				expect(scope.stop_points).to match_array(selected_vj.route.stop_points)
@@ -120,7 +123,7 @@ RSpec.shared_examples_for 'Export::Scope::Base' do
       it "select routes associated with vehicle journeys in scope" do
         expect(scope.routes).to match_array(routes_in_scope)
 
-				allow(scope).to receive(:vehicle_journeys) { [selected_vj] }
+        allow(scope).to receive(:final_scope_vehicle_journeys) { [selected_vj] }
 
 				expect(scope.routes).not_to match_array(routes_in_scope)
 				expect(scope.routes).to match_array([selected_vj.route])
@@ -136,7 +139,7 @@ RSpec.shared_examples_for 'Export::Scope::Base' do
       it "select journey patterns associated with vehicle journeys in scope" do
         expect(scope.journey_patterns).to match_array(journey_patterns_in_scope)
 
-				allow(scope).to receive(:vehicle_journeys) { [selected_vj] }
+        allow(scope).to receive(:final_scope_vehicle_journeys) { [selected_vj] }
 
 				expect(scope.journey_patterns).not_to match_array(journey_patterns_in_scope)
 				expect(scope.journey_patterns).to match_array([selected_vj.journey_pattern])
@@ -162,12 +165,10 @@ RSpec.shared_examples_for 'Export::Scope::Base' do
       # end
 
       it "select lines associated to vehicle journeys" do
-        expect(scope.lines).to eq(lines_in_scope)
-
-				allow(scope).to receive(:vehicle_journeys) { [selected_vj] }
+        allow(scope).to receive(:final_scope_vehicle_journeys) { [selected_vj] }
 
 				expect(scope.lines).not_to match_array(lines_in_scope)
-				expect(scope.lines).to match_array([selected_vj.line])
+				expect(scope.lines).to match_array(selected_lines)
       end
 
       it "doesn't provide a line twice" do
@@ -189,10 +190,10 @@ RSpec.shared_examples_for 'Export::Scope::Base' do
       it "select all VehicleJourneyAtStops associated to vehicle journeys" do
         expect(scope.vehicle_journey_at_stops).to match_array(vehicle_journey_at_stops_in_scope)
 
-				allow(scope).to receive(:vehicle_journeys) { [selected_vj] }
+        allow(scope).to receive(:final_scope_vehicle_journeys) { [selected_vj] }
 
-				expect(scope.vehicle_journey_at_stops).not_to match_array(vehicle_journey_at_stops_in_scope)
-				expect(scope.vehicle_journey_at_stops).to match_array(selected_vj.vehicle_journey_at_stops)
+        expect(scope.vehicle_journey_at_stops).not_to match_array(vehicle_journey_at_stops_in_scope)
+        expect(scope.vehicle_journey_at_stops).to match_array(selected_vj.vehicle_journey_at_stops)
       end
 
       it "doesn't provide a VehicleJourneyAtStop twice" do
@@ -208,7 +209,7 @@ RSpec.shared_examples_for 'Export::Scope::Base' do
 
 				expect(scope.shapes).to match_array(shapes_in_scope)
 
-				allow(scope).to receive(:vehicle_journeys) { [selected_vj] }
+        allow(scope).to receive(:final_scope_vehicle_journeys) { [selected_vj] }
 
 				expect(scope.shapes).not_to match_array(shapes_in_scope)
 				expect(scope.shapes).to match_array([selected_vj.journey_pattern.shape])

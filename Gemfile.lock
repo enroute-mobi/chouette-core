@@ -65,8 +65,7 @@ GIT
 
 GIT
   remote: https://bitbucket.org/enroute-mobi/netex.git
-  revision: 208da0c956459ca03fe147cf24257001e952fc4d
-  branch: NETEX-82-timetabled-passing-time-target-builder
+  revision: 3066cd8231ed122dc6e66534a6f310e240b467e2
   specs:
     netex (0.1.2)
       activesupport

@@ -16,7 +16,7 @@ class ControlListRunsController < ChouetteController
   def index
     index! do |format|
       format.html do
-        redirect_to params.merge(:page => 1) if collection.out_of_bounds?
+        redirect_to params.merge(page: 1) if collection.out_of_bounds?
 
         @control_list_runs = ControlListRunDecorator.decorate(
           collection,
@@ -84,10 +84,14 @@ class ControlListRunsController < ChouetteController
   private
 
   def init_facade
-    object = control_list_run rescue Control::List::Run.new(workbench: workbench)
+    object = begin
+      control_list_run
+    rescue StandardError
+      Control::List::Run.new(workbench: workbench)
+    end
     display_referential_links = object.referential.present? && policy(object.referential).show?
 
-    @facade ||= OperationRunFacade.new(object, display_referential_links: display_referential_links)
+    @facade ||= OperationRunFacade.new(object, current_workbench, display_referential_links: display_referential_links)
   end
 
   alias facade init_facade
@@ -109,8 +113,8 @@ class ControlListRunsController < ChouetteController
     )
   end
 
-	def control_list_run_params
-		params
+  def control_list_run_params
+    params
       .require(:control_list_run)
       .permit(:name, :original_control_list_id, :referential_id)
       .with_defaults(creator: current_user.name)

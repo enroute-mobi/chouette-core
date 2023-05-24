@@ -3,12 +3,12 @@ class OperationRunFacade
   include ActionView::Helpers::TagHelper
   include ActionView::Helpers::UrlHelper
 
-  attr_reader :resource, :workbench, :display_referential_links
+  attr_reader :resource, :current_workbench, :display_referential_links
 
-  def initialize(resource, display_referential_links: true)
+  def initialize(resource, current_workbench, display_referential_links: true)
     @resource = resource
+    @current_workbench = current_workbench
     @display_referential_links = display_referential_links
-    @workbench = resource.workbench
   end
 
   def criticity_span(criticity)
@@ -23,9 +23,9 @@ class OperationRunFacade
     content_tag(:span, '', class: "span fa fa-circle text-enroute-chouette-#{color}") + criticity.text
   end
 
-  # Duplicate method of link_to_if_table in ApplicationHelper
-  # TODO : should be deleted with all this classe
-  def link_to_if_table condition, label, url
+  #  Duplicate method of link_to_if_table in ApplicationHelper
+  #  TODO : should be deleted with all this classe
+  def link_to_if_table(condition, label, url)
     condition == false ? label = '-' : label
     link_to_if(condition, label, url)
   end
@@ -41,8 +41,8 @@ class OperationRunFacade
       TableBuilderHelper::Column.new(key: :message, attribute: :full_message, sortable: false),
       TableBuilderHelper::Column.new(
         key: :source,
-        attribute:  lambda do |message| 
-          source_link = source_link(message);
+        attribute: lambda do |message|
+          source_link = source_link(message)
           link_to_if_table(source_link.present?, '<span class="fa fa-link"></span>'.html_safe, source_link)
         end,
         sortable: false
@@ -55,18 +55,8 @@ class OperationRunFacade
   end
 
   def source_link(message)
-    case message.source_type
-    when 'Chouette::Line'
-      workbench_line_referential_line_path(workbench, message.source_id)
-    when 'Chouette::StopArea'
-      workbench_stop_area_referential_stop_area_path(workbench, message.source_id)
-    when 'Chouette::JourneyPattern'
-      if display_referential_links
-        journey_patterns_referential_path(resource.referential_id, journey_pattern_id: message.source_id)
-      end
-    when 'Chouette::Company'
-      workbench_line_referential_company_path(workbench, message.source_id)
-    end
+    Chouette::ModelPathFinder.new(message.source_type.constantize, message.source_id, current_workbench,
+                                  resource.referential.present? ? resource.referential : nil).path
   end
 
   class	PaginateLinkRenderer < WillPaginate::ActionView::LinkRenderer

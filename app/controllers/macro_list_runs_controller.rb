@@ -86,8 +86,12 @@ class MacroListRunsController < ChouetteController
   private
 
   def init_facade
-    object = macro_list_run rescue Macro::List::Run.new(workbench: workbench)
-    @facade ||= OperationRunFacade.new(object)
+    object = begin
+      macro_list_run
+    rescue StandardError
+      Macro::List::Run.new(workbench: workbench)
+    end
+    @facade ||= OperationRunFacade.new(object, current_workbench)
   end
 
   alias facade init_facade
@@ -95,12 +99,16 @@ class MacroListRunsController < ChouetteController
   helper_method :facade
 
   def decorate_macro_list_run
-    object = macro_list_run rescue build_resource
+    object = begin
+      macro_list_run
+    rescue StandardError
+      build_resource
+    end
     @macro_list_run = MacroListRunDecorator.decorate(
       object,
       context: {
         workbench: workbench,
-				macro_list: macro_list
+        macro_list: macro_list
       }
     )
   end

@@ -260,7 +260,7 @@ class Workbench < ApplicationModel
 
   def create_default_document_provider
     document_providers.find_or_initialize_by(short_name: DEFAULT_PROVIDER_SHORT_NAME) do |p|
-      p.name = DEFAULT_PROVIDER_NAME
+      p.name = name.presence || DEFAULT_PROVIDER_NAME
     end
   end
 

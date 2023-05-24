@@ -1,11 +1,12 @@
+# frozen_string_literal: true
+
 # Selects which models need to be included into an Export
 module Export::Scope
-  def self.build referential, **options
+  def self.build(referential, **options)
     Options.new(referential, options).scope
   end
 
   class Builder
-
     def initialize(referential)
       @scope = All.new(referential)
       yield self if block_given?
@@ -43,14 +44,11 @@ module Export::Scope
       @scope = current_scope
 
       internal_scopes.each do |scope|
-        if scope.respond_to? :final_scope=
-          scope.final_scope = @scope
-        end
+        scope.final_scope = @scope if scope.respond_to? :final_scope=
       end
 
       @scope
     end
-
   end
 
   class Options
@@ -158,16 +156,16 @@ module Export::Scope
     end
 
     def vehicle_journeys
-      @vehicle_journeys ||= current_scope.vehicle_journeys.scheduled
+      current_scope.vehicle_journeys.scheduled
     end
 
     def final_scope_vehicle_journeys
-      @final_scope_vehicle_journeys ||= final_scope.vehicle_journeys
+      final_scope.vehicle_journeys
     end
 
     def lines
       current_scope.lines.distinct.joins(routes: :vehicle_journeys)
-        .where("vehicle_journeys.id" => final_scope_vehicle_journeys)
+                   .where('vehicle_journeys.id' => final_scope_vehicle_journeys)
     end
 
     def companies
@@ -179,7 +177,8 @@ module Export::Scope
     end
 
     def time_tables
-      current_scope.time_tables.joins(:vehicle_journeys).where("vehicle_journeys.id" => final_scope_vehicle_journeys).distinct
+      current_scope.time_tables.joins(:vehicle_journeys)
+                   .where('vehicle_journeys.id' => final_scope_vehicle_journeys).distinct
     end
 
     def vehicle_journey_at_stops
@@ -188,12 +187,12 @@ module Export::Scope
 
     def routes
       current_scope.routes.joins(:vehicle_journeys).distinct
-        .where("vehicle_journeys.id" => final_scope_vehicle_journeys)
+                   .where('vehicle_journeys.id' => final_scope_vehicle_journeys)
     end
 
     def journey_patterns
       current_scope.journey_patterns.joins(:vehicle_journeys).distinct
-        .where("vehicle_journeys.id" => final_scope_vehicle_journeys)
+                   .where('vehicle_journeys.id' => final_scope_vehicle_journeys)
     end
 
     def shapes
@@ -202,7 +201,7 @@ module Export::Scope
 
     def stop_points
       current_scope.stop_points.distinct.joins(route: :vehicle_journeys)
-        .where("vehicle_journeys.id" => final_scope_vehicle_journeys)
+                   .where('vehicle_journeys.id' => final_scope_vehicle_journeys)
     end
 
     def stop_areas
@@ -283,26 +282,27 @@ module Export::Scope
   end
 
   class Stateful < Base
-
     attr_reader :export_id
 
-    def initialize(current_scope, export_id=nil)
+    def initialize(current_scope, export_id = nil)
       super current_scope
       @export_id = export_id
     end
 
     def vehicle_journeys
-      return [] unless current_scope.vehicle_journeys.present?
-
       unless @loaded
-        columns = ['uuid', 'export_id', 'model_type', 'model_id'].reject{ |c| c == 'export_id' && export_id.nil? }.join(',')
-        constants = ["'#{uuid}'", export_id, "'Chouette::VehicleJourney'"].compact
-        models = current_scope.vehicle_journeys.select(constants, :id)
+        model_scope = current_scope.vehicle_journeys
 
-        query = <<~SQL
-          INSERT INTO public.exportables (#{columns}) #{models.to_sql}
-        SQL
-        ActiveRecord::Base.connection.execute query
+        if model_scope.exists?
+          columns = ['uuid', 'export_id', 'model_type', 'model_id'].reject{ |c| c == 'export_id' && export_id.nil? }.join(',')
+          constants = ["'#{uuid}'", export_id, "'Chouette::VehicleJourney'"].compact
+          models = model_scope.select(constants, :id)
+
+          query = <<~SQL
+            INSERT INTO public.exportables (#{columns}) #{models.to_sql}
+          SQL
+          ActiveRecord::Base.connection.execute query
+        end
 
         @loaded = true
       end
@@ -311,7 +311,11 @@ module Export::Scope
     end
 
     def exportable_vehicle_journeys
-      Chouette::VehicleJourney.where(id: Exportable.where(uuid: uuid, model_type: 'Chouette::VehicleJourney').select(:model_id))
+      @exportable_vehicle_journeys ||=
+        begin
+          exportables = Exportable.where(uuid: uuid, model_type: 'Chouette::VehicleJourney')
+          Chouette::VehicleJourney.where(id: exportables.select(:model_id))
+        end
     end
 
     private

@@ -20,7 +20,7 @@ class Export::Base < ApplicationModel
   has_one :organisation, through: :workbench
   has_many :publication_api_sources, foreign_key: :export_id
   has_many :messages, class_name: 'Export::Message', dependent: :delete_all, foreign_key: "export_id"
-  has_many :exportables, dependent: :destroy, class_name: '::Exportable', foreign_key: "export_id"
+  has_many :exportables, dependent: :destroy, class_name: '::Exportable', foreign_key: 'export_id'
 
   attr_accessor :synchronous
   enumerize :status, in: %w(new pending successful warning failed running aborted canceled), scope: true, default: :new
@@ -126,7 +126,7 @@ class Export::Base < ApplicationModel
   end
 
   def export_scope
-    @export_scope ||= Export::Scope.build(referential, date_range: date_range, line_ids: line_ids, export_id: self.id)
+    @export_scope ||= Export::Scope.build(referential, date_range: date_range, line_ids: line_ids, export_id: id)
   end
   attr_writer :export_scope
 

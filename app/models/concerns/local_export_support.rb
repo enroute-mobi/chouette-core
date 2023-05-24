@@ -51,17 +51,17 @@ module LocalExportSupport
     Chouette::Benchmark.measure "export_#{export_type}", export: id do
       referential.switch
 
-      if self.class.skip_empty_exports && export_scope.empty?
-        self.update status: :failed, ended_at: Time.now
-        vals = {}
-        vals[:criticity] = :info
-        vals[:message_key] = :no_matching_journey
-        self.messages.create vals
-
-        return
-      end
-
       CustomFieldsSupport.within_workgroup(referential.workgroup) do
+        if self.class.skip_empty_exports && export_scope.empty?
+          self.update status: :failed, ended_at: Time.now
+          vals = {}
+          vals[:criticity] = :info
+          vals[:message_key] = :no_matching_journey
+          self.messages.create vals
+
+          return
+        end
+
         self.file = generate_export_file
       end
 

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2023_03_13_133608) do
+ActiveRecord::Schema.define(version: 2023_05_17_140119) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "btree_gin"
@@ -525,6 +525,7 @@ ActiveRecord::Schema.define(version: 2023_03_13_133608) do
     t.bigint "workbench_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.string "short_name", null: false
     t.index ["workbench_id"], name: "index_document_providers_on_workbench_id"
   end
 

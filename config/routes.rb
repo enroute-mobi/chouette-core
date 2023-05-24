@@ -175,6 +175,9 @@ ChouetteIhm::Application.routes.draw do
     resources :documents do
       get :download, on: :member
     end
+
+    resources :document_providers
+
     resources :processing_rules, as: 'processing_rule_workbenches'
   end
 

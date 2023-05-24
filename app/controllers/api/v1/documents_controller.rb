@@ -13,7 +13,7 @@ class Api::V1::DocumentsController < Api::V1::WorkbenchController
 
   def document_provider
     current_workbench.document_providers.find_by(short_name: document_params[:document_provider]) ||
-    current_workbench.default_document_provider
+      current_workbench.default_document_provider
   end
 
   def document_attributes

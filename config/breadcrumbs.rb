@@ -135,6 +135,21 @@ crumb :new_document_type do |workgroup|
   parent :document_types, workgroup
 end
 
+crumb :document_providers do |workbench|
+  link I18n.t('document_providers.index.title'), workbench_document_providers_path(workbench)
+  parent :workbench, workbench
+end
+
+crumb :document_provider do |workbench, document_provider|
+  link breadcrumb_name(document_provider), workbench_document_provider_path(workbench, document_provider)
+  parent :document_providers, workbench
+end
+
+crumb :new_document_provider do |workbench|
+  link I18n.t('document_providers.new.title')
+  parent :document_providers, workbench
+end
+
 crumb :sources do |workbench|
   link I18n.t('sources.index.title'), workbench_sources_path(workbench)
   parent :workbench, workbench

@@ -319,7 +319,7 @@ class Workgroup < ApplicationModel
   end
 
   def self.create_with_organisation organisation, params={}
-    name = params[:name] || "#{Workgroup.ts} #{organisation.name}"
+    name = params[:name] || organisation.name
 
     Workgroup.transaction do
       workgroup = Workgroup.create!(name: name) do |workgroup|
@@ -337,7 +337,7 @@ class Workgroup < ApplicationModel
         end
       end
 
-      workgroup.workbenches.create!(name: Workbench.ts, organisation: organisation)
+      workgroup.workbenches.create!(name: name, organisation: organisation)
 
       workgroup
     end

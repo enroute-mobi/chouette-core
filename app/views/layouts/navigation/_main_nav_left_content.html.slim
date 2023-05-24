@@ -54,6 +54,8 @@
         span = 'activerecord.models.source.other'.t.capitalize
       = link_to workbench_documents_path(workbench), class: "list-group-item" do
         span = 'activerecord.models.document.other'.t.capitalize
+      = link_to workbench_document_providers_path(workbench), class: 'list-group-item' do
+        span = 'activerecord.models.document_provider.other'.t.capitalize
       = link_to workbench_processing_rule_workbenches_path(workbench), class: "list-group-item" do
         span = ProcessingRule::Workbench.t
 

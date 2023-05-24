@@ -3,7 +3,8 @@ import _ from 'lodash'
 window._  = _
 
 const dispatch = function(){}
-window.fetch = function(){return Promise.resolve()}
+// FIXME: fetch method should be mocked correctly ... See @CHOUETTE-2828
+window.fetch = function(){return Promise.resolve({ ok: false, json: function() { '{}' } })}
 const currentPage = 1
 
 describe('when cannot fetch api', () => {

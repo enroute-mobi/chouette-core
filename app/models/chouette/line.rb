@@ -2,6 +2,7 @@ module Chouette
   class Line < Chouette::ActiveRecord
     # Must be defined before ObjectidSupport
     before_validation :define_line_referential, on: :create
+    before_validation :set_transport_submode_if_blank
 
     has_metadata
     include LineReferentialSupport
@@ -21,23 +22,26 @@ module Chouette
     belongs_to :network
 
     # this 'light' relation prevents the custom fields loading
-    belongs_to :company_light, -> { select(:id, :name, :line_referential_id, :objectid) }, class_name: "Chouette::Company", foreign_key: :company_id
+    belongs_to :company_light, lambda {
+                                 select(:id, :name, :line_referential_id, :objectid)
+                               }, class_name: 'Chouette::Company', foreign_key: :company_id
 
-    belongs_to_array_in_many :line_routing_constraint_zones, class_name: "LineRoutingConstraintZone", array_name: :lines
+    belongs_to_array_in_many :line_routing_constraint_zones, class_name: 'LineRoutingConstraintZone', array_name: :lines
 
     has_array_of :secondary_companies, class_name: 'Chouette::Company'
 
     has_many :routes
-    has_many :journey_patterns, :through => :routes
-    has_many :vehicle_journeys, :through => :journey_patterns
+    has_many :journey_patterns, through: :routes
+    has_many :vehicle_journeys, through: :journey_patterns
     has_many :routing_constraint_zones, through: :routes
     has_many :time_tables, -> { distinct }, through: :vehicle_journeys
 
-    has_and_belongs_to_many :group_of_lines, :class_name => 'Chouette::GroupOfLine', :order => 'group_of_lines.name'
-    has_and_belongs_to_many :line_notices, :class_name => 'Chouette::LineNotice', :join_table => "public.line_notices_lines"
+    has_and_belongs_to_many :group_of_lines, class_name: 'Chouette::GroupOfLine', order: 'group_of_lines.name'
+    has_and_belongs_to_many :line_notices, class_name: 'Chouette::LineNotice',
+                                           join_table: 'public.line_notices_lines'
 
     has_many :footnotes, inverse_of: :line, validate: true
-    accepts_nested_attributes_for :footnotes, reject_if: :all_blank, :allow_destroy => true
+    accepts_nested_attributes_for :footnotes, reject_if: :all_blank, allow_destroy: true
 
     has_many :document_memberships, as: :documentable, dependent: :delete_all
     has_many :documents, through: :document_memberships
@@ -48,23 +52,24 @@ module Chouette
     validate :transport_mode_and_submode_match
     validates :registration_number, uniqueness: { scope: :line_provider_id }, allow_blank: true
 
-    scope :by_text, ->(text) { text.blank? ? all : where('lower(lines.name) LIKE :t or lower(lines.published_name) LIKE :t or lower(lines.objectid) LIKE :t or lower(lines.comment) LIKE :t or lower(lines.number) LIKE :t', t: "%#{text.downcase}%") }
+    scope :by_text, lambda { |text|
+                      text.blank? ? all : where('lower(lines.name) LIKE :t or lower(lines.published_name) LIKE :t or lower(lines.objectid) LIKE :t or lower(lines.comment) LIKE :t or lower(lines.number) LIKE :t', t: "%#{text.downcase}%")
+                    }
 
-    scope :by_name, ->(name) {
+    scope :by_name, lambda { |name|
       joins('LEFT OUTER JOIN public.companies by_name_companies ON by_name_companies.id = lines.company_id')
         .where('
           lines.number LIKE :q
           OR unaccent(lines.name) ILIKE unaccent(:q)
           OR unaccent(by_name_companies.name) ILIKE unaccent(:q)',
-          q: "%#{sanitize_sql_like(name)}%"
-        )
+               q: "%#{sanitize_sql_like(name)}%")
     }
 
-    scope :for_workbench, ->(workbench){
+    scope :for_workbench, lambda { |workbench|
       where(line_referential_id: workbench.line_referential_id)
     }
 
-    scope :notifiable, -> (workbench) {
+    scope :notifiable, lambda { |workbench|
       where(id: workbench.notification_rules.pluck(:line_id))
     }
 
@@ -83,12 +88,18 @@ module Chouette
     scope :active_after, ->(date) { activated.where('active_until IS NULL OR active_until >= ?', date) }
     scope :active_before, ->(date) { activated.where('active_from IS NULL OR active_from < ?', date) }
     scope :active_between, ->(from, to) { active_after(from).active_before(to) }
-    scope :not_active_after, ->(date) { where('deactivated = ? OR (active_until IS NOT NULL AND active_until < ?)', true, date) }
-    scope :not_active_before, ->(date) { where('deactivated = ? OR (active_from IS NOT NULL AND active_from >= ?)', true, date) }
-    scope :not_active_between, ->(from, to) { where('deactivated = ? OR (active_from IS NOT NULL AND active_from >= ?) OR (active_until IS NOT NULL AND active_until < ?)', true, to, from) }
+    scope :not_active_after, lambda { |date|
+                               where('deactivated = ? OR (active_until IS NOT NULL AND active_until < ?)', true, date)
+                             }
+    scope :not_active_before, lambda { |date|
+                                where('deactivated = ? OR (active_from IS NOT NULL AND active_from >= ?)', true, date)
+                              }
+    scope :not_active_between, lambda { |from, to|
+                                 where('deactivated = ? OR (active_from IS NOT NULL AND active_from >= ?) OR (active_until IS NOT NULL AND active_until < ?)', true, to, from)
+                               }
 
     def self.nullable_attributes
-      [:registration_number, :published_name, :number, :comment, :url, :color, :text_color, :stable_id]
+      %i[registration_number published_name number comment url color text_color stable_id]
     end
 
     def geometry_presenter
@@ -96,27 +107,27 @@ module Chouette
     end
 
     def commercial_stop_areas
-      Chouette::StopArea.joins(:children => [:stop_points => [:route => :line] ]).where(:lines => {:id => self.id}).distinct
+      Chouette::StopArea.joins(children: [stop_points: [route: :line]]).where(lines: { id: id }).distinct
     end
 
     def stop_areas
-      Chouette::StopArea.joins(:stop_points => [:route => :line]).where(:lines => {:id => self.id})
+      Chouette::StopArea.joins(stop_points: [route: :line]).where(lines: { id: id })
     end
 
     def stop_areas_last_parents
-      Chouette::StopArea.joins(:stop_points => [:route => :line]).where(:lines => {:id => self.id}).collect(&:root).flatten.uniq
+      Chouette::StopArea.joins(stop_points: [route: :line]).where(lines: { id: id }).collect(&:root).flatten.uniq
     end
 
     def group_of_line_tokens=(ids)
-      self.group_of_line_ids = ids.split(",")
+      self.group_of_line_ids = ids.split(',')
     end
 
     def vehicle_journey_frequencies?
-      self.vehicle_journeys.unscoped.where(journey_category: 1).count > 0
+      vehicle_journeys.unscoped.where(journey_category: 1).count > 0
     end
 
     def full_display_name
-      [self.get_objectid.short_id, number, name, company_light.try(:name)].compact.join(' - ')
+      [get_objectid.short_id, number, name, company_light.try(:name)].compact.join(' - ')
     end
 
     def display_name
@@ -131,7 +142,7 @@ module Chouette
       line_referential.companies.where(id: company_ids)
     end
 
-    def active?(on_date=Time.now)
+    def active?(on_date = Time.now)
       on_date = on_date.to_date
 
       return false if deactivated
@@ -153,17 +164,18 @@ module Chouette
     def activated
       !deactivated
     end
-    alias_method :activated?, :activated
+    alias activated? activated
 
     def desactivated
-      self.deactivated
+      deactivated
     end
+
     def desactivated=(value)
       self.deactivated = value
     end
 
-    def activated= val
-      bool = !(ActiveModel::Type::Boolean.new.cast(val))
+    def activated=(val)
+      bool = !ActiveModel::Type::Boolean.new.cast(val)
       self.deactivated = bool
     end
 
@@ -172,7 +184,7 @@ module Chouette
     end
 
     def self.statuses
-      %i{activated deactivated}
+      %i[activated deactivated]
     end
 
     def activate
@@ -194,8 +206,12 @@ module Chouette
     private
 
     def define_line_referential
-      # TODO Improve performance ?
+      # TODO: Improve performance ?
       self.line_referential ||= line_provider&.line_referential
+    end
+
+    def set_transport_submode_if_blank
+      transport_submode = :undefined if transport_submode.blank?
     end
   end
 end

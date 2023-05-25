@@ -1323,9 +1323,8 @@ class Export::NetexGeneric < Export::Base
   end
 
   class VehicleJourneys < Part
-
     def export!
-      vehicle_journeys.find_each do |vehicle_journey|
+      vehicle_journeys.find_each(batch_size: 10_000) do |vehicle_journey|
         tags = resource_tagger.tags_for(vehicle_journey.line_id)
         tagged_target = TaggedTarget.new(target, tags)
 

@@ -61,17 +61,21 @@ class TimeOfDay
     create time_zone.now
   end
 
+  ONE_DAY = 1.day.to_i
+  ONE_HOUR = 1.hour.to_i
+  ONE_MINUTE = 1.minute.to_i
+
   def self.from_second_offset(offset, utc_offset: 0)
     offset += utc_offset
 
-    day_offset = offset / 1.day
-    offset = offset % 1.day
+    day_offset = offset / ONE_DAY
+    offset = offset % ONE_DAY
 
-    hour = offset / 1.hour
-    offset = offset % 1.hour
+    hour = offset / ONE_HOUR
+    offset = offset % ONE_HOUR
 
-    minute = offset / 1.minute
-    second = offset % 1.minute
+    minute = offset / ONE_MINUTE
+    second = offset % ONE_MINUTE
 
     TimeOfDay.new hour, minute, second, day_offset: day_offset, utc_offset: utc_offset
   end
@@ -88,9 +92,18 @@ class TimeOfDay
     self.class.from_second_offset second_offset, utc_offset: utc_offset
   end
 
+  mattr_reader :zones_utc_offset, default: {}
+
+  def self.zone_utc_offset(time_zone)
+    zones_utc_offset[time_zone.to_s] ||=
+      begin
+        time_zone = ActiveSupport::TimeZone[time_zone] if time_zone.is_a?(String)
+        time_zone&.utc_offset || 0
+      end
+  end
+
   def with_zone(time_zone)
-    time_zone = ActiveSupport::TimeZone[time_zone] if time_zone.is_a?(String)
-    with_utc_offset(time_zone&.utc_offset || 0)
+    with_utc_offset(self.class.zone_utc_offset(time_zone))
   end
 
   # Returns the *same* hour/minute into another TimeZone

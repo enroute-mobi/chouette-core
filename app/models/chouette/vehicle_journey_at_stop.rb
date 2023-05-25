@@ -193,7 +193,7 @@ module Chouette
     # Uses a database cursor and returns Light::VehicleJourneyAtStop
     def self.find_each_light(&block)
       vehicle_journey_at_stop = Light::VehicleJourneyAtStop.new
-      each_row do |row|
+      each_row(block_size: 10_000) do |row|
         vehicle_journey_at_stop.attributes = row
         block.call vehicle_journey_at_stop
       end

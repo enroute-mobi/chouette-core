@@ -2,7 +2,7 @@ module Chouette
   class Line < Chouette::ActiveRecord
     # Must be defined before ObjectidSupport
     before_validation :define_line_referential, on: :create
-    before_validation :set_transport_submode_if_blank
+    before_validation :update_unpermitted_blank_values
 
     has_metadata
     include LineReferentialSupport
@@ -16,7 +16,7 @@ module Chouette
     open_color_attribute
     open_color_attribute :text_color
 
-    belongs_to :line_provider, required: true
+    belongs_to :line_provider, optional: false
 
     belongs_to :company
     belongs_to :network
@@ -48,7 +48,7 @@ module Chouette
 
     attr_reader :group_of_line_tokens
 
-    validates_presence_of :name
+    validates :name, presence: true
     validate :transport_mode_and_submode_match
     validates :registration_number, uniqueness: { scope: :line_provider_id }, allow_blank: true
 
@@ -210,7 +210,7 @@ module Chouette
       self.line_referential ||= line_provider&.line_referential
     end
 
-    def set_transport_submode_if_blank
+    def update_unpermitted_blank_values
       transport_submode = :undefined if transport_submode.blank?
     end
   end

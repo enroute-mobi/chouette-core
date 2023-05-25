@@ -3,10 +3,11 @@ require 'geo'
 
 module Geo
   class Position
-    FORMAT = /\A *([0-9]+\.[0-9]+) *[,:]? *([0-9]+\.[0-9]+) *\Z/
+    FORMAT = /\A *(?<first>-?[0-9]+(?>\.[0-9]+)?) *[,:]? *(?<second>-?[0-9]+(?>\.[0-9]+)?) *\Z/.freeze
+
     def self.parse(definition)
       if FORMAT =~ definition
-        Geo::Position.new latitude: $1.to_f, longitude: $2.to_f
+        Geo::Position.new latitude: ::Regexp.last_match(1).to_f, longitude: ::Regexp.last_match(2).to_f
       end
     end
 

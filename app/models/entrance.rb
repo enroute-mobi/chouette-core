@@ -43,7 +43,7 @@ class Entrance < ActiveRecord::Base
 
   before_validation :position_from_input
   def position_from_input
-    PositionInput.new(@position_input).change_position(self)
+    PositionInput.new(@position_input).change(self)
   end
 
   def address=(address)

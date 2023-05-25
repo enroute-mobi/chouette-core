@@ -25,6 +25,8 @@ en:
         one: Speed into Journey Patterns
       control/presence_associated_model:
         one: Presence of associated models
+      control/geographical_zone:
+        one: Inclusion in a Geographical Area
     attributes:
       control/base:
         name: Name
@@ -62,3 +64,7 @@ en:
         collection: Associated Models
         minimum: Minimum count
         maximum: Maximal count
+      control/geographical_zone:
+        upper_left_input: Area Upper Left Position
+        lower_right_input: Area Lower Right Position
+        description: The target model must be located in the given area 

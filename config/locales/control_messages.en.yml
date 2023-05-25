@@ -8,6 +8,7 @@ en:
     service_count_trend: "An anomaly on the line %{line} at %{date}"
     speed: "Improper Speed with %{speed} km/h in Journey Pattern '%{journey_pattern_name}' between '%{departure_name}' and '%{arrival_name}' (%{position})"
     presence_associated_model: "Invalid count (%{count}) for %{name}"
+    geographical_zone: "The %{target_model} %{name} is not located into the selected geographical area"
   activerecord:
     models:
       control/message:

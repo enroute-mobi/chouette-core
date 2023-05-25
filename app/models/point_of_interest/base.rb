@@ -29,7 +29,7 @@ module PointOfInterest
     scope :with_position, -> { where.not position: nil }
 
     def position_from_input
-      PositionInput.new(@position_input).change_position(self)
+      PositionInput.new(@position_input).change(self)
     end
 
     attr_writer :position_input

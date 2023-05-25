@@ -25,6 +25,8 @@ fr:
         one: Vitesses au sein des Missions
       control/presence_associated_model/run:
         one: Présence de modèles associés
+      control/geographical_zone/run:
+        one: Inclusion dans une Zone Géographique
     attributes:
       control/base/run:
         name: Nom
@@ -58,3 +60,7 @@ fr:
         collection: Modèles associés
         minimum: Nombre minimal
         maximum: Nombre maximal
+      control/geographical_zone/run:
+        upper_left_input: Coin supérieur gauche de la zone
+        lower_right_input: Coin inférieur droit de la zone
+        description: Le modèle cible doit être situé dans la zone indiquée

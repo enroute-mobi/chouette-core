@@ -27,13 +27,14 @@ module Macro
         # - read all source value (with cursor)
         # - compute all target value
         # - create all required codes with inserter ?
+
         models_without_code.find_in_batches do |batch|
           model_class.transaction do
             batch.each do |model|
               if source_value = source.value(model)
                 code_value = target.value(source_value)
-                model.codes.create(code_space: code_space, value: code_value)
-                create_message(model, code_value, source_value)
+                code = model.codes.create(code_space: code_space, value: code_value)
+                create_message(model, code, source_value)
               end
             end
           end
@@ -42,16 +43,16 @@ module Macro
 
       # Create a message for the given Model
       # If the Model is invalid, an error message is created.
-      def create_message(model, code_value, source_value)
+      def create_message(model, code, source_value)
         attributes = {
           message_attributes: {
-            code_value: code_value,
+            code_value: code.value,
             name: model.try(:name) || model.try(:published_name) || source_value
           },
           source: model
         }
 
-        attributes.merge!(criticity: 'error', message_key: 'error') unless model.valid?
+        attributes.merge!(criticity: 'error', message_key: 'error') unless code.valid?
 
         macro_messages.create!(attributes)
       end

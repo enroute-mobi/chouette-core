@@ -307,7 +307,7 @@ class Operation < ApplicationModel
   callback LogTagger
   callback CustomFieldLoader
   callback PerformedSkipper
-  callback Bullet
+  callback Bullet if defined?(::Bullet)
   callback Benchmarker
   callback Notifier
   callback Referential

@@ -50,7 +50,7 @@ module Control
       end
 
       def position
-        target_model == 'StopArea' ? 'ST_SetSRID(ST_Point(longitude, latitude), 4326)' : 'position'
+        target_model == 'StopArea' ? 'ST_SetSRID(ST_Point(longitude, latitude), 4326)' : "position::geometry"
       end
 
       def faulty_models

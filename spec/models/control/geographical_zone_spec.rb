@@ -86,4 +86,131 @@ RSpec.describe Control::GeographicalZone::Run do
       it { is_expected.to eq 'position' }
     end
   end
+
+  describe '#run' do
+
+    let(:control_list_run) do
+      Control::List::Run.create referential: referential, workbench: workbench
+    end
+
+    let(:control_run) do
+      Control::GeographicalZone::Run.create(
+        control_list_run: control_list_run,
+        target_model: target_model,
+        criticity: 'warning',
+        upper_left_input: '0,0',
+        lower_right_input: '2,2',
+        position: 0
+      )
+    end
+
+    let(:context) do
+      Chouette.create do
+        stop_area :stop_area_inside_bounds, latitude: 1, longitude: 1
+        entrance :entrance_inside_bounds
+        point_of_interest :poi_inside_bounds
+
+        stop_area :stop_area_outside_bounds, latitude: 3, longitude: 3
+        entrance :entrance_outside_bounds
+        point_of_interest :poi_outside_bounds
+
+        referential
+      end
+    end
+
+    let(:referential) { context.referential }
+    let(:workbench) { context.workbench }
+    let(:journey_pattern) { context.journey_pattern }
+
+    describe '#StopArea' do
+      before {control_run.run}
+
+      let(:target_model) { 'StopArea' }
+      let(:stop_area_inside_bounds) { context.stop_area(:stop_area_inside_bounds) }
+      let(:stop_area_outside_bounds) { context.stop_area(:stop_area_outside_bounds) }
+
+      let(:expected_message) do
+        an_object_having_attributes(
+          source: stop_area_outside_bounds,
+          criticity: 'warning',
+        )
+      end
+
+      let(:not_expected_message) do
+        an_object_having_attributes(
+          source: stop_area_inside_bounds,
+          criticity: 'warning',
+        )
+      end
+
+      it do
+        expect(control_run.control_messages).to include(expected_message)
+        expect(control_run.control_messages).not_to include(not_expected_message)
+      end
+    end
+
+    describe '#Entrance' do
+      before do
+        entrance_inside_bounds.update_attribute :position, 'POINT(1 1)'
+        entrance_outside_bounds.update_attribute :position, 'POINT(3 3)'
+
+        control_run.run
+      end
+
+      let(:target_model) { 'Entrance' }
+      let(:entrance_inside_bounds) { context.entrance(:entrance_inside_bounds) }
+      let(:entrance_outside_bounds) { context.entrance(:entrance_outside_bounds) }
+
+      let(:expected_message) do
+        an_object_having_attributes(
+          source: entrance_outside_bounds,
+          criticity: 'warning',
+        )
+      end
+
+      let(:not_expected_message) do
+        an_object_having_attributes(
+          source: entrance_inside_bounds,
+          criticity: 'warning',
+        )
+      end
+
+      it do
+        expect(control_run.control_messages).to include(expected_message)
+        expect(control_run.control_messages).not_to include(not_expected_message)
+      end
+    end
+
+    describe '#PointOfInterest' do
+      before do
+        poi_inside_bounds.update_attribute :position, 'POINT(1 1)'
+        poi_outside_bounds.update_attribute :position, 'POINT(3 3)'
+
+        control_run.run
+      end
+
+      let(:target_model) { 'PointOfInterest' }
+      let(:poi_inside_bounds) { context.point_of_interest(:poi_inside_bounds) }
+      let(:poi_outside_bounds) { context.point_of_interest(:poi_outside_bounds) }
+
+      let(:expected_message) do
+        an_object_having_attributes(
+          source: poi_outside_bounds,
+          criticity: 'warning',
+        )
+      end
+
+      let(:not_expected_message) do
+        an_object_having_attributes(
+          source: poi_inside_bounds,
+          criticity: 'warning',
+        )
+      end
+
+      it do
+        expect(control_run.control_messages).to include(expected_message)
+        expect(control_run.control_messages).not_to include(not_expected_message)
+      end
+    end
+  end
 end

@@ -77,13 +77,13 @@ RSpec.describe Control::GeographicalZone::Run do
     context 'when target_model is Entrance' do
       before { control_run.target_model = 'Entrance' }
 
-      it { is_expected.to eq 'position' }
+      it { is_expected.to eq 'position::geometry' }
     end
 
     context 'when target_model is PointOfInterest' do
       before { control_run.target_model = 'PointOfInterest' }
 
-      it { is_expected.to eq 'position' }
+      it { is_expected.to eq 'position::geometry' }
     end
   end
 

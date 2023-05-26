@@ -183,6 +183,15 @@ en:
         distance: Distance
         lines: Lines
         routes: Routes
+    errors:
+      models:
+        stop_area:
+          attributes:
+            is_referent:
+              the_particulars_collection_should_be_empty: particulars stop area collection should be empty
+            referent_id:
+              an_object_used_as_referent_must_be_flagged_as_referent: a stop area used as referent must be flagged as referent
+              a_referent_cannot_have_a_referent: a stop area referent can't have a referent
   formtastic:
     titles:
       stop_area:

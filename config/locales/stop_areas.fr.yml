@@ -186,6 +186,15 @@ fr:
         distance: Distance
         lines: Lignes
         routes: Itinéraires
+    errors:
+      models:
+        stop_area:
+          attributes:
+            is_referent:
+              the_particulars_collection_should_be_empty: la collection des arrêts particuliers doit être vide
+            referent_id:
+              an_object_used_as_referent_must_be_flagged_as_referent: un arrêt utilisé en référent doit être référencé en tant que référent
+              a_referent_cannot_have_a_referent: un référent ne peut pas référencer un référent
   formtastic:
     titles:
       stop_area:

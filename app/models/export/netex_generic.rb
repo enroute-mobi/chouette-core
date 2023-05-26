@@ -117,9 +117,7 @@ class Export::NetexGeneric < Export::Base
 
     def export_part
       Chouette::Benchmark.measure part_name do
-        Bullet.profile do
-          export!
-        end
+        export!
       end
     end
   end

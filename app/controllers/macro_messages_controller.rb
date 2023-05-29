@@ -17,7 +17,7 @@ class MacroMessagesController < ActionController::Base
 			partial: 'macro_list_runs/macro_messages',
 			locals: {
 				messages: messages,
-				facade: OperationRunFacade.new(@macro_list_run)
+				facade: OperationRunFacade.new(@macro_list_run, @workbench)
 			}
 		)
 

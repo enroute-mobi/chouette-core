@@ -77,6 +77,7 @@ class Aggregate < ApplicationModel
         priority: priority,
         workbench_name: workbench.name,
         referential_name: referential.name,
+        referential_created_at: referential.created_at,
         metrics: {
           vehicle_journey_count: new.switch { |n| n.vehicle_journeys.count },
           overlapping_period_count: overlapping_periods.count

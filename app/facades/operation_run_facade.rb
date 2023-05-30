@@ -55,8 +55,10 @@ class OperationRunFacade
   end
 
   def source_link(message)
-    Chouette::ModelPathFinder.new(message.source_type.constantize, message.source_id, current_workbench,
-                                  resource.referential.present? ? resource.referential : nil).path
+    return nil unless message.source_type && message.source_id
+
+    source_class = message.source_type&.constantize
+    Chouette::ModelPathFinder.new(source_class, message.source_id, current_workbench, resource.referential).path
   end
 
   class	PaginateLinkRenderer < WillPaginate::ActionView::LinkRenderer

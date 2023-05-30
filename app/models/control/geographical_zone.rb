@@ -38,9 +38,12 @@ module Control
       def run
         faulty_models.find_each do |model|
           control_messages.create(
-            message_attributes: model.attributes,
+            message_attributes: {
+              name: model.try(:name).presence || model.try(:uuid) || model.id
+            },
             criticity: criticity,
-            source: model
+            source: model,
+            message_key: :geographical_zone
           )
         end
       end

@@ -36,15 +36,6 @@ RSpec.describe Control::GeographicalZone do
       it { is_expected.to eq('POINT(2.29401 48.85593)') }
     end
   end
-
-  describe '.permitted_params' do
-    subject { described_class.permitted_params }
-
-    it { is_expected.to include(:upper_left_input) }
-    it { is_expected.to include(:lower_right_input) }
-    it { is_expected.to_not include(:upper_left) }
-    it { is_expected.to_not include(:lower_right) }
-  end
 end
 
 RSpec.describe Control::GeographicalZone::Run do

@@ -18,7 +18,7 @@
   .row
     .col-lg-12
       .select-table
-        = table_builder_2 @workgroup.workbenches.left_joins(output: :current).order("referentials.created_at desc"),
+        = table_builder_2 @workgroup.workbenches.left_joins(output: :current).order("referentials.created_at desc nulls last, name asc"),
           [ \
             TableBuilderHelper::Column.new( \
               key: :name, \

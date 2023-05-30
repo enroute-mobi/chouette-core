@@ -196,7 +196,7 @@ module TableBuilderHelper
         end
 
         # Inserts a blank column for the gear menu
-        last_item = collection.last
+        last_item = collection.first
         action_links = last_item && last_item.respond_to?(:action_links) && (last_item&.action_links&.is_a?(AF83::Decorator::ActionLinks) ? last_item.action_links(action) : last_item.action_links)
         if has_links || action_links.try(:any?)
           hcont << content_tag(:th, '')

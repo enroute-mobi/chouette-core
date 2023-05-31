@@ -79,7 +79,6 @@ RSpec.describe Control::GeographicalZone::Run do
   end
 
   describe '#run' do
-
     let(:control_list_run) do
       Control::List::Run.create referential: referential, workbench: workbench
     end
@@ -114,7 +113,7 @@ RSpec.describe Control::GeographicalZone::Run do
     let(:journey_pattern) { context.journey_pattern }
 
     describe '#StopArea' do
-      before {control_run.run}
+      before { control_run.run }
 
       let(:target_model) { 'StopArea' }
       let(:stop_area_inside_bounds) { context.stop_area(:stop_area_inside_bounds) }
@@ -123,14 +122,14 @@ RSpec.describe Control::GeographicalZone::Run do
       let(:expected_message) do
         an_object_having_attributes(
           source: stop_area_outside_bounds,
-          criticity: 'warning',
+          criticity: 'warning'
         )
       end
 
       let(:not_expected_message) do
         an_object_having_attributes(
           source: stop_area_inside_bounds,
-          criticity: 'warning',
+          criticity: 'warning'
         )
       end
 
@@ -155,14 +154,14 @@ RSpec.describe Control::GeographicalZone::Run do
       let(:expected_message) do
         an_object_having_attributes(
           source: entrance_outside_bounds,
-          criticity: 'warning',
+          criticity: 'warning'
         )
       end
 
       let(:not_expected_message) do
         an_object_having_attributes(
           source: entrance_inside_bounds,
-          criticity: 'warning',
+          criticity: 'warning'
         )
       end
 
@@ -187,14 +186,14 @@ RSpec.describe Control::GeographicalZone::Run do
       let(:expected_message) do
         an_object_having_attributes(
           source: poi_outside_bounds,
-          criticity: 'warning',
+          criticity: 'warning'
         )
       end
 
       let(:not_expected_message) do
         an_object_having_attributes(
           source: poi_inside_bounds,
-          criticity: 'warning',
+          criticity: 'warning'
         )
       end
 

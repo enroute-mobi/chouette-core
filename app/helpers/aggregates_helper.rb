@@ -14,6 +14,10 @@ module AggregatesHelper
     Metrics.new(metrics).decorated_metrics
   end
 
+  def decorated_datetime(datetime)
+    datetime.strftime("%Y/%m/%d %Hh%M")
+  end
+
   class Metrics
     def initialize(metrics)
       @metrics = metrics

@@ -56,6 +56,7 @@ fr:
           one: "%{count} seconde"
           other: "%{count} secondes"
         referential_name: "Offre finalisée"
+        referential_created_at: " Offre finalisée créée à"
         overlapping_period_count:
           one: "%{count} période nettoyée"
           other: "%{count} périodes nettoyées"

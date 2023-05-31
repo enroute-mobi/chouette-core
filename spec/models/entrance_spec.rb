@@ -44,21 +44,24 @@ describe Entrance, type: :model do
       context "when position input is '#{definition}'" do
         before do
           entrance.position_input = definition
-          entrance.valid? end
+          entrance.valid?
+        end
+
         it { is_expected.to have_attributes(y: 48.858, x: 2.292) }
       end
     end
 
     [
       'abc',
-      '48 2',
       '1000.0 -1000.0',
       '48.858'
     ].each do |definition|
       context "when position input is '#{definition}'" do
         before do
           entrance.position_input = definition
-          entrance.valid? end
+          entrance.valid?
+        end
+
         it { is_expected.to be_nil }
 
         it 'has an error on position_input' do
@@ -75,7 +78,9 @@ describe Entrance, type: :model do
       context "when position input is #{definition.inspect}" do
         before do
           entrance.position_input = definition
-          entrance.valid? end
+          entrance.valid?
+        end
+
         it { is_expected.to be_nil }
         it 'has no error on position_input' do
           expect(entrance.errors).to_not have_key(:position_input)

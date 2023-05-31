@@ -3,7 +3,7 @@ require 'geo'
 
 module Geo
   class Position
-    FORMAT = /\A *(?<first>-?[0-9]+(?>\.[0-9]+)?) *[,:]? *(?<second>-?[0-9]+(?>\.[0-9]+)?) *\Z/.freeze
+    FORMAT = /\A *(?<first>-?[0-9]+(?>\.[0-9]+)?) *[,: ] *(?<second>-?[0-9]+(?>\.[0-9]+)?) *\Z/.freeze
 
     def self.parse(definition)
       if FORMAT =~ definition

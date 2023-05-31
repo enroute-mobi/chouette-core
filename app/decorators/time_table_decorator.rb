@@ -20,16 +20,6 @@ class TimeTableDecorator < AF83::Decorator
       l.method :post
     end
 
-    instance_decorator.action_link policy: :edit, secondary: true do |l|
-      l.content t('actions.combine')
-      l.href do
-        h.new_referential_time_table_time_table_combination_path(
-          context[:referential],
-          object
-        )
-      end
-    end
-
     instance_decorator.action_link policy: :duplicate, secondary: true do |l|
       l.content t('actions.duplicate')
       l.href do

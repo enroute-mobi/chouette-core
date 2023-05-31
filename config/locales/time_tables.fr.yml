@@ -14,7 +14,6 @@ fr:
       edit: "Editer ce calendrier"
       destroy: "Supprimer ce calendrier"
       duplicate: "Dupliquer ce calendrier"
-      combine: "Combiner ce calendrier"
       destroy_confirm: "Etes vous sûr de supprimer ce calendrier ?"
       destroy_date_confirm: "Etes vous sûr de supprimer cette date ?"
       destroy_period_confirm: "Etes vous sûr de supprimer cette période ?"
@@ -76,7 +75,6 @@ fr:
       to: "au"
       add_period: "Ajouter une période"
       add_date: "Ajouter une date"
-      combine_form: "Combinaison de calendriers"
       combine: "Appliquer"
     show_time_table:
       resume: "Validité comprise du %{start_date} au %{end_date}"

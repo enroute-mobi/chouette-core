@@ -14,6 +14,7 @@ module Control
       Control::JourneyPatternSpeed,
       Control::ServiceCountTrend,
       Control::PresenceAssociatedModel,
+      Control::GeographicalZone
     ]
   end
 end

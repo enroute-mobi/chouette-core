@@ -1,16 +1,17 @@
 # Transform the position input into position when defined and valid
 class PositionInput
-  def initialize(input)
+  def initialize(input, attribute: :position)
     @input = input
+    @attribute = attribute
   end
 
-  def change_position(model)
+  def change(model)
     if blank?
-      model.position = nil
+      model.send "#{attribute}=", nil
     elsif valid?
-      model.position = position
+      model.send "#{attribute}=", position
     else
-      model.errors.add :position_input
+      model.errors.add "#{attribute}_input"
     end
   end
 
@@ -18,7 +19,8 @@ class PositionInput
     geo_position.to_point
   end
 
-  attr_reader :input
+  attr_reader :input, :attribute
+
   delegate :blank?, to: :input
 
   def geo_position

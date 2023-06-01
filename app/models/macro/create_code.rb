@@ -52,7 +52,7 @@ module Macro
           source: model
         }
 
-        attributes.merge!(criticity: 'error', message_key: 'error') unless code.valid?
+        attributes.merge!(criticity: 'error', message_key: 'error') unless code.persisted?
 
         macro_messages.create!(attributes)
       end

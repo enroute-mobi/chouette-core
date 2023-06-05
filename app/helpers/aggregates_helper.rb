@@ -14,10 +14,6 @@ module AggregatesHelper
     Metrics.new(metrics).decorated_metrics
   end
 
-  def decorated_datetime(datetime)
-    datetime.strftime("%Y/%m/%d %Hh%M")
-  end
-
   class Metrics
     def initialize(metrics)
       @metrics = metrics
@@ -26,7 +22,7 @@ module AggregatesHelper
     attr_reader :metrics
 
     def decorated_metrics
-      [ decorated_vehicle_journey_count, decorated_overlapping_period_count ].compact.join(', ')
+      [decorated_vehicle_journey_count, decorated_overlapping_period_count].compact.join(', ')
     end
 
     def decorated_vehicle_journey_count

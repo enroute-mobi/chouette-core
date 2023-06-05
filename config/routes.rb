@@ -354,7 +354,6 @@ ChouetteIhm::Application.routes.draw do # rubocop:disable Metrics/BlockLength
       end
       resources :time_table_dates
       resources :time_table_periods
-      resources :time_table_combinations
     end
     resources :clean_ups
   end

@@ -14,7 +14,6 @@ en:
       edit: "Edit this timetable"
       destroy: "Remove this timetable"
       duplicate: "Duplicate this timetable"
-      combine: "Combine with another timetable"
       destroy_confirm: "Are you sure you want destroy this timetable ?"
       destroy_date_confirm: "Are you sure you want destroy this date ?"
       destroy_period_confirm: "Are you sure you want destroy this period ?"
@@ -76,7 +75,6 @@ en:
       to: "to"
       add_period: "Add a period"
       add_date: "Add a date"
-      combine_form: "Combinations"
       combine: "Apply"
     show_time_table:
       resume: "From %{start_date} to %{end_date}"

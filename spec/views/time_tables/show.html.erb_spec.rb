@@ -11,7 +11,6 @@ describe "/time_tables/show", :type => :view do
     )
   end
   let!(:year) { assign(:year, Date.today.cwyear) }
-  let!(:time_table_combination) {assign(:time_table_combination, TimeTableCombination.new)}
 
   before do
     allow(view).to receive_messages(current_organisation: referential.organisation)

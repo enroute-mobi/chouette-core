@@ -56,7 +56,7 @@ en:
           one: "%{count} second"
           other: "%{count} seconds"
         referential_name: "Merged dataset"
-        referential_created_at: "Dataset created at"
+        referential_created_at: "Merged dataset created at"
         overlapping_period_count:
           one: "%{count} cleaned period"
           other: "%{count} cleaned periods"

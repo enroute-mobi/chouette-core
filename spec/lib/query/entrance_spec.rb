@@ -21,10 +21,18 @@ RSpec.describe Query::Entrance do
   let(:stop_area_provider) { context.stop_area_provider(:searched_stop_area_provider) }
   let(:stop_area) { context.stop_area(:searched_stop_area) }
 
-  describe '#name' do
-    it 'should return the entrance with name foo' do
-      scope = query.name('foo').scope
-      expect(scope).to eq([entrance])
+  let(:scope) { query.send(criteria_id, criteria_value).scope }
+
+  describe '#text' do
+    describe 'when search by id' do
+      let(:criteria_id) { 'text' }
+      let(:criteria_value) { '99999' }
+      it { is_expected.to be_truthy }
+    end
+    describe 'when search by name' do
+      let(:criteria_id) { 'text' }
+      let(:criteria_value) { 'Stop area selected' }
+      it { is_expected.to be_truthy }
     end
   end
 

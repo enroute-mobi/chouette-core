@@ -31,6 +31,10 @@ class ReferentialSchema
     @tables ||= Table.create self, table_names
   end
 
+  def analyse
+    connection.execute "ANALYSE #{table_names.join(',')}"
+  end
+
   # Tables used by Apartment excluded models
   def self.apartment_excluded_table_names
     Apartment.excluded_models.map(&:constantize).map(&:table_name).map {|s| s.gsub(/public\./, '')}.uniq

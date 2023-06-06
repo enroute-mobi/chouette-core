@@ -173,9 +173,17 @@ class Aggregate < ApplicationModel
   end
 
   def after_save_current
+    analyse_current
+
     clean_previous_operations
     publish
     workgroup.aggregated!
+  end
+
+  def analyse_current
+    measure "analyse_current" do
+      output.current.schema.analyse
+    end
   end
 
   def handle_queue

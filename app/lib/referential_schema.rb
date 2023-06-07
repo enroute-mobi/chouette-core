@@ -1,8 +1,9 @@
 # frozen_string_literal: true
+
 class ReferentialSchema
   include Measurable
 
-  PUBLIC_SCHEMA = "public"
+  PUBLIC_SCHEMA = 'public'
 
   def self.current
     current_name = Apartment::Tenant.current
@@ -27,23 +28,33 @@ class ReferentialSchema
     connection.select_values tables_query
   end
 
+  def table_names_with_schema
+    table_names.map { |table_name| "\"#{name}\".#{table_name}" }
+  end
+
   def tables
     @tables ||= Table.create self, table_names
   end
 
   def analyse
-    connection.execute "ANALYSE #{table_names.join(',')}"
+    # With postgresql 9.6 ANALYZE could be used for only one table
+    # With postgresql above 9.6 ANALYZE could be used with table list
+    # connection.execute "ANALYZE #{table_names.map { |table_name| "#{name}.#{table_name}" }.join(',')}"
+    table_names_with_schema.each do |table_name|
+      connection.execute "ANALYZE #{table_name}"
+    end
   end
 
   # Tables used by Apartment excluded models
   def self.apartment_excluded_table_names
-    Apartment.excluded_models.map(&:constantize).map(&:table_name).map {|s| s.gsub(/public\./, '')}.uniq
+    Apartment.excluded_models.map(&:constantize).map(&:table_name).map { |s| s.gsub(/public\./, '') }.uniq
   end
 
   # Table names unused for others schemas than public
   def self.excluded_table_names
     @excluded_table_names ||= apartment_excluded_table_names
   end
+
   def excluded_table_names
     self.class.excluded_table_names
   end
@@ -67,14 +78,14 @@ class ReferentialSchema
     table(other.name)
   end
 
-  TABLES_WITH_CONSTRAINTS = %w{
+  TABLES_WITH_CONSTRAINTS = %w[
     routes stop_points
     journey_patterns journey_patterns_stop_points
     vehicle_journeys vehicle_journey_at_stops
     time_tables time_tables_vehicle_journeys
-  }.freeze
+  ].freeze
 
-  IGNORED_IN_CLONE = %w{ar_internal_metadata schema_migrations}.freeze
+  IGNORED_IN_CLONE = %w[ar_internal_metadata schema_migrations].freeze
 
   def table_names_ordered_by_constraints
     @table_names_ordered_by_constraints ||=
@@ -120,6 +131,7 @@ class ReferentialSchema
     end
 
     attr_accessor :name, :schema
+
     mattr_accessor :columns_cache, default: {}
 
     delegate :connection, :raw_connection, to: :schema
@@ -163,6 +175,7 @@ class ReferentialSchema
 
     def clone_to(target)
       return if empty?
+
       target_table = target.associated_table(self)
       columns_arg = columns.map { |col| "#{col}" }.join(',')
 

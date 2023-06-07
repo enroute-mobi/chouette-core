@@ -9,6 +9,7 @@ en:
     speed: "Improper Speed with %{speed} km/h in Journey Pattern '%{journey_pattern_name}' between '%{departure_name}' and '%{arrival_name}' (%{position})"
     presence_associated_model: "Invalid count (%{count}) for %{name}"
     geographical_zone: "The %{target_model} %{name} is not located into the selected geographical area"
+    expected_provider: "The %{target_model} %{name} is not the expect provider"
   activerecord:
     models:
       control/message:

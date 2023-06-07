@@ -4,7 +4,7 @@ module Control
     enumerize :expected_result, in: %w{warning error failed}, default: "warning"
 
     option :target_model
-    enumerize :target_model, in: %w{Line StopArea JourneyPattern Company}, default: "Line"
+    enumerize :target_model, in: %w{StopArea Entrance ConnectionLink Line Company Network PointOfInterest Shape Document Route JourneyPattern VehicleJourney Stat::JourneyPatternCoursesByDate TimeTable}, default: "Line"
 
     class Run < Control::Base::Run
       option :target_model

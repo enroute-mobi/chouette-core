@@ -42,14 +42,16 @@ module Chouette
         workbench_shape_referential_point_of_interest_category_path(workbench, model_id)
       elsif model_class == Document
         workbench_document_path(workbench, model_id)
-      elsif model_class == Chouette::Route
-        workbench_referential_route_path(workbench, referential, model_id)
-      elsif model_class == Chouette::JourneyPattern
-        workbench_referential_journey_pattern_path(workbench, referential, model_id)
-      elsif model_class == Chouette::VehicleJourney
-        workbench_referential_vehicle_journey_path(workbench, referential, model_id)
-      elsif model_class == Chouette::TimeTable
-        workbench_referential_time_table_path(workbench, referential, model_id)
+      elsif referential.present? # For a referential resource we should test if referential has not been deleted (CHOUETTE-2892)
+        if model_class == Chouette::Route
+          workbench_referential_route_path(workbench, referential, model_id)
+        elsif model_class == Chouette::JourneyPattern
+          workbench_referential_journey_pattern_path(workbench, referential, model_id)
+        elsif model_class == Chouette::VehicleJourney
+          workbench_referential_vehicle_journey_path(workbench, referential, model_id)
+        elsif model_class == Chouette::TimeTable
+          workbench_referential_time_table_path(workbench, referential, model_id)
+        end
       else
         Rails.logger.error "Path not found for class #{model_class}"
         nil

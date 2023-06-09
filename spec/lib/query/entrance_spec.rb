@@ -34,6 +34,11 @@ RSpec.describe Query::Entrance do
       let(:criteria_value) { 'Stop area selected' }
       it { is_expected.to be_truthy }
     end
+    describe 'when search by short name' do
+      let(:criteria_id) { 'text' }
+      let(:criteria_value) { 'short_name' }
+      it { is_expected.to be_truthy }
+    end
   end
 
   describe '#entrance_type' do

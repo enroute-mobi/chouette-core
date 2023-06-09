@@ -6,10 +6,15 @@ module Control
       extend ActiveSupport::Concern
 
       included do
-        enumerize :target_model, in: %w{StopArea ConnectionLink Entrance StopAreaRoutingConstraint Company Line LineNotice Network Document PointOfInterest Shape}
         option :target_model
-        enumerize :expected_provider, in: %w{any_workbench_provider stop_area_provider line_provider shape_provider document_provider}
+        enumerize :target_model, in: %w{
+          StopArea ConnectionLink Entrance
+          StopArea RoutingConstraint Company
+          Line LineNotice Network
+          Document PointOfInterest Shape
+        }
         option :expected_provider
+        enumerize :expected_provider, in: %w{ all_workbench_provider }
 
         validates :target_model, :expected_provider, presence: true
       end
@@ -38,20 +43,25 @@ module Control
           "Chouette::#{target_model}".constantize rescue nil || target_model.constantize
       end
 
-      def code_model
-        model_class.reflections["codes"].class_name.underscore.pluralize.to_sym
+      def provider_attribute
+        %w[
+          stop_area_provider
+          line_provider
+          shape_provider
+          document_provider
+        ].find { |provier| model_class.reflections[provier] }
+      end
+
+      def provider_collection
+        provider_attribute.pluralize
+      end
+
+      def expected_providers
+        workbench.send provider_collection
       end
 
       def faulty_models
         models.where.not(provider_attribute => expected_providers)
-      end
-
-      def provider_attribute
-        [:any_workbench_provider, :stop_area_provider, :line_provider, :shape_provider, :document_provider]
-      end
-
-      def expected_providers
-        workbench.send "#{provider_attribute}s"
       end
 
       def model_collection
@@ -59,7 +69,7 @@ module Control
       end
 
       def models
-        @models ||= context.send(model_collection)
+        @models ||= workbench.send(model_collection)
       end
     end
   end

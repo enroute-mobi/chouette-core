@@ -5,7 +5,7 @@
 
   .ffg-row
     .input-group.search_bar class=filter_item_class(params[:search], :name_or_short_name)
-      = f.input :text, label: false, class: 'form-control', placeholder: I18n.t('simple_form.placeholders.search.text')
+      = f.input :text, label: false, class: 'form-control'
       span.input-group-btn
         button.btn.btn-default#search_btn type='submit'
           span.fa.fa-search

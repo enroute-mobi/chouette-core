@@ -548,7 +548,7 @@ GEM
       cliver (~> 0.3.1)
       websocket-driver (>= 0.2.0)
     polylines (0.4.0)
-    postgres-copy (1.7.0)
+    postgres-copy (1.7.1)
       activerecord (>= 5.1)
       pg (>= 0.17)
     postgresql_cursor (0.6.6)

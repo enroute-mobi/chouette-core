@@ -786,7 +786,7 @@ GEM
       activesupport (>= 5.2)
       sprockets (>= 3.0.0)
     ssrf_filter (1.0.8)
-    stackprof (0.2.23)
+    stackprof (0.2.25)
     teaspoon (1.2.2)
       railties (>= 3.2.5)
     teaspoon-jasmine (2.9.1)

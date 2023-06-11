@@ -668,7 +668,7 @@ GEM
     rgeo-shapefile (3.0.0)
       dbf (~> 4.0)
       rgeo (>= 1.0)
-    rmagick (5.1.0)
+    rmagick (5.2.0)
       pkg-config (~> 1.4)
     roo (2.9.0)
       nokogiri (~> 1)

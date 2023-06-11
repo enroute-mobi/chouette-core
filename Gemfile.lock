@@ -574,7 +574,7 @@ GEM
       nio4r (~> 2.0)
     pundit (2.3.0)
       activesupport (>= 3.0.0)
-    pundit-matchers (1.8.4)
+    pundit-matchers (2.0.0)
       rspec-rails (>= 3.0.0)
     raabro (1.4.0)
     rabl (0.16.1)

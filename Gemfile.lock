@@ -135,7 +135,7 @@ GEM
       activemodel (= 5.2.8.1)
       activesupport (= 5.2.8.1)
       arel (>= 9.0)
-    activerecord-nulldb-adapter (0.8.0)
+    activerecord-nulldb-adapter (0.9.0)
       activerecord (>= 5.2.0, < 7.1)
     activerecord-postgis-adapter (5.2.3)
       activerecord (~> 5.1)

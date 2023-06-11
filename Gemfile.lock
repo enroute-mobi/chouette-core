@@ -551,7 +551,7 @@ GEM
     postgres-copy (1.7.1)
       activerecord (>= 5.1)
       pg (>= 0.17)
-    postgresql_cursor (0.6.6)
+    postgresql_cursor (0.6.7)
       activerecord (>= 3.1.0)
     premailer (1.18.0)
       addressable

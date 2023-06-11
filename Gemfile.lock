@@ -93,7 +93,7 @@ GEM
   remote: https://rubygems.org/
   remote: https://rails-assets.org/
   specs:
-    aasm (5.4.0)
+    aasm (5.5.0)
       concurrent-ruby (~> 1.0)
     actioncable (5.2.8.1)
       actionpack (= 5.2.8.1)
@@ -975,4 +975,4 @@ DEPENDENCIES
   x25519
 
 BUNDLED WITH
-   2.3.26
+   2.4.13

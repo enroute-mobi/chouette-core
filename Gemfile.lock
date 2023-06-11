@@ -341,7 +341,7 @@ GEM
     fuubar (2.5.1)
       rspec-core (~> 3.0)
       ruby-progressbar (~> 1.4)
-    geokit (1.13.1)
+    geokit (1.14.0)
     georuby (2.3.0)
     get_process_mem (0.2.7)
       ffi (~> 1.0)
@@ -505,7 +505,7 @@ GEM
     minitest (5.18.1)
     msgpack (1.7.1)
     multi_json (1.15.0)
-    multipart-post (2.2.3)
+    multipart-post (2.3.0)
     nenv (0.3.0)
     net-imap (0.3.4)
       date

@@ -847,6 +847,16 @@ RSpec.describe Export::Gtfs, type: [:model, :with_exportable_referential] do
 
     end
 
+    describe "shape_dist_traveled" do
+
+      it "finds shape_dist_traveled from costs" do
+        allow(decorator).to receive(:costs).and_return({'1-2' => { 'distance' => 10 }, '2-3' => { 'distance' => 20 }})
+        allow(decorator).to receive(:stop_area_id).and_return(1)
+
+        expect(decorator.shape_dist_traveled).to eq(10)
+      end
+
+    end
   end
 
   describe 'VehicleJourneys Part' do

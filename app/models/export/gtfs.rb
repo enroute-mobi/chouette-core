@@ -1055,9 +1055,10 @@ class Export::Gtfs < Export::Base
         "stop_points.stop_area_id as parent_stop_area_id",
         "stop_points.position",
         "stop_points.for_boarding as for_boarding",
-        "stop_points.for_alighting as for_alighting"
+        "stop_points.for_alighting as for_alighting",
+        "journey_patterns.costs as costs"
       ]
-      vehicle_journey_at_stops.joins(:stop_point).select(*attributes).each_row do |vjas_raw_hash|
+      vehicle_journey_at_stops.joins(:stop_point, vehicle_journey: :journey_pattern).select(*attributes).each_row do |vjas_raw_hash|
         decorated_vehicle_journey_at_stop = Decorator.new(vjas_raw_hash, index: index, ignore_time_zone: ignore_time_zone?)
         # Duplicate the stop time for each exported trip
         index.trip_ids(vjas_raw_hash["vehicle_journey_id"].to_i).each do |trip_id|
@@ -1083,6 +1084,15 @@ class Export::Gtfs < Export::Base
         define_method(attribute) do
           @attributes[attribute]
         end
+      end
+
+      def costs
+        JSON.parse(@attributes['costs'])
+      end
+
+      def shape_dist_traveled
+        dist = costs.find { |stop_area_ids, _| stop_area_ids.starts_with? "#{stop_area_id}-" }&.last || {}
+        dist['distance']
       end
 
       attr_reader :index
@@ -1142,7 +1152,8 @@ class Export::Gtfs < Export::Base
           stop_id: stop_time_stop_id,
           stop_sequence: position,
           pickup_type: pickup_type,
-          drop_off_type: drop_off_type
+          drop_off_type: drop_off_type,
+          shape_dist_traveled: shape_dist_traveled
         }
       end
 

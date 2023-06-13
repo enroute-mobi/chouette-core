@@ -1,5 +1,5 @@
 p== simple_format(@destination_mail.email_text)
-p== t('mailers.publication_mailer.publish.publication_date', formated_date: l(@publication.ended_at, format: :short_with_time) if @publication.ended_at)
+p== t('mailers.publication_mailer.publish.publication_date', formated_date: (l(@publication.ended_at, format: :short_with_time) if @publication.ended_at))
 
 - if @destination_mail.link_to_api.present?
   p

@@ -1087,7 +1087,7 @@ class Export::Gtfs < Export::Base
       end
 
       def costs
-        JSON.parse(@attributes['costs'])
+        JSON.parse(@attributes['costs']) rescue {}
       end
 
       def shape_dist_traveled

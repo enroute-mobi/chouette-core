@@ -3,7 +3,7 @@ module Search
 		extend Enumerize
 
     # All search attributes
-    attribute :name
+    attribute :text
     attribute :stop_area
     attribute :zip_code
     attribute :city
@@ -16,7 +16,7 @@ module Search
 
     def query
 			Query::Entrance.new(scope)
-				.name(name)
+				.text(text)
 				.entrance_type(entrance_type)
 				.stop_area_id(stop_area)
 				.zip_code(zip_code)

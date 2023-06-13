@@ -1,7 +1,12 @@
 module Query
   class Entrance < Base
-    def name(value)
-      where(value, :matches, :name, :short_name)
+    def text(value)
+      change_scope(if: value.present?) do |scope|
+        name = scope.arel_table[:name]
+        short_name = scope.arel_table[:short_name]
+        objectid = scope.arel_table[:objectid]
+        scope.where(name.matches("%#{value}%")).or( scope.where(objectid.matches("%#{value}%"))).or( scope.where(short_name.matches("%#{value}%")))
+      end
     end
 
     def entrance_type(value)

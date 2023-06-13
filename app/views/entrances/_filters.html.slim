@@ -2,10 +2,10 @@
   = f.simple_fields_for :order, @search.order, defaults: { wrapper: false } do |form_order|
     - form_order.object.attributes.keys.each do |attribute|
       = form_order.input attribute, as: :hidden
-  
+
   .ffg-row
     .input-group.search_bar class=filter_item_class(params[:search], :name_or_short_name)
-      = f.input :name, label: false, class: 'form-control', placeholder: I18n.t('entrances.filters.name_or_short_name_matches')
+      = f.input :text, label: false, class: 'form-control'
       span.input-group-btn
         button.btn.btn-default#search_btn type='submit'
           span.fa.fa-search
@@ -24,7 +24,7 @@
     .form-group.togglable  class=filter_item_class(params[:search], :exit_flag)
       = f.label Entrance.tmf(:exit_flag), required: false, class: 'control-label'
       = f.input :exit_flag, as: :check_boxes, label: false, label_method: lambda { |w| ("<span>#{w.first}</span>").html_safe }, include_blank: false, wrapper_html: { class: 'checkbox_list' }
-    
+
   .actions
     = link_to t('actions.erase'), workbench_stop_area_referential_entrances_path(@workbench), class: 'btn btn-link'
     = f.submit t('actions.filter'), class: 'btn btn-default'

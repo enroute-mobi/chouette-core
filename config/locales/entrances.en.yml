@@ -22,8 +22,6 @@ en:
         identification: "Identification"
         localization: "Localization"
       add_code: "Add code"
-    filters:
-      name_or_short_name_matches: Search by name or short name...
     no_codes: "This entry point has no code"
   activerecord:
     models:

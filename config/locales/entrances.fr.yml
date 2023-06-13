@@ -22,8 +22,6 @@ fr:
         identification: "Identification"
         localization: "Localisation"
       add_code: "Ajouter un code"
-    filters:
-      name_or_short_name_matches: "Indiquez un nom ou un nom court..."
     no_codes: "Ce point d'accès n'a pas de code"
   activerecord:
     models:

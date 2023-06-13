@@ -211,7 +211,7 @@ module Chouette
     end
 
     def update_unpermitted_blank_values
-      transport_submode = :undefined if transport_submode.blank?
+      self.transport_submode = :undefined if transport_submode.blank?
     end
   end
 end

@@ -10,7 +10,9 @@ module Macro
         enumerize :expected_result, in: %w[info warning error failed], default: 'info'
 
         option :target_model
-        enumerize :target_model, in: %w[Line StopArea JourneyPattern Company], default: 'Line'
+        enumerize :target_model,
+                  in: %w[StopArea Entrance ConnectionLink Line Company Network PointOfInterest Shape Document Route JourneyPattern VehicleJourney ServiceCount TimeTable], default: 'Line'
+
         validates :target_model, presence: true
       end
     end
@@ -23,9 +25,9 @@ module Macro
       def run
         raise 'Raise error as expected' if expected_result == 'failed'
 
-        models.select(:id, :name).find_each do |model|
+        models.find_each do |model|
           macro_messages.create(
-            message_attributes: { name: model.name, result: expected_result },
+            message_attributes: { name: model.try(:name), result: expected_result },
             criticity: expected_result,
             source: model
           )

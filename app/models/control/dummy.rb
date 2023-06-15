@@ -1,20 +1,21 @@
 module Control
   class Dummy < Control::Base
     option :expected_result
-    enumerize :expected_result, in: %w{warning error failed}, default: "warning"
+    enumerize :expected_result, in: %w[warning error failed], default: 'warning'
 
     option :target_model
-    enumerize :target_model, in: %w{Line StopArea JourneyPattern Company}, default: "Line"
+    enumerize :target_model,
+              in: %w[StopArea Entrance ConnectionLink Line Company Network PointOfInterest Shape Document Route JourneyPattern VehicleJourney ServiceCount TimeTable], default: 'Line'
 
     class Run < Control::Base::Run
       option :target_model
 
       def run
-        raise "Raise error as expected" if options[:expected_result] == "fail"
+        raise 'Raise error as expected' if options[:expected_result] == 'fail'
 
-        models.select(:id, :name).find_each do |model|
+        models.find_each do |model|
           control_messages.create(
-            message_attributes: model.attributes,
+            message_attributes: { name: model.try(:name) },
             criticity: criticity,
             source: model
           )

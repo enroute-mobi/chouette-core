@@ -1078,18 +1078,6 @@ class Export::Gtfs < Export::Base
                 ) SELECT
                   base_table.*,
                   (
-                    CONCAT(
-                      (
-                        SELECT b.parent_stop_area_id
-                        FROM base_table b
-                        WHERE b.position = base_table.position - 1
-                        AND b.vehicle_journey_id = base_table.vehicle_journey_id
-                      ),
-                      '-',
-                      base_table.parent_stop_area_id
-                    )
-                  ) AS keys,
-                  (
                     (
                       base_table.costs::jsonb -> CONCAT(
                         (
@@ -1128,8 +1116,7 @@ class Export::Gtfs < Export::Base
           :position,
           :for_boarding,
           :for_alighting,
-          :shape_dist_traveled,
-          :keys
+          :shape_dist_traveled
         ]
       end
 

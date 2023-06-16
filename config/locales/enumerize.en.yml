@@ -421,7 +421,7 @@ en:
       enabled: Enabled
       disabled: Disabled
     expected_provider:
-      any_workbench_provider: Any Workbench Provider
+      all_workbench_provider: Any Workbench Provider
       stop_area_provider: Stop Area Provider
       line_provider: Line Provider
       shape_provider: Shape Provider

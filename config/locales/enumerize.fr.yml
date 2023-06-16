@@ -421,7 +421,7 @@ fr:
       enabled: Activé
       disabled: Désactivé
     expected_provider:
-      any_workbench_provider: Tout Fournisseur
+      all_workbench_provider: Tous les fournisseurs de l’Espace de Travail
       stop_area_provider: Fournisseur d’arrêts
       line_provider: Fournisseur de lignes
       shape_provider: Fournisseur Topologique

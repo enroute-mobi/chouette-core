@@ -405,6 +405,7 @@ en:
     target_model:
       Line: Line
       StopArea: Stop area
+      StopAreaRoutingConstraint: Stop Area Routing Constraint
       JourneyPattern: Journey pattern
       VehicleJourney: Vehicle journey
       Company: Company
@@ -419,6 +420,12 @@ en:
     expected_status:
       enabled: Enabled
       disabled: Disabled
+    expected_provider:
+      all_workbench_provider: Any Workbench Provider
+      stop_area_provider: Stop Area Provider
+      line_provider: Line Provider
+      shape_provider: Shape Provider
+      document_provider: Document Provider
     search:
       rule_type: *notification_rule_rule_type
     control:

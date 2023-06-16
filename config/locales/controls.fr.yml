@@ -27,6 +27,8 @@ fr:
         one: Présence de modèles associés
       control/geographical_zone:
         one: Inclusion dans une Zone Géographique
+      control/expected_provider:
+        one: Fournisseur attendu
     attributes:
       control/base:
         name: Nom
@@ -68,3 +70,5 @@ fr:
         upper_left_input: Coin supérieur gauche de la zone
         lower_right_input: Coin inférieur droit de la zone
         description: Le modèle cible doit être situé dans la zone indiquée
+      control/expected_provider:
+        expected_provider: Fournisseur attendu

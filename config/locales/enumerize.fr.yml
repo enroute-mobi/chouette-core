@@ -405,6 +405,7 @@ fr:
     target_model:
       Line: Ligne
       StopArea: Arrêt
+      StopAreaRoutingConstraint: Interdiction de Trafic entre Arrêt
       JourneyPattern: Mission
       VehicleJourney: Course
       Company: Transporteur
@@ -419,6 +420,12 @@ fr:
     expected_status:
       enabled: Activé
       disabled: Désactivé
+    expected_provider:
+      all_workbench_provider: Tous les fournisseurs de l’Espace de Travail
+      stop_area_provider: Fournisseur d’arrêts
+      line_provider: Fournisseur de lignes
+      shape_provider: Fournisseur Topologique
+      document_provider: Fournisseur de Documents
     search:
       rule_type: *notification_rule_rule_type
     control:

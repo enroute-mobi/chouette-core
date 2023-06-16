@@ -27,6 +27,8 @@ en:
         one: Presence of associated models
       control/geographical_zone/run:
         one: Inclusion in a Geographical Area
+      control/expected_provider/run:
+        one: Expected provider
     attributes:
       control/base/run:
         name: Name
@@ -55,7 +57,7 @@ en:
       control/service_count_trend/run:
         weeks_before: Weeks before
         weeks_after: Weeks after
-        maximum_difference: Maximum difference in percentage  
+        maximum_difference: Maximum difference in percentage
       control/presence_associated_model/run:
         collection: Associated Models
         minimum: Minimum count
@@ -64,3 +66,5 @@ en:
         upper_left_input: Area Upper Left Position
         lower_right_input: Area Lower Right Position
         description: The target model must be located in the given area
+      control/expected_provider/run:
+        expected_provider: Expected provider

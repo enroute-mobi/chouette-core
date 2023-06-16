@@ -27,6 +27,8 @@ en:
         one: Presence of associated models
       control/geographical_zone:
         one: Inclusion in a Geographical Area
+      control/expected_provider:
+        one: Expected provider
     attributes:
       control/base:
         name: Name
@@ -67,4 +69,6 @@ en:
       control/geographical_zone:
         upper_left_input: Area Upper Left Position
         lower_right_input: Area Lower Right Position
-        description: The target model must be located in the given area 
+        description: The target model must be located in the given area
+      control/expected_provider:
+        expected_provider: Expected provider

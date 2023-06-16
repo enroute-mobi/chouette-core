@@ -1040,25 +1040,106 @@ class Export::Gtfs < Export::Base
             end
           end
 
-          base_scope
+          Scope.new(export_scope.vehicle_journey_at_stops.where(id: base_scope.select(:id))).vehicle_journey_at_stops
         end
     end
 
+    class Scope
+      def initialize(base_scope)
+        @base_scope = base_scope
+      end
+      attr_accessor :base_scope
+
+      def base_attributes
+        @base_attributes ||= [
+          :id,
+          :departure_time,
+          :arrival_time,
+          :departure_day_offset,
+          :arrival_day_offset,
+          :vehicle_journey_id,
+          "vehicle_journey_at_stops.stop_area_id AS stop_area_id",
+          "stop_points.stop_area_id AS parent_stop_area_id",
+          "stop_points.position AS position",
+          "stop_points.for_boarding AS for_boarding",
+          "stop_points.for_alighting AS for_alighting",
+          "journey_patterns.costs AS costs"
+        ]
+      end
+
+      def base_quey
+        @base_quey ||= begin
+          base_quey = base_scope.joins(:stop_point, vehicle_journey: :journey_pattern).select(*base_attributes).to_sql
+          base_quey = <<~SQL
+            (
+              WITH distances AS (
+                WITH base_table AS (
+                  #{base_quey}
+                ) SELECT
+                  base_table.*,
+                  (
+                    CONCAT(
+                      (
+                        SELECT b.parent_stop_area_id
+                        FROM base_table b
+                        WHERE b.position = base_table.position - 1
+                        AND b.vehicle_journey_id = base_table.vehicle_journey_id
+                      ),
+                      '-',
+                      base_table.parent_stop_area_id
+                    )
+                  ) AS keys,
+                  (
+                    (
+                      base_table.costs::jsonb -> CONCAT(
+                        (
+                          SELECT b.parent_stop_area_id
+                          FROM base_table b
+                          WHERE b.position = base_table.position - 1
+                          AND b.vehicle_journey_id = base_table.vehicle_journey_id
+                        ),
+                        '-',
+                        base_table.parent_stop_area_id
+                      )
+                    )::jsonb -> 'distance'
+                  ) AS distance_from_previous_stop_point
+                FROM base_table
+              ) SELECT
+                distances.*,
+                (
+                  sum(distance_from_previous_stop_point::int) OVER (PARTITION BY vehicle_journey_id ORDER BY position)
+                ) AS shape_dist_traveled
+              FROM distances
+            ) AS vehicle_journey_at_stops
+          SQL
+        end
+      end
+
+      def selected_attributes
+        @selected_attributes ||= [
+          :id,
+          :departure_time,
+          :arrival_time,
+          :departure_day_offset,
+          :arrival_day_offset,
+          :vehicle_journey_id,
+          :stop_area_id,
+          :parent_stop_area_id,
+          :position,
+          :for_boarding,
+          :for_alighting,
+          :shape_dist_traveled,
+          :keys
+        ]
+      end
+
+      def vehicle_journey_at_stops
+        @vehicle_journey_at_stops ||= base_scope.select(*selected_attributes).from(base_quey)
+      end
+    end
+
     def export!
-      attributes = [
-        :departure_time,
-        :arrival_time,
-        :departure_day_offset,
-        :arrival_day_offset,
-        :vehicle_journey_id,
-        "vehicle_journey_at_stops.stop_area_id as stop_area_id",
-        "stop_points.stop_area_id as parent_stop_area_id",
-        "stop_points.position",
-        "stop_points.for_boarding as for_boarding",
-        "stop_points.for_alighting as for_alighting",
-        "journey_patterns.costs as costs"
-      ]
-      vehicle_journey_at_stops.joins(:stop_point, vehicle_journey: :journey_pattern).select(*attributes).each_row do |vjas_raw_hash|
+      vehicle_journey_at_stops.each_row do |vjas_raw_hash|
         decorated_vehicle_journey_at_stop = Decorator.new(vjas_raw_hash, index: index, ignore_time_zone: ignore_time_zone?)
         # Duplicate the stop time for each exported trip
         index.trip_ids(vjas_raw_hash["vehicle_journey_id"].to_i).each do |trip_id|
@@ -1079,20 +1160,11 @@ class Export::Gtfs < Export::Base
       end
 
       %w{
-        vehicle_journey_id departure_time departure_day_offset arrival_time arrival_day_offset position for_boarding for_alighting
+        vehicle_journey_id departure_time departure_day_offset arrival_time arrival_day_offset position for_boarding for_alighting shape_dist_traveled
       }.each do |attribute|
         define_method(attribute) do
           @attributes[attribute]
         end
-      end
-
-      def costs
-        JSON.parse(@attributes['costs']) rescue {}
-      end
-
-      def shape_dist_traveled
-        dist = costs.find { |stop_area_ids, _| stop_area_ids.starts_with? "#{stop_area_id}-" }&.last || {}
-        dist['distance']
       end
 
       attr_reader :index

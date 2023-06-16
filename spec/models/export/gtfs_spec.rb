@@ -586,6 +586,65 @@ RSpec.describe Export::Gtfs, type: [:model, :with_exportable_referential] do
       end
     end
 
+    describe 'shape_dist_traveled' do
+      let(:context) do
+        Chouette.create do
+          stop_area :departure
+          stop_area :second
+          stop_area :third
+          stop_area :arrival
+
+          route with_stops: false do
+            stop_point :departure
+            stop_point :second
+            stop_point :third
+            stop_point :arrival
+
+            vehicle_journey
+          end
+        end
+      end
+
+      let(:vehicle_journey_at_stops) { referential.vehicle_journey_at_stops }
+      let(:journey_pattern) { context.vehicle_journey.journey_pattern }
+
+      let(:departure_at_stop) { vehicle_journey_at_stops.joins(:stop_point).where('stop_points.position=0').first }
+      let(:second_at_stop) { vehicle_journey_at_stops.joins(:stop_point).where('stop_points.position=1').first }
+      let(:third_at_stop) { vehicle_journey_at_stops.joins(:stop_point).where('stop_points.position=2').first }
+      let(:arrival_at_stop) { vehicle_journey_at_stops.joins(:stop_point).where('stop_points.position=3').first }
+
+      let(:departure_stop) { departure_at_stop.stop_point.stop_area }
+      let(:second_stop) { second_at_stop.stop_point.stop_area }
+      let(:third_stop) { third_at_stop.stop_point.stop_area }
+      let(:arrival_stop) { arrival_at_stop.stop_point.stop_area }
+
+      before do 
+        journey_pattern.update costs: {
+          "#{departure_stop.id}-#{second_stop.id}" => { 'distance' => 1 },
+          "#{second_stop.id}-#{third_stop.id}" => { 'distance' => 2 },
+          "#{third_stop.id}-#{arrival_stop.id}" => { 'distance' => 3 }
+        }
+      end
+
+      let(:shape_dist_traveled_of_departure_at_stop) do
+        part.vehicle_journey_at_stops.find { |at_stop| at_stop.id ==  departure_at_stop.id }.shape_dist_traveled
+      end
+      let(:shape_dist_traveled_of_second_at_stop) do
+        part.vehicle_journey_at_stops.find { |at_stop| at_stop.id ==  second_at_stop.id }.shape_dist_traveled
+      end
+      let(:shape_dist_traveled_of_third_at_stop) do
+        part.vehicle_journey_at_stops.find { |at_stop| at_stop.id ==  third_at_stop.id }.shape_dist_traveled
+      end
+      let(:shape_dist_traveled_of_arrival_at_stop) do
+        part.vehicle_journey_at_stops.find { |at_stop| at_stop.id ==  arrival_at_stop.id }.shape_dist_traveled
+      end
+
+      it 'shoud compute shape_dist_traveled for each at_stop to export' do
+         expect(shape_dist_traveled_of_second_at_stop).to eq(1)
+         expect(shape_dist_traveled_of_third_at_stop).to eq(3)
+         expect(shape_dist_traveled_of_arrival_at_stop).to eq(6)
+      end
+    end
   end
 
   describe "VehicleJourneyAtStop Decorator" do
@@ -843,17 +902,6 @@ RSpec.describe Export::Gtfs, type: [:model, :with_exportable_referential] do
       it "uses position to fill the same stop_sequence attribute" do
         allow(decorator).to receive(:position).and_return(42)
         expect(decorator.stop_time_attributes[:stop_sequence]).to eq(decorator.position)
-      end
-
-    end
-
-    describe "shape_dist_traveled" do
-
-      it "finds shape_dist_traveled from costs" do
-        allow(decorator).to receive(:costs).and_return({'1-2' => { 'distance' => 10 }, '2-3' => { 'distance' => 20 }})
-        allow(decorator).to receive(:stop_area_id).and_return(1)
-
-        expect(decorator.shape_dist_traveled).to eq(10)
       end
 
     end

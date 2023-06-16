@@ -52,9 +52,6 @@ module Chouette
         elsif model_class == Chouette::TimeTable
           workbench_referential_time_table_path(workbench, referential, model_id)
         end
-      else
-        Rails.logger.error "Path not found for class #{model_class}"
-        nil
       end
     end
   end

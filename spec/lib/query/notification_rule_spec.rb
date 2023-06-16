@@ -132,16 +132,29 @@ RSpec.describe Query::NotificationRule do
 
   describe '#lines' do
     let(:workbench) { context.workbench(:lines) }
-    let(:expected_scope) do
-      [
-        context.notification_rule(:all_line_ids),
-        context.notification_rule(:first_line),
-      ]
+    subject { query.lines(line_ids).scope }
+
+    context 'when line_ids = [1]' do
+      let(:line_ids) { [1] }
+      let(:expected_scope) do
+        [
+          context.notification_rule(:all_line_ids),
+          context.notification_rule(:first_line),
+        ]
+      end
+
+      it 'should change scope' do
+        is_expected.to match_array(expected_scope)
+      end
     end
 
-    it 'should return the notification type with line_ids <=> [1]' do
-      scope = query.lines([1]).scope
-      expect(scope).to match_array(expected_scope)
+    context 'when line_ids contains empty string' do
+      let(:line_ids) { [''] }
+      let(:expected_scope) { workbench.notification_rules }
+
+      it 'should not change scope' do
+         is_expected.to match_array(expected_scope)
+      end
     end
   end
 end

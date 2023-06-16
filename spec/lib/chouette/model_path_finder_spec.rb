@@ -105,6 +105,32 @@ RSpec.describe Chouette::ModelPathFinder do
           it { is_expected.to eq('/workbenches/42/referentials/21/time_tables/1') }
         end
       end
+
+      context 'and Referential is nil' do
+        let(:model_path_finder) do
+          Chouette::ModelPathFinder.new(model.class, model.id, workbench, nil)
+        end
+
+        describe 'for Route 1' do
+          let(:model) { Chouette::Route.new(id: 1) }
+          it { is_expected.to be_nil }
+        end
+
+        describe 'for Journey Pattern 1' do
+          let(:model) { Chouette::JourneyPattern.new(id: 1) }
+          it { is_expected.to be_nil }
+        end
+
+        describe 'for Vehicle Journey 1' do
+          let(:model) { Chouette::VehicleJourney.new(id: 1) }
+          it { is_expected.to be_nil }
+        end
+
+        describe 'for Time Table 1' do
+          let(:model) { Chouette::TimeTable.new(id: 1) }
+          it { is_expected.to be_nil }
+        end
+      end
     end
   end
 end

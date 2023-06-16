@@ -26,19 +26,30 @@ class Import::Netex < Import::Base
   end
 
   def notify_parent
-    Rails.logger.info "#{self.class.name} ##{id}: notify_parent"
+    return false unless finished?
+    return false unless parent.present?
+    return false if notified_parent_at
 
+    Rails.logger.info "#{self.class.name} ##{id}: notify_parent"
     main_resource.update_status_from_importer self.status
     update_referential
+    update_column :notified_parent_at, Time.now
 
-    processor.after([referential])
+    # Launch Control::List or Macro::List asynchronously
+    async_processable
 
     Rails.logger.info "#{self.class.name} ##{id}: invoke next_step"
     next_step
+    parent&.child_change
 
-    super
+    true
   end
-  
+
+  def async_processable
+    enqueue_job processor.after([referential])
+  end
+
+
   def processor
     @processor ||= Processor.new(self)
   end

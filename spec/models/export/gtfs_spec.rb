@@ -574,7 +574,6 @@ RSpec.describe Export::Gtfs, type: [:model, :with_exportable_referential] do
     let(:journey_pattern_without_costs) { context.journey_pattern(:journey_pattern_without_costs) }
     let(:journey_pattern_with_empty_costs_hash) { context.journey_pattern(:journey_pattern_with_empty_costs_hash) }
 
-
     let(:departure_at_stop) { vehicle_journey_at_stops.joins(:stop_point).where('stop_points.position=0').first }
     let(:second_at_stop) { vehicle_journey_at_stops.joins(:stop_point).where('stop_points.position=1').first }
     let(:third_at_stop) { vehicle_journey_at_stops.joins(:stop_point).where('stop_points.position=2').first }
@@ -598,6 +597,8 @@ RSpec.describe Export::Gtfs, type: [:model, :with_exportable_referential] do
         "#{second_stop.id}-#{third_stop.id}" => { 'distance' => 2 },
         "#{third_stop.id}-#{arrival_stop.id}" => { 'distance' => 3 }
       }
+
+      journey_pattern_without_costs.update costs: nil
     end
 
     def distance journey_pattern, stop_point

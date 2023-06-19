@@ -1076,22 +1076,20 @@ class Export::Gtfs < Export::Base
     end
 
     def export!
-      def attributes
-        @attributes ||= [
-          :departure_time,
-          :arrival_time,
-          :departure_day_offset,
-          :arrival_day_offset,
-          :vehicle_journey_id,
-          "vehicle_journey_at_stops.stop_area_id AS stop_area_id",
-          "stop_points.stop_area_id AS parent_stop_area_id",
-          "stop_points.position AS position",
-          "stop_points.for_boarding AS for_boarding",
-          "stop_points.for_alighting AS for_alighting",
-          "stop_points.id AS stop_point_id",
-          "journey_patterns.id AS journey_pattern_id"
-        ]
-      end
+      attributes = [
+        :departure_time,
+        :arrival_time,
+        :departure_day_offset,
+        :arrival_day_offset,
+        :vehicle_journey_id,
+        "vehicle_journey_at_stops.stop_area_id AS stop_area_id",
+        "stop_points.stop_area_id AS parent_stop_area_id",
+        "stop_points.position AS position",
+        "stop_points.for_boarding AS for_boarding",
+        "stop_points.for_alighting AS for_alighting",
+        "stop_points.id AS stop_point_id",
+        "journey_patterns.id AS journey_pattern_id"
+      ]
 
       vehicle_journey_at_stops.joins(:stop_point, vehicle_journey: :journey_pattern).select(*attributes).each_row do |vjas_raw_hash|
         decorated_vehicle_journey_at_stop = Decorator.new(vjas_raw_hash, index: index, ignore_time_zone: ignore_time_zone?)
@@ -1224,7 +1222,7 @@ class Export::Gtfs < Export::Base
       end
 
       def gtfs_shape_points
-        distance = 0
+        distance = 0.0
         last_point = nil
 
         geometry.points.map do |point|
@@ -1232,7 +1230,7 @@ class Export::Gtfs < Export::Base
           distance += point.distance_with(last_point) if last_point
           last_point = point
 
-          GTFS::ShapePoint.new(latitude: point.y, longitude: point.x, dist_traveled: distance / 1000.0)
+          GTFS::ShapePoint.new(latitude: point.y, longitude: point.x, dist_traveled: (distance / 1000).round(3))
         end
       end
 

@@ -1232,7 +1232,7 @@ class Export::Gtfs < Export::Base
           distance += point.distance_with(last_point) if last_point
           last_point = point
 
-          GTFS::ShapePoint.new(latitude: point.y, longitude: point.x, shape_dist_traveled: distance / 1000.0)
+          GTFS::ShapePoint.new(latitude: point.y, longitude: point.x, dist_traveled: distance / 1000.0)
         end
       end
 

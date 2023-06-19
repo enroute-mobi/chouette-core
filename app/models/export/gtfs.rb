@@ -1124,7 +1124,7 @@ class Export::Gtfs < Export::Base
       def shape_dist_traveled
         return unless @attributes['journey_pattern_id'] && @attributes['stop_point_id']
 
-        index.journey_pattern_distances(@attributes['journey_pattern_id'], @attributes['stop_point_id'])
+        index.journey_pattern_distances(@attributes['journey_pattern_id'], @attributes['stop_point_id']).to_f / 1000
       end
 
       attr_reader :index

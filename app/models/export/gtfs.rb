@@ -60,6 +60,7 @@ class Export::Gtfs < Export::Base
     VehicleJourneys.new(self).export_part
 
     # Export stop_times.txt
+    JourneyPatternDistances.new(self).export_part
     filter_non_commercial = referential.stop_areas.non_commercial.exists?
     ignore_time_zone = !export_scope.stop_areas.with_time_zone.exists?
 
@@ -246,9 +247,20 @@ class Export::Gtfs < Export::Base
       @trip_index = 0
       @pickup_type = {}
       @shape_ids = {}
+      @journey_pattern_distances = {}
     end
 
     attr_reader :default_company
+
+    def register_journey_pattern_distances(journey_pattern_id, stop_point_id, value)
+      @journey_pattern_distances[[journey_pattern_id, stop_point_id]] = value
+    end
+
+    def journey_pattern_distances(journey_pattern_id, stop_point_id)
+      return unless journey_pattern_id && stop_point_id
+
+      @journey_pattern_distances[[journey_pattern_id, stop_point_id]]
+    end
 
     def default_company=(value)
       @default_company ||= value
@@ -1003,6 +1015,25 @@ class Export::Gtfs < Export::Base
     end
   end
 
+  class JourneyPatternDistances  < Part
+
+    def journey_patterns
+      export_scope.journey_patterns.includes(:stop_points)
+    end
+
+    def export!
+      journey_patterns.find_each do |journey_pattern|
+        journey_pattern.stop_points.find_each do |stop_point|
+          index.register_journey_pattern_distances(
+            journey_pattern.id,
+            stop_point.id,
+            journey_pattern.distance_to(stop_point)
+          )
+        end
+      end
+    end
+  end
+
   # For legacy specs
   def export_vehicle_journey_at_stops_to(target)
     @target = target
@@ -1040,19 +1071,13 @@ class Export::Gtfs < Export::Base
             end
           end
 
-          Scope.new(export_scope.vehicle_journey_at_stops.where(id: base_scope.select(:id))).vehicle_journey_at_stops
+          base_scope
         end
     end
 
-    class Scope
-      def initialize(base_scope)
-        @base_scope = base_scope
-      end
-      attr_accessor :base_scope
-
-      def base_attributes
-        @base_attributes ||= [
-          :id,
+    def export!
+      def attributes
+        @attributes ||= [
           :departure_time,
           :arrival_time,
           :departure_day_offset,
@@ -1063,70 +1088,12 @@ class Export::Gtfs < Export::Base
           "stop_points.position AS position",
           "stop_points.for_boarding AS for_boarding",
           "stop_points.for_alighting AS for_alighting",
-          "journey_patterns.costs AS costs"
+          "stop_points.id AS stop_point_id",
+          "journey_patterns.id AS journey_patterns_id"
         ]
       end
 
-      def base_quey
-        @base_quey ||= begin
-          base_quey = base_scope.joins(:stop_point, vehicle_journey: :journey_pattern).select(*base_attributes).to_sql
-          base_quey = <<~SQL
-            (
-              WITH distances AS (
-                WITH base_table AS (
-                  #{base_quey}
-                ) SELECT
-                  base_table.*,
-                  (
-                    (
-                      base_table.costs::jsonb -> CONCAT(
-                        (
-                          SELECT b.parent_stop_area_id
-                          FROM base_table b
-                          WHERE b.position = base_table.position - 1
-                          AND b.vehicle_journey_id = base_table.vehicle_journey_id
-                        ),
-                        '-',
-                        base_table.parent_stop_area_id
-                      )
-                    )::jsonb -> 'distance'
-                  ) AS distance_from_previous_stop_point
-                FROM base_table
-              ) SELECT
-                distances.*,
-                (
-                  sum(distance_from_previous_stop_point::int) OVER (PARTITION BY vehicle_journey_id ORDER BY position)
-                ) AS shape_dist_traveled
-              FROM distances
-            ) AS vehicle_journey_at_stops
-          SQL
-        end
-      end
-
-      def selected_attributes
-        @selected_attributes ||= [
-          :id,
-          :departure_time,
-          :arrival_time,
-          :departure_day_offset,
-          :arrival_day_offset,
-          :vehicle_journey_id,
-          :stop_area_id,
-          :parent_stop_area_id,
-          :position,
-          :for_boarding,
-          :for_alighting,
-          :shape_dist_traveled
-        ]
-      end
-
-      def vehicle_journey_at_stops
-        @vehicle_journey_at_stops ||= base_scope.select(*selected_attributes).from(base_quey)
-      end
-    end
-
-    def export!
-      vehicle_journey_at_stops.each_row do |vjas_raw_hash|
+      vehicle_journey_at_stops.joins(:stop_point, vehicle_journey: :journey_pattern).select(*attributes).each_row do |vjas_raw_hash|
         decorated_vehicle_journey_at_stop = Decorator.new(vjas_raw_hash, index: index, ignore_time_zone: ignore_time_zone?)
         # Duplicate the stop time for each exported trip
         index.trip_ids(vjas_raw_hash["vehicle_journey_id"].to_i).each do |trip_id|
@@ -1147,11 +1114,15 @@ class Export::Gtfs < Export::Base
       end
 
       %w{
-        vehicle_journey_id departure_time departure_day_offset arrival_time arrival_day_offset position for_boarding for_alighting shape_dist_traveled
+        vehicle_journey_id departure_time departure_day_offset arrival_time arrival_day_offset position for_boarding for_alighting
       }.each do |attribute|
         define_method(attribute) do
           @attributes[attribute]
         end
+      end
+
+      def shape_dist_traveled
+        index.journey_pattern_distances(@attributes['journey_pattern_id'], @attributes['stop_point_id'])
       end
 
       attr_reader :index

@@ -1122,6 +1122,8 @@ class Export::Gtfs < Export::Base
       end
 
       def shape_dist_traveled
+        return unless @attributes['journey_pattern_id'] && @attributes['stop_point_id']
+
         index.journey_pattern_distances(@attributes['journey_pattern_id'], @attributes['stop_point_id'])
       end
 
@@ -1222,8 +1224,15 @@ class Export::Gtfs < Export::Base
       end
 
       def gtfs_shape_points
+        distance = 0
+        last_point = nil
+
         geometry.points.map do |point|
-          GTFS::ShapePoint.new(latitude: point.y,longitude: point.x)
+          point = Geo::Position.from(point)
+          distance += point.distance_with(last_point) if last_point
+          last_point = point
+
+          GTFS::ShapePoint.new(latitude: point.y, longitude: point.x, shape_dist_traveled: distance / 1000.0)
         end
       end
 

@@ -72,6 +72,18 @@ module IevInterfaces::Task
     workbench || referential.workbench || referential.workgroup&.owner_workbench
   end
 
+  def notify_parent
+    return false unless finished?
+    return false unless parent.present?
+    return false if notified_parent_at
+
+    update_column :notified_parent_at, Time.now
+    parent&.child_change
+
+    true
+  end
+
+
   def children_succeedeed
     children.with_status(:successful, :warning).count
   end

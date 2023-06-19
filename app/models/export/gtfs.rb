@@ -1089,7 +1089,7 @@ class Export::Gtfs < Export::Base
           "stop_points.for_boarding AS for_boarding",
           "stop_points.for_alighting AS for_alighting",
           "stop_points.id AS stop_point_id",
-          "journey_patterns.id AS journey_patterns_id"
+          "journey_patterns.id AS journey_pattern_id"
         ]
       end
 

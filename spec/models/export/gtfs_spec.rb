@@ -563,11 +563,17 @@ RSpec.describe Export::Gtfs, type: [:model, :with_exportable_referential] do
 
           vehicle_journey
         end
+
+        journey_pattern :journey_pattern_without_costs
+        journey_pattern :journey_pattern_with_empty_costs_hash
       end
     end
 
     let(:vehicle_journey_at_stops) { referential.vehicle_journey_at_stops }
     let(:journey_pattern) { context.vehicle_journey.journey_pattern }
+    let(:journey_pattern_without_costs) { context.journey_pattern(:journey_pattern_without_costs) }
+    let(:journey_pattern_with_empty_costs_hash) { context.journey_pattern(:journey_pattern_with_empty_costs_hash) }
+
 
     let(:departure_at_stop) { vehicle_journey_at_stops.joins(:stop_point).where('stop_points.position=0').first }
     let(:second_at_stop) { vehicle_journey_at_stops.joins(:stop_point).where('stop_points.position=1').first }
@@ -599,6 +605,12 @@ RSpec.describe Export::Gtfs, type: [:model, :with_exportable_referential] do
     end
 
     subject { part.export! }
+
+    it { expect(part.journey_patterns).not_to include(journey_pattern_without_costs) }
+
+    it { expect(part.journey_patterns).not_to include(journey_pattern_with_empty_costs_hash) }
+
+    it { expect(part.journey_patterns).to include(journey_pattern) }
 
     context 'for departure stop_point' do
       it { expect { subject }.to change { distance journey_pattern, departure_stop_point }.from(nil).to(0) }

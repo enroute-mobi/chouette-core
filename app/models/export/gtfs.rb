@@ -1018,7 +1018,7 @@ class Export::Gtfs < Export::Base
   class JourneyPatternDistances  < Part
 
     def journey_patterns
-      export_scope.journey_patterns.includes(:stop_points)
+      export_scope.journey_patterns.includes(:stop_points).where.not(costs: [{}, nil])
     end
 
     def export!

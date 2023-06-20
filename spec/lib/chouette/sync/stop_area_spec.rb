@@ -170,6 +170,7 @@ RSpec.describe Chouette::Sync::StopArea do
         expect(quay).to have_attributes(expected_attributes)
       end
     end
+
     describe '#derived_from_object_ref' do
       let(:xml) do
         %(
@@ -206,11 +207,13 @@ RSpec.describe Chouette::Sync::StopArea do
       it 'should create particular stop area' do
         expected_attributes = {
           name: 'Particular Sample',
-          referent: referent_stop_area
+          referent: referent_stop_area,
+          is_referent: false
         }
 
         expect(particular_stop_area.reload).to have_attributes(expected_attributes)
       end
+
     end
   end
 

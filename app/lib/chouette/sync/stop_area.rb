@@ -94,10 +94,6 @@ module Chouette::Sync
           end
         end
 
-        def stop_area_is_referent
-          stop_area_is_particular ? false : nil
-        end
-
         def stop_area_referent_id
           return unless stop_area_is_particular
 
@@ -177,7 +173,6 @@ module Chouette::Sync
             object_version: stop_area_object_version,
             latitude: latitude,
             longitude: longitude,
-            is_referent: stop_area_is_referent,
             referent_id: stop_area_referent_id,
             parent_id: stop_area_parent_id,
             status: :confirmed,
@@ -190,7 +185,9 @@ module Chouette::Sync
             visual_signs_availability: accessibility.visual_signs_available,
             accessibility_limitation_description: accessibility.description,
             import_xml: raw_xml
-          }
+          }.tap do |attributes|
+            attributes[:is_referent] = false if stop_area_is_particular
+          end
         end
       end
 
@@ -254,7 +251,7 @@ module Chouette::Sync
             end
 
             unless child.update_attribute attribute, referenced
-              report_invalid_model(child)
+              Rails.logger.error "Invalid child #{child.inspect}"
             end
           end
         end

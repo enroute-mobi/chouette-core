@@ -46,7 +46,7 @@ module Chouette::Sync
         # Use type_of_place found in the id when no defined
         CANDIDATE_TYPES = %w{quay monomodalStopPlace multimodalStopPlace}
         def type_of_place_in_id
-          CANDIDATE_TYPES.find { |type| id.downcase.include?(type.downcase) }
+          CANDIDATE_TYPES.find { |type| id.downcase.include?(type.downcase) } if id
         end
 
         def type_of_place_in_resource_class
@@ -162,7 +162,7 @@ module Chouette::Sync
           @accessibility ||= AccessibilityAssessment.new accessibility_assessment
         end
 
-        def model_attributes
+        def model_attributes # rubocop:disable Metrics/AbcSize,Metrics/MethodLength
           {
             name: name,
             area_type: stop_area_type,
@@ -190,7 +190,6 @@ module Chouette::Sync
           end
         end
       end
-
     end
 
     class Updater < Chouette::Sync::Updater

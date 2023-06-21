@@ -44,8 +44,7 @@ module Query
 		end
 
 		def lines(value)
-			value = value.reject(&:blank?).map(&:to_i)
-
+			value = (value || []).reject(&:blank?).map(&:to_i)
 			change_scope(if: value.present?) do |scope|
 				scope.where(line_ids: []).or(scope.where('line_ids::integer[] && ARRAY[?]', value))
 			end

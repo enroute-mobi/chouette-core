@@ -156,5 +156,15 @@ RSpec.describe Query::NotificationRule do
          is_expected.to match_array(expected_scope)
       end
     end
+
+    context 'when line_ids is null' do
+      let(:line_ids) { nil }
+      let(:expected_scope) { workbench.notification_rules }
+
+      it 'should not change scope' do
+         is_expected.to match_array(expected_scope)
+      end
+    end
+
   end
 end

@@ -252,11 +252,11 @@ class Export::Gtfs < Export::Base
 
     attr_reader :default_company
 
-    def register_journey_pattern_distances(journey_pattern_id, stop_point_id, value)
+    def register_journey_pattern_distance(journey_pattern_id, stop_point_id, value)
       @journey_pattern_distances[[journey_pattern_id, stop_point_id]] = value
     end
 
-    def journey_pattern_distances(journey_pattern_id, stop_point_id)
+    def journey_pattern_distance(journey_pattern_id, stop_point_id)
       return unless journey_pattern_id && stop_point_id
 
       @journey_pattern_distances[[journey_pattern_id, stop_point_id]]
@@ -1024,7 +1024,7 @@ class Export::Gtfs < Export::Base
     def export!
       journey_patterns.find_each do |journey_pattern|
         journey_pattern.stop_points.find_each do |stop_point|
-          index.register_journey_pattern_distances(
+          index.register_journey_pattern_distance(
             journey_pattern.id,
             stop_point.id,
             journey_pattern.distance_to(stop_point)
@@ -1082,16 +1082,16 @@ class Export::Gtfs < Export::Base
         :departure_day_offset,
         :arrival_day_offset,
         :vehicle_journey_id,
-        "vehicle_journey_at_stops.stop_area_id AS stop_area_id",
-        "stop_points.stop_area_id AS parent_stop_area_id",
-        "stop_points.position AS position",
-        "stop_points.for_boarding AS for_boarding",
-        "stop_points.for_alighting AS for_alighting",
-        "stop_points.id AS stop_point_id",
-        "journey_patterns.id AS journey_pattern_id"
+        'vehicle_journey_at_stops.stop_area_id AS stop_area_id',
+        'stop_points.stop_area_id AS parent_stop_area_id',
+        'stop_points.position AS position',
+        'stop_points.for_boarding AS for_boarding',
+        'stop_points.for_alighting AS for_alighting',
+        'stop_points.id AS stop_point_id',
+        'vehicle_journeys.journey_pattern_id AS journey_pattern_id'
       ]
 
-      vehicle_journey_at_stops.joins(:stop_point, vehicle_journey: :journey_pattern).select(*attributes).each_row do |vjas_raw_hash|
+      vehicle_journey_at_stops.joins(:stop_point, :vehicle_journey).select(*attributes).each_row do |vjas_raw_hash|
         decorated_vehicle_journey_at_stop = Decorator.new(vjas_raw_hash, index: index, ignore_time_zone: ignore_time_zone?)
         # Duplicate the stop time for each exported trip
         index.trip_ids(vjas_raw_hash["vehicle_journey_id"].to_i).each do |trip_id|
@@ -1111,18 +1111,22 @@ class Export::Gtfs < Export::Base
         @ignore_time_zone = ignore_time_zone
       end
 
-      %w{
-        vehicle_journey_id departure_time departure_day_offset arrival_time arrival_day_offset position for_boarding for_alighting
-      }.each do |attribute|
+      %w[
+        vehicle_journey_id departure_time departure_day_offset arrival_time arrival_day_offset 
+        position for_boarding for_alighting journey_pattern_id stop_point_id
+      ].each do |attribute|
         define_method(attribute) do
           @attributes[attribute]
         end
       end
 
       def shape_dist_traveled
-        return unless @attributes['journey_pattern_id'] && @attributes['stop_point_id']
+        return unless journey_pattern_id && stop_point_id
 
-        index.journey_pattern_distances(@attributes['journey_pattern_id'], @attributes['stop_point_id']).to_f / 1000
+        journey_pattern_distance = index.journey_pattern_distance(journey_pattern_id, stop_point_id)
+        return unless journey_pattern_distance
+
+        journey_pattern_distance.to_f / 1000
       end
 
       attr_reader :index

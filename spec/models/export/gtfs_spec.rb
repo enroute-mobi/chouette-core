@@ -601,8 +601,8 @@ RSpec.describe Export::Gtfs, type: [:model, :with_exportable_referential] do
       journey_pattern_without_costs.update costs: nil
     end
 
-    def distance journey_pattern, stop_point
-      export.index.journey_pattern_distances(journey_pattern.id, stop_point.id)
+    def distance(journey_pattern, stop_point)
+      export.index.journey_pattern_distance(journey_pattern.id, stop_point.id)
     end
 
     subject { part.export! }

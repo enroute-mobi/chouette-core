@@ -55,7 +55,7 @@ class OperationRunFacade
   end
 
   def source_link(message)
-    return nil unless message.source_type && message.source_id
+    return nil unless message.source_type && message.source_id && display_referential_links
 
     source_class = message.source_type&.constantize
     Chouette::ModelPathFinder.new(source_class, message.source_id, current_workbench, resource.referential).path

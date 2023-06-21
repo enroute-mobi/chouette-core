@@ -34,13 +34,28 @@ RSpec.describe Aggregate, type: :model do
         before { aggregate.aggregate! }
 
         describe "#aggregate_resources" do
+          let(:first_referential) { context.referentials.first }
+          let(:last_referential) { context.referentials.last }
+
           let(:aggregate_resources) { aggregate.reload.resources }
-          let(:workbench_names) { aggregate_resources.map(&:workbench_name) }
-          let(:first_vehicle_journey_count) { context.referentials.first.switch { |ref| ref.vehicle_journeys.count } }
-          let(:last_vehicle_journey_count) { context.referentials.last.switch { |ref| ref.vehicle_journeys.count } }
+          let(:first_vehicle_journey_count) { first_referential.switch { |ref| ref.vehicle_journeys.count } }
+          let(:last_vehicle_journey_count) { last_referential.switch { |ref| ref.vehicle_journeys.count } }
 
           it "aggregate resources contain workbench names" do
-            expect(workbench_names).to match_array([ workbench.name, other_workbench.name ])
+            workbench_names = aggregate_resources.map(&:workbench_name)
+
+            expect(workbench_names).to match_array([workbench.name, other_workbench.name])
+          end
+
+          it "aggregate resources contain Referential created_at time" do
+            referentials_created_at = aggregate_resources.map { |r| r.referential_created_at.to_s }
+
+            expect(referentials_created_at).to match_array(
+              [
+                first_referential.created_at.to_s,
+                last_referential.created_at.to_s
+              ]
+            )
           end
 
           it "calculate metrics for the first referential" do

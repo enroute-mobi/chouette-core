@@ -10,6 +10,9 @@ class AggregatesController < ChouetteController
     @aggregate = @aggregate.decorate(context: {workgroup: parent})
     @workbench = workgroup.owner_workbench
     @processing = processing
+    @aggregate_resources = @aggregate.resources.order(
+      params[:sort] || :referential_created_at => params[:direction] || :desc
+    )
   end
 
   def rollback

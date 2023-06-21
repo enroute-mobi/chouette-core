@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2023_05_17_140119) do
+ActiveRecord::Schema.define(version: 2023_05_30_144339) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "btree_gin"
@@ -26,8 +26,8 @@ ActiveRecord::Schema.define(version: 2023_05_17_140119) do
     t.integer "priority"
     t.integer "duration"
     t.jsonb "metrics"
-    t.string "referential_name"
     t.bigint "aggregate_id"
+    t.datetime "referential_created_at", null: false
     t.index ["aggregate_id"], name: "index_aggregate_resources_on_aggregate_id"
   end
 

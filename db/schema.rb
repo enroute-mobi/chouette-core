@@ -26,9 +26,8 @@ ActiveRecord::Schema.define(version: 2023_05_30_144339) do
     t.integer "priority"
     t.integer "duration"
     t.jsonb "metrics"
-    t.string "referential_name"
     t.bigint "aggregate_id"
-    t.datetime "referential_created_at"
+    t.datetime "referential_created_at", null: false
     t.index ["aggregate_id"], name: "index_aggregate_resources_on_aggregate_id"
   end
 

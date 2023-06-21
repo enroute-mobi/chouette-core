@@ -13,6 +13,7 @@ class Import::Workbench < Import::Base
   option :store_xml, default_value: false, type: :boolean
   option :disable_missing_resources, default_value: false, type: :boolean
   option :strict_mode, default_value: false, type: :boolean
+  option :line_provider_id, collection: ->(){ candidate_line_providers }
 
   has_many :compliance_check_sets, -> { where(parent_type: "Import::Workbench") }, foreign_key: :parent_id, dependent: :destroy
 
@@ -172,6 +173,10 @@ class Import::Workbench < Import::Base
 
   def referentials
     self.resources.map(&:referential).compact
+  end
+
+  def candidate_line_providers
+    workbench.line_providers.map(&:short_name)
   end
 
   # Invokes by IevInterfaces::Task#update_status

@@ -164,6 +164,10 @@ class Source < ApplicationModel
     import_options["strict_mode"]
   end
 
+  def import_option_line_provider_id
+    import_options["line_provider_id"]
+  end
+
   def import_option_automatic_merge=(value)
     import_options["automatic_merge"] = value
   end
@@ -186,6 +190,10 @@ class Source < ApplicationModel
 
   def import_option_strict_mode=(value)
     import_options["strict_mode"] = value
+  end
+
+  def import_option_line_provider_id=(value)
+    import_options["line_provider_id"] = value
   end
 
   def update_workgroup_providers?
@@ -224,6 +232,10 @@ class Source < ApplicationModel
     retrieval = retrievals.create(creator: 'Source')
     retrieval.enqueue
     retrievals.delete_older
+  end
+
+  def candidate_line_providers
+    workbench.line_providers.map(&:short_name)
   end
 
   module Downloader

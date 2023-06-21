@@ -53,6 +53,7 @@ fr:
         import_option_store_xml: Conserver les definitions XML originelles
         import_option_disable_missing_resources: Désactiver les arrêts et lignes manquantes
         import_option_strict_mode: Mode strict (tout attribut non défini est réinitialisé)
+        import_option_line_provider_id: Fournisseur de lignes
         enabled: "Activée"
         retrieval_time_of_day: "Heure de récupération"
         retrieval_days_of_week: "Jours de récupération"

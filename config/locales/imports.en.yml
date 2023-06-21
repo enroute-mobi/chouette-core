@@ -122,6 +122,7 @@ en:
           store_xml: Store original XML resources
           disable_missing_resources: Disable missing Stop Areas and Lines
           strict_mode: Strict Mode (reset any undefined attribute)
+          line_provider_id: Line Provider
           merge_method: Merge method
           shape_attribute_as_id: Attribute used as id
           import_category: Import type

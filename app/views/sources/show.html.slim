@@ -21,6 +21,7 @@
             = d.attribute :import_option_store_xml, as: :boolean
           = d.attribute :import_option_disable_missing_resources, as: :boolean
           = d.attribute :import_option_strict_mode, as: :boolean
+          = d.attribute :import_option_line_provider_id
     .row
       .col-lg-6.col-md-6.col-sm-12.col-xs-12
         = simple_block_for @source, title: t('sources.form.sections.retrieval') do |d|

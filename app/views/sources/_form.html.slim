@@ -42,6 +42,7 @@
         = f.input :import_option_store_xml, as: :switchable_checkbox
       = f.input :import_option_disable_missing_resources, as: :switchable_checkbox
       = f.input :import_option_strict_mode, as: :switchable_checkbox
+      = f.input :import_option_line_provider_id, as: :select, collection: @source.candidate_line_providers, include_blank: false
 
   = cancel_button
   = f.button :submit, t('actions.submit'), class: 'btn btn-default formSubmitr', form: 'source_form'

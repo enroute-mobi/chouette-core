@@ -46,7 +46,7 @@ module Chouette::Sync
         # Use type_of_place found in the id when no defined
         CANDIDATE_TYPES = %w{quay monomodalStopPlace multimodalStopPlace}
         def type_of_place_in_id
-          CANDIDATE_TYPES.find { |type| id.downcase.include?(type.downcase) }
+          CANDIDATE_TYPES.find { |type| id.downcase.include?(type.downcase) } if id
         end
 
         def type_of_place_in_resource_class
@@ -92,10 +92,6 @@ module Chouette::Sync
           @stop_area_parent_id ||= resolve(:stop_area, stop_area_parent_ref).tap do |parent_id|
             pending_parent id, stop_area_parent_ref if parent_id.nil?
           end
-        end
-
-        def stop_area_is_referent
-          stop_area_is_particular ? false : nil
         end
 
         def stop_area_referent_id
@@ -166,7 +162,7 @@ module Chouette::Sync
           @accessibility ||= AccessibilityAssessment.new accessibility_assessment
         end
 
-        def model_attributes
+        def model_attributes # rubocop:disable Metrics/AbcSize,Metrics/MethodLength
           {
             name: name,
             area_type: stop_area_type,
@@ -177,7 +173,6 @@ module Chouette::Sync
             object_version: stop_area_object_version,
             latitude: latitude,
             longitude: longitude,
-            is_referent: stop_area_is_referent,
             referent_id: stop_area_referent_id,
             parent_id: stop_area_parent_id,
             status: :confirmed,
@@ -190,10 +185,11 @@ module Chouette::Sync
             visual_signs_availability: accessibility.visual_signs_available,
             accessibility_limitation_description: accessibility.description,
             import_xml: raw_xml
-          }
+          }.tap do |attributes|
+            attributes[:is_referent] = false if stop_area_is_particular
+          end
         end
       end
-
     end
 
     class Updater < Chouette::Sync::Updater
@@ -254,7 +250,7 @@ module Chouette::Sync
             end
 
             unless child.update_attribute attribute, referenced
-              report_invalid_model(child)
+              Rails.logger.error "Invalid child #{child.inspect}"
             end
           end
         end

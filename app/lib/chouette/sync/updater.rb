@@ -435,7 +435,7 @@ module Chouette
           @resource
         end
 
-        delegate :resolve, :updater, to: :batch
+        delegate :resolve, :updater, to: :batch, allow_nil: true
 
         def self.undecorate(resource_or_decorator)
           if resource_or_decorator.respond_to?(:to_resource)

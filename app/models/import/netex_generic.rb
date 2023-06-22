@@ -34,11 +34,6 @@ class Import::NetexGeneric < Import::Base
     @stop_area_referential ||= workbench.stop_area_referential
   end
 
-  # lines
-  def line_provider
-    @line_provider ||= workbench.default_line_provider
-  end
-
   def line_referential
     @line_referential ||= workbench.line_referential
   end

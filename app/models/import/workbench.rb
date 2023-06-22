@@ -176,7 +176,7 @@ class Import::Workbench < Import::Base
   end
 
   def candidate_line_providers
-    workbench.line_providers.map(&:short_name)
+    workbench.line_providers.order(:name)
   end
 
   # Invokes by IevInterfaces::Task#update_status

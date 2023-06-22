@@ -140,6 +140,10 @@ class Source < ApplicationModel
     end
   end
 
+  def import_option_line_provider
+    candidate_line_providers.find(import_option_line_provider_id)
+  end
+
   def import_option_automatic_merge
     import_options["automatic_merge"]
   end
@@ -235,7 +239,7 @@ class Source < ApplicationModel
   end
 
   def candidate_line_providers
-    workbench.line_providers.map(&:short_name)
+    workbench.line_providers.order(:name)
   end
 
   module Downloader

@@ -34,17 +34,19 @@ class Import::Netex < Import::Base
     main_resource.update_status_from_importer self.status
     update_referential
 
-    # Launch Control::List or Macro::List asynchronously
-    async_processable
-
     Rails.logger.info "#{self.class.name} ##{id}: invoke next_step"
     next_step
 
-    super
+    # Launch Control::List or Macro::List asynchronously
+    enqueue_job async_processable
   end
 
   def async_processable
-    enqueue_job processor.after([referential])
+    processor.after([referential])
+    update_column :notified_parent_at, Time.now
+    parent&.child_change
+
+    true
   end
 
 

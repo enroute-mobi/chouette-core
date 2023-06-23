@@ -428,4 +428,27 @@ RSpec.describe Import::Workbench do
       end
     end
   end
+
+  describe '#candidate_line_providers' do
+    let(:context) do
+      Chouette.create do
+        referential
+        workbench :workbench do
+          line_provider :first, name: 'first'
+          line_provider :second, name: 'second'
+        end
+      end
+    end
+
+    let(:workbench) { context.workbench(:workbench) }
+    let(:referential) { context.referential }
+
+    let(:import_workbench) { create :workbench_import, workbench: workbench, referential: referential }
+
+    subject { import_workbench.candidate_line_providers.map(&:name).join(', ') }
+
+    it 'should include all line providers of workbench with order' do
+      is_expected.to eq('default, first, second')
+    end
+  end
 end

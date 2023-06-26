@@ -404,6 +404,7 @@ en:
       other: Other
     target_model:
       Line: Line
+      LineNotice: Line Notices
       StopArea: Stop area
       StopAreaRoutingConstraint: Stop Area Routing Constraint
       JourneyPattern: Journey pattern
@@ -412,6 +413,7 @@ en:
       Entrance: Entrance
       PointOfInterest: Point of Interest
       Route: Route
+      RoutingConstraint: Routing Constraint Zones
       TimeTable: Timetable
       Referential: DataSet
       Shape: Shape

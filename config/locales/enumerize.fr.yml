@@ -404,6 +404,7 @@ fr:
       other: Autre
     target_model:
       Line: Ligne
+      LineNotice: Notes de lignes
       StopArea: Arrêt
       StopAreaRoutingConstraint: Interdiction de Trafic entre Arrêt
       JourneyPattern: Mission
@@ -412,6 +413,7 @@ fr:
       Entrance: Point d'accès
       PointOfInterest: Point d'intérêt
       Route: Itinéraire
+      RoutingConstraint: Interdictions de trafic local
       TimeTable: Calendrier
       Referential: Jeu de donnée
       Shape: Tracé

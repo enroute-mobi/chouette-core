@@ -25,7 +25,7 @@ gem 'sprockets', '~> 3.7.2'
 gem 'webpacker', '6.0.0.beta.7'
 
 # Use jquery as the JavaScript library
-gem 'jquery-rails', '>= 4.4.0'
+gem 'jquery-rails', '>= 4.6.0'
 gem 'jquery-ui-rails', '>= 6.0.1'
 # Build JSON APIs with ease. Read more: https://github.com/rails/jbuilder
 gem 'jbuilder'

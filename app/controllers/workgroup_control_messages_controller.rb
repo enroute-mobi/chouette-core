@@ -17,7 +17,7 @@ class WorkgroupControlMessagesController < ChouetteController
       partial: 'control_list_runs/control_messages',
       locals: {
         messages: messages,
-        facade: OperationRunFacade.new(@control_list_run)
+        facade: OperationRunFacade.new(@control_list_run, @workgroup.owner_workbench)
       }
     )
 

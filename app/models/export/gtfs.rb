@@ -248,6 +248,7 @@ class Export::Gtfs < Export::Base
       @pickup_type = {}
       @shape_ids = {}
       @journey_pattern_distances = {}
+      @line_referents = {}
     end
 
     attr_reader :default_company
@@ -620,14 +621,31 @@ class Export::Gtfs < Export::Base
     end
 
     def export!
-      lines.find_each do |line|
-        decorated_line = Decorator.new(line, index, duplicated_registration_numbers)
+      lines.includes(:referent).find_each do |line|
+        exported_line = line.referent || line
+        decorated_line = Decorator.new(exported_line, index, duplicated_registration_numbers)
 
-        create_messages decorated_line
-        target.routes << decorated_line.route_attributes
-
+        unless line_referent_exported?(exported_line)
+          create_messages decorated_line
+          target.routes << decorated_line.route_attributes
+          register_line_referent(exported_line)
+        end
         index.register_route_id line, decorated_line.route_id
       end
+    end
+
+    def register_line_referent(exported_line)
+      return unless exported_line.referent?
+
+      line_referents[exported_line.id] = true
+    end
+
+    def line_referent_exported?(exported_line)
+      line_referents[exported_line.id]
+    end
+
+    def line_referents
+      @line_referents ||= {}
     end
 
     class Decorator < SimpleDelegator

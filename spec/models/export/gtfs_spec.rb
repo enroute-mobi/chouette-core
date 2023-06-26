@@ -321,35 +321,89 @@ RSpec.describe Export::Gtfs, type: [:model, :with_exportable_referential] do
       Export::Gtfs::Lines.new export
     end
 
-    let(:context) do
-      Chouette.create do
-        line_provider :first do
-          company :c1, registration_number: "r1"
-          line :l1, company: :c1, registration_number: "1"
-        end
-        line_provider :other do
-          company :c2, registration_number: "r2"
-          line :l2, company: :c2, registration_number: "1"
-        end
+    context "when several lines aren't associated to referent" do
+      let(:context) do
+        Chouette.create do
+          line_provider :first do
+            company :c1, registration_number: "r1"
+            line :l1, company: :c1, registration_number: "1"
+          end
+          line_provider :other do
+            company :c2, registration_number: "r2"
+            line :l2, company: :c2, registration_number: "1"
+          end
 
-        referential lines: [:l1, :l2]
+          referential lines: [:l1, :l2]
+        end
+      end
+
+      let(:first_line) {context.line(:l1)}
+      let(:first_company) {first_line.company}
+      let(:second_line) {context.line(:l2)}
+      let(:second_company) {second_line.company}
+
+      before do
+        context.referential.switch
+        index.register_agency_id(first_company, first_company.registration_number)
+        index.register_agency_id(second_company, second_company.registration_number)
+      end
+
+      it "should use lines objectid when their registration_number is not unique" do
+        part.export!
+        expect(export.target.routes.map(&:id)).to match_array([first_line.objectid, second_line.objectid])
       end
     end
 
-    let(:first_line) {context.line(:l1)}
-    let(:first_company) {first_line.company}
-    let(:second_line) {context.line(:l2)}
-    let(:second_company) {second_line.company}
+    context "when several lines are associated to referent" do
+      let!(:context) do
+        Chouette.create do
+          line_provider :other do
+            company :c0, registration_number: "r0"
+            line :referent, is_referent: true, company: :c0
+          end
 
-    before do
-      context.referential.switch
-      index.register_agency_id(first_company, first_company.registration_number)
-      index.register_agency_id(second_company, second_company.registration_number)
-    end
+          line_provider :first do
+            company :c1, registration_number: "r1"
+            line :l1, referent: :referent, company: :c1
+          end
 
-    it "should use lines objectid when their registration_number is not unique" do
-      part.export!
-      expect(export.target.routes.map(&:id)).to match_array([first_line.objectid, second_line.objectid])
+          line_provider :second do
+            company :c2, registration_number: "r2"
+            line :l2, referent: :referent, company: :c2
+          end
+
+          line_provider :third do
+            company :c3, registration_number: "r3"
+            line :l3, company: :c3
+          end
+
+          referential lines: [:l1, :l2, :l3, :referent]
+        end
+      end
+
+      before do
+        context.referential.switch
+
+        index.register_agency_id(first_company, first_company.registration_number)
+        index.register_agency_id(second_company, second_company.registration_number)
+        index.register_agency_id(third_company, third_company.registration_number)
+        index.register_agency_id(referent_company, referent_company.registration_number)
+      end
+
+      let(:referent) { context.line(:referent) }
+      let(:l1) { context.line(:l1) }
+      let(:l2) { context.line(:l2) }
+      let(:l3) { context.line(:l3) }
+
+      let(:first_company) {  l1.company }
+      let(:second_company) {  l2.company }
+      let(:third_company) {  l3.company }
+      let(:referent_company) {  referent.company }
+
+      it "should not export several times the same Company Referent" do
+        part.export!
+        expect(export.target.routes.map(&:id)).to match_array([referent.objectid, l3.objectid])
+      end
     end
   end
 

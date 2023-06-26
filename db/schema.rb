@@ -935,10 +935,13 @@ ActiveRecord::Schema.define(version: 2023_06_30_103907) do
     t.date "active_from"
     t.date "active_until"
     t.bigint "line_provider_id"
+    t.boolean "is_referent", default: false
+    t.bigint "referent_id"
     t.index ["line_provider_id"], name: "index_lines_on_line_provider_id"
     t.index ["line_referential_id", "registration_number"], name: "index_lines_on_referential_id_and_registration_number"
     t.index ["line_referential_id"], name: "index_lines_on_line_referential_id"
     t.index ["objectid"], name: "lines_objectid_key", unique: true
+    t.index ["referent_id"], name: "index_lines_on_referent_id"
     t.index ["registration_number"], name: "lines_registration_number_key"
     t.index ["secondary_company_ids"], name: "index_lines_on_secondary_company_ids", using: :gin
   end

@@ -12,6 +12,7 @@ module Chouette
 
     include ColorSupport
     include CodeSupport
+    include ReferentSupport
 
     open_color_attribute
     open_color_attribute :text_color

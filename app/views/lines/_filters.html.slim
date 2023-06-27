@@ -9,7 +9,7 @@
     .flex.items-center.border-t.border-r.border-white
       = f.input :network_id, as: :autocomplete_select, collection: @search.candidate_networks, wrapper_html: {class: "w-2/5"}
       = f.input :company_id, as: :autocomplete_select, collection: @search.candidate_companies, wrapper_html: {class: "w-2/5"}
-      = f.input :line_provider_id, as: :autocomplete_select, collection: @search.candidate_line_providers, wrapper_html: {class: "w-2/5"}
+      = f.input :line_provider_id, as: :autocomplete_select, collection: @search.candidate_line_providers.order(:name), wrapper_html: {class: "w-2/5"}
     .flex.items-center.border-t.border-r.border-white
       = f.input :transport_mode, as: :autocomplete_select, wrapper_html: {class: "w-1/5"}, input_html: { multiple: true, style: 'width: 100%' }
       = f.input :statuses, as: :autocomplete_select, wrapper_html: {class: "w-1/5"}, input_html: { style: 'width: 100%' }

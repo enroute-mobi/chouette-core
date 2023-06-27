@@ -228,6 +228,11 @@ class Import::Base < ApplicationModel
     referential.metadatas.pluck(:line_ids).flatten.uniq
   end
 
+  def line_provider
+    workbench.line_providers.find_by(id: (parent&.options || {})['line_provider_id']) ||
+    workbench.default_line_provider
+  end
+
   protected
 
   # Expected and used file extension

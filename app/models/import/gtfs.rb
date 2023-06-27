@@ -20,10 +20,6 @@ class Import::Gtfs < Import::Base # rubocop:disable Metrics/ClassLength
     return false
   end
 
-  def line_provider
-    workbench.default_line_provider
-  end
-
   def lines
     line_referential.lines.by_provider(line_provider)
   end
@@ -895,7 +891,7 @@ class Import::Gtfs < Import::Base # rubocop:disable Metrics/ClassLength
     @index ||= Index.new
   end
 
-  class Index 
+  class Index
     def initialize
       @fare_ids ||= {}
     end

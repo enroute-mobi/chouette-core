@@ -53,6 +53,8 @@ en:
         import_option_store_xml: Store original XML resources
         import_option_disable_missing_resources: Disable missing Stop Areas and Lines
         import_option_strict_mode: Strict Mode (reset any undefined attribute)
+        import_option_line_provider_id: Line Provider
+        import_option_line_provider: Line Provider
         enabled: "Enabled"
         retrieval_time_of_day: "Retrieval time"
         retrieval_days_of_week: "Retrieval days"

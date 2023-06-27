@@ -510,10 +510,6 @@ class Import::Neptune < Import::Base
     stop_area_provider.stop_areas
   end
 
-  def line_provider
-    workbench.default_line_provider
-  end
-
   def lines
     line_referential.lines.by_provider(line_provider)
   end

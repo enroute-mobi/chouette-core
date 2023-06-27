@@ -40,9 +40,9 @@ RSpec.describe Import::Base, type: :model do
         old_import.workbench.imports.purgeable.count
       }.from(1).to(0)
 
-      expect { Import::Workbench.new(workbench: workbench).purge_imports }.not_to change {
+      expect { Import::Workbench.new(workbench: workbench).purge_imports }.not_to(change do
         old_import.workbench.imports.purgeable.count
-      }
+      end)
     end
   end
 
@@ -82,4 +82,44 @@ RSpec.describe Import::Base, type: :model do
     end
   end
 
+  describe '#line_provider' do
+    let(:workbench) { context.workbench }
+    let(:referential) { context.referential }
+
+    let(:import_workbench) do
+      create :workbench_import, workbench: workbench, referential: referential, options: options
+    end
+
+    let(:line_provider) do
+      workbench.line_providers.create(
+        short_name: 'Line_provider_2',
+        name: 'Line Provider 2'
+      )
+    end
+
+    let(:context) do
+      Chouette.create do
+        referential
+      end
+    end
+
+    before do
+      allow(import).to receive(:workbench).and_return(workbench)
+      allow(import).to receive(:parent).and_return(import_workbench)
+    end
+
+    subject { import.line_provider }
+
+    context 'when options contain line_provider' do
+      let(:options) { { 'line_provider_id' => line_provider.id } }
+
+      it { is_expected.to eq(line_provider) }
+    end
+
+    context "when options don't contain line_provider" do
+      let(:options) { {} }
+
+      it { is_expected.to eq(workbench.default_line_provider) }
+    end
+  end
 end

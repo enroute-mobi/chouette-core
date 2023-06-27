@@ -21,6 +21,9 @@ module Chouette
       end
 
       def delete_from(*updaters)
+        # Prevent to remove all resources when no resource was seen in the synchronisation
+        return if updaters.map(&:processed_identifiers).all?(&:empty?)
+
         useless_identifiers = Set.new(existing_identifiers)
         updaters.each do |updater|
           useless_identifiers.subtract updater.processed_identifiers

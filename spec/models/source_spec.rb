@@ -101,7 +101,6 @@ RSpec.describe Source do
   end
 
   describe '#candidate_line_providers' do
-
     let(:context) do
       Chouette.create do
         workbench :workbench do

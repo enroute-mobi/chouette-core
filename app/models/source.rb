@@ -239,7 +239,7 @@ class Source < ApplicationModel
   end
 
   def candidate_line_providers
-    workbench.line_providers.order(:name)
+    workbench.line_providers
   end
 
   module Downloader

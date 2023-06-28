@@ -141,7 +141,7 @@ class Source < ApplicationModel
   end
 
   def import_option_line_provider
-    candidate_line_providers.find(import_option_line_provider_id)
+    candidate_line_providers.find_by(id: import_option_line_provider_id) || workbench.default_line_provider
   end
 
   def import_option_automatic_merge

@@ -290,4 +290,37 @@ RSpec.describe Source::ScheduledJob do
       it { is_expected.to eq('*') }
     end
   end
+
+  describe '#import_option_line_provider_id' do
+    let(:context) { Chouette.create { source retrieval_frequency: 'daily' } }
+    let(:source) { context.source }
+
+    subject { source.import_option_line_provider }
+
+    context 'when no line_provider_id option is defined' do
+      before { source.import_options['line_provider_id'] = nil }
+
+      it 'uses Workbench default line provider' do
+        is_expected.to eq(source.workbench.default_line_provider)
+      end
+    end
+
+    context 'when line_provider_id option matches one of the candidate line providers' do
+      before { source.import_options['line_provider_id'] = line_provider.id }
+
+      let(:line_provider) { source.candidate_line_providers.first }
+
+      it 'uses the candidate line provider' do
+        is_expected.to eq(line_provider)
+      end
+    end
+
+    context "when line_provider_id option doesn't match one of the candidate providers" do
+      before { source.import_options['line_provider_id'] = 42 }
+
+      it 'uses Workbench default line provider' do
+        is_expected.to eq(source.workbench.default_line_provider)
+      end
+    end
+  end
 end

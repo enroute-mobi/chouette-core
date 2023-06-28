@@ -30,6 +30,9 @@ class Import::Netex < Import::Base
     return false unless parent.present?
     return false if notified_parent_at
 
+    # Update notified_parent_at for Api::V1::Internals::NetexImportsController
+    update_column :notified_parent_at, Time.now
+
     Rails.logger.info "#{self.class.name} ##{id}: notify_parent"
     main_resource.update_status_from_importer self.status
     update_referential
@@ -38,17 +41,13 @@ class Import::Netex < Import::Base
     next_step
 
     # Launch Control::List or Macro::List asynchronously
-    enqueue_job async_processable
-  end
-
-  def async_processable
+    Rails.logger.info "#{self.class.name} ##{id}: invoke async_processable"
     processor.after([referential])
-    update_column :notified_parent_at, Time.now
+
     parent&.child_change
 
     true
   end
-
 
   def processor
     @processor ||= Processor.new(self)

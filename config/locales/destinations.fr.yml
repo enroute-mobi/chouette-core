@@ -11,6 +11,7 @@ fr:
     errors:
       publication_api:
         already_used: Cette API de publication est déjà utilisée par une Publication similaire
+        empty: Il n'y pas de publication associée
       mail:
         recipients_mail_syntax: "Adresse(s) invalide(s) : %{emails}"
   activerecord:

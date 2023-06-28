@@ -1,6 +1,9 @@
 RSpec.describe Destination::PublicationApi, type: :model do
   let(:publication_api) { create :publication_api }
   let(:publication_setup) { create :publication_setup }
+  let(:report){ create(:destination_report) }
+  let(:error_publication_api_id) { 99999999 }
+
   let(:file){ File.open(File.join(Rails.root, 'spec', 'fixtures', 'terminated_job.json')) }
 
   let(:line_1) { create :line }
@@ -17,6 +20,12 @@ RSpec.describe Destination::PublicationApi, type: :model do
     expect(destination).to be_valid
   end
 
+  context 'when destination contains publication_api_id but its publication_api object does not exsit' do
+    it 'should not be valid' do
+      destination = build :publication_api_destination, publication_setup: publication_setup, publication_api_id: error_publication_api_id
+      expect(destination).not_to be_valid
+    end
+  end
 
   context '#do_transmit' do
 
@@ -38,6 +47,18 @@ RSpec.describe Destination::PublicationApi, type: :model do
       expect{ destination.transmit(new_publication) }.to change{ publication_api.publication_api_sources.count }.by 1
     end
 
+    context 'when destination contains publication_api_id but its publication_api object does not exsit' do
+      before do
+        allow(destination).to receive(:publication_api).and_return(nil)
+        allow(destination).to receive(:publication_api_id).and_return(error_publication_api_id)
+
+        destination.do_transmit(publication, report)
+      end
+
+      it 'should update error message into report' do
+        expect(report.error_message).to eq(I18n.t('destinations.errors.publication_api.empty'))
+      end
+    end
   end
 
   context '#api_is_not_already_used' do

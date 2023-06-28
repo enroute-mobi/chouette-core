@@ -1,8 +1,15 @@
 class Destination::PublicationApi < ::Destination
-  validates_presence_of :publication_api_id
+
+  belongs_to :publication_api, optional: false
+
   validate :api_is_not_already_used
 
   def do_transmit(publication, report)
+    unless publication_api
+      report.failed! message: I18n.t('destinations.errors.publication_api.empty')
+      return
+    end
+
     publication.exports.successful.each do |export|
       key = generate_key(export)
 
@@ -18,7 +25,9 @@ class Destination::PublicationApi < ::Destination
   end
 
   def api_is_not_already_used
-    scope = publication_api.publication_setups.same_api_usage(publication_setup)
+    return unless publication_api
+
+    scope = PublicationSetup.same_api_usage(publication_setup)
     if scope.exists?
       errors.add(:publication_api_id, I18n.t('destinations.errors.publication_api.already_used'))
       false

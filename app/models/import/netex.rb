@@ -38,15 +38,20 @@ class Import::Netex < Import::Base
     next_step
 
     # Launch Control::List or Macro::List asynchronously
+    Rails.logger.info "#{self.class.name} ##{id}: invoke async_processable"
     enqueue_job :async_processable
+
+    # Update notified_parent_at for Api::V1::Internals::NetexImportsController
+    update_column :notified_parent_at, Time.now
+    parent&.child_change
+
+    true
   end
 
   def async_processable
     processor.after([referential])
     update_column :notified_parent_at, Time.now
     parent&.child_change
-
-    true
   end
 
 

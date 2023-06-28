@@ -38,7 +38,7 @@ class Import::Netex < Import::Base
     next_step
 
     # Launch Control::List or Macro::List asynchronously
-    enqueue_job async_processable
+    enqueue_job :async_processable
   end
 
   def async_processable

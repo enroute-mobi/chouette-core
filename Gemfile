@@ -83,6 +83,7 @@ gem 'gretel', '>= 4.4.0'
 gem 'country_select'
 gem 'i18n-js', '~> 3.9'
 gem 'font_awesome5_rails', '>= 1.5.0'
+gem 'unsplash'
 
 # Format Output
 gem 'json'

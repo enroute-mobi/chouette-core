@@ -1,6 +1,8 @@
 .col-md-8.product_summary
   .overlay-effect
-  = image_tag "https://source.unsplash.com/collection/40395285/1080x720", class:"img-hp"
+  = image_tag WelcomeImage.current.image_url, class:"img-hp w-full"
+  p.absolute.bottom-5.right-5
+    = WelcomeImage.current.attribution
   .content
       h2 = t("devise.sessions.new.baseline")
       p = link_to t("devise.sessions.new.know_more").html_safe, 'https://enroute.mobi/chouette/', target: :blank

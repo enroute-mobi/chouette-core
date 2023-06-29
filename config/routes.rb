@@ -140,6 +140,7 @@ ChouetteIhm::Application.routes.draw do # rubocop:disable Metrics/BlockLength
       resources :line_providers
 
       resources :lines do
+        get :autocomplete, on: :collection
         resources :line_notices do
           collection do
             get :attach

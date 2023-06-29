@@ -17,7 +17,7 @@
     "@turf/turf": "^6.3.0",
     "alpinejs": "^3.7.0",
     "autoprefixer": "^10.3.1",
-    "babel-jest": "26.5.2",
+    "babel-jest": "27.0.0",
     "babel-loader": "^8.2.4",
     "bootstrap": "3.4.1",
     "bootstrap-sass": "^3.4.1",

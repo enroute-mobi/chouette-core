@@ -8,7 +8,7 @@
     .row
       .col-lg-6.col-md-6.col-sm-6.col-xs-6
         - attributes = { t('id_codif') => @company.get_objectid.try(:short_id) }
-        - %i(name short_name code default_language time_zone).each do |field|
+        - %i(name short_name code default_language time_zone fare_url).each do |field|
           - attributes[Chouette::Company.human_attribute_name(field)] = @company.send(field)
         - @company.custom_fields(current_referential.workgroup).for_section("identification").each do |code, field|
           - attributes.merge!(field.name => field.display_value)

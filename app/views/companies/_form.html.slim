@@ -37,6 +37,7 @@
       h2.mb-lg= t("companies.form.sections.general")
       = f.input :default_language
       = f.input :time_zone, as: :full_time_zone, include_blank: false
+      = f.input :fare_url
 
       = custom_fields_for_section(f, "general")
 

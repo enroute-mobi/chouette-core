@@ -163,6 +163,7 @@ group :development do
   gem 'spring'
   gem 'spring-commands-rspec'
   gem 'better_errors'
+  gem 'sassc' # Needed due to better_errors call in https://github.com/BetterErrors/better_errors/blob/master/lib/better_errors/error_page_style.rb
   gem 'binding_of_caller'
   gem 'derailed_benchmarks'
 

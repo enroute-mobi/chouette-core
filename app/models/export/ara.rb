@@ -286,14 +286,14 @@ class Export::Ara < Export::Base
     delegate :stop_area_referential, to: :context
 
     def export!
-      stop_areas.includes(:parent, :lines, codes: :code_space).find_each do |stop_area|
+      stop_areas.includes(:parent, :referent, :lines, codes: :code_space).find_each do |stop_area|
         target << Decorator.new(stop_area, code_provider: code_provider).ara_model
       end
     end
 
     def stop_areas
       ::Query::StopArea.new(stop_area_referential.stop_areas)
-                       .self_and_ancestors(export_scope.stop_areas)
+                       .self_and_ancestors_with_referents(export_scope.stop_areas)
     end
 
     class CodeScope < SimpleDelegator
@@ -329,7 +329,8 @@ class Export::Ara < Export::Base
           objectids: ara_codes,
           parent_id: parent_uuid,
           line_ids: line_uuids,
-          collect_children: ara_collect_children?
+          collect_children: ara_collect_children?,
+          referent_id: referent_uuid
         }
       end
 
@@ -343,6 +344,10 @@ class Export::Ara < Export::Base
 
       def parent_uuid
         parent&.get_objectid&.local_id
+      end
+
+      def referent_uuid
+        referent&.get_objectid&.local_id
       end
 
       def ara_model

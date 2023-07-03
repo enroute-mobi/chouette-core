@@ -8,6 +8,26 @@ module Query
     #    Query::StopArea.new(stop_area_referential).self_and_ancestors(export_scope.stop_areas)
     #
     # TODO Could use a nice RecurviseQuery common object
+
+    def self_and_ancestors_with_referents(relation)
+      ids = <<-SQL
+        #{self_and_ancestors(relation).select(:id).to_sql}
+        UNION
+        #{with_referents(relation).select(:id).to_sql}
+      SQL
+      scope.where("#{table_name}.id IN (#{ids})")
+    end
+
+    def with_referents(relation)
+      query = <<-SQL
+        SELECT #{table_name}.referent_id
+        FROM #{table_name}
+        WHERE #{table_name}.referent_id is not null
+      SQL
+
+      scope.where("#{table_name}.id IN (#{query})")
+    end
+
     def self_and_ancestors(relation)
       tree_sql = <<-SQL
         WITH RECURSIVE parent_tree(id) AS (

@@ -15,10 +15,10 @@ class MacroListFacade
 			wrapper: :horizontal_form_tailwind,
 			html: {
 				class: 'tailwind-form',
-				id: 'macro_list_form',
-				'x-data': '',
-				'x-init': "$store.macroList.initState(#{json_state})",
-				'x-on:formdata': '$store.macroList.setFormData($event)'
+				id: 'macro_list_form'
+				# 'x-data': '',
+				# 'x-init': "$store.macroList.initState(#{json_state})",
+				# 'x-on:formdata': '$store.macroList.setFormData($event)'
 			}
 		}
 	end

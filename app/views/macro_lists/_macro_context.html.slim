@@ -1,0 +1,13 @@
+- template_mode = local_assigns.fetch(:template_mode, false)
+- fields_for_options = template_mode ? { child_index: "new_child", builder: NewScopeFormBuilder }  : {}
+// - macro_context.position ||= "new_position"
+
+= form.simple_fields_for(:macro_contexts, macro_context, fields_for_options) do |macro_context_form|
+  .flex.items-center.pt-10
+    = render "macro_lists/#{macro_context.model_name.i18n_key.to_s}", form: macro_context_form
+    = macro_context_form.input :type, as: :hidden, input_html: { value: macro_context.class.name }
+
+    // = render 'operations/context_actions'
+
+  div.ml-16.border-l-2.pl-12
+    = render partial: 'macros', locals: { macros: macro_context.macros, form: macro_context_form, template_mode: template_mode }

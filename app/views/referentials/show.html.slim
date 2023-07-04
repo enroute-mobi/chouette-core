@@ -7,7 +7,7 @@
     .row
       .col-lg-6.col-md-6.col-sm-12.col-xs-12
         - attributes = {}
-        - attributes[@referential.human_attribute_name(:state)] = referential_state(@referential) unless @referential.in_referential_suite?
+        - attributes[@referential.human_attribute_name(:status)] = referential_state(@referential) unless @referential.in_referential_suite?
         - attributes[@referential.human_attribute_name(:validity_period)] = (@referential.validity_period.present? ? t('validity_range', debut: l(@referential.try(:validity_period).try(:begin)), end: l(@referential.try(:validity_period).try(:end))) : '-')
         - attributes[@referential.human_attribute_name(:workbench)] = @referential.workbench&.name if @referential.workbench
         - unless @referential.in_referential_suite?

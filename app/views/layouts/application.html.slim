@@ -14,7 +14,9 @@ html lang=I18n.locale
        document.getElementsByClassName('security')[0].innerHTML = "<p id='security-issue'>Security Issue</p>"
      }
 
-    title = page_title
+    title
+      = t('brandname') + " | "
+      = page_title
 
     // Webpack bundle
     = favicon_pack_tag 'static/favicon.ico'

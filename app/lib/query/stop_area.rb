@@ -13,19 +13,16 @@ module Query
       ids = <<-SQL
         #{self_and_ancestors(relation).select(:id).to_sql}
         UNION
-        #{with_referents(relation).select(:id).to_sql}
+        #{with_referents.select(:id).to_sql}
       SQL
       scope.where("#{table_name}.id IN (#{ids})")
     end
 
-    def with_referents(relation)
-      query = <<-SQL
-        SELECT #{table_name}.referent_id
-        FROM #{table_name}
-        WHERE #{table_name}.referent_id is not null
-      SQL
+    def with_referents
+      referent_ids =
+        scope.select(:referent_id).distinct.where.not(referent: nil).to_sql
 
-      scope.where("#{table_name}.id IN (#{query})")
+      scope.where("#{table_name}.id IN (#{referent_ids})")
     end
 
     def self_and_ancestors(relation)

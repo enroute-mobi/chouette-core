@@ -1,8 +1,13 @@
 .col-md-8.product_summary
   .overlay-effect
   = image_tag WelcomeImage.current.image_url, class:"img-hp w-full"
-  p.absolute.bottom-5.right-5
-    = WelcomeImage.current.attribution
+  p.absolute.bottom-5.right-5.z-10
+    | Photo by&nbsp;
+    = link_to WelcomeImage.current.name, "https://unsplash.com/@#{WelcomeImage.current.username}?utm_source=chouette-core&utm_medium=referral"
+    |  on&nbsp;
+    a[href="https://unsplash.com/?utm_source=chouette-core&utm_medium=referral"]
+    | Unsplash
+
   .content
       h2 = t("devise.sessions.new.baseline")
       p = link_to t("devise.sessions.new.know_more").html_safe, 'https://enroute.mobi/chouette/', target: :blank

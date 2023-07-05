@@ -16,10 +16,16 @@ class WelcomeImage
     photo.urls.regular
   end
 
-  def attribution
+  def name
     return unless photo
 
     photo.user.name
+  end
+
+  def username
+    return unless photo
+
+    photo.user.username
   end
 
   def photo

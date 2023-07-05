@@ -3,7 +3,7 @@
 
 div.macros[x-data="{ macro_type: '', children_count: #{macros.count} }"]
   div[x-ref="children"]
-    = render partial: "macro", collection: macros, locals: { form: form, template_mode: template_mode }
+    = render partial: "macro", collection: macros, locals: { form: form, template_mode: template_mode, read_only: read_only }
 
   - unless read_only
     .flex.flex-col.items-center.mt-5

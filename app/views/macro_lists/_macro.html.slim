@@ -1,3 +1,4 @@
+- read_only = local_assigns.fetch(:read_only, false)
 - class_description = macro.class.model_name.human
 - template_mode = local_assigns.fetch(:template_mode, false)
 - expanded = template_mode
@@ -5,13 +6,15 @@
 - macro.position ||= "new_position"
 
 = form.simple_fields_for(:macros, macro, fields_for_options) do |macro_form|
-  .flex.flex-col.items-center[x-data = "{ expanded: #{expanded}, name: '#{macro.name}', class_description: '#{class_description}' }"]
+  .flex.flex-col.items-center[x-data = "{ expanded: #{expanded}, name: '#{macro.name}', class_description: '#{class_description}', deleted: false }", x-show="!deleted"] 
     .flex.items-center.w-full.mb-8 x-show="!expanded"
       button x-on:click.prevent=="expanded = ! expanded" class="flex items-center justify-between p-3 pl-3 mr-3 font-bold text-white bg-enroute-chouette-primary rounded cursor-pointer hover:text-indigo-100"
         <span class="text-3xl w-4">+</span>
 
-      .flex.items-center.max-w-8xl
+      .grow
         p.mb-0.mr-2.truncate x-text="name ? (name + ' (' + class_description + ')') : class_description"
+
+      = render "macro_actions", read_only: read_only
 
     .expanded class="w-full" x-show="expanded"
       .flex.items-center.w-full.mb-8
@@ -23,10 +26,11 @@
         .flex.ml-auto.human_model_name
           p.flex = class_description
 
-        // = render 'operations/actions'
+        = render "macro_actions", read_only: read_only
 
       .flex.flex-col class="w-full"
         = render "macro_lists/#{macro.model_name.i18n_key.to_s}", form: macro_form
         = macro_form.input :comments, as: :text, required: false
-        = macro_form.input :position, as: :hidden
-        = macro_form.input :type, as: :hidden, input_html: { value: macro.class.name }
+
+    = macro_form.hidden_field :type, value: macro.class.name
+    = macro_form.hidden_field :_destroy, 'x-model': 'deleted'

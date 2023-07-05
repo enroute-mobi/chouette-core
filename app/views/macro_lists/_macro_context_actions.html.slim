@@ -1,0 +1,8 @@
+- unless read_only
+  .actions
+    .btn-group
+      .btn.dropdown-toggle data-toggle="dropdown"
+        .span.fa.fa-cog
+      ul.dropdown-menu
+        li
+          a class="cursor-pointer delete" @click="deleted = true" = I18n.t('macros.actions.delete')

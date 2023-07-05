@@ -83,20 +83,20 @@ RSpec.describe Export::Ara do
       end
 
       describe '#referent_uuid' do
-      subject { decorator.referent_uuid }
+        subject { decorator.referent_uuid }
 
-      context "when StopArea parent isn't defined" do
-        before { stop_area.referent = nil }
+        context "when StopArea parent isn't defined" do
+          before { stop_area.referent = nil }
 
-        it { is_expected.to be_nil }
+          it { is_expected.to be_nil }
+        end
+
+        context "when StopArea referent objectid is 'test:StopArea:uuid'" do
+          before { stop_area.referent = Chouette::StopArea.new(objectid: 'test:StopArea:uuid') }
+
+          it { is_expected.to eq('uuid') }
+        end
       end
-
-      context "when StopArea referent objectid is 'test:StopArea:uuid'" do
-        before { stop_area.referent = Chouette::StopArea.new(objectid: 'test:StopArea:uuid') }
-
-        it { is_expected.to eq('uuid') }
-      end
-    end
 
       describe '#line_uuids' do
         subject { decorator.line_uuids }

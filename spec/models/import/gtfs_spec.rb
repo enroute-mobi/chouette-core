@@ -239,6 +239,11 @@ RSpec.describe Import::Gtfs do
           agency.timezone = "Etc/UTC"
           is_expected.to include(time_zone: agency.timezone)
         end
+
+        it "uses the fare url" do
+          agency.fare_url = 'test.enroute.mobi'
+          is_expected.to include(fare_url: 'test.enroute.mobi')
+        end
       end
 
       describe "validation" do

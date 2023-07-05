@@ -139,4 +139,22 @@ describe Chouette::Company, :type => :model do
       end
     end
   end
+
+  describe "#fare_url" do
+    let(:context) do
+      Chouette.create do
+        line_provider do
+          company :company, fare_url: 'test.enroute.mobi'
+        end
+      end
+    end
+
+    let(:company) { context.company(:company) }
+
+    subject { company.fare_url }
+
+    it "company contains fare_url with the value 'test.enroute.mobi'" do
+      is_expected.to eq('test.enroute.mobi')
+    end
+  end
 end

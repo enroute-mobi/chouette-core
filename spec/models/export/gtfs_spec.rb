@@ -124,6 +124,22 @@ RSpec.describe Export::Gtfs, type: [:model, :with_exportable_referential] do
     end
   end
 
+  describe Export::Gtfs::Companies::Decorator do
+    let(:context) do
+      Chouette.create do
+        line_provider do
+          company :company, fare_url: 'test.enroute.mobi'
+        end
+      end
+    end
+    let(:company) { context.company(:company) }
+    let(:decorator) { described_class.new company }
+
+    subject { decorator.agency_attributes[:fare_url] }
+
+    it { is_expected.to eq('test.enroute.mobi') }
+  end
+
   describe 'VehicleJourneyCompany Part' do
     let(:export_scope) { Export::Scope::All.new context.referential }
     let(:index) { export.index }

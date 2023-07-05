@@ -1,7 +1,11 @@
 // - content_for :additional_packs, 'macro_lists/form'
-- form_options = local_assigns.fetch(:options, {})
+- read_only = local_assigns.fetch(:read_only, false)
+- form_options = { wrapper: :horizontal_form_tailwind, html: { class: 'tailwind-form', id: 'macro_list_form' } }
+- form_options.merge!(defaults: { disabled: true }) if read_only
 
-= simple_form_for [@workbench, @macro_list], facade.form_options.merge(form_options) do |f|
+- Rails.logger.debug "read_only: #{read_only} #{form_options.inspect}"
+
+= simple_form_for [@workbench, @macro_list], form_options do |f|
   .row
     .col-lg-12
       = f.input :name
@@ -13,22 +17,23 @@
     .w-full-px-5
       div.macros[x-data="{new_child: '', children_count: #{@macro_list.macro_contexts.count}}"]
         div[x-ref="children"]
-          = render partial: "macro_context", collection: @macro_list.macro_contexts, locals: { form: f }
+          = render partial: "macro_context", collection: @macro_list.macro_contexts, locals: { form: f, read_only: read_only }
 
-        .flex.flex-col.items-center.mt-5
-          .flex.items-center.w-full.mb-8
-            .w-full.mr-5
-              = select_tag "macro_context_type",
-                  options_for_select(Macro::Context.available.map { |macro_context_class| [macro_context_class.model_name.human, render(partial: "macro_context", locals: { macro_context: macro_context_class.new, form: f, template_mode: true })] }),
-                  class: "form-control select required",
-                  "x-model": "new_child",
-                  include_blank: true
-            button.btn.btn-primary x-on:click.prevent= "$refs.children.innerHTML += prepareForm(new_child, '#{f.object_name}', (children_count++) + 1)"
-              = t("simple_form.buttons.macro_list.macro_context_type")
+        - unless read_only
+          .flex.flex-col.items-center.mt-5
+            .flex.items-center.w-full.mb-8
+              .w-full.mr-5
+                = select_tag "macro_context_type",
+                    options_for_select(Macro::Context.available.map { |macro_context_class| [macro_context_class.model_name.human, render(partial: "macro_context", locals: { macro_context: macro_context_class.new, form: f, template_mode: true })] }),
+                    class: "form-control select required",
+                    "x-model": "new_child",
+                    include_blank: true
+              button.btn.btn-primary x-on:click.prevent= "$refs.children.innerHTML += prepareForm(new_child, '#{f.object_name}', (children_count++) + 1)"
+                = t("simple_form.buttons.macro_list.macro_context_type")
 
-      = render partial: 'macros', locals: { macros: @macro_list.macros, form: f }
+      = render partial: 'macros', locals: { macros: @macro_list.macros, form: f, read_only: read_only }
 
-  - unless facade.show?
+  - unless read_only
     = cancel_button
     = f.button :submit, t('actions.submit'), class: 'btn btn-default formSubmitr', form: 'macro_list_form'
 

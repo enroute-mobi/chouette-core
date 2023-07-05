@@ -1,17 +1,19 @@
 - template_mode = local_assigns.fetch(:template_mode, false)
+- read_only = local_assigns.fetch(:read_only, false)
 
 div.macros[x-data="{ macro_type: '', children_count: #{macros.count} }"]
   div[x-ref="children"]
     = render partial: "macro", collection: macros, locals: { form: form, template_mode: template_mode }
 
-  .flex.flex-col.items-center.mt-5
-    .flex.items-center.w-full.mb-8
-      .w-full.mr-5
-        = select_tag "macro_type",
-            options_for_select(Macro.available.map { |macro_class| [macro_class.model_name.human, macro_class.name] }),
-            class: "form-control select required",
-            "x-model": "macro_type",
-            include_blank: true
-      button.btn.btn-primary x-on:click.prevent= "$refs.children.innerHTML += prepareForm(macroForm(macro_type), '#{form.object_name}', (children_count++) + 1)"
-        = t("simple_form.buttons.macro_list.macro_type")
+  - unless read_only
+    .flex.flex-col.items-center.mt-5
+      .flex.items-center.w-full.mb-8
+        .w-full.mr-5
+          = select_tag "macro_type",
+              options_for_select(Macro.available.map { |macro_class| [macro_class.model_name.human, macro_class.name] }),
+              class: "form-control select required",
+              "x-model": "macro_type",
+              include_blank: true
+        button.btn.btn-primary x-on:click.prevent= "$refs.children.innerHTML += prepareForm(macroForm(macro_type), '#{form.object_name}', (children_count++) + 1)"
+          = t("simple_form.buttons.macro_list.macro_type")
 

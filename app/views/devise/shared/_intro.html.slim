@@ -3,7 +3,7 @@
   = image_tag WelcomeImage.current.image_url, class:"img-hp w-full"
   p.absolute.bottom-5.right-5.z-10
     | Photo by&nbsp;
-    = link_to WelcomeImage.current.name, "https://unsplash.com/@#{WelcomeImage.current.username}?utm_source=chouette-core&utm_medium=referral"
+    = link_to WelcomeImage.current.name, "https://unsplash.com/@#{WelcomeImage.current.username}?utm_source=chouette-core&utm_medium=referral", target: "_blank"
     |  on&nbsp;
     a[href="https://unsplash.com/?utm_source=chouette-core&utm_medium=referral"]
     | Unsplash

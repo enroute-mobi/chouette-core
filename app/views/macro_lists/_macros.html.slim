@@ -14,6 +14,6 @@ div.macros[x-data="{ macro_type: '', children_count: #{macros.count} }"]
               class: "form-control select required",
               "x-model": "macro_type",
               include_blank: true
-        button.btn.btn-primary x-on:click.prevent= "$refs.children.innerHTML += prepareForm(macroForm(macro_type), '#{form.object_name}', (children_count++) + 1)"
+        button.btn.btn-primary x-on:click.prevent= "$refs.children.insertAdjacentHTML('beforeend', prepareForm(macroForm(macro_type), '#{form.object_name}', (children_count++) + 1))"
           = t("simple_form.buttons.macro_list.macro_type")
 

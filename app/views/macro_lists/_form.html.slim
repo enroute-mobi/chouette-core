@@ -28,7 +28,7 @@
                     class: "form-control select required",
                     "x-model": "new_child",
                     include_blank: true
-              button.btn.btn-primary x-on:click.prevent= "$refs.children.innerHTML += prepareForm(new_child, '#{f.object_name}', (children_count++) + 1)"
+              button.btn.btn-primary x-on:click.prevent= "$refs.children.insertAdjacentHTML('beforeend', prepareForm(new_child, '#{f.object_name}', (children_count++) + 1))"
                 = t("simple_form.buttons.macro_list.macro_context_type")
 
       = render partial: 'macros', locals: { macros: @macro_list.macros, form: f, read_only: read_only }

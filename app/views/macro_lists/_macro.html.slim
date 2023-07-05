@@ -1,27 +1,32 @@
 - class_description = macro.class.model_name.human
 - template_mode = local_assigns.fetch(:template_mode, false)
+- expanded = template_mode
 - fields_for_options = template_mode ? { child_index: "new_child", builder: NewScopeFormBuilder }  : {}
 - macro.position ||= "new_position"
 
 = form.simple_fields_for(:macros, macro, fields_for_options) do |macro_form|
-	.flex.flex-col.items-center
-		.flex.items-center.w-full.mb-8
-			button class="flex items-center justify-between p-3 pl-3 mr-3 font-bold text-white bg-enroute-chouette-primary rounded cursor-pointer hover:text-indigo-100"
-				<span class="text-3xl w-4">+</span>
-			.grow
-				= macro_form.input :name, as: :string, placeholder: "#{I18n.t('macro_lists.form.macro_placeholder')}", label: false, wrapper_html: {'class': 'mb-0 mx-0'}
+  .flex.flex-col.items-center[x-data = "{ expanded: #{expanded}, name: '#{macro.name}', class_description: '#{class_description}' }"]
+    .flex.items-center.w-full.mb-8 x-show="!expanded"
+      button x-on:click.prevent=="expanded = ! expanded" class="flex items-center justify-between p-3 pl-3 mr-3 font-bold text-white bg-enroute-chouette-primary rounded cursor-pointer hover:text-indigo-100"
+        <span class="text-3xl w-4">+</span>
 
-				/ .flex.items-center.max-w-8xl
-				/ 		p.mb-0.mr-2.truncate x-text="resource.name" x-show="!expanded"
-				/ 		p.mb-0 x-show="!expanded && resource.name" = "(#{class_description})"
-				/ 		p.mb-0 x-show="!expanded && !resource.name" = "#{class_description}"
-			.flex.ml-auto.human_model_name
-				p.flex = class_description
+      .flex.items-center.max-w-8xl
+        p.mb-0.mr-2.truncate x-text="name ? (name + ' (' + class_description + ')') : class_description"
 
-			// = render 'operations/actions'
+    .expanded class="w-full" x-show="expanded"
+      .flex.items-center.w-full.mb-8
+        button x-on:click.prevent=="expanded = ! expanded" class="flex items-center justify-between p-3 pl-3 mr-3 font-bold text-white bg-enroute-chouette-primary rounded cursor-pointer hover:text-indigo-100"
+          <span class="text-3xl w-4">-</span>
+        .grow
+          = macro_form.input :name, as: :string, placeholder: "#{I18n.t('macro_lists.form.macro_placeholder')}", label: false, wrapper_html: {'class': 'mb-0 mx-0', 'x-model': 'name'}
 
-		.flex.flex-col class="w-full"
-			= render "macro_lists/#{macro.model_name.i18n_key.to_s}", form: macro_form
-			= macro_form.input :comments, as: :text, required: false
-			= macro_form.input :position, as: :hidden
-			= macro_form.input :type, as: :hidden, input_html: { value: macro.class.name }
+        .flex.ml-auto.human_model_name
+          p.flex = class_description
+
+        // = render 'operations/actions'
+
+      .flex.flex-col class="w-full"
+        = render "macro_lists/#{macro.model_name.i18n_key.to_s}", form: macro_form
+        = macro_form.input :comments, as: :text, required: false
+        = macro_form.input :position, as: :hidden
+        = macro_form.input :type, as: :hidden, input_html: { value: macro.class.name }

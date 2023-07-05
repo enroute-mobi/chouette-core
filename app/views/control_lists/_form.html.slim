@@ -10,7 +10,7 @@
       = f.input :shared, as: :switchable_checkbox, input_html: { 'x-model': '$store.controlList.shared' }
   .row
     h2
-      = t("control.form.sections.controls")
+      = t("control_lists.form.sections.controls")
     .simple-separator.mb-5
     .w-full-px-5
       = render 'operations/collection', collection: '$store.controlList.contexts', resource_name: 'control_context'

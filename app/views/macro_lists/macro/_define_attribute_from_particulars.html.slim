@@ -1,6 +1,4 @@
-= form.input :target_model, input_html: { 'x-model': 'resource.target_model', 'x-on:change': "resource.target_attribute = ''" }
-= form.input :target_attribute do
-	select.select.form-control.required id='macro_list_macros_attributes_0_target_attribute' name="macro_list[macros_attributes][0][target_attribute]" x-model="resource.target_attribute" :disabled="!Boolean(resource.target_model) || #{facade.show?}"
-		option value=""
-		template[x-for="option in #{form.object.candidate_target_attributes.map { |m| { id: m.name, text: m.human_name, resource_type: m.model_name } }.to_json}"]
-			option :selected="'#{form.object.target_attribute}' == option.id" :value="option.id" x-text="option.text" x-show="option.resource_type == resource.target_model"
+div[x-data = "{target_model: '#{form.object.target_model}'}"]
+  = form.input :target_model, input_html: { 'x-model': 'target_model' }
+  - form.object.candidate_target_attributes.group_by(&:model_name).each do |model_name, target_attributes|
+    = form.input :target_attribute, collection: target_attributes.map { |attribute| [ attribute.human_name, attribute.name ] }, wrapper_html: { 'x-show': "target_model == '#{model_name}'" }

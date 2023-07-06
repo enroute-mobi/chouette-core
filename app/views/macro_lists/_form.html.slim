@@ -15,7 +15,7 @@
       = t("macro.form.sections.macros")
     .simple-separator.mb-5
     .w-full-px-5
-      div.macros[x-data="{new_child: '', children_count: #{@macro_list.macro_contexts.count}}"]
+      div.macro_contexts[x-data="{new_child: '', children_count: #{@macro_list.macro_contexts.count}}"]
         div[x-ref="children"]
           = render partial: "macro_context", collection: @macro_list.macro_contexts, locals: { form: f, read_only: read_only }
 
@@ -61,4 +61,27 @@
       content = content.replace("new_position", position);
 
       return content;
+    }
+
+    function reorderForm(parent) {
+      $(parent).children().each(function(index, element) {
+        $(element).find(':input').each (function(_, input) {
+          // Replace the last occurance if index in the input name and id
+
+          // macro_list[macros_attributes][0][name]=> macro_list[macros_attributes][1][name]
+          // macro_list[macro_contexts_attributes][0][macros_attributes][1688632040446][name] => macro_list[macro_contexts_attributes][0][macros_attributes][1][name] 
+          new_name = input.name.replace(/\[\d+\](\[[^\d]+\])$/, "[" + index + "]$1")
+          input.name = new_name;
+
+          // macro_list_macros_attributes_0_name => macro_list_macros_attributes_1_name
+          // macro_list_macro_contexts_attributes_2_macros_attributes_1688632040446_name => 'macro_list_macro_contexts_attributes_2_macros_attributes_1_name'
+          new_id = input.id.replace(/_\d+_([^\d]+)$/, "_" + index + "_$1")
+          input.id = new_id;
+
+          // change the position input value
+          if (input.name.endsWith("[position]")) {
+            input.value = index + 1;
+          }
+        });
+      });
     }

@@ -6,7 +6,7 @@
 - macro.position ||= "new_position"
 
 = form.simple_fields_for(:macros, macro, fields_for_options) do |macro_form|
-  .flex.flex-col.items-center[x-data = "{ expanded: #{expanded}, name: '#{macro.name}', class_description: '#{class_description}', deleted: false }", x-show="!deleted"] 
+  .flex.flex-col.items-center.macro[x-data = "{ expanded: #{expanded}, name: '#{macro.name}', class_description: '#{class_description}', deleted: false }" x-show="!deleted" x-ref="macro" id=dom_id(macro)] 
     .flex.items-center.w-full.mb-8 x-show="!expanded"
       button x-on:click.prevent=="expanded = ! expanded" class="flex items-center justify-between p-3 pl-3 mr-3 font-bold text-white bg-enroute-chouette-primary rounded cursor-pointer hover:text-indigo-100"
         <span class="text-3xl w-4">+</span>
@@ -32,5 +32,7 @@
         = render "macro_lists/#{macro.model_name.i18n_key.to_s}", form: macro_form
         = macro_form.input :comments, as: :text, required: false
 
+    = macro_form.hidden_field :id
     = macro_form.hidden_field :type, value: macro.class.name
+    = macro_form.hidden_field :position
     = macro_form.hidden_field :_destroy, 'x-model': 'deleted'

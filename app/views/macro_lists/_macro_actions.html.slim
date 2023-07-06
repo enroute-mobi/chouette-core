@@ -5,4 +5,8 @@
         .span.fa.fa-cog
       ul.dropdown-menu
         li
+          a class="cursor-pointer move_up" @click="$refs.macro.previousElementSibling?.before($refs.macro); reorderForm($refs.children)" = I18n.t('macros.actions.move_up')
+        li
+          a class="cursor-pointer move_down" @click="$refs.macro.nextElementSibling?.after($refs.macro); reorderForm($refs.children)" = I18n.t('macros.actions.move_down')
+        li
           a class="cursor-pointer delete" @click="deleted = true" = I18n.t('macros.actions.delete')

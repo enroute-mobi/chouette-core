@@ -8,7 +8,7 @@
       = render "macro_lists/#{macro_context.model_name.i18n_key.to_s}", form: macro_context_form
 
       // FIXME Move on right border
-      = render "macro_actions", read_only: read_only    
+      = render "macro_context_actions", read_only: read_only    
 
     = macro_context_form.hidden_field :type, value: macro_context.class.name
     = macro_context_form.hidden_field :_destroy, 'x-model': 'deleted'

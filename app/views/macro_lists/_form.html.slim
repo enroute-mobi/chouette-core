@@ -46,7 +46,6 @@
     }
 
     function prepareForm(content, object_name, position) {
-      console.log("Prepare form with object_name=" + object_name + " position=" + position)
       var new_id = new Date().getTime();
 
       content = content.replaceAll("new_scope[", object_name + "[");

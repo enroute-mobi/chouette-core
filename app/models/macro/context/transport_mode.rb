@@ -3,8 +3,11 @@ class Macro::Context::TransportMode < Macro::Context
 
   validates_presence_of :transport_mode
 
-  class Run < Macro::Context::Run
+  def candidate_transport_modes
+    workbench.workgroup.sorted_transport_modes
+  end
 
+  class Run < Macro::Context::Run
     def scope(initial_scope = parent.scope)
       Scope.new(initial_scope, options[:transport_mode])
     end

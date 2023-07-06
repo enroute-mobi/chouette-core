@@ -5,6 +5,11 @@ module Macro
     self.table_name = "macro_contexts"
 
     belongs_to :macro_list, class_name: "Macro::List", optional: false, inverse_of: :macro_contexts
+    
+    def workbench
+      @workbench || macro_list&.workbench
+    end
+    attr_writer :workbench
 
     has_many :macros, -> { order(position: :asc) }, class_name: "Macro::Base", dependent: :delete_all, foreign_key: "macro_context_id", inverse_of: :macro_context
     has_many :macro_context_runs, class_name: "Macro::Context::Run", foreign_key: "macro_context_id", inverse_of: :macro_context

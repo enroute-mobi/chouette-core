@@ -1,9 +1,6 @@
-// - content_for :additional_packs, 'macro_lists/form'
 - read_only = local_assigns.fetch(:read_only, false)
 - form_options = { wrapper: :horizontal_form_tailwind, html: { class: 'tailwind-form', id: 'macro_list_form' } }
 - form_options.merge!(defaults: { disabled: true }) if read_only
-
-- Rails.logger.debug "read_only: #{read_only} #{form_options.inspect}"
 
 = simple_form_for [@workbench, @macro_list], form_options do |f|
   .row
@@ -24,7 +21,7 @@
             .flex.items-center.w-full.mb-8
               .w-full.mr-5
                 = select_tag "macro_context_type",
-                    options_for_select(Macro::Context.available.map { |macro_context_class| [macro_context_class.model_name.human, render(partial: "macro_context", locals: { macro_context: macro_context_class.new, form: f, template_mode: true })] }),
+                    options_for_select(Macro::Context.available.map { |macro_context_class| [macro_context_class.model_name.human, render(partial: "macro_context", locals: { macro_context: macro_context_class.new(workbench: @workbench), form: f, template_mode: true })] }),
                     class: "form-control select required",
                     "x-model": "new_child",
                     include_blank: true
@@ -65,18 +62,6 @@
     function reorderForm(parent) {
       $(parent).children().each(function(index, element) {
         $(element).find(':input').each (function(_, input) {
-          // Replace the last occurance if index in the input name and id
-
-          // macro_list[macros_attributes][0][name]=> macro_list[macros_attributes][1][name]
-          // macro_list[macro_contexts_attributes][0][macros_attributes][1688632040446][name] => macro_list[macro_contexts_attributes][0][macros_attributes][1][name] 
-          new_name = input.name.replace(/\[\d+\](\[[^\d]+\])$/, "[" + index + "]$1")
-          input.name = new_name;
-
-          // macro_list_macros_attributes_0_name => macro_list_macros_attributes_1_name
-          // macro_list_macro_contexts_attributes_2_macros_attributes_1688632040446_name => 'macro_list_macro_contexts_attributes_2_macros_attributes_1_name'
-          new_id = input.id.replace(/_\d+_([^\d]+)$/, "_" + index + "_$1")
-          input.id = new_id;
-
           // change the position input value
           if (input.name.endsWith("[position]")) {
             input.value = index + 1;

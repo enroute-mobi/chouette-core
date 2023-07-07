@@ -54,6 +54,10 @@ module Chouette
       empty.for(*model_classes, &block)
     end
 
+    def self.all
+      Collection.new.all
+    end
+
     class Collection
       include Enumerable
 

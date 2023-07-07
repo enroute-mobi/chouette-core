@@ -14,11 +14,11 @@ module Macro
     attr_writer :workbench
 
     has_many :macros, -> { order(position: :asc) },
-             class_name: 'Macro::Base', dependent: :delete_all, 
+             class_name: 'Macro::Base', dependent: :delete_all,
              foreign_key: 'macro_context_id', inverse_of: :macro_context
 
     has_many :macro_context_runs, class_name: 'Macro::Context::Run', foreign_key: 'macro_context_id',
-                                  inverse_of: :macro_context
+                                  inverse_of: :macro_context, dependent: nil
 
     store :options, coder: JSON
 
@@ -52,7 +52,8 @@ module Macro
       belongs_to :macro_context, class_name: 'Macro::Context', optional: true, inverse_of: :macro_context_runs
 
       has_many :macro_runs, -> { order(position: :asc) },
-               class_name: 'Macro::Base::Run', foreign_key: 'macro_context_run_id', inverse_of: :macro_context_run
+               class_name: 'Macro::Base::Run', foreign_key: 'macro_context_run_id',
+               inverse_of: :macro_context_run, dependent: :delete_all
 
       store :options, coder: JSON
 

@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class AddDeferedConstraintOnMacros < ActiveRecord::Migration[5.2]
   def up
     on_public_schema_only do

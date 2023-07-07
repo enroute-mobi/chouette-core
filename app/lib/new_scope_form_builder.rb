@@ -1,3 +1,6 @@
+# frozen_string_literal: true
+
+# Used to change the base object_name to create form template
 class NewScopeFormBuilder < SimpleForm::FormBuilder
   def initialize(*arguments)
     super

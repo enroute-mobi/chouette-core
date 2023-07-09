@@ -242,6 +242,7 @@ class Import::Gtfs < Import::Base # rubocop:disable Metrics/ClassLength
           default_language: lang,
           default_contact_url: url,
           default_contact_phone: phone,
+          fare_url: fare_url,
           time_zone: time_zone_name # TODO Company should support real TimeZone object ..
         }
       end

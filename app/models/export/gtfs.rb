@@ -595,8 +595,8 @@ class Export::Gtfs < Export::Base
           timezone: timezone,
           phone: default_contact_phone,
           email: default_contact_email,
-          lang: default_language
-          #fare_url: TO DO
+          lang: default_language,
+          fare_url: fare_url
         }
       end
     end

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2023_05_30_144339) do
+ActiveRecord::Schema.define(version: 2023_06_30_103907) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "btree_gin"
@@ -164,6 +164,7 @@ ActiveRecord::Schema.define(version: 2023_05_30_144339) do
     t.bigint "line_provider_id"
     t.boolean "is_referent", default: false
     t.bigint "referent_id"
+    t.string "fare_url"
     t.index ["custom_field_values"], name: "index_companies_on_custom_field_values", using: :gin
     t.index ["line_provider_id"], name: "index_companies_on_line_provider_id"
     t.index ["line_referential_id", "registration_number"], name: "index_companies_on_referential_id_and_registration_number"

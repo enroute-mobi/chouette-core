@@ -80,6 +80,7 @@ fr:
         country_code: Pays
         country: Pays
         codes: Codes
+        fare_url: Page Tarifaire
     errors:
       models:
         company:

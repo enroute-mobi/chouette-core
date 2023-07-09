@@ -80,6 +80,7 @@ en:
         country_code: Country
         country: Country
         codes: Codes
+        fare_url: Fare url
     errors:
       models:
         company:

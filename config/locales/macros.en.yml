@@ -38,6 +38,8 @@ en:
         one: Define Journey Pattern distances from Shape
       macro/associate_shape_according_waypoints:
         one: Associate Shapes according Stop Areas
+      macro/update_attribute_from_referent_to_particulars:
+        one: Update attribute from Referent
       macro/delete_vehicle_journeys:
         one: Delete all Vehicle Journeys
     attributes:
@@ -58,6 +60,9 @@ en:
         target_model: Target Model
       macro/define_attribute_from_particulars:
         target_attribute: Attribute
+      macro/update_attribute_from_referent_to_particulars:
+        target_attribute: Attribut
+        override_existing_value: Override existing value
   simple_form:
     placeholders:
       macro_base:

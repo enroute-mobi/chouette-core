@@ -8,7 +8,8 @@ RSpec.describe Macro::UpdateAttributeFromReferentToParticulars::Run do
     described_class.create(
       macro_list_run: macro_list_run,
       position: 0,
-      options: { target_model: target_model, target_attribute: target_attribute, override_existing_value: override_existing_value }
+      options: { target_model: target_model, target_attribute: target_attribute,
+                 override_existing_value: override_existing_value }
     )
   end
 
@@ -25,7 +26,6 @@ RSpec.describe Macro::UpdateAttributeFromReferentToParticulars::Run do
   before { context.referential.switch }
 
   describe '#run' do
-
     let(:referent) { context.stop_area(:referent) }
     let(:target_model) { 'StopArea' }
     let(:target_attribute) { 'time_zone' }

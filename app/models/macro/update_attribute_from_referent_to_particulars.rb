@@ -1,4 +1,5 @@
 # frozen_string_literal: true
+
 module Macro
   class UpdateAttributeFromReferentToParticulars < Macro::Base
     module Options
@@ -19,8 +20,8 @@ module Macro
         candidate_target_attributes.find_by(model_name: target_model, name: target_attribute)
       end
 
-      def candidate_target_attributes # rubocop:disable Metrics/MethodLength
-        Chouette::ModelAttribute.empty do
+      def candidate_target_attributes # rubocop:disable Metrics/MethodLength,Metrics/AbcSize
+        Chouette::ModelAttribute.empty do # rubocop:disable Metrics/BlockLength
           define Chouette::StopArea, :name
           define Chouette::StopArea, :parent
           define Chouette::StopArea, :fare_code

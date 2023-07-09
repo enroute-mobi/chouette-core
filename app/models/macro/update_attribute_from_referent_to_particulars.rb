@@ -21,6 +21,7 @@ module Macro
 
       def candidate_target_attributes # rubocop:disable Metrics/MethodLength
         Chouette::ModelAttribute.empty do
+          define Chouette::StopArea, :name
           define Chouette::StopArea, :parent
           define Chouette::StopArea, :fare_code
           define Chouette::StopArea, :country_code
@@ -29,7 +30,7 @@ module Macro
           define Chouette::StopArea, :city_name
           define Chouette::StopArea, :postal_region
           define Chouette::StopArea, :public_code
-          define Chouette::StopArea, :registration_number
+          # define Chouette::StopArea, :registration_number
           define Chouette::StopArea, :time_zone
           define Chouette::StopArea, :waiting_time
           define Chouette::StopArea, :url
@@ -44,7 +45,7 @@ module Macro
 
           define Chouette::Company, :short_name
           define Chouette::Company, :code
-          define Chouette::Company, :registration_number
+          # define Chouette::Company, :registration_number
           define Chouette::Company, :time_zone
           define Chouette::Company, :house_number
           define Chouette::Company, :address_line_1 # rubocop:disable Naming/VariableNumber
@@ -84,16 +85,23 @@ module Macro
           value = referent.send(attribute_name)
 
           referent.particulars.find_each do |particular|
+            previous_attribute_value = particular.send attribute_name
             particular.update(attribute_name => value)
-            create_message(particular, attribute_name, value)
+            create_message(particular, attribute_name, value, previous_attribute_value)
           end
         end
       end
 
-      def create_message(particular, attribute_name, attribute_value = nil)
+      def create_message(particular, attribute_name, attribute_value, previous_attribute_value)
+        # When value is an enumerize value
+        attribute_value = attribute_value.text if attribute_value.respond_to?(:text)
+
+        name = particular.name
+        name = previous_attribute_value if attribute_name == :name
+
         attributes = {
           message_attributes: {
-            name: particular.name, attribute_name:
+            name: name, attribute_name:
             particular.class.human_attribute_name(attribute_name),
             attribute_value: attribute_value
           },

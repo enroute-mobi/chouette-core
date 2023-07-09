@@ -73,6 +73,10 @@ module Macro
           define Chouette::Company, :default_language
         end
       end
+
+      def override_existing_value?
+        override_existing_value.in?([true, 'true'])
+      end
     end
 
     include Options
@@ -81,14 +85,12 @@ module Macro
       include Options
 
       def run
-        referents.includes(:particulars).find_each do |referent|
-          value = referent.send(attribute_name)
+        models.includes(:referent).find_each do |particular|
+          value = particular.referent.send(attribute_name)
+          previous_attribute_value = particular.send attribute_name
 
-          referent.particulars.find_each do |particular|
-            previous_attribute_value = particular.send attribute_name
-            particular.update(attribute_name => value)
-            create_message(particular, attribute_name, value, previous_attribute_value)
-          end
+          particular.update attribute_name => value
+          create_message particular, attribute_name, value, previous_attribute_value
         end
       end
 
@@ -121,12 +123,18 @@ module Macro
         model_attribute.name
       end
 
-      def referents
-        @referents ||= models.referents
+      def models
+        @models ||= begin
+          scope_models = scope.send(model_collection).particulars
+          scope_models = scope_models.where(attribute_name => undefined_value) unless override_existing_value?
+          scope_models
+        end
       end
 
-      def models
-        @models ||= scope.send(model_collection)
+      def undefined_value
+        # For example Chouette::StopArea.wheelchair_accessibility.default_value => "unknown"
+        # or nil ...
+        model_attribute.model_class.try(attribute_name).try(:default_value)
       end
     end
   end

@@ -48,8 +48,8 @@ fr:
       error: "Le tracé '%{shape}' n'a pas pu être associé à la Mission '%{name}'" 
   macro/update_attribute_from_referent_to_particulars/run:
     messages:
-      default: "L'attribut %{attribute_name} du particulier %{name} a été mis à jour avec la valeur %{attribute_value}"
-      error: "L'attribut %{attribute_name} du particulier %{name} n'a pas pu être mise à jour avec la valeur %{attribute_value}"
+      default: "L'attribut %{attribute_name} de %{name} a été mis à jour avec la valeur %{attribute_value}"
+      error: "L'attribut %{attribute_name} de %{name} n'a pas pu être mise à jour avec la valeur %{attribute_value}"
   macro/delete_vehicle_journeys/run:
     messages:
       default: "%{count} course(s) ont été supprimée(s)"

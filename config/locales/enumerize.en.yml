@@ -410,6 +410,7 @@ en:
       JourneyPattern: Journey pattern
       VehicleJourney: Vehicle journey
       Company: Company
+      Document: Document
       Entrance: Entrance
       PointOfInterest: Point of Interest
       Route: Route
@@ -419,6 +420,7 @@ en:
       Shape: Shape
       Network: Network
       ConnectionLink: Connection
+      ServiceCount: Service count
     expected_status:
       enabled: Enabled
       disabled: Disabled

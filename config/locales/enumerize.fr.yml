@@ -410,6 +410,7 @@ fr:
       JourneyPattern: Mission
       VehicleJourney: Course
       Company: Transporteur
+      Document: Document
       Entrance: Point d'accès
       PointOfInterest: Point d'intérêt
       Route: Itinéraire
@@ -419,6 +420,7 @@ fr:
       Shape: Tracé
       Network: Réseau
       ConnectionLink: Correspondance
+      ServiceCount: Nombre de Services
     expected_status:
       enabled: Activé
       disabled: Désactivé

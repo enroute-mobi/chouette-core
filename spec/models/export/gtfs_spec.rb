@@ -388,6 +388,8 @@ RSpec.describe Export::Gtfs, type: [:model, :with_exportable_referential] do
         index.register_agency_id(second_company, second_company.registration_number)
         index.register_agency_id(third_company, third_company.registration_number)
         index.register_agency_id(referent_company, referent_company.registration_number)
+
+        allow(part).to receive(:prefer_referent_line).and_return(true)
       end
 
       let(:referent) { context.line(:referent) }

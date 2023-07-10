@@ -10,6 +10,7 @@ class Export::Gtfs < Export::Base
   option :company_ids, serialize: :map_ids
   option :line_provider_ids, serialize: :map_ids
   option :prefer_referent_stop_area, required: true, default_value: false, enumerize: [true, false], serialize: ActiveModel::Type::Boolean
+  option :prefer_referent_line, required: true, default_value: false, enumerize: [true, false], serialize: ActiveModel::Type::Boolean
   option :ignore_single_stop_station, required: true, default_value: false, enumerize: [true, false], serialize: ActiveModel::Type::Boolean
   option :prefer_referent_company, required: true, default_value: false, enumerize: [true, false], serialize: ActiveModel::Type::Boolean
   option :ignore_parent_stop_places, required: true, default_value: false, enumerize: [true, false], serialize: ActiveModel::Type::Boolean
@@ -354,7 +355,7 @@ class Export::Gtfs < Export::Base
     end
 
     delegate :target, :index, :export_scope, :messages, :date_range, :code_spaces, :public_code_space,
-             :prefer_referent_stop_area, :prefer_referent_company, :referential, to: :export
+             :prefer_referent_stop_area, :prefer_referent_company, :prefer_referent_line, :referential, to: :export
 
     def part_name
       @part_name ||= self.class.name.demodulize.underscore
@@ -622,7 +623,7 @@ class Export::Gtfs < Export::Base
 
     def export!
       lines.includes(:referent).find_each do |line|
-        exported_line = line.referent || line
+        exported_line = (prefer_referent_line ? line.referent : line) || line
         decorated_line = Decorator.new(exported_line, index, duplicated_registration_numbers)
 
         unless line_referent_exported?(exported_line)

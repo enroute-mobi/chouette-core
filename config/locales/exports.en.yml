@@ -108,6 +108,7 @@ en:
         exported_lines: Exported lines
         profile: Profile
         prefer_referent_stop_area: Prefer Referent Stop Areas
+        prefer_referent_line: Prefer Referent Lines
         prefer_referent_company: Prefer Referent Companies
         ignore_single_stop_station: Ignore Monomodal Stop Places with a single Quay
         include_stop_visits: "Include Stop Visits"

@@ -82,6 +82,22 @@ RSpec.describe Export::Ara do
         end
       end
 
+      describe '#referent_uuid' do
+        subject { decorator.referent_uuid }
+
+        context "when StopArea parent isn't defined" do
+          before { stop_area.referent = nil }
+
+          it { is_expected.to be_nil }
+        end
+
+        context "when StopArea referent objectid is 'test:StopArea:uuid'" do
+          before { stop_area.referent = Chouette::StopArea.new(objectid: 'test:StopArea:uuid') }
+
+          it { is_expected.to eq('uuid') }
+        end
+      end
+
       describe '#line_uuids' do
         subject { decorator.line_uuids }
 
@@ -101,6 +117,11 @@ RSpec.describe Export::Ara do
         context "when #parent_uuid is 'uuid'" do
           before { allow(decorator).to receive(:parent_uuid).and_return('uuid') }
           it { is_expected.to include(parent_id: 'uuid') }
+        end
+
+        context "when #referent_uuid is 'uuid'" do
+          before { allow(decorator).to receive(:referent_uuid).and_return('uuid') }
+          it { is_expected.to include(referent_id: 'uuid') }
         end
 
         context "when #line_uuids is ['uuid']" do
@@ -132,15 +153,17 @@ RSpec.describe Export::Ara do
         let(:context) do
           Chouette.create do
             stop_area :parent, area_type: Chouette::AreaType::STOP_PLACE.to_s
-            stop_area :exported, parent: :parent
+            stop_area :referent, is_referent: true
+            stop_area :exported, parent: :parent, referent: :referent
           end
         end
 
         let(:stop_area) { context.stop_area(:exported) }
         let(:parent) { stop_area.parent }
+        let(:referent) { stop_area.referent }
 
         it 'includes both Stop Area and its parent' do
-          is_expected.to include(stop_area, parent)
+          is_expected.to include(stop_area, parent, referent)
         end
       end
     end

@@ -292,8 +292,7 @@ class Export::Ara < Export::Base
     end
 
     def stop_areas
-      ::Query::StopArea.new(stop_area_referential.stop_areas)
-                       .self_and_ancestors_with_referents(export_scope.stop_areas)
+      ::Query::StopArea.new(stop_area_referential.stop_areas).self_referents_and_ancestors(export_scope.stop_areas)
     end
 
     class CodeScope < SimpleDelegator

@@ -136,6 +136,7 @@ class LinesController < ChouetteController
       :published_name,
       :registration_number,
       :comment,
+      :line_provider_id,
       :mobility_restricted_suitability,
       :int_user_needs,
       :flexible_service,

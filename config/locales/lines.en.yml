@@ -81,6 +81,7 @@ en:
         line_notices: "Line notices"
         activation: 'Activation'
         documents: "Documents"
+        internals: "Internals"
       group_of_lines: "Associated groups of lines"
       no_group_of_line: "No group of line"
       several_group_of_lines: "%{count} groups of lines"
@@ -108,6 +109,8 @@ en:
         company_id: "Company"
         company: "Company"
         secondary_companies: "Secondary companies"
+        line_provider: Line Provider
+        line_provider_id: Line Provider
         is_referent: "Referent"
         referent_id: "Referent Line"
         particulars: "Specific Line"

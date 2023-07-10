@@ -14,8 +14,9 @@
           = f.input :transport_submode, as: :select, collection: submodes, include_blank: false
 
       = f.input :stable_id
-    .separator.section_separator
+      = f.input :line_provider_id, as: :select, collection: @line.candidate_line_providers.order(:name), include_blank: false
 
+  .separator.section_separator
   .row
     .col-lg-12 x-data="{ isReferentActivated: #{@line.is_referent} }"
       h2.mb-lg= t("stop_areas.form.sections.referent")

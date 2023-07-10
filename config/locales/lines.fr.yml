@@ -166,10 +166,10 @@ fr:
         line:
           attributes:
             referent_id:
-              a_referent_cannot_have_a_referent: "Un transporteur référent ne peut pas avoir de référent"
-              an_object_used_as_referent_must_be_flagged_as_referent: "Un transporteur utilisé comme référent doit être signalé comme référent"
+              a_referent_cannot_have_a_referent: "Un ligne référent ne peut pas avoir de référent"
+              an_object_used_as_referent_must_be_flagged_as_referent: "Un ligne utilisé comme référent doit être signalé comme référent"
             is_referent:
-              the_particulars_collection_should_be_empty: "Un transporteur non-référent ne peut avoir des transporteurs particuliers"
+              the_particulars_collection_should_be_empty: "Un ligne non-référent ne peut avoir des transporteurs particuliers"
   formtastic:
     titles:
       line:

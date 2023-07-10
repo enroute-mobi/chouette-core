@@ -8,7 +8,7 @@ class Import::Base < ApplicationModel
   attr_accessor :code_space
   after_initialize :initialize_space_code
 
-  has_many :processings, as: :operation
+  has_many :processings, as: :operation, dependent: :destroy
 
   scope :unfinished, -> { where 'notified_parent_at IS NULL' }
   scope :having_status, ->(statuses) { where(status: statuses ) }

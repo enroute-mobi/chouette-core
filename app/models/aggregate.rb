@@ -9,7 +9,7 @@ class Aggregate < ApplicationModel
   belongs_to :workgroup
   has_many :compliance_check_sets, -> { where(parent_type: "Aggregate") }, foreign_key: :parent_id, dependent: :destroy
   has_many :resources, class_name: 'Aggregate::Resource'
-  has_many :processings, as: :operation
+  has_many :processings, as: :operation, dependent: :destroy
 
   validates :workgroup, presence: true
 

@@ -61,6 +61,13 @@ module Macro
       validates :original_macro_list_id, presence: true, if: :new_record?
 
       scope :having_status, ->(statuses) { where(user_status: statuses) }
+      scope :purgeable, -> { where("created_at < ?", 90.days.ago) }
+
+      def purge_older
+        workbench.macro_list_runs.purgeable.in_batches.destroy_all if workbench
+      end
+
+      after_create :purge_older
 
       def build_with_original_macro_list
         return unless original_macro_list

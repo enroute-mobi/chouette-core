@@ -61,6 +61,13 @@ module Control
       validates :original_control_list_id, presence: true, if: :new_record?
 
       scope :having_status, ->(statuses) { where(user_status: statuses) }
+      scope :purgeable, -> { where("created_at < ?", 90.days.ago) }
+
+      def purge_older
+        workbench.control_list_runs.purgeable.in_batches.destroy_all if workbench
+      end
+
+      after_create :purge_older
 
       # FIXME: See CHOUETTE-2783
       # validates :referential, inclusion: { in: :candidate_referentials }, allow_nil: true

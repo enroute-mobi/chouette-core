@@ -17,9 +17,9 @@ class Import::Workbench < Import::Base
 
   has_many :compliance_check_sets, -> { where(parent_type: "Import::Workbench") }, foreign_key: :parent_id, dependent: :destroy
 
-  has_many :processings, through: :children
-  has_many :control_list_runs, through: :processings, source: :processed, source_type: 'Control::List::Run'
-  has_many :macro_list_runs, through: :processings, source: :processed, source_type: 'Macro::List::Run'
+  has_many :children_processings, through: :children, source: :processings
+  has_many :control_list_runs, through: :children_processings, source: :processed, source_type: 'Control::List::Run'
+  has_many :macro_list_runs, through: :children_processings, source: :processed, source_type: 'Macro::List::Run'
 
   def main_resource; self end
 

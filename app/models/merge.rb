@@ -4,7 +4,7 @@ class Merge < ApplicationModel
 
   belongs_to :workbench
   has_many :compliance_check_sets, -> { where(parent_type: 'Merge') }, foreign_key: :parent_id, dependent: :destroy
-  has_many :processings, as: :operation
+  has_many :processings, as: :operation, dependent: :destroy
   has_many :macro_list_runs, through: :processings, :source => :processed, source_type: "Macro::List::Run"
   has_many :control_list_runs, through: :processings, :source => :processed, source_type: "Control::List::Run"
 

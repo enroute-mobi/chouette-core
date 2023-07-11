@@ -11,7 +11,14 @@ RSpec.describe Aggregate, type: :model do
               time_table :time_table_1, periods: [ Date.parse("2030-06-01")..Date.parse("2030-06-30") ]
               vehicle_journey time_tables: [:time_table_1]
             end
+            referential lines: [ :line ], periods: [ Date.parse("2031-06-01")..Date.parse("2031-06-30") ] do
+              time_table :time_table_12, periods: [ Date.parse("2031-06-01")..Date.parse("2031-06-30") ]
+              vehicle_journey time_tables: [:time_table_12]
+              vehicle_journey time_tables: [:time_table_12]
+              vehicle_journey time_tables: [:time_table_12]
+            end
           end
+
           workbench :other_workbench do
             referential lines: [ :line ], periods: [ Date.parse("2030-06-01")..Date.parse("2030-06-30") ] do
               time_table :time_table_2, periods: [ Date.parse("2030-06-01")..Date.parse("2030-06-30") ]
@@ -35,14 +42,16 @@ RSpec.describe Aggregate, type: :model do
 
         describe "#aggregate_resources" do
           let(:first_referential) { context.referentials.first }
+          let(:second_referential) { context.referentials.second }
           let(:last_referential) { context.referentials.last }
 
           let(:aggregate_resources) { aggregate.reload.resources }
           let(:first_vehicle_journey_count) { first_referential.switch { |ref| ref.vehicle_journeys.count } }
+          let(:second_vehicle_journey_count) { second_referential.switch { |ref| ref.vehicle_journeys.count } }
           let(:last_vehicle_journey_count) { last_referential.switch { |ref| ref.vehicle_journeys.count } }
 
           it "aggregate resources contain workbench names" do
-            workbench_names = aggregate_resources.map(&:workbench_name)
+            workbench_names = aggregate_resources.map(&:workbench_name).uniq
 
             expect(workbench_names).to match_array([workbench.name, other_workbench.name])
           end
@@ -53,6 +62,7 @@ RSpec.describe Aggregate, type: :model do
             expect(referentials_created_at).to match_array(
               [
                 first_referential.created_at.to_s,
+                second_referential.created_at.to_s,
                 last_referential.created_at.to_s
               ]
             )
@@ -63,6 +73,17 @@ RSpec.describe Aggregate, type: :model do
               an_object_having_attributes(
                 metrics: {
                   'vehicle_journey_count' => first_vehicle_journey_count,
+                  'overlapping_period_count' => 0
+                }
+              )
+            )
+          end
+
+          it 'calculate metrics for the second referential without cumulate vehicle journey count from the first referential' do
+            expect(aggregate_resources).to include(
+              an_object_having_attributes(
+                metrics: {
+                  'vehicle_journey_count' => second_vehicle_journey_count, # 3 vehicle_journeys, not 4
                   'overlapping_period_count' => 0
                 }
               )
@@ -86,24 +107,24 @@ RSpec.describe Aggregate, type: :model do
           before { aggregated_dataset.switch }
 
           context "when the two Workbenches have the same priority" do
-            it "contains two Vehicle Journeys" do
-              expect(aggregated_dataset.vehicle_journeys.count).to eq(2)
+            it "contains five Vehicle Journeys" do
+              expect(aggregated_dataset.vehicle_journeys.count).to eq(5)
             end
 
-            it "contains two TimeTables" do
-              expect(aggregated_dataset.time_tables.count).to eq(2)
+            it "contains three TimeTables" do
+              expect(aggregated_dataset.time_tables.count).to eq(3)
             end
           end
 
           context "when a Workbench has a lower priority (2 instead of 1)" do
             let(:workbench_priority) { 2 }
 
-            it "contains a single Vehicle Journey" do
-              expect(aggregated_dataset.vehicle_journeys.count).to eq(1)
+            it "contains four Vehicle Journeys" do
+              expect(aggregated_dataset.vehicle_journeys.count).to eq(4)
             end
 
-            it "contains a single TimeTable" do
-              expect(aggregated_dataset.vehicle_journeys.count).to eq(1)
+            it "contains two TimeTables" do
+              expect(aggregated_dataset.time_tables.count).to eq(2)
             end
           end
         end

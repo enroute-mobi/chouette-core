@@ -1,7 +1,5 @@
 = form.label Macro::Context::TransportMode.human_attribute_name(:transport_mode), class: 'flex mr-8 pt-0 control-label', required: true
 = form.input :transport_mode,
-	collection: facade.transport_mode_options,
-	input_html: { 'x-model': 'resource.transport_mode', ':disabled': '$store.macroList.isShow || resource.isDeleted'},
-	label: false,
-	wrapper_html: { class: 'mb-0 mx-0 ml-12 flex items-center w-4/6 ml-auto', style: 'padding:10px;'},
-	label_html: { class: 'pt-0 mr-5' }
+  collection: form.object.candidate_transport_modes.map { |t| ["enumerize.transport_mode.#{t}".t, t] },
+  label: false,
+  wrapper_html: { class: 'mb-0 mx-0 ml-12 flex items-center w-4/6 ml-auto', style: 'padding:10px;'}

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2023_06_30_103907) do
+ActiveRecord::Schema.define(version: 2023_07_06_084206) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "btree_gin"
@@ -1030,7 +1030,7 @@ ActiveRecord::Schema.define(version: 2023_06_30_103907) do
     t.datetime "updated_at", null: false
     t.bigint "macro_context_id"
     t.index ["macro_context_id"], name: "index_macros_on_macro_context_id"
-    t.index ["macro_list_id", "position"], name: "index_macros_on_macro_list_id_and_position", unique: true
+    t.index ["macro_list_id", "macro_context_id", "position"], name: "index_macros_position", unique: true
     t.index ["macro_list_id"], name: "index_macros_on_macro_list_id"
   end
 

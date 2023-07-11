@@ -126,7 +126,7 @@ module Macro
 
       def models
         @models ||= begin
-          scope_models = scope.send(model_collection).particulars
+          scope_models = scope.send(model_collection).particulars.with_referent
           scope_models = scope_models.where(attribute_name => undefined_value) unless override_existing_value?
           scope_models
         end

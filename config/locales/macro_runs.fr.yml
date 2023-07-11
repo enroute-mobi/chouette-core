@@ -46,3 +46,7 @@ fr:
         target_pattern: Modèle de cible
       macro/dummy/run:
         expected_result: Résultat attendu
+      macro/update_attribute_from_referent_to_particulars/run:
+        target_attribute: Attribut
+        override_existing_value: Remplacer la valeur existante
+

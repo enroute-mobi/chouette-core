@@ -27,7 +27,7 @@ class Destination::PublicationApi < ::Destination
   def api_is_not_already_used
     return unless publication_api
 
-    scope = PublicationSetup.same_api_usage(publication_setup)
+    scope = publication_api.publication_setups.same_api_usage(publication_setup)
     if scope.exists?
       errors.add(:publication_api_id, I18n.t('destinations.errors.publication_api.already_used'))
       false

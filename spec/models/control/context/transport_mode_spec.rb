@@ -1,10 +1,11 @@
+# frozen_string_literal: true
+
 RSpec.describe Control::Context::TransportMode::Run do
-  let!(:organisation){create(:organisation)}
-  let!(:user){create(:user, :organisation => organisation)}
+  let!(:organisation) { create(:organisation) }
+  let!(:user) { create(:user, organisation: organisation) }
 
   let!(:context) do
     Chouette.create do
-
       company :company
 
       line :first, transport_mode: 'bus', company: :company
@@ -12,7 +13,7 @@ RSpec.describe Control::Context::TransportMode::Run do
       line :third, transport_mode: 'bus', company: :company
 
       workbench :workbench do
-        referential :referential, lines: [:first, :second, :third] do
+        referential :referential, lines: %i[first second third] do
           route line: :first do
             journey_pattern do
               vehicle_journey :first
@@ -29,12 +30,12 @@ RSpec.describe Control::Context::TransportMode::Run do
   end
 
   let!(:control_list) do
-    Control::List.create! name: "Control List", workbench: workbench
+    Control::List.create! name: 'Control List', workbench: workbench
   end
 
   let!(:control_context) do
     Control::Context::TransportMode.create!(
-      name: "Control Context TransportMode",
+      name: 'Control Context TransportMode',
       control_list: control_list,
       transport_mode: 'bus'
     )
@@ -42,7 +43,7 @@ RSpec.describe Control::Context::TransportMode::Run do
 
   let!(:control_dummy) do
     Control::Dummy.create(
-      name: "Control dummy",
+      name: 'Control dummy',
       control_context: control_context,
       position: 0
     )
@@ -50,7 +51,7 @@ RSpec.describe Control::Context::TransportMode::Run do
 
   let(:control_list_run) do
     Control::List::Run.new(
-      name: "Control List Run",
+      name: 'Control List Run',
       referential: referential,
       workbench: workbench,
       original_control_list: control_list,
@@ -69,7 +70,7 @@ RSpec.describe Control::Context::TransportMode::Run do
 
   let(:control_context_runs) { control_list_run.control_context_runs }
 
-  describe ".context" do
+  describe '.context' do
     before do
       referential.switch
 
@@ -79,16 +80,15 @@ RSpec.describe Control::Context::TransportMode::Run do
       control_list_run.reload
     end
 
-    let(:control_context_run) { control_context_runs.find{ |e| e.name == "Control Context TransportMode" } }
+    let(:control_context_run) { control_context_runs.find { |e| e.name == 'Control Context TransportMode' } }
 
-
-    describe "#lines" do
+    describe '#lines' do
       let(:lines) { control_context_run.lines }
 
       it { expect(lines).to match_array([first_line, second_line, third_line]) }
     end
 
-    describe "#companies" do
+    describe '#companies' do
       let(:companies) { control_context_run.companies }
 
       it { expect(companies).to match_array([company]) }

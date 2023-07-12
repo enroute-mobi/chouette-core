@@ -9,7 +9,7 @@ class Control::Context::TransportMode < Control::Context
     end
 
     def companies
-      context.companies.joins(:lines).where(lines: {id: lines.select(:id)}).distinct
+      context.companies.where(id: lines.select(:company_id).distinct)
     end
 
     def routes

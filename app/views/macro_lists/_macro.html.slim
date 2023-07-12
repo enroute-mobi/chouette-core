@@ -6,9 +6,9 @@
 - macro.position ||= "new_position"
 
 = form.simple_fields_for(:macros, macro, fields_for_options) do |macro_form|
-  .flex.flex-col.items-center.macro[x-data = "{ expanded: #{expanded || macro_form.object.errors.present?}, name: '#{macro.name}', class_description: '#{escape_javascript(class_description)}', deleted: false }" x-show="!deleted" x-ref="macro" id=dom_id(macro)] 
+  .flex.flex-col.items-center.macro[x-data = "{ expanded: #{expanded || macro_form.object.errors.present?}, name: '#{macro.name}', class_description: '#{escape_javascript(class_description)}', deleted: false }" x-show="!deleted" x-ref="macro" id=dom_id(macro)]
     .flex.items-center.w-full.mb-8 x-show="!expanded"
-      button x-on:click.prevent=="expanded = ! expanded" class="flex items-center justify-between p-3 pl-3 mr-3 font-bold text-white bg-enroute-chouette-primary rounded cursor-pointer hover:text-indigo-100"
+      button x-on:click.prevent=="expanded = ! expanded" class="expand flex items-center justify-between p-3 pl-3 mr-3 font-bold text-white bg-enroute-chouette-primary rounded cursor-pointer hover:text-indigo-100"
         <span class="text-3xl w-4">+</span>
 
       .grow

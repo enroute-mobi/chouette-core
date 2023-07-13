@@ -8,6 +8,10 @@ class Control::Context::TransportMode < Control::Context
       context.lines.where(transport_mode: options[:transport_mode])
     end
 
+    def companies
+      context.companies.where(id: lines.select(:company_id).distinct)
+    end
+
     def routes
       context.routes.where(line: lines)
     end

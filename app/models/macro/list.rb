@@ -48,9 +48,9 @@ module Macro
       belongs_to :original_macro_list, optional: true, foreign_key: :original_macro_list_id, class_name: 'Macro::List'
 
       has_many :macro_runs, -> { order(position: :asc) }, class_name: 'Macro::Base::Run',
-                                                          dependent: :destroy_all, foreign_key: 'macro_list_run_id'
+                                                          dependent: :destroy, foreign_key: 'macro_list_run_id'
 
-      has_many :macro_context_runs, class_name: 'Macro::Context::Run', dependent: :destroy_all,
+      has_many :macro_context_runs, class_name: 'Macro::Context::Run', dependent: :destroy,
                                     foreign_key: 'macro_list_run_id', inverse_of: :macro_list_run
 
       has_many :macro_messages, class_name: 'Macro::Message', through: :macro_runs

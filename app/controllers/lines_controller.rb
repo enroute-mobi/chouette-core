@@ -52,16 +52,24 @@ class LinesController < ChouetteController
     authorize resource_class
     build_resource
     @line.transport_mode, @line.transport_submode = workgroup.default_transport_mode
+    candidate_line_providers
     super
+  end
+
+  def edit
+    candidate_line_providers
+    edit!
   end
 
   def create
     authorize resource_class
     build_resource
+    candidate_line_providers
     super
   end
 
   def update
+    candidate_line_providers
     update! do
       if line_params[:line_notice_ids]
         workbench_line_referential_line_line_notices_path @workbench, @line
@@ -110,6 +118,10 @@ class LinesController < ChouetteController
 
   def workbench
     @workbench
+  end
+
+  def candidate_line_providers
+    @candidate_line_providers ||= @workbench.line_providers.order(:name)
   end
 
   alias_method :line_referential, :parent

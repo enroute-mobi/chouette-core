@@ -143,10 +143,6 @@ module Chouette
       line_referential.companies.where(id: company_ids)
     end
 
-    def candidate_line_providers
-      line_referential.line_providers
-    end
-
     def active?(on_date = Time.now)
       on_date = on_date.to_date
 

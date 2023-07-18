@@ -48,7 +48,7 @@
   .row
     .col-lg-12
       h2.mb-lg= t("lines.form.sections.internals")
-      = f.input :line_provider_id, as: :select, collection: @line.candidate_line_providers.order(:name), include_blank: false
+      = f.association :line_provider, as: :select, collection: @candidate_line_providers, include_blank: false
   .separator.section_separator
   - if policy(@line).update_activation_dates?
     .row

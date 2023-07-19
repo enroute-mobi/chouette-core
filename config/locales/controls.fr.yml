@@ -1,4 +1,13 @@
 fr:
+  controls:
+    actions:
+      duplicate: Dupliquer
+      send_to_top: Envoyer au début
+      move_up: Remonter
+      move_down: Descendre
+      send_to_bottom: Envoyer à la fin
+      delete: Supprimer
+      restore: Restaurer
   control:
     form:
       sections:

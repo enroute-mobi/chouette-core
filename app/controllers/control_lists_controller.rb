@@ -2,15 +2,12 @@ class ControlListsController < ChouetteController
   include ApplicationHelper
   include PolicyChecker
 
-  defaults :resource_class => Control::List, collection_name: :control_lists_shared_with_workgroup
+  defaults resource_class: Control::List, collection_name: :control_lists_shared_with_workgroup
 
   before_action :decorate_control_list, only: %i[show new edit]
   after_action :decorate_control_list, only: %i[create update]
 
-  before_action :init_facade, only: %i[show new edit]
-  after_action :init_facade, only: %i[create update]
-
-  before_action :control_list_params, only: [:create, :update]
+  before_action :control_list_params, only: %i[create update]
 
   belongs_to :workbench
 
@@ -25,10 +22,6 @@ class ControlListsController < ChouetteController
         @control_lists = collection
       end
     end
-  end
-
-  def fetch_object_html
-    render json: { html: Operations::RenderPartial.call(object_html_params) }
   end
 
   protected
@@ -46,15 +39,6 @@ class ControlListsController < ChouetteController
 
   private
 
-  def init_facade
-    object = control_list rescue Control::List.new(workbench: workbench)
-    @facade ||= ControlListFacade.new(object, helpers)
-  end
-
-  alias facade init_facade
-
-  helper_method :facade
-
   def decorate_control_list
     object = control_list rescue build_resource
     @control_list = ControlListDecorator.decorate(
@@ -65,26 +49,17 @@ class ControlListsController < ChouetteController
     )
   end
 
-  def object_html_params
-    params.require(:html).tap do |html_params|
-      html_params[:template] = helpers
-      html_params[:resource] = html_params[:type].constantize.new
-      html_params[:workbench] = workbench
-      html_params[:parent_klass] = Control::List
-    end
-  end
-
   def control_params
     control_options = %i[id name position type code criticity comments control_list_id _destroy]
 
-    control_options += Control::Base.descendants.flat_map { |n| n.options.keys }
+    control_options += Control.available.flat_map { |n| n.options.keys }
 
     control_options
   end
 
   def control_context_params
     control_context_options = %i[id name type comment _destroy]
-    control_context_options += Control::Context.descendants.flat_map { |n| n.options.keys }
+    control_context_options += Control::Context.available.flat_map { |n| n.options.keys }
 
     control_context_options.push(controls_attributes: control_params)
 

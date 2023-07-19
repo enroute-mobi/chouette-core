@@ -1,0 +1,19 @@
+- template_mode = local_assigns.fetch(:template_mode, false)
+- read_only = local_assigns.fetch(:read_only, false)
+
+div.controls[x-data="{ control_type: '', children_count: #{controls.count} }"]
+  div[x-ref="children"]
+    = render partial: "control", collection: controls, locals: { form: form, template_mode: template_mode, read_only: read_only }
+
+  - unless read_only
+    .flex.flex-col.items-center.mt-5
+      .flex.items-center.w-full.mb-8
+        .w-full.mr-5
+          = select_tag "control_type",
+              options_for_select(Control.available.map { |control_class| [control_class.model_name.human, control_class.name] }),
+              class: "form-control select required",
+              "x-model": "control_type",
+              include_blank: true
+        button.btn.btn-primary x-on:click.prevent= "$refs.children.insertAdjacentHTML('beforeend', prepareForm(controlForm(control_type), '#{form.object_name}', (children_count++) + 1))"
+          = t("simple_form.buttons.control_list.control_type")
+

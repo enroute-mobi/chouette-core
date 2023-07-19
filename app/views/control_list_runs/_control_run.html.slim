@@ -9,7 +9,7 @@
       - if control_run.name.present?
         span.name = truncate(control_run.name, length: 60)
         span.human_model_name = " (#{control_run.model_name.human})"
-      - else 
+      - else
         span.human_model_name = control_run.model_name.human
 
     .flex.items-center.ml-auto
@@ -23,7 +23,7 @@
   .mt-md x-show="showDetails" x-transition.delay.50ms=""
     = simple_block_for control_run, title: false do |d|
       = d.attribute :comments
-      = d.attribute :criticity, value: I18n.t(control_run.criticity, scope: 'enumerize.control.criticity')
+      = d.attribute :criticity, value: I18n.t(control_run.criticity, scope: 'enumerize.control/base.criticity')
       = d.attribute :code
       = render "control_options/#{control_run.control_class.short_type}", d: d, control_run: control_run
 

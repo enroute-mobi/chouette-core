@@ -432,7 +432,7 @@ en:
       document_provider: Document Provider
     search:
       rule_type: *notification_rule_rule_type
-    control:
+    control/base:
       criticity:
         warning: Warning
         error: Error

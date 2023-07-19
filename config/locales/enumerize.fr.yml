@@ -432,7 +432,7 @@ fr:
       document_provider: Fournisseur de Documents
     search:
       rule_type: *notification_rule_rule_type
-    control:
+    control/base:
       criticity:
         warning: Avertissement
         error: Erreur

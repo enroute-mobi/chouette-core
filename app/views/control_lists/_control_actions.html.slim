@@ -1,0 +1,12 @@
+- unless read_only
+  .actions
+    .btn-group
+      .btn.dropdown-toggle data-toggle="dropdown"
+        .span.fa.fa-cog
+      ul.dropdown-menu
+        li
+          a class="cursor-pointer move_up" @click="$refs.control.previousElementSibling?.before($refs.control); reorderForm($refs.children)" = I18n.t('controls.actions.move_up')
+        li
+          a class="cursor-pointer move_down" @click="$refs.control.nextElementSibling?.after($refs.control); reorderForm($refs.children)" = I18n.t('controls.actions.move_down')
+        li
+          a class="cursor-pointer delete" @click="deleted = true" = I18n.t('controls.actions.delete')

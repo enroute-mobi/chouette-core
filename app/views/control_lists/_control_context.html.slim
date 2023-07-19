@@ -1,0 +1,17 @@
+- template_mode = local_assigns.fetch(:template_mode, false)
+- fields_for_options = template_mode ? { child_index: "new_child", builder: NewScopeFormBuilder }  : {}
+- read_only = local_assigns.fetch(:read_only, false)
+
+= form.simple_fields_for(:control_contexts, control_context, fields_for_options) do |control_context_form|
+  .context[x-data = "{deleted: false}", x-show="!deleted"]
+    .flex.items-center.pt-10
+      = render "control_lists/#{control_context.model_name.i18n_key.to_s}", form: control_context_form
+
+      // FIXME Move on right border
+      = render "control_context_actions", read_only: read_only
+
+    = control_context_form.hidden_field :type, value: control_context.class.name
+    = control_context_form.hidden_field :_destroy, 'x-model': 'deleted'
+
+    div.ml-16.border-l-2.pl-12
+      = render partial: 'controls', locals: { controls: control_context.controls, form: control_context_form, template_mode: template_mode, read_only: read_only }

@@ -1,4 +1,8 @@
 fr:
+  control:
+    form:
+      sections:
+        controls: "Contrôles"
   activerecord:
     models:
       control/base:

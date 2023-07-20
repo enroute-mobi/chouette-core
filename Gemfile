@@ -129,7 +129,7 @@ gem 'rake'
 gem 'ros-apartment', require: 'apartment'
 gem 'aasm'
 gem 'puma', '>= 5.6.4'
-gem 'postgresql_cursor'
+gem 'postgresql_cursor', '0.6.6'
 
 # CSS styled emails without the hassle.
 gem 'premailer-rails', '>= 1.11.1'

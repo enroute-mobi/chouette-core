@@ -557,7 +557,7 @@ GEM
     postgres-copy (1.7.1)
       activerecord (>= 5.1)
       pg (>= 0.17)
-    postgresql_cursor (0.6.7)
+    postgresql_cursor (0.6.6)
       activerecord (>= 3.1.0)
     premailer (1.18.0)
       addressable
@@ -934,7 +934,7 @@ DEPENDENCIES
   poltergeist (>= 1.18.1)
   polylines
   postgres-copy (>= 1.5.0)
-  postgresql_cursor
+  postgresql_cursor (= 0.6.6)
   premailer-rails (>= 1.11.1)
   pry-byebug
   pry-rails

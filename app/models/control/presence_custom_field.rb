@@ -8,16 +8,16 @@ module Control
         option :target_model
         option :target_custom_field_id
 
-        validates :target_model, :target_custom_field_id, :expected_format, :model_attribute, presence: true
+        validates :target_model, :target_custom_field_id, :model_attribute, presence: true
         enumerize :target_model, in: %w{ Line StopArea Company JourneyPattern VehicleJourney }
 
         delegate :collection_name, to: :model_attribute
 
         def model_attribute
-          candidate_target_attributes.find_by(ressource_type: target_model)
+          candidate_custom_fields.find_by(resource_type: target_model)
         end
 
-        def candidate_target_attributes # rubocop:disable Metrics/MethodLength,Metrics/AbcSize
+        def candidate_custom_fields # rubocop:disable Metrics/MethodLength,Metrics/AbcSize
           workgroup.custom_fields
         end
 

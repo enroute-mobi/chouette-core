@@ -37,7 +37,7 @@
 
   javascript:
     const controlForms =
-      #{Control.available.map { |control_class| [control_class.name, render(partial: "control", locals: { control: control_class.new, form: f, template_mode: true })] }.to_h.to_json.html_safe}
+      #{Control.available.map { |control_class| [control_class.name, render(partial: "control", locals: { control: control_class.new(workbench: @workbench), form: f, template_mode: true })] }.to_h.to_json.html_safe}
 
     function controlForm(control_class) {
       return controlForms[control_class]

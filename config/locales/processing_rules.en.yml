@@ -14,6 +14,7 @@ en:
       new: "Create a Processing Rule"
       edit: "Edit this Processing Rule"
       destroy: "Delete this Processing Rule"
+      destroy_confirm: "Are you sure you want to delete this Processing Rule ?"
     name: "%{operation_step} %{processable_type} %{processable_name}"
   processing_rule/workgroups:
     index:

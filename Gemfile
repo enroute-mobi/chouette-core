@@ -129,7 +129,7 @@ gem 'rake'
 gem 'ros-apartment', require: 'apartment'
 gem 'aasm'
 gem 'puma', '>= 5.6.4'
-gem 'postgresql_cursor'
+gem 'postgresql_cursor', '0.6.6'
 
 # CSS styled emails without the hassle.
 gem 'premailer-rails', '>= 1.11.1'
@@ -163,6 +163,7 @@ group :development do
   gem 'spring'
   gem 'spring-commands-rspec'
   gem 'better_errors'
+  gem 'sassc' # Needed due to better_errors call in https://github.com/BetterErrors/better_errors/blob/master/lib/better_errors/error_page_style.rb
   gem 'binding_of_caller'
   gem 'derailed_benchmarks'
 

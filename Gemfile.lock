@@ -741,8 +741,6 @@ GEM
     rubycas-client (2.3.9)
       activesupport
     rubyzip (2.3.2)
-    sassc (2.4.0)
-      ffi (~> 1.9)
     saxerator (0.9.9)
     seedbank (0.4.0)
     select2-rails (4.0.13)
@@ -968,7 +966,6 @@ DEPENDENCIES
   rspec_junit_formatter
   rubocop-rails
   rubyzip
-  sassc
   seedbank (= 0.4.0)
   select2-rails (~> 4.0, >= 4.0.3)
   sentry-delayed_job

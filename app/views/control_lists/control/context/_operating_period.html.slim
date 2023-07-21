@@ -1,5 +1,5 @@
-div[class="flex mr-8 pt-0 control-label"]
-	p = I18n.t('control_contexts.form.operating_period.label.start')
+div[class="ml-16 flex mr-8 pt-0 control-label items-center"]
+	p.mb-0 = I18n.t('control_contexts.form.operating_period.label.start')
 	.mx-3.w-40
-		input type="number" step="1" pattern="[0-9]+" name="control_list[control_contexts_attributes][0][next_days]" id="control_list_control_contexts_attributes_0_next_days" class="form-control" x-model="resource.next_days" :disabled="$store.controlList.isShow || resource.isDeleted"
-	p = I18n.t('control_contexts.form.operating_period.label.end')
+		= form.input :next_days, as: :numeric, class:"form-control", label: false, wrapper: false
+	p.mb-0 = I18n.t('control_contexts.form.operating_period.label.end')

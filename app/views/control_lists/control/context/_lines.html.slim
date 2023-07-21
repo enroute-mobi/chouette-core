@@ -1,6 +1,6 @@
 = form.label Control::Context::Lines.human_attribute_name(:lines), class: 'flex mr-8 pt-0 control-label', required: true
 = form.input :line_ids,
-	as: :tom_select,
+	as: :ajax_select,
 	collection: form.object.line_collection,
 	input_html: { multiple: true, style: 'width: 100%' },
 	label: false,

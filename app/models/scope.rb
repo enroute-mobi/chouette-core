@@ -75,7 +75,7 @@ module Scope
       @workbench = workbench
     end
 
-    delegate :stop_area_providers, :shape_providers, :line_providers, to: :workbench
+    delegate :stop_area_providers, :shape_providers, :line_providers, :document_providers, to: :workbench
 
     def stop_areas
       scope.stop_areas.where(stop_area_provider: stop_area_providers)
@@ -85,8 +85,16 @@ module Scope
       scope.entrances.where(stop_area_provider: stop_area_providers)
     end
 
+    def connection_links
+      scope.connection_links.where(stop_area_provider: stop_area_providers)
+    end
+
     def shapes
       scope.shapes.where(shape_provider: shape_providers)
+    end
+
+    def documents
+      scope.documents.where(document_provider: document_providers)
     end
 
     def point_of_interests
@@ -105,7 +113,7 @@ module Scope
       scope.companies.where(line_provider: line_providers)
     end
 
-    delegate :routes, :stop_points, :journey_patterns, :journey_pattern_stop_points, :vehicle_journeys, 
+    delegate :routes, :stop_points, :journey_patterns, :journey_pattern_stop_points, :vehicle_journeys,
              :time_tables, :time_table_periods, :time_table_dates, :service_counts, to: :scope
 
     private

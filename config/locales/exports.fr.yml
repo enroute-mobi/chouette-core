@@ -110,7 +110,7 @@ fr:
         exported_lines: Lignes exportées
         profile: Profil
         prefer_referent_stop_area: Préférer les arrêts Référents
-        prefer_referent_line: Préférer les lignes Référents
+        prefer_referent_line: Préférer les lignes Référentes
         prefer_referent_company: Préférer les transporteurs Référents
         ignore_single_stop_station: "Ignorer les Zones de Lieux avec une Zone d’Embarquement unique"
         include_stop_visits: "Inclure les Passages aux Arrêts"

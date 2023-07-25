@@ -93,6 +93,13 @@ fr:
           attributes:
             transport_mode:
               submode_mismatch: "ne correspond pas au sous-mode de transport séléctionné"
+        line:
+          attributes:
+            referent_id:
+              a_referent_cannot_have_a_referent: "Une ligne référente ne peut pas avoir de référente"
+              an_object_used_as_referent_must_be_flagged_as_referent: "Une ligne utilisée comme référente doit être signalée comme référente"
+            is_referent:
+              the_particulars_collection_should_be_empty: "Une ligne non-référente ne peut avoir des lignes particulières"
     models:
       line:
         zero:  "ligne"
@@ -111,7 +118,7 @@ fr:
         secondary_companies: "Transporteurs secondaires"
         is_referent: "Référent"
         referent_id: "Ligne Référente"
-        particulars: "Ligne particulières"
+        particulars: "Lignes particulières"
         line_notices: "Notes de lignes"
         companies:
           name: "Transporteur principal"
@@ -161,15 +168,6 @@ fr:
         associated_notices: Notes de ligne associées
         codes: Codes
         routes: Itinéraires
-    errors:
-      models:
-        line:
-          attributes:
-            referent_id:
-              a_referent_cannot_have_a_referent: "Un ligne référent ne peut pas avoir de référent"
-              an_object_used_as_referent_must_be_flagged_as_referent: "Un ligne utilisé comme référent doit être signalé comme référent"
-            is_referent:
-              the_particulars_collection_should_be_empty: "Un ligne non-référent ne peut avoir des transporteurs particuliers"
   formtastic:
     titles:
       line:

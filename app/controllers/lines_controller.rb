@@ -13,11 +13,12 @@ class LinesController < ChouetteController
   respond_to :js, :only => :index
 
   def autocomplete
-    scope = line_referential.lines
-    scope = scope.referents
-    args  = [].tap{|arg| 3.times{arg << "%#{params[:q]}%"}}
-    @lines = scope.where("unaccent(name) ILIKE unaccent(?) OR registration_number ILIKE ? OR objectid ILIKE ?", *args).limit(50)
-    @lines
+    scope = line_referential.lines.referents
+
+    query = 'unaccent(name) ILIKE unaccent(?) OR registration_number ILIKE ? OR objectid ILIKE ?'
+    args = ["%#{params[:q]}%"] * 3
+
+    @lines = scope.where(query, *args).limit(50)
   end
 
   def index

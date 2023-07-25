@@ -16,14 +16,14 @@
       = f.label :stop_area, class: 'pl-6 whitespace-nowrap'
       = f.input :from_stop_area_id, placeholder: I18n.t('simple_form.placeholders.search.stop_area_id'),
         as: :ajax_select,
-        collection: [[ @search.from_stop_area_id, @search.from_stop_area_name ]],
-        selected: @search.from_stop_area_id,
+        collection: @search.selected_from_stop_area_collection,
+        label_method: :display_name,
         input_html: { 'data-url': stop_areas_referential_autocomplete_index_url(current_referential) },
         wrapper_html: {class: "w-1/3"}
       = f.input :to_stop_area_id, placeholder: I18n.t('simple_form.placeholders.search.stop_area_id'),
         as: :ajax_select,
-        collection: [[ @search.to_stop_area_id, @search.to_stop_area_name ]],
-        selected: @search.to_stop_area_id,
+        collection: @search.selected_to_stop_area_collection,
+        label_method: :display_name,
         input_html: { 'data-url': stop_areas_referential_autocomplete_index_url(current_referential) },
         wrapper_html: {class: "w-1/3"}
 

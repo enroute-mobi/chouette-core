@@ -1,10 +1,9 @@
 = form.label Control::Context::Lines.human_attribute_name(:lines), class: 'flex mr-8 pt-0 control-label', required: true
 = form.input :line_ids,
-	as: :ajax_select,
-	collection: form.object.line_collection,
-	input_html: { multiple: true, style: 'width: 100%' },
+  as: :ajax_select,
+	collection: form.object.selected_lines,
+  label_method: :display_name,
+  placeholder: I18n.t('line_routing_constraint_zones.form.line_placeholder'),
+	input_html: { 'data-url': lines_workbench_autocomplete_index_url(form.object.workbench), multiple: true, style: 'width: 100%;' },
 	label: false,
-	wrapper_html: { class: 'mb-0 mx-0 ml-12 flex items-center grow', style: 'padding:10px;'},
-	selected: form.object.selected_line_ids,
-	label_html: { class: 'pt-0 mr-5' },
-	config: { type: 'ajax', url: lines_workbench_autocomplete_index_path(form.object.workbench), placeholder: I18n.t('line_routing_constraint_zones.form.line_placeholder') }
+	wrapper_html: { class: 'mb-0 mx-0 ml-12 flex items-center w-4/6 ml-auto', style: 'padding:10px;' }

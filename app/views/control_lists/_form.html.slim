@@ -26,7 +26,7 @@
                       class: "form-control select required",
                       "x-model": "new_child",
                       include_blank: true
-                button.btn.btn-primary x-on:click.prevent= "$refs.children.insertAdjacentHTML('beforeend', prepareForm(new_child, '#{f.object_name}', (children_count++) + 1))"
+                button.btn.btn-primary x-on:click.prevent= "$refs.children.insertAdjacentHTML('beforeend', prepareForm(new_child, '#{f.object_name}', (children_count++) + 1)); initForm($refs.children.lastChild)"
                   = t("simple_form.buttons.control_list.control_context_type")
 
       = render partial: 'controls', locals: { controls: @control_list.controls, form: f, read_only: read_only }
@@ -36,6 +36,7 @@
     = f.button :submit, t('actions.submit'), class: 'btn btn-default formSubmitr', form: 'control_list_form'
 
   javascript:
+
     const controlForms =
       #{Control.available.map { |control_class| [control_class.name, render(partial: "control", locals: { control: control_class.new(workbench: @workbench), form: f, template_mode: true })] }.to_h.to_json.html_safe}
 
@@ -69,4 +70,8 @@
           }
         });
       });
+    }
+
+    function initForm(lastChildren) {
+      addAjaxSelectToForm(lastChildren);
     }

@@ -7,8 +7,6 @@ class ControlListsController < ChouetteController
   before_action :decorate_control_list, only: %i[show new edit]
   after_action :decorate_control_list, only: %i[create update]
 
-  before_action :control_list_params, only: %i[create update]
-
   belongs_to :workbench
 
   respond_to :html, :xml, :json
@@ -60,6 +58,9 @@ class ControlListsController < ChouetteController
   def control_context_params
     control_context_options = %i[id name type comment _destroy]
     control_context_options += Control::Context.available.flat_map { |n| n.options.keys }
+    # TODO : Should be fixed and use internal method in each context
+    control_context_options.delete(:line_ids)
+    control_context_options.push({ line_ids: [] })
 
     control_context_options.push(controls_attributes: control_params)
 

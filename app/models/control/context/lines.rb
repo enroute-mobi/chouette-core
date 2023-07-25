@@ -4,31 +4,14 @@ class Control::Context::Lines < Control::Context
 
     included do
       option :line_ids
-
-      validate :workbench_lines_contain_selected_lines
-
-      def line_collection
-        selected_lines.map{ |l| {id: l.id, text: "#{l.name} - #{l.registration_number}"} }
-      rescue
-        []
-      end
-
-      def selected_line_ids
-        return line_ids if line_ids.is_a? Array
-
-        line_ids.to_s.split(',')
-      end
-
-      private
-
-      def workbench_lines_contain_selected_lines
-        unless selected_lines.count == selected_line_ids.count
-          errors.add(:line_ids, :invalid)
-        end
-      end
+      validates :line_ids, presence: true
 
       def selected_lines
-        workbench.lines.distinct.where(id: selected_line_ids)
+        workbench.lines.where(id: line_ids).order(:name)
+      end
+
+      def candidate_lines
+        workbench.lines.pluck(:id)
       end
 
     end

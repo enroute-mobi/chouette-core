@@ -43,12 +43,12 @@ module Search
 			stop_area_referential.stop_areas
 		end
 
+    def selected_parent_collection
+      [parent_stop_area].compact
+    end
+
 		def parent_stop_area
 			stop_area_referential.stop_areas.find(parent_id) if parent_id.present?
-		end
-
-		def parent_stop_area_name
-			parent_stop_area&.display_name
 		end
 
 		private

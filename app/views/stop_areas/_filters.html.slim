@@ -6,7 +6,7 @@
   .flex.flex-col.w-full
     .flex.items-center.border-r.border-white
       = f.input :text, label: false, wrapper_html: {class: "w-2/5"}
-    .flex.items-center.border-r.border-white  
+    .flex.items-center.border-r.border-white
       = f.input :zip_code, label: Chouette::StopArea.tmf('zip_code'), required: false, wrapper_html: {class: filter_item_class(params[:search], :zip_code)}, wrapper_html: {class: "w-1/5"}
       = f.input :city_name, label: Chouette::StopArea.tmf('city_name'), required: false, wrapper_html: {class: filter_item_class(params[:search], :city_name)}, wrapper_html: {class: "w-1/5"}
       = f.input :area_type, as: :autocomplete_select, wrapper_html: {class: "w-1/5"}
@@ -15,8 +15,8 @@
     .flex.items-center.border-t.border-r.border-white
       = f.input :parent_id,
         as: :ajax_select,
-        collection: [[ @search.parent_id, @search.parent_stop_area_name ]],
-        selected: @search.parent_stop_area,
+        collection: @search.selected_parent_collection,
+        label_method: :display_name,
         input_html: { 'data-url': parent_stop_areas_workbench_autocomplete_index_path(@workbench, format: :json) },
         wrapper_html: {class: "w-2/5"}
       = f.input :stop_area_provider_id, as: :autocomplete_select, collection: @search.candidate_stop_area_providers, wrapper_html: {class: "w-2/5"}

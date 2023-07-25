@@ -12,6 +12,15 @@ class LinesController < ChouetteController
   respond_to :kml, :only => :show
   respond_to :js, :only => :index
 
+  def autocomplete
+    scope = line_referential.lines.referents
+
+    query = 'unaccent(name) ILIKE unaccent(?) OR registration_number ILIKE ? OR objectid ILIKE ?'
+    args = ["%#{params[:q]}%"] * 3
+
+    @lines = scope.where(query, *args).limit(50)
+  end
+
   def index
     index! do |format|
       format.html {
@@ -140,6 +149,8 @@ class LinesController < ChouetteController
       :transport_submode,
       :seasonal,
       :line_notice_ids,
+      :is_referent,
+      :referent_id,
       :secondary_company_ids => [],
       footnotes_attributes: [:code, :label, :_destroy, :id],
       codes_attributes: [:id, :code_space_id, :value, :_destroy],

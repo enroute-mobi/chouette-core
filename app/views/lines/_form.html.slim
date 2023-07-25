@@ -14,6 +14,14 @@
           = f.input :transport_submode, as: :select, collection: submodes, include_blank: false
 
       = f.input :stable_id
+    .separator.section_separator
+
+  .row
+    .col-lg-12 x-data="{ isReferentActivated: #{@line.is_referent} }"
+      h2.mb-lg= t("stop_areas.form.sections.referent")
+      = f.input :is_referent, as: :switchable_checkbox, input_html: { checked: @line.is_referent, 'x-on:click': 'isReferentActivated = !isReferentActivated' }
+      = f.input :referent_id, as: :select, collection: [f.object.referent_id], input_html: { style: 'width: 100%', 'x-bind:disabled': "isReferentActivated", data: { select2ed_placeholder: Chouette::StopArea.tmf('referent'), select2ed_allow_clear: true, select2_ajax: true, url: (autocomplete_workbench_line_referential_lines_path(@workbench)), initvalue: {id: f.object.referent_id, text: f.object.referent.try(:name)}}}, wrapper_html: { id: 'referent_input', class: 'inline-form', 'x-bind:class': "{ 'disabled': isReferentActivated }" }
+
   .separator.section_separator
   .row
     .col-lg-12

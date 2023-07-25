@@ -49,3 +49,24 @@
              = replacement_msg t('lines.no_documents')
           = link_to I18n.t('lines.actions.associate_other_documents'), workbench_line_referential_line_document_memberships_path(@workbench, @line), class: 'btn btn-primary my-2'
           .mt-2
+
+        = simple_block_for @line, title: Chouette::Line.tmf('is_referent') do |d|
+          - if @line.is_referent
+            = d.attribute :particulars, as: :count, value: @line.particulars, link: workbench_line_referential_lines_path(@workbench, :'q[referent_id_eq]' => @line.id)
+            - if @line.particulars.present?
+              table.table.table-bordered.mt-5
+                thead
+                  tr
+                    th scope="col"
+                      = Chouette::Line.tmf('id')
+                    th scope="col"
+                      = Chouette::Line.tmf('name')
+                tbody
+                  - @line.particulars.limit(5).each do |c|
+                    tr
+                      td
+                        = c.get_objectid.short_id
+                      td
+                        = link_to(c.name, workbench_line_referential_line_path(@workbench, c))
+          - else
+            = d.attribute :referent, as: :association, link: ->(referent) { workbench_line_referential_line_path(@workbench, referent) }

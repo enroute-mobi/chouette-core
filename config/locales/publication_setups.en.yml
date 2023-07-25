@@ -30,6 +30,7 @@ en:
         destinations: "Output"
         duration: Duration (in days)
         prefer_referent_stop_area: Prefer Referent Stop Areas
+        prefer_referent_line: Prefer Referent Lines
         ignore_single_stop_station: Ignore stations with a single stop
         ignore_parent_stop_places: "Ignore parent Stop Places"
         publish_per_line: Publish per line

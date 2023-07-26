@@ -4,9 +4,6 @@
 # So if you have an array of primitive values, you can use this to
 # validate that all elements of the array are in the inclusion list.
 #
-# Or that all the elements of the array are whatever you want,
-# by supplying a proc that returns false for bad values.
-#
 # Empty arrays are always allowed, add a presence validator if you don't
 # want to allow them, eg `validates :genre, presence: true, array_inclusion: { in: whatever }`
 #
@@ -14,7 +11,7 @@
 #    class Work < Kithe::Work
 #      attr_json :genre, :string, array: true
 #      validates :genre, array_inclusion: { in: ALLOWED_GENRES  }
-#      validates :genre, array_inclusion: { proc: ->(val) { val =~ /\d+/ } }
+#      validates :genre, array_inclusion: { in: ->(work) { work.genres } }
 #      #...
 #
 # Custom message can interpolate `rejected_values` value. (Should also work for i18n)

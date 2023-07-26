@@ -119,7 +119,8 @@ RSpec.describe Control::Context::Lines::Run do
       end
 
       it "should be invalid for line_ids" do
-        expect(errors).to match_array([{:error=>:invalid}])
+        expect(errors.count).to eq(1)
+        expect(errors.first).to include(:error=>:inclusion, :rejected_values=>"9999")
       end
     end
 

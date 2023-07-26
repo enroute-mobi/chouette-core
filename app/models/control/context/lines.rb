@@ -4,13 +4,21 @@ class Control::Context::Lines < Control::Context
 
     included do
       option :line_ids
-      validates :line_ids, presence: true
+      validates :line_ids, presence: true, array_inclusion: { in: ->(context) { context.candidate_lines_id } }
+
+      # Avoid empty string sends by select
+      #  control_list[control_contexts_attributes][1690296924144][line_ids][]	[…]
+      # 0	""
+      # 1	"812"
+      def line_ids=(lines)
+        super(lines.reject(&:blank?).map(&:to_i))
+      end
 
       def selected_lines
         workbench.lines.where(id: line_ids).order(:name)
       end
 
-      def candidate_lines
+      def candidate_lines_id
         workbench.lines.pluck(:id)
       end
 
@@ -23,7 +31,7 @@ class Control::Context::Lines < Control::Context
     include Options
 
     def lines
-      context.lines.where(id: selected_line_ids)
+      context.lines.where(id: selected_lines)
     end
 
     def routes

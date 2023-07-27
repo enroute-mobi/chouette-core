@@ -21,6 +21,7 @@ class Workgroup < ApplicationModel
   has_many :document_types, dependent: :destroy
   has_many :documents, through: :workbenches
   has_many :document_providers, through: :workbenches
+  has_many :document_memberships, through: :documents, source: :memberships
   has_many :imports, through: :workbenches
   has_many :exports, class_name: 'Export::Base', dependent: :destroy
   has_many :calendars, dependent: :destroy

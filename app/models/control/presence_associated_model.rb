@@ -13,7 +13,7 @@ module Control
 
         enumerize :target_model, in: %w[Line StopArea Route JourneyPattern VehicleJourney TimeTable]
         validates :target_model, :collection, presence: true
-        validates :minimum, :maximum, numericality: { only_integer: true, allow_nil: true }
+        validates :minimum, :maximum, numericality: { only_integer: true, allow_blank: true }
       end
 
       def candidate_collections # rubocop:disable Metrics/MethodLength

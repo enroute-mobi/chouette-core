@@ -1,4 +1,4 @@
-= form.label Control::Context::Lines.model_name.human, class: 'flex mr-8 pt-0 control-label', required: true
+= form.label :line_ids, class: 'flex mr-8 pt-0 control-label', required: true
 = form.input :line_ids,
   as: :ajax_select,
 	collection: form.object.selected_lines,

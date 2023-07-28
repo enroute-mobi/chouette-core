@@ -10,7 +10,7 @@ RSpec.describe Control::PresenceCustomField do
       Control::PresenceCustomField::Run.create(
         control_list_run: control_list_run,
         criticity: "warning",
-        options: { target_model: target_model, target_custom_field_id: target_custom_field_id },
+        options: { target_model: target_model, target_custom_field_id: target_custom_field.id },
         position: 0
       )
     end
@@ -24,7 +24,7 @@ RSpec.describe Control::PresenceCustomField do
         criticity: "warning",
         message_attributes: {
           "name"=> source.name,
-          "custom_field" => custom_field_public_name.code,
+          "custom_field" => target_custom_field.code,
         }
       })
     end
@@ -32,21 +32,21 @@ RSpec.describe Control::PresenceCustomField do
     describe "#Company" do
       let!(:context) do
         Chouette.create do
+          custom_field code: 'public_name', resource_type: 'Company'
           company
           referential
         end
       end
 
-      let!(:custom_field_public_name) do
-        create :custom_field, field_type: :string, code: :public_name, name: "Name", workgroup: context.workgroup, resource_type: "Company"
-      end
-
       let(:company) { context.company }
       let(:target_model) { "Company" }
-      let(:target_custom_field_id) { custom_field_public_name.id }
+      let(:target_custom_field) { context.custom_field }
       let(:source) { company }
+      let(:line) { context.referential.lines.first }
 
-      before { context.referential.switch }
+      before :each do
+        line.update company: company
+      end
 
       context "when a Company has no custom field value" do
 
@@ -74,25 +74,27 @@ RSpec.describe Control::PresenceCustomField do
     describe "#StopArea" do
       let!(:context) do
         Chouette.create do
-          stop_area
-          referential
+          custom_field code: 'public_name', resource_type: 'StopArea'
+          stop_area :departure
+          stop_area :arrival
+          referential do
+            route stop_areas: [:departure, :arrival]
+          end
         end
       end
 
-      let!(:custom_field_public_name) do
-        create :custom_field, field_type: :string, code: :public_name, name: "Name", workgroup: context.workgroup, resource_type: "StopArea"
-      end
-
-      let(:stop_area) { context.stop_area }
+      let(:departure) { context.stop_area(:departure) }
+      let(:arrival) { context.stop_area(:arrival) }
       let(:target_model) { "StopArea" }
-      let(:target_custom_field_id) { custom_field_public_name.id }
-      let(:source) { stop_area }
+      let(:target_custom_field) { context.custom_field }
+      let(:source) { departure }
 
       before { context.referential.switch }
 
       context "when a StopArea has no custom field value" do
 
-        before { stop_area.update custom_field_values: { public_name: nil } }
+        before { departure.update custom_field_values: { public_name: nil } }
+        before { arrival.update custom_field_values: { } }
 
         it "should create a warning message" do
           subject
@@ -103,7 +105,8 @@ RSpec.describe Control::PresenceCustomField do
 
       context "when a StopArea has custom field value" do
 
-        before { stop_area.update custom_field_values: { public_name: "TEST" } }
+        before { departure.update custom_field_values: { public_name: "TEST" } }
+        before { arrival.update custom_field_values: { public_name: "TEST" } }
 
         it "should have no warning message created" do
           subject

@@ -4,8 +4,9 @@ RSpec.describe Control::ModelStatus do
 
     let(:context) do
       Chouette.create do
-        stop_area
-        referential
+        referential do
+          route
+        end
       end
     end
 
@@ -41,7 +42,7 @@ RSpec.describe Control::ModelStatus do
     describe "on StopArea" do
 
       let(:target_model) { "StopArea" }
-      let(:stop_area) { context.stop_area }
+      let(:stop_area) { context.route.stop_areas.first }
       let(:source) { stop_area }
 
 
@@ -53,7 +54,7 @@ RSpec.describe Control::ModelStatus do
 
           it "should create a warning message" do
             control_run.run
-            
+
             expect(control_run.control_messages).to include(expected_message)
           end
         end
@@ -82,7 +83,7 @@ RSpec.describe Control::ModelStatus do
       describe "enabled" do
         let(:expected_status) { 'enabled' }
 
-        context "search linew with deactivated to true" do
+        context "search line with deactivated to true" do
           before { line.update deactivated: true }
 
           it "should create a warning message" do

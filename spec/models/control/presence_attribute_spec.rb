@@ -547,9 +547,14 @@ RSpec.describe Control::PresenceAttribute do
 
       describe "#Company" do
         let(:company) {context.company}
+        let(:line) { context.referential.lines.first }
         let(:source) { company }
         let(:target_model) { "Company" }
         let(:attribute_name) { company.name }
+
+        before :each do
+          line.update company: company
+        end
 
         [ "short_name", "house_number", "street", "address_line_1", "address_line_2",
           "town", "postcode", "postcode_extension", "default_contact_name", "code"  ].each do |attr_name|

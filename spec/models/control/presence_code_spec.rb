@@ -34,14 +34,15 @@ RSpec.describe Control::PresenceCode do
 
     describe "#StopArea" do
       let(:target_model) { "StopArea" }
-      let(:source) { context.stop_area }
+      let(:source) { context.route.stop_areas.first }
 
       context "when a StopArea exists without code" do
         let(:context) do
           Chouette.create do
             code_space short_name: "test"
-            stop_area
-            referential
+            referential do
+              route
+            end
           end
         end
 
@@ -52,15 +53,17 @@ RSpec.describe Control::PresenceCode do
         end
       end
 
-      context "when a StopArea exists a code 'test'" do
+      context "when StopArea exist with a code 'test'" do
         let(:context) do
           Chouette.create do
-            code_space short_name: 'test'
-            stop_area codes: { test: 'dummy'}
-            referential
+            code_space short_name: "test"
+            stop_area :departure, codes: { test: 'dummy'}
+            stop_area :arrival, codes: { test: 'dummy'}
+            referential do
+              route stop_areas: [:departure, :arrival]
+            end
           end
         end
-        before { referential.switch }
 
         it "should have no warning message created" do
           subject
@@ -79,12 +82,9 @@ RSpec.describe Control::PresenceCode do
         let(:context) do
           Chouette.create do
             code_space short_name: "test"
-            line
             referential
           end
         end
-
-        before { referential.switch }
 
         it "should create a warning message" do
           subject
@@ -96,15 +96,14 @@ RSpec.describe Control::PresenceCode do
       context "when a Line exists a code 'test'" do
         let(:context) do
           Chouette.create do
-            code_space short_name: 'test'
-            line codes: { test: 'dummy'} #FIXME: can not find workgroup in factory
+            code_space short_name: "test"
             referential
           end
         end
 
-        before { referential.switch }
+        before { context.referential.lines.first.codes.create(code_space: context.code_space, value: 'dummy') }
 
-        xit "should have no warning message created" do
+        it "should have no warning message created" do
           subject
 
           expect(control_run.control_messages).to be_empty

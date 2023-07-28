@@ -19,7 +19,7 @@ RSpec.describe Macro::DefinePostalAddress do
     let(:stop_area) { context.stop_area(:stop_area) }
 
     let(:macro_list_run) do
-      Macro::List::Run.create referential: referential, workbench: workbench
+      Macro::List::Run.create workbench: workbench
     end
     subject(:macro_run) do
       Macro::DefinePostalAddress::Run.create(

@@ -9,7 +9,6 @@ RSpec.describe Macro::List::Run do
       Chouette.create do
 
         referential :target
-        stop_area
 
         macro_list :original_macro_list do
           macro expected_result: 'error', target_model: 'StopArea'
@@ -21,22 +20,11 @@ RSpec.describe Macro::List::Run do
     end
 
     let(:macro_list_run) { context.macro_list_run }
-    let(:stop_area) { context.stop_area }
     let(:line) { context.referential(:target).lines.first }
 
     before do
       macro_list_run.build_with_original_macro_list
       context.macro_list_run.perform
-    end
-
-    let(:expected_message_stop_area) do
-      an_object_having_attributes({
-        criticity: 'error',
-        message_attributes: {
-          'name' => stop_area.name,
-          'result' => 'error'
-        }
-      })
     end
 
     let(:expected_message_line) do
@@ -52,7 +40,7 @@ RSpec.describe Macro::List::Run do
     let(:macro_messages) { Macro::Message.all }
 
     it 'should perform all macro runs and create messages' do
-      expect(macro_messages).to contain_exactly(expected_message_stop_area, expected_message_line)
+      expect(macro_messages).to contain_exactly(expected_message_line)
     end
   end
 end

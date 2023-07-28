@@ -66,7 +66,9 @@ RSpec.describe Control::FormatAttribute do
           Chouette.create do
             stop_area :with_a_good_name, name: 'B9999-AAA'
             stop_area :with_a_bad_name, name: 'BAD_CODE'
-            referential
+            referential do
+              route stop_areas: [:with_a_good_name, :with_a_bad_name]
+            end
           end
         end
 
@@ -78,21 +80,26 @@ RSpec.describe Control::FormatAttribute do
         it 'should create messages for stop areas without good attribute format' do
           subject
 
-          expect(control_run.control_messages.length).to eq(1)
-          expect(control_run.control_messages).to include(expected_message)
+          expect(control_run.control_messages).to contain_exactly(expected_message)
         end
       end
 
       describe '#Entrance' do
         let(:context) do
           Chouette.create do
-            entrance :good_name, name: 'B9999-AAA'
-            entrance :bad_name, name: 'BAD_NAME'
+            stop_area :departure do
+              entrance :good_name, name: 'B9999-AAA'
+              entrance :bad_name, name: 'BAD_NAME'
+            end
+            stop_area :arrival
 
-            referential
+            referential do
+              route stop_areas: [:departure, :arrival]
+            end
           end
         end
 
+        before { referential.switch }
         let(:target_model) { 'Entrance' }
         let(:source) { context.entrance(:bad_name) }
 

@@ -79,33 +79,16 @@ RSpec.describe Control::GeographicalZone::Run do
   end
 
   describe '#run' do
-    let(:control_list_run) do
-      Control::List::Run.create referential: referential, workbench: workbench
-    end
 
     let(:control_run) do
       Control::GeographicalZone::Run.create(
         control_list_run: control_list_run,
         target_model: target_model,
         criticity: 'warning',
-        upper_left_input: '0,0',
-        lower_right_input: '2,2',
+        upper_left_input: '0,2',
+        lower_right_input: '2,0',
         position: 0
       )
-    end
-
-    let(:context) do
-      Chouette.create do
-        stop_area :stop_area_inside_bounds, latitude: 1, longitude: 1
-        entrance :entrance_inside_bounds
-        point_of_interest :poi_inside_bounds
-
-        stop_area :stop_area_outside_bounds, latitude: 3, longitude: 3
-        entrance :entrance_outside_bounds
-        point_of_interest :poi_outside_bounds
-
-        referential
-      end
     end
 
     let(:referential) { context.referential }
@@ -113,7 +96,25 @@ RSpec.describe Control::GeographicalZone::Run do
     let(:journey_pattern) { context.journey_pattern }
 
     describe '#StopArea' do
-      before { control_run.run }
+      before {
+        referential.switch
+        control_run.run
+      }
+
+      let(:control_list_run) do
+        Control::List::Run.create referential: referential, workbench: workbench
+      end
+
+      let(:context) do
+        Chouette.create do
+          stop_area :stop_area_inside_bounds, latitude: 1, longitude: 1
+          stop_area :stop_area_outside_bounds, latitude: 3, longitude: 3
+
+          referential do
+            route stop_areas: [:stop_area_inside_bounds, :stop_area_outside_bounds]
+          end
+        end
+      end
 
       let(:target_model) { 'StopArea' }
       let(:stop_area_inside_bounds) { context.stop_area(:stop_area_inside_bounds) }
@@ -141,10 +142,30 @@ RSpec.describe Control::GeographicalZone::Run do
 
     describe '#Entrance' do
       before do
+        referential.switch
         entrance_inside_bounds.update_attribute :position, 'POINT(1 1)'
         entrance_outside_bounds.update_attribute :position, 'POINT(3 3)'
 
         control_run.run
+      end
+
+      let(:control_list_run) do
+        Control::List::Run.create workbench: workbench
+      end
+
+      let(:context) do
+        Chouette.create do
+          stop_area :departure do
+            entrance :entrance_inside_bounds
+            entrance :entrance_outside_bounds
+          end
+
+          stop_area :arrival
+
+          referential do
+            route stop_areas: [:departure, :arrival]
+          end
+        end
       end
 
       let(:target_model) { 'Entrance' }
@@ -177,6 +198,17 @@ RSpec.describe Control::GeographicalZone::Run do
         poi_outside_bounds.update_attribute :position, 'POINT(3 3)'
 
         control_run.run
+      end
+
+      let(:control_list_run) do
+        Control::List::Run.create workbench: workbench
+      end
+
+      let(:context) do
+        Chouette.create do
+          point_of_interest :poi_inside_bounds
+          point_of_interest :poi_outside_bounds
+        end
       end
 
       let(:target_model) { 'PointOfInterest' }

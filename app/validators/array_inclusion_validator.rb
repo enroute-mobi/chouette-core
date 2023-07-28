@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 # Like the default Rails inclusion validator, but the built-in Rails
 # validator won't work on an _array_ of things.
 #
@@ -27,19 +29,17 @@ class ArrayInclusionValidator < ActiveModel::EachValidator
   include ActiveModel::Validations::Clusivity
 
   def validate_each(record, attribute, value)
-    value = value || []
+    value ||= []
     not_allowed_values = []
 
     value.each do |val|
-      unless include?(record, val)
-        not_allowed_values << val
-      end
+      not_allowed_values << val unless include?(record, val)
     end
 
-    unless not_allowed_values.blank?
-      formatted_rejected = not_allowed_values.uniq.collect(&:inspect).join(",")
-      record.errors.add(attribute, :inclusion, **options.except(:in).merge!(rejected_values: formatted_rejected, value: value))
-    end
+    return if not_allowed_values.blank?
+
+    formatted_rejected = not_allowed_values.uniq.collect(&:inspect).join(',')
+    record.errors.add(attribute, :inclusion,
+                      **options.except(:in).merge!(rejected_values: formatted_rejected, value: value))
   end
-
 end

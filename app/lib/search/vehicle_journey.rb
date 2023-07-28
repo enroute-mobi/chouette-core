@@ -16,13 +16,17 @@ module Search
       Period.new(from: start_date, to: end_date).presence
     end
 
-    validates :start_date, presence: true, if: Proc.new { |search| search.end_date.present? }
-    validates :end_date, presence: true, if: Proc.new { |search| search.start_date.present? }
+    validates :start_date, presence: true, if: proc { |search| search.end_date.present? }
+    validates :end_date, presence: true, if: proc { |search| search.start_date.present? }
     validates :period, valid: true
     validates :company, inclusion: { in: ->(search) { search.candidate_companies } }, allow_blank: true, allow_nil: true
     validates :line, inclusion: { in: ->(search) { search.candidate_lines } }, allow_blank: true, allow_nil: true
-    validates :from_stop_area, inclusion: { in: ->(search) { search.candidate_stop_areas } }, allow_blank: true, allow_nil: true
-    validates :to_stop_area, inclusion: { in: ->(search) { search.candidate_stop_areas } }, allow_blank: true, allow_nil: true
+    validates :from_stop_area, inclusion: { in: lambda { |search|
+                                                  search.candidate_stop_areas
+                                                } }, allow_blank: true, allow_nil: true
+    validates :to_stop_area, inclusion: { in: lambda { |search|
+                                                search.candidate_stop_areas
+                                              } }, allow_blank: true, allow_nil: true
 
     def company
       referential.companies.find(company_id) if company_id.present?
@@ -48,7 +52,6 @@ module Search
       [to_stop_area].compact
     end
 
-
     def candidate_lines
       referential.lines.order(:name)
     end
@@ -62,7 +65,9 @@ module Search
     end
 
     def query
-      Query::VehicleJourney.new(scope).text(text).company(company).line(line).time_table(period).between_stop_areas(from_stop_area, to_stop_area)
+      Query::VehicleJourney.new(scope).text(text).company(company).line(line).time_table(period).between_stop_areas(
+        from_stop_area, to_stop_area
+      )
     end
 
     class Order < ::Search::Order

@@ -1,8 +1,10 @@
+# frozen_string_literal: true
+
 module Control
   class Context < ApplicationModel
     include OptionsSupport
 
-    self.table_name = "control_contexts"
+    self.table_name = 'control_contexts'
 
     belongs_to :control_list, class_name: 'Control::List', optional: false, inverse_of: :control_contexts
 
@@ -48,7 +50,7 @@ module Control
     class Run < ApplicationModel
       include OptionsSupport
 
-      self.table_name = "control_context_runs"
+      self.table_name = 'control_context_runs'
 
       with_options(inverse_of: :control_context_runs) do
         belongs_to :control_list_run, class_name: 'Control::List::Run', optional: false

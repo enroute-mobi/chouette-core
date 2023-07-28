@@ -5,11 +5,9 @@ module Control
     belongs_to :workbench, optional: false
     validates :name, presence: true
 
-    with_options(inverse_of: :control_list) do
-      with_options(foreign_key: 'control_list_id') do
-        has_many :controls, -> { order(position: :asc) }, class_name: 'Control::Base', dependent: :delete_all
-        has_many :control_contexts, class_name: 'Control::Context', dependent: :destroy
-      end
+    with_options(inverse_of: :control_list, foreign_key: 'control_list_id') do
+      has_many :controls, -> { order(position: :asc) }, class_name: 'Control::Base', dependent: :delete_all
+      has_many :control_contexts, class_name: 'Control::Context', dependent: :destroy
     end
 
     has_many :processing_rules, class_name: 'ProcessingRule::Base', as: :processable

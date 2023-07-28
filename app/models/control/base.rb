@@ -33,8 +33,9 @@ module Control
     end
 
     def workbench
-      (control_list || control_context).workbench
+      @workbench ||= (control_list || control_context).workbench
     end
+    attr_writer :workbench
 
     delegate :workgroup, to: :workbench
 

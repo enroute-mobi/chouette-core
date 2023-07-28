@@ -1,0 +1,39 @@
+- read_only = local_assigns.fetch(:read_only, false)
+- class_description = control.class.model_name.human
+- template_mode = local_assigns.fetch(:template_mode, false)
+- expanded = template_mode
+- fields_for_options = template_mode ? { child_index: "new_child", builder: NewScopeFormBuilder }  : {}
+- control.position ||= "new_position"
+
+= form.simple_fields_for(:controls, control, fields_for_options) do |control_form|
+  .flex.flex-col.items-center.control[x-data = "{ expanded: #{expanded || control_form.object.errors.present?}, name: '#{control.name}', class_description: '#{escape_javascript(class_description)}', deleted: false }" x-show="!deleted" x-ref="control" id=dom_id(control)]
+    .flex.items-center.w-full.mb-8 x-show="!expanded"
+      button x-on:click.prevent=="expanded = ! expanded" class="expand flex items-center justify-between p-3 pl-3 mr-3 font-bold text-white bg-enroute-chouette-primary rounded cursor-pointer hover:text-indigo-100"
+        <span class="text-3xl w-4">+</span>
+
+      .grow
+        p.mb-0.mr-2.truncate x-text="name ? (name + ' (' + class_description + ')') : class_description"
+
+      = render "control_actions", read_only: read_only
+
+    .expanded class="w-full" x-show="expanded"
+      .flex.items-center.w-full.mb-8
+        button x-on:click.prevent=="expanded = ! expanded" class="flex items-center justify-between p-3 pl-3 mr-3 font-bold text-white bg-enroute-chouette-primary rounded cursor-pointer hover:text-indigo-100"
+          <span class="text-3xl w-4">-</span>
+        .grow
+          = control_form.input :name, as: :string, placeholder: "#{I18n.t('control_lists.form.control_placeholder')}", label: false, wrapper_html: {'class': 'mb-0 mx-0', 'x-model': 'name'}
+
+        .flex.ml-auto.human_model_name
+          p.flex = class_description
+
+        = render "control_actions", read_only: read_only
+
+      .flex.flex-col class="w-full"
+        = render "control_lists/#{control.model_name.i18n_key.to_s}", form: control_form
+        = control_form.input :criticity, include_blank: false
+        = control_form.input :comments, as: :text, required: false
+
+    = control_form.hidden_field :id
+    = control_form.hidden_field :type, value: control.class.name
+    = control_form.hidden_field :position
+    = control_form.hidden_field :_destroy, 'x-model': 'deleted'

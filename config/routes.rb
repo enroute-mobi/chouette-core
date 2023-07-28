@@ -95,7 +95,6 @@ ChouetteIhm::Application.routes.draw do # rubocop:disable Metrics/BlockLength
     end
 
     resources :control_lists do
-      get :fetch_object_html, on: :collection, defaults: { format: 'json' }
       resources :control_list_runs, only: %w[new create]
     end
 

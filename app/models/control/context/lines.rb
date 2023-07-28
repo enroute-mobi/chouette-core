@@ -4,31 +4,22 @@ class Control::Context::Lines < Control::Context
 
     included do
       option :line_ids
+      validates :line_ids, presence: true, array_inclusion: { in: ->(context) { context.candidate_lines_id } }
 
-      validate :workbench_lines_contain_selected_lines
-
-      def line_collection
-        selected_lines.map{ |l| {id: l.id, text: "#{l.name} - #{l.registration_number}"} }
-      rescue
-        []
-      end
-
-      def selected_line_ids
-        return line_ids if line_ids.is_a? Array
-
-        line_ids.to_s.split(',')
-      end
-
-      private
-
-      def workbench_lines_contain_selected_lines
-        unless selected_lines.count == selected_line_ids.count
-          errors.add(:line_ids, :invalid)
-        end
+      # Avoid empty string sends by select
+      #  control_list[control_contexts_attributes][1690296924144][line_ids][]	[…]
+      # 0	""
+      # 1	"812"
+      def line_ids=(lines)
+        super(lines.reject(&:blank?).map(&:to_i))
       end
 
       def selected_lines
-        workbench.lines.distinct.where(id: selected_line_ids)
+        workbench.lines.where(id: line_ids).order(:name)
+      end
+
+      def candidate_lines_id
+        workbench.lines.pluck(:id)
       end
 
     end
@@ -40,7 +31,7 @@ class Control::Context::Lines < Control::Context
     include Options
 
     def lines
-      context.lines.where(id: selected_line_ids)
+      context.lines.where(id: selected_lines)
     end
 
     def routes

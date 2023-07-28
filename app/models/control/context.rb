@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Control
   class Context < ApplicationModel
     include OptionsSupport
@@ -15,7 +17,10 @@ module Control
 
     accepts_nested_attributes_for :controls, allow_destroy: true, reject_if: :all_blank
 
-    delegate :workbench, to: :control_list
+    def workbench
+      @workbench || control_list&.workbench
+    end
+    attr_writer :workbench
 
     def self.available
       [

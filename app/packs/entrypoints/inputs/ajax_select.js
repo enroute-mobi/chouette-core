@@ -1,26 +1,38 @@
 import TomSelect from 'tom-select'
 
 document.addEventListener("DOMContentLoaded", () => {
-  document.querySelectorAll('select.ajax_select').forEach((el)=>{
+  addAjaxSelectToForm(document)
+})
+
+function addAjaxSelectToForm(dom_part) {
+  dom_part.querySelectorAll('select.ajax_select').forEach((el) => {
+    let plugin_list = []
+    if (el.hasAttribute("multiple")) {
+      plugin_list = ['clear_button', 'remove_button']
+    }
+    else {
+      plugin_list = ['clear_button']
+    }
+
     let settings = {
       valueField: 'id',
       labelField: 'text',
       preload: true,
-      plugins: ['clear_button'],
+      plugins: plugin_list,
       openOnFocus: true,
       // fetch remote data
-      load: function(query, callback) {
+      load: function (query, callback) {
         var url = el.dataset.url + '?q=' + encodeURIComponent(query);
         fetch(url)
           .then(response => response.json())
           .then(callback)
-          .catch(()=>{
+          .catch(() => {
             callback();
           })
-
       }
     }
     new TomSelect(el, settings)
   })
-})
+}
 
+window.addAjaxSelectToForm = addAjaxSelectToForm

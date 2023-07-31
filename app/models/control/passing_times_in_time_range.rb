@@ -11,6 +11,7 @@ module Control
         option :after,  serialize: TimeOfDay::Type::SecondOffset
 
         enumerize :passing_time_scope, in: %w[all first last]
+        validates :passing_time_scope, presence: true
 
         %w[before after].each do |option|
           define_method "#{option}=" do |time_of_day|

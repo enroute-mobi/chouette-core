@@ -3,8 +3,8 @@ en:
     control/passing_times_in_time_range:
       passing_time_scope:
         all: Every passing time
-        first: First passing time
-        last: Last passing time
+        first: The first passing time
+        last: The last passing time
   controls:
     actions:
       duplicate: Duplicate

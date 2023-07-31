@@ -10,7 +10,7 @@ en:
     presence_associated_model: "Invalid count (%{count}) for %{name}"
     geographical_zone: "The %{target_model} %{name} is not located into the selected geographical area"
     expected_provider: "The %{target_model} %{name} is not the expect provider"
-    passing_times_in_time_range: "The %{target_model} %{name} is not in the expect time range"
+    passing_times_in_time_range: "The %{target_model} %{name} contains %{vehicle_journey_at_stop} not included in the expect time range"
   activerecord:
     models:
       control/message:

@@ -3,8 +3,8 @@ fr:
     control/passing_times_in_time_range:
       passing_time_scope:
         all: Tous les horaires
-        first: Premier horaire
-        last: Dernier horaire
+        first: Le premier horaire
+        last: Le dernier horaire
   controls:
     actions:
       duplicate: Dupliquer

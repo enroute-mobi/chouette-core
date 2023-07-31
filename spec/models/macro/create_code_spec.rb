@@ -20,7 +20,7 @@ RSpec.describe Macro::CreateCode do
 
       context "when the macro has target_model 'StopArea' and target_code_space 'test'" do
         let!(:macro_list_run) do
-          Macro::List::Run.create referential: context.referential, workbench: context.workbench
+          Macro::List::Run.create workbench: context.workbench
         end
 
         let(:macro_run) do
@@ -83,7 +83,7 @@ RSpec.describe Macro::CreateCode do
     describe '#run' do
       context "when the macro has target_model 'StopArea', source_attribute 'registration_number' and target_code_space 'test'" do
         let!(:macro_list_run) do
-          Macro::List::Run.create referential: context.referential, workbench: context.workbench
+          Macro::List::Run.create workbench: context.workbench
         end
 
         let(:macro_run) do
@@ -110,6 +110,7 @@ RSpec.describe Macro::CreateCode do
           let(:stop_area) { context.stop_area }
 
           it "creates a code 'test' with value 'dummy' for this Stop Area" do
+            puts stop_area.codes.inspect
             expected_change = change { stop_area.codes.find_by(code_space: code_space)&.value }
                               .from(nil).to('dummy')
             expect { macro_run.run }.to expected_change

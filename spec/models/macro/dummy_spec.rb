@@ -1,7 +1,7 @@
 RSpec.describe Macro::Dummy do
   describe Macro::Dummy::Run do
     let(:macro_list_run) do
-      Macro::List::Run.create referential: context.referential, workbench: context.workbench
+      Macro::List::Run.create workbench: context.workbench
     end
 
     let(:macro_run) do

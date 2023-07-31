@@ -2,7 +2,7 @@
 
 RSpec.describe Macro::UpdateAttributeFromReferentToParticulars::Run do
   let(:macro_list_run) do
-    Macro::List::Run.create referential: context.referential, workbench: context.workbench
+    Macro::List::Run.create workbench: context.workbench
   end
   let(:macro_run) do
     described_class.create(

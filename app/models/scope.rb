@@ -59,13 +59,53 @@ module Scope
       @referential = referential
     end
 
-    delegate :lines, :companies, :stop_areas, :routes, :stop_points,
-             :journey_patterns, :journey_pattern_stop_points, :vehicle_journeys,
+    def lines
+      referential.metadatas_lines
+    end
+
+    def companies
+      line_referential.companies.where(id: lines.where.not(company_id: nil).select(:company_id).distinct)
+    end
+
+    def networks
+      line_referential.networks.where(id: lines.where.not(network_id: nil).select(:network_id).distinct)
+    end
+
+    def stop_areas
+      stop_area_referential.stop_areas.where(id: stop_points.select(:stop_area_id).distinct)
+    end
+
+    def stop_areas_ids
+      referential.stop_points.select(:stop_area_id).distinct
+    end
+
+    def entrances
+      stop_area_referential.entrances.where(stop_area_id: stop_areas_ids)
+    end
+
+    def connection_links
+      stop_area_referential.connection_links.where(departure_id: stop_areas_ids, arrival_id: stop_areas_ids)
+    end
+
+    def shapes
+      shape_referential.shapes.where(id: journey_patterns.where.not(shape_id: nil).select(:shape_id).distinct)
+    end
+
+    def documents
+      workgroup.documents.where(id: line_document_memberships.select(:document_id).distinct)
+    end
+
+    def line_document_memberships
+      workgroup.document_memberships.where(documentable_type: 'Chouette::Line', documentable_id: lines.select(:id))
+    end
+
+    def point_of_interests
+      PointOfInterest::Base.none
+    end
+
+    delegate :routes, :stop_points, :journey_patterns, :journey_pattern_stop_points, :vehicle_journeys,
              :time_tables, :time_table_periods, :time_table_dates, :service_counts, to: :referential
-    delegate :entrances, :point_of_interests, :shapes, :documents, :connection_links, :networks, to: :workbench
-
-    private
-
+    delegate :line_referential, :stop_area_referential, :shape_referential, :workgroup, to: :workbench
     attr_reader :referential, :workbench
   end
 

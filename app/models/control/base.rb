@@ -79,7 +79,7 @@ module Control
         elsif referential
           Scope::Referential.new(workbench, referential)
         else
-          Scope::Workbench.new(workbench)
+          Scope::Owned.new(Scope::Workbench.new(workbench), workbench)
         end
       end
 

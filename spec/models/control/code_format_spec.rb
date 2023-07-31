@@ -43,7 +43,9 @@ RSpec.describe Control::CodeFormat do
           code_space short_name: 'test'
           stop_area :with_a_good_code, codes: { test: 'B9999-AAA' }
           stop_area :with_a_bad_code, codes: { test: 'BAD_CODE' }
-          referential
+          referential do
+            route stop_areas: [:with_a_good_code, :with_a_bad_code]
+          end
         end
       end
 
@@ -61,7 +63,7 @@ RSpec.describe Control::CodeFormat do
           expect(control_run.control_messages).to include(expected_message)
         end
 
-        it "should not create a warning message for the StopArea with a goof code" do
+        it "should not create a warning message for the StopArea with a good code" do
           subject
 
           expect(message_for_good_code).to be_nil
@@ -99,7 +101,7 @@ RSpec.describe Control::CodeFormat do
           expect(control_run.control_messages).to include(expected_message)
         end
 
-        it "should not create a warning message for the VehicleJourney with a goof code" do
+        it "should not create a warning message for the VehicleJourney with a good code" do
           subject
 
           expect(message_for_good_code).to be_nil

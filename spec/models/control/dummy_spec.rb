@@ -29,11 +29,13 @@ RSpec.describe Control::Dummy do
 
     describe '#run' do
       let(:target_model) { 'StopArea' }
-      let(:source) { context.stop_area }
+      let(:source) { context.route.stop_areas.first }
       let(:context) do
         Chouette.create do
           stop_area
-          referential
+          referential do
+            route
+          end
         end
       end
 

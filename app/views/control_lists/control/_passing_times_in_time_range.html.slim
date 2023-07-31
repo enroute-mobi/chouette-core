@@ -1,5 +1,5 @@
-= form.input :passing_time_scope, input_html: { 'x-model': 'resource.passing_time_scope' }
-.time-of-day x-model = "resource.after"
+= form.input :passing_time_scope
+.time-of-day
   = form.input :after, as: :time_of_day
-.time-of-day x-model = "resource.before"
+.time-of-day
   = form.input :before, as: :time_of_day

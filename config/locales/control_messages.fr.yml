@@ -10,6 +10,7 @@ fr:
     presence_associated_model: "Nombre invalide (%{count}) pour %{name}"
     geographical_zone: "Le/la %{target_model} %{name} n'est pas situé(e) dans la zone géographique indiquée"
     expected_provider: "Le/la %{target_model} %{name} n'est pas le fournisseur attendu"
+    passing_times_in_time_range: "Le/la %{target_model} %{name} n'est pas dans la période attendue"
   activerecord:
     models:
       control/message:

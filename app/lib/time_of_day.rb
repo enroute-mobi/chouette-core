@@ -246,7 +246,9 @@ class TimeOfDay
       end
 
       def serialize(value)
+        value = TimeOfDay.parse(value) unless value.is_a? TimeOfDay
         return unless value.present?
+
         value.second_offset
       end
 

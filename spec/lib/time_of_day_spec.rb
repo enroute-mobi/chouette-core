@@ -254,7 +254,7 @@ RSpec.describe TimeOfDay do
         [ 3600, TimeOfDay.parse("01:00") ],
         [ 4812, TimeOfDay.parse("01:20:12") ],
       ].each do |cast_value, expected|
-        it "should return #{expected.inspect} when #{cast_value.inspect} value" do
+        it "should return #{expected.inspect} when value is #{cast_value.inspect}" do
           expect(subject.cast(cast_value)).to eq(expected)
         end
       end
@@ -263,10 +263,12 @@ RSpec.describe TimeOfDay do
     describe '#serialize' do
       [
         [ nil, nil ],
-        [ TimeOfDay.parse("01:00"), 3600 ],
-        [ TimeOfDay.parse("01:20:12"), 4812 ],
+        [ TimeOfDay.parse('01:00'), 3600 ],
+        [ TimeOfDay.parse('01:20:12'), 4812 ],
+        [ '01:00', 3600 ],
+        [ '01:20:12', 4812 ],
       ].each do |cast_value, expected|
-        it "should return #{expected.inspect} when #{cast_value.inspect} value" do
+        it "should return #{expected.inspect} when value is #{cast_value.inspect}" do
           expect(subject.serialize(cast_value)).to eq(expected)
         end
       end

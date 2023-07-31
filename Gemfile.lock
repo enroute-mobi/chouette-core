@@ -299,7 +299,7 @@ GEM
       actionmailer (>= 5.0)
       devise (>= 4.6)
     diff-lcs (1.5.0)
-    digest-crc (0.6.4)
+    digest-crc (0.6.5)
       rake (>= 12.0.0, < 14.0.0)
     docile (1.4.0)
     dogstatsd-ruby (5.6.0)
@@ -481,7 +481,7 @@ GEM
     listen (3.7.1)
       rb-fsevent (~> 0.10, >= 0.10.3)
       rb-inotify (~> 0.9, >= 0.9.10)
-    lograge (0.12.0)
+    lograge (0.13.0)
       actionpack (>= 4)
       activesupport (>= 4)
       railties (>= 4)
@@ -510,7 +510,7 @@ GEM
     mini_portile2 (2.8.4)
     mini_racer (0.6.4)
       libv8-node (~> 16.19.0.0)
-    minitest (5.18.1)
+    minitest (5.19.0)
     msgpack (1.7.2)
     multi_json (1.15.0)
     multipart-post (2.3.0)
@@ -611,8 +611,9 @@ GEM
       actionpack (>= 5.0.1.rc1)
       actionview (>= 5.0.1.rc1)
       activesupport (>= 5.0.1.rc1)
-    rails-dom-testing (2.0.3)
-      activesupport (>= 4.2.0)
+    rails-dom-testing (2.1.1)
+      activesupport (>= 5.0.0)
+      minitest
       nokogiri (>= 1.6)
     rails-erd (1.7.2)
       activerecord (>= 4.2)
@@ -663,7 +664,7 @@ GEM
       actionpack (>= 5.2)
       railties (>= 5.2)
     retriable (3.1.2)
-    rexml (3.2.5)
+    rexml (3.2.6)
     rgeo (3.0.0)
     rgeo-activerecord (6.2.2)
       activerecord (>= 5.0)
@@ -991,4 +992,4 @@ DEPENDENCIES
   x25519
 
 BUNDLED WITH
-   2.4.7
+   2.4.17

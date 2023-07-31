@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 if ENV['DD_AGENT_HOST']
-  Datadog.configure do |c|
+  Datadog.configure do |c| # rubocop:disable Metrics/BlockLength(RuboCop)
     app_name = ENV.fetch('DD_AGENT_APP', 'chouette-core')
     service_context = ENV.fetch('DD_TRACE_CONTEXT', 'front')
     env = ENV.fetch('DD_AGENT_ENV', 'production')
@@ -34,6 +34,16 @@ if ENV['DD_AGENT_HOST']
     c.tracing.instrument :redis, service_name: "#{app_name}-cache"
 
     c.logger.instance = Logger.new('log/datadog.log') if ENV['DD_TRACE_DEBUG']
+
+    # TODO: in the future, the Datadog.statsd instance should provided
+    # by a more generic component (to be used by other metrics)
+    require 'datadog/statsd'
+    require 'delayed/metrics'
+    statsd_tags = { service: c.service, env: c.env, version: c.version }
+    Delayed::Metrics::Publisher::Datadog.statsd = Datadog::Statsd.new(ENV['DD_AGENT_HOST'], tags: statsd_tags)
+
+    # Delayed::Job metrics must be assocatied to the worker service even if they computed into another service
+    Delayed::Metrics::Publisher::Datadog.service_name = "#{app_name}-worker"
   end
 
   if (ENV['DD_PROFILING_ENABLED'] = 'true')

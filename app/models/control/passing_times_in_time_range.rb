@@ -74,14 +74,27 @@ module Control
       end
 
       def base_query
+        select = vehicle_journey_at_stops.select(
+          departure_second_offset,
+          arrival_second_offset
+        ).to_sql
+
+        "(#{select}) AS vehicle_journey_at_stops"
+      end
+
+      def departure_second_offset
         <<~SQL
           (
-            SELECT
-              vehicle_journey_at_stops.*,
-              ((departure_day_offset * 24 + date_part( 'hour', departure_time)) * 60 + date_part('min', departure_time)) * 60 AS departure_second_offset,
-              ((arrival_day_offset * 24 + date_part( 'hour', arrival_time)) * 60 + date_part('min', arrival_time)) * 60 AS arrival_second_offset
-            FROM vehicle_journey_at_stops
-          ) AS vehicle_journey_at_stops
+            (departure_day_offset * 24 + date_part( 'hour', departure_time)) * 60 + date_part('min', departure_time)
+          ) * 60 AS departure_second_offset
+        SQL
+      end
+
+      def arrival_second_offset
+        <<~SQL
+          (
+            (arrival_day_offset * 24 + date_part( 'hour', arrival_time)) * 60 + date_part('min', arrival_time)
+          ) * 60 AS arrival_second_offset
         SQL
       end
 

@@ -52,6 +52,9 @@ module Control
 
       def run
         faulty_models.includes(:vehicle_journey).find_each do |model|
+          vehicle_journey = model.vehicle_journey
+          next if vehicle_journeys[vehicle_journey.id]
+
           control_messages.create(
             message_attributes: {
               name: model.vehicle_journey.try(:published_journey_name) || model.vehicle_journey.id
@@ -60,6 +63,8 @@ module Control
             source: model.vehicle_journey,
             message_key: :passing_times_in_time_range
           )
+
+          vehicle_journeys[vehicle_journey.id] = true
         end
       end
 
@@ -71,6 +76,10 @@ module Control
             "departure_second_offset < :after_second_offset OR arrival_second_offset > :before_second_offset",
             before_second_offset: before_second_offset, after_second_offset: after_second_offset
           )
+      end
+
+      def vehicle_journeys
+        @vehicle_journeys ||= {}
       end
 
       def base_query

@@ -56,21 +56,21 @@ RSpec.describe Control::PassingTimesInTimeRange do
         let(:vehicle_journey_at_stop) { vehicle_journey.vehicle_journey_at_stops.first }
         let(:passing_time_scope) { 'all'}
 
-        it { expect(control_run.control_messages).to include(expected_message) }
+        it { expect(control_run.control_messages).to contain_exactly(expected_message) }
       end
 
       context "when passing_time_scope is 'first'" do
         let(:passing_time_scope) { 'first'}
         let(:vehicle_journey_at_stop) { vehicle_journey.vehicle_journey_at_stops.first }
 
-        it { expect(control_run.control_messages).to include(expected_message) }
+        it { expect(control_run.control_messages).to contain_exactly(expected_message) }
       end
 
       context "when passing_time_scope is 'last'" do
         let(:passing_time_scope) { 'last'}
         let(:vehicle_journey_at_stop) { vehicle_journey.vehicle_journey_at_stops.last }
 
-        it { expect(control_run.control_messages).to include(expected_message) }
+        it { expect(control_run.control_messages).to contain_exactly(expected_message) }
       end
     end
   end

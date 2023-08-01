@@ -54,8 +54,7 @@ module Control
         faulty_models.includes(:vehicle_journey).find_each do |model|
           control_messages.create(
             message_attributes: {
-              name: model.vehicle_journey.try(:published_name) || model.vehicle_journey.id,
-              vehicle_journey_at_stop: I18n.t("enumerize.control/passing_times_in_time_range.passing_time_scope.#{self.passing_time_scope}").downcase
+              name: model.vehicle_journey.try(:published_name) || model.vehicle_journey.id
             },
             criticity: criticity,
             source: model.vehicle_journey,

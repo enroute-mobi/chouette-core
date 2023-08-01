@@ -54,7 +54,7 @@ module Control
         faulty_models.includes(:vehicle_journey).find_each do |model|
           control_messages.create(
             message_attributes: {
-              name: model.vehicle_journey.try(:published_name) || model.vehicle_journey.id
+              name: model.vehicle_journey.try(:published_journey_name) || model.vehicle_journey.id
             },
             criticity: criticity,
             source: model.vehicle_journey,

@@ -57,10 +57,10 @@ module Control
 
           control_messages.create(
             message_attributes: {
-              name: model.vehicle_journey.try(:published_journey_name) || model.vehicle_journey.id
+              name: vehicle_journey.try(:published_journey_name) || vehicle_journey.id
             },
             criticity: criticity,
-            source: model.vehicle_journey,
+            source: vehicle_journey,
             message_key: :passing_times_in_time_range
           )
 

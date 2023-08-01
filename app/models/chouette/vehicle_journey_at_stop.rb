@@ -263,27 +263,11 @@ module Chouette
     end
 
     def self.departures
-      departure_query = <<~SQL
-        (
-          SELECT vehicle_journey_at_stops.*
-          FROM #{departure_arrival_base_query}
-          WHERE vehicle_journey_at_stops.departure = 'true'
-        ) vehicle_journey_at_stops
-      SQL
-
-      select('*').from(departure_query)
+      select('*').from(departure_arrival_base_query).where(departure: true)
     end
 
     def self.arrivals
-      arrival_query = <<~SQL
-        (
-          SELECT vehicle_journey_at_stops.*
-          FROM #{departure_arrival_base_query}
-          WHERE vehicle_journey_at_stops.arrival = 'true'
-        ) vehicle_journey_at_stops
-      SQL
-
-      select('*').from(arrival_query)
+      select('*').from(departure_arrival_base_query).where(arrival: true)
     end
 
     def self.departure_arrival_base_query

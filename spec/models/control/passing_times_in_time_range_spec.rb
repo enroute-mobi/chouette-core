@@ -18,7 +18,7 @@ RSpec.describe Control::PassingTimesInTimeRange do
       described_class.create(
         control_list_run: control_list_run,
         criticity: 'warning',
-        passing_time_scope: 'all',
+        passing_time_scope: passing_time_scope,
         after: after,
         before: before,
         position: 0
@@ -31,7 +31,8 @@ RSpec.describe Control::PassingTimesInTimeRange do
     before do
       referential.switch
 
-      vehicle_journey.vehicle_journey_at_stops.first.update arrival_time: "2000-01-01 17:00:00" , departure_time: "2000-01-01 17:00:00"
+      allow(vehicle_journey_at_stop).to receive(:arrival_time).and_return("2000-01-01 17:00:00")
+      allow(vehicle_journey_at_stop).to receive(:departure_time).and_return("2000-01-01 17:00:00")
 
       control_run.run
     end
@@ -51,7 +52,26 @@ RSpec.describe Control::PassingTimesInTimeRange do
         )
       end
 
-      it { expect(control_run.control_messages).to include(expected_message) }
+      context "when passing_time_scope is 'all'" do
+        let(:vehicle_journey_at_stop) { vehicle_journey.vehicle_journey_at_stops.first }
+        let(:passing_time_scope) { 'all'}
+
+        it { expect(control_run.control_messages).to include(expected_message) }
+      end
+
+      context "when passing_time_scope is 'first'" do
+        let(:passing_time_scope) { 'first'}
+        let(:vehicle_journey_at_stop) { vehicle_journey.vehicle_journey_at_stops.first }
+
+        it { expect(control_run.control_messages).to include(expected_message) }
+      end
+
+      context "when passing_time_scope is 'last'" do
+        let(:passing_time_scope) { 'last'}
+        let(:vehicle_journey_at_stop) { vehicle_journey.vehicle_journey_at_stops.last }
+
+        it { expect(control_run.control_messages).to include(expected_message) }
+      end
     end
   end
 end

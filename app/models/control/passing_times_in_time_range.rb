@@ -75,6 +75,7 @@ module Control
 
       def base_query
         select = vehicle_journey_at_stops.select(
+          '*',
           departure_second_offset,
           arrival_second_offset
         ).to_sql

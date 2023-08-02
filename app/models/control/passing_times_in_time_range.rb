@@ -51,26 +51,26 @@ module Control
       include Options
 
       def run
-        faulty_models.includes(:vehicle_journey).find_each do |model|
-          vehicle_journey = model.vehicle_journey
-          next if vehicle_journeys[vehicle_journey.id]
-
+        faulty_models.find_each do |model|
           control_messages.create(
             message_attributes: {
-              name: vehicle_journey.try(:published_journey_name) || vehicle_journey.id
+              name: model.try(:published_journey_name) || model.id
             },
             criticity: criticity,
-            source: vehicle_journey,
+            source: model,
             message_key: :passing_times_in_time_range
           )
-
-          vehicle_journeys[vehicle_journey.id] = true
         end
       end
 
       def faulty_models
-        vehicle_journey_at_stops
-          .select('*')
+        context.vehicle_journeys.where(id: vehicle_journey_ids)
+      end
+
+      def vehicle_journey_ids
+        context
+          .vehicle_journey_at_stops
+          .select(:vehicle_journey_id)
           .from(base_query)
           .where(
             "departure_second_offset < :after_second_offset OR arrival_second_offset > :before_second_offset",
@@ -78,18 +78,14 @@ module Control
           )
       end
 
-      def vehicle_journeys
-        @vehicle_journeys ||= {}
-      end
-
       def base_query
-        select = vehicle_journey_at_stops.select(
+        sql = vehicle_journey_at_stops.select(
           '*',
           departure_second_offset,
           arrival_second_offset
         ).to_sql
 
-        "(#{select}) AS vehicle_journey_at_stops"
+        "(#{sql}) AS vehicle_journey_at_stops"
       end
 
       def departure_second_offset

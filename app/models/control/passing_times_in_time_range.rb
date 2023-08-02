@@ -68,48 +68,59 @@ module Control
       end
 
       def vehicle_journey_ids
-        context
-          .vehicle_journey_at_stops
-          .select(:vehicle_journey_id)
-          .from(base_query)
-          .where(
-            "departure_second_offset < :after_second_offset OR arrival_second_offset > :before_second_offset",
-            before_second_offset: before_second_offset, after_second_offset: after_second_offset
-          )
+        VehicleJourneys.new(
+          context,
+          vehicle_journey_at_stops,
+          after.second_offset,
+          before.second_offset
+        ).vehicle_journey_ids
       end
 
-      def base_query
-        sql = vehicle_journey_at_stops.select(
-          '*',
-          departure_second_offset,
-          arrival_second_offset
-        ).to_sql
+      class VehicleJourneys
+        def initialize(context, vehicle_journey_at_stops, after_second_offset, before_second_offset)
+          @context = context
+          @vehicle_journey_at_stops = vehicle_journey_at_stops
+          @after_second_offset = after_second_offset
+          @before_second_offset = before_second_offset
+        end
+        attr_reader :context, :vehicle_journey_at_stops, :after_second_offset, :before_second_offset
 
-        "(#{sql}) AS vehicle_journey_at_stops"
-      end
-
-      def departure_second_offset
-        <<~SQL
-          (
-            (departure_day_offset * 24 + date_part( 'hour', departure_time)) * 60 + date_part('min', departure_time)
-          ) * 60 AS departure_second_offset
-        SQL
-      end
-
-      def arrival_second_offset
-        <<~SQL
-          (
-            (arrival_day_offset * 24 + date_part( 'hour', arrival_time)) * 60 + date_part('min', arrival_time)
-          ) * 60 AS arrival_second_offset
-        SQL
-      end
-
-      def after_second_offset
-        after.second_offset
-      end
-
-      def before_second_offset
-        before.second_offset
+        def vehicle_journey_ids
+          context
+            .vehicle_journey_at_stops
+            .select(:vehicle_journey_id)
+            .from(base_query)
+            .where(
+              "departure_second_offset < :after_second_offset OR arrival_second_offset > :before_second_offset",
+              before_second_offset: before_second_offset, after_second_offset: after_second_offset
+            )
+        end
+  
+        def base_query
+          sql = vehicle_journey_at_stops.select(
+            '*',
+            departure_second_offset,
+            arrival_second_offset
+          ).to_sql
+  
+          "(#{sql}) AS vehicle_journey_at_stops"
+        end
+  
+        def departure_second_offset
+          <<~SQL
+            (
+              (departure_day_offset * 24 + date_part( 'hour', departure_time)) * 60 + date_part('min', departure_time)
+            ) * 60 AS departure_second_offset
+          SQL
+        end
+  
+        def arrival_second_offset
+          <<~SQL
+            (
+              (arrival_day_offset * 24 + date_part( 'hour', arrival_time)) * 60 + date_part('min', arrival_time)
+            ) * 60 AS arrival_second_offset
+          SQL
+        end
       end
 
       def vehicle_journey_at_stops

@@ -31,14 +31,13 @@ RSpec.describe Control::PassingTimesInTimeRange do
     before do
       referential.switch
 
-      allow(vehicle_journey_at_stop).to receive(:arrival_time).and_return("2000-01-01 17:00:00")
-      allow(vehicle_journey_at_stop).to receive(:departure_time).and_return("2000-01-01 17:00:00")
+      allow(vehicle_journey_at_stop).to receive(:arrival_time).and_return('2000-01-01 17:00:00')
+      allow(vehicle_journey_at_stop).to receive(:departure_time).and_return('2000-01-01 17:00:00')
 
       control_run.run
     end
 
     describe '#run' do
-
       let(:after) { 58200 } # equals to 16:10
       let(:before) { 72600 } # equals to 20:10
 
@@ -54,20 +53,20 @@ RSpec.describe Control::PassingTimesInTimeRange do
 
       context "when passing_time_scope is 'all'" do
         let(:vehicle_journey_at_stop) { vehicle_journey.vehicle_journey_at_stops.first }
-        let(:passing_time_scope) { 'all'}
+        let(:passing_time_scope) { 'all' }
 
         it { expect(control_run.control_messages).to contain_exactly(expected_message) }
       end
 
       context "when passing_time_scope is 'first'" do
-        let(:passing_time_scope) { 'first'}
+        let(:passing_time_scope) { 'first' }
         let(:vehicle_journey_at_stop) { vehicle_journey.vehicle_journey_at_stops.first }
 
         it { expect(control_run.control_messages).to contain_exactly(expected_message) }
       end
 
       context "when passing_time_scope is 'last'" do
-        let(:passing_time_scope) { 'last'}
+        let(:passing_time_scope) { 'last' }
         let(:vehicle_journey_at_stop) { vehicle_journey.vehicle_journey_at_stops.last }
 
         it { expect(control_run.control_messages).to contain_exactly(expected_message) }
@@ -75,4 +74,3 @@ RSpec.describe Control::PassingTimesInTimeRange do
     end
   end
 end
-

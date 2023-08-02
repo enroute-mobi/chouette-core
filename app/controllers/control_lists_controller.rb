@@ -26,10 +26,16 @@ class ControlListsController < ChouetteController
   alias workbench parent
 
   def collection
-    get_collection_ivar || set_collection_ivar(ControlListDecorator.decorate(end_of_association_chain.paginate(page: params[:page], per_page: 30),
-                                                                             context: {
-                                                                               workbench: @workbench
-                                                                             }))
+    get_collection_ivar ||
+    set_collection_ivar(
+      ControlListDecorator.decorate(
+        end_of_association_chain.paginate(
+          page: params[:page],
+          per_page: 30
+        ),
+        context: { workbench: @workbench }
+      )
+    )
   end
 
   private

@@ -15,7 +15,7 @@ module Control
 
         %w[before after].each do |option|
           define_method "#{option}=" do |time_of_day|
-            if time_of_day.is_a?(Hash) && time_of_day.keys == [1,2]
+            if time_of_day.is_a?(Hash) && time_of_day.keys == [1, 2]
               time_of_day = TimeOfDay.new(time_of_day[1], time_of_day[2]).without_utc_offset.second_offset
             end
 
@@ -91,11 +91,11 @@ module Control
             .select(:vehicle_journey_id)
             .from(base_query)
             .where(
-              "departure_second_offset < :after_second_offset OR arrival_second_offset > :before_second_offset",
+              'departure_second_offset < :after_second_offset OR arrival_second_offset > :before_second_offset',
               before_second_offset: before_second_offset, after_second_offset: after_second_offset
             )
         end
-  
+
         def base_query
           sql = vehicle_journey_at_stops.select(
             '*',
@@ -128,7 +128,6 @@ module Control
       end
 
       class VehicleJourneyAtStops
-
         def self.for(context, passing_time_scope)
           const_get(passing_time_scope.classify)
             .new(context)
@@ -140,23 +139,25 @@ module Control
             @context = context
           end
           attr_reader :context
+
+          delegate :vehicle_journey_at_stops, to: :context
         end
 
         class All < Base
           def vehicle_journey_at_stops
-            context.vehicle_journey_at_stops
+            super
           end
         end
 
         class First < Base
           def vehicle_journey_at_stops
-            context.vehicle_journey_at_stops.departures
+            super.departures
           end
         end
 
         class Last < Base
           def vehicle_journey_at_stops
-            context.vehicle_journey_at_stops.arrivals
+            super.arrivals
           end
         end
       end

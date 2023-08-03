@@ -111,11 +111,23 @@ module Control
         end
 
         def departure_second_offset
-          "(EXTRACT(EPOCH FROM departure_time AT TIME ZONE NULLIF('utc', stop_areas.time_zone)) + departure_day_offset * 86400)::integer"
+          <<~SQL
+            (
+              EXTRACT(HOUR FROM departure_time AT TIME ZONE COALESCE(stop_areas.time_zone, 'UTC')) * 3600 +
+              EXTRACT(MINUTE FROM departure_time AT TIME ZONE COALESCE(stop_areas.time_zone, 'UTC')) * 60 +
+              EXTRACT(SECOND FROM departure_time AT TIME ZONE COALESCE(stop_areas.time_zone, 'UTC'))
+            )::integer
+          SQL
         end
   
         def arrival_second_offset
-          "(EXTRACT(EPOCH FROM arrival_time AT TIME ZONE NULLIF('utc', stop_areas.time_zone)) + arrival_day_offset * 86400)::integer"
+          <<~SQL
+            (
+              EXTRACT(HOUR FROM arrival_time AT TIME ZONE COALESCE(stop_areas.time_zone, 'UTC')) * 3600 +
+              EXTRACT(MINUTE FROM arrival_time AT TIME ZONE COALESCE(stop_areas.time_zone, 'UTC')) * 60 +
+              EXTRACT(SECOND FROM arrival_time AT TIME ZONE COALESCE(stop_areas.time_zone, 'UTC'))
+            )::integer
+          SQL
         end
       end
 

@@ -86,40 +86,36 @@ module Control
         attr_reader :context, :vehicle_journey_at_stops, :after_second_offset, :before_second_offset
 
         def vehicle_journey_ids
-          context
-            .vehicle_journey_at_stops
+          context.vehicle_journey_at_stops
+            .joins(stop_point: :stop_area)
+            .where.not("#{second_offset_range} @> #{departure_second_offset} and #{second_offset_range} @> #{arrival_second_offset}")
             .select(:vehicle_journey_id)
+            .distinct
             .from(base_query)
-            .where(
-              'departure_second_offset < :after_second_offset OR arrival_second_offset > :before_second_offset',
-              before_second_offset: before_second_offset, after_second_offset: after_second_offset
-            )
         end
 
         def base_query
-          sql = vehicle_journey_at_stops.select(
-            '*',
-            departure_second_offset,
-            arrival_second_offset
-          ).to_sql
-  
-          "(#{sql}) AS vehicle_journey_at_stops"
+          "(#{vehicle_journey_at_stops.to_sql}) AS vehicle_journey_at_stops"
+        end
+
+        def second_offset_range
+          "'[#{lower},#{upper}]'::int4range"
         end
   
+        def lower
+          after_second_offset ? after_second_offset : '-infinity'
+        end
+
+        def upper
+          before_second_offset ? before_second_offset : 'infinity'
+        end
+
         def departure_second_offset
-          <<~SQL
-            (
-              (departure_day_offset * 24 + date_part( 'hour', departure_time)) * 60 + date_part('min', departure_time)
-            ) * 60 AS departure_second_offset
-          SQL
+          "(EXTRACT(EPOCH FROM departure_time AT TIME ZONE NULLIF('utc', stop_areas.time_zone)) + departure_day_offset * 86400)::integer"
         end
   
         def arrival_second_offset
-          <<~SQL
-            (
-              (arrival_day_offset * 24 + date_part( 'hour', arrival_time)) * 60 + date_part('min', arrival_time)
-            ) * 60 AS arrival_second_offset
-          SQL
+          "(EXTRACT(EPOCH FROM arrival_time AT TIME ZONE NULLIF('utc', stop_areas.time_zone)) + arrival_day_offset * 86400)::integer"
         end
       end
 

@@ -1,7 +1,11 @@
 class AddUserStatusToOperation < ActiveRecord::Migration[5.2]
+  def operation_classes
+    [Macro::List::Run, Control::List::Run, Source::Retrieval]
+  end
+
   def up
     on_public_schema_only do
-      Operation.descendants.each do |operation_class|
+      operation_classes.each do |operation_class|
         add_column operation_class.table_name, :user_status, :string
 
         operation_class.reset_column_information
@@ -18,7 +22,7 @@ class AddUserStatusToOperation < ActiveRecord::Migration[5.2]
 
   def down
     on_public_schema_only do
-      Operation.descendants.each do |operation_class|
+      operation_classes.each do |operation_class|
         remove_column operation_class.table_name, :user_status
       end
     end

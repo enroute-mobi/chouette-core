@@ -103,11 +103,11 @@ module Control
         end
   
         def lower
-          after_second_offset ? after_second_offset : '-infinity'
+          (after_second_offset.blank? || after_second_offset == 43920)  ? '-infinity' : after_second_offset
         end
 
         def upper
-          before_second_offset ? before_second_offset : 'infinity'
+          (before_second_offset.blank? || before_second_offset == 43920) ? 'infinity' : before_second_offset
         end
 
         def departure_second_offset

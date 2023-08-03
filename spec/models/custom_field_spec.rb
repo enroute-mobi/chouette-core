@@ -240,7 +240,7 @@ RSpec.describe CustomField, type: :model do
 
   context "with a 'attachment' field_type" do
     let!(:field){ [create(:custom_field, code: :energy, field_type: 'attachment', workgroup: workgroup)] }
-    let(:vj){ create :vehicle_journey, custom_field_values: { energy: File.open(Rails.root.join('spec', 'fixtures', 'users.json')) }}
+    let(:vj){ create :vehicle_journey, custom_field_values: { energy: File.open(Rails.root.join('spec', 'fixtures', 'invalid_version.json')) }}
 
     after(:each) do
       to_be_deleted = Chouette::VehicleJourney.__callbacks[:commit].select {|call| call.instance_variable_get('@key') =~ /custom_field/ }
@@ -268,7 +268,7 @@ RSpec.describe CustomField, type: :model do
     context "with a whitelist" do
       let!(:field){ [create(:custom_field, code: :energy, field_type: 'attachment', options: {extension_whitelist: %w(zip)}, workgroup: workgroup)] }
       it "should validate extension" do
-        expect(build(:vehicle_journey, custom_field_values: {energy: File.open(Rails.root.join('spec', 'fixtures', 'users.json'))})).to_not be_valid
+        expect(build(:vehicle_journey, custom_field_values: {energy: File.open(Rails.root.join('spec', 'fixtures', 'invalid_version.json'))})).to_not be_valid
         expect(build(:vehicle_journey, custom_field_values: {energy: File.open(Rails.root.join('spec', 'fixtures', 'nozip.zip'))})).to be_valid
       end
     end

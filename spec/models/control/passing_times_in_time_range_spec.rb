@@ -37,8 +37,6 @@ RSpec.describe Control::PassingTimesInTimeRange do
     end
 
     describe '#run' do
-      let(:after) { 58200 } # equals to 16:10
-      let(:before) { 72600 } # equals to 20:10
 
       let(:expected_message) do
         an_object_having_attributes(
@@ -50,82 +48,171 @@ RSpec.describe Control::PassingTimesInTimeRange do
         )
       end
 
-      context "when passing_time_scope is 'all'" do
-        let(:passing_time_scope) { 'all' }
+      context "when after is equal to '16:10' and before is equal to '20:10'" do
+        let(:after) { 58200 }
+        let(:before) { 72600 }
 
-        context 'and exists at least one at_stop that is not in time range' do
-          before do
-            first_vehicle_journey_at_stop.update arrival_time: '2000-01-01 17:00:00', departure_time: '2000-01-01 17:00:00'
-            second_vehicle_journey_at_stop.update arrival_time: '2000-01-01 11:00:00', departure_time: '2000-01-01 11:00:00'
-            last_vehicle_journey_at_stop.update arrival_time: '2000-01-01 17:00:00', departure_time: '2000-01-01 17:00:00'
+        context "when passing_time_scope is 'all'" do
+          let(:passing_time_scope) { 'all' }
 
-            control_run.run
+          context 'and exists at least one at_stop that is not in time range' do
+            before do
+              first_vehicle_journey_at_stop.update arrival_time: '2000-01-01 17:00:00', departure_time: '2000-01-01 17:00:00'
+              second_vehicle_journey_at_stop.update arrival_time: '2000-01-01 11:00:00', departure_time: '2000-01-01 11:00:00'
+              last_vehicle_journey_at_stop.update arrival_time: '2000-01-01 17:00:00', departure_time: '2000-01-01 17:00:00'
+
+              control_run.run
+            end
+
+            it { expect(control_run.control_messages).to contain_exactly(expected_message) }
           end
 
-          it { expect(control_run.control_messages).to contain_exactly(expected_message) }
+          context 'and all at_stops are in time range' do
+            before do
+              first_vehicle_journey_at_stop.update arrival_time: '2000-01-01 17:00:00', departure_time: '2000-01-01 17:00:00'
+              second_vehicle_journey_at_stop.update arrival_time: '2000-01-01 17:00:00', departure_time: '2000-01-01 17:00:00'
+              last_vehicle_journey_at_stop.update arrival_time: '2000-01-01 17:00:00', departure_time: '2000-01-01 17:00:00'
+
+              control_run.run
+            end
+
+            it { expect(control_run.control_messages).to be_empty }
+          end
         end
 
-        context 'and all at_stops are in time range' do
-          before do
-            first_vehicle_journey_at_stop.update arrival_time: '2000-01-01 17:00:00', departure_time: '2000-01-01 17:00:00'
-            second_vehicle_journey_at_stop.update arrival_time: '2000-01-01 17:00:00', departure_time: '2000-01-01 17:00:00'
-            last_vehicle_journey_at_stop.update arrival_time: '2000-01-01 17:00:00', departure_time: '2000-01-01 17:00:00'
+        context "when passing_time_scope is 'first'" do
+          let(:passing_time_scope) { 'first' }
 
-            control_run.run
+          context 'and exists at least one at_stop that is not in time range' do
+            before do
+              first_vehicle_journey_at_stop.update arrival_time: '2000-01-01 11:00:00', departure_time: '2000-01-01 11:00:00'
+              control_run.run
+            end
+
+            it { expect(control_run.control_messages).to contain_exactly(expected_message) }
           end
 
-          it { expect(control_run.control_messages).to be_empty }
+          context 'and all at_stops are in time range' do
+            before do
+              first_vehicle_journey_at_stop.update arrival_time: '2000-01-01 17:00:00', departure_time: '2000-01-01 17:00:00'
+              second_vehicle_journey_at_stop.update arrival_time: '2000-01-01 17:00:00', departure_time: '2000-01-01 17:00:00'
+              last_vehicle_journey_at_stop.update arrival_time: '2000-01-01 17:00:00', departure_time: '2000-01-01 17:00:00'
+
+              control_run.run
+            end
+
+            it { expect(control_run.control_messages).to be_empty }
+          end
+        end
+
+        context "when passing_time_scope is 'last'" do
+          let(:passing_time_scope) { 'last' }
+
+          context 'and exists at least one at_stop that is not in time range' do
+            before do
+              last_vehicle_journey_at_stop.update arrival_time: '2000-01-01 11:00:00', departure_time: '2000-01-01 11:00:00'
+
+              control_run.run
+            end
+
+            it { expect(control_run.control_messages).to contain_exactly(expected_message) }
+          end
+
+          context 'and all at_stops are in time range' do
+            before do
+              first_vehicle_journey_at_stop.update arrival_time: '2000-01-01 17:00:00', departure_time: '2000-01-01 17:00:00'
+              second_vehicle_journey_at_stop.update arrival_time: '2000-01-01 17:00:00', departure_time: '2000-01-01 17:00:00'
+              last_vehicle_journey_at_stop.update arrival_time: '2000-01-01 17:00:00', departure_time: '2000-01-01 17:00:00'
+
+              control_run.run
+            end
+
+            it { expect(control_run.control_messages).to be_empty }
+          end
         end
       end
 
-      context "when passing_time_scope is 'first'" do
-        let(:passing_time_scope) { 'first' }
+      context "when after is equal to '00:00' and before is equal to '00:00'" do
+        let(:after) { 43920 } # -infinity 
+        let(:before) { 43920 } # infinity
 
-        context 'and exists at least one at_stop that is not in time range' do
-          before do
-            first_vehicle_journey_at_stop.update arrival_time: '2000-01-01 11:00:00', departure_time: '2000-01-01 11:00:00'
-            control_run.run
+        context "when passing_time_scope is 'all'" do
+          let(:passing_time_scope) { 'all' }
+
+          context 'and exists at least one at_stop that is not in time range' do
+            before do
+              first_vehicle_journey_at_stop.update arrival_time: '2000-01-01 17:00:00', departure_time: '2000-01-01 17:00:00'
+              second_vehicle_journey_at_stop.update arrival_time: '2000-01-01 11:00:00', departure_time: '2000-01-01 11:00:00'
+              last_vehicle_journey_at_stop.update arrival_time: '2000-01-01 17:00:00', departure_time: '2000-01-01 17:00:00'
+
+              control_run.run
+            end
+
+            it { expect(control_run.control_messages).to be_empty }
           end
 
-          it { expect(control_run.control_messages).to contain_exactly(expected_message) }
+          context 'and all at_stops are in time range' do
+            before do
+              first_vehicle_journey_at_stop.update arrival_time: '2000-01-01 17:00:00', departure_time: '2000-01-01 17:00:00'
+              second_vehicle_journey_at_stop.update arrival_time: '2000-01-01 17:00:00', departure_time: '2000-01-01 17:00:00'
+              last_vehicle_journey_at_stop.update arrival_time: '2000-01-01 17:00:00', departure_time: '2000-01-01 17:00:00'
+
+              control_run.run
+            end
+
+            it { expect(control_run.control_messages).to be_empty }
+          end
         end
 
-        context 'and all at_stops are in time range' do
-          before do
-            first_vehicle_journey_at_stop.update arrival_time: '2000-01-01 17:00:00', departure_time: '2000-01-01 17:00:00'
-            second_vehicle_journey_at_stop.update arrival_time: '2000-01-01 17:00:00', departure_time: '2000-01-01 17:00:00'
-            last_vehicle_journey_at_stop.update arrival_time: '2000-01-01 17:00:00', departure_time: '2000-01-01 17:00:00'
+        context "when passing_time_scope is 'first'" do
+          let(:passing_time_scope) { 'first' }
 
-            control_run.run
+          context 'and exists at least one at_stop that is not in time range' do
+            before do
+              first_vehicle_journey_at_stop.update arrival_time: '2000-01-01 11:00:00', departure_time: '2000-01-01 11:00:00'
+              control_run.run
+            end
+
+            it { expect(control_run.control_messages).to be_empty }
           end
 
-          it { expect(control_run.control_messages).to be_empty }
+          context 'and all at_stops are in time range' do
+            before do
+              first_vehicle_journey_at_stop.update arrival_time: '2000-01-01 17:00:00', departure_time: '2000-01-01 17:00:00'
+              second_vehicle_journey_at_stop.update arrival_time: '2000-01-01 17:00:00', departure_time: '2000-01-01 17:00:00'
+              last_vehicle_journey_at_stop.update arrival_time: '2000-01-01 17:00:00', departure_time: '2000-01-01 17:00:00'
+
+              control_run.run
+            end
+
+            it { expect(control_run.control_messages).to be_empty }
+          end
         end
-      end
 
-      context "when passing_time_scope is 'last'" do
-        let(:passing_time_scope) { 'last' }
+        context "when passing_time_scope is 'last'" do
+          let(:passing_time_scope) { 'last' }
 
-        context 'and exists at least one at_stop that is not in time range' do
-          before do
-            last_vehicle_journey_at_stop.update arrival_time: '2000-01-01 11:00:00', departure_time: '2000-01-01 11:00:00'
+          context 'and exists at least one at_stop that is not in time range' do
+            before do
+              last_vehicle_journey_at_stop.update arrival_time: '2000-01-01 11:00:00', departure_time: '2000-01-01 11:00:00'
 
-            control_run.run
+              control_run.run
+            end
+
+            it { expect(control_run.control_messages).to be_empty }
           end
 
-          it { expect(control_run.control_messages).to contain_exactly(expected_message) }
-        end
+          context 'and all at_stops are in time range' do
+            before do
+              first_vehicle_journey_at_stop.update arrival_time: '2000-01-01 17:00:00', departure_time: '2000-01-01 17:00:00'
+              second_vehicle_journey_at_stop.update arrival_time: '2000-01-01 17:00:00', departure_time: '2000-01-01 17:00:00'
+              last_vehicle_journey_at_stop.update arrival_time: '2000-01-01 17:00:00', departure_time: '2000-01-01 17:00:00'
 
-        context 'and all at_stops are in time range' do
-          before do
-            first_vehicle_journey_at_stop.update arrival_time: '2000-01-01 17:00:00', departure_time: '2000-01-01 17:00:00'
-            second_vehicle_journey_at_stop.update arrival_time: '2000-01-01 17:00:00', departure_time: '2000-01-01 17:00:00'
-            last_vehicle_journey_at_stop.update arrival_time: '2000-01-01 17:00:00', departure_time: '2000-01-01 17:00:00'
+              control_run.run
+            end
 
-            control_run.run
+            it { expect(control_run.control_messages).to be_empty }
           end
-
-          it { expect(control_run.control_messages).to be_empty }
         end
       end
     end

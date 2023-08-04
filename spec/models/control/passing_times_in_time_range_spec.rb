@@ -133,8 +133,8 @@ RSpec.describe Control::PassingTimesInTimeRange do
       end
 
       context "when after is equal to '00:00' and before is equal to '00:00'" do
-        let(:after) { 43920 } # -infinity 
-        let(:before) { 43920 } # infinity
+        let(:after) { '' } # -infinity
+        let(:before) { '' } # infinity
 
         context "when passing_time_scope is 'all'" do
           let(:passing_time_scope) { 'all' }

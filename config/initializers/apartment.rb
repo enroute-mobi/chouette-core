@@ -18,6 +18,7 @@ Apartment.configure do |config|
   # A typical example would be a Customer or Tenant model that stores each Tenant's information.
   #
   config.excluded_models = [
+    'TimeZone',
     'Aggregate',
     'Aggregate::Resource',
     'ApiKey',

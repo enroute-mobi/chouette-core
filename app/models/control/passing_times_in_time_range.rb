@@ -82,12 +82,13 @@ module Control
         attr_reader :context, :vehicle_journey_at_stops, :after, :before
 
         def vehicle_journey_ids
-          context.vehicle_journey_at_stops
-                 .joins(stop_point: :stop_area)
-                 .where.not("#{second_offset_range} @> #{departure_second_offset} and #{second_offset_range} @> #{arrival_second_offset}")
-                 .select(:vehicle_journey_id)
-                 .distinct
-                 .from(base_query)
+          context
+            .vehicle_journey_at_stops
+              .joins(time_zones, stop_point: :stop_area)
+              .where.not("#{second_offset_range} @> #{departure_second_offset} AND #{second_offset_range} @> #{arrival_second_offset}")
+              .select(:vehicle_journey_id)
+              .distinct
+              .from(base_query)
         end
 
         def base_query
@@ -115,16 +116,15 @@ module Control
         end
 
         def second_offset_expression(state)
-          passing_time = "#{state}_time AT TIME ZONE COALESCE(stop_areas.time_zone, 'UTC')"
+          <<~SQL
+            (EXTRACT(EPOCH FROM #{state}_time) + time_zones.utc_offset + #{state}_day_offset * 86400)::integer
+          SQL
+        end
 
-          parts = [
-            "EXTRACT(HOUR FROM #{passing_time}) * 3600",
-            "EXTRACT(MINUTE FROM #{passing_time}) * 60",
-            "EXTRACT(SECOND FROM #{passing_time})",
-            "#{state}_day_offset * 86400"
-          ]
-
-          "(#{parts.join(' + ')})::integer"
+        def time_zones
+          <<~SQL
+            INNER JOIN public.time_zones ON time_zones.name = COALESCE(stop_areas.time_zone, 'UTC')
+          SQL
         end
       end
 

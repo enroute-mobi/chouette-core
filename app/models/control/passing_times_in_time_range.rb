@@ -17,6 +17,7 @@ module Control
           define_method "#{option}=" do |time_of_day|
             if time_of_day.is_a?(Hash) && time_of_day.keys == [1, 2]
               time_of_day = TimeOfDay.new(time_of_day[1], time_of_day[2]).without_utc_offset.second_offset
+              time_of_day = nil if time_of_day.zero?
             end
 
             super time_of_day
@@ -26,32 +27,27 @@ module Control
     end
     include Options
 
-    validate :before_and_after_present
+    validate :before_or_after_present
     validate :time_of_day_for_before_and_after
 
     private
 
-    def before_and_after_present
-      if before.blank?
-        errors.add(:before, :invalid)
-      elsif after.blank?
-        errors.add(:after, :invalid)
-      end
+    def before_or_after_present
+      return if before || after
+
+      errors.add(:before, :invalid)
+      errors.add(:after, :invalid)
     end
 
     def time_of_day_for_before_and_after
-      if before.present? && !before.is_a?(TimeOfDay)
-        errors.add(:before, :invalid)
-      elsif after.present? && !after.is_a?(TimeOfDay)
-        errors.add(:after, :invalid)
-      end
+      errors.add(:after, :invalid) if before && after && before <= after
     end
 
     class Run < Control::Base::Run
       include Options
 
       def run
-        faulty_models.find_each do |model|
+        faulty_models.each_instance do |model|
           control_messages.create(
             message_attributes: {
               name: model.try(:published_journey_name) || model.id
@@ -71,27 +67,27 @@ module Control
         VehicleJourneys.new(
           context,
           vehicle_journey_at_stops,
-          after.second_offset,
-          before.second_offset
+          after,
+          before
         ).vehicle_journey_ids
       end
 
       class VehicleJourneys
-        def initialize(context, vehicle_journey_at_stops, after_second_offset, before_second_offset)
+        def initialize(context, vehicle_journey_at_stops, after, before)
           @context = context
           @vehicle_journey_at_stops = vehicle_journey_at_stops
-          @after_second_offset = after_second_offset
-          @before_second_offset = before_second_offset
+          @after = after
+          @before = before
         end
-        attr_reader :context, :vehicle_journey_at_stops, :after_second_offset, :before_second_offset
+        attr_reader :context, :vehicle_journey_at_stops, :after, :before
 
         def vehicle_journey_ids
           context.vehicle_journey_at_stops
-            .joins(stop_point: :stop_area)
-            .where.not("#{second_offset_range} @> #{departure_second_offset} and #{second_offset_range} @> #{arrival_second_offset}")
-            .select(:vehicle_journey_id)
-            .distinct
-            .from(base_query)
+                 .joins(stop_point: :stop_area)
+                 .where.not("#{second_offset_range} @> #{departure_second_offset} and #{second_offset_range} @> #{arrival_second_offset}")
+                 .select(:vehicle_journey_id)
+                 .distinct
+                 .from(base_query)
         end
 
         def base_query
@@ -101,33 +97,34 @@ module Control
         def second_offset_range
           "'[#{lower},#{upper}]'::int4range"
         end
-  
+
         def lower
-          (after_second_offset.blank? || after_second_offset == 43920)  ? '' : after_second_offset
+          after ? after.second_offset : ''
         end
 
         def upper
-          (before_second_offset.blank? || before_second_offset == 43920) ? '' : before_second_offset
+          before ? before.second_offset : ''
         end
 
         def departure_second_offset
-          <<~SQL
-            (
-              EXTRACT(HOUR FROM departure_time AT TIME ZONE COALESCE(stop_areas.time_zone, 'UTC')) * 3600 +
-              EXTRACT(MINUTE FROM departure_time AT TIME ZONE COALESCE(stop_areas.time_zone, 'UTC')) * 60 +
-              EXTRACT(SECOND FROM departure_time AT TIME ZONE COALESCE(stop_areas.time_zone, 'UTC'))
-            )::integer
-          SQL
+          second_offset_expression :departure
         end
-  
+
         def arrival_second_offset
-          <<~SQL
-            (
-              EXTRACT(HOUR FROM arrival_time AT TIME ZONE COALESCE(stop_areas.time_zone, 'UTC')) * 3600 +
-              EXTRACT(MINUTE FROM arrival_time AT TIME ZONE COALESCE(stop_areas.time_zone, 'UTC')) * 60 +
-              EXTRACT(SECOND FROM arrival_time AT TIME ZONE COALESCE(stop_areas.time_zone, 'UTC'))
-            )::integer
-          SQL
+          second_offset_expression :arrival
+        end
+
+        def second_offset_expression(state)
+          passing_time = "#{state}_time AT TIME ZONE COALESCE(stop_areas.time_zone, 'UTC')"
+
+          parts = [
+            "EXTRACT(HOUR FROM #{passing_time}) * 3600",
+            "EXTRACT(MINUTE FROM #{passing_time}) * 60",
+            "EXTRACT(SECOND FROM #{passing_time})",
+            "#{state}_day_offset * 86400"
+          ]
+
+          "(#{parts.join(' + ')})::integer"
         end
       end
 
@@ -152,9 +149,6 @@ module Control
         end
 
         class All < Base
-          def vehicle_journey_at_stops
-            super
-          end
         end
 
         class First < Base

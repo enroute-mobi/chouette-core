@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2023_07_18_115813) do
+ActiveRecord::Schema.define(version: 2023_08_04_083558) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "btree_gin"
@@ -472,11 +472,9 @@ ActiveRecord::Schema.define(version: 2023_07_18_115813) do
     t.datetime "created_at"
     t.datetime "updated_at"
     t.bigint "organisation_id"
-    t.bigint "source_id"
     t.string "cron"
     t.index ["organisation_id"], name: "index_delayed_jobs_on_organisation_id"
     t.index ["priority", "run_at"], name: "delayed_jobs_priority"
-    t.index ["source_id"], name: "index_delayed_jobs_on_source_id"
   end
 
   create_table "delayed_workers", force: :cascade do |t|
@@ -953,7 +951,7 @@ ActiveRecord::Schema.define(version: 2023_07_18_115813) do
     t.text "comments"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.string "type"
+    t.string "type", null: false
     t.index ["macro_list_run_id"], name: "index_macro_context_runs_on_macro_list_run_id"
   end
 
@@ -964,12 +962,14 @@ ActiveRecord::Schema.define(version: 2023_07_18_115813) do
     t.text "comments"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.string "type"
+    t.string "type", null: false
     t.index ["macro_list_id"], name: "index_macro_contexts_on_macro_list_id"
   end
 
   create_table "macro_list_runs", force: :cascade do |t|
     t.bigint "workbench_id"
+    t.string "name"
+    t.bigint "original_macro_list_id"
     t.bigint "referential_id"
     t.string "status"
     t.string "error_uuid"
@@ -978,16 +978,15 @@ ActiveRecord::Schema.define(version: 2023_07_18_115813) do
     t.datetime "ended_at"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.bigint "original_macro_list_id"
-    t.string "name"
     t.string "user_status", null: false
+    t.index ["original_macro_list_id"], name: "index_macro_list_runs_on_original_macro_list_id"
     t.index ["referential_id"], name: "index_macro_list_runs_on_referential_id"
     t.index ["workbench_id"], name: "index_macro_list_runs_on_workbench_id"
   end
 
   create_table "macro_lists", force: :cascade do |t|
     t.bigint "workbench_id"
-    t.text "name"
+    t.string "name"
     t.text "comments"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
@@ -1026,7 +1025,7 @@ ActiveRecord::Schema.define(version: 2023_07_18_115813) do
     t.string "type", null: false
     t.bigint "macro_list_id"
     t.integer "position", null: false
-    t.text "name"
+    t.string "name"
     t.text "comments"
     t.jsonb "options", default: {}
     t.datetime "created_at", null: false
@@ -1319,10 +1318,8 @@ ActiveRecord::Schema.define(version: 2023_07_18_115813) do
     t.string "objectid_format"
     t.datetime "merged_at"
     t.datetime "failed_at"
-    t.bigint "shape_referential_id"
     t.index ["created_from_id"], name: "index_referentials_on_created_from_id"
     t.index ["referential_suite_id"], name: "index_referentials_on_referential_suite_id"
-    t.index ["shape_referential_id"], name: "index_referentials_on_shape_referential_id"
     t.index ["slug"], name: "index_referentials_on_slug", unique: true
   end
 
@@ -1381,7 +1378,7 @@ ActiveRecord::Schema.define(version: 2023_07_18_115813) do
   create_table "shapes", force: :cascade do |t|
     t.string "name"
     t.geometry "geometry", limit: {:srid=>4326, :type=>"line_string"}
-    t.uuid "uuid", default: -> { "shared_extensions.gen_random_uuid()" }, null: false
+    t.uuid "uuid", default: -> { "gen_random_uuid()" }, null: false
     t.bigint "shape_referential_id", null: false
     t.bigint "shape_provider_id", null: false
     t.datetime "created_at", null: false
@@ -1646,6 +1643,12 @@ ActiveRecord::Schema.define(version: 2023_07_18_115813) do
     t.index ["vehicle_journey_id"], name: "index_time_tables_vehicle_journeys_on_vehicle_journey_id"
   end
 
+  create_table "time_zones", force: :cascade do |t|
+    t.string "name"
+    t.integer "utc_offset"
+    t.index ["name"], name: "index_time_zones_on_name", unique: true
+  end
+
   create_table "users", force: :cascade do |t|
     t.string "email", default: "", null: false
     t.string "encrypted_password", default: ""
@@ -1823,7 +1826,6 @@ ActiveRecord::Schema.define(version: 2023_07_18_115813) do
   add_foreign_key "control_runs", "control_context_runs"
   add_foreign_key "controls", "control_contexts"
   add_foreign_key "custom_fields", "custom_field_groups"
-  add_foreign_key "delayed_jobs", "sources"
   add_foreign_key "exports", "workgroups"
   add_foreign_key "group_of_lines_lines", "group_of_lines", name: "groupofline_group_fkey", on_delete: :cascade
   add_foreign_key "journey_patterns", "routes", name: "jp_route_fkey", on_delete: :cascade
@@ -1835,7 +1837,6 @@ ActiveRecord::Schema.define(version: 2023_07_18_115813) do
   add_foreign_key "macros", "macro_contexts"
   add_foreign_key "point_of_interest_categories", "point_of_interest_categories", column: "parent_id"
   add_foreign_key "referentials", "referential_suites"
-  add_foreign_key "referentials", "shape_referentials"
   add_foreign_key "routes", "routes", column: "opposite_route_id", name: "route_opposite_route_fkey"
   add_foreign_key "stop_areas", "stop_areas", column: "parent_id", name: "area_parent_fkey", on_delete: :nullify
   add_foreign_key "time_table_dates", "time_tables", name: "tm_date_fkey", on_delete: :cascade

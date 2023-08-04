@@ -16,9 +16,7 @@ class MacroListsController < ChouetteController
   def index
     index! do |format|
       format.html do
-        if collection.out_of_bounds?
-          redirect_to params.merge(:page => 1)
-        end
+        redirect_to params.merge(page: 1) if collection.out_of_bounds?
 
         @macro_lists = MacroListDecorator.decorate(
           @macro_lists,
@@ -42,7 +40,11 @@ class MacroListsController < ChouetteController
   private
 
   def decorate_macro_list
-    object = macro_list rescue build_resource
+    object = begin
+      macro_list
+    rescue StandardError
+      build_resource
+    end
     @macro_list = MacroListDecorator.decorate(
       object,
       context: {
@@ -53,13 +55,16 @@ class MacroListsController < ChouetteController
 
   def macro_params
     macro_options = %i[id name position type comments macro_list_id _destroy]
+
     macro_options += Macro.available.flat_map { |n| n.options.keys }
+
     macro_options
   end
 
   def macro_context_params
     macro_context_options = %i[id name type comment _destroy]
     macro_context_options += Macro::Context.available.flat_map { |n| n.options.keys }
+
     macro_context_options.push(macros_attributes: macro_params)
 
     macro_context_options

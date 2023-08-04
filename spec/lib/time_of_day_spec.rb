@@ -245,4 +245,31 @@ RSpec.describe TimeOfDay do
       end.to perform_at_least(100_000).within(1.second).ips
     end
   end
+
+  describe '#second_offset' do
+    subject { TimeOfDay::Type::SecondOffset.new }
+    describe '#cast' do
+      [
+        [ nil, nil ],
+        [ 3600, TimeOfDay.parse("01:00") ],
+        [ 4812, TimeOfDay.parse("01:20:12") ],
+      ].each do |cast_value, expected|
+        it "should return #{expected.inspect} when value is #{cast_value.inspect}" do
+          expect(subject.cast(cast_value)).to eq(expected)
+        end
+      end
+    end
+
+    describe '#serialize' do
+      [
+        [ nil, nil ],
+        [ TimeOfDay.parse('01:00'), 3600 ],
+        [ TimeOfDay.parse('01:20:12'), 4812 ],
+      ].each do |cast_value, expected|
+        it "should return #{expected.inspect} when value is #{cast_value.inspect}" do
+          expect(subject.serialize(cast_value)).to eq(expected)
+        end
+      end
+    end
+  end
 end

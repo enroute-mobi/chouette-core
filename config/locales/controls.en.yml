@@ -1,4 +1,10 @@
 en:
+  enumerize:
+    control/passing_times_in_time_range:
+      passing_time_scope:
+        all: Every passing time
+        first: The first passing time
+        last: The last passing time
   controls:
     actions:
       duplicate: Duplicate
@@ -42,6 +48,8 @@ en:
         one: Inclusion in a Geographical Area
       control/expected_provider:
         one: Expected provider
+      control/passing_times_in_time_range:
+        one: Passing times in a time range
     attributes:
       control/base:
         name: Name
@@ -85,3 +93,7 @@ en:
         description: The target model must be located in the given area
       control/expected_provider:
         expected_provider: Expected provider
+      control/passing_times_in_time_range:
+        passing_time_scope: Passing time scope
+        before: Before
+        after: After

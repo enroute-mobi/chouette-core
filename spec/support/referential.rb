@@ -54,7 +54,7 @@ RSpec.configure do |config|
 
   config.before(:suite) do
     # Clean all tables to start
-    DatabaseCleaner.clean_with :truncation, except: %w[spatial_ref_sys]
+    DatabaseCleaner.clean_with :truncation, except: %w[spatial_ref_sys time_zones]
     # Truncating doesn't drop schemas, ensure we're clean here, first *may not* exist
     Apartment::Tenant.drop('first') rescue nil
     # Create the default tenant for our tests
@@ -107,7 +107,7 @@ RSpec.configure do |config|
   end
 
   config.before(:each, truncation: true) do
-    DatabaseCleaner.strategy = :truncation, { except: %w[spatial_ref_sys] }
+    DatabaseCleaner.strategy = :truncation, { except: %w[spatial_ref_sys time_zones] }
   end
 
   config.before(:each) do

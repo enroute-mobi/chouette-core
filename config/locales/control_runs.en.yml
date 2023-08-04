@@ -29,6 +29,8 @@ en:
         one: Inclusion in a Geographical Area
       control/expected_provider/run:
         one: Expected provider
+      control/passing_times_in_time_range/run:
+        one: Passing times in a time range
     attributes:
       control/base/run:
         name: Name
@@ -68,3 +70,7 @@ en:
         description: The target model must be located in the given area
       control/expected_provider/run:
         expected_provider: Expected provider
+      control/passing_times_in_time_range/run:
+        passing_time_scope: Passing time scope
+        before: Before
+        after: After

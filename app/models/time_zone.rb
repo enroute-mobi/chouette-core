@@ -1,0 +1,2 @@
+class TimeZone < ApplicationModel
+end

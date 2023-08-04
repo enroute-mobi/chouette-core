@@ -68,7 +68,7 @@ fr:
         stop_points: Points d'arrêt
         checksum: Signature métier
         shape: Tracé
-        vehicle_journeys: Course
+        vehicle_journeys: Courses
   formtastic:
     titles:
       journey_pattern:

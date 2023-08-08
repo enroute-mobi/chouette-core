@@ -15,8 +15,13 @@ module Control
 
         %w[before after].each do |option|
           define_method "#{option}=" do |time_of_day|
-            if time_of_day.is_a?(Hash) && time_of_day.keys == [1, 2]
-              time_of_day = TimeOfDay.new(time_of_day[1], time_of_day[2]).without_utc_offset.second_offset
+            if time_of_day.is_a?(Hash)
+              time_of_day = TimeOfDay.new(
+                time_of_day[1],
+                time_of_day[2],
+                day_offset: time_of_day[3]
+              ).without_utc_offset.second_offset
+
               time_of_day = nil if time_of_day.zero?
             end
 

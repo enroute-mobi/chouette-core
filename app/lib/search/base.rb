@@ -8,6 +8,8 @@ module Search
     include ActiveAttr::TypecastedAttributes
     include ActiveAttr::AttributeDefaults
 
+    attribute :search_id
+
     def initialize(scope, params = nil, context = {})
       apply_defaults
 

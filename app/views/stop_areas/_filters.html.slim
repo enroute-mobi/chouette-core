@@ -6,6 +6,7 @@
   .flex.flex-col.w-full
     .flex.items-center.border-r.border-white
       = f.input :text, label: false, wrapper_html: {class: "w-2/5"}
+      = f.input :search_id, collection: @saved_searches, required: false, wrapper_html: {class: "w-3/5"}
     .flex.items-center.border-r.border-white
       = f.input :zip_code, label: Chouette::StopArea.tmf('zip_code'), required: false, wrapper_html: {class: filter_item_class(params[:search], :zip_code)}, wrapper_html: {class: "w-1/5"}
       = f.input :city_name, label: Chouette::StopArea.tmf('city_name'), required: false, wrapper_html: {class: filter_item_class(params[:search], :city_name)}, wrapper_html: {class: "w-1/5"}

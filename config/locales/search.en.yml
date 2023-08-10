@@ -33,6 +33,7 @@ en:
         document_type: "Document type"
         valid_before_date: Valide before
         valid_after_date: Valide after
+        search_id: 'Saved searches'
   simple_form:
     placeholders:
       search:

@@ -39,7 +39,7 @@ module Delayed
       end
 
       def publisher_classes
-        [Publisher::Log]
+        [Publisher::Log, Publisher::Datadog]
       end
 
       def publishers
@@ -54,11 +54,12 @@ module Delayed
     end
 
     module Metric
-      # a Basic Metric which given name and value
+      # a Basic Metric which given name, value and (optional) tags
       class Base
-        def initialize(name: nil, value: nil)
+        def initialize(name = nil, value = nil, tags = {})
           @name = name
           @value = value
+          @tags = tags
         end
 
         attr_reader :name, :value
@@ -68,7 +69,17 @@ module Delayed
         end
 
         def to_s
-          "#{name}=#{value}"
+          "#{name}#{tags_as_string}=#{value}"
+        end
+
+        def tags
+          @tags ||= {}
+        end
+
+        def tags_as_string
+          return '' if tags.blank?
+
+          "[#{tags.inspect}]"
         end
       end
 
@@ -141,7 +152,7 @@ module Delayed
           latencies_per_organisation.map do |code, latency|
             label = code || 'none'
             latency = latency.to_i
-            Metric::Base.new(name: "jobs.organisation_#{label}.latency", value: latency) if latency > 10
+            Metric::Base.new('jobs.latency', latency, organisation: label) if latency > 10
           end.compact
         end
 
@@ -174,6 +185,24 @@ module Delayed
           Rails.logger.info "[Delayed::Job] Metrics: #{message}"
 
           self.class.logged_at = Time.current
+        end
+      end
+
+      # Publish metrics as statsd gauges
+      class Datadog
+        mattr_accessor :statsd, :service_name
+
+        def publish(metrics)
+          return unless statsd
+
+          metrics.each do |metric|
+            tags = metric.tags
+            # Replace default service tag by worker service (ex: chouette-core-worker instead of chouette-core-front)
+            tags = tags.merge(service: service_name) if service_name
+
+            Rails.logger.debug { "[statsd] chouette.#{metric.name}=#{metric.value} tags: #{tags.inspect}" }
+            statsd.gauge("chouette.#{metric.name}", metric.value, tags: tags)
+          end
         end
       end
     end

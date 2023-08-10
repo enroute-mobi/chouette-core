@@ -14,6 +14,7 @@ fr:
       new: "Créer une Règle de traitement"
       edit: "Editer cette Règle de traitement"
       destroy: "Supprimer cette Règle de traitement"
+      destroy_confirm: "Etes vous sûr de supprimer cette Règle de traitement ?"
     name: "%{operation_step} %{processable_type} %{processable_name}"
 
   processing_rule/workgroups:

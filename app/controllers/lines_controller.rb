@@ -12,6 +12,8 @@ class LinesController < ChouetteController
   respond_to :kml, :only => :show
   respond_to :js, :only => :index
 
+  helper_method :candidate_line_providers
+
   def autocomplete
     scope = line_referential.lines.referents
 
@@ -112,6 +114,10 @@ class LinesController < ChouetteController
     @workbench
   end
 
+  def candidate_line_providers
+    @candidate_line_providers ||= @workbench.line_providers.order(:name)
+  end
+
   alias_method :line_referential, :parent
   delegate :workgroup, to: :workbench, allow_nil: true
 
@@ -136,6 +142,7 @@ class LinesController < ChouetteController
       :published_name,
       :registration_number,
       :comment,
+      :line_provider_id,
       :mobility_restricted_suitability,
       :int_user_needs,
       :flexible_service,

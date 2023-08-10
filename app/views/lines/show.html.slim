@@ -23,6 +23,9 @@
              Chouette::Line.tmf(:seasonal) => boolean_icon(@line.seasonal),
              Chouette::Line.tmf(:comment) => @line.comment.presence || '-' }
 
+        = simple_block_for @line, title: t("lines.form.sections.internals") do |d|
+          = d.attribute :line_provider, as: :association, link: ->(line_provider) { workbench_line_referential_line_provider_path(@workbench, @line.line_provider_id) }
+
         = simple_block_for @line, title: Chouette::StopArea.tmf(:codes) do |d|
           - if @line.codes.empty?
             .mb-xs

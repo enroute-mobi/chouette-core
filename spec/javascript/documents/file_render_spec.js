@@ -89,7 +89,7 @@ describe('FileRender', () => {
 			describe('when other', () => {
 				it('should not preview', () => {
 					const container = document.createElement('div')
-					const url = '../../fixtures/users.json'
+					const url = '../../fixtures/valid_version.json'
 
 					FileRender.call(container, { contentType: 'application/json', url })
 

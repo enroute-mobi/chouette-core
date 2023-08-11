@@ -1,7 +1,7 @@
 class PublicationApi < ActiveRecord::Base
   belongs_to :workgroup
   has_many :api_keys, class_name: 'PublicationApiKey'
-  has_many :destinations
+  has_many :destinations, dependent: :delete_all
   has_many :publication_setups, through: :destinations
   has_many :publication_api_sources, dependent: :destroy
 

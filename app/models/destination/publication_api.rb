@@ -1,6 +1,6 @@
 class Destination::PublicationApi < ::Destination
 
-  belongs_to :publication_api, optional: false
+  belongs_to :publication_api, optional: false, class_name: "::PublicationApi"
 
   validate :api_is_not_already_used
 

@@ -7,14 +7,14 @@ module Control
 
       included do
         option :target_model
-        enumerize :target_model, in: %w{
+        enumerize :target_model, in: %w[
           StopArea ConnectionLink Entrance
           StopArea RoutingConstraint Company
           Line LineNotice Network
           Document PointOfInterest Shape
-        }
+        ]
         option :expected_provider
-        enumerize :expected_provider, in: %w{ all_workbench_provider }
+        enumerize :expected_provider, in: %w[all_workbench_provider], default: 'all_workbench_provider'
 
         validates :target_model, :expected_provider, presence: true
       end
@@ -69,7 +69,7 @@ module Control
       end
 
       def models
-        @models ||= workbench.send(model_collection)
+        @models ||= context.send(model_collection)
       end
     end
   end

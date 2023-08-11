@@ -1,6 +1,5 @@
 class Destination::PublicationApi < ::Destination
-
-  belongs_to :publication_api, optional: false, class_name: "::PublicationApi"
+  belongs_to :publication_api, optional: false, class_name: '::PublicationApi'
 
   validate :api_is_not_already_used
 
@@ -13,14 +12,14 @@ class Destination::PublicationApi < ::Destination
     publication.exports.successful.each do |export|
       key = generate_key(export)
 
-      if key
-        publication_api_source = publication_api.publication_api_sources.find_or_create_by(key: key)
-        publication_api_source.export = export
-        publication_api_source.publication = publication
-        publication_api_source.key = key
+      next unless key
 
-        publication_api_source.save
-      end
+      publication_api_source = publication_api.publication_api_sources.find_or_create_by(key: key)
+      publication_api_source.export = export
+      publication_api_source.publication = publication
+      publication_api_source.key = key
+
+      publication_api_source.save
     end
   end
 
@@ -39,11 +38,12 @@ class Destination::PublicationApi < ::Destination
   def generate_key(export)
     return nil unless export
 
-    export_type = if export.is_a?(Export::NetexGeneric)
-      "netex"
-    else
-      export.class.name.demodulize.downcase
-    end
+    export_type = 
+      if export.is_a?(Export::NetexGeneric)
+        'netex'
+      else
+        export.class.name.demodulize.downcase
+      end
 
     if publication_setup.publish_per_line
       line = Chouette::Line.find export.line_ids.first

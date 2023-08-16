@@ -35,9 +35,7 @@ module ApplicationHelper
   def page_header_meta(object)
     out = ""
     display = true
-    if policy(object).respond_to?(:synchronize?)
-      display = policy(object).synchronize?
-    elsif object.instance_of?(Workbench)
+    if object.instance_of?(Workbench)
       display = false
     end
 

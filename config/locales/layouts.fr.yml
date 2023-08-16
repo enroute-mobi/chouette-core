@@ -33,8 +33,6 @@ fr:
       workgroups_configuration: Groupes de travail
       security_configuration: Sécurité
       tools: Outils
-      sync: Synchronisation
-      sync_icar: Synchronisation iCAR
       sync_ilico: Synchronisation iLICO
       icar: iCAR
       ilico: iLICO

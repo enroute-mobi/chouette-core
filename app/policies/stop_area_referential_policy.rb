@@ -5,10 +5,6 @@ class StopAreaReferentialPolicy < ApplicationPolicy
     end
   end
 
-  def synchronize?
-    workgroup_owner? && instance_permission("synchronize")
-  end
-
   def edit?
     workgroup_owner? && update?
   end

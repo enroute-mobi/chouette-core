@@ -89,26 +89,3 @@
                 =< t('date.updated', distance_in_time: time_ago_in_words(entrance.updated_at))
             - unless @stop_area_referential.entrances.any?
               = replacement_msg t('no_result_text')
-    .row
-      .col-md-12
-        - if @stop_area_referential.stop_area_referential_syncs.any?
-          h2= StopAreaReferentialSync.t
-          .row
-            .col-lg-12
-                = table_builder_2 @stop_area_referential.stop_area_referential_syncs,
-                  [ \
-                    TableBuilderHelper::Column.new( \
-                      name: t('.synchronized'), \
-                      attribute: Proc.new { |sync| stop_area_referential_sync_created_at(sync) }, \
-                    ), \
-                    TableBuilderHelper::Column.new( \
-                      name: t('.status'), \
-                      attribute: Proc.new { |sync| stop_area_referential_sync_status(sync) }, \
-                    ), \
-                    TableBuilderHelper::Column.new( \
-                      name: t('.message'), \
-                      attribute: Proc.new { |sync| stop_area_referential_sync_message(sync) }, \
-                    ), \
-                  ],
-                  sortable: false,
-                  cls: 'table'

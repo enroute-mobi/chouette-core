@@ -170,8 +170,8 @@ class TimeOfDay
   end
 
   class ISO8601 < SimpleDelegator
-    UTC_FORMAT = '%.2d:%.2d:%.2dZ'
-    NON_UTC_FORMAT = '%.2d:%.2d:%.2d%s%.2d:%.2d'
+    UTC_FORMAT = '%.2d:%.2d:%.2dZ'.freeze
+    NON_UTC_FORMAT = '%.2d:%.2d:%.2d%s%.2d:%.2d'.freeze
 
     def to_s
       if utc_offset?

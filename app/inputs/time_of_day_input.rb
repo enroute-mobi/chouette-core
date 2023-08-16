@@ -3,53 +3,49 @@
 class TimeOfDayInput < SimpleForm::Inputs::Base
   delegate :select_hour, :select_minute, to: :template
 
+  include ActionView::Helpers::FormOptionsHelper
+  include ActionView::Helpers::FormTagHelper
+
   def input(wrapper_options = nil)
     merged_input_options = merge_wrapper_options(input_html_options, wrapper_options)
 
-    [
+    parts = [
       select_hour(time_of_day, hour_options, merged_input_options),
-      select_minute(time_of_day, minute_options, merged_input_options),
-      select_day_offset(time_of_day, day_offset_options, merged_input_options)
-    ].compact.join(content_tag(:span, " : ", class: 'mx-5'))
+      separator(':'),
+      select_minute(time_of_day, minute_options, merged_input_options)
+    ]
+
+    parts += [separator, select_day_offset(merged_input_options)] if use_day_offset?
+
+    parts.join
   end
 
-  def select_day_offset(time_of_day, options = {}, html_options = {})
-    return nil unless html_options[:use_day_offset]
-
-    SelectDayOffset.new(time_of_day, options, html_options).select_day_offset
+  def select_day_offset(html_options = {})
+    options = options_from_collection_for_select(day_offsets, 'value', 'name', time_of_day&.day_offset || 0)
+    select_tag "#{object_name}[#{attribute_name_with_position(4)}]", options, html_options
   end
 
-  class SelectDayOffset < ActionView::Helpers::DateTimeSelector
-    def time_of_day
-      @datetime
+  def use_day_offset?
+    options[:use_day_offset]
+  end
+
+  def day_offsets
+    (0..5).map { |value| DayOffset.new(value) }
+  end
+
+  def separator(content = '')
+    content_tag(:span, content, class: 'mx-3')
+  end
+
+  class DayOffset
+    attr_reader :value
+
+    def initialize(value)
+      @value = value
     end
 
-    def day_offset
-      time_of_day&.day_offset
-    end
-
-    def select_day_offset
-      if @options[:use_hidden] || @options[:discard_day_offset]
-        build_hidden(:day_offset, day_offset || 0)
-      else
-        build_select(:day_offset, build_day_offset_options(day_offset))
-      end
-    end
-
-    def build_day_offset_options(selected)
-      select_options = []
-      (0..5).each do |value|
-        tag_options = { value: value }
-        tag_options[:selected] = "selected" if selected == value
-        text = day_offset_name(value)
-        select_options << content_tag("option", text, tag_options)
-      end
-
-      (select_options.join("\n") + "\n").html_safe
-    end
-
-    def day_offset_name(number)
-      "J+#{number}"
+    def name
+      I18n.t('day_offset.name', value: value)
     end
   end
 
@@ -67,10 +63,6 @@ class TimeOfDayInput < SimpleForm::Inputs::Base
 
   def minute_options
     base_options.merge(field_name: attribute_name_with_position(2), minute_step: 5)
-  end
-
-  def day_offset_options
-    base_options.merge(field_name: attribute_name_with_position(3))
   end
 
   def time_of_day

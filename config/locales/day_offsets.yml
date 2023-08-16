@@ -1,0 +1,6 @@
+fr:
+  day_offset:
+    name: "J+%{value}"
+en:
+  day_offset:
+    name: "D+%{value}"    

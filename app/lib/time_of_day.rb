@@ -43,7 +43,7 @@ class TimeOfDay
   def self.create(time = nil, attributes = nil)
     attributes ||= {}
 
-    %i{hour minute min second sec day_offset time_zone}.each do |attribute|
+    %i[hour minute min second sec day_offset time_zone].each do |attribute|
       attributes[attribute] = time.send(attribute) if time.respond_to?(attribute)
     end
 
@@ -117,7 +117,7 @@ class TimeOfDay
   end
 
   def with_day_offset(offset)
-    self.class.from_second_offset second_offset + (offset-day_offset).days, utc_offset: utc_offset
+    self.class.from_second_offset second_offset + (offset - day_offset).days, utc_offset: utc_offset
   end
 
   def day_offset?
@@ -128,14 +128,14 @@ class TimeOfDay
     utc_offset != 0
   end
 
-  HMS_FORMAT = "%.2d:%.2d:%.2d"
+  HMS_FORMAT = '%.2d:%.2d:%.2d'
   def to_hms
-    HMS_FORMAT % [hour, minute, second]
+    format(HMS_FORMAT, hour, minute, second)
   end
 
-  HM_FORMAT = "%.2d:%.2d"
+  HM_FORMAT = '%.2d:%.2d'
   def to_hm
-    HM_FORMAT % [hour, minute]
+    format(HM_FORMAT, hour, minute)
   end
 
   def to_s
@@ -147,7 +147,7 @@ class TimeOfDay
   end
 
   def to_vehicle_journey_at_stop_time
-    ::Time.new(2000, 1, 1, hour, minute, second, "+00:00")
+    ::Time.new(2000, 1, 1, hour, minute, second, '+00:00')
   end
 
   alias to_time to_vehicle_journey_at_stop_time
@@ -160,16 +160,24 @@ class TimeOfDay
     second_offset - other.second_offset
   end
 
-  class ISO8601 < SimpleDelegator
+  INPUT_HASH_HOUR = 1
+  INPUT_HASH_MINUTE = 2
+  INPUT_HASH_SECOND = 3
+  INPUT_HASH_DAY_OFFSET = 4
+  def self.from_input_hash(hash)
+    TimeOfDay.new(hash[INPUT_HASH_HOUR], hash[INPUT_HASH_MINUTE], hash.fetch(INPUT_HASH_SECOND, 0),
+                  day_offset: hash[INPUT_HASH_DAY_OFFSET])
+  end
 
-    UTC_FORMAT = "%.2d:%.2d:%.2dZ"
-    NON_UTC_FORMAT = "%.2d:%.2d:%.2d%s%.2d:%.2d"
+  class ISO8601 < SimpleDelegator
+    UTC_FORMAT = '%.2d:%.2d:%.2dZ'
+    NON_UTC_FORMAT = '%.2d:%.2d:%.2d%s%.2d:%.2d'
 
     def to_s
-      unless utc_offset?
-        UTC_FORMAT % [hour, minute, second]
+      if utc_offset?
+        format(NON_UTC_FORMAT, hour, minute, second, sign_utc_offset, hour_utc_offset, minute_utc_offset)
       else
-        NON_UTC_FORMAT % [hour, minute, second, sign_utc_offset, hour_utc_offset, minute_utc_offset]
+        format(UTC_FORMAT, hour, minute, second)
       end
     end
 
@@ -184,11 +192,11 @@ class TimeOfDay
     def minute_utc_offset
       utc_offset.abs % 1.hour / 1.minute
     end
-
   end
 
   def <=>(other)
     return unless other.respond_to?(:second_offset)
+
     @second_offset <=> other.second_offset
   end
 
@@ -203,10 +211,12 @@ class TimeOfDay
     /x
 
   def self.parse(definition, attributes = nil)
-    if PARSE_REGEX =~ definition
-      hour, minute, second = $1, $2, $3
-      new hour, minute, second, attributes || {}
-    end
+    return unless PARSE_REGEX =~ definition
+
+    hour = ::Regexp.last_match(1)
+    minute = ::Regexp.last_match(2)
+    second = ::Regexp.last_match(3)
+    new hour, minute, second, attributes || {}
   end
 
   def self.unserialize(value, attributes = nil)
@@ -230,6 +240,7 @@ class TimeOfDay
 
       def serialize(value)
         return unless value.present?
+
         value.to_hms
       end
 

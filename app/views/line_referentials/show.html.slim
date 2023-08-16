@@ -107,23 +107,3 @@
             - unless @line_referential.line_providers.any?
               = replacement_msg t('no_result_text')
 
-    -if @line_referential.line_referential_syncs.any?
-      .row
-        .col-lg-12
-            = table_builder_2 @line_referential.line_referential_syncs,
-              [ \
-                TableBuilderHelper::Column.new( \
-                  name: t('.synchronized'), \
-                  attribute: Proc.new { |sync| line_referential_sync_created_at(sync) }, \
-                ), \
-                TableBuilderHelper::Column.new( \
-                  name: t('.status'), \
-                  attribute: Proc.new { |sync| line_referential_sync_status(sync) }, \
-                ), \
-                TableBuilderHelper::Column.new( \
-                  name: t('.message'), \
-                  attribute: Proc.new { |sync| line_referential_sync_message(sync) }, \
-                ), \
-              ],
-              sortable: false,
-              cls: 'table'

@@ -15,8 +15,8 @@ module Control
 
         %w[before after].each do |option|
           define_method "#{option}=" do |time_of_day|
-            if time_of_day.is_a?(Hash) && time_of_day.keys == [1, 2]
-              time_of_day = TimeOfDay.new(time_of_day[1], time_of_day[2]).without_utc_offset.second_offset
+            if time_of_day.is_a?(Hash)
+              time_of_day = TimeOfDay.from_input_hash(time_of_day).without_utc_offset.second_offset
               time_of_day = nil if time_of_day.zero?
             end
 
@@ -84,11 +84,11 @@ module Control
         def vehicle_journey_ids
           context
             .vehicle_journey_at_stops
-              .joins(time_zones, stop_point: :stop_area)
-              .where.not("#{second_offset_range} @> #{departure_second_offset} AND #{second_offset_range} @> #{arrival_second_offset}")
-              .select(:vehicle_journey_id)
-              .distinct
-              .from(base_query)
+            .joins(time_zones, stop_point: :stop_area)
+            .where.not("#{second_offset_range} @> #{departure_second_offset} AND #{second_offset_range} @> #{arrival_second_offset}")
+            .select(:vehicle_journey_id)
+            .distinct
+            .from(base_query)
         end
 
         def base_query

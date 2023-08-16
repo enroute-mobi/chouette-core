@@ -139,8 +139,6 @@ Apartment.configure do |config|
     'StopAreaProvider',
     'StopAreaReferential',
     'StopAreaReferentialMembership',
-    'StopAreaReferentialSync',
-    'StopAreaReferentialSyncMessage',
     'StopAreaRoutingConstraint',
     'Source',
     'Source::Retrieval',

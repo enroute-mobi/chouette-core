@@ -57,8 +57,6 @@ gem 'graphql', '~> 1.12.19'
 
 # Codifligne API
 gem 'codifligne', en_route: 'ilico-api'
-# ICar API
-gem 'icar', en_route: 'icar-api'
 
 # Authentication
 gem 'devise', '>= 4.8.1'

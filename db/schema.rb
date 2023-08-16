@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2023_08_04_083558) do
+ActiveRecord::Schema.define(version: 2023_08_16_202654) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "btree_gin"
@@ -1449,26 +1449,6 @@ ActiveRecord::Schema.define(version: 2023_08_04_083558) do
     t.bigint "organisation_id"
     t.bigint "stop_area_referential_id"
     t.boolean "owner"
-  end
-
-  create_table "stop_area_referential_sync_messages", force: :cascade do |t|
-    t.integer "criticity"
-    t.string "message_key"
-    t.hstore "message_attributes"
-    t.bigint "stop_area_referential_sync_id"
-    t.datetime "created_at"
-    t.datetime "updated_at"
-    t.index ["stop_area_referential_sync_id"], name: "stop_area_referential_sync_id"
-  end
-
-  create_table "stop_area_referential_syncs", force: :cascade do |t|
-    t.bigint "stop_area_referential_id"
-    t.datetime "created_at"
-    t.datetime "updated_at"
-    t.datetime "ended_at"
-    t.datetime "started_at"
-    t.string "status"
-    t.index ["stop_area_referential_id"], name: "index_stop_area_referential_syncs_on_stop_area_referential_id"
   end
 
   create_table "stop_area_referentials", force: :cascade do |t|

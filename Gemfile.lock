@@ -23,17 +23,6 @@ GIT
       railties (>= 5.0)
 
 GIT
-  remote: https://bitbucket.org/enroute-mobi/icar-api.git
-  revision: ac862e756595fde3081d78104aec9c6055a51440
-  specs:
-    icar (0.0.3)
-      nokogiri (>= 1.8.5)
-      rgeo
-      rgeo-proj4
-      ruby-filemagic
-      rubyzip (>= 1.2.2)
-
-GIT
   remote: https://bitbucket.org/enroute-mobi/ilico-api.git
   revision: 292032c017ba912870dd029c3ca9cb3410b592c9
   specs:
@@ -733,7 +722,6 @@ GEM
       activesupport (>= 4.2.0)
       rack (>= 1.1)
       rubocop (>= 1.33.0, < 2.0)
-    ruby-filemagic (0.7.3)
     ruby-graphviz (1.2.5)
       rexml
     ruby-progressbar (1.13.0)
@@ -912,7 +900,6 @@ DEPENDENCIES
   htmlbeautifier
   i18n-js (~> 3.9)
   i18n-tasks (>= 0.9.37)
-  icar!
   inherited_resources (>= 1.13.1)
   jbuilder
   jquery-rails (>= 4.6.0)

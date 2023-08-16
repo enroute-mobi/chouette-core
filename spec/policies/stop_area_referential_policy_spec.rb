@@ -39,28 +39,4 @@ RSpec.describe StopAreaReferentialPolicy, type: :policy do
       it { is_expected.to forbid_action(:update) }
     end
   end
-
-  describe "for synchronize action" do
-    context 'when user is Workgroup owner and has the permission "stop_area_referentials.synchronize"' do
-      let(:user) { owner_user }
-      before { user.permissions << 'stop_area_referentials.synchronize' }
-
-      it { is_expected.to permit_action(:synchronize) }
-    end
-
-    context 'when user is Workgroup owner without the permission' do
-      let(:user) { owner_user }
-      before { user.permissions.clear }
-
-      it { is_expected.to forbid_action(:synchronize) }
-    end
-
-    context "when user isn't Workgroup owner with the permission" do
-      let(:user) { another_user }
-      before { user.permissions << 'stop_area_referentials.synchronize' }
-
-      it { is_expected.to forbid_action(:synchronize) }
-    end
-  end
-
 end

@@ -5,7 +5,6 @@ toolbar.available_features = ::Feature.all
 permissions = Permission.full + Permission.workgroup_permissions; nil
 
 permissions << "line_referentials.synchronize"; nil
-permissions << "stop_area_referentials.synchronize"; nil
 permissions << "sidekiq.monitor"; nil
 permissions << "merges.rollback"; nil
 

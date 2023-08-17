@@ -1,19 +1,14 @@
 en:
   stop_area_referentials:
     actions:
-      edit_params: Edit parameters
-      sync: "Launch a new synchronization"
-      cancel_sync: "Cancel synchronization"
+      edit_params: Edit Parameters
     show:
-      title: 'Stop area referential'
-      synchronized: Synchronized
-      status: status
-      message: Message
+      title: 'Stop Area Referential'
   activerecord:
     models:
       stop_area_referential:
-        one: "stop area referential"
-        other: "stop area referentials"
+        one: "Stop Area Referential"
+        other: "Stop Area Referentials"
     attributes:
       stop_area_referential:
         locales: Available languages
@@ -21,7 +16,7 @@ en:
         locale_default: Default
         locale_name: Language
         stops_selection_displayed_fields: Informations displayed at stop selection
-        route_edition_available_stops: Stop area type available when editing the offer
+        route_edition_available_stops: Stop Area type available when editing the offer
         formatted_area_type: Area type
         local_id: Local ID
         zip_code: City zip code

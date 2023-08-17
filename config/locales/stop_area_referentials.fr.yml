@@ -2,18 +2,13 @@ fr:
   stop_area_referentials:
     actions:
       edit_params: Editer les paramètres
-      sync: Lancer une synchronisation
-      cancel_sync: Annuler la synchronisation
     show:
       title: "Référentiel d'Arrêts"
-      synchronized: Synchronisé
-      status: État
-      message: Message
   activerecord:
     models:
       stop_area_referential:
-        one: "référentiel d'arrêts"
-        other: "référentiels d'arrêts"
+        one: "Référentiel d'Arrêts"
+        other: "Référentiels d'Arrêts"
     attributes:
       stop_area_referential:
         locales: Langues disponibles

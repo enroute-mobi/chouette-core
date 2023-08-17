@@ -32,7 +32,6 @@ fr:
     select: Sélectionner
     show: 'Consulter'
     submit: "Valider"
-    sync: 'Synchroniser'
     unarchive: 'Désarchiver'
     validate: 'Contrôler'
     wait_for_submission: "Validation..."

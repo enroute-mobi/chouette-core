@@ -32,7 +32,6 @@ en:
     select: Select
     show: "See"
     submit: "Submit"
-    sync: 'Synchronize'
     unarchive: "Unarchive"
     validate: 'Validate'
     wait_for_submission: "Please wait..."

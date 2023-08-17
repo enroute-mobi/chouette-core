@@ -113,12 +113,12 @@ en:
         line_provider_id: Line Provider
         is_referent: "Referent"
         referent_id: "Referent Line"
-        particulars: "Specific Line"
+        particulars: "Specific Lines"
         line_notices: "Line notices"
         companies:
           name: "Company"
         registration_number: "Registration number"
-        name: "Name"
+        name: "Name of line"
         published_name: "Published name"
         number: "Number"
         transport_mode: "Transport mode"

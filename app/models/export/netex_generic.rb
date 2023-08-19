@@ -238,7 +238,9 @@ class Export::NetexGeneric < Export::Base
         centroid: centroid,
         raw_xml: import_xml,
         key_list: key_list,
-        accessibility_assessment: accessibility_assessment
+        accessibility_assessment: accessibility_assessment,
+        postal_address: postal_address,
+        url: url
       }.tap do |attributes|
         unless netex_quay?
           attributes[:parent_site_ref] = parent_site_ref
@@ -349,8 +351,23 @@ class Export::NetexGeneric < Export::Base
       when 'lda'
         'generalStopPlace'
       when 'gdl'
-          'groupOfStopPlaces'
+        'groupOfStopPlaces'
       end
+    end
+
+    def postal_address_objectid
+      netex_identifier&.change(type: 'PostalAddress').to_s
+    end
+
+    def postal_address
+      Netex::PostalAddress.new(
+        id: postal_address_objectid,
+        address_line_1: street_name,
+        post_code: zip_code,
+        town: city_name,
+        postal_region: postal_region,
+        country_name: country_name
+      )
     end
 
     def netex_resource

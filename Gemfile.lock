@@ -40,10 +40,12 @@ GIT
 
 GIT
   remote: https://bitbucket.org/enroute-mobi/nest.git
-  revision: 12f4782f1b16aea39f72063d28c8f0bf87db0df1
+  revision: 33ef0a06748a47b5dc05c2eadfce83d1234bf8dd
+  branch: NEST-3-welcome-photo
   specs:
     nest (0.1)
       activesupport
+      unsplash
 
 GIT
   remote: https://bitbucket.org/enroute-mobi/netex.git
@@ -316,6 +318,8 @@ GEM
       i18n (>= 1.8.11, < 2)
     faraday (0.17.6)
       multipart-post (>= 1.2, < 3)
+    faraday-multipart (1.0.4)
+      multipart-post (~> 2)
     faraday_middleware (0.14.0)
       faraday (>= 0.7.4, < 1.0)
     ffaker (2.1.0)
@@ -393,6 +397,7 @@ GEM
       actionpack (>= 5.2)
       activesupport (>= 5.2)
     hashdiff (1.0.1)
+    hashie (5.0.0)
     health_check (3.1.0)
       railties (>= 5.0)
     heapy (0.2.0)
@@ -401,8 +406,8 @@ GEM
     html_tokenizer (0.0.7)
     htmlbeautifier (1.4.2)
     htmlentities (4.3.4)
-    httparty (0.20.0)
-      mime-types (~> 3.0)
+    httparty (0.21.0)
+      mini_mime (>= 1.0.0)
       multi_xml (>= 0.5.2)
     httpclient (2.8.3)
     i18n (1.14.1)
@@ -524,12 +529,13 @@ GEM
     notiffany (0.1.3)
       nenv (~> 0.1)
       shellany (~> 0.0)
-    oauth2 (1.4.11)
+    oauth2 (2.0.9)
       faraday (>= 0.17.3, < 3.0)
       jwt (>= 1.0, < 3.0)
-      multi_json (~> 1.3)
       multi_xml (~> 0.5)
       rack (>= 1.2, < 4)
+      snaky_hash (~> 2.0)
+      version_gem (~> 1.1)
     offline-sort (0.2.0)
     open4 (1.3.4)
     orm_adapter (0.5.0)
@@ -773,6 +779,9 @@ GEM
       railties (>= 3.1)
       slim (>= 3.0, < 6.0, != 5.0.0)
     smart_properties (1.17.0)
+    snaky_hash (2.0.1)
+      hashie
+      version_gem (~> 1.1, >= 1.1.1)
     spring (4.1.1)
     spring-commands-rspec (1.0.4)
       spring (>= 0.9.1)
@@ -808,9 +817,11 @@ GEM
     unaccent (0.4.0)
     unicode-display_width (2.4.2)
     uniform_notifier (1.16.0)
-    unsplash (2.1.0)
-      httparty (~> 0.16)
-      oauth2 (~> 1)
+    unsplash (3.0.0)
+      faraday-multipart (~> 1.0.4)
+      httparty (~> 0.20)
+      oauth2 (>= 2.0.8)
+    version_gem (1.1.3)
     warden (1.2.9)
       rack (>= 2.0.9)
     webmock (3.18.1)
@@ -976,7 +987,6 @@ DEPENDENCIES
   teaspoon-jasmine (>= 2.9.1)
   timecop
   uglifier (~> 2.7.2)
-  unsplash
   webmock
   webpacker (= 6.0.0.beta.7)
   whenever!

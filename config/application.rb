@@ -118,6 +118,13 @@ module ChouetteIhm
         SmartEnv[:OCCASIONAL_TRAVELLER_CONNECTION_SPEED]
     ]
 
+    if Chouette::Config.loaded?
+      config.to_prepare do
+        WelcomePhoto.unsplash_credential = Chouette::Config.unsplash.credential
+        WelcomePhoto.unsplash_utm_source = Chouette::Config.unsplash.utm_source
+      end
+    end
+
     config.to_prepare do
       Devise::Mailer.layout 'mailer'
     end

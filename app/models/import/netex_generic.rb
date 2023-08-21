@@ -483,6 +483,7 @@ class Import::NetexGeneric < Import::Base
 
   def netex_source
     @netex_source ||= Netex::Source.new(include_raw_xml: store_xml?).tap do |source|
+      source.transformers << Netex::Transformer::LocationFromCoordinates.new
       source.read(local_file.path, type: file_extension)
     end
   end

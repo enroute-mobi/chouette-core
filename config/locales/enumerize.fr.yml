@@ -13,7 +13,6 @@ fr:
         done: Terminé
     notification_rule:
       notification_type:
-        hole_sentinel: Trou d'offre
         merge: Finalisation
         aggregate: Agrégation
         source_retrieval: Récupération de données

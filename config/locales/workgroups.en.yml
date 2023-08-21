@@ -32,7 +32,6 @@ en:
     edit_merge:
       title: "Merge settings"
       edit_purge_settings: "Purge merged data settings"
-      edit_hole_sentinel: "Missing offer detection settings"
       disclaimer: These settings are used by all Workbenches of this Workgroup.
       edit_transport_modes:
         title: Edit transport modes
@@ -56,8 +55,6 @@ en:
         description: Description
         enable_purge_merged_data: Enable purge of past merged data
         maximum_data_age: Maximum age of merged data
-        sentinel_min_hole_size: Minimum length of a missing offer
-        sentinel_delay: Distance of detection
         nightly_aggregate_days:  Aggregate days
         nightly_aggregate_enabled: Daily aggregation enabled
         nightly_aggregate_time: Aggregation time
@@ -77,5 +74,4 @@ en:
     hints:
       workgroup:
         maximum_data_age: (in days) Maximum days of a past TimeTable
-        sentinel_min_hole_size: (in days) Minimum length of a missing offer to be signaled.
-        sentinel_delay: (in days) A value of 0 disables the missing offer detection
+

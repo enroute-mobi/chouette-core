@@ -32,7 +32,6 @@ fr:
     edit_merge:
       title: "Finalisation"
       edit_purge_settings: "Paramétrage de la purge des données après finalisation"
-      edit_hole_sentinel: "Paramétrage de la détection de trous d'offre"
       disclaimer: Ces paramètres sont utilisés par tous les Espaces de travail de ce Groupe de travail.
     edit_transport_modes:
       title: Paramétrages des modes de transport
@@ -56,8 +55,6 @@ fr:
         description: Description
         enable_purge_merged_data: Activer la purge des données après finalisation
         maximum_data_age: Age maximum des données finalisées
-        sentinel_min_hole_size: Taille minimum d'un trou d'offre
-        sentinel_delay: Distance de détection
         nightly_aggregate_days:  Jours d’agrégation
         nightly_aggregate_enabled: Lancement quotidien activé
         nightly_aggregate_time: Heure du lancement
@@ -77,5 +74,4 @@ fr:
     hints:
       workgroup:
         maximum_data_age: (en jours) Nombre de jours maximum d'un Calendrier passé
-        sentinel_min_hole_size: (en jours) Durée minimum d'un trou d'offre pour qu'il soit signalé.
-        sentinel_delay: (en jours) Une valeur de 0 désactive la détection de trous
+

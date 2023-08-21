@@ -43,9 +43,7 @@ class WorkgroupsController < ChouetteController
 
   def update
     unless resource.update workgroup_params
-      if workgroup_params.has_key? :sentinel_min_hole_size
-        render :edit_merge
-      elsif workgroup_params.has_key? :compliance_control_set_ids
+      if workgroup_params.has_key? :compliance_control_set_ids
         render :edit_controls
       else
         render :edit
@@ -74,8 +72,6 @@ class WorkgroupsController < ChouetteController
       :description,
       :enable_purge_merged_data,
       :maximum_data_age,
-      :sentinel_min_hole_size,
-      :sentinel_delay,
       :nightly_aggregate_enabled, :nightly_aggregate_time, :nightly_aggregate_days, :nightly_aggregate_notification_target,
       :transport_modes_as_json,
       workbenches_attributes: [

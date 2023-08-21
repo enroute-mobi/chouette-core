@@ -21,13 +21,5 @@
                   .slave data-master="#workgroup_enable_purge_merged_data" data-value="true"
                     = f.input :maximum_data_age, label: "workgroup.maximum_data_age".tmf, hint: "formtastic.hints.workgroup.maximum_data_age".t, input_html: {value: f.object.maximum_data_age || 0 }
 
-              .col-lg-12
-                h3= I18n.t('workgroups.edit_merge.edit_hole_sentinel')
-              .col-lg-12
-                = f.input :sentinel_min_hole_size, label: "workgroup.sentinel_min_hole_size".tmf, hint: "formtastic.hints.workgroup.sentinel_min_hole_size".t
-              .col-lg-12
-                = f.input :sentinel_delay, label: "workgroup.sentinel_delay".tmf, hint: "formtastic.hints.workgroup.sentinel_delay".t
-
           = cancel_button
           = f.button :submit, t('actions.submit'), class: 'btn btn-default formSubmitr', form: 'workgroup_form'
-

@@ -20,11 +20,6 @@ RSpec.describe Query::NotificationRule do
 				notification_rule :out_of_period, period: Period.before(:today).during(10.days)
 			end
 
-			workbench :notification_type do
-				notification_rule :hole_sentinel, notification_type: 'hole_sentinel'
-				notification_rule :import, notification_type: 'import'
-			end
-
 			workbench :rule_type do
 				notification_rule :block, rule_type: 'block'
 				notification_rule :notify, rule_type: 'notify'
@@ -91,16 +86,6 @@ RSpec.describe Query::NotificationRule do
     it 'should return the notification rule with the overlapping period' do
       scope = query.in_period(Time.zone.today..Time.zone.today).scope
 			expect(scope).to match_array(expected_scope)
-    end
-  end
-
-  describe '#notification_type' do
-    let(:workbench) { context.workbench(:notification_type) }
-    let(:expected_scope) { [context.notification_rule(:hole_sentinel)] }
-
-    it 'should return the notification type with the hole_sentinel notification_type' do
-      scope = query.notification_type(['hole_sentinel']).scope
-      expect(scope).to match_array(expected_scope)
     end
   end
 

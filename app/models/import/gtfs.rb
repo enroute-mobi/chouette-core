@@ -414,6 +414,10 @@ class Import::Gtfs < Import::Base # rubocop:disable Metrics/ClassLength
             'funicular'
           when '204'
             [ 'coach', 'regionalCoach' ]
+          when '205'
+            [ 'coach', 'specialCoach' ]
+          when '208'
+            [ 'coach', 'commuterCoach' ]
           when '200'
             'coach'
           when '713'

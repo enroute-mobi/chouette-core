@@ -131,7 +131,6 @@ namespace :ci do
       File.write ".rspec_parallel", parallel_test_options
 
       begin
-        puts parallel_specs_command
         sh parallel_specs_command
       ensure
         sh "cat #{runtime_log} | grep '^spec' | sort -t: -k2 -n -r -" if File.exists?(runtime_log)

@@ -1,6 +1,3 @@
-options:
-  size: 2x
-
 definitions:
   services:
     docker:
@@ -83,7 +80,7 @@ definitions:
           - eval "$(build.sh bitbucket::env)"
           - build.sh bundler::dependencies
           - export RAILS_DB_ADAPTER=nulldb
-          - bundle exec rake ci:assets 
+          - bundle exec rake ci:assets
         artifacts:
           - public/packs-test/**
           - public/assets/**
@@ -95,6 +92,7 @@ definitions:
           name: us.gcr.io/enroute-interne/enroute-ruby:2.7-dev
           username: _json_key
           password: "$GCLOUD_API_KEYFILE"
+        size: 2x
         script:
           - unset BUNDLE_APP_CONFIG
           - eval "$(build.sh bitbucket::env)"
@@ -179,6 +177,7 @@ pipelines:
         - step: *unit-tests
         - step:
             name: Build Docker
+            size: 2x
             image:
               name: us.gcr.io/enroute-interne/enroute-cloud-sdk:latest
               username: _json_key

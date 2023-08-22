@@ -33,7 +33,6 @@ en:
       workgroups_configuration: Workgroups
       security_configuration: Security
       tools: Tools
-      sync_ilico: iLICO synchronization
       icar: iCAR
       ilico: iLICO
       portal: Portal (POSTIF)

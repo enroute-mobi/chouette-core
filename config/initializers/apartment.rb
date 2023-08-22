@@ -84,8 +84,6 @@ Apartment.configure do |config|
     'LineControl::Route',
     'LineReferential',
     'LineReferentialMembership',
-    'LineReferentialSync',
-    'LineReferentialSyncMessage',
     'LineRoutingConstraintZone',
     'Merge',
     'Macro::Base',

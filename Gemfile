@@ -55,9 +55,6 @@ gem 'bulk_insert'
 
 gem 'graphql', '~> 1.12.19'
 
-# Codifligne API
-gem 'codifligne', en_route: 'ilico-api'
-
 # Authentication
 gem 'devise', '>= 4.8.1'
 gem 'devise_cas_authenticatable', '~> 1'

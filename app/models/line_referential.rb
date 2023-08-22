@@ -8,7 +8,6 @@ class LineReferential < ApplicationModel
   has_many :group_of_lines, class_name: 'Chouette::GroupOfLine', dependent: :destroy
   has_many :companies, class_name: 'Chouette::Company', dependent: :destroy
   has_many :networks, class_name: 'Chouette::Network', dependent: :destroy
-  has_many :line_referential_syncs, -> { order created_at: :desc }, dependent: :destroy
   has_many :workbenches, dependent: :nullify
   has_many :line_notices, class_name: 'Chouette::LineNotice', inverse_of: :line_referential, dependent: :destroy
   has_many :line_routing_constraint_zones
@@ -22,15 +21,8 @@ class LineReferential < ApplicationModel
   end
 
   validates :name, presence: true
-  validates :sync_interval, presence: true
-  # need to define precise validation rules
-  validates_inclusion_of :sync_interval, :in => 1..30
 
   def operating_lines
     lines.where(deactivated: false)
-  end
-
-  def last_sync
-    line_referential_syncs.last
   end
 end

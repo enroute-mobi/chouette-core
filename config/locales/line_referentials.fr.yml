@@ -1,21 +1,9 @@
 fr:
   line_referentials:
-    actions:
-      edit: "Editer ce référentiel"
-      sync: "Lancer une synchronisation"
-      cancel_sync: "Annuler la synchronisation"
-    edit:
-      title: "Editer le référentiel %{name}"
     show:
       title: 'Référentiel de Lignes'
-      synchronized: Synchronisé
-      status: État
-      message: Message
   activerecord:
     models:
       line_referential:
-        one: "référentiel de ligne"
-        other: "référentiels de ligne"
-    attributes:
-      line_referential:
-        sync_interval: "Fréquence de synchronisation"
+        one: "Référentiel de Lignes"
+        other: "Référentiels de Lignes"

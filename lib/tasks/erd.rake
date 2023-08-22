@@ -4,7 +4,7 @@ namespace :generate do
   task :model_diagram  => :environment do
     sh "bundle exec rake erd only='Organisation,Referential,User,Workbench,Workgroup' filename='organisation' title='Organisation'"
     sh "bundle exec rake erd only='Calendar,Referential,ReferentialMetadata,Chouette::Line,Chouette::Route,Chouette::JourneyPattern,Chouette::VehicleJourney,Chouette::VehicleJourneyAtStop,Chouette::TimeTable,Chouette::TimeTableDate,Chouette::TimeTablePeriod,Chouette::Footnote,Chouette::Network,Chouette::Company,Chouette::StopPoint,Chouette::StopArea' filename='offer_datas' title='Offer Datas'"
-    sh "bundle exec rake erd only='Organisation,StopAreaReferential,StopAreaReferentialMembership,LineReferential,LineReferentialSync,LineReferentialSyncMessage,LineReferentialMembership' filename='referentiels_externes' title='Référentiels externes'"
+    sh "bundle exec rake erd only='Organisation,StopAreaReferential,StopAreaReferentialMembership,LineReferential,LineReferentialMembership' filename='referentiels_externes' title='Référentiels externes'"
     sh "bundle exec rake erd only='Import::Netex,Import::Base,Import::Workbench,Import::Resource,Import::Message' filename='import' title='Import'"
     sh "bundle exec rake erd only='ComplianceControlSet,ComplianceControlBlock,ComplianceControl,ComplianceCheckSet,ComplianceCheckBlock,ComplianceCheck,ComplianceCheckResource,ComplianceCheckMessage' filename='validation' title='Validation'"
     sh "bundle exec rake erd only='Organisation,Workgroup,Workbench,ReferentialSuite,Referential' filename='merge' title='Merge'"

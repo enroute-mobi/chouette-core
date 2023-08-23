@@ -23,6 +23,7 @@ fr:
       placeholders:
       sections:
         identification: "Identification"
+        internal: "Interne"
         associated_resources: "Ressources associées"
         codes: "Codes"
     search_no_results: "Aucun Fournisseurs de Tarifications ne correspond à votre recherche"

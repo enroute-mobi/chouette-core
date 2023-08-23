@@ -26,7 +26,7 @@ en:
       sections:
         identification: "Identification"
         content: Content
-        internals: Internals
+        internal: Internals
         codes: "Codes"
     search_no_results: "No Fare Zones match this search"
     no_codes: "This Fare Zone does not have any codes"

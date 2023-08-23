@@ -26,7 +26,7 @@ fr:
       sections:
         identification: "Identification"
         content: Contenu
-        internals: "Interne"
+        internal: "Interne"
         codes: "Codes"
     search_no_results: "Aucune Zones de Tarifications ne correspond à votre recherche"
     no_codes: "Cette Zone de Tarifications n'a pas de codes"

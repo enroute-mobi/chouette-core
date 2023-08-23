@@ -23,6 +23,7 @@ en:
       placeholders:
       sections:
         identification: "Identification"
+        internal: "Internal"
         associated_resources: "Associated Resources"
         codes: "Codes"
     search_no_results: "No Fare Providers match this search"

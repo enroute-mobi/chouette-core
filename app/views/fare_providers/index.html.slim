@@ -10,10 +10,19 @@
           = table_builder_2 @fare_providers,
             [ \
               TableBuilderHelper::Column.new( \
+                key: :name, \
+                attribute: :name, \
+                link_to: -> (fare_provider) { workbench_fare_provider_path(@workbench, fare_provider) } \
+							), \
+              TableBuilderHelper::Column.new( \
                 key: :short_name, \
                 attribute: :short_name, \
                 link_to: -> (fare_provider) { workbench_fare_provider_path(@workbench, fare_provider) } \
 							), \
+              TableBuilderHelper::Column.new( \
+                key: :workbench, \
+                attribute: Proc.new { |fare_provider| fare_provider.workbench.name }, \
+              ), \
             ].compact,
             cls: 'table has-filter has-search'
 

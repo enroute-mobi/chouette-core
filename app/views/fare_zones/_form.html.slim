@@ -15,9 +15,8 @@
   .row
     .col-lg-12
       h2.my-16
-        = t('fare_zones.form.sections.internals')
+        = t('fare_zones.form.sections.internal')
       = f.association :fare_provider, as: :select, collection: @workbench.fare_providers.order(:name), include_blank: false
-      / = f.association :line_provider, as: :select, collection: candidate_line_providers, include_blank: false
 
   .separator.section_separator
   .row

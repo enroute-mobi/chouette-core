@@ -56,6 +56,10 @@
         span = 'activerecord.models.document.other'.t.capitalize
       = link_to workbench_document_providers_path(workbench), class: 'list-group-item' do
         span = 'activerecord.models.document_provider.other'.t.capitalize
+      = link_to workbench_fare_zones_path(workbench), class: "list-group-item" do
+        span = Fare::Zone.model_name.human(count: 2)
+      = link_to workbench_fare_providers_path(workbench), class: 'list-group-item' do
+        span = Fare::Provider.model_name.human(count: 2)
       = link_to workbench_processing_rule_workbenches_path(workbench), class: "list-group-item" do
         span = ProcessingRule::Workbench.t
 

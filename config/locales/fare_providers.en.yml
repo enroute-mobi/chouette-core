@@ -1,0 +1,54 @@
+en:
+  fare/providers:
+    index:
+      title: Fare Providers
+    show:
+      title: "%{name}"
+    new:
+      title: "Create a Fare Provider"
+    edit:
+      title: "Edit %{name}"
+    actions:
+      show: "Show this Fare Provider"
+      new: "Create a Fare Provider"
+      edit: "Edit this Fare Provider"
+      destroy: "Delete this Fare Provider"
+      destroy_confirm: "Are you sure you want to delete this Fare Provider ?"
+  fare_providers:
+    index:
+      title: Fare Providers
+    actions:
+      new: "Create a Fare Provider"
+    form:
+      placeholders:
+      sections:
+        identification: "Identification"
+        associated_resources: "Associated Resources"
+        codes: "Codes"
+    search_no_results: "No Fare Providers match this search"
+    no_codes: "This Fare Provider does not have any codes"
+    flash:
+      associate:
+        notice: The document is successfully associated to the line
+        error: The document could not be associated to the line
+      unassociate:
+        notice: The document is successfully unassociated to the line
+        error: The document could not be unassociated to the line
+  activemodel:
+    attributes:
+  activerecord:
+    models:
+      fare/provider:
+        zero:  "Fare Providers"
+        one: "Fare Provider"
+        other: "Fare Providers"
+    attributes:
+      fare/provider:
+        uuid: ID
+        name: Name
+        fare_zones: Fare Zones
+        workbench: Workbench
+    errors:
+      models:
+        fare_zone:
+          attributes:

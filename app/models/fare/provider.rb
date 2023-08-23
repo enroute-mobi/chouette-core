@@ -8,7 +8,9 @@ module Fare
     belongs_to :workbench, optional: false
     belongs_to :fare_referential, class_name: 'Fare::Referential', optional: false
 
-    validates :short_name, presence: true
+    include CodeSupport
+
+    validates :short_name, :name, presence: true
 
     with_options(dependent: :destroy, foreign_key: :fare_provider_id) do
       has_many :fare_zones, class_name: 'Fare::Zone'
@@ -20,6 +22,10 @@ module Fare
 
     def define_fare_referential
       self.fare_referential ||= workbench&.fare_referential
+    end
+
+    def self.policy_class
+      FareProviderPolicy
     end
   end
 end

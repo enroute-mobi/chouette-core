@@ -1,0 +1,57 @@
+en:
+  fare/zones:
+    index:
+      title: Fare Zones
+    show:
+      title: "%{name}"
+    new:
+      title: "Create a Fare Zone"
+    edit:
+      title: "Edit %{name}"
+    actions:
+      show: "Show this Fare Zone"
+      new: "Create a Fare Zone"
+      edit: "Edit this Fare Zone"
+      destroy: "Delete this Fare Zone"
+      destroy_confirm: "Are you sure you want to delete this Fare Zone ?"
+  fare_zones:
+    index:
+      title: Fare Zones
+    new:
+      title: "Create a Fare Zone"
+    actions:
+      new: "Create a Fare Zone"
+    form:
+      placeholders:
+      sections:
+        identification: "Identification"
+        content: Content
+        internals: Internals
+        codes: "Codes"
+    search_no_results: "No Fare Zones match this search"
+    no_codes: "This Fare Zone does not have any codes"
+    flash:
+      associate:
+        notice: The document is successfully associated to the line
+        error: The document could not be associated to the line
+      unassociate:
+        notice: The document is successfully unassociated to the line
+        error: The document could not be unassociated to the line
+  activemodel:
+    attributes:
+  activerecord:
+    models:
+      fare/zone:
+        zero:  "Fare Zones"
+        one: "Fare Zone"
+        other: "Fare Zones"
+    attributes:
+      fare/zone:
+        uuid: ID
+        name: Name
+        fare_zone_provider: Fare provider
+        fare_zone_provider_id: Fare provider
+    errors:
+      models:
+        fare_zone:
+          attributes:

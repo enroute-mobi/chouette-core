@@ -58,6 +58,7 @@ class Workbench < ApplicationModel
   has_many :line_providers, dependent: :destroy
   has_many :stop_area_providers, dependent: :destroy
   has_many :fare_providers, dependent: :destroy, class_name: 'Fare::Provider'
+  has_many :fare_zones, through: :fare_providers
 
   has_many :macro_lists, class_name: "Macro::List", dependent: :destroy
   has_many :macro_list_runs, class_name: "Macro::List::Run", dependent: :destroy

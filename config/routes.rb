@@ -176,6 +176,9 @@ ChouetteIhm::Application.routes.draw do # rubocop:disable Metrics/BlockLength
 
     resources :document_providers
 
+    resources :fare_zones
+    resources :fare_providers
+
     resources :processing_rules, as: 'processing_rule_workbenches'
   end
 

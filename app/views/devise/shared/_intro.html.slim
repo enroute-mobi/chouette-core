@@ -1,12 +1,12 @@
 .col-md-8.product_summary
   .overlay-effect
-  - photo = WelcomePhoto.current
-  = image_tag photo.image_url, class:"img-hp w-full"
-  p.absolute.bottom-1.right-5.z-10.text-white-300
-    | Photo by&nbsp;
-    = link_to photo.author_name, photo.author_link, target: "_blank"
-    |  on&nbsp;
-    = link_to "Unsplash", "https://unsplash.com/?utm_source=chouette&utm_medium=referral", target: "_blank"
+  - if photo = WelcomePhoto.current
+    = image_tag photo.image_url, class:"img-hp w-full"
+    p.absolute.bottom-1.right-5.z-10.text-white-300
+      | Photo by&nbsp;
+      = link_to photo.author_name, photo.author_link, target: "_blank"
+      |  on&nbsp;
+      = link_to "Unsplash", "https://unsplash.com/?utm_source=chouette&utm_medium=referral", target: "_blank"
 
   .content
       h2 = t("devise.sessions.new.baseline")

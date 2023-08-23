@@ -97,6 +97,10 @@ module Chouette
         @access_key = access_key
         @secret_key = secret_key
       end
+
+      def present?
+        [access_key, secret_key].all?(&:present?)
+      end
     end
 
     class Unsplash
@@ -109,7 +113,7 @@ module Chouette
         @credential ||= OAuthCredential.new(
           access_key: env.string('UNSPLASH_ACCESS_KEY'),
           secret_key: env.string('UNSPLASH_SECRET_KEY')
-        )
+        ).presence
       end
 
       def utm_source

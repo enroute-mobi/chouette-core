@@ -342,7 +342,6 @@ RSpec.describe Chouette::TimeTable, :type => :model do
         item['day_types'] = "Di,Lu,Ma,Me,Je,Ve,Sa"
         item['current_month'] = time_table.month_inspect(Time.zone.today.beginning_of_month)
         item['current_periode_range'] = Time.zone.today.beginning_of_month.to_s
-        item['tags'] = time_table.tags.map{ |tag| {id: tag.id, name: tag.name}}
         item['time_table_periods'] = time_table.periods.map{|p| {'id': p.id, 'period_start': p.period_start.to_s, 'period_end': p.period_end.to_s}}
       end
     end
@@ -1265,11 +1264,6 @@ describe "update_attributes on periods and dates" do
   end
 
   describe "#duplicate" do
-    it 'should also copy tags' do
-      subject.tag_list.add('tag1', 'tag2')
-      expect(subject.duplicate.tag_list).to include('tag1', 'tag2')
-    end
-
     it "should be a copy of" do
       target=subject.duplicate
       expect(target.id).to be_nil
@@ -1289,16 +1283,6 @@ describe "update_attributes on periods and dates" do
       target=subject.duplicate(comment: "custom comment")
       expect(target.comment).to eq("custom comment")
     end
-  end
-
-  describe "#tags" do
-      it "should accept tags" do
-        subject.tag_list = "toto, titi"
-        subject.save
-        subject.reload
-        expect(Chouette::TimeTable.tag_counts.size).to eq(2)
-        expect(subject.tag_list.size).to eq(2)
-      end
   end
 
   describe "#intersect_periods!" do

@@ -4,6 +4,9 @@ class FareZonesController < ChouetteController
 
   defaults resource_class: Fare::Zone
 
+  before_action :decorate_fare_zone, only: %i[show new edit]
+  after_action :decorate_fare_zone, only: %i[create update]
+
   belongs_to :workbench
 
   def index
@@ -26,6 +29,16 @@ class FareZonesController < ChouetteController
 
   def scope
     @scope ||= workbench.fare_zones
+  end
+
+  def decorate_fare_zone
+    object = document_type rescue build_resource
+    @fare_zone = FareZoneDecorator.decorate(
+      object,
+      context: {
+        workbench: @workbench
+      }
+    )
   end
 
   # def resource

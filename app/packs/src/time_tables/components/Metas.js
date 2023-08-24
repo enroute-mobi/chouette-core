@@ -70,18 +70,6 @@ const Metas = ({
           </div>
         </div>}
 
-        {/* tags */}
-        {metas.tags !== undefined && <div className="form-group">
-          <label htmlFor="" className="control-label col-sm-4">{I18n.attribute_name('time_table', 'tag_list')}</label>
-          <div className="col-sm-8">
-            <TagsSelect2
-              url={tagsUrl}
-              value={metas.tags}
-              onHandleChange={onSetNewTags}
-            />
-          </div>
-        </div>}
-
         {/* calendar */}
         {metas.calendar !== null && <div className="form-group">
           <label htmlFor="" className="control-label col-sm-4">{I18n.attribute_name('time_table', 'calendar')}</label>

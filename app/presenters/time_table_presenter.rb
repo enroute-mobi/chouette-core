@@ -18,10 +18,6 @@ class TimeTablePresenter
     end
   end
 
-  def tag_list_shortened
-    @time_table.tags.join(', ').truncate(30, separator: ',')
-  end
-
   def time_table_bounding
     return I18n.t('time_tables.time_table.empty') if @time_table.bounding_dates.empty?
     "#{I18n.l(@time_table.bounding_dates.min)} #{I18n.l(@time_table.bounding_dates.max)}"

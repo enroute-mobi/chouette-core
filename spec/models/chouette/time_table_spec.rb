@@ -437,24 +437,6 @@ RSpec.describe Chouette::TimeTable, :type => :model do
       expect(subject.reload.color).to eq(state['color'])
     end
 
-    it 'should save new tags' do
-      subject.tag_list = "awesome, great"
-      subject.save
-      state['tags'] << {'value' => false, 'label' => 'new_tag'}
-
-      subject.state_update state
-      expect(subject.reload.tags.map(&:name)).to include('new_tag')
-    end
-
-    it 'should remove removed tags' do
-      subject.tag_list = "awesome, great"
-      subject.save
-      state['tags'] = []
-
-      subject.state_update state
-      expect(subject.reload.tags).to be_empty
-    end
-
     it 'should update comment' do
       state['comment'] = "Edited timetable name"
       subject.state_update state

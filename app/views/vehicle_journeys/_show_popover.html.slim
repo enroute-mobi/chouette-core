@@ -13,10 +13,6 @@ p
             i.fa.fa-certificate
           = time_table.comment
 
-        - if time_table.tag_list.present?
-          br
-          span.time_table_info = truncate(time_table.tag_list.to_s, :length => 35)
-
         br
         - %w(monday tuesday wednesday thursday friday saturday sunday).each do |day_type|
           span class="#{time_table.send( day_type) ? 'included_day_type' : 'excluded_day_type'} time_table_info"

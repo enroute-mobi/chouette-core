@@ -1,6 +1,5 @@
 FactoryBot.define do
   factory :notification_rule do
-    notification_type { 'hole_sentinel' }
     target_type { 'workbench' }
     operation_statuses { [] }
     association :workbench

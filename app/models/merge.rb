@@ -228,7 +228,6 @@ class Merge < ApplicationModel
     referentials.each(&:merged!)
     Stat::JourneyPatternCoursesByDate.compute_for_referential(new, line_ids: merged_line_ids)
     aggregate_if_urgent_offer
-    HoleSentinel.new(workbench).watch!
   end
 
   def merged_line_ids

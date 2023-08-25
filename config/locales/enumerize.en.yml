@@ -13,7 +13,6 @@ en:
           done: Done
     notification_rule:
       notification_type:
-        hole_sentinel: Hole Sentinel
         merge: Merge
         aggregate: Aggregate
         source_retrieval: Source Retrieval

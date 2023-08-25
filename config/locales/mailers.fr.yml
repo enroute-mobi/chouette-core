@@ -81,13 +81,6 @@ fr:
           Vous avez lancé l'agrégation <strong>"%{agg_name}"</strong>. <br/>
           Elle est maintenant terminée.<br/>
           Le statut de l'opération est : <strong>%{status}</strong>.
-    sentinel_mailer:
-      finished:
-        button: Voir les trous d'offre
-        subject: Présence de trous d'offre dans l'offre finalisée
-        body: |
-          Des trous d'offre ont été détectés dans l'offre finalisée "%{referential_name}".<br/>
-          Nous vous conseillons d'analyser les données d'offre afin de détecter les problèmes éventuels.
     publication_mailer:
       publish:
         publication_date: Ces nouvelles données ont été publiées le %{formated_date}.

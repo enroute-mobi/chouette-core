@@ -47,8 +47,6 @@ class Workgroup < ApplicationModel
   validates :output, presence: true
   before_validation :create_dependencies, on: :create
 
-  validates :sentinel_min_hole_size, presence: true, numericality: { greater_than_or_equal_to: 0 }
-
   has_many :custom_fields, dependent: :delete_all, inverse_of: :workgroup
   has_many :custom_field_groups, inverse_of: :workgroup
 

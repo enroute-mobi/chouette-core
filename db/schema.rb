@@ -1339,6 +1339,19 @@ ActiveRecord::Schema.define(version: 2023_08_22_153032) do
     t.jsonb "metadata", default: {}
   end
 
+  create_table "saved_searches", force: :cascade do |t|
+    t.bigint "workbench_id"
+    t.string "search_type", null: false
+    t.string "name", null: false
+    t.string "creator", null: false
+    t.datetime "last_used_at", null: false
+    t.jsonb "search_attributes", default: {}
+    t.text "description"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["workbench_id"], name: "index_saved_searches_on_workbench_id"
+  end
+
   create_table "shape_providers", force: :cascade do |t|
     t.string "short_name", null: false
     t.bigint "workbench_id", null: false
@@ -1750,8 +1763,6 @@ ActiveRecord::Schema.define(version: 2023_08_22_153032) do
     t.bigint "owner_id"
     t.bigint "output_id"
     t.hstore "compliance_control_set_ids"
-    t.integer "sentinel_min_hole_size", default: 3
-    t.integer "sentinel_delay", default: 7
     t.time "nightly_aggregate_time", default: "2000-01-01 00:00:00"
     t.boolean "nightly_aggregate_enabled", default: false
     t.datetime "nightly_aggregated_at"

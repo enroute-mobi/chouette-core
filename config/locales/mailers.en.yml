@@ -85,13 +85,6 @@ en:
           Hello, the aggregation is over
           You started the aggregation %{agg_name}. The operation is now over. It is %{status}
           The operation status is %{status}<br/><br/>
-    sentinel_mailer:
-      finished:
-        button: See lacks of offer
-        subject: Lack of offer have been detected in finalized offer
-        body: |
-          Lack of offer has been detected in the finalized offer %{referential_name}.<br/>
-          We encourage you to study offer datas to detect possible problems.<br/><br/>
     publication_mailer:
       publish:
         publication_date: This new data has been published on %{formated_date}.

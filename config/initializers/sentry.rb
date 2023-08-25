@@ -4,6 +4,9 @@ if ENV['SENTRY_DSN']
   Sentry.init do |config|
     config.breadcrumbs_logger = %i[active_support_logger http_logger]
     config.release = Nest::Version.current.name
+
+    # Disable transaction report
+    config.traces_sample_rate = 0
   end
 
   app = ENV.fetch 'SENTRY_APP', 'chouette-core'

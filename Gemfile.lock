@@ -40,8 +40,7 @@ GIT
 
 GIT
   remote: https://bitbucket.org/enroute-mobi/nest.git
-  revision: 33ef0a06748a47b5dc05c2eadfce83d1234bf8dd
-  branch: NEST-3-welcome-photo
+  revision: bdb2257ab4a92087d9766d354280214cfd665b0c
   specs:
     nest (0.1)
       activesupport
@@ -496,7 +495,7 @@ GEM
       nokogiri (~> 1)
       rake
     mini_histogram (0.3.1)
-    mini_mime (1.1.2)
+    mini_mime (1.1.5)
     mini_portile2 (2.8.4)
     mini_racer (0.6.4)
       libv8-node (~> 16.19.0.0)
@@ -587,7 +586,7 @@ GEM
     rabl (0.16.1)
       activesupport (>= 2.3.14)
     racc (1.7.1)
-    rack (2.2.7)
+    rack (2.2.8)
     rack-proxy (0.7.2)
       rack
     rack-test (2.1.0)

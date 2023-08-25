@@ -149,7 +149,7 @@ gem 'sentry-rails'
 
 gem 'coverband', require: false
 
-gem 'nest', en_route: 'nest', branch: 'NEST-3-welcome-photo'
+gem 'nest', en_route: 'nest'
 
 group :development do
   gem 'rails-erd'

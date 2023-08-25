@@ -4,9 +4,9 @@
     = image_tag photo.image_url, class:"img-hp w-full"
     p.absolute.bottom-1.right-5.z-10.text-white-300
       | Photo by&nbsp;
-      = link_to photo.author_name, photo.author_link, target: "_blank"
+      = link_to photo.author_name, photo.author_link, target: "_blank", class: "hover:text-white"
       |  on&nbsp;
-      = link_to "Unsplash", "https://unsplash.com/?utm_source=chouette&utm_medium=referral", target: "_blank"
+      = link_to "Unsplash", "https://unsplash.com/?utm_source=chouette&utm_medium=referral", target: "_blank", class: "hover:text-white"
 
   .content
       h2 = t("devise.sessions.new.baseline")

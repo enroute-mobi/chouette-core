@@ -8,7 +8,7 @@ class CreateSavedSearches < ActiveRecord::Migration[5.2]
         t.string :creator, null: false
         t.datetime :last_used_at, null: false
         t.jsonb :search_attributes, default: {}
-        t.text :descriptions
+        t.text :description
 
         t.timestamps
       end

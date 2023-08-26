@@ -86,6 +86,41 @@ module Chouette
       end
     end
 
+    def unsplash
+      @unsplash ||= Unsplash.new(env)
+    end
+
+    class OAuthCredential
+      attr_accessor :access_key, :secret_key
+
+      def initialize(access_key:, secret_key:)
+        @access_key = access_key
+        @secret_key = secret_key
+      end
+
+      def present?
+        [access_key, secret_key].all?(&:present?)
+      end
+    end
+
+    class Unsplash
+      def initialize(env)
+        @env = env
+      end
+      attr_reader :env
+
+      def credential
+        @credential ||= OAuthCredential.new(
+          access_key: env.string('UNSPLASH_ACCESS_KEY'),
+          secret_key: env.string('UNSPLASH_SECRET_KEY')
+        ).presence
+      end
+
+      def utm_source
+        @utm_source ||= env.string('UNSPLASH_UTM_SOURCE') || 'chouette'
+      end
+    end
+
     class Environment
       def initialize(values = ENV)
         @values = values

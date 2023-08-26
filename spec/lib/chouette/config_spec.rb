@@ -64,4 +64,36 @@ RSpec.describe Chouette::Config do
       end
     end
   end
+
+  describe '#unsplash' do
+    subject(:unsplash) { config.unsplash }
+
+    describe '#credential' do
+      subject { unsplash.credential }
+
+      with_env UNSPLASH_ACCESS_KEY: '' do
+        it { is_expected.to be_nil }
+      end
+
+      with_env UNSPLASH_SECRET_KEY: '' do
+        it { is_expected.to be_nil }
+      end
+
+      with_env UNSPLASH_ACCESS_KEY: 'dummy', UNSPLASH_SECRET_KEY: 'secret' do
+        it { is_expected.to have_attributes(access_key: 'dummy', secret_key: 'secret') }
+      end
+    end
+
+    describe '#utm_source' do
+      subject { unsplash.utm_source }
+
+      with_env UNSPLASH_UTM_SOURCE: '' do
+        it { is_expected.to eq('chouette') }
+      end
+
+      with_env UNSPLASH_UTM_SOURCE: 'dummy' do
+        it { is_expected.to eq('dummy') }
+      end
+    end
+  end
 end

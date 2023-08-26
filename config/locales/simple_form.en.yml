@@ -13,10 +13,6 @@ en:
     include_blanks:
       defaults:
         notification_target: "Without notification"
-    custom_inputs:
-      tags:
-        placeholder:
-          Add each entry
   helpers:
     submit:
       create: Submit

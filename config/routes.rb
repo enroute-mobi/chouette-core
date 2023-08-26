@@ -343,9 +343,6 @@ ChouetteIhm::Application.routes.draw do # rubocop:disable Metrics/BlockLength
     resources :vehicle_journeys, controller: 'referential_vehicle_journeys', only: [:index]
 
     resources :time_tables do
-      collection do
-        get :tags
-      end
       member do
         post 'actualize'
         get 'duplicate'

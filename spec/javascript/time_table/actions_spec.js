@@ -37,18 +37,6 @@ describe('actions', () => {
     expect(actions.updateColor('#ffffff')).toEqual(expectedAction)
   })
 
-  it('should create an action to update selected tags', () => {
-    let selectedItem = {
-      id: 1,
-      name: 'test'
-    }
-    const expectedAction = {
-      type: 'SET_NEW_TAGS',
-      tagList: selectedItem
-    }
-    expect(actions.setNewTags(selectedItem)).toEqual(expectedAction)
-  })
-
   it('should create an action to go to previous page', () => {
     let pagination = {
       currentPage: '2017-01-01',

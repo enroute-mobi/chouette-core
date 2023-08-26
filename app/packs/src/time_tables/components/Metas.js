@@ -3,9 +3,6 @@ import PropTypes from 'prop-types'
 
 import actions from '../actions'
 import ColorSelect from './ColorSelect'
-import TagsSelect2 from './TagsSelect2'
-
-const tagsUrl = window.location.origin + window.location.pathname.split('/', 4).join('/') + '/tags.json'
 
 const Metas = ({
   metas,
@@ -13,7 +10,6 @@ const Metas = ({
   onUpdateComment,
   onUpdateShared,
   onUpdateColor,
-  onSetNewTags,
   isCalendar
 }) => (
   <div className='form-horizontal'>
@@ -117,7 +113,6 @@ Metas.propTypes = {
   onUpdateDayTypes: PropTypes.func.isRequired,
   onUpdateShared: PropTypes.func.isRequired,
   onUpdateColor: PropTypes.func.isRequired,
-  onSetNewTags: PropTypes.func.isRequired,
   isCalendar: PropTypes.bool.isRequired
 }
 

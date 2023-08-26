@@ -25,8 +25,7 @@ let initialState = {
   },
   metas: {
     comment: '',
-    day_types: [],
-    initial_tags: []
+    day_types: []
   },
   pagination: {
     stateChanged: false,

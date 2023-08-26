@@ -4,7 +4,21 @@
  * DS207: Consider shorter variations of null checks
  * Full docs: https://github.com/decaffeinate/decaffeinate/blob/master/docs/suggestions.md
  */
-import bind_select2 from '../tags';
+const bind_select2 = function(el, cfg) {
+  if (cfg == null) { cfg = {}; }
+  const target = $(el);
+
+  const default_cfg = {
+    theme: 'bootstrap',
+    language: I18n.locale,
+    placeholder: target.data('select2ed-placeholder'),
+    tags: true,
+    width: '100%',
+    allowClear: true
+  };
+
+  return target.select2($.extend({}, default_cfg, cfg));
+};
 
 class MasterSlave {
   constructor(selector){

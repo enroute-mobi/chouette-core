@@ -5,14 +5,12 @@ import actions from '../actions'
 export default function metas(state = {}, action) {
   switch (action.type) {
     case 'RECEIVE_TIME_TABLES':
-      const { comment, day_types, tags, color, calendar, shared } = action.json
+      const { comment, day_types, color, calendar, shared } = action.json
 
       return {
         ...state,
         comment,
         day_types: actions.strToArrayDayTypes(day_types),
-        tags,
-        initial_tags: tags,
         color,
         calendar,
         shared
@@ -34,8 +32,6 @@ export default function metas(state = {}, action) {
       return assign({}, state, { comment: action.comment })
     case 'UPDATE_COLOR':
       return assign({}, state, {color: action.color})
-    case 'SET_NEW_TAGS':
-      return assign({}, state, { tags: action.tagList })
     case 'UPDATE_SHARED':
       return { ...state, shared: action.shared }
     default:

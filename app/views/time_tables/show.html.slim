@@ -11,7 +11,6 @@
         = definition_list t('metadatas'),
           { Chouette::TimeTable.tmf(:bounding_dates) => (@time_table.bounding_dates.empty? ? '-' : t('bounding_dates', debut: l(@time_table.bounding_dates.min), end: l(@time_table.bounding_dates.max))),
             Chouette::TimeTable.tmf(:color)  => (@time_table.color.nil? ? '-' : content_tag(:span, '', class: 'fa fa-circle', style: "color:#{@time_table.try(:color)}")),
-            Chouette::TimeTable.tmf(:tag_list)  => @time_table.tag_list,
             Chouette::TimeTable.tmf(:calendar)  => (@calendar ? link_to(@calendar.name, workgroup_calendar_path(@calendar.workgroup, @calendar)) : '-'),
             Chouette::TimeTable.tmf(:day_types) => %w(monday tuesday wednesday thursday friday saturday sunday).collect{ |d| content_tag(:span, t("calendars.days.#{d}"), class: "label label-default #{@time_table.send(d) ? '' : 'disabled'}") }.join.html_safe,
             Chouette::TimeTable.tmf(:checksum) => @time_table.checksum}

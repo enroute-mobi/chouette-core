@@ -7,9 +7,6 @@
           span.fa.fa-search
 
   .ffg-row
-    .form-group class=filter_item_class(params[:q], :tag_search)
-      = f.label Chouette::TimeTable.human_attribute_name(:tag_search), required: false, class: 'control-label'
-      = f.input :tag_search, as: :select_tags, collection: Chouette::TimeTable.tags_on(:tags).pluck(:name), label: false, input_html: { 'data-select2ed': 'true', 'data-select2ed-placeholder': t('time_tables.index.tag_search') }, wrapper_html: { class: 'select2ed'}, include_blank: false, selected: params[:q] ? params[:q]['tag_search'] : nil
 
     .form-group.togglable class=filter_item_class(params[:q], :bounding_dates)
       = f.label Chouette::TimeTable.human_attribute_name(:bounding_dates), required: false, class: 'control-label'

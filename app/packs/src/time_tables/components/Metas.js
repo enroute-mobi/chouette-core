@@ -3,9 +3,6 @@ import PropTypes from 'prop-types'
 
 import actions from '../actions'
 import ColorSelect from './ColorSelect'
-import TagsSelect2 from './TagsSelect2'
-
-const tagsUrl = window.location.origin + window.location.pathname.split('/', 4).join('/') + '/tags.json'
 
 const Metas = ({
   metas,
@@ -13,7 +10,6 @@ const Metas = ({
   onUpdateComment,
   onUpdateShared,
   onUpdateColor,
-  onSetNewTags,
   isCalendar
 }) => (
   <div className='form-horizontal'>
@@ -70,18 +66,6 @@ const Metas = ({
           </div>
         </div>}
 
-        {/* tags */}
-        {metas.tags !== undefined && <div className="form-group">
-          <label htmlFor="" className="control-label col-sm-4">{I18n.attribute_name('time_table', 'tag_list')}</label>
-          <div className="col-sm-8">
-            <TagsSelect2
-              url={tagsUrl}
-              value={metas.tags}
-              onHandleChange={onSetNewTags}
-            />
-          </div>
-        </div>}
-
         {/* calendar */}
         {metas.calendar !== null && <div className="form-group">
           <label htmlFor="" className="control-label col-sm-4">{I18n.attribute_name('time_table', 'calendar')}</label>
@@ -129,7 +113,6 @@ Metas.propTypes = {
   onUpdateDayTypes: PropTypes.func.isRequired,
   onUpdateShared: PropTypes.func.isRequired,
   onUpdateColor: PropTypes.func.isRequired,
-  onSetNewTags: PropTypes.func.isRequired,
   isCalendar: PropTypes.bool.isRequired
 }
 

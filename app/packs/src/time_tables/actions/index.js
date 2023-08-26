@@ -74,10 +74,6 @@ const actions = {
     type: 'UPDATE_COLOR',
     color
   }),
-  setNewTags: (tagList) => ({
-    type: 'SET_NEW_TAGS',
-    tagList
-  }),
   deletePeriod: (index, dayTypes) => ({
     type: 'DELETE_PERIOD',
     index,

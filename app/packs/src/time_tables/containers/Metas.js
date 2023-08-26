@@ -22,12 +22,6 @@ const mapDispatchToProps = dispatch => ({
   onUpdateColor: (color) => {
     dispatch(actions.updateColor(color))
   },
-  onSetNewTags: (newValue) => {
-    let newTags = newValue.reduce((tags, { value, label }) => {
-        return [...tags, { value, label }]
-      }, [])
-    dispatch(actions.setNewTags(newTags))
-  },
   onUpdateShared: newValue => {
     dispatch(actions.updateShared(newValue))
   }

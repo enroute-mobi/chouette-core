@@ -89,7 +89,6 @@ fr:
       resume_empty: "Calendrier vide"
     index:
       comment: "Recherche par nom"
-      tag_search: Recherche par étiquette
       from: "De : "
       to: " à : "
       start_date: "jj/mm/aaaa"
@@ -140,8 +139,6 @@ fr:
         periods: "Périodes d'application"
         period_start: "Du"
         period_end: "au"
-        tag_search: "Etiquettes"
-        tag_list: "Etiquettes"
         associated_vehicle_journeys: Nombre de courses associées
   formtastic:
     titles:

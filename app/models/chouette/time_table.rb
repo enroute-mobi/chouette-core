@@ -6,12 +6,10 @@ module Chouette
     include ApplicationDaysSupport
     include TimetableSupport
 
-    acts_as_taggable
-
-    attr_accessor :tag_search, :skip_save_shortcuts
+    attr_accessor :skip_save_shortcuts
 
     def self.ransackable_attributes auth_object = nil
-      (column_names + ['tag_search']) + _ransackers.keys
+      column_names + _ransackers.keys
     end
 
     ransacker :unaccented_comment, formatter: ->(val){ val.parameterize } do
@@ -566,7 +564,6 @@ module Chouette
 
     def duplicate(tt_params = {})
       tt = self.deep_clone include: [:periods, :dates], except: [:object_version, :objectid]
-      tt.tag_list.add(*self.tag_list) unless self.tag_list.empty?
       tt.created_from = self
       tt.comment      = tt_params[:comment].presence || I18n.t("activerecord.copy", :name => self.comment)
       tt

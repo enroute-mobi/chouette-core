@@ -14,10 +14,6 @@
       = @time_table.version
 
     p
-      label = "#{@time_table.human_attribute_name('tag_list')} : "
-      = @time_table.tag_list
-
-    p
       label = "#{@time_table.human_attribute_name('day_types')} : "
 
       - if @time_table.int_day_types & 508 == 0

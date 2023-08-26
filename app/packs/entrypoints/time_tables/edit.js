@@ -26,7 +26,6 @@ let initialState = {
   metas: {
     comment: '',
     day_types: [],
-    tags: [],
     color: '',
     calendar: null
   },

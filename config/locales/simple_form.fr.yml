@@ -21,10 +21,6 @@ fr:
         <<: *DEFAULT_INCLUDE_BLANKS
       aggregate:
         <<: *DEFAULT_INCLUDE_BLANKS
-    custom_inputs:
-      tags:
-        placeholder:
-          Ajouter chaque entrée
   helpers:
     submit:
       create: Valider

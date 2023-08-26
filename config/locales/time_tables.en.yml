@@ -140,8 +140,6 @@ en:
         periods: "Periods"
         period_start: "From"
         period_end: "to"
-        tag_search: "Tags"
-        tag_list: "Tags"
         associated_vehicle_journeys: Number of associated vehicle journeys
   formtastic:
     titles:

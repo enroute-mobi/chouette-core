@@ -28,11 +28,6 @@ class TimeTablesController < ChouetteController
     @time_table = resource
   end
 
-  def new
-    @autocomplete_items = ActsAsTaggableOn::Tag.all
-    new!
-  end
-
   def create
     tt_params = time_table_params
     if tt_params[:calendar_id] && tt_params[:calendar_id] != ""
@@ -49,12 +44,6 @@ class TimeTablesController < ChouetteController
         redirect_to referential_time_table_path(@referential, @time_table)
       end
       failure.html { render :new }
-    end
-  end
-
-  def edit
-    edit! do
-      @autocomplete_items = ActsAsTaggableOn::Tag.all
     end
   end
 
@@ -97,22 +86,10 @@ class TimeTablesController < ChouetteController
     redirect_to referential_time_table_path @referential, @time_table
   end
 
-  def tags
-    # @tags = ActsAsTaggableOn::Tag.where("tags.name = ?", "%#{params[:tag]}%")
-    @tags = Chouette::TimeTable.tags_on(:tags)
-    respond_to do |format|
-      format.json { render :json => @tags.map{|t| { value: t.id.to_s, label: t.name }} }
-    end
-  end
-
   protected
 
   def collection
     scope = select_time_tables
-    if params[:q] && params[:q]["tag_search"]
-      tags = params[:q]["tag_search"].reject {|c| c.empty?}
-      scope = select_time_tables.tagged_with(tags, :any => true) if tags.any?
-    end
     scope = self.ransack_period_range(scope: scope, error_message: t('referentials.errors.validity_period'), query: :overlapping)
     @q = scope.ransack(params[:q])
 
@@ -222,9 +199,7 @@ class TimeTablesController < ChouetteController
       :end_date,
       :created_from_id,
       { :dates_attributes => [:date, :in_out, :id, :_destroy] },
-      { :periods_attributes => [:period_start, :period_end, :_destroy, :id] },
-      {tag_list: []},
-      :tag_search
+      { :periods_attributes => [:period_start, :period_end, :_destroy, :id] }
     )
   end
 end

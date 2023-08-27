@@ -39,7 +39,7 @@ if ENV['DD_AGENT_HOST']
     # by a more generic component (to be used by other metrics)
     require 'datadog/statsd'
     require 'delayed/metrics'
-    statsd_tags = { service: c.service, env: c.env, version: c.version }
+    statsd_tags = { service: c.service, env: c.env, version: c.version, app: app_name }
     Delayed::Metrics::Publisher::Datadog.statsd = Datadog::Statsd.new(ENV['DD_AGENT_HOST'], tags: statsd_tags)
 
     # Delayed::Job metrics must be assocatied to the worker service even if they computed into another service

@@ -230,9 +230,9 @@ GEM
     database_cleaner-core (2.0.1)
     date (3.3.3)
     dbf (4.2.0)
-    ddtrace (1.12.1)
+    ddtrace (1.14.0)
       debase-ruby_core_source (= 3.2.1)
-      libdatadog (~> 2.0.0.1.0)
+      libdatadog (~> 3.0.0.1.0)
       libddwaf (~> 1.9.0.0.0)
       msgpack
     dead_end (4.0.0)
@@ -447,8 +447,8 @@ GEM
       actionmailer (>= 3.2)
       letter_opener (~> 1.0)
       railties (>= 3.2)
-    libdatadog (2.0.0.1.0)
-    libdatadog (2.0.0.1.0-x86_64-linux)
+    libdatadog (3.0.0.1.0)
+    libdatadog (3.0.0.1.0-x86_64-linux)
     libddwaf (1.9.0.0.1)
       ffi (~> 1.0)
     libddwaf (1.9.0.0.1-x86_64-darwin)
@@ -991,4 +991,4 @@ DEPENDENCIES
   x25519
 
 BUNDLED WITH
-   2.4.18
+   2.4.19

@@ -109,7 +109,6 @@ ChouetteIhm::Application.routes.draw do # rubocop:disable Metrics/BlockLength
     end
 
     resource :stop_area_referential, only: %i[show edit update] do
-      post :sync, on: :member
       resources :stop_area_routing_constraints
       resources :entrances
 
@@ -131,8 +130,7 @@ ChouetteIhm::Application.routes.draw do # rubocop:disable Metrics/BlockLength
       end
     end
 
-    resource :line_referential, only: %i[show edit update] do
-      post :sync
+    resource :line_referential, only: %i[show] do
       resources :line_routing_constraint_zones
 
       resources :line_providers

@@ -31,7 +31,7 @@ class StopAreasController < ChouetteController
   end
 
   def index
-    if saved_search = saved_searches.find_by(id: params.dig(:search, :search_id))
+    if saved_search = saved_searches.find_by(id: params[:search_id])
       @search = saved_search.search(scope, stop_area_referential: stop_area_referential)
     end
 

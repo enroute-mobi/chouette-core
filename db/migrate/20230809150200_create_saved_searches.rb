@@ -5,8 +5,8 @@ class CreateSavedSearches < ActiveRecord::Migration[5.2]
         t.references :workbench
         t.string :search_type, null: false
         t.string :name, null: false
-        t.string :creator, null: false
-        t.datetime :last_used_at, null: false
+        t.string :creator
+        t.datetime :last_used_at
         t.jsonb :search_attributes, default: {}
         t.text :description
 

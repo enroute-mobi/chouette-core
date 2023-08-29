@@ -1,0 +1,86 @@
+.referential-overview id=overview.pagination_param_name
+  .filters
+    = search_form_for overview.search, as: overview.search_param_name, url: "##{overview.pagination_param_name}", html: {method: :get}, class: 'form form-filter' do |f|
+      .ffg-row
+        .form-group.input-group.search_bar
+          = f.search_field :name_or_number_or_short_id_cont, placeholder: t('lines.index.name_or_number_or_short_id'), class: 'form-control'
+          span.input-group-btn
+            button.btn.btn-default#search-btn type='submit'
+              span.fa.fa-search
+
+        - companies = overview.referential_lines.map(&:company).compact.uniq
+        - if companies.size > 1
+          .form-group.togglable
+            = f.label Chouette::Line.human_attribute_name(:company_id), required: false, class: 'control-label'
+            = f.input :company_id_eq_any, collection: companies.sort_by(&:name), as: :check_boxes, label: false, label_method: lambda{|l| ("<span>" + l.name + "</span>").html_safe}, required: false, wrapper_html: { class: 'checkbox_list'}
+
+        - transport_modes = overview.referential_lines.map(&:transport_mode).compact.uniq
+        - if transport_modes.size > 1
+          .form-group.togglable
+            = f.label Chouette::Line.human_attribute_name(:transport_mode), required: false, class: 'control-label'
+            = f.input :transport_mode_eq_any, collection: transport_modes.sort, as: :check_boxes, label: false, label_method: lambda{|l| ("<span>" + t("enumerize.transport_mode.#{l}") + "</span>").html_safe}, required: false, wrapper_html: { class: 'checkbox_list'}
+
+      .actions
+        = link_to t('actions.erase'), url_for() + "##{overview.pagination_param_name}", class: 'btn btn-link'
+        = f.submit t('actions.filter'), class: 'btn btn-default'
+
+  .time-travel
+    .btn-group
+      = link_to I18n.t("referentials.overview.head.prev_page"), '#', class: "prev-page btn btn-default disabled"
+      = link_to I18n.t("referentials.overview.head.today"), '#', class: "today btn btn-default #{overview.includes_today? ? '' : 'disabled'}"
+      = link_to I18n.t("referentials.overview.head.next_page"), '#', class: "next-page btn btn-default"
+    .form-group
+      input.date-search type="date" min=overview.period.first max=overview.period.last
+      a.search-date href='#'
+        span.fa.fa-search
+  .overview-table
+    .left
+      .head
+        .dates= I18n.t("referentials.overview.head.dates")
+        .lines= I18n.t("referentials.overview.head.lines")
+      .lines
+        - overview.lines.each do |line|
+          = link_to [overview.referential, line.referential_line], class: 'line', title: line.name do
+            - if line.number.present?
+              .number style="background-color: #{line.color.present? ? "##{line.color}" : 'whitesmoke'}; color: #{line.color && line.text_color ? "##{line.text_color}" : '#4b4b4b'}"
+                = line.number
+            - else
+              .name= line.name
+            .company= line.company&.name
+            .mode= line.transport_mode.present? ? t("enumerize.transport_mode.#{line.transport_mode}") : ""
+    .right
+      .inner
+        .head
+          - overview.weeks.each do |week|
+            .week
+              .week-span= week.span
+              .week-number= week.number
+              .days
+                - week.days.each do |day|
+                  .day style=day.html_style class=day.html_class
+                    .name= day.short_name
+                    .number= day.number
+        .lines
+          - if overview.lines.any?
+            - overview.lines.each do |line|
+              .line style=line.html_style class=line.html_class
+                - line.periods.each do |period|
+                  .period style=period.html_style class=period.html_class
+                    .title=period.title
+                - line.holes.each do |hole|
+                  .period.hole style=hole.html_style class=hole.html_class
+                    - if hole.title
+                      .title=hole.title
+          - else
+            = replacement_msg t('referential_lines.search_no_results')
+
+
+  ul.legend
+    li.period-container= 'referentials.overview.legend.period'.t
+    li.period-container.hole= 'referentials.overview.legend.hole'.t
+    li.period-container.empty= 'referentials.overview.legend.empty'.t
+
+  = new_pagination overview, 'pull-right'
+
+= javascript_tag do
+  | window.overviewId = "#{overview.pagination_param_name}";

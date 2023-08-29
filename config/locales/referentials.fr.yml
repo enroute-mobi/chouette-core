@@ -54,6 +54,18 @@ fr:
       overlapped_referential: "%{referential} couvre le même périmètre d'offre"
       overlapped_period: "Une autre période chevauche cette période"
       invalid_period: La date de début doit être antérieure à la date de fin
+    overview:
+      head:
+        dates: Dates
+        lines: Lignes
+        today: Aujourd'hui
+        prev_page: ←
+        next_page: →
+      legend:
+        period: Période couverte
+        empty: Période non-couverte
+        accepted: Période non-couverte (durée < 7 jours)
+        hole: Trou d’offre
     states:
       pending:  En cours de traitement
       failed:   En erreur

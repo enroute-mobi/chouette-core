@@ -59,6 +59,11 @@ module ReferentialsHelper
     end
   end
 
+  def referential_overview referential
+    service = ReferentialOverview.new referential, self
+    render partial: "referentials/overview", locals: {referential: referential, overview: service}
+  end
+
   def mutual_workbench workbench
     return unless workbench
     current_user.organisation.workbenches.where(workgroup_id: workbench.workgroup_id).last

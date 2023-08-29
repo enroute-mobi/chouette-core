@@ -79,4 +79,4 @@
             = replacement_msg t('referential_lines.search_no_results')
 
 
-      = referential_overview resource
+      = referential_overview(resource) if @referential.referential_suite_id.present?

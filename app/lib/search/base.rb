@@ -8,8 +8,6 @@ module Search
     include ActiveAttr::TypecastedAttributes
     include ActiveAttr::AttributeDefaults
 
-    attribute :search_id
-
     def initialize(scope, params = nil, context = {})
       apply_defaults
 
@@ -104,9 +102,30 @@ module Search
       raise 'Not yet implemented'
     end
 
+    def without_order
+      @without_order = true
+      self
+    end
+
+    def without_order?
+      @without_order
+    end
+
+    def without_pagination
+      @without_pagination = true
+      self
+    end
+
+    def without_pagination?
+      @without_pagination
+    end
+
     def collection
       if valid?
-        order.order(query.scope).paginate(paginate_attributes)
+        scope = query.scope
+        scope = order.order(scope) unless without_order?
+        scope = scope.paginate(paginate_attributes) unless without_pagination?
+        scope
       else
         Rails.logger.debug "[Search] invalid attributes: #{errors.full_messages}"
         scope.none

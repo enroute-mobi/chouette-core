@@ -1,4 +1,5 @@
 class ImportUploader < CarrierWave::Uploader::Base
+  include LocalCache
 
   # Include RMagick or MiniMagick support:
   # include CarrierWave::RMagick
@@ -33,7 +34,7 @@ class ImportUploader < CarrierWave::Uploader::Base
   # Add a white list of extensions which are allowed to be uploaded.
   # For images you might use something like this:
   def extension_whitelist
-    model&.file_extension_whitelist || %w(zip)
+    model&.file_extension_whitelist || %w[zip]
   end
 
   # Override the filename of the uploaded files:
@@ -41,5 +42,4 @@ class ImportUploader < CarrierWave::Uploader::Base
   # def filename
   #   "something.jpg" if original_filename
   # end
-
 end

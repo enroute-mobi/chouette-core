@@ -54,6 +54,18 @@ en:
       overlapped_referential: "%{referential} cover the same perimeter"
       overlapped_period: "Another period is on the same period"
       invalid_period: The begin date must be before end date
+    overview:
+      head:
+        dates: Dates
+        lines: Lines
+        today: Today
+        prev_page: Prev. page
+        next_page: Next page
+      legend:
+        period: Managed period
+        empty: Not managed period
+        accepted: Not managed period (length < 7 days)
+        hole: Lack of offer
     states:
       pending:  Pending
       failed:   Failed

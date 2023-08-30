@@ -1,0 +1,5 @@
+
+.flex.flex-col.w-full[x-data = {saved_searches: @saved_searches.map {|s| {id: s.id, text: s.name}}}.to_json]
+  select[x-on:change="window.location.replace('#{workbench_stop_area_referential_stop_areas_path(@workbench)}?search_id=' + $el.value)"]
+    template[x-for="saved_search in saved_searches" :key="saved_search.id"]
+      option[:key="saved_search.id" :value="saved_search.id" x-text="saved_search.text" :selected="saved_search.id === #{params[:search_id]}"]

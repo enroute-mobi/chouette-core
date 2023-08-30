@@ -1,11 +1,3 @@
-
-= simple_form_for @search, url: request.path, method: "GET", html: { class: 'flex items-center tailwind-filters relative' }, wrapper: :filters_form_tailwind  do |f|
-  .flex.flex-col.w-full
-    .flex.items-center.justify-end.-mr-6
-      = button_tag '' => '', class: 'btn btn-default' do
-        i.fa.fa-save
-      = f.input :search_id, collection: @saved_searches, required: false, wrapper_html: {class: "w-1/5"}
-
 = simple_form_for @search, url: request.path, method: "GET", html: { class: 'flex items-center tailwind-filters bg-grey relative pr-6' }, wrapper: :filters_form_tailwind  do |f|
   = f.simple_fields_for :order, @search.order, defaults: { wrapper: false } do |form_order|
     - form_order.object.attributes.keys.each do |attribute|

@@ -67,7 +67,7 @@ module LocalCache
 
     Dir.glob(File.join(local_cache_directory, '*')).each do |file|
       created_at = File.ctime(file)
-      continue if created_at > 24.hours.ago
+      next if created_at > 24.hours.ago
 
       Rails.logger.info "Cache locally file #{file}"
       File.delete file

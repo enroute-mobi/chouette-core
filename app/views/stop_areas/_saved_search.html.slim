@@ -5,5 +5,5 @@
     = select_tag "saved_searches",
       options_for_select(@saved_searches.map {|s| [s.name, s.id]}, selected: params[:search_id]),
       class: "form-control select w-1/5",
-      "x-on:change": "window.location.replace('#{workbench_stop_area_referential_stop_areas_path(@workbench)}?search_id=' + $el.value)",
+      "x-on:change": "window.location.replace('#{request.path}?search_id=' + $el.value)",
       include_blank: true

@@ -9,6 +9,8 @@ module LocalCache
         cache!
       end
     end
+
+    LocalCache.clean_local_cache
   end
 
   def local_cached?
@@ -54,4 +56,21 @@ module LocalCache
   # We can't use the CarrierWave cache directory which expects a given format for cleaning
   # In a container environment, this directory will be uniq
   mattr_accessor :local_cache_directory, default: Dir.mktmpdir('chouette-local-cache')
+
+  mattr_accessor :local_cache_cleaned_at, default: Time.zone.now
+
+  def self.clean_local_cache
+    return if local_cache_cleaned_at > 5.minutes.ago
+
+    Rails.logger.debug 'Clean local cache'
+    self.local_cache_cleaned_at = Time.zone.now
+
+    Dir.glob(File.join(local_cache_directory, '*')).each do |file|
+      created_at = File.ctime(file)
+      continue if created_at > 24.hours.ago
+
+      Rails.logger.info "Cache locally file #{file}"
+      File.delete file
+    end
+  end
 end

@@ -3,8 +3,12 @@
 # Use a predictable local file for a CarrierWave Uploader
 module LocalCache
   def local_cache!
+    return if file_storage?
+
     with_local_lock do
-      unless local_cached?
+      if local_cached?
+        @file = CarrierWave::SanitizedFile.new(local_cache_file)
+      else
         Rails.logger.info "Cache locally file for #{model.class}##{model.id} in #{local_cache_file}" if model
         cache!
       end
@@ -14,9 +18,7 @@ module LocalCache
   end
 
   def local_cached?
-    return true if file_storage?
-
-    File.exist? local_cache_file
+    file_storage? || File.exist?(local_cache_file)
   end
 
   def local_cache_file
@@ -72,5 +74,7 @@ module LocalCache
       Rails.logger.info "Cache locally file #{file}"
       File.delete file
     end
+
+    true
   end
 end

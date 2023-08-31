@@ -100,11 +100,11 @@ module Chouette
             end
           end
 
-          model :control_list do 
+          model :control_list do
             attribute(:name) { |n| "Control List #{n}" }
           end
 
-          model :macro_list do 
+          model :macro_list do
             attribute(:name) { |n| "Macro List #{n}" }
             model :macro do
               attribute(:name) { |n| "Dummy #{n}" }
@@ -264,7 +264,7 @@ module Chouette
                 file_path = File.expand_path("spec/fixtures/#{transient(:file)}")
                 new_instance.file = File.new(file_path)
 
-                document_type = transient(:document_type, resolve_instances: true) || 
+                document_type = transient(:document_type, resolve_instances: true) ||
                   parent.workbench.workgroup.document_types.create!(name: 'Default', short_name: 'default')
 
                 new_instance.document_type = document_type
@@ -273,6 +273,7 @@ module Chouette
           end
 
           model :fare_provider do
+            attribute(:name) { |n| "fare_provider_#{n}" }
             attribute(:short_name) { |n| "fare_provider_#{n}" }
 
             model :fare_product do

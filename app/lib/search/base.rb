@@ -102,9 +102,30 @@ module Search
       raise 'Not yet implemented'
     end
 
+    def without_order
+      @without_order = true
+      self
+    end
+
+    def without_order?
+      @without_order
+    end
+
+    def without_pagination
+      @without_pagination = true
+      self
+    end
+
+    def without_pagination?
+      @without_pagination
+    end
+
     def collection
       if valid?
-        order.order(query.scope).paginate(paginate_attributes)
+        result = query.scope
+        result = order.order(result) unless without_order?
+        result = result.paginate(paginate_attributes) unless without_pagination?
+        result
       else
         Rails.logger.debug "[Search] invalid attributes: #{errors.full_messages}"
         scope.none

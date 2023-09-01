@@ -140,6 +140,7 @@ Apartment.configure do |config|
     'StopAreaRoutingConstraint',
     'Source',
     'Source::Retrieval',
+    'Search::Save',
     'User',
     'VehicleJourneyControl::Delta',
     'VehicleJourneyControl::Speed',

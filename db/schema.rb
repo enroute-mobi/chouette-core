@@ -1340,11 +1340,11 @@ ActiveRecord::Schema.define(version: 2023_08_24_140434) do
   end
 
   create_table "saved_searches", force: :cascade do |t|
-    t.bigint "workbench_id"
+    t.bigint "workbench_id", null: false
     t.string "search_type", null: false
     t.string "name", null: false
-    t.string "creator", null: false
-    t.datetime "last_used_at", null: false
+    t.string "creator"
+    t.datetime "last_used_at"
     t.jsonb "search_attributes", default: {}
     t.text "description"
     t.datetime "created_at", null: false

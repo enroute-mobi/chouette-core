@@ -31,6 +31,10 @@ class StopAreasController < ChouetteController
   end
 
   def index
+    if saved_search = saved_searches.find_by(id: params[:search_id])
+      @search = saved_search.search(scope, stop_area_referential: stop_area_referential)
+    end
+
     @per_page = 25
     @zip_codes = stop_area_referential.stop_areas.where("zip_code is NOT null").distinct.pluck(:zip_code)
 
@@ -100,6 +104,10 @@ class StopAreasController < ChouetteController
     respond_to do |format|
       format.json { render :json => referential.stop_areas.collect(&:zip_code).compact.uniq.to_json }
     end
+  end
+
+  def saved_searches
+    @saved_searches ||=  @workbench.saved_searches.for(Search::StopArea)
   end
 
   protected

@@ -9,6 +9,8 @@ en:
         label: When transport mode is
       lines:
         label:  When lines are
+      saved_search:
+        label: When saved search is
 
   activerecord:
     models:
@@ -22,6 +24,8 @@ en:
         one: Operating period
       control/context/lines:
         one: Lines
+      control/context/saved_search:
+        one: Saved search
 
     attributes:
       control/context: &control_context

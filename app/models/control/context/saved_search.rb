@@ -1,22 +1,35 @@
 class Control::Context::SavedSearch < Control::Context
-  option :saved_search
+  module Options
+    extend ActiveSupport::Concern
 
-  validates_presence_of :saved_search
+    included do
+      option :saved_search_id
+      option :target_model
+
+      enumerize :target_model, in: %w[Line StopArea]
+      validates_presence_of :saved_search_id
+
+      def candidate_saved_searches
+        saved_searches
+      end
+
+      def saved_searches
+        klass = "::Search::#{target_model}".constantize
+        workbench.saved_searches.for(klass)
+      end
+    end
+  end
+  include Options
 
   class Run < Control::Context::Run
-    option :saved_search
+    include Options
 
     %i[stop_areas lines].each do |method|
       define_method method do
-        
-        if saved_search = saved_searches(__method__).find_by(id: saved_search)
-          saved_search.search(scope, {})
+        if saved_search = saved_searches.find_by(id: saved_search_id)
+          saved_search.search(context.send(method)).collection
         end
       end
-    end
-
-    def saved_searches(klass)
-      workbench.saved_searches.for("::Search::#{klass.to_s.classify}".constantize)
     end
   end
 end

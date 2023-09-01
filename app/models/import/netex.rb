@@ -34,6 +34,17 @@ class Import::Netex < Import::Base
     update_column :notified_parent_at, Time.now
 
     Rails.logger.info "#{self.class.name} ##{id}: notify_parent"
+    # CHOUETTE-3078 Hack to avoid iev control and multiple parsing the same file calendriers.xml
+    # Find duplicated periods for each timetable
+    time_tables = time_tables_with_duplicated_periods
+    # Create messages for netex import
+    time_tables.each do |time_table|
+      self.main_resource.messages.create(criticity: :error, message_attributes: { timetable_objectid: time_table.objectid }, message_key: 'overlaping_period_for_timetable')
+    end
+    # Override status for netex import
+    self.failed! if time_tables.present?
+
+    # Do nothing : update main resource status never displayed
     main_resource.update_status_from_importer self.status
     update_referential
 
@@ -47,6 +58,14 @@ class Import::Netex < Import::Base
     parent&.child_change
 
     true
+  end
+
+  def time_tables_with_duplicated_periods
+    return unless referential.present?
+
+    referential.switch
+    periods = referential.time_table_periods.joins("inner join time_table_periods as brother on time_table_periods.time_table_id = brother.time_table_id and time_table_periods.id <> brother.id").where("time_table_periods.period_start <= brother.period_end AND time_table_periods.period_end >= brother.period_start")
+    periods.collect(&:time_table).uniq
   end
 
   def processor

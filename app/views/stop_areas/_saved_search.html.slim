@@ -1,9 +1,10 @@
 
-.flex.justify-end.mb-5
-  .flex.items-center.w-1/5
-    = label_tag t('activemodel.attributes.search.search_id'), nil, class: 'control-label w-4/5'
-    = select_tag "saved_searches",
-      options_for_select(@saved_searches.map {|s| [s.name, s.id]}, selected: params[:search_id]),
-      class: "form-control select w-1/5",
-      "x-on:change": "window.location.replace('#{request.path}?search_id=' + $el.value)",
-      include_blank: true
+- if @saved_searches.present?
+  .flex.justify-end.mb-5
+    .flex.items-center.w-1/5
+      = form_tag workbench_stop_area_referential_stop_areas_path(@workbench), method: :get, "x-ref": "searchForm"
+        = select_tag "search_id",
+          options_from_collection_for_select(@saved_searches, :id, :name, params[:search_id]),
+          class: "form-control select w-1/5",
+          "x-on:change": "$refs.searchForm.submit()",
+          include_blank: true

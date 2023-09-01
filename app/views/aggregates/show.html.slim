@@ -9,6 +9,8 @@
 					= d.attribute :status, value: operation_status(@aggregate.status, verbose: true, i18n_prefix: "aggregates.statuses")
 					= d.attribute :new, as: :association, link: ->(new) { referential_path(new) }
 					= d.attribute :contains_urgent_offer, value: boolean_icon(@aggregate.contains_urgent_offer?)
+					= d.attribute :vehicle_journeys_count, value: @aggregate.new.vehicle_journeys_count
+
       = processing_helper(@aggregate)
 
     - if @aggregate_resources.any?

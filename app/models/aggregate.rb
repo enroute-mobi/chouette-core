@@ -125,6 +125,7 @@ class Aggregate < ApplicationModel
           referentials_by_priority.each do |source|
             copy = WorkbenchCopy.new(source, new).copy!
             resources << copy.aggregate_resource
+            new.update vehicle_journeys_count: new.switch { |ref| ref.vehicle_journeys.count }
           end
         end
 

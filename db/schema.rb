@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2023_08_24_140434) do
+ActiveRecord::Schema.define(version: 2023_09_01_121853) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "btree_gin"
@@ -1297,6 +1297,7 @@ ActiveRecord::Schema.define(version: 2023_08_24_140434) do
     t.string "objectid_format"
     t.datetime "merged_at"
     t.datetime "failed_at"
+    t.integer "vehicle_journeys_count"
     t.index ["created_from_id"], name: "index_referentials_on_created_from_id"
     t.index ["referential_suite_id"], name: "index_referentials_on_referential_suite_id"
     t.index ["slug"], name: "index_referentials_on_slug", unique: true

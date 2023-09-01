@@ -40,6 +40,15 @@ RSpec.describe Aggregate, type: :model do
 
         before { aggregate.aggregate! }
 
+        describe "vehicle_journeys_count" do
+          subject(:aggregated_dataset) { aggregate.new }
+          before { aggregated_dataset.switch }
+
+          it "contains five Vehicle Journeys" do
+            expect(aggregated_dataset.vehicle_journeys_count).to eq(5)
+          end
+        end
+
         describe "#aggregate_resources" do
           let(:first_referential) { context.referentials.first }
           let(:second_referential) { context.referentials.second }

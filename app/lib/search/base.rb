@@ -122,10 +122,10 @@ module Search
 
     def collection
       if valid?
-        scope = query.scope
-        scope = order.order(scope) unless without_order?
-        scope = scope.paginate(paginate_attributes) unless without_pagination?
-        scope
+        result = query.scope
+        result = order.order(result) unless without_order?
+        result = result.paginate(paginate_attributes) unless without_pagination?
+        result
       else
         Rails.logger.debug "[Search] invalid attributes: #{errors.full_messages}"
         scope.none

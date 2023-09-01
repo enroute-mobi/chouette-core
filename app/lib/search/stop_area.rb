@@ -36,11 +36,11 @@ module Search
 		end
 
 		def candidate_stop_area_providers
-			stop_area_referential.stop_area_providers
+			stop_area_referential&.stop_area_providers
 		end
 
 		def candidate_parents
-			stop_area_referential.stop_areas
+			stop_area_referential&.stop_areas
 		end
 
     def selected_parent_collection
@@ -48,7 +48,7 @@ module Search
     end
 
 		def parent_stop_area
-			stop_area_referential.stop_areas.find(parent_id) if parent_id.present?
+			stop_area_referential&.stop_areas.find(parent_id) if parent_id.present?
 		end
 
 		private

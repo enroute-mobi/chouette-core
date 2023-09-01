@@ -1,9 +1,22 @@
-= simple_form_for @search, url: request.path, method: "GET", html: { class: 'flex items-center tailwind-filters bg-grey relative pr-6' }, wrapper: :filters_form_tailwind  do |f|
+- if @search.id
+  - save_path = workbench_stop_areas_search_path(@workbench, @search)
+  - save_method = :patch
+  // <input type="hidden" name="_method" value="patch">
+- else
+  - save_path = workbench_stop_areas_searches_path(@workbench)
+  - save_method = :post 
+
+= simple_form_for @search, url: workbench_stop_area_referential_stop_areas_path(@workbench), method: "GET", html: { class: 'flex items-center tailwind-filters bg-grey relative pr-6', "x-data": "{ save_path: '#{save_path}', save_method: '#{save_method}'}"}, wrapper: :filters_form_tailwind  do |f|
   = f.simple_fields_for :order, @search.order, defaults: { wrapper: false } do |form_order|
     - form_order.object.attributes.keys.each do |attribute|
       = form_order.input attribute, as: :hidden
 
   .flex.flex-col.w-full
+    .flex.items-center.border-r.border-white.border-b
+      = f.input :name, wrapper_html: {class: "w-2/5"}
+      = f.input :description, wrapper_html: {class: "w-2/5"}
+      = f.submit "Save", class: 'btn btn-default', "@click": "$root.action = save_path ; $root.method = save_method ; console.log($root.action) ;console.log($root.method)"
+
     .flex.items-center.border-r.border-white.border-b
       = f.input :text, label: false, wrapper_html: {class: "w-2/5"}
     .flex.items-center.border-r.border-white
@@ -28,3 +41,4 @@
     .flex.items-center
       = link_to t('actions.erase'), workbench_stop_area_referential_stop_areas_path(@workbench), class: 'btn btn-link'
       = f.submit t('actions.filter'), class: 'btn btn-default'
+

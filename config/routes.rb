@@ -109,12 +109,13 @@ ChouetteIhm::Application.routes.draw do # rubocop:disable Metrics/BlockLength
     end
 
     resource :stop_area_referential, only: %i[show edit update] do
+      resources :searches, path: ':parent_resources/searches'
+
       resources :stop_area_routing_constraints
       resources :entrances
 
       resources :stop_area_providers
 
-      # TODO: Delete this route and use autocomplete below
       resources :stop_areas do
         get :autocomplete, on: :collection
         get :fetch_connection_links, on: :member, defaults: { format: 'geojson' }

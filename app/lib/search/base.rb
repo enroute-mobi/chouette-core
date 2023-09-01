@@ -8,7 +8,8 @@ module Search
     include ActiveAttr::TypecastedAttributes
     include ActiveAttr::AttributeDefaults
 
-    attr_accessor :id
+    # TODO
+    attr_accessor :id, :name, :description
 
     def initialize(attributes = {})
       apply_defaults

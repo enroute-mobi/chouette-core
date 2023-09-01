@@ -11,6 +11,8 @@ module MetadataControllerSupport
   end
 
   def set_creator_metadata
+    return unless try(:resource)
+
     if resource.valid?
       resource.try(:set_metadata!, :creator_username, user_for_metadata)
       resource.try(:set_metadata!, :modifier_username, user_for_metadata)

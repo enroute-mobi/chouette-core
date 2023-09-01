@@ -1340,7 +1340,7 @@ ActiveRecord::Schema.define(version: 2023_08_24_140434) do
   end
 
   create_table "saved_searches", force: :cascade do |t|
-    t.bigint "workbench_id"
+    t.bigint "workbench_id", null: false
     t.string "search_type", null: false
     t.string "name", null: false
     t.string "creator"

@@ -2,7 +2,7 @@ class CreateSavedSearches < ActiveRecord::Migration[5.2]
   def change
     on_public_schema_only do
       create_table :saved_searches do |t|
-        t.references :workbench
+        t.references :workbench, null: false
         t.string :search_type, null: false
         t.string :name, null: false
         t.string :creator

@@ -34,22 +34,6 @@ module ComplianceControlsHelper
     end
   end
 
-  def compliance_control_radio_options compliance_control, compliance_control_set
-    disabled = case compliance_control.name
-    when 'CustomFieldControl::Presence'
-      compliance_control_set.organisation.custom_fields.none?
-    else
-      false
-    end
-
-    title = disabled ? I18n.t('compliance_controls.select_type.generic.no_custom_fields') : ''
-
-    {
-      disabled: disabled,
-      title: title
-    }
-  end
-
   def compliance_control_types_options
     ComplianceControl.descendants.group_by(&:object_type)
   end

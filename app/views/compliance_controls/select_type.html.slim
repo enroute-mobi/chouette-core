@@ -8,7 +8,7 @@
             p.import_control_group= I18n.t(".compliance_controls.select_type.compliance_control_groups.#{group}")
             - compliance_controls.each do |compliance_control|
               .radio
-                = radio_button_tag(:sti_class, compliance_control, compliance_control.first, **compliance_control_radio_options(compliance_control, parent))
+                = radio_button_tag(:sti_class, compliance_control, compliance_control.first)
                 = development_only do
                   = compliance_control.iev_enabled_check ? '( IEV ) ' : '( RUBY ) '
                 = development_only do

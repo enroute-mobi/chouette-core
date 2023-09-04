@@ -44,8 +44,7 @@ fr:
         dummy: Simulation
         company: Transporteur
         stop_area: Arrêt
-      generic:
-        no_custom_fields: Votre organisation ne possède aucun champ personnalisé
+
     actions:
       new: Ajouter
       edit: Editer

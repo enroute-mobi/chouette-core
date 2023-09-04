@@ -46,9 +46,16 @@ class SearchesController < ApplicationController
     if @search.valid?
       saved_search = saved_searches.find(params[:id])
       saved_search.update name: params[:search][:name], description: params[:search][:description], search_attributes: @search.meuh_attributes
+
+      @search = saved_search.search(nil)
     end
 
     render :index
+  end
+
+  def destroy
+    saved_searches.find(params[:id]).destroy
+    redirect_to workbench_stop_area_referential_searches_path(workbench, parent_resources: parent_resources)
   end
 
   private
@@ -71,7 +78,7 @@ class SearchesController < ApplicationController
   end
 
   def saved_searches
-    @saved_searches ||= workbench.saved_searches.for(search_class)
+    @saved_searches ||= workbench.saved_searches.for(search_class).order(:name)
   end
   helper_method :saved_searches
 

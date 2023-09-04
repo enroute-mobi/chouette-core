@@ -20,8 +20,12 @@ module MetadataControllerSupport
   end
 
   def set_modifier_metadata
-    _resource = @resources || [resource]
-    _resource.to_a.flatten.each do |r|
+    _resources = @resources || [try(:resource)]
+    _resources = _resources.to_a.flatten.compact
+
+    return if _resources.blank?
+
+    _resources.each do |r|
       r.try(:set_metadata!, :modifier_username, user_for_metadata) if r.persisted? && r.valid?
     end
   end

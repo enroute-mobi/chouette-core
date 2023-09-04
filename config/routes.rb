@@ -333,7 +333,6 @@ ChouetteIhm::Application.routes.draw do # rubocop:disable Metrics/BlockLength
         end
         resource :vehicle_journeys_collection, only: %i[show update]
         resources :vehicle_journeys
-        resources :stop_points, only: :index, controller: 'route_stop_points'
       end
       resources :routing_constraint_zones
     end

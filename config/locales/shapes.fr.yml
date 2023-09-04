@@ -8,7 +8,6 @@ fr:
       edit: "Éditer un tracé"
       destroy: "Supprimer ce tracé"
       destroy_confirm: "Etes vous sûr de supprimer ce tracé ?"
-      associated_resources: "Tracé %{shape_uuid} - Ressources associées"
       view_waypoint: Zoom
       delete_waypoint: Supprimer
     edit:
@@ -17,13 +16,6 @@ fr:
       title: "Tracé %{name}"
     index:
       title: Tracés
-    associations:
-      table_headers:
-        status: État
-        dataset: Jeu de données
-        type: Type
-        id: ID
-        line: Ligne
     errors:
       cannot_edit: "Edition impossible : cette mission ne possede pas tracé"
       cannot_edit_imported_shape: "Edition impossible d'un tracé importé"

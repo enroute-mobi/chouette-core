@@ -164,9 +164,6 @@ ChouetteIhm::Application.routes.draw do # rubocop:disable Metrics/BlockLength
     end
 
     resource :shape_referential do
-      resources :shapes, except: [:create] do
-        get :associations, on: :member
-      end
       resources :point_of_interests
       resources :point_of_interest_categories
     end

@@ -31,10 +31,6 @@ class ShapesController < ChouetteController
     end
   end
 
-  def associations
-    @shape = resource
-  end
-
   protected
 
   alias_method :shape_referential, :parent

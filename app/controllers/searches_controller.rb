@@ -15,9 +15,6 @@ class SearchesController < ApplicationController
   # List Saved Search of given type
   # /workbenches/<workbench_id>/<parent_resources>/searches
   def index
-    Rails.logger.debug params.inspect
-    Rails.logger.debug [parent_resources, parent_resource, search_class_name, search_class]
-
     @search = search_class.new(nil)
   end
 
@@ -29,11 +26,13 @@ class SearchesController < ApplicationController
   def create
     @search = search_class.new(nil, params)
 
-    Rails.logger.debug @search.inspect
-
     if @search.valid?
-      saved_search = saved_searches.create name: params[:search][:name], description: params[:search][:description], search_attributes: @search.meuh_attributes
-      Rails.logger.debug [saved_search, saved_search.errors].inspect
+      saved_search = saved_searches.create(
+        name: params[:search][:name],
+        description: params[:search][:description],
+        creator: current_user.name,
+        search_attributes: @search.meuh_attributes
+      )
       @search = saved_search.search(nil)
     end
 

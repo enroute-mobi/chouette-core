@@ -11,9 +11,4 @@
       - if policy(@vehicle_journey).destroy?
         = link_to t('vehicle_journeys.actions.destroy'), referential_line_route_vehicle_journey_path(@referential, @line, @route, @vehicle_journey), :method => :delete, :data => {:confirm =>  t('vehicle_journeys.actions.destroy_confirm')}, class: "remove"
 
-    - unless @vehicle_journey.vehicle_journey_at_stops.empty?
-      li
-        i.fa.fa-cubes.fa-fw style="color:#D98F3B;"
-        = link_to t('vehicle_journeys.show.translation_form'), new_referential_line_route_vehicle_journey_vehicle_translation_path(@referential, @line, @route, @vehicle_journey), {:remote => true, 'data-toggle' =>  "modal", 'data-target' => '#modal_translation', class: "with_fa" }
-
   = creation_tag(@vehicle_journey)

@@ -10,6 +10,8 @@ fr:
   activemodel:
     attributes:
       search:
+        name: Nom
+        description: Description
         statuses: État
         workbench_ids: Espaces de travail
         workbench_id: Espace de travail
@@ -43,7 +45,7 @@ fr:
       search/save:
         name: Nom
         description: Description
-        last_used_at: Derniére fois utilisé
+        last_used_at: Dernière utilisation
         creator: Créateur
   simple_form:
     placeholders:

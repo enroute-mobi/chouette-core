@@ -10,6 +10,8 @@ en:
   activemodel:
     attributes:
       search:
+        name: Name
+        description: Description
         statuses: Status
         workbench_ids: Workbench
         workbench_id: Workbench

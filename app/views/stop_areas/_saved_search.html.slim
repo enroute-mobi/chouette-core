@@ -3,7 +3,7 @@
   .flex.justify-end.mb-5
     .flex.items-center.w-1/6
       button.mr-5.hover:text-enroute-blue x-on:click.prevent= "saveSearchPanel = ! saveSearchPanel"
-        span.fas.fa-save.fa-3x
+        span.fas.fa-save.fa-2x
       = form_tag workbench_stop_area_referential_stop_areas_path(@workbench), method: :get, "x-ref": "searchForm", class: "w-full"
         = select_tag "search_id",
           options_from_collection_for_select(@saved_searches, :id, :name, params[:search_id]),

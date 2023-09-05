@@ -21,7 +21,7 @@
               ),
               TableBuilderHelper::Column.new( \
                 key: :last_used_at, \
-                attribute: :last_used_at \
+                attribute: Proc.new { |n| l(n.last_used_at, format: :short_with_time) if n.last_used_at }, \
               ),
               TableBuilderHelper::Column.new( \
                 key: :creator, \

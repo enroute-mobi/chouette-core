@@ -33,7 +33,7 @@ en:
     show: "See"
     submit: "Submit"
     unarchive: "Unarchive"
-    validate: 'Validate'
+    validate: 'Control'
     wait_for_submission: "Please wait..."
   are_you_sure: Are you sure?
   back: "Go Back"

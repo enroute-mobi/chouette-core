@@ -78,12 +78,6 @@ module Cron
       Import::Netex.abort_old
     end
 
-    def audit_referentials
-      if Rails.configuration.enable_automated_audits
-        ReferentialAudit::Full.new.delay.perform(output: :html)
-      end
-    end
-
     def handle_dead_workers
       Delayed::Heartbeat.delete_timed_out_workers
     end

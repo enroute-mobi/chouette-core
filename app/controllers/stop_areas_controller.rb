@@ -32,7 +32,7 @@ class StopAreasController < ChouetteController
 
   def index
     if saved_search = saved_searches.find_by(id: params[:search_id])
-      @search = saved_search.search(scope, stop_area_referential: stop_area_referential)
+      @search = saved_search.search(stop_area_referential: stop_area_referential)
     end
 
     @per_page = 25
@@ -107,7 +107,7 @@ class StopAreasController < ChouetteController
   end
 
   def saved_searches
-    @saved_searches ||=  @workbench.saved_searches.for(Search::StopArea)
+    @saved_searches ||= @workbench.saved_searches.for(Search::StopArea)
   end
 
   protected
@@ -125,15 +125,13 @@ class StopAreasController < ChouetteController
     parent.stop_areas
   end
 
-  def collection
-    @stop_areas = parent.stop_areas.paginate(page: params[:page], per_page: 30)
-  end
-
   def search
-    @search ||= Search::StopArea.new(scope, params, stop_area_referential: stop_area_referential)
+    @search ||= Search::StopArea.from_params(params, stop_area_referential: stop_area_referential)
   end
 
-  delegate :collection, to: :search
+  def collection
+    @collection ||= search.search scope
+  end
 
   def set_current_workgroup(&block)
     # Ensure that InheritedResources has defined parents (workbench, etc)
@@ -143,26 +141,6 @@ class StopAreasController < ChouetteController
   end
 
   private
-
-  def sort_column
-    ref = parent.present? ? parent : referential
-    (ref.stop_areas.column_names + %w{status}).include?(params[:sort]) ? params[:sort] : 'name'
-  end
-
-  def sort_direction
-    %w[asc desc].include?(params[:direction]) ?  params[:direction] : 'asc'
-  end
-
-  def sort_result collection
-    col_names = parent.present? ? parent.stop_areas.column_names : referential.stop_areas.column_names
-    col = (col_names + %w{status}).include?(params[:sort]) ? params[:sort] : 'name'
-
-    if ['status'].include?(col)
-      collection.send("order_by_#{col}", sort_direction)
-    else
-      collection.order("#{col} #{sort_direction}")
-    end
-  end
 
   alias_method :current_referential, :stop_area_referential
   helper_method :current_referential

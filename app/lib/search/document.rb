@@ -26,7 +26,7 @@ module Search
 
     validates :period, valid: true
 
-    def query
+    def query(scope)
       Query::Document.new(scope).name(name).document_type(document_type)
                      .document_provider(document_provider).in_period(period)
     end

@@ -72,7 +72,7 @@ class MacroListRunsController < ChouetteController
   end
 
   def search
-    @search ||= Search.new(scope, params)
+    @search ||= Search.from_params(params)
   end
 
   class Search < Search::Operation
@@ -81,7 +81,9 @@ class MacroListRunsController < ChouetteController
     end
   end
 
-  delegate :collection, to: :search
+  def collection
+    @collection ||= search.search(scope)
+  end
 
   private
 

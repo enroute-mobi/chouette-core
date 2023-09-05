@@ -64,7 +64,7 @@ module Search
       referential.stop_areas
     end
 
-    def query
+    def query(scope)
       Query::VehicleJourney.new(scope).text(text).company(company).line(line).time_table(period).between_stop_areas(
         from_stop_area, to_stop_area
       )

@@ -41,7 +41,7 @@ class WorkbenchesController < ChouetteController
   end
 
   def resource
-    @workbench = current_organisation.workbenches.find params[:id]
+    @workbench ||= current_organisation.workbenches.find params[:id]
   end
 
   protected
@@ -51,12 +51,15 @@ class WorkbenchesController < ChouetteController
   end
 
   def search
+    # FIXME: should be managed by Search::Referential
     # Select workbench linked to current user by default
     params["search"] = {} if params["search"].blank?
     params["search"]["workbench_ids"] = [@workbench.id] if params["search"]["workbench_ids"].blank?
-    @search ||= Search::Referential.new(scope, params, workbench: @workbench)
+
+    @search ||= Search::Referential.from_params(params, workbench: @workbench)
   end
 
-  delegate :collection, to: :search
-
+  def collection
+    @collection ||= search.search scope
+  end
 end

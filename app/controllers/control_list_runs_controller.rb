@@ -71,7 +71,7 @@ class ControlListRunsController < ChouetteController
   end
 
   def search
-    @search ||= Search.new(scope, params)
+    @search ||= Search.from_params(params)
   end
 
   class Search < Search::Operation
@@ -79,7 +79,10 @@ class ControlListRunsController < ChouetteController
       Query::ControlListRun
     end
   end
-  delegate :collection, to: :search
+
+  def collection
+    @collection ||= search.search(scope)
+  end
 
   private
 

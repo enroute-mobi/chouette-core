@@ -8,30 +8,29 @@ module Search
     include ActiveAttr::TypecastedAttributes
     include ActiveAttr::AttributeDefaults
 
-    def initialize(scope, params = nil, context = {})
+    attr_accessor :id
+
+    def initialize(attributes = {})
       apply_defaults
 
-      @scope = scope
-
-      context.each { |k,v| send "#{k}=", v }
-
-      params = self.class.params(params.dup)
-
-      Rails.logger.debug "[Search] Params: #{params.inspect}"
-
-      if params[:order]
-        order.attributes = params.delete :order
-      else
-        order.use_defaults
-      end
-
-      self.attributes = params
-
-      Rails.logger.debug "[Search] #{self.class.name}(#{attributes.inspect},order=#{order.attributes.inspect})"
+      order.attributes = attributes.delete :order if attributes[:order]
+      attributes.each { |k, v| send "#{k}=", v }
     end
-    attr_reader :scope
 
-    # TODO Why the default ActiveAttr::AttributeDefaults#apply_defaults
+    def self.from_params(params, attributes = {})
+      Rails.logger.debug "[Search] Raw params: #{params.inspect}"
+
+      new(attributes).tap do |search|
+        search.attributes = FromParamsBuilder.new(params).attributes
+        Rails.logger.debug "[Search] #{search.inspect}"
+      end
+    end
+
+    def inspect
+      "#{self.class.name}(#{attributes.inspect},order=#{order.attributes.inspect})"
+    end
+
+    # TODO: Why the default ActiveAttr::AttributeDefaults#apply_defaults
     # defines @attributes values without writing the attributes ?
     def apply_defaults(defaults=attribute_defaults)
       defaults.each do |name, value|
@@ -42,38 +41,56 @@ module Search
     def attributes=(attributes = {})
       attributes = attributes.with_indifferent_access if attributes.respond_to?(:with_indifferent_access)
 
+      if attributes[:order]
+        order.attributes = attributes.delete :order
+      else
+        order.use_defaults
+      end
+
       # Only used defined attributes
-      self.attributes.keys.each do |attribute_name|
-        if attributes.has_key? attribute_name
-          write_attribute attribute_name, attributes[attribute_name]
-        end
+      self.class.attributes.each_key do |attribute_name|
+        write_attribute(attribute_name, attributes[attribute_name]) if attributes.key? attribute_name
       end
     end
 
-    def self.params(params)
-      return {} if params.nil?
-      Rails.logger.debug "[Search] Raw params: #{params.inspect}"
+    def attributes
+      super.delete_if { |_k, v| v.blank? }
+    end
 
-      params[:search] ||= {}
-
-      # Transform 'legacy' parameters into order params
-      if params[:sort]
-        sort_attribute = params.delete(:sort).to_sym
-        sort_direction = params.delete(:direction).presence || :asc
-
-        params[:search][:order] = { sort_attribute => sort_direction.to_sym }
+    # Create Search attributes from our legacy Controller params (:sort, :direction, :page, etc)
+    class FromParamsBuilder
+      def initialize(params = {})
+        @params = params.dup
       end
+      attr_reader :params
 
-      %i{page per_page}.each do |param|
-        params[:search][param] = params[param] if params[param]
-      end
+      delegate :blank?, to: :params
 
-      search_params = params[:search]
+      def attributes
+        return {} if blank?
 
-      if search_params.respond_to?(:permit!)
-        search_params.permit!
-      else
+        search_params[:order] = { sort_attribute => sort_direction } if sort_attribute
+
+        %i[page per_page].each do |param|
+          search_params[param] = params[param] if params.key?(param)
+        end
+
+        search_params.try :permit!
         search_params
+      end
+
+      def sort_attribute
+        @sort_attribute ||= (params.delete(:sort).to_sym if params.key?(:sort))
+      end
+
+      def sort_direction
+        return :asc unless params.key?(:direction)
+
+        @sort_direction ||= params.delete(:direction).to_sym
+      end
+
+      def search_params
+        params[:search] ||= {}
       end
     end
 
@@ -84,22 +101,8 @@ module Search
     validates :per_page, numericality: { greater_than: 0, less_than_or_equal_to: 100 }, allow_nil: true
 
     # Could be useful for i18n .. but change the params root key
-    # def self.model_name
-    #   model_name =
-    #     if name =~ /^(.*)Controller::Search$/
-    #       "Search::#{$1}"
-    #     else
-    #       'Search'
-    #     end
-    #   ActiveModel::Name.new(self, nil, model_name)
-    # end
-
     def self.model_name
       @model_name ||= ActiveModel::Name.new(self, nil, 'Search')
-    end
-
-    def query
-      raise 'Not yet implemented'
     end
 
     def without_order
@@ -120,14 +123,18 @@ module Search
       @without_pagination
     end
 
-    def collection
+    def query(_scope)
+      raise 'Not yet implemented'
+    end
+
+    def search(scope)
       if valid?
-        result = query.scope
+        result = query(scope).scope
         result = order.order(result) unless without_order?
         result = result.paginate(paginate_attributes) unless without_pagination?
         result
       else
-        Rails.logger.debug "[Search] invalid attributes: #{errors.full_messages}"
+        Rails.logger.debug "[Search] Invalid attributes: #{errors.full_messages}"
         scope.none
       end
     end

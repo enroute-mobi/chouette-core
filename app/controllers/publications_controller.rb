@@ -13,14 +13,18 @@ class PublicationsController < ChouetteController
   protected
 
   def search
-    @search ||= Search::PublicationExport.new(@publication.exports, params)
+    @search ||= Search::PublicationExport.from_params(params)
+  end
+
+  def collection
+    @collection ||= search.search(@publication.exports)
   end
 
   private
 
   def decorate_exports
     @exports = ExportDecorator.decorate(
-      search.collection,
+      collection,
       context: {
         parent: @workgroup
       }

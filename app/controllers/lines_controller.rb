@@ -105,10 +105,12 @@ class LinesController < ChouetteController
   end
 
   def search
-    @search ||= Search::Line.new(scope, params, line_referential: line_referential)
+    @search ||= Search::Line.from_params(params, line_referential: line_referential)
   end
 
-  delegate :collection, to: :search
+  def collection
+    @collection ||= search.search scope
+  end
 
   def workbench
     @workbench

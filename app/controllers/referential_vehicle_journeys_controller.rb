@@ -24,10 +24,12 @@ class ReferentialVehicleJourneysController < ChouetteController
   end
 
   def search
-    @search ||= Search::VehicleJourney.new(scope, params, referential: referential)
+    @search ||= Search::VehicleJourney.from_params(params, referential: referential)
   end
-  delegate :collection, to: :search
 
+  def collection
+    @collection ||= search.search scope
+  end
 
   def decorate_collection(vehicle_journeys)
     VehicleJourneyDecorator.decorate(
@@ -37,5 +39,4 @@ class ReferentialVehicleJourneysController < ChouetteController
       }
     )
   end
-
 end

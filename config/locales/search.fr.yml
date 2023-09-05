@@ -2,6 +2,11 @@
 # = simple_form_for @search, as: :custom_search, url: request.path, method: "GET", html: { class: 'form form-filter' }  do |f|
 # and use custom_search for model name
 fr:
+  searchs:
+    actions:
+      save: "Sauvegarder"
+      destroy: "Supprimer"
+      destroy_confirm: "Etes vous sûr de supprimer cette Recherche ?"
   activemodel:
     attributes:
       search:
@@ -33,6 +38,13 @@ fr:
         document_type: "Type de Document"
         valid_before_date: Valide depuis
         valid_after_date: Valide jusqu'au
+  activerecord:
+    attributes:
+      search/save:
+        name: Nom
+        description: Description
+        last_used_at: Derniére fois utilisé
+        creator: Créateur
   simple_form:
     placeholders:
       search:

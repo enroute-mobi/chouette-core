@@ -11,14 +11,14 @@
       = form_order.input attribute, as: :hidden
 
   .flex.flex-col.w-full
-    .flex.items-center.border-r.border-white.border-b
+    .flex.items-center.border-r.border-white.border-b x-show="saveSearchPanel"
       = f.input :name, wrapper_html: {class: "w-2/5"}
       = f.input :description, wrapper_html: {class: "w-2/5"}
       = hidden_field_tag :_method, "post", "x-ref": "method", disabled: true
-      = hidden_field_tag :authenticity_token, form_authenticity_token, "x-ref": "authenticity_token", disabled: true 
-      = f.submit "Save", class: 'btn btn-default', "@click": "$root.action = save_path ; $root.method = 'post' ; $refs.method.value = save_method; $refs.method.disabled = false; ; $refs.authenticity_token.disabled = false"
+      = hidden_field_tag :authenticity_token, form_authenticity_token, "x-ref": "authenticity_token", disabled: true
+      = f.submit t('searchs.actions.save'), class: 'btn btn-default ml-5', "@click": "$root.action = save_path ; $root.method = 'post' ; $refs.method.value = save_method; $refs.method.disabled = false; ; $refs.authenticity_token.disabled = false"
       - if @search.id
-        = link_to "Destroy", workbench_stop_areas_search_path(@workbench, @search), method: :delete, data: {:confirm => "Sure ??" }
+        = link_to t('searchs.actions.destroy'), workbench_stop_areas_search_path(@workbench, @search), method: :delete, data: {:confirm => t('searchs.actions.destroy_confirm') }, class: 'btn btn-danger ml-5'
 
     .flex.items-center.border-r.border-white.border-b
       = f.input :text, label: false, wrapper_html: {class: "w-2/5"}

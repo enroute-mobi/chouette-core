@@ -7,6 +7,7 @@ module LocalCache
 
     with_local_lock do
       if local_cached?
+        FileUtils.touch local_cache_file
         @file = CarrierWave::SanitizedFile.new(local_cache_file)
       else
         Rails.logger.info "Cache locally file for #{model.class}##{model.id} in #{local_cache_file}" if model
@@ -62,16 +63,16 @@ module LocalCache
   mattr_accessor :local_cache_cleaned_at, default: Time.zone.now
 
   def self.clean_local_cache
-    return if local_cache_cleaned_at > 5.minutes.ago
+    return if local_cache_cleaned_at > 1.hour.ago
 
     Rails.logger.debug 'Clean local cache'
     self.local_cache_cleaned_at = Time.zone.now
 
     Dir.glob(File.join(local_cache_directory, '*')).each do |file|
-      created_at = File.ctime(file)
-      next if created_at > 24.hours.ago
+      modified_at = File.mtime(file)
+      next if modified_at > 32.hours.ago
 
-      Rails.logger.info "Cache locally file #{file}"
+      Rails.logger.info "Remove local file #{file}"
       File.delete file
     end
 

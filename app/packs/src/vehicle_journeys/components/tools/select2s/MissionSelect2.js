@@ -33,6 +33,7 @@ const JPSelect2 = ({ isFilter, onSelect2JourneyPattern, selectedItem }) =>  (
       }),
       menu: base => ({ ...base, zIndex: 2000 })
     }}
+    isClearable
   />
 )
 

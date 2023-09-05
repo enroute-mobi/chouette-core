@@ -20,6 +20,7 @@ const VJSelect2 = ({ _isFilter, onSelect2VehicleJourney, options, selectedItem }
       }),
       menu: base => ({ ...base, zIndex: 2000 })
     }}
+    isClearable
   />
 )
 

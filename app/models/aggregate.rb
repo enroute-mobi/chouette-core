@@ -125,8 +125,11 @@ class Aggregate < ApplicationModel
           referentials_by_priority.each do |source|
             copy = WorkbenchCopy.new(source, new).copy!
             resources << copy.aggregate_resource
-            new.update vehicle_journeys_count: new.switch { |ref| ref.vehicle_journeys.count }
           end
+
+          #new.update vehicle_journeys_count: new.switch { |ref| ref.vehicle_journeys.count }
+          vehicle_journeys_count = resources.map { |r| (r.metrics || {})['vehicle_journey_count'] }.reject(&:blank?).sum
+          new.update vehicle_journeys_count: vehicle_journeys_count
         end
 
         if processing_rules_after_aggregate.present?

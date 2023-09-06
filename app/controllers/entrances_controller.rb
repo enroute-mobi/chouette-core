@@ -14,10 +14,6 @@ class EntrancesController < ChouetteController
   def index
     index! do |format|
       format.html do
-        if collection.out_of_bounds?
-          redirect_to params.merge(:page => 1)
-        end
-
         @entrances = EntranceDecorator.decorate(
           collection,
           context: {
@@ -51,8 +47,11 @@ class EntrancesController < ChouetteController
   alias_method :entrance, :resource
   alias_method :stop_area_referential, :parent
 
-  def collection
-    @entrances = parent.entrances.paginate(page: params[:page], per_page: 30)
+  def workbench
+    # Ensure parents are loaded
+    parent
+
+    @workbench
   end
 
   def scope
@@ -60,20 +59,14 @@ class EntrancesController < ChouetteController
   end
 
   def search
-    @search ||= Search::Entrance.new(scope, params)
+    @search ||= Search::Entrance.from_params(params, workbench: workbench)
   end
 
-  delegate :collection, to: :search
+  def collection
+    @collection ||= search.search scope
+  end
 
   private
-
-  def sort_column
-    params[:sort].presence || 'departure'
-  end
-
-  def sort_direction
-    %w[asc desc].include?(params[:direction]) ?  params[:direction] : 'asc'
-  end
 
   def entrance_params
     params.require(:entrance).permit(

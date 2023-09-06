@@ -10,66 +10,30 @@ RSpec.describe Search::Base do
   end
 
   let(:scope) { double }
-  subject(:search) { self.class::Search.new scope }
+  subject(:search) { self.class::Search.new }
 
-  describe 'initializer' do
+  describe '.from_params' do
     context "when params define a Search attribute (like search: { name: 'dummy' })" do
-      subject { self.class::Search.new scope, search: { name: 'dummy' } }
+      subject { self.class::Search.from_params search: { name: 'dummy' } }
 
       it { is_expected.to have_attributes(name: 'dummy') }
     end
 
     context "when params define a Search Order attribute (like search: { order: { name: 'desc' }})" do
-      subject(:search) { self.class::Search.new scope, search: { order: { name: 'desc' } } }
+      subject(:search) { self.class::Search.from_params search: { order: { name: 'desc' } } }
 
       it { expect(search.order).to have_attributes(name: :desc) }
     end
 
     context "when context define a Search accessor (like { context: 'test' })" do
-      subject { self.class::Search.new scope, {}, { context: 'test' } }
+      subject { self.class::Search.from_params({}, context: 'test') }
 
       it { is_expected.to have_attributes(context: 'test') }
     end
   end
 
-  describe '.params' do
-    subject { Search::Base.params given_params }
-
-    context 'when given params are nil' do
-      let(:given_params) { nil }
-      it { is_expected.to eq({}) }
-    end
-
-    context "when (legacy) 'sort' param is defined (like sort=name)" do
-      let(:given_params) { { sort: 'name' } }
-      it { is_expected.to eq(order: { name: :asc }) }
-    end
-
-    context "when (legacy) 'direction' param is defined (like sort=name & direction=desc)" do
-      let(:given_params) { { sort: 'name', direction: 'desc' } }
-      it { is_expected.to eq(order: { name: :desc }) }
-    end
-
-    context "when (legacy) 'per_page' param is defined (like per_page=10)" do
-      let(:given_params) { { per_page: '10' } }
-      it { is_expected.to eq({ per_page: '10' }) }
-    end
-
-    context "when (legacy) 'page' param is defined (like page=2)" do
-      let(:given_params) { { page: '2' } }
-      it { is_expected.to eq({ page: '2' }) }
-    end
-  end
-
-  describe '#scope' do
-    subject { search.scope }
-    it 'is the scope used to create the Search' do
-      is_expected.to be(scope)
-    end
-  end
-
-  describe '#collection' do
-    subject { search.collection }
+  describe '#search' do
+    subject { search.search(scope) }
 
     context "when the Search isn't valid" do
       let(:scope) { double none: double('None relation from scope') }
@@ -335,6 +299,42 @@ RSpec.describe Search::Base do
           expect(order_class.defaults).to eq(dummy: :desc)
         end
       end
+    end
+  end
+end
+
+RSpec.describe Search::Base::FromParamsBuilder do
+  describe '.attributes' do
+    subject { Search::Base::FromParamsBuilder.new(params).attributes }
+
+    context 'when given params are nil' do
+      let(:params) { nil }
+      it { is_expected.to eq({}) }
+    end
+
+    context "when (legacy) 'sort' param is defined (like sort=name)" do
+      let(:params) { { sort: 'name' } }
+      it { is_expected.to eq(order: { name: :asc }) }
+    end
+
+    context "when (legacy) 'direction' param is defined (like sort=name & direction=desc)" do
+      let(:params) { { sort: 'name', direction: 'desc' } }
+      it { is_expected.to eq(order: { name: :desc }) }
+    end
+
+    context "when (legacy) 'per_page' param is defined (like per_page=10)" do
+      let(:params) { { per_page: '10' } }
+      it { is_expected.to eq({ per_page: '10' }) }
+    end
+
+    context "when (legacy) 'page' param is defined (like page=2)" do
+      let(:params) { { page: '2' } }
+      it { is_expected.to eq({ page: '2' }) }
+    end
+
+    context 'when search[text] param is defined' do
+      let(:params) { { search: { text: 'dummy' } } }
+      it { is_expected.to eq({ text: 'dummy' }) }
     end
   end
 end

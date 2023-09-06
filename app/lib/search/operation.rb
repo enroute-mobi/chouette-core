@@ -27,7 +27,7 @@ module Search
       candidate_workbenches.where(id: workbench_ids)
     end
 
-    def query
+    def query(scope)
       query_class.new(scope).workbenches(workbenches).text(name).user_statuses(statuses).in_period(period)
     end
 

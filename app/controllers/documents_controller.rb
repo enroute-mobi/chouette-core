@@ -44,9 +44,12 @@ class DocumentsController < ChouetteController
   end
 
   def search
-    @search ||= Search::Document.new(scope, params, workgroup: workbench.workgroup)
+    @search ||= Search::Document.from_params(params, workgroup: workbench.workgroup)
   end
-  delegate :collection, to: :search
+
+  def collection
+    @collection ||= search.search scope
+  end
 
   private
 

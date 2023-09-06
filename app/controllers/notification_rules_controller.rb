@@ -40,10 +40,12 @@ class NotificationRulesController < ChouetteController
   end
 
   def search
-    @search ||= Search::NotificationRule.new(scope, params)
+    @search ||= Search::NotificationRule.from_params(params)
   end
 
-  delegate :collection, to: :search
+  def collection
+    @collection ||= search.search scope
+  end
 
   private
 

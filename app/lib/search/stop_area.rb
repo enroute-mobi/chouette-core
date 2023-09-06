@@ -19,7 +19,7 @@ module Search
 
 		attr_accessor :stop_area_referential
 
-    def query
+    def query(scope)
 			Query::StopArea.new(scope)
 				.text(text)
 				.zip_code(zip_code)

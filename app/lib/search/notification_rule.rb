@@ -16,7 +16,7 @@ module Search
 
     alias_method :line_ids, :lines
 
-    def query
+    def query(scope)
       Query::NotificationRule.new(scope)
         .email(email)
         .in_period(period)

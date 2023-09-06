@@ -37,7 +37,7 @@ class WorkgroupControlListRunsController < ChouetteController
   end
 
   def search
-    @search ||= Search.new(scope, params, workgroup: workgroup)
+    @search ||= Search.from_params(params, workgroup: workgroup)
   end
 
   class Search < Search::Operation
@@ -45,7 +45,10 @@ class WorkgroupControlListRunsController < ChouetteController
       Query::ControlListRun
     end
   end
-  delegate :collection, to: :search
+
+  def collection
+    @collection ||= search.search(scope)
+  end
 
   private
 

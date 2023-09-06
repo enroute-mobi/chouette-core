@@ -94,9 +94,12 @@ class ImportsController < ChouetteController
   end
 
   def search
-    @search ||= Search.new(scope, params, workgroup: workgroup)
+    @search ||= Search.from_params(params, workgroup: workgroup)
   end
-  delegate :collection, to: :search
+
+  def collection
+    @collection ||= search.search(scope)
+  end
 
   def import_params
     permitted_keys = %i(name file type referential_id notification_target)

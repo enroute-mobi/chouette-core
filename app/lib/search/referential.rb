@@ -22,7 +22,7 @@ module Search
 
     validates :period, valid: true
 
-    def query
+    def query(scope)
       Query::Referential.new(scope)
                         .text(text)
                         .line(line)

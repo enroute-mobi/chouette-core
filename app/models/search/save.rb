@@ -11,15 +11,11 @@ module Search
       where(search_type: search_type.to_s)
     end
 
-    def search(scope, context = {})
-      new_search = search_class.new(
-        scope,
-        { search: search_attributes.merge(search_id: id) },
-        context
-      )
-
-      used
-      new_search
+    def search(context = {})
+      all_attributes = search_attributes.merge(context).merge(id: id)
+      search_class.new(all_attributes).tap do
+        used
+      end
     end
 
     def search_class

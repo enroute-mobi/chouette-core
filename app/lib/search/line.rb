@@ -23,7 +23,7 @@ module Search
 
     validates :period, valid: true
 
-    def query
+    def query(scope)
 			Query::Line.new(scope)
 				.text(text)
 				.network_id(network_id)

@@ -98,10 +98,12 @@ class ExportsController < ChouetteController
   end
 
   def search
-    @search ||= Search.new(scope, params, workgroup: workgroup)
+    @search ||= Search.from_params(params, workgroup: workgroup)
   end
 
-  delegate :collection, to: :search
+  def collection
+    @collection ||= search.search(scope)
+  end
 
   def export_params
     params.require(:export).permit(:name, :type, :referential_id, :notification_target, options: {}).tap do |export_params|

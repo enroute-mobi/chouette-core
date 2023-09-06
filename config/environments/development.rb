@@ -83,7 +83,6 @@ Rails.application.configure do
   end
 
   config.subscriptions_notifications_recipients = %w{foo@example.com bar@example.com}
-  config.automated_audits_recipients = %w{foo@example.com bar@example.com}
 
   config.to_prepare do
     Chouette::ChecksumManager.cleanup

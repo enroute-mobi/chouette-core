@@ -3,9 +3,6 @@ fr:
     info_contact: 'Pour toute question, notre équipe de support est joignable sur '
     footer: 'est conçu et développé par'
     hello: 'Bonjour,'
-    audit_mailer:
-      audit:
-        subject: "Audit automatique du %{date} sur %{host}"
     import_mailer:
       button: Voir l'import
       finished:

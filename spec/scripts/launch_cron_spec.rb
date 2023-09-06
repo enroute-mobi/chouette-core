@@ -24,7 +24,6 @@ RSpec.describe "launch-cron" do
     end
 
     SUPPORTED_VARIABLES = %w{
-      AUTOMATED_AUDITS_ENABLED
       BUNDLE_APP_CONFIG
       BUNDLE_PATH
       BUNDLE_SILENCE_ROOT_WARNING

@@ -25,7 +25,7 @@ en:
         line_id: "Line"
         line: "Line"
         timetable: "Timetable"
-        stop_area: "Stop area"
+        stop_area_id: "Stop area"
         area_type: "Area type"
         is_referent: "Referent"
         zip_code: "Zip code"

@@ -4,7 +4,7 @@ module Search
 
     # All search attributes
     attribute :text
-    attribute :stop_area
+    attribute :stop_area_id
     attribute :zip_code
     attribute :city
     attribute :stop_area_provider
@@ -14,18 +14,16 @@ module Search
 
     enumerize :entrance_type, in: ::Entrance.entrance_type.values
 
-    attr_accessor :workbench
-
-    def query(scope)
-      Query::Entrance.new(scope)
-                     .text(text)
-                     .entrance_type(entrance_type)
-                     .stop_area_id(stop_area)
-                     .zip_code(zip_code)
-                     .city_name(city)
-                     .stop_area_provider_id(stop_area_provider)
-                     .entry_flag(entry_flag)
-                     .exit_flag(exit_flag)
+    def query
+			Query::Entrance.new(scope)
+				.text(text)
+				.entrance_type(entrance_type)
+				.stop_area_id(stop_area_id)
+				.zip_code(zip_code)
+				.city_name(city)
+				.stop_area_provider_id(stop_area_provider)
+				.entry_flag(entry_flag)
+				.exit_flag(exit_flag)
     end
 
     def entry_flag
@@ -36,8 +34,8 @@ module Search
       flag(super)
     end
 
-    def stop_area_options
-      workbench.stop_area_referential.stop_areas.pluck(:name, :id)
+    def candidate_stop_areas
+      stop_area_referential.stop_areas.limit(50)
     end
 
     def stop_area_provider_options

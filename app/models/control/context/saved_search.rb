@@ -11,14 +11,14 @@ class Control::Context::SavedSearch < Control::Context
         [].tap do |groups|
           if stop_area_saved_searches = saved_searches.for('Search::StopArea').presence
             groups << [
-              'stop areas',
+              Chouette::StopArea.model_name.human.pluralize.capitalize,
               stop_area_saved_searches.sort_by(&:name).pluck(:name, :id)
             ]
           end
 
           if line_saved_searches = saved_searches.for('Search::Line').presence
             groups << [
-              'lines',
+              Chouette::Line.model_name.human.pluralize.capitalize,
               line_saved_searches.sort_by(&:name).pluck(:name, :id)
             ]
           end

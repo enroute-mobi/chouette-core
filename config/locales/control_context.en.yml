@@ -37,6 +37,8 @@ en:
         next_days: Next days
       control/context/lines: &lines
         line_ids: Lines
+      control/context/saved_search: &saved_search
+        saved_search_id: Saved search
       control/context/run:
         <<: *control_context
       control/context/transport_mode/run:
@@ -45,3 +47,5 @@ en:
         <<: *operating_period
       control/context/lines/run:
         <<: *lines
+      control/context/saved_search/run:
+        <<: *saved_search

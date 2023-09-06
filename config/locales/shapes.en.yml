@@ -8,7 +8,6 @@ en:
       edit: "Edit a Shape"
       destroy: "Remove this shape"
       destroy_confirm: Are you sure you want destroy this shape ?"
-      associated_resources: "Shape %{shape_uuid} - Associated resources"
       view_waypoint: Zoom
       delete_waypoint: Supprimer
     edit:
@@ -17,13 +16,6 @@ en:
       title: "Shape %{name}"
     index:
       title: Shapes
-    associations:
-      table_headers:
-        status: Status
-        dataset: Dataset
-        type: Type
-        id: ID
-        line: Line
     errors:
       cannot_edit: 'Cannot edit : this journey pattern does not have a shape'
       cannot_edit_imported_shape: "Cannot edit an imported shape"

@@ -32,7 +32,7 @@ module Search
 
     # TODO: Why the default ActiveAttr::AttributeDefaults#apply_defaults
     # defines @attributes values without writing the attributes ?
-    def apply_defaults(defaults=attribute_defaults)
+    def apply_defaults(defaults = attribute_defaults)
       defaults.each do |name, value|
         write_attribute name, value
       end
@@ -49,7 +49,9 @@ module Search
 
       # Only used defined attributes
       self.class.attributes.each_key do |attribute_name|
-        write_attribute(attribute_name, attributes[attribute_name]) if attributes.key? attribute_name
+        if (value = attributes[attribute_name]).present?
+          write_attribute attribute_name, value
+        end
       end
     end
 
@@ -59,38 +61,42 @@ module Search
 
     # Create Search attributes from our legacy Controller params (:sort, :direction, :page, etc)
     class FromParamsBuilder
-      def initialize(params = {})
-        @params = params.dup
+      def initialize(params = nil)
+        @params = params || {}
       end
       attr_reader :params
 
-      delegate :blank?, to: :params
-
       def attributes
-        return {} if blank?
+        {}.tap do |attributes|
+          attributes[:order] = { sort_attribute => sort_direction } if sort_attribute
+          attributes[:page] = page
+          attributes[:per_page] = per_page
 
-        search_params[:order] = { sort_attribute => sort_direction } if sort_attribute
-
-        %i[page per_page].each do |param|
-          search_params[param] = params[param] if params.key?(param)
+          attributes.merge! search_params
+          attributes.delete_if { |_, v| v.blank? }
         end
+      end
 
-        search_params.try :permit!
-        search_params
+      def page
+        params[:page]
+      end
+
+      def per_page
+        params[:per_page]
       end
 
       def sort_attribute
-        @sort_attribute ||= (params.delete(:sort).to_sym if params.key?(:sort))
+        params[:sort]&.to_sym
       end
 
       def sort_direction
-        return :asc unless params.key?(:direction)
-
-        @sort_direction ||= params.delete(:direction).to_sym
+        params[:direction]&.to_sym || :asc
       end
 
       def search_params
-        params[:search] ||= {}
+        (params[:search] || {}).tap do |search_params|
+          search_params.try(:permit!)
+        end
       end
     end
 

@@ -331,5 +331,10 @@ RSpec.describe Search::Base::FromParamsBuilder do
       let(:params) { { page: '2' } }
       it { is_expected.to eq({ page: '2' }) }
     end
+
+    context 'when search[text] param is defined' do
+      let(:params) { { search: { text: 'dummy' } } }
+      it { is_expected.to eq({ text: 'dummy' }) }
+    end
   end
 end

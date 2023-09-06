@@ -93,7 +93,7 @@ describe TableBuilderHelper, type: :helper do
                         <ul class="other">
                             <li class=""><a href="/referentials/#{referential.id}/time_tables">Calendriers</a></li>
                             <li class=""><a href="/workbenches/#{workbench.id}/referentials/new?from=#{referential.id}">Dupliquer</a></li>
-                            <li class=""><a href="/referentials/#{referential.id}/select_compliance_control_set">Contrôler</a></li>
+                            <li class=""><a href="/workbenches/#{workbench.id}/control_list_runs/new?referential_id=#{referential.id}">Contrôler</a></li>
                             <li class=""><a rel="nofollow" data-method="put" href="/referentials/#{referential.id}/archive">Archiver</a></li>
                         </ul>
                         <ul class="footer">

@@ -115,32 +115,6 @@ RSpec.describe "ComplianceControlSets", type: :feature do
     end
   end
 
-  describe 'select type' do
-    let( :control_button_href ){ select_type_compliance_control_set_compliance_controls_path(control_set) }
-    let(:expect_proc) do
-      Proc.new{ |bool| expect(page).to have_field(type: 'radio', with: 'CustomFieldControl::Presence', disabled: bool) }
-    end
-
-    context 'when current organisation have custom fields' do
-      before do
-        FactoryBot.create(:custom_field, workgroup: organisation.workgroups.first)
-      end
-
-      it 'should enable custom field control radio button' do
-        visit control_button_href
-
-        expect_proc.call(false)
-      end
-    end
-
-    context 'when current organisation does not have any custom fields' do
-        it 'should disable custom field control radio button' do
-          visit control_button_href
-          expect_proc.call(true)
-      end
-    end
-  end
-
   def make_control ccblock=nil, times: 1, severity: :warning
     times.times do
       make_one_control ccblock, severity

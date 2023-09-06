@@ -45,8 +45,6 @@ en:
         dummy: Simulation
         company: Company
         stop_area: Stop area
-      generic:
-        no_custom_fields: Your organisation doesn't have any custom fields
     actions:
       new: Add
       edit: Edit

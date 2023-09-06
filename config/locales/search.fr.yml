@@ -41,6 +41,10 @@ fr:
         valid_before_date: Valide depuis
         valid_after_date: Valide jusqu'au
   activerecord:
+    models:
+      search/save:
+        one: "Recherche sauvegardée"
+        other: "Recherches sauvegardées"
     attributes:
       search/save:
         name: Nom

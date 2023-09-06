@@ -32,7 +32,7 @@ class StopAreasController < ChouetteController
 
   def index
     if saved_search = saved_searches.find_by(id: params[:search_id])
-      @search = saved_search.search(stop_area_referential: stop_area_referential)
+      @search = saved_search.search
     end
 
     @per_page = 25
@@ -126,7 +126,7 @@ class StopAreasController < ChouetteController
   end
 
   def search
-    @search ||= Search::StopArea.from_params(params, stop_area_referential: stop_area_referential)
+    @search ||= Search::StopArea.from_params(params, workbench: @workbench)
   end
 
   def collection

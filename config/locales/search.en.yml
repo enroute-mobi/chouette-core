@@ -41,6 +41,10 @@ en:
         valid_before_date: Valide before
         valid_after_date: Valide after
   activerecord:
+    models:
+      search/save:
+        one: "Saved Search"
+        other: "Saved Searches"
     attributes:
       search/save:
         name: Name

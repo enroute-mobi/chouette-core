@@ -1,5 +1,5 @@
-// TODO
-// - breadcrumb :stop_areas, :searches, @workbench
+- breadcrumb "#{parent_resources}_searches".to_sym, @workbench
+- content_for :page_header_title, Search::Save.model_name.human(count: 2)
 
 .page_content x-data="{ saveSearchPanel: true }"
   .container-fluid
@@ -33,6 +33,3 @@
       .row.mt-xs
         .col-lg-12
           = replacement_msg t('searches.search_no_results')
-
-
-

@@ -15,38 +15,42 @@ class SearchesController < ApplicationController
   # List Saved Search of given type
   # /workbenches/<workbench_id>/<parent_resources>/searches
   def index
-    @search = search_class.new(nil)
+    @search = search_class.new(workbench: workbench)
   end
 
   def show
-    @search = saved_searches.find(params[:id]).search(nil)
+    @search = saved_searches.find(params[:id]).search
     render :index
   end
 
   def create
-    @search = search_class.new(nil, params)
+    @search = search_class.from_params(params, workbench: workbench)
 
     if @search.valid?
       saved_search = saved_searches.create(
         name: params[:search][:name],
         description: params[:search][:description],
         creator: current_user.name,
-        search_attributes: @search.meuh_attributes
+        search_attributes: @search.attributes
       )
-      @search = saved_search.search(nil)
+      @search = saved_search.search
     end
 
     render :index
   end
 
   def update
-    @search = search_class.new(nil, params)
+    @search = search_class.from_params(params, workbench: workbench)
     
     if @search.valid?
       saved_search = saved_searches.find(params[:id])
-      saved_search.update name: params[:search][:name], description: params[:search][:description], search_attributes: @search.meuh_attributes
+      saved_search.update(
+        name: params[:search][:name], 
+        description: params[:search][:description], 
+        search_attributes: @search.attributes
+      )
 
-      @search = saved_search.search(nil)
+      @search = saved_search.search
     end
 
     render :index

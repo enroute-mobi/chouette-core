@@ -17,7 +17,8 @@ module Search
 
 		validates :parent_stop_area, inclusion: { in: ->(search) { search.candidate_parents } }, allow_blank: true, allow_nil: true
 
-		attr_accessor :stop_area_referential
+		attr_accessor :workbench
+    delegate :stop_area_referential, to: :workbench
 
     def query(scope)
 			Query::StopArea.new(scope)
@@ -36,7 +37,7 @@ module Search
 		end
 
 		def candidate_stop_area_providers
-			stop_area_referential&.stop_area_providers
+			stop_area_referential.stop_area_providers
 		end
 
 		def candidate_parents
@@ -48,7 +49,7 @@ module Search
     end
 
 		def parent_stop_area
-			stop_area_referential&.stop_areas.find(parent_id) if parent_id.present?
+			stop_area_referential.stop_areas.find(parent_id) if parent_id.present?
 		end
 
 		private

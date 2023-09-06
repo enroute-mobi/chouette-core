@@ -33,6 +33,7 @@ const TTSelect2 = ({ isFilter, onSelect2Timetable, selectedItem }) => (
       }),
       menu: base => ({ ...base, zIndex: 2000 })
     }}
+    isClearable
   />
 )
 

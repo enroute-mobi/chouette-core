@@ -125,8 +125,6 @@ Rails.application.configure do
     Devise::Mailer.layout "mailer"
   end
 
-  config.automated_audits_recipients = 'team-support@enroute.mobi'
-
   config.i18n.available_locales = [:fr, :en]
 
   # Set node env for browserify-rails

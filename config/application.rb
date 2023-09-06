@@ -54,7 +54,6 @@ module ChouetteIhm
     SmartEnv.add :CHOUETTE_ADDITIONAL_COMPLIANCE_CONTROLS, default: ""
     SmartEnv.add :CHOUETTE_ADDITIONAL_PUBLICATION_DESTINATIONS, default: ""
     SmartEnv.add :MAIL_FROM, default: 'Chouette <noreply@enroute.mobi>'
-    SmartEnv.add_boolean :AUTOMATED_AUDITS_ENABLED
     SmartEnv.add_boolean :BYPASS_AUTH_FOR_SIDEKIQ
     SmartEnv.add_boolean :CHOUETTE_ROUTE_POSITION_CHECK
     SmartEnv.add_boolean :CHOUETTE_ITS_SEND_INVITATION
@@ -100,8 +99,6 @@ module ChouetteIhm
     )
 
     config.subscriptions_notifications_recipients = []
-    config.enable_automated_audits = SmartEnv.boolean('AUTOMATED_AUDITS_ENABLED')
-    config.automated_audits_recipients = []
 
     config.vehicle_journeys_extra_headers = []
     config.osm_backgrounds_source = :osm

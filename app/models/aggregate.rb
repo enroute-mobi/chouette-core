@@ -127,9 +127,7 @@ class Aggregate < ApplicationModel
             resources << copy.aggregate_resource
           end
 
-          #new.update vehicle_journeys_count: new.switch { |ref| ref.vehicle_journeys.count }
-          vehicle_journeys_count = resources.map { |r| (r.metrics || {})['vehicle_journey_count'] }.reject(&:blank?).sum
-          new.update vehicle_journeys_count: vehicle_journeys_count
+          new.switch { new.update_counters }
         end
 
         if processing_rules_after_aggregate.present?

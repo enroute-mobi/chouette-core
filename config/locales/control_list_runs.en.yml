@@ -5,7 +5,7 @@ en:
     show:
       title: "%{name}"
     new:
-      title: "Créer un rapport"
+      title: "Control a DataSet"
     actions:
       create: "Create a report"
       show: "Show this report"

@@ -50,7 +50,7 @@ class Control::Context::SavedSearch < Control::Context
     def lines
       case collection_name
       when :lines
-        saved_search.search(context.lines).collection
+        saved_search.search(context.lines).without_pagination.collection
       when :stop_areas
         context.lines.where(routes: routes.select(:id)).distinct
       else
@@ -71,7 +71,7 @@ class Control::Context::SavedSearch < Control::Context
     end
 
     def stop_areas
-      return saved_search.search(context.stop_areas).collection if collection_name == :stop_areas
+      return saved_search.search(context.stop_areas).without_pagination.collection if collection_name == :stop_areas
 
       context.stop_areas.where(id: stop_points.select(:stop_area_id))
     end

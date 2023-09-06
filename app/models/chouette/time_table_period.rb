@@ -9,6 +9,10 @@ module Chouette
       where("(time_table_periods.period_start <= :end AND time_table_periods.period_end >= :begin)", {begin: period_range.begin, end: period_range.end})
     end
 
+    scope :overlapping_siblings, -> {
+      joins("inner join time_table_periods as brother on time_table_periods.time_table_id = brother.time_table_id and time_table_periods.id <> brother.id").where("time_table_periods.period_start <= brother.period_end AND time_table_periods.period_end >= brother.period_start")
+    }
+
     validates_presence_of :period_start, :period_end
     validate :validate_period_uniqueness
     validate :start_must_be_before_end

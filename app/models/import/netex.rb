@@ -38,11 +38,11 @@ class Import::Netex < Import::Base
     # Find duplicated periods for each timetable
     time_tables = time_tables_with_duplicated_periods
     # Create messages for netex import
-    time_tables.each do |time_table|
-      self.main_resource.messages.create(criticity: :error, message_attributes: { timetable_objectid: time_table.objectid }, message_key: 'overlaping_period_for_timetable')
+    time_tables.find_each do |time_table|
+      main_resource.messages.create(criticity: :error, message_attributes: { timetable_objectid: time_table.objectid }, message_key: 'overlaping_period_for_timetable')
     end
     # Override status for netex import
-    self.failed! if time_tables.present?
+    failed! if time_tables.present?
 
     # Do nothing : update main resource status never displayed
     main_resource.update_status_from_importer self.status
@@ -64,8 +64,8 @@ class Import::Netex < Import::Base
     return unless referential.present?
 
     referential.switch
-    periods = referential.time_table_periods.joins("inner join time_table_periods as brother on time_table_periods.time_table_id = brother.time_table_id and time_table_periods.id <> brother.id").where("time_table_periods.period_start <= brother.period_end AND time_table_periods.period_end >= brother.period_start")
-    periods.collect(&:time_table).uniq
+    periods = referential.time_table_periods.overlapping_siblings
+    referential.time_tables.where(id: periods.select(:time_table_id).distinct.to_sql)
   end
 
   def processor

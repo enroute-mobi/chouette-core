@@ -194,7 +194,6 @@ class VehicleJourneysController < ChouetteController
         :stop_area_id => sp.stop_area_id,
         :registration_number => sp.stop_area.try(:registration_number),
         :nearest_topic_name => sp.stop_area.try(:nearest_topic_name),
-        :fare_code => sp.stop_area.try(:fare_code),
         :longitude => sp.stop_area.try(:longitude),
         :latitude => sp.stop_area.try(:latitude),
         :long_lat_type => sp.stop_area.try(:long_lat_type),

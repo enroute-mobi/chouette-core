@@ -1,7 +1,7 @@
 object @stop_area
 extends "api/v1/trident_objects/show"
 
-[:name, :area_type, :nearest_topic_name, :fare_code, :registration_number,
+[:name, :area_type, :nearest_topic_name, :registration_number,
   :longitude, :latitude, :long_lat_type,
   :country_code, :street_name, :projection_x, :projection_y, :projection, :comment
 ].each do |attr|

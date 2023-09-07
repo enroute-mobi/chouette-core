@@ -31,7 +31,6 @@ module Control
             define Chouette::StopArea, :postal_region
             define Chouette::StopArea, :registration_number
             define Chouette::StopArea, :public_code
-            define Chouette::StopArea, :fare_code
             define Chouette::StopArea, :accessibility_limitation_description
 
             # Chouette::Company

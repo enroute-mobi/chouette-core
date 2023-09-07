@@ -275,7 +275,6 @@ class Import::Neptune < Import::Base
         end
         if (extension = source_stop_area[:stop_area_extension])
           stop_area.nearest_topic_name = extension[:nearest_topic_name] if extension[:nearest_topic_name].present?
-          stop_area.fare_code = extension[:fare_code] if extension[:fare_code].present?
           stop_area.area_type = stop_area_type_mapping(extension[:area_type]) if extension[:area_type].present?
         end
         stop_area.kind = :commercial

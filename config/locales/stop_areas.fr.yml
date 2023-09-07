@@ -143,7 +143,6 @@ fr:
         street_name: "Nom de la rue"
         country_code: "Pays"
         country: "Pays"
-        fare_code: "Zone tarifaire"
         projection: "Projection"
         projection_x: "Position X"
         projection_y: "Position Y"

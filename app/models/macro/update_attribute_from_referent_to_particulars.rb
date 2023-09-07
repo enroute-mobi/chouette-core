@@ -24,7 +24,6 @@ module Macro
         Chouette::ModelAttribute.empty do # rubocop:disable Metrics/BlockLength
           define Chouette::StopArea, :name
           define Chouette::StopArea, :parent
-          define Chouette::StopArea, :fare_code
           define Chouette::StopArea, :country_code
           define Chouette::StopArea, :street_name
           define Chouette::StopArea, :zip_code

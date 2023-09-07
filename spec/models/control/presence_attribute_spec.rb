@@ -450,23 +450,6 @@ RSpec.describe Control::PresenceAttribute do
             end
           end
         end
-
-        describe "#fare_code" do
-          let(:target_attribute) { "fare_code" }
-
-          context "when value is not present" do
-            before { stop_area.update fare_code: nil }
-
-            let(:message_key) { "no_presence_of_attribute" }
-            let(:criticity) { "warning" }
-
-            it "should create warning message" do
-              subject
-
-              expect(control_run.control_messages).to include(expected_message)
-            end
-          end
-        end
       end
 
       describe "#VehicleJourney" do

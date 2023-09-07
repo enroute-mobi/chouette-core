@@ -99,7 +99,6 @@ module Chouette
         city_name
         comment
         country_code
-        fare_code
         long_lat_type
         nearest_topic_name
         postal_region

@@ -126,6 +126,8 @@ class Aggregate < ApplicationModel
             copy = WorkbenchCopy.new(source, new).copy!
             resources << copy.aggregate_resource
           end
+
+          new.switch { new.update_counters }
         end
 
         if processing_rules_after_aggregate.present?

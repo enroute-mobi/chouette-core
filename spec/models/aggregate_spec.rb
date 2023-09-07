@@ -100,6 +100,15 @@ RSpec.describe Aggregate, type: :model do
               )
             )
           end
+
+          describe "vehicle_journeys_count" do
+            subject(:aggregated_dataset) { aggregate.new }
+            before { aggregated_dataset.switch }
+
+            it "contains five Vehicle Journeys" do
+              expect(aggregated_dataset.vehicle_journeys_count).to eq(first_vehicle_journey_count + second_vehicle_journey_count + last_vehicle_journey_count)
+            end
+          end
         end
 
         context "the aggregated dataset" do

@@ -45,6 +45,7 @@ en:
         available_referentials: "Available data sets"
         selected_referentials: "Selected data sets"
         contains_urgent_offer: Handles urgent offer
+        vehicle_journeys_count: Vehicle journeys count
       aggregate/resource:
         workbench_name: "Workbench name"
         priority: "Priority"

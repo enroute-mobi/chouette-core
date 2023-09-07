@@ -826,6 +826,10 @@ class Referential < ApplicationModel
     CrossReferentialIndexEntry.clean_index_for_referential!(self)
   end
 
+  def update_counters
+    update_column :vehicle_journeys_count, vehicle_journeys.count
+  end
+
   private
 
   def lock_table

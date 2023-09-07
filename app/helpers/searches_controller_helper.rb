@@ -10,6 +10,6 @@ module SearchesControllerHelper
   end
 
   def workbench_stop_areas_search_path(workbench, search)
-    workbench_stop_area_referential_search_path workbench, search.id, parent_resources: :stop_areas
+    workbench_stop_area_referential_search_path workbench, search.saved_id, parent_resources: :stop_areas
   end
 end

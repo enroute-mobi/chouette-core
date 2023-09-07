@@ -10,8 +10,8 @@ fr:
   activemodel:
     attributes:
       search:
-        name: Nom
-        description: Description
+        saved_name: Nom de la Recherche sauvegardée
+        saved_description: Description
         statuses: État
         workbench_ids: Espaces de travail
         workbench_id: Espace de travail

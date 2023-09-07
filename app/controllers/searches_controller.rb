@@ -28,8 +28,8 @@ class SearchesController < ApplicationController
 
     if @search.valid?
       saved_search = saved_searches.create(
-        name: params[:search][:name],
-        description: params[:search][:description],
+        name: params[:search][:saved_name],
+        description: params[:search][:saved_description],
         creator: current_user.name,
         search_attributes: @search.attributes
       )
@@ -41,12 +41,12 @@ class SearchesController < ApplicationController
 
   def update
     @search = search_class.from_params(params, workbench: workbench)
-    
+
     if @search.valid?
       saved_search = saved_searches.find(params[:id])
       saved_search.update(
-        name: params[:search][:name], 
-        description: params[:search][:description], 
+        name: params[:search][:saved_name],
+        description: params[:search][:saved_description],
         search_attributes: @search.attributes
       )
 

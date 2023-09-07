@@ -15,7 +15,6 @@
 
   .actions
     .flex
-      = f.label :per_page, class: 'control-label'
-      = f.input :per_page, as: :per_page, wrapper_html: {class: "ml-3"}, label: false
+      = render partial: 'shared/per_page', locals: {f:f}
     = link_to t('actions.erase'), workbench_control_list_runs_path(@workbench), class: 'btn btn-link'
     = f.submit t('actions.filter'), class: 'btn btn-default'

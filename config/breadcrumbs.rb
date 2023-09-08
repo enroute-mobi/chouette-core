@@ -427,7 +427,7 @@ crumb :new_invitation do |organisation|
 end
 
 crumb :organisation do |organisation|
-  link breadcrumb_name(organisation), organisation_path()
+  link breadcrumb_name(organisation), organisation_path
 end
 
 crumb :compliance_control_sets do
@@ -452,6 +452,11 @@ end
 crumb :stop_areas do |workbench|
   link I18n.t('stop_areas.index.title'), workbench_stop_area_referential_stop_areas_path(workbench)
   parent :stop_area_referential, workbench
+end
+
+crumb :stop_areas_searches do |workbench|
+  link Search::Save.model_name.human(count: 2)
+  parent :stop_areas, workbench
 end
 
 crumb :entrances do |workbench|

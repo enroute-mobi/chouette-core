@@ -8,7 +8,7 @@ module Search
     include ActiveAttr::TypecastedAttributes
     include ActiveAttr::AttributeDefaults
 
-    attr_accessor :id
+    attr_accessor :saved_id, :saved_name, :saved_description
 
     def initialize(attributes = {})
       apply_defaults
@@ -28,6 +28,12 @@ module Search
 
     def inspect
       "#{self.class.name}(#{attributes.inspect},order=#{order.attributes.inspect})"
+    end
+
+    def saved_search=(saved_search)
+      self.saved_id = saved_search.id
+      self.saved_name = saved_search.name
+      self.saved_description = saved_search.description
     end
 
     # TODO: Why the default ActiveAttr::AttributeDefaults#apply_defaults

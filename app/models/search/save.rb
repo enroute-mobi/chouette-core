@@ -12,7 +12,10 @@ module Search
     end
 
     def search(context = {})
-      all_attributes = search_attributes.merge(context).merge(id: id)
+      all_attributes = search_attributes.merge(context).merge(
+        saved_search: self,
+        workbench: workbench
+      )
       search_class.new(all_attributes).tap do
         used
       end

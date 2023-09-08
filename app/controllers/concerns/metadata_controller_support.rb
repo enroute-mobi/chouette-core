@@ -11,16 +11,23 @@ module MetadataControllerSupport
   end
 
   def set_creator_metadata
-    if resource.valid?
-      resource.try(:set_metadata!, :creator_username, user_for_metadata)
-      resource.try(:set_metadata!, :modifier_username, user_for_metadata)
-    end
+    return unless metadata_resource&.valid?
+
+    metadata_resource.try(:set_metadata!, :creator_username, user_for_metadata)
+    metadata_resource.try(:set_metadata!, :modifier_username, user_for_metadata)
   end
 
   def set_modifier_metadata
-    _resource = @resources || [resource]
-    _resource.to_a.flatten.each do |r|
+    metadata_resources.each do |r|
       r.try(:set_metadata!, :modifier_username, user_for_metadata) if r.persisted? && r.valid?
     end
+  end
+
+  def metadata_resource
+    @metadata_resource ||= resource if respond_to?(:resource, true)
+  end
+
+  def metadata_resources
+    @metadata_resources ||= [@resources, [metadata_resource]].to_a.flatten.compact
   end
 end

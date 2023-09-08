@@ -43,7 +43,7 @@
                 TableBuilderHelper::Column.new( \
                   key: :departure_time, \
                   attribute: Proc.new {|v| display_time_of_day(v.vehicle_journey_at_stops.first&.departure_local_time_of_day) }, \
-                  sortable: false \
+                  sortable: true \
                 ), \
                 [@search.from_stop_area, @search.to_stop_area].compact.map{|stop| \
                   TableBuilderHelper::Column.new( \
@@ -55,12 +55,12 @@
                 TableBuilderHelper::Column.new( \
                   key: :arrival_time, \
                   attribute: Proc.new {|v| display_time_of_day(v.vehicle_journey_at_stops.last&.arrival_local_time_of_day) }, \
-                  sortable: false \
+                  sortable: true \
                 ), \
               ].flatten.compact,
               cls: 'table has-filter has-search'
 
-          = new_pagination @vehicle_journeys, 'pull-right'
+          = new_pagination @vehicle_journeys_for_paginate, 'pull-right'
     - else
       .row.mt-xs
         .col-lg-12

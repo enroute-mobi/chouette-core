@@ -10,10 +10,9 @@ class ReferentialVehicleJourneysController < ChouetteController
   respond_to :html, only: :index
 
   def index
-    index! do |format|
-      format.html {
-        @vehicle_journeys = decorate_collection(collection)
-      }
+    index! do
+      @vehicle_journeys = decorate_collection(search.search(scope.with_departure_arrival_second_offsets))
+      @vehicle_journeys_for_paginate = search.without_order.search(scope)
     end
   end
 
@@ -25,10 +24,6 @@ class ReferentialVehicleJourneysController < ChouetteController
 
   def search
     @search ||= Search::VehicleJourney.from_params(params, referential: referential)
-  end
-
-  def collection
-    @collection ||= search.search scope
   end
 
   def decorate_collection(vehicle_journeys)

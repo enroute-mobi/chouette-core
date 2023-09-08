@@ -120,6 +120,18 @@ module Chouette
       .order(Arel.sql("#{field} #{dir}"))
     }
 
+    def self.with_departure_arrival_second_offsets
+      stops = Chouette::VehicleJourneyAtStop.joins(:stop_point).where('vehicle_journey_id = vehicle_journeys.id')
+
+      query = joins("JOIN LATERAL (#{stops.order('stop_points.position').limit(1).select(:departure_time, :departure_day_offset).to_sql}) first_stop ON true")
+              .joins("JOIN LATERAL (#{stops.order('stop_points.position': :desc).select(:arrival_time, :arrival_day_offset).limit(1).to_sql}) last_stop ON true")
+              .select('*',
+                      'EXTRACT(EPOCH FROM first_stop.departure_time) + first_stop.departure_day_offset * 86400 as departure_second_offset',
+                      'EXTRACT(EPOCH FROM last_stop.arrival_time) + last_stop.arrival_day_offset * 86400 as arrival_second_offset')
+
+      from(query, :vehicle_journeys)
+    end
+
     scope :without_any_time_table, -> { joins('LEFT JOIN time_tables_vehicle_journeys ON time_tables_vehicle_journeys.vehicle_journey_id = vehicle_journeys.id LEFT JOIN time_tables ON time_tables.id = time_tables_vehicle_journeys.time_table_id').where(:time_tables => { :id => nil}) }
     scope :without_any_passing_time, -> { joins('LEFT JOIN vehicle_journey_at_stops ON vehicle_journey_at_stops.vehicle_journey_id = vehicle_journeys.id').where(vehicle_journey_at_stops: { id: nil }) }
     scope :scheduled, -> { joins(:time_tables).merge(Chouette::TimeTable.non_empty) }

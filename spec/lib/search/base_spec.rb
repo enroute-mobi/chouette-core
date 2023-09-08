@@ -322,6 +322,11 @@ RSpec.describe Search::Base::FromParamsBuilder do
       it { is_expected.to eq(order: { name: :desc }) }
     end
 
+    context "when (legacy) 'sort' param is defined and search[order][<attribute>] is defined too" do
+      let(:params) { { sort: 'name', search: { order: { other: :desc } } } }
+      it { is_expected.to eq(order: { name: :asc }) }
+    end
+
     context "when (legacy) 'per_page' param is defined (like per_page=10)" do
       let(:params) { { per_page: '10' } }
       it { is_expected.to eq({ per_page: '10' }) }

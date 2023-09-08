@@ -74,11 +74,12 @@ module Search
 
       def attributes
         {}.tap do |attributes|
+          attributes.merge! search_params
+
           attributes[:order] = { sort_attribute => sort_direction } if sort_attribute
           attributes[:page] = page
           attributes[:per_page] = per_page
 
-          attributes.merge! search_params
           attributes.delete_if { |_, v| v.blank? }
         end
       end

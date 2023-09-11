@@ -29,6 +29,7 @@ fr:
     invalid_model_attribute: "L'attribut %{attribute_name} ne peut avoir la valeur '%{attribute_value}'"
     unreasonable_shape: 'Le tracé %{shape_id} est ignoré à cause de son trop grand nombre de points'
     stop_area_not_found: "Arrêt inconnu: '%{code}'"
+    overlaping_period_for_timetable: "L'objet DayType d'identifiant %{timetable_objectid} contient des DayTypeAssignment avec des OperatingPeriod se chevauchant."
     gtfs:
       agencies:
         imported: "%{count} agence(s) importée(s)"

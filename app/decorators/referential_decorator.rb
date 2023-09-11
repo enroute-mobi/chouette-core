@@ -17,7 +17,7 @@ class ReferentialDecorator < AF83::Decorator
       l.href { h.duplicate_workbench_referential_path(object) }
     end
 
-    instance_decorator.action_link policy: :validate, secondary: :show do |l|
+    instance_decorator.action_link policy: :validate, secondary: :show, if: ->{ object.workbench } do |l|
       l.content t('actions.validate')
       l.href { h.new_workbench_control_list_run_path(object.workbench, referential_id: object.id ) }
     end

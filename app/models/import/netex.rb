@@ -65,7 +65,7 @@ class Import::Netex < Import::Base
 
     referential.switch
     periods = referential.time_table_periods.overlapping_siblings
-    referential.time_tables.where(id: periods.select(:time_table_id).distinct.to_sql)
+    referential.time_tables.where(id: periods.select(:time_table_id).distinct)
   end
 
   def processor

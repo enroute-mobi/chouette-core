@@ -100,7 +100,7 @@ module Chouette
                                }
 
     def self.nullable_attributes
-      %i[registration_number published_name number comment url color text_color stable_id]
+      %i[registration_number published_name number comment url color text_color]
     end
 
     def geometry_presenter

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2023_09_01_121853) do
+ActiveRecord::Schema.define(version: 2023_09_12_100632) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "btree_gin"
@@ -894,12 +894,10 @@ ActiveRecord::Schema.define(version: 2023_09_01_121853) do
     t.string "registration_number"
     t.string "comment"
     t.boolean "mobility_restricted_suitability"
-    t.integer "int_user_needs"
     t.boolean "flexible_service"
     t.string "url"
     t.string "color", limit: 6
     t.string "text_color", limit: 6
-    t.string "stable_id"
     t.bigint "line_referential_id"
     t.boolean "deactivated", default: false
     t.text "import_xml"

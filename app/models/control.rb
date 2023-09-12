@@ -5,12 +5,13 @@ module Control
     # Should be automatic to provide an *ordered* list
     # Could use groups in the future
     [
-      Control::Dummy,
       Control::PresenceAttribute,
       Control::PresenceCode,
       Control::PresenceCustomField,
-      Control::CodeFormat,
       Control::FormatAttribute,
+      Control::CodeFormat,
+      Control::AttributeUniqueness,
+      Control::CodeUniqueness,
       Control::ModelStatus,
       Control::JourneyPatternSpeed,
       Control::ServiceCountTrend,
@@ -19,8 +20,8 @@ module Control
       Control::GeographicalZone,
       Control::ExpectedProvider,
       Control::ServicesOnlyInValidityPeriod,
-      Control::CodeUniqueness,
-      Control::ServiceCountInRange
+      Control::ServiceCountInRange,
+      Control::Dummy
     ]
   end
 end

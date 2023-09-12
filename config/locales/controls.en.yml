@@ -56,6 +56,8 @@ en:
         one: Code uniqueness
       control/service_count_in_range:
         one: Service count in a range
+      control/attribute_uniqueness:
+        one: Attribute uniqueness
     attributes:
       control/base:
         name: Name
@@ -109,3 +111,6 @@ en:
       control/service_count_in_range:
         minimum_service_counts: Minimum service counts
         maximum_service_counts: Maximum service counts
+      control/attribute_uniqueness:
+        target_attribute: Attribute
+        uniqueness_scope: Uniqueness scope

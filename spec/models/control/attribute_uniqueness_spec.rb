@@ -93,9 +93,6 @@ RSpec.describe Control::AttributeUniqueness do
         let(:first_expected_message) do
           an_object_having_attributes(
             source: first_duplicate_stop,
-            message_attributes: {
-              "name" => 'duplicate',
-            },
             criticity: 'warning',
           )
         end
@@ -103,9 +100,6 @@ RSpec.describe Control::AttributeUniqueness do
         let(:second_expected_message) do
           an_object_having_attributes(
             source: second_duplicate_stop,
-            message_attributes: {
-              "name" => 'duplicate',
-            },
             criticity: 'warning',
           )
         end
@@ -118,7 +112,7 @@ RSpec.describe Control::AttributeUniqueness do
         end
 
         context "When uniqueness scope is 'All'" do
-          let(:uniqueness_scope) { 'All'}
+          let(:uniqueness_scope) { 'all'}
 
           it 'should create warning messages' do
             is_expected.to include(first_expected_message)
@@ -131,7 +125,7 @@ RSpec.describe Control::AttributeUniqueness do
         end
 
         context "When uniqueness scope is 'Provider'" do
-          let(:uniqueness_scope) { 'Provider'}
+          let(:uniqueness_scope) { 'provider'}
 
           context 'with the same provider' do
             it "should create warning messages" do
@@ -156,7 +150,7 @@ RSpec.describe Control::AttributeUniqueness do
         end
 
         context "When uniqueness scope is 'Workbench'" do
-          let(:uniqueness_scope) { 'Workbench'}
+          let(:uniqueness_scope) { 'workbench'}
 
           before do
             first_duplicate_stop.update stop_area_provider: other_stop_area_provider

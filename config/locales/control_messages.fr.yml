@@ -15,6 +15,7 @@ fr:
     code_uniqueness: "Le/la %{target_model} '%{name}' n’a pas une unique valeur '%{code_value}' dans l'espace de code '%{code_space}'"
     service_count_in_range: "Une anomalie sur la ligne %{line} le %{date}"
     dummy: "L'/la/le %{target_model} %{name} a été controlé"
+    attribute_uniqueness: "Le/la %{target_model} '%{name}' avec id '%{id}' n’a pas un/une unique '%{target_attribute}'"
   activerecord:
     models:
       control/message:

@@ -15,6 +15,7 @@ en:
     code_uniqueness: "The %{target_model} '%{name}' has not an unique code '%{code_value}' in the code space '%{code_space}'"
     service_count_in_range: "An anomaly on the line %{line} at %{date}"
     dummy: "The %{target_model} %{name} has been updated"
+    attribute_uniqueness: "The %{target_model} '%{name}' with id '%{id}' has not an unique '%{target_attribute}'"
   activerecord:
     models:
       control/message:

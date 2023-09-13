@@ -5,4 +5,4 @@ div[x-data = "{target_model: '#{form.object.target_model}'}"]
     - disabled = (form.options[:defaults] || {})[:disabled]
     - input_html_options = disabled ? {} : { 'x-bind:disabled': "target_model != '#{model_name}'" }
     = form.input :target_attribute, collection: target_attributes.map { |attribute| [ attribute.human_name, attribute.name ] }, wrapper_html: { 'x-show': "target_model == '#{model_name}'" }, input_html: input_html_options
-  =form.input :uniqueness_scope
+  = form.input :uniqueness_scope, wrapper_html: { 'x-show': "target_model && #{form.object.dataset_models}.some(el => el != target_model)" }

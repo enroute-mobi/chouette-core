@@ -9,7 +9,7 @@ module Control
         option :uniqueness_scope
 
         enumerize :target_model, in: %w{ Line StopArea Company VehicleJourney }
-        enumerize :uniqueness_scope, in: %w{ All Workbench Provider }
+        enumerize :uniqueness_scope, in: %w{ all workbench provider }
 
         validates :target_model, :target_attribute, presence: true
 
@@ -36,6 +36,10 @@ module Control
             define Chouette::VehicleJourney, :published_journey_identifier
           end
         end
+
+        def dataset_models
+          %w{ VehicleJourney }
+        end
       end
     end
     include Options
@@ -47,11 +51,14 @@ module Control
         analysis.duplicates.each do |duplicate|
           control_messages.create!({
             message_attributes: { 
-              name: duplicate.name || duplicate.external_id
+              name: duplicate.name,
+              id: duplicate.external_id || duplicate.id,
+              target_attribute: target_attribute
             },
             criticity: criticity,
             source_type: duplicate.source_type,
-            source_id: duplicate.source_id
+            source_id: duplicate.source_id,
+            message_key: :attribute_uniqueness
           })
         end
       end
@@ -62,7 +69,9 @@ module Control
 
       class Analysis
         def self.for(uniqueness_scope)
-          const_get(uniqueness_scope || 'Nil')
+          return Nil unless uniqueness_scope
+
+          const_get(uniqueness_scope.classify)
         end
 
         class Base

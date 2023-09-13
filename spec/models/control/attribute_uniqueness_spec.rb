@@ -57,9 +57,9 @@ RSpec.describe Control::AttributeUniqueness do
     describe '#run' do
       describe '#vehicle_journeys' do
 
-        let(:target_model) { 'VehicleJourney'}
-        let(:target_attribute) { 'published_journey_name'}
-        let(:uniqueness_scope) { nil}
+        let(:target_model) { 'VehicleJourney' }
+        let(:target_attribute) { 'published_journey_name' }
+        let(:uniqueness_scope) { nil }
 
         let(:first_expected_message) do
           an_object_having_attributes(
@@ -82,8 +82,8 @@ RSpec.describe Control::AttributeUniqueness do
       end
 
       describe '#stop_areas' do
-        let(:target_model) { 'StopArea'}
-        let(:target_attribute) { 'name'}
+        let(:target_model) { 'StopArea' }
+        let(:target_attribute) { 'name' }
 
         before do
           first_duplicate_stop.update name: 'duplicate'
@@ -112,7 +112,7 @@ RSpec.describe Control::AttributeUniqueness do
         end
 
         context "When uniqueness scope is 'All'" do
-          let(:uniqueness_scope) { 'all'}
+          let(:uniqueness_scope) { 'all' }
 
           it 'should create warning messages' do
             is_expected.to include(first_expected_message)
@@ -125,7 +125,7 @@ RSpec.describe Control::AttributeUniqueness do
         end
 
         context "When uniqueness scope is 'Provider'" do
-          let(:uniqueness_scope) { 'provider'}
+          let(:uniqueness_scope) { 'provider' }
 
           context 'with the same provider' do
             it "should create warning messages" do
@@ -150,7 +150,7 @@ RSpec.describe Control::AttributeUniqueness do
         end
 
         context "When uniqueness scope is 'Workbench'" do
-          let(:uniqueness_scope) { 'workbench'}
+          let(:uniqueness_scope) { 'workbench' }
 
           before do
             first_duplicate_stop.update stop_area_provider: other_stop_area_provider

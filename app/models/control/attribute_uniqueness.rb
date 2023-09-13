@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Control
   class AttributeUniqueness < Control::Base
     module Options
@@ -8,8 +10,8 @@ module Control
         option :target_attribute
         option :uniqueness_scope
 
-        enumerize :target_model, in: %w{ Line StopArea Company VehicleJourney }
-        enumerize :uniqueness_scope, in: %w{ all workbench provider }
+        enumerize :target_model, in: %w[Line StopArea Company VehicleJourney]
+        enumerize :uniqueness_scope, in: %w[all workbench provider]
 
         validates :target_model, :target_attribute, presence: true
 
@@ -38,7 +40,7 @@ module Control
         end
 
         def dataset_models
-          %w{ VehicleJourney }
+          %w[VehicleJourney]
         end
       end
     end
@@ -50,7 +52,7 @@ module Control
       def run
         analysis.duplicates.each do |duplicate|
           control_messages.create!({
-            message_attributes: { 
+            message_attributes: {
               name: duplicate.name,
               id: duplicate.external_id || duplicate.id,
               target_attribute: target_attribute
@@ -117,12 +119,10 @@ module Control
           def query
             <<~SQL
               SELECT * FROM (
-                SELECT 
-                  #{model_collection}.*,
-                  #{duplicates_count} AS duplicates_count 
+                SELECT #{model_collection}.*, #{duplicates_count} AS duplicates_count
                 FROM #{sql_model_collection}
                 WHERE #{model_collection}.id IN (#{models.select(:id).to_sql})
-              ) AS with_duplicates_count 
+              ) AS with_duplicates_count
               WHERE duplicates_count > 1
             SQL
           end
@@ -154,14 +154,12 @@ module Control
           def query
             <<~SQL
               SELECT * FROM (
-                SELECT 
-                  #{model_collection}.*,
-                  #{duplicates_count} AS duplicates_count 
+                SELECT #{model_collection}.*, #{duplicates_count} AS duplicates_count
                 FROM #{sql_model_collection}
                 INNER JOIN public.#{model_singulier}_providers ON #{model_singulier}_providers.id = #{provider_id}
                 INNER JOIN public.workbenches ON workbenches.id = #{model_singulier}_providers.workbench_id
                 WHERE #{model_collection}.id IN (#{models.select(:id).to_sql})
-              ) AS with_duplicates_count 
+              ) AS with_duplicates_count
               WHERE duplicates_count > 1
             SQL
           end
@@ -180,8 +178,8 @@ module Control
             attributes.each { |k, v| send "#{k}=", v if respond_to?(k) }
           end
 
-          attr_accessor :name, :registration_number, :id, :source_type
-          attr_accessor :published_journey_name, :published_journey_identifier
+          attr_accessor :name, :id, :source_type, :published_journey_name,
+                        :registration_number, :published_journey_identifier
 
           def external_id
             @registration_number || @published_journey_identifier

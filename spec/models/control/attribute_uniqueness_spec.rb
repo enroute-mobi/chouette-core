@@ -12,8 +12,8 @@ RSpec.describe Control::AttributeUniqueness do
         workbench :other
 
         referential do
-          vehicle_journey :first, published_journey_name: 'duplicate'
-          vehicle_journey :second, published_journey_name: 'duplicate'
+          vehicle_journey :first, published_journey_name: 'duplicate', published_journey_identifier: 'id_1'
+          vehicle_journey :second, published_journey_name: 'duplicate', published_journey_identifier: 'id_2'
           vehicle_journey :last
         end
       end
@@ -64,14 +64,24 @@ RSpec.describe Control::AttributeUniqueness do
         let(:first_expected_message) do
           an_object_having_attributes(
             source: first_duplicate_vehicle_journey,
-            criticity: 'warning',
+            message_attributes: {
+              'id' => 'id_1',
+              'name' => 'duplicate',
+              'target_attribute' => 'published_journey_name'
+            },
+            criticity: 'warning'
           )
         end
 
         let(:second_expected_message) do
           an_object_having_attributes(
-            source: first_duplicate_vehicle_journey,
-            criticity: 'warning',
+            source: second_duplicate_vehicle_journey,
+            message_attributes: {
+              'id' => 'id_2',
+              'name' => 'duplicate',
+              'target_attribute' => 'published_journey_name'
+            },
+            criticity: 'warning'
           )
         end
 

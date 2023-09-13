@@ -86,6 +86,12 @@ module Control
 
           attr_accessor :target_model, :target_attribute, :context, :model_attribute
 
+          PREFIX_PROVIDERS = {
+            stop_area: 'stop_area',
+            line: 'line',
+            company: 'line'
+          }.with_indifferent_access
+
           def duplicates
             PostgreSQLCursor::Cursor.new(query).map do |attributes|
               Duplicate.new attributes.merge source_type: source_type
@@ -113,7 +119,7 @@ module Control
           end
 
           def provider_id
-            "#{model_collection}.#{model_singulier}_provider_id"
+            "#{model_collection}.#{PREFIX_PROVIDERS[model_singulier]}_provider_id"
           end
 
           def query
@@ -156,10 +162,14 @@ module Control
             "count(#{model_collection}.id) OVER(PARTITION BY workbenches.id, #{lower_attribute})"
           end
 
+          def providers
+            "#{PREFIX_PROVIDERS[model_singulier]}_providers"
+          end
+
           def inner_join
             <<~SQL
-              INNER JOIN public.#{model_singulier}_providers ON #{model_singulier}_providers.id = #{provider_id}
-              INNER JOIN public.workbenches ON workbenches.id = #{model_singulier}_providers.workbench_id
+              INNER JOIN public.#{providers} ON #{providers}.id = #{provider_id}
+              INNER JOIN public.workbenches ON workbenches.id = #{providers}.workbench_id
             SQL
           end
         end

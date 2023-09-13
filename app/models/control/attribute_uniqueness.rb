@@ -121,6 +121,7 @@ module Control
               SELECT * FROM (
                 SELECT #{model_collection}.*, #{duplicates_count} AS duplicates_count
                 FROM #{sql_model_collection}
+                #{inner_join}
                 WHERE #{model_collection}.id IN (#{models.select(:id).to_sql})
               ) AS with_duplicates_count
               WHERE duplicates_count > 1
@@ -138,6 +139,10 @@ module Control
           def public?
             Apartment.excluded_models.include? source_type
           end
+
+          def inner_join
+
+          end
         end
 
         class Provider < Base
@@ -151,16 +156,10 @@ module Control
             "count(#{model_collection}.id) OVER(PARTITION BY workbenches.id, #{lower_attribute})"
           end
 
-          def query
+          def inner_join
             <<~SQL
-              SELECT * FROM (
-                SELECT #{model_collection}.*, #{duplicates_count} AS duplicates_count
-                FROM #{sql_model_collection}
-                INNER JOIN public.#{model_singulier}_providers ON #{model_singulier}_providers.id = #{provider_id}
-                INNER JOIN public.workbenches ON workbenches.id = #{model_singulier}_providers.workbench_id
-                WHERE #{model_collection}.id IN (#{models.select(:id).to_sql})
-              ) AS with_duplicates_count
-              WHERE duplicates_count > 1
+              INNER JOIN public.#{model_singulier}_providers ON #{model_singulier}_providers.id = #{provider_id}
+              INNER JOIN public.workbenches ON workbenches.id = #{model_singulier}_providers.workbench_id
             SQL
           end
         end

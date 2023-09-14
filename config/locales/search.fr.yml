@@ -21,6 +21,7 @@ fr:
         per_page: "Afficher par"
         text: "Recherche par nom ou identification"
         company_id: "Transporteur"
+        category: "Catégorie"
         line_id: "Ligne"
         line: "Ligne"
         timetable: "Calendrier"
@@ -33,6 +34,7 @@ fr:
         transport_mode: "Mode de transport"
         parent_id: "Parent"
         stop_area_provider_id: Fournisseur d'arrêts
+        shape_provider_id: Fournisseur Topologique
         line_provider_id: Fournisseur de lignes
         document_provider_id: Fournisseur de documents
         from_stop_area_id: "de"

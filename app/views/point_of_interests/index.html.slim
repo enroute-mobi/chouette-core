@@ -2,10 +2,9 @@
 
 .page_content
   .container-fluid
-    - if params[:q].present? or @point_of_interests.any?
-      .row
-        .col-lg-12
-
+    .row
+      .col-lg-12
+        = render 'filters'
     - if @point_of_interests.any?
       .row
         .col-lg-12

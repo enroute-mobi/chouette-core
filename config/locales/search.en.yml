@@ -21,6 +21,7 @@ en:
         per_page: "Display per"
         text: "Search by name or id"
         company_id: "Company"
+        category: "Catégories"
         line_id: "Line"
         line: "Line"
         timetable: "Timetable"
@@ -33,6 +34,7 @@ en:
         transport_mode: "Transport mode"
         parent_id: "Parent"
         stop_area_provider_id: Stop area provider
+        shape_provider_id: Topological Provider
         line_provider_id: Line provider
         document_provider_id: Document provider
         from_stop_area_id: "From"

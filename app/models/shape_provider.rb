@@ -14,6 +14,10 @@ class ShapeProvider < ApplicationModel
 
   delegate :workgroup, to: :workbench, allow_nil: true
 
+  def name
+    short_name
+  end
+
   private
 
   def define_shape_referential

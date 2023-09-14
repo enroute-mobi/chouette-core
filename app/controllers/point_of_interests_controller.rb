@@ -36,8 +36,16 @@ class PointOfInterestsController < ChouetteController
   alias point_of_interest resource
   alias shape_referential parent
 
+  def scope
+    @scope ||= @workbench.shape_referential.point_of_interests
+  end
+
+  def search
+    @search ||= Search::PointOfInterest.from_params(params, shape_referential: shape_referential)
+  end
+
   def collection
-    @point_of_interests = parent.point_of_interests.paginate(page: params[:page], per_page: 30)
+    @collection ||= search.search scope
   end
 
   private

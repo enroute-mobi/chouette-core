@@ -131,6 +131,21 @@ module SimpleBlockForHelper
             else
               raw_value
             end
+          when :associations
+            if raw_value.is_a?(ActiveRecord::Associations::CollectionProxy) && (link = options[:link]).present?
+              content_tag :ul do
+                raw_value.collect do |single_raw_value|
+                  if link.respond_to?(:call)
+                    link_li = link.call(single_raw_value).gsub('.', '/')
+                  end
+
+                  displayed_value_li = [single_raw_value.name,  single_raw_value.get_objectid.short_id].join(' ')
+                  concat(content_tag(:li, link_to(displayed_value_li, link_li), class: "step"))
+                end
+              end
+            else
+              raw_value
+            end
           when :count
             if raw_value.respond_to?(:count)
               raw_value = raw_value.count
@@ -158,7 +173,7 @@ module SimpleBlockForHelper
 
       end
 
-      if displayed_value && link = options[:link]
+      if displayed_value.present? && (link = options[:link]).present? && options[:as] != :associations
         if link.respond_to?(:call)
           link = link.call(raw_value)
         end

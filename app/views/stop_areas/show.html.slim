@@ -18,6 +18,7 @@
           = d.attribute :area_type, value: "#{Chouette::AreaType.find(@stop_area.area_type).try(:label)} (#{@stop_area.kind})"
           = d.attribute :parent, as: :association, link: ->(parent) { workbench_stop_area_referential_stop_area_path(@workbench, parent) }
           = d.attribute :children, as: :count, value: @stop_area.children, link: workbench_stop_area_referential_stop_areas_path(@workbench, :'search[parent_id]' => @stop_area.id)
+          = d.attribute :children, as: :associations, value: @stop_area.children, link: ->(child) { workbench_stop_area_referential_stop_areas_path(@workbench, child) }
         - if @stop_area.children.present?
           table.table.table-bordered
             thead

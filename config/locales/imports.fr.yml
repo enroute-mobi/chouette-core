@@ -133,7 +133,7 @@ fr:
           disable_missing_resources: Désactiver les arrêts et lignes manquantes
           strict_mode: Mode strict (tout attribut non défini est réinitialisé)
           line_provider_id: Fournisseur de lignes
-          merge_method: Méthode de finalisation
+          stop_area_provider_id: Fournisseur d'arrêts
           shape_attribute_as_id: Attribut utilisé comme identifiant
           import_category: Type d'import
           import_category_collection:

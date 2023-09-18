@@ -122,4 +122,44 @@ RSpec.describe Import::Base, type: :model do
       it { is_expected.to eq(workbench.default_line_provider) }
     end
   end
+
+  describe '#stop_area_provider' do
+    let(:workbench) { context.workbench }
+    let(:referential) { context.referential }
+
+    let(:import_workbench) do
+      create :workbench_import, workbench: workbench, referential: referential, options: options
+    end
+
+    let(:stop_area_provider) do
+      workbench.stop_area_providers.create(
+        name: 'Stop Area Provider 2'
+      )
+    end
+
+    let(:context) do
+      Chouette.create do
+        referential
+      end
+    end
+
+    before do
+      allow(import).to receive(:workbench).and_return(workbench)
+      allow(import).to receive(:parent).and_return(import_workbench)
+    end
+
+    subject { import.stop_area_provider }
+
+    context 'when options contain stop_area_provider' do
+      let(:options) { { 'stop_area_provider_id' => stop_area_provider.id } }
+
+      it { is_expected.to eq(stop_area_provider) }
+    end
+
+    context "when options don't contain stop_area_provider" do
+      let(:options) { {} }
+
+      it { is_expected.to eq(workbench.default_stop_area_provider) }
+    end
+  end
 end

@@ -76,6 +76,7 @@ class SourcesController < ChouetteController
       :import_option_disable_missing_resources,
       :import_option_strict_mode,
       :import_option_line_provider_id,
+      :import_option_stop_area_provider_id,
       :created_at,
       :updated_at,
       :downloader_type,

@@ -885,10 +885,6 @@ class Import::Gtfs < Import::Base # rubocop:disable Metrics/ClassLength
     workbench.default_fare_provider
   end
 
-  def stop_area_provider
-    workbench.default_stop_area_provider
-  end
-
   delegate :stop_areas, to: :stop_area_provider
   delegate :connection_links, to: :stop_area_provider
 

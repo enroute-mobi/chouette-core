@@ -10,5 +10,7 @@
         - if policy(import).option?(k)
           - if k == 'line_provider_id'
             = b.attribute k, label: t(k, scope: import.i18n_attribute_scope), value_method: :line_provider, as: :association
+          - elsif k == 'stop_area_provider_id'
+            = b.attribute k, label: t(k, scope: import.i18n_attribute_scope), value_method: :stop_area_provider, as: :association
           - else
             = b.attribute k, label: t(k, scope: import.i18n_attribute_scope), value: display_option_value(import, k)

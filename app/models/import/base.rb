@@ -228,9 +228,22 @@ class Import::Base < ApplicationModel
     referential.metadatas.pluck(:line_ids).flatten.uniq
   end
 
+  def line_provider_id
+    return unless parent&.options
+    parent.options['line_provider_id']
+  end
+
   def line_provider
-    workbench.line_providers.find_by(id: (parent&.options || {})['line_provider_id']) ||
-    workbench.default_line_provider
+    workbench.line_providers.find_by(id: line_provider_id) || workbench.default_line_provider
+  end
+
+  def stop_area_provider_id
+    return unless parent&.options
+    parent.options['stop_area_provider_id']
+  end
+
+  def stop_area_provider
+    workbench.stop_area_providers.find_by(id: stop_area_provider_id) || workbench.default_stop_area_provider
   end
 
   protected

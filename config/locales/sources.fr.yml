@@ -55,6 +55,8 @@ fr:
         import_option_strict_mode: Mode strict (tout attribut non défini est réinitialisé)
         import_option_line_provider_id: Fournisseur de lignes
         import_option_line_provider: Fournisseur de lignes
+        import_option_stop_area_provider_id: Fournisseur d'arrêts
+        import_option_stop_area_provider: Fournisseur d'arrêts
         enabled: "Activée"
         retrieval_time_of_day: "Heure de récupération"
         retrieval_days_of_week: "Jours de récupération"

@@ -1,26 +1,26 @@
 fr:
   fare/zones:
     index:
-      title: Zones de Tarifications
+      title: Zones de tarifications
     show:
       title: "%{name}"
     new:
-      title: "Créer un Zone de Tarifications"
+      title: "Créer un Zone de tarifications"
     edit:
       title: "Editer %{name}"
     actions:
-      show: "Afficher cette Zone de Tarifications"
-      new: "Créer une Zone de Tarifications"
-      edit: "Editer cette Zone de Tarifications"
-      destroy: "Supprimer cette Zone de Tarifications"
-      destroy_confirm: "Etes vous sûr de supprimer cette Zone de Tarifications ?"
+      show: "Afficher cette Zone de tarifications"
+      new: "Créer une Zone de tarifications"
+      edit: "Editer cette Zone de tarifications"
+      destroy: "Supprimer cette Zone de tarifications"
+      destroy_confirm: "Etes vous sûr de supprimer cette Zone de tarifications ?"
   fare_zones:
     index:
-      title: Zones de Tarifications
+      title: Zones de tarifications
     new:
-      title: "Créer un Zone de Tarifications"
+      title: "Créer un Zone de tarifications"
     actions:
-      new: "Créer une Zone de Tarifications"
+      new: "Créer une Zone de tarifications"
     form:
       placeholders:
       sections:
@@ -28,29 +28,29 @@ fr:
         content: Contenu
         internal: "Interne"
         codes: "Codes"
-    search_no_results: "Aucune Zones de Tarifications ne correspond à votre recherche"
-    no_codes: "Cette Zone de Tarifications n'a pas de codes"
+    search_no_results: "Aucune Zones de tarifications ne correspond à votre recherche"
+    no_codes: "Cette Zone de tarifications n'a pas de codes"
     flash:
       associate:
-        notice: Le Zone de Tarifications a été associé à la ligne avec succès
-        error: Le Zone de Tarifications n'a pas pu être associé avec la ligne
+        notice: Le Zone de tarifications a été associé à la ligne avec succès
+        error: Le Zone de tarifications n'a pas pu être associé avec la ligne
       unassociate:
-        notice: Le Zone de Tarifications a été dissocié de la ligne avec succès
-        error: Le Zone de Tarifications n'a pas pu être dissocié de la ligne
+        notice: Le Zone de tarifications a été dissocié de la ligne avec succès
+        error: Le Zone de tarifications n'a pas pu être dissocié de la ligne
   activemodel:
     attributes:
   activerecord:
     models:
       fare/zone:
-        zero: "Zone de Tarifications"
-        one: "Zone de Tarifications"
-        other: "Zones de Tarifications"
+        zero: "Zone de tarifications"
+        one: "Zone de tarifications"
+        other: "Zones de tarifications"
     attributes:
       fare/zone:
         uuid: ID
         name: "Nom"
-        fare_provider: "Fournisseur de Tarifications"
-        fare_provider_id: "Fournisseur de Tarifications"
+        fare_provider: "Fournisseur de tarifications"
+        fare_provider_id: "Fournisseur de farifications"
     errors:
       models:
         fare_zone:

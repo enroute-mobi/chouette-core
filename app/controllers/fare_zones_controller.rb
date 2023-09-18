@@ -4,15 +4,12 @@ class FareZonesController < ChouetteController
 
   defaults resource_class: Fare::Zone
 
-  before_action :decorate_fare_zone, only: %i[show new edit]
-  after_action :decorate_fare_zone, only: %i[create update]
-
   belongs_to :workbench
 
   def index
     index! do |format|
       format.html do
-        @fare_zones = FareZoneDecorator.decorate(
+        @fare_zones = Fare::ZoneDecorator.decorate(
           collection,
           context: {
             workbench: @workbench
@@ -27,33 +24,13 @@ class FareZonesController < ChouetteController
   alias fare_zone resource
   alias workbench parent
 
-  def scope
-    @scope ||= workbench.fare_zones
+  def resource
+    get_resource_ivar || set_resource_ivar(super.decorate(context: { workbench: workbench }))
   end
 
-  def decorate_fare_zone
-    object = document_type rescue build_resource
-    @fare_zone = FareZoneDecorator.decorate(
-      object,
-      context: {
-        workbench: @workbench
-      }
-    )
+  def build_resource
+    get_resource_ivar || set_resource_ivar(super.decorate(context: { workbench: workbench }))
   end
-
-  # def resource
-  #   get_resource_ivar || set_resource_ivar(scope.find_by_id(params[:id]).decorate(context: { workbench: @workbench }))
-  # end
-
-  # def build_resource
-  #   get_resource_ivar || set_resource_ivar(end_of_association_chain.send(method_for_build,
-  #                                                                        *resource_params).decorate(context: { workbench: @workbench }))
-  # end
-
-  # def search
-  #   @search ||= Search::Document.new(scope, params, workgroup: workbench.workgroup)
-  # end
-  # delegate :collection, to: :search
 
   private
 

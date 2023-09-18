@@ -1,26 +1,26 @@
 en:
   fare/zones:
     index:
-      title: Fare Zones
+      title: Fare zones
     show:
       title: "%{name}"
     new:
-      title: "Create a Fare Zone"
+      title: "Create a Fare zone"
     edit:
       title: "Edit %{name}"
     actions:
-      show: "Show this Fare Zone"
-      new: "Create a Fare Zone"
-      edit: "Edit this Fare Zone"
-      destroy: "Delete this Fare Zone"
-      destroy_confirm: "Are you sure you want to delete this Fare Zone ?"
+      show: "Show this Fare zone"
+      new: "Create a Fare zone"
+      edit: "Edit this Fare zone"
+      destroy: "Delete this Fare zone"
+      destroy_confirm: "Are you sure you want to delete this Fare zone ?"
   fare_zones:
     index:
-      title: Fare Zones
+      title: Fare zones
     new:
-      title: "Create a Fare Zone"
+      title: "Create a Fare zone"
     actions:
-      new: "Create a Fare Zone"
+      new: "Create a Fare zone"
     form:
       placeholders:
       sections:
@@ -28,8 +28,8 @@ en:
         content: Content
         internal: Internals
         codes: "Codes"
-    search_no_results: "No Fare Zones match this search"
-    no_codes: "This Fare Zone does not have any codes"
+    search_no_results: "No Fare zones match this search"
+    no_codes: "This Fare zone does not have any codes"
     flash:
       associate:
         notice: The document is successfully associated to the line
@@ -42,9 +42,9 @@ en:
   activerecord:
     models:
       fare/zone:
-        zero:  "Fare Zones"
-        one: "Fare Zone"
-        other: "Fare Zones"
+        zero:  "Fare zones"
+        one: "Fare zone"
+        other: "Fare zones"
     attributes:
       fare/zone:
         uuid: ID

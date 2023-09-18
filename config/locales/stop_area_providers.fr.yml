@@ -4,9 +4,9 @@ fr:
       destroy_confirm: "Etes vous sûr de supprimer ce fournisseur d'arrêts ?"
     search_no_results: "Aucun fournisseur d'arrêts"
     index:
-      title: "Fournisseurs d’arrêts"
+      title: "Fournisseurs d'arrêts"
     new:
-      title: "Ajouter un fournisseurs d’arrêts"
+      title: "Ajouter un fournisseurs d'arrêts"
     show:
       title: "%{name}"
     edit:
@@ -16,8 +16,8 @@ fr:
   activerecord:
     models:
       stop_area_provider:
-        one: "Fournisseur d’arrêts"
-        other: "Fournisseurs d’arrêts"
+        one: "Fournisseur d'arrêts"
+        other: "Fournisseurs d'arrêts"
     attributes:
       stop_area_provider:
         name: Nom

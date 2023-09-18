@@ -55,6 +55,8 @@ en:
         import_option_strict_mode: Strict Mode (reset any undefined attribute)
         import_option_line_provider_id: Line Provider
         import_option_line_provider: Line Provider
+        import_option_stop_area_provider_id: Stop Area Provider
+        import_option_stop_area_provider: Stop Area Provider
         enabled: "Enabled"
         retrieval_time_of_day: "Retrieval time"
         retrieval_days_of_week: "Retrieval days"

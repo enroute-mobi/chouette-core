@@ -13,7 +13,8 @@ class Import::Workbench < Import::Base
   option :store_xml, default_value: false, type: :boolean
   option :disable_missing_resources, default_value: false, type: :boolean
   option :strict_mode, default_value: false, type: :boolean
-  option :line_provider_id, collection: ->(){ candidate_line_providers }
+  option :stop_area_provider_id, collection: ->(){ candidate_stop_area_providers.order(:name) }
+  option :line_provider_id, collection: ->(){ candidate_line_providers.order(:name) }
 
   has_many :compliance_check_sets, -> { where(parent_type: "Import::Workbench") }, foreign_key: :parent_id, dependent: :destroy
 
@@ -175,9 +176,7 @@ class Import::Workbench < Import::Base
     self.resources.map(&:referential).compact
   end
 
-  def candidate_line_providers
-    workbench.line_providers.order(:name)
-  end
+  delegate :line_providers, :stop_area_providers, to: :workbench, prefix: :candidate
 
   # Invokes by IevInterfaces::Task#update_status
   # *only* when status is changed to successful

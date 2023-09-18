@@ -123,7 +123,7 @@ en:
           disable_missing_resources: Disable missing Stop Areas and Lines
           strict_mode: Strict Mode (reset any undefined attribute)
           line_provider_id: Line Provider
-          merge_method: Merge method
+          stop_area_provider_id: Stop Area Provider
           shape_attribute_as_id: Attribute used as id
           import_category: Import type
           import_category_collection:

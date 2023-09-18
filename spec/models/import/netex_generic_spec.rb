@@ -148,7 +148,7 @@ RSpec.describe Import::NetexGeneric do
         let(:context) do
           Chouette.create { stop_area registration_number: '42' }
         end
-        before { import.stop_area_provider = stop_area.stop_area_provider }
+        before { allow(import).to receive(:stop_area_provider).and_return(stop_area.stop_area_provider) }
         let!(:stop_area) { context.stop_area }
 
         it { expect { subject ; stop_area.reload }.to change(stop_area, :name).from(a_string_not_matching('Tour Eiffel')).to('Tour Eiffel') }
@@ -301,7 +301,7 @@ RSpec.describe Import::NetexGeneric do
             let(:context) do
               Chouette.create { stop_area registration_number: 'test' }
             end
-            before { import.stop_area_provider = stop_area.stop_area_provider }
+            before { allow(import).to receive(:stop_area_provider).and_return(stop_area.stop_area_provider) }
             let!(:stop_area) { context.stop_area }
 
             before { import.part(:stop_area_referential).import! }
@@ -400,7 +400,7 @@ RSpec.describe Import::NetexGeneric do
             let(:context) do
               Chouette.create { stop_area registration_number: 'test' }
             end
-            before { import.stop_area_provider = stop_area.stop_area_provider }
+            before { allow(import).to receive(:stop_area_provider).and_return(stop_area.stop_area_provider) }
             let!(:stop_area) { context.stop_area }
 
             before { import.part(:stop_area_referential).import! }
@@ -875,7 +875,7 @@ RSpec.describe Import::NetexGeneric do
       )
     end
 
-    before { import.stop_area_provider = stop_area.stop_area_provider }
+    before { allow(import).to receive(:stop_area_provider).and_return(stop_area.stop_area_provider) }
 
     context 'when XML contains QuayRef in PassengerStopAssignment' do
       let(:xml) do

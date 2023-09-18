@@ -119,6 +119,26 @@ RSpec.describe Source do
       is_expected.to eq('default, first, second')
     end
   end
+
+  describe '#candidate_stop_area_providers' do
+    let(:context) do
+      Chouette.create do
+        workbench :workbench do
+          stop_area_provider :first, name: 'first'
+          stop_area_provider :second, name: 'second'
+        end
+      end
+    end
+
+    let(:workbench) { context.workbench(:workbench) }
+
+    let(:source) { Source.new workbench: workbench }
+    subject { source.candidate_stop_area_providers.map(&:name).join(', ') }
+
+    it 'should include all stop_area providers of workbench with order' do
+      is_expected.to eq('Default, first, second')
+    end
+  end
 end
 
 RSpec.describe Source::Retrieval do

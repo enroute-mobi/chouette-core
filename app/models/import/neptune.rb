@@ -502,10 +502,6 @@ class Import::Neptune < Import::Base
     (obj.is_a?(Array) ? obj : [obj]).compact
   end
 
-  def stop_area_provider
-    workbench.default_stop_area_provider
-  end
-
   def stop_areas
     stop_area_provider.stop_areas
   end

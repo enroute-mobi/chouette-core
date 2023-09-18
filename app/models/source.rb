@@ -144,6 +144,10 @@ class Source < ApplicationModel
     candidate_line_providers.find_by(id: import_option_line_provider_id) || workbench.default_line_provider
   end
 
+  def import_option_stop_area_provider
+    candidate_stop_area_providers.find_by(id: import_option_stop_area_provider_id) || workbench.default_stop_area_provider
+  end
+
   def import_option_automatic_merge
     import_options["automatic_merge"]
   end
@@ -172,6 +176,10 @@ class Source < ApplicationModel
     import_options["line_provider_id"]
   end
 
+  def import_option_stop_area_provider_id
+    import_options["stop_area_provider_id"]
+  end
+
   def import_option_automatic_merge=(value)
     import_options["automatic_merge"] = value
   end
@@ -198,6 +206,10 @@ class Source < ApplicationModel
 
   def import_option_line_provider_id=(value)
     import_options["line_provider_id"] = value
+  end
+
+  def import_option_stop_area_provider_id=(value)
+    import_options["stop_area_provider_id"] = value
   end
 
   def update_workgroup_providers?
@@ -238,9 +250,7 @@ class Source < ApplicationModel
     retrievals.delete_older
   end
 
-  def candidate_line_providers
-    workbench.line_providers
-  end
+  delegate :line_providers, :stop_area_providers, to: :workbench, prefix: :candidate
 
   module Downloader
 

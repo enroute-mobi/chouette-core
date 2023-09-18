@@ -24,12 +24,6 @@ class Import::NetexGeneric < Import::Base
     %w[zip xml]
   end
 
-  # stop_areas
-  def stop_area_provider
-    @stop_area_provider ||= workbench.default_stop_area_provider
-  end
-  attr_writer :stop_area_provider, :stop_area_referential, :line_provider, :line_referential, :shape_provider
-
   def stop_area_referential
     @stop_area_referential ||= workbench.stop_area_referential
   end

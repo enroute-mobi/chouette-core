@@ -101,7 +101,7 @@ class Timetable
       if period.empty?
         true
       elsif period.single_day?
-        included_dates << period.first
+        included_dates << period.dates.first
         true
       else
         false
@@ -281,6 +281,7 @@ class Timetable
     def enumerator
       enum_for(:each_date)
     end
+    alias dates enumerator
 
     def each_date(&block)
       date_range.each do |date|

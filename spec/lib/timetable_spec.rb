@@ -190,6 +190,13 @@ RSpec.describe Timetable do
       end.to change(timetable,:included_dates).to([date("15/05")]) and change(timetable,:period).to([])
     end
 
+    it "transforms single day period into an included date according to the days of week" do
+      timetable = create { period "14/1/2030","20/1/2030", "...J..." }
+      expect do
+        timetable.normalize!
+      end.to change(timetable,:included_dates).to([date("17/01/2030")]) and change(timetable,:period).to([])
+    end
+
     it "remove empty period" do
       timetable = create { period "1/1/2030","1/1/2030", "L......" }
       expect do

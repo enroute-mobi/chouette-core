@@ -36,6 +36,9 @@ module SimpleBlockForHelper
   # association::
   #   the #name method is invoked on the value. If the value has an objectid,
   #   its short_id is prefixed
+  # associations::
+  #   the #name method is invoked on the value. If the value has an Association (has_many),
+  #   its short_id is suffix with a link to the object
   # count:
   #   the #count method is invoked on the value. If the count is 0, the value is ignored
   #
@@ -132,7 +135,7 @@ module SimpleBlockForHelper
               raw_value
             end
           when :associations
-            if raw_value.is_a?(ActiveRecord::Associations::CollectionProxy) && (link = options[:link]).present?
+            if raw_value.try(:to_a).is_a?(Array) && (link = options[:link]).present?
               content_tag :ul do
                 raw_value.collect do |single_raw_value|
                   if link.respond_to?(:call)

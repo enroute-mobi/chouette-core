@@ -1,24 +1,24 @@
 en:
   fare/providers:
     index:
-      title: Fare Providers
+      title: Fare providers
     show:
       title: "%{name}"
     new:
-      title: "Create a Fare Provider"
+      title: "Create a Fare provider"
     edit:
       title: "Edit %{name}"
     actions:
-      show: "Show this Fare Provider"
-      new: "Create a Fare Provider"
-      edit: "Edit this Fare Provider"
-      destroy: "Delete this Fare Provider"
-      destroy_confirm: "Are you sure you want to delete this Fare Provider ?"
+      show: "Show this Fare provider"
+      new: "Create a Fare provider"
+      edit: "Edit this Fare provider"
+      destroy: "Delete this Fare provider"
+      destroy_confirm: "Are you sure you want to delete this Fare provider ?"
   fare_providers:
     index:
-      title: Fare Providers
+      title: Fare providers
     actions:
-      new: "Create a Fare Provider"
+      new: "Create a Fare provider"
     form:
       placeholders:
       sections:
@@ -26,8 +26,8 @@ en:
         internal: "Internal"
         associated_resources: "Associated Resources"
         codes: "Codes"
-    search_no_results: "No Fare Providers match this search"
-    no_codes: "This Fare Provider does not have any codes"
+    search_no_results: "No Fare providers match this search"
+    no_codes: "This Fare provider does not have any codes"
     flash:
       associate:
         notice: The document is successfully associated to the line
@@ -40,9 +40,9 @@ en:
   activerecord:
     models:
       fare/provider:
-        zero:  "Fare Providers"
-        one: "Fare Provider"
-        other: "Fare Providers"
+        zero:  "Fare providers"
+        one: "Fare provider"
+        other: "Fare providers"
     attributes:
       fare/provider:
         uuid: ID

@@ -1,7 +1,10 @@
+# frozen_string_literal: true
+
 class FareProvidersController < ChouetteController
   include ApplicationHelper
+  include PolicyChecker
 
-  defaults :resource_class => Fare::Provider
+  defaults resource_class: Fare::Provider
 
   belongs_to :workbench
 
@@ -10,7 +13,7 @@ class FareProvidersController < ChouetteController
   def index
     index! do |format|
       format.html do
-        @fare_providers = FareProviderDecorator.decorate(
+        @fare_providers = Fare::ProviderDecorator.decorate(
           collection,
           context: {
             workbench: @workbench
@@ -22,10 +25,15 @@ class FareProvidersController < ChouetteController
 
   protected
 
+  alias fare_provider resource
+  alias workbench parent
+
+  def resource
+    get_resource_ivar || set_resource_ivar(super.decorate(context: { workbench: workbench }))
+  end
+
   def build_resource
-    get_resource_ivar || super.tap do |fare_provider|
-      fare_provider.workbench = @workbench
-    end
+    get_resource_ivar || set_resource_ivar(super.decorate(context: { workbench: workbench }))
   end
 
   def fare_provider_params

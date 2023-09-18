@@ -14,7 +14,7 @@ class FareProviderPolicy < ApplicationPolicy
   end
 
   def destroy?
-    user.has_permission?('fare_providers.destroy')
+    user.has_permission?('fare_providers.destroy') && !record.used?
   end
 
 end

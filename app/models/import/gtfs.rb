@@ -299,12 +299,16 @@ class Import::Gtfs < Import::Base # rubocop:disable Metrics/ClassLength
     attr_reader :zone_id, :code_space, :fare_provider, :stop_area_id
 
     def zone
+      return unless zone_id.present?
+
       @zone ||= fare_provider.fare_zones.first_or_create_by_code(code_space, zone_id) do |zone|
         zone.name = zone_id
       end
     end
 
     def import!
+      return unless zone
+
       zone.stop_area_zones.find_or_create_by(stop_area_id: stop_area_id)
     end
   end

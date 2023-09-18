@@ -447,6 +447,14 @@ class Export::Gtfs < Export::Base
         @fare_zone ||= fare_zones&.first
       end
 
+      def zone_id
+        fare_zone&.codes&.first&.value
+      end
+
+      def fare_zone
+        @fare_zone ||= fare_zones&.first
+      end
+
       def stop_id
         if registration_number.present? &&
            duplicated_registration_numbers.exclude?(registration_number)

@@ -534,6 +534,26 @@ RSpec.describe Import::Gtfs do
         end
       end
     end
+
+    describe '#import_fare_zone' do
+      let(:import) do
+        build_import('google-sample-feed-zone.zip')
+      end
+
+      let(:zone) { Fare::Zone.by_code(import.code_space, 'test_zone_id').first }
+
+      let(:expected_stop_areas) { workbench.stop_area_referential.stop_areas }
+
+      before { import.import_stops }
+
+      it 'should find or create fare zone' do
+        expect(zone).not_to be_nil
+      end
+
+      it 'should create a stop_area for each stop and associeate it with fare zone' do
+        expect(zone.stop_areas).to match_array(expected_stop_areas)
+      end
+    end
   end
 
   describe '#import_transfers' do

@@ -294,6 +294,35 @@ RSpec.describe Export::Gtfs, type: [:model, :with_exportable_referential] do
       end
     end
 
+    describe '#zone_id' do
+      let(:context) do
+        Chouette.create do
+          stop_area :stop_area
+
+          referential
+        end
+      end
+
+      let(:workbench) { context.workbench }
+      let(:workgroup) { workbench.workgroup }
+      let(:code_space) { workgroup.code_spaces.default }
+      let(:fare_provider) { workbench.default_fare_provider }
+      let(:zone_id) { 'fare_zone_sample' }
+      let(:fare_zone) do 
+        fare_provider.fare_zones.first_or_create_by_code(code_space, zone_id) do |zone|
+          zone.name = 'fare zone sample'
+        end
+      end
+      let(:stop_area) { context.stop_area(:stop_area) }
+
+      subject do
+        fare_zone.stop_area_zones.create(stop_area: stop_area)
+        decorator.zone_id
+      end
+
+      it { is_expected.to eq(zone_id) }
+    end
+
     describe "stop_attributes" do
       subject { decorator.stop_attributes }
       context "when gtfs_platform_code is 'dummy'" do

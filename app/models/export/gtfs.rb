@@ -396,7 +396,7 @@ class Export::Gtfs < Export::Base
     end
 
     def export!
-      stop_areas.includes(:referent, :parent, :codes).order("parent_id NULLS first").each_instance do |stop_area|
+      stop_areas.includes(:referent, :parent, :codes, fare_zones: :codes).order("parent_id NULLS first").each_instance do |stop_area|
         decorated_stop_area = handle_referent(stop_area)
         next if index.has_stop_id? decorated_stop_area
 
@@ -424,6 +424,14 @@ class Export::Gtfs < Export::Base
       end
 
       attr_reader :index, :public_code_space, :duplicated_registration_numbers
+
+      def zone_id
+        fare_zone&.codes&.first&.value
+      end
+
+      def fare_zone
+        @fare_zone ||= fare_zones&.first
+      end
 
       def stop_id
         if registration_number.present? &&
@@ -471,7 +479,8 @@ class Export::Gtfs < Export::Base
           timezone: (time_zone unless parent),
           zone_id: fare_code,
           wheelchair_boarding: gtfs_wheelchair_boarding,
-          platform_code: gtfs_platform_code
+          platform_code: gtfs_platform_code,
+          zone_id: zone_id
         }
       end
 

@@ -9,6 +9,7 @@ class VehicleJourneysCollectionsController < ChouetteController
   end
   alias_method :route, :parent
 
+  skip_after_action :set_modifier_metadata
   before_action do
     authorize parent
   end

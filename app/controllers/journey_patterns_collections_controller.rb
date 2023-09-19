@@ -2,6 +2,7 @@ class JourneyPatternsCollectionsController < ChouetteController
   include ReferentialSupport
   defaults :resource_class => Chouette::JourneyPattern
   before_action :user_permissions, only: :show
+  skip_after_action :set_modifier_metadata
 
   respond_to :html
   respond_to :json

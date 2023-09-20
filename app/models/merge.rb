@@ -8,8 +8,7 @@ class Merge < ApplicationModel
   has_many :macro_list_runs, through: :processings, :source => :processed, source_type: "Macro::List::Run"
   has_many :control_list_runs, through: :processings, :source => :processed, source_type: "Control::List::Run"
 
-  delegate :output, to: :workbench
-  delegate :workgroup, to: :workbench
+  delegate :output, :organisation, :workgroup, to: :workbench, allow_nil: true
 
   validates :workbench, presence: true
 
@@ -148,8 +147,14 @@ class Merge < ApplicationModel
     failed!
   end
 
+  def experimental_method?
+    merge_method == EXPERIMENTAL_METHOD ||
+      SmartEnv.boolean('FORCE_MERGE_METHOD') ||
+      organisation&.has_feature?("merge_with_experimental")
+  end
+
   def merge_referential_method_class
-    if merge_method == EXPERIMENTAL_METHOD || SmartEnv.boolean('FORCE_MERGE_METHOD')
+    if experimental_method?
       Merge::Referential::Experimental
     else
       Merge::Referential::Legacy

@@ -25,7 +25,10 @@ module Macro
     accepts_nested_attributes_for :macros, allow_destroy: true, reject_if: :all_blank
 
     def self.available
-      [Macro::Context::TransportMode]
+      [
+        Macro::Context::TransportMode,
+        Macro::Context::SavedSearch
+      ]
     end
 
     def build_run

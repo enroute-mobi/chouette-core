@@ -1,0 +1,8 @@
+= form.label :saved_search_id, class: 'flex mr-8 pt-0 control-label', required: true
+= form.input :saved_search_id,
+  as: :grouped_tom_select,
+  required: true,
+  label: false,
+  collection: form.object.candidate_saved_searches,
+  group_method: :last,
+  wrapper_html: { class: 'mb-0 mx-0 ml-12 flex items-center w-4/6 ml-auto', style: 'padding:10px;'}

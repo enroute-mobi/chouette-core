@@ -17,9 +17,10 @@ en:
       return_to_dashboard: "Return to Dashboard"
       dashboard: Dashboard
       referential_datas: "Datas"
-      shape_referential: "Topological referential"
-      line_referential: "Line referential"
-      stop_area_referential: "Stop area referential"
+      shape_referential: "Topological Referential"
+      line_referential: "Line Referential"
+      stop_area_referential: "Stop Area Referential"
+      fare_referential: "Fare Referential"
       settings: "Settings"
       current_offer:
         one: Current offer

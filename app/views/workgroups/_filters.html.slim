@@ -1,17 +1,18 @@
-= search_form_for @q, url: workgroups_path(), html: {method: :get}, class: 'form form-filter' do |f|
-  .ffg-row
-    .input-group.search_bar class=filter_item_class(params[:q], :name_cont)
-      = f.search_field :name_cont, placeholder: t('workgroups.index.name_cont'), class: 'form-control'
-      span.input-group-btn
-        button.btn.btn-default#search-btn type='submit'
-          span.fa.fa-search
+= simple_form_for @search, url: request.path, method: "GET", html: { class: 'flex items-center tailwind-filters bg-grey relative pr-6' }, wrapper: :filters_form_tailwind  do |f|
+  = f.simple_fields_for :order, @search.order, defaults: { wrapper: false } do |form_order|
+    - form_order.object.attributes.keys.each do |attribute|
+      = form_order.input attribute, as: :hidden
 
-  .ffg-row
-    .form-group.togglable class=filter_item_class(params[:q], :owner_id_eq_any)
-      = f.label Workgroup.tmf(:owner), required: false, class: 'control-label'
-      = f.input :owner_id_eq_any, collection: current_organisation.workgroups.map{|w| w.owner }.sort_by(&:name), as: :check_boxes, label: false, label_method: lambda{|l| ("<span>" + l.name + "</span>").html_safe}, required: false, wrapper_html: { class: 'checkbox_list'}
+  .flex.flex-col.w-full
+    .flex.items-center.border-r.border-white
+      = f.input :name, label: false, wrapper_html: {class: "w-2/5"}, placeholder: I18n.t('simple_form.placeholders.search.owner_id')
+    .flex.items-center.border-t.border-r.border-white
+      = f.input :owner, as: :autocomplete_select, collection: @search.candidate_owners, wrapper_html: {class: "w-2/5"}
 
-
-  .actions
-    = link_to t('actions.erase'), @workbench, class: 'btn btn-link'
-    = f.submit t('actions.filter'), class: 'btn btn-default'
+  .flex.flex-col.justify-center.items-center.actions.ml-auto.py-3.w-80
+    .flex.items-center.mb-3
+      = f.label :per_page, class: 'control-label mr-3'
+      = f.input :per_page, as: :per_page, label: false, wrapper: false
+    .flex.items-center
+      = link_to t('actions.erase'), @workbench, class: 'btn btn-link'
+      = f.submit t('actions.filter'), class: 'btn btn-default'

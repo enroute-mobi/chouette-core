@@ -30,6 +30,7 @@ fr:
         zip_code: "Code Postal"
         city_name: "Commune"
         network_id: "Réseau"
+        owner: Propriétaire
         transport_mode: "Mode de transport"
         parent_id: "Parent"
         stop_area_provider_id: Fournisseur d'arrêts
@@ -61,3 +62,4 @@ fr:
         document_id: "Indiquez un nom de document"
         document_type_id: "Sélectionnez un Type de document"
         workbench_id: "Indiquez un nom d'espace de travail"
+        owner_id: "Indiquez un nom de propriétaire"

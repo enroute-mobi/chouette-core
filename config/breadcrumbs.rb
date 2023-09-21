@@ -707,6 +707,36 @@ crumb :new_document do |workbench|
   parent :documents, workbench
 end
 
+crumb :fare_providers do |workbench|
+  link I18n.t('fare_providers.index.title'), workbench_fare_providers_path(workbench)
+  parent :workbench, workbench
+end
+
+crumb :fare_provider do |workbench, fare_provider|
+  link fare_provider.short_name, workbench_fare_provider_path(workbench, fare_provider)
+  parent :fare_providers, workbench
+end
+
+crumb :new_fare_provider do |workbench|
+  link I18n.t('fare_providers.new.title')
+  parent :fare_providers, workbench
+end
+
+crumb :fare_zones do |workbench|
+  link I18n.t('fare_zones.index.title'), workbench_fare_zones_path(workbench)
+  parent :workbench, workbench
+end
+
+crumb :fare_zone do |workbench, fare_zone|
+  link breadcrumb_name(fare_zone), workbench_fare_zone_path(workbench, fare_zone)
+  parent :fare_zones, workbench
+end
+
+crumb :new_fare_zone do |workbench|
+  link I18n.t('fare_zones.new.title')
+  parent :fare_zones, workbench
+end
+
 crumb :document_memberships do |workbench, line|
   link I18n.t('documents.index.title'), workbench_line_referential_line_document_memberships_path(workbench, line)
   parent :line, workbench, line

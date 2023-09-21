@@ -20,6 +20,7 @@ fr:
       shape_referential: "Référentiel Topologique"
       line_referential: "Référentiel de lignes"
       stop_area_referential: "Référentiel d'arrêts"
+      fare_referential: "Référentiel Tarifaire"
       settings: "Paramètres"
       current_offer:
         one: Offres courante

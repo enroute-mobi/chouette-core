@@ -1,0 +1,25 @@
+- breadcrumb :fare_zone, @workbench, @fare_zone
+- page_header_content_for @fare_zone
+
+.page_content
+  .container-fluid
+		.row
+			.col-lg-6.col-md-6.col-sm-12.col-xs-12
+				= simple_block_for @fare_zone, title: t('fare_zones.form.sections.identification') do |d|
+					= d.attribute :uuid
+					= d.attribute :name
+
+		.row
+			.col-lg-6.col-md-6.col-sm-12.col-xs-12
+				= simple_block_for @fare_zone, title: t('fare_zones.form.sections.internal') do |d|
+					= d.attribute :fare_provider, link: ->(fare_provider) { workbench_fare_provider_path(@workbench, @fare_zone.fare_provider) }, value: @fare_zone.fare_provider.name
+		.row
+			.col-lg-6.col-md-6.col-sm-12.col-xs-12
+				= simple_block_for @fare_zone, title: Chouette::StopArea.tmf(:codes) do |d|
+					- if @fare_zone.codes.empty?
+						.mb-xs
+							= replacement_msg t('fare_zones.no_codes')
+					- else
+						- @fare_zone.codes.each do |c|
+							= d.attribute :value, label: c.code_space.short_name, object: c
+

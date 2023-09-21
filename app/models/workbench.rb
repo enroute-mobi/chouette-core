@@ -58,6 +58,7 @@ class Workbench < ApplicationModel
   has_many :line_providers, dependent: :destroy
   has_many :stop_area_providers, dependent: :destroy
   has_many :fare_providers, dependent: :destroy, class_name: 'Fare::Provider'
+  has_many :fare_zones, through: :fare_providers
 
   has_many :macro_lists, class_name: "Macro::List", dependent: :destroy
   has_many :macro_list_runs, class_name: "Macro::List::Run", dependent: :destroy
@@ -166,6 +167,7 @@ class Workbench < ApplicationModel
   def default_fare_provider
     @default_fare_provider ||= fare_providers.find_or_initialize_by(short_name: DEFAULT_PROVIDER_SHORT_NAME) do |p|
       p.fare_referential_id = workgroup.fare_referential_id
+      p.name = DEFAULT_PROVIDER_NAME
     end
   end
 

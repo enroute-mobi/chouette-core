@@ -100,6 +100,12 @@
       = link_to workbench_shape_referential_point_of_interest_categories_path(workbench), class: 'list-group-item' do
         span = PointOfInterest::Category.t.capitalize
 
+    = main_nav_menu_item 'layouts.navbar.fare_referential'.t do
+      = link_to workbench_fare_zones_path(workbench), class: "list-group-item" do
+        span = Fare::Zone.model_name.human(count: 2)
+      = link_to workbench_fare_providers_path(workbench), class: 'list-group-item' do
+        span = Fare::Provider.model_name.human(count: 2)
+
     = main_nav_menu_item 'layouts.navbar.configuration'.t do
       - if policy(workbench).edit?
         .subtitle= 'layouts.navbar.workbench.subtitle'.t

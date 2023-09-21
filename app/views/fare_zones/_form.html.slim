@@ -1,0 +1,33 @@
+= simple_form_for([@workbench, @fare_zone],
+    html: { \
+      multipart: true, \
+      class: 'tailwind-form', \
+      id: 'fare_zone_form'\
+    }, \
+    wrapper: :horizontal_form_tailwind \
+  ) do |f|
+  .row
+    .col-lg-12
+      h2.my-16
+        = t("fare_zones.form.sections.identification")
+      = f.input :name
+  .separator.section_separator
+  .row
+    .col-lg-12
+      h2.my-16
+        = t('fare_zones.form.sections.internal')
+      = f.association :fare_provider, as: :select, collection: @workbench.fare_providers.order(:name), include_blank: false
+
+  .separator.section_separator
+  .row
+    .col-lg-12
+      h2.my-16
+        = Chouette::StopArea.tmf(:codes)
+      = f.simple_fields_for(:codes) do |codes_form|
+        = render 'code_fields', f: codes_form
+
+      .links.nested-linker
+        = link_to_add_association t('entrances.form.add_code'), f, :codes, class: 'btn btn-primary'
+
+  = cancel_button
+  = f.button :submit, t('actions.submit'), class: 'btn btn-default formSubmitr', form: 'fare_zone_form'

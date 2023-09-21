@@ -27,6 +27,8 @@ class Permission
         document_providers
         document_types
         exports
+        fare_zones
+        fare_providers
         footnotes
         imports
         journey_patterns

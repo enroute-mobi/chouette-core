@@ -665,6 +665,7 @@ ActiveRecord::Schema.define(version: 2023_09_01_121853) do
     t.bigint "fare_referential_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.string "name", null: false
     t.index ["fare_referential_id"], name: "index_fare_providers_on_fare_referential_id"
     t.index ["workbench_id"], name: "index_fare_providers_on_workbench_id"
   end

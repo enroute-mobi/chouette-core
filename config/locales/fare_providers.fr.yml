@@ -1,0 +1,56 @@
+fr:
+  fare/providers:
+    index:
+      title: Fournisseurs de tarification
+    show:
+      title: "%{name}"
+    new:
+      title: "Créer un Fournisseur de tarification"
+    edit:
+      title: "Editer %{name}"
+    actions:
+      show: "Afficher ce Fournisseur de tarification"
+      new: "Créer un Fournisseur de tarification"
+      edit: "Editer ce Fournisseur de tarification"
+      destroy: "Supprimer ce Fournisseur de tarification"
+      destroy_confirm: "Etes vous sûr de supprimer ce Fournisseur de tarification ?"
+  fare_providers:
+    index:
+      title: Fournisseurs de tarification
+    actions:
+      new: "Créer un Fournisseur de tarification"
+    form:
+      placeholders:
+      sections:
+        identification: "Identification"
+        internal: "Interne"
+        associated_resources: "Ressources associées"
+        codes: "Codes"
+    search_no_results: "Aucun Fournisseurs de tarification ne correspond à votre recherche"
+    no_codes: "ce Fournisseur de tarification n'a pas de codes"
+    flash:
+      associate:
+        notice: Le Fournisseur de tarification a été associé à la ligne avec succès
+        error: Le Fournisseur de tarification n'a pas pu être associé avec la ligne
+      unassociate:
+        notice: Le Fournisseur de tarification a été dissocié de la ligne avec succès
+        error: Le Fournisseur de tarification n'a pas pu être dissocié de la ligne
+  activemodel:
+    attributes:
+  activerecord:
+    models:
+      fare/provider:
+        zero: "Fournisseur de tarification"
+        one: "Fournisseur de tarification"
+        other: "Fournisseurs de tarification"
+    attributes:
+      fare/provider:
+        uuid: ID
+        name: "Nom"
+        short_name: "Nom court"
+        fare_zones: "Zones Tarifaires"
+        workbench: Espace de travail
+    errors:
+      models:
+        fare_zone:
+          attributes:

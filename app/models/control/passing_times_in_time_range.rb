@@ -47,6 +47,8 @@ module Control
       include Options
 
       def run
+        return if vehicle_journey_at_stops.blank?
+
         faulty_models.each_instance do |model|
           control_messages.create(
             message_attributes: {

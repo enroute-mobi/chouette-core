@@ -27,6 +27,7 @@ module PointOfInterest
 
     scope :without_address, -> { where country: nil, city_name: nil, zip_code: nil, address_line_1: nil }
     scope :with_position, -> { where.not position: nil }
+    scope :with_category, ->(point_of_interest_category) { where(point_of_interest_category: point_of_interest_category) }
 
     def position_from_input
       PositionInput.new(@position_input).change(self)

@@ -91,9 +91,10 @@ module Control
                       departure_id,
                       arrival_id,
                       position,
-                      (
-                        (journey_patterns.costs->>departure_arrival_ids)::jsonb->>'distance'
-                      )::float as distance,
+                      coalesce(
+                        ((journey_patterns.costs->>departure_arrival_ids)::jsonb->>'distance')::float,
+                        straight_line_distance
+                      ) as distance,
                       (
                         (journey_patterns.costs->>departure_arrival_ids)::jsonb->>'time'
                       )::float as duration
@@ -102,14 +103,21 @@ module Control
                           position,
                           departure_id,
                           arrival_id,
-                          CONCAT(departure_id, '-', arrival_id) as departure_arrival_ids
+                          CONCAT(departure_id, '-', arrival_id) as departure_arrival_ids,
+                          ST_DistanceSphere(departure, arrival) as straight_line_distance
                         from (
                             select journey_pattern_id,
                               stop_points.position as position,
                               LAG(stop_points.stop_area_id) OVER journey_pattern_stop_sequence as departure_id,
-                              stop_points.stop_area_id as arrival_id
+                              stop_points.stop_area_id as arrival_id,
+                              ST_MakePoint(stop_areas.longitude, stop_areas.latitude) AS arrival,
+                              ST_MakePoint(
+                                LAG(stop_areas.longitude) OVER journey_pattern_stop_sequence,
+                                LAG(stop_areas.latitude) OVER journey_pattern_stop_sequence
+                              ) AS departure
                             from journey_patterns_stop_points
                               inner join stop_points on journey_patterns_stop_points.stop_point_id = stop_points.id
+                              inner join public.stop_areas on stop_areas.id = stop_points.stop_area_id
                             where journey_pattern_id in (#{journey_patterns.select(:id).to_sql})
                             WINDOW journey_pattern_stop_sequence AS (
                               PARTITION BY journey_pattern_id

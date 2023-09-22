@@ -14,7 +14,9 @@ module Search
 
     enumerize :entrance_type, in: ::Entrance.entrance_type.values
 
-    def query
+    attr_accessor :workbench
+
+    def query(scope)
 			Query::Entrance.new(scope)
 				.text(text)
 				.entrance_type(entrance_type)
@@ -35,7 +37,7 @@ module Search
     end
 
     def candidate_stop_areas
-      stop_area_referential.stop_areas.limit(50)
+      workbench.stop_area_referential.stop_areas.limit(50)
     end
 
     def stop_area_provider_options

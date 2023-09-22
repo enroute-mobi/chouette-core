@@ -5,9 +5,7 @@
 
   .flex.flex-col.w-full
     .flex.items-center.border-r.border-white
-      = f.input :name, label: false, wrapper_html: {class: "w-2/5"}, placeholder: I18n.t('simple_form.placeholders.search.owner_id')
-    .flex.items-center.border-t.border-r.border-white
-      = f.input :owner, as: :autocomplete_select, collection: @search.candidate_owners, wrapper_html: {class: "w-2/5"}
+      = f.input :name, label: false, wrapper_html: {class: "w-2/5"}, placeholder: I18n.t('simple_form.placeholders.search.workgroup_id')
 
   .flex.flex-col.justify-center.items-center.actions.ml-auto.py-3.w-80
     .flex.items-center.mb-3

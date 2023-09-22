@@ -62,4 +62,5 @@ fr:
         document_id: "Indiquez un nom de document"
         document_type_id: "Sélectionnez un Type de document"
         workbench_id: "Indiquez un nom d'espace de travail"
+        workgroup_id: "Indiquez un nom de groupe de travail"
         owner_id: "Indiquez un nom de propriétaire"

@@ -62,4 +62,5 @@ en:
         document_id: "Specify a document name"
         document_type_id: "Select a document type"
         workbench_id: "Specify a Workbench name"
+        workgroup_id: "Specify a Workgroup name"
         owner_id: "Specify a Owner name"

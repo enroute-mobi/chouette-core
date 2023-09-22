@@ -69,7 +69,7 @@ class WorkgroupsController < ChouetteController
   end
 
   def search
-    @search ||= Search::Workgroup.from_params(params, workgroups: current_organisation.workgroups)
+    @search ||= Search::Workgroup.from_params(params)
   end
 
   def collection

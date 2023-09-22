@@ -9,10 +9,9 @@
           = d.attribute :objectid, value: @line.get_objectid.short_id
           = d.attribute :name
           = d.attribute :published_name
-          = d.attribute :registration_number
           = d.attribute :number
           = d.attribute :transport_mode
-          = d.attribute :transport_submode
+          = d.attribute :transport_submode, as: :enumerize
           = d.attribute :flexible_service, as: :boolean
           = d.attribute :seasonal, as: :boolean
 
@@ -48,6 +47,7 @@
           = d.attribute :comment
 
         = simple_block_for @line, title: Chouette::StopArea.tmf(:codes) do |d|
+          = d.attribute :registration_number
           - if @line.codes.empty?
             .mb-xs
               = replacement_msg t('lines.no_codes')

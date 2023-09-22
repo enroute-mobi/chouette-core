@@ -6,19 +6,15 @@
   .container-fluid
     .row
       .col-lg-6.col-md-6.col-sm-12.col-xs-12
-        = definition_list t('metadatas'),
-          {  t('id_codif') => @line.get_objectid.short_id,
-             Chouette::Line.tmf('status') => line_status(@line),
-             Chouette::Line.tmf('network_id') => (@line.network.nil? ? t('lines.index.unset') : link_to(@line.network.name,  default_network_path(@line.network)) ),
-             Chouette::Line.tmf('company') => (@line.company.nil? ? t('lines.index.unset') : link_to(@line.company.name, default_company_path(@line.company)) ),
-             Chouette::Line.tmf('secondary_companies') => (@line.secondary_companies.nil? ? t('lines.index.unset') : @line.secondary_companies.collect(&:name).join(', ')),
-             Chouette::Line.tmf('published_name') => (@line.published_name ? @line.published_name : '-'),
-             Chouette::Line.tmf('registration_number') => @line.registration_number,
-             Chouette::Line.tmf('number') => @line.number,
-             Chouette::Line.tmf('transport_mode') => (@line.transport_mode.present? ? t("enumerize.transport_mode.#{@line.transport_mode}") : '-'),
-             Chouette::Line.tmf('transport_submode') => (@line.transport_submode.present? ? t("enumerize.transport_submode.#{@line.transport_submode}") : '-'),
-             Chouette::Line.tmf('url') => (@line.url ? @line.url : '-'),
-             Chouette::Line.tmf('seasonal') => (@line.seasonal? ? t('true') : t('false')),}
+        = simple_block_for @line, title: t("lines.form.sections.identification") do |d|
+          = d.attribute :objectid, value: @line.get_objectid.short_id
+          = d.attribute :name
+          = d.attribute :published_name
+          = d.attribute :number
+          = d.attribute :transport_mode
+          = d.attribute :transport_submode, as: :enumerize
+          = d.attribute :flexible_service, as: :boolean
+          = d.attribute :seasonal, as: :boolean
       .col-lg-6.col-md-6.col-sm-12.col-xs-12
         h4.underline= t('lines.show.map')
         #routes_map.map.mb-lg

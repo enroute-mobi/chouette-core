@@ -539,7 +539,7 @@ GEM
     os (1.1.4)
     ox (2.14.17)
     parallel (1.23.0)
-    parallel_tests (4.2.1)
+    parallel_tests (4.2.2)
       parallel
     parser (3.2.2.3)
       ast (~> 2.4.1)

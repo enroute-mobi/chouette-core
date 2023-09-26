@@ -100,7 +100,7 @@
   .row
     .col-lg-12
       h2.mb-lg= t("stop_areas.form.sections.fare")
-      = f.association :fare_zones, as: :autocomplete_select, collection: @stop_area.candidate_fare_zones.order(:name), include_blank: false, input_html: { multiple: true}
+      = f.association :fare_zones, as: :autocomplete_select, collection: @stop_area.candidate_fare_zones.order(:name), include_blank: true, input_html: { multiple: true}
 
   .separator.section_separator
 

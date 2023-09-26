@@ -1,7 +1,5 @@
 module Search
   class Workgroup < Base
-    attr_accessor :workgroups
-
     attribute :name
 
     def query(scope)

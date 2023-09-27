@@ -175,7 +175,7 @@ class Export::Ara < Export::Base
       end
 
       def unique_code(model)
-        candidate_value = model.registration_number
+        candidate_value = model.registration_number || model.try(:objectid)
         return nil if candidate_value.blank?
         return nil if duplicated?(candidate_value)
 
@@ -360,7 +360,7 @@ class Export::Ara < Export::Base
 
       # TODO: To be shared
       def ara_codes
-        code_provider.unique_codes __getobj__
+        code_provider.unique_codes(__getobj__)
       end
     end
   end
@@ -551,7 +551,7 @@ class Export::Ara < Export::Base
 
       # TODO: To be shared
       def ara_codes
-        code_provider.unique_codes __getobj__
+        code_provider.unique_codes(__getobj__)
       end
     end
   end

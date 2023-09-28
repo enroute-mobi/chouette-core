@@ -25,6 +25,9 @@
       = f.label Entrance.tmf(:exit_flag), required: false, class: 'control-label'
       = f.input :exit_flag, as: :check_boxes, label: false, label_method: lambda { |w| ("<span>#{w.first}</span>").html_safe }, include_blank: false, wrapper_html: { class: 'checkbox_list' }
 
-  .actions
-    = link_to t('actions.erase'), workbench_stop_area_referential_entrances_path(@workbench), class: 'btn btn-link'
-    = f.submit t('actions.filter'), class: 'btn btn-default'
+  .flex.flex-col.justify-center.items-center.actions.ml-auto.py-3.w-80
+    .flex.items-center.mb-3
+      = render partial: 'shared/per_page', locals: {f:f}
+    .flex.items-center
+      = link_to t('actions.erase'), workbench_stop_area_referential_entrances_path(@workbench), class: 'btn btn-link'
+      = f.submit t('actions.filter'), class: 'btn btn-default'

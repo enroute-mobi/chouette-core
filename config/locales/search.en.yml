@@ -30,7 +30,6 @@ en:
         zip_code: "Zip code"
         city_name: "City name"
         network_id: "Network"
-        owner: Owner
         transport_mode: "Transport mode"
         parent_id: "Parent"
         stop_area_provider_id: Stop area provider
@@ -63,4 +62,3 @@ en:
         document_type_id: "Select a document type"
         workbench_id: "Specify a Workbench name"
         workgroup_id: "Specify a Workgroup name"
-        owner_id: "Specify a Owner name"

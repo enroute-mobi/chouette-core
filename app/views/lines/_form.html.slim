@@ -6,14 +6,21 @@
       h2.mb-lg= t("lines.form.sections.identification")
       = f.input :name
       = f.input :published_name
-      = f.input :registration_number
       = f.input :number
       = f.input :transport_mode, as: :select, collection: referential.workgroup.sorted_transport_modes, label: Chouette::Line.tmf('transport_mode'), label_method: lambda {|t| ("<span>" + t("enumerize.transport_mode.#{t}") + "</span>").html_safe}, required: true, prompt: ''
       - referential.workgroup.formatted_submodes_for_transports.each do |mode, submodes|
         .slave data-master="[name='line[transport_mode]']" data-value=mode
           = f.input :transport_submode, as: :select, collection: submodes, include_blank: false
+      = f.input :flexible_service, as: :switchable_checkbox
+      = f.input :seasonal, as: :switchable_checkbox
 
-      = f.input :stable_id
+  .separator.section_separator
+  .row
+    .col-lg-12
+      h2.mb-lg= t("lines.form.sections.hierarchy")
+      = f.input :company_id, as: :select, :collection => @line_referential.companies.order(Arel.sql('lower(name) asc')), include_blank: true
+      = f.input :secondary_company_ids, :collection => @line_referential.companies.order(Arel.sql('lower(name) asc')), include_blank: false, input_html: { multiple: true, 'data-select2ed': true }, label: Chouette::Line.tmf(:secondary_companies)
+      = f.input :network_id, as: :select, :collection => @line_referential.networks.order(Arel.sql('lower(name) asc')), include_blank: true
 
   .separator.section_separator
   .row
@@ -25,30 +32,21 @@
   .separator.section_separator
   .row
     .col-lg-12
-      h2.mb-lg= t("lines.form.sections.location")
-      = f.input :network_id, as: :select, :collection => @line_referential.networks.order(Arel.sql('lower(name) asc')), include_blank: true
-      = f.input :company_id, as: :select, :collection => @line_referential.companies.order(Arel.sql('lower(name) asc')), include_blank: true
-      = f.input :secondary_company_ids, :collection => @line_referential.companies.order(Arel.sql('lower(name) asc')), include_blank: false, input_html: { multiple: true, 'data-select2ed': true }, label: Chouette::Line.tmf(:secondary_companies)
-  .separator.section_separator
-  .row
-    .col-lg-12
-      h2.mb-lg= t("lines.form.sections.publication_data")
-      = f.input :color, as: :color_picker
-      = f.input :text_color, as: :color_picker
-      = f.input :url
-  .separator.section_separator
-  .row
-    .col-lg-12
-      h2.mb-lg= t("lines.form.sections.general")
-      = f.input :mobility_restricted_suitability, as: :switchable_checkbox
-      = f.input :flexible_service, as: :switchable_checkbox
-      = f.input :seasonal, as: :switchable_checkbox
-      = f.input :comment, as: :text, input_html: { rows: 5, title: t("formtastic.titles#{format_restriction_for_locales(@referential)}.stop_area.comment") }
-  .separator.section_separator
-  .row
-    .col-lg-12
       h2.mb-lg= t("lines.form.sections.internals")
       = f.association :line_provider, as: :select, collection: candidate_line_providers, include_blank: false
+      = f.input :comment, as: :text, input_html: { rows: 5, title: t("formtastic.titles#{format_restriction_for_locales(@referential)}.stop_area.comment") }
+
+  .separator.section_separator
+  .row
+    .col-lg-12
+      h2.mb-lg= Chouette::Line.tmf(:codes)
+      = f.input :registration_number
+      = f.simple_fields_for(:codes) do |codes_form|
+        = render 'code_fields', f: codes_form
+
+      .links.nested-linker
+        = link_to_add_association t('lines.form.add_code'), f, :codes, class: 'btn btn-primary'
+
   .separator.section_separator
   - if policy(@line).update_activation_dates?
     .row
@@ -61,12 +59,16 @@
   .separator.section_separator
   .row
     .col-lg-12
-      h2.mb-lg= Chouette::Line.tmf(:codes)
-      = f.simple_fields_for(:codes) do |codes_form|
-        = render 'code_fields', f: codes_form
+      h2.mb-lg= t("lines.form.sections.publication_data")
+      = f.input :color, as: :color_picker
+      = f.input :text_color, as: :color_picker
+      = f.input :url
 
-      .links.nested-linker
-        = link_to_add_association t('lines.form.add_code'), f, :codes, class: 'btn btn-primary'
+  .separator.section_separator
+  .row
+    .col-lg-12
+      h2.mb-lg= t("lines.form.sections.accessibility")
+      = f.input :mobility_restricted_suitability, as: :switchable_checkbox
 
   = cancel_button
   = f.button :submit, t('actions.submit'), class: 'btn btn-default formSubmitr', form: 'lines_form'

@@ -7,7 +7,7 @@ kml xmlns="http://www.opengis.net/kml/2.2"
     placemark id="#{@line.objectid}"
       name = h(@line.name)
       extendeddata
-        - [ :transport_mode, :objectid, :created_at, :updated_at, :object_version, :name, :number, :published_name, :registration_number, :comment, :mobility_restricted_suitability, :int_user_needs].each do |prop|
+        - [ :transport_mode, :objectid, :created_at, :updated_at, :object_version, :name, :number, :published_name, :registration_number, :comment, :mobility_restricted_suitability].each do |prop|
           data name="#{prop.to_s}"
             value = h(@line.send( prop))
 

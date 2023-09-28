@@ -75,13 +75,15 @@ en:
     form:
       sections:
         identification: "Identification"
+        hierarchy: "Hierarchy"
         location: "Location"
-        publication_data: "Publication Data"
+        publication_data: "Publication"
         general: "General"
         line_notices: "Line notices"
         activation: 'Activation'
         documents: "Documents"
         internals: "Internals"
+        accessibility: "Accessibility"
       group_of_lines: "Associated groups of lines"
       no_group_of_line: "No group of line"
       several_group_of_lines: "%{count} groups of lines"
@@ -118,17 +120,17 @@ en:
         companies:
           name: "Company"
         registration_number: "Registration number"
-        name: "Name of line"
+        name: "Name"
         published_name: "Published name"
         number: "Number"
         transport_mode: "Transport mode"
         transport_submode: "Transport Submode"
         seasonal: "Seasonal"
         url: "Web page"
-        color: "Line color"
+        color: "Shape color"
         text_color: "Text color"
-        mobility_restricted_suitability: "PRM accessibility"
-        flexible_service: "On demand transportation"
+        mobility_restricted_suitability: "Access for mobility impaired user"
+        flexible_service: "Flexible line"
         unspecified_mrs: "Not specified"
         accessible: "Accessible"
         not_accessible: "Not accessible"
@@ -144,17 +146,16 @@ en:
         number_of_null_mrs_vj: "Number of unspecified accessible vehicle journeys"
         default_fs_msg: "These vehicle journeys are considered as regular"
         group_of_line: "Group of lines"
-        comment: "Comments"
-        objectid: "External identifier"
+        comment: "Description"
+        objectid: "ID"
         object_version: "Version"
         created_at: Created at
         updated_at: Updated at
         creator_id: "Created by"
         footnotes: "Footnotes"
-        stable_id: External permanent identifier
         status: Status
         activated: Activated
-        deactivated:
+        deactivated: Deactivated
         active_between: Active from %{from} to %{to}
         active_from_date: Active from %{from}
         active_until_date: Active until %{to}

@@ -50,4 +50,8 @@ class LineDecorator < AF83::Decorator
       cls: 'table'
     )
   end
+
+  define_instance_method :human_status do
+    h.t(status, scope: 'activerecord.attributes.line')
+  end
 end

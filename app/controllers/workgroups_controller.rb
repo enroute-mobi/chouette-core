@@ -31,12 +31,10 @@ class WorkgroupsController < ChouetteController
 
   def index
     index! do |format|
-      @workgroups = WorkgroupDecorator.decorate(@workgroups)
-
       format.html do
-        if collection.out_of_bounds?
-          redirect_to params.merge(:page => 1)
-        end
+        @workgroups = WorkgroupDecorator.decorate(
+          collection
+        )
       end
     end
   end
@@ -62,6 +60,20 @@ class WorkgroupsController < ChouetteController
   def remove_deletion
     resource.remove_deletion!
     redirect_to resource
+  end
+
+  protected
+
+  def scope
+    @scope ||= current_organisation.workgroups
+  end
+
+  def search
+    @search ||= Search::Workgroup.from_params(params)
+  end
+
+  def collection
+    @collection ||= search.search scope
   end
 
   private
@@ -90,25 +102,5 @@ class WorkgroupsController < ChouetteController
     else
       current_organisation.workgroups.build
     end
-  end
-
-  def collection
-    @workgroups ||= begin
-      scope = current_organisation.workgroups
-      @q = scope.ransack(params[:q])
-
-      workgroups = @q.result(:distinct => true)
-
-      if params[:sort] == 'owner'
-        workgroups = workgroups.joins(:owner).select('workgroups.*, organisations.name').order('organisations.name ' + sort_direction)
-      else
-        workgroups.order('name ' + sort_direction)
-      end
-      workgroups.paginate(:page => params[:page])
-    end
-  end
-
-  def sort_direction
-    %w[asc desc].include?(params[:direction]) ?  params[:direction] : 'asc'
   end
 end

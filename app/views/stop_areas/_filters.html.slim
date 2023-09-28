@@ -1,15 +1,25 @@
-- if @search.saved_id
-  - save_path = workbench_stop_areas_search_path(@workbench, @search)
-  - save_method = :patch
-- else
-  - save_path = workbench_stop_areas_searches_path(@workbench)
-  - save_method = :post
+/ = form.row do
+/   = form.input :text
+/ = form.row do
+/   = form.input :zip_code
+/   = form.input :input2, width: 2
+/ = form.row do
+/   = form.input :input3
+/   = form.input :parent_id,
+/       as: :ajax_select,
+/       collection: @search.selected_parent_collection,
+/       label_method: :display_name,
+/       input_html: { 'data-url': parent_stop_areas_workbench_autocomplete_index_path(@workbench, format: :json) }
+    
+/ - if @search.saved_id
+/   - save_path = workbench_stop_areas_search_path(@workbench, @search)
+/   - save_method = :patch
+/ - else
+/   - save_path = workbench_stop_areas_searches_path(@workbench)
+/   - save_method = :post
 
-= simple_form_for @search, url: workbench_stop_area_referential_stop_areas_path(@workbench), method: "GET", html: { class: 'flex items-center tailwind-filters bg-grey relative pr-6', "x-data": "{ save_path: '#{save_path}', save_method: '#{save_method}'}"}, wrapper: :filters_form_tailwind  do |f|
-  = f.simple_fields_for :order, @search.order, defaults: { wrapper: false } do |form_order|
-    - form_order.object.attributes.keys.each do |attribute|
-      = form_order.input attribute, as: :hidden
-
+/ = simple_form_for @search, url: workbench_stop_area_referential_stop_areas_path(@workbench), method: "GET", html: { class: 'flex items-center tailwind-filters bg-grey relative pr-6', "x-data": "{ save_path: '#{save_path}', save_method: '#{save_method}'}"}, wrapper: :filters_form_tailwind  do |f|
+= simple_search_for @search, workbench_stop_area_referential_stop_areas_path(@workbench) do |f|
   .flex.flex-col.w-full
     .flex.items-center.border-r.border-white.border-b x-show="saveSearchPanel"
       = f.input :saved_name, wrapper_html: {class: "w-2/5"}

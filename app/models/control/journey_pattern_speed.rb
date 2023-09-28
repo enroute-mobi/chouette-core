@@ -57,6 +57,8 @@ module Control
         attr_reader :journey_patterns, :minimum_speed, :maximum_speed, :minimum_distance
 
         def anomalies
+          return [] if journey_patterns.blank?
+
           PostgreSQLCursor::Cursor.new(query).map { |attributes| Anomaly.new(attributes) }
         end
 

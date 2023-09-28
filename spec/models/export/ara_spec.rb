@@ -198,7 +198,13 @@ RSpec.describe Export::Ara do
 
         context "when one of the Stop Area has a code 'test': 'dummy" do
           before { stop_area.codes.create!(code_space: code_space, value: 'dummy') }
-          it { is_expected.to include(an_object_having_attributes(objectids: { 'test' => 'dummy' })) }
+          it do
+            is_expected.to include(
+              an_object_having_attributes(
+                objectids: { 'test' => 'dummy', 'external' => stop_area.objectid }
+              )
+            )
+          end
         end
 
         context "when all Stop Areas has a code 'test':'dummy" do
@@ -253,7 +259,13 @@ RSpec.describe Export::Ara do
 
         context "when one of the Line has a code 'test': 'dummy" do
           before { line.codes.create!(code_space: code_space, value: 'dummy') }
-          it { is_expected.to include(an_object_having_attributes(objectids: { 'test' => 'dummy' })) }
+          it do
+            is_expected.to include(
+              an_object_having_attributes(
+                objectids: { 'test' => 'dummy', 'external' => line.objectid }
+              )
+            )
+          end
         end
 
         context "when all Lines has a code 'test': 'dummy" do
@@ -386,7 +398,11 @@ RSpec.describe Export::Ara do
 
         context "when one of the Vehicle Journey has a code 'test': 'dummy" do
           before { vehicle_journey.codes.create!(code_space: code_space, value: 'dummy') }
-          it { is_expected.to include(an_object_having_attributes(objectids: { 'test' => 'dummy' })) }
+          it do 
+            is_expected.to include(
+              an_object_having_attributes(objectids: { 'test' => 'dummy', 'external' => vehicle_journey.objectid})
+            )
+          end
         end
 
         context "when all Vehicle Journeys has a code 'test': 'dummy" do

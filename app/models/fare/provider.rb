@@ -9,8 +9,6 @@ module Fare
     belongs_to :workbench, optional: false
     belongs_to :fare_referential, class_name: 'Fare::Referential', optional: false
 
-    before_destroy :can_destroy?, prepend: true
-
     validates :short_name, :name, presence: true
 
     with_options(dependent: :destroy, foreign_key: :fare_provider_id) do
@@ -31,15 +29,6 @@ module Fare
 
     def self.policy_class
       FareProviderPolicy
-    end
-
-    private
-
-    def can_destroy?
-      if used?
-        errors.add(:base, "Can't be destroyed because fare provider is linked to other objects")
-        throw :abort
-      end
     end
   end
 end

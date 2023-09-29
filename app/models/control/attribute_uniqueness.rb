@@ -19,20 +19,17 @@ module Control
           candidate_target_attributes.find_by(model_name: target_model, name: target_attribute)
         end
 
-        def candidate_target_attributes # rubocop:disable Metrics/MethodLength,Metrics/AbcSize
-          Chouette::ModelAttribute.empty do # rubocop:disable Metrics/BlockLength
+        def candidate_target_attributes
+          Chouette::ModelAttribute.empty do
             # Chouette::StopArea
             define Chouette::StopArea, :name
             define Chouette::StopArea, :registration_number
-
             # Chouette::Company
             define Chouette::Company, :name
             define Chouette::Company, :registration_number
- 
             # Chouette::Line
             define Chouette::Line, :name
             define Chouette::Line, :registration_number
-
             # Chouette::VehicleJourney
             define Chouette::VehicleJourney, :published_journey_name
             define Chouette::VehicleJourney, :published_journey_identifier
@@ -51,18 +48,19 @@ module Control
 
       def run
         analysis.duplicates.each do |duplicate|
-          control_messages.create!({
-            message_attributes: {
-              name: duplicate.name,
-              id: duplicate.external_id || duplicate.id,
-              target_attribute: target_attribute
-            },
-            criticity: criticity,
-            source_type: duplicate.source_type,
-            source_id: duplicate.source_id,
-            message_key: :attribute_uniqueness
-          })
+          create_message(duplicate)
         end
+      end
+
+      def create_message(duplicate)
+        control_messages.create!(
+          message_attributes: {
+            id: duplicate.external_id || duplicate.id,
+            name: duplicate.name, target_attribute: target_attribute
+          },
+          criticity: criticity, message_key: :attribute_uniqueness,
+          source_id: duplicate.source_id, source_type: duplicate.source_type
+        )
       end
 
       def analysis
@@ -109,7 +107,7 @@ module Control
           def model_collection
             @model_collection ||= model_singulier.pluralize
           end
-    
+
           def table_name
             @table_name ||= model_attribute.model_class.table_name
           end
@@ -142,7 +140,26 @@ module Control
             "count(#{model_collection}.id) OVER(PARTITION BY #{lower_attribute})"
           end
 
-          def inner_join
+          def inner_join; end
+
+          class Duplicate
+            def initialize(attributes)
+              attributes.each { |k, v| send "#{k}=", v if respond_to?(k) }
+            end
+
+            attr_writer   :name
+            attr_accessor :registration_number, :published_journey_name,
+                          :id, :source_type, :published_journey_identifier
+
+            alias source_id id
+
+            def external_id
+              @registration_number || @published_journey_identifier
+            end
+
+            def name
+              @name || @published_journey_name
+            end
           end
         end
 
@@ -169,34 +186,9 @@ module Control
           end
         end
 
-        class All < Base
-        
-        end
+        class All < Base; end
 
-        class Nil < All
-        
-        end
-
-        class Duplicate
-          def initialize(attributes)
-            attributes.each { |k, v| send "#{k}=", v if respond_to?(k) }
-          end
-
-          attr_accessor :name, :id, :source_type, :published_journey_name,
-                        :registration_number, :published_journey_identifier
-
-          def external_id
-            @registration_number || @published_journey_identifier
-          end
-
-          def source_id
-            @id
-          end
-
-          def name
-            @name || @published_journey_name
-          end
-        end
+        class Nil < Base; end
       end
     end
   end

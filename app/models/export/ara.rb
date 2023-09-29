@@ -105,7 +105,7 @@ class Export::Ara < Export::Base
       attr_reader :scope, :model_class
 
       # For the given model (StopArea, VehicleJourney, ..), returns all codes which are uniq.
-      def unique_codes(model, options={})
+      def unique_codes(model)
         unique_codes = {}
 
         if model.respond_to?(:codes)
@@ -127,8 +127,8 @@ class Export::Ara < Export::Base
           unique_codes[registration_number_provider.short_name] = unique_code if unique_code
         end
 
-        if options[:use_objectid] && objectid = model.try(:objectid) 
-          return { 'external' => objectid }.merge unique_codes
+        if model.respond_to?(:objectid)
+          unique_codes['external'] ||= model.objectid
         end
 
         unique_codes
@@ -158,7 +158,7 @@ class Export::Ara < Export::Base
       end
 
       class Null
-        def unique_codes(model, options={})
+        def unique_codes(model)
           model.codes.map do |code|
             [code.code_space.short_name, code.value]
           end.to_h
@@ -364,7 +364,7 @@ class Export::Ara < Export::Base
 
       # TODO: To be shared
       def ara_codes
-        code_provider.unique_codes(__getobj__, use_objectid: true)
+        code_provider.unique_codes __getobj__
       end
     end
   end
@@ -555,7 +555,7 @@ class Export::Ara < Export::Base
 
       # TODO: To be shared
       def ara_codes
-        code_provider.unique_codes(__getobj__, use_objectid: true)
+        code_provider.unique_codes __getobj__
       end
     end
   end
@@ -658,7 +658,7 @@ class Export::Ara < Export::Base
 
       # TODO: To be shared
       def ara_codes
-        code_provider.unique_codes(__getobj__, use_objectid: true)
+        code_provider.unique_codes __getobj__
       end
     end
   end

@@ -309,7 +309,8 @@ RSpec.describe Export::Ara do
       let(:context) do
         Chouette.create do
           company(:first)
-          company(:other) end
+          company(:other)
+        end
       end
 
       let(:company) { context.company(:first) }
@@ -320,7 +321,8 @@ RSpec.describe Export::Ara do
       describe 'the Ara File target' do
         subject do
           part.export!
-          target end
+          target
+        end
         it { is_expected.to match_array([an_instance_of(Ara::Operator)] * 2) }
 
         context "when one of the Company has a registration number 'dummy'" do
@@ -335,7 +337,7 @@ RSpec.describe Export::Ara do
 
         context "when one of the Company has a code 'test': 'dummy" do
           before { company.codes.create!(code_space: code_space, value: 'dummy') }
-          it { is_expected.to include(an_object_having_attributes(objectids: { 'test' => 'dummy' })) }
+          it { is_expected.to include(an_object_having_attributes(objectids: a_hash_including('test' => 'dummy'))) }
         end
 
         context "when all Companies has a code 'test':'dummy" do

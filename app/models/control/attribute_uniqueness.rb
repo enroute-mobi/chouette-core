@@ -110,8 +110,8 @@ module Control
             @model_collection ||= model_singulier.pluralize
           end
     
-          def sql_model_collection
-            @sql_model_collection ||= public? ? "public.#{model_collection}" : model_collection
+          def table_name
+            @table_name ||= model_attribute.model_class.table_name
           end
 
           def models
@@ -125,10 +125,10 @@ module Control
           def query
             <<~SQL
               SELECT * FROM (
-                SELECT #{model_collection}.*, #{duplicates_count} AS duplicates_count
-                FROM #{sql_model_collection}
+                SELECT #{table_name}.*, #{duplicates_count} AS duplicates_count
+                FROM #{table_name}
                 #{inner_join}
-                WHERE #{model_collection}.id IN (#{models.select(:id).to_sql})
+                WHERE #{table_name}.id IN (#{models.select(:id).to_sql})
               ) AS with_duplicates_count
               WHERE duplicates_count > 1
             SQL
@@ -142,12 +142,7 @@ module Control
             "count(#{model_collection}.id) OVER(PARTITION BY #{lower_attribute})"
           end
 
-          def public?
-            Apartment.excluded_models.include? source_type
-          end
-
           def inner_join
-
           end
         end
 

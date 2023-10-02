@@ -73,6 +73,7 @@ gem 'georuby', '2.3.0' # Fix version for georuby-ext because api has changed
 gem 'mimemagic', '>= 0.4.3'
 
 # User interface
+gem 'bootstrap-sass', '3.3.7'
 gem 'language_engine', en_route: 'language_engine'
 gem 'calendar_helper', '0.2.5'
 gem 'cocoon'
@@ -217,13 +218,6 @@ end
 gem 'rails-i18n', '>= 5.1.3'
 gem 'devise-i18n', '>= 1.10.2'
 gem 'i18n-tasks', '>= 0.9.37'
-
-# Rails Assets
-source 'https://rails-assets.org' do
-  # Use twitter bootstrap resources
-  gem 'rails-assets-bootstrap-sass-official', '~> 3.3.0'
-  gem 'rails-assets-respond'
-end
 
 gem 'activerecord-nulldb-adapter', require: (ENV['RAILS_DB_ADAPTER'] == 'nulldb')
 

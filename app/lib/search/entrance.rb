@@ -17,15 +17,15 @@ module Search
     attr_accessor :workbench
 
     def query(scope)
-			Query::Entrance.new(scope)
-				.text(text)
-				.entrance_type(entrance_type)
-				.stop_area_id(stop_area_id)
-				.zip_code(zip_code)
-				.city_name(city)
-				.stop_area_provider_id(stop_area_provider)
-				.entry_flag(entry_flag)
-				.exit_flag(exit_flag)
+      Query::Entrance.new(scope)
+                     .text(text)
+                     .entrance_type(entrance_type)
+                     .stop_area_id(stop_area_id)
+                     .zip_code(zip_code)
+                     .city_name(city)
+                     .stop_area_provider_id(stop_area_provider)
+                     .entry_flag(entry_flag)
+                     .exit_flag(exit_flag)
     end
 
     def entry_flag

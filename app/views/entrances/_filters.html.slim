@@ -10,7 +10,12 @@
         button.btn.btn-default#search_btn type='submit'
           span.fa.fa-search
   .ffg-row
-    = f.input :stop_area, collection: @search.stop_area_options, label: false, include_blank: Entrance.tmf(:stop_area)
+    = f.input :stop_area_id,
+      as: :ajax_select,
+      collection: @search.candidate_stop_areas,
+      label_method: :display_name,
+      input_html: { 'data-url': stop_areas_workgroup_autocomplete_index_path(@workbench.workgroup, format: :json), class: "w-full" },
+      wrapper_html: { class: "w-168" }
     = f.input :zip_code, label: Entrance.tmf(:zip_code)
     = f.input :city, label: Entrance.tmf(:city_name)
     = f.input :stop_area_provider, collection: @search.stop_area_provider_options, label: false, include_blank: Entrance.tmf(:stop_area_provider)

@@ -38,6 +38,14 @@ module.exports = {
         'light-brown': '#3B3B3B',
         'grey': '#F0F0F0'
       },
+      width: {
+        '108': '27rem',
+        '120': '30rem',
+        '132': '33rem',
+        '144': '36rem',
+        '156': '39rem',
+        '168': '42rem',
+       }
     },
   },
   plugins: [],

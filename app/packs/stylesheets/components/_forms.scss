@@ -994,6 +994,7 @@ table,
     display: flex;
     padding: 0;
     border-right: 1px solid #fff;
+    flex-wrap: wrap;
 
     + .ffg-row {
       border-top: 1px solid #fff;

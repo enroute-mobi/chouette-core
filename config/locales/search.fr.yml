@@ -25,7 +25,7 @@ fr:
         line_id: "Ligne"
         line: "Ligne"
         timetable: "Calendrier"
-        stop_area: "Arrêt"
+        stop_area_id: "Arrêt"
         area_type: "Type d'arrêt"
         is_referent: "Référent"
         zip_code: "Code Postal"

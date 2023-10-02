@@ -16,9 +16,9 @@
           = d.attribute :seasonal, as: :boolean
 
         = simple_block_for @line, title: t("lines.form.sections.hierarchy") do |d|
-          = d.attribute :company_id, as: :association
-          = d.attribute :secondary_companies, as: :association, value: array_to_html_list(@line.secondary_companies.map{ |c| link_to(c.name, workbench_line_referential_company_path(@workbench, c)) })
-          = d.attribute :network_id, as: :association
+          = d.attribute :company, as: :association, link: ->(company) { workbench_line_referential_company_path(@workbench, company) }
+          = d.attribute :secondary_companies, as: :associations, link: ->(company) { workbench_line_referential_company_path(@workbench, company) }
+          = d.attribute :network, as: :association, link: ->(network) { workbench_line_referential_network_path(@workbench, network) }
 
         = simple_block_for @line, title: Chouette::Line.tmf('is_referent') do |d|
           - if @line.is_referent

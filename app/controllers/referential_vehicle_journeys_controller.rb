@@ -11,9 +11,13 @@ class ReferentialVehicleJourneysController < ChouetteController
 
   def index
     index! do
-      @vehicle_journeys = decorate_collection(search.search(scope.with_departure_arrival_second_offsets))
       @vehicle_journeys_for_paginate = search.without_order.search(scope)
       @enable_complex_sort = @vehicle_journeys_for_paginate.count < 50000
+      
+      search_scope = scope
+      search_scope = scope.with_departure_arrival_second_offsets if @enable_complex_sort
+      
+      @vehicle_journeys = decorate_collection(search.search(search_scope))
     end
   end
 

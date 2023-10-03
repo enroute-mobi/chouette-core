@@ -116,8 +116,16 @@ module Control
             @models ||= context.send(model_collection)
           end
 
+          def where
+            "WHERE #{table_name}.id IN (#{models.select(:id).to_sql})"
+          end
+
           def provider_id
             "#{model_collection}.#{PREFIX_PROVIDERS[model_singulier]}_provider_id"
+          end
+
+          def providers
+            "#{PREFIX_PROVIDERS[model_singulier]}_providers"
           end
 
           def query
@@ -126,7 +134,7 @@ module Control
                 SELECT #{table_name}.*, #{duplicates_count} AS duplicates_count
                 FROM #{table_name}
                 #{inner_join}
-                WHERE #{table_name}.id IN (#{models.select(:id).to_sql})
+                #{where}
               ) AS with_duplicates_count
               WHERE duplicates_count > 1
             SQL
@@ -136,11 +144,9 @@ module Control
             "lower(#{model_collection}.#{target_attribute})"
           end
 
-          def duplicates_count
-            "count(#{model_collection}.id) OVER(PARTITION BY #{lower_attribute})"
-          end
-
           def inner_join; end
+
+          def duplicates_count; end
 
           class Duplicate
             def initialize(attributes)
@@ -174,10 +180,6 @@ module Control
             "count(#{model_collection}.id) OVER(PARTITION BY workbenches.id, #{lower_attribute})"
           end
 
-          def providers
-            "#{PREFIX_PROVIDERS[model_singulier]}_providers"
-          end
-
           def inner_join
             <<~SQL
               INNER JOIN public.#{providers} ON #{providers}.id = #{provider_id}
@@ -186,9 +188,33 @@ module Control
           end
         end
 
-        class All < Base; end
+        class All < Base
+          def duplicates_count
+            "count(#{model_collection}.id) OVER(PARTITION BY workgroups.id, #{lower_attribute})"
+          end
 
-        class Nil < Base; end
+          def where
+            "WHERE public.workgroups.id = #{workgroup_id}"
+          end
+
+          def inner_join
+            <<~SQL
+              INNER JOIN public.#{providers} ON #{providers}.id = #{provider_id}
+              INNER JOIN public.workbenches ON workbenches.id = #{providers}.workbench_id
+              INNER JOIN public.workgroups ON workgroups.id = workbenches.workgroup_id
+            SQL
+          end
+
+          def workgroup_id
+            context.workgroup.id
+          end
+        end
+
+        class Nil < Base
+          def duplicates_count
+            "count(#{model_collection}.id) OVER(PARTITION BY #{lower_attribute})"
+          end
+        end
       end
     end
   end

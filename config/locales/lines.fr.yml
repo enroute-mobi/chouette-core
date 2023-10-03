@@ -128,7 +128,7 @@ fr:
         companies:
           name: "Transporteur principal"
         registration_number: "Numéro d'enregistrement"
-        name: "Nom de la ligne"
+        name: "Nom"
         published_name: "Nom public"
         number: "Numéro"
         transport_mode: "Mode de transport"

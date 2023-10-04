@@ -10,7 +10,7 @@
           = d.attribute :name
           = d.attribute :published_name
           = d.attribute :number
-          = d.attribute :transport_mode
+          = d.attribute :transport_mode, as: :enumerize
           = d.attribute :transport_submode, as: :enumerize
           = d.attribute :flexible_service, as: :boolean
           = d.attribute :seasonal, as: :boolean

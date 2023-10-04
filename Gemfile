@@ -73,7 +73,7 @@ gem 'georuby', '2.3.0' # Fix version for georuby-ext because api has changed
 gem 'mimemagic', '>= 0.4.3'
 
 # User interface
-gem 'bootstrap-sass', '3.3.7'
+gem 'bootstrap-sass', '3.4.1'
 gem 'language_engine', en_route: 'language_engine'
 gem 'calendar_helper', '0.2.5'
 gem 'cocoon'

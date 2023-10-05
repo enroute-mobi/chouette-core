@@ -11,7 +11,7 @@ class ReferentialVehicleJourneysController < ChouetteController
 
   def index
     index! do
-      @vehicle_journeys_for_paginate = search.without_order.search(scope)
+      @vehicle_journeys_for_paginate = search.dup.without_order.search(scope)
       @enable_complex_sort = @vehicle_journeys_for_paginate.count < 50_000
 
       search_scope = scope

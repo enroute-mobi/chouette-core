@@ -32,6 +32,10 @@ module Scope
       Chouette::VehicleJourney.none
     end
 
+    def vehicle_journey_at_stops
+      Chouette::VehicleJourneyAtStop.none
+    end
+
     def time_tables
       Chouette::TimeTable.none
     end
@@ -153,7 +157,7 @@ module Scope
       scope.companies.where(line_provider: line_providers)
     end
 
-    delegate :routes, :stop_points, :journey_patterns, :journey_pattern_stop_points, :vehicle_journeys,
+    delegate :routes, :stop_points, :journey_patterns, :journey_pattern_stop_points, :vehicle_journeys, :vehicle_journey_at_stops,
              :time_tables, :time_table_periods, :time_table_dates, :service_counts, to: :scope
 
     private

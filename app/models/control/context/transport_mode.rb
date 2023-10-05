@@ -40,6 +40,10 @@ class Control::Context::TransportMode < Control::Context
       context.vehicle_journeys.where(journey_pattern: journey_patterns)
     end
 
+    def vehicle_journey_at_stops
+      context.vehicle_journey_at_stops.where(vehicle_journey: vehicle_journeys)
+    end
+
     def shapes
       context.shapes.where(id: journey_patterns.select(:shape_id))
     end

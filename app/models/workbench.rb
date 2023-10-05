@@ -164,15 +164,19 @@ class Workbench < ApplicationModel
     end
   end
 
+  def create_default_shape_provider
+    default_shape_provider.save
+  end
+
   def default_fare_provider
-    @default_fare_provider ||= fare_providers.find_or_initialize_by(short_name: DEFAULT_PROVIDER_SHORT_NAME) do |p|
-      p.fare_referential_id = workgroup.fare_referential_id
-      p.name = DEFAULT_PROVIDER_NAME
-    end
+    @default_fare_provider ||= fare_providers.first || create_default_fare_provider
   end
 
   def create_default_fare_provider
-    default_fare_provider.save
+    fare_providers.find_or_initialize_by(short_name: DEFAULT_PROVIDER_SHORT_NAME) do |p|
+      p.fare_referential_id = workgroup.fare_referential_id
+      p.name = DEFAULT_PROVIDER_NAME
+    end
   end
 
   def default_line_provider
@@ -201,10 +205,6 @@ class Workbench < ApplicationModel
     stop_area_providers.find_or_initialize_by(name: DEFAULT_PROVIDER_SHORT_NAME.capitalize) do |p|
       p.stop_area_referential_id = stop_area_referential_id
     end
-  end
-
-  def create_default_shape_provider
-    default_shape_provider.save
   end
 
   def create_invitation_code

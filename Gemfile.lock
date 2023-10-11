@@ -143,7 +143,7 @@ GEM
       execjs (~> 2)
     awesome_print (1.9.2)
     base64 (0.1.1)
-    bcrypt (3.1.18)
+    bcrypt (3.1.19)
     bcrypt_pbkdf (1.1.0)
     benchmark-ips (2.10.0)
     benchmark-malloc (0.2.0)
@@ -171,7 +171,7 @@ GEM
     builder (3.2.4)
     bulk_insert (1.9.0)
       activerecord (>= 3.2.0)
-    bullet (7.0.7)
+    bullet (7.1.1)
       activesupport (>= 3.0.0)
       uniform_notifier (~> 1.11)
     bummr (0.6.0)
@@ -209,9 +209,9 @@ GEM
       execjs
     coffee-script-source (1.12.2)
     concurrent-ruby (1.2.2)
-    countries (5.6.0)
+    countries (5.7.0)
       unaccent (~> 0.3)
-    country_select (8.0.2)
+    country_select (8.0.3)
       countries (~> 5.0)
     coverband (5.2.5)
       redis (>= 3.0)
@@ -227,7 +227,7 @@ GEM
       database_cleaner-core (~> 2.0.0)
     database_cleaner-core (2.0.1)
     date (3.3.3)
-    dbf (4.2.0)
+    dbf (4.2.4)
     ddtrace (1.14.0)
       debase-ruby_core_source (= 3.2.1)
       libdatadog (~> 3.0.0.1.0)
@@ -269,7 +269,7 @@ GEM
       warden (~> 1.2.3)
     devise-encryptable (0.2.0)
       devise (>= 2.1.0)
-    devise-i18n (1.11.0)
+    devise-i18n (1.12.0)
       devise (>= 4.9.0)
     devise_cas_authenticatable (1.10.4)
       devise (>= 1.2.0)
@@ -357,9 +357,9 @@ GEM
       google-cloud-core (~> 1.2)
       googleauth (>= 0.6.2, < 0.10.0)
       mime-types (~> 3.0)
-    google-protobuf (3.24.3)
-    google-protobuf (3.24.3-x86_64-darwin)
-    google-protobuf (3.24.3-x86_64-linux)
+    google-protobuf (3.24.4)
+    google-protobuf (3.24.4-x86_64-darwin)
+    google-protobuf (3.24.4-x86_64-linux)
     googleauth (0.9.0)
       faraday (~> 0.12)
       jwt (>= 1.4, < 3.0)
@@ -371,9 +371,9 @@ GEM
       railties
       sprockets-rails
     graphql (1.12.24)
-    gretel (4.5.0)
-      actionview (>= 5.1, < 7.1)
-      railties (>= 5.1, < 7.1)
+    gretel (4.6.0)
+      actionview (>= 5.1, < 7.2)
+      railties (>= 5.1, < 7.2)
     guard (2.18.0)
       formatador (>= 0.2.4)
       listen (>= 2.7, < 4.0)
@@ -486,7 +486,7 @@ GEM
     method_source (1.0.0)
     mime-types (3.5.1)
       mime-types-data (~> 3.2015)
-    mime-types-data (3.2023.0808)
+    mime-types-data (3.2023.1003)
     mimemagic (0.4.3)
       nokogiri (~> 1)
       rake
@@ -664,7 +664,7 @@ GEM
       rgeo (>= 1.0.0)
     rgeo-proj4 (4.0.0)
       rgeo (~> 3.0.0)
-    rgeo-shapefile (3.0.0)
+    rgeo-shapefile (3.1.0)
       dbf (~> 4.0)
       rgeo (>= 1.0)
     rmagick (5.3.0)
@@ -991,4 +991,4 @@ DEPENDENCIES
   x25519
 
 BUNDLED WITH
-   2.4.19
+   2.4.20

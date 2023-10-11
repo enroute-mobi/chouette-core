@@ -234,7 +234,7 @@ class Import::Base < ApplicationModel
   end
 
   def line_provider
-    workbench.line_providers.find_by(id: line_provider_id) || workbench.default_line_provider
+    @line_provider ||= (workbench.line_providers.find_by(id: line_provider_id) || workbench.default_line_provider)
   end
 
   def stop_area_provider_id
@@ -243,7 +243,7 @@ class Import::Base < ApplicationModel
   end
 
   def stop_area_provider
-    workbench.stop_area_providers.find_by(id: stop_area_provider_id) || workbench.default_stop_area_provider
+    @stop_area_provider ||= (workbench.stop_area_providers.find_by(id: stop_area_provider_id) || workbench.default_stop_area_provider)
   end
 
   protected

@@ -31,6 +31,7 @@ en:
     stop_area_not_found: "Unknown Stop Area: '%{code}'"
     overlaping_period_for_timetable: "The DayType with identifier %{timetable_objectid} contains DayTypeAssignment with interesecting OperatingPeriod."
     several_datasets: "The NeTex file can’t define several datasets"
+    overlapping_referentials: "You are trying to import a file that overlaps DataSets in edition (see Overlapping section for details)."
     gtfs:
       agencies:
         imported: "%{count} agency(ies) imported"

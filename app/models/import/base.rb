@@ -8,6 +8,7 @@ class Import::Base < ApplicationModel
   after_initialize :initialize_space_code
 
   has_many :processings, as: :operation, dependent: :destroy
+  has_array_of :overlapping_referentials, class_name: '::Referential'
 
   scope :unfinished, -> { where 'notified_parent_at IS NULL' }
   scope :having_status, ->(statuses) { where(status: statuses ) }

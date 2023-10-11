@@ -4,7 +4,13 @@
   .col-lg-6.col-md-6.col-sm-12.col-xs-12
     = render 'metadatas', import: @import
   = processing_helper(@import)
-
+- if @import.overlapping_referentials.any?
+  .row
+    .col-lg-6.col-md-6.col-sm-12.col-xs-12
+      = simple_block_for @import, title: t('imports.show.overlapping') do |d|
+        = d.attribute :overlapping_referentials, as: :associations, value: @import.overlapping_referentials.sort_by(&:name), link: ->(child) { workbench_referential_path(@workbench, child) }
+        p.mt-6
+          = t('imports.show.overlapping_tips')
 .col-lg-12
   .error_messages
     - messages = @import.messages + @import.resources.flat_map(&:messages)
@@ -12,7 +18,7 @@
 
 - if (@workgroup || @workbench.workgroup).has_legacy_processing_rules?
   = render 'table_with_legacy_controls'
-- else 
+- else
   - if @import.children.any?
     .col-lg-12
       = table_builder_2 @import.children,

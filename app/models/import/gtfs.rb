@@ -651,7 +651,6 @@ class Import::Gtfs < Import::Base # rubocop:disable Metrics/ClassLength
       trip.route_id,
       trip.direction_id,
       trip.headsign,
-      trip.short_name,
       trip.shape_id,
     ] + stop_times.map(&:stop_id)
   end
@@ -665,7 +664,7 @@ class Import::Gtfs < Import::Base # rubocop:disable Metrics/ClassLength
 
     route = referential.routes.build line: line
     route.wayback = (trip.direction_id == '0' ? :outbound : :inbound)
-    route.name = trip.headsign.presence || trip.short_name.presence || route.wayback.to_s.capitalize
+    route.name = trip.headsign.presence || route.wayback.to_s.capitalize
 
     journey_pattern = route.journey_patterns.build skip_custom_fields_initialization: true
     journey_pattern.name = route.name

@@ -7,7 +7,7 @@
 #= require jquery
 #= require jquery_ujs
 #= require cocoon
-#= require bootstrap-sass-official
+#= require bootstrap
 #= require select2-full
 #= require select2_locale_fr
 #= require select2_locale_en

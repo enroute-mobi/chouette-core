@@ -1,6 +1,9 @@
 .flex.justify-end.mb-5
   .flex.items-center.w-1/6
-    button.mr-5.hover:text-enroute-blue x-on:click.prevent= "saveSearchPanel = ! saveSearchPanel"
+    = button_tag t("searchs.actions.open_save_search_panel"),
+        class: 'mr-5 hover:text-enroute-blue open_search_panel',
+        id: 'open_search_panel',
+        'x-on:click.prevent': "saveSearchPanel = ! saveSearchPanel"
       span.far.fa-save.fa-2x
     = form_tag workbench_stop_area_referential_stop_areas_path(@workbench), method: :get, "x-ref": "searchForm", class: "w-full"
       = select_tag "search_id",

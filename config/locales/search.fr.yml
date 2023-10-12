@@ -4,6 +4,7 @@
 fr:
   searchs:
     actions:
+      open_save_search_panel: "Afficher la recherche Sauvegardé"
       save: "Sauvegarder"
       destroy: "Supprimer"
       destroy_confirm: "Etes vous sûr de supprimer cette Recherche ?"

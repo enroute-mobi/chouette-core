@@ -99,6 +99,13 @@
 
   .row
     .col-lg-12
+      h2.mb-lg= t("stop_areas.form.sections.fare")
+      = f.association :fare_zones, as: :autocomplete_select, collection: @stop_area.candidate_fare_zones.order(:name), include_blank: true, input_html: { multiple: true}
+
+  .separator.section_separator
+
+  .row
+    .col-lg-12
       h2.mb-lg= t("stop_areas.form.sections.accessibility")
       = f.input :mobility_impaired_accessibility, as: :select, include_blank: false
   .row

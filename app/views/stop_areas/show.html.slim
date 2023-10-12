@@ -100,6 +100,9 @@
           = d.attribute :fare_code
           = d.attribute :url, link: @stop_area.url
 
+        = simple_block_for @stop_area, title: t("stop_areas.form.sections.fare") do |d|
+          = d.attribute :fare_zones, as: :associations, value: @stop_area.fare_zones.sort_by(&:name), link: ->(fare_zone) { workbench_fare_zone_path(@workbench, fare_zone) }
+
         = simple_block_for @stop_area, title: t("stop_areas.form.sections.accessibility") do |d|
           = d.attribute :mobility_impaired_accessibility, as: :enumerize
           = d.attribute :wheelchair_accessibility, as: :enumerize

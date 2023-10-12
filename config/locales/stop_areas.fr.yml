@@ -70,6 +70,7 @@ fr:
         referent: "Référent"
         internals: "Interne"
         usage: "Utilisation"
+        fare: "Tarification"
         accessibility: "Accessibilité"
         custom_fields: "Champs personnalisés"
       address: "246 Boulevard Saint-Germain, 75007 Paris"
@@ -186,6 +187,7 @@ fr:
         distance: Distance
         lines: Lignes
         routes: Itinéraires
+        fare_zones: Zones Tarifaires
     errors:
       models:
         stop_area:

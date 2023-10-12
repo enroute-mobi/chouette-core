@@ -69,6 +69,7 @@ en:
         referent: "Referent"
         internals: "Internals"
         usage: "Usage"
+        fare: "Fare"
         accessibility: "Accessibility"
         custom_fields: "Custom fields"
       address: "246 Boulevard Saint-Germain, 75007 Paris"
@@ -183,6 +184,7 @@ en:
         distance: Distance
         lines: Lines
         routes: Routes
+        fare_zones: Fare zones
     errors:
       models:
         stop_area:

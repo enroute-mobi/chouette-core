@@ -645,5 +645,9 @@ module Chouette
       attr_accessor :accessibility_limitation_description
     end
 
+    def candidate_fare_zones
+      stop_area_referential.fare_zones
+    end
+
   end
 end

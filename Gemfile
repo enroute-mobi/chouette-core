@@ -56,7 +56,7 @@ gem 'bulk_insert'
 gem 'graphql', '~> 1.12.19'
 
 # Authentication
-gem 'devise', '>= 4.8.1'
+gem 'devise', '>= 4.9.3'
 gem 'devise_cas_authenticatable', '~> 1'
 gem 'devise-encryptable', '>= 0.2.0'
 gem 'devise_invitable', '>= 2.0.6'
@@ -78,7 +78,7 @@ gem 'language_engine', en_route: 'language_engine'
 gem 'calendar_helper', '0.2.5'
 gem 'cocoon'
 gem 'slim-rails', '>= 3.3.0'
-gem 'simple_form', '>= 5.1.0'
+gem 'simple_form', '>= 5.3.0'
 gem 'will_paginate-bootstrap'
 gem 'gretel', '>= 4.4.0'
 gem 'country_select'
@@ -92,7 +92,7 @@ gem 'roo', '>= 2.8.3'
 
 # Controller
 gem 'inherited_resources', '>= 1.13.1'
-gem 'responders', '>= 3.0.1'
+gem 'responders', '>= 3.1.1'
 
 gem "lograge", ">= 0.11.2"
 

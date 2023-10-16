@@ -36,154 +36,169 @@ class Merge::Referential::Legacy < Merge::Referential::Base
         end
       end
 
-      Chouette::ChecksumManager.inline do
-        # let's merge data :)
+      # let's merge data :)
 
-        # Routes
+      # Routes
 
-        # Always the same pattern :
-        # - load models from original Referential
-        # - load associated datas (children, checksum for associated models)
-        # - switch to new Referential
-        # - enumerate loaded models
-        # - skip model if its checksum exists "in the same line"
-        # - prepare attributes for a fresh model
-        # - remove all primary keys
-        # - compute an ObjectId
-        # - process children models as nested attributes
-        # - associated other models (by line/checksum)
-        # - save! and next one
+      # Always the same pattern :
+      # - load models from original Referential
+      # - load associated datas (children, checksum for associated models)
+      # - switch to new Referential
+      # - enumerate loaded models
+      # - skip model if its checksum exists "in the same line"
+      # - prepare attributes for a fresh model
+      # - remove all primary keys
+      # - compute an ObjectId
+      # - process children models as nested attributes
+      # - associated other models (by line/checksum)
+      # - save! and next one
 
-        referential_stop_points = referential.switch do
-          referential.stop_points.all.to_a
+      referential_stop_points = referential.switch do
+        referential.stop_points.all.to_a
+      end
+
+      referential_stop_points_by_route = referential_stop_points.group_by(&:route_id)
+
+      referential_routing_constraint_zones = referential.switch do
+        referential.routing_constraint_zones.each_with_object(Hash.new { |h,k| h[k] = {}}) do |routing_constraint_zone, hash|
+          hash[routing_constraint_zone.route_id][routing_constraint_zone.checksum] = routing_constraint_zone
         end
+      end
 
-        referential_stop_points_by_route = referential_stop_points.group_by(&:route_id)
+      referential_route_opposite_route_ids = referential.switch do
+        Hash[referential.routes.where('opposite_route_id is not null').pluck(:id, :opposite_route_id)]
+      end
 
-        referential_routing_constraint_zones = referential.switch do
-          referential.routing_constraint_zones.each_with_object(Hash.new { |h,k| h[k] = {}}) do |routing_constraint_zone, hash|
-            hash[routing_constraint_zone.route_id][routing_constraint_zone.checksum] = routing_constraint_zone
-          end
-        end
+      new.switch do
+        existing_route_objectids = new.routes.distinct.pluck(:objectid).to_set
+        existing_stop_points_objectids = new.stop_points.distinct.pluck(:objectid).to_set
 
-        referential_route_opposite_route_ids = referential.switch do
-          Hash[referential.routes.where('opposite_route_id is not null').pluck(:id, :opposite_route_id)]
-        end
+        route_ids_mapping = {}
 
-        new.switch do
-          route_ids_mapping = {}
-
-          Chouette::Benchmark.measure("routes") do
-            referential_routes.each_slice(10) do |routes|
-              Chouette::Route.transaction do
-                routes.each do |route|
-                  existing_route = new.routes.find_by line_id: route.line_id, checksum: route.checksum
-                  if existing_route
-                    route_ids_mapping[route.id] = existing_route.id
-                    existing_route.merge_metadata_from route
-                  else
-                    objectid = Chouette::Route.where(objectid: route.objectid).exists? ? nil : route.objectid
-                    attributes = route.attributes.merge(
-                      id: nil,
-                      objectid: objectid,
-                      # line_id is the same
-                      # all other primary must be changed
-                      opposite_route_id: nil # merged after
-                    )
-                    new_route = new.routes.build attributes
-
-                    route_stop_points = referential_stop_points_by_route[route.id] || []
-
-                    # Stop Points
-                    route_stop_points.sort_by(&:position).each do |stop_point|
-                      objectid = Chouette::StopPoint.where(objectid: stop_point.objectid).exists? ? nil : stop_point.objectid
-                      attributes = stop_point.attributes.merge(
+        Chouette::Benchmark.measure("routes") do
+          ApplicationModel.skipping_objectid_uniqueness do
+            Chouette::StopPoint.acts_as_list_no_update do
+              referential_routes.each_slice(100) do |routes|
+                Chouette::Route.transaction do
+                  routes.each do |route|
+                    Rails.logger.debug "Merge Route #{route.id}"
+                    existing_route = new.routes.find_by line_id: route.line_id, checksum: route.checksum
+                    if existing_route
+                      route_ids_mapping[route.id] = existing_route.id
+                      existing_route.merge_metadata_from route
+                    else
+                      objectid = existing_route_objectids.add?(route.objectid) ? route.objectid : nil
+                      attributes = route.attributes.merge(
                         id: nil,
-                        route_id: nil,
                         objectid: objectid,
+                        # line_id is the same
+                        # all other primary must be changed
+                        opposite_route_id: nil # merged after
                       )
-                      new_route.stop_points.build attributes
-                    end
+                      new_route = new.routes.build attributes
 
-                    # We need to create StopPoints to known new primary keys
-                    save_model! new_route
+                      route_stop_points = referential_stop_points_by_route[route.id] || []
 
-                    route_ids_mapping[route.id] = new_route.id
+                      # Stop Points
+                      route_stop_points.sort_by(&:position).each do |stop_point|
+                        objectid = existing_stop_points_objectids.add?(stop_point.objectid) ? stop_point.objectid : nil
+                        attributes = stop_point.attributes.merge(
+                          id: nil,
+                          route_id: nil,
+                          objectid: objectid,
 
-                    old_stop_point_ids = route_stop_points.sort_by(&:position).map(&:id)
-                    new_stop_point_ids = new_route.stop_points.sort_by(&:position).map(&:id)
-
-                    stop_point_ids_mapping = Hash[[old_stop_point_ids, new_stop_point_ids].transpose]
-
-                    # RoutingConstraintZones
-                    routing_constraint_zones = referential_routing_constraint_zones[route.id]
-
-                    routing_constraint_zones.values.each do |routing_constraint_zone|
-                      objectid = new.routing_constraint_zones.where(objectid: routing_constraint_zone.objectid).exists? ? nil : routing_constraint_zone.objectid
-                      stop_point_ids = routing_constraint_zone.stop_point_ids.map { |id| stop_point_ids_mapping[id] }.compact
-
-                      if stop_point_ids.size != routing_constraint_zone.stop_point_ids.size
-                        raise "Can't find all required StopPoints for RoutingConstraintZone #{routing_constraint_zone.inspect}"
+                        )
+                        stop_point = new_route.stop_points.build attributes
+                        stop_point.skip_stop_area_id_validation
                       end
 
-                      attributes = routing_constraint_zone.attributes.merge(
-                        id: nil,
-                        route_id: nil,
-                        objectid: objectid,
-                        stop_point_ids: stop_point_ids,
-                      )
-                      new_route.routing_constraint_zones.build attributes
-                    end
+                      new_route.update_checksum_without_callbacks!(db_lookup: false)
 
-                    save_model! new_route
+                      # We need to create StopPoints to known new primary keys
+                      save_model! new_route
 
-                    if new_route.checksum != route.checksum
-                      raise "Checksum has changed for route #{route.id}:\n \"#{route.checksum}\", \"#{route.checksum_source}\" \n -> \n \"#{new_route.checksum}\", \"#{new_route.checksum_source}\""
-                    end
+                      route_ids_mapping[route.id] = new_route.id
 
-                    if new_route.routing_constraint_zones.map(&:checksum).sort != routing_constraint_zones.keys.sort
-                      raise "Checksum has changed in RoutingConstraintZones: \"#{new_route.routing_constraint_zones.map(&:checksum).sort}\" -> \"#{route.routing_constraint_zones.map(&:checksum).sort}\""
-                    end
+                      old_stop_point_ids = route_stop_points.sort_by(&:position).map(&:id)
+                      new_stop_point_ids = new_route.stop_points.sort_by(&:position).map(&:id)
 
-                    new_route.routing_constraint_zones.each do |new_routing_constraint_zone|
-                      routing_constraint_zone = routing_constraint_zones[new_routing_constraint_zone.checksum]
-                      if routing_constraint_zone
-                        referential_routing_constraint_zones_new_ids[routing_constraint_zone.id] = new_routing_constraint_zone.id
-                      else
-                        raise "Can't find RoutingConstraintZone for checksum #{new_routing_constraint_zone.checksum} into #{routing_constraint_zones.inspect}"
+                      stop_point_ids_mapping = Hash[[old_stop_point_ids, new_stop_point_ids].transpose]
+
+                      # RoutingConstraintZones
+                      routing_constraint_zones = referential_routing_constraint_zones[route.id]
+                      if routing_constraint_zones.present?
+                        routing_constraint_zones.values.each do |routing_constraint_zone|
+                          objectid = new.routing_constraint_zones.where(objectid: routing_constraint_zone.objectid).exists? ? nil : routing_constraint_zone.objectid
+                          stop_point_ids = routing_constraint_zone.stop_point_ids.map { |id| stop_point_ids_mapping[id] }.compact
+
+                          if stop_point_ids.size != routing_constraint_zone.stop_point_ids.size
+                            raise "Can't find all required StopPoints for RoutingConstraintZone #{routing_constraint_zone.inspect}"
+                          end
+
+                          attributes = routing_constraint_zone.attributes.merge(
+                            id: nil,
+                            route_id: nil,
+                            objectid: objectid,
+                            stop_point_ids: stop_point_ids,
+                          )
+                          new_route.routing_constraint_zones.build attributes
+                        end
+
+                        new_route.update_checksum_without_callbacks!(db_lookup: false)
+                        save_model! new_route
+                      end
+
+                      if new_route.checksum != route.checksum
+                        raise "Checksum has changed for route #{route.id}:\n \"#{route.checksum}\", \"#{route.checksum_source}\" \n -> \n \"#{new_route.checksum}\", \"#{new_route.checksum_source}\""
+                      end
+
+                      if new_route.routing_constraint_zones.map(&:checksum).sort != routing_constraint_zones.keys.sort
+                        raise "Checksum has changed in RoutingConstraintZones: \"#{new_route.routing_constraint_zones.map(&:checksum).sort}\" -> \"#{route.routing_constraint_zones.map(&:checksum).sort}\""
+                      end
+
+                      new_route.routing_constraint_zones.each do |new_routing_constraint_zone|
+                        routing_constraint_zone = routing_constraint_zones[new_routing_constraint_zone.checksum]
+                        if routing_constraint_zone
+                          referential_routing_constraint_zones_new_ids[routing_constraint_zone.id] = new_routing_constraint_zone.id
+                        else
+                          raise "Can't find RoutingConstraintZone for checksum #{new_routing_constraint_zone.checksum} into #{routing_constraint_zones.inspect}"
+                        end
                       end
                     end
                   end
-                end
 
-                referential_route_opposite_route_ids.each do |route_id, opposite_route_id|
-                  new_route_id = route_ids_mapping[route_id]
-                  new_opposite_route_id = route_ids_mapping[opposite_route_id]
+                  referential_route_opposite_route_ids.each do |route_id, opposite_route_id|
+                    new_route_id = route_ids_mapping[route_id]
+                    new_opposite_route_id = route_ids_mapping[opposite_route_id]
 
-                  new_route = nil
-                  if new_route_id && new_opposite_route_id
-                    if new_route = new.routes.find_by(id: new_route_id)
-                      new_route.update_column :opposite_route_id, new_opposite_route_id
+                    new_route = nil
+                    if new_route_id && new_opposite_route_id
+                      if new_route = new.routes.find_by(id: new_route_id)
+                        new_route.update_column :opposite_route_id, new_opposite_route_id
+                      end
+                      Rails.logger.warn "Can't merge opposite route for Route #{route_id}" unless new_route
                     end
-                    Rails.logger.warn "Can't merge opposite route for Route #{route_id}" unless new_route
                   end
                 end
               end
             end
           end
         end
+      end
 
-        # JourneyPatterns
+      # JourneyPatterns
 
-        referential_journey_patterns_stop_areas_objectids = referential.switch do
-          journey_patterns_stop_areas_objectids = {}
+      referential_journey_patterns_stop_areas_objectids = referential.switch do
+        journey_patterns_stop_areas_objectids = {}
 
-          referential.journey_patterns.includes(stop_points: :stop_area).find_each do |journey_pattern|
-            journey_patterns_stop_areas_objectids[journey_pattern.id] = journey_pattern.stop_points.map { |sp| [sp.position, sp.stop_area.raw_objectid]}
-          end
-
-          journey_patterns_stop_areas_objectids
+        referential.journey_patterns.includes(stop_points: :stop_area).find_each do |journey_pattern|
+          journey_patterns_stop_areas_objectids[journey_pattern.id] = journey_pattern.stop_points.map { |sp| [sp.position, sp.stop_area.raw_objectid]}
         end
+
+        journey_patterns_stop_areas_objectids
+      end
+
+      Chouette::ChecksumManager.inline do
 
         new.switch do
           Chouette::Benchmark.measure("journey_patterns") do

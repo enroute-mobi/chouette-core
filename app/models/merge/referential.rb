@@ -8,7 +8,7 @@ module Merge::Referential
     attr_reader :referential, :merge
     alias source referential
 
-    delegate :new, :workbench, to: :merge
+    delegate :new, :workbench, :workgroup, to: :merge
 
     def logger
       # FIXME

@@ -16,8 +16,11 @@ class ApplicationModel < ::ActiveRecord::Base
 
     def skipping_objectid_uniqueness
       @skip_objectid_uniqueness = true
-      yield
-      @skip_objectid_uniqueness = false
+      begin
+        yield
+      ensure
+        @skip_objectid_uniqueness = false
+      end
     end
 
     def add_light_belongs_to(rel_name)

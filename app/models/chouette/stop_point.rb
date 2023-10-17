@@ -27,9 +27,19 @@ module Chouette
     # validates_presence_of :stop_area
     validate :stop_area_id_validation
     def stop_area_id_validation
+      return if skip_stop_area_id_validation?
+
       unless stop_area_id.present? && Chouette::StopArea.exists?(stop_area_id)
         errors.add(:stop_area_id, I18n.t("stop_areas.errors.empty"))
       end
+    end
+
+    def skip_stop_area_id_validation?
+      @skip_stop_area_id_validation
+    end
+
+    def skip_stop_area_id_validation
+      @skip_stop_area_id_validation = true
     end
 
     scope :default_order, -> { order("position") }

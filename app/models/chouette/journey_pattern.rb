@@ -140,7 +140,17 @@ module Chouette
       Chouette::StopPoint.find( arrival_stop_point_id)
     end
 
+    def skip_save_shortcuts?
+      @skip_save_shortcuts
+    end
+
+    def skip_save_shortcuts
+      @skip_save_shortcuts = true
+    end
+
     def shortcuts_update_for_add( stop_point)
+      return if skip_save_shortcuts?
+
       stop_points << stop_point unless stop_points.include?( stop_point)
 
       ordered_stop_points = stop_points

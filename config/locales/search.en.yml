@@ -4,6 +4,7 @@
 en:
   searchs:
     actions:
+      open_save_search_panel: "Display save search"
       save: "Save"
       destroy: "Delete"
       destroy_confirm: "Are you sure you want to destroy this Search ?"

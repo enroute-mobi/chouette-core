@@ -53,7 +53,7 @@ gem 'postgres-copy', '>= 1.5.0'
 gem 'polylines'
 gem 'bulk_insert'
 
-gem 'graphql', '~> 1.12.19'
+gem 'graphql'
 
 # Authentication
 gem 'devise', '>= 4.9.3'
@@ -162,7 +162,7 @@ group :development do
   gem 'derailed_benchmarks'
 
   gem 'bummr'
-  gem 'graphiql-rails', '>= 1.8.0'
+  gem 'graphiql-rails'
 
   gem 'guard-rspec', require: false
   gem 'rubocop-rails', '>= 2.21.2', require: false

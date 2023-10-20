@@ -142,7 +142,7 @@ module SimpleBlockForHelper
                     link_li = link.call(single_raw_value).gsub('.', '/')
                   end
 
-                  displayed_value_li = [single_raw_value.name,  single_raw_value.try(:get_objectid)&.short_id].join(' ')
+                  displayed_value_li = [single_raw_value.name,  single_raw_value.try(:get_objectid).try(:short_id)].join(' ')
                   concat(content_tag(:li, link_to(displayed_value_li, link_li), class: "step"))
                 end
               end

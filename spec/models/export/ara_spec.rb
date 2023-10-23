@@ -367,6 +367,7 @@ RSpec.describe Export::Ara do
     let(:target) { [] }
 
     let(:code_space) { context.workgroup.code_spaces.create! short_name: 'test' }
+    let(:external_code_space) { context.workgroup.code_spaces.create! short_name: 'external' }
 
     let(:part) { Export::Ara::VehicleJourneys.new export_scope: scope, target: target }
 
@@ -400,7 +401,7 @@ RSpec.describe Export::Ara do
 
         context "when one of the Vehicle Journey has a code 'test': 'dummy" do
           before { vehicle_journey.codes.create!(code_space: code_space, value: 'dummy') }
-          it do 
+          it do
             is_expected.to include(
               an_object_having_attributes(objectids: { 'test' => 'dummy', 'external' => vehicle_journey.objectid})
             )
@@ -415,6 +416,25 @@ RSpec.describe Export::Ara do
           end
           it { is_expected.to_not include(an_object_having_attributes(objectids: { 'test' => 'dummy' })) }
         end
+
+        context "when one of the Vehicle Journey has a code 'external': 'dummy" do
+          before { vehicle_journey.codes.create!(code_space: external_code_space, value: 'dummy') }
+          it do
+            is_expected.to include(
+              an_object_having_attributes(objectids: { 'external' => 'dummy' })
+            )
+          end
+        end
+
+        context "when all Vehicle Journeys has a code 'external': 'dummy" do
+          before do
+            scope.vehicle_journeys.each do |vehicle_journey|
+              vehicle_journey.codes.create! code_space: external_code_space, value: 'dummy'
+            end
+          end
+          it { is_expected.to_not include(an_object_having_attributes(objectids: { 'external' => 'dummy' })) }
+        end
+
       end
     end
   end

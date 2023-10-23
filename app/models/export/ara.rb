@@ -127,7 +127,7 @@ class Export::Ara < Export::Base
           unique_codes[registration_number_provider.short_name] = unique_code if unique_code
         end
 
-        if model.respond_to?(:objectid)
+        if model.respond_to?(:objectid) && !unique_codes.key?('external')
           unique_codes['external'] ||= model.objectid
         end
 

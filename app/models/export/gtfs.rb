@@ -696,6 +696,7 @@ class Export::Gtfs < Export::Base
 
       def route_type
         unless flexible_service
+          return 103 if transport_mode == 'rail' && transport_submode == 'interregionalRail'
           return 204 if transport_mode == 'coach' && transport_submode == 'regionalCoach'
           return 205 if transport_mode == 'coach' && transport_submode == 'specialCoach'
           return 208 if transport_mode == 'coach' && transport_submode == 'commuterCoach'
@@ -1133,7 +1134,7 @@ class Export::Gtfs < Export::Base
       end
 
       %w[
-        vehicle_journey_id departure_time departure_day_offset arrival_time arrival_day_offset 
+        vehicle_journey_id departure_time departure_day_offset arrival_time arrival_day_offset
         position for_boarding for_alighting journey_pattern_id stop_point_id
       ].each do |attribute|
         define_method(attribute) do

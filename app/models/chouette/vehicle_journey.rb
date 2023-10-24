@@ -42,11 +42,7 @@ module Chouette
 
     validates_presence_of :route
     validates_presence_of :journey_pattern
-    # validates :vehicle_journey_at_stops,
-      # Validation temporarily removed for day offsets
-      # :vjas_departure_time_must_be_before_next_stop_arrival_time,
-
-      # vehicle_journey_at_stops_are_in_increasing_time_order: false
+    validate :vjas_departure_time_must_be_before_next_stop_arrival_time
     validates_presence_of :number
 
     has_many :vehicle_journey_at_stops, -> { includes(:stop_point).order("stop_points.position") }, dependent: :destroy
@@ -170,22 +166,22 @@ module Chouette
       joins(:time_tables).merge(Chouette::TimeTable.scheduled_on(date)).distinct
     end
 
-    # TODO: Remove this validator
-    # We've eliminated this validation because it prevented vehicle journeys
-    # from being saved with at-stops having a day offset greater than 0,
-    # because these would have times that were "earlier" than the previous
-    # at-stop. TBD by Luc whether we're deleting this validation altogether or
-    # instead rejiggering it to work with day offsets.
     def vjas_departure_time_must_be_before_next_stop_arrival_time
-      notice = 'departure time must be before next stop arrival time'
-      vehicle_journey_at_stops.each_with_index do |current_stop, index|
-        next_stop = vehicle_journey_at_stops[index + 1]
+      previous_time_of_day = nil
+      vehicle_journey_at_stops.each do |vehicle_journey_at_stop|
+        %w{arrival departure}.each do |part|
+          time_of_day = vehicle_journey_at_stop.send "#{part}_time_of_day"
+          # next unless time_of_day || previous_time_of_day
 
-        next unless next_stop && (next_stop[:arrival_time] < current_stop[:departure_time])
-
-        current_stop.errors.add(:departure_time, notice)
-        self.errors.add(:vehicle_journey_at_stops, notice)
+          if time_of_day.present? && previous_time_of_day.present? && time_of_day < previous_time_of_day
+            # For the moment, a single/global error is defined
+            errors.add :vehicle_journey_at_stops, :invalid_chronology
+            return false
+          end
+          previous_time_of_day = time_of_day
+        end
       end
+      true
     end
 
     def local_id

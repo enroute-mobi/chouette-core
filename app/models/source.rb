@@ -160,6 +160,10 @@ class Source < ApplicationModel
     import_options["update_workgroup_providers"]
   end
 
+  def import_option_process_gtfs_route_ids
+    (import_options["process_gtfs_route_ids"] || []).join(",")
+  end
+
   def import_option_store_xml
     import_options["store_xml"]
   end
@@ -190,6 +194,10 @@ class Source < ApplicationModel
 
   def import_option_update_workgroup_providers=(value)
     import_options["update_workgroup_providers"] = value
+  end
+
+  def import_option_process_gtfs_route_ids=(value)
+    import_options["process_gtfs_route_ids"] = value.delete('\t\r\n').split(',')
   end
 
   def import_option_store_xml=(value)

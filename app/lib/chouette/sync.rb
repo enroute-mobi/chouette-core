@@ -40,6 +40,10 @@ module Chouette
       # To be overrided
       def after_synchronisation; end
 
+      def processed_identifiers
+        updater.processed_identifiers
+      end
+
       protected
 
       def updater_class

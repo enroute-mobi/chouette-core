@@ -3,6 +3,8 @@ class Import::NetexGeneric < Import::Base
   include LocalImportSupport
   include Imports::WithoutReferentialSupport
 
+  attr_accessor :imported_line_ids
+
   def self.accepts_file?(file)
     case File.extname(file)
     when '.xml'
@@ -48,7 +50,65 @@ class Import::NetexGeneric < Import::Base
       part(part_class).import!
     end
 
+    within_referential
+
     update_import_status
+  end
+
+  def within_referential(&block)
+    referential_builder.create do |referential|
+      referential.switch
+
+      yield referential
+    end
+
+    unless referential_builder.valid?
+      # Create a global error message
+      messages.create criticity: :error, message_key: 'referential_creation_overlapping_existing_referential'
+      # Save overlapping referentials for user display
+      #self.overlapping_referential_ids = referential_builder.overlapping_referential_ids
+    end
+  end
+
+  def referential_builder
+    ReferentialBuilder.new(workbench, name: name, metadata: referential_metadata)
+  end
+
+  def referential_metadata
+    @referential_metadata ||=
+      ReferentialMetadata.new line_ids: imported_line_ids, periodes: [netex_source.validity_period]
+  end
+
+  class ReferentialBuilder
+    def initialize(workbench, name:, metadata:)
+      @workbench = workbench
+      @name = name
+      @metadata = metadata
+    end
+    attr_reader :workbench, :name, :metadata
+
+    delegate :organisation, to: :workbench
+
+    def create(&block)
+      yield referential if valid?
+    end
+
+    def referential
+      @referential ||= workbench.referentials.create(
+        name: name,
+        organisation: organisation,
+        metadatas: [metadata],
+        ready: false
+      )
+    end
+
+    def valid?
+      @valid ||= referential.valid?
+    end
+
+    def overlapping_referential_ids
+      @overlapping_referentials ||= referential.overlapped_referential_ids
+    end
   end
 
   # TODO: why the resource statuses are not checked automaticaly ??
@@ -203,7 +263,7 @@ class Import::NetexGeneric < Import::Base
     delegate :line_referential, to: :import
 
     def synchronization
-      Chouette::Sync::Referential.new(target).tap do |sync|
+      @synchronization ||= Chouette::Sync::Referential.new(target).tap do |sync|
         sync.synchronize_with Chouette::Sync::Company::Netex
         sync.synchronize_with Chouette::Sync::Network::Netex
         sync.synchronize_with Chouette::Sync::LineNotice::Netex
@@ -241,6 +301,9 @@ class Import::NetexGeneric < Import::Base
         .where.not(company_id: nil)
         .in_batches
         .update_all(company_id: nil)
+
+      import.imported_line_ids =
+        synchronization.sync_for(Chouette::Sync::Line::Netex).imported_line_ids
     end
   end
 

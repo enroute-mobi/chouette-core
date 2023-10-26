@@ -47,6 +47,10 @@ module Chouette
         syncs.each(&:synchronize)
       end
 
+      def sync_for(sync_class)
+        syncs.find { |sync| sync.class == sync_class }
+      end
+
       protected
 
       def sync_classes

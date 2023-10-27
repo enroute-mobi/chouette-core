@@ -14,4 +14,7 @@ class EditableSelectInput < SimpleForm::Inputs::StringInput
     @builder.text_field(attribute_name, merged_input_options)
   end
 
+  def input_html_classes
+    super.push('w-full')
+  end
 end

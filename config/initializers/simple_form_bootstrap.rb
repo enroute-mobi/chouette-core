@@ -251,6 +251,22 @@ SimpleForm.setup do |config|
     b.use :hint,  wrap_with: { tag: 'p', class: 'help-block small' }
   end
 
+  config.wrappers :horizontal_input_editable_select_tailwind, tag: 'div', class: 'flex items-center mb-10', error_class: 'has-error' do |b|
+    b.use :html5
+    b.use :placeholder
+    b.optional :maxlength
+    b.optional :pattern
+    b.optional :min_max
+    b.optional :readonly
+    b.use :label, class: 'flex justify-end w-2/6 mr-8 mb-0 control-label pt-0'
+
+    b.wrapper tag: 'div', class: 'w-4/6 flex items-center relative' do |ba|
+      ba.use :input, class: ''
+      ba.use :error, wrap_with: { tag: 'span', class: 'help-block small absolute top-14 ml-2' }
+      ba.use :hint,  wrap_with: { tag: 'p', class: 'help-block small absolute top-14 ml-2' }
+    end
+  end
+
   # Wrappers for forms and inputs using the Bootstrap toolkit.
   # Check the Bootstrap docs (http://getbootstrap.com)
   # to learn about the different styles for forms and inputs,

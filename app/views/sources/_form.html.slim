@@ -42,6 +42,7 @@
         = f.input :import_option_store_xml, as: :switchable_checkbox
       = f.input :import_option_disable_missing_resources, as: :switchable_checkbox
       = f.input :import_option_strict_mode, as: :switchable_checkbox
+      = f.input :import_option_process_gtfs_route_ids, as: :editable_select, wrapper: :horizontal_input_editable_select_tailwind
       = f.input :import_option_stop_area_provider_id, as: :select, collection: @source.candidate_stop_area_providers.order(:name), include_blank: false
       = f.input :import_option_line_provider_id, as: :select, collection: @source.candidate_line_providers.order(:name), include_blank: false
 

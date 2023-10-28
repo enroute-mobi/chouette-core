@@ -72,6 +72,7 @@ class SourcesController < ChouetteController
       :import_option_automatic_merge,
       :import_option_archive_on_fail,
       :import_option_update_workgroup_providers,
+      :import_option_process_gtfs_route_ids,
       :import_option_store_xml,
       :import_option_disable_missing_resources,
       :import_option_strict_mode,

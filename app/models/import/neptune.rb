@@ -452,7 +452,7 @@ class Import::Neptune < Import::Base
 
     vehicle_journey.vehicle_journey_at_stops.destroy_all
 
-    vehicle_journey_at_stops.sort_by{|i| i[:order]}.each_with_index do |source_vehicle_journey_at_stop, index|
+    vehicle_journey_at_stops.sort_by{|i| i[:order]&.to_i}.each_with_index do |source_vehicle_journey_at_stop, index|
       vehicle_journey.vehicle_journey_at_stops.build do |vehicle_journey_at_stop|
         vehicle_journey_at_stop.stop_point = @stop_points[route_object_id][source_vehicle_journey_at_stop[:stop_point_id]]
 

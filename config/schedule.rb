@@ -31,26 +31,6 @@ set :job_template, "/bin/bash -c 'sleep $[$RANDOM % 60] ; :job'"
 job_type :rake_if, '[ "$:if" == "true" ] && cd :path && :environment_variable=:environment bundle exec rake :task --silent :output'
 job_type :runner,  "cd :path && bundle exec rails runner -e :environment ':task' :output"
 
-every :hour do
-  runner "Cron.every_hour"
-end
-
-every :day, :at => '3:00am' do
-  runner "Cron.every_day_at_3AM"
-end
-
-every :day, :at => '4:00 am' do
- runner "Cron.every_day_at_4AM"
-end
-
 every 3.hours do
   rake_if 'cucumber:clean_test_organisations', if: "CHOUETTE_CLEAN_TEST_ORGANISATIONS"
-end
-
-every 5.minutes do
-  runner "Cron.every_5_minutes"
-end
-
-every 1.minute do
-  command "/bin/echo HeartBeat"
 end

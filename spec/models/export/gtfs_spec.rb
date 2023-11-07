@@ -1413,7 +1413,7 @@ RSpec.describe Export::Gtfs, type: [:model, :with_exportable_referential] do
 
     describe 'gtfs_headsign' do
       subject { decorator.gtfs_headsign }
-      
+
       context 'when JourneyPattern published_name is "dummy"' do
         before { allow(decorator).to receive(:journey_pattern).and_return(double(published_name: 'dummy')) }
         it { is_expected.to eq('dummy') }
@@ -1876,41 +1876,50 @@ RSpec.describe Export::Gtfs, type: [:model, :with_exportable_referential] do
     end
   end
 
-  it "should correctly handle timezones" do
-    exported_referential.switch do
-      company.time_zone = "Europe/Paris"
-      company.save
+  describe 'When agency timezone is defined' do
+    let(:context) do
+      Chouette.create do
+        line_provider :first do
+          company :c1, time_zone: 'Europe/Paris'
+          line :l1, company: :c1
+        end
 
-      line = exported_referential.lines.first
-      stop_areas = stop_area_referential.stop_areas.order(Arel.sql('random()')).limit(2)
-      stop_areas.update_all time_zone: "Europe/Paris"
+        stop_area :departure, time_zone: 'Europe/Athens'
+        stop_area :second
+        stop_area :arrival
 
-      route = FactoryBot.create :route, line: line, stop_areas: stop_areas, stop_points_count: 0
-      journey_pattern = FactoryBot.create :journey_pattern, route: route, stop_points: route.stop_points.sample(2)
-      vehicle_journey = FactoryBot.create :vehicle_journey, journey_pattern: journey_pattern, company: company
-      vehicle_journey.time_tables << (FactoryBot.create :time_table)
-
-      gtfs_export.duration = nil
-      gtfs_export.export_scope = Export::Scope::All.new(exported_referential)
-
-      tmp_dir = Dir.mktmpdir
-
-      gtfs_export.export_to_dir tmp_dir
-
-      # The processed export files are re-imported through the GTFS gem
-      stop_times_zip_path = File.join(tmp_dir, "#{gtfs_export.zip_file_name}.zip")
-      source = GTFS::Source.build stop_times_zip_path, strict: false
-
-      vehicle_journey_at_stops = vehicle_journey.vehicle_journey_at_stops.select {|vehicle_journey_at_stop| vehicle_journey_at_stop.stop_point.stop_area.commercial? }
-      periods = vehicle_journey.time_tables.inject(0) { |sum, tt| sum + tt.periods.length }
-      expect(source.stop_times.count).to eq(vehicle_journey_at_stops.length * periods)
-
-      vehicle_journey_at_stops.each do |vj|
-        stop_time = source.stop_times.detect{|s| s.arrival_time == GTFSTime.format_datetime(vj.arrival_time, vj.arrival_day_offset, 'Europe/Paris') }
-        expect(stop_time).not_to be_nil, "Did not find stop with time #{GTFSTime.format_datetime(vj.arrival_time, vj.arrival_day_offset, 'Europe/Paris') } among #{source.stop_times.map(&:arrival_time)}"
-        expect(stop_time.departure_time).to eq(GTFSTime.format_datetime(vj.departure_time, vj.departure_day_offset, 'Europe/Paris'))
+        referential lines: [:l1] do
+          time_table :default
+          route line: :l1, stop_areas: [:departure, :second, :arrival] do
+            vehicle_journey time_tables: [:default]
+          end
+        end
       end
     end
+
+    let(:exported_referential) { context.referential }
+    let(:vehicle_journey) { context.vehicle_journey }
+
+    it "gtfs export stop times use agency timezone" do
+      exported_referential.switch do
+        gtfs_export.duration = nil
+        gtfs_export.export_scope = Export::Scope::All.new(exported_referential)
+
+        tmp_dir = Dir.mktmpdir
+        gtfs_export.export_to_dir tmp_dir
+
+        # The processed export files are re-imported through the GTFS gem
+        stop_times_zip_path = File.join(tmp_dir, "#{gtfs_export.zip_file_name}.zip")
+        source = GTFS::Source.build stop_times_zip_path, strict: false
+
+        first_vehicle_journey_at_stop = vehicle_journey.vehicle_journey_at_stops.first
+        first_stop_time = source.stop_times.sort_by{ |stop_time| stop_time.departure_time }.first
+
+        expect(first_stop_time.arrival_time).to eq(GTFSTime.format_datetime(first_vehicle_journey_at_stop.arrival_time, first_vehicle_journey_at_stop.departure_day_offset, 'Europe/Paris'))
+        expect(first_stop_time.departure_time).to eq(GTFSTime.format_datetime(first_vehicle_journey_at_stop.departure_time, first_vehicle_journey_at_stop.departure_day_offset, 'Europe/Paris'))
+      end
+    end
+
   end
 
   context 'with journeys' do

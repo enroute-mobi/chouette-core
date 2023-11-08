@@ -59,8 +59,10 @@ RSpec.describe Merge do
           expect(old_vehicle_journey).to be_nil
         end
 
-        it 'keeps a previous TimeTable (ending today)' do
-          expect(previous_timetable).to_not be_nil
+        it 'timetable checksum is correct after cutting periods' do
+          previous_timetable_checksum = previous_timetable.checksum
+          previous_timetable.update_checksum
+          expect(previous_timetable_checksum).to eq(previous_timetable.checksum)
         end
 
         it 'keeps a previous Vehicle Journey (ending today)' do

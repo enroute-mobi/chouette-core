@@ -34,6 +34,9 @@ class Merge::Referential::Legacy < Merge::Referential::Base
             end
           end
         end
+
+        # Update time_tables checksum
+        Chouette::ChecksumUpdater.new(new).time_tables
       end
 
       code_spaces = workgroup.code_spaces.index_by(&:id)

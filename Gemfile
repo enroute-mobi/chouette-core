@@ -121,7 +121,6 @@ gem 'delayed_job_active_record'
 gem 'delayed_job_heartbeat_plugin'
 gem 'delayed_cron_job'
 
-gem 'whenever', en_route: 'whenever', require: false
 gem 'rake'
 gem 'ros-apartment', require: 'apartment'
 gem 'aasm'

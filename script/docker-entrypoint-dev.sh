@@ -18,9 +18,6 @@ case $command in
     export RUBY_GC_HEAP_GROWTH_FACTOR=1.1
     exec bundle exec mwrap ./script/delayed-job-worker
     ;;
-  sync)
-    exec bash ./script/launch-cron
-    ;;
   front)
     if [ "$RUN_SETUP" = "true" ]; then
       setup || exit $?

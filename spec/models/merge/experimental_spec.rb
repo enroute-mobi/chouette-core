@@ -367,7 +367,6 @@ describe Merge do
       describe "VehicleJourney merge" do
 
         context "when no VehicleJourney with the same checksum already exists in the merged data set" do
-
           let(:merge_context) do
             MergeContext.new(merge_method: merge_method) do
               line :line
@@ -510,6 +509,236 @@ describe Merge do
               expect(existing_vehicle_journey).to exist_in_database
               expect(Chouette::VehicleJourney.count).to eq(1)
             end
+          end
+        end
+      end
+
+      describe "VehicleJourney Codes merge" do
+        context "when no such code exists in the merged data set (on the same Vehicle Journey)" do
+          let(:merge_context) do
+            MergeContext.new(merge_method: merge_method) do
+              code_space short_name: 'test'
+
+              line :line
+              referential :source, lines: [:line] do
+                time_table :default
+                route line: :line do
+                  vehicle_journey time_tables: [:default], codes: { test: 'value' }
+                end
+              end
+            end
+          end
+
+          let(:merge) { merge_context.merge }
+
+          it "creates the VehicleJourney code in the merged data set" do
+            merge.merge!
+
+            merge.new.switch do
+              vehicle_journey = merge.new.vehicle_journeys.sole
+              expected_code = an_object_having_attributes(
+                value: 'value',
+                code_space: an_object_having_attributes(short_name: 'test')
+              )
+              expect(vehicle_journey.codes).to contain_exactly(expected_code)
+            end
+          end
+        end
+
+        context "when the merged Vehicle Journey exists but without code" do
+          let(:merge_context) do
+            MergeContext.new(merge_method: merge_method) do
+              code_space short_name: 'test'
+
+              stop_area :first
+              stop_area :second
+              stop_area :third
+
+              line :line
+
+              referential :source, lines: [:line] do
+                time_table :source_time_table
+                route :source_route, line: :line, with_stops: false do
+                  stop_point stop_area: :first
+                  stop_point stop_area: :second
+                  stop_point stop_area: :third
+                  journey_pattern :source_journey_pattern do
+                    vehicle_journey :source_vehicle_journey, time_tables: [:source_time_table], codes: { test: 'value' }
+                  end
+                end
+              end
+
+              referential :new, lines: [:line], archived_at: Time.now do
+                time_table :existing_time_table
+                route :existing_route, line: :line, with_stops: false do
+                  stop_point stop_area: :first
+                  stop_point stop_area: :second
+                  stop_point stop_area: :third
+                  journey_pattern :existing_journey_pattern do
+                    vehicle_journey :existing_vehicle_journey, time_tables: [:existing_time_table]
+                  end
+                end
+              end
+            end
+          end
+
+          let(:existing_route_checksum) { merge_context.source_route.checksum }
+          let(:existing_journey_pattern_checksum) { merge_context.source_journey_pattern.checksum }
+          let(:existing_vehicle_journey_checksum) { merge_context.source_vehicle_journey.checksum }
+
+          before do
+            merge_context.new.switch do
+              merge_context.existing_route.update_column :checksum, existing_route_checksum
+              merge_context.existing_journey_pattern.update_column :checksum, existing_journey_pattern_checksum
+              merge_context.existing_vehicle_journey.update_column :checksum, existing_vehicle_journey_checksum
+            end
+          end
+
+          let(:merge) { merge_context.merge }
+
+          it "creates the VehicleJourney code in the merged data set" do
+            merge.merge!
+
+            merge.new.switch do
+              vehicle_journey = merge.new.vehicle_journeys.sole
+              expected_code = an_object_having_attributes(
+                value: 'value',
+                code_space: an_object_having_attributes(short_name: 'test')
+              )
+              expect(vehicle_journey.codes).to contain_exactly(expected_code)
+            end
+          end
+        end
+
+        context "when the same code (code space / value) exists in the merged data set" do
+          let(:merge_context) do
+            MergeContext.new(merge_method: merge_method) do
+              code_space short_name: 'test'
+
+              stop_area :first
+              stop_area :second
+              stop_area :third
+
+              line :line
+
+              referential :source, lines: [:line] do
+                time_table :source_time_table
+                route :source_route, line: :line, with_stops: false do
+                  stop_point stop_area: :first
+                  stop_point stop_area: :second
+                  stop_point stop_area: :third
+                  journey_pattern :source_journey_pattern do
+                    vehicle_journey :source_vehicle_journey, time_tables: [:source_time_table], codes: { test: 'value' }
+                  end
+                end
+              end
+
+              referential :new, lines: [:line], archived_at: Time.now do
+                time_table :existing_time_table
+                route :existing_route, line: :line, with_stops: false do
+                  stop_point stop_area: :first
+                  stop_point stop_area: :second
+                  stop_point stop_area: :third
+                  journey_pattern :existing_journey_pattern do
+                    vehicle_journey :existing_vehicle_journey, time_tables: [:existing_time_table], codes: { test: 'value' }
+                  end
+                end
+              end
+            end
+          end
+
+          let(:existing_route_checksum) { merge_context.source_route.checksum }
+          let(:existing_journey_pattern_checksum) { merge_context.source_journey_pattern.checksum }
+          let(:existing_vehicle_journey_checksum) { merge_context.source_vehicle_journey.checksum }
+
+          before do
+            merge_context.new.switch do
+              merge_context.existing_route.update_column :checksum, existing_route_checksum
+              merge_context.existing_journey_pattern.update_column :checksum, existing_journey_pattern_checksum
+              merge_context.existing_vehicle_journey.update_column :checksum, existing_vehicle_journey_checksum
+            end
+          end
+
+          let(:merge) { merge_context.merge }
+
+          it "keeps existing VehicleJourney code in the merged data set" do
+            merge.merge!
+
+            merge.new.switch do
+              vehicle_journey = merge.new.vehicle_journeys.sole
+              expected_code = an_object_having_attributes(
+                value: 'value',
+                code_space: an_object_having_attributes(short_name: 'test')
+              )
+              expect(vehicle_journey.codes).to contain_exactly(expected_code)
+            end
+          end
+        end
+      end
+
+      context "when a code with same code space exists in the merged data set" do
+        let(:merge_context) do
+          MergeContext.new(merge_method: merge_method) do
+            code_space short_name: 'test'
+
+            stop_area :first
+            stop_area :second
+            stop_area :third
+
+            line :line
+
+            referential :source, lines: [:line] do
+              time_table :source_time_table
+              route :source_route, line: :line, with_stops: false do
+                stop_point stop_area: :first
+                stop_point stop_area: :second
+                stop_point stop_area: :third
+                journey_pattern :source_journey_pattern do
+                  vehicle_journey :source_vehicle_journey, time_tables: [:source_time_table], codes: { test: 'new' }
+                end
+              end
+            end
+
+            referential :new, lines: [:line], archived_at: Time.now do
+              time_table :existing_time_table
+              route :existing_route, line: :line, with_stops: false do
+                stop_point stop_area: :first
+                stop_point stop_area: :second
+                stop_point stop_area: :third
+                journey_pattern :existing_journey_pattern do
+                  vehicle_journey :existing_vehicle_journey, time_tables: [:existing_time_table], codes: { test: 'old' }
+                end
+              end
+            end
+          end
+        end
+
+        let(:existing_route_checksum) { merge_context.source_route.checksum }
+        let(:existing_journey_pattern_checksum) { merge_context.source_journey_pattern.checksum }
+        let(:existing_vehicle_journey_checksum) { merge_context.source_vehicle_journey.checksum }
+
+        before do
+          merge_context.new.switch do
+            merge_context.existing_route.update_column :checksum, existing_route_checksum
+            merge_context.existing_journey_pattern.update_column :checksum, existing_journey_pattern_checksum
+            merge_context.existing_vehicle_journey.update_column :checksum, existing_vehicle_journey_checksum
+          end
+        end
+
+        let(:merge) { merge_context.merge }
+
+        it "creates new VehicleJourney code and keep old one in the merged data set" do
+          merge.merge!
+
+          merge.new.switch do
+            vehicle_journey = merge.new.vehicle_journeys.sole
+            expected_codes = %w{old new}.map do |value|
+              an_object_having_attributes(
+                value: value,
+              code_space: an_object_having_attributes(short_name: 'test')
+              )
+            end
+            expect(vehicle_journey.codes).to match_array(expected_codes)
           end
         end
       end

@@ -9,7 +9,7 @@ class ObjectidInserter
     @objectid_formatter ||= target.objectid_formatter
   end
 
-  def insert(model)
+  def insert(model, options = {})
     return unless support_objectid?(model)
     return unless model.objectid.nil?
 
@@ -23,5 +23,4 @@ class ObjectidInserter
   def new_objectid(model)
     objectid_formatter.objectid(model).to_s
   end
-
 end

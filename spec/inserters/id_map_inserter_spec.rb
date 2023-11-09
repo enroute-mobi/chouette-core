@@ -97,6 +97,12 @@ RSpec.describe IdMapInserter do
       expect { inserter.insert(code) }.to change(code, :resource_id).to(new_resource_id)
     end
 
+    context "when skip_id_map_update_relations option is used" do
+      it "keep existing resource_id" do
+        code.resource_type, code.resource_id = 'Chouette::VehicleJourney', 42
+        expect { inserter.insert(code, skip_id_map_update_relations: true) }.to_not change(code, :resource_id).from(code.resource_id)
+      end
+    end
   end
 
   describe "VehicleJourneyAtStop" do

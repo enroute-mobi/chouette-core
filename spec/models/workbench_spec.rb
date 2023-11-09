@@ -213,18 +213,29 @@ RSpec.describe Workbench, type: :model do
     describe "default Line Provider" do
       subject { workbench.default_line_provider }
 
-      it "must be the first/single Line Provider" do
-        is_expected.to eq(workbench.line_providers.first)
-      end
-
-      it { is_expected.to have_attributes(short_name: 'default', name: 'default') }
-
-      context "when default line provider name is changed" do
-        before { subject.update name: 'line_provider', short_name: 'line_provider' }
-
-        it "must find the default line provider" do
+      context 'when disable_default_line_provider is false' do
+        it "must be the first/single Line Provider" do
           is_expected.to eq(workbench.line_providers.first)
         end
+
+        it { is_expected.to have_attributes(short_name: 'default', name: 'default') }
+
+        context "when default line provider name is changed" do
+          before { subject.update name: 'line_provider', short_name: 'line_provider' }
+
+          it "must find the default line provider" do
+            is_expected.to eq(workbench.line_providers.first)
+          end
+        end
+      end
+
+      context 'when disable_default_line_provider is true' do
+        before { Workbench.disable_default_line_provider = true }
+
+        it "is nil when no line providers exist" do
+          is_expected.to eq(nil)
+        end
+
       end
     end
 

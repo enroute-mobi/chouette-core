@@ -1,6 +1,8 @@
 # frozen_string_literal: true
 
 RSpec.describe Merge do
+  # !! We should not use a common context for each spec !!
+  # Go to the end of the file for new version
   let(:context) do
     Chouette.create do
       referential periods: [1.month.ago.to_date..1.month.from_now.to_date] do
@@ -60,9 +62,19 @@ RSpec.describe Merge do
         end
 
         it 'timetable checksum is correct after cutting periods' do
-          previous_timetable_checksum = previous_timetable.checksum
-          previous_timetable.update_checksum
-          expect(previous_timetable_checksum).to eq(previous_timetable.checksum)
+          # Force checksum source and checksum update for time table and his children
+          # previous_timetable.periods.map(&:update_checksum!)
+          # previous_timetable.update_checksum!
+          debugger
+
+          referential.switch do
+            truc = previous_timetable.checksum
+          end
+
+          merge.new.switch
+
+          expect(previous_timetable).to exist_in_database
+          expect(previous_timetable.checksum).not_to eq(merge.new.time_tables.find_by_objectid(previous_timetable.objectid).checksum)
         end
 
         it 'keeps a previous Vehicle Journey (ending today)' do
@@ -178,6 +190,62 @@ RSpec.describe Merge do
 
     it 'leaves unchanged metadatas' do
       expect(merge.new.validity_period.begin).to eq(1.month.ago.to_date)
+    end
+  end
+end
+
+require_relative './merge_context_helper'
+
+RSpec.describe Merge do
+
+  %i{legacy experimental}.each do |merge_method|
+    context "with #{merge_method} method" do
+
+      context "when the timetable and its associated period is cut by merge and produces a date" do
+        let(:merge_context) do
+          MergeContext.new(merge_method: merge_method) do
+            referential :source do
+              time_table :source_time_table, periods: [1.month.ago.to_date..Time.zone.today]
+              vehicle_journey :source_vehicle_journey, time_tables: [:source_time_table]
+            end
+          end
+        end
+
+        let(:source_time_table_checksum) { merge_context.source_time_table.checksum }
+        let(:merge) { merge_context.merge }
+
+        it "source checksum should be different from the new checksum" do
+          merge.merge!
+
+          merge.new.switch do
+            time_table = merge.new.time_tables.first
+            expect(time_table.checksum).not_to eq(source_time_table_checksum)
+          end
+        end
+      end
+
+      context "when the timetable and its associated period is cut by merge and produces a shorter period" do
+        let(:merge_context) do
+          MergeContext.new(merge_method: merge_method) do
+            referential :source do
+              time_table :source_time_table, periods: [1.month.ago.to_date..Time.zone.today + 1]
+              vehicle_journey :source_vehicle_journey, time_tables: [:source_time_table]
+            end
+          end
+        end
+
+        let(:source_time_table_checksum) { merge_context.source_time_table.checksum }
+        let(:merge) { merge_context.merge }
+
+        it "source checksum should be different from the new checksum" do
+          merge.merge!
+
+          merge.new.switch do
+            time_table = merge.new.time_tables.first
+            expect(time_table.checksum).not_to eq(source_time_table_checksum)
+          end
+        end
+      end
     end
   end
 end

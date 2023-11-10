@@ -1,18 +1,97 @@
 RSpec.describe Import::Workbench do
-  let(:workbench) { context.workbench }
-  let(:referential) { context.referential }
+  let(:context) do
+    Chouette.create do
+      workbench :workbench do
+        referential :referential
+      end
+    end
+  end
+  let(:workbench) { context.workbench(:workbench) }
+  let(:referential) { context.referential(:referential) }
 
-  let(:options) { {} }
+  let(:filename) { 'OFFRE_TRANSDEV_2017030112251.zip' }
+  subject(:import_workbench) do
+    create(:workbench_import, workbench: workbench, referential: referential, file: open_fixture(filename))
+  end
 
-  let(:import_workbench) { create :workbench_import, workbench: workbench, referential: referential }
+  describe '#lanch_worker (after_commit)' do
+    it do
+      is_expected.to have_attributes(
+        status: 'running',
+        started_at: be_present
+      )
+    end
 
-  context '#children_status' do
-    let(:context) do
-      Chouette.create do
-        referential
+    context 'with a GTFS file' do
+      let(:filename) { 'google-sample-feed.zip' }
+
+      it 'creates a Import::Gtfs' do
+        expect(import_workbench.children).to match_array(
+          [
+            have_attributes(
+              type: 'Import::Gtfs',
+              parent: import_workbench,
+              workbench: workbench,
+              file: be_present,
+              name: import_workbench.name,
+              creator: 'Web service'
+            )
+          ]
+        )
+        expect(import_workbench.messages).to be_empty
       end
     end
 
+    context 'with a NETEX file' do
+      it 'creates a Import::Netex' do
+        expect(import_workbench.children).to be_empty
+        expect(import_workbench.messages).to be_empty
+        expect(Delayed::Job.last).to have_attributes(
+          payload_object: have_attributes(
+            object: import_workbench,
+            method_name: :netex_import,
+            args: []
+          ),
+          queue: 'imports'
+        )
+      end
+    end
+
+    context 'with a Neptune file' do
+      let(:filename) { 'fake_neptune.zip' }
+
+      it 'creates a Import::Neptune' do
+        expect(import_workbench.children).to match_array(
+          [
+            have_attributes(
+              type: 'Import::Neptune',
+              parent: import_workbench,
+              workbench: workbench,
+              file: be_present,
+              name: import_workbench.name,
+              creator: 'Web service'
+            )
+          ]
+        )
+        expect(import_workbench.messages).to be_empty
+      end
+    end
+
+    context 'with a malformed file' do
+      let(:filename) { 'malformed_import_file.zip' }
+
+      it 'creates an error message' do
+        expect(import_workbench.children).to be_empty
+        expect(import_workbench.messages).to match_array(
+          [
+            have_attributes(criticity: 'error', message_key: 'unsupported_file_format')
+          ]
+        )
+      end
+    end
+  end
+
+  context '#children_status' do
     it 'should return failed if a child has a failed status' do
       create(:netex_import, parent: import_workbench, workbench: workbench, status: 'failed',
                             notified_parent_at: Date.today)
@@ -50,8 +129,10 @@ RSpec.describe Import::Workbench do
   context '#processed_status' do
     let(:context) do
       Chouette.create do
-        referential
-        workbench_processing_rule
+        workbench :workbench do
+          referential :referential
+          workbench_processing_rule
+        end
       end
     end
     let(:netex_import) do
@@ -103,12 +184,6 @@ RSpec.describe Import::Workbench do
 
   context '#compute_new_status' do
     context 'without macro_list_runs and control_list_runs' do
-      let(:context) do
-        Chouette.create do
-          referential
-        end
-      end
-
       it 'should return failed if children_status is failed' do
         allow(import_workbench).to receive(:children_status).and_return 'failed'
         expect(import_workbench.compute_new_status).to eq 'failed'
@@ -133,8 +208,10 @@ RSpec.describe Import::Workbench do
     context 'with macro_list_runs or control_list_runs' do
       let(:context) do
         Chouette.create do
-          referential
-          workbench_processing_rule
+          workbench :workbench do
+            referential :referential
+            workbench_processing_rule
+          end
         end
       end
       let(:netex_import) do
@@ -180,68 +257,46 @@ RSpec.describe Import::Workbench do
   end
 
   context '#file_type' do
-    let(:context) do
-      Chouette.create do
-        referential
-      end
+    subject { import_workbench.file_type }
+
+    let(:import_workbench) do
+      build(:workbench_import, workbench: workbench, referential: referential, file: open_fixture(filename))
     end
-    let(:filename) { 'google-sample-feed.zip' }
-    let(:import) do
-      Import::Workbench.new workbench: workbench, name: 'test', creator: 'Albator', file: open_fixture(filename),
-                            options: options
-    end
+
     context 'with a GTFS file' do
-      it 'should return :gtfs' do
-        expect(import.file_type).to eq :gtfs
-      end
+      let(:filename) { 'google-sample-feed.zip' }
+      it { is_expected.to eq :gtfs }
     end
 
     context 'with a NETEX file' do
-      let(:filename) { 'OFFRE_TRANSDEV_2017030112251.zip' }
-      it 'should return :netex' do
-        expect(import.file_type).to eq :netex
-      end
+      it { is_expected.to eq :netex }
     end
 
     context 'with a Neptune file' do
       let(:filename) { 'fake_neptune.zip' }
-      it 'should return :neptune' do
-        expect(import.file_type).to eq :neptune
-      end
+      it { is_expected.to eq :neptune }
     end
 
     context 'with a malformed file' do
       let(:filename) { 'malformed_import_file.zip' }
-      it 'should return nil' do
-        expect(import.file_type).to be_nil
-      end
+      it { is_expected.to be_nil }
     end
 
     context 'with import_type restriction' do
-      before { import.workgroup.import_types = ['Import::Gtfs'] }
+      before { import_workbench.workgroup.import_types = ['Import::Gtfs'] }
 
       context 'with a GTFS file' do
-        it 'should return :gtfs' do
-          expect(import.file_type).to eq :gtfs
-        end
+        let(:filename) { 'google-sample-feed.zip' }
+        it { is_expected.to eq :gtfs }
       end
 
       context 'with a NETEX file' do
-        let(:filename) { 'OFFRE_TRANSDEV_2017030112251.zip' }
-        it 'should return nil' do
-          expect(import.file_type).to be_nil
-        end
+        it { is_expected.to be_nil }
       end
     end
   end
 
   describe '#done!' do
-    let(:context) do
-      Chouette.create do
-        referential
-      end
-    end
-
     context 'when flag_urgent option is selected' do
       before { import_workbench.flag_urgent = true }
       it 'flag referentials as urgent' do
@@ -292,16 +347,9 @@ RSpec.describe Import::Workbench do
   end
 
   describe '#flag_refentials_as_urgent' do
-    let(:context) do
-      Chouette.create do
-        referential
-      end
-    end
-
     # Time.now.round simplifies Time comparaison in specs
     around { |example| Timecop.freeze(Time.now.round) { example.run } }
 
-    let(:referential) { context.referential }
     before { allow(import_workbench).to receive(:referentials).and_return([referential]) }
 
     it 'flag referential metadatas as urgent' do
@@ -312,12 +360,6 @@ RSpec.describe Import::Workbench do
   end
 
   describe '#create_automatic_merge' do
-    let(:context) do
-      Chouette.create do
-        referential
-      end
-    end
-
     before { allow(import_workbench).to receive(:referentials).and_return([referential]) }
 
     it 'create a new Merge' do
@@ -349,18 +391,13 @@ RSpec.describe Import::Workbench do
   describe '#candidate_line_providers' do
     let(:context) do
       Chouette.create do
-        referential
+        referential :referential
         workbench :workbench do
           line_provider :first, name: 'first'
           line_provider :second, name: 'second'
         end
       end
     end
-
-    let(:workbench) { context.workbench(:workbench) }
-    let(:referential) { context.referential }
-
-    let(:import_workbench) { create :workbench_import, workbench: workbench, referential: referential }
 
     subject { import_workbench.candidate_line_providers.map(&:name).join(', ') }
 
@@ -372,18 +409,13 @@ RSpec.describe Import::Workbench do
   describe '#candidate_stop_area_providers' do
     let(:context) do
       Chouette.create do
-        referential
+        referential :referential
         workbench :workbench do
           stop_area_provider :first, name: 'first'
           stop_area_provider :second, name: 'second'
         end
       end
     end
-
-    let(:workbench) { context.workbench(:workbench) }
-    let(:referential) { context.referential }
-
-    let(:import_workbench) { create :workbench_import, workbench: workbench, referential: referential }
 
     subject { import_workbench.candidate_stop_area_providers.map(&:name).join(', ') }
 

@@ -28,7 +28,7 @@ Rails.application.configure do
 
   config.log_level = :debug
   config.colorize_logging = false
-  config.logger = ActiveSupport::Logger.new("log/development.log", 3, 250.megabytes)
+  config.logger = ActiveSupport::Logger.new("log/development.log", 2, 250.megabytes)
 
   # Raise an error on page load if there are pending migrations.
   config.active_record.migration_error = :page_load
@@ -88,7 +88,7 @@ Rails.application.configure do
     Chouette::ChecksumManager.cleanup
   end
 
-  config.after_initialize do    
+  config.after_initialize do
     Bullet.enable = ENV['CHOUETTE_BULLET_ENABLED'] == 'true'
     Bullet.rails_logger = true
   end

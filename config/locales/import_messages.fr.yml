@@ -30,7 +30,7 @@ fr:
     unreasonable_shape: 'Le tracé %{shape_id} est ignoré à cause de son trop grand nombre de points'
     stop_area_not_found: "Arrêt inconnu: '%{code}'"
     overlaping_period_for_timetable: "L'objet DayType d'identifiant %{timetable_objectid} contient des DayTypeAssignment avec des OperatingPeriod se chevauchant."
-    several_datasets: "Le fichier NeTEx ne peut définir plusieurs jeux de données"
+    several_datasets: "Le fichier NeTEx ne peut pas définir plusieurs jeux de données"
     gtfs:
       agencies:
         imported: "%{count} agence(s) importée(s)"

@@ -39,7 +39,7 @@ class CopyInserter < ByClassInserter
       @headers ||= columns.map(&:name)
     end
 
-    def insert(model)
+    def insert(model, options = {})
       csv << csv_values(model)
     end
 

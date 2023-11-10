@@ -39,9 +39,9 @@ class ReferentialInserter
 
   end
 
-  def insert model
+  def insert(model, options = {})
     inserters.each do |inserter|
-      inserter.insert model
+      inserter.insert model, options
     end
   end
 
@@ -78,9 +78,9 @@ class ReferentialInserter
       @parent = parent
     end
 
-    def << model
-      @parent.insert model
-    end
+    delegate :insert, to: :parent
+    alias << insert
 
+    attr_reader :parent
   end
 end

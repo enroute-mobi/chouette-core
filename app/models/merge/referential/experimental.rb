@@ -31,6 +31,7 @@ module Merge::Referential
     def merge_vehicle_journeys
       source.switch do
         VehicleJourneys.new(self).merge
+        VehicleJourneyCodes.new(self).merge
         VehicleJourneyAtStops.new(self).merge
       end
 
@@ -348,5 +349,31 @@ module Merge::Referential
 
     end
 
+    class VehicleJourneyCodes < Part
+      include Sanitizer
+
+      def merge!
+        codes.each_instance do |code|
+          if code.existing_resource_id
+            code.resource_id = code.existing_resource_id
+            referential_inserter.codes.insert code, skip_id_map_update_relations: true
+          else
+            referential_inserter.codes << code
+          end
+        end
+      end
+
+      def codes
+        source.referential_codes.where(resource_type: 'Chouette::VehicleJourney').
+          joins("INNER JOIN vehicle_journeys ON referential_codes.resource_id = vehicle_journeys.id").
+          joins("INNER JOIN journey_patterns ON vehicle_journeys.journey_pattern_id = journey_patterns.id").
+          joins("INNER JOIN routes ON journey_patterns.route_id = routes.id").
+          joins(sanitize_joins("LEFT OUTER JOIN \":new_slug\".routes as existing_routes ON routes.checksum = existing_routes.checksum AND routes.line_id = existing_routes.line_id")).
+          joins(sanitize_joins("LEFT OUTER JOIN \":new_slug\".journey_patterns as existing_journey_patterns ON journey_patterns.checksum = existing_journey_patterns.checksum AND existing_routes.id = existing_journey_patterns.route_id")).
+          joins(sanitize_joins("LEFT OUTER JOIN \":new_slug\".vehicle_journeys as existing_vehicle_journeys ON vehicle_journeys.checksum = existing_vehicle_journeys.checksum AND existing_journey_patterns.id = existing_vehicle_journeys.journey_pattern_id")).
+          joins(sanitize_joins("LEFT OUTER JOIN \":new_slug\".referential_codes as existing_codes ON referential_codes.code_space_id = existing_codes.code_space_id AND referential_codes.value = existing_codes.value AND existing_vehicle_journeys.id = existing_codes.resource_id AND existing_codes.resource_type = 'Chouette::VehicleJourney'")).
+          where("existing_codes.id" => nil).select("referential_codes.*", "existing_vehicle_journeys.id as existing_resource_id")
+      end
+    end
   end
 end

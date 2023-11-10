@@ -56,8 +56,8 @@ class IdMapInserter < ByClassInserter
       @new_primary_keys ||= Hash.new
     end
 
-    def insert(model)
-      update_relations model
+    def insert(model, options = {})
+      update_relations model unless options[:skip_id_map_update_relations]
 
       update_primary_key model
     end

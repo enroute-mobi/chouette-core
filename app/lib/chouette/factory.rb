@@ -199,12 +199,12 @@ module Chouette
               attribute(:latitude) { 48.8584 - 5 + 10 * rand }
               attribute(:longitude) { 2.2945 - 2 + 4 * rand }
 
-              transient :codes
+              transient :codes, {}
 
               after do
                 new_instance.stop_area_referential = parent.stop_area_referential
 
-                (transient(:codes) || {}).each do |code_space_short_name, value|
+                transient(:codes).each do |code_space_short_name, value|
                   code_space = new_instance.workgroup.code_spaces.find_by!(short_name: code_space_short_name)
                   new_instance.codes.build(code_space: code_space, value: value)
                 end
@@ -395,6 +395,7 @@ module Chouette
                   transient :with_stops, true
                   transient :departure_time, '12:00:00'
                   transient :time_tables, []
+                  transient :codes, {}
 
                   after do
                     first_departure_time = Time.parse(transient(:departure_time))
@@ -414,6 +415,11 @@ module Chouette
 
                     transient(:time_tables, resolve_instances: true).each do |time_table|
                       new_instance.time_tables << time_table
+                    end
+
+                    transient(:codes).each do |code_space_short_name, value|
+                      code_space = new_instance.workgroup.code_spaces.find_by!(short_name: code_space_short_name)
+                      new_instance.codes.build code_space: code_space, value: value
                     end
                   end
                 end

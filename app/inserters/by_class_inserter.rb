@@ -1,7 +1,7 @@
 class ByClassInserter
 
-  def insert(model)
-    self.for(model.class).insert(model)
+  def insert(model, options = {})
+    self.for(model.class).insert(model, options)
   end
 
   # Hash of singleton inserters

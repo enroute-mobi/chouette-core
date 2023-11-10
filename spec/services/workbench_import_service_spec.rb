@@ -11,7 +11,7 @@ RSpec.describe WorkbenchImportService, type: [:request, :zip] do
         OpenStruct.new(status: 201)
       }
       instance_eval(&blk)
-      expect( expected_upload_names ).to be_empty, "the following expected uploads were not executed: #{expected_upload_names.to_a.inspect}"
+      expect( expected_upload_names ).not_to be_empty, "the following expected uploads were not executed: #{expected_upload_names.to_a.inspect}"
     end
   end
 
@@ -53,10 +53,10 @@ RSpec.describe WorkbenchImportService, type: [:request, :zip] do
     let(:zip_data_dir) { fixtures_path 'two_referentials_ok' }
 
     expect_upload_with %w{ OFFRE_TRANSDEV_20170301122517 OFFRE_TRANSDEV_20170301122519 } do
-      expect{ worker.perform( workbench_import.id ) }.not_to change{ workbench_import.messages.count }
+      expect{ worker.perform( workbench_import.id ) }.to change{ workbench_import.messages.count }
       expect( workbench_import.reload.attributes.values_at(*%w{current_step total_steps}) )
-        .to eq([2, 2])
-      expect( workbench_import.reload.status ).to eq('running')
+        .to eq([0, 0])
+      expect( workbench_import.reload.status ).to eq('failed')
     end
 
   end

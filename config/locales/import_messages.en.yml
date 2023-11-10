@@ -30,6 +30,7 @@ en:
     unreasonable_shape: 'The Shape %{shape_id} is ignored due to its huge point count'
     stop_area_not_found: "Unknown Stop Area: '%{code}'"
     overlaping_period_for_timetable: "The DayType with identifier %{timetable_objectid} contains DayTypeAssignment with interesecting OperatingPeriod."
+    several_datasets: "The NeTex file can’t define several datasets"
     gtfs:
       agencies:
         imported: "%{count} agency(ies) imported"

@@ -179,11 +179,14 @@ class Workbench < ApplicationModel
     end
   end
 
+  mattr_accessor :disable_default_line_provider
+
   def default_line_provider
     @default_line_provider ||= line_providers.first || create_default_line_provider
   end
 
   def create_default_line_provider
+    return if disable_default_line_provider
     line_providers.find_or_initialize_by(name: DEFAULT_PROVIDER_NAME) do |p|
       p.line_referential_id = workgroup.line_referential_id
       p.short_name = DEFAULT_PROVIDER_SHORT_NAME

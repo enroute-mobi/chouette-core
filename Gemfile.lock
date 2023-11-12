@@ -212,7 +212,7 @@ GEM
       unaccent (~> 0.3)
     country_select (8.0.3)
       countries (~> 5.0)
-    coverband (5.2.5)
+    coverband (6.0.0)
       redis (>= 3.0)
     crack (0.4.5)
       rexml

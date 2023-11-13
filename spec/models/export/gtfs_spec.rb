@@ -295,32 +295,43 @@ RSpec.describe Export::Gtfs, type: [:model, :with_exportable_referential] do
     end
 
     describe '#zone_id' do
-      let(:context) do
-        Chouette.create do
-          stop_area :stop_area
+      subject { decorator.zone_id }
 
-          referential
+      context 'when Stop Area is no Fare Zone' do
+        it { is_expected.to be_nil }
+      end
+
+      context 'when Stop Area is a Fare Zone with expected code space' do
+        let(:code_space) { CodeSpace.new }
+        before do
+          stop_area.fare_zones << Fare::Zone.new(
+            codes: [
+              Code.new(value: 'wrong'),
+              Code.new(code_space: code_space, value: 'test')
+            ]
+          )
         end
+
+        it { is_expected.to eq('test') }
       end
 
-      let(:workbench) { context.workbench }
-      let(:workgroup) { workbench.workgroup }
-      let(:code_space) { workgroup.code_spaces.default }
-      let(:fare_provider) { workbench.default_fare_provider }
-      let(:zone_id) { 'fare_zone_sample' }
-      let(:fare_zone) do 
-        fare_provider.fare_zones.first_or_create_by_code(code_space, zone_id) do |zone|
-          zone.name = 'fare zone sample'
+      context 'when Stop Area is a Fare Zone without code' do
+        before do
+          stop_area.fare_zones << fare_zone
         end
-      end
-      let(:stop_area) { context.stop_area(:stop_area) }
+        let(:fare_zone) { Fare::Zone.new uuid: SecureRandom.uuid }
 
-      subject do
-        fare_zone.stop_area_zones.create(stop_area: stop_area)
-        decorator.zone_id
+        it { is_expected.to eq(fare_zone.uuid) }
       end
 
-      it { is_expected.to eq(zone_id) }
+      context 'when Stop Area is a Fare Zone without expected code space' do
+        before do
+          stop_area.fare_zones << fare_zone
+        end
+        let(:fare_zone) { Fare::Zone.new uuid: SecureRandom.uuid, codes: [ Code.new(value: 'wrong') ] }
+
+        it { is_expected.to eq(fare_zone.uuid) }
+      end
     end
 
     describe "stop_attributes" do
@@ -333,8 +344,8 @@ RSpec.describe Export::Gtfs, type: [:model, :with_exportable_referential] do
         before { allow(decorator).to receive(:gtfs_wheelchair_boarding).and_return("dummy") }
         it { is_expected.to include(wheelchair_boarding: 'dummy')}
       end
-      context "when fare_code is 'dummy'" do
-        before { stop_area.fare_code = 'dummy' }
+      context "when zone_id is 'dummy'" do
+        before { allow(decorator).to receive(:zone_id).and_return('dummy') }
         it { is_expected.to include(zone_id: 'dummy')}
       end
     end

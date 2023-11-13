@@ -147,7 +147,7 @@ gem 'sentry-delayed_job'
 gem 'sentry-ruby'
 gem 'sentry-rails'
 
-gem 'coverband', require: false
+gem 'coverband', '~> 5.2.5', require: false
 
 gem 'nest', en_route: 'nest'
 

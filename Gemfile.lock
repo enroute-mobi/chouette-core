@@ -212,7 +212,7 @@ GEM
       unaccent (~> 0.3)
     country_select (8.0.3)
       countries (~> 5.0)
-    coverband (6.0.0)
+    coverband (5.2.5)
       redis (>= 3.0)
     crack (0.4.5)
       rexml
@@ -876,7 +876,7 @@ DEPENDENCIES
   cocoon
   coffee-rails (>= 5.0.0)
   country_select
-  coverband
+  coverband (~> 5.2.5)
   database_cleaner
   ddtrace
   deep_cloneable

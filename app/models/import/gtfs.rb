@@ -13,7 +13,8 @@ class Import::Gtfs < Import::Base # rubocop:disable Metrics/ClassLength
 
   def self.accepts_file?(file)
     Zip::File.open(file) do |zip_file|
-      zip_file.glob('agency.txt').size == 1
+      agency_file = File.join('**', 'agency.txt')
+      zip_file.glob(agency_file).size == 1
     end
   rescue => e
     Chouette::Safe.capture "Error in testing GTFS file: #{file}", e

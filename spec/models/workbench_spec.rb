@@ -230,7 +230,7 @@ RSpec.describe Workbench, type: :model do
       end
 
       context 'when disable_default_line_provider is true' do
-        before { Workbench.disable_default_line_provider = true }
+        before { allow_any_instance_of(Workbench).to receive(:disable_default_line_provider).and_return(true) }
 
         it "is nil when no line providers exist" do
           is_expected.to eq(nil)

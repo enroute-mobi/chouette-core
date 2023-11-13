@@ -370,6 +370,7 @@ fr:
     period:
       all_periods: Toute la période disponible
       only_next_days: Seulement les jours suivants
+      static_day_period: Période statique
     profile:
       none: Aucun
       french: France (beta)

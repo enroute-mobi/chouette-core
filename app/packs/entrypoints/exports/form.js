@@ -8,7 +8,9 @@ class Store {
 		period = 'all_periods',
 		referentialId = '',
 		isExport = null,
-		duration = null
+		duration = null,
+		from = null,
+		to = null
 	} = {}) {
 		this.type = type
 		this.exportedLines = exportedLines
@@ -16,6 +18,8 @@ class Store {
 		this.referentialId = referentialId
 		this.isExport = isExport
 		this.duration = duration
+		this.from = from
+		this.to = to
 		this.workbenchOrWorkgroupId = location.pathname.match(/(\d+)/)[0]
 		this.exportedLinesSelectURL = ''
 		this.exportType = isExport ? null : 'full'

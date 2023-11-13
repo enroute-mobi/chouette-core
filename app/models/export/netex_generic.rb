@@ -3,10 +3,12 @@ class Export::NetexGeneric < Export::Base
 
   option :profile, enumerize: %w[none french european idfm/line idfm/full], default: :none
   option :duration
+  option :from
+  option :to
   option :line_ids, serialize: :map_ids
   option :company_ids, serialize: :map_ids
   option :line_provider_ids, serialize: :map_ids
-  option :period, default_value: 'all_periods', enumerize: %w[all_periods only_next_days]
+  option :period, default_value: 'all_periods', enumerize: %w[all_periods only_next_days static_day_period]
   option :exported_lines, default_value: 'all_line_ids', enumerize: %w[line_ids company_ids line_provider_ids all_line_ids]
 
   def target

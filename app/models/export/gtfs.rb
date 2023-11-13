@@ -3,8 +3,10 @@
 class Export::Gtfs < Export::Base
   include LocalExportSupport
 
-  option :period, default_value: 'all_periods', enumerize: %w[all_periods only_next_days]
+  option :period, default_value: 'all_periods', enumerize: %w[all_periods only_next_days static_day_period]
   option :duration
+  option :from, serialize: TimeOfDay::Type::DatePicker
+  option :to, serialize: TimeOfDay::Type::DatePicker
   option :exported_lines, default_value: 'all_line_ids', enumerize: %w[line_ids company_ids line_provider_ids all_line_ids]
   option :line_ids, serialize: :map_ids
   option :company_ids, serialize: :map_ids
@@ -15,6 +17,11 @@ class Export::Gtfs < Export::Base
   option :prefer_referent_company, required: true, default_value: false, enumerize: [true, false], serialize: ActiveModel::Type::Boolean
   option :ignore_parent_stop_places, required: true, default_value: false, enumerize: [true, false], serialize: ActiveModel::Type::Boolean
 
+  %w[from to].each do |option|
+    define_method "#{option}=" do |value|
+      value.to_date if value
+    end
+  end
 
   DEFAULT_AGENCY_ID = "chouette_default"
   DEFAULT_TIMEZONE = "Etc/UTC"

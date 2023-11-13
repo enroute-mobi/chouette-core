@@ -107,6 +107,8 @@ fr:
         referential: Jeu de données
         options: Options
         duration: Durée
+        from: Valide à partir de
+        to: Valide jusqu'au
         exported_lines: Lignes exportées
         profile: Profil
         prefer_referent_stop_area: Préférer les arrêts Référents

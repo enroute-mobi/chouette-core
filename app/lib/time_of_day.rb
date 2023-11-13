@@ -266,5 +266,19 @@ class TimeOfDay
         raw_old_value != serialize(new_value)
       end
     end
+
+    class DatePicker < ActiveRecord::Type::Value
+      def cast(value)
+        return unless value.present?
+
+        value.to_date
+      end
+
+      def serialize(value)
+        return unless value.present?
+
+        value.to_date
+      end
+    end
   end
 end

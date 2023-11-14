@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class Api::V1::DatasController < ActionController::Base
   include Downloadable
 
@@ -22,7 +24,7 @@ class Api::V1::DatasController < ActionController::Base
       fresh_when(source, public: @publication_api.public?)
       send_file source.file.path, filename: source.public_url_filename
     else
-      render :missing_file_error, layout: 'api', status: 404
+      missing_file_error
     end
   end
 
@@ -58,7 +60,7 @@ class Api::V1::DatasController < ActionController::Base
 
   def use_published_referential
     unless published_referential
-      render :missing_file_error, layout: 'api', status: 404
+      missing_file_error
       return
     end
     published_referential.switch do
@@ -119,6 +121,6 @@ class Api::V1::DatasController < ActionController::Base
   end
 
   def missing_file_error
-    render :missing_file_error, layout: 'api', status: 404
+    render 'missing_file_error.html.slim', layout: 'api', status: :not_found
   end
 end

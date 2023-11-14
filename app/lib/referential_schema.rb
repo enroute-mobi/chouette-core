@@ -71,6 +71,7 @@ class ReferentialSchema
   delegate :raw_connection, to: :connection
 
   def table(name)
+    name = name.to_sym
     tables.find { |table| table.name == name }
   end
 
@@ -127,7 +128,7 @@ class ReferentialSchema
 
     def initialize(schema, name)
       @schema = schema
-      @name = name
+      @name = name.to_sym
     end
 
     attr_accessor :name, :schema

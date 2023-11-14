@@ -104,7 +104,7 @@ class Aggregate < ApplicationModel
           Rails.logger.tagged("Workbench ##{workbench.id}") do
             Rails.logger.info "Aggregate Referential##{referential.id} with priority #{priority}"
             clean!
-            ReferentialCopy.new(source: referential, target: new, source_priority: priority).copy!
+            Referential::Copy.new(source: referential, target: new, source_priority: priority).copy
           end
         end
       end

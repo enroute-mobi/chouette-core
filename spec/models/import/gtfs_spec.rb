@@ -18,6 +18,34 @@ RSpec.describe Import::Gtfs do
     Import::Gtfs.new workbench: workbench, local_file: open_fixture(file), creator: "test", name: "test"
   end
 
+  describe '.accepts_file?' do
+    subject { Import::Gtfs.accepts_file?(file) }
+
+    context "when file is a 'classic' GTFS file" do
+      let(:file) { open_fixture('google-sample-feed.zip') }
+
+      it { is_expected.to be_truthy }
+    end
+
+    context "when file is a GTFS file with directories" do
+      let(:file) { open_fixture('google-sample-feed-with-directories.zip') }
+
+      it { is_expected.to be_truthy }
+    end
+
+    context "when file is a Neptune file" do
+      let(:file) { open_fixture('sample_neptune.zip') }
+
+      it { is_expected.to be_falsy }
+    end
+
+    context "when file isn't a Zip file" do
+      let(:file) { open_fixture('sample_png.png') }
+
+      it { is_expected.to be_falsy }
+    end
+  end
+
   context "when the file is not directly accessible" do
     let(:import) {
       Import::Gtfs.create workbench: workbench, name: "test", creator: "Albator", file: open_fixture('google-sample-feed.zip')

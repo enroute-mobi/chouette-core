@@ -179,6 +179,9 @@ en:
       models:
         vehicle_journey:
           invalid_times: "Invalid times"
+          attributes:
+            vehicle_journey_at_stops:
+              invalid_chronology: "Invalid times"
   formtastic:
     titles:
       vehicle_journey:

@@ -182,6 +182,9 @@ fr:
       models:
         vehicle_journey:
           invalid_times: "Horaires invalides"
+          attributes:
+            vehicle_journey_at_stops:
+              invalid_chronology: "Horaires invalides"
   formtastic:
     titles:
       vehicle_journey:

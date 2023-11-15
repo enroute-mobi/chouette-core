@@ -1,3 +1,5 @@
+# Append Referential data into another Referential
+# Used into Aggregate for example
 class Referential::Copy
   include Measurable
 
@@ -15,7 +17,9 @@ class Referential::Copy
 
       Mapper
         .new(source, target, :journey_patterns)
-        .mapping(:route_id, with: :routes),
+        .mapping(:route_id, with: :routes)
+        .mapping(:departure_stop_point_id, with: :stop_points, as: :departure_stop_point, optional: true)
+        .mapping(:arrival_stop_point_id, with: :stop_points, as: :arrival_stop_point, optional: true),
 
       Mapper
         .new(source, target, :vehicle_journeys)
@@ -117,11 +121,11 @@ class Referential::Copy
       execute("DROP INDEX IF EXISTS #{table_name}_legacy_id_unique;")
     end
 
-    def mapping(column_name, with:, as: nil)
+    def mapping(column_name, with:, as: nil, optional: false)
       target_table_as = "target_#{as || with}"
 
       replace_columns(target_table_as, column_name)
-      append_joins(target_schema.table(with).full_name, target_table_as, column_name)
+      append_joins(target_schema.table(with).full_name, target_table_as, column_name, optional: optional)
 
       self
     end
@@ -145,9 +149,10 @@ class Referential::Copy
       end
     end
 
-    def append_joins(target_table, target_table_as, column_name)
+    def append_joins(target_table, target_table_as, column_name, optional: false)
+      join = optional ? "LEFT JOIN" : "JOIN"
       joins << <<-SQL
-        JOIN #{target_table} #{target_table_as} ON
+        #{join} #{target_table} #{target_table_as} ON
           #{target_table_as}.legacy_id = source_table.#{column_name}
       SQL
     end

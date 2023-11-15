@@ -100,7 +100,7 @@ class Aggregate < ApplicationModel
 
     def copy!
       duration = ::Benchmark.realtime do
-        measure :copy, workbench_id: workbench.id do
+        measure :workbench, workbench_id: workbench.id do
           Rails.logger.tagged("Workbench ##{workbench.id}") do
             Rails.logger.info "Aggregate Referential##{referential.id} with priority #{priority}"
             clean!
@@ -174,8 +174,13 @@ class Aggregate < ApplicationModel
     end
   end
 
+  def compute_service_counts
+    Stat::JourneyPatternCoursesByDate.compute_for_referential new
+  end
+
   def after_save_current
     analyse_current
+    compute_service_counts
 
     clean_previous_operations
     publish

@@ -7,18 +7,17 @@ class TimePickerInput < SimpleForm::Inputs::Base
     # Never update the code before read https://flatpickr.js.org/examples/#flatpickr--external-elements
     input_html_options[:type] = 'text'
     input_html_options[:data] ||= { 'input': ''}
-    input_html_options[:style] = 'background-color: white;'
 
-    content_tag(:div, class: 'time_picker_block input-group') do
+    content_tag(:div, class: 'time_picker_block flex') do
       concat @builder.text_field(attribute_name, input_html_options)
-      concat( content_tag(:div, class: 'input-group-btn') do
+      concat( content_tag(:div, class: 'flex items-center bg-enroute-blue rounded-tr-full rounded-br-full') do
         concat clock_button
       end)
     end
   end
 
   def input_html_classes
-    super.push 'form-control'
+    super.push 'border border-gray-300 rounded-tl rounded-bl w-full py-4 px-3 focus:outline-none focus:ring-0 focus:border-blue-500 leading-6 transition-colors duration-200 ease-in-out string optional'
   end
 
   private

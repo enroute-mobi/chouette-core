@@ -105,8 +105,8 @@ en:
         referential_id: Referential
         referential: Referential
         duration: Duration
-        from: Valid after
-        to: Valid until
+        from: From
+        to: To
         exported_lines: Exported lines
         profile: Profile
         prefer_referent_stop_area: Prefer Referent Stop Areas

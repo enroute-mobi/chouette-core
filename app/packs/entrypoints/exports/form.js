@@ -30,6 +30,10 @@ class Store {
 
 	init() {
 		this.$watch('referentialId', () => this.handleReferentialIdUpdate())
+		this.$watch('type', () => flatpickr('.date_picker_block', {
+			dateFormat: "d/m/Y",
+			wrap: true
+		}))
 	}
 
 	/* Used in app/views/exports/options/_exported_lines.html.slim as x-bind:data-url

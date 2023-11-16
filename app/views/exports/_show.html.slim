@@ -7,6 +7,8 @@
       - if @export.type != "Export::Netex"
         = d.attribute :exported_lines, value_method: :display_selected_lines_to_export
       = d.attribute :period, value_method: :display_period
+      = d.attribute :from, as: :date
+      = d.attribute :to, as: :date
       - if @export.type == "Export::NetexGeneric"
         = d.attribute :profile, value_method: :display_profile
       - if @export.type == "Export::Gtfs"

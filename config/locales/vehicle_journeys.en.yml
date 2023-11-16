@@ -172,16 +172,16 @@ en:
         unspecified_mrs: "Not specified"
         updated_at: Updated at
         vehicle_journey_at_stop_ids: "Time list"
+        vehicle_journey_at_stops: "Time list"
         vehicle_type_identifier: "Vehicle Type Identifier"
         start_time: Start time
         constraint_exclusions: Constraint Zones exclusions
     errors:
       models:
         vehicle_journey:
-          invalid_times: "Invalid times"
           attributes:
             vehicle_journey_at_stops:
-              invalid_chronology: "Invalid times"
+              invalid_chronology: "is not in chronological order"
   formtastic:
     titles:
       vehicle_journey:

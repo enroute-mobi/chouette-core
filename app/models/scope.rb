@@ -49,7 +49,7 @@ module Scope
     end
 
     def service_counts
-      Stat::JourneyPatternCoursesByDate.none
+      ServiceCount.none
     end
 
     private

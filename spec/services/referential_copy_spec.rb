@@ -351,7 +351,7 @@ describe ReferentialCopy do
 
   end
 
-  describe "JourneyPatternCoursesByDate copy" do
+  describe 'ServiceCount copy' do
 
     let(:context) do
       Chouette.create do
@@ -371,14 +371,14 @@ describe ReferentialCopy do
       end
     end
 
-    it "contains the same JourneyPatternCoursesByDate count" do
+    it 'contains the same ServiceCount count' do
       expect {
         referential_copy.copy
       }.to change { target.switch { target.service_counts.count } }
              .from(0).to( source.switch { target.service_counts.count } )
     end
 
-    describe "the JourneyPatternCoursesByDate in target referential" do
+    describe 'the ServiceCount in target referential' do
 
       subject { target.switch { target.service_counts.first } }
 
@@ -398,7 +398,7 @@ describe ReferentialCopy do
         is_expected.to have_attributes(route_id: target_journey_pattern.route_id)
       end
 
-      it "has the same date and count than the source JourneyPatternCoursesByDate" do
+      it 'has the same date and count than the source ServiceCount' do
         is_expected.to have_same_attributes(:count, :date, than: source_journey_pattern_courses_by_day)
       end
 

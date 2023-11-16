@@ -1,4 +1,4 @@
-RSpec.describe Stat::JourneyPatternCoursesByDate, type: :model do
+RSpec.describe ServiceCount, type: :model do
   let(:journey_pattern) { create :journey_pattern }
   let(:line_referential) { create :line_referential }
   let(:workbench) { create :workbench, line_referential: line_referential }
@@ -32,43 +32,43 @@ RSpec.describe Stat::JourneyPatternCoursesByDate, type: :model do
       expected_count = referential.metadatas_period.count * referential.associated_lines.count
 
       expect {
-        Stat::JourneyPatternCoursesByDate.compute_for_referential(referential)
-      }.to change { Stat::JourneyPatternCoursesByDate.count }.by(expected_count)
+        ServiceCount.compute_for_referential(referential)
+      }.to change { ServiceCount.count }.by(expected_count)
     end
 
     it 'can take an option to select lines to compute' do
-      Stat::JourneyPatternCoursesByDate.compute_for_referential(referential, line_ids: [line.id])
+      ServiceCount.compute_for_referential(referential, line_ids: [line.id])
 
       expect(
-        Stat::JourneyPatternCoursesByDate.where(line_id: line.id).exists?
+        ServiceCount.where(line_id: line.id).exists?
       ).to be_truthy
 
       expect(
-        Stat::JourneyPatternCoursesByDate.where(line_id: line2.id).exists?
+        ServiceCount.where(line_id: line2.id).exists?
       ).to be_falsy
     end
   end
 
   describe '#clean_previous_stats' do
     it 'delete records associated to specific lines' do
-      Stat::JourneyPatternCoursesByDate.compute_for_referential(referential, line_ids: [line.id])
-      Stat::JourneyPatternCoursesByDate.compute_for_referential(referential, line_ids: [line2.id])
-      Stat::JourneyPatternCoursesByDate.clean_previous_stats([line2.id])
+      ServiceCount.compute_for_referential(referential, line_ids: [line.id])
+      ServiceCount.compute_for_referential(referential, line_ids: [line2.id])
+      ServiceCount.clean_previous_stats([line2.id])
 
       expect(
-        Stat::JourneyPatternCoursesByDate.where(line_id: line2.id).exists?
+        ServiceCount.where(line_id: line2.id).exists?
       ).to be_falsy
 
       expect(
-        Stat::JourneyPatternCoursesByDate.where(line_id: line.id).exists?
+        ServiceCount.where(line_id: line.id).exists?
       ).to be_truthy
     end
   end
 
   describe '#populate_for_journey_pattern' do
     it 'should create nothing without a vehicle_journey' do
-      expect { Stat::JourneyPatternCoursesByDate.populate_for_journey_pattern(journey_pattern) }.to_not(
-        change { Stat::JourneyPatternCoursesByDate.count }
+      expect { ServiceCount.populate_for_journey_pattern(journey_pattern) }.to_not(
+        change { ServiceCount.count }
       )
     end
 
@@ -82,13 +82,13 @@ RSpec.describe Stat::JourneyPatternCoursesByDate, type: :model do
         before do
           time_table.periods.create!(period_start: period_start, period_end: circulation_day)
           time_table.periods.create!(period_start: circulation_day.next, period_end: period_end)
-          Stat::JourneyPatternCoursesByDate.populate_for_journey_pattern(journey_pattern)
+          ServiceCount.populate_for_journey_pattern(journey_pattern)
         end
 
         it 'should create instances' do
           period_start.upto(period_end).each do |date|
             expect(
-              Stat::JourneyPatternCoursesByDate.where(journey_pattern_id: journey_pattern.id, date: date).exists?
+              ServiceCount.where(journey_pattern_id: journey_pattern.id, date: date).exists?
             ).to be_truthy
           end
         end
@@ -98,18 +98,18 @@ RSpec.describe Stat::JourneyPatternCoursesByDate, type: :model do
         before do
           time_table.periods.create!(period_start: period_start, period_end: circulation_day.prev_day)
           time_table.periods.create!(period_start: circulation_day.next, period_end: period_end)
-          Stat::JourneyPatternCoursesByDate.populate_for_journey_pattern(journey_pattern)
+          ServiceCount.populate_for_journey_pattern(journey_pattern)
         end
 
         it 'should create instances' do
           period_start.upto(circulation_day.prev_day).each do |date|
             expect(
-              Stat::JourneyPatternCoursesByDate.where(journey_pattern_id: journey_pattern.id, date: date).exists?
+              ServiceCount.where(journey_pattern_id: journey_pattern.id, date: date).exists?
             ).to be_truthy
           end
           circulation_day.next.upto(period_end).each do |date|
             expect(
-              Stat::JourneyPatternCoursesByDate.where(journey_pattern_id: journey_pattern.id, date: date).exists?
+              ServiceCount.where(journey_pattern_id: journey_pattern.id, date: date).exists?
             ).to be_truthy
           end
         end
@@ -119,12 +119,12 @@ RSpec.describe Stat::JourneyPatternCoursesByDate, type: :model do
 
   describe '#fill_blanks_for_empty_line' do
     it "should fill with holes" do
-      expect { Stat::JourneyPatternCoursesByDate.fill_blanks_for_empty_line(line, referential: referential) }.to(
-        change { Stat::JourneyPatternCoursesByDate.count }.by(period_end - period_start + 1)
+      expect { ServiceCount.fill_blanks_for_empty_line(line, referential: referential) }.to(
+        change { ServiceCount.count }.by(period_end - period_start + 1)
       )
       period_start.upto(period_end) do |date|
         expect(
-          Stat::JourneyPatternCoursesByDate.where(line_id: line.id, date: date).last.count
+          ServiceCount.where(line_id: line.id, date: date).last.count
         ).to be_zero
       end
     end
@@ -132,12 +132,12 @@ RSpec.describe Stat::JourneyPatternCoursesByDate, type: :model do
 
   describe '#fill_blanks_for_empty_route' do
     it "should fill with holes" do
-      expect { Stat::JourneyPatternCoursesByDate.fill_blanks_for_empty_route(route, referential: referential) }.to(
-        change { Stat::JourneyPatternCoursesByDate.count }.by(period_end - period_start + 1)
+      expect { ServiceCount.fill_blanks_for_empty_route(route, referential: referential) }.to(
+        change { ServiceCount.count }.by(period_end - period_start + 1)
       )
       period_start.upto(period_end) do |date|
         expect(
-          Stat::JourneyPatternCoursesByDate.where(line_id: line.id, date: date).last.count
+          ServiceCount.where(line_id: line.id, date: date).last.count
         ).to be_zero
       end
     end
@@ -145,13 +145,13 @@ RSpec.describe Stat::JourneyPatternCoursesByDate, type: :model do
 
   describe '#fill_blanks_for_journey_pattern' do
     it "should fill with holes" do
-      Stat::JourneyPatternCoursesByDate.populate_for_journey_pattern(journey_pattern)
-      expect { Stat::JourneyPatternCoursesByDate.fill_blanks_for_journey_pattern(journey_pattern) }.to(
-        change { Stat::JourneyPatternCoursesByDate.count }.by(period_end - period_start + 1)
+      ServiceCount.populate_for_journey_pattern(journey_pattern)
+      expect { ServiceCount.fill_blanks_for_journey_pattern(journey_pattern) }.to(
+        change { ServiceCount.count }.by(period_end - period_start + 1)
       )
       period_start.upto(period_end) do |date|
         expect(
-          Stat::JourneyPatternCoursesByDate.where(journey_pattern_id: journey_pattern.id, date: date).last.count
+          ServiceCount.where(journey_pattern_id: journey_pattern.id, date: date).last.count
         ).to be_zero
       end
     end
@@ -166,12 +166,12 @@ RSpec.describe Stat::JourneyPatternCoursesByDate, type: :model do
         before do
           time_table.periods.create!(period_start: period_start, period_end: circulation_day)
           time_table.periods.create!(period_start: circulation_day.next, period_end: period_end)
-          Stat::JourneyPatternCoursesByDate.populate_for_journey_pattern(journey_pattern)
+          ServiceCount.populate_for_journey_pattern(journey_pattern)
         end
 
         it 'should do nothing' do
-          expect { Stat::JourneyPatternCoursesByDate.fill_blanks_for_journey_pattern(journey_pattern) }.to_not(
-            change { Stat::JourneyPatternCoursesByDate.count }
+          expect { ServiceCount.fill_blanks_for_journey_pattern(journey_pattern) }.to_not(
+            change { ServiceCount.count }
           )
         end
       end
@@ -180,17 +180,17 @@ RSpec.describe Stat::JourneyPatternCoursesByDate, type: :model do
         before do
           time_table.periods.create!(period_start: period_start, period_end: circulation_day.prev_day)
           time_table.periods.create!(period_start: circulation_day.next, period_end: period_end)
-          Stat::JourneyPatternCoursesByDate.populate_for_journey_pattern(journey_pattern)
+          ServiceCount.populate_for_journey_pattern(journey_pattern)
         end
 
         it 'should create instances' do
-          Stat::JourneyPatternCoursesByDate.fill_blanks_for_journey_pattern(journey_pattern)
+          ServiceCount.fill_blanks_for_journey_pattern(journey_pattern)
           expect(
-            Stat::JourneyPatternCoursesByDate.where(journey_pattern_id: journey_pattern.id, date: circulation_day).exists?
+            ServiceCount.where(journey_pattern_id: journey_pattern.id, date: circulation_day).exists?
           ).to be_truthy
 
           expect(
-            Stat::JourneyPatternCoursesByDate.where(journey_pattern_id: journey_pattern.id, date: circulation_day).last.count
+            ServiceCount.where(journey_pattern_id: journey_pattern.id, date: circulation_day).last.count
           ).to be_zero
         end
       end
@@ -198,26 +198,26 @@ RSpec.describe Stat::JourneyPatternCoursesByDate, type: :model do
       context 'with a hole at the start' do
         before do
           time_table.periods.create!(period_start: circulation_day, period_end: period_end)
-          Stat::JourneyPatternCoursesByDate.populate_for_journey_pattern(journey_pattern)
+          ServiceCount.populate_for_journey_pattern(journey_pattern)
         end
 
         it 'should create instances' do
-          expect { Stat::JourneyPatternCoursesByDate.fill_blanks_for_journey_pattern(journey_pattern) }.to(
-            change { Stat::JourneyPatternCoursesByDate.count }.by(circulation_day - period_start)
+          expect { ServiceCount.fill_blanks_for_journey_pattern(journey_pattern) }.to(
+            change { ServiceCount.count }.by(circulation_day - period_start)
           )
           period_start.upto(period_end) do |date|
             expect(
-              Stat::JourneyPatternCoursesByDate.where(journey_pattern_id: journey_pattern.id, date: date)
+              ServiceCount.where(journey_pattern_id: journey_pattern.id, date: date)
             ).to be_exists
           end
           period_start.upto(circulation_day.prev_day) do |date|
             expect(
-              Stat::JourneyPatternCoursesByDate.where(journey_pattern_id: journey_pattern.id, date: date).last.count
+              ServiceCount.where(journey_pattern_id: journey_pattern.id, date: date).last.count
             ).to be_zero
           end
           circulation_day.upto(period_end) do |date|
             expect(
-              Stat::JourneyPatternCoursesByDate.where(journey_pattern_id: journey_pattern.id, date: date).last.count
+              ServiceCount.where(journey_pattern_id: journey_pattern.id, date: date).last.count
             ).to eq 1
           end
         end
@@ -226,26 +226,26 @@ RSpec.describe Stat::JourneyPatternCoursesByDate, type: :model do
       context 'with a hole at the end' do
         before do
           time_table.periods.create!(period_start: period_start, period_end: circulation_day)
-          Stat::JourneyPatternCoursesByDate.populate_for_journey_pattern(journey_pattern)
+          ServiceCount.populate_for_journey_pattern(journey_pattern)
         end
 
         it 'should create instances' do
-          expect { Stat::JourneyPatternCoursesByDate.fill_blanks_for_journey_pattern(journey_pattern) }.to(
-            change { Stat::JourneyPatternCoursesByDate.count }.by(period_end - circulation_day)
+          expect { ServiceCount.fill_blanks_for_journey_pattern(journey_pattern) }.to(
+            change { ServiceCount.count }.by(period_end - circulation_day)
           )
           period_start.upto(period_end) do |date|
             expect(
-              Stat::JourneyPatternCoursesByDate.where(journey_pattern_id: journey_pattern.id, date: date)
+              ServiceCount.where(journey_pattern_id: journey_pattern.id, date: date)
             ).to be_exists
           end
           period_start.upto(circulation_day) do |date|
             expect(
-              Stat::JourneyPatternCoursesByDate.where(journey_pattern_id: journey_pattern.id, date: date).last.count
+              ServiceCount.where(journey_pattern_id: journey_pattern.id, date: date).last.count
             ).to eq 1
           end
           circulation_day.next.upto(period_end) do |date|
             expect(
-              Stat::JourneyPatternCoursesByDate.where(journey_pattern_id: journey_pattern.id, date: date).last.count
+              ServiceCount.where(journey_pattern_id: journey_pattern.id, date: date).last.count
             ).to be_zero
           end
         end
@@ -255,29 +255,29 @@ RSpec.describe Stat::JourneyPatternCoursesByDate, type: :model do
 
   describe 'scopes' do
     before do
-      ["2020-01-01", "2020-06-01", "2020-12-01", "2021-01-01"].each{ |d| create :stat_journey_pattern_courses_by_date, date: d.to_date }
+      %w[2020-01-01 2020-06-01 2020-12-01 2021-01-01].each { |d| create :service_count, date: d.to_date }
     end
 
     describe '#between' do
-      let(:filtered_jpcbd_list) { Stat::JourneyPatternCoursesByDate.between("2020-05-01".to_date, "2020-12-01".to_date) }
+      let(:filtered_jpcbd_list) { ServiceCount.between('2020-05-01'.to_date, '2020-12-01'.to_date) }
 
-      it 'should return JourneyPatternCoursesByDate items between the selected dates' do
+      it 'should return ServiceCount items between the selected dates' do
         expect( filtered_jpcbd_list.count ).to eq 2
       end
     end
 
     describe '#before' do
-      let(:filtered_jpcbd_list) { Stat::JourneyPatternCoursesByDate.after("2020-05-01".to_date) }
+      let(:filtered_jpcbd_list) { ServiceCount.after('2020-05-01'.to_date) }
 
-      it 'should return JourneyPatternCoursesByDate items after the selected date' do
+      it 'should return ServiceCount items after the selected date' do
         expect( filtered_jpcbd_list.count ).to eq 3
       end
     end
 
     describe '#after' do
-      let(:filtered_jpcbd_list) { Stat::JourneyPatternCoursesByDate.before("2020-05-01".to_date) }
+      let(:filtered_jpcbd_list) { ServiceCount.before('2020-05-01'.to_date) }
 
-      it 'should return JourneyPatternCoursesByDate items before the selected date' do
+      it 'should return ServiceCount items before the selected date' do
         expect( filtered_jpcbd_list.count ).to eq 1
       end
     end

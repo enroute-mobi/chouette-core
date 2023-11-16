@@ -231,7 +231,7 @@ class Merge < ApplicationModel
 
   def after_save_current
     referentials.each(&:merged!)
-    Stat::JourneyPatternCoursesByDate.compute_for_referential(new, line_ids: merged_line_ids)
+    ServiceCount.compute_for_referential(new, line_ids: merged_line_ids)
     aggregate_if_urgent_offer
   end
 

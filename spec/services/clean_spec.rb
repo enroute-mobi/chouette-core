@@ -729,7 +729,7 @@ RSpec.describe Clean::ServiceCount::InPeriod do
   let(:journey_pattern) { context.journey_pattern }
 
   let!(:service_count) do
-    Stat::JourneyPatternCoursesByDate.create!(
+    ServiceCount.create!(
       journey_pattern_id: journey_pattern.id,
       route_id: journey_pattern.route_id,
       line_id: journey_pattern.route.line_id,

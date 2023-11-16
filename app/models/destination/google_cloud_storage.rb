@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class Destination::GoogleCloudStorage < ::Destination
   require "google/cloud/storage"
 
@@ -10,7 +12,11 @@ class Destination::GoogleCloudStorage < ::Destination
   @secret_file_required = true
 
   def do_transmit(publication, report)
+    secret_file.cache!
+
     publication.exports.each do |export|
+      next unless export[:file].present?
+
       upload_to_google_cloud export.file if export[:file]
     end
   end
@@ -18,10 +24,10 @@ class Destination::GoogleCloudStorage < ::Destination
   def upload_to_google_cloud file
     storage = Google::Cloud::Storage.new(
       project_id: self.project,
-      credentials: local_secret_file.path
+      credentials: secret_file.path
     )
-
     bucket = storage.bucket self.bucket, skip_lookup: true
-    bucket.create_file local_temp_file(file), File.basename(file.path)
+    file.cache!
+    bucket.create_file(file.path, File.basename(file.path))
   end
 end

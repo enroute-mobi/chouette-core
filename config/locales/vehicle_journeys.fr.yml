@@ -174,17 +174,17 @@ fr:
         unspecified_fs: "Non spécifié"
         unspecified_mrs: "Non spécifié"
         updated_at: "Edité le"
-        vehicle_journey_at_stop_ids: "Liste des horaires"
+        vehicle_journey_at_stops: "La liste des horaires"
+        vehicle_journey_at_stop_ids: "La liste des horaires"
         vehicle_type_identifier: "Type d'identifiant du véhicule"
         start_time: Heure de départ
         constraint_exclusions: Exclusions d'interdictions de trafic
     errors:
       models:
         vehicle_journey:
-          invalid_times: "Horaires invalides"
           attributes:
             vehicle_journey_at_stops:
-              invalid_chronology: "Horaires invalides"
+              invalid_chronology: "n'est pas dans un ordre chronologique"
   formtastic:
     titles:
       vehicle_journey:

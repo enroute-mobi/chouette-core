@@ -6,6 +6,8 @@ class ZipService
     end
   end
 
+  class TooManyDirectoriesError < StandardError; end
+
   attr_reader :allowed_lines, :current_key, :foreign_lines, :current_output, :current_spurious, :yielder
 
   def initialize data, allowed_lines
@@ -32,6 +34,7 @@ class ZipService
   def add_entry entry
     key = entry_key entry
     unless key == current_key
+      raise TooManyDirectoriesError  unless current_key.nil?
       finish_current_output
       open_new_output key
     end

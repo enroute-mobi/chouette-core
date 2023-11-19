@@ -18,18 +18,12 @@ RSpec.describe ZipService, type: :zip do
     end
   end
 
-  context 'two, legal, referentials' do
+  context 'two referentials' do
     let( :zip_name ){ 'two_referential_ok.zip' }
     let( :zip_content ){ first_referential_ok_data.merge( second_referential_ok_data ) }
-    let( :expected_zips ){ [
-      make_zip('expected.zip', first_referential_ok_data),
-      make_zip('expected.zip', second_referential_ok_data)
-    ] }
 
-    it 'yields correct output' do
-      subject.zip(expected_zips).each do | subdir, expected_zip |
-        expect_correct_subdir subdir, expected_zip
-      end
+    it 'raise an error' do
+      expect{ subject.first }.to raise_error ZipService::TooManyDirectoriesError
     end
   end
 
@@ -66,22 +60,6 @@ RSpec.describe ZipService, type: :zip do
 
     it 'returns a not ok object' do
       expect_incorrect_subdir subject.first, expected_foreign_lines: %w{C00110}
-    end
-  end
-
-  context '1st ref ok, 2nd foreign line, 3rd spurious' do
-    let( :zip_name ){ '3-mixture.zip' }
-    let( :zip_content ){ first_referential_ok_data
-                           .merge(first_referential_foreign_data)
-                           .merge(first_referential_spurious_data) }
-
-    it 'returns 3 objects accordingly' do
-      subdirs = subject.to_a
-
-      expect_correct_subdir subdirs.first, make_zip('expected.zip', first_referential_ok_data)
-
-      expect_incorrect_subdir subdirs.second, expected_foreign_lines: %w{C00110}
-      expect_incorrect_subdir subdirs.third,  expected_spurious: %W{SPURIOUS}
     end
   end
 
@@ -169,7 +147,7 @@ RSpec.describe ZipService, type: :zip do
     </netex:PublicationDelivery>
     """
   end
-  
+
   let :first_referential_ok_data do
     {
        'Referential1/calendriers.xml'     => valid_calendar,

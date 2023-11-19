@@ -40,22 +40,20 @@ class WorkbenchImportService
 
   def handle_corrupt_zip_file
     workbench_import.messages.create(criticity: :error, message_key: 'corrupt_zip_file', message_attributes: {source_filename: workbench_import.file.file.file})
-    workbench_import.update( current_step: @entries, status: 'failed' )
+    workbench_import.update_columns status: 'failed'
+    workbench_import.update_columns ended_at: Time.now
   end
 
   def upload zip_service
     entry_group_streams = zip_service.subdirs
-    if entry_group_streams.many?
-      workbench_import.messages.create(criticity: :error, message_key: 'several_datasets')
-      workbench_import.update status: 'failed'
-      return
-   end
     entry_group_streams.each_with_index(&method(:upload_entry_group))
     workbench_import.update total_steps: @entries
     handle_corrupt_zip_file unless @subdir_uploaded
+  rescue ZipService::TooManyDirectoriesError
+    workbench_import.messages.create(criticity: :error, message_key: 'several_datasets')
+    raise
   rescue Exception => e
     Chouette::Safe.capture "Upload failed", e
-    workbench_import.update( current_step: @entries, status: 'failed' )
     raise
   end
 

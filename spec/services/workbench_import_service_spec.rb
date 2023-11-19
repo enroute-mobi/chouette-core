@@ -56,7 +56,7 @@ RSpec.describe WorkbenchImportService, type: [:request, :zip] do
   context 'with spurious directories' do
     let(:zip_path) { fixtures_path 'imports/idfm_netex/spurious.zip' }
 
-    it 'should make the import failed and write message key spurious_zip_file' do
+    it 'should make the import failed and write message key inconsistent_zip_file' do
       worker.perform(workbench_import.id)
       expect(workbench_import.resources.flat_map(&:messages).collect(&:message_key)).to eq(%w{inconsistent_zip_file})
       expect( workbench_import.reload.status ).to eq('failed')
@@ -66,7 +66,7 @@ RSpec.describe WorkbenchImportService, type: [:request, :zip] do
   context 'with foreign lines' do
     let(:zip_path) { fixtures_path 'imports/idfm_netex/foreign_line.zip' }
 
-    it 'should make the import failed and write message key corrupt_zip_file' do
+    it 'should make the import failed and write message key foreign_lines_in_referential' do
       worker.perform(workbench_import.id)
       expect(workbench_import.resources.flat_map(&:messages).collect(&:message_key)).to eq(%w{foreign_lines_in_referential})
       expect(workbench_import.reload.status).to eq('failed')

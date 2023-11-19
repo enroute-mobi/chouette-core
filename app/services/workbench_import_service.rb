@@ -46,11 +46,6 @@ class WorkbenchImportService
 
   def upload zip_service
     entry_group_streams = zip_service.subdirs
-    if entry_group_streams.many?
-      workbench_import.messages.create(criticity: :error, message_key: 'several_datasets')
-      workbench_import.update status: 'failed'
-      return
-   end
     entry_group_streams.each_with_index(&method(:upload_entry_group))
     workbench_import.update total_steps: @entries
     handle_corrupt_zip_file unless @subdir_uploaded

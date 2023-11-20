@@ -74,10 +74,23 @@ class Referential::Copy
         end
       end
 
+      copy_route_opposites
+
       measure :drop_legacy_id_column do
         mappings.each(&:drop_legacy_id_column)
       end
     end
+  end
+
+  def copy_route_opposites
+    ActiveRecord::Base.connection.execute <<-SQL
+      UPDATE #{new_table_routes} AS target_routes SET
+        opposite_route_id = source_routes.opposite_route_id
+      FROM (
+        SELECT #{new_table_routes}.legacy_id, #{new_table_routes}.opposite_route_id FROM #{new_table_routes}
+      ) AS source_routes(opposite_route_id, legacy_id)
+      WHERE target_routes.opposite_route_id = source_routes.legacy_id
+    SQL
   end
 
   class Mapper
@@ -126,6 +139,12 @@ class Referential::Copy
 
       replace_columns(target_table_as, column_name)
       append_joins(target_schema.table(with).full_name, target_table_as, column_name, optional: optional)
+
+      self
+    end
+
+    def exclude(*excluded_columns)
+      @source_columns -= excluded_columns.map(&:to_s)
 
       self
     end
@@ -213,4 +232,10 @@ class Referential::Copy
     end
   end
   measure :copy_metadatas
+
+  private
+
+  def new_table_routes
+    @new_table_routes ||= target.schema.table(:routes).full_name
+  end
 end

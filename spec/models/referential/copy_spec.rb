@@ -59,5 +59,36 @@ RSpec.describe Referential::Copy do
       let(:expected_attributes) { %i[line objectid name published_name wayback created_at updated_at data_source_ref] }
       it { is_expected.to have_same_route_attributes(than: route, named: 'source Route') }
     end
+
+    describe 'copy opposite route' do
+      let(:context) do
+        Chouette.create do
+          referential :target do
+            route :existing, name: 'Existing'
+          end
+
+          referential :source do
+            route :route, name: 'Route'
+            route :opposite_route, name: 'Opposite Route'
+          end
+        end
+      end
+
+      let(:route) { source.switch { context.route(:route).reload } }
+      let(:opposite_route) { source.switch { context.route(:opposite_route).reload } }
+
+      before {
+        source.switch do
+          opposite_route.update wayback: route.opposite_wayback
+          route.update opposite_route_id: opposite_route.id
+        end
+
+        copy.copy
+      }
+
+      subject { target.switch.routes.where.not(opposite_route_id: nil).map(&:name) }
+
+      it { is_expected.to match_array ['Route', 'Opposite Route'] }
+    end
   end
 end

@@ -11,7 +11,7 @@ class Referential::Copy
 
   def mappings
     @mappings ||= [
-      Mapper.new(source, target, :routes),
+      Mapper.new(source, target, :routes).exclude(:opposite_route_id),
 
       Mapper.new(source, target, :stop_points).mapping(:route_id, with: :routes),
 
@@ -121,7 +121,7 @@ class Referential::Copy
 
     def select_query
       <<-SQL
-        SELECT #{select}
+        SELECT #{select.join(',')}
         FROM #{source_full_name} source_table
         #{joins.join(' ')}
       SQL
@@ -144,7 +144,9 @@ class Referential::Copy
     end
 
     def exclude(*excluded_columns)
-      @source_columns -= excluded_columns.map(&:to_s)
+      @select = select.map do |column|
+        excluded_columns.include?(column.to_sym) ? "NULL AS #{column}" : column
+      end
 
       self
     end
@@ -169,7 +171,7 @@ class Referential::Copy
     end
 
     def append_joins(target_table, target_table_as, column_name, optional: false)
-      join = optional ? "LEFT JOIN" : "JOIN"
+      join = optional ? 'LEFT JOIN' : 'JOIN'
       joins << <<-SQL
         #{join} #{target_table} #{target_table_as} ON
           #{target_table_as}.legacy_id = source_table.#{column_name}
@@ -211,9 +213,9 @@ class Referential::Copy
     end
 
     def select
-      source_columns
-        .map { |column| column.include?(' ') ? column : "source_table.#{column}" }
-        .join(',')
+      @select ||= source_columns.map do |column|
+        column.include?(' ') ? column : "source_table.#{column}"
+      end
     end
 
     def joins

@@ -1,30 +1,26 @@
 RSpec.describe ServiceCount, type: :model do
-  let(:journey_pattern) { create :journey_pattern }
-  let(:line_referential) { create :line_referential }
-  let(:workbench) { create :workbench, line_referential: line_referential }
-  let!(:line) { create :line, line_referential: line_referential }
-  let!(:line2) { create :line, line_referential: line_referential }
-  let(:route) { journey_pattern.route }
-  let(:service) { JourneyPatternOfferService.new(journey_pattern) }
+  let(:line_referential) { create(:line_referential) }
+  let(:line) { create(:line, line_referential: line_referential) }
+  let(:line2) { create(:line, line_referential: line_referential) }
+  let(:route) { create(:route, line: line) }
+  let(:journey_pattern) { create(:journey_pattern, route: route) }
+  let(:workbench) { create(:workbench, line_referential: line_referential) }
 
-  let(:metadatas_1) do
-    create :referential_metadata, lines: line_referential.lines,
-                                  periodes: [(period_start..period_end.prev_day)]
-  end
-
-  let(:metadatas_2) do
-    create :referential_metadata, lines: line_referential.lines,
-                                  periodes: [(period_start.next..period_end)]
-  end
-
-  let(:referential)  { create :workbench_referential, workbench: workbench,
-                                                      metadatas: [metadatas_1, metadatas_2] }
   let(:period_start) { 1.month.ago.to_date }
   let(:period_end)   { 1.month.since.to_date }
+  let(:metadatas1) do
+    create(:referential_metadata, lines: line_referential.lines, periodes: [period_start..period_end.prev_day])
+  end
+  let(:metadatas2) do
+    create(:referential_metadata, lines: line_referential.lines, periodes: [period_start.next..period_end])
+  end
+  let(:referential) { create(:workbench_referential, workbench: workbench, metadatas: [metadatas1, metadatas2]) }
+
+  let(:lines) { [line, line2] }
 
   before do
+    lines
     referential.switch
-    journey_pattern.route.update line: line
   end
 
   describe '#compute_for_referential' do
@@ -46,6 +42,77 @@ RSpec.describe ServiceCount, type: :model do
       expect(
         ServiceCount.where(line_id: line2.id).exists?
       ).to be_falsy
+    end
+
+    context 'CHOUETTE-3215' do
+      let(:period_start) { Date.parse('2030-01-07') }
+      let(:period_end) { Date.parse('2030-01-27') }
+      let(:time_table_a) do
+        build(:time_table, int_day_types: Timetable::DaysOfWeek::SATURDAY | Timetable::DaysOfWeek::SUNDAY).tap do |t|
+          t.periods.new(period_start: Date.parse('2030-01-07'), period_end: Date.parse('2030-01-20'))
+          t.save!
+        end
+      end
+      let(:time_table_b) do
+        build(:time_table, int_day_types: Timetable::DaysOfWeek::EVERYDAY).tap do |t|
+          t.periods.new(period_start: Date.parse('2030-01-14'), period_end: Date.parse('2030-01-27'))
+          t.save!
+        end
+      end
+      let(:journey_pattern_target) { create(:journey_pattern, route: route) }
+      let!(:vehicle_journey1) { create(:vehicle_journey, journey_pattern: journey_pattern_target, time_tables: [time_table_a] )}
+      let!(:vehicle_journey2) { create(:vehicle_journey, journey_pattern: journey_pattern_target, time_tables: [time_table_a] )}
+      let!(:vehicle_journey3) { create(:vehicle_journey, journey_pattern: journey_pattern_target, time_tables: [time_table_a, time_table_b] )}
+      let!(:vehicle_journey4) { create(:vehicle_journey, journey_pattern: journey_pattern_target, time_tables: [time_table_b] )}
+      let!(:vehicle_journey_other) { create(:vehicle_journey, journey_pattern: create(:journey_pattern, route: create(:route, line: line2)), time_tables: [time_table_a]) }
+
+      it 'should compute all service counts' do
+        ServiceCount.compute_for_referential(referential)
+        expect(ServiceCount.where(['count > ?', 0])).to match_array([
+          have_attributes(line_id: line.id, route_id: route.id, journey_pattern_id: journey_pattern_target.id, date: Date.parse('2030-01-12'), count: 3),
+          have_attributes(line_id: line.id, route_id: route.id, journey_pattern_id: journey_pattern_target.id, date: Date.parse('2030-01-13'), count: 3),
+          have_attributes(line_id: line.id, route_id: route.id, journey_pattern_id: journey_pattern_target.id, date: Date.parse('2030-01-14'), count: 2),
+          have_attributes(line_id: line.id, route_id: route.id, journey_pattern_id: journey_pattern_target.id, date: Date.parse('2030-01-15'), count: 2),
+          have_attributes(line_id: line.id, route_id: route.id, journey_pattern_id: journey_pattern_target.id, date: Date.parse('2030-01-16'), count: 2),
+          have_attributes(line_id: line.id, route_id: route.id, journey_pattern_id: journey_pattern_target.id, date: Date.parse('2030-01-17'), count: 2),
+          have_attributes(line_id: line.id, route_id: route.id, journey_pattern_id: journey_pattern_target.id, date: Date.parse('2030-01-18'), count: 2),
+          have_attributes(line_id: line.id, route_id: route.id, journey_pattern_id: journey_pattern_target.id, date: Date.parse('2030-01-19'), count: 4),
+          have_attributes(line_id: line.id, route_id: route.id, journey_pattern_id: journey_pattern_target.id, date: Date.parse('2030-01-20'), count: 4),
+          have_attributes(line_id: line.id, route_id: route.id, journey_pattern_id: journey_pattern_target.id, date: Date.parse('2030-01-21'), count: 2),
+          have_attributes(line_id: line.id, route_id: route.id, journey_pattern_id: journey_pattern_target.id, date: Date.parse('2030-01-22'), count: 2),
+          have_attributes(line_id: line.id, route_id: route.id, journey_pattern_id: journey_pattern_target.id, date: Date.parse('2030-01-23'), count: 2),
+          have_attributes(line_id: line.id, route_id: route.id, journey_pattern_id: journey_pattern_target.id, date: Date.parse('2030-01-24'), count: 2),
+          have_attributes(line_id: line.id, route_id: route.id, journey_pattern_id: journey_pattern_target.id, date: Date.parse('2030-01-25'), count: 2),
+          have_attributes(line_id: line.id, route_id: route.id, journey_pattern_id: journey_pattern_target.id, date: Date.parse('2030-01-26'), count: 2),
+          have_attributes(line_id: line.id, route_id: route.id, journey_pattern_id: journey_pattern_target.id, date: Date.parse('2030-01-27'), count: 2),
+          have_attributes(line_id: vehicle_journey_other.journey_pattern.route.line_id, route_id: vehicle_journey_other.journey_pattern.route_id, journey_pattern_id: vehicle_journey_other.journey_pattern_id, date: Date.parse('2030-01-12'), count: 1),
+          have_attributes(line_id: vehicle_journey_other.journey_pattern.route.line_id, route_id: vehicle_journey_other.journey_pattern.route_id, journey_pattern_id: vehicle_journey_other.journey_pattern_id, date: Date.parse('2030-01-13'), count: 1),
+          have_attributes(line_id: vehicle_journey_other.journey_pattern.route.line_id, route_id: vehicle_journey_other.journey_pattern.route_id, journey_pattern_id: vehicle_journey_other.journey_pattern_id, date: Date.parse('2030-01-19'), count: 1),
+          have_attributes(line_id: vehicle_journey_other.journey_pattern.route.line_id, route_id: vehicle_journey_other.journey_pattern.route_id, journey_pattern_id: vehicle_journey_other.journey_pattern_id, date: Date.parse('2030-01-20'), count: 1),
+        ])
+      end
+
+      it 'should compute service counts for specific line' do
+        ServiceCount.compute_for_referential(referential, line_ids: [line.id])
+        expect(ServiceCount.where(['count > ?', 0])).to match_array([
+          have_attributes(line_id: line.id, route_id: route.id, journey_pattern_id: journey_pattern_target.id, date: Date.parse('2030-01-12'), count: 3),
+          have_attributes(line_id: line.id, route_id: route.id, journey_pattern_id: journey_pattern_target.id, date: Date.parse('2030-01-13'), count: 3),
+          have_attributes(line_id: line.id, route_id: route.id, journey_pattern_id: journey_pattern_target.id, date: Date.parse('2030-01-14'), count: 2),
+          have_attributes(line_id: line.id, route_id: route.id, journey_pattern_id: journey_pattern_target.id, date: Date.parse('2030-01-15'), count: 2),
+          have_attributes(line_id: line.id, route_id: route.id, journey_pattern_id: journey_pattern_target.id, date: Date.parse('2030-01-16'), count: 2),
+          have_attributes(line_id: line.id, route_id: route.id, journey_pattern_id: journey_pattern_target.id, date: Date.parse('2030-01-17'), count: 2),
+          have_attributes(line_id: line.id, route_id: route.id, journey_pattern_id: journey_pattern_target.id, date: Date.parse('2030-01-18'), count: 2),
+          have_attributes(line_id: line.id, route_id: route.id, journey_pattern_id: journey_pattern_target.id, date: Date.parse('2030-01-19'), count: 4),
+          have_attributes(line_id: line.id, route_id: route.id, journey_pattern_id: journey_pattern_target.id, date: Date.parse('2030-01-20'), count: 4),
+          have_attributes(line_id: line.id, route_id: route.id, journey_pattern_id: journey_pattern_target.id, date: Date.parse('2030-01-21'), count: 2),
+          have_attributes(line_id: line.id, route_id: route.id, journey_pattern_id: journey_pattern_target.id, date: Date.parse('2030-01-22'), count: 2),
+          have_attributes(line_id: line.id, route_id: route.id, journey_pattern_id: journey_pattern_target.id, date: Date.parse('2030-01-23'), count: 2),
+          have_attributes(line_id: line.id, route_id: route.id, journey_pattern_id: journey_pattern_target.id, date: Date.parse('2030-01-24'), count: 2),
+          have_attributes(line_id: line.id, route_id: route.id, journey_pattern_id: journey_pattern_target.id, date: Date.parse('2030-01-25'), count: 2),
+          have_attributes(line_id: line.id, route_id: route.id, journey_pattern_id: journey_pattern_target.id, date: Date.parse('2030-01-26'), count: 2),
+          have_attributes(line_id: line.id, route_id: route.id, journey_pattern_id: journey_pattern_target.id, date: Date.parse('2030-01-27'), count: 2),
+        ])
+      end
     end
   end
 

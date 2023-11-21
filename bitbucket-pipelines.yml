@@ -58,7 +58,6 @@ definitions:
           - bundler
           - yarn
         script:
-          - unset BUNDLE_APP_CONFIG
           - eval "$(build.sh bitbucket::env)"
           - build.sh ci::setup
           - bundle config
@@ -76,7 +75,6 @@ definitions:
           - assets
           - assets-cache
         script:
-          - unset BUNDLE_APP_CONFIG
           - eval "$(build.sh bitbucket::env)"
           - build.sh bundler::dependencies
           - export RAILS_DB_ADAPTER=nulldb
@@ -94,7 +92,6 @@ definitions:
           password: "$GCLOUD_API_KEYFILE"
         size: 2x
         script:
-          - unset BUNDLE_APP_CONFIG
           - eval "$(build.sh bitbucket::env)"
           - build.sh bundler::dependencies
           - bundle exec rake ci:setup ci:spec
@@ -119,7 +116,6 @@ definitions:
           username: _json_key
           password: "$GCLOUD_API_KEYFILE"
         script:
-          - unset BUNDLE_APP_CONFIG
           - eval "$(build.sh bitbucket::env)"
           - build.sh bundler::dependencies
           - bundle exec rake ci:jest
@@ -131,7 +127,6 @@ definitions:
           username: _json_key
           password: "$GCLOUD_API_KEYFILE"
         script:
-          - unset BUNDLE_APP_CONFIG
           - eval "$(build.sh bitbucket::env)"
           - build.sh bundler::dependencies
           - bundle exec rake ci:check_security

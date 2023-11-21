@@ -288,7 +288,7 @@ RSpec.describe Source::ScheduledJob do
 
     context 'when selected Day of Week is Monday"' do
       before do
-        source.retrieval_days_of_week = Timetable::DaysOfWeek.none.enable(:monday)
+        source.retrieval_days_of_week = Cuckoo::Timetable::DaysOfWeek.none.enable(:monday)
       end
 
       it { is_expected.to eq('mon') }
@@ -296,7 +296,7 @@ RSpec.describe Source::ScheduledJob do
 
     context 'when selected Days of Week are Monday and Sunday"' do
       before do
-        source.retrieval_days_of_week = Timetable::DaysOfWeek.none.enable(:monday).enable(:sunday)
+        source.retrieval_days_of_week = Cuckoo::Timetable::DaysOfWeek.none.enable(:monday).enable(:sunday)
       end
 
       it { is_expected.to eq('mon,sun') }
@@ -304,7 +304,7 @@ RSpec.describe Source::ScheduledJob do
 
     context 'when all Days of Week are selected' do
       before do
-        source.retrieval_days_of_week = Timetable::DaysOfWeek.all
+        source.retrieval_days_of_week = Cuckoo::Timetable::DaysOfWeek.all
       end
 
       it { is_expected.to eq('*') }

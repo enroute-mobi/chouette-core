@@ -24,7 +24,7 @@ RSpec.describe Chouette::TimeTable, type: :model do
         end
 
         context 'when a Time Table Days of Week includes only Sunday' do
-          before { time_table.update days_of_week: Timetable::DaysOfWeek.none.enable(:sunday) }
+          before { time_table.update days_of_week: Cuckoo::Timetable::DaysOfWeek.none.enable(:sunday) }
           it { is_expected.to_not include(time_table) }
         end
 
@@ -1522,7 +1522,7 @@ describe "update_attributes on periods and dates" do
 
       it "has a period for each Period" do
         period = time_table.periods.build period_start: Date.new(2030, 1, 1), period_end: Date.new(2030, 2, 1)
-        expected_period = Timetable::Period.from(period.range)
+        expected_period = Cuckoo::Timetable::Period.from(period.range)
         expect(time_table.to_timetable.periods).to match_array([expected_period])
       end
 
@@ -1539,20 +1539,20 @@ describe "update_attributes on periods and dates" do
     let(:date_range) { Range.new(Date.new(2030,1,1), Date.new(2030,2,1)) }
 
     it "creates a Date 'in' for each included date" do
-      time_table.apply(Timetable.new included_dates: [dates])
+      time_table.apply(Cuckoo::Timetable.new included_dates: [dates])
       expect(time_table.dates.map(&:date)).to eq([dates])
       expect(time_table.dates.map(&:in_out).uniq).to eq([true])
     end
 
     it "creates a Date 'out' for each excluded date" do
-      time_table.apply(Timetable.new excluded_dates: [dates])
+      time_table.apply(Cuckoo::Timetable.new excluded_dates: [dates])
       expect(time_table.dates.map(&:date)).to eq([dates])
       expect(time_table.dates.map(&:in_out).uniq).to eq([false])
     end
 
     it "creates a Period for each period" do
       expect do
-        time_table.apply(Timetable.new periods: Timetable::Period.from(date_range))
+        time_table.apply(Cuckoo::Timetable.new periods: Cuckoo::Timetable::Period.from(date_range))
       end.to change { time_table.periods.size }.to(1)
       expect(time_table.periods.first).to have_attributes(period_start: date_range.min, period_end: date_range.max)
     end
@@ -1560,26 +1560,26 @@ describe "update_attributes on periods and dates" do
     it "removes unexpected Dates 'in'" do
       time_table.dates.build date: date, in_out: true
       expect do
-        time_table.apply(Timetable.new)
+        time_table.apply(Cuckoo::Timetable.new)
       end.to change { time_table.dates.reject(&:destroyed?).size }.to(0)
     end
 
     it "removes unexpected Dates 'out'" do
       time_table.dates.build date: date, in_out: false
       expect do
-        time_table.apply(Timetable.new)
+        time_table.apply(Cuckoo::Timetable.new)
       end.to change { time_table.dates.reject(&:destroyed?).size }.to(0)
     end
 
     it "removes unexpected Period" do
       time_table.periods.build period_start: date_range.min, period_end: date_range.max
       expect do
-        time_table.apply(Timetable.new)
+        time_table.apply(Cuckoo::Timetable.new)
       end.to change { time_table.periods.reject(&:destroyed?).size }.to(0)
     end
 
     it "uses an uniq DaysOfWeek" do
-      timetable = Timetable::Builder.create do
+      timetable = Cuckoo::Timetable::Builder.create do
         period("1/06","15/06", 'L......')
         period("1/07","15/07", 'L......')
       end
@@ -1590,7 +1590,7 @@ describe "update_attributes on periods and dates" do
     end
 
     it "raise an ArgumentError when several DaysOfWeeks are defined" do
-      timetable = Timetable::Builder.create do
+      timetable = Cuckoo::Timetable::Builder.create do
         period("1/06","15/06", 'L......')
         period("1/07","15/07", '.....SD')
       end

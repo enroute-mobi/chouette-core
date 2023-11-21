@@ -1249,8 +1249,8 @@ RSpec.describe Import::Gtfs do
       subject(:memory_timetable) { decorator.memory_timetable }
 
       it 'should be normalized' do
-        # Timetable.new.normalize! returns a double which #normalized? => true
-        allow(Timetable).to receive_message_chain(:new, :normalize!).and_return(double(normalized?: true))
+        # Cuckoo::Timetable.new.normalize! returns a double which #normalized? => true
+        allow(Cuckoo::Timetable).to receive_message_chain(:new, :normalize!).and_return(double(normalized?: true))
 
         is_expected.to be_normalized
       end
@@ -1267,7 +1267,7 @@ RSpec.describe Import::Gtfs do
         context 'when Decorator period is 2030-01-01..2030-01-31' do
           before do
             allow(decorator).to receive(:period).and_return(Period.parse('2030-01-01..2030-01-31'))
-            allow(decorator).to receive(:days_of_week).and_return(Timetable::DaysOfWeek.all)
+            allow(decorator).to receive(:days_of_week).and_return(Cuckoo::Timetable::DaysOfWeek.all)
           end
 
           it { is_expected.to contain_exactly(an_object_having_attributes(date_range: decorator.period)) }
@@ -1276,7 +1276,7 @@ RSpec.describe Import::Gtfs do
         context 'when Decorator days of week is Monday and Saturday' do
           before do
             allow(decorator).to receive(:period).and_return(Period.parse('2030-01-01..2030-01-31'))
-            allow(decorator).to receive(:days_of_week).and_return(Timetable::DaysOfWeek.none.enable(:monday).enable(:saturday))
+            allow(decorator).to receive(:days_of_week).and_return(Cuckoo::Timetable::DaysOfWeek.none.enable(:monday).enable(:saturday))
           end
 
           it { is_expected.to contain_exactly(an_object_having_attributes(days_of_week: decorator.days_of_week)) }
@@ -1302,7 +1302,7 @@ RSpec.describe Import::Gtfs do
         context 'when Decorator included dates are [2030-01-01, 2030-01-15]' do
           before do
             allow(decorator).to receive(:period).and_return(Period.parse('2030-01-01..2030-01-31'))
-            allow(decorator).to receive(:days_of_week).and_return(Timetable::DaysOfWeek.all)
+            allow(decorator).to receive(:days_of_week).and_return(Cuckoo::Timetable::DaysOfWeek.all)
 
             allow(decorator).to receive(:excluded_dates).and_return([Date.parse('2030-01-01'),
                                                                      Date.parse('2030-01-15')])

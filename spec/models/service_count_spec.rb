@@ -48,13 +48,13 @@ RSpec.describe ServiceCount, type: :model do
       let(:period_start) { Date.parse('2030-01-07') }
       let(:period_end) { Date.parse('2030-01-27') }
       let(:time_table_a) do
-        build(:time_table, int_day_types: Timetable::DaysOfWeek::SATURDAY | Timetable::DaysOfWeek::SUNDAY).tap do |t|
+        build(:time_table, int_day_types: Cuckoo::Timetable::DaysOfWeek::SATURDAY | Cuckoo::Timetable::DaysOfWeek::SUNDAY).tap do |t|
           t.periods.new(period_start: Date.parse('2030-01-07'), period_end: Date.parse('2030-01-20'))
           t.save!
         end
       end
       let(:time_table_b) do
-        build(:time_table, int_day_types: Timetable::DaysOfWeek::EVERYDAY).tap do |t|
+        build(:time_table, int_day_types: Cuckoo::Timetable::DaysOfWeek::EVERYDAY).tap do |t|
           t.periods.new(period_start: Date.parse('2030-01-14'), period_end: Date.parse('2030-01-27'))
           t.save!
         end

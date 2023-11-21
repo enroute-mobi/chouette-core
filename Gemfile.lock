@@ -5,6 +5,14 @@ GIT
     ara-file (0.1.2)
 
 GIT
+  remote: https://bitbucket.org/enroute-mobi/cuckoo.git
+  revision: d0162577b665bb56c0e293c0407ad67f8d3363a4
+  specs:
+    cuckoo (0.1.0)
+      activesupport
+      bitset
+
+GIT
   remote: https://bitbucket.org/enroute-mobi/gtfs.git
   revision: 21178151e8696c4469ee9465fbc88e963d55b43b
   specs:
@@ -162,6 +170,7 @@ GEM
       smart_properties
     binding_of_caller (1.0.0)
       debug_inspector (>= 0.0.1)
+    bitset (1.2.0)
     bootsnap (1.17.0)
       msgpack (~> 1.2)
     bootstrap-sass (3.4.1)
@@ -878,6 +887,7 @@ DEPENDENCIES
   coffee-rails (>= 5.0.0)
   country_select
   coverband (~> 5.2.5)
+  cuckoo!
   database_cleaner
   ddtrace
   deep_cloneable

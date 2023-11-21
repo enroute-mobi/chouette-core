@@ -227,3 +227,5 @@ gem 'net-sftp'
 gem 'ed25519'
 gem 'x25519'
 gem 'bcrypt_pbkdf'
+
+gem 'cuckoo', en_route: 'cuckoo'

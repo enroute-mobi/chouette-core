@@ -618,7 +618,7 @@ class Export::NetexGeneric < Export::Base
         end
 
         def all_days
-          @all_days ||= Timetable::DaysOfWeek.all.days
+          @all_days ||= Cuckoo::Timetable::DaysOfWeek.all.days
         end
 
         def contains_day?(day)

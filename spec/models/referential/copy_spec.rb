@@ -77,18 +77,23 @@ RSpec.describe Referential::Copy do
       let(:route) { source.switch { context.route(:route).reload } }
       let(:opposite_route) { source.switch { context.route(:opposite_route).reload } }
 
-      before {
+      before do
         source.switch do
           opposite_route.update wayback: route.opposite_wayback
           route.update opposite_route_id: opposite_route.id
         end
 
         copy.copy
-      }
 
-      subject { target.switch.routes.where.not(opposite_route_id: nil).map(&:name) }
+        target.switch
+      end
 
-      it { is_expected.to match_array ['Route', 'Opposite Route'] }
+      let(:target_opposite_route_id) { target.routes.find_by_name('Opposite Route').id }
+      subject { target.routes.find_by_name('Route').opposite_route_id }
+
+      it 'should copy opposite route id' do
+        is_expected.to eq target_opposite_route_id
+      end
     end
   end
 end

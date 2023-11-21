@@ -84,12 +84,14 @@ class Referential::Copy
 
   def copy_route_opposites
     ActiveRecord::Base.connection.execute <<-SQL
-      UPDATE #{new_table_routes} AS target_routes SET
-        opposite_route_id = source_routes.opposite_route_id
+      UPDATE #{target_routes} AS target_routes SET
+        opposite_route_id = source_routes.id
       FROM (
-        SELECT #{new_table_routes}.legacy_id, #{new_table_routes}.opposite_route_id FROM #{new_table_routes}
-      ) AS source_routes(opposite_route_id, legacy_id)
-      WHERE target_routes.opposite_route_id = source_routes.legacy_id
+        SELECT #{target_routes}.id, #{target_routes}.legacy_id
+        FROM #{target_routes} JOIN #{source_routes}
+          ON #{source_routes}.opposite_route_id = #{target_routes}.legacy_id
+      ) AS source_routes(id, legacy_id)
+      WHERE target_routes.id = source_routes.legacy_id
     SQL
   end
 
@@ -144,9 +146,10 @@ class Referential::Copy
     end
 
     def exclude(*excluded_columns)
-      @select = select.map do |column|
-        excluded_columns.include?(column.to_sym) ? "NULL AS #{column}" : column
-      end
+      excluded_columns = excluded_columns.map(&:to_s)
+
+      @source_columns = source_columns - excluded_columns
+      @target_columns = target_columns - excluded_columns
 
       self
     end
@@ -237,7 +240,11 @@ class Referential::Copy
 
   private
 
-  def new_table_routes
-    @new_table_routes ||= target.schema.table(:routes).full_name
+  def target_routes
+    @target_routes ||= target.schema.table(:routes).full_name
+  end
+
+  def source_routes
+    @source_routes ||= source.schema.table(:routes).full_name
   end
 end

@@ -17,12 +17,27 @@
 const images = require.context('../images', true)
 const imagePath = (name) => images(name, true)
 
-// loading font awesome
+
 import "@fortawesome/fontawesome-free/js/all"
-// import "@fortawesome/fontawesome-free/css/all"
+import "src/sentry"
 
-
+// Loading flag icons (Can't move in application.scss because I don't find a way to load load svg files in tags directory)
 import 'flag-icon-css/css/flag-icons.css'
-// import "./application.scss"
+
+// Loading Alpine before every application javscript files
+import Alpine from "alpinejs"
+window.Alpine = Alpine
+
+document.addEventListener("DOMContentLoaded", function(event) {
+  window.Alpine.start();
+});
+
+//---------------------------
+// Loaded after Alpine start
+//---------------------------
+
+import 'entrypoints/inputs/ajax_select'
+import "src/flash_messages"
+import "src/date_filters"
 
 console.log('Hello World from Webpacker 6')

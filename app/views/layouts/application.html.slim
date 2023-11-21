@@ -20,10 +20,9 @@ html lang=I18n.locale
 
     // Webpack bundle
     = favicon_pack_tag 'static/favicon.ico'
-    - packs = %w(sentry application date_filters flash_messages)
+    = javascript_pack_tag 'application'
     - additional_packs = (yield :additional_packs).split.to_set.to_a
-    - last_packs = %w(alpine)
-    = javascript_pack_tag *(packs | additional_packs | last_packs), defer: true
+    = javascript_pack_tag *(additional_packs), defer: true
     = stylesheet_pack_tag 'application'
 
     // Sprockets bundle

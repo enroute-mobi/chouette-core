@@ -5,20 +5,15 @@
 //-------------//
 
 // Tailwind
-
 @import "tailwindcss/base";
 @import "tailwindcss/utilities";
 @import "tailwindcss/components";
 
 // Bootstrap
-
 $icon-font-path: "~bootstrap-sass/assets/fonts/bootstrap/";
 @import "~bootstrap-sass/assets/stylesheets/_bootstrap.scss";
 
 // FontAwesome
-// @import 'font-awesome-sprockets';
-// @import 'font-awesome';
-
 $fa-font-path: "@fortawesome/fontawesome-free/webfonts";
 @import "@fortawesome/fontawesome-free/scss/fontawesome";
 @import "@fortawesome/fontawesome-free/scss/regular";
@@ -31,9 +26,6 @@ $fa-font-path: "@fortawesome/fontawesome-free/webfonts";
 
 // OL3
 @import "stylesheets/OpenLayers/ol";
-
-// Flags
-// @import 'flag-icon';
 
 // TomSelect
 @import "tom-select/dist/css/tom-select";

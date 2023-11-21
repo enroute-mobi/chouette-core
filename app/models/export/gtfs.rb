@@ -20,6 +20,7 @@ class Export::Gtfs < Export::Base
   validate :ensure_is_valid_period
 
   def ensure_is_valid_period
+    return unless from || to
     if from > to
       errors.add(:from, :invalid)
       errors.add(:to, :invalid)

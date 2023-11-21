@@ -96,7 +96,7 @@ namespace :ci do
 
       parallel_specs_command = "parallel_test spec -t rspec"
 
-      runtime_log = "parallel_tests/runtime.log"
+      runtime_log = 'parallel_tests/runtime.log'
 
       if ENV['BITBUCKET_PARALLEL_STEP_COUNT']
         step_count = ENV['BITBUCKET_PARALLEL_STEP_COUNT'].to_i
@@ -112,12 +112,12 @@ namespace :ci do
           end
 
         group_count = cpu_count * step_count
-        group_selection = Range.new(step*cpu_count, (step+1)*cpu_count, true).to_a
+        group_selection = Range.new(step * cpu_count, (step + 1) * cpu_count, true).to_a
 
         parallel_specs_command += " -n #{group_count} --only-group #{group_selection.join(',')}"
       end
 
-      parallel_specs_command += " --runtime-log cache/runtime.log" if File.exists? "cache/runtime.log"
+      parallel_specs_command += ' --runtime-log cache/runtime.log' if File.exist? 'cache/runtime.log'
 
       parallel_test_options = '-r spec_helper '
       parallel_test_options += test_options(xml_output: 'parallel-tests<%= ENV["TEST_ENV_NUMBER"] %>')
@@ -133,8 +133,8 @@ namespace :ci do
       begin
         sh parallel_specs_command
       ensure
-        sh "cat #{runtime_log} | grep '^spec' | sort -t: -k2 -n -r -" if File.exists?(runtime_log)
-        sh "cat #{summary_log}" if File.exists?(summary_log)
+        sh "cat #{runtime_log} | grep '^spec' | sort -t: -k2 -n -r -" if File.exist?(runtime_log)
+        sh "cat #{summary_log}" if File.exist?(summary_log)
       end
     else
       sh "bundle exec rspec #{test_options()}"
@@ -142,7 +142,7 @@ namespace :ci do
   end
 
   # def codacy_coverage(language,file)
-  #   if File.exists?(file)
+  #   if File.exist?(file)
   #     codacy_coverage_reporter "report -l #{language} -r #{file}"
   #   end
   # end

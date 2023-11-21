@@ -201,7 +201,7 @@ group :test, :development do
   gem 'ffaker', '~> 2.1.0'
   gem 'faker'
 
-  gem 'factory_bot_rails', '>= 6.2.0'
+  gem 'factory_bot_rails', '~> 6.2.0' # Could not upgrade to another version without https://enroute.atlassian.net/browse/CHOUETTE-3190
 
   gem 'awesome_print'
   gem 'pry-rails'

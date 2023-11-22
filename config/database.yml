@@ -1,5 +1,5 @@
 default: &default
-  adapter: postgis
+  adapter: <%= ENV.fetch('RAILS_DB_ADAPTER', 'postgis') %> 
   encoding: unicode
   port: 5432
   host: <%= ENV.fetch('RAILS_DB_HOST','localhost') %>

@@ -1,13 +1,4 @@
 namespace :ci do
-
-  def cache_files
-    @cache_files ||= []
-  end
-
-  def cache_file(name)
-    cache_files << name
-  end
-
   def parallel_tests?
     ENV["PARALLEL_TESTS"] == "true"
   end
@@ -40,14 +31,6 @@ namespace :ci do
     Rake::Task["webpacker:yarn_install"].clear
     Rake::Task.define_task "webpacker:yarn_install" do
       puts "Don't run yarn"
-    end
-  end
-
-  def git_branch
-    if ENV['GIT_BRANCH'] =~ %r{/(.*)$}
-      $1
-    else
-      `git rev-parse --abbrev-ref HEAD`.strip
     end
   end
 
@@ -113,8 +96,28 @@ namespace :ci do
 
       parallel_specs_command = "parallel_test spec -t rspec"
 
-      runtime_log = "log/parallel_runtime_specs.log"
-      parallel_specs_command += " --runtime-log #{runtime_log}" if File.exists? runtime_log
+      runtime_log = 'parallel_tests/runtime.log'
+
+      if ENV['BITBUCKET_PARALLEL_STEP_COUNT']
+        step_count = ENV['BITBUCKET_PARALLEL_STEP_COUNT'].to_i
+        step = ENV['BITBUCKET_PARALLEL_STEP'].to_i
+
+        runtime_log = "parallel_tests/runtime-#{step}.log"
+
+        cpu_count =
+          if ENV['PARALLEL_TEST_PROCESSORS']
+            ENV['PARALLEL_TEST_PROCESSORS'].to_i
+          else
+            ParallelTests.determine_number_of_processes(nil)
+          end
+
+        group_count = cpu_count * step_count
+        group_selection = Range.new(step * cpu_count, (step + 1) * cpu_count, true).to_a
+
+        parallel_specs_command += " -n #{group_count} --only-group #{group_selection.join(',')}"
+      end
+
+      parallel_specs_command += ' --runtime-log cache/runtime.log' if File.exist? 'cache/runtime.log'
 
       parallel_test_options = '-r spec_helper '
       parallel_test_options += test_options(xml_output: 'parallel-tests<%= ENV["TEST_ENV_NUMBER"] %>')
@@ -130,99 +133,28 @@ namespace :ci do
       begin
         sh parallel_specs_command
       ensure
-        sh "cat #{runtime_log} | grep '^spec' | sort -t: -k2 -n -r -" if File.exists?(runtime_log)
-        sh "cat #{summary_log}" if File.exists?(summary_log)
+        sh "cat #{runtime_log} | grep '^spec' | sort -t: -k2 -n -r -" if File.exist?(runtime_log)
+        sh "cat #{summary_log}" if File.exist?(summary_log)
       end
     else
       sh "bundle exec rspec #{test_options()}"
     end
   end
-  cache_file "log/parallel_runtime_specs.log"
 
-  def codacy_coverage_reporter(command)
-    sh "bash -c 'bash <(curl -Ls https://coverage.codacy.com/get.sh) #{command}'" do |ok, _|
-      fail "Coverage failed" if !ok && File.exists?('.codacy-coverage/codacy-coverage-reporter')
+  # def codacy_coverage(language,file)
+  #   if File.exist?(file)
+  #     codacy_coverage_reporter "report -l #{language} -r #{file}"
+  #   end
+  # end
 
-      puts "Fallback to our codacy-coverage-reporter mirror"
-      mkdir_p '.codacy-coverage'
-      sh "curl -Ls --output .codacy-coverage/codacy-coverage-reporter https://bitbucket.org/enroute-mobi/codacy-coverage-reporter/downloads/codacy-coverage-reporter"
-      sh "chmod +x .codacy-coverage/codacy-coverage-reporter"
-      sh ".codacy-coverage/codacy-coverage-reporter #{command}"
-    end
-  end
-
-  def codacy_coverage(language,file)
-    if File.exists?(file)
-      codacy_coverage_reporter "report -l #{language} -r #{file}"
-    end
-  end
-
-  task :codacy do
-    if ENV['CODACY_PROJECT_TOKEN']
-      codacy_coverage :ruby, "coverage/coverage.xml"
-      codacy_coverage :javascript, "coverage/lcov.info"
-    end
-  end
+  # task :codacy do
+  #   if ENV['CODACY_PROJECT_TOKEN']
+  #     codacy_coverage :ruby, "coverage/coverage.xml"
+  #     codacy_coverage :javascript, "coverage/lcov.info"
+  #   end
+  # end
 
   task :performance do
     sh "bundle exec rspec --tag performance #{test_options(xml_output: 'performance')}"
   end
-
-  task :build => ["ci:setup", "ci:assets", "ci:spec", "ci:jest", "ci:codacy", "ci:check_security"]
-
-  namespace :docker do
-    task :clean do
-      if parallel_tests?
-        sh "RAILS_ENV=test rake parallel:drop"
-      else
-        sh "RAILS_ENV=test rake db:drop"
-      end
-
-      # Restore projet config/database.yml
-      # cp "config/database.yml.orig", "config/database.yml" if File.exists?("config/database.yml.orig")
-    end
-  end
-
-  task :docker => ["ci:build"]
-
-  namespace :cache do
-
-    def cache_dir
-      "cache"
-    end
-
-    def cache_dir?
-      Dir.exists? cache_dir
-    end
-
-    def store_file(file)
-      return unless cache_dir?
-      cp file, cache_dir if File.exists?(file)
-    end
-
-    def fetch_file(file)
-      return unless cache_dir?
-      cache_file = File.join(cache_dir, File.basename(file))
-      cp cache_file, file if File.exists?(cache_file)
-    end
-
-    # Retrive usefull data from cache at the beginning of the build
-    task :fetch do
-      cache_files.each do |cache_file|
-        puts "Retrieve #{cache_file} from cache"
-        fetch_file cache_file
-      end
-    end
-
-    # Fill cache at the end of the build
-    task :store do
-      cache_files.each do |cache_file|
-        puts "Store #{cache_file} in cache"
-        store_file cache_file
-      end
-    end
-  end
 end
-
-desc "Run continuous integration tasks (spec, ...)"
-task :ci => ["ci:cache:fetch", "ci:build", "ci:cache:store"]

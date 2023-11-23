@@ -87,6 +87,7 @@ definitions:
           - public/assets/**
           - public/javascripts/i18n.js
           - public/javascripts/translations.js
+
     - step: &rspec-tests
         name: Ruby Unit tests
         image:
@@ -106,6 +107,67 @@ definitions:
         services:
           - postgres
           - datadog-agent
+
+    - step: &rspec-tests-1
+        name: Ruby Unit tests
+        image:
+          name: us.gcr.io/enroute-interne/enroute-ruby:2.7-dev
+          username: _json_key
+          password: "$GCLOUD_API_KEYFILE"
+        size: 2x
+        script:
+          - eval "$(build.sh bitbucket::env)"
+          - build.sh bundler::dependencies
+          - BITBUCKET_PARALLEL_STEP_COUNT=3 BITBUCKET_PARALLEL_STEP=0 FAIL_FAST=true bundle exec rake ci:setup ci:spec
+          - build.sh codacy::report
+        caches:
+          - build-cache
+        artifacts:
+          - parallel_tests/*
+        services:
+          - postgres
+          - datadog-agent
+
+    - step: &rspec-tests-2
+        name: Ruby Unit tests
+        image:
+          name: us.gcr.io/enroute-interne/enroute-ruby:2.7-dev
+          username: _json_key
+          password: "$GCLOUD_API_KEYFILE"
+        size: 2x
+        script:
+          - eval "$(build.sh bitbucket::env)"
+          - build.sh bundler::dependencies
+          - BITBUCKET_PARALLEL_STEP_COUNT=3 BITBUCKET_PARALLEL_STEP=1 FAIL_FAST=true bundle exec rake ci:setup ci:spec
+          - build.sh codacy::report
+        caches:
+          - build-cache
+        artifacts:
+          - parallel_tests/*
+        services:
+          - postgres
+          - datadog-agent
+
+    - step: &rspec-tests-3
+        name: Ruby Unit tests
+        image:
+          name: us.gcr.io/enroute-interne/enroute-ruby:2.7-dev
+          username: _json_key
+          password: "$GCLOUD_API_KEYFILE"
+        size: 2x
+        script:
+          - eval "$(build.sh bitbucket::env)"
+          - build.sh bundler::dependencies
+          - BITBUCKET_PARALLEL_STEP_COUNT=3 BITBUCKET_PARALLEL_STEP=2 FAIL_FAST=true bundle exec rake ci:setup ci:spec
+          - build.sh codacy::report
+        caches:
+          - build-cache
+        artifacts:
+          - parallel_tests/*
+        services:
+          - postgres
+          - datadog-agent
+
     - step: &rebuild-runtime-log
         name: Rebuild runtime log
         script:
@@ -134,7 +196,6 @@ definitions:
           - build.sh bundler::dependencies
           - bundle exec rake ci:check_security
           - build.sh codacy::report
-
     - step: &build-docker
         name: Build Docker
         size: 2x
@@ -187,23 +248,17 @@ pipelines:
   branches:
     master:
       - step: *setup
+      - step: *build-assets
       - parallel:
           fail-fast: true
           steps:
-            - step: *build-assets
-            - step: *bundle-audit
-      - parallel:
-          fail-fast: true
-          steps:
-            - step: *rspec-tests
-            - step: *rspec-tests
-            - step: *rspec-tests
-      - step: *rebuild-runtime-log
-      - parallel:
-          fail-fast: true
-          steps:
-            - step: *jest-tests
             - step: *build-docker
+            - step: *bundle-audit
+            - step: *jest-tests
+            - step: *rspec-tests-1
+            - step: *rspec-tests-2
+            - step: *rspec-tests-3
+      - step: *rebuild-runtime-log
       - step:
           name: Tag
           script:

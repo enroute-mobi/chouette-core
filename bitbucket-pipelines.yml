@@ -261,6 +261,8 @@ pipelines:
       - step: *rebuild-runtime-log
       - step:
           name: Tag
+          artifacts:
+            download: false
           script:
             - export TAG_NAME=ci-master
             - git tag -afm "Build ${BITBUCKET_BUILD_NUMBER}" $TAG_NAME
@@ -268,6 +270,8 @@ pipelines:
             - git push origin $TAG_NAME
       - step:
           name: Trigger sub-projects
+          artifacts:
+            download: false
           script:
             - pipe: atlassian/trigger-pipeline:5.0.1
               variables:
@@ -283,6 +287,8 @@ pipelines:
                 CUSTOM_PIPELINE_NAME: "merge"
       - step:
           name: Deploy to test
+          artifacts:
+            download: false
           image:
               name: eu.gcr.io/enroute-interne/enroute-cloud-sdk:latest
               username: _json_key
@@ -300,6 +306,8 @@ pipelines:
                 TITLE: "Build ${BITBUCKET_BUILD_NUMBER} deployed on ${BITBUCKET_REPO_SLUG} ${BITBUCKET_DEPLOYMENT_ENVIRONMENT}"
       - step:
           name: Trigger User Tests
+          artifacts:
+            download: false
           script:
             - pipe: atlassian/trigger-pipeline:5.0.1
               variables:

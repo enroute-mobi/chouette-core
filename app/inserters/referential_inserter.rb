@@ -65,6 +65,7 @@ class ReferentialInserter
     time_table_dates
     time_table_periods
     codes
+    service_counts
   }.freeze
 
   COLLECTION_ALIASES.each do |method_name|

@@ -633,6 +633,10 @@ module Chouette
       end
     end
 
+    def to_days_bit
+      to_timetable.to_days_bit
+    end
+
     def apply(timetable)
       Applier.new(self, timetable).apply
       self

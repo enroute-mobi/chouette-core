@@ -1,7 +1,10 @@
 definitions:
   services:
     docker:
+      memory: 512
+    docker-large:
       memory: 7128
+      type: docker
     postgres:
       image:
         name: us.gcr.io/enroute-interne/enroute-postgresql:14-dev
@@ -132,6 +135,21 @@ definitions:
           - bundle exec rake ci:check_security
           - build.sh codacy::report
 
+    - step: &build-docker
+        name: Build Docker
+        size: 2x
+        image:
+          name: us.gcr.io/enroute-interne/enroute-cloud-sdk:latest
+          username: _json_key
+          password: "$GCLOUD_API_KEYFILE"
+        caches:
+          - docker
+        script:
+          - build.sh gcloud::setup
+          - build.sh bitbucket::docker::build
+        services:
+          - docker-large
+
 pipelines:
   custom:
     gems-update: # Merge ci-master from chouette-core
@@ -168,22 +186,24 @@ pipelines:
 
   branches:
     master:
+      - step: *setup
       - parallel:
-        - step: *unit-tests
-        - step:
-            name: Build Docker
-            size: 2x
-            image:
-              name: us.gcr.io/enroute-interne/enroute-cloud-sdk:latest
-              username: _json_key
-              password: "$GCLOUD_API_KEYFILE"
-            caches:
-              - docker
-            script:
-              - build.sh gcloud::setup
-              - build.sh bitbucket::docker::build
-            services:
-              - docker
+          fail-fast: true
+          steps:
+            - step: *build-assets
+            - step: *bundle-audit
+      - parallel:
+          fail-fast: true
+          steps:
+            - step: *rspec-tests
+            - step: *rspec-tests
+            - step: *rspec-tests
+      - step: *rebuild-runtime-log
+      - parallel:
+          fail-fast: true
+          steps:
+            - step: *jest-tests
+            - step: *build-docker
       - step:
           name: Tag
           script:

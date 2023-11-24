@@ -24,7 +24,7 @@ class ServiceCount < ActiveRecord::Base
   }
 
   def self.compute_for_referential(referential, line_ids: [])
-    Chouette::Benchmark.measure 'journey_pattern_courses_by_date.referential', referential: referential.id do
+    Chouette::Benchmark.measure 'service_counts', referential: referential.id do
       referential.switch do
         clean_previous_stats(line_ids)
         ActiveRecord::Base.cache do

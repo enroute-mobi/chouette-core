@@ -11,7 +11,7 @@ module Chouette
     has_and_belongs_to_many :stop_points, -> { order("stop_points.position") }, :before_add => :vjas_add, :before_remove => :vjas_remove, :after_add => :shortcuts_update_for_add, :after_remove => :shortcuts_update_for_remove
     has_and_belongs_to_many :stop_point_lights, -> { light.order("stop_points.position") }, class_name: 'Chouette::StopPoint', join_table: :journey_patterns_stop_points, foreign_key: :journey_pattern_id
     has_many :stop_areas, through: :stop_points
-    has_many :courses_stats, class_name: 'ServiceCount'
+    has_many :service_counts
 
     belongs_to :shape, optional: true
     belongs_to_public :shape

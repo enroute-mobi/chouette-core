@@ -1,4 +1,6 @@
-describe ReferentialCopy do
+# frozen_string_literal: true
+
+RSpec.describe ReferentialCopy do
   let(:stop_area_referential){ create :stop_area_referential }
   let(:line_referential){ create :line_referential }
   let(:company){ create :company, line_referential: line_referential }
@@ -156,7 +158,7 @@ describe ReferentialCopy do
 
 end
 
-describe ReferentialCopy do
+RSpec.describe ReferentialCopy do
 
   let(:source) { context.referential(:source) }
   let(:target) { context.referential(:target) }
@@ -362,12 +364,12 @@ describe ReferentialCopy do
       end
     end
 
-    let!(:source_journey_pattern_courses_by_day) do
+    let!(:source_service_count) do
       source.switch do
         journey_pattern = source.journey_patterns.first
         route = journey_pattern.route
 
-        journey_pattern.courses_stats.create! line: route.line, route: route, count: 42, date: Time.zone.today
+        journey_pattern.service_counts.create! line: route.line, route: route, count: 42, date: Time.zone.today
       end
     end
 
@@ -399,7 +401,7 @@ describe ReferentialCopy do
       end
 
       it 'has the same date and count than the source ServiceCount' do
-        is_expected.to have_same_attributes(:count, :date, than: source_journey_pattern_courses_by_day)
+        is_expected.to have_same_attributes(:count, :date, than: source_service_count)
       end
 
     end

@@ -183,11 +183,11 @@ RSpec.describe Api::V1::DatasController, type: :controller do
       context 'serviceCounts' do
         before do
           [:r_first, :r_second].each do |route_s|
-            ["2020-01-01", "2020-06-01", "2020-12-01", "2021-01-01", "2021-06-01", "2021-12-01"].each{ |d| create :stat_journey_pattern_courses_by_date, date: d.to_date, line: context.line(:first), route: context.route(route_s), count: 5 }
+            %w[2020-01-01 2020-06-01 2020-12-01 2021-01-01 2021-06-01 2021-12-01].each { |d| create :service_count, date: d.to_date, line: context.line(:first), route: context.route(route_s), count: 5 }
           end
 
           [:r_third, :r_fourth].each do |route_s|
-            ["2021-01-01", "2021-06-01", "2021-12-01", "2022-01-01", "2022-06-01", "2022-12-01"].each{ |d| create :stat_journey_pattern_courses_by_date, date: d.to_date, line: context.line(:second), route: context.route(route_s), count: 5 }
+            %w[2021-01-01 2021-06-01 2021-12-01 2022-01-01 2022-06-01 2022-12-01].each { |d| create :service_count, date: d.to_date, line: context.line(:second), route: context.route(route_s), count: 5 }
           end
         end
 
@@ -214,7 +214,7 @@ RSpec.describe Api::V1::DatasController, type: :controller do
             expect(line_nodes.count).to eq 2
           end
 
-          it 'serviceCount returns the sum of JourneyPatternCoursesByDate objects having the same date and line_id' do
+          it 'serviceCount returns the sum of ServiceCount objects having the same date and line_id' do
             expect(second_line_node["serviceCounts"]["nodes"].map{ |n| n["count"]}).to eq [10, 10, 10, 10, 10, 10]
           end
 
@@ -249,7 +249,7 @@ RSpec.describe Api::V1::DatasController, type: :controller do
           }
 
           before do
-            create :stat_journey_pattern_courses_by_date, date: "2022-05-01".to_date, line: context.line(:second), route: context.route(:r_third), count: 5
+            create :service_count, date: '2022-05-01'.to_date, line: context.line(:second), route: context.route(:r_third), count: 5
           end
 
           it 'returns the right number of lines' do
@@ -261,7 +261,7 @@ RSpec.describe Api::V1::DatasController, type: :controller do
             expect(first_line_node["serviceCounts"]).to be_nil
           end
 
-          it 'serviceCount returns the sum of JourneyPatternCoursesByDate objects having the same date and line_id' do
+          it 'serviceCount returns the sum of ServiceCount objects having the same date and line_id' do
             service_counts = second_line_node["serviceCounts"]["edges"]
             expect(service_counts.find{|e| e["node"]["date"]=="2022-06-01"}["node"]["count"]).to eq 10
             expect(service_counts.find{|e| e["node"]["date"]=="2022-05-01"}["node"]["count"]).to eq 5
@@ -274,11 +274,11 @@ RSpec.describe Api::V1::DatasController, type: :controller do
 
         before do
           [:r_first, :r_second].each do |route_s|
-            ["2020-01-01", "2020-06-01", "2020-12-01", "2021-01-01", "2021-06-01", "2021-12-01"].each{ |d| create :stat_journey_pattern_courses_by_date, date: d.to_date, line: context.line(:first), route: context.route(route_s), count: 5 }
+            %w[2020-01-01 2020-06-01 2020-12-01 2021-01-01 2021-06-01 2021-12-01].each { |d| create :service_count, date: d.to_date, line: context.line(:first), route: context.route(route_s), count: 5 }
           end
 
           [:r_third, :r_fourth].each do |route_s|
-            ["2021-01-01", "2021-06-01", "2021-12-01", "2022-01-01", "2022-06-01", "2022-12-01"].each{ |d| create :stat_journey_pattern_courses_by_date, date: d.to_date, line: context.line(:second), route: context.route(route_s), count: 5 }
+            %w[2021-01-01 2021-06-01 2021-12-01 2022-01-01 2022-06-01 2022-12-01].each { |d| create :service_count, date: d.to_date, line: context.line(:second), route: context.route(route_s), count: 5 }
           end
         end
 
@@ -297,7 +297,7 @@ RSpec.describe Api::V1::DatasController, type: :controller do
           }
 
           before do
-            create :stat_journey_pattern_courses_by_date, date: "2022-05-01".to_date, line: context.line(:second), route: context.route(:r_third), count: 5
+            create :service_count, date: '2022-05-01'.to_date, line: context.line(:second), route: context.route(:r_third), count: 5
           end
 
           it 'returns the right total for serviceCount attribute' do

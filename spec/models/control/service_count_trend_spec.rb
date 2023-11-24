@@ -33,7 +33,7 @@ RSpec.describe Control::ServiceCountTrend do
       journey_pattern1.route.update line: line
       journey_pattern2.route.update line: line
 
-      Stat::JourneyPatternCoursesByDate.create([
+      ServiceCount.create([
         {
           date: "2022-09-13".to_date,
           count: 1,

@@ -223,8 +223,8 @@ class ReferentialCopy
           end
         end
 
-        sql = "INSERT INTO \"#{target.slug}\".stat_journey_pattern_courses_by_dates (journey_pattern_id,route_id,line_id,date,count) "
-        sql << "(SELECT '#{new_journey_pattern.id}','#{new_route.id}',line_id,date,count FROM \"#{source.slug}\".stat_journey_pattern_courses_by_dates WHERE stat_journey_pattern_courses_by_dates.journey_pattern_id = '#{journey_pattern.id}' )"
+        sql = "INSERT INTO \"#{target.slug}\".service_counts (journey_pattern_id,route_id,line_id,date,count) "
+        sql << "(SELECT '#{new_journey_pattern.id}','#{new_route.id}',line_id,date,count FROM \"#{source.slug}\".service_counts WHERE service_counts.journey_pattern_id = '#{journey_pattern.id}' )"
         ActiveRecord::Base.connection.execute sql
       end
 

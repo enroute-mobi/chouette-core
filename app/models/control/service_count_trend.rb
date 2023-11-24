@@ -91,7 +91,7 @@ module Control
                     ) AS avg_table
                     WHERE (avg_table.line_id = A.line_id)
                   ) AS avg_sum
-                FROM stat_journey_pattern_courses_by_dates A
+                FROM service_counts A
                 WHERE A.date BETWEEN (A.date - #{days_before}) AND (A.date + #{days_after})
                 GROUP BY A.line_id, A.date
               ) AS sum_and_avg_table

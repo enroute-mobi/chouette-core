@@ -1,4 +1,6 @@
-describe ReferentialCopy do
+# frozen_string_literal: true
+
+RSpec.describe ReferentialCopy do
   let(:stop_area_referential){ create :stop_area_referential }
   let(:line_referential){ create :line_referential }
   let(:company){ create :company, line_referential: line_referential }
@@ -156,7 +158,7 @@ describe ReferentialCopy do
 
 end
 
-describe ReferentialCopy do
+RSpec.describe ReferentialCopy do
 
   let(:source) { context.referential(:source) }
   let(:target) { context.referential(:target) }
@@ -351,7 +353,7 @@ describe ReferentialCopy do
 
   end
 
-  describe "JourneyPatternCoursesByDate copy" do
+  describe 'ServiceCount copy' do
 
     let(:context) do
       Chouette.create do
@@ -362,23 +364,23 @@ describe ReferentialCopy do
       end
     end
 
-    let!(:source_journey_pattern_courses_by_day) do
+    let!(:source_service_count) do
       source.switch do
         journey_pattern = source.journey_patterns.first
         route = journey_pattern.route
 
-        journey_pattern.courses_stats.create! line: route.line, route: route, count: 42, date: Time.zone.today
+        journey_pattern.service_counts.create! line: route.line, route: route, count: 42, date: Time.zone.today
       end
     end
 
-    it "contains the same JourneyPatternCoursesByDate count" do
+    it 'contains the same ServiceCount count' do
       expect {
         referential_copy.copy
       }.to change { target.switch { target.service_counts.count } }
              .from(0).to( source.switch { target.service_counts.count } )
     end
 
-    describe "the JourneyPatternCoursesByDate in target referential" do
+    describe 'the ServiceCount in target referential' do
 
       subject { target.switch { target.service_counts.first } }
 
@@ -398,8 +400,8 @@ describe ReferentialCopy do
         is_expected.to have_attributes(route_id: target_journey_pattern.route_id)
       end
 
-      it "has the same date and count than the source JourneyPatternCoursesByDate" do
-        is_expected.to have_same_attributes(:count, :date, than: source_journey_pattern_courses_by_day)
+      it 'has the same date and count than the source ServiceCount' do
+        is_expected.to have_same_attributes(:count, :date, than: source_service_count)
       end
 
     end

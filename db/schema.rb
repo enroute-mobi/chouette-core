@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2023_09_12_100632) do
+ActiveRecord::Schema.define(version: 2023_11_16_161907) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "btree_gin"
@@ -1352,6 +1352,17 @@ ActiveRecord::Schema.define(version: 2023_09_12_100632) do
     t.index ["workbench_id"], name: "index_saved_searches_on_workbench_id"
   end
 
+  create_table "service_counts", force: :cascade do |t|
+    t.bigint "journey_pattern_id"
+    t.bigint "route_id"
+    t.bigint "line_id"
+    t.date "date"
+    t.integer "count", default: 0
+    t.index ["journey_pattern_id"], name: "journey_pattern_id"
+    t.index ["line_id"], name: "line_id"
+    t.index ["route_id"], name: "route_id"
+  end
+
   create_table "shape_providers", force: :cascade do |t|
     t.string "short_name", null: false
     t.bigint "workbench_id", null: false
@@ -1414,17 +1425,6 @@ ActiveRecord::Schema.define(version: 2023_09_12_100632) do
     t.bit "retrieval_days_of_week", limit: 7, default: "1111111"
     t.index ["scheduled_job_id"], name: "index_sources_on_scheduled_job_id"
     t.index ["workbench_id"], name: "index_sources_on_workbench_id"
-  end
-
-  create_table "stat_journey_pattern_courses_by_dates", force: :cascade do |t|
-    t.bigint "journey_pattern_id"
-    t.bigint "route_id"
-    t.bigint "line_id"
-    t.date "date"
-    t.integer "count", default: 0
-    t.index ["journey_pattern_id"], name: "journey_pattern_id"
-    t.index ["line_id"], name: "line_id"
-    t.index ["route_id"], name: "route_id"
   end
 
   create_table "stop_area_providers", force: :cascade do |t|

@@ -83,7 +83,7 @@ class ReferentialOverview
 
     def holes
       @holes ||= begin
-        holes = Stat::JourneyPatternCoursesByDate.holes_for_line(@referential_line).map { |hole| Period.new (hole.date..hole.date), @start, h }
+        holes = ServiceCount.holes_for_line(@referential_line).map { |hole| Period.new (hole.date..hole.date), @start, h }
         holes = merge_periods holes, join: true
       end
     end

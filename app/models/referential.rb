@@ -323,9 +323,8 @@ class Referential < ApplicationModel
   alias referential_codes codes
 
   def service_counts
-    Stat::JourneyPatternCoursesByDate.all
+    ServiceCount.all
   end
-  alias journey_pattern_courses_by_date service_counts
 
   def workgroup
     @workgroup = begin

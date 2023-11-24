@@ -53,7 +53,8 @@ class Import::NetexGeneric < Import::Base
     within_referential do |referential|
       [
         RouteJourneyPatterns,
-        TimeTables
+        TimeTables,
+        RouteJourneyPatterns
       ].each do |part_class|
         part(part_class, target: referential).import!
       end
@@ -349,12 +350,12 @@ class Import::NetexGeneric < Import::Base
   end
 
   class RouteJourneyPatterns < WithResourcePart
-    delegate :netex_source, :scheduled_stop_points, :line_provider, :event_handler, :referential, to: :import
+    delegate :netex_source, :scheduled_stop_points, :line_provider, :event_handler, to: :import
 
     def import!
-      each_route_with_journey_patterns do |netex_route, netex_journey_patterns|
+      each_route_with_journey_patterns do |route, journey_patterns|
         decorator = Decorator.new(
-          netex_route, netex_journey_patterns,
+          route, journey_patterns,
           scheduled_stop_points: scheduled_stop_points,
           route_points: route_points,
           directions: directions,
@@ -396,38 +397,6 @@ class Import::NetexGeneric < Import::Base
           end
         else
           Rails.logger.debug "Invalid JourneyPattern: #{journey_pattern.errors.inspect}"
-          create_message :journey_pattern_invalid
-        end
-      end
-    end
-
-    def prepare_route(chouette_route)
-      if chouette_route&.valid?
-        referential_inserter.routes << chouette_route
-        chouette_route.stop_points.each do |stop_point|
-          stop_point.route_id = chouette_route.id
-          referential_inserter.stop_points << stop_point
-        end
-      else
-        create_message :route_invalid
-      end
-
-      chouette_route
-    end
-
-    def prepare_journey_patterns(chouette_route, netex_journey_patterns, route_decorator)
-      netex_journey_patterns.each do |netex_journey_pattern|
-        chouette_journey_pattern = JourneyPatternDecorator.new(route_decorator,
-                                                               netex_journey_pattern).chouette_journey_pattern
-        chouette_route.journey_patterns << chouette_journey_pattern
-        chouette_journey_pattern.route_id = chouette_route.id
-        if chouette_journey_pattern&.valid?
-          referential_inserter.journey_patterns << chouette_journey_pattern
-          chouette_journey_pattern.journey_patterns_stop_points.each do |journey_pattern_stop_point|
-            journey_pattern_stop_point.journey_pattern_id = chouette_journey_pattern.id
-            referential_inserter.journey_patterns_stop_points << journey_pattern_stop_point
-          end
-        else
           create_message :journey_pattern_invalid
         end
       end
@@ -549,9 +518,9 @@ class Import::NetexGeneric < Import::Base
           journey_patterns.each do |netex_journey_pattern|
             scheduled_point_ids =
               netex_journey_pattern
-              .points_in_sequence
-              .sort_by { |stop_point_in_journey_pattern| stop_point_in_journey_pattern.order.to_i }
-              .map { |stop_point_in_journey_pattern| stop_point_in_journey_pattern.scheduled_stop_point_ref&.ref }
+                .points_in_sequence
+                .sort_by { |stop_point_in_journey_pattern| stop_point_in_journey_pattern.order.to_i }
+                .map { |stop_point_in_journey_pattern| stop_point_in_journey_pattern.scheduled_stop_point_ref&.ref }
 
             merger << scheduled_point_ids
           end
@@ -565,7 +534,7 @@ class Import::NetexGeneric < Import::Base
       def stop_points_by_scheduled_stop_point_id
         @stop_points_by_scheduled_stop_point_id ||= {}.tap do |by_scheduled_stop_point_id|
           complete_scheduled_stop_points.map.with_index do |scheduled_stop_point_id, position|
-            if (stop_area_id = scheduled_stop_points[scheduled_stop_point_id]&.stop_area_id)
+            if stop_area_id = scheduled_stop_points[scheduled_stop_point_id]&.stop_area_id        
               stop_point = Chouette::StopPoint.new stop_area_id: stop_area_id, position: position
               by_scheduled_stop_point_id[scheduled_stop_point_id] = stop_point
             else
@@ -667,6 +636,8 @@ class Import::NetexGeneric < Import::Base
           Sequence.new([link])
         elsif link.from?(last.to)
           Sequence.new(links + [link])
+        else
+          Sequence.new(links + [link]) if link.from?(last.to)
         end
       end
 
@@ -777,7 +748,6 @@ class Import::NetexGeneric < Import::Base
 
           def complete
             return self if completed?
-
             next_paths.each do |next_path|
               completed_path = next_path.complete
               return completed_path if completed_path

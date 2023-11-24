@@ -9,7 +9,7 @@ RSpec.describe IdInserter do
   describe '#insert' do
     let(:route1) { Chouette::Route.new }
     let(:route2) { Chouette::Route.new }
-    let(:line) { Chouette::Line.new }
+    let(:journey_pattern) { Chouette::JourneyPattern.new }
 
     it 'assigns id on one new record' do
       expect { inserter.insert(route1) }.to change { route1.id }.from(nil).to(1)
@@ -22,7 +22,7 @@ RSpec.describe IdInserter do
 
     it 'assigns same id on two new record of different class' do
       inserter.insert(route1)
-      expect { inserter.insert(line) }.to change { line.id }.from(nil).to(1)
+      expect { inserter.insert(journey_pattern) }.to change { journey_pattern.id }.from(nil).to(1)
     end
   end
 

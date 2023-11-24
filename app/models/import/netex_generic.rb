@@ -55,6 +55,8 @@ class Import::NetexGeneric < Import::Base
       ].each do |part_class|
         part(part_class).import!
       end
+
+      referential.update ready: true
     end
 
     update_import_status

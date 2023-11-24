@@ -1,5 +1,13 @@
 # frozen_string_literal: true
 
+# Define primary key via a simple sequence
+#
+#   inserter = ReferentialInserter.new referential do |config|
+#     config.add IdInserter
+#   end
+#
+#   inserter.routes << Chouette::TimeTable.new
+#
 class IdInserter < ByClassInserter
   attr_reader :target
 
@@ -8,6 +16,7 @@ class IdInserter < ByClassInserter
     @target = target
   end
 
+  # :nodoc:
   class Base
     def initialize(_model_class, _parent_inserter)
       @next_primary_key = 0

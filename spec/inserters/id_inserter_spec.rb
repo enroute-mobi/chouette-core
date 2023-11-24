@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 # rubocop:disable Rails::SkipsModelValidations
+# Avoid false rubucop errors on #insert usage
 RSpec.describe IdInserter do
   let(:referential) { double 'Referential' }
 

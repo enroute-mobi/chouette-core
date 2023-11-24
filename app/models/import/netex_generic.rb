@@ -34,7 +34,6 @@ class Import::NetexGeneric < Import::Base
     @line_referential ||= workbench.line_referential
   end
 
-  # shapes
   def shape_provider
     @shape_provider ||= workbench.default_shape_provider
   end
@@ -53,7 +52,6 @@ class Import::NetexGeneric < Import::Base
     within_referential do |referential|
       [
         RouteJourneyPatterns
-        # TimeTable part here
       ].each do |part_class|
         part(part_class).import!
       end

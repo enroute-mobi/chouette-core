@@ -14,7 +14,10 @@ RSpec.describe Import::NetexGeneric do
       allow(import).to receive(:netex_source) do
         Netex::Source.new.tap do |s|
           s.transformers << Netex::Transformer::Indexer.new(Netex::JourneyPattern, by: :route_ref)
+<<<<<<< HEAD
           s.transformers << Netex::Transformer::Indexer.new(Netex::DayTypeAssignment, by: :day_type_ref)
+=======
+>>>>>>> 0471d484d (CHOUETTE-3103 add specs)
           s.parse(StringIO.new(xml))
         end
       end
@@ -1006,7 +1009,11 @@ RSpec.describe Import::NetexGeneric do
     end
   end
 
+<<<<<<< HEAD
   describe 'Route and Journay Patterns part' do
+=======
+  describe 'Create Route and Journay Patterns' do
+>>>>>>> 0471d484d (CHOUETTE-3103 add specs)
     let(:xml) do
       <<-XML
         <members>
@@ -1128,7 +1135,11 @@ RSpec.describe Import::NetexGeneric do
       import.part(:scheduled_stop_points).import!
 
       import.within_referential do |referential|
+<<<<<<< HEAD
         import.part(:route_journey_patterns, target: referential).import!
+=======
+        import.part(:route_journey_patterns).import!
+>>>>>>> 0471d484d (CHOUETTE-3103 add specs)
       end
     end
 

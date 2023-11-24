@@ -429,18 +429,23 @@ class Import::NetexGeneric < Import::Base
     end
 
     class Decorator < SimpleDelegator
-      def initialize(route, journey_patterns, options = {})
+      def initialize(route, journey_patterns, scheduled_stop_points: nil, route_points: nil, directions: nil, destination_displays: nil, line_provider: nil)
         super route
 
         @journey_patterns = journey_patterns
-        options.each { |k, v| send "#{k}=", v }
+        @scheduled_stop_points = scheduled_stop_points
+        @route_points = route_points
+        @directions = directions
+        @destination_displays = destination_displays
+        @line_provider = line_provider
       end
-      attr_accessor :journey_patterns, :scheduled_stop_points, :route_points, :directions, :line_provider,
-                    :destination_displays
+      attr_accessor :journey_patterns, :scheduled_stop_points, :route_points, :directions, :line_provider, :destination_displays
 
       def chouette_line
         line = line_provider.lines.find_by(registration_number: line_ref&.ref)
-        add_error :line_not_found unless line
+        unless line
+          add_error :line_not_found
+        end
 
         line
       end
@@ -471,7 +476,6 @@ class Import::NetexGeneric < Import::Base
           direction_type
         else
           add_error :direction_type_not_found
-
           nil
         end
       end
@@ -514,9 +518,9 @@ class Import::NetexGeneric < Import::Base
           journey_patterns.each do |netex_journey_pattern|
             scheduled_point_ids =
               netex_journey_pattern
-              .points_in_sequence
-              .sort_by { |stop_point_in_journey_pattern| stop_point_in_journey_pattern.order.to_i }
-              .map { |stop_point_in_journey_pattern| stop_point_in_journey_pattern.scheduled_stop_point_ref&.ref }
+                .points_in_sequence
+                .sort_by { |stop_point_in_journey_pattern| stop_point_in_journey_pattern.order.to_i }
+                .map { |stop_point_in_journey_pattern| stop_point_in_journey_pattern.scheduled_stop_point_ref&.ref }
 
             merger << scheduled_point_ids
           end
@@ -630,8 +634,8 @@ class Import::NetexGeneric < Import::Base
       def add(link)
         if empty?
           Sequence.new([link])
-        elsif link.from?(last.to)
-          Sequence.new(links + [link])
+        else
+          Sequence.new(links + [link]) if link.from?(last.to)
         end
       end
 
@@ -641,15 +645,18 @@ class Import::NetexGeneric < Import::Base
 
       def to_a
         return [] if empty?
-
         links.map(&:from) + [last.to]
       end
 
       def cover?(from, to)
         from_found = false
         links.each do |link|
-          from_found = true if !from_found && link.from?(from)
-          return true if from_found && link.to?(to)
+          if !from_found && link.from?(from)
+            from_found = true
+          end
+          if from_found && link.to?(to)
+            return true
+          end
         end
         false
       end
@@ -658,6 +665,7 @@ class Import::NetexGeneric < Import::Base
         def initialize(from, to)
           @from = from
           @to = to
+
           @definition = "#{from}-#{to}"
           @hash = definition.hash
           freeze
@@ -711,11 +719,13 @@ class Import::NetexGeneric < Import::Base
           # For example, A,B,C covers A-E, no need to explore it
           def unsolved_links
             @unsolved_links ||=
-              if sequence.empty?
-                pending_links
-              else
-                pending_links.delete_if do |link|
-                  sequence.cover? link.from, link.to
+              begin
+                if sequence.empty?
+                  pending_links
+                else
+                  pending_links.delete_if do |link|
+                    sequence.cover? link.from, link.to
+                  end
                 end
               end
           end

@@ -50,8 +50,13 @@ class Import::NetexGeneric < Import::Base
       part(part_class).import!
     end
 
-    within_referential do
-      # TODO: import Route, Timetable, etc
+    within_referential do |referential|
+      [
+        RouteJourneyPatterns
+        # TimeTable part here
+      ].each do |part_class|
+        part(part_class).import!
+      end
     end
 
     update_import_status
@@ -338,6 +343,392 @@ class Import::NetexGeneric < Import::Base
     end
   end
 
+  class RouteJourneyPatterns < WithResourcePart
+    delegate :netex_source, :scheduled_stop_points, :line_provider, :event_handler, to: :import
+
+    def import!
+      each_route_with_journey_patterns do |route, journey_patterns|
+        decorator = Decorator.new(
+          route, journey_patterns,
+          scheduled_stop_points: scheduled_stop_points,
+          route_points: route_points,
+          directions: directions,
+          destination_displays: destination_displays,
+          line_provider: line_provider
+        )
+
+        decorator.errors.each { |error| create_message error } unless decorator.valid?
+
+        chouette_route = decorator.chouette_route
+
+        if chouette_route&.valid?
+          chouette_route.save
+        else
+          create_message :route_invalid
+        end
+
+        netex_source.journey_patterns.each do |netex_journey_pattern|
+          attributes = JourneyPatternDecorator.new(decorator, netex_journey_pattern).journey_pattern_attributes
+          chouette_journey_pattern = chouette_route.journey_patterns.new attributes
+
+          if chouette_journey_pattern&.valid?
+            chouette_journey_pattern.save
+          else
+            create_message :journey_pattern_invalid
+          end
+        end
+      end
+    end
+
+    def each_route_with_journey_patterns(&block)
+      netex_source.routes.each do |route|
+        journey_patterns = netex_source.journey_patterns.find_by(route_ref: route.id)
+        block.call route, journey_patterns
+      end
+    end
+
+    def route_points
+      @route_points ||= netex_source.route_points
+    end
+
+    def directions
+      @directions ||= netex_source.directions
+    end
+
+    def destination_displays
+      @destination_displays ||= netex_source.destination_displays
+    end
+
+    class Decorator < SimpleDelegator
+      def initialize(route, journey_patterns, scheduled_stop_points: nil, route_points: nil, directions: nil, destination_displays: nil, line_provider: nil)
+        super route
+
+        @journey_patterns = journey_patterns
+        @scheduled_stop_points = scheduled_stop_points
+        @route_points = route_points
+        @directions = directions
+        @destination_displays = destination_displays
+        @line_provider = line_provider
+      end
+      attr_accessor :journey_patterns, :scheduled_stop_points, :route_points, :directions, :line_provider, :destination_displays
+
+      def chouette_line
+        line = line_provider.lines.find_by(registration_number: line_ref&.ref)
+        unless line
+          add_error :line_not_found
+        end
+
+        line
+      end
+
+      def chouette_route
+        chouette_line.routes.build(route_attributes)
+      end
+
+      def route_attributes
+        {
+          name: name,
+          wayback: wayback,
+          published_name: direction_name,
+          stop_points: stop_points
+        }
+      end
+
+      def wayback
+        if Chouette::Route.wayback.values.include?(direction_type)
+          direction_type
+        else
+          add_error :direction_type_not_found
+
+          return nil
+        end
+      end
+
+      def direction
+        direction_id = direction_ref&.ref
+        return unless direction_id
+
+        direction = directions.find direction_id
+        unless direction
+          add_error :direction_not_found_in_netex_source
+        end
+
+        direction
+      end
+
+      def direction_name
+        direction&.name
+      end
+
+      def route_point_refs
+        points_in_sequence
+          .sort_by { |point_on_route| point_on_route.order.to_i }
+          .map { |point_on_route| point_on_route.route_point_ref&.ref }
+      end
+
+      def route_scheduled_point_refs
+        route_point_refs.map do |route_point_ref|
+          route_point = route_points.find route_point_ref
+          if route_point
+            route_point.projections.first&.project_to_point_ref&.ref
+          else
+            add_error :direction_not_found_in_netex_source
+          end
+        end
+      end
+
+      def sequence_merger
+        @sequence_merger ||= Sequence::Merger.new.tap do |merger|
+          merger << route_scheduled_point_refs
+
+          journey_patterns.each do |netex_journey_pattern|
+            scheduled_point_ids =
+              netex_journey_pattern
+                .points_in_sequence
+                .sort_by { |stop_point_in_journey_pattern| stop_point_in_journey_pattern.order.to_i }
+                .map { |stop_point_in_journey_pattern| stop_point_in_journey_pattern.scheduled_stop_point_ref&.ref }
+
+            merger << scheduled_point_ids
+          end
+        end
+      end
+
+      def complete_scheduled_stop_points
+        sequence_merger.merge.to_a
+      end
+
+      def stop_points_by_scheduled_stop_point_id
+        @stop_points_by_scheduled_stop_point_id ||= {}.tap do |by_scheduled_stop_point_id|
+          complete_scheduled_stop_points.map.with_index do |scheduled_stop_point_id, position|
+            if stop_area_id = scheduled_stop_points[scheduled_stop_point_id]&.stop_area_id        
+              stop_point = Chouette::StopPoint.new stop_area_id: stop_area_id, position: position
+              by_scheduled_stop_point_id[scheduled_stop_point_id] = stop_point
+            else
+              add_error :stop_area_found_in_scheduled_stop_points
+            end
+          end
+        end
+      end
+
+      def stop_point_for_scheduled_stop_point_id(scheduled_stop_point_id)
+        stop_points_by_scheduled_stop_point_id[scheduled_stop_point_id]
+      end
+      
+      # Route Stop Points ordered by #complete_scheduled_stop_points
+      def stop_points
+        complete_scheduled_stop_points.map do |scheduled_stop_point_id|
+          stop_point_for_scheduled_stop_point_id scheduled_stop_point_id
+        end
+      end
+
+      def add_error(message_key)
+        errors << message_key
+      end
+
+      def errors
+        @errors ||= []
+      end
+
+      def valid?
+        errors.empty?
+      end
+    end
+
+    class JourneyPatternDecorator < SimpleDelegator
+      def initialize(route_decorator, journey_pattern)
+        super journey_pattern
+
+        @route_decorator = route_decorator
+      end
+      attr_accessor :route_decorator
+    
+      delegate :destination_displays, :scheduled_stop_points, to: :route_decorator
+
+      def journey_pattern_attributes
+        {
+          name: name,
+          published_name: published_name,
+          journey_patterns_stop_points_attributes: journey_patterns_stop_points_attributes
+        }
+      end
+      
+      def published_name
+        destination_display&.front_text
+      end
+      
+      def destination_display
+        destination_displays.find(destination_display_ref&.ref)
+      end
+
+      def scheduled_point_ids
+        points_in_sequence
+          .sort_by { |stop_point_in_journey_pattern| stop_point_in_journey_pattern.order.to_i }
+          .map { |stop_point_in_journey_pattern| stop_point_in_journey_pattern.scheduled_stop_point_ref&.ref }
+      end
+
+      def journey_patterns_stop_points_attributes
+        scheduled_point_ids.map do |scheduled_point_id|
+          { stop_point_id: route_decorator.stop_point_for_scheduled_stop_point_id(scheduled_point_id).reload.id }
+        end
+      end
+    end
+
+    class Sequence
+      # Create a Sequence from an array
+      def self.create(*elements)
+        links = []
+        elements.flatten.each_cons(2) do |from, to|
+          links << Link.new(from, to)
+        end
+        new links
+      end
+
+      def initialize(links = [])
+        @links = links
+        @last = links.last
+        freeze
+      end
+      attr_reader :links, :last
+
+      def empty?
+        links.empty?
+      end
+
+      def add(link)
+        if empty?
+          Sequence.new([link])
+        else
+          Sequence.new(links + [link]) if link.from?(last.to)
+        end
+      end
+
+      def to_s
+        to_a.join(',')
+      end
+
+      def to_a
+        return [] if empty?
+        links.map { |link| link.from } + [last.to]
+      end
+
+      def cover?(from, to)
+        from_found = false
+        links.each do |link|
+          if !from_found && link.from?(from)
+            from_found = true
+          end
+          if from_found && link.to?(to)
+            return true
+          end
+        end
+        false
+      end
+
+      class Link
+        def initialize(from, to)
+          @from, @to = from, to
+          @definition = "#{from}-#{to}"
+          @hash = definition.hash
+          freeze
+        end
+        attr_reader :from, :to, :definition, :hash
+
+        def eql?(other)
+          from == other.from && to == other.to
+        end
+
+        def from?(value)
+          from == value
+        end
+
+        def to?(value)
+          to == value
+        end
+
+        alias to_s definition
+        alias inspect definition
+      end
+
+      class Merger
+        def links
+          @links ||= Set.new
+        end
+
+        def add(sequence)
+          sequence = Sequence.create(sequence)
+          links.merge sequence.links
+        end
+        alias << add
+
+        def merge
+          solution = Path.new(Sequence.new, links.dup).complete
+          solution&.sequence
+        end
+
+        class Path
+          def initialize(sequence, pending_links)
+            @sequence = sequence
+            @pending_links = pending_links
+          end
+          attr_reader :sequence, :pending_links
+
+          def completed?
+            unsolved_links.empty?
+          end
+
+          # The current sequence can cover some of the pending links.
+          # For example, A,B,C covers A-E, no need to explore it
+          def unsolved_links
+            @unsolved_links ||=
+              begin
+                if sequence.empty?
+                  pending_links
+                else
+                  pending_links.delete_if do |link|
+                    sequence.cover? link.from, link.to
+                  end
+                end
+              end
+          end
+
+          # Next possible sequences by following unsolved links
+          def next_sequences
+            unsolved_links.map do |link|
+              sequence.add(link)
+            end.compact
+          end
+
+          def next_pending_links(next_link)
+            unsolved_links.dup.subtract([next_link])
+          end
+
+          # Create a Path with each possible next sequences
+          def next_paths
+            next_sequences.map do |next_sequence|
+              next_link = next_sequence.last
+              # Remove from pending_links the explored link
+              next_pending_links = next_pending_links(next_link)
+              Path.new(next_sequence, next_pending_links)
+            end
+          end
+
+          def complete
+            return self if completed?
+            next_paths.each do |next_path|
+              completed_path = next_path.complete
+              return completed_path if completed_path
+            end
+            nil
+          end
+
+          def to_s
+            "[#{sequence}] ? #{pending_links.to_a.join(',')}"
+          end
+        end
+      end
+    end
+  end
+
   def scheduled_stop_points
     @scheduled_stop_points ||= {}
   end
@@ -558,6 +949,8 @@ class Import::NetexGeneric < Import::Base
   def netex_source
     @netex_source ||= Netex::Source.new(include_raw_xml: store_xml?).tap do |source|
       source.transformers << Netex::Transformer::LocationFromCoordinates.new
+      source.transformers << Netex::Transformer::Indexer.new(Netex::JourneyPattern, by: :route_ref)
+
       source.read(local_file.path, type: file_extension)
     end
   end

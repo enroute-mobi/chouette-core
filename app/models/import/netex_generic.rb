@@ -582,6 +582,10 @@ class Import::NetexGeneric < Import::Base
         Chouette::JourneyPattern.new journey_pattern_attributes
       end
 
+      def chouette_journey_pattern
+        Chouette::JourneyPattern.new journey_pattern_attributes
+      end
+
       def journey_pattern_attributes
         {
           name: name,

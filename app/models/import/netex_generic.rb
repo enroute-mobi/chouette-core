@@ -54,7 +54,7 @@ class Import::NetexGeneric < Import::Base
       [
         RouteJourneyPatterns
       ].each do |part_class|
-        part(part_class).import!
+        part(part_class, target: referential).import!
       end
 
       referential.ready!
@@ -153,7 +153,7 @@ class Import::NetexGeneric < Import::Base
     Rails.logger.debug "@status: #{@status.inspect}"
   end
 
-  def part(part_class)
+  def part(part_class, target: nil)
     # For test, accept a symbol/name in argument
     # For example: part(:line_referential).import!
     unless part_class.is_a?(Class)
@@ -168,14 +168,15 @@ class Import::NetexGeneric < Import::Base
       part_class = self.class.const_get(part_class_name)
     end
 
-    part_class.new(self)
+    part_class.new(self, target: target)
   end
 
   class Part
-    def initialize(import)
+    def initialize(import, target: nil)
       @import = import
+      @target = target
     end
-    attr_reader :import
+    attr_reader :import, :target
 
     # To define callback in import!
     include AroundMethod
@@ -399,6 +400,8 @@ class Import::NetexGeneric < Import::Base
           create_message :journey_pattern_invalid
         end
       end
+
+      referential_inserter.flush
     end
 
     def referential_inserter
@@ -577,6 +580,10 @@ class Import::NetexGeneric < Import::Base
       attr_accessor :route_decorator
 
       delegate :destination_displays, to: :route_decorator
+
+      def chouette_journey_pattern
+        Chouette::JourneyPattern.new journey_pattern_attributes
+      end
 
       def chouette_journey_pattern
         Chouette::JourneyPattern.new journey_pattern_attributes

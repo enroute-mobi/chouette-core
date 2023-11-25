@@ -53,7 +53,7 @@ class Import::NetexGeneric < Import::Base
       [
         RouteJourneyPatterns
       ].each do |part_class|
-        part(part_class).import!
+        part(part_class, target: referential).import!
       end
 
       referential.update ready: true
@@ -148,7 +148,7 @@ class Import::NetexGeneric < Import::Base
     Rails.logger.debug "@status: #{@status.inspect}"
   end
 
-  def part(part_class)
+  def part(part_class, target: nil)
     # For test, accept a symbol/name in argument
     # For example: part(:line_referential).import!
     unless part_class.is_a?(Class)
@@ -163,14 +163,15 @@ class Import::NetexGeneric < Import::Base
       part_class = self.class.const_get(part_class_name)
     end
 
-    part_class.new(self)
+    part_class.new(self, target: target)
   end
 
   class Part
-    def initialize(import)
+    def initialize(import, target: nil)
       @import = import
+      @target = target
     end
-    attr_reader :import
+    attr_reader :import, :target
 
     # To define callback in import!
     include AroundMethod
@@ -362,21 +363,42 @@ class Import::NetexGeneric < Import::Base
         chouette_route = decorator.chouette_route
 
         if chouette_route&.valid?
-          chouette_route.save
+          referential_inserter.routes << chouette_route
+
+          chouette_route.stop_points.each do |stop_point|
+            stop_point.route_id = chouette_route.id
+
+            referential_inserter.stop_points << stop_point
+          end
         else
           create_message :route_invalid
         end
 
         netex_source.journey_patterns.each do |netex_journey_pattern|
-          attributes = JourneyPatternDecorator.new(decorator, netex_journey_pattern).journey_pattern_attributes
-          chouette_journey_pattern = chouette_route.journey_patterns.new attributes
+          chouette_journey_pattern = JourneyPatternDecorator.new(decorator, netex_journey_pattern).chouette_journey_pattern
+          chouette_route.journey_patterns << chouette_journey_pattern
+          chouette_journey_pattern.route_id = chouette_route.id
 
           if chouette_journey_pattern&.valid?
-            chouette_journey_pattern.save
+            referential_inserter.journey_patterns << chouette_journey_pattern
+            chouette_journey_pattern.journey_patterns_stop_points.each do |journey_pattern_stop_point|
+              journey_pattern_stop_point.journey_pattern_id = chouette_journey_pattern.id
+
+              referential_inserter.journey_patterns_stop_points << journey_pattern_stop_point
+            end
           else
             create_message :journey_pattern_invalid
           end
         end
+      end
+
+      referential_inserter.flush
+    end
+
+    def referential_inserter
+      @referential_inserter ||= ReferentialInserter.new(target) do |config|
+        config.add IdInserter
+        config.add CopyInserter
       end
     end
 
@@ -544,14 +566,18 @@ class Import::NetexGeneric < Import::Base
     
       delegate :destination_displays, :scheduled_stop_points, to: :route_decorator
 
+      def chouette_journey_pattern
+        Chouette::JourneyPattern.new journey_pattern_attributes
+      end
+
       def journey_pattern_attributes
         {
           name: name,
           published_name: published_name,
-          journey_patterns_stop_points_attributes: journey_patterns_stop_points_attributes
+          journey_patterns_stop_points: journey_patterns_stop_points
         }
       end
-      
+
       def published_name
         destination_display&.front_text
       end
@@ -566,9 +592,9 @@ class Import::NetexGeneric < Import::Base
           .map { |stop_point_in_journey_pattern| stop_point_in_journey_pattern.scheduled_stop_point_ref&.ref }
       end
 
-      def journey_patterns_stop_points_attributes
+      def journey_patterns_stop_points
         scheduled_point_ids.map do |scheduled_point_id|
-          { stop_point_id: route_decorator.stop_point_for_scheduled_stop_point_id(scheduled_point_id).reload.id }
+          Chouette::JourneyPatternsStopPoint.new stop_point_id: route_decorator.stop_point_for_scheduled_stop_point_id(scheduled_point_id).id
         end
       end
     end

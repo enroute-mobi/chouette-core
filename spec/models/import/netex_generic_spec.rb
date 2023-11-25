@@ -1127,7 +1127,7 @@ RSpec.describe Import::NetexGeneric do
       import.part(:scheduled_stop_points).import!
 
       import.within_referential do |referential|
-        import.part(:route_journey_patterns).import!
+        import.part(:route_journey_patterns, target: referential).import!
       end
     end
 

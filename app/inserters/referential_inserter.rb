@@ -66,6 +66,10 @@ class ReferentialInserter
     time_table_periods
     codes
     service_counts
+    routes
+    journey_patterns
+    stop_points
+    journey_patterns_stop_points
   }.freeze
 
   COLLECTION_ALIASES.each do |method_name|

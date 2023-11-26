@@ -67,8 +67,6 @@ class Import::NetexGeneric < Import::Base
   end
 
   def within_referential(&block)
-    return unless referential_metadata
-
     referential_builder.create do |referential|
       self.referential = referential
       referential.switch
@@ -400,8 +398,38 @@ class Import::NetexGeneric < Import::Base
           create_message :journey_pattern_invalid
         end
       end
+    end
 
-      referential_inserter.flush
+    def prepare_route(chouette_route)
+      if chouette_route&.valid?
+        referential_inserter.routes << chouette_route
+        chouette_route.stop_points.each do |stop_point|
+          stop_point.route_id = chouette_route.id
+          referential_inserter.stop_points << stop_point
+        end
+      else
+        create_message :route_invalid
+      end
+
+      chouette_route
+    end
+
+    def prepare_journey_patterns(chouette_route, netex_journey_patterns, route_decorator)
+      netex_journey_patterns.each do |netex_journey_pattern|
+        chouette_journey_pattern = JourneyPatternDecorator.new(route_decorator,
+                                                               netex_journey_pattern).chouette_journey_pattern
+        chouette_route.journey_patterns << chouette_journey_pattern
+        chouette_journey_pattern.route_id = chouette_route.id
+        if chouette_journey_pattern&.valid?
+          referential_inserter.journey_patterns << chouette_journey_pattern
+          chouette_journey_pattern.journey_patterns_stop_points.each do |journey_pattern_stop_point|
+            journey_pattern_stop_point.journey_pattern_id = chouette_journey_pattern.id
+            referential_inserter.journey_patterns_stop_points << journey_pattern_stop_point
+          end
+        else
+          create_message :journey_pattern_invalid
+        end
+      end
     end
 
     def referential_inserter
@@ -442,13 +470,12 @@ class Import::NetexGeneric < Import::Base
         @destination_displays = destination_displays
         @line_provider = line_provider
       end
-      attr_accessor :journey_patterns, :scheduled_stop_points, :route_points, :directions, :line_provider, :destination_displays
+      attr_accessor :journey_patterns, :scheduled_stop_points, :route_points, :directions, :line_provider,
+                    :destination_displays
 
       def chouette_line
         line = line_provider.lines.find_by(registration_number: line_ref&.ref)
-        unless line
-          add_error :line_not_found
-        end
+        add_error :line_not_found unless line
 
         line
       end
@@ -521,9 +548,9 @@ class Import::NetexGeneric < Import::Base
           journey_patterns.each do |netex_journey_pattern|
             scheduled_point_ids =
               netex_journey_pattern
-                .points_in_sequence
-                .sort_by { |stop_point_in_journey_pattern| stop_point_in_journey_pattern.order.to_i }
-                .map { |stop_point_in_journey_pattern| stop_point_in_journey_pattern.scheduled_stop_point_ref&.ref }
+              .points_in_sequence
+              .sort_by { |stop_point_in_journey_pattern| stop_point_in_journey_pattern.order.to_i }
+              .map { |stop_point_in_journey_pattern| stop_point_in_journey_pattern.scheduled_stop_point_ref&.ref }
 
             merger << scheduled_point_ids
           end
@@ -585,10 +612,6 @@ class Import::NetexGeneric < Import::Base
         Chouette::JourneyPattern.new journey_pattern_attributes
       end
 
-      def chouette_journey_pattern
-        Chouette::JourneyPattern.new journey_pattern_attributes
-      end
-
       def journey_pattern_attributes
         {
           name: name,
@@ -641,8 +664,8 @@ class Import::NetexGeneric < Import::Base
       def add(link)
         if empty?
           Sequence.new([link])
-        else
-          Sequence.new(links + [link]) if link.from?(last.to)
+        elsif link.from?(last.to)
+          Sequence.new(links + [link])
         end
       end
 
@@ -658,12 +681,8 @@ class Import::NetexGeneric < Import::Base
       def cover?(from, to)
         from_found = false
         links.each do |link|
-          if !from_found && link.from?(from)
-            from_found = true
-          end
-          if from_found && link.to?(to)
-            return true
-          end
+          from_found = true if !from_found && link.from?(from)
+          return true if from_found && link.to?(to)
         end
         false
       end
@@ -672,7 +691,6 @@ class Import::NetexGeneric < Import::Base
         def initialize(from, to)
           @from = from
           @to = to
-
           @definition = "#{from}-#{to}"
           @hash = definition.hash
           freeze
@@ -726,13 +744,11 @@ class Import::NetexGeneric < Import::Base
           # For example, A,B,C covers A-E, no need to explore it
           def unsolved_links
             @unsolved_links ||=
-              begin
-                if sequence.empty?
-                  pending_links
-                else
-                  pending_links.delete_if do |link|
-                    sequence.cover? link.from, link.to
-                  end
+              if sequence.empty?
+                pending_links
+              else
+                pending_links.delete_if do |link|
+                  sequence.cover? link.from, link.to
                 end
               end
           end

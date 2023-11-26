@@ -367,14 +367,13 @@ class Import::NetexGeneric < Import::Base
 
           chouette_route.stop_points.each do |stop_point|
             stop_point.route_id = chouette_route.id
-
             referential_inserter.stop_points << stop_point
           end
         else
           create_message :route_invalid
         end
 
-        netex_source.journey_patterns.each do |netex_journey_pattern|
+        journey_patterns.each do |netex_journey_pattern|
           chouette_journey_pattern = JourneyPatternDecorator.new(decorator, netex_journey_pattern).chouette_journey_pattern
           chouette_route.journey_patterns << chouette_journey_pattern
           chouette_journey_pattern.route_id = chouette_route.id
@@ -422,15 +421,11 @@ class Import::NetexGeneric < Import::Base
     end
 
     class Decorator < SimpleDelegator
-      def initialize(route, journey_patterns, scheduled_stop_points: nil, route_points: nil, directions: nil, destination_displays: nil, line_provider: nil)
+      def initialize(route, journey_patterns, options={})
         super route
 
         @journey_patterns = journey_patterns
-        @scheduled_stop_points = scheduled_stop_points
-        @route_points = route_points
-        @directions = directions
-        @destination_displays = destination_displays
-        @line_provider = line_provider
+        options.each { |k, v| send "#{k}=", v }
       end
       attr_accessor :journey_patterns, :scheduled_stop_points, :route_points, :directions, :line_provider, :destination_displays
 

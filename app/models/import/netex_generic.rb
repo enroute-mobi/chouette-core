@@ -68,7 +68,7 @@ class Import::NetexGeneric < Import::Base
     update_import_status
   end
 
-  def within_referential(&block)
+  def within_referential
     referential_builder.create do |referential|
       self.referential = referential
       referential.switch
@@ -518,9 +518,9 @@ class Import::NetexGeneric < Import::Base
           journey_patterns.each do |netex_journey_pattern|
             scheduled_point_ids =
               netex_journey_pattern
-                .points_in_sequence
-                .sort_by { |stop_point_in_journey_pattern| stop_point_in_journey_pattern.order.to_i }
-                .map { |stop_point_in_journey_pattern| stop_point_in_journey_pattern.scheduled_stop_point_ref&.ref }
+              .points_in_sequence
+              .sort_by { |stop_point_in_journey_pattern| stop_point_in_journey_pattern.order.to_i }
+              .map { |stop_point_in_journey_pattern| stop_point_in_journey_pattern.scheduled_stop_point_ref&.ref }
 
             merger << scheduled_point_ids
           end
@@ -534,7 +534,7 @@ class Import::NetexGeneric < Import::Base
       def stop_points_by_scheduled_stop_point_id
         @stop_points_by_scheduled_stop_point_id ||= {}.tap do |by_scheduled_stop_point_id|
           complete_scheduled_stop_points.map.with_index do |scheduled_stop_point_id, position|
-            if stop_area_id = scheduled_stop_points[scheduled_stop_point_id]&.stop_area_id        
+            if stop_area_id = scheduled_stop_points[scheduled_stop_point_id]&.stop_area_id
               stop_point = Chouette::StopPoint.new stop_area_id: stop_area_id, position: position
               by_scheduled_stop_point_id[scheduled_stop_point_id] = stop_point
             else
@@ -752,6 +752,7 @@ class Import::NetexGeneric < Import::Base
 
           def complete
             return self if completed?
+
             next_paths.each do |next_path|
               completed_path = next_path.complete
               return completed_path if completed_path

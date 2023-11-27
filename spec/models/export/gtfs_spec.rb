@@ -310,6 +310,8 @@ RSpec.describe Export::Gtfs, type: [:model, :with_exportable_referential] do
               Code.new(code_space: code_space, value: 'test')
             ]
           )
+
+          allow(decorator).to receive(:code_space).and_return(code_space)
         end
 
         it { is_expected.to eq('test') }
@@ -1772,6 +1774,8 @@ RSpec.describe Export::Gtfs, type: [:model, :with_exportable_referential] do
       end
 
     end
+
+
   end
 
   describe Export::Gtfs::Service do

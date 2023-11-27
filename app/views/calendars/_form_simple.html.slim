@@ -1,6 +1,6 @@
 .row
   .col-lg-8.col-lg-offset-2.col-md-8.col-md-offset-2.col-sm-10.col-sm-offset-1
-    = simple_form_for [@workgroup, @calendar], html: { class: 'form-horizontal', id: 'calendar_form' }, wrapper: :horizontal_form do |f|
+    = simple_form_for [@workbench, @calendar], html: { class: 'form-horizontal', id: 'calendar_form' }, wrapper: :horizontal_form do |f|
       .row
         .col-lg-12
           = f.input :name

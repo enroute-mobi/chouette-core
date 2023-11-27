@@ -1,4 +1,4 @@
-= search_form_for @q, url: workgroup_calendars_path(@workgroup), builder: SimpleForm::FormBuilder, html: { method: :get, class: 'form form-filter' } do |f|
+= search_form_for @q, url: workbench_calendars_path(@workbench), builder: SimpleForm::FormBuilder, html: { method: :get, class: 'form form-filter' } do |f|
   .ffg-row
     .input-group.search_bar class=filter_item_class(params[:q], :name_or_short_name_cont)
       = f.search_field :name_cont, class: 'form-control', placeholder: I18n.t('calendars.filters.name_cont')
@@ -18,5 +18,5 @@
       = f.input :contains_date, as: :date, label: false, wrapper_html: { class: 'date smart_date' }, class: 'form-control', include_blank: true
 
   .actions
-    = link_to I18n.t('actions.erase'), workgroup_calendars_path(@workgroup), class: 'btn btn-link'
+    = link_to I18n.t('actions.erase'), workbench_calendars_path(@workbench), class: 'btn btn-link'
     = f.submit I18n.t('actions.filter'), id: 'calendar_filter_btn', class: 'btn btn-default'

@@ -200,13 +200,10 @@ RSpec.describe Workgroup, type: :model do
     let!(:field){ create(:custom_field, workgroup: workgroup) }
     let!(:publication_api) { create(:publication_api, workgroup: workgroup) }
     let!(:publication_setup) { create(:publication_setup, workgroup: workgroup)}
-    let!(:calendar) { create(:calendar, workgroup: workgroup)}
-
 
     let!(:line) { create(:line, line_referential: referential.line_referential) }
     let!(:route) { create(:route, line: line)}
     let!(:journey_pattern) { create(:journey_pattern, route: route) }
-
 
     it "should cascade destroy every related object" do
       Workgroup.purge_all
@@ -216,8 +213,16 @@ RSpec.describe Workgroup, type: :model do
 
       expect(Chouette::Line.where(id: line.id).exists?).to be_truthy
 
-      [workgroup, workbench, new_referential, field, calendar, new_referential, publication_api, publication_setup].each do |record|
-        expect{record.reload}.to raise_error ActiveRecord::RecordNotFound
+      [
+        workgroup,
+        workbench,
+        new_referential,
+        field,
+        new_referential,
+        publication_api,
+        publication_setup
+      ].each do |record|
+        expect { record.reload }.to raise_error(ActiveRecord::RecordNotFound)
       end
     end
   end

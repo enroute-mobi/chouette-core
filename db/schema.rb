@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2023_12_18_161931) do
+ActiveRecord::Schema.define(version: 2023_12_18_161932) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "btree_gin"
@@ -62,15 +62,13 @@ ActiveRecord::Schema.define(version: 2023_12_18_161931) do
     t.daterange "date_ranges", array: true
     t.date "dates", array: true
     t.boolean "shared", default: false
-    t.bigint "organisation_id"
     t.datetime "created_at"
     t.datetime "updated_at"
-    t.bigint "workgroup_id"
     t.integer "int_day_types"
     t.date "excluded_dates", array: true
     t.jsonb "metadata", default: {}
-    t.index ["organisation_id"], name: "index_calendars_on_organisation_id"
-    t.index ["workgroup_id"], name: "index_calendars_on_workgroup_id"
+    t.bigint "workbench_id", null: false
+    t.index ["workbench_id"], name: "index_calendars_on_workbench_id"
   end
 
   create_table "clean_up_results", force: :cascade do |t|
@@ -1762,6 +1760,7 @@ ActiveRecord::Schema.define(version: 2023_12_18_161931) do
     t.index ["shape_referential_id"], name: "index_workgroups_on_shape_referential_id"
   end
 
+  add_foreign_key "calendars", "workbenches"
   add_foreign_key "compliance_check_blocks", "compliance_check_sets"
   add_foreign_key "compliance_check_messages", "compliance_check_resources"
   add_foreign_key "compliance_check_messages", "compliance_check_sets"

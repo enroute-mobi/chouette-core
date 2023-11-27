@@ -34,7 +34,7 @@
       - if workbench.workgroup.export_types.present?
         = link_to workbench_exports_path(workbench), class: "list-group-item" do
           span = 'activerecord.models.export.other'.t.capitalize
-      = link_to workgroup_calendars_path(workbench.workgroup), class: 'list-group-item' do
+      = link_to workbench_calendars_path(workbench), class: 'list-group-item' do
         span = 'activerecord.models.calendar.other'.t.capitalize
       = link_to workbench_control_lists_path(workbench), class: "list-group-item" do
         span = Control::List.model_name.human(count: 2)

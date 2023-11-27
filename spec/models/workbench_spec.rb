@@ -256,6 +256,40 @@ RSpec.describe Workbench, type: :model do
       it { is_expected.to have_attributes(invitation_code: matching(/\d{3}-\d{3}-\d{3}/)) }
     end
   end
+
+  describe '#calendars' do
+    subject { workbench.calendars }
+
+    let(:workbench) { create(:workbench) }
+    let!(:non_shared_workbench_calendar) do
+      create(:calendar, organisation: workbench.organisation, workgroup: workbench.workgroup)
+    end
+    let!(:shared_workbench_calendar) do
+      create(:calendar, organisation: workbench.organisation, workgroup: workbench.workgroup, shared: true)
+    end
+    let!(:non_shared_other_organisation_calendar) do
+      create(:calendar, workgroup: workbench.workgroup)
+    end
+    let!(:shared_other_organisation_calendar) do
+      create(:calendar, workgroup: workbench.workgroup, shared: true)
+    end
+    let!(:non_shared_other_workgroup_calendar) do
+      create(:calendar, organisation: workbench.organisation)
+    end
+    let!(:shared_other_workgroup_calendar) do
+      create(:calendar, organisation: workbench.organisation, shared: true)
+    end
+
+    it 'returns only its calendars + shared calendars' do
+      is_expected.to match_array(
+        [
+          non_shared_workbench_calendar,
+          shared_workbench_calendar,
+          shared_other_organisation_calendar
+        ]
+      )
+    end
+  end
 end
 
 RSpec.describe Workbench::Confirmation do

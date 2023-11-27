@@ -288,6 +288,31 @@ class Import::Gtfs < Import::Base # rubocop:disable Metrics/ClassLength
 
   attr_accessor :default_time_zone, :default_company
 
+  class StopAreaZone
+    def initialize(zone_id: nil, code_space: nil, fare_provider: nil, stop_area_id: nil)
+      @zone_id = zone_id
+      @code_space = code_space
+      @fare_provider = fare_provider
+      @stop_area_id = stop_area_id
+    end
+
+    attr_reader :zone_id, :code_space, :fare_provider, :stop_area_id
+
+    def zone
+      return unless zone_id.present?
+
+      @zone ||= fare_provider.fare_zones.first_or_create_by_code(code_space, zone_id) do |zone|
+        zone.name = zone_id
+      end
+    end
+
+    def import!
+      return unless zone
+
+      zone.stop_area_zones.find_or_create_by(stop_area_id: stop_area_id)
+    end
+  end
+
   def import_stops
     sorted_stops = source.stops.sort_by { |s| s.parent_station.present? ? 1 : 0 }
     @stop_areas_id_by_registration_number = {}
@@ -362,6 +387,13 @@ class Import::Gtfs < Import::Base # rubocop:disable Metrics/ClassLength
 
         save_model stop_area, resource: resource
         @stop_areas_id_by_registration_number[stop_area.registration_number] = stop_area.id
+
+        StopAreaZone.new(
+          zone_id: stop.zone_id,
+          code_space: code_space,
+          fare_provider: fare_provider,
+          stop_area_id: stop_area.id
+        ).import!
       end
     end
 

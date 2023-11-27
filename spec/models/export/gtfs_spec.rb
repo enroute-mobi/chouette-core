@@ -294,6 +294,48 @@ RSpec.describe Export::Gtfs, type: [:model, :with_exportable_referential] do
       end
     end
 
+    describe '#zone_id' do
+      subject { decorator.zone_id }
+
+      context 'when Stop Area is no Fare Zone' do
+        it { is_expected.to be_nil }
+      end
+
+      context 'when Stop Area is a Fare Zone with expected code space' do
+        let(:code_space) { CodeSpace.new }
+        before do
+          stop_area.fare_zones << Fare::Zone.new(
+            codes: [
+              Code.new(value: 'wrong'),
+              Code.new(code_space: code_space, value: 'test')
+            ]
+          )
+
+          allow(decorator).to receive(:code_space).and_return(code_space)
+        end
+
+        it { is_expected.to eq('test') }
+      end
+
+      context 'when Stop Area is a Fare Zone without code' do
+        before do
+          stop_area.fare_zones << fare_zone
+        end
+        let(:fare_zone) { Fare::Zone.new uuid: SecureRandom.uuid }
+
+        it { is_expected.to eq(fare_zone.uuid) }
+      end
+
+      context 'when Stop Area is a Fare Zone without expected code space' do
+        before do
+          stop_area.fare_zones << fare_zone
+        end
+        let(:fare_zone) { Fare::Zone.new uuid: SecureRandom.uuid, codes: [ Code.new(value: 'wrong') ] }
+
+        it { is_expected.to eq(fare_zone.uuid) }
+      end
+    end
+
     describe "stop_attributes" do
       subject { decorator.stop_attributes }
       context "when gtfs_platform_code is 'dummy'" do
@@ -304,8 +346,8 @@ RSpec.describe Export::Gtfs, type: [:model, :with_exportable_referential] do
         before { allow(decorator).to receive(:gtfs_wheelchair_boarding).and_return("dummy") }
         it { is_expected.to include(wheelchair_boarding: 'dummy')}
       end
-      context "when fare_code is 'dummy'" do
-        before { stop_area.fare_code = 'dummy' }
+      context "when zone_id is 'dummy'" do
+        before { allow(decorator).to receive(:zone_id).and_return('dummy') }
         it { is_expected.to include(zone_id: 'dummy')}
       end
     end
@@ -1732,6 +1774,8 @@ RSpec.describe Export::Gtfs, type: [:model, :with_exportable_referential] do
       end
 
     end
+
+
   end
 
   describe Export::Gtfs::Service do

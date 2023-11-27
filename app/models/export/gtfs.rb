@@ -354,7 +354,7 @@ class Export::Gtfs < Export::Base
       options.each { |k,v| send "#{k}=", v }
     end
 
-    delegate :target, :index, :export_scope, :messages, :date_range, :code_spaces, :public_code_space,
+    delegate :target, :index, :export_scope, :messages, :date_range, :code_spaces, :public_code_space, :code_space,
              :prefer_referent_stop_area, :prefer_referent_company, :prefer_referent_line, :referential, to: :export
 
     def part_name
@@ -396,7 +396,7 @@ class Export::Gtfs < Export::Base
     end
 
     def export!
-      stop_areas.includes(:referent, :parent, :codes).order("parent_id NULLS first").each_instance do |stop_area|
+      stop_areas.includes(:referent, :parent, :codes, fare_zones: :codes).order("parent_id NULLS first").each_instance do |stop_area|
         decorated_stop_area = handle_referent(stop_area)
         next if index.has_stop_id? decorated_stop_area
 
@@ -406,9 +406,12 @@ class Export::Gtfs < Export::Base
     end
 
     def handle_referent stop_area
-      return Decorator.new(stop_area, index, public_code_space, duplicated_registration_numbers) unless prefer_referent_stop_area && stop_area.referent
+      unless prefer_referent_stop_area && stop_area.referent
+        return Decorator.new(stop_area, index, public_code_space, duplicated_registration_numbers, code_space)
+      end
 
-      decorated_referent = Decorator.new(stop_area.referent, index, public_code_space, duplicated_registration_numbers)
+      decorated_referent = Decorator.new(stop_area.referent, index, public_code_space,
+                                         duplicated_registration_numbers, code_space)
       index.register_stop_id(stop_area, decorated_referent.stop_id)
       return decorated_referent
     end
@@ -416,14 +419,33 @@ class Export::Gtfs < Export::Base
     class Decorator < SimpleDelegator
 
       # index is optional to make tests easier
-      def initialize(stop_area, index = nil, public_code_space = "", duplicated_registration_numbers = [])
+      def initialize(stop_area, index = nil, public_code_space = "", duplicated_registration_numbers = [], code_space = nil)
         super stop_area
         @index = index
         @public_code_space = public_code_space
         @duplicated_registration_numbers = duplicated_registration_numbers
+        @code_space = code_space
       end
 
-      attr_reader :index, :public_code_space, :duplicated_registration_numbers
+      attr_reader :index, :public_code_space, :duplicated_registration_numbers, :code_space
+
+      def zone_id
+        code_value || fare_zone&.uuid
+      end
+
+      def code_value
+        return unless fare_zone_codes
+
+        fare_zone_codes.find { |code| code.code_space && code.code_space == code_space }&.value
+      end
+
+      def fare_zone_codes
+        fare_zone&.codes
+      end
+
+      def fare_zone
+        @fare_zone ||= fare_zones&.first
+      end
 
       def stop_id
         if registration_number.present? &&
@@ -471,7 +493,8 @@ class Export::Gtfs < Export::Base
           timezone: (time_zone unless parent),
           zone_id: fare_code,
           wheelchair_boarding: gtfs_wheelchair_boarding,
-          platform_code: gtfs_platform_code
+          platform_code: gtfs_platform_code,
+          zone_id: zone_id
         }
       end
 

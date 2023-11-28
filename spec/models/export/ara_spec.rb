@@ -675,6 +675,27 @@ RSpec.describe Export::Ara do
             end
           end
         end
+
+        context 'when day is 2030-07-01 (summer time)' do
+          before { decorator.day = Date.parse('2030-07-01') }
+
+          context 'when arrival_time is 15:00:00 and departure_time is 15:05:00' do
+            before do
+              vehicle_journey_at_stop.arrival_time = '15:00:00'
+              vehicle_journey_at_stop.departure_time = '15:05:00'
+            end
+
+            let(:expected_schedule) do
+              {
+                Kind: 'aimed',
+                ArrivalTime: '2030-01-01T16:00:00+00:00',
+                DepartureTime: '2030-01-01T16:05:00+00:00'
+              }
+            end
+
+            it { is_expected.to include(expected_schedule) }
+          end
+        end
       end
     end
 

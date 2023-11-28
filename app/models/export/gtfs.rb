@@ -20,8 +20,9 @@ class Export::Gtfs < Export::Base
   validate :ensure_is_valid_period
 
   def ensure_is_valid_period
-    return unless from || to
-    if from > to
+    return unless period == 'static_day_period'
+
+    if from.blank? || to.blank? || from > to
       errors.add(:from, :invalid)
       errors.add(:to, :invalid)
     end
@@ -1353,9 +1354,10 @@ class Export::Gtfs < Export::Base
 
   class FeedInfo < Part
     delegate :companies, :validity_period, to: :export_scope
+    delegate :from, to: :export
 
     def export!
-      target.feed_infos << Decorator.new(company: company, validity_period: validity_period).feed_info_attributes
+      target.feed_infos << Decorator.new(company: company, validity_period: validity_period, from: from).feed_info_attributes
     end
 
     def company
@@ -1363,11 +1365,12 @@ class Export::Gtfs < Export::Base
     end
 
     class Decorator
-      attr_reader :company, :validity_period
+      attr_reader :company, :validity_period, :from
 
-      def initialize(company:, validity_period:)
+      def initialize(company:, validity_period:, from:)
         @company = company
         @validity_period = validity_period
+        @from = from
       end
 
       def feed_info_attributes
@@ -1381,6 +1384,7 @@ class Export::Gtfs < Export::Base
       end
 
       def start_date
+        return from if from.present?
         validity_period&.min
       end
 

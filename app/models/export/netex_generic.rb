@@ -14,8 +14,9 @@ class Export::NetexGeneric < Export::Base
   validate :ensure_is_valid_period
 
   def ensure_is_valid_period
-    return unless from || to
-    if from > to
+    return unless period == 'static_day_period'
+
+    if from.blank? || to.blank? || from > to
       errors.add(:from, :invalid)
       errors.add(:to, :invalid)
     end

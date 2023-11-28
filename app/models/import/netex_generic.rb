@@ -50,16 +50,22 @@ class Import::NetexGeneric < Import::Base
       part(part_class).import!
     end
 
-    within_referential
+    within_referential do
+      # TODO: import Route, Timetable, etc
+    end
 
     update_import_status
   end
 
   def within_referential(&block)
+    return unless referential_metadata
+
     referential_builder.create do |referential|
       referential.switch
 
       yield referential
+
+      referential.update_attribute :ready, true
     end
 
     unless referential_builder.valid?
@@ -75,6 +81,8 @@ class Import::NetexGeneric < Import::Base
   end
 
   def referential_metadata
+    return unless [imported_line_ids, netex_source.validity_period].all?(:present?)
+
     @referential_metadata ||=
       ReferentialMetadata.new line_ids: imported_line_ids, periodes: [netex_source.validity_period]
   end

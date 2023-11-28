@@ -173,11 +173,6 @@ fr:
         3_vehiclejourney_5_2: "La course %{source_objectid} a un horaire de départ %{error_value} à l'arrêt %{target_0_label} (%{target_0_objectid}) supérieur à l'horaire d'arrivé %{reference_value} à l'arrêt suivant"
       description: "L'horaire d'arrivée à un arrêt doit être antérieur à l'horaire de départ de cet arrêt ET les horaires de départ aux arrêts doivent être dans l'ordre chronologique croissant."
       prerequisite: "Aucun"
-    vehicle_journey_control/published_journey_name:
-      messages:
-        3_vehiclejourney_8: La course %{source_objectid} doit avoir un numéro de service compris entre %{min} et %{max} pour le transporteur %{company_name}
-      description: Valeur du numéro de service pour un transporteur donné
-      prerequisite: "Aucun"
     vehicle_journey_control/bus_capacity:
       messages:
         3_vehiclejourney_9: "La course %{source_objectid} doit avoir une capacité de bus"
@@ -315,8 +310,6 @@ fr:
         one: "Chronologie croissante des horaires"
       vehicle_journey_control/bus_capacity:
         one: "Présence de la capacité du bus"
-      vehicle_journey_control/published_journey_name:
-        one: Valeur du numéro de service pour un transporteur donné
       vehicle_journey_control/empty_time_table:
         one: Une course ne doit pas être liée à un calendrier d'application vide
       vehicle_journey_control/company:

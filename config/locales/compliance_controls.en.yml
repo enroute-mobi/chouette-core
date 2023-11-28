@@ -173,11 +173,6 @@ en:
         3_vehiclejourney_5_2: "The vehicle journey with %{source_objectid} objectid has an departure time %{error_value} at stop point %{target_0_label} (%{target_0_objectid}) greater than the arrival %{reference_value} at the next stop point"
       description: Increasing chronology of the vehicle journey at stops
       prerequisite: "None"
-    vehicle_journey_control/published_journey_name:
-      messages:
-        3_vehiclejourney_8: "The vehicle journey with %{source_objectid} must have a published journey name between %{min} and %{max} for the company : %{company_name}"
-      description: Published journey name value for a company
-      prerequisite: "None"
     vehicle_journey_control/bus_capacity:
       messages:
         3_vehiclejourney_9: "The vehicle journey %{source_objectid} lacks a bus capacity"
@@ -314,8 +309,6 @@ en:
         one: "Increasing chronology of the vehicle journey at stops"
       vehicle_journey_control/bus_capacity:
         one: "Présence of bus capacity"
-      vehicle_journey_control/published_journey_name:
-        one: Value of published journey name for one company
       vehicle_journey_control/empty_time_table:
         one: A vehicle journey cannot have an empty timetable
       vehicle_journey_control/company:

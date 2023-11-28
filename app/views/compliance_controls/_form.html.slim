@@ -11,20 +11,6 @@
       - @compliance_control.class.dynamic_attributes.each do |attribute|
         - if attribute == :target
           = f.input :target, as: :grouped_select, collection: compliance_control_target_options(@compliance_control), group_method: :last, include_blank: false
-        - elsif attribute == :company_id
-          = f.input :company_id,
-            as: :select,
-            style: "width: 100%",
-            input_html: { \
-              data: { \
-                'select2-ajax': 'true',
-                'select2ed-placeholder': t('.company_name'),
-                term: 'name_cont',
-                url: autocomplete_companies_path(format: :json),
-                'select2ed-allow-clear': true \
-              } \
-            },
-            wrapper_html: { class: 'filter_menu-item select2ed' }
         - elsif attribute == :custom_field_code
           = f.input :custom_field_code, as: :grouped_select, collection: custom_fields_by_resource_type(@compliance_control_set.organisation), group_method: :last, include_blank: false
         - else

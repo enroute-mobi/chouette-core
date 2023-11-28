@@ -48,8 +48,7 @@ GIT
 
 GIT
   remote: https://bitbucket.org/enroute-mobi/netex.git
-  revision: b7ad603a99ca04fe4e0f6a340101bf10c3f6e9d2
-  branch: NETEX-89-source-validity-period
+  revision: 31a5411e8fa07e294196b71959fc078203ee4d50
   specs:
     netex (0.1.2)
       activesupport

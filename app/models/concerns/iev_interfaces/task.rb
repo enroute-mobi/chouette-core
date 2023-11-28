@@ -34,8 +34,6 @@ module IevInterfaces::Task
       where(referential_id: referential.id)
     end
     # Scope unused in Chouette
-    scope :blocked, -> { where('created_at < ? AND status = ?', 4.hours.ago, 'running') }
-    # Scope unused in Chouette
     scope :new_or_pending, -> { where(status: [:new, :pending]) }
 
     scope :successful, -> { where(status: :successful) }

@@ -25,13 +25,8 @@ module Chouette
         after_synchronisation
       end
 
-      def update_or_create
-        updater.update_or_create
-      end
-
-      def delete(resource_identifiers)
-        deleter.delete resource_identifiers
-      end
+      delegate :update_or_create, :processed_identifiers, to: :updater
+      delegate :delete, to: :deleter
 
       def delete_after_update_or_create
         deleter.delete_from(updater)
@@ -39,10 +34,6 @@ module Chouette
 
       # To be overrided
       def after_synchronisation; end
-
-      def processed_identifiers
-        updater.processed_identifiers
-      end
 
       protected
 

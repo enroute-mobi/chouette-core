@@ -48,7 +48,7 @@ module Chouette
       end
 
       def sync_for(sync_class)
-        syncs.find { |sync| sync.class == sync_class }
+        syncs.find { |sync| sync.instance_of?(sync_class) }
       end
 
       protected

@@ -63,17 +63,17 @@ class Import::NetexGeneric < Import::Base
     referential_builder.create do |referential|
       referential.switch
 
-      yield referential
+      block.call referential
 
-      referential.update_attribute :ready, true
+      referential.ready!
     end
 
-    unless referential_builder.valid?
-      # Create a global error message
-      messages.create criticity: :error, message_key: 'referential_creation_overlapping_existing_referential'
-      # Save overlapping referentials for user display
-      #self.overlapping_referential_ids = referential_builder.overlapping_referential_ids
-    end
+    return if referential_builder.valid?
+
+    # Create a global error message
+    messages.create criticity: :error, message_key: 'referential_creation_overlapping_existing_referential'
+    # Save overlapping referentials for user display
+    # self.overlapping_referential_ids = referential_builder.overlapping_referential_ids
   end
 
   def referential_builder
@@ -87,6 +87,7 @@ class Import::NetexGeneric < Import::Base
       ReferentialMetadata.new line_ids: imported_line_ids, periodes: [netex_source.validity_period]
   end
 
+  # Create a Referential with given name and medata
   class ReferentialBuilder
     def initialize(workbench, name:, metadata:)
       @workbench = workbench
@@ -98,7 +99,7 @@ class Import::NetexGeneric < Import::Base
     delegate :organisation, to: :workbench
 
     def create(&block)
-      yield referential if valid?
+      block.call referential if valid?
     end
 
     def referential
@@ -115,7 +116,7 @@ class Import::NetexGeneric < Import::Base
     end
 
     def overlapping_referential_ids
-      @overlapping_referentials ||= referential.overlapped_referential_ids
+      @overlapping_referential_ids ||= referential.overlapped_referential_ids
     end
   end
 

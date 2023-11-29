@@ -16,8 +16,11 @@ module LocalExportSupport
   end
 
   def date_range
-    return nil if duration.nil?
-    @date_range ||= Time.now.to_date..self.duration.to_i.days.from_now.to_date
+    @date_range ||= if duration.present?
+      Time.now.to_date..self.duration.to_i.days.from_now.to_date
+    elsif period == 'static_day_period' && from.present? && to.present?
+      from..to
+    end
   end
 
   def export_type

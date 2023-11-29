@@ -1,5 +1,4 @@
 require 'table_builder_helper/column'
-require 'table_builder_helper/custom_links'
 require 'table_builder_helper/url'
 
 # table_builder_2
@@ -341,15 +340,6 @@ module TableBuilderHelper
               _links.map{|link| gear_menu_link(link)}.join.html_safe
             end
           end
-        end.join.html_safe
-      end
-    else
-      menu = content_tag :ul, class: 'dropdown-menu' do
-        (
-          CustomLinks.new(item, pundit_user, links, referential, workgroup).links +
-          action_links.select { |link| link.is_a?(Link)}
-        ).map do |link|
-          gear_menu_link(link)
         end.join.html_safe
       end
     end

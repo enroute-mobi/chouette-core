@@ -23,8 +23,6 @@ class ComplianceCheckSet < ApplicationModel
     where('created_at BETWEEN :begin AND :end', begin: period_range.begin, end: period_range.end)
   end
 
-  scope :blocked, -> { where('created_at < ? AND status = ?', 4.hours.ago, 'running') }
-
   scope :unfinished, -> { where 'notified_parent_at IS NULL' }
 
   scope :assigned_to_slots, ->(organisation, slots) do

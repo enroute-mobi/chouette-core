@@ -84,9 +84,9 @@ fr:
               options:
                 not_supported: L'option %{name} n'est pas valide pour ce type d'export
                 from:
-                  invalid: 'invalid from period'
+                  invalid: 'période non valide'
                 to:
-                  invalid: 'invalid to period'
+                  invalid: 'période non valide'
     attributes:
       attrs: &attrs
         created_at: Créé le

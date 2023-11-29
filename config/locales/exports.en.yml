@@ -82,6 +82,10 @@ en:
                 wrong_file_extension: "The exported file must be a zip file"
               options:
                 not_supported: "%{name} option is valid afor this export type"
+                from:
+                  invalid: 'invalid period'
+                to:
+                  invalid: 'invalid period'
     attributes:
       attrs: &attrs
         created_at: Created at

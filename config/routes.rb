@@ -438,10 +438,6 @@ ChouetteIhm::Application.routes.draw do # rubocop:disable Metrics/BlockLength
     resources :compliance_control_blocks, except: %i[show index]
   end
 
-  resources :companies do
-    get :autocomplete, on: :collection, controller: 'autocomplete_companies'
-  end
-
   resources :calendars do
     get :autocomplete, on: :collection, controller: 'autocomplete_calendars'
     member do

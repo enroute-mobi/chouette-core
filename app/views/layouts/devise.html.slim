@@ -10,9 +10,8 @@ html lang=I18n.locale
 
     // Webpack bundle
     = favicon_pack_tag 'static/favicon.ico'
-    = javascript_pack_tag 'application'
     - additional_packs = (yield :additional_packs).split.to_set.to_a
-    = javascript_pack_tag *(additional_packs), defer: true
+    = javascript_pack_tag 'application', *additional_packs, defer: true
     = stylesheet_pack_tag 'application'
 
     // Sprockets bundle

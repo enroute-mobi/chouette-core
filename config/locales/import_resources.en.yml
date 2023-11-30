@@ -1,21 +1,9 @@
 en:
-  import:
-    resources: &resources
-      index:
-        title: "NeTEx conformity"
-        table_state: "%{lines_imported} line(s) imported on %{lines_in_zipfile} presents in zip file"
-        metrics: "%{error_count} errors, %{warning_count} warnings"
   import_resources:
-    <<: *resources
+    index:
+      metrics: "%{error_count} errors, %{warning_count} warnings"
   activerecord:
-    models:
-      import_resource:
-        zero:  "netex conformity"
-        one:   "netex conformity"
-        other: "netex conformities"
     attributes:
       import/resource:
         name: "Filename"
         status: "Status"
-        resource_type: Resource Type
-        number_of_resources: Number of resources

@@ -19,6 +19,8 @@ class Calendar < ApplicationModel
 
   scope :order_by_organisation_name, ->(dir) { joins(:organisation).order("lower(organisations.name) #{dir}") }
 
+  scope :by_text, ->(text) { text.blank? ? all : where('lower(name) LIKE :t', t: "%#{text.downcase}%") }
+
   after_initialize :set_defaults
 
   def self.ransackable_scopes(auth_object = nil)

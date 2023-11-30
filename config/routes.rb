@@ -47,6 +47,7 @@ ChouetteIhm::Application.routes.draw do # rubocop:disable Metrics/BlockLength
       get :users, on: :collection, defaults: { format: 'json' }
       get :macro_lists, on: :collection, defaults: { format: 'json' }
       get :control_lists, on: :collection, defaults: { format: 'json' }
+      get :calendars, on: :collection, defaults: { format: 'json' }
     end
 
     resources :compliance_check_sets, only: %i[index show] do
@@ -182,7 +183,6 @@ ChouetteIhm::Application.routes.draw do # rubocop:disable Metrics/BlockLength
     resources :processing_rules, as: 'processing_rule_workbenches'
 
     resources :calendars do
-      get :autocomplete, on: :collection, controller: 'autocomplete_calendars'
       member do
         get 'month', defaults: { format: :json }
       end

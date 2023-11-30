@@ -35,6 +35,10 @@ class AutocompleteController < ChouetteController
     @control_lists ||= workbench.control_lists.by_text(text).limit(50)
   end
 
+  def calendars
+    @calendars ||= workbench.calendars_with_shared.by_text(text).limit(50)
+  end
+
   ##################
   # StopArea scope #
   ##################

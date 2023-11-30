@@ -890,7 +890,11 @@ class Import::NetexGeneric < Import::Base
       def time_table
         return nil if name.blank?
 
-        @time_table ||= Chouette::TimeTable.new(comment: name).apply(memory_timetable)
+        @time_table ||= Chouette::TimeTable.new(comment: name).apply(memory_timetable).tap do |time_table|
+          now = Time.now
+          time_table.created_at = now
+          time_table.updated_at = now
+        end
       end
 
       def memory_timetable

@@ -287,12 +287,6 @@ ChouetteIhm::Application.routes.draw do # rubocop:disable Metrics/BlockLength
 
     match 'lines' => 'lines#destroy_all', :via => :delete
     resources :lines, controller: 'referential_lines', except: :index do # rubocop:disable Metrics/BlockLength
-      defaults format: :json do
-        collection do
-          get :autocomplete, to: 'autocomplete_lines#index'
-        end
-      end
-
       resources :footnotes do
         collection do
           get 'edit_all'

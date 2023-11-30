@@ -450,8 +450,14 @@ class Import::NetexGeneric < Import::Base
           name: name,
           wayback: wayback,
           published_name: direction_name,
+          created_at: now,
+          updated_at: now,
           stop_points: stop_points
         }
+      end
+
+      def now
+        @now ||= Time.now
       end
 
       def wayback

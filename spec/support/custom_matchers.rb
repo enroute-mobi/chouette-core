@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 #
 # Usage:
 #   expect(model).to exist_in_database
@@ -58,7 +60,7 @@ class SameAttributesMatcher
     if !@allow_nil && @expected_value.nil?
       "expected value for #{@tested_attribute} is nil"
     else
-      verb = negated ? "matches" : "doesn't match"
+      verb = negated ? 'matches' : "doesn't match"
       "#{@actual_value.inspect} #{verb} #{@expected_value.inspect}"
     end
   end
@@ -72,14 +74,13 @@ class SameAttributesMatcher
   end
 
   def description
-    attribute = "attribute"
-    attribute += "s" if @attribute_names.many?
+    attribute = 'attribute'
+    attribute += 's' if @attribute_names.many?
     "have the same #{attribute} #{@attribute_names.to_sentence} than the #{@named || @than.class.name}"
   end
 end
 
 module AttributesMatcher
-
   # Compare values of given attributes. The compared model can be retrieved by a Proc
   #
   # expect(copy).to have_same_attributes(:name, :parent_id, than: original)

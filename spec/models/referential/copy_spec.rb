@@ -88,8 +88,8 @@ RSpec.describe Referential::Copy do
         target.switch
       end
 
-      let(:target_opposite_route_id) { target.routes.find_by_name('Opposite Route').id }
-      subject { target.routes.find_by_name('Route').opposite_route_id }
+      let(:target_opposite_route_id) { target.routes.find_by(name: 'Opposite Route').id }
+      subject { target.routes.find_by(name: 'Route').opposite_route_id }
 
       it 'should copy opposite route id' do
         is_expected.to eq target_opposite_route_id

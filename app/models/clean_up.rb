@@ -2,7 +2,7 @@ class CleanUp < ApplicationModel
   extend Enumerize
   include CleanUpMethods
   include AASM
-  belongs_to :referential
+  belongs_to :referential # TODO: CHOUETTE-3247 optional: true?
   has_one :clean_up_result
 
   enumerize :date_type, in: %i(outside between before after)

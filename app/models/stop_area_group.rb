@@ -10,7 +10,7 @@ class StopAreaGroup < Group
   validates :stop_area_ids, length: { minimum: 1 }
 
   class Member < Group::Member
-    belongs_to :stop_area, class_name: 'Chouette::StopArea'
+    belongs_to :stop_area, class_name: 'Chouette::StopArea' # CHOUETTE-3247 code analysis
     validates :stop_area_id, uniqueness: { scope: %i[group_id] }
   end
 end

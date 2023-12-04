@@ -1,9 +1,9 @@
 class Destination < ApplicationModel
   include OptionsSupport
 
-  belongs_to :publication_setup, inverse_of: :destinations
+  belongs_to :publication_setup, inverse_of: :destinations # TODO: CHOUETTE-3247 optional: true?
   has_many :reports, class_name: 'DestinationReport', dependent: :destroy
-  belongs_to :publication_api, class_name: '::PublicationApi'
+  belongs_to :publication_api, class_name: '::PublicationApi' # TODO: CHOUETTE-3247 optional: true?
 
   validates :name, :type, presence: true
 

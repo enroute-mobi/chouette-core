@@ -4,8 +4,8 @@ module Control
 
     self.table_name = 'controls'
 
-    belongs_to :control_context, class_name: 'Control::Context', optional: true, inverse_of: :controls
-    belongs_to :control_list, class_name: 'Control::List', optional: true, inverse_of: :controls
+    belongs_to :control_context, class_name: 'Control::Context', optional: true, inverse_of: :controls # CHOUETTE-3247
+    belongs_to :control_list, class_name: 'Control::List', optional: true, inverse_of: :controls # CHOUETTE-3247
     acts_as_list scope: 'control_list_id #{control_list_id ? "= #{control_list_id}" : "IS NULL"} AND control_context_id #{control_context_id ? "= #{control_context_id}" : "IS NULL"}'
 
     store :options, coder: JSON
@@ -43,8 +43,8 @@ module Control
       self.table_name = 'control_runs'
 
       with_options(inverse_of: :control_runs) do
-        belongs_to :control_context_run, class_name: 'Control::Context::Run', optional: true
-        belongs_to :control_list_run, class_name: 'Control::List::Run'
+        belongs_to :control_context_run, class_name: 'Control::Context::Run', optional: true # CHOUETTE-3247
+        belongs_to :control_list_run, class_name: 'Control::List::Run' # TODO: CHOUETTE-3247 optional: true?
       end
 
       with_options(foreign_key: 'control_run_id', inverse_of: :control_run) do

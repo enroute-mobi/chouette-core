@@ -4,7 +4,7 @@ module Chouette
   class TimeTableDate < Referential::ActiveRecord
     include ChecksumSupport
 
-    belongs_to :time_table, inverse_of: :dates
+    belongs_to :time_table, inverse_of: :dates # CHOUETTE-3247 null: false
 
     validates :date, presence: true
 

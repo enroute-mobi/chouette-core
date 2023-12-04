@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 class DocumentType < ActiveRecord::Base
-  belongs_to :workgroup, optional: false
+  belongs_to :workgroup # CHOUETTE-3247 optional: false
 
   has_many :documents
 

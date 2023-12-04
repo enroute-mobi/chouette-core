@@ -1,8 +1,8 @@
 class LineProvider < ApplicationModel
   include CodeSupport
 
-  belongs_to :line_referential, required: true
-  belongs_to :workbench, required: true
+  belongs_to :line_referential # CHOUETTE-3247 required: true
+  belongs_to :workbench # CHOUETTE-3247 required: true
   has_many :lines, class_name: "Chouette::Line"
   has_many :companies, class_name: "Chouette::Company"
   has_many :networks, class_name: "Chouette::Network"

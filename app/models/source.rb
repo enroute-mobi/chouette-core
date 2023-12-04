@@ -3,7 +3,7 @@ require 'net/ftp'
 
 class Source < ApplicationModel
   extend Enumerize
-  belongs_to :workbench, optional: false
+  belongs_to :workbench # CHOUETTE-3247 optional: false
 
   has_many :retrievals, class_name: "Source::Retrieval", foreign_key: "source_id", dependent: :destroy
 
@@ -45,7 +45,7 @@ class Source < ApplicationModel
   attribute :retrieval_time_of_day, TimeOfDay::Type::TimeWithoutZone.new
   attribute :retrieval_days_of_week, Cuckoo::DaysOfWeek::Type.new
 
-  belongs_to :scheduled_job, class_name: '::Delayed::Job', dependent: :destroy
+  belongs_to :scheduled_job, class_name: '::Delayed::Job', optional: true, dependent: :destroy # CHOUETTE-3247 code analysis
   validates :retrieval_time_of_day, presence: true, if: :retrieval_frequency_daily?
   validates :retrieval_days_of_week, presence: true, if: :enabled?
 
@@ -420,9 +420,9 @@ class Source < ApplicationModel
   class Retrieval < Operation
     include Measurable
 
-    belongs_to :source, optional: false
-    belongs_to :import, class_name: "Import::Workbench"
-    belongs_to :workbench, optional: false
+    belongs_to :source # CHOUETTE-3247 optional: false
+    belongs_to :import, class_name: "Import::Workbench" # TODO: CHOUETTE-3247 optional: true?
+    belongs_to :workbench # CHOUETTE-3247 optional: false
 
     before_validation :set_workbench, on: :create
     delegate :workgroup, to: :workbench

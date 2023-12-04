@@ -35,8 +35,8 @@ module Chouette
       [:published_name, :comment, :number, :name, :direction, :wayback]
     end
 
-    belongs_to :line
-    belongs_to :opposite_route, :class_name => 'Chouette::Route', :foreign_key => :opposite_route_id
+    belongs_to :line # CHOUETTE-3247 validates presence
+    belongs_to :opposite_route, :class_name => 'Chouette::Route', :foreign_key => :opposite_route_id # TODO: CHOUETTE-3247 optional: true?
 
     has_many :routing_constraint_zones, :dependent => :destroy
     has_many :journey_patterns, :dependent => :destroy
@@ -88,7 +88,6 @@ module Chouette
     accepts_nested_attributes_for :stop_points, :allow_destroy => :true
 
     validates_presence_of :name
-    validates_presence_of :line
     validates :wayback, inclusion: { in: self.wayback.values }
     after_commit :calculate_costs!, on: [:create, :update]
 

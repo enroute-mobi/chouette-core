@@ -30,7 +30,7 @@ class User < ApplicationModel
 
   # Setup accessible (or protected) attributes for your model
   # attr_accessible :email, :password, :current_password, :password_confirmation, :remember_me, :name, :organisation_attributes
-  belongs_to :organisation
+  belongs_to :organisation # CHOUETTE-3247 validates presence
   has_many :organisation_workbenches, class_name: 'Workbench', through: :organisation, source: :workbenches
   has_many :workbench_sharings, class_name: 'Workbench::Sharing', dependent: :destroy,
                                 as: :recipient, inverse_of: :recipient
@@ -42,7 +42,6 @@ class User < ApplicationModel
   has_many :aggregates, dependent: :nullify
   accepts_nested_attributes_for :organisation
 
-  validates :organisation, presence: true
   validates :email, presence: true, uniqueness: true
   validates :name, presence: true
   validates :enable_internal_password_authentication, inclusion: { in: [true, false] }

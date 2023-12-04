@@ -8,6 +8,6 @@ class Group < ApplicationModel
 
   class Member < ApplicationModel
     self.abstract_class = true
-    belongs_to :group
+    belongs_to :group # CHOUETTE-3247 code analysis
   end
 end

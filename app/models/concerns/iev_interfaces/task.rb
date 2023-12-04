@@ -6,10 +6,10 @@ module IevInterfaces::Task
   include OperationsHelper
 
   included do
-    belongs_to :parent, polymorphic: true
-    belongs_to :workbench, class_name: "::Workbench"
+    belongs_to :parent, polymorphic: true # TODO: CHOUETTE-3247 optional: true?
+    belongs_to :workbench, class_name: "::Workbench" # TODO: CHOUETTE-3247 optional: true?
     has_one :organisation, through: :workbench
-    belongs_to :referential
+    belongs_to :referential # TODO: CHOUETTE-3247 optional: true?
 
     mount_uploader :file, ImportUploader
     validates_integrity_of :file

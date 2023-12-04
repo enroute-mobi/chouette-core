@@ -1,5 +1,5 @@
 class DocumentProvider < ActiveRecord::Base
-  belongs_to :workbench, required: true
+  belongs_to :workbench # CHOUETTE-3247 required: true
 
   has_many :documents
 

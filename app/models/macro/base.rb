@@ -6,8 +6,8 @@ module Macro
 
     self.table_name = 'macros'
 
-    belongs_to :macro_context, class_name: 'Macro::Context', optional: true, inverse_of: :macros
-    belongs_to :macro_list, class_name: 'Macro::List', optional: true, inverse_of: :macros
+    belongs_to :macro_context, class_name: 'Macro::Context', optional: true, inverse_of: :macros # CHOUETTE-3247
+    belongs_to :macro_list, class_name: 'Macro::List', optional: true, inverse_of: :macros # CHOUETTE-3247
     acts_as_list scope: 'macro_list_id #{macro_list_id ? "= #{macro_list_id}" : "IS NULL"} AND macro_context_id #{macro_context_id ? "= #{macro_context_id}" : "IS NULL"}' # rubocop:disable Lint/InterpolationCheck
 
     store :options, coder: JSON
@@ -33,8 +33,8 @@ module Macro
     class Run < ApplicationModel
       self.table_name = 'macro_runs'
 
-      belongs_to :macro_context_run, class_name: 'Macro::Context::Run', optional: true, inverse_of: :macro_runs
-      belongs_to :macro_list_run, class_name: 'Macro::List::Run', inverse_of: :macro_runs
+      belongs_to :macro_context_run, class_name: 'Macro::Context::Run', optional: true, inverse_of: :macro_runs # CHOUETTE-3247
+      belongs_to :macro_list_run, class_name: 'Macro::List::Run', inverse_of: :macro_runs # TODO: CHOUETTE-3247 optional: true?
 
       has_many :macro_messages, class_name: 'Macro::Message', foreign_key: 'macro_run_id', inverse_of: :macro_run
 

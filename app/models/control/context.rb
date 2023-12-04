@@ -6,7 +6,7 @@ module Control
 
     self.table_name = 'control_contexts'
 
-    belongs_to :control_list, class_name: 'Control::List', optional: false, inverse_of: :control_contexts
+    belongs_to :control_list, class_name: 'Control::List', inverse_of: :control_contexts # CHOUETTE-3247 optional: false
 
     with_options(inverse_of: :control_context, foreign_key: 'control_context_id') do
       has_many :controls, -> { order(position: :asc) }, class_name: 'Control::Base', dependent: :delete_all
@@ -53,8 +53,8 @@ module Control
       self.table_name = 'control_context_runs'
 
       with_options(inverse_of: :control_context_runs) do
-        belongs_to :control_list_run, class_name: 'Control::List::Run', optional: false
-        belongs_to :control_context, class_name: 'Control::Context', optional: true
+        belongs_to :control_list_run, class_name: 'Control::List::Run' # CHOUETTE-3247 optional: false
+        belongs_to :control_context, class_name: 'Control::Context', optional: true # CHOUETTE-3247
       end
 
       with_options(inverse_of: :control_context_run, foreign_key: 'control_context_run_id') do

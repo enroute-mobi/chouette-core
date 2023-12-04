@@ -5,8 +5,8 @@ class StopAreaProvider < ActiveRecord::Base
   include ObjectidSupport
   include CodeSupport
 
-  belongs_to :stop_area_referential
-  belongs_to :workbench, required: true
+  belongs_to :stop_area_referential # TODO: CHOUETTE-3247 optional: true?
+  belongs_to :workbench # CHOUETTE-3247 required: true
 
   has_many :stop_areas, class_name: "Chouette::StopArea"
   has_many :connection_links, class_name: "Chouette::ConnectionLink"

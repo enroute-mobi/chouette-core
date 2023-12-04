@@ -26,7 +26,7 @@ module Chouette
 
     scope :with_lines, ->(lines) { joins(:line_notice_memberships).where(line_notices_lines: { line_id: lines }) }
 
-    belongs_to :line_referential, inverse_of: :line_notices
+    belongs_to :line_referential, inverse_of: :line_notices # TODO: CHOUETTE-3247 optional: true?
     has_many :line_notice_memberships, inverse_of: :line_notice, dependent: :destroy
     has_many :lines, through: :line_notice_memberships, inverse_of: :line_notices
     has_many_scattered :vehicle_journeys

@@ -2,11 +2,10 @@ require 'activeattr_ext.rb'
 require 'range_ext'
 
 class ReferentialMetadata < ApplicationModel
-  belongs_to :referential, touch: true
-  belongs_to :referential_source, class_name: 'Referential'
+  belongs_to :referential, touch: true # CHOUETTE-3247 validates presence
+  belongs_to :referential_source, class_name: 'Referential' # TODO: CHOUETTE-3247 optional: true?
   has_array_of :lines, class_name: 'Chouette::Line'
 
-  validates :referential, presence: true
   validates :lines, presence: true
   validates :periodes, presence: true
 

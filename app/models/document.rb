@@ -3,8 +3,8 @@
 class Document < ApplicationModel
   include CodeSupport
 
-  belongs_to :document_type, required: true
-  belongs_to :document_provider, required: true
+  belongs_to :document_type # CHOUETTE-3247 required: true
+  belongs_to :document_provider # CHOUETTE-3247 required: true
 
   has_many :memberships, class_name: 'DocumentMembership', dependent: :delete_all
   has_many :lines, through: :memberships, source: :documentable, source_type: 'Chouette::Line'
@@ -14,7 +14,7 @@ class Document < ApplicationModel
   mount_uploader :file, DocumentUploader
 
   attribute :validity_period, Period::Type.new, range: true
-  validates :name, :file, :document_type_id, :document_provider_id, presence: true
+  validates :name, :file, presence: true
 
   # Can't use it for the moment because it fails with an error
   # "convert endless range to an array error due to Array conversion" in AssociatedValidator

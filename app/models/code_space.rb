@@ -1,6 +1,6 @@
 class CodeSpace < ActiveRecord::Base
 
-  belongs_to :workgroup
+  belongs_to :workgroup # TODO: CHOUETTE-3247 optional: true?
   validates :short_name, presence: true, uniqueness: {scope: :workgroup_id}, format: { with: /\A[A-Za-z0-9_]+\z/ }
 
   DEFAULT_SHORT_NAME = 'external'

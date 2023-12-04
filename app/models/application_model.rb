@@ -23,11 +23,11 @@ class ApplicationModel < ::ActiveRecord::Base
       end
     end
 
-    def add_light_belongs_to(rel_name)
+    def add_light_belongs_to(rel_name, **options)
       rel = reflections[rel_name.to_s]
       raise "missing relation #{rel_name} on #{self.name}" unless rel
 
-      belongs_to "#{rel_name}_light".to_sym, ->{ light }, class_name: rel.klass.name, foreign_key: rel.foreign_key
+      belongs_to "#{rel_name}_light".to_sym, ->{ light }, class_name: rel.klass.name, foreign_key: rel.foreign_key, **options
 
       alias_method "#{rel_name}_light_without_cache", "#{rel_name}_light"
       define_method "#{rel_name}_light_with_cache" do

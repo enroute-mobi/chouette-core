@@ -10,7 +10,7 @@ class Import::Base < ApplicationModel
 
   has_many :processings, as: :operation, dependent: :destroy
   has_array_of :overlapping_referentials, class_name: '::Referential'
-  belongs_to :code_space, optional: false, default: -> { default_code_space }
+  belongs_to :code_space, default: -> { default_code_space } # CHOUETTE-3247 optional: false
 
   scope :unfinished, -> { where 'notified_parent_at IS NULL' }
   scope :having_status, ->(statuses) { where(status: statuses ) }
@@ -136,8 +136,6 @@ class Import::Base < ApplicationModel
   # in order to allow async workers (which don't have acces to the file) to
   # save the import
   validates_presence_of :file, unless: Proc.new {|import| @local_file.present? || import.persisted? || import.errors[:file].present? }
-
-  validates_presence_of :workbench
 
   def self.maximum_runtime
     SmartEnv['CHOUETTE_IMPORT_MAX_RUN_TIME'] ? SmartEnv['CHOUETTE_IMPORT_MAX_RUN_TIME'].hours : Delayed::Worker.max_run_time

@@ -7,7 +7,7 @@ module Chouette
 
     include TransientSupport
 
-    belongs_to :route
+    belongs_to :route # CHOUETTE-3247 validates presence
     has_many :vehicle_journeys, :dependent => :destroy
     has_many :vehicle_journey_at_stops, :through => :vehicle_journeys
     has_and_belongs_to_many :stop_points, -> { order("stop_points.position") }, :before_add => :vjas_add, :before_remove => :vjas_remove, :after_add => :shortcuts_update_for_add, :after_remove => :shortcuts_update_for_remove
@@ -17,7 +17,7 @@ module Chouette
     has_many :journey_pattern_stop_points, class_name: '::Chouette::JourneyPatternStopPoint'
     accepts_nested_attributes_for :journey_pattern_stop_points
 
-    belongs_to :shape, optional: true
+    belongs_to :shape, optional: true # CHOUETTE-3247
     belongs_to_public :shape
 
     scope :light, ->{ select(:id, :name, :route_id, :objectid) }
@@ -27,7 +27,6 @@ module Chouette
     scope :with_associated_shape, -> { where.not(shape_id: nil) }
     scope :without_associated_shape, -> { where(shape_id: nil) }
 
-    validates_presence_of :route
     validates_presence_of :name
 
     delegate :line, to: :route

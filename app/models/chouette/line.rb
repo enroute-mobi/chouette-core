@@ -26,11 +26,11 @@ module Chouette
     open_color_attribute
     open_color_attribute :text_color
 
-    belongs_to :company
-    belongs_to :network
+    belongs_to :company # TODO: CHOUETTE-3247 optional: true?
+    belongs_to :network # TODO: CHOUETTE-3247 optional: true?
 
     # this 'light' relation prevents the custom fields loading
-    belongs_to :company_light, lambda {
+    belongs_to :company_light, lambda { # TODO: CHOUETTE-3247 optional: true?
                                  select(:id, :name, :line_referential_id, :objectid)
                                }, class_name: 'Chouette::Company', foreign_key: :company_id
 

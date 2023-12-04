@@ -8,7 +8,7 @@ module ProcessingRule
     extend Enumerize
 
     # Macro::List or Control::List to be started
-    belongs_to :processable, polymorphic: true, required: true
+    belongs_to :processable, polymorphic: true # CHOUETTE-3247 required: true
     has_many :processings, foreign_key: 'processing_rule_id'
 
     validates :operation_step, presence: true
@@ -58,7 +58,7 @@ module ProcessingRule
 
   # Workbench ProcessingRule managed as Workbench#processing_rules
   class Workbench < Base
-    belongs_to :workbench, required: true
+    belongs_to :workbench # CHOUETTE-3247 required: true
 
     enumerize :processable_type, in: %w[Macro::List Control::List]
     enumerize :operation_step, in: %w[after_import before_merge after_merge], scope: :shallow
@@ -92,7 +92,7 @@ module ProcessingRule
 
   # Workgroup ProcessingRule managed as Workgroup#processing_rules
   class Workgroup < Base
-    belongs_to :workgroup, required: true
+    belongs_to :workgroup # CHOUETTE-3247 required: true
     has_array_of :target_workbenches, class_name: 'Workbench'
 
     enumerize :processable_type, in: %w[Control::List]

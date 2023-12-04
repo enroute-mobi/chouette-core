@@ -142,6 +142,9 @@ module ChouetteIhm
     end
 
     config.stop_area_available_localizations = %i[en_UK nl_NL de_DE fr_FR it_IT es_ES]
+
+    # Require `belongs_to` associations by default. Previous versions had false.
+    config.active_record.belongs_to_required_by_default = true
   end
 end
 

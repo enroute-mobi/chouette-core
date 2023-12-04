@@ -1,5 +1,5 @@
 class ReferentialSuite < ApplicationModel
-  belongs_to :new, class_name: 'Referential'
+  belongs_to :new, class_name: 'Referential', optional: true # CHOUETTE-3247 code analysis
   validate def validate_consistent_new
     return true if new_id.nil? || new.nil?
     return true if new.referential_suite_id == id
@@ -7,7 +7,7 @@ class ReferentialSuite < ApplicationModel
                I18n.t('referential_suites.errors.inconsistent_new', name: new.name))
   end
 
-  belongs_to :current, class_name: 'Referential'
+  belongs_to :current, class_name: 'Referential', optional: true # CHOUETTE-3247 code analysis
   validate def validate_consistent_current
     return true if current_id.nil? || current.nil?
     return true if current.referential_suite_id == id

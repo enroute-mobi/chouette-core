@@ -17,12 +17,12 @@ module Chouette
       [:transport_mode, :published_journey_name, :vehicle_type_identifier, :published_journey_identifier, :comment]
     end
 
-    belongs_to :company
-    belongs_to :accessibility_assessment, class_name: '::AccessibilityAssessment', optional: true
-    belongs_to :company_light, -> {select(:id, :objectid, :line_referential_id)}, class_name: "Chouette::Company", foreign_key: :company_id
-    belongs_to :route
-    belongs_to :journey_pattern
-    belongs_to :journey_pattern_only_objectid, -> {select("journey_patterns.id, journey_patterns.objectid")}, class_name: "Chouette::JourneyPattern", foreign_key: :journey_pattern_id
+    belongs_to :company # TODO: CHOUETTE-3247 optional: true?
+    belongs_to :accessibility_assessment, class_name: '::AccessibilityAssessment', optional: true # CHOUETTE-3247 optional: true
+    belongs_to :company_light, -> {select(:id, :objectid, :line_referential_id)}, class_name: "Chouette::Company", foreign_key: :company_id # TODO: CHOUETTE-3247 optional: true?
+    belongs_to :route # TODO: CHOUETTE-3247 optional: true?
+    belongs_to :journey_pattern # TODO: CHOUETTE-3247 optional: true?
+    belongs_to :journey_pattern_only_objectid, -> {select("journey_patterns.id, journey_patterns.objectid")}, class_name: "Chouette::JourneyPattern", foreign_key: :journey_pattern_id # TODO: CHOUETTE-3247 optional: true?
     has_array_of :service_facility_sets, class_name: '::ServiceFacilitySet'
 
     has_many :stop_areas, through: :journey_pattern

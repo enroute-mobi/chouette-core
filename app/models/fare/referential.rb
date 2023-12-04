@@ -5,7 +5,7 @@ module Fare
   class Referential < ApplicationModel
     self.table_name = :fare_referentials
 
-    belongs_to :workgroup
+    belongs_to :workgroup # TODO: CHOUETTE-3247 WTF? no workgroup_id...
 
     has_many :fare_providers, class_name: 'Fare::Provider', foreign_key: 'fare_referential_id', dependent: :destroy
     has_many :fare_zones, through: :fare_providers

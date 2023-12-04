@@ -4,8 +4,8 @@ module StopAreaReferentialSupport
   extend ActiveSupport::Concern
 
   included do
-    belongs_to :stop_area_referential, required: true
-    belongs_to :stop_area_provider, required: true
+    belongs_to :stop_area_referential # CHOUETTE-3247 required: true
+    belongs_to :stop_area_provider # CHOUETTE-3247 required: true
 
     alias_method :referential, :stop_area_referential
 

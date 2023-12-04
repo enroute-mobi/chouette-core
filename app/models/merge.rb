@@ -2,14 +2,12 @@ class Merge < ApplicationModel
   include OperationSupport
   include NotifiableSupport
 
-  belongs_to :workbench
+  belongs_to :workbench # CHOUETTE-3247 validates presence
   has_many :processings, as: :operation, dependent: :destroy
   has_many :macro_list_runs, through: :processings, :source => :processed, source_type: "Macro::List::Run"
   has_many :control_list_runs, through: :processings, :source => :processed, source_type: "Control::List::Run"
 
   delegate :output, :organisation, :workgroup, to: :workbench, allow_nil: true
-
-  validates :workbench, presence: true
 
   EXPERIMENTAL_METHOD = 'experimental'
   enumerize :merge_method, in: ['legacy', EXPERIMENTAL_METHOD], default: 'legacy'

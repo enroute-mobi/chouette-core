@@ -7,7 +7,7 @@ class Entrance < ActiveRecord::Base
   include CodeSupport
   extend Enumerize
 
-  belongs_to :stop_area, class_name: 'Chouette::StopArea', optional: false
+  belongs_to :stop_area, class_name: 'Chouette::StopArea' # CHOUETTE-3247 optional: false
   has_one :raw_import, as: :model, dependent: :delete
   accepts_nested_attributes_for :raw_import
 

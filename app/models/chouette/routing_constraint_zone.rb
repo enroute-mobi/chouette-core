@@ -6,12 +6,12 @@ module Chouette
     include ObjectidSupport
     has_metadata
 
-    belongs_to :route
+    belongs_to :route # CHOUETTE-3247 validates presence
     has_array_of :stop_points, class_name: 'Chouette::StopPoint', order_by: :position
 
     attr_accessor :allow_entire_journey
 
-    validates_presence_of :name, :stop_points, :route_id
+    validates_presence_of :name, :stop_points
     validate :stop_points_belong_to_route, :at_least_two_stop_points_selected
     validate :not_all_stop_points_selected, unless: :allow_entire_journey
 

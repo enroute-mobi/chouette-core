@@ -3,8 +3,8 @@
 class Contract < ApplicationModel
   include CodeSupport
 
-  belongs_to :company, optional: false, class_name: 'Chouette::Company'
-  belongs_to :workbench, optional: false, class_name: 'Workbench'
+  belongs_to :company, class_name: 'Chouette::Company' # CHOUETTE-3247 optional: false
+  belongs_to :workbench, class_name: 'Workbench' # CHOUETTE-3247 optional: false
 
   has_array_of :lines, class_name: 'Chouette::Line'
 

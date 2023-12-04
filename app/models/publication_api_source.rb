@@ -1,11 +1,9 @@
 class PublicationApiSource < ActiveRecord::Base
 
-  belongs_to :publication_api
-  belongs_to :publication
-  belongs_to :export, class_name: 'Export::Base'
+  belongs_to :publication_api # CHOUETTE-3247 code analysis
+  belongs_to :publication # CHOUETTE-3247 code analysis
+  belongs_to :export, class_name: 'Export::Base' # TODO: CHOUETTE-3247 optional: true?
 
-  validates :publication_api, presence: true
-  validates :publication, presence: true
   validates :key, presence: true
 
   delegate :file, to: :export

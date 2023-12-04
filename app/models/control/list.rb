@@ -2,7 +2,7 @@ module Control
   class List < ApplicationModel
     self.table_name = 'control_lists'
 
-    belongs_to :workbench, optional: false
+    belongs_to :workbench # CHOUETTE-3247 optional: false
     validates :name, presence: true
 
     with_options(inverse_of: :control_list, foreign_key: 'control_list_id') do
@@ -35,16 +35,16 @@ module Control
       # The Workbench where controls are executed
       self.table_name = 'control_list_runs'
 
-      belongs_to :workbench, optional: false
+      belongs_to :workbench # CHOUETTE-3247 optional: false
       delegate :workgroup, to: :workbench
 
       # The Referential where controls are executed.
       # Optional, because the user can run controls on Stop Areas for example
-      belongs_to :referential, optional: true
+      belongs_to :referential, optional: true # CHOUETTE-3247
 
       # The original control list definition. This control list can have been modified or deleted since.
       # Should only used to provide a link in the UI
-      belongs_to :original_control_list,
+      belongs_to :original_control_list, # CHOUETTE-3247
                  optional: true, foreign_key: :original_control_list_id, class_name: 'Control::List'
 
       with_options(foreign_key: 'control_list_run_id', dependent: :destroy, inverse_of: :control_list_run) do

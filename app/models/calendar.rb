@@ -7,7 +7,7 @@ class Calendar < ApplicationModel
   include TimetableSupport
 
   has_metadata
-  belongs_to :workbench, required: true
+  belongs_to :workbench # CHOUETTE-3247 required: true
   has_one :organisation, through: :workbench
   has_one :workgroup, through: :workbench
 

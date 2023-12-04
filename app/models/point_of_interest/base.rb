@@ -9,8 +9,10 @@ module PointOfInterest
 
     self.table_name = 'point_of_interests'
 
-    belongs_to :point_of_interest_category, class_name: 'PointOfInterest::Category', optional: false,
-                                            inverse_of: :point_of_interests, required: true
+    belongs_to :shape_referential # CHOUETTE-3247 required: true
+    belongs_to :shape_provider # CHOUETTE-3247 required: true
+    belongs_to :point_of_interest_category, class_name: 'PointOfInterest::Category', # CHOUETTE-3247 optional: false + required: true (!)
+                                            inverse_of: :point_of_interests
 
     has_many :codes, as: :resource, dependent: :delete_all
     has_many :point_of_interest_hours, dependent: :delete_all, class_name: 'PointOfInterest::Hour',
@@ -18,7 +20,7 @@ module PointOfInterest
     accepts_nested_attributes_for :point_of_interest_hours, allow_destroy: true, reject_if: :all_blank
 
     validates_associated :point_of_interest_hours
-    validates :name, :point_of_interest_category_id, presence: true
+    validates :name, presence: true
 
     before_validation :position_from_input
 

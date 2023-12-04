@@ -9,7 +9,7 @@ class LineGroup < Group
   validates :line_ids, length: { minimum: 1 }
 
   class Member < Group::Member
-    belongs_to :line, class_name: 'Chouette::Line'
+    belongs_to :line, class_name: 'Chouette::Line' # CHOUETTE-3247 code analysis
     validates :line_id, uniqueness: { scope: %i[group_id] }
   end
 end

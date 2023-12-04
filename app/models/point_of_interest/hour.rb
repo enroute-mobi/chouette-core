@@ -4,7 +4,7 @@ module PointOfInterest
   class Hour < ApplicationModel
     self.table_name = 'point_of_interest_hours'
 
-    belongs_to :point_of_interest, class_name: 'PointOfInterest::Base',
+    belongs_to :point_of_interest, class_name: 'PointOfInterest::Base', # TODO: CHOUETTE-3247 optional: true?
                                    inverse_of: :point_of_interest_hours
 
     validates :opening_time_of_day, presence: true

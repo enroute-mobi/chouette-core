@@ -618,7 +618,7 @@ module Chouette
     end
 
     def to_timetable
-      Timetable.new.tap do |timetable|
+      Cuckoo::Timetable.new.tap do |timetable|
         dates.each do |date|
           if date.in?
             timetable.included_dates << date.date
@@ -628,9 +628,13 @@ module Chouette
         end
 
         periods.each do |period|
-          timetable.periods << Timetable::Period.new(period.period_start, period.period_end, days_of_week)
+          timetable.periods << Cuckoo::Timetable::Period.new(period.period_start, period.period_end, days_of_week)
         end
       end
+    end
+
+    def to_days_bit
+      to_timetable.to_days_bit
     end
 
     def apply(timetable)

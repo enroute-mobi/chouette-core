@@ -1363,9 +1363,9 @@ class Import::Gtfs < Import::Base # rubocop:disable Metrics/ClassLength
 
       attr_accessor :index
 
-      # Returns a Timetable::DaysOfWeek according to GTFS Service monday?/.../sunday?
+      # Returns a Cuckoo::Timetable::DaysOfWeek according to GTFS Service monday?/.../sunday?
       def days_of_week
-        Timetable::DaysOfWeek.new.tap do |days_of_week|
+        Cuckoo::Timetable::DaysOfWeek.new.tap do |days_of_week|
           %i[monday tuesday wednesday thursday friday saturday sunday].each do |day|
             days_of_week.enable day if send "#{day}?"
           end
@@ -1386,11 +1386,11 @@ class Import::Gtfs < Import::Base # rubocop:disable Metrics/ClassLength
       end
 
       def memory_timetable_period
-        Timetable::Period.from(period, days_of_week) if period
+        Cuckoo::Timetable::Period.from(period, days_of_week) if period
       end
 
       def memory_timetable
-        @memory_timetable ||= Timetable.new(
+        @memory_timetable ||= Cuckoo::Timetable.new(
           period: memory_timetable_period,
           included_dates: included_dates,
           excluded_dates: excluded_dates

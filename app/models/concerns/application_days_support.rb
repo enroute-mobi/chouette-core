@@ -121,7 +121,7 @@ module ApplicationDaysSupport
   end
 
   def days_of_week
-    Timetable::DaysOfWeek.from_int_day_types(int_day_types)
+    Cuckoo::Timetable::DaysOfWeek.from_int_day_types(int_day_types)
   end
 
   def days_of_week=(days_of_week)

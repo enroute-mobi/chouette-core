@@ -96,7 +96,7 @@ module Chouette::Sync
           end
 
           def netex_week_days(day_types)
-            Timetable::DaysOfWeek.new.tap do |dow|
+            Cuckoo::Timetable::DaysOfWeek.new.tap do |dow|
               day_types.each do |day_type|
                 day_type.properties.each do |property|
                   property.days_of_week.split(/\s/).map(&:downcase).each do |day|

@@ -14,7 +14,7 @@ module PointOfInterest
     attribute :week_days, WeekDays.new
 
     def week_days_attributes=(attributes)
-      self.week_days = Timetable::DaysOfWeek.new(attributes)
+      self.week_days = Cuckoo::Timetable::DaysOfWeek.new(attributes)
     end
 
     attribute :opening_time_of_day, TimeOfDay::Type::TimeWithoutZone.new

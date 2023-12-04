@@ -23,157 +23,96 @@ class ServiceCount < ActiveRecord::Base
     end
   }
 
-  def self.compute_for_referential(referential, line_ids: [])
-    Chouette::Benchmark.measure 'service_counts', referential: referential.id do
-      referential.switch do
-        clean_previous_stats(line_ids)
-        ActiveRecord::Base.cache do
-          ActiveRecord::Base.transaction do
-            selected_lines(referential, line_ids).find_each do |line|
-              Chouette::Benchmark.measure 'line', line: line.id do
-                routes = referential.routes.where(line_id: line.id)
-                if routes.exists?
-                  routes.includes(:journey_patterns).find_each do |route|
-                    compute_for_route(route, referential: referential)
-                  end
-                else
-                  fill_blanks_for_empty_line line, referential: referential
-                end
+  acts_as_copy_target
+
+  class << self
+    # rubocop:disable Metrics/MethodLength,Metrics/BlockLength,Metrics/AbcSize
+    def compute_for_referential(referential)
+      Chouette::Benchmark.measure 'service_counts', referential: referential.id do
+        referential_inserter = ReferentialInserter.new(referential) do |config|
+          config.add(IdInserter)
+          config.add(CopyInserter)
+        end
+
+        referential.switch do
+          delete_all
+
+          ActiveRecord::Base.cache do
+            time_table_days_bits = {}
+            referential.time_tables.includes(:dates, :periods).find_each do |time_table|
+              time_table_days_bits[time_table.id] = time_table.to_days_bit
+            end
+
+            current_attributes = nil
+            current_days_count = nil
+
+            request = time_tables_and_vehicle_journey_count_by_journey_pattern_id(referential)
+            cursor = PostgreSQLCursor::Cursor.new(request)
+            cursor.each_row do |row|
+              if current_attributes && current_attributes['journey_pattern_id'] != row['journey_pattern_id']
+                insert_service_counts(referential_inserter, current_attributes, current_days_count)
+                current_attributes = nil
+              end
+
+              # TODO: use ActiveRecord::Type.lookup(:integer, array: true) when activerecord-postgis-adapter >= 7.1.0
+              # see https://github.com/rgeo/activerecord-postgis-adapter/pull/334
+              time_table_ids = PG::TextDecoder::Array.new.decode(row['time_table_ids']).map(&:to_i)
+              row_days_bit = Cuckoo::DaysBit.merge(*time_table_days_bits.values_at(*time_table_ids))
+              row_days_count = row_days_bit * row['vehicle_journey_count'].to_i
+              if current_attributes.nil?
+                current_attributes = row.slice('journey_pattern_id', 'route_id', 'line_id')
+                current_days_count = row_days_count
+              else
+                current_days_count += row_days_count
               end
             end
+
+            insert_service_counts(referential_inserter, current_attributes, current_days_count) if current_attributes
           end
         end
+
+        referential_inserter.flush
       end
     end
-  end
+    # rubocop:enable Metrics/MethodLength,Metrics/BlockLength,Metrics/AbcSize
 
-  def self.selected_lines(referential, ids)
-    if ids.empty?
-      referential.lines.select(:id)
-    else
-      referential.lines.where(id: ids)
-    end
-  end
+    private
 
-  def self.clean_previous_stats(line_ids)
-    if line_ids.empty?
-      delete_all
-    else
-      where(line_id: line_ids).delete_all
-    end
-  end
-
-  def self.compute_for_route(route, referential: nil)
-    journey_patterns = route.journey_patterns
-    if journey_patterns.exists?
-      journey_patterns.select(:id, :route_id).find_each do |journey_pattern|
-        populate_for_journey_pattern journey_pattern, referential: referential
-        fill_blanks_for_journey_pattern journey_pattern, referential: referential
-      end
-    else
-      fill_blanks_for_empty_route route, referential: referential
-    end
-  end
-
-  def self.populate_for_journey_pattern(journey_pattern, referential: nil)
-    route_id = journey_pattern.route_id
-    line_id = journey_pattern.route.line_id
-
-    bulk_insert do |worker|
-      JourneyPatternOfferService.new(
-        journey_pattern,
-        referential: referential
-      ).circulation_dates.each do |date, count|
-        worker.add(
-          journey_pattern_id: journey_pattern.id,
-          route_id: route_id,
-          line_id: line_id,
-          date: date,
-          count: count
-        )
+    def insert_service_counts(referential_inserter, service_count_attributes, days_count)
+      days_count.each_date do |date, count|
+        service_count = new(service_count_attributes.merge('date' => date, 'count' => count))
+        referential_inserter.service_counts << service_count
       end
     end
-  end
 
-  def self.fill_blanks_for_empty_line(line, referential:)
-    service = JourneyPatternOfferService.new(
-      nil,
-      referential: referential,
-      line: line
-    )
-
-    bulk_insert do |worker|
-      service.period_start.upto(service.period_end) do |date|
-        worker.add(
-          date: date,
-          count: 0,
-          journey_pattern_id: nil,
-          route_id: nil,
-          line_id: line.id
-        )
-      end
+    def time_tables_and_vehicle_journey_count_by_journey_pattern_id(referential)
+      <<-SQL
+        SELECT
+          journey_pattern_id,
+          route_id,
+          line_id,
+          time_table_ids::integer[],
+          COUNT(vehicle_journey_id) AS vehicle_journey_count
+        FROM (#{time_tables_by_vehicle_journey_subquery(referential)}) t
+        GROUP BY journey_pattern_id, route_id, line_id, time_table_ids
+        ORDER BY journey_pattern_id ASC
+      SQL
     end
-  end
 
-  def self.fill_blanks_for_empty_route(route, referential:)
-    service = JourneyPatternOfferService.new(
-      nil,
-      referential: referential,
-      route: route
-    )
-
-    bulk_insert do |worker|
-      service.period_start.upto(service.period_end) do |date|
-        worker.add(
-          date: date,
-          count: 0,
-          journey_pattern_id: nil,
-          route_id: route.id,
-          line_id: route.line_id
-        )
-      end
+    # rubocop:disable Metrics/MethodLength
+    def time_tables_by_vehicle_journey_subquery(referential)
+      referential.vehicle_journeys
+                 .joins(:time_tables, journey_pattern: :route) \
+                 .select(
+                   'vehicle_journeys.id AS "vehicle_journey_id"',
+                   'journey_patterns.id AS journey_pattern_id',
+                   'routes.id AS route_id',
+                   'routes.line_id AS line_id',
+                   'array_agg(time_tables.id ORDER BY time_tables.id) AS "time_table_ids"'
+                 ) \
+                 .group('vehicle_journeys.id', 'journey_patterns.id', 'routes.id', 'routes.line_id')
+                 .to_sql
     end
-  end
-
-  def self.fill_blanks_for_journey_pattern(journey_pattern, referential: nil)
-    scope = for_journey_pattern(journey_pattern)
-
-    service = JourneyPatternOfferService.new(
-      journey_pattern,
-      referential: referential
-    )
-
-    previous_date = service.period_start.prev_day
-    route_id = journey_pattern.route_id
-    line_id = journey_pattern.route.line_id
-    bulk_insert do |worker|
-      scope.order('date ASC').each do |stat|
-        while previous_date < stat.date - 1
-          previous_date = previous_date.next
-          worker.add(
-            date: previous_date,
-            count: 0,
-            journey_pattern_id: journey_pattern.id,
-            route_id: route_id,
-            line_id: line_id
-          )
-        end
-        previous_date = stat.date
-      end
-      while previous_date < service.period_end
-        previous_date = previous_date.next
-        worker.add(
-          date: previous_date,
-          count: 0,
-          journey_pattern_id: journey_pattern.id,
-          route_id: route_id,
-          line_id: line_id
-        )
-      end
-    end
-  end
-
-  def self.holes_for_line(line)
-    for_line(line).group('date, line_id').having('SUM(count) = 0').select(:date).order(:date)
+    # rubocop:enable Metrics/MethodLength
   end
 end

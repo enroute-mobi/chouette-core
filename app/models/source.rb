@@ -74,7 +74,7 @@ class Source < ApplicationModel
   end
 
   def retrieval_days_of_week_attributes=(attributes)
-    self.retrieval_days_of_week = Timetable::DaysOfWeek.new(attributes)
+    self.retrieval_days_of_week = Cuckoo::Timetable::DaysOfWeek.new(attributes)
   end
 
   # REMOVEME after CHOUETTE-2007

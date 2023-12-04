@@ -231,7 +231,7 @@ class Merge < ApplicationModel
 
   def after_save_current
     referentials.each(&:merged!)
-    ServiceCount.compute_for_referential(new, line_ids: merged_line_ids)
+    ServiceCount.compute_for_referential(new)
     aggregate_if_urgent_offer
   end
 

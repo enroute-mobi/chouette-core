@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class Aggregate < ApplicationModel
   DEFAULT_KEEP_AGGREGATES = 10
 
@@ -7,7 +9,7 @@ class Aggregate < ApplicationModel
   include Measurable
 
   belongs_to :workgroup
-  has_many :compliance_check_sets, -> { where(parent_type: "Aggregate") }, foreign_key: :parent_id, dependent: :destroy
+  has_many :compliance_check_sets, -> { where(parent_type: 'Aggregate') }, foreign_key: :parent_id, dependent: :destroy
   has_many :resources, class_name: 'Aggregate::Resource'
   has_many :processings, as: :operation, dependent: :destroy
 
@@ -20,8 +22,9 @@ class Aggregate < ApplicationModel
   end
 
   def rollback!
-    raise "You cannot rollback to the current version" if current?
-    workgroup.output.update current: self.new
+    raise 'You cannot rollback to the current version' if current?
+
+    workgroup.output.update current: new
     following_aggregates.each(&:cancel!)
     publish rollback: true
     workgroup.aggregated!
@@ -38,7 +41,7 @@ class Aggregate < ApplicationModel
   end
 
   def aggregate
-    update_column :started_at, Time.now
+    update_column :started_at, Time.zone.now
     update_column :status, :running
 
     enqueue_job :aggregate!
@@ -57,7 +60,8 @@ class Aggregate < ApplicationModel
     include Measurable
 
     def initialize(referential, new)
-      @referential, @new = referential, new
+      @referential = referential
+      @new = new
     end
     attr_reader :referential, :new
 
@@ -100,11 +104,11 @@ class Aggregate < ApplicationModel
 
     def copy!
       duration = ::Benchmark.realtime do
-        measure :copy, workbench_id: workbench.id do
+        measure :workbench, workbench_id: workbench.id do
           Rails.logger.tagged("Workbench ##{workbench.id}") do
             Rails.logger.info "Aggregate Referential##{referential.id} with priority #{priority}"
             clean!
-            ReferentialCopy.new(source: referential, target: new, source_priority: priority).copy!
+            Referential::Copy.new(source: referential, target: new, source_priority: priority).copy
           end
         end
       end
@@ -113,12 +117,11 @@ class Aggregate < ApplicationModel
 
       self
     end
-
   end
 
   def aggregate!
     Rails.logger.tagged("Aggregate ##{id}") do
-      measure "aggregate", aggregate: id do
+      measure 'aggregate', aggregate: id do
         prepare_new
 
         measure 'referential_copies' do
@@ -126,8 +129,15 @@ class Aggregate < ApplicationModel
             copy = WorkbenchCopy.new(source, new).copy!
             resources << copy.aggregate_resource
           end
+        end
 
-          new.switch { new.update_counters }
+        new.switch do
+          measure 'analyse_current' do
+            new.schema.analyse
+          end
+
+          new.update_counters
+          ServiceCount.compute_for_referential(new)
         end
 
         if processing_rules_after_aggregate.present?
@@ -146,7 +156,7 @@ class Aggregate < ApplicationModel
         end
       end
     end
-  rescue => e
+  rescue StandardError => e
     Chouette::Safe.capture "Aggregate ##{id} failed", e
     failed!
     raise e if Rails.env.test?
@@ -165,31 +175,21 @@ class Aggregate < ApplicationModel
   end
 
   def self.keep_operations
-    @keep_operations ||= begin
-      if Rails.configuration.respond_to?(:keep_aggregates)
-        Rails.configuration.keep_aggregates
-      else
-        DEFAULT_KEEP_AGGREGATES
-      end
-    end
+    @keep_operations ||= if Rails.configuration.respond_to?(:keep_aggregates)
+                           Rails.configuration.keep_aggregates
+                         else
+                           DEFAULT_KEEP_AGGREGATES
+                         end
   end
 
   def after_save_current
-    analyse_current
-
     clean_previous_operations
     publish
     workgroup.aggregated!
   end
 
-  def analyse_current
-    measure "analyse_current" do
-      output.current.schema.analyse
-    end
-  end
-
   def handle_queue
-    concurent_operations.pending.where('created_at < ?', created_at).each(&:cancel!)
+    concurent_operations.pending.where('created_at < ?', created_at).find_each(&:cancel!)
     super
   end
 
@@ -203,7 +203,7 @@ class Aggregate < ApplicationModel
   private
 
   def prepare_new
-    Rails.logger.debug "Create a new output"
+    Rails.logger.debug 'Create a new output'
     # In the unique case, the referential created can't be linked to any workbench
     attributes = {
       organisation: workgroup.owner,
@@ -215,15 +215,13 @@ class Aggregate < ApplicationModel
     }
     new = workgroup.output.referentials.new attributes
     new.referential_suite = output
-    new.name = I18n.t("aggregates.referential_name", date: I18n.l(created_at, format: :short_with_time))
+    new.name = I18n.t('aggregates.referential_name', date: I18n.l(created_at, format: :short_with_time))
 
-    unless new.valid?
-      Rails.logger.error "New referential isn't valid : #{new.errors.inspect}"
-    end
+    Rails.logger.error "New referential isn't valid : #{new.errors.inspect}" unless new.valid?
 
     begin
       new.save!
-    rescue
+    rescue StandardError
       Rails.logger.debug "Errors on new referential: #{new.errors.messages}"
       raise
     end

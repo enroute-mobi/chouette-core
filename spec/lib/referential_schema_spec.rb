@@ -87,7 +87,10 @@ RSpec.describe ReferentialSchema do
     subject { referential_schema.excluded_tables }
 
     it 'returns a Table for each excluded model table' do
-      expect(subject.map(&:name)).to eq(referential_schema.excluded_table_names)
+      expected_tables = referential_schema.excluded_table_names.map do |name|
+        an_object_having_attributes name: name.to_sym
+      end
+      is_expected.to match_array(expected_tables)
     end
   end
 

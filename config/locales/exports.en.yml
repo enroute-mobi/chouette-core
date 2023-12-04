@@ -82,6 +82,10 @@ en:
                 wrong_file_extension: "The exported file must be a zip file"
               options:
                 not_supported: "%{name} option is valid afor this export type"
+                from:
+                  invalid: 'invalid period'
+                to:
+                  invalid: 'invalid period'
     attributes:
       attrs: &attrs
         created_at: Created at
@@ -105,6 +109,8 @@ en:
         referential_id: Referential
         referential: Referential
         duration: Duration
+        from: From
+        to: To
         exported_lines: Exported lines
         profile: Profile
         prefer_referent_stop_area: Prefer Referent Stop Areas

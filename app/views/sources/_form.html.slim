@@ -16,9 +16,7 @@
       = t("sources.form.sections.retrieval")
     .simple-separator.mb-5
     .col-lg-12 x-data="{ retrieval_frequency: '#{@source.retrieval_frequency}' }"
-      .flex.items-center.mb-10
-        = f.label :retrieval_frequency, class: 'flex justify-end w-2/6 mr-8 mb-0 control-label pt-0'
-        = f.input :retrieval_frequency, as: :radio_buttons, label: false, wrapper: :vertical_radio_and_checkboxes_tailwind, input_html: { "x-model" => "retrieval_frequency" }
+      = f.input :retrieval_frequency, as: :radio_buttons, wrapper: :vertical_radio_and_checkboxes_tailwind, input_html: { "x-model" => "retrieval_frequency" }
       = f.input :retrieval_time_of_day, as: :time_of_day, input_html: { "x-bind:disabled" => "retrieval_frequency != 'daily'" }
       .flex.items-center.mb-10
         = f.label :retrieval_days_of_week, class: "flex justify-end w-2/6 mr-8 mb-0 control-label pt-0 required"

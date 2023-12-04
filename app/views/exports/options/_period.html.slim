@@ -1,5 +1,7 @@
 
-= form.input :period, as: :radio_buttons, required: true, wrapper: :horizontal_form, input_html: { 'x-model': 'period' }
-.form-group
-  .col-sm-4.col-xs-5
-  = form.input :duration, wrapper: false, legend_tag: false, label: false, input_html: { class: "simple_form_input_offset", 'x-bind:disabled': "period == 'all_periods'", 'x-model': 'duration' }
+= form.input :period, as: :radio_buttons, required: true, wrapper: :vertical_radio_and_checkboxes_tailwind, input_html: { 'x-model': 'period' }
+div[x-bind:class="{ 'opacity-50': period == 'all_periods' || period == 'static_day_period' }" ]
+  = form.input :duration, legend_tag: false, input_html: { 'x-bind:disabled': "period == 'all_periods' || period == 'static_day_period'", 'x-model': 'duration' }
+div[x-bind:class="{ 'opacity-50': period == 'all_periods' || period == 'only_next_days' }" ]
+  = form.input :from, as: :date_picker, input_html: { 'x-bind:disabled': "period == 'all_periods' || period == 'only_next_days'", 'x-model': 'from' }
+  = form.input :to, as: :date_picker, input_html: { 'x-bind:disabled': "period == 'all_periods' || period == 'only_next_days'", 'x-model': 'to' }

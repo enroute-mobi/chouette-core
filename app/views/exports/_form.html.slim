@@ -1,5 +1,5 @@
 - javascript_additional_packs 'exports/form'
-= simple_form_for @export, as: :export, url: workbench_exports_path(workbench), html: {class: 'form-horizontal', id: 'wb_export_form', 'x-data': "exportForm(#{@export.alpine_state(true)})" }, wrapper: :horizontal_form do |form|
+= simple_form_for @export, as: :export, url: workbench_exports_path(workbench), html: {class: 'tailwind-form', id: 'wb_export_form', 'x-data': "exportForm(#{@export.alpine_state(true)})" }, wrapper: :horizontal_form_tailwind do |form|
 
   .row
     .col-lg-12
@@ -11,8 +11,8 @@
           as: :tom_select,
           collection: @referential_options,
           label_method: :name,
-          input_html: { 'x-model': 'referentialId' }
-        
+          input_html: { 'x-model': 'referentialId', class: "w-full" }
+
         = render 'exports/options', form: form, resource_type: :options, workgroup: @workbench.workgroup
 
     .col-lg-12

@@ -83,6 +83,10 @@ fr:
                 wrong_file_extension: "Le fichier exporté doit être au format zip"
               options:
                 not_supported: L'option %{name} n'est pas valide pour ce type d'export
+                from:
+                  invalid: 'période non valide'
+                to:
+                  invalid: 'période non valide'
     attributes:
       attrs: &attrs
         created_at: Créé le
@@ -107,6 +111,8 @@ fr:
         referential: Jeu de données
         options: Options
         duration: Durée
+        from: De
+        to: Vers
         exported_lines: Lignes exportées
         profile: Profil
         prefer_referent_stop_area: Préférer les arrêts Référents

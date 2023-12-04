@@ -211,7 +211,7 @@ SimpleForm.setup do |config|
     b.optional :pattern
     b.optional :min_max
     b.optional :readonly
-    b.use :label, class: 'flex justify-end w-2/6 mr-8 mb-0 control-label pt-0'
+    b.use :label, class: 'flex justify-end text-right w-2/6 mr-8 mb-0 control-label pt-0'
 
     b.wrapper tag: 'div', class: 'w-4/6 flex items-center relative' do |ba|
       ba.use :input, class: 'form-control'
@@ -220,13 +220,16 @@ SimpleForm.setup do |config|
     end
   end
 
-  config.wrappers :vertical_radio_and_checkboxes_tailwind, tag: 'div', class: 'flex flex-col', error_class: 'has-error' do |b|
+  config.wrappers :vertical_radio_and_checkboxes_tailwind, tag: 'div', class: 'flex items-center mb-10', error_class: 'has-error' do |b|
     b.use :html5
     b.optional :readonly
-    b.use :label, class: 'control-label'
-    b.use :input, class: 'cursor-pointer'
-    b.use :error, wrap_with: { tag: 'span', class: 'help-block small' }
-    b.use :hint,  wrap_with: { tag: 'p', class: 'help-block small' }
+    b.use :label, class: 'flex justify-end w-2/6 mr-8 mb-0 control-label pt-0'
+
+    b.wrapper tag: 'div', class: 'w-4/6 flex flex-col relative' do |ba|
+      ba.use :input, class: 'cursor-pointer'
+      ba.use :error, wrap_with: { tag: 'span', class: 'help-block small absolute top-14 ml-2' }
+      ba.use :hint,  wrap_with: { tag: 'p', class: 'help-block small absolute top-14 ml-2' }
+    end
   end
 
   config.wrappers :horizontal_boolean_tailwind, tag: 'div', class: '', error_class: 'has-error' do |b|

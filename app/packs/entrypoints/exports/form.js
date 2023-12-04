@@ -8,7 +8,9 @@ class Store {
 		period = 'all_periods',
 		referentialId = '',
 		isExport = null,
-		duration = null
+		duration = null,
+		from = null,
+		to = null
 	} = {}) {
 		this.type = type
 		this.exportedLines = exportedLines
@@ -16,6 +18,8 @@ class Store {
 		this.referentialId = referentialId
 		this.isExport = isExport
 		this.duration = duration
+		this.from = from
+		this.to = to
 		this.workbenchOrWorkgroupId = location.pathname.match(/(\d+)/)[0]
 		this.exportedLinesSelectURL = ''
 		this.exportType = isExport ? null : 'full'
@@ -26,6 +30,10 @@ class Store {
 
 	init() {
 		this.$watch('referentialId', () => this.handleReferentialIdUpdate())
+		this.$watch('type', () => flatpickr('.date_picker_block', {
+			dateFormat: "d/m/Y",
+			wrap: true
+		}))
 	}
 
 	/* Used in app/views/exports/options/_exported_lines.html.slim as x-bind:data-url

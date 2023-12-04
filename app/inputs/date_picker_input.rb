@@ -7,12 +7,11 @@ class DatePickerInput < SimpleForm::Inputs::StringInput
     # Never update the code before read https://flatpickr.js.org/examples/#flatpickr--external-elements
     input_html_options[:type] = 'text'
     input_html_options[:data] = { 'input': ''}
-    input_html_options[:style] = 'background-color: white;'
     input_html_options[:value] ||= I18n.localize(value, format: display_pattern) if value
 
-    content_tag(:div, class: 'date_picker_block input-group') do
+    content_tag(:div, class: 'date_picker_block flex') do
       concat @builder.text_field(attribute_name, input_html_options)
-      concat( content_tag(:div, class: 'input-group-btn') do
+      concat( content_tag(:div, class: 'flex items-center bg-enroute-blue rounded-tr-full rounded-br-full') do
         concat calendar_button
         concat clear_button
       end)
@@ -21,13 +20,13 @@ class DatePickerInput < SimpleForm::Inputs::StringInput
   end
 
   def input_html_classes
-    super.push 'form-control'
+    super.push 'border border-gray-300 rounded-tl rounded-bl w-full py-4 px-3 focus:outline-none focus:ring-0 focus:border-blue-500 leading-6 transition-colors duration-200 ease-in-out string optional'
   end
 
   private
 
   def clear_button
-    content_tag(:a, title: "clear", class: 'btn btn-default', 'data-clear': "") do
+    content_tag(:a, title: "clear", class: 'btn btn-default ml-0', 'data-clear': "") do
       concat content_tag(:i, "", class: 'fas fa-times')
     end
   end

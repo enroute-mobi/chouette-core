@@ -127,7 +127,16 @@ class Aggregate < ApplicationModel
             resources << copy.aggregate_resource
           end
 
-          new.switch { new.update_counters }
+
+        end
+
+        new.switch do
+          measure "analyse_current" do
+            new.schema.analyse
+          end
+
+          new.update_counters
+          ServiceCount.compute_for_referential(new)
         end
 
         if processing_rules_after_aggregate.present?
@@ -174,23 +183,10 @@ class Aggregate < ApplicationModel
     end
   end
 
-  def compute_service_counts
-    Stat::JourneyPatternCoursesByDate.compute_for_referential new
-  end
-
   def after_save_current
-    analyse_current
-    compute_service_counts
-
     clean_previous_operations
     publish
     workgroup.aggregated!
-  end
-
-  def analyse_current
-    measure "analyse_current" do
-      output.current.schema.analyse
-    end
   end
 
   def handle_queue

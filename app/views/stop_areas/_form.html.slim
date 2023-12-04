@@ -92,7 +92,6 @@
       h2.mb-lg= t("stop_areas.form.sections.usage")
       - if has_feature?(:stop_area_waiting_time)
         = f.input :waiting_time, input_html: { min: 0 }
-      = f.input :fare_code
       = f.input :url
 
   .separator.section_separator

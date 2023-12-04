@@ -97,7 +97,6 @@
 
         = simple_block_for @stop_area, title: t("stop_areas.form.sections.usage") do |d|
           = d.attribute :waiting_time, as: :duration, value: @stop_area.waiting_time&.minutes
-          = d.attribute :fare_code
           = d.attribute :url, link: @stop_area.url
 
         = simple_block_for @stop_area, title: t("stop_areas.form.sections.fare") do |d|

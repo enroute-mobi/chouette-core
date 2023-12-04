@@ -491,7 +491,6 @@ class Export::Gtfs < Export::Base
           desc: comment,
           url: url,
           timezone: (time_zone unless parent),
-          zone_id: fare_code,
           wheelchair_boarding: gtfs_wheelchair_boarding,
           platform_code: gtfs_platform_code,
           zone_id: zone_id

@@ -118,7 +118,6 @@ module Chouette
         define Chouette::StopArea, :status
         define Chouette::StopArea, :registration_number
         define Chouette::StopArea, :public_code
-        define Chouette::StopArea, :fare_code
         define Chouette::StopArea, :compass_bearing
         define Chouette::StopArea, :accessibility_limitation_description
         define Chouette::StopArea, :mobility_impaired_accessibility

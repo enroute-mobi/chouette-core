@@ -331,7 +331,6 @@ class Import::Gtfs < Import::Base # rubocop:disable Metrics/ClassLength
         stop_area.deleted_at = nil
         stop_area.confirmed_at ||= Time.now
         stop_area.comment = stop.desc
-        stop_area.fare_code = stop.zone_id if stop.zone_id.present?
 
         if stop.wheelchair_boarding
           case stop.wheelchair_boarding

@@ -17,7 +17,7 @@ kml xmlns="http://www.opengis.net/kml/2.2"
         placemark id="#{stop_area.objectid}"
           name = h(stop_area.name)
           extendeddata
-            - [ :objectid, :object_version, :name, :comment, :area_type, :registration_number, :nearest_topic_name, :fare_code, :longitude, :latitude, :long_lat_type, :country_code, :street_name, :mobility_restricted_suitability, :stairs_availability, :lift_availability, :int_user_needs].each do |prop|
+            - [ :objectid, :object_version, :name, :comment, :area_type, :registration_number, :nearest_topic_name, :longitude, :latitude, :long_lat_type, :country_code, :street_name, :mobility_restricted_suitability, :stairs_availability, :lift_availability, :int_user_needs].each do |prop|
               data name="#{prop.to_s}"
                 value = h(stop_area.send( prop))
 

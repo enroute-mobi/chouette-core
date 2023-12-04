@@ -1479,7 +1479,6 @@ ActiveRecord::Schema.define(version: 2023_11_16_161907) do
     t.string "area_type"
     t.string "registration_number"
     t.string "nearest_topic_name"
-    t.string "fare_code"
     t.decimal "longitude", precision: 19, scale: 16
     t.decimal "latitude", precision: 19, scale: 16
     t.string "long_lat_type"

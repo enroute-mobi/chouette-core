@@ -160,7 +160,6 @@ RSpec.describe Import::Neptune do
       stop_area = Chouette::StopArea.find_by registration_number: 'NAVSTEX:StopArea:gen6'
       expect(stop_area.latitude).to be_present
       expect(stop_area.longitude).to be_present
-      expect(stop_area.fare_code).to be_present
       expect(stop_area.nearest_topic_name).to be_present
     end
 
@@ -228,7 +227,6 @@ RSpec.describe Import::Neptune do
         comment: "Defined",
         street_name: "Defined",
         nearest_topic_name: "Defined",
-        fare_code: "42",
         area_type: "zdep",
         latitude: 0.42e2,
         longitude: 0.42e2,

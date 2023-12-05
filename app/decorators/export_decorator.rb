@@ -31,7 +31,7 @@ class ExportDecorator < AF83::Decorator
   end
 
   define_instance_method :display_period do
-    return "#{I18n.l(from, format: :default)} - #{I18n.l(to, format: :default)}" if from.present? && to.present?
+    return "#{I18n.l(from, format: :default)} - #{I18n.l(to, format: :default)}" if(respond_to?(:from) && respond_to?(:to) && from.present? && to.present?)
     return "#{I18n.t('enumerize.period.only_next_days')} :  #{duration}" if duration.present?
     I18n.t('enumerize.period.all_periods')
   end

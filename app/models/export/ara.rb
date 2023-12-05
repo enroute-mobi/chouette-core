@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 # Export a dataset into a Ara CSV file
+require 'ara/file'
 class Export::Ara < Export::Base
   include LocalExportSupport
 
@@ -29,7 +30,7 @@ class Export::Ara < Export::Base
   end
 
   def target
-    @target ||= ::Ara::File.new export_file
+    @target ||= ::Ara::File::Target.new export_file
   end
   attr_writer :target
 
@@ -354,7 +355,7 @@ class Export::Ara < Export::Base
       end
 
       def ara_model
-        Ara::StopArea.new ara_attributes
+        Ara::File::StopArea.new ara_attributes
       end
 
       # TODO: To be shared
@@ -430,7 +431,7 @@ class Export::Ara < Export::Base
       end
 
       def ara_model
-        Ara::StopVisit.new ara_attributes
+        Ara::File::StopVisit.new ara_attributes
       end
 
       def stop_area_id
@@ -545,7 +546,7 @@ class Export::Ara < Export::Base
       end
 
       def ara_model
-        Ara::Line.new ara_attributes
+        Ara::File::Line.new ara_attributes
       end
 
       # TODO: To be shared
@@ -594,7 +595,7 @@ class Export::Ara < Export::Base
       end
 
       def ara_model
-        Ara::Operator.new ara_attributes
+        Ara::File::Operator.new ara_attributes
       end
 
       # TODO: To be shared
@@ -648,7 +649,7 @@ class Export::Ara < Export::Base
       end
 
       def ara_model
-        Ara::VehicleJourney.new ara_attributes
+        Ara::File::VehicleJourney.new ara_attributes
       end
 
       # TODO: To be shared

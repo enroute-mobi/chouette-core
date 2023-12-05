@@ -82,10 +82,11 @@ class ReferentialOverview
     end
 
     def holes
-      @holes ||= begin
-        holes = ServiceCount.holes_for_line(@referential_line).map { |hole| Period.new (hole.date..hole.date), @start, h }
-        holes = merge_periods holes, join: true
-      end
+      @holes ||= []
+      # @holes ||= begin
+      #   holes = ServiceCount.holes_for_line(@referential_line).map { |hole| Period.new (hole.date..hole.date), @start, h }
+      #   holes = merge_periods holes, join: true
+      # end
     end
 
     def periods

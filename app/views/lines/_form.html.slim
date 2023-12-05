@@ -2,14 +2,14 @@
 
 = simple_form_for [@workbench, :line_referential, @line], html: {class: 'form-horizontal', id: 'lines_form'}, wrapper: :horizontal_form do |f|
   .row
-    .col-lg-12
+    .col-lg-12 x-data="{ transport_mode: '#{@line.transport_mode}' || 'bus'}"
       h2.mb-lg= t("lines.form.sections.identification")
       = f.input :name
       = f.input :published_name
       = f.input :number
-      = f.input :transport_mode, as: :select, collection: referential.workgroup.sorted_transport_modes, label: Chouette::Line.tmf('transport_mode'), label_method: lambda {|t| ("<span>" + t("enumerize.transport_mode.#{t}") + "</span>").html_safe}, required: true, prompt: ''
+      = f.input :transport_mode, as: :select, collection: referential.workgroup.sorted_transport_modes, label: Chouette::Line.tmf('transport_mode'), label_method: lambda {|t| ("<span>" + t("enumerize.transport_mode.#{t}") + "</span>").html_safe}, required: true, prompt: '', input_html: { 'x-on:change': 'transport_mode = $event.target.value' }
       - referential.workgroup.formatted_submodes_for_transports.each do |mode, submodes|
-        .slave data-master="[name='line[transport_mode]']" data-value=mode
+        .transport_mode x-show="transport_mode === '#{mode}'"
           = f.input :transport_submode, as: :select, collection: submodes, include_blank: false
       = f.input :flexible_service, as: :switchable_checkbox
       = f.input :seasonal, as: :switchable_checkbox

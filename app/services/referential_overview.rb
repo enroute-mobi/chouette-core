@@ -81,8 +81,8 @@ class ReferentialOverview
 
     def holes
       @holes ||= begin
-        ServiceCount.holes_for_line(@referential_line).map { |hole| Period.new((hole.date..hole.date), @start, filled: true) }
-        merge_periods holes, join: true
+        service_counts = ServiceCount.holes_for_line(@referential_line).map { |hole| Period.new((hole.date..hole.date), @start, filled: true) }
+        merge_periods service_counts, join: true
       end
     end
 

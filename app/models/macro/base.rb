@@ -34,7 +34,7 @@ module Macro
       self.table_name = 'macro_runs'
 
       belongs_to :macro_context_run, class_name: 'Macro::Context::Run', optional: true, inverse_of: :macro_runs # CHOUETTE-3247
-      belongs_to :macro_list_run, class_name: 'Macro::List::Run', inverse_of: :macro_runs # TODO: CHOUETTE-3247 optional: true?
+      belongs_to :macro_list_run, class_name: 'Macro::List::Run', optional: true, inverse_of: :macro_runs # CHOUETTE-3247 failing specs
 
       has_many :macro_messages, class_name: 'Macro::Message', foreign_key: 'macro_run_id', inverse_of: :macro_run
 

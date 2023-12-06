@@ -44,7 +44,7 @@ module Control
 
       with_options(inverse_of: :control_runs) do
         belongs_to :control_context_run, class_name: 'Control::Context::Run', optional: true # CHOUETTE-3247
-        belongs_to :control_list_run, class_name: 'Control::List::Run' # TODO: CHOUETTE-3247 optional: true?
+        belongs_to :control_list_run, class_name: 'Control::List::Run', optional: true # CHOUETTE-3247 failing specs
       end
 
       with_options(foreign_key: 'control_run_id', inverse_of: :control_run) do

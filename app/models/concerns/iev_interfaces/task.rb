@@ -6,10 +6,10 @@ module IevInterfaces::Task
   include OperationsHelper
 
   included do
-    belongs_to :parent, polymorphic: true # TODO: CHOUETTE-3247 optional: true?
+    belongs_to :parent, polymorphic: true, optional: true # CHOUETTE-3247 failing specs
     belongs_to :workbench, class_name: "::Workbench" # TODO: CHOUETTE-3247 optional: true?
     has_one :organisation, through: :workbench
-    belongs_to :referential # TODO: CHOUETTE-3247 optional: true?
+    belongs_to :referential, optional: true # CHOUETTE-3247 failing specs
 
     mount_uploader :file, ImportUploader
     validates_integrity_of :file
@@ -23,7 +23,7 @@ module IevInterfaces::Task
     validates_presence_of :creator
 
     has_many :messages, class_name: messages_class_name, dependent: :delete_all, foreign_key: "#{messages_class_name.split('::').first.downcase}_id"
-    has_many :resources, class_name: resources_class_name, dependent: :destroy, foreign_key: "#{resources_class_name.split('::').first.downcase}_id"
+    has_many :resources, class_name: resources_class_name, dependent: :destroy, foreign_key: "#{resources_class_name.split('::').first.downcase}_id", inverse_of: :import
 
     # Scope unused in Chouette
     scope :where_started_at_in, ->(period_range) do

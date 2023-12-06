@@ -421,7 +421,7 @@ class Source < ApplicationModel
     include Measurable
 
     belongs_to :source # CHOUETTE-3247 optional: false
-    belongs_to :import, class_name: "Import::Workbench" # TODO: CHOUETTE-3247 optional: true?
+    belongs_to :import, class_name: 'Import::Workbench', optional: true # CHOUETTE-3247 failling specs
     belongs_to :workbench # CHOUETTE-3247 optional: false
 
     before_validation :set_workbench, on: :create

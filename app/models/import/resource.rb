@@ -4,7 +4,7 @@ class Import::Resource < ApplicationModel
   include IevInterfaces::Resource
 
   belongs_to :import, class_name: 'Import::Base' # TODO: CHOUETTE-3247 optional: true?
-  belongs_to :referential # TODO: CHOUETTE-3247 optional: true?
+  belongs_to :referential, optional: true # CHOUETTE-3247 failing specs
   has_many :messages, class_name: 'Import::Message', foreign_key: :resource_id, dependent: :delete_all
 
   scope :main_resources, ->{ where(resource_type: "referential") }

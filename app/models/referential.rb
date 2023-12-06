@@ -57,7 +57,7 @@ class Referential < ApplicationModel
 
   belongs_to :line_referential # CHOUETTE-3247 validates presence
 
-  belongs_to :created_from, class_name: 'Referential' # TODO: CHOUETTE-3247 optional: true?
+  belongs_to :created_from, class_name: 'Referential', optional: true  # CHOUETTE-3247 failing specs
   has_many :associated_lines, through: :line_referential, source: :lines
   has_many :companies, through: :line_referential
   has_many :networks, through: :line_referential
@@ -69,9 +69,9 @@ class Referential < ApplicationModel
   has_many :stop_areas, through: :stop_area_referential
   has_many :stop_area_providers, through: :stop_area_referential
 
-  belongs_to :workbench, optional: true # CHOUETTE-3247 code analysis
+  belongs_to :workbench, optional: true # CHOUETTE-3247 code analysis + failing specs
 
-  belongs_to :referential_suite, optional: true # CHOUETTE-3247 code analysis
+  belongs_to :referential_suite, optional: true # CHOUETTE-3247 code analysis + failing specs
 
   has_many :publications, dependent: :destroy
 

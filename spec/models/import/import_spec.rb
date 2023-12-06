@@ -1,13 +1,12 @@
 RSpec.describe Import::Base, type: :model do
 
-  it { should belong_to(:referential) }
-  it { should belong_to(:workbench) }
-  it { should belong_to(:parent) }
+  it { should belong_to(:referential).required(false) }
+  it { should belong_to(:workbench).required(true) }
+  it { should belong_to(:parent).required(false) }
 
   it { should enumerize(:status).in("aborted", "canceled", "failed", "new", "pending", "running", "successful", "warning") }
 
   it { should validate_presence_of(:file) }
-  it { should validate_presence_of(:workbench) }
   it { should validate_presence_of(:creator) }
 
   include ActionDispatch::TestProcess

@@ -2,7 +2,7 @@
 RSpec.describe PublicationApi, type: :model do
   subject { create(:publication_api) }
 
-  it { should belong_to :workgroup }
+  it { is_expected.to belong_to(:workgroup).required(false) }
   it { should validate_presence_of :name }
   it { should validate_presence_of :slug }
   it { should validate_uniqueness_of :slug }

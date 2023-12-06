@@ -13,9 +13,9 @@ class Export::Base < ApplicationModel
   extend Enumerize
 
   belongs_to :referential # CHOUETTE-3247 validates presence
-  belongs_to :publication # TODO: CHOUETTE-3247 optional: true?
+  belongs_to :publication, optional: true # CHOUETTE-3247 failing specs
   belongs_to :workgroup, class_name: '::Workgroup' # CHOUETTE-3247 validates presence
-  belongs_to :workbench, class_name: "::Workbench" # TODO: CHOUETTE-3247 optional: true?
+  belongs_to :workbench, class_name: '::Workbench', optional: true # CHOUETTE-3247 failing specs
 
   has_one :organisation, through: :workbench
   has_many :publication_api_sources, foreign_key: :export_id

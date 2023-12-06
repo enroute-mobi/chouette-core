@@ -17,12 +17,12 @@ module Chouette
       [:transport_mode, :published_journey_name, :vehicle_type_identifier, :published_journey_identifier, :comment]
     end
 
-    belongs_to :company # TODO: CHOUETTE-3247 optional: true?
+    belongs_to :company, optional: true # CHOUETTE-3247 failing specs
     belongs_to :accessibility_assessment, class_name: '::AccessibilityAssessment', optional: true # CHOUETTE-3247 optional: true
-    belongs_to :company_light, -> {select(:id, :objectid, :line_referential_id)}, class_name: "Chouette::Company", foreign_key: :company_id # TODO: CHOUETTE-3247 optional: true?
-    belongs_to :route # TODO: CHOUETTE-3247 optional: true?
-    belongs_to :journey_pattern # TODO: CHOUETTE-3247 optional: true?
-    belongs_to :journey_pattern_only_objectid, -> {select("journey_patterns.id, journey_patterns.objectid")}, class_name: "Chouette::JourneyPattern", foreign_key: :journey_pattern_id # TODO: CHOUETTE-3247 optional: true?
+    belongs_to :company_light, -> {select(:id, :objectid, :line_referential_id)}, class_name: "Chouette::Company", foreign_key: :company_id, optional: true # CHOUETTE-3247 failing specs
+    belongs_to :route # CHOUETTE-3247 failing specs
+    belongs_to :journey_pattern # CHOUETTE-3247 failing specs
+    belongs_to :journey_pattern_only_objectid, -> {select("journey_patterns.id, journey_patterns.objectid")}, class_name: "Chouette::JourneyPattern", optional: true, foreign_key: :journey_pattern_id # CHOUETTE-3247 failing specs
     has_array_of :service_facility_sets, class_name: '::ServiceFacilitySet'
 
     has_many :stop_areas, through: :journey_pattern
@@ -43,7 +43,7 @@ module Chouette
     validate :validate_passing_times_chronology
     validates :number, presence: true
 
-    has_many :vehicle_journey_at_stops, -> { includes(:stop_point).order("stop_points.position") }, dependent: :destroy
+    has_many :vehicle_journey_at_stops, -> { includes(:stop_point).order("stop_points.position") }, inverse_of: :vehicle_journey, dependent: :destroy
     has_and_belongs_to_many :time_tables, :class_name => 'Chouette::TimeTable', :foreign_key => "vehicle_journey_id", :association_foreign_key => "time_table_id"
     has_many :stop_points, -> { order("stop_points.position") }, :through => :vehicle_journey_at_stops
     has_many :vehicle_journey_time_table_relationships, class_name: 'Chouette::TimeTablesVehicleJourney'

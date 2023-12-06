@@ -36,7 +36,7 @@ module Chouette
     end
 
     belongs_to :line # CHOUETTE-3247 validates presence
-    belongs_to :opposite_route, :class_name => 'Chouette::Route', :foreign_key => :opposite_route_id # TODO: CHOUETTE-3247 optional: true?
+    belongs_to :opposite_route, :class_name => 'Chouette::Route', :foreign_key => :opposite_route_id, optional: true # CHOUETTE-3247 failling specs
 
     has_many :routing_constraint_zones, :dependent => :destroy
     has_many :journey_patterns, :dependent => :destroy

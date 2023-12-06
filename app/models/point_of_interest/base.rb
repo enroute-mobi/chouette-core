@@ -15,8 +15,10 @@ module PointOfInterest
                                             inverse_of: :point_of_interests
 
     has_many :codes, as: :resource, dependent: :delete_all
-    has_many :point_of_interest_hours, dependent: :delete_all, class_name: 'PointOfInterest::Hour',
-                                       foreign_key: :point_of_interest_id
+    has_many :point_of_interest_hours, dependent: :delete_all,
+                                       class_name: 'PointOfInterest::Hour',
+                                       foreign_key: :point_of_interest_id,
+                                       inverse_of: :point_of_interest
     accepts_nested_attributes_for :point_of_interest_hours, allow_destroy: true, reject_if: :all_blank
 
     validates_associated :point_of_interest_hours

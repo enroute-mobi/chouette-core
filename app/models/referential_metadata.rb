@@ -3,7 +3,7 @@ require 'range_ext'
 
 class ReferentialMetadata < ApplicationModel
   belongs_to :referential, touch: true # CHOUETTE-3247 validates presence
-  belongs_to :referential_source, class_name: 'Referential' # TODO: CHOUETTE-3247 optional: true?
+  belongs_to :referential_source, class_name: 'Referential', optional: true # CHOUETTE-3247 failing specs
   has_array_of :lines, class_name: 'Chouette::Line'
 
   validates :lines, presence: true

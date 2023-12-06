@@ -18,7 +18,7 @@ RSpec.describe Workbench::Sharing, type: :model do
   let(:workbench) { context.workbench(:workbench) }
 
   it { is_expected.to belong_to(:workbench).required }
-  it { is_expected.to belong_to(:recipient) }
+  it { is_expected.to belong_to(:recipient).required(false) }
 
   it { is_expected.to validate_presence_of(:name) }
 

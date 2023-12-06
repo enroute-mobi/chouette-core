@@ -173,10 +173,18 @@ RSpec.describe Api::V1::DatasController, type: :controller do
           line :second
 
           referential lines: [:first, :second] do
-            route :r_first, line: :first
-            route :r_second, line: :first
-            route :r_third, line: :second
-            route :r_fourth, line: :second
+            route :r_first, line: :first do
+              journey_pattern :jp_first
+            end
+            route :r_second, line: :first do
+              journey_pattern :jp_second
+            end
+            route :r_third, line: :second do
+              journey_pattern :jp_third
+            end
+            route :r_fourth, line: :second do
+              journey_pattern :jp_fourth
+            end
           end
         end
       end
@@ -199,11 +207,29 @@ RSpec.describe Api::V1::DatasController, type: :controller do
       context 'serviceCounts' do
         before do
           [:r_first, :r_second].each do |route_s|
-            %w[2020-01-01 2020-06-01 2020-12-01 2021-01-01 2021-06-01 2021-12-01].each { |d| create :service_count, date: d.to_date, line: context.line(:first), route: context.route(route_s), count: 5 }
+            %w[2020-01-01 2020-06-01 2020-12-01 2021-01-01 2021-06-01 2021-12-01].each do |d|
+              create(
+                :service_count,
+                date: d.to_date,
+                line: context.line(:first),
+                route: context.route(route_s),
+                journey_pattern: context.route(route_s).journey_patterns.first,
+                count: 5
+              )
+            end
           end
 
           [:r_third, :r_fourth].each do |route_s|
-            %w[2021-01-01 2021-06-01 2021-12-01 2022-01-01 2022-06-01 2022-12-01].each { |d| create :service_count, date: d.to_date, line: context.line(:second), route: context.route(route_s), count: 5 }
+            %w[2021-01-01 2021-06-01 2021-12-01 2022-01-01 2022-06-01 2022-12-01].each do |d|
+              create(
+                :service_count,
+                date: d.to_date,
+                line: context.line(:second),
+                route: context.route(route_s),
+                journey_pattern: context.route(route_s).journey_patterns.first,
+                count: 5
+              )
+            end
           end
         end
 
@@ -265,7 +291,14 @@ RSpec.describe Api::V1::DatasController, type: :controller do
           }
 
           before do
-            create :service_count, date: '2022-05-01'.to_date, line: context.line(:second), route: context.route(:r_third), count: 5
+            create(
+              :service_count,
+              date: '2022-05-01'.to_date,
+              line: context.line(:second),
+              route: context.route(:r_third),
+              journey_pattern: context.journey_pattern(:jp_third),
+              count: 5
+            )
           end
 
           it 'returns the right number of lines' do
@@ -290,11 +323,29 @@ RSpec.describe Api::V1::DatasController, type: :controller do
 
         before do
           [:r_first, :r_second].each do |route_s|
-            %w[2020-01-01 2020-06-01 2020-12-01 2021-01-01 2021-06-01 2021-12-01].each { |d| create :service_count, date: d.to_date, line: context.line(:first), route: context.route(route_s), count: 5 }
+            %w[2020-01-01 2020-06-01 2020-12-01 2021-01-01 2021-06-01 2021-12-01].each do |d|
+              create(
+                :service_count,
+                date: d.to_date,
+                line: context.line(:first),
+                route: context.route(route_s),
+                journey_pattern: context.route(route_s).journey_patterns.first,
+                count: 5
+              )
+            end
           end
 
           [:r_third, :r_fourth].each do |route_s|
-            %w[2021-01-01 2021-06-01 2021-12-01 2022-01-01 2022-06-01 2022-12-01].each { |d| create :service_count, date: d.to_date, line: context.line(:second), route: context.route(route_s), count: 5 }
+            %w[2021-01-01 2021-06-01 2021-12-01 2022-01-01 2022-06-01 2022-12-01].each do |d|
+              create(
+                :service_count,
+                date: d.to_date,
+                line: context.line(:second),
+                route: context.route(route_s),
+                journey_pattern: context.route(route_s).journey_patterns.first,
+                count: 5
+              )
+            end
           end
         end
 
@@ -313,7 +364,14 @@ RSpec.describe Api::V1::DatasController, type: :controller do
           }
 
           before do
-            create :service_count, date: '2022-05-01'.to_date, line: context.line(:second), route: context.route(:r_third), count: 5
+            create(
+              :service_count,
+              date: '2022-05-01'.to_date,
+              line: context.line(:second),
+              route: context.route(:r_third),
+              journey_pattern: context.journey_pattern(:jp_third),
+              count: 5
+            )
           end
 
           it 'returns the right total for serviceCount attribute' do

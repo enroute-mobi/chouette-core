@@ -13,7 +13,7 @@ module OperationSupport
     scope :running, ->{ where status: :running }
 
     has_array_of :referentials, class_name: '::Referential'
-    belongs_to :new, class_name: '::Referential' # TODO: CHOUETTE-3247 optional: true?
+    belongs_to :new, class_name: '::Referential', optional: true # CHOUETTE-3247 failing specs
     has_many :publications, as: :parent, dependent: :destroy
 
     validates :creator, presence: true

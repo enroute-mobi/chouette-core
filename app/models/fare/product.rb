@@ -14,7 +14,9 @@ module Fare
     belongs_to :company, class_name: 'Chouette::Company', optional: true # CHOUETTE-3247
 
     has_many :product_validities, class_name: 'Fare::ProductValidity',
-                                  foreign_key: 'fare_product_id', dependent: :delete_all
+                                  foreign_key: 'fare_product_id',
+                                  inverse_of: :product,
+                                  dependent: :delete_all
     has_many :validites, through: :product_validities
 
     validates :name, presence: true

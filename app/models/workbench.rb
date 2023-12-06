@@ -20,7 +20,7 @@ class Workbench < ApplicationModel
   has_one :shape_referential, through: :workgroup
   has_one :fare_referential, through: :workgroup
   belongs_to :output, class_name: 'ReferentialSuite', dependent: :destroy # CHOUETTE-3247 validates presence
-  belongs_to :locked_referential_to_aggregate, class_name: 'Referential' # TODO: CHOUETTE-3247 optional: true?
+  belongs_to :locked_referential_to_aggregate, class_name: 'Referential', optional: true # CHOUETTE-3247 failling specs
 
   has_many :users, through: :organisation
   has_many :sharings, class_name: 'Workbench::Sharing', dependent: :destroy

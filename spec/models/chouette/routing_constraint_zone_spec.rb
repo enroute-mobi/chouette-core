@@ -3,8 +3,8 @@ describe Chouette::RoutingConstraintZone, type: :model do
   subject { create(:routing_constraint_zone) }
   let(:route){ subject.route }
 
+  it { is_expected.to belong_to(:route).required(true) }
   it { is_expected.to validate_presence_of :name }
-  it { is_expected.to validate_presence_of :route_id }
   # shoulda matcher to validate length of array ?
   xit { is_expected.to validate_length_of(:stop_point_ids).is_at_least(2) }
 

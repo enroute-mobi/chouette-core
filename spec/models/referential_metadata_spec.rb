@@ -2,10 +2,9 @@
 
 RSpec.describe ReferentialMetadata, :type => :model do
 
-  it { should belong_to(:referential) }
-  it { should belong_to(:referential_source) }
+  it { is_expected.to belong_to(:referential).required(true) }
+  it { is_expected.to belong_to(:referential_source).required(false) }
 
-  it { is_expected.to validate_presence_of(:referential) }
   context '', pending: 'validate_presence_of does not support has_array_of (= nil)' do # TODO: CHOUETTE-2397
     it { is_expected.to validate_presence_of(:lines) }
   end

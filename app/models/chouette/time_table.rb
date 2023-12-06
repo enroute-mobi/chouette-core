@@ -24,8 +24,8 @@ module Chouette
     has_many :dates, -> {order(:date)}, inverse_of: :time_table, :validate => :true, :class_name => "Chouette::TimeTableDate", dependent: :destroy
     has_many :periods, -> {order(:period_start)}, inverse_of: :time_table, :validate => :true, :class_name => "Chouette::TimeTablePeriod", dependent: :destroy
 
-    belongs_to :calendar # TODO: CHOUETTE-3247 optional: true?
-    belongs_to :created_from, class_name: 'Chouette::TimeTable' # TODO: CHOUETTE-3247 optional: true?
+    belongs_to :calendar, optional: true # CHOUETTE-3247 failling specs
+    belongs_to :created_from, class_name: 'Chouette::TimeTable', optional: true # CHOUETTE-3247 failing specs
 
     scope :overlapping, -> (period_range) do
       joins("

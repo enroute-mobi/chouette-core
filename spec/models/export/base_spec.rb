@@ -2,7 +2,7 @@
 
 RSpec.describe Export::Base, type: :model do
   it { should belong_to(:referential) }
-  it { should belong_to(:workbench) }
+  it { is_expected.to belong_to(:workbench).required(false) }
 
   it { should enumerize(:status).in("aborted", "canceled", "failed", "new", "pending", "running", "successful", "warning") }
 

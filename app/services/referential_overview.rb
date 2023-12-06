@@ -11,7 +11,7 @@ class ReferentialOverview
   end
 
   def lines
-    filtered_lines.includes(:company).order(:name).map { |l| Line.new(l, @referential, period.first, h) }
+    filtered_lines.includes(:company).order(:name).map { |l| Line.new(l, @referential, period.first) }
   end
 
   def period
@@ -25,7 +25,7 @@ class ReferentialOverview
   def weeks
     @weeks = {}
     period.map do |d|
-      @weeks[Week.key(d)] ||= Week.new(d, period.last, h)
+      @weeks[Week.key(d)] ||= Week.new(d, period.last)
     end
     @weeks.values
   end
@@ -61,16 +61,14 @@ class ReferentialOverview
   end
 
   class Line
-    attr_reader :h
     attr_reader :referential_line
 
     delegate :name, :number, :company, :color, :text_color, :transport_mode, to: :referential_line
 
-    def initialize line, referential, start, h
+    def initialize line, referential, start
       @referential_line = line
       @referential = referential
       @start = start
-      @h = h
     end
 
     def period
@@ -82,16 +80,15 @@ class ReferentialOverview
     end
 
     def holes
-      @holes ||= []
-      # @holes ||= begin
-      #   holes = ServiceCount.holes_for_line(@referential_line).map { |hole| Period.new (hole.date..hole.date), @start, h }
-      #   holes = merge_periods holes, join: true
-      # end
+      @holes = begin
+        ServiceCount.holes_for_line(@referential_line).map { |hole| Period.new((hole.date..hole.date), @start, filled: true) }
+        merge_periods holes, join: true
+      end
     end
 
     def periods
       @periods ||= begin
-        periods = referential_periods.flatten.map { |p| Period.new p, @start, h }
+        periods = referential_periods.flatten.map { |p| Period.new p, @start }
         periods = fill_periods periods
         periods = merge_periods periods
         periods
@@ -103,7 +100,7 @@ class ReferentialOverview
         previous = OpenStruct.new(end: period.first - 1.day)
         (periods + [OpenStruct.new(start: period.last + 1.day)]).each do |p|
           if p.start > previous.end + 1.day
-            out << Period.new((previous.end+1.day..p.start - 1.day), @start, h).tap { |pp| pp.empty = true }
+            out << Period.new((previous.end+1.day..p.start - 1.day), @start, filled: false)
           end
           out << p if p.respond_to?(:end)
           previous = p
@@ -146,14 +143,12 @@ class ReferentialOverview
     end
 
     class Period
-      attr_accessor :empty
-      attr_accessor :h
+      attr_accessor :filled
 
-      def initialize(period, start, h, opts={})
+      def initialize(period, start, opts={})
         @period = period
         @start = start
-        @empty = false
-        @h = h
+        @filled = opts[:filled] || false
         @hole = opts[:hole]
       end
 
@@ -188,32 +183,30 @@ class ReferentialOverview
         }.map{|k, v| "#{k}: #{v}"}.join('; ')
       end
 
-      def empty?
-        @empty
+      def filled?
+        @filled
       end
 
       # Display title if we have at least 2 days
       def title
-        h.l(self.start) + ' - ' + h.l(self.end) if size > 1
+        "#{I18n.l(self.start)} - #{I18n.l(self.end)}" if size > 1
       end
 
       def html_class
         out = []
-        out << "empty" if empty?
+        out << "filled" if filled?
         out
       end
     end
   end
 
   class Week
-    attr_reader :h
     attr_reader :start_date
     attr_reader :end_date
 
-    def initialize start_date, boundary, h
+    def initialize start_date, boundary
       @start_date = start_date.to_date
       @end_date = [start_date.end_of_week, boundary].min.to_date
-      @h = h
     end
 
     def self.key date
@@ -222,14 +215,14 @@ class ReferentialOverview
 
     def span
       if @start_date.month == @end_date.month
-        h.l(@start_date, format: "#{@start_date.day}-#{@end_date.day} %b %Y")
+        I18n.l(@start_date, format: "#{@start_date.day}-#{@end_date.day} %b %Y")
       else
-        "#{h.l(@start_date, format: "%d %b")} - #{h.l(@end_date, format: "%d %b %Y")}"
+        "#{I18n.l(@start_date, format: "%d %b")} - #{I18n.l(@end_date, format: "%d %b %Y")}"
       end
     end
 
     def number
-      h.l(@start_date, format: "%W")
+      I18n.l(@start_date, format: "%W")
     end
 
     def period
@@ -237,18 +230,16 @@ class ReferentialOverview
     end
 
     def days
-      period.map {|d| Day.new d, h }
+      period.map {|d| Day.new d }
     end
   end
 
   class Day
-    attr_reader :h
 
     WIDTH=50
 
-    def initialize date, h
+    def initialize date
       @date = date
-      @h = h
     end
 
     def html_style
@@ -256,14 +247,14 @@ class ReferentialOverview
     end
 
     def html_class
-      out = [h.l(@date, format: "%Y-%m-%d")]
+      out = [I18n.l(@date, format: "%Y-%m-%d")]
       out << "weekend" if [0, 6].include?(@date.wday)
       out << "today" if @date == Time.now.to_date
       out
     end
 
     def short_name
-      h.l(@date, format: "%a")
+      I18n.l(@date, format: "%a")
     end
 
     def number

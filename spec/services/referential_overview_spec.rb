@@ -8,11 +8,11 @@ RSpec.describe ReferentialOverview::Week do
 
   describe "#initialize" do
     it "should respect the boundary" do
-      week = ReferentialOverview::Week.new(Time.now.beginning_of_week, 1.week.from_now, {})
+      week = ReferentialOverview::Week.new(Time.now.beginning_of_week, 1.week.from_now)
       expect(week.start_date).to eq Time.now.beginning_of_week.to_date
       expect(week.end_date).to eq Time.now.end_of_week.to_date
 
-      week = ReferentialOverview::Week.new(Time.now.beginning_of_week, Time.now, {})
+      week = ReferentialOverview::Week.new(Time.now.beginning_of_week, Time.now)
       expect(week.start_date).to eq Time.now.beginning_of_week.to_date
       expect(week.end_date).to eq Time.now.to_date
     end
@@ -27,7 +27,7 @@ RSpec.describe ReferentialOverview::Line do
   let(:period_1){(10.days.ago..8.days.ago)}
   let(:period_2){(5.days.ago..1.days.ago)}
 
-  subject(:line){ReferentialOverview::Line.new ref_line, referential, start, {}}
+  subject(:line){ReferentialOverview::Line.new ref_line, referential, start}
 
   before(:each) do
     create(:referential_metadata, referential: referential, line_ids: [ref_line.id], periodes: [period_1, period_2].compact)
@@ -47,8 +47,8 @@ RSpec.describe ReferentialOverview::Line do
       end
       it "should find them all" do
         expect(line.periods.count).to eq 2
-        expect(line.periods[0].empty?).to be_falsy
-        expect(line.periods[1].empty?).to be_falsy
+        expect(line.periods[0].filled?).to be_falsy
+        expect(line.periods[1].filled?).to be_falsy
       end
 
       context "when the periodes overlap" do
@@ -58,7 +58,7 @@ RSpec.describe ReferentialOverview::Line do
         end
         it "should merge them" do
           expect(line.periods.count).to eq 1
-          expect(line.periods[0].empty?).to be_falsy
+          expect(line.periods[0].filled?).to be_falsy
           expect(line.periods[0].start).to eq 17.days.ago.to_date
           expect(line.periods[0].end).to eq 8.days.ago.to_date
         end
@@ -69,9 +69,9 @@ RSpec.describe ReferentialOverview::Line do
   describe "#fill_periods" do
     it "should fill the voids" do
       expect(line.periods.count).to eq 3
-      expect(line.periods[0].empty?).to be_falsy
-      expect(line.periods[1].empty?).to be_truthy
-      expect(line.periods[2].empty?).to be_falsy
+      expect(line.periods[0].filled?).to be_falsy
+      expect(line.periods[1].filled?).to be_falsy
+      expect(line.periods[2].filled?).to be_falsy
     end
 
     context "with no void" do
@@ -80,8 +80,8 @@ RSpec.describe ReferentialOverview::Line do
 
       it "should find no void" do
         expect(line.periods.count).to eq 2
-        expect(line.periods[0].empty?).to be_falsy
-        expect(line.periods[1].empty?).to be_falsy
+        expect(line.periods[0].filled?).to be_falsy
+        expect(line.periods[1].filled?).to be_falsy
       end
     end
 
@@ -91,9 +91,9 @@ RSpec.describe ReferentialOverview::Line do
 
       it "should fill the void" do
         expect(line.periods.count).to eq 3
-        expect(line.periods[0].empty?).to be_falsy
-        expect(line.periods[1].empty?).to be_truthy
-        expect(line.periods[2].empty?).to be_falsy
+        expect(line.periods[0].filled?).to be_falsy
+        expect(line.periods[1].filled?).to be_falsy
+        expect(line.periods[2].filled?).to be_falsy
       end
     end
 
@@ -106,8 +106,8 @@ RSpec.describe ReferentialOverview::Line do
 
       it "should fill the void" do
         expect(line.periods.count).to eq 2
-        expect(line.periods[0].empty?).to be_falsy
-        expect(line.periods[1].empty?).to be_truthy
+        expect(line.periods[0].filled?).to be_falsy
+        expect(line.periods[1].filled?).to be_falsy
         expect(line.periods[1].end).to eq 1.days.ago.to_date
       end
     end
@@ -122,8 +122,8 @@ RSpec.describe ReferentialOverview::Line do
       it "should fill the void" do
         expect(line.periods.count).to eq 2
         expect(line.periods[0].start).to eq 200.days.ago.to_date
-        expect(line.periods[0].empty?).to be_truthy
-        expect(line.periods[1].empty?).to be_falsy
+        expect(line.periods[0].filled?).to be_falsy
+        expect(line.periods[1].filled?).to be_falsy
       end
     end
   end
@@ -134,7 +134,7 @@ RSpec.describe ReferentialOverview::Line::Period do
   let(:period){(1.day.ago.to_date..Time.now.to_date)}
   let(:start){2.days.ago.to_date}
 
-  subject(:line_period){ReferentialOverview::Line::Period.new period, start, nil}
+  subject(:line_period){ReferentialOverview::Line::Period.new period, start}
 
   describe "#width" do
     it "should have the right value" do

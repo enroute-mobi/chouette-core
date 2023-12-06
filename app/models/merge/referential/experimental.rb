@@ -235,6 +235,7 @@ module Merge::Referential
           vehicle_journey_at_stop = vehicle_journey_at_stop_merge.vehicle_journey_at_stop
           vehicle_journey_at_stop.stop_point_id = vehicle_journey_at_stop_merge.existing_stop_point_id
 
+
           referential_inserter.vehicle_journey_at_stops << vehicle_journey_at_stop
         end
       end
@@ -244,7 +245,7 @@ module Merge::Referential
       end
 
       def find_each(&block)
-        vehicle_journey_at_stops.joins(:vehicle_journey).order("vehicle_journeys.route_id").each_instance_batch do |batch|
+        vehicle_journey_at_stops.joins(:vehicle_journey, :stop_point).order("vehicle_journeys.route_id", "stop_points.position").each_instance_batch do |batch|
           Batch.new(self, batch).find_each(&block)
         end
       end
@@ -289,31 +290,33 @@ module Merge::Referential
           <<-SQL
         SELECT stop_point_id, existing_stop_point_id FROM
         (
-          SELECT stop_points.id as stop_point_id, routes.checksum as route_checksum,
+          SELECT stop_points.id as stop_point_id, routes.checksum as route_checksum, routes.line_id as line_id,
             ROW_NUMBER () OVER (
-          		PARTITION BY route_id
-          		ORDER BY position
-          	) normalized_position
+              PARTITION BY stop_points.route_id
+              ORDER BY position
+            ) normalized_position
           from "stop_points"
           INNER JOIN "routes" ON "routes"."id" = "stop_points"."route_id"
-          WHERE "stop_points"."id" IN (#{stop_point_ids_bind_params})
-          order by route_id, stop_points.position
+          INNER JOIN (SELECT distinct route_id from stop_points WHERE id IN (#{stop_point_ids_bind_params})) source_stop_points ON source_stop_points.route_id = routes.id
+          order by stop_points.route_id, stop_points.position
         ) source_stop_points
         join
         (
-          SELECT existing_stop_points.id as existing_stop_point_id, existing_routes.checksum as route_checksum,
+          SELECT existing_stop_points.id as existing_stop_point_id, existing_routes.checksum as route_checksum, existing_routes.line_id as line_id,
             ROW_NUMBER () OVER (
-          		PARTITION BY existing_stop_points.route_id
-          		ORDER BY existing_stop_points.position
-          	) normalized_position
+              PARTITION BY existing_stop_points.route_id
+              ORDER BY existing_stop_points.position
+            ) normalized_position
           from \"#{new.slug}\".stop_points as existing_stop_points
           LEFT OUTER JOIN \"#{new.slug}\".routes as existing_routes ON existing_routes.id = existing_stop_points.route_id
-          LEFT OUTER JOIN routes ON routes.checksum = existing_routes.checksum
+          LEFT OUTER JOIN routes ON routes.checksum = existing_routes.checksum AND routes.line_id = existing_routes.line_id
           INNER JOIN (SELECT distinct route_id from stop_points WHERE id IN (#{stop_point_ids_bind_params})) source_stop_points ON source_stop_points.route_id = routes.id
         ) existing_stop_points
         ON
           source_stop_points.route_checksum = existing_stop_points.route_checksum
+          AND source_stop_points.line_id = existing_stop_points.line_id
           AND source_stop_points.normalized_position = existing_stop_points.normalized_position
+        WHERE "stop_point_id" IN (#{stop_point_ids_bind_params})
       SQL
         end
 
@@ -344,9 +347,7 @@ module Merge::Referential
         def existing_stop_point_id(stop_point_id)
           existing_stop_point_ids.fetch stop_point_id
         end
-
       end
-
     end
 
     class VehicleJourneyCodes < Part

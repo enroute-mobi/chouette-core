@@ -77,15 +77,46 @@ module LocalImportSupport
     end
   end
 
-  def create_referential
-    Chouette::Benchmark.measure 'create_referential' do
-      self.referential ||= Referential.new(
-        name: referential_name,
-        organisation_id: workbench.organisation_id,
-        workbench_id: workbench.id,
-        metadatas: [referential_metadata],
+  def referential_builder
+    ReferentialBuilder.new(workbench, name: referential_name, metadata: referential_metadata)
+  end
+
+  # Create a Referential with given name and medata
+  class ReferentialBuilder
+    def initialize(workbench, name:, metadata:)
+      @workbench = workbench
+      @name = name
+      @metadata = metadata
+    end
+    attr_reader :workbench, :name, :metadata
+
+    delegate :organisation, to: :workbench
+
+    def create(&block)
+      block.call referential if valid?
+    end
+
+    def referential
+      @referential ||= workbench.referentials.create(
+        name: name,
+        organisation: organisation,
+        metadatas: [metadata],
         ready: false
       )
+    end
+
+    def valid?
+      @valid ||= referential.valid?
+    end
+
+    def overlapping_referential_ids
+      @overlapping_referential_ids ||= referential.overlapped_referential_ids
+    end
+  end
+
+  def create_referential
+    Chouette::Benchmark.measure 'create_referential' do
+      self.referential ||= referential_builder.referential
 
       begin
         self.referential.save!

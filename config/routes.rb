@@ -30,8 +30,7 @@ ChouetteIhm::Application.routes.draw do # rubocop:disable Metrics/BlockLength
   resources :workbenches, only: %i[index show], concerns: :iev_interfaces do # rubocop:disable Metrics/BlockLength
     resources :api_keys
 
-    resources :autocomplete,
-              only: %i[lines companies line_providers line_notices stop_areas parent_stop_areas stop_area_providers] do
+    resources :autocomplete, only: [] do
       get :lines, on: :collection, defaults: { format: 'json' }
       get :companies, on: :collection, defaults: { format: 'json' }
       get :line_providers, on: :collection, defaults: { format: 'json' }
@@ -111,7 +110,7 @@ ChouetteIhm::Application.routes.draw do # rubocop:disable Metrics/BlockLength
         get :fetch_connection_links, on: :member, defaults: { format: 'geojson' }
       end
 
-      resources :autocomplete, only: %i[stop_areas parent_stop_areas stop_area_providers] do
+      resources :autocomplete, only: [] do
         get :stop_areas, on: :collection, defaults: { format: 'json' }
         get :parent_stop_areas, on: :collection, defaults: { format: 'json' }
         get :stop_area_providers, on: :collection, defaults: { format: 'json' }
@@ -147,7 +146,7 @@ ChouetteIhm::Application.routes.draw do # rubocop:disable Metrics/BlockLength
       resources :line_notices
     end
 
-    resources :autocomplete, only: %i[lines companies line_providers line_notices] do
+    resources :autocomplete, only: [] do
       get :lines, on: :collection, defaults: { format: 'json' }
       get :companies, on: :collection, defaults: { format: 'json' }
       get :line_providers, on: :collection, defaults: { format: 'json' }
@@ -218,8 +217,7 @@ ChouetteIhm::Application.routes.draw do # rubocop:disable Metrics/BlockLength
       end
     end
 
-    resources :autocomplete,
-              only: %i[lines companies line_providers stop_areas parent_stop_areas stop_area_providers] do
+    resources :autocomplete, only: [] do
       get :lines, on: :collection, defaults: { format: 'json' }
       get :companies, on: :collection, defaults: { format: 'json' }
       get :line_providers, on: :collection, defaults: { format: 'json' }
@@ -253,8 +251,7 @@ ChouetteIhm::Application.routes.draw do # rubocop:disable Metrics/BlockLength
       get 'around', on: :member
     end
 
-    resources :autocomplete,
-              only: %i[lines companies line_providers stop_areas parent_stop_areas stop_area_providers] do
+    resources :autocomplete, only: [] do
       get :lines, on: :collection, defaults: { format: 'json' }
       get :companies, on: :collection, defaults: { format: 'json' }
       get :line_providers, on: :collection, defaults: { format: 'json' }

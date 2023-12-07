@@ -65,7 +65,9 @@ gem 'devise_invitable', '>= 2.0.6'
 gem 'pundit'
 
 # Map, Geolocalization
-gem 'rgeo'
+
+# See CHOUETTE-3264
+gem 'rgeo', '3.0.0'
 gem 'rgeo-proj4'
 gem 'geokit'
 gem 'georuby', '2.3.0' # Fix version for georuby-ext because api has changed

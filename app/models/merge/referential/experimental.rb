@@ -235,7 +235,6 @@ module Merge::Referential
           vehicle_journey_at_stop = vehicle_journey_at_stop_merge.vehicle_journey_at_stop
           vehicle_journey_at_stop.stop_point_id = vehicle_journey_at_stop_merge.existing_stop_point_id
 
-
           referential_inserter.vehicle_journey_at_stops << vehicle_journey_at_stop
         end
       end

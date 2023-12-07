@@ -402,7 +402,7 @@ describe Merge do
                   end
                 end
 
-                referential :new, lines: %i[line alternative_line], archived_at: Time.now do
+                referential :new, lines: %i[line alternative_line], archived_at: Time.zone.now do
                   time_table :existing_time_table
                   route :existing_route, line: :line, with_stops: false do
                     stop_point stop_area: :first

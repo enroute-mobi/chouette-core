@@ -1,5 +1,3 @@
-- javascript_additional_packs 'imports/form'
-
 = simple_form_for import, as: :import, url: workbench_imports_path(workbench), html: {class: 'form-horizontal', id: 'wb_import_form'}, wrapper: :horizontal_form do |form|
   .row
     .col-lg-12
@@ -18,7 +16,7 @@
               = "Options"
 
   .row
-    .col-lg-12
+    .col-lg-12 x-data="{ import_category: 'automatic'}"
       = form.input :notification_target, collection: Import::Base.notification_target_options, selected: :user
       - import.class.options.each do |attr, option_def|
         - next if (attr == :merge_method)

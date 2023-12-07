@@ -45,12 +45,16 @@ module OptionsHelper
       opts[:collection] = opts[:collection].push([t('none'), nil]) if option_def[:allow_blank]
     end
     opts[:label] =  translate_option_key(type, attr)
+
+    if attr == :import_category
+      opts[:input_html] = {'x-on:change': 'import_category = $event.target.value'}
+    end
+
     out = form.input attr, opts
 
     if option_def[:depends]
-      klass = 'slave'
-      klass << ' hidden' if option_def[:hidden]
-      out = content_tag :div, class: klass, data: { master: "[name='#{parent_form.object_name}[#{option_def[:depends][:option]}]']", value: option_def[:depends][:value] } do
+      klass = 'hidden' if option_def[:hidden]
+      out = content_tag :div, class: klass, 'x-show': "import_category == '#{option_def[:depends][:value]}'" do
         out
       end.html_safe
     end

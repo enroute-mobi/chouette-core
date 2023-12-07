@@ -99,7 +99,7 @@ ChouetteIhm::Application.routes.draw do # rubocop:disable Metrics/BlockLength
     end
 
     resource :stop_area_referential, only: %i[show edit update] do
-      resources :searches, path: ':parent_resources/searches'
+      resources :searches, only: %i[index show create update destroy], path: ':parent_resources/searches'
 
       resources :stop_area_routing_constraints
       resources :entrances
@@ -246,7 +246,7 @@ ChouetteIhm::Application.routes.draw do # rubocop:disable Metrics/BlockLength
     member do
       put :archive
       put :unarchive
-      put :clean
+      # put :clean
       get :journey_patterns
     end
 
@@ -273,16 +273,12 @@ ChouetteIhm::Application.routes.draw do # rubocop:disable Metrics/BlockLength
         end
       end
       delete :index, on: :collection, action: :delete_all
-      collection do
-        get 'name_filter'
-      end
       resources :routes do # rubocop:disable Metrics/BlockLength
         member do
           get 'edit_boarding_alighting'
           put 'save_boarding_alighting'
           get 'costs'
           post 'duplicate', to: 'routes#duplicate'
-          get 'get_initial_state'
         end
         collection do
           get 'fetch_opposite_routes'

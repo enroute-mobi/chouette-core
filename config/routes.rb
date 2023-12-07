@@ -246,7 +246,6 @@ ChouetteIhm::Application.routes.draw do # rubocop:disable Metrics/BlockLength
     member do
       put :archive
       put :unarchive
-      # put :clean
       get :journey_patterns
     end
 
@@ -271,6 +270,7 @@ ChouetteIhm::Application.routes.draw do # rubocop:disable Metrics/BlockLength
           patch 'update_all'
         end
       end
+
       resources :routes do # rubocop:disable Metrics/BlockLength
         member do
           get 'edit_boarding_alighting'

@@ -6,3 +6,7 @@ Metrics/ClassLength:
 
 Metrics/BlockLength:
   AllowedMethods: ['describe', 'context']
+
+Rails/SkipsModelValidations:
+  Exclude:
+    - 'spec/**/*.rb'

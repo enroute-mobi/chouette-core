@@ -245,8 +245,6 @@ ChouetteIhm::Application.routes.draw do # rubocop:disable Metrics/BlockLength
     end
 
     resources :autocomplete, only: [] do
-      get :lines, on: :collection, defaults: { format: 'json' }
-      get :companies, on: :collection, defaults: { format: 'json' }
       get :line_providers, on: :collection, defaults: { format: 'json' }
       get :stop_areas, on: :collection, defaults: { format: 'json' }
       get :parent_stop_areas, on: :collection, defaults: { format: 'json' }

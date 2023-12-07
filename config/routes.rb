@@ -146,13 +146,6 @@ ChouetteIhm::Application.routes.draw do # rubocop:disable Metrics/BlockLength
       resources :line_notices
     end
 
-    resources :autocomplete, only: [] do
-      get :lines, on: :collection, defaults: { format: 'json' }
-      get :companies, on: :collection, defaults: { format: 'json' }
-      get :line_providers, on: :collection, defaults: { format: 'json' }
-      get :line_notices, on: :collection, defaults: { format: 'json' }
-    end
-
     resource :shape_referential, only: [] do
       resources :shapes, except: [:create]
       resources :point_of_interests

@@ -4,11 +4,6 @@ ChouetteIhm::Application.routes.draw do # rubocop:disable Metrics/BlockLength
   resource :dashboard
   resource :subscriptions, only: :create
 
-  # FIXME: See CHOUETTE-207
-  resources :exports, only: :upload do
-    post :upload, on: :member, controller: :export_uploads
-  end
-
   # Used to the redirect user to the current workbench
   # See CHOUETTE-797
   namespace :redirect do
@@ -21,7 +16,7 @@ ChouetteIhm::Application.routes.draw do # rubocop:disable Metrics/BlockLength
     resources :imports do
       get :download, on: :member
       get :internal_download, on: :member
-      resources :import_resources, only: %i[index show] do
+      resources :import_resources, only: [] do
         resources :import_messages, only: [:index]
       end
     end
@@ -159,7 +154,7 @@ ChouetteIhm::Application.routes.draw do # rubocop:disable Metrics/BlockLength
       get :line_notices, on: :collection, defaults: { format: 'json' }
     end
 
-    resource :shape_referential do
+    resource :shape_referential, only: [] do
       resources :shapes, except: [:create]
       resources :point_of_interests
       resources :point_of_interest_categories
@@ -325,8 +320,6 @@ ChouetteIhm::Application.routes.draw do # rubocop:disable Metrics/BlockLength
         get 'duplicate'
         get 'month', defaults: { format: :json }
       end
-      resources :time_table_dates
-      resources :time_table_periods
     end
     resources :clean_ups
   end

@@ -1,4 +1,6 @@
-class CodeSpacesController < ChouetteController
+# frozen_string_literal: true
+
+class CodeSpacesController < Chouette::WorkgroupController
   # required because of page_title helper :"(
   defaults resource_class: CodeSpace
 

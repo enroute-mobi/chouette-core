@@ -9,7 +9,7 @@
 #     # ...
 #   end
 #
-class SearchesController < ApplicationController
+class SearchesController < Chouette::UserController
   before_action :workbench
 
   # List Saved Search of given type

@@ -1,4 +1,6 @@
-class WorkgroupOutputsController < ChouetteController
+# frozen_string_literal: true
+
+class WorkgroupOutputsController < Chouette::WorkgroupController
   respond_to :html, only: [:show]
   defaults resource_class: Workgroup
 

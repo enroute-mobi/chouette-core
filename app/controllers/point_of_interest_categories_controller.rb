@@ -1,4 +1,6 @@
-class PointOfInterestCategoriesController < ChouetteController
+# frozen_string_literal: true
+
+class PointOfInterestCategoriesController < Chouette::TopologicReferentialController
   include ApplicationHelper
   include PolicyChecker
 

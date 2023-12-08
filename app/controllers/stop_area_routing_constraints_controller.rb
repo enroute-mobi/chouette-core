@@ -1,4 +1,6 @@
-class StopAreaRoutingConstraintsController < ChouetteController
+# frozen_string_literal: true
+
+class StopAreaRoutingConstraintsController < Chouette::StopAreaReferentialController
   include ApplicationHelper
   include PolicyChecker
 

@@ -1,4 +1,6 @@
-class TimeTablesController < ChouetteController
+# frozen_string_literal: true
+
+class TimeTablesController < Chouette::ReferentialController
   include ReferentialSupport
   include TimeTablesHelper
   include RansackDateFilter

@@ -1,4 +1,6 @@
-class EntrancesController < ChouetteController
+# frozen_string_literal: true
+
+class EntrancesController < Chouette::StopAreaReferentialController
   include ApplicationHelper
   include PolicyChecker
 

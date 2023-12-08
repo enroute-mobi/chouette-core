@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-class CalendarsController < ChouetteController
+class CalendarsController < Chouette::WorkbenchController
   include PolicyChecker
 
   defaults resource_class: Calendar

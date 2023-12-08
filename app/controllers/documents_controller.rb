@@ -1,4 +1,6 @@
-class DocumentsController < ChouetteController
+# frozen_string_literal: true
+
+class DocumentsController < Chouette::WorkbenchController
   include ApplicationHelper
   include PolicyChecker
   include Downloadable

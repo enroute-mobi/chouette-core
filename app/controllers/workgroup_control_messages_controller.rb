@@ -1,4 +1,6 @@
-class WorkgroupControlMessagesController < ChouetteController
+# frozen_string_literal: true
+
+class WorkgroupControlMessagesController < Chouette::WorkgroupController
   include Pundit::Authorization
 
   defaults collection_name: 'control_messages'

@@ -1,4 +1,6 @@
-class ShapesController < ChouetteController
+# frozen_string_literal: true
+
+class ShapesController < Chouette::TopologicReferentialController
   include PolicyChecker
   # FIXME required by page_tile helper (?!)
   defaults :resource_class => Shape

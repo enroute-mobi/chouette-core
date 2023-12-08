@@ -1,4 +1,6 @@
-class LineRoutingConstraintZonesController < ChouetteController
+# frozen_string_literal: true
+
+class LineRoutingConstraintZonesController < Chouette::LineReferentialController
   include ApplicationHelper
   include PolicyChecker
 

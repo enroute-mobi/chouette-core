@@ -1,4 +1,6 @@
-class NotificationRulesController < ChouetteController
+# frozen_string_literal: true
+
+class NotificationRulesController < Chouette::WorkbenchController
   include PolicyChecker
   include RansackDateFilter
 

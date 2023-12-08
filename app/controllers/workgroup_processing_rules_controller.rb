@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 # Manage ProcessingRule::Workgroup on /workgroups/:id/processing_rules
-class WorkgroupProcessingRulesController < ChouetteController
+class WorkgroupProcessingRulesController < Chouette::WorkgroupController
   include PolicyChecker
 
   defaults resource_class: ProcessingRule::Workgroup,

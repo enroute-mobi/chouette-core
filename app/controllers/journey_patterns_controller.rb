@@ -1,4 +1,6 @@
-class JourneyPatternsController < ChouetteController
+# frozen_string_literal: true
+
+class JourneyPatternsController < Chouette::ReferentialController
   include ReferentialSupport
   defaults :resource_class => Chouette::JourneyPattern
 

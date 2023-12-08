@@ -1,4 +1,6 @@
-class CompaniesController < ChouetteController
+# frozen_string_literal: true
+
+class CompaniesController < Chouette::LineReferentialController
   include ApplicationHelper
   include PolicyChecker
 

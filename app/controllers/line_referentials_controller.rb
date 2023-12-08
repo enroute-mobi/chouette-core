@@ -1,4 +1,6 @@
-class LineReferentialsController < ChouetteController
+# frozen_string_literal: true
+
+class LineReferentialsController < Chouette::WorkbenchController
   belongs_to :workbench
   defaults resource_class: LineReferential, singleton: true
 

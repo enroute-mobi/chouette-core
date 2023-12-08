@@ -1,4 +1,6 @@
-class ReferentialAutocompleteController < ChouetteController
+# frozen_string_literal: true
+
+class ReferentialAutocompleteController < Chouette::ReferentialController
   include ReferentialSupport
 
   def lines

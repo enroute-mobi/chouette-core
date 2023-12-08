@@ -1,4 +1,6 @@
-class ConnectionLinksController < ChouetteController
+# frozen_string_literal: true
+
+class ConnectionLinksController < Chouette::StopAreaReferentialController
   include ApplicationHelper
   include PolicyChecker
 

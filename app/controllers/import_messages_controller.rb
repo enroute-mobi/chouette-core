@@ -1,4 +1,6 @@
-class ImportMessagesController < ChouetteController
+# frozen_string_literal: true
+
+class ImportMessagesController < Chouette::WorkbenchController
   defaults resource_class: Import::Message, collection_name: 'messages'
   respond_to :csv
   belongs_to :import, :parent_class => Import::Base do

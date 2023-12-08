@@ -1,4 +1,6 @@
-class WorkbenchConfirmationsController < ChouetteController
+# frozen_string_literal: true
+
+class WorkbenchConfirmationsController < Chouette::ResourceController
   defaults resource_class: Workbench::Confirmation, singleton: true
 
   include PolicyChecker

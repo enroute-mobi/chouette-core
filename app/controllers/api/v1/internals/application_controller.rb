@@ -1,7 +1,9 @@
+# frozen_string_literal: true
+
 module Api
   module V1
     module Internals
-      class ApplicationController < ActionController::Base
+      class ApplicationController < ::Api::V1::BaseController
         respond_to :json
         layout false
         before_action :require_token

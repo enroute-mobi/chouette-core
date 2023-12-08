@@ -1,4 +1,6 @@
-class AggregatesController < ChouetteController
+# frozen_string_literal: true
+
+class AggregatesController < Chouette::WorkgroupController
   include PolicyChecker
 
   defaults resource_class: Aggregate

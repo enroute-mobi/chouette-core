@@ -1,4 +1,6 @@
-class StopAreaProvidersController < ChouetteController
+# frozen_string_literal: true
+
+class StopAreaProvidersController < Chouette::StopAreaReferentialController
   include ApplicationHelper
 
   defaults :resource_class => StopAreaProvider

@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-class RoutesController < ChouetteController
+class RoutesController < Chouette::ReferentialController
   include ReferentialSupport
   include PolicyChecker
   defaults resource_class: Chouette::Route

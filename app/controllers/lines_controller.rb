@@ -1,4 +1,6 @@
-class LinesController < ChouetteController
+# frozen_string_literal: true
+
+class LinesController < Chouette::LineReferentialController
   include ApplicationHelper
   include PolicyChecker
   include TransportModeFilter

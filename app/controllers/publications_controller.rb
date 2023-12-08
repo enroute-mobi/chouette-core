@@ -1,4 +1,6 @@
-class PublicationsController < ChouetteController
+# frozen_string_literal: true
+
+class PublicationsController < Chouette::WorkgroupController
   include PolicyChecker
 
   defaults :resource_class => Publication

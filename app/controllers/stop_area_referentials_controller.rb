@@ -1,4 +1,6 @@
-class StopAreaReferentialsController < ChouetteController
+# frozen_string_literal: true
+
+class StopAreaReferentialsController < Chouette::WorkbenchController
   belongs_to :workbench
   defaults resource_class: StopAreaReferential, singleton: true
 

@@ -1,4 +1,6 @@
-class ImportsController < ChouetteController
+# frozen_string_literal: true
+
+class ImportsController < Chouette::WorkbenchController
   include PolicyChecker
   include Downloadable
 

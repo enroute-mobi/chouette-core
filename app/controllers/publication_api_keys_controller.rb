@@ -1,4 +1,6 @@
-class PublicationApiKeysController < ChouetteController
+# frozen_string_literal: true
+
+class PublicationApiKeysController < Chouette::WorkgroupController
   include PolicyChecker
 
   defaults :resource_class => PublicationApiKey, collection_name: :api_keys

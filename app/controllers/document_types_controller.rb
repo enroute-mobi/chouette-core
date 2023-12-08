@@ -1,4 +1,6 @@
-class DocumentTypesController < ChouetteController
+# frozen_string_literal: true
+
+class DocumentTypesController < Chouette::WorkgroupController
   include ApplicationHelper
   include PolicyChecker
 

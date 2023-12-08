@@ -1,4 +1,6 @@
-class ReferentialLinesController < ChouetteController
+# frozen_string_literal: true
+
+class ReferentialLinesController < Chouette::ReferentialController
   include ReferentialSupport
   include PolicyChecker
 

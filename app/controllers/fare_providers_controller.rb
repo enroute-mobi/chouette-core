@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-class FareProvidersController < ChouetteController
+class FareProvidersController < Chouette::FareReferentialController
   include ApplicationHelper
   include PolicyChecker
 

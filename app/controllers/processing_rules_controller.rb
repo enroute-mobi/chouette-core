@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 # Manage ProcessingRule::Workbench on /workbenches/:id/processing_rules
-class ProcessingRulesController < ChouetteController
+class ProcessingRulesController < Chouette::WorkbenchController
   include PolicyChecker
 
   defaults resource_class: ProcessingRule::Workbench,

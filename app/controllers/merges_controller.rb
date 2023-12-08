@@ -1,4 +1,6 @@
-class MergesController < ChouetteController
+# frozen_string_literal: true
+
+class MergesController < Chouette::WorkbenchController
   include PolicyChecker
   include ActionView::Helpers::TagHelper
   include IconHelper

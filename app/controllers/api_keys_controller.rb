@@ -1,4 +1,6 @@
-class ApiKeysController < ChouetteController
+# frozen_string_literal: true
+
+class ApiKeysController < Chouette::WorkbenchController
   defaults resource_class: ApiKey
 
   belongs_to :workbench

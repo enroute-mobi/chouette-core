@@ -1,4 +1,6 @@
-class Redirect::BaseController < ApplicationController
+# frozen_string_literal: true
+
+class Redirect::BaseController < Chouette::UserController
   include DefaultPathHelper
   rescue_from DefaultPathHelper::NoDefaultWorkbenchError, with: :not_default_workbench
 

@@ -1,4 +1,6 @@
-class FootnotesController < ChouetteController
+# frozen_string_literal: true
+
+class FootnotesController < Chouette::ReferentialController
   include ReferentialSupport
 
   before_action :authorize_resource

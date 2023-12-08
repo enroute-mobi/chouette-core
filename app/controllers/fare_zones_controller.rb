@@ -1,4 +1,6 @@
-class FareZonesController < ChouetteController
+# frozen_string_literal: true
+
+class FareZonesController < Chouette::FareReferentialController
   include ApplicationHelper
   include PolicyChecker
 

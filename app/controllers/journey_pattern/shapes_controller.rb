@@ -1,5 +1,7 @@
+# frozen_string_literal: true
+
 module JourneyPattern
-  class ShapesController < ChouetteController
+  class ShapesController < ::Chouette::ReferentialController
     include ReferentialSupport
     include DefaultPathHelper
     

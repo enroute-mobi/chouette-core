@@ -1,4 +1,6 @@
-class DocumentProvidersController < ChouetteController
+# frozen_string_literal: true
+
+class DocumentProvidersController < Chouette::WorkbenchController
   include ApplicationHelper
   include PolicyChecker
 

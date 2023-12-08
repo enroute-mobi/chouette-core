@@ -1,4 +1,6 @@
-class NetworksController < ChouetteController
+# frozen_string_literal: true
+
+class NetworksController < Chouette::LineReferentialController
   include ApplicationHelper
   include PolicyChecker
 

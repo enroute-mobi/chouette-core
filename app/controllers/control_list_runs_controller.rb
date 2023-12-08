@@ -1,4 +1,6 @@
-class ControlListRunsController < ChouetteController
+# frozen_string_literal: true
+
+class ControlListRunsController < Chouette::WorkbenchController
   include ApplicationHelper
   include PolicyChecker
 

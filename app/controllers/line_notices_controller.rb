@@ -1,4 +1,6 @@
-class LineNoticesController < ChouetteController
+# frozen_string_literal: true
+
+class LineNoticesController < Chouette::LineReferentialController
   include PolicyChecker
   include ApplicationHelper
 

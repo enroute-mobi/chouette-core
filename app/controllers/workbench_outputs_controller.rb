@@ -1,4 +1,6 @@
-class WorkbenchOutputsController < ChouetteController
+# frozen_string_literal: true
+
+class WorkbenchOutputsController < Chouette::WorkbenchController
   respond_to :html, only: [:show]
   defaults resource_class: Workbench
 

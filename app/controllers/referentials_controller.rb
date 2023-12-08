@@ -1,4 +1,6 @@
-class ReferentialsController < ChouetteController
+# frozen_string_literal: true
+
+class ReferentialsController < Chouette::ResourceController
   defaults :resource_class => Referential
   before_action :load_workbench
   include PolicyChecker

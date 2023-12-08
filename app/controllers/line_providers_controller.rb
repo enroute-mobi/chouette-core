@@ -1,4 +1,6 @@
-class LineProvidersController < ChouetteController
+# frozen_string_literal: true
+
+class LineProvidersController < Chouette::LineReferentialController
   include ApplicationHelper
 
   defaults :resource_class => LineProvider

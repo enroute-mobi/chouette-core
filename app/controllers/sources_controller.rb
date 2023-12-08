@@ -1,4 +1,6 @@
-class SourcesController < ChouetteController
+# frozen_string_literal: true
+
+class SourcesController < Chouette::WorkbenchController
   include ApplicationHelper
   include PolicyChecker
 

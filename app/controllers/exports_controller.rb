@@ -1,4 +1,6 @@
-class ExportsController < ChouetteController
+# frozen_string_literal: true
+
+class ExportsController < Chouette::WorkbenchController
   include PolicyChecker
   include Downloadable
 

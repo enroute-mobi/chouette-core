@@ -65,10 +65,10 @@
             - overview.lines.each do |line|
               .line style=line.html_style class=line.html_class
                 - line.periods.each do |period|
-                  .period style=period.html_style class=period.html_class
+                  .period.hole style=period.html_style class=period.html_class
                     .title=period.title
                 - line.holes.each do |hole|
-                  .period.hole style=hole.html_style class=hole.html_class
+                  .period style=hole.html_style class=hole.html_class
                     - if hole.title
                       .title=hole.title
           - else
@@ -76,9 +76,8 @@
 
 
   ul.legend
-    li.period-container= 'referentials.overview.legend.period'.t
+    li.period-container.filled= 'referentials.overview.legend.period'.t
     li.period-container.hole= 'referentials.overview.legend.hole'.t
-    li.period-container.empty= 'referentials.overview.legend.empty'.t
 
   = new_pagination overview, 'pull-right'
 

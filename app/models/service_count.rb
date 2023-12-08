@@ -115,4 +115,10 @@ class ServiceCount < ActiveRecord::Base
     end
     # rubocop:enable Metrics/MethodLength
   end
+
+  def self.holes_for_line(line)
+    for_line(line).select(:date).group(:date).order(:date)
+    # rubocop:enable Metrics/MethodLength
+  end
+
 end

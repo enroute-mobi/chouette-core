@@ -3,6 +3,7 @@
   $line-height: 60px;
   margin-top: 50px;
   overflow: hidden;
+
   .time-travel,
   .filters {
     background-color: $lightergrey;
@@ -13,6 +14,7 @@
     border: 1px solid $lightgrey;
     border-bottom: none;
     position: relative;
+
     &:after {
       position: absolute;
       content: "";
@@ -20,30 +22,37 @@
       top: 100%;
       right: 0;
       height: 10px;
-      box-shadow: 0 0 10px rgba(0,0,0,0.5);
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
       z-index: 1;
     }
   }
+
   .time-travel {
     padding-top: 3px;
     padding-bottom: 4px;
     height: 44px;
+
     a.btn:first-child {
       margin-right: 1px;
     }
+
     a.btn:last-child {
       margin-right: 1px;
     }
+
     max-width: 33%;
+
     .btn-group,
     .form-group {
       position: relative;
       z-index: 2;
     }
+
     .form-group {
       margin-left: 10px;
       margin-bottom: 0;
       display: inline-block;
+
       input {
         padding: 6px 5px;
         border: 1px solid $lightgrey;
@@ -52,6 +61,7 @@
         border-radius: 4px;
         padding-right: 25px;
       }
+
       a {
         padding: 4px;
         margin-top: 2px;
@@ -59,27 +69,34 @@
       }
     }
   }
+
   .filters {
     float: left;
     max-width: 66%;
     padding: 0;
+
     form {
       background: transparent;
       display: flex;
+
       .ffg-row {
         border-color: $grey;
       }
+
       .form-group {
         border-color: $grey;
         width: auto;
         flex: 1 1;
         padding: 6px 11px;
+
         .input-group-btn {
           right: 10px;
         }
+
         &.togglable {
           padding-top: 6px;
           padding-bottom: 7px;
+
           &:before {
             top: 0px;
           }
@@ -87,6 +104,7 @@
       }
     }
   }
+
   .overview-table {
     position: relative;
     z-index: 2;
@@ -94,36 +112,44 @@
     clear: both;
     display: flex;
     @include emptyzone($lightgrey, $lightergrey);
+
     .head {
       height: $left-size;
     }
+
     .line {
       height: $line-height;
     }
+
     .left {
       flex: 0 0;
       background: $lightergrey;
       min-width: $left-size;
       overflow: hidden;
       border-right: 1px solid white;
+
       .head {
         position: relative;
         border-bottom: 1px solid $grey;
         border-right: 1px solid $lightgrey;
+
         .dates,
         .lines {
           position: absolute;
           font-size: 0.8em;
           z-index: 2;
         }
+
         .dates {
           right: 20px;
           top: 20px;
         }
+
         .lines {
           left: 20px;
           bottom: 20px;
         }
+
         &:after {
           position: absolute;
           border-left: ($left-size - 2px)/2 solid transparent;
@@ -137,14 +163,17 @@
           content: "";
         }
       }
+
       .line {
         padding: 7px 10px;
         border-bottom: 1px solid $grey;
         font-size: 0.8em;
         display: block;
+
         &:last-child {
           border-bottom: none;
         }
+
         .number {
           border-radius: 100px;
           display: inline-block;
@@ -160,6 +189,7 @@
           text-overflow: ellipsis;
           overflow: hidden;
         }
+
         .name {
           display: inline-block;
           width: $left-size - 10px;
@@ -171,6 +201,7 @@
           color: black;
           text-decoration: none;
         }
+
         .company,
         .mode {
           font-size: 0.9em;
@@ -179,6 +210,7 @@
           overflow: hidden;
           margin-top: -2px;
         }
+
         .mode {
           text-transform: uppercase;
           color: $grey;
@@ -186,16 +218,20 @@
         }
       }
     }
+
     .right {
       flex: 1 1;
       overflow: hidden;
+
       .inner .lines {
         transition: margin-left 0.5s;
       }
+
       .head {
         white-space: nowrap;
         position: relative;
         z-index: 3;
+
         &:after,
         &:before {
           opacity: 0;
@@ -210,12 +246,14 @@
           z-index: 11;
           border-top: 1px solid white;
         }
+
         .week {
           display: inline-block;
           position: relative;
           height: 100%;
           transition: margin 0.5s;
           background: white;
+
           // &:last-child
           //   box-shadow: 0 -10px 10px rgba(0,0,0,0.5)
           .week-span {
@@ -227,6 +265,7 @@
             text-overflow: ellipsis;
             position: absolute;
           }
+
           .week-number {
             background-color: $lightgrey;
             color: $grey;
@@ -235,6 +274,7 @@
             right: 0;
             padding: 2px 4px;
           }
+
           &:after {
             position: absolute;
             right: 0;
@@ -244,9 +284,11 @@
             width: 1px;
             content: "";
           }
+
           &:last-child:after {
             display: none;
           }
+
           .days {
             position: relative;
             top: 50%;
@@ -254,6 +296,7 @@
             border-top: 1px solid $grey;
             border-bottom: 1px solid $grey;
           }
+
           .day {
             float: left;
             border-left: 1px solid $grey;
@@ -262,6 +305,7 @@
             padding-top: 3px;
             position: relative;
             height: 100%;
+
             .name,
             .number {
               position: absolute;
@@ -271,19 +315,24 @@
               transform: translateY(-50%);
               margin-top: 10px;
             }
+
             .name {
               font-weight: bold;
               font-size: 0.8em;
               margin-top: -10px;
             }
+
             &:first-child {
               border: none;
             }
+
             &.weekend {
               background: $lightergrey;
             }
+
             &:hover {
               background-color: transparentize(white, 0.7);
+
               &:after {
                 content: "";
                 left: -1px;
@@ -298,22 +347,24 @@
           }
         }
       }
+
       .line {
         border-bottom: 1px solid $grey;
         position: relative;
         overflow: hidden;
-        box-shadow: 0 -10px 10px rgba(0,0,0,0.5);
+        box-shadow: 0 -10px 10px rgba(0, 0, 0, 0.5);
 
         &:last-child {
           border-bottom: none;
         }
       }
+
       .period {
         height: 100%;
         top: 0;
         position: absolute;
-        box-shadow: 0 0 10px rgba(0,0,0,0.5);
-        z-index: 2;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+
         .title {
           position: absolute;
           left: 12px;
@@ -328,6 +379,7 @@
           max-width: calc(100% - 24px);
           margin-right: 12px;
         }
+
         &:after {
           content: "";
           position: absolute;
@@ -337,18 +389,20 @@
           height: 10px;
           background: white;
           opacity: 0.25;
-          z-index: 3;
         }
+
         &.hole {
-          z-index: 3;
-        }
-        &.empty {
           z-index: 1;
         }
+
+        &.filled {
+          z-index: 2;
+        }
+
         &:hover {
-          z-index: 3;
           &:after {
             opacity: 0.5;
+
             .title {
               background-color: transparentize(white, 0.1);
             }
@@ -357,40 +411,35 @@
       }
     }
   }
+
   .right,
   .legend {
+
     .period,
     .period-container {
-      &,
-      &:before {
-        background: $smooth-green;
+      &.filled {
+
+        &,
+        &:before {
+          background: $smooth-green;
+        }
       }
+
       &.hole {
+
         &,
         &:before {
           background: #e49393;
         }
       }
-      &.empty {
-        &,
-        &:before {
-          background: rgb(244, 67, 67);
-          background: repeating-linear-gradient(-45deg, #f5e1cf,#f5e1cf 12px,#e49393 12px,#f19039 25px);
-        }
-        &.accepted {
-          &,
-          &:before {
-            background: #f19039;
-            background: repeating-linear-gradient(-45deg, #f5e1cf,#f5e1cf 12px,#f19039 12px,#f19039 25px);
-          }
-        }
-      }
     }
   }
+
   .legend {
     margin: 10px 0;
     padding: 5px 0 0 0;
     float: left;
+
     li.period-container {
       list-style-type: none;
       float: left;
@@ -398,6 +447,7 @@
       margin-right: 20px;
       background: none !important;
       position: relative;
+
       &:before {
         content: "";
         position: absolute;
@@ -408,18 +458,21 @@
       }
     }
   }
+
   &.sticky {
     .time-travel {
       position: fixed;
       bottom: 0;
       z-index: 15;
       right: 35px;
-      box-shadow: 0 0 10px rgba(0,0,0,0.5);
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
     }
+
     .overview-table .right {
       .lines {
         margin-top: $left-size;
       }
+
       .head {
         position: fixed;
         top: 80px;
@@ -428,19 +481,23 @@
         height: 50px;
         right: 51px;
         left: 51px + $left-size;
+
         // overflow-x: hidden
         &:after,
         &:before {
           opacity: 1;
         }
+
         &:after {
           left: 100%;
           right: -1000px;
         }
+
         .week-span,
         .week-number {
           display: none;
         }
+
         .days {
           height: 100%;
           top: 0;

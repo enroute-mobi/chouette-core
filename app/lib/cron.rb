@@ -74,8 +74,8 @@ module Cron
     end
 
     def check_import_operations
-      ParentNotifier.new(Import::Base).notify_when_finished
       Import::Netex.abort_old
+      ParentNotifier.new(Import::Netex).notify_when_finished
     end
 
     def handle_dead_workers

@@ -228,4 +228,4 @@ gem 'ed25519'
 gem 'x25519'
 gem 'bcrypt_pbkdf'
 
-gem 'cuckoo', en_route: 'cuckoo'
+gem 'cuckoo', en_route: 'cuckoo', branch: 'CHOUETTE-3270-avoid-empty-daysbits'

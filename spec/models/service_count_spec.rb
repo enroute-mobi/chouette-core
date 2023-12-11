@@ -77,6 +77,15 @@ RSpec.describe ServiceCount, type: :model do
         ]
       )
     end
+
+    context "when an empty timetable is present" do
+      before { referential.time_tables.first.periods.delete_all }
+
+      it 'computes all service counts' do
+        expect { ServiceCount.compute_for_referential(referential) }.to change(referential.service_counts, :count).from(0)
+      end
+    end
+
     # rubocop:enable Layout/LineLength
   end
 

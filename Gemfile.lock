@@ -6,7 +6,8 @@ GIT
 
 GIT
   remote: https://bitbucket.org/enroute-mobi/cuckoo.git
-  revision: d0162577b665bb56c0e293c0407ad67f8d3363a4
+  revision: 606b297c8f524f682088921abdc0cc814d054910
+  branch: CHOUETTE-3270-avoid-empty-daysbits
   specs:
     cuckoo (0.1.0)
       activesupport

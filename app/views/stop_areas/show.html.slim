@@ -36,7 +36,7 @@
                   td
                     = link_to(c.name, workbench_stop_area_referential_stop_area_path(@workbench, c))
                   td
-                    - if c.distance
+                    - if c.try(:distance)
                       = "#{c.distance.round(2)} m"
           - if @stop_area.children.count > 5
             = link_to t('stop_areas.show.more', count: (@stop_area.children.count - 5)), workbench_stop_area_referential_stop_areas_path(@workbench, :'search[parent_id]' => @stop_area.id), class: 'btn btn-link pull-right'
@@ -62,7 +62,7 @@
                       td
                         = link_to(c.name, workbench_stop_area_referential_stop_area_path(@workbench, c))
                       td
-                        - if c.distance
+                        - if c.try(:distance)
                           = "#{c.distance.round(2)} m"
           - else
             = d.attribute :referent, as: :association, link: ->(referent) { workbench_stop_area_referential_stop_area_path(@workbench, referent) }

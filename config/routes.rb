@@ -264,7 +264,6 @@ ChouetteIhm::Application.routes.draw do # rubocop:disable Metrics/BlockLength
       get :stop_area_providers, on: :collection, defaults: { format: 'json' }
     end
 
-    match 'lines' => 'lines#destroy_all', :via => :delete
     resources :lines, controller: 'referential_lines', except: :index do # rubocop:disable Metrics/BlockLength
       resources :footnotes do
         collection do
@@ -272,7 +271,6 @@ ChouetteIhm::Application.routes.draw do # rubocop:disable Metrics/BlockLength
           patch 'update_all'
         end
       end
-      delete :index, on: :collection, action: :delete_all
       resources :routes do # rubocop:disable Metrics/BlockLength
         member do
           get 'edit_boarding_alighting'

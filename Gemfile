@@ -135,7 +135,7 @@ gem 'redis-actionpack', '>= 5.3.0'
 gem 'gtfs', en_route: 'gtfs'
 gem 'netex', en_route: 'netex'
 gem 'rgeo-shapefile'
-gem 'ara-file', '>= 0.1.2', en_route: 'ara-file'
+gem 'ara', '>= 1.0.0', en_route: 'ara-ruby'
 gem 'neptune', en_route: 'neptune'
 
 # Monitoring

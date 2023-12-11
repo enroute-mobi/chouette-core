@@ -29,9 +29,23 @@ RSpec.describe Export::Ara do
       it { is_expected.to be_successful }
 
       describe 'file' do
-        # TODO: Use Ara::File to read the file
-        subject { export.file.read.split("\n") }
-        it { is_expected.to have_attributes(size: 48) }
+        subject(:source) { Ara::File::Source.new(export.file.path) }
+        describe 'stop_visits count ' do
+          subject { source.stop_visits.to_a.size }
+          it { is_expected.to eq(18) }
+        end
+        describe 'lines count' do
+          subject { source.lines.to_a.size }
+          it { is_expected.to eq(6) }
+        end
+        describe 'vehicle_journeys count' do
+          subject { source.vehicle_journeys.to_a.size }
+          it { is_expected.to eq(6) }
+        end
+        describe 'operators count' do
+          subject { source.operators.to_a.size }
+          it { is_expected.to eq(0) }
+        end
       end
     end
 
@@ -54,9 +68,23 @@ RSpec.describe Export::Ara do
       it { is_expected.to be_successful }
 
       describe 'file' do
-        # TODO: Use Ara::File to read the file
-        subject { export.file.read.split("\n") }
-        it { is_expected.to have_attributes(size: 30) }
+        subject(:source) { Ara::File::Source.new(export.file.path) }
+        describe 'stop_visits count ' do
+          subject { source.stop_visits.to_a.size }
+          it { is_expected.to eq(0) }
+        end
+        describe 'lines count' do
+          subject { source.lines.to_a.size }
+          it { is_expected.to eq(6) }
+        end
+        describe 'vehicle_journeys count' do
+          subject { source.vehicle_journeys.to_a.size }
+          it { is_expected.to eq(6) }
+        end
+        describe 'operators count' do
+          subject { source.operators.to_a.size }
+          it { is_expected.to eq(0) }
+        end
       end
     end
   end
@@ -184,7 +212,7 @@ RSpec.describe Export::Ara do
         subject do
           part.export!
           target end
-        it { is_expected.to match_array([an_instance_of(Ara::StopArea)] * 2) }
+        it { is_expected.to match_array([an_instance_of(Ara::File::StopArea)] * 2) }
 
         context "when one of the Stop Area has a registration number 'dummy'" do
           before { stop_area.update registration_number: 'dummy' }
@@ -241,7 +269,7 @@ RSpec.describe Export::Ara do
         subject do
           part.export!
           target end
-        it { is_expected.to match_array([an_instance_of(Ara::Line)] * 2) }
+        it { is_expected.to match_array([an_instance_of(Ara::File::Line)] * 2) }
 
         it 'contains Line having a number' do
           expect(subject.first).to respond_to(:number)
@@ -323,7 +351,7 @@ RSpec.describe Export::Ara do
           part.export!
           target
         end
-        it { is_expected.to match_array([an_instance_of(Ara::Operator)] * 2) }
+        it { is_expected.to match_array([an_instance_of(Ara::File::Operator)] * 2) }
 
         context "when one of the Company has a registration number 'dummy'" do
           before { company.update registration_number: 'dummy' }
@@ -377,7 +405,7 @@ RSpec.describe Export::Ara do
       end
 
       describe 'the Ara File target' do
-        it { is_expected.to match_array([an_instance_of(Ara::VehicleJourney)]) }
+        it { is_expected.to match_array([an_instance_of(Ara::File::VehicleJourney)]) }
 
         it 'contains a Vehicle journey having a direction_type' do
           expect(subject.first).to respond_to(:direction_type)
@@ -397,7 +425,7 @@ RSpec.describe Export::Ara do
       end
 
       describe 'the Ara File target' do
-        it { is_expected.to match_array([an_instance_of(Ara::VehicleJourney)] * 2) }
+        it { is_expected.to match_array([an_instance_of(Ara::File::VehicleJourney)] * 2) }
 
         context "when one of the Vehicle Journey has a code 'test': 'dummy" do
           before { vehicle_journey.codes.create!(code_space: code_space, value: 'dummy') }
@@ -581,7 +609,7 @@ RSpec.describe Export::Ara do
 
         let(:at_stops_count) { vehicle_journey.vehicle_journey_at_stops.count }
 
-        it { is_expected.to match_array([an_instance_of(Ara::StopVisit)] * at_stops_count) }
+        it { is_expected.to match_array([an_instance_of(Ara::File::StopVisit)] * at_stops_count) }
 
         describe Export::Ara::StopVisits::Decorator do
           context 'with the first stop_visit' do

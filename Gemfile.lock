@@ -975,7 +975,7 @@ DEPENDENCIES
   ransack
   redis-actionpack (>= 5.3.0)
   responders (>= 3.1.1)
-  rgeo
+  rgeo (= 3.0.0)
   rgeo-proj4
   rgeo-shapefile
   rmagick

@@ -1,19 +1,17 @@
+# frozen_string_literal: true
+
 module Api
   module V1
     module Internals
-      class NetexImportsController < Api::V1::Internals::ApplicationController
+      class NetexImportsController < Api::V1::Internals::BaseController
         include ControlFlow
         include Downloadable
 
         before_action :find_workbench, only: :create
 
         def create
-          respond_to do | format |
-            format.json do
-              creator = NetexImportCreator.new(@workbench, netex_import_params).create
-              render json: creator
-            end
-          end
+          creator = NetexImportCreator.new(@workbench, netex_import_params).create
+          render json: creator
         end
 
         def notify_parent
@@ -21,7 +19,7 @@ module Api
           if @netex_import.notify_parent
             render json: {
               status: "ok",
-              message:"#{@netex_import.parent_type} (id: #{@netex_import.parent_id}) successfully notified at #{l(@netex_import.notified_parent_at)}"
+              message:"#{@netex_import.parent_type} (id: #{@netex_import.parent_id}) successfully notified at #{I18n.l(@netex_import.notified_parent_at)}"
             }
           else
             render json: {status: "error", message: @netex_import.errors.full_messages }

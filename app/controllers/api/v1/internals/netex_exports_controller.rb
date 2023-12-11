@@ -1,7 +1,9 @@
+# frozen_string_literal: true
+
 module Api
   module V1
     module Internals
-      class NetexExportsController < Api::V1::Internals::ApplicationController
+      class NetexExportsController < Api::V1::Internals::BaseController
         include ControlFlow
         skip_before_action :require_token, only: :upload
         before_action :find_netex_export

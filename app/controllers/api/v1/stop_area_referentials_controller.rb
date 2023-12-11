@@ -6,7 +6,6 @@ module Api
       respond_to :json, :xml
       wrap_parameters :stop_area_referential, include: [ :type, *WebhookEvent::StopAreaReferential.resource_names ]
 
-      layout false
       before_action :authenticate
 
       def webhook

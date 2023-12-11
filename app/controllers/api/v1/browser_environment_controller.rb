@@ -4,7 +4,6 @@ module Api
   module V1
     class BrowserEnvironmentController < BaseController
       respond_to :json, only: [:show]
-      layout false
 
       def show
         browser_environment = {

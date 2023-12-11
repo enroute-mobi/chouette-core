@@ -4,7 +4,7 @@
 module Api
   module V1
     module PublicationApi
-      class Base < ::Api::V1::BaseController
+      class BaseController < ::Api::V1::BaseController
         before_action :authenticate
 
         protected

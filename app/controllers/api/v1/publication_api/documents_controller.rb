@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 # Provides Documents associated to a Published resource (line / stop area, etc)
-class Api::V1::PublicationApi::DocumentsController < Api::V1::PublicationApi::Base
+class Api::V1::PublicationApi::DocumentsController < Api::V1::PublicationApi::BaseController
   include Downloadable
 
   rescue_from Date::Error do

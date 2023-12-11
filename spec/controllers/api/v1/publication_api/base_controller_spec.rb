@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-RSpec.describe Api::V1::PublicationApi::Base, type: :controller do
+RSpec.describe Api::V1::PublicationApi::BaseController, type: :controller do
   controller do
     def show
       workgroup
@@ -52,7 +52,7 @@ RSpec.describe Api::V1::PublicationApi::Base, type: :controller do
 
       before do
         request.headers['Authorization'] = authorization_header
-        get :show, params: { slug: publication_api.slug } 
+        get :show, params: { slug: publication_api.slug }
       end
 
       context 'without authentication header' do

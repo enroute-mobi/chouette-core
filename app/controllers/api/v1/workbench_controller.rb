@@ -6,7 +6,6 @@ module Api
       include Pundit
       respond_to :json
 
-      layout false
       before_action :authenticate
 
       def pundit_user

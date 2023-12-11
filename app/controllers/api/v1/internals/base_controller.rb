@@ -3,9 +3,8 @@
 module Api
   module V1
     module Internals
-      class ApplicationController < ::Api::V1::BaseController
+      class BaseController < ::Api::V1::BaseController
         respond_to :json
-        layout false
         before_action :require_token
 
         def require_token

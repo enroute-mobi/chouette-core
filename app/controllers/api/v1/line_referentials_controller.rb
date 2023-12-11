@@ -6,7 +6,6 @@ module Api
       respond_to :json, :xml
       wrap_parameters :line_referential, include: [:type, *WebhookEvent::LineReferential.resource_names]
 
-      layout false
       before_action :authenticate
 
       def webhook

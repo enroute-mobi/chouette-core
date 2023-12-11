@@ -12,22 +12,7 @@ ChouetteIhm::Application.routes.draw do # rubocop:disable Metrics/BlockLength
     resources :stop_areas, only: :show
   end
 
-  concern :iev_interfaces do
-    resources :imports do
-      get :download, on: :member
-      get :internal_download, on: :member
-      resources :import_resources, only: [] do
-        resources :import_messages, only: [:index]
-      end
-    end
-
-    resources :exports do
-      post :upload, on: :member
-      get :download, on: :member
-    end
-  end
-
-  resources :workbenches, except: %i[index destroy], concerns: :iev_interfaces do # rubocop:disable Metrics/BlockLength
+  resources :workbenches, only: %i[show] do # rubocop:disable Metrics/BlockLength
     resources :api_keys
 
     resources :autocomplete, only: [] do
@@ -168,11 +153,24 @@ ChouetteIhm::Application.routes.draw do # rubocop:disable Metrics/BlockLength
         get 'month', defaults: { format: :json }
       end
     end
+
+    resources :imports do
+      get :download, on: :member
+      get :internal_download, on: :member
+      resources :import_resources, only: [] do
+        resources :import_messages, only: [:index]
+      end
+    end
+
+    resources :exports do
+      post :upload, on: :member
+      get :download, on: :member
+    end
   end
 
   resource :workbench_confirmation, only: %i[new create]
 
-  resources :workgroups, except: [:destroy], concerns: :iev_interfaces do # rubocop:disable Metrics/BlockLength
+  resources :workgroups, except: [:destroy] do # rubocop:disable Metrics/BlockLength
     put :setup_deletion, on: :member
     put :remove_deletion, on: :member
 
@@ -218,6 +216,17 @@ ChouetteIhm::Application.routes.draw do # rubocop:disable Metrics/BlockLength
       get :parent_stop_areas, on: :collection, defaults: { format: 'json' }
       get :stop_area_providers, on: :collection, defaults: { format: 'json' }
       get :shapes, on: :collection, defaults: { format: 'json' }
+    end
+
+    resources :imports, only: %i[index show], controller: :workgroup_imports do
+      get :download, on: :member
+      resources :import_resources, only: [] do
+        resources :import_messages, only: [:index]
+      end
+    end
+
+    resources :exports, only: %i[index show], controller: :workgroup_exports do
+      get :download, on: :member
     end
   end
 

@@ -1,22 +1,15 @@
 # frozen_string_literal: true
 
-class ImportsController < Chouette::WorkbenchController
+class WorkgroupImportsController < Chouette::WorkbenchController
   include PolicyChecker
   include Downloadable
 
-  skip_before_action :authenticate_user!, only: [:internal_download]
+  def self.controller_path
+    'imports'
+  end
+
   defaults resource_class: Import::Base, collection_name: 'imports', instance_name: 'import'
   respond_to :json, :html
-
-  def internal_download
-    resource = Import::Base.find params[:id]
-    if params[:token] == resource.token_download
-      prepare_for_download resource
-      send_file resource.file.path
-    else
-      user_not_authorized
-    end
-  end
 
   def download
     prepare_for_download resource
@@ -34,45 +27,40 @@ class ImportsController < Chouette::WorkbenchController
     end
   end
 
+  # rubocop:disable Metrics/MethodLength
   def index
     index! do |format|
       format.html do
-        # if collection.out_of_bounds?
-        #   redirect_to params.merge(:page => 1)
-        # end
         @contextual_cols = []
-        @contextual_cols << TableBuilderHelper::Column.new(key: :creator, attribute: 'creator')
+        @contextual_cols << TableBuilderHelper::Column.new(
+          key: :workbench,
+          name: Workbench.ts.capitalize,
+          attribute: proc { |n| n.workbench.name },
+          link_to: lambda do |import|
+            policy(import.workbench).show? ? import.workbench : nil
+          end
+        )
         @imports = decorate_collection(collection)
       end
     end
   end
-
-  def create
-    create! { [parent, resource] }
-  end
+  # rubocop:enable Metrics/MethodLength
 
   protected
 
   def parent
-    @parent ||= workbench
+    @parent ||= workgroup
   end
 
-  def workbench
-    return unless params[:workbench_id]
+  def workgroup
+    return unless params[:workgroup_id]
 
-    @workbench ||= current_organisation&.workbenches&.find(params[:workbench_id])
+    @workgroup ||= current_organisation&.workgroups&.owned&.find(params[:workgroup_id])
   end
 
   # rubocop:disable Naming/MemoizedInstanceVariableName
   def resource
     @import ||= parent.imports.find(params[:id])
-  end
-
-  def build_resource
-    @import ||= Import::Workbench.new(*resource_params) do |import|
-      import.workbench = parent
-      import.creator   = current_user.name
-    end
   end
   # rubocop:enable Naming/MemoizedInstanceVariableName
 
@@ -81,19 +69,11 @@ class ImportsController < Chouette::WorkbenchController
   end
 
   def search
-    @search ||= Search.from_params(params)
+    @search ||= Search.from_params(params, workgroup: workgroup)
   end
 
   def collection
     @collection ||= search.search(scope)
-  end
-
-  def import_params
-    permitted_keys = %i(name file type referential_id notification_target)
-    permitted_keys += Import::Workbench.options.keys
-    import_params = params.require(:import).permit(permitted_keys)
-    import_params[:user_id] ||= current_user.id
-    import_params
   end
 
   def decorate_collection(imports)

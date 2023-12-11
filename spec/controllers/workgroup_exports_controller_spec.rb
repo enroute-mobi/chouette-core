@@ -1,11 +1,18 @@
 # frozen_string_literal: true
 
-RSpec.describe ImportsController, type: :controller do
+RSpec.describe WorkgroupExportsController, type: :controller do
+  # because of #controller_path redefinition in controller
+  def controller_class_name
+    'workgroup_exports'
+  end
+
+  login_user
+
   let(:context) do
     Chouette.create do
       # To match organisation used by login_user
       organisation = Organisation.find_by(code: 'first')
-      workgroup owner: organisation do
+      workgroup owner: organisation, export_types: ['Export::Gtfs'] do
         workbench organisation: organisation do
           referential
         end
@@ -14,91 +21,60 @@ RSpec.describe ImportsController, type: :controller do
   end
 
   let(:referential) { context.referential }
+  let(:workgroup) { referential.workgroup }
   let(:workbench) { referential.workbench }
 
-  let(:import) do
-    Import::Workbench.create!(
+  let(:file) { nil }
+  let(:export) do
+    Export::Gtfs.create!(
       name: 'Test',
       creator: 'test',
-      file: fixture_file_upload('google-sample-feed.zip'),
-      workbench: workbench
+      referential: referential,
+      workgroup: workgroup,
+      workbench: workbench,
+      file: file
     )
   end
 
-  context 'logged in' do
-    login_user
+  let(:parent_params) { { workgroup_id: workgroup.id } }
 
-    describe 'GET index' do
-      let(:request) { get :index, params: { workbench_id: workbench.id } }
+  describe 'GET index' do
+    let(:request) { get :index, params: parent_params }
+
+    it 'should be successful' do
+      expect(request).to be_successful
+    end
+  end
+
+  describe 'GET #show' do
+    it 'should be successful' do
+      get :show, params: parent_params.merge({ id: export.id })
+      expect(response).to be_successful
+    end
+
+    context 'in JSON format' do
+      let(:export) { create :gtfs_export, workbench: workbench }
 
       it 'should be successful' do
-        expect(request).to be_successful
-      end
-    end
-
-    describe 'GET #new' do
-      it 'should be successful if authorized' do
-        get :new, params: { workbench_id: workbench.id }
+        get :show, params: parent_params.merge({ id: export.id, format: :json })
         expect(response).to be_successful
-      end
-
-      it 'should be unsuccessful unless authorized' do
-        remove_permissions('imports.create', from_user: @user, save: true)
-        get :new, params: { workbench_id: workbench.id }
-        expect(response).not_to be_successful
-      end
-    end
-
-    describe 'POST #create' do
-      it 'displays a flash message' do
-        post :create, params: {
-          workbench_id: workbench.id,
-          import: {
-            name: 'Offre',
-            file: fixture_file_upload('nozip.zip')
-          }
-        }
-      end
-    end
-
-    describe 'GET #show' do
-      it 'should be successful' do
-        get :show, params: { workbench_id: workbench.id, id: import.id }
-        expect(response).to be_successful
-      end
-
-      context 'in JSON format' do
-        let(:import) { create :gtfs_import, workbench: workbench }
-
-        it 'should be successful' do
-          get :show, params: { workbench_id: workbench.id, id: import.id, format: :json }
-          expect(response).to be_successful
-        end
-      end
-    end
-
-    describe 'GET #download' do
-      it 'should be successful' do
-        get :download, params: { workbench_id: workbench.id, id: import.id }
-        expect(response).to be_successful
-        expect(response.body).to eq(import.file.read)
       end
     end
   end
 
-  describe 'GET #internal_download' do
-    let(:organisation) { create(:organisation) }
+  describe 'GET #download' do
+    let(:file) { fixture_file_upload('OFFRE_TRANSDEV_2017030112251.zip') }
 
     it 'should be successful' do
-      get :internal_download, params: { workbench_id: workbench.id, id: import.id, token: import.token_download }
+      get :download, params: parent_params.merge({ id: export.id })
       expect(response).to be_successful
-      expect(response.body).to eq(import.file.read)
+      expect(response.body).to eq(export.file.read)
     end
   end
 end
 
-RSpec.describe ImportsController::Search, type: :model do
-  subject(:search) { ImportsController::Search.new }
+RSpec.describe ExportsController::Search, type: :model do
+  subject(:search) { ExportsController::Search.new }
 
   describe 'validation' do
     context 'when period is not valid' do
@@ -143,21 +119,51 @@ RSpec.describe ImportsController::Search, type: :model do
   describe '#candidate_workbenches' do
     subject { search.candidate_workbenches }
 
-    context 'when no workgroup is associated' do
-      before { search.workgroup = nil }
-      it { is_expected.to be_empty }
-    end
+    before { search.workgroup = double(workbenches: double('Workgroup workbenches')) }
 
-    context 'when a workgroup is defined' do
-      before { search.workgroup = double(workbenches: double('Workgroup workbenches')) }
-      it { is_expected.to eq(search.workgroup.workbenches) }
-    end
+    it { is_expected.to eq(search.workgroup.workbenches) }
   end
 
   describe '#workbenches' do
     subject { search.workbenches }
 
-    it { is_expected.to be_empty }
+    let(:context) do
+      Chouette.create do
+        workgroup(:first) { workbench }
+        workgroup(:other) { workbench }
+      end
+    end
+
+    let(:workgroup) { context.workgroup(:first) }
+    let(:search) { ExportsController::Search.new workgroup: workgroup }
+
+    context 'when workbench_ids is nil' do
+      before { search.workbench_ids = nil }
+      it { is_expected.to be_empty }
+    end
+
+    context 'when workbench_ids is empty' do
+      before { search.workbench_ids = [] }
+      it { is_expected.to be_empty }
+    end
+
+    context 'when workbench_ids contains the Workbench identifier from the associated Workgroup' do
+      let(:workbench) { workgroup.workbenches.first }
+      before { search.workbench_ids = [workbench.id] }
+
+      it 'includes this Workbench' do
+        is_expected.to include(workbench)
+      end
+    end
+
+    context 'when workbench_ids contains the Workbench identifier from another Workgroup' do
+      let(:workbench) { context.workgroup(:other).workbenches.first }
+      before { search.workbench_ids = [workbench.id] }
+
+      it "doesn't include this Workbench" do
+        is_expected.to_not include(workbench)
+      end
+    end
   end
 
   describe '#query' do
@@ -166,7 +172,7 @@ RSpec.describe ImportsController::Search, type: :model do
       let(:query) { Query::Mock.new(scope) }
 
       before do
-        allow(Query::Import).to receive(:new).and_return(query)
+        allow(Query::Export).to receive(:new).and_return(query)
       end
 
       it 'uses Search workbenches' do

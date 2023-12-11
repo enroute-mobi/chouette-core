@@ -300,10 +300,13 @@ pipelines:
           script:
             - git clone git@bitbucket.org:enroute-mobi/chouette-env.git env
             - env/deploy-with-runner.sh
-            - pipe: atlassian/datadog-send-event:1.1.3
+            - pipe: atlassian/datadog-send-event:2.2.0
               variables:
                 API_KEY: $DATADOG_KEY
                 TITLE: "Build ${BITBUCKET_BUILD_NUMBER} deployed on ${BITBUCKET_REPO_SLUG} ${BITBUCKET_DEPLOYMENT_ENVIRONMENT}"
+                PAYLOAD: >
+                  { "source_type_name": "BITBUCKET", "tags":["env:test","app:chouette-core","repository:chouette-core"] }
+
       - step:
           name: Trigger User Tests
           artifacts:

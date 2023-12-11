@@ -6,8 +6,7 @@ GIT
 
 GIT
   remote: https://bitbucket.org/enroute-mobi/cuckoo.git
-  revision: 606b297c8f524f682088921abdc0cc814d054910
-  branch: CHOUETTE-3270-avoid-empty-daysbits
+  revision: 7b868c53633fa43593ffc1a5001a6686526b097b
   specs:
     cuckoo (0.1.0)
       activesupport
@@ -671,7 +670,7 @@ GEM
       railties (>= 5.2)
     retriable (3.1.2)
     rexml (3.2.6)
-    rgeo (3.0.1)
+    rgeo (3.0.0)
     rgeo-activerecord (6.2.2)
       activerecord (>= 5.0)
       rgeo (>= 1.0.0)

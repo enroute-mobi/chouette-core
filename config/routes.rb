@@ -27,7 +27,7 @@ ChouetteIhm::Application.routes.draw do # rubocop:disable Metrics/BlockLength
     end
   end
 
-  resources :workbenches, only: %i[index show], concerns: :iev_interfaces do # rubocop:disable Metrics/BlockLength
+  resources :workbenches, except: %i[index destroy], concerns: :iev_interfaces do # rubocop:disable Metrics/BlockLength
     resources :api_keys
 
     resources :autocomplete, only: [] do
@@ -315,7 +315,7 @@ ChouetteIhm::Application.routes.draw do # rubocop:disable Metrics/BlockLength
 
   devise_scope :user do
     authenticated :user do
-      root to: 'workbenches#index', as: :authenticated_root
+      root to: 'dashboards#show'
     end
 
     unauthenticated :user do
@@ -323,7 +323,7 @@ ChouetteIhm::Application.routes.draw do # rubocop:disable Metrics/BlockLength
 
       target = 'devise/cas_sessions#new' if Rails.application.config.chouette_authentication_settings[:type] == 'cas'
 
-      root to: target, as: :unauthenticated_root
+      root to: target
     end
   end
 
@@ -388,8 +388,6 @@ ChouetteIhm::Application.routes.draw do # rubocop:disable Metrics/BlockLength
 
   mount LetterOpenerWeb::Engine, at: '/letter_opener' if %i[letter_opener_web
                                                             letter_opener].include?(Rails.application.config.action_mailer.delivery_method)
-
-  root to: 'dashboards#show'
 
   get '/snap' => 'snapshots#show' if Rails.env.development? || Rails.env.test?
 

@@ -40,7 +40,12 @@ class ServiceCount < ActiveRecord::Base
           ActiveRecord::Base.cache do
             time_table_days_bits = {}
             referential.time_tables.includes(:dates, :periods).find_each do |time_table|
-              time_table_days_bits[time_table.id] = time_table.to_days_bit
+              days_bit = time_table.to_days_bit
+              if days_bit
+                time_table_days_bits[time_table.id] = days_bit
+              else
+                Rails.logger.warn "Empty/invalid TimeTable: #{time_table.inspect}"
+              end
             end
 
             current_attributes = nil
@@ -57,7 +62,9 @@ class ServiceCount < ActiveRecord::Base
               # TODO: use ActiveRecord::Type.lookup(:integer, array: true) when activerecord-postgis-adapter >= 7.1.0
               # see https://github.com/rgeo/activerecord-postgis-adapter/pull/334
               time_table_ids = PG::TextDecoder::Array.new.decode(row['time_table_ids']).map(&:to_i)
-              row_days_bit = Cuckoo::DaysBit.merge(*time_table_days_bits.values_at(*time_table_ids))
+              row_days_bit = Cuckoo::DaysBit.merge(*time_table_days_bits.values_at(*time_table_ids).compact)
+              next unless row_days_bit
+
               row_days_count = row_days_bit * row['vehicle_journey_count'].to_i
               if current_attributes.nil?
                 current_attributes = row.slice('journey_pattern_id', 'route_id', 'line_id')

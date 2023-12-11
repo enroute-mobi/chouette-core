@@ -6,7 +6,7 @@ GIT
 
 GIT
   remote: https://bitbucket.org/enroute-mobi/cuckoo.git
-  revision: d0162577b665bb56c0e293c0407ad67f8d3363a4
+  revision: 7b868c53633fa43593ffc1a5001a6686526b097b
   specs:
     cuckoo (0.1.0)
       activesupport
@@ -670,7 +670,7 @@ GEM
       railties (>= 5.2)
     retriable (3.1.2)
     rexml (3.2.6)
-    rgeo (3.0.1)
+    rgeo (3.0.0)
     rgeo-activerecord (6.2.2)
       activerecord (>= 5.0)
       rgeo (>= 1.0.0)

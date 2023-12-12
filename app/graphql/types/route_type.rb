@@ -4,6 +4,8 @@ module Types
 
     field :objectid, String, null: false
     field :name, String, null: true
+    field :published_name, String, null: true
+    field :wayback, String, null: true
 
     field :stop_areas, Types::StopAreaType.connection_type, null: false,
       description: "The Route's StopAreas"

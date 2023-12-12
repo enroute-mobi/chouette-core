@@ -3,6 +3,7 @@
 class ImportsController < Chouette::WorkbenchController
   include PolicyChecker
   include Downloadable
+  include ImportMessages
 
   skip_before_action :authenticate_user!, only: [:internal_download]
   defaults resource_class: Import::Base, collection_name: 'imports', instance_name: 'import'

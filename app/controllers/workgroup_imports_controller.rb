@@ -3,6 +3,7 @@
 class WorkgroupImportsController < Chouette::WorkbenchController
   include PolicyChecker
   include Downloadable
+  include ImportMessages
 
   def self.controller_path
     'imports'

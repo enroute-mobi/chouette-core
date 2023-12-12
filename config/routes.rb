@@ -157,10 +157,10 @@ ChouetteIhm::Application.routes.draw do # rubocop:disable Metrics/BlockLength
     resources :imports do
       get :download, on: :member
       get :internal_download, on: :member
-      resources :import_resources, only: [] do
-        resources :import_messages, only: [:index]
-      end
     end
+    get 'imports/:id/import_resources/:import_resource_id/messages',
+        to: 'imports#messages',
+        as: 'import_import_resource_import_messages'
 
     resources :exports do
       post :upload, on: :member
@@ -220,10 +220,10 @@ ChouetteIhm::Application.routes.draw do # rubocop:disable Metrics/BlockLength
 
     resources :imports, only: %i[index show], controller: :workgroup_imports do
       get :download, on: :member
-      resources :import_resources, only: [] do
-        resources :import_messages, only: [:index]
-      end
     end
+    get 'imports/:id/import_resources/:import_resource_id/messages',
+        to: 'workgroup_imports#messages',
+        as: 'import_import_resource_import_messages'
 
     resources :exports, only: %i[index show], controller: :workgroup_exports do
       get :download, on: :member

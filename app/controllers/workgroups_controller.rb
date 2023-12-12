@@ -2,11 +2,7 @@ class WorkgroupsController < ChouetteController
   defaults resource_class: Workgroup
 
   include PolicyChecker
-  before_action :authorize_resource, only: %i[edit_controls update_controls setup_deletion remove_deletion]
-
-  def edit_controls
-    edit!
-  end
+  before_action :authorize_resource, only: %i[setup_deletion remove_deletion]
 
   def create
     @workgroup = Workgroup.create_with_organisation current_organisation, workgroup_params
@@ -41,11 +37,7 @@ class WorkgroupsController < ChouetteController
 
   def update
     unless resource.update workgroup_params
-      if workgroup_params.has_key? :compliance_control_set_ids
-        render :edit_controls
-      else
-        render :edit
-      end
+      render :edit
     else
       flash[:success] = t('workgroups.edit.success')
       redirect_to resource
@@ -90,9 +82,7 @@ class WorkgroupsController < ChouetteController
         :id,
         :locked_referential_to_aggregate_id,
         :priority,
-        compliance_control_set_ids: @workgroup&.compliance_control_sets_by_workgroup&.keys
-      ],
-      compliance_control_set_ids: Workgroup.workgroup_compliance_control_sets
+      ]
     )
   end
 

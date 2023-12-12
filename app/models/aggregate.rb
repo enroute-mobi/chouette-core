@@ -9,7 +9,6 @@ class Aggregate < ApplicationModel
   include Measurable
 
   belongs_to :workgroup
-  has_many :compliance_check_sets, -> { where(parent_type: 'Aggregate') }, foreign_key: :parent_id, dependent: :destroy
   has_many :resources, class_name: 'Aggregate::Resource'
   has_many :processings, as: :operation, dependent: :destroy
 
@@ -149,11 +148,7 @@ class Aggregate < ApplicationModel
           end
         end
 
-        if after_aggregate_compliance_control_set.present?
-          create_after_aggregate_compliance_check_set
-        else
-          save_current
-        end
+        save_current
       end
     end
   rescue StandardError => e
@@ -232,12 +227,4 @@ class Aggregate < ApplicationModel
     update new: new
   end
   measure :prepare_new
-
-  def after_aggregate_compliance_control_set
-    @after_aggregate_compliance_control_set ||= workgroup.compliance_control_set(:after_aggregate)
-  end
-
-  def create_after_aggregate_compliance_check_set
-    create_compliance_check_set :after_aggregate, after_aggregate_compliance_control_set, new
-  end
 end

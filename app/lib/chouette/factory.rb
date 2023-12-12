@@ -93,13 +93,6 @@ module Chouette
             attribute(:line_ids) { [] }
           end
 
-          model :compliance_check_set do
-            attribute(:name) { |n| "Test #{n}" }
-            after do
-              new_instance.workgroup = parent.workgroup
-            end
-          end
-
           model :control_list do
             attribute(:name) { |n| "Control List #{n}" }
           end

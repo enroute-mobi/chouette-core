@@ -2,7 +2,6 @@ fr:
   workgroups:
     actions:
       new: "Ajouter un Groupe de travail"
-      edit_control_sets: Paramétrer les Contrôles
       edit_aggregate: Paramétrer l'Agrégation
       edit_merge: Finalisation
       destroy_confirm: "Etes vous sûr de vouloir supprimer ce groupe de travail ?"
@@ -11,10 +10,7 @@ fr:
       restore_workgroup: Restaurer
       edit_transport_modes: Paramétrer les modes de transport
       add_workbench: Ajouter un espace de travail
-    edit_controls: &edit_controls
-      title: 'Paramétrage de la validation du Groupe de Travail'
     edit:
-      <<: *edit_controls
       success: "Le Groupe de Travail a bien éte modifié"
     index:
       name_cont: Nom
@@ -35,16 +31,6 @@ fr:
       disclaimer: Ces paramètres sont utilisés par tous les Espaces de travail de ce Groupe de travail.
     edit_transport_modes:
       title: Paramétrages des modes de transport
-    compliance_control_sets:
-      after_import: Après Import
-      after_import_by_workgroup: Après Import (Groupe)
-      before_merge: Avant Finalisation
-      before_merge_by_workgroup: Avant Finalisation (Groupe)
-      after_merge: Après Finalisation
-      after_merge_by_workgroup: Après Finalisation (Groupe)
-      automatic_by_workgroup: Automatique
-      after_aggregate: Après Agrégation
-      manual: Manuel
   activerecord:
     models:
       workgroup:

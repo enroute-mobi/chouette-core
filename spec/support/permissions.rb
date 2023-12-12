@@ -26,10 +26,6 @@ module Support
         time_tables
         vehicle_journeys
         api_keys
-        compliance_controls
-        compliance_control_sets
-        compliance_control_blocks
-        compliance_check_sets
         workbenches
         workgroups
         shapes

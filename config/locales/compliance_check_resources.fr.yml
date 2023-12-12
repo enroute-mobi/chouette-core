@@ -1,8 +1,0 @@
-fr:
-  activerecord:
-    attributes:
-      compliance_check_resource:
-        name: Nom
-        status: État
-        metrics: Métriques
-        download: Téléchargement

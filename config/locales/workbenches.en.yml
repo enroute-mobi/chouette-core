@@ -55,8 +55,6 @@ en:
         other: "workbenches"
     attributes:
       workbench:
-        import_compliance_control_set_id: Space data before import
-        merge_compliance_control_set_id: Space data before merge
         name: Name
         organisation: Organization
         last_merged_data: Last merged data

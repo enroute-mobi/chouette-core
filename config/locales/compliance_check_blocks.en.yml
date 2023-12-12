@@ -1,8 +1,0 @@
-en:
-  activerecord:
-    models:
-      compliance_check_block:
-        zero:  Control blocks
-        one:   Control block
-        other: Control blocks
-

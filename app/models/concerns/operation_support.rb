@@ -144,10 +144,6 @@ module OperationSupport
     end
   end
 
-  def create_compliance_check_set(context, control_set, referential)
-    ComplianceControlSetCopier.new.copy control_set.id, referential.id, nil, self.class.name, id, context
-  end
-
   def operation_scheduled?
     Delayed::Job.where("handler ILIKE '%#{self.class.name}%name: id\n    value_before_type_cast: #{self.id}%'").exists?
   end
@@ -155,35 +151,6 @@ module OperationSupport
   def enqueue_operation
     worker_method = "#{self.class.name.underscore}!".to_sym
     enqueue_job worker_method
-  end
-
-  def child_change
-    Rails.logger.debug "#{self.class.name} #{self.inspect} child_change"
-    # Wait next child change if one of the check isn't finished
-    return if compliance_check_sets.unfinished.exists?
-
-    if compliance_check_sets.all? { |c| c.status.in? %w{successful warning} }
-      if new
-        # We are done
-        save_current
-      else
-        # We just passed 'before' validations
-        if operation_scheduled?
-          Rails.logger.warn "#{self.class.name} ##{self.id} - Trying to schedule a #{self.class.name} while it is already enqueued"
-        else
-          enqueue_operation
-        end
-      end
-    else
-      referentials.each &:active!
-      update status: :failed, ended_at: Time.now
-    end
-  end
-
-  def compliance_check_set(key, referential = nil)
-    referential ||= new
-    control = parent.compliance_control_set(key)
-    compliance_check_sets.where(compliance_control_set_id: control.id).find_by(referential_id: referential.id, context: key) if control
   end
 
   def failed!

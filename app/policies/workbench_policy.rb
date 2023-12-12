@@ -8,9 +8,4 @@ class WorkbenchPolicy < ApplicationPolicy
   def show?
     user.organisation_id == record.organisation_id
   end
-
-  def update?
-    show? && user.has_permission?('workbenches.update')
-  end
-
 end

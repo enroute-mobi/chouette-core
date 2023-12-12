@@ -34,11 +34,6 @@ en:
       duplicated:
         title: 'Clone a data set'
       submit: "Create a data set"
-    select_compliance_control_set:
-        title: "Select a Compliance Control Set"
-        select:
-          empty_list: You need to have a compliance control set to validate this referential
-          no_item_selected: You need to select a compliance control set from the list
     actions:
       new: "Add a data set"
       destroy_confirm: "Do you confirm to destroy this data set ?"
@@ -118,7 +113,6 @@ en:
         itls: "routing contraints"
         imports: "Imports"
         exports: "Exports"
-        compliance_checks: "Validations"
         data_format_restrictions: "Data format constraint"
         data_format: "Favorite format for export"
         routing_constraint_zone: Routing constraint zone
@@ -161,7 +155,6 @@ en:
       deleted: "Datasets has been successfully destroyed"
       create: The creation is in progress. Please wait and refresh the page in a few moments..
       duplicate: "The duplication is in progress. Please wait and refresh the page in a few moments."
-      validate: "The validation is in progress. Please wait and refresh the page in a few moments."
     referential:
       archived: "The data set has been successfully archived"
       unarchived: "The data set has been successfully unarchived"

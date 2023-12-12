@@ -17,14 +17,6 @@ class WorkgroupPolicy < ApplicationPolicy
     (record.owner == user.organisation) && user.has_permission?('workgroups.update')
   end
 
-  def edit_controls?
-    edit?
-  end
-
-  def update_controls?
-    update?
-  end
-
   def aggregate?
     update? && user.has_permission?('aggregates.create')
   end

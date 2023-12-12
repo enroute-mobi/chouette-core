@@ -2,7 +2,6 @@ en:
   workgroups:
     actions:
       new: "Create a new Workgroup"
-      edit_control_sets: Setup Controls
       edit_aggregate: Setup Aggregation
       edit_merge: Merge settings
       destroy_confirm: Are you sure you want to delete this workgroup ?
@@ -11,10 +10,7 @@ en:
       restore_workgroup: Restore workgroup
       edit_transport_modes: Edit transport modes
       add_workbench: Add Workbench
-    edit_controls: &edit_controls
-      title: "Workgroup Validation Settings"
     edit:
-      <<: *edit_controls
       success: The Workgroup is modified
     index:
       name_cont: Name
@@ -35,16 +31,6 @@ en:
       disclaimer: These settings are used by all Workbenches of this Workgroup.
       edit_transport_modes:
         title: Edit transport modes
-    compliance_control_sets:
-      after_import: After Import
-      after_import_by_workgroup: After Import (Group)
-      before_merge: Before Merge
-      before_merge_by_workgroup: Before Merge (Group)
-      after_merge: After Merge
-      after_merge_by_workgroup: After Merge (Group)
-      automatic_by_workgroup: Automatic
-      after_aggregate: After Aggregation
-      manual: Manual
   activerecord:
     models:
       workgroup:

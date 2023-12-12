@@ -5,16 +5,6 @@ class ModelAttribute
     @__all__ ||= []
   end
 
-  def self.grouped_options(list: all, type: nil)
-    group_by_class(list).reduce({}) do |options, (key, values)|
-      values.reject!{ |x| x.data_type != type } if type
-      key = I18n.t("activerecord.models.#{key}.one")
-      options.merge(
-        key => values.map { |i| [i.klass.tmf(i.name), "#{i.code}"] }
-      )
-    end
-  end
-
   def self.define(**params)
     all << new(
       params[:klass],

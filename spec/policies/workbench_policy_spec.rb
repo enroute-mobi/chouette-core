@@ -20,23 +20,4 @@ RSpec.describe WorkbenchPolicy, type: :policy do
       end
     end
 
-    permissions :update? do
-      let(:record) { build_stubbed :workbench, organisation: user.organisation }
-
-      context "without permission" do
-        it "should not allow update" do
-          remove_permissions('workbenches.update', from_user: user)
-          expect_it.not_to permit(user_context, record)
-        end
-      end
-
-      context "with permission" do
-        it "should allow update" do
-          add_permissions('workbenches.update', to_user: user)
-          expect_it.to permit(user_context, record)
-        end
-      end
-
-    end
-
 end

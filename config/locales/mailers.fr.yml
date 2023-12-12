@@ -62,14 +62,6 @@ fr:
       title: Bonjour %{email},<br/><br/>
       body: "Ce message est une invitation pour accéder à Chouette, vous pouvez l'accepter en cliquant sur le lien suivant :"
       ignore: Si vous ne souhaitez pas accepter cette invitation, ignorez ce message. Votre compte ne sera pas créé tant que vous n'accédez pas au lien ci-dessus et que vous ne définissez un mot de passe.
-    compliance_check_set_mailer:
-      finished:
-        button: Voir la Validation
-        subject: La validation est terminée
-        body: |
-          Vous avez lancé une validation sur <strong>"%{ref_name}"</strong>.<br/>
-          Elle est maintenant terminée.<br/>
-          Le statut de l'opération est : <strong>%{status}</strong>.
     aggregate_mailer:
       finished:
         button: Voir l'Agrégation

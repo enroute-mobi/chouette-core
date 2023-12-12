@@ -10,10 +10,6 @@ module ImportResourcesSupport
     true
   end
 
-  def next_step
-    main_resource&.next_step
-  end
-
   def create_message args, opts={}
     resource = opts[:resource] || main_resource || self
     message = resource.messages.build args

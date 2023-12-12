@@ -16,10 +16,6 @@ class Permission
         api_keys
         calendars
         code_spaces
-        compliance_check_sets
-        compliance_control_blocks
-        compliance_control_sets
-        compliance_controls
         connection_links
         control_lists
         control_list_runs

@@ -29,8 +29,6 @@ fr:
       title: "%{name}"
       report: "Rapport"
       imported_file: "Fichier source"
-      compliance_check: "Test de conformité"
-      compliance_check_of: "Validation de l'import : "
       import_of_validation: "L'import de la validation"
       data_recorvery: Récupération des données
       filename: Nom de l'archive
@@ -38,7 +36,6 @@ fr:
       stif_control: Contrôle STIF
       organisation_control: Contrôle organisation
       results: "%{count} jeu(x) de données validé(s) sur %{total}"
-      summary: Bilan des jeux de contrôles d'import
       parent: Parent
       status: État
       referential: Jeu de données
@@ -52,7 +49,6 @@ fr:
         download: Téléchargement
       gtfs:
         filename: Fichier
-    compliance_check_task: "Validation"
     severities:
       info: "Information"
       uncheck: "Non testé"

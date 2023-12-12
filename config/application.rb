@@ -51,7 +51,6 @@ module ChouetteIhm
     SmartEnv.add :RAILS_LOCALE, default: :fr
     SmartEnv.add :TEST_ENV_NUMBER
     SmartEnv.add :WORKBENCH_IMPORT_DIR
-    SmartEnv.add :CHOUETTE_ADDITIONAL_COMPLIANCE_CONTROLS, default: ""
     SmartEnv.add :CHOUETTE_ADDITIONAL_PUBLICATION_DESTINATIONS, default: ""
     SmartEnv.add :MAIL_FROM, default: 'Chouette <noreply@enroute.mobi>'
     SmartEnv.add_boolean :BYPASS_AUTH_FOR_SIDEKIQ
@@ -103,9 +102,6 @@ module ChouetteIhm
     config.vehicle_journeys_extra_headers = []
     config.osm_backgrounds_source = :osm
     config.osm_backgrounds_esri_token = "your_token_here"
-
-    config.additional_compliance_controls = []
-    config.additional_compliance_controls.push *SmartEnv["CHOUETTE_ADDITIONAL_COMPLIANCE_CONTROLS"].split(',')
 
     config.enable_transactional_checksums = SmartEnv.boolean('CHOUETTE_TRANSACTIONAL_CHECKSUMS')
 

@@ -82,48 +82,4 @@ RSpec.describe NotifiableOperationObserver do
       end
     end
   end
-
-  context "when operation is a ComplianceCheckSet" do
-    let(:operation)  { ComplianceCheckSet.new workbench: workbench }
-    let(:notification_center) { operation.workbench.notification_center }
-
-    context "when manually started" do
-      before { operation.context = "manual"}
-
-      %w{successful failed}.each do |status|
-        context "when status is #{status}" do
-          before { operation.status = status }
-
-          it "sends notification via Workbench NotificationCenter" do
-            expect(notification_center).to receive(:notify).with(operation)
-            subject.after_update(operation)
-          end
-        end
-      end
-
-      %w{running}.each do |status|
-        context "when status is #{status}" do
-          before { operation.status = status }
-
-          it "doesn't send notification via Workbench NotificationCenter" do
-            expect(notification_center).to_not receive(:notify).with(operation)
-            subject.after_update(operation)
-          end
-        end
-      end
-    end
-
-    context "when not manually started" do
-      %w{successful failed running}.each do |status|
-        context "when status is #{status}" do
-          before { operation.status = status }
-
-          it "doesn't send notification via Workbench NotificationCenter" do
-            expect(notification_center).to_not receive(:notify).with(operation)
-            subject.after_update(operation)
-          end
-        end
-      end
-    end
-  end
 end

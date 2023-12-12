@@ -129,10 +129,6 @@ fr:
   activerecord:
     errors:
       models:
-        compliance_check_block:
-          attributes:
-            transport_mode:
-              submode_mismatch: "ne correspond pas au sous-mode de transport séléctionné"
         line:
           attributes:
             referent_id:

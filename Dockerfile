@@ -50,13 +50,12 @@ COPY config/database.yml.docker config/database.yml
 COPY config/secrets.yml.docker config/secrets.yml
 RUN build.sh docker::env::production
 
-# Run whenever to define crontab
-# Create version.json file if VERSION is available
 COPY --from=assets-builder /app/public/assets/ public/assets/
 COPY --from=assets-builder /app/public/packs/ public/packs/
 
+# Create version.json file if VERSION is available
 ARG VERSION
-RUN build.sh docker::whenever docker::version
+RUN build.sh docker::version
 
 RUN bundle exec bootsnap precompile --gemfile app/ lib/
 

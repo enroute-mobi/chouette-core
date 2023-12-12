@@ -67,13 +67,6 @@ GIT
       rubyzip
 
 GIT
-  remote: https://bitbucket.org/enroute-mobi/whenever.git
-  revision: b7963381a11243affe4f35881c85be0710f434e3
-  specs:
-    whenever (0.9.4)
-      chronic (>= 0.6.3)
-
-GIT
   remote: https://github.com/metaware/carrierwave-google-storage.git
   revision: d8092cb70096ae599ffb99ab99ee13c9fc4deafd
   specs:
@@ -207,7 +200,6 @@ GEM
       mime-types (>= 1.16)
       ssrf_filter (~> 1.0, < 1.1.0)
     choice (0.2.0)
-    chronic (0.10.2)
     cliver (0.3.2)
     cocoon (1.2.15)
     coderay (1.1.3)
@@ -1006,7 +998,6 @@ DEPENDENCIES
   uglifier (~> 2.7.2)
   webmock
   webpacker (= 6.0.0.beta.7)
-  whenever!
   will_paginate
   will_paginate-bootstrap
   x25519

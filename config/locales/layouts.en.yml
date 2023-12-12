@@ -43,8 +43,12 @@ en:
         subtitle: Workbench
         edit_control_sets: Controls settings
         notification_rules: Notification center
+        control_definitions: Control Definitions
+        macro_definitions: Macro Definitions
       workgroup:
         subtitle: Workgroup
+        control_reports: Control Reports
+        macro_reports: Macro Reports
         edit_control_sets: Controls settings
         edit_aggregate: Aggregation settings
         edit_merge: Merge settings

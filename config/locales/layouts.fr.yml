@@ -43,8 +43,12 @@ fr:
         subtitle: Espace de travail
         edit_control_sets: Jeux de Contrôle
         notification_rules: Centre de notification
+        control_definitions: Jeux de contrôles
+        macro_definitions: Jeux d'instructions
       workgroup:
         subtitle: Groupe de Travail
+        control_reports: Rapports de jeux de contrôles
+        macro_reports: Rapports de jeux d'instructions
         edit_control_sets: Jeux de Contrôle
         edit_aggregate: Agrégation
         edit_merge: Finalisation

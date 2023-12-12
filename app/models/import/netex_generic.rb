@@ -54,7 +54,7 @@ class Import::NetexGeneric < Import::Base
       [
         RouteJourneyPatterns,
         TimeTables,
-        RouteJourneyPatterns
+        VehicleJourneys
       ].each do |part_class|
         part(part_class, target: referential).import!
       end
@@ -122,7 +122,7 @@ class Import::NetexGeneric < Import::Base
         name: name,
         organisation: organisation,
         metadatas: [metadata],
-        ready: false
+        ready: true
       )
     end
 
@@ -588,6 +588,7 @@ class Import::NetexGeneric < Import::Base
 
       def journey_pattern_attributes
         {
+          registration_number: id,
           name: name,
           published_name: published_name,
           journey_pattern_stop_points: journey_pattern_stop_points
@@ -882,6 +883,160 @@ class Import::NetexGeneric < Import::Base
     end
   end
 
+  class VehicleJourneys < WithResourcePart
+    delegate :netex_source, to: :import
+
+    def import!
+      netex_source.service_journeys.each do |service_journey|
+        decorator = Decorator.new(service_journey, netex_source, chouette_journey_pattern_ids, chouette_route_ids, target)
+
+        unless decorator.valid?
+          decorator.errors.each { |error| create_message error }
+
+          next
+        end
+
+        vehicle_journey = decorator.chouette_vehicle_journey
+        unless vehicle_journey.valid?
+          create_message :vehicle_journey_invalid
+        end
+
+        referential_inserter.vehicle_journeys << vehicle_journey
+
+        vehicle_journey.vehicle_journey_at_stops.each do |vehicle_journey_at_stop|
+          vehicle_journey_at_stop.vehicle_journey_id = vehicle_journey.id
+          referential_inserter.vehicle_journey_at_stops << vehicle_journey_at_stop
+        end
+
+        vehicle_journey.vehicle_journey_time_table_relationships.each do |vehicle_journey_time_table|
+          vehicle_journey_time_table.vehicle_journey_id = vehicle_journey.id
+          referential_inserter.vehicle_journey_time_table_relationships << vehicle_journey_time_table
+        end
+      end
+
+      referential_inserter.flush
+    end
+
+    def referential_inserter
+      @referential_inserter ||= ReferentialInserter.new(target) do |config|
+        config.add IdInserter
+        config.add ObjectidInserter
+        config.add CopyInserter
+      end
+    end
+
+    def chouette_route_ids
+      @chouette_route_ids ||= {}
+    end
+
+    def chouette_journey_pattern_ids
+      @chouette_journey_pattern_ids ||= {}
+    end
+
+    class Decorator < SimpleDelegator
+      def initialize(service_journey, netex_source, chouette_journey_pattern_ids, chouette_route_ids, referential)
+        super service_journey
+
+        @netex_source = netex_source
+        @chouette_journey_pattern_ids = chouette_journey_pattern_ids
+        @chouette_route_ids = chouette_route_ids
+        @referential = referential
+      end
+      attr_reader :netex_source, :chouette_journey_pattern_ids, :chouette_route_ids, :referential
+
+      def valid?
+        errors.empty?
+      end
+
+      def errors
+        @errors ||= []
+      end
+
+      def route_id
+        @route_id ||= begin
+          route_id = route&.id
+          errors << :route_not_found unless route_id
+          route_id
+        end
+      end
+
+      def route
+        chouette_journey_pattern.route
+      end
+
+      def netex_journey_pattern_ref
+        @journey_pattern_ref ||= journey_pattern_ref&.ref
+      end
+
+      def chouette_journey_pattern
+        @chouette_journey_pattern ||= referential.journey_patterns.find_by_registration_number(netex_journey_pattern_ref)
+      end
+
+      def journey_pattern_id
+        @journey_pattern_id ||= begin
+          journey_pattern_id = chouette_journey_pattern_ids[netex_journey_pattern_ref]
+
+          unless journey_pattern_id
+            journey_pattern_id = chouette_journey_pattern&.id
+            chouette_journey_pattern_ids[netex_journey_pattern_ref] = journey_pattern_id
+          end
+
+          errors << :journey_pattern_not_found unless journey_pattern_id
+
+          journey_pattern_id
+        end
+      end
+
+      def vehicle_journey_attributes
+        {
+          route_id: route_id,
+          journey_pattern_id: journey_pattern_id,
+          published_journey_name: name,
+          published_journey_identifier: id,
+          vehicle_journey_at_stops: vehicle_journey_at_stops,
+          vehicle_journey_time_table_relationships: vehicle_journey_time_table_relationships
+        }
+      end
+
+      def chouette_vehicle_journey
+        @chouette_vehicle_journey ||= referential.vehicle_journeys.new vehicle_journey_attributes
+      end
+
+      def vehicle_journey_at_stops
+        unless chouette_journey_pattern.stop_points.count == passing_times.count
+          errors << :number_passing_times_incoherent
+          return []
+        end
+
+        [].tap do |vehicle_journey_at_stops|
+          chouette_journey_pattern.stop_points.find_each.with_index do |stop_point, index|
+            passing_time = passing_times[index]
+            vehicle_journey_at_stops << Chouette::VehicleJourneyAtStop.new(
+              stop_point_id: stop_point.id,
+              arrival_time: passing_time.arrival_time,
+              departure_time: passing_time.departure_time,
+              arrival_day_offset: passing_time.arrival_day_offset || 0,
+              departure_day_offset: passing_time.departure_day_offset || 0
+            )
+          end
+        end
+      end
+
+      def vehicle_journey_time_table_relationships
+        [].tap do |vehicle_journey_time_tables|
+          netex_source.day_types.map do |day_type|
+            time_table_id = referential.time_tables.find_by(comment: day_type.name)&.id
+            if time_table_id
+              vehicle_journey_time_tables << Chouette::TimeTablesVehicleJourney.new(time_table_id: time_table_id)
+            else
+              errors << :time_table_not_found
+            end
+          end
+        end
+      end
+    end
+  end
+
   def scheduled_stop_points
     @scheduled_stop_points ||= {}
   end
@@ -1102,7 +1257,7 @@ class Import::NetexGeneric < Import::Base
       source.transformers << Netex::Transformer::LocationFromCoordinates.new
       source.transformers << Netex::Transformer::Indexer.new(Netex::JourneyPattern, by: :route_ref)
       source.transformers << Netex::Transformer::Indexer.new(Netex::DayTypeAssignment, by: :day_type_ref)
-
+      source.transformers << Netex::Transformer::Indexer.new(Netex::ServiceJourney, by: :journey_pattern_ref)
       source.read(local_file.path, type: file_extension)
     end
   end

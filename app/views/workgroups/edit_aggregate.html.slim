@@ -1,6 +1,5 @@
 - breadcrumb :workgroup_aggregation_settings, resource
 - page_header_content_for resource
-- javascript_additional_packs 'workgroups/edit_aggregate'
 - workbenches = resource.workbenches.joins(:organisation).order('organisations.name')
 
 .page_content
@@ -10,17 +9,16 @@
         .col-lg-12
           h3= I18n.t('workgroups.edit_aggregate.nightly_aggregate')
 
-      .row
+      .row x-data="{ nightlyAggregateEnabled: #{resource.nightly_aggregate_enabled} || false}"
         .col-lg-12
-          = f.input :nightly_aggregate_enabled, as: :switchable_checkbox
-        .col-lg-12
-          .slave data-master="#workgroup_nightly_aggregate_enabled" data-value="true"
-            = f.input :nightly_aggregate_time, as: :time_picker
-            = f.input :nightly_aggregate_days, as: :day_type
-            = f.input :nightly_aggregate_notification_target,
-              collection: Aggregate.notification_target.values.delete_if{|value| value == "user"}.map { |k| [k && "enumerize.notification_target.#{k}".t, k] },
-              selected: f.object.nightly_aggregate_notification_target,
-              input_html: { style: 'max-width: 350px;' }
+          = f.input :nightly_aggregate_enabled, as: :switchable_checkbox, input_html: { 'x-on:click': 'nightlyAggregateEnabled = !nightlyAggregateEnabled' }
+        .col-lg-12 x-show="nightlyAggregateEnabled"
+          = f.input :nightly_aggregate_time, as: :time_picker
+          = f.input :nightly_aggregate_days, as: :day_type
+          = f.input :nightly_aggregate_notification_target,
+            collection: Aggregate.notification_target.values.delete_if{|value| value == "user"}.map { |k| [k && "enumerize.notification_target.#{k}".t, k] },
+            selected: f.object.nightly_aggregate_notification_target,
+            input_html: { style: 'max-width: 350px;' }
       .row
         .col-lg-12= I18n.t('workgroups.edit_aggregate.disclaimer').html_safe
 

@@ -12,9 +12,8 @@ module Chouette
     has_and_belongs_to_many :stop_point_lights, -> { light.order("stop_points.position") }, class_name: 'Chouette::StopPoint', join_table: :journey_patterns_stop_points, foreign_key: :journey_pattern_id
     has_many :stop_areas, through: :stop_points
     has_many :service_counts
-    has_many :courses_stats, class_name: "Stat::JourneyPatternCoursesByDate"
-    has_many :journey_patterns_stop_points, class_name: '::Chouette::JourneyPatternsStopPoint'
-    accepts_nested_attributes_for :journey_patterns_stop_points
+    has_many :journey_pattern_stop_points, class_name: '::Chouette::JourneyPatternStopPoint'
+    accepts_nested_attributes_for :journey_pattern_stop_points
 
     belongs_to :shape, optional: true
     belongs_to_public :shape

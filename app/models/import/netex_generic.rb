@@ -388,9 +388,9 @@ class Import::NetexGeneric < Import::Base
         chouette_journey_pattern.route_id = chouette_route.id
         if chouette_journey_pattern&.valid?
           referential_inserter.journey_patterns << chouette_journey_pattern
-          chouette_journey_pattern.journey_patterns_stop_points.each do |journey_pattern_stop_point|
+          chouette_journey_pattern.journey_pattern_stop_points.each do |journey_pattern_stop_point|
             journey_pattern_stop_point.journey_pattern_id = chouette_journey_pattern.id
-            referential_inserter.journey_patterns_stop_points << journey_pattern_stop_point
+            referential_inserter.journey_pattern_stop_points << journey_pattern_stop_point
           end
         else
           create_message :journey_pattern_invalid
@@ -576,7 +576,7 @@ class Import::NetexGeneric < Import::Base
         {
           name: name,
           published_name: published_name,
-          journey_patterns_stop_points: journey_patterns_stop_points
+          journey_pattern_stop_points: journey_pattern_stop_points
         }
       end
 
@@ -594,9 +594,9 @@ class Import::NetexGeneric < Import::Base
           .map { |stop_point_in_journey_pattern| stop_point_in_journey_pattern.scheduled_stop_point_ref&.ref }
       end
 
-      def journey_patterns_stop_points
+      def journey_pattern_stop_points
         scheduled_point_ids.map do |scheduled_point_id|
-          Chouette::JourneyPatternsStopPoint.new stop_point_id: route_decorator.stop_point_for_scheduled_stop_point_id(scheduled_point_id).id
+          Chouette::JourneyPatternStopPoint.new stop_point_id: route_decorator.stop_point_for_scheduled_stop_point_id(scheduled_point_id).id
         end
       end
     end

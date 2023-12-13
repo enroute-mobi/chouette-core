@@ -81,7 +81,7 @@ class Import::NetexGeneric < Import::Base
   end
 
   def referential_metadata
-    return unless [imported_line_ids, netex_source.validity_period].all?(:present?)
+    return unless [imported_line_ids, netex_source.validity_period].all?(&:present?)
 
     @referential_metadata ||=
       ReferentialMetadata.new line_ids: imported_line_ids, periodes: [netex_source.validity_period]
@@ -99,7 +99,12 @@ class Import::NetexGeneric < Import::Base
     delegate :organisation, to: :workbench
 
     def create(&block)
-      block.call referential if valid?
+      if valid?
+        Rails.logger.debug "Create imported Referential: #{referential.inspect}"
+        block.call referential
+      else
+        Rails.logger.debug "Can't created imported Referential: #{referential.inspect}"
+      end
     end
 
     def referential

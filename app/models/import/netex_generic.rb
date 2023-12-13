@@ -128,12 +128,15 @@ class Import::NetexGeneric < Import::Base
   # TODO: why the resource statuses are not checked automaticaly ??
   # See CHOUETTE-2747
   def update_import_status
-    resource_status = resources.map(&:status).uniq.map(&:to_s)
-    Rails.logger.debug "resource_status: #{resource_status.inspect}"
+    all_resources_and_messages_statuses =
+      messages.map(&:criticity).map(&:upcase) + resources.map(&:status).map(&:to_s)
 
-    if resource_status.include?('ERROR')
+    resources_and_messages_statuses = all_resources_and_messages_statuses.uniq
+    Rails.logger.debug "resource_status: #{resources_and_messages_statuses.inspect}"
+
+    if resources_and_messages_statuses.include?('ERROR')
       self.status = 'failed'
-    elsif resource_status.include?('WARNING')
+    elsif resources_and_messages_statuses.include?('WARNING')
       self.status = 'warning'
     end
 

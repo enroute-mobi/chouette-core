@@ -7,9 +7,6 @@ class LinesController < Chouette::LineReferentialController
 
   defaults :resource_class => Chouette::Line
 
-  belongs_to :workbench
-  belongs_to :line_referential, singleton: true
-
   respond_to :html, :xml, :json
   respond_to :js, :only => :index
 
@@ -30,8 +27,8 @@ class LinesController < Chouette::LineReferentialController
         @lines = LineDecorator.decorate(
           collection,
           context: {
-            workbench: @workbench,
-            line_referential: @line_referential,
+            workbench: workbench,
+            line_referential: line_referential,
             # TODO Remove me ?
             current_organisation: current_organisation
           }
@@ -44,8 +41,8 @@ class LinesController < Chouette::LineReferentialController
     @group_of_lines = resource.group_of_lines
     show! do
       @line = @line.decorate(context: {
-        workbench: @workbench,
-        line_referential: @line_referential,
+        workbench: workbench,
+        line_referential: line_referential,
         current_organisation: current_organisation
       })
     end
@@ -67,9 +64,9 @@ class LinesController < Chouette::LineReferentialController
   def update
     update! do
       if line_params[:line_notice_ids]
-        workbench_line_referential_line_line_notices_path @workbench, @line
+        workbench_line_referential_line_line_notices_path workbench, @line
       else
-        workbench_line_referential_line_path @workbench, @line
+        workbench_line_referential_line_path workbench, @line
       end
     end
   end
@@ -90,7 +87,7 @@ class LinesController < Chouette::LineReferentialController
 
   def build_resource
     get_resource_ivar || super.tap do |line|
-      line.line_provider ||= @workbench.default_line_provider
+      line.line_provider ||= workbench.default_line_provider
     end
   end
 
@@ -106,21 +103,13 @@ class LinesController < Chouette::LineReferentialController
     @collection ||= search.search scope
   end
 
-  def workbench
-    @workbench
-  end
-
   def candidate_line_providers
-    @candidate_line_providers ||= @workbench.line_providers.order(:name)
+    @candidate_line_providers ||= workbench.line_providers.order(:name)
   end
 
-  alias_method :line_referential, :parent
   delegate :workgroup, to: :workbench, allow_nil: true
 
   private
-
-  alias_method :current_referential, :line_referential
-  helper_method :current_referential
 
   def line_params
     out = params.require(:line)

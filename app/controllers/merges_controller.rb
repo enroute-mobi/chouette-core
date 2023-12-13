@@ -7,7 +7,6 @@ class MergesController < Chouette::WorkbenchController
   include ReferentialsHelper
 
   defaults resource_class: Merge
-  belongs_to :workbench
 
   respond_to :html
 
@@ -39,7 +38,6 @@ class MergesController < Chouette::WorkbenchController
   protected
   
   alias merge resource
-  alias workbench parent
 
   def build_resource
     super.tap do |merge|

@@ -5,7 +5,6 @@ class NotificationRulesController < Chouette::WorkbenchController
   include RansackDateFilter
 
   defaults resource_class: NotificationRule
-  belongs_to :workbench
 
   def index
     index! do |format|
@@ -13,7 +12,7 @@ class NotificationRulesController < Chouette::WorkbenchController
         @notification_rules = NotificationRuleDecorator.decorate(
           collection,
             context: {
-              workbench: @workbench
+              workbench: workbench
             }
         )
       }
@@ -67,6 +66,6 @@ class NotificationRulesController < Chouette::WorkbenchController
         operation_statuses: [],
         lines: []
       )
-      .with_defaults(workbench_id: parent.id, users: [], external_email: nil) # CHOUETTE-1713 (depending on the chosen target_type, some inputs are disabled, we then need to ensure default values)
+      .with_defaults(workbench_id: workbench.id, users: [], external_email: nil) # CHOUETTE-1713 (depending on the chosen target_type, some inputs are disabled, we then need to ensure default values)
   end
 end

@@ -6,9 +6,6 @@ class LineNoticesController < Chouette::LineReferentialController
 
   defaults :resource_class => Chouette::LineNotice
 
-  belongs_to :workbench
-  belongs_to :line_referential, singleton: true
-
   before_action :load_line
 
   def index
@@ -17,7 +14,7 @@ class LineNoticesController < Chouette::LineReferentialController
         @line_notices = LineNoticeDecorator.decorate(
           @line_notices.order('created_at DESC'),
           context: {
-            workbench: @workbench,
+            workbench: workbench,
             line_referential: line_referential,
             line: @line
           }
@@ -32,16 +29,16 @@ class LineNoticesController < Chouette::LineReferentialController
       if @line
         @line.line_notices << @line_notice
         @line.save
-        [@workbench, :line_referential, @line, :line_notices]
+        [workbench, :line_referential, @line, :line_notices]
       else
-        [@workbench, :line_referential, :line_notices]
+        [workbench, :line_referential, :line_notices]
       end
     end
   end
 
   def detach
     @line.update line_notice_ids: (@line.line_notice_ids - [params[:id].to_i])
-    redirect_to [@workbench, :line_referential, @line, :line_notices]
+    redirect_to [workbench, :line_referential, @line, :line_notices]
   end
 
   alias_method :line_referential, :parent
@@ -50,12 +47,12 @@ class LineNoticesController < Chouette::LineReferentialController
 
   def build_resource
     get_resource_ivar || super.tap do |line_notice|
-      line_notice.line_provider ||= @workbench.default_line_provider
+      line_notice.line_provider ||= workbench.default_line_provider
     end
   end
 
   def resource
-    super.decorate(context: { workbench: @workbench, line_referential: line_referential })
+    super.decorate(context: { workbench: workbench, line_referential: line_referential })
   end
 
   def sort_column

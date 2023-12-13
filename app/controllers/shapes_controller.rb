@@ -5,9 +5,6 @@ class ShapesController < Chouette::TopologicReferentialController
   # FIXME required by page_tile helper (?!)
   defaults :resource_class => Shape
 
-  belongs_to :workbench
-  belongs_to :shape_referential, singleton: true
-
   respond_to :html
   respond_to :json, only: %i[index]
   respond_to :geojson, only: %i[index show]
@@ -20,7 +17,7 @@ class ShapesController < Chouette::TopologicReferentialController
         @shapes = ShapeDecorator.decorate(
           @shapes,
           context: {
-            workbench: @workbench
+            workbench: workbench
           }
         )
       }
@@ -35,8 +32,6 @@ class ShapesController < Chouette::TopologicReferentialController
 
   protected
 
-  alias_method :shape_referential, :parent
-
   def collection
     @q = shape_referential.shapes.ransack(params[:q])
     @shapes ||= @q.result.paginate(page: params[:page], per_page: 12)
@@ -45,7 +40,7 @@ class ShapesController < Chouette::TopologicReferentialController
   private
 
   def resource
-    super.decorate(context: { workbench: @workbench })
+    super.decorate(context: { workbench: workbench })
   end
 
   def shape_params

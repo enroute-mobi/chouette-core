@@ -8,8 +8,6 @@ class ProcessingRulesController < Chouette::WorkbenchController
            route_instance_name: 'processing_rule_workbench',
            route_collection_name: 'processing_rule_workbenches'
 
-  belongs_to :workbench
-
   respond_to :html
 
   before_action only: :index do
@@ -19,7 +17,6 @@ class ProcessingRulesController < Chouette::WorkbenchController
   protected
 
   alias processing_rule resource
-  alias workbench parent
 
   def collection
     @processing_rules ||= decorate(workbench.processing_rules.paginate(page: params[:page], per_page: 30)) # rubocop:disable Naming/MemoizedInstanceVariableName(RuboCop)

@@ -11,8 +11,6 @@ class DocumentTypesController < Chouette::WorkgroupController
 
   before_action :document_type_params, only: [:create, :update]
 
-  belongs_to :workgroup
-
   respond_to :html, :xml, :json
 
   def index
@@ -25,7 +23,7 @@ class DocumentTypesController < Chouette::WorkgroupController
         @document_types = DocumentTypeDecorator.decorate(
           collection,
           context: {
-            workgroup: @workgroup,
+            workgroup: workgroup,
           }
         )
       end
@@ -48,7 +46,7 @@ class DocumentTypesController < Chouette::WorkgroupController
     @document_type = DocumentTypeDecorator.decorate(
       object,
       context: {
-        workgroup: @workgroup
+        workgroup: workgroup
       }
     )
   end

@@ -9,8 +9,6 @@ class CalendarsController < Chouette::WorkbenchController
   respond_to :json, only: :show
   respond_to :js, only: :index
 
-  belongs_to :workbench
-
   def index
     index! do
       @calendars = @calendars.includes(:organisation)
@@ -58,8 +56,15 @@ class CalendarsController < Chouette::WorkbenchController
   end
 
   def calendar_params
-    permitted_params = [:id, :name, :shared, periods_attributes: [:id, :begin, :end, :_destroy], date_values_attributes: [:id, :value, :_destroy]]
-    permitted_params << :shared if policy(Calendar).share?
+    permitted_params = [
+      :id, :name,
+      {
+        periods_attributes: %i[id begin end _destroy],
+        date_values_attributes: %i[id value _destroy]
+      }
+    ]
+    # CHOUETTE-3123 Alban's idea: we need an instance but cannot call #build_resource since it calls #calendar_params
+    permitted_params << :shared if policy(workbench.calendars.build).share?
     params.require(:calendar).permit(*permitted_params)
   end
 

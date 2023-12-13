@@ -7,7 +7,6 @@ class WorkgroupControlMessagesController < Chouette::WorkgroupController
 
   respond_to :js
 
-  belongs_to :workgroup
   belongs_to :control_list_run
   belongs_to :control_run
 
@@ -19,7 +18,7 @@ class WorkgroupControlMessagesController < Chouette::WorkgroupController
       partial: 'control_list_runs/control_messages',
       locals: {
         messages: messages,
-        facade: OperationRunFacade.new(@control_list_run, @workgroup.owner_workbench)
+        facade: OperationRunFacade.new(@control_list_run, workgroup.owner_workbench)
       }
     )
 
@@ -29,6 +28,6 @@ class WorkgroupControlMessagesController < Chouette::WorkgroupController
   protected
 
   def pundit_user
-    UserContext.new(current_user, workgroup: @workgroup)
+    UserContext.new(current_user, workgroup: workgroup)
   end
 end

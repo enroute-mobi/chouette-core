@@ -78,6 +78,8 @@ class DocumentMembershipsController < Chouette::ResourceController
 
   private
 
+  alias current_workbench workbench
+
   def decorator_context
     {
       workbench: workbench,

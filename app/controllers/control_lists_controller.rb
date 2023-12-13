@@ -9,8 +9,6 @@ class ControlListsController < Chouette::WorkbenchController
   before_action :decorate_control_list, only: %i[show new edit]
   after_action :decorate_control_list, only: %i[create update]
 
-  belongs_to :workbench
-
   respond_to :html, :xml, :json
 
   def index
@@ -25,7 +23,6 @@ class ControlListsController < Chouette::WorkbenchController
   protected
 
   alias control_list resource
-  alias workbench parent
 
   def collection
     get_collection_ivar ||
@@ -35,7 +32,7 @@ class ControlListsController < Chouette::WorkbenchController
           page: params[:page],
           per_page: 30
         ),
-        context: { workbench: @workbench }
+        context: { workbench: workbench }
       )
     )
   end
@@ -85,6 +82,6 @@ class ControlListsController < Chouette::WorkbenchController
       :updated_at,
       controls_attributes: control_params,
       control_contexts_attributes: control_context_params
-    ).with_defaults(workbench_id: parent.id)
+    ).with_defaults(workbench_id: workbench.id)
   end
 end

@@ -6,8 +6,6 @@ class FareProvidersController < Chouette::FareReferentialController
 
   defaults resource_class: Fare::Provider
 
-  belongs_to :workbench
-
   respond_to :html, :json
 
   def index

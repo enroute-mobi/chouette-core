@@ -5,9 +5,6 @@ class StopAreasController < Chouette::StopAreaReferentialController
 
   defaults :resource_class => Chouette::StopArea
 
-  belongs_to :workbench
-  belongs_to :stop_area_referential, singleton: true
-
   respond_to :html, :geojson, :xml, :json
   respond_to :js, :only => :index
 
@@ -45,7 +42,7 @@ class StopAreasController < Chouette::StopAreaReferentialController
         @stop_areas = StopAreaDecorator.decorate(
           collection,
           context: {
-            workbench: @workbench
+            workbench: workbench
             }
           )
       }
@@ -73,8 +70,8 @@ class StopAreasController < Chouette::StopAreaReferentialController
         render json: attributes
       end
 
-      @stop_area = @stop_area.decorate(context: { workbench: @workbench })
-      @connection_links = ConnectionLinkDecorator.decorate(@stop_area.connection_links.limit(4), context: {workbench: @workbench})
+      @stop_area = @stop_area.decorate(context: { workbench: workbench })
+      @connection_links = ConnectionLinkDecorator.decorate(@stop_area.connection_links.limit(4), context: {workbench: workbench})
     end
   end
 
@@ -109,17 +106,16 @@ class StopAreasController < Chouette::StopAreaReferentialController
   end
 
   def saved_searches
-    @saved_searches ||= @workbench.saved_searches.for(Search::StopArea)
+    @saved_searches ||= workbench.saved_searches.for(Search::StopArea)
   end
 
   protected
 
   alias_method :stop_area, :resource
-  alias_method :stop_area_referential, :parent
 
   def build_resource
     get_resource_ivar || super.tap do |stop_area|
-      stop_area.stop_area_provider ||= @workbench.default_stop_area_provider
+      stop_area.stop_area_provider ||= workbench.default_stop_area_provider
     end
   end
 
@@ -128,7 +124,7 @@ class StopAreasController < Chouette::StopAreaReferentialController
   end
 
   def search
-    @search ||= Search::StopArea.from_params(params, workbench: @workbench)
+    @search ||= Search::StopArea.from_params(params, workbench: workbench)
   end
 
   def collection
@@ -143,9 +139,6 @@ class StopAreasController < Chouette::StopAreaReferentialController
   end
 
   private
-
-  alias_method :current_referential, :stop_area_referential
-  helper_method :current_referential
 
   def stop_area_params
     fields = [

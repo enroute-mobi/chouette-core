@@ -4,12 +4,11 @@ class AggregatesController < Chouette::WorkgroupController
   include PolicyChecker
 
   defaults resource_class: Aggregate
-  belongs_to :workgroup
 
   respond_to :html
 
   def show
-    @aggregate = @aggregate.decorate(context: {workgroup: parent})
+    @aggregate = @aggregate.decorate(context: { workgroup: workgroup })
     @workbench = workgroup.owner_workbench
     @processing = processing
     @aggregate_resources = @aggregate.resources.order(
@@ -24,8 +23,6 @@ class AggregatesController < Chouette::WorkgroupController
   end
 
   private
-
-  alias_method :workgroup, :parent
 
   # Only one processing for aggregate
   def processing

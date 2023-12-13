@@ -95,4 +95,6 @@ class WorkgroupsController < Chouette::ResourceController
       current_organisation.workgroups.build
     end
   end
+
+  alias current_workgroup resource
 end

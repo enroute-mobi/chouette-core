@@ -11,8 +11,6 @@ class SourcesController < Chouette::WorkbenchController
 
   before_action :source_params, only: [:create, :update]
 
-  belongs_to :workbench
-
   respond_to :html, :xml, :json
 
   def index
@@ -25,7 +23,7 @@ class SourcesController < Chouette::WorkbenchController
         @sources = SourceDecorator.decorate(
           collection,
           context: {
-            workbench: @workbench
+            workbench: workbench
           }
         )
       end
@@ -44,8 +42,6 @@ class SourcesController < Chouette::WorkbenchController
   end
 
   protected
-
-  alias workbench parent
 
   def collection
     @sources = parent.sources.paginate(page: params[:page], per_page: 30)
@@ -87,6 +83,6 @@ class SourcesController < Chouette::WorkbenchController
       :retrieval_time_of_day,
       :retrieval_frequency,
       retrieval_days_of_week_attributes: [:monday, :tuesday, :wednesday, :thursday, :friday, :saturday, :sunday]
-    ).with_defaults(workbench_id: parent.id)
+    ).with_defaults(workbench_id: workbench.id)
   end
 end

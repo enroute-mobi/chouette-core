@@ -10,8 +10,6 @@ class WorkgroupControlListRunsController < Chouette::WorkgroupController
 
   before_action :init_facade, only: %i[show]
 
-  belongs_to :workgroup
-
   respond_to :html, :json
 
   def index
@@ -22,7 +20,7 @@ class WorkgroupControlListRunsController < Chouette::WorkgroupController
         @control_list_runs = WorkgroupControlListRunDecorator.decorate(
           collection,
           context: {
-            workgroup: @workgroup
+            workgroup: workgroup
           }
         )
       end
@@ -32,7 +30,6 @@ class WorkgroupControlListRunsController < Chouette::WorkgroupController
   protected
 
   alias control_list_run resource
-  alias workgroup parent
 
   def scope
     workgroup.control_list_runs

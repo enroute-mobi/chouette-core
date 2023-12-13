@@ -6,8 +6,6 @@ class FareZonesController < Chouette::FareReferentialController
 
   defaults resource_class: Fare::Zone
 
-  belongs_to :workbench
-
   def index
     index! do |format|
       format.html do

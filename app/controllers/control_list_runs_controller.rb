@@ -10,7 +10,6 @@ class ControlListRunsController < Chouette::WorkbenchController
 
   before_action :init_facade, only: %i[show]
 
-  belongs_to :workbench
   belongs_to :control_list, optional: true, collection_name: :control_lists_shared_with_workgroup
 
   respond_to :html, :json
@@ -50,15 +49,7 @@ class ControlListRunsController < Chouette::WorkbenchController
   def control_list
     # Ensure parent is loaded
     association_chain
-
-    parent if parent.is_a?(Control::List)
-  end
-
-  def workbench
-    # Ensure parent is loaded
-    association_chain
-
-    @workbench ||= parent.is_a?(Workbench) ? parent : parent&.workbench
+    get_parent_ivar(:control_list)
   end
 
   def build_resource

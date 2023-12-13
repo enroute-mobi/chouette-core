@@ -11,9 +11,6 @@ class PointOfInterestsController < Chouette::TopologicReferentialController
 
   before_action :point_of_interest_params, only: [:create, :update]
 
-  belongs_to :workbench
-  belongs_to :shape_referential, singleton: true
-
   respond_to :html, :xml, :json
 
   def index
@@ -26,7 +23,7 @@ class PointOfInterestsController < Chouette::TopologicReferentialController
         @point_of_interests = PointOfInterestDecorator.decorate(
           collection,
           context: {
-            workbench: @workbench,
+            workbench: workbench,
           }
         )
       end
@@ -36,10 +33,9 @@ class PointOfInterestsController < Chouette::TopologicReferentialController
   protected
 
   alias point_of_interest resource
-  alias shape_referential parent
 
   def scope
-    @scope ||= @workbench.shape_referential.point_of_interests
+    @scope ||= workbench.shape_referential.point_of_interests
   end
 
   def search
@@ -57,7 +53,7 @@ class PointOfInterestsController < Chouette::TopologicReferentialController
     @point_of_interest = PointOfInterestDecorator.decorate(
       object,
       context: {
-        workbench: @workbench
+        workbench: workbench
       }
     )
   end

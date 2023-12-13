@@ -8,9 +8,6 @@ class EntrancesController < Chouette::StopAreaReferentialController
 
   before_action :entrance_params, only: [:create, :update]
 
-  belongs_to :workbench
-  belongs_to :stop_area_referential, singleton: true
-
   respond_to :html, :xml, :json, :geojson
 
   def index
@@ -19,7 +16,7 @@ class EntrancesController < Chouette::StopAreaReferentialController
         @entrances = EntranceDecorator.decorate(
           collection,
           context: {
-            workbench: @workbench
+            workbench: workbench
           }
         )
       end
@@ -28,7 +25,7 @@ class EntrancesController < Chouette::StopAreaReferentialController
 
   def show
     show! do |format|
-      @entrance = @entrance.decorate context: { workbench: @workbench }
+      @entrance = @entrance.decorate context: { workbench: workbench }
 
       format.geojson { render 'entrances/show.geo' }
     end
@@ -37,9 +34,9 @@ class EntrancesController < Chouette::StopAreaReferentialController
   def update
     update! do
       if entrance_params[:entrance_ids]
-        workbench_stop_area_referential_entrances_path @workbench, @entrance
+        workbench_stop_area_referential_entrances_path workbench, @entrance
       else
-        workbench_stop_area_referential_entrance_path @workbench, @entrance
+        workbench_stop_area_referential_entrance_path workbench, @entrance
       end
     end
   end
@@ -47,17 +44,9 @@ class EntrancesController < Chouette::StopAreaReferentialController
   protected
 
   alias_method :entrance, :resource
-  alias_method :stop_area_referential, :parent
-
-  def workbench
-    # Ensure parents are loaded
-    parent
-
-    @workbench
-  end
 
   def scope
-    parent.entrances
+    stop_area_referential.entrances
   end
 
   def search

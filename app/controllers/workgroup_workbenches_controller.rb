@@ -7,7 +7,6 @@ class WorkgroupWorkbenchesController < Chouette::WorkgroupController
   defaults resource_class: Workbench
   defaults collection_name: 'workbenches', instance_name: 'workbench'
 
-  belongs_to :workgroup
   helper_method :has_restriction?
 
   def create
@@ -20,8 +19,6 @@ class WorkgroupWorkbenchesController < Chouette::WorkgroupController
   end
 
   protected
-
-  alias workgroup parent
 
   def has_restriction?(*restrictions)
     return false unless @workbench

@@ -8,9 +8,6 @@ class LineRoutingConstraintZonesController < Chouette::LineReferentialController
 
   before_action :decorate_line_routing_constraint_zone, only: %i[show new edit]
 
-  belongs_to :workbench
-  belongs_to :line_referential, singleton: true
-
   respond_to :html, :json
 
   def index
@@ -21,7 +18,7 @@ class LineRoutingConstraintZonesController < Chouette::LineReferentialController
         end
 
         @line_routing_constraint_zones = LineRoutingConstraintZoneDecorator.decorate(@line_routing_constraint_zones,
-        context: { workbench: @workbench })
+        context: { workbench: workbench })
       }
       format.json
     end
@@ -30,7 +27,6 @@ class LineRoutingConstraintZonesController < Chouette::LineReferentialController
   protected
 
   alias :line_routing_constraint_zone :resource
-  alias :line_referential :parent
 
   def collection
     @line_routing_constraint_zones = parent.line_routing_constraint_zones.paginate(page: params[:page], per_page: 30)
@@ -43,7 +39,7 @@ class LineRoutingConstraintZonesController < Chouette::LineReferentialController
     @line_routing_constraint_zone = LineRoutingConstraintZoneDecorator.decorate(
       object,
       context: {
-        workbench: @workbench
+        workbench: workbench
       }
     )
   end

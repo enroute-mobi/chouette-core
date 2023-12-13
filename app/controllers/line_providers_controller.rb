@@ -5,9 +5,6 @@ class LineProvidersController < Chouette::LineReferentialController
 
   defaults :resource_class => LineProvider
 
-  belongs_to :workbench
-  belongs_to :line_referential, singleton: true
-
   respond_to :html, :json
 
   def index
@@ -24,7 +21,7 @@ class LineProvidersController < Chouette::LineReferentialController
 
   def show
     respond_to do |format|
-      @line_provider = resource.decorate(context: {workbench: @workbench})
+      @line_provider = resource.decorate(context: { workbench: workbench })
       format.html
     end
   end
@@ -33,14 +30,14 @@ class LineProvidersController < Chouette::LineReferentialController
 
   def build_resource
     get_resource_ivar || super.tap do |line_provider|
-      line_provider.workbench = @workbench
+      line_provider.workbench = workbench
     end
   end
 
   def collection
     get_collection_ivar || set_collection_ivar(LineProviderDecorator.decorate(end_of_association_chain.order(:name).paginate(:page => params[:page], per_page: 30),
     context: {
-      workbench: @workbench
+      workbench: workbench
       })
     )
   end

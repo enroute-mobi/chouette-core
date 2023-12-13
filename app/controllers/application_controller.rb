@@ -1,54 +1,18 @@
-class ApplicationController < ActionController::Base
-  include MetadataControllerSupport
-  include Pundit
-  include FeatureChecker
+# frozen_string_literal: true
 
-  rescue_from Pundit::NotAuthorizedError, with: :user_not_authorized
+class ApplicationController < ActionController::Base
+  include FeatureChecker
 
   # TODO : Delete hack to authorize Cross Request for js and json get request from javascript
   protect_from_forgery unless: -> { request.get? && (request.format.json? || request.format.js?) }
-  before_action :authenticate_user!
-  before_action :set_locale, unless: -> { params[:controller] == 'notifications' }
-  before_action :set_time_zone
 
   # Load helpers in rails engine
   helper LanguageEngine::Engine.helpers
   layout :layout_by_resource
 
-  def set_locale
-    I18n.locale = LocaleSelector.locale_for(params, session, current_user)
-  end
-
-  def set_time_zone
-    Time.zone = TimeZoneSelector.time_zone_for(current_user)
-  end
-
-  def pundit_user
-    UserContext.new(current_user, referential: @referential, workbench: current_workbench, workgroup: current_workgroup)
-  end
-
   protected
 
   include ErrorManagement
-  alias user_not_authorized forbidden
-
-  def current_organisation
-    current_user.organisation if current_user
-  end
-
-  helper_method :current_organisation
-
-  def current_workbench
-    (self.respond_to? :workbench)? workbench : @workbench
-  end
-
-  def current_workgroup
-    if respond_to? :workgroup, true
-      workgroup
-    else
-      @workgroup || current_workbench&.workgroup
-    end
-  end
 
   def collection_name
     self.class.name.split("::").last.gsub('Controller', '').underscore

@@ -7,15 +7,13 @@ class DocumentsController < Chouette::WorkbenchController
 
   defaults resource_class: Document
 
-  belongs_to :workbench
-
   def index
     index! do |format|
       format.html do
         @documents = DocumentDecorator.decorate(
           collection,
           context: {
-            workbench: @workbench
+            workbench: workbench
           }
         )
       end
@@ -30,19 +28,18 @@ class DocumentsController < Chouette::WorkbenchController
   protected
 
   alias document resource
-  alias workbench parent
 
   def scope
     @scope ||= workbench.workgroup.documents
   end
 
   def resource
-    get_resource_ivar || set_resource_ivar(scope.find_by_id(params[:id]).decorate(context: { workbench: @workbench }))
+    get_resource_ivar || set_resource_ivar(scope.find_by_id(params[:id]).decorate(context: { workbench: workbench }))
   end
 
   def build_resource
     get_resource_ivar || set_resource_ivar(end_of_association_chain.send(method_for_build,
-                                                                         *resource_params).decorate(context: { workbench: @workbench }))
+                                                                         *resource_params).decorate(context: { workbench: workbench }))
   end
 
   def search

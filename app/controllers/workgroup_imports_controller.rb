@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-class WorkgroupImportsController < Chouette::WorkbenchController
+class WorkgroupImportsController < Chouette::WorkgroupController
   include PolicyChecker
   include Downloadable
   include ImportMessages
@@ -48,16 +48,6 @@ class WorkgroupImportsController < Chouette::WorkbenchController
   # rubocop:enable Metrics/MethodLength
 
   protected
-
-  def parent
-    @parent ||= workgroup
-  end
-
-  def workgroup
-    return unless params[:workgroup_id]
-
-    @workgroup ||= current_organisation&.workgroups&.owned&.find(params[:workgroup_id])
-  end
 
   # rubocop:disable Naming/MemoizedInstanceVariableName
   def resource

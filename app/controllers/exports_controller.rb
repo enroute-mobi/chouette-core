@@ -56,16 +56,6 @@ class ExportsController < Chouette::WorkbenchController
 
   protected
 
-  def parent
-    @parent ||= workbench
-  end
-
-  def workbench
-    return unless params[:workbench_id]
-
-    @workbench ||= current_organisation&.workbenches&.find(params[:workbench_id])
-  end
-
   # rubocop:disable Naming/MemoizedInstanceVariableName
   def resource
     @export ||= parent.exports.find(params[:id])

@@ -1,12 +1,11 @@
 # frozen_string_literal: true
 
 class StopAreaReferentialsController < Chouette::WorkbenchController
-  belongs_to :workbench
   defaults resource_class: StopAreaReferential, singleton: true
 
   def show
     show! do
-      @stop_area_referential = StopAreaReferentialDecorator.decorate(@stop_area_referential, context: { workbench: @workbench })
+      @stop_area_referential = StopAreaReferentialDecorator.decorate(@stop_area_referential, context: { workbench: workbench })
       @connection_links = ConnectionLinkDecorator.decorate(@stop_area_referential.connection_links.order("updated_at desc").limit(5))
       @entrances = EntranceDecorator.decorate(@entrances)
     end

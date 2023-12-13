@@ -6,9 +6,6 @@ class NetworksController < Chouette::LineReferentialController
 
   defaults :resource_class => Chouette::Network
 
-  belongs_to :workbench
-  belongs_to :line_referential, singleton: true
-
   respond_to :html
   respond_to :xml
   respond_to :json
@@ -17,7 +14,7 @@ class NetworksController < Chouette::LineReferentialController
   def show
     show! do
       @network = @network.decorate(context: {
-        workbench: @workbench,
+        workbench: workbench,
         line_referential: line_referential
       })
     end
@@ -62,11 +59,6 @@ class NetworksController < Chouette::LineReferentialController
     end
   end
 
-  alias_method :line_referential, :parent
-
-  alias_method :current_referential, :line_referential
-  helper_method :current_referential
-
   def network_params
     params.require(:network).permit(:objectid, :object_version, :version_date, :description, :name, :registration_number, :source_name, :source_type_name, :source_identifier, :comment )
   end
@@ -75,7 +67,7 @@ class NetworksController < Chouette::LineReferentialController
 
   def build_resource
     get_resource_ivar || super.tap do |network|
-      network.line_provider ||= @workbench.default_line_provider
+      network.line_provider ||= workbench.default_line_provider
     end
   end
 
@@ -90,7 +82,7 @@ class NetworksController < Chouette::LineReferentialController
     NetworkDecorator.decorate(
       networks,
       context: {
-        workbench: @workbench,
+        workbench: workbench,
         line_referential: line_referential
       }
     )

@@ -6,9 +6,6 @@ class CompaniesController < Chouette::LineReferentialController
 
   defaults :resource_class => Chouette::Company
 
-  belongs_to :workbench
-  belongs_to :line_referential, singleton: true
-
   respond_to :html
   respond_to :xml
   respond_to :json
@@ -53,7 +50,7 @@ class CompaniesController < Chouette::LineReferentialController
 
   def build_resource
     get_resource_ivar || super.tap do |company|
-      company.line_provider ||= @workbench.default_line_provider
+      company.line_provider ||= workbench.default_line_provider
     end
   end
 
@@ -76,21 +73,16 @@ class CompaniesController < Chouette::LineReferentialController
   end
 
   def resource
-    super.decorate(context: { workbench: @workbench, referential: line_referential })
+    super.decorate(context: { workbench: workbench, referential: line_referential })
   end
 
   def resource_url(company = nil)
-    workbench_line_referential_company_path(@workbench, company || resource)
+    workbench_line_referential_company_path(workbench, company || resource)
   end
 
   def collection_url
-    workbench_line_referential_companies_path(@workbench)
+    workbench_line_referential_companies_path(workbench)
   end
-
-  alias_method :line_referential, :parent
-
-  alias_method :current_referential, :line_referential
-  helper_method :current_referential
 
   def company_params
     fields = [:objectid, :object_version, :name, :short_name, :default_language, :default_contact_organizational_unit, :default_contact_operating_department_name, :code, :default_contact_phone, :default_contact_fax, :default_contact_email, :registration_number, :default_contact_url, :time_zone, :is_referent, :referent_id]
@@ -113,7 +105,7 @@ class CompaniesController < Chouette::LineReferentialController
     CompanyDecorator.decorate(
       companies,
       context: {
-        workbench: @workbench,
+        workbench: workbench,
         referential: line_referential
       }
     )

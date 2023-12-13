@@ -47,16 +47,6 @@ class WorkgroupExportsController < Chouette::WorkgroupController
 
   protected
 
-  def parent
-    @parent ||= workgroup
-  end
-
-  def workgroup
-    return unless params[:workgroup_id]
-
-    @workgroup ||= current_organisation&.workgroups&.owned&.find(params[:workgroup_id])
-  end
-
   # rubocop:disable Naming/MemoizedInstanceVariableName
   def resource
     @export ||= parent.exports.find(params[:id])

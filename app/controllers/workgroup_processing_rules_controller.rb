@@ -8,8 +8,6 @@ class WorkgroupProcessingRulesController < Chouette::WorkgroupController
            route_instance_name: 'processing_rule_workgroup',
            route_collection_name: 'processing_rule_workgroups'
 
-  belongs_to :workgroup
-
   respond_to :html
 
   before_action only: :index do
@@ -17,8 +15,6 @@ class WorkgroupProcessingRulesController < Chouette::WorkgroupController
   end
 
   protected
-
-  alias workgroup parent
 
   def collection
     @processing_rules ||= decorate(workgroup.processing_rules.paginate(page: params[:page], per_page: 30)) # rubocop:disable Naming/MemoizedInstanceVariableName(RuboCop)

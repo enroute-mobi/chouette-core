@@ -5,9 +5,6 @@ class StopAreaProvidersController < Chouette::StopAreaReferentialController
 
   defaults :resource_class => StopAreaProvider
 
-  belongs_to :workbench
-  belongs_to :stop_area_referential, singleton: true
-
   respond_to :html, :json
 
   def index
@@ -17,7 +14,10 @@ class StopAreaProvidersController < Chouette::StopAreaReferentialController
           redirect_to params.merge(:page => 1)
         end
 
-        @stop_area_providers = StopAreaProviderDecorator.decorate(@stop_area_providers, context: {workbench: @workbench})
+        @stop_area_providers = StopAreaProviderDecorator.decorate(
+          @stop_area_providers,
+          context: { workbench: workbench }
+        )
       }
     end
   end
@@ -27,7 +27,7 @@ class StopAreaProvidersController < Chouette::StopAreaReferentialController
       format.json do
         render json: resource.attributes.update(text: resource.name)
       end
-      @stop_area_provider = resource.decorate(context: {workbench: @workbench})
+      @stop_area_provider = resource.decorate(context: { workbench: workbench })
       format.html
     end
   end
@@ -36,7 +36,7 @@ class StopAreaProvidersController < Chouette::StopAreaReferentialController
 
   def build_resource
     get_resource_ivar || super.tap do |stop_area_provider|
-      stop_area_provider.workbench = @workbench
+      stop_area_provider.workbench = workbench
     end
   end
 

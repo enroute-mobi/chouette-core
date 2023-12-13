@@ -11,8 +11,6 @@ class DocumentProvidersController < Chouette::WorkbenchController
 
   before_action :document_provider_params, only: [:create, :update]
 
-  belongs_to :workbench
-
   def index
     index! do |format|
       format.html do
@@ -23,7 +21,7 @@ class DocumentProvidersController < Chouette::WorkbenchController
         @document_providers = DocumentProviderDecorator.decorate(
           collection,
           context: {
-            workbench: @workbench
+            workbench: workbench
           }
         )
       end
@@ -50,7 +48,7 @@ class DocumentProvidersController < Chouette::WorkbenchController
     @document_provider = DocumentProviderDecorator.decorate(
       object,
       context: {
-        workbench: @workbench
+        workbench: workbench
       }
     )
   end

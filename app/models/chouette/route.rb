@@ -110,7 +110,7 @@ module Chouette
         clean_join_tables!
         vehicle_journeys.delete_all
 
-        Chouette::JourneyPatternsStopPoint.where(journey_pattern: journey_patterns).delete_all
+        Chouette::JourneyPatternStopPoint.where(journey_pattern: journey_patterns).delete_all
         journey_patterns.delete_all
         stop_points.delete_all
         routing_constraint_zones.delete_all

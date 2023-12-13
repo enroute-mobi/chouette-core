@@ -305,7 +305,7 @@ class Referential < ApplicationModel
   end
 
   def journey_pattern_stop_points
-    Chouette::JourneyPatternsStopPoint.all
+    Chouette::JourneyPatternStopPoint.all
   end
 
   def footnotes

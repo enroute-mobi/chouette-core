@@ -309,7 +309,7 @@ module Chouette
       # and the delete cascade will be the fallback
 
       Chouette::VehicleJourney.where(journey_pattern: current_scope).clean!
-      Chouette::JourneyPatternsStopPoint.where(journey_pattern: current_scope).delete_all
+      Chouette::JourneyPatternStopPoint.where(journey_pattern: current_scope).delete_all
       delete_all
     end
 

@@ -25,7 +25,7 @@ module Scope
     end
 
     def journey_pattern_stop_points
-      Chouette::JourneyPatternsStopPoint.none
+      Chouette::JourneyPatternStopPoint.none
     end
 
     def vehicle_journeys

@@ -77,7 +77,7 @@ class Import::NetexGeneric < Import::Base
   end
 
   def referential_builder
-    ReferentialBuilder.new(workbench, name: name, metadata: referential_metadata)
+    @referential_builder ||= ReferentialBuilder.new(workbench, name: name, metadata: referential_metadata)
   end
 
   def referential_metadata

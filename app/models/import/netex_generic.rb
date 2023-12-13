@@ -64,6 +64,8 @@ class Import::NetexGeneric < Import::Base
   end
 
   def within_referential(&block)
+    return unless referential_metadata
+
     referential_builder.create do |referential|
       referential.switch
 

@@ -3,6 +3,8 @@ class Import::NetexGeneric < Import::Base
   include LocalImportSupport
   include Imports::WithoutReferentialSupport
 
+  attr_accessor :imported_line_ids
+
   def self.accepts_file?(file)
     case File.extname(file)
     when '.xml'
@@ -48,18 +50,93 @@ class Import::NetexGeneric < Import::Base
       part(part_class).import!
     end
 
+    within_referential do
+      # TODO: import Route, Timetable, etc
+    end
+
     update_import_status
+  end
+
+  def within_referential(&block)
+    return unless referential_metadata
+
+    referential_builder.create do |referential|
+      referential.switch
+
+      block.call referential
+
+      referential.ready!
+    end
+
+    return if referential_builder.valid?
+
+    # Create a global error message
+    messages.create criticity: :error, message_key: 'referential_creation_overlapping_existing_referential'
+    # Save overlapping referentials for user display
+    # self.overlapping_referential_ids = referential_builder.overlapping_referential_ids
+  end
+
+  def referential_builder
+    ReferentialBuilder.new(workbench, name: name, metadata: referential_metadata)
+  end
+
+  def referential_metadata
+    return unless [imported_line_ids, netex_source.validity_period].all?(&:present?)
+
+    @referential_metadata ||=
+      ReferentialMetadata.new line_ids: imported_line_ids, periodes: [netex_source.validity_period]
+  end
+
+  # Create a Referential with given name and medata
+  class ReferentialBuilder
+    def initialize(workbench, name:, metadata:)
+      @workbench = workbench
+      @name = name
+      @metadata = metadata
+    end
+    attr_reader :workbench, :name, :metadata
+
+    delegate :organisation, to: :workbench
+
+    def create(&block)
+      if valid?
+        Rails.logger.debug "Create imported Referential: #{referential.inspect}"
+        block.call referential
+      else
+        Rails.logger.debug "Can't created imported Referential: #{referential.inspect}"
+      end
+    end
+
+    def referential
+      @referential ||= workbench.referentials.create(
+        name: name,
+        organisation: organisation,
+        metadatas: [metadata],
+        ready: false
+      )
+    end
+
+    def valid?
+      @valid ||= referential.valid?
+    end
+
+    def overlapping_referential_ids
+      @overlapping_referential_ids ||= referential.overlapped_referential_ids
+    end
   end
 
   # TODO: why the resource statuses are not checked automaticaly ??
   # See CHOUETTE-2747
   def update_import_status
-    resource_status = resources.map(&:status).uniq.map(&:to_s)
-    Rails.logger.debug "resource_status: #{resource_status.inspect}"
+    all_resources_and_messages_statuses =
+      messages.map(&:criticity).map(&:upcase) + resources.map(&:status).map(&:to_s)
 
-    if resource_status.include?('ERROR')
+    resources_and_messages_statuses = all_resources_and_messages_statuses.uniq
+    Rails.logger.debug "resource_status: #{resources_and_messages_statuses.inspect}"
+
+    if resources_and_messages_statuses.include?('ERROR')
       self.status = 'failed'
-    elsif resource_status.include?('WARNING')
+    elsif resources_and_messages_statuses.include?('WARNING')
       self.status = 'warning'
     end
 
@@ -203,7 +280,7 @@ class Import::NetexGeneric < Import::Base
     delegate :line_referential, to: :import
 
     def synchronization
-      Chouette::Sync::Referential.new(target).tap do |sync|
+      @synchronization ||= Chouette::Sync::Referential.new(target).tap do |sync|
         sync.synchronize_with Chouette::Sync::Company::Netex
         sync.synchronize_with Chouette::Sync::Network::Netex
         sync.synchronize_with Chouette::Sync::LineNotice::Netex
@@ -241,6 +318,9 @@ class Import::NetexGeneric < Import::Base
         .where.not(company_id: nil)
         .in_batches
         .update_all(company_id: nil)
+
+      import.imported_line_ids =
+        synchronization.sync_for(Chouette::Sync::Line::Netex).imported_line_ids
     end
   end
 

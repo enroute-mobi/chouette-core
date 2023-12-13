@@ -13,6 +13,10 @@ module Chouette::Sync
         super options
       end
 
+      def imported_line_ids
+        updater.target.lines.where(registration_number: processed_identifiers).pluck(:id)
+      end
+
       class Decorator < Chouette::Sync::Netex::Decorator
         def line_number
           short_name

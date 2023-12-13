@@ -788,6 +788,10 @@ class Referential < ApplicationModel
     update_columns failed_at: nil, archived_at: now, merged_at: now, ready: true
   end
 
+  def ready!
+    light_update ready: true
+  end
+
   def unmerged!
     # always change merged_at
     update_column :merged_at, nil

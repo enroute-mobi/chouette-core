@@ -18,7 +18,7 @@
         = link_to workgroup_exports_path(workbench.workgroup), class: "list-group-item" do
           span = 'activerecord.models.export.other'.t.capitalize
         = link_to workgroup_control_list_runs_path(workbench.workgroup), class: "list-group-item" do
-          span = 'layouts.navbar.workgroup.control_reports'.t
+          span = Control::List::Run.model_name.human(count: 2)
         = link_to workgroup_code_spaces_path(workbench.workgroup), class: 'list-group-item' do
           span = 'activerecord.models.code_space.other'.t.capitalize
         = link_to workgroup_document_types_path(workbench.workgroup), class: 'list-group-item' do
@@ -37,13 +37,13 @@
       = link_to workgroup_calendars_path(workbench.workgroup), class: 'list-group-item' do
         span = 'activerecord.models.calendar.other'.t.capitalize
       = link_to workbench_control_lists_path(workbench), class: "list-group-item" do
-        span = 'layouts.navbar.workbench.control_definitions'.t
+        span = Control::List.model_name.human(count: 2)
       = link_to workbench_control_list_runs_path(workbench), class: "list-group-item" do
-        span = 'layouts.navbar.workgroup.control_reports'.t
+        span = Control::List::Run.model_name.human(count: 2)
       = link_to workbench_macro_lists_path(workbench), class: "list-group-item" do
-        span = 'layouts.navbar.workbench.macro_definitions'.t
+        span = Macro::List.model_name.human(count: 2)
       = link_to workbench_macro_list_runs_path(workbench), class: "list-group-item" do
-        span = 'layouts.navbar.workgroup.macro_reports'.t
+        span = Macro::List::Run.model_name.human(count: 2)
       = link_to workbench_sources_path(workbench), class: "list-group-item" do
         span = 'activerecord.models.source.other'.t.capitalize
       = link_to workbench_documents_path(workbench), class: "list-group-item" do

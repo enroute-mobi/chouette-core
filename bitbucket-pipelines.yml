@@ -248,6 +248,7 @@ pipelines:
       - step: *rspec-tests
       - step: *rspec-tests
       - step: *rspec-tests
+      - step: *rspec-tests
     - step: *rebuild-runtime-log
     - parallel:
       - step: *jest-tests

@@ -7,6 +7,7 @@ class RoutesController < ChouetteController
   respond_to :kml, :only => :show
   respond_to :js, :only => :show
   respond_to :geojson, only: %i[show index]
+  respond_to :json, only: %i[retrieve_nearby_stop_areas]
 
   belongs_to :referential do
     belongs_to :line, :parent_class => Chouette::Line, :optional => true, :polymorphic => true
@@ -31,6 +32,16 @@ class RoutesController < ChouetteController
     else
       render "edit_boarding_alighting"
     end
+  end
+
+  def retrieve_nearby_stop_areas
+    @route = route
+    stop_area_id = params[:stop_area_id]
+    area_type = params[:target_type]
+    workbench = route.referential.workbench
+
+    stop_area   = workbench.stop_areas.where(deleted_at: nil, id: stop_area_id).first
+    @stop_areas = stop_area.around(referential.stop_areas.where(area_type: area_type), 300)
   end
 
   def show

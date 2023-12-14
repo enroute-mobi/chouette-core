@@ -30,8 +30,8 @@ const getStyles = () => ({
   })
 })
 
-const path = new Path('/referentials/:referentialId')
-const { referentialId } = path.partialTest(location.pathname) || {}
+const path = new Path('/referentials/:referentialId/lines/:lineId/routes/:routeId')
+const { referentialId, lineId, routeId } = path.partialTest(location.pathname) || {}
 
 export default function StopPointsMap({ index, onSelectMarker, onUpdateViaOlMap, onUnselectMarker, value }) {
   const styles = getStyles()
@@ -42,7 +42,7 @@ export default function StopPointsMap({ index, onSelectMarker, onUpdateViaOlMap,
   const centerLayer = new VectorLayer({ style: styles.default })
 
   const onMapInit = async map => {
-    const fetchedFeatures = await (await fetch(`${path.build({ referentialId })}/autocomplete_stop_areas/${stoparea_id}/around?target_type=zdep`)).json()
+    const fetchedFeatures = await (await fetch(`${path.build({ referentialId, lineId, routeId })}/retrieve_nearby_stop_areas?stop_area_id=${stoparea_id}&target_type=zdep`)).json()
 
     const centerSource = new VectorSource({ features: geoJSON.readFeatures(fetchedFeatures) })
     centerLayer.setSource(centerSource)

@@ -98,7 +98,7 @@ class BSelect2 extends Component{
           theme: 'bootstrap',
           width: '100%',
           ajax: {
-            url: origin + path + '/autocomplete_stop_areas.json',
+            url: origin + path + '/autocomplete/stop_areas.json',
             dataType: 'json',
             delay: '500',
             data: function(params) {

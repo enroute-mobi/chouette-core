@@ -527,7 +527,7 @@ class Import::NetexGeneric < Import::Base
       def stop_points_by_scheduled_stop_point_id
         @stop_points_by_scheduled_stop_point_id ||= {}.tap do |by_scheduled_stop_point_id|
           complete_scheduled_stop_points.map.with_index do |scheduled_stop_point_id, position|
-            if stop_area_id = scheduled_stop_points[scheduled_stop_point_id]&.stop_area_id
+            if (stop_area_id = scheduled_stop_points[scheduled_stop_point_id]&.stop_area_id)
               stop_point = Chouette::StopPoint.new stop_area_id: stop_area_id, position: position
               by_scheduled_stop_point_id[scheduled_stop_point_id] = stop_point
             else
@@ -639,7 +639,7 @@ class Import::NetexGeneric < Import::Base
       def to_a
         return [] if empty?
 
-        links.map { |link| link.from } + [last.to]
+        links.map(&:from) + [last.to]
       end
 
       def cover?(from, to)

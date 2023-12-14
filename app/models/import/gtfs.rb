@@ -742,7 +742,7 @@ class Import::Gtfs < Import::Base # rubocop:disable Metrics/ClassLength
       stop_points = []
     end
 
-    Chouette::JourneyPatternsStopPoint.bulk_insert do |w|
+    Chouette::JourneyPatternStopPoint.bulk_insert do |w|
       stop_points.each do |stop_point|
         w.add journey_pattern_id: journey_pattern.id, stop_point_id: stop_point.id
       end

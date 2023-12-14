@@ -212,7 +212,7 @@ class ReferentialCopy
 
         if stop_point_ids.present?
           target.switch do
-            Chouette::JourneyPatternsStopPoint.bulk_insert do |worker|
+            Chouette::JourneyPatternStopPoint.bulk_insert do |worker|
               stop_point_ids.each do |id|
                 worker.add journey_pattern_id: new_journey_pattern.id, stop_point_id: id
               end

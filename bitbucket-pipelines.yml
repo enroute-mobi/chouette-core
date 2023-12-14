@@ -95,9 +95,11 @@ definitions:
           username: _json_key
           password: "$GCLOUD_API_KEYFILE"
         size: 2x
+        max-time: 30
         script:
           - eval "$(build.sh bitbucket::env)"
           - build.sh bundler::dependencies
+          - export LD_PRELOAD=/usr/lib/x86_64-linux-gnu/libjemalloc.so.2
           - bundle exec rake ci:setup ci:spec
           - build.sh codacy::report
         caches:
@@ -115,9 +117,11 @@ definitions:
           username: _json_key
           password: "$GCLOUD_API_KEYFILE"
         size: 2x
+        max-time: 30
         script:
           - eval "$(build.sh bitbucket::env)"
           - build.sh bundler::dependencies
+          - export LD_PRELOAD=/usr/lib/x86_64-linux-gnu/libjemalloc.so.2
           - BITBUCKET_PARALLEL_STEP_COUNT=3 BITBUCKET_PARALLEL_STEP=0 FAIL_FAST=true bundle exec rake ci:setup ci:spec
           - build.sh codacy::report
         caches:
@@ -135,9 +139,11 @@ definitions:
           username: _json_key
           password: "$GCLOUD_API_KEYFILE"
         size: 2x
+        max-time: 30
         script:
           - eval "$(build.sh bitbucket::env)"
           - build.sh bundler::dependencies
+          - export LD_PRELOAD=/usr/lib/x86_64-linux-gnu/libjemalloc.so.2
           - BITBUCKET_PARALLEL_STEP_COUNT=3 BITBUCKET_PARALLEL_STEP=1 FAIL_FAST=true bundle exec rake ci:setup ci:spec
           - build.sh codacy::report
         caches:
@@ -155,9 +161,11 @@ definitions:
           username: _json_key
           password: "$GCLOUD_API_KEYFILE"
         size: 2x
+        max-time: 30
         script:
           - eval "$(build.sh bitbucket::env)"
           - build.sh bundler::dependencies
+          - export LD_PRELOAD=/usr/lib/x86_64-linux-gnu/libjemalloc.so.2
           - BITBUCKET_PARALLEL_STEP_COUNT=3 BITBUCKET_PARALLEL_STEP=2 FAIL_FAST=true bundle exec rake ci:setup ci:spec
           - build.sh codacy::report
         caches:

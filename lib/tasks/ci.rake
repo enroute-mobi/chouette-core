@@ -8,7 +8,7 @@ namespace :ci do
   end
 
   def quiet?
-    ENV["QUIET"] == "true"
+    ENV["QUIET"] != "false"
   end
 
   def fail_fast?

@@ -30,27 +30,6 @@ definitions:
     build-cache: ./cache
     codacy-coverage: ./.codacy-coverage
   steps:
-    - step: &unit-tests
-        name: Unit tests
-        image:
-          name: us.gcr.io/enroute-interne/enroute-ruby:2.7-dev
-          username: _json_key
-          password: "$GCLOUD_API_KEYFILE"
-        caches:
-          - bundler
-          - yarn
-          - assets
-          - assets-cache
-          - build-cache
-          - codacy-coverage
-        script:
-          - eval "$(build.sh bitbucket::env)"
-          - build.sh ci::setup
-          - bundle exec rake ci
-        services:
-          - postgres
-          - datadog-agent
-
     - step: &setup
         name: Setup
         image:
@@ -68,6 +47,7 @@ definitions:
           - node_modules/**
           - vendor/bundle/**
           - .bundle/*
+
     - step: &build-assets
         name: Build assets
         image:
@@ -99,7 +79,6 @@ definitions:
         script:
           - eval "$(build.sh bitbucket::env)"
           - build.sh bundler::dependencies
-          - export LD_PRELOAD=/usr/lib/x86_64-linux-gnu/libjemalloc.so.2
           - bundle exec rake ci:setup ci:spec
           - build.sh codacy::report
         caches:
@@ -121,8 +100,7 @@ definitions:
         script:
           - eval "$(build.sh bitbucket::env)"
           - build.sh bundler::dependencies
-          - export LD_PRELOAD=/usr/lib/x86_64-linux-gnu/libjemalloc.so.2
-          - BITBUCKET_PARALLEL_STEP_COUNT=3 BITBUCKET_PARALLEL_STEP=0 FAIL_FAST=true bundle exec rake ci:setup ci:spec
+          - BITBUCKET_PARALLEL_STEP_COUNT=4 BITBUCKET_PARALLEL_STEP=0 FAIL_FAST=true bundle exec rake ci:setup ci:spec
           - build.sh codacy::report
         caches:
           - build-cache
@@ -143,8 +121,7 @@ definitions:
         script:
           - eval "$(build.sh bitbucket::env)"
           - build.sh bundler::dependencies
-          - export LD_PRELOAD=/usr/lib/x86_64-linux-gnu/libjemalloc.so.2
-          - BITBUCKET_PARALLEL_STEP_COUNT=3 BITBUCKET_PARALLEL_STEP=1 FAIL_FAST=true bundle exec rake ci:setup ci:spec
+          - BITBUCKET_PARALLEL_STEP_COUNT=4 BITBUCKET_PARALLEL_STEP=1 FAIL_FAST=true bundle exec rake ci:setup ci:spec
           - build.sh codacy::report
         caches:
           - build-cache
@@ -165,8 +142,7 @@ definitions:
         script:
           - eval "$(build.sh bitbucket::env)"
           - build.sh bundler::dependencies
-          - export LD_PRELOAD=/usr/lib/x86_64-linux-gnu/libjemalloc.so.2
-          - BITBUCKET_PARALLEL_STEP_COUNT=3 BITBUCKET_PARALLEL_STEP=2 FAIL_FAST=true bundle exec rake ci:setup ci:spec
+          - BITBUCKET_PARALLEL_STEP_COUNT=4 BITBUCKET_PARALLEL_STEP=2 FAIL_FAST=true bundle exec rake ci:setup ci:spec
           - build.sh codacy::report
         caches:
           - build-cache
@@ -187,8 +163,7 @@ definitions:
         script:
           - eval "$(build.sh bitbucket::env)"
           - build.sh bundler::dependencies
-          - export LD_PRELOAD=/usr/lib/x86_64-linux-gnu/libjemalloc.so.2
-          - BITBUCKET_PARALLEL_STEP_COUNT=4 BITBUCKET_PARALLEL_STEP=2 FAIL_FAST=true bundle exec rake ci:setup ci:spec
+          - BITBUCKET_PARALLEL_STEP_COUNT=4 BITBUCKET_PARALLEL_STEP=3 FAIL_FAST=true bundle exec rake ci:setup ci:spec
           - build.sh codacy::report
         caches:
           - build-cache
@@ -204,6 +179,7 @@ definitions:
           - cat parallel_tests/runtime*.log > cache/runtime.log
         caches:
           - build-cache
+
     - step: &jest-tests
         name: Javascript Unit tests
         image:
@@ -215,6 +191,7 @@ definitions:
           - build.sh bundler::dependencies
           - bundle exec rake ci:jest
           - build.sh codacy::report
+
     - step: &bundle-audit
         name: Bundle Audit
         image:
@@ -225,7 +202,7 @@ definitions:
           - eval "$(build.sh bitbucket::env)"
           - build.sh bundler::dependencies
           - bundle exec rake ci:check_security
-          - build.sh codacy::report
+
     - step: &build-docker
         name: Build Docker
         size: 2x

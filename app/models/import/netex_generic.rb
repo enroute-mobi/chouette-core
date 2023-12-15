@@ -57,7 +57,10 @@ class Import::NetexGeneric < Import::Base
         part(part_class).import!
       end
 
-      referential.update ready: true
+      referential.ready!
+    rescue StandardError => e
+      referential.failed!
+      raise e
     end
 
     update_import_status

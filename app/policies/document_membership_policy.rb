@@ -6,7 +6,7 @@ class DocumentMembershipPolicy < ApplicationPolicy
   end
 
   def create?
-    user.has_permission?('document_memberships.create')
+    user.has_permission?('document_memberships.create') && user.has_permission?('lines.update')
   end
 
   def destroy?

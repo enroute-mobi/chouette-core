@@ -397,6 +397,7 @@ ActiveRecord::Schema.define(version: 2024_01_19_151212) do
     t.string "documentable_type", null: false
     t.bigint "document_id"
     t.index ["document_id"], name: "index_document_memberships_on_document_id"
+    t.index ["documentable_type", "documentable_id", "document_id"], name: "index_document_memberships_on_documentable_and_document_id", unique: true
   end
 
   create_table "document_providers", force: :cascade do |t|

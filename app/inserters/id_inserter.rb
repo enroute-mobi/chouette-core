@@ -9,11 +9,8 @@
 #   inserter.routes << Chouette::TimeTable.new
 #
 class IdInserter < ByClassInserter
-  attr_reader :target
-
-  def initialize(target, _options = {})
+  def initialize(_target, _options = {})
     super()
-    @target = target
   end
 
   # :nodoc:

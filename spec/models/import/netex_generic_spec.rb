@@ -12,7 +12,10 @@ RSpec.describe Import::NetexGeneric do
   def build_import(xml)
     Import::NetexGeneric.new(workbench: workbench, creator: "test", name: "test").tap do |import|
       allow(import).to receive(:netex_source) do
-        Netex::Source.new.tap { |s| s.parse(StringIO.new(xml)) }
+        Netex::Source.new.tap do |s|
+          s.transformers << Netex::Transformer::Indexer.new(Netex::JourneyPattern, by: :route_ref)
+          s.parse(StringIO.new(xml))
+        end
       end
     end
   end
@@ -999,6 +1002,174 @@ RSpec.describe Import::NetexGeneric do
     it 'should import routing constraint_zones' do
       expect { subject }.to change { line_routing_constraint_zones.count }.from(0).to(1)
       expect(line_routing_constraint_zones).to include(expected_attributes)
+    end
+  end
+
+  describe 'Create Route and Journay Patterns' do
+    let(:xml) do
+      <<-XML
+        <members>
+          <Route id="route-1">
+            <Name>Route Sample</Name>
+            <LineRef ref="line-1"/>
+          </Route>
+
+          <ServiceJourneyPattern id="journeypattern-1">
+            <Name>Journey Pattern 1</Name>
+            <RouteRef ref="route-1"/>
+            <pointsInSequence>
+              <StopPointInJourneyPattern id="stop-point-in-journey-pattern-11" order="1">
+                <ScheduledStopPointRef ref="scheduled-stop-point-1"/>
+              </StopPointInJourneyPattern>
+              <StopPointInJourneyPattern id="stop-point-in-journey-pattern-12" order="2">
+                <ScheduledStopPointRef ref="scheduled-stop-point-3"/>
+              </StopPointInJourneyPattern>
+            </pointsInSequence>
+          </ServiceJourneyPattern>
+
+          <ServiceJourneyPattern id="journeypattern-2">
+            <Name>Journey Pattern 2</Name>
+            <RouteRef ref="route-1"/>
+            <pointsInSequence>
+              <StopPointInJourneyPattern id="stop-point-in-journey-pattern-21" order="1">
+                <ScheduledStopPointRef ref="scheduled-stop-point-1"/>
+              </StopPointInJourneyPattern>
+              <StopPointInJourneyPattern id="stop-point-in-journey-pattern-22" order="2">
+                <ScheduledStopPointRef ref="scheduled-stop-point-2"/>
+              </StopPointInJourneyPattern>
+              <StopPointInJourneyPattern id="stop-point-in-journey-pattern-23" order="3">
+                <ScheduledStopPointRef ref="scheduled-stop-point-3"/>
+              </StopPointInJourneyPattern>
+            </pointsInSequence>
+          </ServiceJourneyPattern>
+
+          <ServiceJourneyPattern id="journeypattern-3">
+            <Name>Journey Pattern 3</Name>
+            <RouteRef ref="route-1"/>
+            <pointsInSequence>
+              <StopPointInJourneyPattern id="stop-point-in-journey-pattern-31" order="1">
+                <ScheduledStopPointRef ref="scheduled-stop-point-2"/>
+              </StopPointInJourneyPattern>
+              <StopPointInJourneyPattern id="stop-point-in-journey-pattern-32" order="2">
+                <ScheduledStopPointRef ref="scheduled-stop-point-3"/>
+              </StopPointInJourneyPattern>
+            </pointsInSequence>
+          </ServiceJourneyPattern>
+
+          <!-- Required resources -->
+
+          <Line id="line-1">
+            <Name>Line Sample</Name>
+          </Line>
+
+          <!-- Timetable -->
+          <DayType id="daytype-1">
+            <Name>Sample</Name>
+            <properties>
+              <PropertyOfDay>
+                <DaysOfWeek>Monday Tuesday Wednesday Thursday Friday Saturday Sunday</DaysOfWeek>
+              </PropertyOfDay>
+            </properties>
+          </DayType>
+
+          <DayTypeAssignment id="assigment-1" order="0">
+            <OperatingPeriodRef ref="period-1"/>
+            <DayTypeRef ref="daytype-1"/>
+          </DayTypeAssignment>
+
+          <OperatingPeriod id="period-1">
+            <FromDate>2030-01-01T00:00:00</FromDate>
+            <ToDate>2030-01-10T00:00:00</ToDate>
+          </OperatingPeriod>
+
+          <!-- ScheduledStopPoint + PassengerStopAssignment + Quay -->
+          <ScheduledStopPoint id="scheduled-stop-point-1"/>
+
+          <PassengerStopAssignment id="passenger-stop-assignment-1" order="0">
+            <ScheduledStopPointRef ref="scheduled-stop-point-1"/>
+            <QuayRef ref="quay-1" />
+          </PassengerStopAssignment>
+
+          <Quay id="quay-1">
+            <Name>Quay A</Name>
+          </Quay>
+
+          <!-- ScheduledStopPoint + PassengerStopAssignment + Quay -->
+          <ScheduledStopPoint id="scheduled-stop-point-2"/>
+
+          <PassengerStopAssignment id="passenger-stop-assignment-2" order="0">
+            <ScheduledStopPointRef ref="scheduled-stop-point-2"/>
+            <QuayRef ref="quay-2" />
+          </PassengerStopAssignment>
+
+          <Quay id="quay-2">
+            <Name>Quay B</Name>
+          </Quay>
+
+          <!-- ScheduledStopPoint + PassengerStopAssignment + Quay -->
+          <ScheduledStopPoint id="scheduled-stop-point-3"/>
+
+          <PassengerStopAssignment id="passenger-stop-assignment-3" order="0">
+            <ScheduledStopPointRef ref="scheduled-stop-point-3"/>
+            <QuayRef ref="quay-3" />
+          </PassengerStopAssignment>
+
+          <Quay id="quay-3">
+            <Name>Quay C</Name>
+          </Quay>
+        </members>
+      XML
+    end
+
+    before do
+      import.part(:stop_area_referential).import!
+      import.part(:line_referential).import!
+      import.part(:scheduled_stop_points).import!
+
+      import.within_referential do |referential|
+        import.part(:route_journey_patterns).import!
+      end
+    end
+
+    let(:new_referential) { Referential.where(name: 'test').last }
+    let(:stop_areas) { new_referential&.stop_areas }
+    let(:route) { new_referential.routes.first }
+
+    describe 'StopArea' do
+      subject { stop_areas.map(&:name) }
+
+      it { is_expected.to match_array ['Quay A', 'Quay B', 'Quay C'] }
+    end
+
+    describe 'Route' do
+      describe 'StopPoints in Route' do
+        subject { route.stop_points.map{ |stop_point| stop_point.stop_area.name } }
+
+        it { is_expected.to match_array ['Quay A', 'Quay B', 'Quay C'] }
+      end
+
+      describe 'JourneyPatterns in Route' do
+        let(:journey_pattern) { route.journey_patterns.find_by(name: name) }
+        subject { journey_pattern.stop_points.map{ |stop_point| stop_point.stop_area.name } }
+
+        context 'with first journey pattern' do
+          let(:name) { 'Journey Pattern 1' }
+
+          it { is_expected.to match_array ['Quay A', 'Quay C'] }
+        end
+
+        context 'with second journey pattern' do
+          let(:name) { 'Journey Pattern 2' }
+
+          it { is_expected.to match_array ['Quay A', 'Quay B', 'Quay C'] }
+        end
+
+        context 'with last journey pattern' do
+          let(:name) { 'Journey Pattern 3' }
+
+          it { is_expected.to match_array ['Quay B', 'Quay C'] }
+        end
+      end
     end
   end
 end

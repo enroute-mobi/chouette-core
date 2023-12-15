@@ -10,6 +10,7 @@
     .form-group.togglable class=filter_item_class(params[:search], :statuses)
       = f.label :statuses, required: false, class: 'control-label'
       = f.input :statuses, as: :check_boxes, collection: @search.candidate_statuses.map(&:slug), label: false, label_method: lambda{|slug| ("<span>" + operation_status(slug, verbose: true) + "</span>").html_safe}, wrapper_html: { class: "checkbox_list"}
+    = f.input :referential_name
     = f.input :start_date, as: :date_picker
     = f.input :end_date, as: :date_picker
 

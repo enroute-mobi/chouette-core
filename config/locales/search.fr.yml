@@ -43,6 +43,7 @@ fr:
         document_type: "Type de Document"
         valid_before_date: Valide depuis
         valid_after_date: Valide jusqu'au
+        referential_name: Cible
   activerecord:
     models:
       search/save:

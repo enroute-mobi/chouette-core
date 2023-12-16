@@ -862,7 +862,7 @@ class Import::NetexGeneric < Import::Base
       end
 
       def days_of_week
-        Timetable::DaysOfWeek.new.tap do |days_of_week|
+        Cuckoo::Timetable::DaysOfWeek.new.tap do |days_of_week|
           %i[monday tuesday wednesday thursday friday saturday sunday].each do |day|
             days_of_week.enable day if self.send "#{day}?"
           end
@@ -883,7 +883,7 @@ class Import::NetexGeneric < Import::Base
 
       def memory_timetable_periods
         operating_periods.map do |operating_period|
-          period = Timetable::Period.from(operating_period.date_range, days_of_week)
+          Cuckoo::Timetable::Period.from(operating_period.date_range, days_of_week)
         end
       end
 
@@ -898,7 +898,7 @@ class Import::NetexGeneric < Import::Base
       end
 
       def memory_timetable
-        @memory_timetable ||= Timetable.new(
+        @memory_timetable ||= Cuckoo::Timetable.new(
           periods: memory_timetable_periods,
           included_dates: included_dates,
           excluded_dates: excluded_dates

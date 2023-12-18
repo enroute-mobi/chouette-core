@@ -1,4 +1,8 @@
+# frozen_string_literal: true
+
 class StopAreaDecorator < AF83::Decorator
+  include DocumentableDecorator
+
   decorates Chouette::StopArea
 
   set_scope { [ context[:workbench], :stop_area_referential ] }

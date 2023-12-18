@@ -693,7 +693,18 @@ crumb :new_fare_zone do |workbench|
   parent :fare_zones, workbench
 end
 
-crumb :document_memberships do |workbench, line|
+crumb :line_document_memberships do |workbench, line|
   link I18n.t('documents.index.title'), workbench_line_referential_line_document_memberships_path(workbench, line)
   parent :line, workbench, line
+end
+
+crumb :company_document_memberships do |workbench, company|
+  link I18n.t('documents.index.title'), workbench_line_referential_company_document_memberships_path(workbench, company)
+  parent :company, workbench, company
+end
+
+crumb :stop_area_document_memberships do |workbench, stop_area|
+  link I18n.t('documents.index.title'),
+       workbench_stop_area_referential_stop_area_document_memberships_path(workbench, stop_area)
+  parent :stop_area, workbench, stop_area
 end

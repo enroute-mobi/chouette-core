@@ -14,7 +14,11 @@ class CompanyDocumentMembershipsController < DocumentMembershipsController
     CompanyPolicy
   end
 
-  def redirect_path
-    workbench_line_referential_company_document_memberships_path(workbench, documentable)
+  def collection_path_method
+    :workbench_line_referential_company_document_memberships_path
+  end
+
+  def member_path_method
+    :workbench_line_referential_company_document_membership_path
   end
 end

@@ -14,7 +14,11 @@ class StopAreaDocumentMembershipsController < DocumentMembershipsController
     StopAreaPolicy
   end
 
-  def redirect_path
-    workbench_stop_area_referential_stop_area_document_memberships_path(workbench, documentable)
+  def collection_path_method
+    :workbench_stop_area_referential_stop_area_document_memberships_path
+  end
+
+  def member_path_method
+    :workbench_stop_area_referential_stop_area_document_membership_path
   end
 end

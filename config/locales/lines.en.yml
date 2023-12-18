@@ -1,7 +1,6 @@
 en:
   lines: &en_lines
     no_codes: "This line has no code"
-    no_documents: "This line has no document"
     actions:
       new: "Add a new line"
       edit: "Edit this line"
@@ -18,7 +17,6 @@ en:
       show_network: 'Show network'
       show_company: 'Show company'
       add_notice: 'Add a notice'
-      associate_other_documents: Associate other documents
     search_no_results: "No results found"
     filters:
       name_or_short_id_cont: "Search by name or objectid"
@@ -79,7 +77,6 @@ en:
         general: "General"
         line_notices: "Line notices"
         activation: 'Activation'
-        documents: "Documents"
         internals: "Internals"
         accessibility: "Accessibility"
       group_of_lines: "Associated groups of lines"

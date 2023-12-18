@@ -55,6 +55,7 @@ class DocumentMembershipsController < Chouette::ResourceController
 
   alias document_membership resource
   alias documentable parent
+  helper_method :documentable
 
   def document
     workbench.documents.find(params[:document_id])
@@ -89,7 +90,11 @@ class DocumentMembershipsController < Chouette::ResourceController
     raise NotImplementedError
   end
 
-  def redirect_path
+  def collection_path_method
+    raise NotImplementedError
+  end
+
+  def member_path_method
     raise NotImplementedError
   end
 
@@ -100,7 +105,13 @@ class DocumentMembershipsController < Chouette::ResourceController
   def decorator_context
     {
       workbench: workbench,
-      documentable: documentable
+      documentable: documentable,
+      collection_path_method: collection_path_method,
+      member_path_method: member_path_method
     }
+  end
+
+  def redirect_path
+    send(collection_path_method, workbench, documentable)
   end
 end

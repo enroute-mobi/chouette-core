@@ -1,0 +1,8 @@
+en:
+  documentable:
+    no_documents: "No associated document"
+    actions:
+      associate_other_documents: "Associate other documents"
+    form:
+      sections:
+        documents: "Documents"

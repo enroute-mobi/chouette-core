@@ -64,13 +64,13 @@
         = simple_block_for @line, title: t("lines.form.sections.accessibility") do |d|
           = d.attribute :mobility_restricted_suitability, as: :boolean
           / = d.attribute :mobility_impaired_accessibility, as: :enumerize
-          / = d.attribute :wheelchair_accessibility, as: :enumerize
-          / = d.attribute :step_free_accessibility, as: :enumerize
-          / = d.attribute :escalator_free_accessibility, as: :enumerize
-          / = d.attribute :lift_free_accessibility, as: :enumerize
-          / = d.attribute :audible_signals_availability, as: :enumerize
-          / = d.attribute :visual_signs_availability, as: :enumerize
-          / = d.attribute :accessibility_limitation_description
+          = d.attribute :wheelchair_accessibility, as: :enumerize
+          = d.attribute :step_free_accessibility, as: :enumerize
+          = d.attribute :escalator_free_accessibility, as: :enumerize
+          = d.attribute :lift_free_accessibility, as: :enumerize
+          = d.attribute :audible_signals_availability, as: :enumerize
+          = d.attribute :visual_signs_availability, as: :enumerize
+          = d.attribute :accessibility_limitation_description
 
         = simple_block_for @line, title: t("lines.form.sections.documents") do
           - if @line.documents.any?

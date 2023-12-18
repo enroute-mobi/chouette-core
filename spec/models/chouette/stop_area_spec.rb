@@ -4,6 +4,9 @@ RSpec.describe Chouette::StopArea do
   let(:context) { Chouette.create { stop_area :subject } }
   subject(:stop_area) { context.stop_area(:subject) }
 
+  it { is_expected.to have_many(:document_memberships) }
+  it { is_expected.to have_many(:documents) }
+
   describe '#closest_children' do
     subject { stop_area.closest_children }
 

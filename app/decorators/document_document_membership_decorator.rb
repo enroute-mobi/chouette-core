@@ -1,7 +1,7 @@
 class DocumentDocumentMembershipDecorator < AF83::Decorator
 	decorates Document
 
-  set_scope { [context[:workbench], context[:line]] }
+  set_scope { [context[:workbench], context[:documentable]] }
 
 	with_instance_decorator do |instance_decorator|
 

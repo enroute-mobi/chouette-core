@@ -10,6 +10,7 @@ module Chouette
     include CustomFieldsSupport
     include CodeSupport
     include ReferentSupport
+    include Documentable
 
     extend Enumerize
     enumerize :area_type, in: Chouette::AreaType::ALL, default: Chouette::AreaType::COMMERCIAL.first, scope: true
@@ -648,5 +649,8 @@ module Chouette
       stop_area_referential.fare_zones
     end
 
+    def same_documentable_workbench?(workbench)
+      stop_area_provider.workbench_id == workbench.id
+    end
   end
 end

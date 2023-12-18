@@ -8,17 +8,22 @@ class DocumentMembershipsController < Chouette::ResourceController
            instance_name: 'document_membership'
 
   belongs_to :workbench
-  belongs_to :line_referential, singleton: true
-  belongs_to :line
+
+  before_action :authorize_build_resource, only: %i[new create]
+  before_action :authorize_resource_class, only: %i[index]
 
   respond_to :js, only: :index
 
   def index
-    @document_memberships = DocumentMembershipDecorator.decorate(document_memberships,
-                                                                 context: decorator_context.merge(pagination_param_name: :document_memberships_page))
+    @document_memberships = DocumentMembershipDecorator.decorate(
+      document_memberships,
+      context: decorator_context.merge(pagination_param_name: :document_memberships_page)
+    )
     @unassociated_documents_search = Search::Document.from_params(params, workgroup: workbench.workgroup)
-    @unassociated_documents = DocumentDocumentMembershipDecorator.decorate(@unassociated_documents_search.search(unassociated_documents),
-                                                                           context: decorator_context.merge(pagination_param_name: :unassociated_documents_page))
+    @unassociated_documents = DocumentDocumentMembershipDecorator.decorate(
+      @unassociated_documents_search.search(unassociated_documents),
+      context: decorator_context.merge(pagination_param_name: :unassociated_documents_page)
+    )
     index!
   end
 
@@ -29,7 +34,7 @@ class DocumentMembershipsController < Chouette::ResourceController
     else
       flash[:error] = I18n.t('documents.flash.associate.error')
     end
-    redirect_to workbench_line_referential_line_document_memberships_path(workbench, line)
+    redirect_to redirect_path
   end
 
   def destroy
@@ -39,34 +44,38 @@ class DocumentMembershipsController < Chouette::ResourceController
     else
       flash[:error] = I18n.t('documents.flash.unassociate.error')
     end
-    redirect_to workbench_line_referential_line_document_memberships_path(workbench, line)
+    redirect_to redirect_path
   end
 
   protected
 
+  def authorize_build_resource
+    authorize(build_resource)
+  end
+
   alias document_membership resource
-  alias line parent
+  alias documentable parent
 
   def document
     workbench.documents.find(params[:document_id])
   end
 
   def build_resource
-    get_resource_ivar || set_resource_ivar(document.memberships.build(documentable: line))
+    get_resource_ivar || set_resource_ivar(document.memberships.build(documentable: documentable))
   end
 
   def resource
-    get_resource_ivar || set_resource_ivar(line.document_memberships.find(params[:id]))
+    get_resource_ivar || set_resource_ivar(documentable.document_memberships.find(params[:id]))
   end
 
   def document_memberships
-    line.document_memberships.paginate(page: params[:document_memberships_page], per_page: 30)
+    documentable.document_memberships.paginate(page: params[:document_memberships_page], per_page: 30)
   end
 
   def unassociated_documents
-    if LinePolicy.new(pundit_user, line).update?
-      workbench.documents.where.not(id: line.document_ids).paginate(page: params[:unassociated_documents_page],
-                                                                    per_page: 30)
+    if documentable_policy_klass.new(pundit_user, documentable).update?
+      workbench.documents.where.not(id: documentable.document_ids).paginate(page: params[:unassociated_documents_page],
+                                                                            per_page: 30)
     else
       workbench.documents.none
     end
@@ -76,6 +85,14 @@ class DocumentMembershipsController < Chouette::ResourceController
     @workbench ||= current_organisation.workbenches.find(params[:workbench_id])
   end
 
+  def documentable_policy_klass
+    raise NotImplementedError
+  end
+
+  def redirect_path
+    raise NotImplementedError
+  end
+
   private
 
   alias current_workbench workbench
@@ -83,7 +100,7 @@ class DocumentMembershipsController < Chouette::ResourceController
   def decorator_context
     {
       workbench: workbench,
-      line: line
+      documentable: documentable
     }
   end
 end

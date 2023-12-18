@@ -93,6 +93,8 @@ ChouetteIhm::Application.routes.draw do # rubocop:disable Metrics/BlockLength
       resources :stop_areas do
         get :autocomplete, on: :collection
         get :fetch_connection_links, on: :member, defaults: { format: 'geojson' }
+
+        resources :document_memberships, only: %i[index create destroy], controller: :stop_area_document_memberships
       end
 
       resources :autocomplete, only: [] do
@@ -122,11 +124,15 @@ ChouetteIhm::Application.routes.draw do # rubocop:disable Metrics/BlockLength
           end
         end
 
-        resources :document_memberships, only: %i[index create destroy]
+        resources :document_memberships, only: %i[index create destroy], controller: :line_document_memberships
       end
+
       resources :companies do
         get :autocomplete, on: :collection
+
+        resources :document_memberships, only: %i[index create destroy], controller: :company_document_memberships
       end
+
       resources :networks
       resources :line_notices
     end

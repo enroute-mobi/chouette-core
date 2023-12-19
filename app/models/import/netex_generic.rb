@@ -69,6 +69,8 @@ class Import::NetexGeneric < Import::Base
   end
 
   def within_referential(&block)
+    return unless referential_metadata
+
     referential_builder.create do |referential|
       self.referential = referential
       referential.switch
@@ -122,7 +124,7 @@ class Import::NetexGeneric < Import::Base
         name: name,
         organisation: organisation,
         metadatas: [metadata],
-        ready: true
+        ready: false
       )
     end
 
@@ -353,9 +355,9 @@ class Import::NetexGeneric < Import::Base
     delegate :netex_source, :scheduled_stop_points, :line_provider, :index_route_journey_patterns, :referential, to: :import
 
     def import!
-      each_route_with_journey_patterns do |route, journey_patterns|
+      each_route_with_journey_patterns do |netex_route, netex_journey_patterns|
         decorator = Decorator.new(
-          route, journey_patterns,
+          netex_route, netex_journey_patterns,
           scheduled_stop_points: scheduled_stop_points,
           route_points: route_points,
           directions: directions,
@@ -544,7 +546,7 @@ class Import::NetexGeneric < Import::Base
       def stop_points_by_scheduled_stop_point_id
         @stop_points_by_scheduled_stop_point_id ||= {}.tap do |by_scheduled_stop_point_id|
           complete_scheduled_stop_points.map.with_index do |scheduled_stop_point_id, position|
-            if stop_area_id = scheduled_stop_points[scheduled_stop_point_id]&.stop_area_id
+            if (stop_area_id = scheduled_stop_points[scheduled_stop_point_id]&.stop_area_id)
               stop_point = Chouette::StopPoint.new stop_area_id: stop_area_id, position: position
               by_scheduled_stop_point_id[scheduled_stop_point_id] = stop_point
             else
@@ -587,10 +589,6 @@ class Import::NetexGeneric < Import::Base
       attr_accessor :route_decorator
 
       delegate :destination_displays, to: :route_decorator
-
-      def chouette_journey_pattern
-        Chouette::JourneyPattern.new journey_pattern_attributes
-      end
 
       def chouette_journey_pattern
         Chouette::JourneyPattern.new journey_pattern_attributes
@@ -650,8 +648,6 @@ class Import::NetexGeneric < Import::Base
       def add(link)
         if empty?
           Sequence.new([link])
-        elsif link.from?(last.to)
-          Sequence.new(links + [link])
         else
           Sequence.new(links + [link]) if link.from?(last.to)
         end
@@ -1262,7 +1258,7 @@ class Import::NetexGeneric < Import::Base
       source.transformers << Netex::Transformer::LocationFromCoordinates.new
       source.transformers << Netex::Transformer::Indexer.new(Netex::JourneyPattern, by: :route_ref)
       source.transformers << Netex::Transformer::Indexer.new(Netex::DayTypeAssignment, by: :day_type_ref)
-      source.transformers << Netex::Transformer::Indexer.new(Netex::ServiceJourney, by: :journey_pattern_ref)
+      # source.transformers << Netex::Transformer::Indexer.new(Netex::ServiceJourney, by: :journey_pattern_ref)
       source.read(local_file.path, type: file_extension)
     end
   end

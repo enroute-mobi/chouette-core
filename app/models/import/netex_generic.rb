@@ -52,9 +52,10 @@ class Import::NetexGeneric < Import::Base
 
     within_referential do |referential|
       [
-        RouteJourneyPatterns
+        RouteJourneyPatterns,
+        TimeTables
       ].each do |part_class|
-        part(part_class).import!
+        part(part_class, target: referential).import!
       end
 
       referential.ready!
@@ -67,8 +68,6 @@ class Import::NetexGeneric < Import::Base
   end
 
   def within_referential(&block)
-    return unless referential_metadata
-
     referential_builder.create do |referential|
       self.referential = referential
       referential.switch
@@ -153,7 +152,7 @@ class Import::NetexGeneric < Import::Base
     Rails.logger.debug "@status: #{@status.inspect}"
   end
 
-  def part(part_class)
+  def part(part_class, target: nil)
     # For test, accept a symbol/name in argument
     # For example: part(:line_referential).import!
     unless part_class.is_a?(Class)
@@ -168,14 +167,15 @@ class Import::NetexGeneric < Import::Base
       part_class = self.class.const_get(part_class_name)
     end
 
-    part_class.new(self)
+    part_class.new(self, target: target)
   end
 
   class Part
-    def initialize(import)
+    def initialize(import, target: nil)
       @import = import
+      @target = target
     end
-    attr_reader :import
+    attr_reader :import, :target
 
     # To define callback in import!
     include AroundMethod
@@ -401,6 +401,38 @@ class Import::NetexGeneric < Import::Base
       end
     end
 
+    def prepare_route(chouette_route)
+      if chouette_route&.valid?
+        referential_inserter.routes << chouette_route
+        chouette_route.stop_points.each do |stop_point|
+          stop_point.route_id = chouette_route.id
+          referential_inserter.stop_points << stop_point
+        end
+      else
+        create_message :route_invalid
+      end
+
+      chouette_route
+    end
+
+    def prepare_journey_patterns(chouette_route, netex_journey_patterns, route_decorator)
+      netex_journey_patterns.each do |netex_journey_pattern|
+        chouette_journey_pattern = JourneyPatternDecorator.new(route_decorator,
+                                                               netex_journey_pattern).chouette_journey_pattern
+        chouette_route.journey_patterns << chouette_journey_pattern
+        chouette_journey_pattern.route_id = chouette_route.id
+        if chouette_journey_pattern&.valid?
+          referential_inserter.journey_patterns << chouette_journey_pattern
+          chouette_journey_pattern.journey_patterns_stop_points.each do |journey_pattern_stop_point|
+            journey_pattern_stop_point.journey_pattern_id = chouette_journey_pattern.id
+            referential_inserter.journey_patterns_stop_points << journey_pattern_stop_point
+          end
+        else
+          create_message :journey_pattern_invalid
+        end
+      end
+    end
+
     def referential_inserter
       @referential_inserter ||= ReferentialInserter.new(referential) do |config|
         config.add IdInserter
@@ -429,11 +461,15 @@ class Import::NetexGeneric < Import::Base
     end
 
     class Decorator < SimpleDelegator
-      def initialize(route, journey_patterns, options = {})
+      def initialize(route, journey_patterns, scheduled_stop_points: nil, route_points: nil, directions: nil, destination_displays: nil, line_provider: nil)
         super route
 
         @journey_patterns = journey_patterns
-        options.each { |k, v| send "#{k}=", v }
+        @scheduled_stop_points = scheduled_stop_points
+        @route_points = route_points
+        @directions = directions
+        @destination_displays = destination_displays
+        @line_provider = line_provider
       end
       attr_accessor :journey_patterns, :scheduled_stop_points, :route_points, :directions, :line_provider,
                     :destination_displays
@@ -471,7 +507,6 @@ class Import::NetexGeneric < Import::Base
           direction_type
         else
           add_error :direction_type_not_found
-
           nil
         end
       end
@@ -641,7 +676,6 @@ class Import::NetexGeneric < Import::Base
 
       def to_a
         return [] if empty?
-
         links.map(&:from) + [last.to]
       end
 
@@ -755,6 +789,120 @@ class Import::NetexGeneric < Import::Base
             "[#{sequence}] ? #{pending_links.to_a.join(',')}"
           end
         end
+      end
+    end
+  end
+
+  class TimeTables < WithResourcePart
+    delegate :netex_source, to: :import
+
+    def import!
+      each_day_type_with_assignements_and_periods do |day_type, day_type_assignments, operating_periods|
+
+        decorator = Decorator.new(day_type, day_type_assignments, operating_periods)
+        decorator.errors.each { |error| create_message error } unless decorator.valid?
+
+        time_table = decorator.time_table
+        next unless time_table&.valid?
+
+        save(time_table, referential_inserter)
+      end
+
+      referential_inserter.flush
+    end
+
+    def each_day_type_with_assignements_and_periods(&block)
+      netex_source.day_types.each do |day_type|
+        day_type_assignments = netex_source.day_type_assignments.find_by(day_type_ref: day_type.id)
+
+        operating_period_ids = day_type_assignments.map { |a| a.operating_period_ref&.ref }
+        operating_periods = operating_period_ids.map {|id| netex_source.operating_periods.find id }.reject(&:blank?)
+
+        block.call day_type, day_type_assignments, operating_periods
+      end
+    end
+
+    def save(time_table, referential_inserter)
+      referential_inserter.time_tables << time_table
+
+      time_table.dates.each do |time_table_date|
+        time_table_date.time_table_id = time_table.id
+        referential_inserter.time_table_dates << time_table_date
+      end
+
+      time_table.periods.each do |time_table_period|
+        time_table_period.time_table_id = time_table.id
+        referential_inserter.time_table_periods << time_table_period
+      end
+    end
+
+    def referential_inserter
+      @referential_inserter ||= ReferentialInserter.new(target) do |config|
+        config.add IdInserter
+        config.add ObjectidInserter
+        config.add CopyInserter
+      end
+    end
+
+    class Decorator < SimpleDelegator
+      def initialize(day_type, day_type_assignments, operating_periods)
+        super day_type
+
+        @day_type_assignments = day_type_assignments
+        @operating_periods = operating_periods
+      end
+      attr_reader :day_type_assignments, :operating_periods
+
+      def valid?
+        errors.empty?
+      end
+
+      def errors
+        @errors ||= []
+      end
+
+      def days_of_week
+        Cuckoo::Timetable::DaysOfWeek.new.tap do |days_of_week|
+          %i[monday tuesday wednesday thursday friday saturday sunday].each do |day|
+            days_of_week.enable day if self.send "#{day}?"
+          end
+        end
+      end
+
+      def day_type_assignments_with_date
+        @day_type_assignments_with_date ||= day_type_assignments.select { |assigment| assigment.date }
+      end
+
+      def included_dates
+        day_type_assignments_with_date.select(&:available?).map(&:date)
+      end
+
+      def excluded_dates
+        day_type_assignments_with_date.reject(&:available?).map(&:date)
+      end
+
+      def memory_timetable_periods
+        operating_periods.map do |operating_period|
+          Cuckoo::Timetable::Period.from(operating_period.date_range, days_of_week)
+        end
+      end
+
+      def time_table
+        return nil if name.blank?
+
+        @time_table ||= Chouette::TimeTable.new(comment: name).apply(memory_timetable).tap do |time_table|
+          now = Time.now
+          time_table.created_at = now
+          time_table.updated_at = now
+        end
+      end
+
+      def memory_timetable
+        @memory_timetable ||= Cuckoo::Timetable.new(
+          periods: memory_timetable_periods,
+          included_dates: included_dates,
+          excluded_dates: excluded_dates
+        ).normalize!
       end
     end
   end
@@ -978,6 +1126,7 @@ class Import::NetexGeneric < Import::Base
     @netex_source ||= Netex::Source.new(include_raw_xml: store_xml?).tap do |source|
       source.transformers << Netex::Transformer::LocationFromCoordinates.new
       source.transformers << Netex::Transformer::Indexer.new(Netex::JourneyPattern, by: :route_ref)
+      source.transformers << Netex::Transformer::Indexer.new(Netex::DayTypeAssignment, by: :day_type_ref)
 
       source.read(local_file.path, type: file_extension)
     end

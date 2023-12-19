@@ -655,6 +655,8 @@ module Chouette
         apply_included_dates
         apply_excluded_dates
         apply_periods
+
+        self
       end
 
       delegate :int_day_types=, :dates, :periods, to: :time_table

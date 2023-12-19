@@ -14,6 +14,7 @@ RSpec.describe Import::NetexGeneric do
       allow(import).to receive(:netex_source) do
         Netex::Source.new.tap do |s|
           s.transformers << Netex::Transformer::Indexer.new(Netex::JourneyPattern, by: :route_ref)
+          s.transformers << Netex::Transformer::Indexer.new(Netex::DayTypeAssignment, by: :day_type_ref)
           s.parse(StringIO.new(xml))
         end
       end
@@ -1005,7 +1006,7 @@ RSpec.describe Import::NetexGeneric do
     end
   end
 
-  describe 'Create Route and Journay Patterns' do
+  describe 'Route and Journay Patterns part' do
     let(:xml) do
       <<-XML
         <members>
@@ -1127,7 +1128,7 @@ RSpec.describe Import::NetexGeneric do
       import.part(:scheduled_stop_points).import!
 
       import.within_referential do |referential|
-        import.part(:route_journey_patterns).import!
+        import.part(:route_journey_patterns, target: referential).import!
       end
     end
 
@@ -1170,6 +1171,77 @@ RSpec.describe Import::NetexGeneric do
           it { is_expected.to match_array ['Quay B', 'Quay C'] }
         end
       end
+    end
+  end
+
+  describe 'TimeTables part' do
+    let(:xml) do
+      <<-XML
+        <root>
+          <Line id="line-1">
+            <Name>Line Sample</Name>
+          </Line> 
+          
+          <DayType id="daytype-1">
+            <Name>Sample</Name>
+            <properties>
+              <PropertyOfDay>
+                <DaysOfWeek>Tuesday Friday</DaysOfWeek>
+              </PropertyOfDay>
+            </properties>
+          </DayType>
+          
+          <DayTypeAssignment id="assigment-1">
+            <OperatingPeriodRef ref="period-1"/>
+            <DayTypeRef ref="daytype-1"/>
+          </DayTypeAssignment>
+          
+          <DayTypeAssignment id="assigment-2">
+            <Date>2030-01-15</Date>
+            <DayTypeRef ref="daytype-1"/>
+            <isAvailable>true</isAvailable>
+          </DayTypeAssignment>
+          
+          <OperatingPeriod id="period-1">
+            <FromDate>2030-01-01T00:00:00</FromDate>
+            <ToDate>2030-01-10T00:00:00</ToDate>
+          </OperatingPeriod>
+        </root>
+      XML
+    end
+
+    before do
+      import.part(:stop_area_referential).import!
+      import.part(:line_referential).import!
+      import.part(:scheduled_stop_points).import!
+
+      import.within_referential do |referential|
+        import.part(:time_tables, target: referential).import!
+      end
+    end
+
+    let(:new_referential) { Referential.where(name: 'test').last }
+    let(:time_table) { new_referential.time_tables.find_by(comment: 'Sample')}
+
+    describe '#effective_days' do
+      let(:expected_dates) { ['2030-01-01', '2030-01-04', '2030-01-08', '2030-01-15'].map(&:to_date) }
+      subject { time_table.effective_days }
+
+      it { is_expected.to eq expected_dates}
+    end
+
+    describe '#included_days_in_dates_and_periods' do
+      let(:expected_dates) do 
+        [
+          '2030-01-01', '2030-01-02', '2030-01-03', '2030-01-04',
+          '2030-01-05', '2030-01-06', '2030-01-07', '2030-01-08',
+          '2030-01-09', '2030-01-10', '2030-01-15'
+        ].map(&:to_date)
+      end
+
+      subject { time_table.included_days_in_dates_and_periods }
+
+      it { is_expected.to eq expected_dates}
     end
   end
 end

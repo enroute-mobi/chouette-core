@@ -344,37 +344,6 @@ describe Chouette::VehicleJourney, type: :model do
                        checksum_owner.custom_field_values = {custom_field.code.to_s => value}
                        checksum_owner.save
                      }
-
-
-      context "with an attachment custom_field" do
-        let(:checksum_owner) do
-          custom_field
-          vj = create(:vehicle_journey)
-          vj.custom_field_energy = File.open(fixtures_path("test_1/file.txt"))
-          vj.save
-          vj
-        end
-        let(:custom_field){ create :custom_field, field_type: :attachment, code: :energy, name: :energy, resource_type: "VehicleJourney" }
-
-        after(:each) do
-          to_be_deleted = Chouette::VehicleJourney.__callbacks[:commit].select {|call| call.instance_variable_get('@key') =~ /custom_field/ }
-          to_be_deleted.each do |callback|
-            Chouette::VehicleJourney.__callbacks[:commit].delete callback
-          end
-        end
-
-        it_behaves_like 'it works with both checksums modes',
-                       "should change the checksum",
-                       -> {
-                         checksum_owner.custom_field_energy = File.open(fixtures_path("test_2/file.txt"))
-                         checksum_owner.save
-                       }
-
-        it_behaves_like 'it works with both checksums modes',
-                       "should not change the checksum",
-                       -> { checksum_owner.reload.save },
-                       change: false
-      end
     end
   end
 

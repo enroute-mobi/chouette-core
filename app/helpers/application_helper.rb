@@ -127,14 +127,12 @@ module ApplicationHelper
     url_for(:controller => "/help", :action => "show") + '/' + target
   end
 
-  def permitted_custom_fields_params custom_fields
-    res = [{
-      custom_field_values: custom_fields.map(&:code)
-    }]
-    custom_fields.where(field_type: :attachment).each do |cf|
-      res << "remove_custom_field_#{cf.code}"
-    end
-  res
+  def permitted_custom_fields_params(custom_fields)
+    [
+      {
+        custom_field_values: custom_fields.map(&:code)
+      }
+    ]
   end
 
   def cancel_button(cancel_path = :back)

@@ -352,7 +352,7 @@ class Import::NetexGeneric < Import::Base
   end
 
   class RouteJourneyPatterns < WithResourcePart
-    delegate :netex_source, :scheduled_stop_points, :line_provider, :index_route_journey_patterns, :referential, to: :import
+    delegate :netex_source, :scheduled_stop_points, :line_provider, :index_route_journey_patterns, to: :import
 
     def import!
       each_route_with_journey_patterns do |netex_route, netex_journey_patterns|
@@ -415,7 +415,7 @@ class Import::NetexGeneric < Import::Base
     end
 
     def referential_inserter
-      @referential_inserter ||= ReferentialInserter.new(referential) do |config|
+      @referential_inserter ||= ReferentialInserter.new(target) do |config|
         config.add IdInserter
         config.add TimestampsInserter
         config.add CopyInserter

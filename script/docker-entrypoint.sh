@@ -45,7 +45,7 @@ case $command in
     bundle exec rake db:migrate && bundle exec rake db:seed
     ;;
   cucumber-cron)
-    bundle exec rake cucumber:clean_test_organisations
+    bundle exec rake cucumber:clean
     ;;
   *)
     exec $@

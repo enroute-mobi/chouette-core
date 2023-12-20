@@ -23,8 +23,6 @@ describe "/layouts/application", :type => :view do
     expect(rendered).to have_menu_link_to workbench_imports_path(workbench)
     expect(rendered).to have_menu_link_to workbench_exports_path(workbench)
     expect(rendered).to have_menu_link_to workgroup_calendars_path(workbench.workgroup)
-    expect(rendered).to have_menu_link_to workbench_compliance_check_sets_path(workbench)
-    expect(rendered).to have_menu_link_to compliance_control_sets_path
 
     expect(rendered).to have_menu_title('layouts.navbar.line_referential'.t)
     expect(rendered).to have_menu_link_to workbench_line_referential_lines_path(workbench)

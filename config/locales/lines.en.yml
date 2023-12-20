@@ -88,6 +88,43 @@ en:
       no_group_of_line: "No group of line"
       several_group_of_lines: "%{count} groups of lines"
       add_code: "Add a Code"
+  enumerize:
+    line:
+      mobility_impaired_accessibility:
+        unknown: Unknown
+        yes: Yes
+        no: No
+        partial: Partial
+      wheelchair_accessibility:
+        unknown: Unknown
+        yes: Yes
+        no: No
+        partial: Partial
+      step_free_accessibility:
+        unknown: Unknown
+        yes: Yes
+        no: No
+        partial: Partial
+      escalator_free_accessibility:
+        unknown: Unknown
+        yes: Yes
+        no: No
+        partial: Partial
+      lift_free_accessibility:
+        unknown: Unknown
+        yes: Yes
+        no: No
+        partial: Partial
+      audible_signals_availability:
+        unknown: Unknown
+        yes: Yes
+        no: No
+        partial: Partial
+      visual_signs_availability:
+        unknown: Unknown
+        yes: Yes
+        no: No
+        partial: Partial
   activerecord:
     errors:
       models:

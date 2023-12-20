@@ -40,18 +40,20 @@ module Chouette
     has_array_of :ignored_routing_contraint_zones, class_name: 'Chouette::RoutingConstraintZone'
     has_array_of :ignored_stop_area_routing_constraints, class_name: 'StopAreaRoutingConstraint'
 
-    validates_presence_of :route
-    validates_presence_of :journey_pattern
+    with_options(if: -> { validation_context != :inserter }) do |except_in_inserter_context|
+      except_in_inserter_context.validates :route, presence: true
+      except_in_inserter_context.validates :journey_pattern, presence: true
+      except_in_inserter_context.before_validation :calculate_vehicle_journey_at_stop_day_offset
+    end
     validate :vjas_departure_time_must_be_before_next_stop_arrival_time
-    validates_presence_of :number
+    validates :number, presence: true
 
     has_many :vehicle_journey_at_stops, -> { includes(:stop_point).order("stop_points.position") }, dependent: :destroy
     has_and_belongs_to_many :time_tables, :class_name => 'Chouette::TimeTable', :foreign_key => "vehicle_journey_id", :association_foreign_key => "time_table_id"
     has_many :stop_points, -> { order("stop_points.position") }, :through => :vehicle_journey_at_stops
     has_many :vehicle_journey_time_table_relationships, class_name: 'Chouette::TimeTablesVehicleJourney'
 
-    before_validation :set_default_values,
-      :calculate_vehicle_journey_at_stop_day_offset
+    before_validation :set_default_values
 
     scope :with_companies, -> (companies) { joins(route: :line).where(lines: { company_id: companies }) }
 

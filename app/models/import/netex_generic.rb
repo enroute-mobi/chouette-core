@@ -796,7 +796,7 @@ class Import::NetexGeneric < Import::Base
         decorator.errors.each { |error| create_message error } unless decorator.valid?
 
         time_table = decorator.time_table
-        next unless time_table&.valid?
+        next unless time_table&.valid?(:inserter)
 
         save(time_table, referential_inserter)
 
@@ -917,8 +917,10 @@ class Import::NetexGeneric < Import::Base
         end
 
         vehicle_journey = decorator.chouette_vehicle_journey
-        unless vehicle_journey.valid?
+        unless vehicle_journey.valid?(:inserter)
           create_message :vehicle_journey_invalid
+
+          next
         end
 
         referential_inserter.vehicle_journeys << vehicle_journey

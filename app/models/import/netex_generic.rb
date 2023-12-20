@@ -188,7 +188,9 @@ class Import::NetexGeneric < Import::Base
 
     def around_import!(&block)
       run_callbacks :import do
-        block.call
+        CustomFieldsSupport.within_workgroup(import.workgroup) do
+          block.call
+        end
       end
     end
 

@@ -56,7 +56,7 @@ class Import::NetexGeneric < Import::Base
         TimeTables,
         VehicleJourneys
       ].each do |part_class|
-        part(part_class, target: referential).import!
+        part(part_class).import!
       end
 
       referential.ready!
@@ -155,7 +155,7 @@ class Import::NetexGeneric < Import::Base
     Rails.logger.debug "@status: #{@status.inspect}"
   end
 
-  def part(part_class, target: nil)
+  def part(part_class)
     # For test, accept a symbol/name in argument
     # For example: part(:line_referential).import!
     unless part_class.is_a?(Class)
@@ -170,15 +170,14 @@ class Import::NetexGeneric < Import::Base
       part_class = self.class.const_get(part_class_name)
     end
 
-    part_class.new(self, target: target)
+    part_class.new self
   end
 
   class Part
-    def initialize(import, target: nil)
+    def initialize(import)
       @import = import
-      @target = target
     end
-    attr_reader :import, :target
+    attr_reader :import
 
     # To define callback in import!
     include AroundMethod
@@ -351,7 +350,24 @@ class Import::NetexGeneric < Import::Base
     end
   end
 
+  module ReferentialPart
+    extend ActiveSupport::Concern
+
+    included do
+      delegate :referential, to: :import
+    end
+
+    def referential_inserter
+      @referential_inserter ||= ReferentialInserter.new(referential) do |config|
+        config.add IdInserter
+        config.add TimestampsInserter
+        config.add CopyInserter
+      end
+    end
+  end
+
   class RouteJourneyPatterns < WithResourcePart
+    include ReferentialPart
     delegate :netex_source, :scheduled_stop_points, :line_provider, :index_route_journey_patterns, to: :import
 
     def import!
@@ -412,14 +428,6 @@ class Import::NetexGeneric < Import::Base
         route_id: route.id,
         stop_point_ids: journey_pattern.journey_pattern_stop_points.map(&:stop_point_id)
       }
-    end
-
-    def referential_inserter
-      @referential_inserter ||= ReferentialInserter.new(target) do |config|
-        config.add IdInserter
-        config.add TimestampsInserter
-        config.add CopyInserter
-      end
     end
 
     def each_route_with_journey_patterns(&block)
@@ -777,6 +785,8 @@ class Import::NetexGeneric < Import::Base
   end
 
   class TimeTables < WithResourcePart
+    include ReferentialPart
+
     delegate :netex_source, :index_time_tables, to: :import
 
     def import!
@@ -818,14 +828,6 @@ class Import::NetexGeneric < Import::Base
       time_table.periods.each do |time_table_period|
         time_table_period.time_table_id = time_table.id
         referential_inserter.time_table_periods << time_table_period
-      end
-    end
-
-    def referential_inserter
-      @referential_inserter ||= ReferentialInserter.new(target) do |config|
-        config.add IdInserter
-        config.add ObjectidInserter
-        config.add CopyInserter
       end
     end
 
@@ -901,6 +903,7 @@ class Import::NetexGeneric < Import::Base
   end
 
   class VehicleJourneys < WithResourcePart
+    include ReferentialPart
     delegate :netex_source, :index_route_journey_patterns, :index_time_tables, to: :import
 
     def import!
@@ -936,14 +939,6 @@ class Import::NetexGeneric < Import::Base
 
     def day_types
       @day_types ||= netex_source.day_types
-    end
-
-    def referential_inserter
-      @referential_inserter ||= ReferentialInserter.new(target) do |config|
-        config.add IdInserter
-        config.add ObjectidInserter
-        config.add CopyInserter
-      end
     end
 
     class Decorator < SimpleDelegator
@@ -1258,7 +1253,7 @@ class Import::NetexGeneric < Import::Base
       source.transformers << Netex::Transformer::LocationFromCoordinates.new
       source.transformers << Netex::Transformer::Indexer.new(Netex::JourneyPattern, by: :route_ref)
       source.transformers << Netex::Transformer::Indexer.new(Netex::DayTypeAssignment, by: :day_type_ref)
-      # source.transformers << Netex::Transformer::Indexer.new(Netex::ServiceJourney, by: :journey_pattern_ref)
+
       source.read(local_file.path, type: file_extension)
     end
   end

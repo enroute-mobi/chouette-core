@@ -15,7 +15,7 @@ RSpec.describe Import::NetexGeneric do
         Netex::Source.new.tap do |s|
           s.transformers << Netex::Transformer::Indexer.new(Netex::JourneyPattern, by: :route_ref)
           s.transformers << Netex::Transformer::Indexer.new(Netex::DayTypeAssignment, by: :day_type_ref)
-          s.transformers << Netex::Transformer::Indexer.new(Netex::ServiceJourney, by: :journey_pattern_ref)
+
           s.parse(StringIO.new(xml))
         end
       end
@@ -1129,7 +1129,7 @@ RSpec.describe Import::NetexGeneric do
       import.part(:scheduled_stop_points).import!
 
       import.within_referential do |referential|
-        import.part(:route_journey_patterns, target: referential).import!
+        import.part(:route_journey_patterns).import!
       end
     end
 
@@ -1217,8 +1217,8 @@ RSpec.describe Import::NetexGeneric do
       import.part(:scheduled_stop_points).import!
 
       import.within_referential do |referential|
-        import.part(:route_journey_patterns, target: referential).import!
-        import.part(:time_tables, target: referential).import!
+        import.part(:route_journey_patterns).import!
+        import.part(:time_tables).import!
       end
     end
 
@@ -1354,9 +1354,9 @@ RSpec.describe Import::NetexGeneric do
       import.part(:scheduled_stop_points).import!
 
       import.within_referential do |referential|
-        import.part(:route_journey_patterns, target: referential).import!
-        import.part(:time_tables, target: referential).import!
-        import.part(:vehicle_journeys, target: referential).import!
+        import.part(:route_journey_patterns).import!
+        import.part(:time_tables).import!
+        import.part(:vehicle_journeys).import!
       end
     end
 

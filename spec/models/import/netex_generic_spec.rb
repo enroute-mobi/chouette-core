@@ -15,6 +15,7 @@ RSpec.describe Import::NetexGeneric do
         Netex::Source.new.tap do |s|
           s.transformers << Netex::Transformer::Indexer.new(Netex::JourneyPattern, by: :route_ref)
           s.transformers << Netex::Transformer::Indexer.new(Netex::DayTypeAssignment, by: :day_type_ref)
+
           s.parse(StringIO.new(xml))
         end
       end
@@ -1128,7 +1129,7 @@ RSpec.describe Import::NetexGeneric do
       import.part(:scheduled_stop_points).import!
 
       import.within_referential do |referential|
-        import.part(:route_journey_patterns, target: referential).import!
+        import.part(:route_journey_patterns).import!
       end
     end
 
@@ -1216,7 +1217,8 @@ RSpec.describe Import::NetexGeneric do
       import.part(:scheduled_stop_points).import!
 
       import.within_referential do |referential|
-        import.part(:time_tables, target: referential).import!
+        import.part(:route_journey_patterns).import!
+        import.part(:time_tables).import!
       end
     end
 
@@ -1242,6 +1244,166 @@ RSpec.describe Import::NetexGeneric do
       subject { time_table.included_days_in_dates_and_periods }
 
       it { is_expected.to eq expected_dates}
+    end
+  end
+
+  describe 'VehicleJourneys part' do
+    let(:xml) do
+      <<-XML
+        <members>
+          <Quay id="quay-1">
+            <Name>Quay 1</Name>
+          </Quay>
+          <Quay id="quay-2">
+            <Name>Quay 2</Name>
+          </Quay>
+          <Quay id="quay-3">
+            <Name>Quay 3</Name>
+          </Quay>
+        
+          <Line id="line">
+            <Name>Line Sample</Name>
+          </Line>
+        
+          <Route id="route">
+            <Name>Route Sample</Name>
+            <LineRef ref="line"/>
+            <DirectionType>outbound</DirectionType>
+          </Route>
+        
+          <ScheduledStopPoint id="scheduled-stop-point-1"/>
+          <ScheduledStopPoint id="scheduled-stop-point-2"/>
+          <ScheduledStopPoint id="scheduled-stop-point-3"/>
+        
+          <PassengerStopAssignment id="passenger-stop-assignment-1" order="1">
+            <ScheduledStopPointRef ref="scheduled-stop-point-1"/>
+            <QuayRef ref="quay-1"/>
+          </PassengerStopAssignment>
+          <PassengerStopAssignment id="passenger-stop-assignment-2" order="2">
+            <ScheduledStopPointRef ref="scheduled-stop-point-2"/>
+            <QuayRef ref="quay-2"/>
+          </PassengerStopAssignment>
+          <PassengerStopAssignment id="passenger-stop-assignment-3" order="3">
+            <ScheduledStopPointRef ref="scheduled-stop-point-3"/>
+            <QuayRef ref="quay-3"/>
+          </PassengerStopAssignment>
+        
+          <ServiceJourneyPattern id="journey-pattern-1">
+            <Name>Journey Pattern Sample</Name>
+            <RouteRef ref="route"/>
+            <pointsInSequence>
+              <StopPointInJourneyPattern id="stop-point-in-journey-pattern-1" order="1">
+                <ScheduledStopPointRef ref="scheduled-stop-point-1"/>
+              </StopPointInJourneyPattern>
+              <StopPointInJourneyPattern id="stop-point-in-journey-pattern-2" order="2">
+                <ScheduledStopPointRef ref="scheduled-stop-point-2"/>
+              </StopPointInJourneyPattern>
+              <StopPointInJourneyPattern id="stop-point-in-journey-pattern-3" order="3">
+                <ScheduledStopPointRef ref="scheduled-stop-point-3"/>
+              </StopPointInJourneyPattern>
+            </pointsInSequence>
+          </ServiceJourneyPattern>
+        
+          <ServiceJourney id="service-journey">
+            <Name>Vehicle Journey Sample</Name>
+            <dayTypes>
+              <DayTypeRef ref="timetable"/>
+            </dayTypes>
+            <JourneyPatternRef ref="journey-pattern-1"/>
+            <passingTimes>
+              <TimetabledPassingTime>
+                <DepartureTime>23:50:00</DepartureTime>
+              </TimetabledPassingTime>
+              <TimetabledPassingTime>
+                <ArrivalTime>23:55:00</ArrivalTime>
+                <DepartureTime>00:05:00</DepartureTime>
+                <DepartureDayOffset>1</DepartureDayOffset>
+              </TimetabledPassingTime>
+              <TimetabledPassingTime>
+                <ArrivalTime>00:15:00</ArrivalTime>
+                <ArrivalDayOffset>1</ArrivalDayOffset>
+              </TimetabledPassingTime>
+            </passingTimes>
+          </ServiceJourney>
+        
+          <DayType id="timetable">
+            <Name>TimeTable Sample</Name>
+            <properties>
+              <PropertyOfDay>
+                <DaysOfWeek>Monday Tuesday Wednesday Thursday Friday Saturday Sunday</DaysOfWeek>
+              </PropertyOfDay>
+            </properties>
+          </DayType>
+        
+          <OperatingPeriod id="operation-period">
+            <FromDate>2030-01-01T00:00:00</FromDate>
+            <ToDate>2030-12-31T00:00:00</ToDate>
+          </OperatingPeriod>
+        
+          <DayTypeAssignment id="day-type-assignment" order="1">
+            <OperatingPeriodRef ref="operation-period" />
+            <DayTypeRef ref="timetable"/>
+          </DayTypeAssignment>
+        </members>
+      XML
+    end
+
+    before do
+      import.part(:stop_area_referential).import!
+      import.part(:line_referential).import!
+      import.part(:scheduled_stop_points).import!
+
+      import.within_referential do |referential|
+        import.part(:route_journey_patterns).import!
+        import.part(:time_tables).import!
+        import.part(:vehicle_journeys).import!
+      end
+    end
+
+    let(:new_referential) { Referential.where(name: 'test').last }
+    let(:vehicle_journey) { new_referential.vehicle_journeys.find_by(published_journey_identifier: 'service-journey')}
+
+    describe '#vehicle_journey' do
+      subject { vehicle_journey }  
+      let(:expected_attributes) do
+        {
+          published_journey_name: 'Vehicle Journey Sample',
+          published_journey_identifier: 'service-journey'
+        }
+      end
+
+      it { is_expected.to an_object_having_attributes(expected_attributes) }
+    end
+
+    describe '#journey_pattern' do
+      subject { vehicle_journey.journey_pattern }  
+      let(:expected_attributes) do
+        { name: 'Journey Pattern Sample' }
+      end
+
+      it { is_expected.to an_object_having_attributes(expected_attributes) }
+    end
+
+    describe '#vehicle_journey_at_stops' do
+      subject do 
+        vehicle_journey.vehicle_journey_at_stops.map do |at_stop|
+          {
+            stop_area: at_stop.stop_point.stop_area.name,
+            arrival_time: (at_stop.arrival_time.strftime('%H:%M') rescue nil),
+            departure_time: (at_stop.departure_time.strftime('%H:%M') rescue nil)
+          }
+        end
+      end
+
+      let(:expected_attributes) do
+        [
+          {:stop_area=>"Quay 1", :arrival_time=>nil, :departure_time=>"23:50"}, 
+          {:stop_area=>"Quay 2", :arrival_time=>"23:55", :departure_time=>"00:05"},
+          {:stop_area=>"Quay 3", :arrival_time=>"00:15", :departure_time=>nil}
+        ]
+      end
+
+      it { is_expected.to match_array expected_attributes }
     end
   end
 end

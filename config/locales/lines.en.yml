@@ -88,6 +88,43 @@ en:
       no_group_of_line: "No group of line"
       several_group_of_lines: "%{count} groups of lines"
       add_code: "Add a Code"
+  enumerize:
+    line:
+      mobility_impaired_accessibility:
+        unknown: Unknown
+        yes: Yes
+        no: No
+        partial: Partial
+      wheelchair_accessibility:
+        unknown: Unknown
+        yes: Yes
+        no: No
+        partial: Partial
+      step_free_accessibility:
+        unknown: Unknown
+        yes: Yes
+        no: No
+        partial: Partial
+      escalator_free_accessibility:
+        unknown: Unknown
+        yes: Yes
+        no: No
+        partial: Partial
+      lift_free_accessibility:
+        unknown: Unknown
+        yes: Yes
+        no: No
+        partial: Partial
+      audible_signals_availability:
+        unknown: Unknown
+        yes: Yes
+        no: No
+        partial: Partial
+      visual_signs_availability:
+        unknown: Unknown
+        yes: Yes
+        no: No
+        partial: Partial
   activerecord:
     errors:
       models:
@@ -129,7 +166,15 @@ en:
         url: "Web page"
         color: "Shape color"
         text_color: "Text color"
-        mobility_restricted_suitability: "Access for mobility impaired user"
+        mobility_restricted_suitability: "Access for mobility impaired users"
+        mobility_impaired_accessibility: "Access for mobility impaired users"
+        wheelchair_accessibility: "Wheelchair Access"
+        step_free_accessibility: "Step Free Access"
+        escalator_free_accessibility: "Escalator Free Access"
+        lift_free_accessibility: "Lift Free Access"
+        audible_signals_availability: "Audible Signals Available"
+        visual_signs_availability: "Visual Signs Available"
+        accessibility_limitation_description: "Description"
         flexible_service: "Flexible line"
         unspecified_mrs: "Not specified"
         accessible: "Accessible"

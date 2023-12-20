@@ -89,6 +89,43 @@ fr:
       no_group_of_line: "Aucun groupe de lignes"
       several_group_of_lines: "%{count} groupes of lignes"
       add_code: Ajouter un code
+  enumerize:
+    line:
+      mobility_impaired_accessibility:
+        unknown: Inconnu
+        'yes': Oui
+        'no': Non
+        partial: Partiel
+      wheelchair_accessibility:
+        unknown: Inconnu
+        'yes': Oui
+        'no': Non
+        partial: Partiel
+      step_free_accessibility:
+        unknown: Inconnu
+        'yes': Oui
+        'no': Non
+        partial: Partiel
+      escalator_free_accessibility:
+        unknown: Inconnu
+        'yes': Oui
+        'no': Non
+        partial: Partiel
+      lift_free_accessibility:
+        unknown: Inconnu
+        'yes': Oui
+        'no': Non
+        partial: Partiel
+      audible_signals_availability:
+        unknown: Inconnu
+        'yes': Oui
+        'no': Non
+        partial: Partiel
+      visual_signs_availability:
+        unknown: Inconnu
+        'yes': Oui
+        'no': Non
+        partial: Partiel
   activerecord:
     errors:
       models:
@@ -138,6 +175,14 @@ fr:
         color: "Couleur du tracé"
         text_color: "Couleur du texte"
         mobility_restricted_suitability: "Accessibilité pour les personnes à mobilité réduite"
+        mobility_impaired_accessibility: "Accès pour voyageur à mobilité réduite"
+        wheelchair_accessibility: "Accès en fauteuil roulant"
+        step_free_accessibility: "Accès sans marche"
+        escalator_free_accessibility: "Accès sans escalator"
+        lift_free_accessibility: "Accès sans ascenseur"
+        audible_signals_availability: "Signalétique auditive disponible"
+        visual_signs_availability: "Signalétique visuelle disponible"
+        accessibility_limitation_description: "Description"
         flexible_service: "Transport à la demande"
         unspecified_mrs: "Non spécifié"
         accessible: "Accessible"

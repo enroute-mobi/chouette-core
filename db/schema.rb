@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2023_12_18_161932) do
+ActiveRecord::Schema.define(version: 2023_12_21_174101) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "btree_gin"
@@ -911,7 +911,7 @@ ActiveRecord::Schema.define(version: 2023_12_18_161932) do
     t.bigint "line_provider_id"
     t.boolean "is_referent", default: false
     t.bigint "referent_id"
-    t.string "mobility_impaired_accessility"
+    t.string "mobility_impaired_accessibility"
     t.string "wheelchair_accessibility"
     t.string "step_free_accessibility"
     t.string "escalator_free_accessibility"

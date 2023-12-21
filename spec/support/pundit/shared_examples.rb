@@ -81,6 +81,34 @@ RSpec.shared_examples 'always forbidden' do
   end
 end
 
+RSpec.shared_examples 'permitted policy and same workbench' do |permission|
+  context 'permission absent → ' do
+    it 'denies a user with a different workbench' do
+      expect_it.not_to permit(user_context, record)
+    end
+
+    it 'and also a user with the same workbench' do
+      record.workbench = user_context.context[:workbench]
+      expect_it.not_to permit(user_context, record)
+    end
+  end
+
+  context 'permission present → ' do
+    before do
+      add_permissions(permission, to_user: user)
+    end
+
+    it 'denies a user with a different workbench' do
+      expect_it.not_to permit(user_context, record)
+    end
+
+    it 'but allows it for a user with the same workbench' do
+      record.workbench = user_context.context[:workbench]
+      expect_it.to permit(user_context, record)
+    end
+  end
+end
+
 RSpec.shared_examples 'permitted policy and same organisation' do
   | permission, archived_and_finalised: false |
 

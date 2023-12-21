@@ -588,12 +588,12 @@ crumb :new_line_routing_constraint_zone do |workbench|
   parent :line_routing_constraint_zones, workbench
 end
 
-crumb :calendars do |workgroup|
-  link I18n.t('calendars.index.title'), workgroup_calendars_path(workgroup)
+crumb :calendars do |workbrench|
+  link I18n.t('calendars.index.title'), workbench_calendars_path(workbrench)
 end
 
 crumb :calendar do |workgroup, calendar|
-  link breadcrumb_name(calendar), workgroup_calendar_path(workgroup, calendar)
+  link breadcrumb_name(calendar), workbench_calendar_path(workbench, calendar)
   parent :calendars, workgroup
 end
 

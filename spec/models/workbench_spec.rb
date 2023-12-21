@@ -17,6 +17,8 @@ RSpec.describe Workbench, type: :model do
     it { is_expected.to have_many(:stop_areas).through(:stop_area_referential) }
     it { is_expected.to have_many(:notification_rules).dependent(:destroy) }
 
+    it { is_expected.to have_many(:calendars).dependent(:destroy) }
+
     context 'when the Workbench is waiting an associated Organisation' do
       before { allow(subject).to receive(:pending?) { true } }
       it { is_expected.to_not validate_presence_of(:organisation) }
@@ -254,6 +256,42 @@ RSpec.describe Workbench, type: :model do
 
       it { is_expected.to have_attributes(organisation: a_nil_value, prefix: a_nil_value) }
       it { is_expected.to have_attributes(invitation_code: matching(/\d{3}-\d{3}-\d{3}/)) }
+    end
+  end
+
+  describe '#calendars_with_shared' do
+    subject { workbench.calendars_with_shared }
+
+    let(:workbench) { create(:workbench) }
+    let(:other_organisation_workbench) { create(:workbench, workgroup: workbench.workgroup) }
+    let(:other_workgroup_workbench) { create(:workbench, organisation: workbench.organisation) }
+    let!(:non_shared_workbench_calendar) do
+      create(:calendar, workbench: workbench)
+    end
+    let!(:shared_workbench_calendar) do
+      create(:calendar, workbench: workbench, shared: true)
+    end
+    let!(:non_shared_other_organisation_calendar) do
+      create(:calendar, workbench: other_organisation_workbench)
+    end
+    let!(:shared_other_organisation_calendar) do
+      create(:calendar, workbench: other_organisation_workbench, shared: true)
+    end
+    let!(:non_shared_other_workgroup_calendar) do
+      create(:calendar, workbench: other_workgroup_workbench)
+    end
+    let!(:shared_other_workgroup_calendar) do
+      create(:calendar, workbench: other_workgroup_workbench, shared: true)
+    end
+
+    it 'returns only its calendars + shared calendars' do
+      is_expected.to match_array(
+        [
+          non_shared_workbench_calendar,
+          shared_workbench_calendar,
+          shared_other_organisation_calendar
+        ]
+      )
     end
   end
 end

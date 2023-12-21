@@ -1,11 +1,13 @@
-RSpec.describe Calendar, :type => :model do
+# frozen_string_literal: true
+
+RSpec.describe Calendar, type: :model do
   include Support::TimeTableHelper
 
-  it { should belong_to(:organisation) }
+  it { should belong_to(:workbench).required(true) }
+  it { should have_one(:workgroup).through(:workbench) }
+  it { should have_one(:organisation).through(:workbench) }
 
-  it { is_expected.to validate_presence_of(:organisation) }
   it { is_expected.to validate_presence_of(:name) }
-
 
   describe '#to_time_table' do
     let(:calendar) { create(:calendar, int_day_types: Calendar::MONDAY | Calendar::SUNDAY, date_ranges: [Date.today...(Date.today + 1.month)]) }

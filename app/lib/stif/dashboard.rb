@@ -16,7 +16,7 @@ module Stif
     end
 
     def calendars
-      workbench.calendars
+      workbench.calendars_with_shared
     end
   end
 end

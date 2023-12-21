@@ -1,6 +1,7 @@
+# frozen_string_literal: true
+
 class CalendarsController < ChouetteController
   include PolicyChecker
-  include TimeTablesHelper
 
   defaults resource_class: Calendar
   before_action :ransack_contains_date, only: [:index]
@@ -8,10 +9,11 @@ class CalendarsController < ChouetteController
   respond_to :json, only: :show
   respond_to :js, only: :index
 
-  belongs_to :workgroup
+  belongs_to :workbench
 
   def index
     index! do
+      @calendars = @calendars.includes(:organisation)
       @calendars = decorate_calendars(@calendars)
     end
   end
@@ -19,9 +21,11 @@ class CalendarsController < ChouetteController
   def show
     show! do
       @year = params[:year] ? params[:year].to_i : @calendar.presenter.default_year
-      @calendar = @calendar.decorate(context: {
-        workgroup: workgroup
-      })
+      @calendar = @calendar.decorate(
+        context: {
+          workbench: workbench
+        }
+      )
     end
   end
 
@@ -48,7 +52,7 @@ class CalendarsController < ChouetteController
     CalendarDecorator.decorate(
       calendars,
       context: {
-        workgroup: workgroup
+        workbench: workbench
       }
     )
   end
@@ -73,29 +77,34 @@ class CalendarsController < ChouetteController
 
   protected
 
-  alias_method :workgroup, :parent
-  helper_method :workgroup
+  alias workbench parent
+  helper_method :workbench
 
+  # rubocop:disable Naming/MemoizedInstanceVariableName
   def resource
-    @calendar ||= workgroup.calendars.where('(organisation_id = ? OR shared = ?)', current_organisation.id, true).find_by_id(params[:id])
+    @calendar ||= workbench.calendars_with_shared.find_by(id: params[:id])
   end
+  # rubocop:enable Naming/MemoizedInstanceVariableName
 
   def build_resource
     super.tap do |calendar|
-      calendar.workgroup = workgroup
-      calendar.organisation = current_organisation
+      calendar.workbench = workbench
     end
   end
 
+  # rubocop:disable Naming/MemoizedInstanceVariableName
   def collection
     @calendars ||= begin
-      scope = workgroup.calendars.where('(organisation_id = ? OR shared = ?)', current_organisation.id, true)
+      scope = workbench.calendars_with_shared
       scope = shared_scope(scope)
       @q = scope.ransack(params[:q])
       calendars = sort_results(@q.result)
       calendars = calendars.paginate(page: params[:page])
+      calendars
     end
   end
+  # rubocop:enable Naming/MemoizedInstanceVariableName
+
   def ransack_contains_date
     date =[]
     if params[:q] && !params[:q]['contains_date(1i)'].empty?
@@ -117,5 +126,4 @@ class CalendarsController < ChouetteController
 
     scope
   end
-
 end

@@ -7,16 +7,19 @@ class Calendar < ApplicationModel
   include TimetableSupport
 
   has_metadata
-  belongs_to :organisation
-  belongs_to :workgroup
+  belongs_to :workbench, required: true
+  has_one :organisation, through: :workbench
+  has_one :workgroup, through: :workbench
 
-  validates_presence_of :name, :organisation, :workgroup
+  validates :name, presence: true
 
   has_many :time_tables, class_name: "Chouette::TimeTable" , dependent: :nullify
 
   scope :contains_date, ->(date) { where('(date ? = any (dates) OR date ? <@ any (date_ranges)) AND NOT date ? = any (excluded_dates)', date, date, date) }
 
   scope :order_by_organisation_name, ->(dir) { joins(:organisation).order("lower(organisations.name) #{dir}") }
+
+  scope :by_text, ->(text) { text.blank? ? all : where('lower(name) LIKE :t', t: "%#{text.downcase}%") }
 
   after_initialize :set_defaults
 

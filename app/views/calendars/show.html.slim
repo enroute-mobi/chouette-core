@@ -1,4 +1,4 @@
-- breadcrumb :calendar, @workgroup, @calendar
+- breadcrumb :calendar, @workbench, @calendar
 - page_header_content_for @calendar
 
 .page_content
@@ -16,7 +16,7 @@
         .pagination.pull-right
           = @year
           .page_links
-            = link_to '', workgroup_calendar_path(@workgroup, @calendar, year: (@year - 1)), class: 'previous_page'
-            = link_to '', workgroup_calendar_path(@workgroup, @calendar, year: (@year + 1)), class: 'next_page'
+            = link_to '', workbench_calendar_path(@workbench, @calendar, year: (@year - 1)), class: 'previous_page'
+            = link_to '', workbench_calendar_path(@workbench, @calendar, year: (@year + 1)), class: 'next_page'
 
-    = render 'time_tables/show_time_table', time_table: @calendar, edit_url: [:edit, @workgroup, @calendar], disabled: !policy(@calendar).update?
+    = render 'time_tables/show_time_table', time_table: @calendar, edit_url: [:edit, @workbench, @calendar], disabled: !policy(@calendar).update?

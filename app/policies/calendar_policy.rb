@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class CalendarPolicy < ApplicationPolicy
   class Scope < Scope
     def resolve
@@ -8,12 +10,22 @@ class CalendarPolicy < ApplicationPolicy
   def create?
     user.has_permission?('calendars.create')
   end
-  def destroy?; instance_permission("destroy") end
-  def update?; instance_permission("update") end
-  def share?; instance_permission("share") end
+
+  def update?
+    instance_permission('update')
+  end
+
+  def destroy?
+    instance_permission('destroy')
+  end
+
+  def share?
+    instance_permission('share')
+  end
 
   private
-  def instance_permission permission
-    organisation_match? && user.has_permission?("calendars.#{permission}")
+
+  def instance_permission(permission)
+    workbench_matches? && user.has_permission?("calendars.#{permission}")
   end
 end

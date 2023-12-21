@@ -24,7 +24,7 @@ class Organisation < ApplicationModel
   has_many :exports, through: :workbenches, class_name: "Export::Base"
   has_many :api_keys, through: :workbenches
 
-  has_many :calendars, dependent: :destroy
+  has_many :calendars, through: :workbenches
 
   validates_presence_of :name
   validates_uniqueness_of :code

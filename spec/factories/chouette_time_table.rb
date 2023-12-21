@@ -3,7 +3,7 @@ FactoryBot.define do
     sequence(:comment) { |n| "Timetable #{n}" }
     sequence(:objectid) { |n| "organisation:Timetable:#{n}:LOC" }
     sequence(:int_day_types) { (1..7).to_a.map{ |n| 2**(n+1)}.sum }
-    calendar nil
+    calendar { nil }
 
     trait :empty do
       dates_count { 0 }

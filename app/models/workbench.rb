@@ -40,6 +40,7 @@ class Workbench < ApplicationModel
   has_many :processing_rules, class_name: "ProcessingRule::Workbench"
   has_many :point_of_interests, through: :shape_referential
   has_many :saved_searches, class_name: 'Search::Save', dependent: :destroy
+  has_many :calendars, dependent: :destroy
 
   validates :name, presence: true
   validates :organisation, presence: true, unless: :pending?
@@ -129,8 +130,12 @@ class Workbench < ApplicationModel
     locked_referential_to_aggregate || output. current
   end
 
-  def calendars
-    workgroup.calendars.where('(organisation_id = ? OR shared = ?)', organisation.id, true)
+  def calendars_with_shared
+    # NOTE: calendars.joins(:workbench).or(workgroup.calendars.where(shared: true)) does not work because
+    # INNER JOIN "public"."workbenches" ON "public"."workbenches"."id" = "public"."calendars"."workbench_id"
+    # INNER JOIN "public"."workbenches" ON "public"."calendars"."workbench_id" = "public"."workbenches"."id"
+    # do not match
+    workgroup.calendars.where(workbench_id: id).or(workgroup.calendars.where(shared: true))
   end
 
   def compliance_control_set key

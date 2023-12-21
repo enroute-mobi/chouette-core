@@ -47,6 +47,7 @@ ChouetteIhm::Application.routes.draw do # rubocop:disable Metrics/BlockLength
       get :users, on: :collection, defaults: { format: 'json' }
       get :macro_lists, on: :collection, defaults: { format: 'json' }
       get :control_lists, on: :collection, defaults: { format: 'json' }
+      get :calendars, on: :collection, defaults: { format: 'json' }
     end
 
     resources :compliance_check_sets, only: %i[index show] do
@@ -180,6 +181,12 @@ ChouetteIhm::Application.routes.draw do # rubocop:disable Metrics/BlockLength
     resources :fare_providers
 
     resources :processing_rules, as: 'processing_rule_workbenches'
+
+    resources :calendars do
+      member do
+        get 'month', defaults: { format: :json }
+      end
+    end
   end
 
   resource :workbench_confirmation, only: %i[new create]
@@ -222,13 +229,6 @@ ChouetteIhm::Application.routes.draw do # rubocop:disable Metrics/BlockLength
 
     resources :publication_apis do
       resources :publication_api_keys
-    end
-
-    resources :calendars do
-      get :autocomplete, on: :collection, controller: 'autocomplete_calendars'
-      member do
-        get 'month', defaults: { format: :json }
-      end
     end
 
     resources :control_list_runs, controller: :workgroup_control_list_runs, only: %w[show index] do
@@ -436,13 +436,6 @@ ChouetteIhm::Application.routes.draw do # rubocop:disable Metrics/BlockLength
       get :select_type, on: :collection
     end
     resources :compliance_control_blocks, except: %i[show index]
-  end
-
-  resources :calendars do
-    get :autocomplete, on: :collection, controller: 'autocomplete_calendars'
-    member do
-      get 'month', defaults: { format: :json }
-    end
   end
 
   mount LetterOpenerWeb::Engine, at: '/letter_opener' if %i[letter_opener_web

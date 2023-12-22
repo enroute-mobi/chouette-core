@@ -383,7 +383,12 @@ class Import::NetexGeneric < Import::Base
           line_provider: line_provider
         )
 
-        decorator.errors.each { |error| create_message error } unless decorator.valid?
+        unless decorator.valid?
+          decorator.errors.each { |error| create_message error }
+          Rails.logger.debug { "Errors found by Decorator for #{netex_route.inspect}: #{decorator.errors.inspect}" }
+
+          next
+        end
 
         save_route decorator.chouette_route
       end
@@ -401,6 +406,7 @@ class Import::NetexGeneric < Import::Base
 
         save_journey_patterns route
       else
+        Rails.logger.debug { "Invalid Route: #{route.errors.inspect} #{route.journey_patterns.map(&:errors).inspect}" }
         create_message :route_invalid
       end
     end
@@ -408,6 +414,7 @@ class Import::NetexGeneric < Import::Base
     def save_journey_patterns(route)
       route.journey_patterns.each do |journey_pattern|
         journey_pattern.route_id = route.id
+        # TODO: For the moment, a Route isn't valid when one of the Journey Pattern is not valid
         if journey_pattern.valid?
           referential_inserter.journey_patterns << journey_pattern
           journey_pattern.journey_pattern_stop_points.each do |journey_pattern_stop_point|
@@ -418,7 +425,7 @@ class Import::NetexGeneric < Import::Base
 
           cache_route_journey_patterns(route, journey_pattern)
         else
-          Rails.logger.debug "Invalid JourneyPattern: #{journey_pattern.errors.inspect}"
+          Rails.logger.debug { "Invalid JourneyPattern: #{journey_pattern.errors.inspect}" }
           create_message :journey_pattern_invalid
         end
       end
@@ -473,7 +480,7 @@ class Import::NetexGeneric < Import::Base
       end
 
       def chouette_route
-        chouette_line.routes.build(route_attributes).tap do |chouette_route|
+        @chouette_route ||= chouette_line.routes.build(route_attributes).tap do |chouette_route|
           chouette_route.journey_patterns = chouette_journey_patterns
         end
       end
@@ -574,7 +581,7 @@ class Import::NetexGeneric < Import::Base
       def stop_points
         complete_scheduled_stop_points.map do |scheduled_stop_point_id|
           stop_point_for_scheduled_stop_point_id scheduled_stop_point_id
-        end
+        end.compact
       end
 
       def add_error(message_key)
@@ -586,6 +593,7 @@ class Import::NetexGeneric < Import::Base
       end
 
       def valid?
+        chouette_route
         errors.empty?
       end
     end
@@ -795,10 +803,19 @@ class Import::NetexGeneric < Import::Base
       each_day_type_with_assignements_and_periods do |day_type, day_type_assignments, operating_periods|
 
         decorator = Decorator.new(day_type, day_type_assignments, operating_periods)
-        decorator.errors.each { |error| create_message error } unless decorator.valid?
+
+        unless decorator.valid?
+          decorator.errors.each { |error| create_message error }
+          Rails.logger.debug { "Errors found by Decorator for #{[day_type, day_type_assignments, operating_periods].inspect}: #{decorator.errors.inspect}" }
+
+          next
+        end
 
         time_table = decorator.time_table
-        next unless time_table&.valid?(:inserter)
+        unless time_table&.valid?(:inserter)
+          Rails.logger.debug { "Invalid TimeTable: #{time_table.errors.inspect}" }
+          next
+        end
 
         save(time_table, referential_inserter)
 
@@ -843,6 +860,7 @@ class Import::NetexGeneric < Import::Base
       attr_reader :day_type_assignments, :operating_periods
 
       def valid?
+        time_table
         errors.empty?
       end
 
@@ -914,12 +932,14 @@ class Import::NetexGeneric < Import::Base
 
         unless decorator.valid?
           decorator.errors.each { |error| create_message error }
+          Rails.logger.debug { "Errors found by Decorator for #{service_journey.inspect}: #{decorator.errors.inspect}" }
 
           next
         end
 
         vehicle_journey = decorator.chouette_vehicle_journey
         unless vehicle_journey.valid?(:inserter)
+          Rails.logger.debug { "Invalid Vehicle Journey: #{vehicle_journey.errors.inspect}" }
           create_message :vehicle_journey_invalid
 
           next
@@ -956,6 +976,7 @@ class Import::NetexGeneric < Import::Base
       attr_reader :day_types, :index_route_journey_patterns, :index_time_tables
 
       def valid?
+        chouette_vehicle_journey
         errors.empty?
       end
 
@@ -965,19 +986,24 @@ class Import::NetexGeneric < Import::Base
 
       def route_id
         @route_id ||= begin
-          route_id = index_route_journey_patterns[netex_journey_pattern_ref][:route_id]
+          route_id = route_journey_pattern(:route_id)
           errors << :route_not_found unless route_id
           route_id
         end
       end
 
       def netex_journey_pattern_ref
-        @journey_pattern_ref ||= journey_pattern_ref&.ref
+        journey_pattern_ref&.ref
+      end
+
+      def route_journey_pattern(attribute)
+        @route_journey_pattern ||= index_route_journey_patterns[netex_journey_pattern_ref]
+        @route_journey_pattern[attribute] if @route_journey_pattern
       end
 
       def journey_pattern_id
         @journey_pattern_id ||= begin
-          journey_pattern_id = index_route_journey_patterns[netex_journey_pattern_ref][:journey_pattern_id]
+          journey_pattern_id = route_journey_pattern(:journey_pattern_id)
           errors << :journey_pattern_not_found unless journey_pattern_id
           journey_pattern_id
         end
@@ -999,7 +1025,7 @@ class Import::NetexGeneric < Import::Base
       end
 
       def chouette_stop_point_ids
-        @chouette_stop_point_ids ||= index_route_journey_patterns.dig(netex_journey_pattern_ref, :stop_point_ids)
+        @chouette_stop_point_ids ||= (route_journey_pattern(:stop_point_ids) || [])
       end
 
       def vehicle_journey_at_stops
@@ -1023,7 +1049,7 @@ class Import::NetexGeneric < Import::Base
       end
 
       def vehicle_journey_time_table_relationships
-        [].tap do |vehicle_journey_time_tables|
+        @vehicle_journey_time_table_relationships ||= [].tap do |vehicle_journey_time_tables|
           day_types.map do |day_type|
             time_table_id =  index_time_tables[day_type.id]
             if time_table_id

@@ -775,7 +775,6 @@ ActiveRecord::Schema.define(version: 2023_12_21_174101) do
     t.string "transport_mode"
     t.string "registration_number"
     t.string "comment"
-    t.boolean "mobility_restricted_suitability"
     t.boolean "flexible_service"
     t.string "url"
     t.string "color", limit: 6

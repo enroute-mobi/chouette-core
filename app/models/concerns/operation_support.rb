@@ -1,9 +1,10 @@
+# frozen_string_literal: true
+
 module OperationSupport
   extend ActiveSupport::Concern
 
   included do |into|
     into.extend Enumerize
-    into.include ProfilingSupport
 
     enumerize :status, in: %w[new pending successful failed running canceled], default: :new
     scope :successful, ->{ where status: :successful }

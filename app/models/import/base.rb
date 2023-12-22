@@ -3,7 +3,6 @@ class Import::Base < ApplicationModel
   include OptionsSupport
   include NotifiableSupport
   include PurgeableResource
-  include ProfilingSupport
 
   attr_accessor :code_space
   after_initialize :initialize_space_code

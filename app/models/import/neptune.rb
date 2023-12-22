@@ -336,78 +336,72 @@ class Import::Neptune < Import::Base
   end
 
   def import_routes_in_line(line, source_routes, line_desc)
-    profile_tag :import_routes_in_line do
-      source_routes = make_enum source_routes
+    source_routes = make_enum source_routes
 
-      source_routes.each do |source_route|
-        published_name = source_route[:published_name] || source_route[:name]
-        route = line.routes.build do |r|
-          r.published_name = published_name
-          r.name = source_route[:name]
-          r.wayback = route_wayback_mapping source_route[:route_extension][:way_back]
-          r.metadata = { creator_username: source_route[:creator_id], created_at: source_route[:creation_time] }
-          r.opposite_route_id = @opposite_route_id.delete source_route[:object_id]
-        end
-
-        add_stop_points_to_route(route, source_route[:pt_link_id], line_desc[:pt_link], source_route[:object_id])
-        save_model route
-
-        if source_route[:way_back_route_id].present? && !route.opposite_route_id
-          @opposite_route_id[source_route[:way_back_route_id]] = route.id
-        end
-        @routes[source_route[:object_id]] = route
+    source_routes.each do |source_route|
+      published_name = source_route[:published_name] || source_route[:name]
+      route = line.routes.build do |r|
+        r.published_name = published_name
+        r.name = source_route[:name]
+        r.wayback = route_wayback_mapping source_route[:route_extension][:way_back]
+        r.metadata = { creator_username: source_route[:creator_id], created_at: source_route[:creation_time] }
+        r.opposite_route_id = @opposite_route_id.delete source_route[:object_id]
       end
+
+      add_stop_points_to_route(route, source_route[:pt_link_id], line_desc[:pt_link], source_route[:object_id])
+      save_model route
+
+      if source_route[:way_back_route_id].present? && !route.opposite_route_id
+        @opposite_route_id[source_route[:way_back_route_id]] = route.id
+      end
+      @routes[source_route[:object_id]] = route
     end
   end
 
   def import_journey_patterns_in_line(line, source_journey_patterns)
-    profile_tag :import_journey_patterns_in_line do
-      source_journey_patterns = make_enum source_journey_patterns
+    source_journey_patterns = make_enum source_journey_patterns
 
-      source_journey_patterns.each do |source_journey_pattern|
-        route = @routes[source_journey_pattern[:route_id]]
-        journey_pattern = route.journey_patterns.build do |j|
-          j.published_name = source_journey_pattern[:published_name]
-          j.registration_number = source_journey_pattern[:registration].try(:[], :registration_number)
-          j.name = source_journey_pattern[:name]
-          j.metadata = { creator_username: source_journey_pattern[:creator_id], created_at: source_journey_pattern[:creation_time] }
-        end
-
-        add_stop_points_to_journey_pattern(journey_pattern, source_journey_pattern[:stop_point_list], source_journey_pattern[:route_id])
-        save_model journey_pattern
-        @journey_patterns[source_journey_pattern[:object_id]] = journey_pattern
+    source_journey_patterns.each do |source_journey_pattern|
+      route = @routes[source_journey_pattern[:route_id]]
+      journey_pattern = route.journey_patterns.build do |j|
+        j.published_name = source_journey_pattern[:published_name]
+        j.registration_number = source_journey_pattern[:registration].try(:[], :registration_number)
+        j.name = source_journey_pattern[:name]
+        j.metadata = { creator_username: source_journey_pattern[:creator_id], created_at: source_journey_pattern[:creation_time] }
       end
+
+      add_stop_points_to_journey_pattern(journey_pattern, source_journey_pattern[:stop_point_list], source_journey_pattern[:route_id])
+      save_model journey_pattern
+      @journey_patterns[source_journey_pattern[:object_id]] = journey_pattern
     end
   end
 
   def import_vehicle_journeys_in_line(line, source_vehicle_journeys)
-    profile_tag :import_vehicle_journeys_in_line do
-      source_vehicle_journeys = make_enum source_vehicle_journeys
+    source_vehicle_journeys = make_enum source_vehicle_journeys
 
-      source_vehicle_journeys.each do |source_vehicle_journey|
-        if source_vehicle_journey[:journey_pattern_id]
-          journey_pattern = @journey_patterns[source_vehicle_journey[:journey_pattern_id]]
-        else
-          journey_pattern = @routes[source_vehicle_journey[:route_id]].journey_patterns.last
-        end
-        vehicle_journey = journey_pattern.vehicle_journeys.build do |v|
-          v.published_journey_identifier = source_vehicle_journey[:number]
-          if source_vehicle_journey[:number] =~ /\A[0-9]+\z/
-            v.number = source_vehicle_journey[:number].to_i
-          end
-          v.published_journey_name = source_vehicle_journey[:published_journey_name]
-          v.route = journey_pattern.route
-          v.metadata = { creator_username: source_vehicle_journey[:creator_id], created_at: source_vehicle_journey[:creation_time] }
-          v.transport_mode, _ = transport_mode_name_mapping(source_vehicle_journey[:transport_mode_name])
-          v.company = companies.find_by registration_number: source_vehicle_journey[:operator_id]
-          v.time_table_ids = @time_tables.delete(source_vehicle_journey[:object_id])
-
-          v.codes.build code_space: code_space, value: source_vehicle_journey[:object_id]
-        end
-        add_stop_points_to_vehicle_journey(vehicle_journey, source_vehicle_journey[:vehicle_journey_at_stop], source_vehicle_journey[:route_id])
-
-        save_model vehicle_journey
+    source_vehicle_journeys.each do |source_vehicle_journey|
+      if source_vehicle_journey[:journey_pattern_id]
+        journey_pattern = @journey_patterns[source_vehicle_journey[:journey_pattern_id]]
+      else
+        journey_pattern = @routes[source_vehicle_journey[:route_id]].journey_patterns.last
       end
+      vehicle_journey = journey_pattern.vehicle_journeys.build do |v|
+        v.published_journey_identifier = source_vehicle_journey[:number]
+        if source_vehicle_journey[:number] =~ /\A[0-9]+\z/
+          v.number = source_vehicle_journey[:number].to_i
+        end
+        v.published_journey_name = source_vehicle_journey[:published_journey_name]
+        v.route = journey_pattern.route
+        v.metadata = { creator_username: source_vehicle_journey[:creator_id], created_at: source_vehicle_journey[:creation_time] }
+        v.transport_mode, _ = transport_mode_name_mapping(source_vehicle_journey[:transport_mode_name])
+        v.company = companies.find_by registration_number: source_vehicle_journey[:operator_id]
+        v.time_table_ids = @time_tables.delete(source_vehicle_journey[:object_id])
+
+        v.codes.build code_space: code_space, value: source_vehicle_journey[:object_id]
+      end
+      add_stop_points_to_vehicle_journey(vehicle_journey, source_vehicle_journey[:vehicle_journey_at_stop], source_vehicle_journey[:route_id])
+
+      save_model vehicle_journey
     end
   end
 

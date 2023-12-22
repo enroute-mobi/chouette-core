@@ -1,47 +1,13 @@
+# frozen_string_literal: true
+
 module LocalImportSupport
   extend ActiveSupport::Concern
 
   included do |_into|
     include ImportResourcesSupport
-    after_commit :import_async, on: :create, unless: :profile?
+    after_commit :import_async, on: :create
 
     delegate :line_referential, :stop_area_referential, to: :workbench
-  end
-
-  module ClassMethods
-    def profile(filepath, profile_options = {})
-      import = new(creator: 'Profiler', workbench: Workbench.first)
-      import.file = File.open(filepath)
-      import.profile = true
-      import.profile_options = profile_options
-      import.name = "Profile #{File.basename(filepath)}"
-      import.save!
-      import.reload
-      if profile_options[:operations]
-        if profile_options[:reuse_referential]
-          r = if profile_options[:reuse_referential].is_a?(Referential)
-                profile_options[:reuse_referential]
-              else
-                Referential.where(name: import.referential_name).last
-              end
-          import.referential = r
-          r.switch
-        else
-          import.create_referential
-        end
-      end
-      import.save!
-      if profile_options[:operations]
-        import.profile_tag 'import' do
-          ActiveRecord::Base.cache do
-            import.import_resources(*profile_options[:operations])
-          end
-        end
-      else
-        import.import
-      end
-      import
-    end
   end
 
   def import_async
@@ -121,7 +87,6 @@ module LocalImportSupport
         ready: false
       )
 
-      Referential.find(self.referential.overlapped_referential_ids).each(&:archive!) if profile?
       begin
         self.referential.save!
       rescue ActiveRecord::RecordInvalid
@@ -203,55 +168,53 @@ module LocalImportSupport
   end
 
   def save_model(model, filename: nil, line_number: nil, column_number: nil, resource: nil)
-    profile_tag "save_model.#{model.class.name}" do
-      return unless model.changed?
+    return unless model.changed?
 
-      if resource
-        filename ||= "#{resource.name}.txt"
-        line_number ||= resource.rows_count
-        column_number ||= 0
-      end
+    if resource
+      filename ||= "#{resource.name}.txt"
+      line_number ||= resource.rows_count
+      column_number ||= 0
+    end
 
-      unless model.save
-        Rails.logger.error "Can't save #{model.class.name} : #{model.errors.inspect}"
+    unless model.save
+      Rails.logger.error "Can't save #{model.class.name} : #{model.errors.inspect}"
 
-        # if the model cannot be saved, we still ensure we store a consistent checksum
-        model.try(:update_checksum_without_callbacks!) if model.persisted?
+      # if the model cannot be saved, we still ensure we store a consistent checksum
+      model.try(:update_checksum_without_callbacks!) if model.persisted?
 
-        model.errors.details.each do |key, messages|
-          messages.uniq.each do |message|
-            message.each do |criticity, error|
-              next unless Import::Message.criticity.values.include?(criticity.to_s)
+      model.errors.details.each do |key, messages|
+        messages.uniq.each do |message|
+          message.each do |criticity, error|
+            next unless Import::Message.criticity.values.include?(criticity.to_s)
 
-              create_message(
-                {
-                  criticity: criticity,
-                  message_key: error,
-                  message_attributes: {
-                    test_id: key,
-                    object_attribute: key,
-                    source_attribute: key
-                  },
-                  resource_attributes: {
-                    filename: filename,
-                    line_number: line_number,
-                    column_number: column_number
-                  }
+            create_message(
+              {
+                criticity: criticity,
+                message_key: error,
+                message_attributes: {
+                  test_id: key,
+                  object_attribute: key,
+                  source_attribute: key
                 },
-                resource: resource,
-                commit: true
-              )
-            end
+                resource_attributes: {
+                  filename: filename,
+                  line_number: line_number,
+                  column_number: column_number
+                }
+              },
+              resource: resource,
+              commit: true
+            )
           end
         end
-        @models_in_error ||= Hash.new { |hash, key| hash[key] = [] }
-        @models_in_error[model.class.name] << model_key(model)
-        @status = 'failed'
-        return
       end
-
-      Rails.logger.debug "Created #{model.inspect}"
+      @models_in_error ||= Hash.new { |hash, key| hash[key] = [] }
+      @models_in_error[model.class.name] << model_key(model)
+      @status = 'failed'
+      return
     end
+
+    Rails.logger.debug "Created #{model.inspect}"
   end
 
   def check_parent_is_valid_or_create_message(klass, key, resource)

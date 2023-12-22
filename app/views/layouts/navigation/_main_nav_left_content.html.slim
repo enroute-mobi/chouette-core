@@ -103,14 +103,10 @@
     = main_nav_menu_item 'layouts.navbar.configuration'.t do
       - if policy(workbench).edit?
         .subtitle= 'layouts.navbar.workbench.subtitle'.t
-        = link_to [:edit, workbench], class: 'list-group-item level-2' do
-          span = 'layouts.navbar.workbench.edit_control_sets'.t
         = link_to workbench_notification_rules_path(workbench), class: 'list-group-item level-2' do
           span = 'layouts.navbar.workbench.notification_rules'.t
       - if policy(workbench.workgroup).edit?
         .subtitle= 'layouts.navbar.workgroup.subtitle'.t
-        = link_to [:edit_controls, workbench.workgroup], class: 'list-group-item level-2' do
-          span = 'layouts.navbar.workgroup.edit_control_sets'.t
         = link_to [:edit_aggregate, workbench.workgroup], class: 'list-group-item level-2' do
           span = 'layouts.navbar.workgroup.edit_aggregate'.t
         = link_to [:edit_merge, workbench.workgroup], class: 'list-group-item level-2' do

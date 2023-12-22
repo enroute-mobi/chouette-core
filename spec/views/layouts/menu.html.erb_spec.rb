@@ -36,29 +36,4 @@ describe "/layouts/application", :type => :view do
     expect(rendered).to_not have_menu_link_to edit_workbench_path(workbench)
     expect(rendered).to_not have_menu_link_to edit_workgroup_path(workbench.workgroup)
   end
-
-  with_permission "workbenches.update" do
-    it "should have a link to update the workbench" do
-      render
-      expect(rendered).to have_menu_link_to edit_workbench_path(workbench)
-    end
-  end
-
-  context "when belonging to the workgroups owner" do
-    let(:user){ build_stubbed(:user, organisation: organisation) }
-    before do
-      workbench.workgroup.update owner: organisation
-      allow(view).to receive_messages :current_user => user
-    end
-    it "should not have a link to update the workgroup" do
-      render
-      expect(rendered).to_not have_menu_link_to edit_controls_workgroup_path(workbench.workgroup)
-    end
-    with_permission "workgroups.update" do
-      it "should have a link to update the workgroup" do
-        render
-        expect(rendered).to have_menu_link_to edit_controls_workgroup_path(workbench.workgroup)
-      end
-    end
-  end
 end

@@ -1014,6 +1014,7 @@ RSpec.describe Import::NetexGeneric do
           <Route id="route-1">
             <Name>Route Sample</Name>
             <LineRef ref="line-1"/>
+            <DirectionType>outbound</DirectionType>
           </Route>
 
           <ServiceJourneyPattern id="journeypattern-1">

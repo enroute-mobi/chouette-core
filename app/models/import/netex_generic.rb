@@ -486,19 +486,24 @@ class Import::NetexGeneric < Import::Base
 
       def route_attributes
         {
-          name: name,
+          name: chouette_name,
           wayback: wayback,
           published_name: direction_name,
           stop_points: stop_points
         }
       end
 
+      def chouette_name
+        name || "Default"
+      end
+
       def wayback
         if Chouette::Route.wayback.values.include?(direction_type)
           direction_type
         else
-          add_error :direction_type_not_found
-          nil
+          # Should be a warning
+          # add_error :direction_type_not_found
+          :outbound
         end
       end
 
@@ -607,10 +612,14 @@ class Import::NetexGeneric < Import::Base
       def journey_pattern_attributes
         {
           registration_number: id,
-          name: name,
+          name: chouette_name,
           published_name: published_name,
           journey_pattern_stop_points: journey_pattern_stop_points
         }
+      end
+
+      def chouette_name
+        name || "Default"
       end
 
       def published_name
@@ -876,14 +885,12 @@ class Import::NetexGeneric < Import::Base
         end
       end
 
-      def time_table
-        return nil if name.blank?
+      def chouette_name
+        name || "Default"
+      end
 
-        @time_table ||= Chouette::TimeTable.new(comment: name).apply(memory_timetable).tap do |time_table|
-          now = Time.now
-          time_table.created_at = now
-          time_table.updated_at = now
-        end
+      def time_table
+        @time_table ||= Chouette::TimeTable.new(comment: chouette_name).apply(memory_timetable)
       end
 
       def memory_timetable

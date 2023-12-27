@@ -120,10 +120,6 @@ class Publication < ApplicationModel
     send("#{new_status}!")
   end
 
-  def export_output
-    export&.file
-  end
-
   def previous
     publication_setup.publications.order(created_at: :desc).where.not(id: self).first
   end

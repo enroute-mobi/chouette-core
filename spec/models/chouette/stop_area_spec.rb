@@ -31,7 +31,7 @@ RSpec.describe Chouette::StopArea do
 
       context "when the StopArea has no defined position" do
         before { stop_area.latitude = stop_area.longitude = nil }
-        it { is_expected.to eq([farthest_child, nearest_child]) }
+        it { is_expected.to match_array([farthest_child, nearest_child]) }
       end
 
       context "when one of the children has no position" do

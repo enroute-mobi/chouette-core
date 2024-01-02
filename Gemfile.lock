@@ -376,7 +376,7 @@ GEM
     graphiql-rails (1.9.0)
       railties
       sprockets-rails
-    graphql (2.2.1)
+    graphql (2.2.3)
       racc (~> 1.4)
     gretel (4.6.0)
       actionview (>= 5.1, < 7.2)
@@ -544,7 +544,7 @@ GEM
     os (1.1.4)
     ox (2.14.17)
     parallel (1.24.0)
-    parallel_tests (4.3.0)
+    parallel_tests (4.4.0)
       parallel
     parser (3.2.2.4)
       ast (~> 2.4.1)
@@ -734,7 +734,7 @@ GEM
       unicode-display_width (>= 2.4.0, < 3.0)
     rubocop-ast (1.30.0)
       parser (>= 3.2.1.0)
-    rubocop-rails (2.23.0)
+    rubocop-rails (2.23.1)
       activesupport (>= 4.2.0)
       rack (>= 1.1)
       rubocop (>= 1.33.0, < 2.0)

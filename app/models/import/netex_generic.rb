@@ -88,7 +88,7 @@ class Import::NetexGeneric < Import::Base
     # Create a global error message
     messages.build criticity: :error, message_key: 'referential_creation_overlapping_existing_referential'
     # Save overlapping referentials for user display
-    # self.overlapping_referential_ids = referential_builder.overlapping_referential_ids
+    self.overlapping_referential_ids = referential_builder.overlapping_referential_ids
   end
 
   def referential_metadata

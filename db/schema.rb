@@ -788,6 +788,7 @@ ActiveRecord::Schema.define(version: 2023_12_21_174101) do
     t.string "notification_target"
     t.datetime "notified_recipients_at"
     t.bigint "user_id"
+    t.bigint "overlapping_referential_ids", default: [], array: true
     t.index ["referential_id"], name: "index_imports_on_referential_id"
     t.index ["workbench_id"], name: "index_imports_on_workbench_id"
   end

@@ -106,6 +106,10 @@ class Import::Workbench < Import::Base
     referentials.each(&:archive!)
   end
 
+  def overlapping_referentials
+    children.flat_map(&:overlapping_referentials)
+  end
+
   # Compute children status
   def children_status
     if children.unfinished.count > 0

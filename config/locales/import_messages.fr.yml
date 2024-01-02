@@ -11,7 +11,7 @@ fr:
     multiple_companies_in_file: "Le fichier %{source_filename} contient plusieurs transporteurs, les lignes importées n'ont donc pas étées associées."
     referential_creation_missing_lines_in_files: "Le référentiel %{referential_name} n'a pas pu être créé car aucune donnée d'offre n'est présente dans le fichier"
     referential_creation_missing_lines: "Le référentiel %{referential_name} n'a pas pu être créé car aucune ligne n'appartient à l'organisation"
-    referential_creation_overlapping_existing_referential: "Le référentiel %{referential_name} n'a pas pu être créé car un référentiel existe déjà sur les mêmes périodes et lignes: <a href='%{overlapped_url}'>%{overlapped_name}</a>"
+    referential_creation_overlapping_existing_referential: "Vous essayez d’importer un fichier qui chevauche des Jeux de Données en édition (consulter la section Chevauchement)."
     referential_creation: "Le référentiel %{referential_name} n'a pas pu être créé."
     trip_with_inconsistent_stop_times: La course %{trip_id} a des horaires incohérents
     trip_with_single_stop_time: La course %{trip_id} n'a qu'un seul arrêt

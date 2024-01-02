@@ -42,6 +42,8 @@ fr:
       parent: Parent
       status: État
       referential: Jeu de données
+      overlapping: Chevauchement
+      overlapping_tips: vous pouvez archiver ou supprimer ces Jeux de Données avant de relancer le même import
       netex:
         table_title: "État des fichiers analysés"
         table_explanation: "Dans le cas ou le(s) fichiers calendriers.xml et/ou commun.xml sont dans un état non importé, alors tous les fichiers lignes sont automatiquement dans un état non traité."
@@ -118,6 +120,7 @@ fr:
         ignore_end_chars: "ignorer les n derniers caractères"
         referential: Jeu de données
         filename: Nom de l'archive
+        overlapping_referentials: Jeux de données
       import:
         <<: *attrs
         base:

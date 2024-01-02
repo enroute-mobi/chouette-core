@@ -11,7 +11,7 @@ en:
     multiple_companies_in_file: "The file %{source_filename} contains multiple companies, imported lines have therefore not be associated."
     referential_creation_missing_lines_in_files: "Le référentiel %{referential_name} has not been created because the file contains no offer data"
     referential_creation_missing_lines: "The referential %{referential_name} has not been created because no line has been found in the organization"
-    referential_creation_overlapping_existing_referential: "The referential %{referential_name} has not been created because another referential already exists for the same periods and lines: <a href='%{overlapped_url}'>%{overlapped_name}</a>"
+    referential_creation_overlapping_existing_referential: "You are trying to import a file that overlaps DataSets in edition (see Overlapping section for details)."
     referential_creation: "The referential %{referential_name} has not been created because another referential with the same lines and periods already exists"
     trip_with_inconsistent_stop_times: The trip %{trip_id} has inconsistent stop times
     trip_with_single_stop_time: The trip %{trip_id} has only one stop

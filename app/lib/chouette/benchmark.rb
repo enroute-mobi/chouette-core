@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Chouette
   module Benchmark
 
@@ -186,6 +188,13 @@ module Chouette
 
     def self.current_usage
       STATM_FOUND ? (File.read(STATM_PATH).split(' ')[1].to_i * KERNEL_PAGE_SIZE) / 1024 / 1024.0 : 0
+    end
+
+    MAPS_PATH  = "/proc/#{Process.pid}/maps"
+    MAPS_FOUND = File.exist?(MAPS_PATH)
+
+    def self.current_map_usage
+      MAPS_FOUND ? File.read(MAPS_PATH).count($RS).to_i : 0
     end
 
   end

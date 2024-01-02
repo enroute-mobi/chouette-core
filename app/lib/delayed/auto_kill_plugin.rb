@@ -6,7 +6,8 @@ module Delayed
     callbacks do |lifecycle|
       lifecycle.after(:perform) do |worker, _|
         memory_used = Chouette::Benchmark.current_usage
-        worker.say "Job done, using #{memory_used.to_i}M"
+        memory_map_used = Chouette::Benchmark.current_map_usage
+        worker.say "Job done, using #{memory_used.to_i}M, #{memory_map_used} maps"
 
         if memory_used > 1024
           worker.say 'Killing myself'

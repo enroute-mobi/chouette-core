@@ -1,5 +1,3 @@
-- javascript_additional_packs 'stop_areas/form'
-
 = simple_form_for [@workbench, :stop_area_referential, @stop_area], html: {class: 'form-horizontal', id: 'stop_area_form'}, wrapper: :horizontal_form do |f|
   .row
     .col-lg-12
@@ -28,27 +26,26 @@
   .separator.section_separator
 
   .row
-    .col-lg-12
+    .col-lg-12 x-data="{ kind: '#{@stop_area.kind}' || 'commercial'}"
       h2.mb-lg= t("stop_areas.form.sections.hierarchy")
         // as: :radio_buttons
       - if has_feature?("route_stop_areas_all_types")
         = f.input :kind,
             as: :radio_buttons,
             checked: @stop_area.new_record? ? :commercial : @stop_area.kind,
-            input_html: { disabled: !@stop_area.new_record? },
+            input_html: { disabled: !@stop_area.new_record?, 'x-on:change': 'kind = $event.target.value' },
             include_blank: false,
             item_wrapper_class: 'radio-inline',
             wrapper: :horizontal_form,
             disabled: !@stop_area.new_record?
         - unless @stop_area.new_record?
             = f.input :kind, as: :hidden, input_html: { value: @stop_area.kind }
-        .slave data-master="[name='stop_area[kind]']" data-value="commercial"
       - else
         = f.input :kind, as: :hidden, input_html: { value: :commercial }
       - %i(non_commercial commercial).each do |kind|
-        .slave data-master="[name='stop_area[kind]']" data-value=kind
-          = f.input :area_type, as: :select, input_html: {id: kind, disabled: !@stop_area.new_record?}, collection: area_type_options(kind), include_blank: false, disabled: !@stop_area.new_record?
-      = f.input :parent_id, as: :select, collection: [f.object.parent_id], input_html: { data: { select2ed_placeholder: Chouette::StopArea.tmf('parent'), select2ed_allow_clear: 'true', select2_ajax: 'true', url: autocomplete_workbench_stop_area_referential_stop_areas_path(@workbench), initvalue: {id: f.object.parent_id, text: f.object.parent.try(:formatted_selection_details)}}}
+          .kind x-show="kind === '#{kind}'"
+            = f.input :area_type, as: :select, input_html: { id: kind, disabled: !@stop_area.new_record?, 'x-bind:disabled': "kind != '#{kind}'" }, collection: area_type_options(kind), include_blank: false, disabled: !@stop_area.new_record?
+      = f.input :parent_id, as: :select, collection: [f.object.parent_id], input_html: {'x-bind:disabled': "kind === 'non_commercial' || #{@stop_area.kind == 'non_commercial' }", data: { select2ed_placeholder: Chouette::StopArea.tmf('parent'), select2ed_allow_clear: 'true', select2_ajax: 'true', url: autocomplete_workbench_stop_area_referential_stop_areas_path(@workbench), initvalue: {id: f.object.parent_id, text: f.object.parent.try(:formatted_selection_details)}}}
 
   .separator.section_separator
 

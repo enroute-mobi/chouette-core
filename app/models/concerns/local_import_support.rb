@@ -123,14 +123,13 @@ module LocalImportSupport
     Chouette::Benchmark.measure 'create_referential' do
       self.referential ||= referential_builder.referential
 
-      begin
-        self.referential.save!
-      rescue ActiveRecord::RecordInvalid
-        # No double capture for Chouette::Safe
-        Rails.logger.error "Unable to create referential: #{self.referential.errors.messages}"
-        raise
-      end
       main_resource.update referential: referential if main_resource
+
+      return referential if referential_builder.valid?
+
+      # Create a global error message
+      self.messages.create criticity: :error, message_key: 'referential_creation_overlapping_existing_referential'
+      self.overlapping_referential_ids = referential_builder.overlapping_referential_ids
     end
   end
 

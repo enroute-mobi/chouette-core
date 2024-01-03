@@ -78,7 +78,7 @@ module LocalImportSupport
   end
 
   def referential_builder
-    ReferentialBuilder.new(workbench, name: referential_name, metadata: referential_metadata)
+    @referential_builder ||= ReferentialBuilder.new(workbench, name: referential_name, metadata: referential_metadata)
   end
 
   # Create a Referential with given name and medata

@@ -65,15 +65,6 @@ en:
         Hello %{email},<br/><br/>
         This message is an invit to use the Chouette app, you can access it by clicking on the following link :
       ignore: If you don't want to access it, you can ignore the message. Your account won't be created until you click the link above and you define a password.
-    compliance_check_set_mailer:
-      finished:
-        button: See compliance check set
-        subject: Compliance Check set is over
-        body: |
-          The compliance check set is done.<br/>
-          You started the validation on %{ref_name}.<br/>
-          The operation is now over.<br/>
-          The operation status is %{status}<br/><br/>
     aggregate_mailer:
       finished:
         button: See Aggregation

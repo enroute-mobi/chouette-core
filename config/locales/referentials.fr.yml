@@ -34,11 +34,6 @@ fr:
       duplicated:
         title: 'Dupliquer un jeu de données'
       submit: "Valider"
-    select_compliance_control_set:
-      title: "Sélection du jeu de contrôles"
-      select:
-          empty_list: Vous devez avoir un jeu de contrôle pour valider ce jeu de données
-          no_item_selected: Vous devez sélectionner un jeu de contrôle de la liste
     actions:
       new: "Créer un jeu de données"
       destroy_confirm: "Etes vous sûr de vouloir supprimer ce jeu de données ?"
@@ -118,7 +113,6 @@ fr:
         itls: "ITL"
         imports: "Imports"
         exports: "Exports"
-        compliance_checks: "Validations"
         data_format_restrictions: "Format d'export privilégié"
         data_format: "Format d'export privilégié"
         routing_constraint_zone: Zone de contrainte
@@ -161,7 +155,6 @@ fr:
       deleted: "Les jeux de données ont été supprimés"
       create: La création du jeu de données est en cours, veuillez patienter. Actualiser votre page si vous voulez voir l'avancement de votre traitement.
       duplicate: "La duplication est en cours, veuillez patienter. Actualiser votre page si vous voulez voir l'avancement de votre traitement."
-      validate: "La validation est en cours, veuillez patienter. Actualiser votre page si vous voulez voir l'avancement de votre traitement."
     referential:
       archived: "Le jeu de données a été correctement archivé"
       unarchived: "Le jeu de données a été correctement desarchivé"

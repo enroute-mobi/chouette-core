@@ -33,7 +33,6 @@ class Workbench < ApplicationModel
   has_many :exports, class_name: 'Export::Base', dependent: :destroy
   has_many :sources, dependent: :destroy
   has_many :workbench_imports, class_name: 'Import::Workbench', dependent: :destroy
-  has_many :compliance_check_sets, dependent: :destroy
   has_many :merges, dependent: :destroy
   has_many :api_keys, dependent: :destroy
   has_many :source_retrievals, class_name: "Source::Retrieval"
@@ -136,15 +135,6 @@ class Workbench < ApplicationModel
     # INNER JOIN "public"."workbenches" ON "public"."calendars"."workbench_id" = "public"."workbenches"."id"
     # do not match
     workgroup.calendars.where(workbench_id: id).or(workgroup.calendars.where(shared: true))
-  end
-
-  def compliance_control_set key
-    id = (owner_compliance_control_set_ids || {})[key.to_s]
-    ComplianceControlSet.where(id: id).last if id.present?
-  end
-
-  def compliance_control_set_ids=(compliance_control_set_ids)
-    self.owner_compliance_control_set_ids = (owner_compliance_control_set_ids || {}).merge compliance_control_set_ids
   end
 
   def has_restriction?(restriction)

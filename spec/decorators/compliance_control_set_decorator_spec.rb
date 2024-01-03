@@ -1,3 +1,0 @@
-
-describe ComplianceControlSetDecorator do
-end

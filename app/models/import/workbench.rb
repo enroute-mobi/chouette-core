@@ -16,8 +16,6 @@ class Import::Workbench < Import::Base
   option :stop_area_provider_id, collection: ->(){ candidate_stop_area_providers.order(:name) }
   option :line_provider_id, collection: ->(){ candidate_line_providers.order(:name) }
 
-  has_many :compliance_check_sets, -> { where(parent_type: "Import::Workbench") }, foreign_key: :parent_id, dependent: :destroy
-
   has_many :children_processings, through: :children, source: :processings
   has_many :control_list_runs, through: :children_processings, source: :processed, source_type: 'Control::List::Run'
   has_many :macro_list_runs, through: :children_processings, source: :processed, source_type: 'Macro::List::Run'
@@ -123,19 +121,6 @@ class Import::Workbench < Import::Base
     end
   end
 
-  # Compute compliance_check_sets status
-  def compliance_check_sets_status
-    if compliance_check_sets.unfinished.count > 0
-      'running'
-    elsif compliance_check_sets.where(status: self.class.failed_statuses).count > 0
-      'failed'
-    elsif compliance_check_sets.where(status: "warning").count > 0
-      'warning'
-    elsif compliance_check_sets.where(status: "successful").count == compliance_check_sets.count
-      'successful'
-    end
-  end
-
   # Compute processed status (Macro::List::Run and Control::List::Run)
   def processed_status
     statuses = (control_list_runs.pluck(:user_status) + macro_list_runs.pluck(:user_status)).uniq
@@ -151,17 +136,7 @@ class Import::Workbench < Import::Base
   end
 
   def compute_new_status
-    if compliance_check_sets.present?
-      if children_status == 'running' || compliance_check_sets_status == 'running'
-        return 'running'
-      elsif children_status == 'failed' || compliance_check_sets_status == 'failed'
-        return 'failed'
-      elsif children_status == 'warning' || compliance_check_sets_status == 'warning'
-        return 'warning'
-      elsif children_status == 'successful' && compliance_check_sets_status == 'successful'
-        return 'successful'
-      end
-    elsif control_list_runs.present? || macro_list_runs.present?
+    if control_list_runs.present? || macro_list_runs.present?
       if children_status == 'running' || processed_status == 'running'
         return 'running'
       elsif children_status == 'failed' || processed_status == 'failed'

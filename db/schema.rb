@@ -172,124 +172,6 @@ ActiveRecord::Schema.define(version: 2023_12_21_174101) do
     t.index ["registration_number"], name: "companies_registration_number_key"
   end
 
-  create_table "compliance_check_blocks", force: :cascade do |t|
-    t.string "name"
-    t.hstore "condition_attributes"
-    t.bigint "compliance_check_set_id"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-    t.index ["compliance_check_set_id"], name: "index_compliance_check_blocks_on_compliance_check_set_id"
-  end
-
-  create_table "compliance_check_messages", force: :cascade do |t|
-    t.bigint "compliance_check_id"
-    t.bigint "compliance_check_resource_id"
-    t.string "message_key"
-    t.hstore "message_attributes"
-    t.hstore "resource_attributes"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-    t.string "status"
-    t.bigint "compliance_check_set_id"
-    t.index ["compliance_check_id"], name: "index_compliance_check_messages_on_compliance_check_id"
-    t.index ["compliance_check_resource_id"], name: "index_compliance_check_messages_on_compliance_check_resource_id"
-    t.index ["compliance_check_set_id"], name: "index_compliance_check_messages_on_compliance_check_set_id"
-  end
-
-  create_table "compliance_check_resources", force: :cascade do |t|
-    t.string "status"
-    t.string "name"
-    t.string "resource_type"
-    t.string "reference"
-    t.hstore "metrics"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-    t.bigint "compliance_check_set_id"
-    t.index ["compliance_check_set_id"], name: "index_compliance_check_resources_on_compliance_check_set_id"
-  end
-
-  create_table "compliance_check_sets", force: :cascade do |t|
-    t.bigint "referential_id"
-    t.bigint "compliance_control_set_id"
-    t.bigint "workbench_id"
-    t.string "status"
-    t.string "parent_type"
-    t.bigint "parent_id"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-    t.string "current_step_id"
-    t.float "current_step_progress"
-    t.string "name"
-    t.datetime "started_at"
-    t.datetime "ended_at"
-    t.datetime "notified_parent_at"
-    t.jsonb "metadata", default: {}
-    t.string "context"
-    t.string "notification_target"
-    t.datetime "notified_recipients_at"
-    t.bigint "user_id"
-    t.bigint "workgroup_id"
-    t.index ["compliance_control_set_id"], name: "index_compliance_check_sets_on_compliance_control_set_id"
-    t.index ["parent_type", "parent_id"], name: "index_compliance_check_sets_on_parent_type_and_parent_id"
-    t.index ["referential_id"], name: "index_compliance_check_sets_on_referential_id"
-    t.index ["workbench_id"], name: "index_compliance_check_sets_on_workbench_id"
-    t.index ["workgroup_id"], name: "index_compliance_check_sets_on_workgroup_id"
-  end
-
-  create_table "compliance_checks", force: :cascade do |t|
-    t.bigint "compliance_check_set_id"
-    t.bigint "compliance_check_block_id"
-    t.string "type"
-    t.json "control_attributes"
-    t.string "name"
-    t.string "code"
-    t.string "criticity"
-    t.text "comment"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-    t.string "origin_code"
-    t.string "compliance_control_name"
-    t.boolean "iev_enabled_check", default: true
-    t.index ["compliance_check_block_id"], name: "index_compliance_checks_on_compliance_check_block_id"
-    t.index ["compliance_check_set_id"], name: "index_compliance_checks_on_compliance_check_set_id"
-  end
-
-  create_table "compliance_control_blocks", force: :cascade do |t|
-    t.string "name"
-    t.hstore "condition_attributes"
-    t.bigint "compliance_control_set_id"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-    t.index ["compliance_control_set_id"], name: "index_compliance_control_blocks_on_compliance_control_set_id"
-  end
-
-  create_table "compliance_control_sets", force: :cascade do |t|
-    t.string "name"
-    t.bigint "organisation_id"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-    t.jsonb "metadata", default: {}
-    t.index ["organisation_id"], name: "index_compliance_control_sets_on_organisation_id"
-  end
-
-  create_table "compliance_controls", force: :cascade do |t|
-    t.bigint "compliance_control_set_id"
-    t.string "type"
-    t.json "control_attributes"
-    t.string "name"
-    t.string "code"
-    t.string "criticity"
-    t.text "comment"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-    t.string "origin_code"
-    t.bigint "compliance_control_block_id"
-    t.boolean "iev_enabled_check", default: true
-    t.index ["code", "compliance_control_set_id"], name: "index_compliance_controls_on_code_and_compliance_control_set_id", unique: true
-    t.index ["compliance_control_block_id"], name: "index_compliance_controls_on_compliance_control_block_id"
-    t.index ["compliance_control_set_id"], name: "index_compliance_controls_on_compliance_control_set_id"
-  end
-
   create_table "connection_links", force: :cascade do |t|
     t.bigint "departure_id"
     t.bigint "arrival_id"
@@ -1720,7 +1602,6 @@ ActiveRecord::Schema.define(version: 2023_12_21_174101) do
     t.bigint "output_id"
     t.string "objectid_format"
     t.bigint "workgroup_id"
-    t.hstore "owner_compliance_control_set_ids"
     t.string "prefix"
     t.bigint "locked_referential_to_aggregate_id"
     t.string "restrictions", default: [], array: true
@@ -1743,7 +1624,6 @@ ActiveRecord::Schema.define(version: 2023_12_21_174101) do
     t.string "export_types", default: [], array: true
     t.bigint "owner_id"
     t.bigint "output_id"
-    t.hstore "compliance_control_set_ids"
     t.time "nightly_aggregate_time", default: "2000-01-01 00:00:00"
     t.boolean "nightly_aggregate_enabled", default: false
     t.datetime "nightly_aggregated_at"
@@ -1762,19 +1642,6 @@ ActiveRecord::Schema.define(version: 2023_12_21_174101) do
   end
 
   add_foreign_key "calendars", "workbenches"
-  add_foreign_key "compliance_check_blocks", "compliance_check_sets"
-  add_foreign_key "compliance_check_messages", "compliance_check_resources"
-  add_foreign_key "compliance_check_messages", "compliance_check_sets"
-  add_foreign_key "compliance_check_messages", "compliance_checks"
-  add_foreign_key "compliance_check_resources", "compliance_check_sets"
-  add_foreign_key "compliance_check_sets", "workbenches"
-  add_foreign_key "compliance_check_sets", "workgroups"
-  add_foreign_key "compliance_checks", "compliance_check_blocks"
-  add_foreign_key "compliance_checks", "compliance_check_sets"
-  add_foreign_key "compliance_control_blocks", "compliance_control_sets"
-  add_foreign_key "compliance_control_sets", "organisations"
-  add_foreign_key "compliance_controls", "compliance_control_blocks"
-  add_foreign_key "compliance_controls", "compliance_control_sets"
   add_foreign_key "control_runs", "control_context_runs"
   add_foreign_key "controls", "control_contexts"
   add_foreign_key "custom_fields", "custom_field_groups"

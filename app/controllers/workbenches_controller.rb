@@ -34,12 +34,6 @@ class WorkbenchesController < ChouetteController
 
   private
 
-  def workbench_params
-    params
-      .require(:workbench)
-      .permit(compliance_control_set_ids: @workbench.workgroup.compliance_control_sets_by_workbench.keys)
-  end
-
   def resource
     @workbench ||= current_organisation.workbenches.find params[:id]
   end

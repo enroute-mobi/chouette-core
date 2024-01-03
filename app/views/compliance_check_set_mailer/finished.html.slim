@@ -1,4 +1,0 @@
-h2.mail-title
-  == 'mailers.hello'.t
-p== t('mailers.compliance_check_set_mailer.finished.body', ref_name: @ccset.referential.name, status: I18n.t("operation_support.statuses.#{@status}"))
-p= mailer_button(t('mailers.compliance_check_set_mailer.finished.button'), workbench_compliance_check_set_url(@ccset.workbench, @ccset))

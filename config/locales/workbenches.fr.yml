@@ -55,8 +55,6 @@ fr:
         other: "espaces de travail"
     attributes:
       workbench:
-        import_compliance_control_set_id: Jeu de données après import
-        merge_compliance_control_set_id: Jeu de Données avant intégration
         name: Nom
         organisation: Organisation
         last_merged_data: Dernière finalisation

@@ -22,7 +22,6 @@ RSpec.describe User, :type => :model do
     context "opeations that belong to user" do
       let!(:import) { create :import,  user: user}
       let!(:export) { create :export, user: user, type: 'Export::Gtfs' }
-      let!(:ccset) { create :compliance_check_set, user: user }
       let(:workbench) { create :workbench, organisation: user.organisation }
       let(:ref1) {create :referential, workbench: workbench, organisation: user.organisation}
       let(:ref2) {create :referential, workbench: workbench, organisation: user.organisation}
@@ -31,7 +30,7 @@ RSpec.describe User, :type => :model do
 
       it "should nullify their #user_id" do
         user.destroy
-        [import, export, ccset, merge, aggregate].each { |operation| expect(operation.reload.user_id).to be_nil }
+        [import, export, merge, aggregate].each { |operation| expect(operation.reload.user_id).to be_nil }
       end
     end
   end

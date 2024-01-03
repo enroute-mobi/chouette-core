@@ -41,11 +41,9 @@ fr:
       shapes: Tracés
       workbench:
         subtitle: Espace de travail
-        edit_control_sets: Jeux de Contrôle
         notification_rules: Centre de notification
       workgroup:
         subtitle: Groupe de Travail
-        edit_control_sets: Jeux de Contrôle
         edit_aggregate: Agrégation
         edit_merge: Finalisation
         edit_transport_modes: Modes de transport

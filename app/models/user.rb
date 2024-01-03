@@ -33,7 +33,6 @@ class User < ApplicationModel
   has_many :workgroups, through: :workbenches
   has_many :imports, dependent: :nullify, class_name: 'Import::Base'
   has_many :exports, dependent: :nullify, class_name: 'Export::Base'
-  has_many :compliance_check_sets, dependent: :nullify
   has_many :merges, dependent: :nullify
   has_many :aggregates, dependent: :nullify
   accepts_nested_attributes_for :organisation

@@ -47,7 +47,6 @@ class Referential < ApplicationModel
 
   has_one :user
   has_many :import_resources, class_name: 'Import::Resource', dependent: :destroy
-  has_many :compliance_check_sets, dependent: :nullify
   has_many :clean_ups, dependent: :destroy
 
   belongs_to :organisation
@@ -152,11 +151,6 @@ class Referential < ApplicationModel
       Dir.chdir path do
         Dir['**/*.rb'].each do |src|
           next if src =~ /^concerns/
-          # thanks for inconsistent naming ...
-          if src == "route_control/zdl_stop_area.rb"
-            RouteControl::ZDLStopArea
-            next
-          end
           Rails.logger.info "Loading #{src}"
           begin
             src[0..-4].classify.safe_constantize

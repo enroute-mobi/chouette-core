@@ -1,5 +1,5 @@
 class NotifiableOperationObserver < ActiveRecord::Observer
-  observe Export::Gtfs, Export::Netex, Export::NetexGeneric, Import::Workbench, Aggregate, Merge, ComplianceCheckSet
+  observe Export::Gtfs, Export::Netex, Export::NetexGeneric, Import::Workbench, Aggregate, Merge
 
   def after_update(operation)
     return unless email_sendable_for?(operation)
@@ -15,7 +15,6 @@ class NotifiableOperationObserver < ActiveRecord::Observer
   private
 
   def email_sendable_for?(operation)
-    return false if operation.is_a?(ComplianceCheckSet) && operation.context != 'manual'
     return false if operation.try(:notified_recipients_at)
 
     operation.class.finished_statuses.include?(operation.status)

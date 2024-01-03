@@ -333,31 +333,6 @@ crumb :time_table do |referential, time_table|
   parent :time_tables, referential
 end
 
-crumb :compliance_check_sets do |ccset_parent|
-  if ccset_parent.is_a?(Workbench)
-    link I18n.t('compliance_check_sets.index.title'), workbench_compliance_check_sets_path(ccset_parent)
-    parent :workbench, ccset_parent
-  else
-    link I18n.t('compliance_check_sets.index.title'), workgroup_compliance_check_sets_path(ccset_parent)
-    parent :imports_parent, ccset_parent
-  end
-end
-
-crumb :compliance_check_set do |ccset_parent, compliance_check_set|
-  link breadcrumb_name(compliance_check_set), [ccset_parent, compliance_check_set]
-  parent :compliance_check_sets, ccset_parent
-end
-
-crumb :compliance_check do |cc_set_parent, compliance_check|
-  link breadcrumb_name(compliance_check), [cc_set_parent, compliance_check.compliance_check_set, compliance_check]
-  parent :compliance_check_set_executed, cc_set_parent, compliance_check.compliance_check_set
-end
-
-crumb :compliance_check_set_executed do |cc_set_parent, compliance_check_set|
-  link I18n.t('compliance_check_sets.executed.title', name: compliance_check_set.name), [:executed, cc_set_parent, compliance_check_set]
-  parent :compliance_check_sets, cc_set_parent
-end
-
 crumb :imports_parent do |imports_parent|
   if imports_parent.is_a? Workgroup
     link Workgroup.ts, [imports_parent]
@@ -428,20 +403,6 @@ end
 
 crumb :organisation do |organisation|
   link breadcrumb_name(organisation), organisation_path
-end
-
-crumb :compliance_control_sets do
-  link I18n.t('compliance_control_sets.index.title'), compliance_control_sets_path
-end
-
-crumb :compliance_control_set do |compliance_control_set|
-  link breadcrumb_name(compliance_control_set), compliance_control_set_path(compliance_control_set)
-  parent :compliance_control_sets
-end
-
-crumb :compliance_control do |compliance_control|
-  link breadcrumb_name(compliance_control), compliance_control_set_compliance_control_path(compliance_control.compliance_control_set, compliance_control)
-  parent :compliance_control_set, compliance_control.compliance_control_set
 end
 
 crumb :stop_area_referential do |workbench|
@@ -634,11 +595,6 @@ end
 
 crumb :workgroup_aggregation_settings do |workgroup|
   link I18n.t('workgroups.edit_aggregate.title')
-  parent workgroup
-end
-
-crumb :workgroup_edit_controls do |workgroup|
-  link I18n.t('workgroups.edit_controls.title')
   parent workgroup
 end
 

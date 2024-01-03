@@ -41,11 +41,9 @@ en:
       shapes: Shapes
       workbench:
         subtitle: Workbench
-        edit_control_sets: Controls settings
         notification_rules: Notification center
       workgroup:
         subtitle: Workgroup
-        edit_control_sets: Controls settings
         edit_aggregate: Aggregation settings
         edit_merge: Merge settings
         edit_transport_modes: Transport modes

@@ -24,10 +24,7 @@ fr:
       title: "%{name}"
       report: "Rapport"
       exported_file: "Fichier source"
-      compliance_check: "Test de conformité"
-      compliance_check_of: "Validation de l'export : "
       export_of_validation: "L'export de la validation"
-    compliance_check_task: "Validation"
     severities:
       info: "Information"
       uncheck: "Non testé"

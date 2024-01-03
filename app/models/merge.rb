@@ -3,7 +3,6 @@ class Merge < ApplicationModel
   include NotifiableSupport
 
   belongs_to :workbench
-  has_many :compliance_check_sets, -> { where(parent_type: 'Merge') }, foreign_key: :parent_id, dependent: :destroy
   has_many :processings, as: :operation, dependent: :destroy
   has_many :macro_list_runs, through: :processings, :source => :processed, source_type: "Macro::List::Run"
   has_many :control_list_runs, through: :processings, :source => :processed, source_type: "Control::List::Run"
@@ -56,44 +55,10 @@ class Merge < ApplicationModel
 
       referentials.each(&:pending!)
 
-      if before_merge_compliance_control_sets.present?
-        create_before_merge_compliance_check_sets
-      else
-        enqueue_job :merge!
-      end
+      enqueue_job :merge!
     end
   end
   alias run merge
-
-  
-
-  def before_merge_compliance_control_sets
-    workbench.workgroup.before_merge_compliance_control_sets.map do |key, _|
-      cc_set = workbench.compliance_control_set(key)
-      cc_set.present? ? [key, cc_set] : nil
-    end.compact
-  end
-
-  def after_merge_compliance_control_sets
-    workbench.workgroup.after_merge_compliance_control_sets.map do |key, _|
-      cc_set = workbench.compliance_control_set(key)
-      cc_set.present? ? [key, cc_set] : nil
-    end.compact
-  end
-
-  def create_before_merge_compliance_check_sets
-    referentials.each do |referential|
-      before_merge_compliance_control_sets.each do |key, compliance_control_set|
-        create_compliance_check_set key, compliance_control_set, referential
-      end
-    end
-  end
-
-  def create_after_merge_compliance_check_sets
-    after_merge_compliance_control_sets.each do |key, compliance_control_set|
-      create_compliance_check_set key, compliance_control_set, new
-    end
-  end
 
   def merge!
     Rails.logger.info "Start Merge##{id} merge for #{referential_ids}"
@@ -132,12 +97,8 @@ class Merge < ApplicationModel
             return
           end
         end
-        
-        if after_merge_compliance_control_sets.present?
-          create_after_merge_compliance_check_sets
-        else
-          save_current
-        end
+
+        save_current
       end
     end
   rescue StandardError => e

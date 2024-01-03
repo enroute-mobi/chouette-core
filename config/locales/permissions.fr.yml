@@ -21,10 +21,6 @@ fr:
       api_keys: Clés d'accès API
       calendars: Calendriers
       companies: Transporteurs
-      compliance_check_sets: Rapports de contrôles
-      compliance_control_blocks: Groupes de contrôles
-      compliance_control_sets: Jeux de contrôles
-      compliance_controls: Contrôles
       connection_links: Correspondances
       exports: Exports
       footnotes: Notes de bas de page

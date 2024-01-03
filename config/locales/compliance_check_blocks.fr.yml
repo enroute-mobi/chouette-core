@@ -1,7 +1,0 @@
-fr:
-  activerecord:
-    models:
-      compliance_check_block:
-        zero:  "Groupe de contrôle"
-        one:   "Groupe de contrôle"
-        other: "Groupes de contrôles"

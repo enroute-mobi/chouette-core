@@ -30,7 +30,6 @@ class Workgroup < ApplicationModel
   has_many :aggregates, dependent: :destroy
   has_many :publication_setups, dependent: :destroy
   has_many :publication_apis, dependent: :destroy
-  has_many :compliance_check_sets, dependent: :destroy
   has_many :macro_lists, through: :workbenches
   has_many :macro_list_runs, through: :workbenches
   has_many :control_lists, through: :workbenches
@@ -82,55 +81,6 @@ class Workgroup < ApplicationModel
 
   def has_export? export_name
     export_types.include? export_name
-  end
-
-  def has_legacy_processing_rules?
-    processing_rules.empty? && workbench_processing_rules.empty?
-  end
-
-  def self.all_compliance_control_sets
-    %i(after_import
-      after_import_by_workgroup
-      before_merge
-      before_merge_by_workgroup
-      after_merge
-      after_merge_by_workgroup
-      automatic_by_workgroup
-    )
-  end
-
-  def self.workgroup_compliance_control_sets
-    %i[
-      after_aggregate
-    ]
-  end
-
-  def self.all_compliance_control_sets_labels
-    compliance_control_sets_labels all_compliance_control_sets
-  end
-
-  def self.compliance_control_sets_for_workgroup
-    compliance_control_sets_labels workgroup_compliance_control_sets
-  end
-
-  def self.compliance_control_sets_by_workgroup
-    compliance_control_sets_labels all_compliance_control_sets.grep(/by_workgroup$/)
-  end
-
-  def self.compliance_control_sets_by_workbench
-    compliance_control_sets_labels all_compliance_control_sets.grep_v(/by_workgroup$/)
-  end
-
-  def self.import_compliance_control_sets
-    compliance_control_sets_labels all_compliance_control_sets.grep(/^after_import/)
-  end
-
-  def self.before_merge_compliance_control_sets
-    compliance_control_sets_labels all_compliance_control_sets.grep(/^before_merge/)
-  end
-
-  def self.after_merge_compliance_control_sets
-    compliance_control_sets_labels all_compliance_control_sets.grep(/^after_merge/)
   end
 
   def self.purge_all
@@ -205,41 +155,12 @@ class Workgroup < ApplicationModel
     within_timeframe && (nightly_aggregated_at.blank? || nightly_aggregated_at < cool_down_time)
   end
 
-  def import_compliance_control_sets
-    self.class.import_compliance_control_sets
-  end
-
   def workbench_scopes workbench
     self.class.workbench_scopes_class.new(workbench)
   end
 
-  def all_compliance_control_sets_labels
-    self.class.all_compliance_control_sets_labels
-  end
-
-  def compliance_control_sets_by_workgroup
-    self.class.compliance_control_sets_by_workgroup
-  end
-
-  def compliance_control_sets_by_workbench
-    self.class.compliance_control_sets_by_workbench
-  end
-
-  def before_merge_compliance_control_sets
-    self.class.before_merge_compliance_control_sets
-  end
-
-  def after_merge_compliance_control_sets
-    self.class.after_merge_compliance_control_sets
-  end
-
   def aggregatable_referentials
     workbenches.map { |w| w.referential_to_aggregate }.compact
-  end
-
-  def compliance_control_set key
-    id = (compliance_control_set_ids || {})[key.to_s]
-    ComplianceControlSet.where(id: id).last if id.present?
   end
 
   def owner_workbench
@@ -303,17 +224,6 @@ class Workgroup < ApplicationModel
         config.resolver_classes << RoutePlanner::Resolver::TomTom
         config.resolver_classes << RoutePlanner::Resolver::Cache
       end
-    end
-  end
-
-  def self.compliance_control_sets_label(key)
-    "workgroups.compliance_control_sets.#{key}".t
-  end
-
-  def self.compliance_control_sets_labels(keys)
-    keys.inject({}) do |h, k|
-      h[k] = compliance_control_sets_label(k)
-      h
     end
   end
 

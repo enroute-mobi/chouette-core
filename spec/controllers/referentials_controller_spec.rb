@@ -57,26 +57,6 @@ describe ReferentialsController, :type => :controller do
     it_behaves_like 'checks current_organisation', success_code: 302
   end
 
-  describe 'GET select_compliance_control_set' do
-    it 'gets compliance control set for current organisation' do
-      compliance_control_set = create(:compliance_control_set, organisation: @user.organisation)
-      create(:compliance_control_set)
-      get :select_compliance_control_set, params: { id: referential.id }
-      expect(assigns[:compliance_control_sets]).to eq([compliance_control_set])
-    end
-  end
-
-  describe "POST #validate" do
-    it "displays a flash message" do
-      compliance_control_set = create(:compliance_control_set, organisation: @user.organisation)
-      post :validate, params: { id: referential.id, compliance_control_set: compliance_control_set.id }
-
-      expect(controller).to set_flash[:notice].to(
-        I18n.t('notice.referentials.validate')
-      )
-    end
-  end
-
   describe "POST #create" do
     let(:from_current_offer) { '0' }
     let(:urgent) { '0' }

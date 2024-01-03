@@ -18,10 +18,6 @@ en:
       api_keys: Api keys
       calendars: Calendars
       companies: Companies
-      compliance_check_sets: Compliance check sets
-      compliance_control_blocks: Control blocks
-      compliance_control_sets: Control sets
-      compliance_controls: Control
       connection_links: Connections
       exports: Exports
       footnotes: Notes

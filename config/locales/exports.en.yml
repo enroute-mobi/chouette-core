@@ -23,10 +23,7 @@ en:
       title: "%{name}"
       report: "Report"
       exported_file: "Original file"
-      compliance_check: "Validation report"
-      compliance_check_of: "Validation of export: "
       export_of_validation: "Export of the validation"
-    compliance_check_task: "Validate Report"
     severities:
       info: "Information"
       uncheck: "Unchecked"

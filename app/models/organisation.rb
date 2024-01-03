@@ -4,7 +4,6 @@ class Organisation < ApplicationModel
 
   has_many :users, dependent: :destroy
   has_many :referentials, dependent: :destroy
-  has_many :compliance_control_sets, dependent: :destroy
 
   has_many :stop_area_referential_memberships, dependent: :destroy
   has_many :stop_area_referentials, through: :stop_area_referential_memberships

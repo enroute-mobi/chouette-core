@@ -99,9 +99,6 @@ module LocalImportSupport
   def notify_parent
     Rails.logger.info "#{self.class.name} ##{id}: notify_parent #{caller[0..2].inspect}"
 
-    Rails.logger.info "#{self.class.name} ##{id}: invoke next_step"
-    next_step
-
     main_resource&.update_status_from_importer status
 
     super

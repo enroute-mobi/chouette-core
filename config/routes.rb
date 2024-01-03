@@ -32,7 +32,7 @@ ChouetteIhm::Application.routes.draw do # rubocop:disable Metrics/BlockLength
     end
   end
 
-  resources :workbenches, except: [:destroy], concerns: :iev_interfaces do # rubocop:disable Metrics/BlockLength
+  resources :workbenches, only: %i[index show], concerns: :iev_interfaces do # rubocop:disable Metrics/BlockLength
     resources :api_keys
 
     resources :autocomplete,
@@ -48,12 +48,6 @@ ChouetteIhm::Application.routes.draw do # rubocop:disable Metrics/BlockLength
       get :macro_lists, on: :collection, defaults: { format: 'json' }
       get :control_lists, on: :collection, defaults: { format: 'json' }
       get :calendars, on: :collection, defaults: { format: 'json' }
-    end
-
-    resources :compliance_check_sets, only: %i[index show] do
-      get :executed, on: :member
-      resources :compliance_checks, only: [:show]
-      resources :compliance_check_messages, only: [:index]
     end
 
     resource :output, controller: :workbench_outputs
@@ -197,8 +191,6 @@ ChouetteIhm::Application.routes.draw do # rubocop:disable Metrics/BlockLength
 
     member do
       get :edit_aggregate
-      get :edit_controls
-      put :update_controls
       get :edit_merge
       get :edit_transport_modes
     end
@@ -207,12 +199,6 @@ ChouetteIhm::Application.routes.draw do # rubocop:disable Metrics/BlockLength
 
     resources :document_types
     resources :processing_rules, as: 'processing_rule_workgroups', controller: 'workgroup_processing_rules'
-
-    resources :compliance_check_sets, only: %i[index show] do
-      get :executed, on: :member
-      resources :compliance_checks, only: [:show]
-      resources :compliance_check_messages, only: [:index]
-    end
 
     resources :workbenches, controller: :workgroup_workbenches, only: %i[new create show edit update]
 
@@ -265,8 +251,6 @@ ChouetteIhm::Application.routes.draw do # rubocop:disable Metrics/BlockLength
     member do
       put :archive
       put :unarchive
-      get :select_compliance_control_set
-      post :validate
       put :clean
       get :journey_patterns
     end
@@ -397,8 +381,6 @@ ChouetteIhm::Application.routes.draw do # rubocop:disable Metrics/BlockLength
       get 'browser_environment', to: 'browser_environment#show', defaults: { format: 'json' }
 
       namespace :internals do
-        get 'compliance_check_sets/:id/notify_parent', to: 'compliance_check_sets#notify_parent'
-
         post 'netex_exports/:id/upload', to: 'netex_exports#upload'
 
         get 'netex_exports/:id/notify_parent', to: 'netex_exports#notify_parent'
@@ -427,15 +409,6 @@ ChouetteIhm::Application.routes.draw do # rubocop:disable Metrics/BlockLength
         post :invite
       end
     end
-  end
-
-  resources :compliance_control_sets do
-    get :simple, on: :member
-    get :clone, on: :member
-    resources :compliance_controls, except: :index do
-      get :select_type, on: :collection
-    end
-    resources :compliance_control_blocks, except: %i[show index]
   end
 
   mount LetterOpenerWeb::Engine, at: '/letter_opener' if %i[letter_opener_web

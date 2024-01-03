@@ -1,3 +1,0 @@
-module ComplianceCheckBlocksHelper
-  include TransportModeHelper
-end

@@ -348,40 +348,6 @@ describe Merge do
     end
   end
 
-  context "with before_merge compliance_control_sets" do
-    let(:merge) { Merge.create(workbench: workbench, referentials: [referential, referential]) }
-    before do
-      @control_set = create :compliance_control_set, organisation: workbench.organisation
-      workbench.update owner_compliance_control_set_ids: {before_merge: @control_set.id}
-    end
-
-    it "should run checks" do
-      expect{ merge }.to change{ ComplianceCheckSet.count }.by 2
-    end
-
-    context "when the control_set has been destroyed" do
-      before do
-        @control_set.destroy
-      end
-      it "should not fail" do
-        expect{merge.merge}.to change{ComplianceCheckSet.count}.by 0
-      end
-    end
-
-    context "when the control_set fails" do
-      it "should reset referential state to active" do
-        merge.merge
-        check_set = ComplianceCheckSet.last
-        ComplianceCheckSet.where.not(id: check_set.id).update_all notified_parent_at: Time.now
-        expect(check_set.referential).to eq referential
-        merge.compliance_check_sets.update_all status: :successful
-        check_set.update status: :failed
-        check_set.do_notify_parent
-        expect(referential.reload.state).to eq :active
-      end
-    end
-  end
-
   it "should set source refererentials state to pending" do
     merge = Merge.create!(workbench: referential.workbench, referentials: [referential, referential])
     merge.merge

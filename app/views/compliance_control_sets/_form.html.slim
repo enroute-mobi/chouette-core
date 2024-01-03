@@ -1,9 +1,0 @@
-= simple_form_for @compliance_control_set, html: { class: 'form-horizontal', id: 'compliance_control_set_form' }, wrapper: :horizontal_form do |f|
-  .row
-    .col-lg-12
-      = f.input :name
-
-  .separator
-
-  = cancel_button
-  = f.button :submit, t('actions.submit'), class: 'btn btn-default formSubmitr', form: 'compliance_control_set_form'

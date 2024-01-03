@@ -73,23 +73,6 @@ class ReferentialsController < ChouetteController
     @referential.clean_routes_if_needed
   end
 
-  def select_compliance_control_set
-    @compliance_control_sets = ComplianceControlSet.where(organisation: current_organisation)
-  end
-
-  def validate
-    check_set = ComplianceControlSetCopier.new.copy(params[:compliance_control_set], params[:id], current_user.id) do |cck_set|
-      cck_set.notification_target = params[:notification_target]
-    end
-    flash[:notice] = t('notice.referentials.validate')
-
-    if referential.workbench
-      redirect_to workbench_compliance_check_set_path(referential.workbench_id, check_set)
-    else
-      redirect_to workgroup_compliance_check_set_path(referential.workgroup.id, check_set)
-    end
-  end
-
   def destroy
     workbench = referential.workbench_id
 

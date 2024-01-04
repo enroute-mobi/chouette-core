@@ -1,6 +1,6 @@
 object @line
 extends "api/v1/trident_objects/show"
-[ :name, :number, :published_name, :transport_mode, :registration_number, :comment, :mobility_restricted_suitability].each do |attr|
+[ :name, :number, :published_name, :transport_mode, :registration_number, :comment].each do |attr|
   attributes attr, :unless => lambda { |m| m.send( attr).nil?}
 end
 

@@ -7,4 +7,4 @@ fr:
       import/resource:
         name: "Fichier"
         status: "État"
-        resource_type: Types de ressources
+        resource_type: "Types de ressource"

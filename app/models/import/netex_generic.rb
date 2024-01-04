@@ -1287,6 +1287,7 @@ class Import::NetexGeneric < Import::Base
 
   def netex_source
     @netex_source ||= Netex::Source.new(include_raw_xml: store_xml?).tap do |source|
+      source.transformers << Netex::Transformer::Uniqueness.new
       source.transformers << Netex::Transformer::LocationFromCoordinates.new
       source.transformers << Netex::Transformer::Indexer.new(Netex::JourneyPattern, by: :route_ref)
       source.transformers << Netex::Transformer::Indexer.new(Netex::DayTypeAssignment, by: :day_type_ref)

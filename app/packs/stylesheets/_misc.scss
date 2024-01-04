@@ -75,12 +75,6 @@
     }
   }
 }
-[data-master] {
-  display: none;
-  & [data-master] {
-    display: block;
-  }
-}
 .filter_menu {
   .select2ed {
     min-width: 300px;

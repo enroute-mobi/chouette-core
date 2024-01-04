@@ -230,4 +230,4 @@ gem 'x25519'
 gem 'bcrypt_pbkdf'
 
 gem 'bitset', en_route: 'bitset'
-gem 'cuckoo', en_route: 'cuckoo'
+gem 'cuckoo', en_route: 'cuckoo', branch: 'CUCKOO-10-cuckootimetableto_days_bit-bas'

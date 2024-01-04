@@ -14,7 +14,8 @@ GIT
 
 GIT
   remote: https://bitbucket.org/enroute-mobi/cuckoo.git
-  revision: 56945856959441fdd1112993d9518bccadca470e
+  revision: e901af4d1b45c0bbdbaebae0973a41da65becc41
+  branch: CUCKOO-10-cuckootimetableto_days_bit-bas
   specs:
     cuckoo (0.1.0)
       activesupport

@@ -7,8 +7,14 @@ GIT
       json
 
 GIT
+  remote: https://bitbucket.org/enroute-mobi/bitset.git
+  revision: bf7b4a2de68364dc6c8eba8487f73889d0e32cda
+  specs:
+    bitset (1.2.0)
+
+GIT
   remote: https://bitbucket.org/enroute-mobi/cuckoo.git
-  revision: 7b868c53633fa43593ffc1a5001a6686526b097b
+  revision: 56945856959441fdd1112993d9518bccadca470e
   specs:
     cuckoo (0.1.0)
       activesupport
@@ -165,7 +171,6 @@ GEM
       smart_properties
     binding_of_caller (1.0.0)
       debug_inspector (>= 0.0.1)
-    bitset (1.2.0)
     bootsnap (1.17.0)
       msgpack (~> 1.2)
     bootstrap-sass (3.4.1)
@@ -873,6 +878,7 @@ DEPENDENCIES
   bcrypt_pbkdf
   better_errors
   binding_of_caller
+  bitset!
   bootsnap
   bootstrap-sass (= 3.4.1)
   bulk_insert

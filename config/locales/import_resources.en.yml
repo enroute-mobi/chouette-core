@@ -7,3 +7,4 @@ en:
       import/resource:
         name: "Filename"
         status: "Status"
+        resource_type: "Resource types"

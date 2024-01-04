@@ -994,25 +994,6 @@ describe "update_attributes on periods and dates" do
     end
   end
 
-  describe "#include_in_overlap_dates?" do
-    it "should return true if a day is included in overlap dates" do
-      time_table = Chouette::TimeTable.create!(:comment => "Test", :objectid => "test:Timetable:1:loc", :int_day_types => 4)
-      time_table.periods << Chouette::TimeTablePeriod.new(
-                              :period_start => Date.new(2012, 1, 1),
-                              :period_end => Date.new(2012, 01, 30))
-      time_table.dates << Chouette::TimeTableDate.new( :date => Date.new(2012, 1, 2), :in_out => true)
-      expect(time_table.include_in_overlap_dates?(Date.new(2012, 1, 2))).to eq(true)
-    end
-    it "should return false if the day is excluded" do
-      time_table = Chouette::TimeTable.create!(:comment => "Test", :objectid => "test:Timetable:1:loc", :int_day_types => 4)
-      time_table.periods << Chouette::TimeTablePeriod.new(
-                              :period_start => Date.new(2012, 1, 1),
-                              :period_end => Date.new(2012, 01, 30))
-      time_table.dates << Chouette::TimeTableDate.new( :date => Date.new(2012, 1, 2), :in_out => false)
-      expect(time_table.include_in_overlap_dates?(Date.new(2012, 1, 2))).to be_falsey
-    end
-  end
-
   describe "#validity_out_between?" do
     let(:empty_tm) {build(:time_table)}
     it "should be false if empty calendar" do

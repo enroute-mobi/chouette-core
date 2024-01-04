@@ -315,32 +315,6 @@ module Chouette
       end
     end
 
-    def include_day?(day)
-      include_in_dates?(day) || include_in_periods?(day)
-    end
-
-    def include_in_dates?(day)
-      self.dates.any?{ |d| d.date === day && d.in_out == true }
-    end
-
-    def excluded_date?(day)
-      self.dates.any?{ |d| d.date === day && d.in_out == false }
-    end
-
-    def include_in_periods?(day)
-      self.periods.any?{ |period| period.period_start <= day &&
-                                  day <= period.period_end &&
-                                  valid_days.include?(day.cwday) &&
-                                  ! excluded_date?(day) }
-    end
-
-    def include_in_overlap_dates?(day)
-      return false if self.excluded_date?(day)
-
-      counter = self.dates.select{ |d| d.date === day}.size + self.periods.select{ |period| period.period_start <= day && day <= period.period_end && valid_days.include?(day.cwday) }.size
-      counter <= 1 ? false : true
-    end
-
     def periods_max_date
       return nil if self.periods.empty?
 

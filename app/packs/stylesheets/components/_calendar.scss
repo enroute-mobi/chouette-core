@@ -39,9 +39,7 @@ table.calendar {
       &.weekend {
         font-weight: bold;
       }
-      &.selected_period,
-      &.selected_date,
-      &.overlaped_date {
+      &.operating_day {
         > a {
           display: block;
           margin: 0 auto;

@@ -764,7 +764,6 @@ class Export::Gtfs < Export::Base
       end
 
     end
-
   end
 
   class TimeTables < Part
@@ -1019,6 +1018,17 @@ class Export::Gtfs < Export::Base
         journey_pattern&.published_name
       end
 
+      def gtfs_wheelchair_accessibility
+        case line.wheelchair_accessibility
+        when nil, 'unknown'
+          '0'
+        when 'yes'
+          '1'
+        when 'no'
+          '2'
+        end
+      end
+
       def trip_attributes(service)
         {
           route_id: route_id,
@@ -1027,9 +1037,9 @@ class Export::Gtfs < Export::Base
           short_name: published_journey_name,
           direction_id: direction_id,
           shape_id: gtfs_shape_id,
-          headsign: gtfs_headsign
+          headsign: gtfs_headsign,
+          wheelchair_accessible: gtfs_wheelchair_accessibility
           # block_id: TO DO
-          # wheelchair_accessible: TO DO
           # bikes_allowed: TO DO
         }
       end
@@ -1435,6 +1445,7 @@ class Export::Gtfs < Export::Base
       end
     end
   end
+
   class FareProducts < Part
     delegate :code_space, to: :export
     delegate :fare_products, to: :export_scope

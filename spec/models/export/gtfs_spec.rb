@@ -1260,6 +1260,8 @@ RSpec.describe Export::Gtfs, type: [:model, :with_exportable_referential] do
     let(:vehicle_journey) { Chouette::VehicleJourney.new }
     let(:index) { Export::Gtfs::Index.new }
     let(:resource_code_space) { double }
+    let(:line ) { Chouette::Line.new(id: rand(100)) }
+
     let(:decorator) do
       Export::Gtfs::VehicleJourneys::Decorator.new vehicle_journey, index: index, code_provider: resource_code_space
     end
@@ -1271,7 +1273,6 @@ RSpec.describe Export::Gtfs, type: [:model, :with_exportable_referential] do
       let(:indexed_route_id) { double 'GTFS route_id associated to the VehicleJourney line' }
 
       before do
-        line = Chouette::Line.new(id: rand(100))
         vehicle_journey.route = Chouette::Route.new(line_id: line.id)
         index.register_route_id line, indexed_route_id
       end
@@ -1383,6 +1384,33 @@ RSpec.describe Export::Gtfs, type: [:model, :with_exportable_referential] do
 
       end
 
+    end
+
+    describe '#wheelchair_accessible' do
+      subject { decorator.gtfs_wheelchair_accessibility }
+
+      before do
+        line.wheelchair_accessibility = wheelchair_accessibility
+        allow(vehicle_journey).to receive(:line).and_return(line)
+      end
+
+      context "when wheelchair accessibility is 'unknown'" do
+        let(:wheelchair_accessibility) { 'unknown' }
+
+        it { is_expected.to eq '0' }
+      end
+
+      context "when wheelchair accessibility is 'yes'" do
+        let(:wheelchair_accessibility) { 'yes' }
+
+        it { is_expected.to eq '1' }
+      end
+
+      context "when wheelchair accessibility is 'no'" do
+        let(:wheelchair_accessibility) { 'no' }
+
+        it { is_expected.to eq '2' }
+      end
     end
 
     describe '#services' do

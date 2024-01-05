@@ -182,6 +182,31 @@ RSpec.describe Export::NetexGeneric do
       end
     end
 
+    context 'when the Export scope contains a StopArea with accessibilitie attributes' do
+      subject { decorator.netex_attributes[:accessibility_assessment].limitations.first }
+
+      let(:context) do
+        Chouette.create do
+          stop_area :stop_area, wheelchair_accessibility: 'yes', step_free_accessibility: 'no', lift_free_accessibility: 'partial'
+          referential
+        end
+      end
+      let(:stop_area) { context.stop_area :stop_area }
+      let(:decorator) { Export::NetexGeneric::StopDecorator.new(stop_area) }
+      let(:netex_accessibility_attributes) do
+        {
+          wheelchair_access: 'true',
+          step_free_access: 'false',
+          escalator_free_access: 'unknown',
+          lift_free_access: 'partial',
+          audible_signals_available: 'unknown',
+          visual_signs_available: 'unknown'
+        }
+      end
+
+      it { is_expected.to an_object_having_attributes(netex_accessibility_attributes) }
+    end
+
     describe "#custom_field" do
       subject { decorator.netex_resource.key_list }
 
@@ -385,6 +410,31 @@ RSpec.describe Export::NetexGeneric do
 
           it { expect(key_list).to match_array(codes) }
         end
+      end
+
+      describe '#accessibility' do
+        subject { decorator.netex_attributes[:accessibility_assessment].limitations.first }
+
+        let(:context) do
+          Chouette.create do
+            line :line, wheelchair_accessibility: 'yes', step_free_accessibility: 'no', lift_free_accessibility: 'partial'
+            referential
+          end
+        end
+        let(:line) { context.line :line }
+        let(:decorator) { Export::NetexGeneric::Lines::Decorator.new(line) }
+        let(:netex_accessibility_attributes) do
+          {
+            wheelchair_access: 'true',
+            step_free_access: 'false',
+            escalator_free_access: 'unknown',
+            lift_free_access: 'partial',
+            audible_signals_available: 'unknown',
+            visual_signs_available: 'unknown'
+          }
+        end
+  
+        it { is_expected.to an_object_having_attributes(netex_accessibility_attributes) }
       end
     end
   end

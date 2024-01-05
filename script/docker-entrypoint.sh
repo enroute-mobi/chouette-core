@@ -15,10 +15,6 @@ case $command in
     export RUBY_GC_HEAP_GROWTH_FACTOR=1.1
     exec bundle exec ./script/delayed-job-worker
     ;;
-  # see CHOUETTE-3189
-  sync)
-    sleep infinity
-    ;;
   front)
     if [ "$RUN_MIGRATIONS" = "true" ]; then
       bundle exec rake db:migrate || exit $?

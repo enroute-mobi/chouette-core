@@ -1,8 +1,8 @@
 GIT
   remote: https://bitbucket.org/enroute-mobi/ara-ruby.git
-  revision: ac8cc50642bfad5e23f55b04020d87d5b3a5d808
+  revision: 16e3f5acb1e20b051e9231eccd48a06672a0512f
   specs:
-    ara (1.0.0)
+    ara (3.0.0)
       faraday
       json
 
@@ -873,7 +873,7 @@ DEPENDENCIES
   activerecord-postgis-adapter (~> 5.2.3)
   acts_as_list
   acts_as_tree
-  ara (>= 1.0.0)!
+  ara (>= 3.0.0)!
   awesome_print
   bcrypt_pbkdf
   better_errors

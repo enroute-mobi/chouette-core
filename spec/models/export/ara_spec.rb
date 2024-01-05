@@ -216,12 +216,12 @@ RSpec.describe Export::Ara do
 
         context "when one of the Stop Area has a registration number 'dummy'" do
           before { stop_area.update registration_number: 'dummy' }
-          it { is_expected.to include(an_object_having_attributes(objectids: { 'external' => 'dummy' })) }
+          it { is_expected.to include(an_object_having_attributes(codes: { 'external' => 'dummy' })) }
         end
 
         context "when all Stop Area has a registration number 'dummy'" do
           before { scope.stop_areas.update_all registration_number: 'dummy' }
-          it { is_expected.to_not include(an_object_having_attributes(objectids: { 'external' => 'dummy' })) }
+          it { is_expected.to_not include(an_object_having_attributes(codes: { 'external' => 'dummy' })) }
         end
 
         context "when one of the Stop Area has a code 'test': 'dummy" do
@@ -229,7 +229,7 @@ RSpec.describe Export::Ara do
           it do
             is_expected.to include(
               an_object_having_attributes(
-                objectids: { 'test' => 'dummy', 'external' => stop_area.objectid }
+                codes: { 'test' => 'dummy', 'external' => stop_area.objectid }
               )
             )
           end
@@ -241,7 +241,7 @@ RSpec.describe Export::Ara do
               stop_area.codes.create! code_space: code_space, value: 'dummy'
             end
           end
-          it { is_expected.to_not include(an_object_having_attributes(objectids: { 'test' => 'dummy' })) }
+          it { is_expected.to_not include(an_object_having_attributes(codes: { 'test' => 'dummy' })) }
         end
       end
     end
@@ -277,12 +277,12 @@ RSpec.describe Export::Ara do
 
         context "when one of the Line has a registration number 'dummy'" do
           before { line.update registration_number: 'dummy' }
-          it { is_expected.to include(an_object_having_attributes(objectids: { 'external' => 'dummy' })) }
+          it { is_expected.to include(an_object_having_attributes(codes: { 'external' => 'dummy' })) }
         end
 
         context "when all Line has a registration number 'dummy'" do
           before { scope.lines.update_all registration_number: 'dummy' }
-          it { is_expected.to_not include(an_object_having_attributes(objectids: { 'external' => 'dummy' })) }
+          it { is_expected.to_not include(an_object_having_attributes(codes: { 'external' => 'dummy' })) }
         end
 
         context "when one of the Line has a code 'test': 'dummy" do
@@ -290,7 +290,7 @@ RSpec.describe Export::Ara do
           it do
             is_expected.to include(
               an_object_having_attributes(
-                objectids: { 'test' => 'dummy', 'external' => line.objectid }
+                codes: { 'test' => 'dummy', 'external' => line.objectid }
               )
             )
           end
@@ -302,7 +302,7 @@ RSpec.describe Export::Ara do
               line.codes.create! code_space: code_space, value: 'dummy'
             end
           end
-          it { is_expected.to_not include(an_object_having_attributes(objectids: { 'test' => 'dummy' })) }
+          it { is_expected.to_not include(an_object_having_attributes(codes: { 'test' => 'dummy' })) }
         end
       end
     end
@@ -355,17 +355,17 @@ RSpec.describe Export::Ara do
 
         context "when one of the Company has a registration number 'dummy'" do
           before { company.update registration_number: 'dummy' }
-          it { is_expected.to include(an_object_having_attributes(objectids: { 'external' => 'dummy' })) }
+          it { is_expected.to include(an_object_having_attributes(codes: { 'external' => 'dummy' })) }
         end
 
         context "when all Company has a registration number 'dummy'" do
           before { scope.companies.update_all registration_number: 'dummy' }
-          it { is_expected.to_not include(an_object_having_attributes(objectids: { 'external' => 'dummy' })) }
+          it { is_expected.to_not include(an_object_having_attributes(codes: { 'external' => 'dummy' })) }
         end
 
         context "when one of the Company has a code 'test': 'dummy" do
           before { company.codes.create!(code_space: code_space, value: 'dummy') }
-          it { is_expected.to include(an_object_having_attributes(objectids: a_hash_including('test' => 'dummy'))) }
+          it { is_expected.to include(an_object_having_attributes(codes: a_hash_including('test' => 'dummy'))) }
         end
 
         context "when all Companies has a code 'test':'dummy" do
@@ -374,7 +374,7 @@ RSpec.describe Export::Ara do
               company.codes.create! code_space: code_space, value: 'dummy'
             end
           end
-          it { is_expected.to_not include(an_object_having_attributes(objectids: { 'test' => 'dummy' })) }
+          it { is_expected.to_not include(an_object_having_attributes(codes: { 'test' => 'dummy' })) }
         end
       end
     end
@@ -431,7 +431,7 @@ RSpec.describe Export::Ara do
           before { vehicle_journey.codes.create!(code_space: code_space, value: 'dummy') }
           it do
             is_expected.to include(
-              an_object_having_attributes(objectids: { 'test' => 'dummy', 'external' => vehicle_journey.objectid})
+              an_object_having_attributes(codes: { 'test' => 'dummy', 'external' => vehicle_journey.objectid})
             )
           end
         end
@@ -442,14 +442,14 @@ RSpec.describe Export::Ara do
               vehicle_journey.codes.create! code_space: code_space, value: 'dummy'
             end
           end
-          it { is_expected.to_not include(an_object_having_attributes(objectids: { 'test' => 'dummy' })) }
+          it { is_expected.to_not include(an_object_having_attributes(codes: { 'test' => 'dummy' })) }
         end
 
         context "when one of the Vehicle Journey has a code 'external': 'dummy" do
           before { vehicle_journey.codes.create!(code_space: external_code_space, value: 'dummy') }
           it do
             is_expected.to include(
-              an_object_having_attributes(objectids: { 'external' => 'dummy' })
+              an_object_having_attributes(codes: { 'external' => 'dummy' })
             )
           end
         end
@@ -460,7 +460,7 @@ RSpec.describe Export::Ara do
               vehicle_journey.codes.create! code_space: external_code_space, value: 'dummy'
             end
           end
-          it { is_expected.to_not include(an_object_having_attributes(objectids: { 'external' => 'dummy' })) }
+          it { is_expected.to_not include(an_object_having_attributes(codes: { 'external' => 'dummy' })) }
         end
 
       end
@@ -529,8 +529,8 @@ RSpec.describe Export::Ara do
         end
       end
 
-      describe '#operator_objectid' do
-        subject { decorator.operator_objectid }
+      describe '#operator_code' do
+        subject { decorator.operator_code }
 
         context 'without Company' do
           it { is_expected.to be_nil }
@@ -562,13 +562,13 @@ RSpec.describe Export::Ara do
       describe '#references' do
         subject { decorator.references }
 
-        context "when operator_objectid {'test': 'dummy'}" do
-          before { allow(decorator).to receive(:operator_objectid).and_return({ 'test': 'dummy' }) }
-          it { is_expected.to eq({ 'OperatorRef': { 'Type': 'OperatorRef', 'ObjectId': { 'test': 'dummy' } } }) }
+        context "when operator_code {'test': 'dummy'}" do
+          before { allow(decorator).to receive(:operator_code).and_return({ 'test': 'dummy' }) }
+          it { is_expected.to eq({ 'OperatorRef': { 'Type': 'OperatorRef', 'Code': { 'test': 'dummy' } } }) }
         end
 
-        context 'without operator_objectid' do
-          before { allow(decorator).to receive(:operator_objectid) }
+        context 'without operator_code' do
+          before { allow(decorator).to receive(:operator_code) }
           it { is_expected.to be_nil }
         end
       end

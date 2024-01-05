@@ -54,10 +54,8 @@ RSpec.describe Chouette::Sync::Line do
              <limitations>
                <AccessibilityLimitation>
                  <WheelchairAccess>unknown</WheelchairAccess>
-                 <AudibleSignalsAvailable>
-                 unknown</AudibleSignalsAvailable>
-                 <VisualSignsAvailable>
-                 unknown</VisualSignsAvailable>
+                 <AudibleSignalsAvailable>unknown</AudibleSignalsAvailable>
+                 <VisualSignsAvailable>unknown</VisualSignsAvailable>
                </AccessibilityLimitation>
              </limitations>
            </AccessibilityAssessment>
@@ -107,10 +105,8 @@ RSpec.describe Chouette::Sync::Line do
              <limitations>
                <AccessibilityLimitation>
                  <WheelchairAccess>unknown</WheelchairAccess>
-                 <AudibleSignalsAvailable>
-                 unknown</AudibleSignalsAvailable>
-                 <VisualSignsAvailable>
-                 unknown</VisualSignsAvailable>
+                 <AudibleSignalsAvailable>unknown</AudibleSignalsAvailable>
+                 <VisualSignsAvailable>unknown</VisualSignsAvailable>
                </AccessibilityLimitation>
              </limitations>
            </AccessibilityAssessment>

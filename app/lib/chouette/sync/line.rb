@@ -96,6 +96,14 @@ module Chouette::Sync
             secondary_company_ids: line_secondary_company_ids,
             network_id: line_network_id,
             line_notice_ids: line_notice_ids,
+            mobility_impaired_accessibility: accessibility.mobility_impaired_access,
+            wheelchair_accessibility: accessibility.wheelchair_access,
+            step_free_accessibility: accessibility.step_free_access,
+            escalator_free_accessibility: accessibility.escalator_free_access,
+            lift_free_accessibility: accessibility.lift_free_access,
+            audible_signals_availability: accessibility.audible_signals_available,
+            visual_signs_availability: accessibility.visual_signs_available,
+            accessibility_limitation_description: accessibility.description,
             import_xml: raw_xml
           }
         end

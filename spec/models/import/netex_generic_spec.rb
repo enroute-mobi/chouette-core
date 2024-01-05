@@ -737,6 +737,84 @@ RSpec.describe Import::NetexGeneric do
       end
       end
     end
+
+    describe '#accessibility' do
+      subject { described_class.find_by(registration_number: 'test') }
+
+      expected_attributes = {
+        mobility_impaired_accessibility: "yes",
+        wheelchair_accessibility: "yes",
+        step_free_accessibility: "no",
+        escalator_free_accessibility: "yes",
+        lift_free_accessibility: "partial",
+        audible_signals_availability: "partial",
+        visual_signs_availability: "yes"
+      }
+
+      describe Chouette::Line do
+        let(:xml) do
+          %{
+            <Line id="test">
+              <Name>Line Sample</Name>
+              <AccessibilityAssessment>
+                <validityConditions>
+                  <ValidityCondition>
+                    <Description>Description Sample</Description>
+                  </ValidityCondition>
+                </validityConditions>
+                <MobilityImpairedAccess>true</MobilityImpairedAccess>
+                <limitations>
+                  <AccessibilityLimitation>
+                    <WheelchairAccess>true</WheelchairAccess>
+                    <StepFreeAccess>false</StepFreeAccess>
+                    <EscalatorFreeAccess>true</EscalatorFreeAccess>
+                    <LiftFreeAccess>partial</LiftFreeAccess>
+                    <AudibleSignalsAvailable>partial</AudibleSignalsAvailable>
+                    <VisualSignsAvailable>true</VisualSignsAvailable>
+                  </AccessibilityLimitation>
+                </limitations>
+              </AccessibilityAssessment>
+            </Line>
+          }
+        end
+
+        before { import.part(:line_referential).import! }
+
+        it { is_expected.to an_object_having_attributes(expected_attributes) }
+      end
+
+      describe Chouette::StopArea do
+        let(:xml) do
+          %{
+            <StopPlace id="test">
+              <Name>Stop Place Sample</Name>
+              <AccessibilityAssessment>
+                <validityConditions>
+                  <ValidityCondition>
+                    <Description>Description Sample</Description>
+                  </ValidityCondition>
+                </validityConditions>
+                <MobilityImpairedAccess>true</MobilityImpairedAccess>
+                <limitations>
+                  <AccessibilityLimitation>
+                    <WheelchairAccess>true</WheelchairAccess>
+                    <StepFreeAccess>false</StepFreeAccess>
+                    <EscalatorFreeAccess>true</EscalatorFreeAccess>
+                    <LiftFreeAccess>partial</LiftFreeAccess>
+                    <AudibleSignalsAvailable>partial</AudibleSignalsAvailable>
+                    <VisualSignsAvailable>true</VisualSignsAvailable>
+                  </AccessibilityLimitation>
+                </limitations>
+              </AccessibilityAssessment>
+            </StopPlace>
+          }
+        end
+
+        before { import.part(:stop_area_referential).import! }
+
+        it { is_expected.to an_object_having_attributes(expected_attributes) }
+      end
+    end
   end
 
   describe 'Shape Referential part' do

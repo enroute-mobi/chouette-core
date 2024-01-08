@@ -174,7 +174,7 @@ GEM
     builder (3.2.4)
     bulk_insert (1.9.0)
       activerecord (>= 3.2.0)
-    bullet (7.1.4)
+    bullet (7.1.5)
       activesupport (>= 3.0.0)
       uniform_notifier (~> 1.11)
     bummr (0.6.0)
@@ -876,7 +876,7 @@ DEPENDENCIES
   bootsnap
   bootstrap-sass (= 3.4.1)
   bulk_insert
-  bullet
+  bullet (>= 7.1.5)
   bummr
   bundler-audit
   calendar_helper (= 0.2.5)

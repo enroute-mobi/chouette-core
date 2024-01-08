@@ -29,8 +29,8 @@ module Chouette
     end
 
     # "stop_areas", "lines", "journey_patterns"
-    def collection_name
-      @collection_name ||= resource_name.pluralize
+    def table_name
+      @table_name ||= model_class.reflections["#{name}"]&.klass&.table_name
     end
 
     # "stop_area#name", "line#name", ...
@@ -85,6 +85,7 @@ module Chouette
       define Chouette::Line, :active_until
       define Chouette::Line, :color
       define Chouette::Line, :company, { reference: true, association_collection: :companies }
+      define Chouette::Line, :secondary_companies
       define Chouette::Line, :network, { reference: true, association_collection: :networks }
       define Chouette::Line, :number
       define Chouette::Line, :published_name
@@ -93,6 +94,9 @@ module Chouette
       define Chouette::Line, :transport_mode
       define Chouette::Line, :transport_submode
       define Chouette::Line, :url
+
+      # Chouette::Network
+      define Chouette::Network, :name
 
       # Chouette::Company
       define Chouette::Company, :name
@@ -146,16 +150,29 @@ module Chouette
       define Chouette::StopArea, :registration_number
       define Chouette::StopArea, :compass_bearing, data_type: :float
       define Chouette::StopArea, :accessibility_limitation_description
+      define Chouette::StopArea, :escalator_free_accessibility
+      define Chouette::StopArea, :lift_free_accessibility
+      define Chouette::StopArea, :mobility_impaired_accessibility
+      define Chouette::StopArea, :step_free_accessibility
+      define Chouette::StopArea, :wheelchair_accessibility
+      define Chouette::StopArea, :visual_signs_availability
+      define Chouette::StopArea, :lines
+      define Chouette::StopArea, :routes
 
       # Chouette::Route
       define Chouette::Route, :name
       define Chouette::Route, :published_name
       define Chouette::Route, :opposite_route, { reference: true }
+      define Chouette::Route, :journey_patterns
+      define Chouette::Route, :vehicle_journeys
+      define Chouette::Route, :stop_points
       define Chouette::Route, :wayback
 
       # Chouette::JourneyPattern
       define Chouette::JourneyPattern, :name
       define Chouette::JourneyPattern, :published_name
+      define Chouette::JourneyPattern, :stop_points
+      define Chouette::JourneyPattern, :vehicle_journeys
       define Chouette::JourneyPattern, :shape, { reference: true, association_collection: :shapes }
 
       # Chouette::VehicleJourney
@@ -163,6 +180,12 @@ module Chouette
       define Chouette::VehicleJourney, :company, { reference: true, association_collection: :companies }
       define Chouette::VehicleJourney, :transport_mode
       define Chouette::VehicleJourney, :published_journey_identifier
+      define Chouette::VehicleJourney, :time_tables
+      define Chouette::VehicleJourney, :transport_mode
+
+      # Chouette::TimeTable
+      define Chouette::TimeTable, :dates
+      define Chouette::TimeTable, :periods
 
       # Chouette::Footnote
       define Chouette::Footnote, :code
@@ -170,6 +193,35 @@ module Chouette
 
       # Chouette::RoutingConstraintZone
       define Chouette::RoutingConstraintZone, :name
+
+      # Chouette::ConnectionLink
+      define Chouette::ConnectionLink, :name
+
+      # Document
+      define Document, :name
+
+      # Entrance
+      define Entrance, :address_line_1 # rubocop:disable Naming/VariableNumber
+      define Entrance, :city_name
+      define Entrance, :country
+      define Entrance, :name
+      define Entrance, :short_name
+      define Entrance, :zip_code
+
+      # PointOfInterest::Base
+      define PointOfInterest::Base, :address_line_1 # rubocop:disable Naming/VariableNumber
+      define PointOfInterest::Base, :city_name
+      define PointOfInterest::Base, :country
+      define PointOfInterest::Base, :email
+      define PointOfInterest::Base, :name
+      define PointOfInterest::Base, :phone
+      define PointOfInterest::Base, :postal_region
+      define PointOfInterest::Base, :url
+      define PointOfInterest::Base, :zip_code
+
+      # Shape
+      define Shape, :name
+
     end
   end
 end

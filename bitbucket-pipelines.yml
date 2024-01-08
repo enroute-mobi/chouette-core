@@ -80,7 +80,7 @@ definitions:
           - eval "$(build.sh bitbucket::env)"
           - build.sh bundler::dependencies
           - bundle exec rake ci:setup ci:spec
-          - build.sh codacy::report
+          - build.sh codacy::report::partial
         caches:
           - build-cache
         artifacts:
@@ -101,7 +101,7 @@ definitions:
           - eval "$(build.sh bitbucket::env)"
           - build.sh bundler::dependencies
           - BITBUCKET_PARALLEL_STEP_COUNT=4 BITBUCKET_PARALLEL_STEP=0 FAIL_FAST=true bundle exec rake ci:setup ci:spec
-          - build.sh codacy::report
+          - build.sh codacy::report::partial
         caches:
           - build-cache
         artifacts:
@@ -122,7 +122,7 @@ definitions:
           - eval "$(build.sh bitbucket::env)"
           - build.sh bundler::dependencies
           - BITBUCKET_PARALLEL_STEP_COUNT=4 BITBUCKET_PARALLEL_STEP=1 FAIL_FAST=true bundle exec rake ci:setup ci:spec
-          - build.sh codacy::report
+          - build.sh codacy::report::partial
         caches:
           - build-cache
         artifacts:
@@ -143,7 +143,7 @@ definitions:
           - eval "$(build.sh bitbucket::env)"
           - build.sh bundler::dependencies
           - BITBUCKET_PARALLEL_STEP_COUNT=4 BITBUCKET_PARALLEL_STEP=2 FAIL_FAST=true bundle exec rake ci:setup ci:spec
-          - build.sh codacy::report
+          - build.sh codacy::report::partial
         caches:
           - build-cache
         artifacts:
@@ -164,7 +164,7 @@ definitions:
           - eval "$(build.sh bitbucket::env)"
           - build.sh bundler::dependencies
           - BITBUCKET_PARALLEL_STEP_COUNT=4 BITBUCKET_PARALLEL_STEP=3 FAIL_FAST=true bundle exec rake ci:setup ci:spec
-          - build.sh codacy::report
+          - build.sh codacy::report::partial
         caches:
           - build-cache
         artifacts:
@@ -175,8 +175,13 @@ definitions:
 
     - step: &rebuild-runtime-log
         name: Rebuild runtime log
+        image:
+          name: us.gcr.io/enroute-interne/enroute-ruby:2.7-dev
+          username: _json_key
+          password: "$GCLOUD_API_KEYFILE"
         script:
           - cat parallel_tests/runtime*.log > cache/runtime.log
+          - build.sh codacy::report::final
         caches:
           - build-cache
 

@@ -79,13 +79,6 @@ class LinesController < ChouetteController
     object.delete
   end
 
-  def delete_all
-    objects =
-      get_collection_ivar || set_collection_ivar(end_of_association_chain.where(:id => params[:ids]))
-    objects.each { |object| object.delete }
-    respond_with(objects, :location => smart_collection_url)
-  end
-
   def name_filter
     respond_to do |format|
       format.json { render :json => filtered_lines_maps}

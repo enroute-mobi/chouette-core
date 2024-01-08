@@ -4,11 +4,6 @@ ChouetteIhm::Application.routes.draw do # rubocop:disable Metrics/BlockLength
   resource :dashboard
   resource :subscriptions, only: :create
 
-  # FIXME: See CHOUETTE-207
-  resources :exports, only: :upload do
-    post :upload, on: :member, controller: :export_uploads
-  end
-
   # Used to the redirect user to the current workbench
   # See CHOUETTE-797
   namespace :redirect do
@@ -21,7 +16,7 @@ ChouetteIhm::Application.routes.draw do # rubocop:disable Metrics/BlockLength
     resources :imports do
       get :download, on: :member
       get :internal_download, on: :member
-      resources :import_resources, only: %i[index show] do
+      resources :import_resources, only: [] do
         resources :import_messages, only: [:index]
       end
     end
@@ -104,7 +99,7 @@ ChouetteIhm::Application.routes.draw do # rubocop:disable Metrics/BlockLength
     end
 
     resource :stop_area_referential, only: %i[show edit update] do
-      resources :searches, path: ':parent_resources/searches'
+      resources :searches, only: %i[index show create update destroy], path: ':parent_resources/searches'
 
       resources :stop_area_routing_constraints
       resources :entrances
@@ -159,7 +154,7 @@ ChouetteIhm::Application.routes.draw do # rubocop:disable Metrics/BlockLength
       get :line_notices, on: :collection, defaults: { format: 'json' }
     end
 
-    resource :shape_referential do
+    resource :shape_referential, only: [] do
       resources :shapes, except: [:create]
       resources :point_of_interests
       resources :point_of_interest_categories
@@ -251,7 +246,7 @@ ChouetteIhm::Application.routes.draw do # rubocop:disable Metrics/BlockLength
     member do
       put :archive
       put :unarchive
-      put :clean
+      # put :clean
       get :journey_patterns
     end
 
@@ -269,7 +264,6 @@ ChouetteIhm::Application.routes.draw do # rubocop:disable Metrics/BlockLength
       get :stop_area_providers, on: :collection, defaults: { format: 'json' }
     end
 
-    match 'lines' => 'lines#destroy_all', :via => :delete
     resources :lines, controller: 'referential_lines', except: :index do # rubocop:disable Metrics/BlockLength
       resources :footnotes do
         collection do
@@ -277,17 +271,12 @@ ChouetteIhm::Application.routes.draw do # rubocop:disable Metrics/BlockLength
           patch 'update_all'
         end
       end
-      delete :index, on: :collection, action: :delete_all
-      collection do
-        get 'name_filter'
-      end
       resources :routes do # rubocop:disable Metrics/BlockLength
         member do
           get 'edit_boarding_alighting'
           put 'save_boarding_alighting'
           get 'costs'
           post 'duplicate', to: 'routes#duplicate'
-          get 'get_initial_state'
         end
         collection do
           get 'fetch_opposite_routes'
@@ -325,8 +314,6 @@ ChouetteIhm::Application.routes.draw do # rubocop:disable Metrics/BlockLength
         get 'duplicate'
         get 'month', defaults: { format: :json }
       end
-      resources :time_table_dates
-      resources :time_table_periods
     end
     resources :clean_ups
   end

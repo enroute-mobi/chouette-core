@@ -152,7 +152,7 @@ module Control
           with_query = WithQuery.create(scope, model_attribute)
           return with_query if with_query
 
-          if model_attribute.options[:reference]
+          if model_attribute.table_name
             Reference.new scope, model_attribute
           else
             SimpleAttribute.new scope, model_attribute

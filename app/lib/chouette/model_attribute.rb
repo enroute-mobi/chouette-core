@@ -12,6 +12,14 @@ module Chouette
       Collection.new(&block)
     end
 
+    # Returns the localized attribute name ("Nom", "Name", "Transporteur", etc)
+    def human_name
+      # Do not store the value (depend on the current locale)
+      I18n.translate! name, scope: ['model_attribute', resource_name]
+    rescue I18n::MissingTranslationData
+      model_class.human_attribute_name(name)
+    end
+
     def initialize(model_class, name, options = {})
       @model_class = model_class
       @name = name
@@ -84,9 +92,9 @@ module Chouette
       define Chouette::Line, :active_from
       define Chouette::Line, :active_until
       define Chouette::Line, :color
-      define Chouette::Line, :company, { reference: true, association_collection: :companies }
+      define Chouette::Line, :company
       define Chouette::Line, :secondary_companies
-      define Chouette::Line, :network, { reference: true, association_collection: :networks }
+      define Chouette::Line, :network
       define Chouette::Line, :number
       define Chouette::Line, :published_name
       define Chouette::Line, :registration_number
@@ -134,8 +142,8 @@ module Chouette
 
       # Chouette::StopArea
       define Chouette::StopArea, :name
-      define Chouette::StopArea, :parent, { reference: true }
-      define Chouette::StopArea, :referent, { reference: true }
+      define Chouette::StopArea, :parent
+      define Chouette::StopArea, :referent
       define Chouette::StopArea, :fare_code
       define Chouette::StopArea, :coordinates
       define Chouette::StopArea, :country_code
@@ -162,7 +170,7 @@ module Chouette
       # Chouette::Route
       define Chouette::Route, :name
       define Chouette::Route, :published_name
-      define Chouette::Route, :opposite_route, { reference: true }
+      define Chouette::Route, :opposite_route
       define Chouette::Route, :journey_patterns
       define Chouette::Route, :vehicle_journeys
       define Chouette::Route, :stop_points
@@ -173,11 +181,11 @@ module Chouette
       define Chouette::JourneyPattern, :published_name
       define Chouette::JourneyPattern, :stop_points
       define Chouette::JourneyPattern, :vehicle_journeys
-      define Chouette::JourneyPattern, :shape, { reference: true, association_collection: :shapes }
+      define Chouette::JourneyPattern, :shape
 
       # Chouette::VehicleJourney
       define Chouette::VehicleJourney, :published_journey_name
-      define Chouette::VehicleJourney, :company, { reference: true, association_collection: :companies }
+      define Chouette::VehicleJourney, :company
       define Chouette::VehicleJourney, :transport_mode
       define Chouette::VehicleJourney, :published_journey_identifier
       define Chouette::VehicleJourney, :time_tables

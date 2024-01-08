@@ -8,7 +8,7 @@ class ShapesController < ChouetteController
 
   respond_to :html
   respond_to :json, only: %i[index]
-  respond_to :kml, :geojson, only: %i[index show]
+  respond_to :geojson, only: %i[index show]
 
   def index
     index! do |format|

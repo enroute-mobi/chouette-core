@@ -9,8 +9,6 @@ fr:
       edit_boarding_alighting: "Contraintes de montée - descente"
       destroy: "Supprimer cet itinéraire"
       destroy_confirm: "Etes vous sûr de supprimer cet itinéraire ?"
-      export_kml: "Export KML de l'itinéraire"
-      export_kml_all: "Export KML des itinéraires"
       add_stop_point: "Ajouter un arrêt"
       new_stop_point: "Créer un arrêt pour l'ajouter"
       reversed_vehicle_journey: "Horaires retour"

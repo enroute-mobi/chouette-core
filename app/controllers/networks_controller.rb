@@ -10,7 +10,6 @@ class NetworksController < ChouetteController
   respond_to :html
   respond_to :xml
   respond_to :json
-  respond_to :kml, :only => :show
   respond_to :js, :only => :index
 
   def show

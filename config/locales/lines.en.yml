@@ -14,8 +14,6 @@ en:
       destroy_confirm: "Are you sure you want to destroy this line ?"
       destroy_selection_confirm: "Are you sure you want to destroy those lines ?"
       import: "Import lines"
-      export_kml: "Export KML line"
-      export_kml_all: "Export KML lines"
       show: 'Show'
       show_network: 'Show network'
       show_company: 'Show company'

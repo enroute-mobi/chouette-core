@@ -6,8 +6,7 @@ class RoutesController < ChouetteController
   defaults resource_class: Chouette::Route
 
   respond_to :html, :xml, :json, :geojson
-  respond_to :kml, only: :show
-  respond_to :js, only: :show
+  respond_to :js, :only => :show
   respond_to :geojson, only: %i[show index]
   respond_to :json, only: %i[retrieve_nearby_stop_areas autocomplete_stop_areas]
 

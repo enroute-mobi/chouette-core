@@ -6,7 +6,7 @@ class StopAreasController < ChouetteController
   belongs_to :workbench
   belongs_to :stop_area_referential, singleton: true
 
-  respond_to :html, :kml, :geojson, :xml, :json
+  respond_to :html, :geojson, :xml, :json
   respond_to :js, :only => :index
 
   around_action :set_current_workgroup

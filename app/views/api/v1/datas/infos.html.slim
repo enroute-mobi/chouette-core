@@ -1,0 +1,91 @@
+- if I18n.locale == :fr
+  h2
+    = "Accès à l'API de données "
+    strong= @publication_api.name
+  p.alert.alert-info
+    - if @publication_api.public?
+      = "Cette API est publique"
+    - else
+      = "Pour accéder aux données de cette API, vous devez disposer d'une clé d'accès."
+      br
+      = "Contacter le propriétaire de l’API pour obtenir une clé d'accès."
+  - if @publication_api.publication_api_sources.exists?
+    h4 Ressources disponibles:
+    ul
+      - @publication_api.publication_api_sources.each do |source|
+        li= link_to source.public_url, source.public_url
+    - if @publication_api.last_publication_at
+      = "La dernière publication de données a eu lieu le #{l @publication_api.last_publication_at, format: :short_with_time}."
+  - else
+    h4 Aucune Ressource disponible
+  - if @publication_api.public?
+    p
+      # Pour tester l'accès à une ressource, vous pouvez utiliser le code suivant:
+      pre
+        = "curl -o #{params[:from] && params[:from].split('/').last || 'output.zip'} #{params[:from] || "<URL DE LA RESSOURCE>"}"
+  - else
+    h4 Authentification
+    p
+      # La clé doit être transmise dans une entête HTTP de la forme :
+      pre Authorization: Token token="&lt;YOUR TOKEN&gt;"
+    p
+      = "Par exemple, si le token de clé est "
+      em 5fa1f901a833aaec78
+      = ", la requête doit inclure une entête HTTP :"
+      pre Authorization: Token token="5fa1f901a833aaec78"
+    p
+      # Pour tester l'accès à une ressource, vous pouvez utiliser le code suivant:
+      pre
+        = "curl \\"
+        br
+        = "-H 'Authorization: Token token=\"<VOTRE TOKEN>\"'  \\"
+        br
+        = "-o #{params[:from] && params[:from].split('/').last || 'output.zip'} \\"
+        br
+        = params[:from] || "<URL DE LA RESSOURCE>"
+- else
+  h2
+    = "Access to the "
+    strong= @publication_api.name
+    = " API"
+  p.alert.alert-info
+    - if @publication_api.public?
+      = "This API is public"
+    - else
+      = "To gain access to this API, you need an authorization token."
+      br
+      = "Please contact the owner of this API to get an access token."
+  - if @publication_api.publication_api_sources.exists?
+    h4 Available resources:
+    ul
+      - @publication_api.publication_api_sources.each do |source|
+        li= link_to source.public_url
+    - if @publication_api.last_publication_at
+      = "The last data publication has been performed on #{l @publication_api.last_publication_at, format: :short_with_time}."
+  - else
+    h4 No available resource
+  - if @publication_api.public?
+    p
+      # To thest the access to a resource, you may use the following snippet:
+      pre
+        = "curl -o #{params[:from] && params[:from].split('/').last || 'output.zip'} #{params[:from] || "<URL DE LA RESSOURCE>"}"
+  - else
+    h4 Authentication
+    p
+      # The token must be transmitted through an HTTP header :
+      pre Authorization: Token token="&lt;VOTRE TOKEN&gt;"
+    p
+      = "For example, if the token is "
+      em 5fa1f901a833aaec78
+      =", the request must contain the following HTTP header:"
+      pre Authorization: Token token="5fa1f901a833aaec78"
+    p
+      # To thest the access to a resource, you may use the following snippet:
+      pre
+        = "curl \\"
+        br
+        = "-H'Authorization: Token token=\"<YOUR TOKEN>\"'  \\"
+        br
+        = "-o #{params[:from] && params[:from].split('/').last || 'output.zip'} \\"
+        br
+        = params[:from] || "<RESOURCE URL>"

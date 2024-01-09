@@ -49,6 +49,14 @@ RSpec.describe Control::ModelStatus do
       describe "enabled" do
         let(:expected_status) { 'enabled' }
 
+        context 'search stop areas with deleted_at is nil' do
+          it 'should not create a warning message' do
+            control_run.run
+
+            expect(control_run.control_messages).to be_empty
+          end
+        end
+
         context "search stop areas with deleted_at is not nil" do
           before { stop_area.update deleted_at: Date.current }
 
@@ -63,13 +71,43 @@ RSpec.describe Control::ModelStatus do
       describe "disabled" do
         let(:expected_status) { 'disabled' }
 
-        context "search stop areas with confirmed_at not nil and deleted_at is nil" do
+        context 'search stop areas with deleted_at is nil and confirmed_at is nil' do
+          before { stop_area.update deleted_at: nil, confirmed_at: nil }
+
+          it 'should not create a warning message' do
+            control_run.run
+
+            expect(control_run.control_messages).to be_empty
+          end
+        end
+
+        context 'search stop areas with deleted_at is not nil and confirmed_at is nil' do
+          before { stop_area.update deleted_at: DateTime.now, confirmed_at: nil }
+
+          it 'should not create a warning message' do
+            control_run.run
+
+            expect(control_run.control_messages).to be_empty
+          end
+        end
+
+        context 'search stop areas with deleted_at is nil and confirmed_at is not nil' do
           before { stop_area.update  deleted_at: nil, confirmed_at: DateTime.now }
 
           it "should create a warning message" do
             control_run.run
 
             expect(control_run.control_messages).to include(expected_message)
+          end
+        end
+
+        context 'search stop areas with deleted_at is not nil and confirmed_at is not nil' do
+          before { stop_area.update deleted_at: DateTime.now, confirmed_at: DateTime.now }
+
+          it 'should not create a warning message' do
+            control_run.run
+
+            expect(control_run.control_messages).to be_empty
           end
         end
       end
@@ -83,6 +121,16 @@ RSpec.describe Control::ModelStatus do
       describe "enabled" do
         let(:expected_status) { 'enabled' }
 
+        context 'search line with deactivated to false' do
+          before { line.update deactivated: false }
+
+          it 'should not create a warning message' do
+            control_run.run
+
+            expect(control_run.control_messages).to be_empty
+          end
+        end
+
         context "search line with deactivated to true" do
           before { line.update deactivated: true }
 
@@ -92,7 +140,6 @@ RSpec.describe Control::ModelStatus do
             expect(control_run.control_messages).to include(expected_message)
           end
         end
-
       end
 
       describe "disabled" do
@@ -105,6 +152,16 @@ RSpec.describe Control::ModelStatus do
             control_run.run
 
             expect(control_run.control_messages).to include(expected_message)
+          end
+        end
+
+        context 'search line with deactivated to true' do
+          before { line.update deactivated: true }
+
+          it 'should not create a warning message' do
+            control_run.run
+
+            expect(control_run.control_messages).to be_empty
           end
         end
       end

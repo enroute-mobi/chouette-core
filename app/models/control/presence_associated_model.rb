@@ -17,26 +17,26 @@ module Control
       end
 
       def candidate_collections # rubocop:disable Metrics/MethodLength
-        Chouette::ModelAttribute.empty do
-          define Chouette::StopArea, :routes
-          define Chouette::StopArea, :lines
-          # define Chouette::StopArea, :entrances
-          # define Chouette::StopArea, :connection_links
+        Chouette::ModelAttribute.collection do
+          select Chouette::StopArea, :routes
+          select Chouette::StopArea, :lines
+          # select Chouette::StopArea, :entrances
+          # select Chouette::StopArea, :connection_links
 
-          define Chouette::Line, :routes
-          # define Chouette::Line, :secondary_companies
+          select Chouette::Line, :routes
+          # select Chouette::Line, :secondary_companies
 
-          define Chouette::Route, :stop_points
-          define Chouette::Route, :journey_patterns
-          define Chouette::Route, :vehicle_journeys
+          select Chouette::Route, :stop_points
+          select Chouette::Route, :journey_patterns
+          select Chouette::Route, :vehicle_journeys
 
-          define Chouette::JourneyPattern, :stop_points
-          define Chouette::JourneyPattern, :vehicle_journeys
+          select Chouette::JourneyPattern, :stop_points
+          select Chouette::JourneyPattern, :vehicle_journeys
 
-          define Chouette::VehicleJourney, :time_tables
+          select Chouette::VehicleJourney, :time_tables
 
-          define Chouette::TimeTable, :periods
-          define Chouette::TimeTable, :dates
+          select Chouette::TimeTable, :periods
+          select Chouette::TimeTable, :dates
         end
       end
 

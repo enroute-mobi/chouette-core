@@ -2,6 +2,15 @@
 
 RSpec.describe Control::PresenceAssociatedModel do
   describe Control::PresenceAssociatedModel::Run do
+    describe '#candidate_collections' do
+      subject { described_class.new.candidate_collections }
+
+      it 'does not cause error' do
+        expect(Rails.logger).not_to receive(:error)
+        subject
+      end
+    end
+
     let(:control_list_run) do
       Control::List::Run.create referential: context.referential, workbench: context.workbench
     end

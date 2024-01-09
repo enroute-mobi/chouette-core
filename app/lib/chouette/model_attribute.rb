@@ -26,19 +26,23 @@ module Chouette
       @options = options
     end
 
+    # TODO: CHOUETTE-3266 remove?
     # "StopArea", "Line", "Entrance", ...
     def model_name
       @model_name ||= model_class.model_name.to_s
     end
 
+    # TODO: CHOUETTE-3266 remove?
     # :stop_area, :line, :entrance, ...
     def resource_name
       @resource_name ||= model_name.underscore
     end
 
+    # TODO: CHOUETTE-3266 only used once?
     # "stop_areas", "lines", "journey_patterns"
     def table_name
-      @table_name ||= model_class.reflections["#{name}"]&.klass&.table_name
+      # @table_name ||= model_class.reflections["#{name}"]&.klass&.table_name
+      @table_name ||= model_class.table_name
     end
 
     # "stop_area#name", "line#name", ...
@@ -79,6 +83,7 @@ module Chouette
         end
       end
 
+      # TODO: CHOUETTE-3266 always used with model_name and name, maybe make an optimized version
       def find_by(attributes)
         find do |model_attribute|
           attributes.all? do |k, v|
@@ -102,6 +107,7 @@ module Chouette
       define Chouette::Line, :transport_mode
       define Chouette::Line, :transport_submode
       define Chouette::Line, :url
+      define Chouette::Line, :routes
 
       # Chouette::Network
       define Chouette::Network, :name

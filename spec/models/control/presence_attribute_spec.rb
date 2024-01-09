@@ -1,6 +1,15 @@
-RSpec.describe Control::PresenceAttribute do
+# frozen_string_literal: true
 
+RSpec.describe Control::PresenceAttribute do
   describe Control::PresenceAttribute::Run do
+    describe '#candidate_target_attributes' do
+      subject { described_class.new.candidate_target_attributes }
+
+      it 'does not cause error' do
+        expect(Rails.logger).not_to receive(:error)
+        subject
+      end
+    end
 
     let(:control_list_run) do
       Control::List::Run.create referential: context.referential, workbench: context.workbench

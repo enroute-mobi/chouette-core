@@ -58,8 +58,7 @@ GIT
 
 GIT
   remote: https://bitbucket.org/enroute-mobi/netex.git
-  revision: 5e1471c62a6bddf00421af32d9d514c8f4591a7b
-  branch: NETEX-108-vehicle-journey-stop-assignment
+  revision: 8f471ba123ee068aacca45267b544e9243049499
   specs:
     netex (0.1.2)
       activesupport

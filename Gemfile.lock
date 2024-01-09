@@ -376,7 +376,7 @@ GEM
     graphiql-rails (1.9.0)
       railties
       sprockets-rails
-    graphql (2.2.3)
+    graphql (2.2.4)
       racc (~> 1.4)
     gretel (4.6.0)
       actionview (>= 5.1, < 7.2)
@@ -491,7 +491,7 @@ GEM
     memoist (0.16.2)
     memory_profiler (1.0.0)
     method_source (1.0.0)
-    mime-types (3.5.1)
+    mime-types (3.5.2)
       mime-types-data (~> 3.2015)
     mime-types-data (3.2023.1205)
     mimemagic (0.4.3)
@@ -520,7 +520,7 @@ GEM
     net-smtp (0.4.0)
       net-protocol
     net-ssh (7.0.1)
-    nio4r (2.5.9)
+    nio4r (2.7.0)
     nokogiri (1.15.5)
       mini_portile2 (~> 2.8.2)
       racc (~> 1.4)
@@ -579,7 +579,7 @@ GEM
     pry-rails (0.3.9)
       pry (>= 0.10.4)
     public_suffix (5.0.4)
-    puma (6.4.0)
+    puma (6.4.1)
       nio4r (~> 2.0)
     pundit (2.3.1)
       activesupport (>= 3.0.0)

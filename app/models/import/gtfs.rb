@@ -704,22 +704,12 @@ class Import::Gtfs < Import::Base # rubocop:disable Metrics/ClassLength
     journey_pattern.name = route.name
     journey_pattern.published_name = trip.headsign
 
-    if trip.shape_id
-      shape = shape_provider.shapes.by_code(code_space, trip.shape_id).first
-      journey_pattern.shape = shape
-
-      # Define Shape name when empty (to make it more user friendly)
-      if shape && shape.name.blank?
-        shape.update name: journey_pattern.name
-      end
-    end
-
     raise InvalidTripTimesError unless consistent_stop_times(stop_times)
     stop_points_with_times = stop_times.each_with_index.map do |stop_time, i|
       [stop_time, import_stop_time(stop_time, journey_pattern.route, resource, i)]
     end
     ApplicationModel.skipping_objectid_uniqueness do
-        save_model route, resource: resource
+      save_model route, resource: resource
     end
 
     stop_points = stop_points_with_times.map do |s|
@@ -751,8 +741,20 @@ class Import::Gtfs < Import::Base # rubocop:disable Metrics/ClassLength
     journey_pattern.departure_stop_point_id = stop_points.first.id
     journey_pattern.arrival_stop_point_id = stop_points.last.id
 
+    if trip.shape_id
+      shape = shape_provider.shapes.by_code(code_space, trip.shape_id).first
+      journey_pattern.shape = shape
+
+      # Define Shape name when empty (to make it more user friendly)
+      if shape
+        shape.name = journey_pattern.name if shape.name.blank?
+        shape.waypoints = journey_pattern.waypoints unless shape.waypoints.any?
+        shape.save
+      end
+    end
+
     ApplicationModel.skipping_objectid_uniqueness do
-        save_model journey_pattern, resource: resource
+      save_model journey_pattern, resource: resource
     end
 
     journey_pattern_ids[trip_signature(trip, stop_times)] = journey_pattern.id

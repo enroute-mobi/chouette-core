@@ -36,9 +36,13 @@ const store = createStore(
   applyMiddleware()
 )
 
-render(
-  <Provider store={store}>
-    <App />
-  </Provider>,
-  document.getElementById('journey_patterns')
-)
+document.addEventListener("DOMContentLoaded", () => {
+  if (document.getElementById("journey_patterns")) {
+    render(
+      <Provider store={store}>
+        <App />
+      </Provider>,
+      document.getElementById('journey_patterns')
+    )
+  }
+})

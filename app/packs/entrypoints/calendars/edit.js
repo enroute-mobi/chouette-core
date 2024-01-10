@@ -59,9 +59,13 @@ let store = createStore(
   applyMiddleware()
 )
 
-render(
-  <Provider store={store}>
-    <App isCalendar />
-  </Provider>,
-  document.getElementById('periods')
-)
+document.addEventListener("DOMContentLoaded", () => {
+  if (document.getElementById("periods")) {
+    render(
+      <Provider store={store}>
+        <App isCalendar />
+      </Provider>,
+      document.getElementById('periods')
+    )
+  }
+})

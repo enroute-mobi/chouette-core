@@ -16,9 +16,13 @@ let store = createStore(
   applyMiddleware()
 )
 
-render(
-  <Provider store={store}>
-    <App returnRouteUrl={window.returnRouteUrl} />
-  </Provider>,
-  document.getElementById('vehicle_journeys_wip')
-)
+document.addEventListener("DOMContentLoaded", () => {
+  if (document.getElementById("vehicle_journeys_wip")) {
+    render(
+      <Provider store={store}>
+        <App returnRouteUrl={window.returnRouteUrl} />
+      </Provider>,
+      document.getElementById('vehicle_journeys_wip')
+    )
+  }
+})

@@ -40,4 +40,11 @@ import 'entrypoints/inputs/ajax_select'
 import "src/flash_messages"
 import "src/date_filters"
 
+// React Apps
+import './calendars/edit'
+import './journey_patterns'
+import './routes/form'
+import './time_tables/edit'
+import './vehicle_journeys'
+
 console.log('Hello World from Webpacker 6')

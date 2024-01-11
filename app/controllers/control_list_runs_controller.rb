@@ -77,17 +77,23 @@ class ControlListRunsController < ChouetteController
     @search ||= Search.from_params(params)
   end
 
-  class Search < Search::Operation
-    def query_class
-      Query::ControlListRun
-    end
-  end
-
   def collection
     @collection ||= search.search(scope)
   end
 
   private
+
+  class Search < Search::Operation
+    attribute :referential_name
+
+    def query(scope)
+      super.referential_name(referential_name)
+    end
+
+    def query_class
+      Query::ControlListRun
+    end
+  end
 
   def init_facade
     object = begin

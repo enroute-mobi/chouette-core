@@ -13,6 +13,7 @@
     .form-group.togglable class=filter_item_class(params[:search], :workbench_ids)
       = f.label :workbench_ids, class: 'control-label'
       = f.input :workbench_ids, as: :check_boxes, collection: @search.candidate_workbenches.order('name'), label: false, label_method: lambda{|workbench| ("<span>" + workbench.name + "</span>").html_safe}, value_method: lambda{|workbench| workbench.id.to_s}, wrapper_html: { class: "checkbox_list"}
+    = f.input :referential_name
     = f.input :start_date, as: :date_picker
     = f.input :end_date, as: :date_picker
 

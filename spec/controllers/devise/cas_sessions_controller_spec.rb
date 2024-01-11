@@ -32,7 +32,7 @@ RSpec.describe Devise::CasSessionsController, type: :controller do
     it 'can login and will be redirected to the referentials page' do
       @user.permissions << 'sessions.create'
       get :service
-      expect(response).to redirect_to(authenticated_root_path)
+      expect(response).to redirect_to(root_path)
     end
   end
 

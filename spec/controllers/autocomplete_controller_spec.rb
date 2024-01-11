@@ -55,45 +55,6 @@ RSpec.describe AutocompleteController, type: :controller do
       end
 
     end
-
-    context "for a referential" do
-
-      it "returns the complete list when the search parameter is not found" do
-        get :lines, params: {
-          referential_id: referential.id
-        }
-        expect(assigns(:lines)).to match_array [first_line]
-        expect(response).to be_successful
-      end
-
-      it "returns a line when the name contains the search parameter" do
-        get :lines, params: {
-          referential_id: referential.id,
-          q: 'Line one'
-        }
-        expect(assigns(:lines).to_a).to eq [first_line]
-        expect(response).to be_successful
-      end
-
-      it "returns a line when the number contains the search parameter" do
-        get :lines, params: {
-          referential_id: referential.id,
-          q: 'L1'
-        }
-        expect(assigns(:lines).to_a).to eq [first_line]
-        expect(response).to be_successful
-      end
-
-      it "returns a line when the published name contains the search parameter" do
-        get :lines, params: {
-          referential_id: referential.id,
-          q: 'First'
-        }
-        expect(assigns(:lines).to_a).to eq [first_line]
-        expect(response).to be_successful
-      end
-
-    end
   end
 
   describe "GET #companies" do
@@ -133,36 +94,6 @@ RSpec.describe AutocompleteController, type: :controller do
       it "returns a company when the short name contains the search parameter" do
         get :companies, params: {
           workbench_id: workbench.id,
-          q: 'C1'
-        }
-        expect(assigns(:companies).to_a).to eq [company]
-        expect(response).to be_successful
-      end
-
-    end
-
-    context "for a referential" do
-
-      it "returns the complete list when the search parameter is not found" do
-        get :companies, params: {
-          referential_id: referential.id
-        }
-        expect(assigns(:companies)).to match_array [company]
-        expect(response).to be_successful
-      end
-
-      it "returns a company when the name contains the search parameter" do
-        get :companies, params: {
-          referential_id: referential.id,
-          q: 'Company one'
-        }
-        expect(assigns(:companies).to_a).to eq [company]
-        expect(response).to be_successful
-      end
-
-      it "returns a company when the short name contains the search parameter" do
-        get :companies, params: {
-          referential_id: referential.id,
           q: 'C1'
         }
         expect(assigns(:companies).to_a).to eq [company]

@@ -27,11 +27,10 @@ ChouetteIhm::Application.routes.draw do # rubocop:disable Metrics/BlockLength
     end
   end
 
-  resources :workbenches, only: %i[index show], concerns: :iev_interfaces do # rubocop:disable Metrics/BlockLength
+  resources :workbenches, except: %i[index destroy], concerns: :iev_interfaces do # rubocop:disable Metrics/BlockLength
     resources :api_keys
 
-    resources :autocomplete,
-              only: %i[lines companies line_providers line_notices stop_areas parent_stop_areas stop_area_providers] do
+    resources :autocomplete, only: [] do
       get :lines, on: :collection, defaults: { format: 'json' }
       get :companies, on: :collection, defaults: { format: 'json' }
       get :line_providers, on: :collection, defaults: { format: 'json' }
@@ -111,7 +110,7 @@ ChouetteIhm::Application.routes.draw do # rubocop:disable Metrics/BlockLength
         get :fetch_connection_links, on: :member, defaults: { format: 'geojson' }
       end
 
-      resources :autocomplete, only: %i[stop_areas parent_stop_areas stop_area_providers] do
+      resources :autocomplete, only: [] do
         get :stop_areas, on: :collection, defaults: { format: 'json' }
         get :parent_stop_areas, on: :collection, defaults: { format: 'json' }
         get :stop_area_providers, on: :collection, defaults: { format: 'json' }
@@ -145,13 +144,6 @@ ChouetteIhm::Application.routes.draw do # rubocop:disable Metrics/BlockLength
       end
       resources :networks
       resources :line_notices
-    end
-
-    resources :autocomplete, only: %i[lines companies line_providers line_notices] do
-      get :lines, on: :collection, defaults: { format: 'json' }
-      get :companies, on: :collection, defaults: { format: 'json' }
-      get :line_providers, on: :collection, defaults: { format: 'json' }
-      get :line_notices, on: :collection, defaults: { format: 'json' }
     end
 
     resource :shape_referential, only: [] do
@@ -218,8 +210,7 @@ ChouetteIhm::Application.routes.draw do # rubocop:disable Metrics/BlockLength
       end
     end
 
-    resources :autocomplete,
-              only: %i[lines companies line_providers stop_areas parent_stop_areas stop_area_providers] do
+    resources :autocomplete, only: [] do
       get :lines, on: :collection, defaults: { format: 'json' }
       get :companies, on: :collection, defaults: { format: 'json' }
       get :line_providers, on: :collection, defaults: { format: 'json' }
@@ -246,7 +237,6 @@ ChouetteIhm::Application.routes.draw do # rubocop:disable Metrics/BlockLength
     member do
       put :archive
       put :unarchive
-      # put :clean
       get :journey_patterns
     end
 
@@ -254,10 +244,7 @@ ChouetteIhm::Application.routes.draw do # rubocop:disable Metrics/BlockLength
       get 'around', on: :member
     end
 
-    resources :autocomplete,
-              only: %i[lines companies line_providers stop_areas parent_stop_areas stop_area_providers] do
-      get :lines, on: :collection, defaults: { format: 'json' }
-      get :companies, on: :collection, defaults: { format: 'json' }
+    resources :autocomplete, only: [] do
       get :line_providers, on: :collection, defaults: { format: 'json' }
       get :stop_areas, on: :collection, defaults: { format: 'json' }
       get :parent_stop_areas, on: :collection, defaults: { format: 'json' }
@@ -271,6 +258,7 @@ ChouetteIhm::Application.routes.draw do # rubocop:disable Metrics/BlockLength
           patch 'update_all'
         end
       end
+
       resources :routes do # rubocop:disable Metrics/BlockLength
         member do
           get 'edit_boarding_alighting'
@@ -327,7 +315,7 @@ ChouetteIhm::Application.routes.draw do # rubocop:disable Metrics/BlockLength
 
   devise_scope :user do
     authenticated :user do
-      root to: 'workbenches#index', as: :authenticated_root
+      root to: 'dashboards#show'
     end
 
     unauthenticated :user do
@@ -335,7 +323,7 @@ ChouetteIhm::Application.routes.draw do # rubocop:disable Metrics/BlockLength
 
       target = 'devise/cas_sessions#new' if Rails.application.config.chouette_authentication_settings[:type] == 'cas'
 
-      root to: target, as: :unauthenticated_root
+      root to: target
     end
   end
 
@@ -400,8 +388,6 @@ ChouetteIhm::Application.routes.draw do # rubocop:disable Metrics/BlockLength
 
   mount LetterOpenerWeb::Engine, at: '/letter_opener' if %i[letter_opener_web
                                                             letter_opener].include?(Rails.application.config.action_mailer.delivery_method)
-
-  root to: 'dashboards#show'
 
   get '/snap' => 'snapshots#show' if Rails.env.development? || Rails.env.test?
 

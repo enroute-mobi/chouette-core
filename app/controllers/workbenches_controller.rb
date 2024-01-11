@@ -4,10 +4,6 @@ class WorkbenchesController < ChouetteController
 
   respond_to :html, except: :destroy
 
-  def index
-    redirect_to dashboard_path
-  end
-
   def show
     @single_workbench = @workbench.workgroup.workbenches.one?
 

@@ -5,8 +5,11 @@ module Chouette
 
     belongs_to :time_table, inverse_of: :dates
 
-    validates_presence_of :date
-    validates_uniqueness_of :date, :scope => :time_table_id
+    validates :date, presence: true
+
+    with_options(if: -> { validation_context != :inserter }) do |except_in_inserter_context|
+      except_in_inserter_context.validates :date, uniqueness: { scope: :time_table_id }
+    end
 
     scope :in_dates, -> { where(in_out: true) }
     scope :in_date_range, -> (date_range) { where("date between ? and ?", date_range.min, date_range.max) }

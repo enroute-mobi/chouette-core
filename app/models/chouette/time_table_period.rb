@@ -13,9 +13,12 @@ module Chouette
       joins("inner join time_table_periods as brother on time_table_periods.time_table_id = brother.time_table_id and time_table_periods.id <> brother.id").where("time_table_periods.period_start <= brother.period_end AND time_table_periods.period_end >= brother.period_start")
     }
 
-    validates_presence_of :period_start, :period_end
-    validate :validate_period_uniqueness
+    validates :period_start, :period_end, presence: true
     validate :start_must_be_before_end
+
+    with_options(if: -> { validation_context != :inserter }) do |except_in_inserter_context|
+      except_in_inserter_context.validate :validate_period_uniqueness
+    end
 
     def validate_period_uniqueness
       return unless time_table

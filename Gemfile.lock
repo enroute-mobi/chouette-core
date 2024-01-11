@@ -58,8 +58,7 @@ GIT
 
 GIT
   remote: https://bitbucket.org/enroute-mobi/netex.git
-  revision: 1d02e01205fee5777db18318945f0cf17e38e488
-  branch: NETEX-119-resource-loading
+  revision: 9b60d060765af1243206446ee6a5e1eef74bf4ed
   specs:
     netex (0.1.2)
       activesupport

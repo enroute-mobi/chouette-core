@@ -38,8 +38,7 @@ module LocalImportSupport
     update status: 'failed', ended_at: Time.now
     Chouette::Safe.capture "#{self.class.name} ##{id} failed", e
 
-    if (referential && overlapped_referential_ids = referential.overlapped_referential_ids).present?
-      overlapped = Referential.find overlapped_referential_ids.last
+    if overlapping_referential_ids.present?
       create_message(
         criticity: :error,
         message_attributes: {
@@ -127,8 +126,6 @@ module LocalImportSupport
 
       return referential if referential_builder.valid?
 
-      # Create a global error message
-      self.messages.create criticity: :error, message_key: 'referential_creation_overlapping_existing_referential'
       self.overlapping_referential_ids = referential_builder.overlapping_referential_ids
     end
   end

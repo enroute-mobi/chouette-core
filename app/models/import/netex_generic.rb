@@ -866,7 +866,15 @@ class Import::NetexGeneric < Import::Base
         @day_type_assignments = day_type_assignments
         @operating_periods = operating_periods
       end
-      attr_reader :day_type_assignments, :operating_periods
+      attr_reader :day_type_assignments
+
+      def operating_periods
+        @operating_periods.reject { |o| o.respond_to? :valid_day_bits }
+      end
+
+      def uic_operating_periods
+        @operating_periods.select { |o| o.respond_to? :valid_day_bits }
+      end
 
       def valid?
         time_table
@@ -897,10 +905,23 @@ class Import::NetexGeneric < Import::Base
         day_type_assignments_with_date.reject(&:available?).map(&:date)
       end
 
-      def memory_timetable_periods
+      def timetable_periods
         operating_periods.map do |operating_period|
           Cuckoo::Timetable::Period.from(operating_period.date_range, days_of_week)
         end
+      end
+
+      def uic_days_bits
+        uic_operating_periods.map do |operating_period|
+          Cuckoo::DaysBit.new(
+            from: operating_period.date_range.min,
+            bitset: Bitset.from_s(operating_period.valid_day_bits)
+          )
+        end
+      end
+
+      def uic_timetables
+        uic_days_bits.map(&:to_timetable)
       end
 
       def chouette_name
@@ -911,12 +932,17 @@ class Import::NetexGeneric < Import::Base
         @time_table ||= Chouette::TimeTable.new(comment: chouette_name).apply(memory_timetable)
       end
 
-      def memory_timetable
-        @memory_timetable ||= Cuckoo::Timetable.new(
-          periods: memory_timetable_periods,
+      def base_timetable
+        Cuckoo::Timetable.new(
+          periods: timetable_periods,
           included_dates: included_dates,
           excluded_dates: excluded_dates
-        ).normalize!
+        )
+      end
+
+      def memory_timetable
+        @memory_timetable ||=
+          Cuckoo::Timetable.merge(base_timetable, *uic_timetables).with_uniq_days_of_week.normalize!
       end
     end
   end

@@ -229,4 +229,5 @@ gem 'ed25519'
 gem 'x25519'
 gem 'bcrypt_pbkdf'
 
+gem 'bitset', en_route: 'bitset'
 gem 'cuckoo', en_route: 'cuckoo'

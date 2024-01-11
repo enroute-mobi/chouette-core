@@ -1408,3 +1408,97 @@ RSpec.describe Import::NetexGeneric do
     end
   end
 end
+
+RSpec.describe Import::NetexGeneric::TimeTables::Decorator do
+  subject(:decorator) { described_class.new day_type, day_type_assignments, operating_periods }
+
+  let(:day_type) { Netex::DayType.new }
+  let(:day_type_assignments) { [] }
+  let(:operating_periods) { [] }
+
+  describe '#timetable_periods' do
+    subject { decorator.timetable_periods }
+
+    context 'when no Operation Period is defined' do
+      it { is_expected.to be_empty }
+    end
+
+    # <OperatingPeriod>
+    #   <FromDate>2030-01-01T00:00:00</FromDate>
+    #   <ToDate>2030-01-10T00:00:00</ToDate>
+    # </OperatingPeriod>
+    context 'when an Operating Period is present from 2030-01-01 to 2030-01-10' do
+      let(:operating_periods) do
+        [
+          Netex::OperatingPeriod.new(time_range: Time.parse('2030-01-01')..Time.parse('2030-01-10'))
+        ]
+      end
+
+      let(:expected_period) do
+        an_object_having_attributes(first: Date.parse('2030-01-01'), last: Date.parse('2030-01-10'))
+      end
+
+      it { is_expected.to contain_exactly(expected_period) }
+    end
+
+    context 'when an Operating Period and an UicOperatingPeriod are present' do
+      let(:operating_periods) do
+        [
+          Netex::OperatingPeriod.new(time_range: Time.parse('2030-01-01')..Time.parse('2030-01-10')),
+          Netex::UicOperatingPeriod.new
+        ]
+      end
+
+      it { is_expected.to have_attributes(size: 1) }
+    end
+  end
+
+  describe '#uic_days_bits' do
+    subject { decorator.uic_days_bits }
+
+    context 'when an UicOperatingPeriod is present from 2030-01-01 to 2030-01-10 with 1010110101' do
+      let(:operating_periods) do
+        [
+          Netex::UicOperatingPeriod.new(
+            time_range: Time.parse('2030-01-01')..Time.parse('2030-01-10'),
+            valid_day_bits: '1010110101'
+          )
+        ]
+      end
+
+      let(:expected_days_bit) do
+        an_object_having_attributes(
+          from: Date.parse('2030-01-01'),
+          to: Date.parse('2030-01-10'),
+          bitset: Bitset.from_s('1010110101')
+        )
+      end
+
+      it { is_expected.to contain_exactly(expected_days_bit) }
+    end
+  end
+
+  describe '#memory_timetable' do
+    subject { decorator.memory_timetable }
+
+    context 'with an OperatingPeriod 2030-01-01..2030-01-10/MoTu, an UicOperatingPeriod from 2030-01-10/1000000001' do
+      let(:day_type) do
+        Netex::DayType.new(properties: [Netex::PropertyOfDay.new(days_of_week: 'monday tuesday')])
+      end
+
+      let(:operating_periods) do
+        [
+          Netex::OperatingPeriod.new(time_range: Time.parse('2030-01-01')..Time.parse('2030-01-10')),
+          Netex::UicOperatingPeriod.new(
+            time_range: Time.parse('2030-01-10')..Time.parse('2030-01-20'),
+            valid_day_bits: '10000000001'
+          )
+        ]
+      end
+
+      it { is_expected.to include(Date.parse('2030-01-01')) }
+      it { is_expected.not_to include(Date.parse('2030-01-02')) }
+      it { is_expected.to include(Date.parse('2030-01-20')) }
+    end
+  end
+end

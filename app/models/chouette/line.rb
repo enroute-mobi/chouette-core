@@ -10,7 +10,7 @@ module Chouette
     include TransportModeEnumerations
     enumerize_transport_submode
 
-    enumerize :mobility_impaired_accessility, in: %i(unknown yes no partial), default: :unknown
+    enumerize :mobility_impaired_accessibility, in: %i(unknown yes no partial), default: :unknown
     enumerize :wheelchair_accessibility, in: %i(unknown yes no partial), default: :unknown
     enumerize :step_free_accessibility, in: %i(unknown yes no partial), default: :unknown
     enumerize :escalator_free_accessibility, in: %i(unknown yes no partial), default: :unknown

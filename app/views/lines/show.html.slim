@@ -62,8 +62,7 @@
           = d.attribute :url, link: @line.url
 
         = simple_block_for @line, title: t("lines.form.sections.accessibility") do |d|
-          = d.attribute :mobility_restricted_suitability, as: :boolean
-          / = d.attribute :mobility_impaired_accessibility, as: :enumerize
+          = d.attribute :mobility_impaired_accessibility, as: :enumerize
           = d.attribute :wheelchair_accessibility, as: :enumerize
           = d.attribute :step_free_accessibility, as: :enumerize
           = d.attribute :escalator_free_accessibility, as: :enumerize

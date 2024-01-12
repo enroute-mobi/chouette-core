@@ -15,7 +15,8 @@ module Control
 
         models.find_each do |model|
           control_messages.create(
-            message_attributes: { name: model.try(:name) },
+            message_attributes: { name: model.try(:name) || model.try(:published_journey_name) || model.try(:comment) },
+            message_key: :dummy,
             criticity: criticity,
             source: model
           )

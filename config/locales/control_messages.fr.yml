@@ -11,6 +11,7 @@ fr:
     geographical_zone: "Le/la %{target_model} %{name} n'est pas situé(e) dans la zone géographique indiquée"
     expected_provider: "Le/la %{target_model} %{name} n'a pas le fournisseur attendu"
     passing_times_in_time_range: "La course %{name} contient des horaires non inclus dans la période attendue"
+    dummy: "L'/la/le %{target_model} %{name} a été controlé"
   activerecord:
     models:
       control/message:

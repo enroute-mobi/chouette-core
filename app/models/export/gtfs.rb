@@ -1019,7 +1019,9 @@ class Export::Gtfs < Export::Base
       end
 
       def gtfs_wheelchair_accessibility
-        case line.wheelchair_accessibility
+        return unless line
+
+        case line.mobility_impaired_accessibility
         when nil, 'unknown'
           '0'
         when 'yes'

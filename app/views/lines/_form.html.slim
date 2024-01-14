@@ -70,8 +70,7 @@
   .row
     .col-lg-12
       h2.mb-lg= t("lines.form.sections.accessibility")
-      = f.input :mobility_restricted_suitability, as: :switchable_checkbox
-      / = f.input :mobility_impaired_accessibility, as: :select, include_blank: false
+      = f.input :mobility_impaired_accessibility, as: :select, include_blank: false
   .row
     .col-md-6
       = f.input :wheelchair_accessibility, as: :select, include_blank: false

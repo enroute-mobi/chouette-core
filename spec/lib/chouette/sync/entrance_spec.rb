@@ -1,11 +1,10 @@
-# coding: utf-8
+# frozen_string_literal: true
+
 RSpec.describe Chouette::Sync::Entrance do
-
   describe Chouette::Sync::Entrance::Netex do
-
     let(:context) do
       Chouette.create do
-        stop_area registration_number: "stop-place-1"
+        stop_area registration_number: 'stop-place-1'
         code_space short_name: 'external'
       end
     end
@@ -64,10 +63,10 @@ RSpec.describe Chouette::Sync::Entrance do
     before do
       # In IBOO the stop_area_referential should use stif_reflex objectid_format
       if Chouette::Sync::Base.default_model_id_attribute == :objectid
-        context.stop_area_referential.update objectid_format: "stif_reflex"
+        context.stop_area_referential.update objectid_format: 'stif_reflex'
       end
 
-      stop_area_provider.update objectid: "FR1-ARRET_AUTO"
+      stop_area_provider.update objectid: 'FR1-ARRET_AUTO'
     end
 
     subject(:sync) do
@@ -76,28 +75,28 @@ RSpec.describe Chouette::Sync::Entrance do
 
     let(:model_id_attribute) { sync.model_id_attribute }
 
-    let(:expected_attributes) do 
+    let(:expected_attributes) do
       {
-        name: "Centre ville",
+        name: 'Centre ville',
         entry_flag: false,
         exit_flag: false,
-        entrance_type: "opening",
-        address_line_1: "Address Line 1",
-        zip_code: "44300",
-        city_name: "Nantes",
-        country: "France",
+        entrance_type: 'opening',
+        address_line_1: 'Address Line 1',
+        zip_code: '44300',
+        city_name: 'Nantes',
+        country: 'France'
       }
     end
 
-    context "when no entrance exists" do
-      let(:created_stop_area_entrance) {target.entrances.by_code(code_space, "entrance-1").first}
-      let(:created_code) {Code.find_by_value("entrance-1")}
+    context 'when no entrance exists' do
+      let(:created_stop_area_entrance) { target.entrances.by_code(code_space, 'entrance-1').first }
+      let(:created_code) { Code.find_by(value: 'entrance-1') }
       let(:expected_code_attributes) do
         {
           code_space_id: code_space&.id,
-          resource_type: "Entrance",
+          resource_type: 'Entrance',
           resource_id: created_stop_area_entrance&.id,
-          value: "entrance-1",
+          value: 'entrance-1'
         }
       end
 
@@ -105,36 +104,35 @@ RSpec.describe Chouette::Sync::Entrance do
         sync.synchronize
       end
 
-      it "should create code" do
+      it 'should create code' do
         expect(created_code).to have_attributes(expected_code_attributes)
       end
 
-      it "should create stop place entrance" do
+      it 'should create stop place entrance' do
         expect(created_stop_area_entrance).to have_attributes(expected_attributes)
       end
 
-      it "should create association between Entrances and Code" do
-        expect( created_stop_area_entrance.codes).to match_array([created_code])
+      it 'should create association between Entrances and Code' do
+        expect(created_stop_area_entrance.codes).to match_array([created_code])
       end
-
     end
 
-    context "when entrance exists" do
+    context 'when entrance exists' do
       let!(:existing_stop_area_entrance) do
         target.entrances.create!({
-          name: "test",
-          stop_area_provider: stop_area_provider,
-          stop_area: stop_area,
-          codes_attributes: [
-            {
-              code_space: code_space,
-              value: "entrance-1"
-            }
-          ]
-        })
+                                   name: 'test',
+                                   stop_area_provider: stop_area_provider,
+                                   stop_area: stop_area,
+                                   codes_attributes: [
+                                     {
+                                       code_space: code_space,
+                                       value: 'entrance-1'
+                                     }
+                                   ]
+                                 })
       end
 
-      it "should update stop place entrance" do
+      it 'should update stop place entrance' do
         sync.synchronize
 
         expect(existing_stop_area_entrance.reload).to have_attributes(expected_attributes)

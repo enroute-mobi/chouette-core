@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 RSpec.describe Chouette::Sync::StopArea do
   describe Chouette::Sync::StopArea::Netex do
     let(:context) do

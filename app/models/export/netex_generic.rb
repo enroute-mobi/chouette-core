@@ -240,7 +240,71 @@ class Export::NetexGeneric < Export::Base
 
   end
 
+  module Accessibility
+    extend ActiveSupport::Concern
+
+    included do
+      def accessibility_assessment
+        return unless accessibility_assessment?
+
+        Netex::AccessibilityAssessment.new(
+          id: netex_identifier&.change(type: 'AccessibilityAssessment').to_s,
+          mobility_impaired_access: netex_value(mobility_impaired_accessibility),
+          limitations: [accessibility_limitation].compact,
+          validity_conditions: [availability_condition].compact
+        )
+      end
+
+      def accessibility_limitation
+        return unless accessibility_limitation?
+
+        Netex::AccessibilityLimitation.new(
+          wheelchair_access: netex_value(wheelchair_accessibility),
+          step_free_access: netex_value(step_free_accessibility),
+          escalator_free_access: netex_value(escalator_free_accessibility),
+          lift_free_access: netex_value(lift_free_accessibility),
+          audible_signals_available: netex_value(audible_signals_availability),
+          visual_signs_available: netex_value(visual_signs_availability)
+        )
+      end
+
+      def netex_value(value)
+        case value
+        when 'yes'
+          'true'
+        when 'no'
+          'false'
+        else
+          value
+        end
+      end
+
+      def availability_condition
+        return unless accessibility_limitation_description.present?
+
+        Netex::AvailabilityCondition.new(
+          id: netex_identifier.change(type: 'AvailabilityCondition').to_s,
+          description: accessibility_limitation_description
+        )
+      end
+
+      def accessibility_assessment?
+        accessibility_limitation? || availability_condition.present? || mobility_impaired_accessibility != 'unknown'
+      end
+
+      def accessibility_limitation?
+        %i[
+          wheelchair_accessibility step_free_accessibility escalator_free_accessibility
+          lift_free_accessibility audible_signals_availability visual_signs_availability
+        ].any? do |attribute|
+          send(attribute) != :unknown
+        end
+      end
+    end
+  end
+
   class StopDecorator < SimpleDelegator
+    include Accessibility
 
     def netex_attributes # rubocop:disable Metrics/MethodLength
       {
@@ -264,63 +328,6 @@ class Export::NetexGeneric < Export::Base
 
     def netex_identifier
       @netex_identifier ||= Netex::ObjectId.parse(objectid)
-    end
-
-    def accessibility_assessment
-      return unless accessibility_assessment?
-
-      Netex::AccessibilityAssessment.new(
-        id: netex_identifier.change(type: 'AccessibilityAssessment').to_s,
-        mobility_impaired_access: netex_value(mobility_impaired_accessibility),
-        limitations: [accessibility_limitation].compact,
-        validity_conditions: [availability_condition].compact
-      )
-    end
-
-    def accessibility_limitation
-      return unless accessibility_limitation?
-
-      Netex::AccessibilityLimitation.new(
-        wheelchair_access: netex_value(wheelchair_accessibility),
-        step_free_access: netex_value(step_free_accessibility),
-        escalator_free_access: netex_value(escalator_free_accessibility),
-        lift_free_access: netex_value(lift_free_accessibility),
-        audible_signals_available: netex_value(audible_signals_availability),
-        visual_signs_available: netex_value(visual_signs_availability)
-      )
-    end
-
-    def netex_value(value)
-      case value
-      when 'yes'
-        'true'
-      when 'no'
-        'false'
-      else
-        value
-      end
-    end
-
-    def availability_condition
-      return unless accessibility_limitation_description.present?
-
-      Netex::AvailabilityCondition.new(
-        id: netex_identifier.change(type: 'AvailabilityCondition').to_s,
-        description: accessibility_limitation_description
-      )
-    end
-
-    def accessibility_assessment?
-      accessibility_limitation? || availability_condition.present? || mobility_impaired_accessibility != 'unknown'
-    end
-
-    def accessibility_limitation?
-      %i[
-        wheelchair_accessibility step_free_accessibility escalator_free_accessibility
-        lift_free_accessibility audible_signals_availability visual_signs_availability
-      ].any? do |attribute|
-        send(attribute) != :unknown
-      end
     end
 
     def parent_objectid
@@ -657,6 +664,7 @@ class Export::NetexGeneric < Export::Base
     end
 
     class Decorator < SimpleDelegator
+      include Accessibility
 
       def netex_attributes
         {
@@ -670,6 +678,7 @@ class Export::NetexGeneric < Export::Base
           presentation: presentation,
           additional_operators: additional_operators,
           key_list: netex_alternate_identifiers,
+          accessibility_assessment: accessibility_assessment,
           status: status,
           valid_between: valid_between,
           raw_xml: import_xml
@@ -678,6 +687,10 @@ class Export::NetexGeneric < Export::Base
 
       def netex_alternate_identifiers
         AlternateIdentifiersExtractor.new(self).alternate_identifiers
+      end
+
+      def netex_identifier
+        @netex_identifier ||= Netex::ObjectId.parse(objectid)
       end
 
       def netex_name

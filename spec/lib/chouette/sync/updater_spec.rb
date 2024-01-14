@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 RSpec.describe Chouette::Sync::Updater do
   subject(:updater) { Test.new }
 

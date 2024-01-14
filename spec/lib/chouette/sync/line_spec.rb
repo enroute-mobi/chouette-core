@@ -49,8 +49,7 @@ RSpec.describe Chouette::Sync::Line do
            </AlternativePresentation>
            <AccessibilityAssessment id="FR1:AccessibilityAssessment:C01931:"
            version="any">
-             <MobilityImpairedAccess>
-             false</MobilityImpairedAccess>
+             <MobilityImpairedAccess>false</MobilityImpairedAccess>
              <limitations>
                <AccessibilityLimitation>
                  <WheelchairAccess>unknown</WheelchairAccess>
@@ -100,8 +99,7 @@ RSpec.describe Chouette::Sync::Line do
            </AlternativePresentation>
            <AccessibilityAssessment id="FR1:AccessibilityAssessment:C01659:"
            version="any">
-             <MobilityImpairedAccess>
-             false</MobilityImpairedAccess>
+             <MobilityImpairedAccess>false</MobilityImpairedAccess>
              <limitations>
                <AccessibilityLimitation>
                  <WheelchairAccess>unknown</WheelchairAccess>
@@ -111,10 +109,8 @@ RSpec.describe Chouette::Sync::Line do
              </limitations>
            </AccessibilityAssessment>
            <noticeAssignments>
-             <NoticeAssignment id="FR1:NoticeAssignment:C01659:"
-             version="any" order="0">
-               <NoticeRef version="any"
-               ref="FR1:Notice:C01659:" />
+             <NoticeAssignment id="FR1:NoticeAssignment:C01659:" version="any" order="0">
+               <NoticeRef version="any" ref="FR1:Notice:C01659:" />
              </NoticeAssignment>
              <NoticeAssignmentView id="FR1:NoticeAssignmentView:C01659:"
              order="0">
@@ -155,14 +151,9 @@ RSpec.describe Chouette::Sync::Line do
 
     let(:model_id_attribute) { Chouette::Sync::Base.default_model_id_attribute }
 
-    let!(:existing_line) do
-      target.lines.create! name: "Old Name", model_id_attribute => "FR1:Line:C01659:"
-    end
-
     let(:created_line) do
       line("FR1:Line:C01931:")
     end
-
 
     def line(registration_number)
       target.lines.find_by(model_id_attribute => registration_number)
@@ -195,6 +186,8 @@ RSpec.describe Chouette::Sync::Line do
     end
 
     it "should update the FR1:Line:C01659:" do
+      existing_line = target.lines.create! name: "Old Name", model_id_attribute => "FR1:Line:C01659:"
+
       sync.synchronize
 
       expected_attributes = {

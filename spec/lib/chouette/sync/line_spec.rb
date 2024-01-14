@@ -1,7 +1,7 @@
+# frozen_string_literal: true
+
 RSpec.describe Chouette::Sync::Line do
-
   describe Chouette::Sync::Line::Netex do
-
     let(:context) do
       Chouette.create do
         line_provider
@@ -11,7 +11,7 @@ RSpec.describe Chouette::Sync::Line do
     let(:target) { context.line_provider }
 
     let(:xml) do
-      %{
+      %(
        <lines>
          <Line version="any"
          dataSourceRef="FR1:OrganisationalUnit: :"
@@ -128,7 +128,7 @@ RSpec.describe Chouette::Sync::Line do
              </NoticeAssignmentView>
            </noticeAssignments>
          </Line>
-       </lines>}
+       </lines>)
     end
 
     let(:source) do
@@ -141,7 +141,7 @@ RSpec.describe Chouette::Sync::Line do
     before do
       # In IBOO the line_referential should use stif_codifligne objectid_format
       if Chouette::Sync::Base.default_model_id_attribute == :objectid
-        context.line_referential.update objectid_format: "stif_codifligne"
+        context.line_referential.update objectid_format: 'stif_codifligne'
       end
     end
 
@@ -152,30 +152,30 @@ RSpec.describe Chouette::Sync::Line do
     let(:model_id_attribute) { Chouette::Sync::Base.default_model_id_attribute }
 
     let(:created_line) do
-      line("FR1:Line:C01931:")
+      line('FR1:Line:C01931:')
     end
 
     def line(registration_number)
       target.lines.find_by(model_id_attribute => registration_number)
     end
 
-    it "should create the Line FR1:Line:C01931:" do
+    it 'should create the Line FR1:Line:C01931:' do
       company =
-        target.companies.create! name: "Test", model_id_attribute => "FR1:Operator:210:LOC"
+        target.companies.create! name: 'Test', model_id_attribute => 'FR1:Operator:210:LOC'
       network =
-        target.networks.create! name: "Test", model_id_attribute => 'FR1:Network:68:LOC'
+        target.networks.create! name: 'Test', model_id_attribute => 'FR1:Network:68:LOC'
       line_notice =
-        target.line_notices.create! name: "Test", model_id_attribute => 'FR1:Notice:C01931:'
+        target.line_notices.create! name: 'Test', model_id_attribute => 'FR1:Notice:C01931:'
 
       sync.synchronize
 
       expected_attributes = {
-        name: "Ligne 3 : Boucle de Chevry",
-        number: "Ligne 3 : Boucle de Chevry",
-        transport_mode: "bus",
-        transport_submode: "demandAndResponseBus",
-        color: "AAAAAA",
-        text_color: "000000",
+        name: 'Ligne 3 : Boucle de Chevry',
+        number: 'Ligne 3 : Boucle de Chevry',
+        transport_mode: 'bus',
+        transport_submode: 'demandAndResponseBus',
+        color: 'AAAAAA',
+        text_color: '000000',
         company: company,
         secondary_company_ids: nil,
         line_notice_ids: [line_notice.id],
@@ -185,25 +185,23 @@ RSpec.describe Chouette::Sync::Line do
       expect(created_line).to have_attributes(expected_attributes)
     end
 
-    it "should update the FR1:Line:C01659:" do
-      existing_line = target.lines.create! name: "Old Name", model_id_attribute => "FR1:Line:C01659:"
+    it 'should update the FR1:Line:C01659:' do
+      existing_line = target.lines.create! name: 'Old Name', model_id_attribute => 'FR1:Line:C01659:'
 
       sync.synchronize
 
       expected_attributes = {
-        name: "AB",
+        name: 'AB',
         desactivated: false
       }
       expect(existing_line.reload).to have_attributes(expected_attributes)
     end
 
-    it "should destroy Lines no referenced in the source" do
+    it 'should destroy Lines no referenced in the source' do
       useless_line =
-        target.lines.create! name: "Useless", model_id_attribute => "unknown"
+        target.lines.create! name: 'Useless', model_id_attribute => 'unknown'
       sync.synchronize
       expect(useless_line.reload).to be_deactivated
     end
-
   end
-
 end

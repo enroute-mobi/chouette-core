@@ -1,8 +1,7 @@
-# coding: utf-8
+# frozen_string_literal: true
+
 RSpec.describe Chouette::Sync::Company do
-
   describe Chouette::Sync::Company::Netex do
-
     let(:context) do
       Chouette.create do
         line_provider
@@ -15,7 +14,7 @@ RSpec.describe Chouette::Sync::Company do
     mattr_reader :updated_id, default: 'FR1:Operator:251:LOC'
 
     let(:xml) do
-      %{
+      %(
         <operators>
           <Operator version="any"
           dataSourceRef="FR1:OrganisationalUnit::"
@@ -62,7 +61,7 @@ RSpec.describe Chouette::Sync::Company do
             </Address>
           </Operator>
         </operators>
-      }
+      )
     end
 
     let(:source) do
@@ -75,7 +74,7 @@ RSpec.describe Chouette::Sync::Company do
     before do
       # In IBOO the line_referential should use stif_codifligne objectid_format
       if Chouette::Sync::Base.default_model_id_attribute == :objectid
-        context.line_referential.update objectid_format: "stif_codifligne"
+        context.line_referential.update objectid_format: 'stif_codifligne'
       end
     end
 
@@ -137,9 +136,7 @@ RSpec.describe Chouette::Sync::Company do
       useless_company =
         target.companies.create! name: 'Useless', model_id_attribute => 'unknown'
       sync.synchronize
-      expect(target.companies.where(id:useless_company)).to_not exist
+      expect(target.companies.where(id: useless_company)).to_not exist
     end
-
   end
-
 end

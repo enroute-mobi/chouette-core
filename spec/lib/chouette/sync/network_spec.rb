@@ -1,8 +1,7 @@
-# coding: utf-8
+# frozen_string_literal: true
+
 RSpec.describe Chouette::Sync::Network do
-
   describe Chouette::Sync::Network::Netex do
-
     let(:context) do
       Chouette.create do
         line_provider
@@ -15,7 +14,7 @@ RSpec.describe Chouette::Sync::Network do
     mattr_reader :updated_id, default: 'FR1:Network:120:LOC'
 
     let(:xml) do
-      %{
+      %(
         <networks>
           <Network version="any" id="#{created_id}">
             <Name>Conflans Achères</Name>
@@ -24,7 +23,7 @@ RSpec.describe Chouette::Sync::Network do
             <Name>VEXINBUS</Name>
           </Network>
         </networks>
-      }
+      )
     end
 
     let(:source) do
@@ -56,7 +55,7 @@ RSpec.describe Chouette::Sync::Network do
       sync.synchronize
 
       expected_attributes = {
-        name: 'Conflans Achères',
+        name: 'Conflans Achères'
       }
       expect(created_network).to have_attributes(expected_attributes)
     end
@@ -65,7 +64,7 @@ RSpec.describe Chouette::Sync::Network do
       sync.synchronize
 
       expected_attributes = {
-        name: 'VEXINBUS',
+        name: 'VEXINBUS'
       }
       expect(updated_network.reload).to have_attributes(expected_attributes)
     end
@@ -74,9 +73,7 @@ RSpec.describe Chouette::Sync::Network do
       useless_network =
         target.networks.create! name: 'Useless', model_id_attribute => 'unknown'
       sync.synchronize
-      expect(target.networks.where(id:useless_network)).to_not exist
+      expect(target.networks.where(id: useless_network)).to_not exist
     end
-
   end
-
 end

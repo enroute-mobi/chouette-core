@@ -1,8 +1,7 @@
-# coding: utf-8
+# frozen_string_literal: true
+
 RSpec.describe Chouette::Sync::LineNotice do
-
   describe Chouette::Sync::LineNotice::Netex do
-
     let(:context) do
       Chouette.create do
         line_provider
@@ -15,7 +14,7 @@ RSpec.describe Chouette::Sync::LineNotice do
     mattr_reader :updated_id, default: 'FR1:Notice:C00251:'
 
     let(:xml) do
-      %{
+      %(
         <notices>
           <Notice version="any" id="#{created_id}">
             <Name>First</Name>
@@ -33,7 +32,7 @@ RSpec.describe Chouette::Sync::LineNotice do
             <TypeOfNoticeRef ref="LineNotice" />
           </Notice>
         </notices>
-      }
+      )
     end
 
     let(:source) do
@@ -46,7 +45,7 @@ RSpec.describe Chouette::Sync::LineNotice do
     before do
       # In IBOO the line_referential should use stif_codifligne objectid_format
       if Chouette::Sync::Base.default_model_id_attribute == :objectid
-        context.line_referential.update objectid_format: "stif_codifligne"
+        context.line_referential.update objectid_format: 'stif_codifligne'
       end
     end
 
@@ -92,14 +91,12 @@ RSpec.describe Chouette::Sync::LineNotice do
       useless_line_notice =
         target.line_notices.create! name: 'Useless', model_id_attribute => 'unknown'
       sync.synchronize
-      expect(target.line_notices.where(id:useless_line_notice)).to_not exist
+      expect(target.line_notices.where(id: useless_line_notice)).to_not exist
     end
 
     it 'should create empty Line Notice' do
       sync.synchronize
-      expect(target.line_notices.where(model_id_attribute =>"empty")).to_not exist
+      expect(target.line_notices.where(model_id_attribute => 'empty')).to_not exist
     end
-
   end
-
 end

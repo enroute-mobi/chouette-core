@@ -170,7 +170,6 @@ fr:
         url: "Page web associée"
         color: "Couleur du tracé"
         text_color: "Couleur du texte"
-        mobility_restricted_suitability: "Accessibilité pour les personnes à mobilité réduite"
         mobility_impaired_accessibility: "Accès pour voyageur à mobilité réduite"
         wheelchair_accessibility: "Accès en fauteuil roulant"
         step_free_accessibility: "Accès sans marche"

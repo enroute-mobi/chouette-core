@@ -166,7 +166,6 @@ en:
         url: "Web page"
         color: "Shape color"
         text_color: "Text color"
-        mobility_restricted_suitability: "Access for mobility impaired users"
         mobility_impaired_accessibility: "Access for mobility impaired users"
         wheelchair_accessibility: "Wheelchair Access"
         step_free_accessibility: "Step Free Access"

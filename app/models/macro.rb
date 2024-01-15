@@ -16,6 +16,7 @@ module Macro
       Macro::AssociateShapeAccordingWaypoints,
       Macro::UpdateAttributeFromReferentToParticulars,
       Macro::DeleteVehicleJourneys,
+      Macro::ComputeServiceCounts,
       Macro::Dummy # Keep this dummy last
     ]
   end

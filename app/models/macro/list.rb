@@ -54,6 +54,10 @@ module Macro
                                     foreign_key: 'macro_list_run_id', inverse_of: :macro_list_run
 
       has_many :macro_messages, class_name: 'Macro::Message', through: :macro_runs
+      has_many :context_macro_messages,
+               class_name: 'Macro::Message',
+               through: :macro_context_runs,
+               source: :macro_messages
 
       has_one :processing, as: :processed
 
@@ -102,11 +106,10 @@ module Macro
         end
         attr_reader :macro_list_run
 
-        delegate :macro_messages, to: :macro_list_run
+        delegate :macro_messages, :context_macro_messages, to: :macro_list_run
 
         def criticities
-          # reorder! to avoid problems with default order and pluck
-          @criticities ||= macro_messages.reorder!.distinct.pluck(:criticity)
+          @criticities ||= (without_context_criticities + with_context_criticities).uniq
         end
 
         def worst_criticity
@@ -124,6 +127,17 @@ module Macro
           else
             Operation.user_status.successful
           end
+        end
+
+        private
+
+        def without_context_criticities
+          # reorder! to avoid problems with default order and pluck
+          macro_messages.reorder!.distinct.pluck(:criticity)
+        end
+
+        def with_context_criticities
+          context_macro_messages.reorder!.distinct.pluck(:criticity)
         end
       end
 

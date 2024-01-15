@@ -55,6 +55,8 @@ module Macro
                class_name: 'Macro::Base::Run', foreign_key: 'macro_context_run_id',
                inverse_of: :macro_context_run, dependent: :delete_all
 
+      has_many :macro_messages, class_name: 'Macro::Message', through: :macro_runs
+
       store :options, coder: JSON
 
       delegate :referential, :workbench, to: :macro_list_run

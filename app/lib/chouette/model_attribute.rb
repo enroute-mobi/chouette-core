@@ -169,6 +169,7 @@ module Chouette
       define Chouette::StopArea, :mobility_impaired_accessibility
       define Chouette::StopArea, :step_free_accessibility
       define Chouette::StopArea, :wheelchair_accessibility
+      define Chouette::StopArea, :audible_signals_availability
       define Chouette::StopArea, :visual_signs_availability
       define Chouette::StopArea, :lines
       define Chouette::StopArea, :routes

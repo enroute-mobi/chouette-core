@@ -32,6 +32,9 @@ module Control
             select Chouette::StopArea, :registration_number
             select Chouette::StopArea, :public_code
             select Chouette::StopArea, :accessibility_limitation_description
+            select Chouette::StopArea, :compass_bearing
+            select Chouette::StopArea, :coordinates
+            select Chouette::StopArea, :waiting_time
 
             # Chouette::Company
             select Chouette::Company, :name
@@ -162,7 +165,7 @@ module Control
 
       class SimpleAttribute < Finder
         def faulty_models
-          scope.where(model_attribute.name => nil)
+          scope.where(model_attribute.name => [nil, ''])
         end
       end
 

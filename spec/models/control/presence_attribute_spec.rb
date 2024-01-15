@@ -59,17 +59,15 @@ RSpec.describe Control::PresenceAttribute do
 
       describe "JourneyPattern" do
         let(:journey_pattern) { context.journey_pattern }
+        let(:source) { journey_pattern }
+        let(:attribute_name) { journey_pattern.name }
         let(:target_model) { "JourneyPattern" }
-        let(:target_attribute) { "shape" }
-        let(:shape) { context.shape(:shape) }
+        let(:target_attribute) { "published_name" }
 
-        context "when shape is not present" do
-          before { shape.delete }
-
+        context "when name is not present" do
+          before { journey_pattern.update published_name: nil }
           let(:message_key) { "no_presence_of_attribute" }
           let(:criticity) { "warning" }
-          let(:attribute_name) { journey_pattern.name }
-          let(:source) { journey_pattern }
 
           it "should create a warning message" do
             subject
@@ -157,42 +155,6 @@ RSpec.describe Control::PresenceAttribute do
           end
         end
 
-        describe "#company" do
-          let(:target_model) { "Line" }
-          let(:target_attribute) { "company"}
-
-          context "when value is not present" do
-            before { line.update company: nil }
-
-            let(:message_key) { "no_presence_of_attribute" }
-            let(:criticity) { "warning" }
-
-            it "should create warning message" do
-              subject
-
-              expect(control_run.control_messages).to include(expected_message)
-            end
-          end
-        end
-
-        describe "#network" do
-          let(:target_model) { "Line" }
-          let(:target_attribute) { "network"}
-
-          context "when value is not present" do
-            before { line.update network: nil }
-
-            let(:message_key) { "no_presence_of_attribute" }
-            let(:criticity) { "warning" }
-
-            it "should create warning message" do
-              subject
-
-              expect(control_run.control_messages).to include(expected_message)
-            end
-          end
-        end
-
         describe "#color" do
           let(:target_model) { "Line" }
           let(:target_attribute) { "color"}
@@ -260,41 +222,6 @@ RSpec.describe Control::PresenceAttribute do
 
           context "when value is not present" do
             before { stop_area.update url: nil }
-
-            let(:message_key) { "no_presence_of_attribute" }
-            let(:criticity) { "warning" }
-
-            it "should create warning message" do
-              subject
-
-              expect(control_run.control_messages).to include(expected_message)
-            end
-          end
-        end
-
-        describe "#parent" do
-          let(:target_attribute) { "parent" }
-          let(:parent) { create(:stop_area) }
-
-          context "when value is not present" do
-            before { stop_area.update parent: nil}
-
-            let(:message_key) { "no_presence_of_attribute" }
-            let(:criticity) { "warning" }
-
-            it "should create warning message" do
-              subject
-
-              expect(control_run.control_messages).to include(expected_message)
-            end
-          end
-        end
-
-        describe "#referent" do
-          let(:target_attribute) { "referent" }
-
-          context "when value is not present" do
-            before { stop_area.update referent: nil}
 
             let(:message_key) { "no_presence_of_attribute" }
             let(:criticity) { "warning" }
@@ -473,23 +400,6 @@ RSpec.describe Control::PresenceAttribute do
 
           context "when value is not present" do
             before { vehicle_journey.update transport_mode: nil }
-
-            let(:message_key) { "no_presence_of_attribute" }
-            let(:criticity) { "warning" }
-
-            it "should create warning message" do
-              subject
-
-              expect(control_run.control_messages).to include(expected_message)
-            end
-          end
-        end
-
-        describe "#company" do
-          let(:target_attribute) { "company"}
-
-          context "when value is not present" do
-            before { vehicle_journey.update company: nil }
 
             let(:message_key) { "no_presence_of_attribute" }
             let(:criticity) { "warning" }

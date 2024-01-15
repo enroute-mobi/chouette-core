@@ -138,7 +138,6 @@ class LinesController < ChouetteController
       :registration_number,
       :comment,
       :line_provider_id,
-      :mobility_restricted_suitability,
       :mobility_impaired_accessibility,
       :wheelchair_accessibility,
       :step_free_accessibility,

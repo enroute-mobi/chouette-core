@@ -39,8 +39,14 @@ module LocalImportSupport
     Chouette::Safe.capture "#{self.class.name} ##{id} failed", e
 
     if (referential && overlapped_referential_ids = referential.overlapped_referential_ids).present?
+      overlapped = Referential.find overlapped_referential_ids.last
       create_message(
         criticity: :error,
+        message_attributes: {
+          referential_name: referential.name,
+          overlapped_name: overlapped.name,
+          overlapped_url: Rails.application.routes.url_helpers.referential_path(overlapped)
+        },
         message_key: 'referential_creation_overlapping_existing_referential'
       )
     else

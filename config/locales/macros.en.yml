@@ -42,6 +42,8 @@ en:
         one: Update attribute from Referent
       macro/delete_vehicle_journeys:
         one: Delete all Vehicle Journeys
+      macro/compute_service_counts:
+        one: Compute service counts
     attributes:
       macro/base:
         name: Name

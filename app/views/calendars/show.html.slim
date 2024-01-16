@@ -5,11 +5,11 @@
   .container-fluid
     .row
       .col-lg-6.col-md-6.col-sm-12.col-xs-12
-        = definition_list t('metadatas'),
-          { Calendar.tmf('shared') => t("#{resource.shared}"),
-            Calendar.tmf('organisation') => resource.organisation.name,
-            Calendar.tmf('dates') =>  resource.dates.collect{|d| l(d)}.join(', ').html_safe,
-            Calendar.tmf('date_ranges') => resource.periods.map{|d| t('validity_range', debut: l(d.begin), end: l(d.end))}.join('<br>').html_safe }
+        = simple_block_for @calendar, title: t('calendar.form.sections.informations') do |d|
+          = d.attribute :shared, as: :boolean
+          = d.attribute :organisation, value: @calendar.organisation.name
+          = d.attribute :dates, as: :associations, value: @calendar.dates.collect{|d| l(d)}.join(', ').html_safe
+          = d.attribute :date_ranges, as: :associations, value: resource.periods.map{|d| t('validity_range', debut: l(d.begin), end: l(d.end))}.join('<br>').html_safe
 
     .row
       .col-lg-12.mb-sm

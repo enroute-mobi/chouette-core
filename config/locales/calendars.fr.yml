@@ -49,6 +49,9 @@ fr:
       title: Editer %{name}
     show:
       title: "%{name}"
+    form:
+      sections:
+        informations: "Informations"
   simple_form:
     labels:
       calendar:

@@ -21,56 +21,56 @@ module Macro
       end
 
       def candidate_target_attributes # rubocop:disable Metrics/MethodLength,Metrics/AbcSize
-        Chouette::ModelAttribute.empty do # rubocop:disable Metrics/BlockLength
-          define Chouette::StopArea, :name
-          define Chouette::StopArea, :parent
-          define Chouette::StopArea, :country_code
-          define Chouette::StopArea, :street_name
-          define Chouette::StopArea, :zip_code
-          define Chouette::StopArea, :city_name
-          define Chouette::StopArea, :postal_region
-          define Chouette::StopArea, :public_code
-          # define Chouette::StopArea, :registration_number
-          define Chouette::StopArea, :time_zone
-          define Chouette::StopArea, :waiting_time
-          define Chouette::StopArea, :url
-          define Chouette::StopArea, :mobility_impaired_accessibility
-          define Chouette::StopArea, :wheelchair_accessibility
-          define Chouette::StopArea, :step_free_accessibility
-          define Chouette::StopArea, :escalator_free_accessibility
-          define Chouette::StopArea, :lift_free_accessibility
-          define Chouette::StopArea, :audible_signals_availability
-          define Chouette::StopArea, :visual_signs_availability
-          define Chouette::StopArea, :accessibility_limitation_description
+        Chouette::ModelAttribute.collection do # rubocop:disable Metrics/BlockLength
+          select Chouette::StopArea, :name
+          select Chouette::StopArea, :parent
+          select Chouette::StopArea, :country_code
+          select Chouette::StopArea, :street_name
+          select Chouette::StopArea, :zip_code
+          select Chouette::StopArea, :city_name
+          select Chouette::StopArea, :postal_region
+          select Chouette::StopArea, :public_code
+          # select Chouette::StopArea, :registration_number
+          select Chouette::StopArea, :time_zone
+          select Chouette::StopArea, :waiting_time
+          select Chouette::StopArea, :url
+          select Chouette::StopArea, :mobility_impaired_accessibility
+          select Chouette::StopArea, :wheelchair_accessibility
+          select Chouette::StopArea, :step_free_accessibility
+          select Chouette::StopArea, :escalator_free_accessibility
+          select Chouette::StopArea, :lift_free_accessibility
+          select Chouette::StopArea, :audible_signals_availability
+          select Chouette::StopArea, :visual_signs_availability
+          select Chouette::StopArea, :accessibility_limitation_description
 
-          define Chouette::Company, :short_name
-          define Chouette::Company, :code
-          # define Chouette::Company, :registration_number
-          define Chouette::Company, :time_zone
-          define Chouette::Company, :house_number
-          define Chouette::Company, :address_line_1 # rubocop:disable Naming/VariableNumber
-          define Chouette::Company, :address_line_2 # rubocop:disable Naming/VariableNumber
-          define Chouette::Company, :street
-          define Chouette::Company, :postcode
-          define Chouette::Company, :postcode_extension
-          define Chouette::Company, :town
-          define Chouette::Company, :country_code
-          define Chouette::Company, :default_contact_name
-          define Chouette::Company, :default_contact_email
-          define Chouette::Company, :default_contact_phone
-          define Chouette::Company, :default_contact_url
-          define Chouette::Company, :default_contact_more
-          define Chouette::Company, :customer_service_contact_name
-          define Chouette::Company, :customer_service_contact_email
-          define Chouette::Company, :customer_service_contact_phone
-          define Chouette::Company, :customer_service_contact_url
-          define Chouette::Company, :customer_service_contact_more
-          define Chouette::Company, :private_contact_name
-          define Chouette::Company, :private_contact_email
-          define Chouette::Company, :private_contact_phone
-          define Chouette::Company, :private_contact_url
-          define Chouette::Company, :private_contact_more
-          define Chouette::Company, :default_language
+          select Chouette::Company, :short_name
+          select Chouette::Company, :code
+          # select Chouette::Company, :registration_number
+          select Chouette::Company, :time_zone
+          select Chouette::Company, :house_number
+          select Chouette::Company, :address_line_1 # rubocop:disable Naming/VariableNumber
+          select Chouette::Company, :address_line_2 # rubocop:disable Naming/VariableNumber
+          select Chouette::Company, :street
+          select Chouette::Company, :postcode
+          select Chouette::Company, :postcode_extension
+          select Chouette::Company, :town
+          select Chouette::Company, :country_code
+          select Chouette::Company, :default_contact_name
+          select Chouette::Company, :default_contact_email
+          select Chouette::Company, :default_contact_phone
+          select Chouette::Company, :default_contact_url
+          select Chouette::Company, :default_contact_more
+          select Chouette::Company, :customer_service_contact_name
+          select Chouette::Company, :customer_service_contact_email
+          select Chouette::Company, :customer_service_contact_phone
+          select Chouette::Company, :customer_service_contact_url
+          select Chouette::Company, :customer_service_contact_more
+          select Chouette::Company, :private_contact_name
+          select Chouette::Company, :private_contact_email
+          select Chouette::Company, :private_contact_phone
+          select Chouette::Company, :private_contact_url
+          select Chouette::Company, :private_contact_more
+          select Chouette::Company, :default_language
         end
       end
 

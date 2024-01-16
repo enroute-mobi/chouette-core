@@ -152,8 +152,8 @@ module Control
         end
 
         def self.create(scope, model_attribute)
-          with_query = WithQuery.create(scope, model_attribute)
-          return with_query if with_query
+          with_query = WithQuery.new(scope, model_attribute)
+          return with_query if with_query.support?
 
           if model_attribute.model_class.reflections[model_attribute.name] # TODO: CHOUETTE-3266 meh...
             Reference.new scope, model_attribute
@@ -181,17 +181,13 @@ module Control
       end
 
       class WithQuery < Finder
-        def self.create(scope, model_attribute)
-          with_query = new(scope, model_attribute)
-          with_query if with_query.support?
-        end
 
         def support?
           query.respond_to? query_method
         end
 
         def query_class
-          Query.for model_attribute.klass rescue nil
+          ::Query.for model_attribute.model_class rescue nil
         end
 
         def query

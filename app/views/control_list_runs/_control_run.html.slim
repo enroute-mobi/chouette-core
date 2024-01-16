@@ -16,7 +16,7 @@
       .flex.justify-center.rounded.mx-5.p-5.font-bold.border.border-black.text-black style="min-width: 50px;" class="#{control_run.criticity == 'warning' ? 'bg-enroute-chouette-gold' : 'bg-enroute-chouette-red' }"
         p.count class=control_run.criticity = control_run.control_messages.size
 
-      button @click="showMessages = ! showMessages" type="button" class="flex px-7 py-3 ml-xs font-bold text-white rounded cursor-pointer bg-enroute-chouette-primary h-[50%] hover:text-indigo-100"
+      button @click="showMessages = ! showMessages" type="button" class="showMessages flex px-7 py-3 ml-xs font-bold text-white rounded cursor-pointer bg-enroute-chouette-primary h-[50%] hover:text-indigo-100"
         .span.fa.fa-caret-down.mx-1 x-show="showMessages"
         .span.fa.fa-caret-up.mx-1 x-show="!showMessages"
 

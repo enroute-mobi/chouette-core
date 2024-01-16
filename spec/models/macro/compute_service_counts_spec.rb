@@ -40,8 +40,8 @@ RSpec.describe Macro::ComputeServiceCounts do
       subject
 
       expected_message = {
-        criticity: "info",
-        message_attributes: {"name" => line.name },
+        criticity: 'info',
+        message_attributes: { 'name' => line.name },
         source: line
       }
 

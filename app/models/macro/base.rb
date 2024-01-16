@@ -111,4 +111,3 @@ require_dependency 'macro/define_postal_address'
 require_dependency 'macro/dummy'
 require_dependency 'macro/update_stop_area_compass_bearing'
 require_dependency 'macro/compute_service_counts'
-

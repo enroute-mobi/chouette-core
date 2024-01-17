@@ -179,7 +179,7 @@ GEM
     builder (3.2.4)
     bulk_insert (1.9.0)
       activerecord (>= 3.2.0)
-    bullet (7.1.5)
+    bullet (7.1.6)
       activesupport (>= 3.0.0)
       uniform_notifier (~> 1.11)
     bummr (0.6.0)
@@ -215,7 +215,7 @@ GEM
       coffee-script-source
       execjs
     coffee-script-source (1.12.2)
-    concurrent-ruby (1.2.2)
+    concurrent-ruby (1.2.3)
     connection_pool (2.4.1)
     countries (5.7.0)
       unaccent (~> 0.3)
@@ -507,7 +507,7 @@ GEM
     mini_portile2 (2.8.5)
     mini_racer (0.6.4)
       libv8-node (~> 16.19.0.0)
-    minitest (5.20.0)
+    minitest (5.21.1)
     msgpack (1.7.2)
     multi_json (1.15.0)
     multi_xml (0.6.0)
@@ -882,7 +882,7 @@ DEPENDENCIES
   bootsnap
   bootstrap-sass (= 3.4.1)
   bulk_insert
-  bullet (>= 7.1.5)
+  bullet (>= 7.1.6)
   bummr
   bundler-audit
   calendar_helper (= 0.2.5)

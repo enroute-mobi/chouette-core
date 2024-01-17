@@ -56,7 +56,7 @@
         h3.panel-title.with_actions
           div
             = link_to t('.calendars'), workbench_calendars_path(@dashboard.workbench)
-            span.badge.ml-xs = @dashboard.workbench_with_shared.count if @dashboard.calendars.present?
+            span.badge.ml-xs = @dashboard.workbench.calendars_with_shared.count if @dashboard.workbench.calendars_with_shared.present?
 
           div
             = link_to '', workbench_calendars_path(@dashboard.workbench), class: ' fa fa-chevron-right pull-right', title: t('.see')

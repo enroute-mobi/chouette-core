@@ -536,13 +536,18 @@ class Import::NetexGeneric < Import::Base
 
       def route_scheduled_point_refs
         route_point_refs.map do |route_point_ref|
-          route_point = route_points.find route_point_ref
-          if route_point
-            route_point.projections.first&.project_to_point_ref&.ref
-          else
-            add_error :direction_not_found_in_netex_source
-          end
+          route_scheduled_point_ref(route_point_ref)
+        end.compact
+      end
+
+      def route_scheduled_point_ref(route_point_ref)
+        route_point = route_points.find route_point_ref
+        unless route_point
+          add_error :direction_not_found_in_netex_source
+          return nil
         end
+
+        route_point.projections.first&.project_to_point_ref&.ref
       end
 
       def sequence_merger

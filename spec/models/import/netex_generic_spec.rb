@@ -1580,3 +1580,57 @@ RSpec.describe Import::NetexGeneric::TimeTables::Decorator do
     end
   end
 end
+
+RSpec.describe Import::NetexGeneric::RouteJourneyPatterns::Decorator do
+  subject(:decorator) { described_class.new netex_route, netex_journey_patterns }
+
+  let(:netex_route) { Netex::Route.new }
+  let(:netex_journey_patterns) { [] }
+
+  describe '#route_scheduled_point_ref' do
+    subject { decorator.route_scheduled_point_ref(route_point_ref) }
+
+    let(:route_point_ref) { "route_point_ref-1" }
+    let(:route_point) { Netex::RoutePoint.new }
+
+    let(:route_points) { double(find: route_point) }
+    before { allow(decorator).to receive(:route_points).and_return(route_points) }
+
+    context "when the targeted RoutePoint isn't found" do
+      let(:route_point) { nil }
+
+      it { is_expected.to be_nil }
+
+      it "adds an error"
+    end
+
+    context 'when a RoutePoint is found but without ProjectToPointRef#ref' do
+      it { is_expected.to be_nil }
+    end
+
+    context "when a RoutePoint is found but with ProjectToPointRef#ref 'dummy'" do
+      let(:point_projection) { Netex::PointProjection.new project_to_point_ref: Netex::Reference.new('dummy', type: 'ProjectToPointRef') }
+      before { route_point.projections << point_projection }
+
+      it { is_expected.to eq('dummy') }
+    end
+  end
+
+  describe '#route_scheduled_point_refs' do
+    subject { decorator.route_scheduled_point_refs }
+
+    before { allow(decorator).to receive(:route_point_refs).and_return(route_point_refs) }
+    let(:route_point_refs) { [] }
+
+    context 'when #route_point_refs is empty' do
+      it { is_expected.to be_empty }
+    end
+
+    context 'when #route_point_refs are not associated to a ScheduledPoint' do
+      let(:route_point_refs) { %w{1 2 3} }
+      before { allow(decorator).to receive(:route_scheduled_point_ref).and_return(nil) }
+
+      it { is_expected.to be_empty }
+    end
+  end
+end

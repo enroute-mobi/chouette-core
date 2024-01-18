@@ -95,6 +95,14 @@ RSpec.describe Control::FormatAttribute do
 
           expect(control_run.control_messages).to contain_exactly(expected_message)
         end
+
+        context 'when expected_format is just numbers' do
+          let(:expected_format) { '123' }
+
+          it 'does not crash' do
+            expect { subject }.to_not raise_error
+          end
+        end
       end
 
       describe '#Entrance' do

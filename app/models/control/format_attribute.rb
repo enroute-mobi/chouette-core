@@ -8,7 +8,7 @@ module Control
       included do # rubocop:disable Metrics/BlockLength
         option :target_model
         option :target_attribute
-        option :expected_format
+        option :expected_format, serialize: ActiveModel::Type::String
 
         enumerize :target_model,
                   in: %w[Line StopArea Route JourneyPattern VehicleJourney Company Entrance PointOfInterest Document

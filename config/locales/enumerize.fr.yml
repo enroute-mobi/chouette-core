@@ -428,6 +428,11 @@ fr:
       line_provider: Fournisseur de lignes
       shape_provider: Fournisseur Topologique
       document_provider: Fournisseur de Documents
+    uniqueness_scope:
+      all: Tous
+      provider: Par Fournisseur
+      workbench: Par Espace de travail
+      workgroup: Par Groupe de travail
     search:
       rule_type: *notification_rule_rule_type
     control/base:

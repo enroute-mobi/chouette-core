@@ -428,6 +428,11 @@ en:
       line_provider: Line Provider
       shape_provider: Shape Provider
       document_provider: Document Provider
+    uniqueness_scope:
+      all: All
+      provider: By Provider
+      workbench: By Workbench
+      workgroup: By Workgroup
     search:
       rule_type: *notification_rule_rule_type
     control/base:

@@ -31,6 +31,8 @@ fr:
         one: Fournisseur attendu
       control/passing_times_in_time_range/run:
         one: Horaires inclus dans une période
+      control/code_uniqueness/run:
+        one: Unicité du code
     attributes:
       control/base/run:
         name: Nom
@@ -74,3 +76,6 @@ fr:
         passing_time_scope: Horaires sélectionnés
         before: Avant
         after: Après
+      control/code_uniqueness/run:
+        target_code_space_id: Espace de code cible
+        uniqueness_scope: Portée de l'unicité

@@ -17,7 +17,8 @@ module Control
       Control::PresenceAssociatedModel,
       Control::PassingTimesInTimeRange,
       Control::GeographicalZone,
-      Control::ExpectedProvider
+      Control::ExpectedProvider,
+      Control::CodeUniqueness
     ]
   end
 end

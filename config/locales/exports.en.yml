@@ -109,6 +109,7 @@ en:
         from: From
         to: To
         exported_lines: Exported lines
+        exported_code_space: Exported Code Space
         profile: Profile
         prefer_referent_stop_area: Prefer Referent Stop Areas
         prefer_referent_line: Prefer Referent Lines

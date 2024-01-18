@@ -8,6 +8,7 @@ class Export::Gtfs < Export::Base
   option :from, serialize: ActiveModel::Type::Date
   option :to, serialize: ActiveModel::Type::Date
   option :exported_lines, default_value: 'all_line_ids', enumerize: %w[line_ids company_ids line_provider_ids all_line_ids]
+  option :exported_code_space
   option :line_ids, serialize: :map_ids
   option :company_ids, serialize: :map_ids
   option :line_provider_ids, serialize: :map_ids

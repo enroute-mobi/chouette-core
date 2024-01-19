@@ -62,9 +62,13 @@ module Control
           attr_accessor :target_model, :context, :target_code_space
 
           PREFIX_PROVIDERS = {
-            stop_area: 'stop_area', entrance: 'stop_area',
-            line: 'line', company: 'line', document: 'document',
-            shape: 'shape', point_of_interest: 'shape'
+            stop_area: 'stop_area',
+            company: 'line',
+            line: 'line',
+            document: 'document',
+            entrance: 'stop_area',
+            point_of_interest: 'shape',
+            shape: 'shape'
           }.with_indifferent_access
 
           def duplicates
@@ -73,8 +77,8 @@ module Control
             end
           end
 
-          def model_singulier
-            @model_singulier ||= target_model.underscore
+          def model_singular
+            @model_singular ||= target_model.underscore
           end
 
           def source_type
@@ -85,7 +89,7 @@ module Control
           end
 
           def model_collection
-            @model_collection ||= model_singulier.pluralize
+            @model_collection ||= model_singular.pluralize
           end
 
           def model_table_name
@@ -97,11 +101,11 @@ module Control
           end
 
           def provider_id
-            "#{model_collection}.#{PREFIX_PROVIDERS[model_singulier]}_provider_id"
+            "#{model_collection}.#{PREFIX_PROVIDERS[model_singular]}_provider_id"
           end
 
           def providers
-            "#{PREFIX_PROVIDERS[model_singulier]}_providers"
+            "#{PREFIX_PROVIDERS[model_singular]}_providers"
           end
 
           def query
@@ -138,7 +142,7 @@ module Control
 
           def inner_join
             <<~SQL
-              INNER JOIN public.codes ON #{model_table_name}.id = codes.resource_id
+              INNER JOIN public.codes ON codes.resource_id = #{model_table_name}.id
             SQL
           end
         end
@@ -154,7 +158,7 @@ module Control
             <<~SQL
               INNER JOIN public.#{providers} ON #{providers}.id = #{provider_id}
               INNER JOIN public.workbenches ON workbenches.id = #{providers}.workbench_id
-              INNER JOIN public.codes ON #{model_table_name}.id = codes.resource_id
+              INNER JOIN public.codes ON codes.resource_id = #{model_table_name}.id
             SQL
           end
         end
@@ -171,7 +175,7 @@ module Control
               INNER JOIN public.#{providers} ON #{providers}.id = #{provider_id}
               INNER JOIN public.workbenches ON workbenches.id = #{providers}.workbench_id
               INNER JOIN public.workgroups ON workgroups.id = workbenches.workgroup_id
-              INNER JOIN public.codes ON #{model_table_name}.id = codes.resource_id
+              INNER JOIN public.codes ON codes.resource_id = #{model_table_name}.id
             SQL
           end
         end

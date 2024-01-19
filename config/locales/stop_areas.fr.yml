@@ -115,6 +115,43 @@ fr:
       title: "Gérer le parent de l'arrêt %{stop_area}"
     add_children:
       title: "Gérer les fils de l'arrêt %{stop_area}"
+  enumerize:
+    stop_area:
+      mobility_impaired_accessibility:
+        unknown: Inconnu
+        'yes': Oui
+        'no': Non
+        partial: Partiel
+      wheelchair_accessibility:
+        unknown: Inconnu
+        'yes': Oui
+        'no': Non
+        partial: Partiel
+      step_free_accessibility:
+        unknown: Inconnu
+        'yes': Oui
+        'no': Non
+        partial: Partiel
+      escalator_free_accessibility:
+        unknown: Inconnu
+        'yes': Oui
+        'no': Non
+        partial: Partiel
+      lift_free_accessibility:
+        unknown: Inconnu
+        'yes': Oui
+        'no': Non
+        partial: Partiel
+      audible_signals_availability:
+        unknown: Inconnu
+        'yes': Oui
+        'no': Non
+        partial: Partiel
+      visual_signs_availability:
+        unknown: Inconnu
+        'yes': Oui
+        'no': Non
+        partial: Partiel
   activerecord:
     models:
       stop_area:

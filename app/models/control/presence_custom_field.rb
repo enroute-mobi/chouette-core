@@ -19,7 +19,7 @@ module Control
         end
 
         def candidate_custom_fields
-          workgroup.custom_fields
+          workgroup&.custom_fields || ::CustomField.none
         end
       end
 

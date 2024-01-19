@@ -106,6 +106,14 @@ RSpec.describe Macro::AssociateShapeAccordingWaypoints do
 
         expect(macro_run.macro_messages).to include(expected_message)
       end
+
+      context 'when the JourneyPattern has already a Shape' do
+        before { updated_journey_pattern.update! shape: other_shape }
+
+        it "doesn't change the Journey Pattern Shape" do
+          expect { subject }.to_not(change { updated_journey_pattern.reload.shape })
+        end
+      end
     end
   end
 end

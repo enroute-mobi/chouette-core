@@ -1,7 +1,18 @@
 # frozen_string_literal: true
 
 RSpec.describe Control::PassingTimesInTimeRange do
+  it 'should be one of the available Control' do
+    expect(Control.available).to include(described_class)
+  end
+
   describe Control::PassingTimesInTimeRange::Run do
+    it { should validate_presence_of :passing_time_scope }
+    it do
+      should enumerize(:passing_time_scope).in(
+        %w[all first last]
+      )
+    end
+
     let(:control_list_run) do
       Control::List::Run.create referential: referential, workbench: referential.workbench
     end

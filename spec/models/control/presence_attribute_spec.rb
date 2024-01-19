@@ -1,7 +1,35 @@
 # frozen_string_literal: true
 
 RSpec.describe Control::PresenceAttribute do
+  it 'should be one of the available Control' do
+    expect(Control.available).to include(described_class)
+  end
+
   describe Control::PresenceAttribute::Run do
+    it { should validate_presence_of :target_model }
+    it { should validate_presence_of :target_attribute }
+    it do
+      should enumerize(:target_model).in(
+        %w[Line StopArea JourneyPattern VehicleJourney Company]
+      )
+    end
+
+    it 'should validate_presences of :model_attribute' do
+      valid_control_run = described_class.new target_model: 'Line', target_attribute: 'name'
+
+      valid_control_run.valid?
+
+      expect(valid_control_run.model_attribute).to be
+      expect(valid_control_run.errors.details[:model_attribute]).to be_empty
+
+      invalid_control_run = described_class.new target_model: 'Line', target_attribute: 'names'
+
+      invalid_control_run.valid?
+
+      expect(invalid_control_run.model_attribute).to be_nil
+      expect(invalid_control_run.errors.details[:model_attribute]).not_to be_empty
+    end
+
     describe '#candidate_target_attributes' do
       subject { described_class.new.candidate_target_attributes }
 

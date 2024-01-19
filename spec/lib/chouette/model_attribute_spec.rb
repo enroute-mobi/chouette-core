@@ -35,7 +35,9 @@ RSpec.describe Chouette::ModelAttribute do
     end
 
     it 'cannot select an undefined attribute' do
-      expect(Rails.logger).to receive(:error).with("Selected Model attribute with class User and name email doesn't exist in the list")
+      expect(Rails.logger).to receive(:error).with(
+        "Selected Model attribute with class User and name email doesn't exist in the list"
+      )
       described_class.collection do
         select User, :email
       end

@@ -1,6 +1,10 @@
 # frozen_string_literal: true
 
 RSpec.describe Control::FormatAttribute do
+  it 'should be one of the available Control' do
+    expect(Control.available).to include(described_class)
+  end
+
   describe Control::FormatAttribute::Run do
     it { should validate_presence_of :target_model }
     it { should validate_presence_of :target_attribute }

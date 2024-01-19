@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 RSpec.describe Macro::List::Run do
   describe '.table_name' do
     subject { described_class.table_name }

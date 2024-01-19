@@ -1,5 +1,11 @@
 # frozen_string_literal: true
 
+RSpec.describe Control::Context::TransportMode do
+  it 'should be one of the available Control::Context' do
+    expect(Control::Context.available).to include(described_class)
+  end
+end
+
 RSpec.describe Control::Context::TransportMode::Run do
   let!(:organisation) { create(:organisation) }
   let!(:user) { create(:user, organisation: organisation) }

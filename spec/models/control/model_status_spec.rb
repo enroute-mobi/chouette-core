@@ -1,6 +1,23 @@
+# frozen_string_literal: true
+
 RSpec.describe Control::ModelStatus do
+  it 'should be one of the available Control' do
+    expect(Control.available).to include(described_class)
+  end
 
   describe Control::ModelStatus::Run do
+    it { should validate_presence_of :target_model }
+    it { should validate_presence_of :expected_status }
+    it do
+      should enumerize(:target_model).in(
+        %w[Line StopArea]
+      )
+    end
+    it do
+      should enumerize(:expected_status).in(
+        %w[enabled disabled]
+      )
+    end
 
     let(:context) do
       Chouette.create do

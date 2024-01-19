@@ -9,6 +9,8 @@ module Macro
         option :target_attribute
 
         enumerize :target_model, in: %w[StopArea Company]
+
+        validates :target_model, :target_attribute, :model_attribute, presence: true
       end
 
       def model_attribute
@@ -74,8 +76,6 @@ module Macro
         end
       end
     end
-
-    validates :target_model, :target_attribute, :model_attribute, presence: true
 
     include Options
 

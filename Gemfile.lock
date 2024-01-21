@@ -381,7 +381,7 @@ GEM
     graphiql-rails (1.9.0)
       railties
       sprockets-rails
-    graphql (2.2.4)
+    graphql (2.2.5)
       racc (~> 1.4)
     gretel (4.6.0)
       actionview (>= 5.1, < 7.2)

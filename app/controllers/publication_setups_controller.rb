@@ -52,7 +52,6 @@ class PublicationSetupsController < ChouetteController
       :enabled,
       :force_daily_publishing,
       :workgroup_id,
-      :publish_per_line,
       destinations_attributes: destination_options,
       export_options: {}
     )

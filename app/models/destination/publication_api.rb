@@ -45,11 +45,6 @@ class Destination::PublicationApi < ::Destination
         export.class.name.demodulize.downcase
       end
 
-    if publication_setup.publish_per_line
-      line = Chouette::Line.find export.line_ids.first
-      "lines/#{line.registration_number}-#{export_type}.#{export.user_file.extension}"
-    else
-      "#{export_type}.#{export.user_file.extension}"
-    end
+    "#{export_type}.#{export.user_file.extension}"
   end
 end

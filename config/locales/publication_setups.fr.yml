@@ -33,7 +33,6 @@ fr:
         prefer_referent_line: Préférer les lignes Référents
         ignore_single_stop_station: Ignorer les stations avec un arrêt unique
         ignore_parent_stop_places: "Ignorer les arrêts Parents"
-        publish_per_line: Publier Par Ligne
     errors:
       models:
         publication_setups:

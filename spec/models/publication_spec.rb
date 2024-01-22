@@ -65,7 +65,7 @@ RSpec.describe Publication, type: :model do
       expect { publication.run_export }.to change { Export::Gtfs.count }.by 1
       expect_any_instance_of(Export::Gtfs).to receive(:run)
       publication.run_export
-      expect(publication.exports).to be_present
+      expect(publication.export).to be_present
     end
 
     context 'when the export succeeds' do
@@ -97,10 +97,8 @@ RSpec.describe Publication, type: :model do
         expect(publication).to_not receive(:send_to_destinations)
         publication.run_export
         expect(publication).to be_failed
-        expect(publication.exports).to be_present
-        publication.exports.each do |export|
-          expect(export).to be_persisted
-        end
+        expect(publication.export).to be_present
+        expect(publication.export).to be_persisted
       end
     end
 
@@ -115,7 +113,7 @@ RSpec.describe Publication, type: :model do
         expect(publication).to_not receive(:send_to_destinations)
         publication.run_export
         expect(publication).to be_failed
-        expect(publication.exports).to be_present
+        expect(publication.export).to be_present
       end
     end
   end

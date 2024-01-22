@@ -15,11 +15,6 @@
       .col-lg-12
         = render'exports/options', form: form, resource_type: :export_options, workgroup: @workgroup
 
-        div
-          template[x-if="(!isExport && (type == 'Export::Gtfs' || type == 'Export::NetexGeneric'))"]
-            div
-              = form.input :publish_per_line, as: :switchable_checkbox, input_html: { name: 'publication_setup[publish_per_line]' }
-
     .separator.section_separator
 
     h2.mb-lg= t('publication_setups.form.sections.destinations')

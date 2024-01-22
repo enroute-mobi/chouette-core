@@ -24,8 +24,7 @@ class PublicationSetup < ApplicationModel
   scope :export_type, ->(export_type) { where("export_options -> 'type' = ?", export_type) }
 
   def self.same_api_usage(other)
-   scope = export_type(other.export_type).
-     where(publish_per_line: other.publish_per_line)
+   scope = export_type(other.export_type)
    scope = scope.where.not(id: other.id) if other.id
    scope
   end

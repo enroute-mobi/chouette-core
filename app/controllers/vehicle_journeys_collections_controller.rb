@@ -1,8 +1,6 @@
 # frozen_string_literal: true
 
 class VehicleJourneysCollectionsController < Chouette::ReferentialController
-  include ReferentialSupport
-
   respond_to :json
   belongs_to :referential do
     belongs_to :line, :parent_class => Chouette::Line do

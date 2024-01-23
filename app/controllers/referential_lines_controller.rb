@@ -1,7 +1,6 @@
 # frozen_string_literal: true
 
 class ReferentialLinesController < Chouette::ReferentialController
-  include ReferentialSupport
   include PolicyChecker
 
   defaults :resource_class => Chouette::Line, :collection_name => 'lines', :instance_name => 'line'

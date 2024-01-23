@@ -2,8 +2,6 @@
 
 # Browse all VehicleJourneys of the Referential
 class ReferentialVehicleJourneysController < Chouette::ReferentialController
-  include ReferentialSupport
-
   defaults resource_class: Chouette::VehicleJourney, collection_name: :vehicle_journeys
   belongs_to :referential
 

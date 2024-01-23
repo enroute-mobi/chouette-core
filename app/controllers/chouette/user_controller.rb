@@ -2,11 +2,11 @@
 
 module Chouette
   class UserController < ApplicationController
-    include MetadataControllerSupport
     include Pundit
 
     before_action :authenticate_user!
-    before_action :set_locale, unless: -> { params[:controller] == 'notifications' }
+    # already defined in ApplicationController but this declaration allows to put authenticate_user! before
+    before_action :set_locale
     before_action :set_time_zone
 
     rescue_from Pundit::NotAuthorizedError, with: :user_not_authorized

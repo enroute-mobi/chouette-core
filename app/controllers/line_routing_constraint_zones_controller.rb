@@ -10,15 +10,19 @@ class LineRoutingConstraintZonesController < Chouette::LineReferentialController
 
   respond_to :html, :json
 
-  def index
+  def index # rubocop:disable Metrics/MethodLength
     index! do |format|
       format.html {
         if collection.out_of_bounds?
           redirect_to params.merge(:page => 1)
         end
 
-        @line_routing_constraint_zones = LineRoutingConstraintZoneDecorator.decorate(@line_routing_constraint_zones,
-        context: { workbench: workbench })
+        @line_routing_constraint_zones = LineRoutingConstraintZoneDecorator.decorate(
+          @line_routing_constraint_zones,
+          context: {
+            workbench: workbench
+          }
+        )
       }
       format.json
     end

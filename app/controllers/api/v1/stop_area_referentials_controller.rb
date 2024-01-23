@@ -4,7 +4,7 @@ module Api
   module V1
     class StopAreaReferentialsController < WorkbenchController
       respond_to :json, :xml
-      wrap_parameters :stop_area_referential, include: [ :type, *WebhookEvent::StopAreaReferential.resource_names ]
+      wrap_parameters :stop_area_referential, include: [:type, *WebhookEvent::StopAreaReferential.resource_names]
 
       before_action :authenticate
 
@@ -67,9 +67,9 @@ module Api
       #   {"stop_place"=>{}, "stop_places"=>[:id], "quay"=>{}, "quays"=>[:id]}]
       def permitted_attributes
         @permitted_attributes ||= [
-          "type",
+          'type',
           *WebhookEvent::StopAreaReferential.resource_names,
-          Hash[WebhookEvent::StopAreaReferential.resource_names.map { |name| [name, name.end_with?('s') ? [:id] : {} ] }]
+          Hash[WebhookEvent::StopAreaReferential.resource_names.map { |name| [name, name.end_with?('s') ? [:id] : {}] }]
         ]
       end
 

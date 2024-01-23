@@ -19,8 +19,7 @@ class ApplicationController < ActionController::Base
     ::I18n.locale = ::LocaleSelector.locale_for(params, session, nil)
   end
 
-  def set_time_zone
-  end
+  def set_time_zone; end
 
   include ErrorManagement
 

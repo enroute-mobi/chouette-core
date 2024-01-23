@@ -17,12 +17,13 @@ module Api
         def notify_parent
           find_netex_import
           if @netex_import.notify_parent
+            date = I18n.l(@netex_import.notified_parent_at)
             render json: {
-              status: "ok",
-              message:"#{@netex_import.parent_type} (id: #{@netex_import.parent_id}) successfully notified at #{I18n.l(@netex_import.notified_parent_at)}"
+              status: 'ok',
+              message: "#{@netex_import.parent_type} (id: #{@netex_import.parent_id}) successfully notified at #{date}"
             }
           else
-            render json: {status: "error", message: @netex_import.errors.full_messages }
+            render json: { status: 'error', message: @netex_import.errors.full_messages }
           end
         end
 
@@ -38,8 +39,8 @@ module Api
           @netex_import = Import::Netex.find(params[:id])
         rescue ActiveRecord::RecordNotFound
           render json: {
-            status: "error",
-            message: "Record not found"
+            status: 'error',
+            message: 'Record not found'
           }
           finish_action!
         end
@@ -47,7 +48,7 @@ module Api
         def find_workbench
           @workbench = Workbench.find(netex_import_params['workbench_id'])
         rescue ActiveRecord::RecordNotFound
-          render json: {errors: {'workbench_id' => 'missing'}}, status: 406
+          render json: { errors: { 'workbench_id' => 'missing' } }, status: :not_acceptable
           finish_action!
         end
 

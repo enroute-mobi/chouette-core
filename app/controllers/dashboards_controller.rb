@@ -1,5 +1,5 @@
 # frozen_string_literal: true
-#
+
 # If you changed the default Dashboard implementation (see Dashboard),
 # this controller will use a custom partial like
 # custom/dashboards/_dashboard.html.slim for Custom::Dashboard
@@ -11,5 +11,4 @@ class DashboardsController < Chouette::UserController
     @dashboard = Dashboard.create self
     @workbenches = current_organisation.workbenches
   end
-
 end

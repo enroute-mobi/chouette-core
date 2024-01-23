@@ -7,10 +7,14 @@ class CodeSpacesController < Chouette::WorkgroupController
   protected
 
   def collection
-    get_collection_ivar || set_collection_ivar(CodeSpaceDecorator.decorate(
-      super.order(:short_name).paginate(page: params[:page]),
-      context: { workgroup: workgroup }
-    ))
+    get_collection_ivar || set_collection_ivar(
+      CodeSpaceDecorator.decorate(
+        super.order(:short_name).paginate(page: params[:page]),
+        context: {
+          workgroup: workgroup
+        }
+      )
+    )
   end
 
   def resource
@@ -20,11 +24,4 @@ class CodeSpacesController < Chouette::WorkgroupController
   def code_space_params
     params.require(:code_space).permit(:name, :short_name, :description)
   end
-
-  # def build_resource
-  #   get_resource_ivar || super.tap do |code_space|
-
-  #   end
-  # end
-
 end

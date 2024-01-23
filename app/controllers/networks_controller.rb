@@ -13,10 +13,12 @@ class NetworksController < Chouette::LineReferentialController
 
   def show
     show! do
-      @network = @network.decorate(context: {
-        workbench: workbench,
-        line_referential: line_referential
-      })
+      @network = @network.decorate(
+        context: {
+          workbench: workbench,
+          line_referential: line_referential
+        }
+      )
     end
   end
 

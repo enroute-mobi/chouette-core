@@ -23,7 +23,7 @@ class PointOfInterestsController < Chouette::TopologicReferentialController
         @point_of_interests = PointOfInterestDecorator.decorate(
           collection,
           context: {
-            workbench: workbench,
+            workbench: workbench
           }
         )
       end

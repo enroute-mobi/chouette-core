@@ -40,11 +40,13 @@ class LinesController < Chouette::LineReferentialController
   def show
     @group_of_lines = resource.group_of_lines
     show! do
-      @line = @line.decorate(context: {
-        workbench: workbench,
-        line_referential: line_referential,
-        current_organisation: current_organisation
-      })
+      @line = @line.decorate(
+        context: {
+          workbench: workbench,
+          line_referential: line_referential,
+          current_organisation: current_organisation
+        }
+      )
     end
   end
 

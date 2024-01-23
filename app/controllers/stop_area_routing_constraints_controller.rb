@@ -10,15 +10,19 @@ class StopAreaRoutingConstraintsController < Chouette::StopAreaReferentialContro
 
   respond_to :html, :json
 
-  def index
+  def index # rubocop:disable Metrics/MethodLength
     index! do |format|
       format.html {
         if collection.out_of_bounds?
           redirect_to params.merge(:page => 1)
         end
 
-        @stop_area_routing_constraints = StopAreaRoutingConstraintDecorator.decorate(@stop_area_routing_constraints,
-        context: { workbench: workbench })
+        @stop_area_routing_constraints = StopAreaRoutingConstraintDecorator.decorate(
+          @stop_area_routing_constraints,
+          context: {
+            workbench: workbench
+          }
+        )
       }
       format.json
     end

@@ -7,7 +7,7 @@ class StopAreaProvidersController < Chouette::StopAreaReferentialController
 
   respond_to :html, :json
 
-  def index
+  def index # rubocop:disable Metrics/MethodLength
     index! do |format|
       format.html {
         if collection.out_of_bounds?
@@ -16,7 +16,9 @@ class StopAreaProvidersController < Chouette::StopAreaReferentialController
 
         @stop_area_providers = StopAreaProviderDecorator.decorate(
           @stop_area_providers,
-          context: { workbench: workbench }
+          context: {
+            workbench: workbench
+          }
         )
       }
     end

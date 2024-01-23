@@ -29,7 +29,7 @@ class StopAreasController < Chouette::StopAreaReferentialController
     @children = stop_area.children
   end
 
-  def index
+  def index # rubocop:disable Metrics/MethodLength
     if saved_search = saved_searches.find_by(id: params[:search_id])
       @search = saved_search.search
     end
@@ -43,8 +43,8 @@ class StopAreasController < Chouette::StopAreaReferentialController
           collection,
           context: {
             workbench: workbench
-            }
-          )
+          }
+        )
       }
     end
   end
@@ -59,7 +59,7 @@ class StopAreasController < Chouette::StopAreaReferentialController
     create!
   end
 
-  def show
+  def show # rubocop:disable Metrics/MethodLength,Metrics/AbcSize
     show! do |format|
       format.geojson { render 'stop_areas/show.geo' }
 
@@ -71,7 +71,12 @@ class StopAreasController < Chouette::StopAreaReferentialController
       end
 
       @stop_area = @stop_area.decorate(context: { workbench: workbench })
-      @connection_links = ConnectionLinkDecorator.decorate(@stop_area.connection_links.limit(4), context: {workbench: workbench})
+      @connection_links = ConnectionLinkDecorator.decorate(
+        @stop_area.connection_links.limit(4),
+        context: {
+          workbench: workbench
+        }
+      )
     end
   end
 

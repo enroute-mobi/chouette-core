@@ -24,11 +24,16 @@ module Chouette
     end
 
     def pundit_user
-      ::UserContext.new(current_user, referential: @referential, workbench: current_workbench, workgroup: current_workgroup)
+      ::UserContext.new(
+        current_user,
+        referential: @referential,
+        workbench: current_workbench,
+        workgroup: current_workgroup
+      )
     end
 
     def current_organisation
-      current_user.organisation if current_user
+      current_user&.organisation
     end
     helper_method :current_organisation
 

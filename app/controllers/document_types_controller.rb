@@ -13,7 +13,7 @@ class DocumentTypesController < Chouette::WorkgroupController
 
   respond_to :html, :xml, :json
 
-  def index
+  def index # rubocop:disable Metrics/MethodLength
     index! do |format|
       format.html do
         if collection.out_of_bounds?
@@ -23,7 +23,7 @@ class DocumentTypesController < Chouette::WorkgroupController
         @document_types = DocumentTypeDecorator.decorate(
           collection,
           context: {
-            workgroup: workgroup,
+            workgroup: workgroup
           }
         )
       end

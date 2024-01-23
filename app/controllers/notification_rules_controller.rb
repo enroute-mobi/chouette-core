@@ -11,9 +11,9 @@ class NotificationRulesController < Chouette::WorkbenchController
       format.html {
         @notification_rules = NotificationRuleDecorator.decorate(
           collection,
-            context: {
-              workbench: workbench
-            }
+          context: {
+            workbench: workbench
+          }
         )
       }
     end
@@ -66,6 +66,7 @@ class NotificationRulesController < Chouette::WorkbenchController
         operation_statuses: [],
         lines: []
       )
-      .with_defaults(workbench_id: workbench.id, users: [], external_email: nil) # CHOUETTE-1713 (depending on the chosen target_type, some inputs are disabled, we then need to ensure default values)
+      .with_defaults(workbench_id: workbench.id, users: [], external_email: nil) # CHOUETTE-1713
+    # (depending on the chosen target_type, some inputs are disabled, we then need to ensure default values)
   end
 end

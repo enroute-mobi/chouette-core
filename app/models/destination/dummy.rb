@@ -4,6 +4,6 @@ class Destination::Dummy < ::Destination
 
   def do_transmit(publication, report)
     raise "You asked me to fail" if result.to_s == "unexpected_failure"
-    report.failed! "I failed, but it was expected"  if result.to_s == "expected_failure"
+    report.failed! message: "I failed, but it was expected" if result.to_s == "expected_failure"
   end
 end

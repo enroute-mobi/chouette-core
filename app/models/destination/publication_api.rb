@@ -9,10 +9,9 @@ class Destination::PublicationApi < ::Destination
       return
     end
 
-    publication.exports.successful.each do |export|
+    if export = publication.export
       key = generate_key(export)
-
-      next unless key
+      return unless key
 
       publication_api_source = publication_api.publication_api_sources.find_or_create_by(key: key)
       publication_api_source.export = export

@@ -56,9 +56,9 @@ class Publication < ApplicationModel
     running!
     run_export
 
-    rescue => e
-      Chouette::Safe.capture "Publication ##{id} failed", e
-      failed!
+  rescue => e
+    Chouette::Safe.capture "Publication ##{id} failed", e
+    failed!
   end
 
   def referential

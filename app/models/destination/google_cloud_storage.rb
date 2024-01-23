@@ -14,8 +14,8 @@ class Destination::GoogleCloudStorage < ::Destination
   def do_transmit(publication, report)
     secret_file.cache!
 
-    publication.exports.each do |export|
-      next unless export[:file].present?
+    if export = publication.export
+      return unless export[:file].present?
 
       upload_to_google_cloud export.file if export[:file]
     end

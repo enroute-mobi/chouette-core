@@ -7,7 +7,7 @@ class Destination::Ara < ::Destination
 
   def do_transmit(publication, report)
     Rails.logger.tagged("Destination::Ara ##{id}") do
-      publication.exports.each do |export|
+      if export = publication.export
         export.file.cache_stored_file!
         send_to_ara export.file, report if export[:file]
       end

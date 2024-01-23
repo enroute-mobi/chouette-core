@@ -28,7 +28,6 @@ RSpec.describe PublicationApiSource, type: :model do
       allow_any_instance_of(PublicationApi).to receive(:public_url).and_return public_url
 
       expect(publication_api_source_gtfs.public_url_filename).to eq "gtfs.zip"
-      expect(publication_api_source_gtfs_line.public_url_filename).to eq "#{line.registration_number}-gtfs.zip"
 
       expect(publication_api_source_idfm_netex_full.public_url_filename).to eq "netex.zip"
     end

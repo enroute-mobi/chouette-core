@@ -1,7 +1,7 @@
 RSpec.describe Publication, type: :model do
   it { should belong_to :publication_setup }
   it { should belong_to :parent }
-  it { should have_many :exports }
+  it { should have_one :export }
   it { should validate_presence_of :publication_setup }
   it { should validate_presence_of :parent }
 
@@ -131,8 +131,12 @@ RSpec.describe Publication, type: :model do
   end
 
   describe '#infer_status' do
-    before(:each) do
+    let(:export) { create(:gtfs_export) }
+
+    before do
       publication.send_to_destinations
+      allow(export).to receive(:status).and_return 'successful'
+      allow(publication).to receive(:export).and_return export
     end
 
     context 'with a failed destination_report' do

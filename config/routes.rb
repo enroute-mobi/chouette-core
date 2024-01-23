@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 ChouetteIhm::Application.routes.draw do # rubocop:disable Metrics/BlockLength
-  resource :dashboard
+  resource :dashboard, only: :show
   resource :subscriptions, only: :create
 
   # Used to the redirect user to the current workbench

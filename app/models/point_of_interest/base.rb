@@ -2,6 +2,7 @@
 
 module PointOfInterest
   class Base < ApplicationModel
+    include NilIfBlank
     include CodeSupport
     include RawImportSupport
 
@@ -25,9 +26,21 @@ module PointOfInterest
     before_validation :define_shape_referential, on: :create
     before_validation :position_from_input
 
+    # rubocop:disable Naming/VariableNumber
     scope :without_address, -> { where country: nil, city_name: nil, zip_code: nil, address_line_1: nil }
     scope :with_position, -> { where.not position: nil }
     scope :with_category, ->(point_of_interest_category) { where(point_of_interest_category: point_of_interest_category) }
+
+    def self.nullable_attributes
+      %i[
+        address_line_1
+        zip_code
+        city_name
+        country
+        postal_region
+      ]
+    end
+    # rubocop:enable Naming/VariableNumber
 
     def position_from_input
       PositionInput.new(@position_input).change(self)

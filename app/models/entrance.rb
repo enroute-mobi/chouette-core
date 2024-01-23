@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 class Entrance < ActiveRecord::Base
+  include NilIfBlank
   include StopAreaReferentialSupport
   include ObjectidSupport
   include CodeSupport
@@ -18,8 +19,19 @@ class Entrance < ActiveRecord::Base
   validates :name, presence: true
   attr_writer :position_input
 
+  # rubocop:disable Naming/VariableNumber
   scope :without_address, -> { where country: nil, city_name: nil, zip_code: nil, address_line_1: nil }
   scope :with_position, -> { where.not position: nil }
+
+  def self.nullable_attributes
+    %i[
+      address_line_1
+      zip_code
+      city_name
+      country
+    ]
+  end
+  # rubocop:enable Naming/VariableNumber
 
   def position_input
     @position_input || ("#{position.y} #{position.x}" if position)

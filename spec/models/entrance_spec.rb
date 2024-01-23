@@ -103,6 +103,7 @@ describe Entrance, type: :model do
     end
   end
 
+  # rubocop:disable Naming/VariableNumber
   describe '.without_address' do
     subject { described_class.without_address }
 
@@ -126,8 +127,13 @@ describe Entrance, type: :model do
       it { is_expected.to_not include(entrance) }
     end
 
-    context 'when Entrance has no country code, street name, zipcode or city name' do
+    context 'when Entrance has nil country code, street name, zipcode and city name' do
       before { entrance.update country: nil, address_line_1: nil, zip_code: nil, city_name: nil }
+      it { is_expected.to include(entrance) }
+    end
+
+    context 'when Entrance has empty country code, street name, zipcode and city name' do
+      before { entrance.update country: '', address_line_1: '', zip_code: '', city_name: '' }
       it { is_expected.to include(entrance) }
     end
   end
@@ -162,4 +168,5 @@ describe Entrance, type: :model do
       it { expect { subject }.to change(entrance, :city_name).to('dummy') }
     end
   end
+  # rubocop:enable Naming/VariableNumber
 end

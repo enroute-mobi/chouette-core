@@ -23,6 +23,7 @@ RSpec.describe PointOfInterest::Base do
     end
   end
 
+  # rubocop:disable Naming/VariableNumber
   describe '.without_address' do
     subject { described_class.without_address }
 
@@ -46,8 +47,13 @@ RSpec.describe PointOfInterest::Base do
       it { is_expected.to_not include(point_of_interest) }
     end
 
-    context 'when PointOfInterest has no country code, street name, zipcode or city name' do
+    context 'when PointOfInterest has nil country code, street name, zipcode and city name' do
       before { point_of_interest.update country: nil, address_line_1: nil, zip_code: nil, city_name: nil }
+      it { is_expected.to include(point_of_interest) }
+    end
+
+    context 'when PointOfInterest has empty country code, street name, zipcode and city name' do
+      before { point_of_interest.update country: '', address_line_1: '', zip_code: '', city_name: '' }
       it { is_expected.to include(point_of_interest) }
     end
   end
@@ -82,4 +88,5 @@ RSpec.describe PointOfInterest::Base do
       it { expect { subject }.to change(point_of_interest, :city_name).to('dummy') }
     end
   end
+  # rubocop:enable Naming/VariableNumber
 end

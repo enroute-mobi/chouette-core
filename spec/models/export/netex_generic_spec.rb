@@ -1360,6 +1360,40 @@ RSpec.describe Export::NetexGeneric do
           end
         end
       end
+
+      describe '#netex_resources' do
+        context 'when a validity period exists' do
+          let(:validity_period) { '2023-02-10'.to_date..'2023-02-14'.to_date }
+
+          let(:context) do
+            Chouette.create do
+              time_table periods: ['2023-02-01'.to_date..'2023-02-15'.to_date], int_day_types: 272, start_date: '2023-02-01', end_date: '2023-02-15'
+            end
+          end
+          let(:time_table) { context.time_table }
+          let(:referential) { context.referential }
+
+          let(:decorated_time_table) { Export::NetexGeneric::TimeTables::Decorator.new(time_table, validity_period) }
+
+          before { referential.switch }
+
+          subject { decorated_time_table.netex_resources.select { |e| e.is_a? Netex::DayTypeAssignment } }
+
+          context 'when an period intersects the validity period' do
+            it 'should export DayTypeAssignment' do
+              is_expected.to be_present
+            end
+          end
+
+          context 'when an period does not intersect the validity period' do
+            let(:validity_period) { '2023-01-10'.to_date..'2023-01-14'.to_date }
+
+            it 'should not export DayTypeAssignment' do
+              is_expected.to be_empty
+            end
+          end
+        end
+      end
     end
 
     describe Export::NetexGeneric::PeriodDecorator do

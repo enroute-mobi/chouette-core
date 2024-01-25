@@ -262,6 +262,7 @@ ChouetteIhm::Application.routes.draw do # rubocop:disable Metrics/BlockLength
           get 'costs'
           post 'duplicate', to: 'routes#duplicate'
           get 'retrieve_nearby_stop_areas'
+          get 'autocomplete_stop_areas'
         end
         collection do
           get 'fetch_opposite_routes'

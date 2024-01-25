@@ -7,7 +7,7 @@ class RoutesController < ChouetteController
   respond_to :kml, :only => :show
   respond_to :js, :only => :show
   respond_to :geojson, only: %i[show index]
-  respond_to :json, only: %i[retrieve_nearby_stop_areas]
+  respond_to :json, only: %i[retrieve_nearby_stop_areas, autocomplete_stop_areas]
 
   belongs_to :referential do
     belongs_to :line, :parent_class => Chouette::Line, :optional => true, :polymorphic => true
@@ -34,6 +34,7 @@ class RoutesController < ChouetteController
     end
   end
 
+  # Retrieve nearby stop areas for one stop area in route editor
   def retrieve_nearby_stop_areas
     @route = route
     stop_area_id = params[:stop_area_id]
@@ -42,6 +43,18 @@ class RoutesController < ChouetteController
 
     stop_area   = workbench.stop_areas.where(deleted_at: nil, id: stop_area_id).first
     @stop_areas = stop_area.around(referential.stop_areas.where(area_type: area_type), 300)
+  end
+
+  # Retrieve stop areas for autocomplete in route editor
+  def autocomplete_stop_areas
+    @stop_areas = begin
+      scope = referential.workbench.stop_areas.where(deleted_at: nil)
+      unless current_user.organisation.has_feature?("route_stop_areas_all_types")
+        scope = scope.where(kind: :non_commercial).or(scope.where(area_type: referential.stop_area_referential.available_stops))
+      end
+      args = [].tap{|arg| 4.times{arg << "%#{params[:q]}%"}}
+      scope.order(:name).where("unaccent(stop_areas.name) ILIKE unaccent(?) OR unaccent(stop_areas.city_name) ILIKE unaccent(?) OR stop_areas.registration_number ILIKE ? OR stop_areas.objectid ILIKE ?", *args).limit(50)
+    end
   end
 
   def show

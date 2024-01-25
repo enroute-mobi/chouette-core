@@ -1,54 +1,26 @@
 # frozen_string_literal: true
 
-class VehicleJourneysController < Chouette::ReferentialController
-  include ActionView::Helpers::TextHelper
-
-  defaults :resource_class => Chouette::VehicleJourney
-  before_action :user_permissions, only: :index
-
-  respond_to :json, :only => :index
-  respond_to :js, :only => [:select_journey_pattern, :select_vehicle_journey, :edit, :new, :index]
-
+class RouteVehicleJourneysController < Chouette::ReferentialController
+  defaults resource_class: Chouette::VehicleJourney
   belongs_to :referential do
-    belongs_to :line, :parent_class => Chouette::Line do
-      belongs_to :route, :parent_class => Chouette::Route
-    end
+    belongs_to :route, parent_class: Chouette::Route
   end
-
-  include PolicyChecker
-  alias_method :vehicle_journeys, :collection
   alias_method :route, :parent
-  alias_method :vehicle_journey, :resource
+  alias_method :vehicle_journeys, :collection
 
-  def select_journey_pattern
-    if params[:journey_pattern_id]
-      selected_journey_pattern = Chouette::JourneyPattern.find(params[:journey_pattern_id])
-
-      @vehicle_journey = vehicle_journey
-      @vehicle_journey.update_journey_pattern(selected_journey_pattern)
-    end
+  skip_after_action :set_modifier_metadata
+  before_action do
+    authorize parent
   end
-  def select_vehicle_journey
-    if params[:vehicle_journey_objectid]
-      @vehicle_journey = Chouette::VehicleJourney.find(params[:vehicle_journey_objectid])
-    end
-  end
+  before_action :user_permissions, only: :show
 
-  def create
-    create!(:alert => t('activerecord.errors.models.vehicle_journey.invalid_times'))
-  end
-
-  def update
-    update!(:alert => t('activerecord.errors.models.vehicle_journey.invalid_times'))
-  end
-
-  def index
-    index! do |format|
+  def show # rubocop:disable Metrics/AbcSize,Metrics/MethodLength
+    respond_to do |format|
       if collection.out_of_bounds?
         redirect_to params.merge(:page => 1)
       end
       format.json do
-        @vehicle_journeys = @vehicle_journeys.includes({stop_points: :stop_area})
+        @vehicle_journeys = @vehicle_journeys.includes(stop_points: :stop_area)
       end
       format.html do
         load_missions
@@ -66,13 +38,20 @@ class VehicleJourneysController < Chouette::ReferentialController
     end
   end
 
-  # overwrite inherited resources to use delete instead of destroy
-  # foreign keys will propagate deletion)
-  def destroy_resource(object)
-    object.delete
+  def update
+    state = JSON.parse request.raw_post
+    @resources = Chouette::VehicleJourney.state_update route, state
+    errors = state.any? { |item| item['errors'] }
+
+    respond_to do |format|
+      format.json do
+        render json: state, status: errors ? :unprocessable_entity : :ok
+      end
+    end
   end
 
   protected
+
   def collection
     scope = route.vehicle_journeys.with_stops
     scope = maybe_filter_by_departure_time(scope)
@@ -83,7 +62,7 @@ class VehicleJourneysController < Chouette::ReferentialController
 
       @ppage = 20
       vehicle_journeys = @q.result.paginate(:page => params[:page], :per_page => @ppage)
-      @footnotes = route.line.footnotes.map{|f| f.attributes.slice(*%w(label id code)) }
+      @footnotes = route.line.footnotes.map { |f| f.attributes.slice(*%w[label id code]) }
       route.line.line_notices.each do |line_notice|
         @footnotes << {
           code: line_notice.title,
@@ -118,53 +97,26 @@ class VehicleJourneysController < Chouette::ReferentialController
       return scope.without_time_tables
     end
 
-    # if params[:q]
-    #   if params[:q][:vehicle_journey_without_time_table] == 'true'
-    #     return scope.without_time_tables
-    #   end
-    # else
-    #   return scope.without_time_tables
-    # end
-
     scope
   end
 
   def filtered_ransack_params
     if params[:q]
-      params[:q] = params[:q].reject{|k| params[:q][k] == 'undefined'}
+      params[:q] = params[:q].reject { |k| params[:q][k] == 'undefined' }
       params[:q].except(:vehicle_journey_at_stops_departure_time_gteq, :vehicle_journey_at_stops_departure_time_lteq)
     end
   end
 
-  def adapted_params
-    params.tap do |adapted_params|
-      adapted_params.merge!(:route => parent)
-      hour_entry = "vehicle_journey_at_stops_departure_time_gt(4i)".to_sym
-      if params[:q] && params[:q][ hour_entry]
-        adapted_params[:q].merge! hour_entry => (params[:q][ hour_entry].to_i - utc_offset)
-      end
-    end
-  end
-  def utc_offset
-    # Ransack Time eval - utc eval
-    sample = [2001,1,1,10,0]
-    Time.zone.local(*sample).utc.hour - Time.utc(*sample).hour
-  end
-
-  def matrix
-    @matrix = resource_class.matrix(@vehicle_journeys)
-  end
-
   def user_permissions
-    @features = Hash[*current_organisation.features.map{|f| [f, true]}.flatten].to_json
+    @features = Hash[*current_organisation.features.map { |f| [f, true] }.flatten].to_json
     policy = policy(:vehicle_journey)
-    @perms =
-      %w{create destroy update}.inject({}) do | permissions, action |
-        permissions.merge( "vehicle_journeys.#{action}" => policy.authorizes_action?(action) )
-      end.to_json
+    @perms = %w[create destroy update].inject({}) do |permissions, action|
+      permissions.merge("vehicle_journeys.#{action}" => policy.authorizes_action?(action))
+    end.to_json
   end
 
   private
+
   def load_custom_fields
     @custom_fields = Chouette::VehicleJourney.custom_fields_definitions(referential.workgroup)
 
@@ -209,6 +161,9 @@ class VehicleJourneysController < Chouette::ReferentialController
 
   def load_missions
     @all_missions = route.journey_patterns.count > 10 ? [] : route.journey_patterns.map do |item|
+      published_name = ERB::Util.h(item.published_name)
+      short_id = ERB::Util.h(item.get_objectid.short_id)
+      registration_number = ERB::Util.h(item.registration_number)
       {
         id: item.id,
         "data-item": {
@@ -239,32 +194,8 @@ class VehicleJourneysController < Chouette::ReferentialController
             }
           end
         }.to_json,
-        text: "<strong>#{item.published_name} - #{item.get_objectid.short_id}</strong><br/><small>#{item.registration_number}</small>"
+        text: "<strong>#{published_name} - #{short_id}</strong><br/><small>#{registration_number}</small>"
       }
     end
-  end
-  def vehicle_journey_params
-    params.require(:vehicle_journey).permit(
-      { footnote_ids: [] },
-      :journey_pattern_id,
-      :number,
-      :published_journey_name,
-      :published_journey_identifier,
-      :comment,
-      :transport_mode,
-      :mobility_restricted_suitability,
-      :flexible_service,
-      :facility,
-      :vehicle_type_identifier,
-      :objectid,
-      :time_table_tokens,
-      { date: [:hour, :minute] },
-      :button,
-      :referential_id,
-      :line_id,
-      :route_id,
-      :id,
-      { vehicle_journey_at_stops_attributes: [:arrival_time, :id, :_destroy, :stop_point_id, :departure_time] }
-    )
   end
 end

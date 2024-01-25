@@ -1,7 +1,0 @@
-ul.actions
-  li
-    - if policy(Chouette::VehicleJourney).create? && @referential.organisation == current_organisation
-      = link_to t('vehicle_journeys.actions.new'), new_referential_line_route_vehicle_journey_path(@referential, @line, @route), class: "add"
-  li
-    = link_to t('vehicle_journeys.actions.new_frequency'), new_referential_line_route_vehicle_journey_frequency_path(@referential, @line, @route), class: "add"
-  

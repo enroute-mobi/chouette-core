@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Redirect
   class VehicleJourneysController < BaseController
     include ReferentialSupport
@@ -7,8 +9,7 @@ module Redirect
     end
 
     def show
-      redirect_to referential_line_route_vehicle_journeys_path referential, vehicle_journey.route.line,
-                                                               vehicle_journey.route
+      redirect_to referential_route_vehicle_journeys_path referential, vehicle_journey.route
     end
   end
 end

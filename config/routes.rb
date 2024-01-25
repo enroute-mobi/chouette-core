@@ -302,10 +302,12 @@ ChouetteIhm::Application.routes.draw do # rubocop:disable Metrics/BlockLength
             end
           end
         end
-        resource :vehicle_journeys_collection, only: %i[show update]
-        resources :vehicle_journeys
       end
       resources :routing_constraint_zones
+    end
+
+    resources :routes, only: [] do
+      resource :vehicle_journeys, only: %i[show update], controller: :route_vehicle_journeys
     end
 
     resources :vehicle_journeys, controller: 'referential_vehicle_journeys', only: [:index]

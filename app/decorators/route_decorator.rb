@@ -31,7 +31,6 @@ class RouteDecorator < AF83::Decorator
       l.href do
         [
           context[:referential],
-          context[:line],
           object,
           :vehicle_journeys
         ]

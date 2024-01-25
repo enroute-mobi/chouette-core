@@ -234,10 +234,6 @@ module Chouette
 
     accepts_nested_attributes_for :vehicle_journey_at_stops, :allow_destroy => true
 
-    def presenter
-      @presenter ||= ::VehicleJourneyPresenter.new( self)
-    end
-
     def vehicle_journey_at_stops_matrix
       at_stops = self.vehicle_journey_at_stops.to_a.dup
       active_stop_point_ids = journey_pattern.stop_points.map(&:id)

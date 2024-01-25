@@ -9,8 +9,6 @@
         - enable = @route.opposite_route.vehicle_journeys.exists?
         = link_to(t('routes.actions.reversed_vehicle_journey'), [@referential, @route.line, @route.opposite_route, :vehicle_journeys], class: "btn btn-primary sticky-action #{enable ? '' : 'disabled'}")
 
-- javascript_additional_packs 'vehicle_journeys/index'
-
 .page_content
   .container-fluid
     .row

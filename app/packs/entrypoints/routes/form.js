@@ -10,9 +10,13 @@ import App from '../../src/routes/containers/App'
 
 const store = createStore(reducers, {}, applyMiddleware())
 
-render(
-  <Provider store={store}>
-    <App />
-  </Provider>,
-  document.getElementById('route')
-)
+document.addEventListener("DOMContentLoaded", () => {
+  if (document.getElementById("route")) {
+    render(
+      <Provider store={store}>
+        <App />
+      </Provider>,
+      document.getElementById('route')
+    )
+  }
+})

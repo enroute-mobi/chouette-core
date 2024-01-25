@@ -184,6 +184,9 @@ RSpec.describe RoutesController, type: :controller do
     end
 
     describe 'without feature route_stop_areas_all_types' do
+      let(:scope) { :route_editor }
+      let(:request){ get :autocomplete_stop_areas, params: { referential_id: referential.id, line_id: line.id, id: route.id, scope: scope } }
+
       with_feature :route_stop_areas_all_types do
         it "should not filter stop areas based on type" do
           request

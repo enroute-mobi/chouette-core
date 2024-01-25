@@ -36,14 +36,15 @@ class RoutesController < ChouetteController
 
   # Retrieve nearby stop areas for one stop area in route editor
   def retrieve_nearby_stop_areas
-    @route = route
     stop_area_id = params[:stop_area_id]
     area_type = params[:target_type]
     workbench = route.referential.workbench
 
-    stop_area   = workbench.stop_areas.where(deleted_at: nil, id: stop_area_id).first
-    raise ActiveRecord::RecordNotFound unless stop_area
-    @stop_areas = stop_area.around(referential.stop_areas.where(area_type: area_type), 300)
+    if stop_area = workbench.stop_areas.where(deleted_at: nil).find(stop_area_id)
+      @stop_areas = stop_area.around(referential.stop_areas.where(area_type: area_type), 300)
+    else
+      raise ActiveRecord::RecordNotFound
+    end
   end
 
   # Retrieve stop areas for autocomplete in route editor
@@ -53,8 +54,7 @@ class RoutesController < ChouetteController
       unless current_user.organisation.has_feature?("route_stop_areas_all_types")
         scope = scope.where(kind: :non_commercial).or(scope.where(area_type: referential.stop_area_referential.available_stops))
       end
-      args = [].tap{|arg| 4.times{arg << "%#{params[:q]}%"}}
-      scope.order(:name).where("unaccent(stop_areas.name) ILIKE unaccent(?) OR unaccent(stop_areas.city_name) ILIKE unaccent(?) OR stop_areas.registration_number ILIKE ? OR stop_areas.objectid ILIKE ?", *args).limit(50)
+      scope.where("unaccent(stop_areas.name) ILIKE unaccent(:search) OR unaccent(stop_areas.city_name) ILIKE unaccent(:search) OR stop_areas.registration_number ILIKE :search OR stop_areas.objectid ILIKE :search", search: "%#{params[:q]}%").order(:name).limit(50)
     end
   end
 

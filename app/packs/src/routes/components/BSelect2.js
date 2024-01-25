@@ -8,7 +8,7 @@ import { Path } from 'path-parser'
 
 // get JSON full path
 const path = new Path('/referentials/:referentialId/lines/:lineId/routes/:routeId')
-const { referentialId, lineId, routeId } = path.partialTest(location.pathname)
+const { referentialId, lineId, routeId } = path.partialTest(location.pathname) || {}
 
 // This component should not be used elsewhere that in route editor for stop areas autocomplete
 export default class BSelect3 extends Component {

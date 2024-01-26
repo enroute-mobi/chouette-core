@@ -37,7 +37,7 @@ class Document < ApplicationModel
   end
 
   def self.file_extension_whitelist
-    %w[pdf jpg jpeg png]
+    %w[pdf kml jpg jpeg png]
   end
 
   # Returns all attributes of the export file from the user point of view

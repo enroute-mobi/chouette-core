@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 RSpec.describe RoutesController, type: :controller do
   login_user
 
@@ -8,8 +10,8 @@ RSpec.describe RoutesController, type: :controller do
           route
         end
 
-        stop_area :zdep, name: "ecola", area_type: "zdep"
-        stop_area :lda, area_type: "lda"
+        stop_area :zdep, name: 'ecola', area_type: 'zdep'
+        stop_area :lda, area_type: 'lda'
       end
     end
   end
@@ -22,24 +24,24 @@ RSpec.describe RoutesController, type: :controller do
 
   it { is_expected.to be_kind_of(ChouetteController) }
 
-  shared_examples_for "line and referential linked" do
-    it "assigns route.line as @line" do
+  shared_examples_for 'line and referential linked' do
+    it 'assigns route.line as @line' do
       expect(assigns[:line]).to eq(route.line)
     end
 
-    it "assigns referential as @referential" do
+    it 'assigns referential as @referential' do
       expect(assigns[:referential]).to eq(referential)
     end
   end
 
-  shared_examples_for "route, line and referential linked" do
-    it "assigns route as @route" do
+  shared_examples_for 'route, line and referential linked' do
+    it 'assigns route as @route' do
       expect(assigns[:route]).to eq(route)
     end
-    it_behaves_like "line and referential linked"
+    it_behaves_like 'line and referential linked'
   end
 
-  describe "GET /index" do
+  describe 'GET /index' do
     before(:each) do
       get :index, params: {
         line_id: route.line_id,
@@ -47,39 +49,39 @@ RSpec.describe RoutesController, type: :controller do
       }
     end
 
-    it_behaves_like "line and referential linked"
+    it_behaves_like 'line and referential linked'
   end
 
-  describe "POST /create" do
+  describe 'POST /create' do
     before(:each) do
       post :create, params: {
         line_id: route.line_id,
         referential_id: referential.id,
-        route: { name: "changed" }
+        route: { name: 'changed' }
       }
     end
-    it_behaves_like "line and referential linked"
-    it "sets metadata" do
+    it_behaves_like 'line and referential linked'
+    it 'sets metadata' do
       expect(Chouette::Route.last.metadata.creator_username).to eq @user.username
     end
   end
 
-  describe "PUT /update" do
-    let(:request){
+  describe 'PUT /update' do
+    let(:request)  do
       put :update, params: {
         id: route.id, line_id: route.line_id,
         referential_id: referential.id,
-        route: route.attributes.update({'name' => "New name"})
+        route: route.attributes.update({ 'name' => 'New name' })
       }
-    }
-    context "" do
-      before{ request }
-      it_behaves_like "route, line and referential linked"
-      it "sets metadata" do
+    end
+    context '' do
+      before { request }
+      it_behaves_like 'route, line and referential linked'
+      it 'sets metadata' do
         expect(Chouette::Route.last.metadata.modifier_username).to eq @user.username
       end
     end
-    it "does not save item twice" do
+    it 'does not save item twice' do
       counts = Hash.new { |hash, key| hash[key] = 0 }
       allow_any_instance_of(Chouette::Route).to receive(:save).and_wrap_original do |meth, *args|
         counts[meth.receiver.id] += 1
@@ -91,7 +93,7 @@ RSpec.describe RoutesController, type: :controller do
     end
   end
 
-  describe "GET /show" do
+  describe 'GET /show' do
     before(:each) do
       get :show, params: {
         id: route.id,
@@ -100,15 +102,15 @@ RSpec.describe RoutesController, type: :controller do
       }
     end
 
-    it_behaves_like "route, line and referential linked"
+    it_behaves_like 'route, line and referential linked'
   end
 
-  describe "POST /duplicate" do
+  describe 'POST /duplicate' do
     before do
       referential.switch # Force referential switch because spec/support/referential.rb force referential switch to use first
     end
 
-    it "creates a new route" do
+    it 'creates a new route' do
       expect do
         post :duplicate, params: {
           referential_id: referential.id,
@@ -117,15 +119,13 @@ RSpec.describe RoutesController, type: :controller do
         }
       end.to change { Chouette::Route.count }.by(1)
 
-
       expect(Chouette::Route.last.name).to eq(I18n.t('activerecord.copy', name: route.name))
       expect(Chouette::Route.last.published_name).to eq(route.published_name)
       expect(Chouette::Route.last.stop_area_ids).to eq route.stop_area_ids
     end
 
-    context "when opposite = true" do
-
-      it "creates a new route on the opposite way" do
+    context 'when opposite = true' do
+      it 'creates a new route on the opposite way' do
         expect do
           post :duplicate, params: {
             referential_id: referential.id,
@@ -152,13 +152,15 @@ RSpec.describe RoutesController, type: :controller do
 
     context 'search by name' do
       it 'should be successful' do
-        get :autocomplete_stop_areas, params: { referential_id: referential.id, line_id: line.id, id: route.id, q: 'écolà', format: :json }
+        get :autocomplete_stop_areas,
+            params: { referential_id: referential.id, line_id: line.id, id: route.id, q: 'écolà', format: :json }
         expect(response).to be_successful
         expect(assigns(:stop_areas)).to eq([zdep])
       end
 
       it 'should be accent insensitive' do
-        get :autocomplete_stop_areas, params: { referential_id: referential.id, line_id: line.id, id: route.id, q: 'ecola', format: :json }
+        get :autocomplete_stop_areas,
+            params: { referential_id: referential.id, line_id: line.id, id: route.id, q: 'ecola', format: :json }
         expect(response).to be_successful
         expect(assigns(:stop_areas)).to eq([zdep])
       end
@@ -166,16 +168,19 @@ RSpec.describe RoutesController, type: :controller do
 
     describe 'without feature route_stop_areas_all_types' do
       let(:scope) { :route_editor }
-      let(:request){ get :autocomplete_stop_areas, params: { referential_id: referential.id, line_id: line.id, id: route.id, scope: scope } }
+      let(:request) do
+        get :autocomplete_stop_areas,
+            params: { referential_id: referential.id, line_id: line.id, id: route.id, scope: scope }
+      end
 
-      it "should filter stop areas based on type" do
+      it 'should filter stop areas based on type' do
         request
         expect(assigns(:stop_areas)).to include(zdep)
         expect(assigns(:stop_areas)).to_not include(lda)
       end
 
-      it "should filter stop areas based on type if we change the default behaviour" do
-        referential.stop_area_referential.route_edition_available_stops = {lda: true}
+      it 'should filter stop areas based on type if we change the default behaviour' do
+        referential.stop_area_referential.route_edition_available_stops = { lda: true }
         referential.stop_area_referential.save
         request
         expect(assigns(:stop_areas)).to include(lda)
@@ -185,10 +190,13 @@ RSpec.describe RoutesController, type: :controller do
 
     describe 'without feature route_stop_areas_all_types' do
       let(:scope) { :route_editor }
-      let(:request){ get :autocomplete_stop_areas, params: { referential_id: referential.id, line_id: line.id, id: route.id, scope: scope } }
+      let(:request) do
+        get :autocomplete_stop_areas,
+            params: { referential_id: referential.id, line_id: line.id, id: route.id, scope: scope }
+      end
 
       with_feature :route_stop_areas_all_types do
-        it "should not filter stop areas based on type" do
+        it 'should not filter stop areas based on type' do
           request
           expect(assigns(:stop_areas)).to include(zdep)
           expect(assigns(:stop_areas)).to include(lda)

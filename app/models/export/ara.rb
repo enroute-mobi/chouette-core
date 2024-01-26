@@ -330,7 +330,7 @@ class Export::Ara < Export::Base
         {
           id: uuid,
           name: name,
-          objectids: ara_codes,
+          codes: ara_codes,
           parent_id: parent_uuid,
           line_ids: line_uuids,
           collect_children: ara_collect_children?,
@@ -421,7 +421,7 @@ class Export::Ara < Export::Base
       def ara_attributes
         {
           id: uuid,
-          objectids: ara_codes,
+          codes: ara_codes,
           stop_area_id: stop_area_id,
           vehicle_journey_id: vehicle_journey_id,
           passage_order: passage_order,
@@ -443,17 +443,17 @@ class Export::Ara < Export::Base
       end
 
       def references
-        return unless operator_objectid
+        return unless operator_code
 
         {
           "OperatorRef": {
             'Type': 'OperatorRef',
-            'ObjectId': operator_objectid
+            'Code': operator_code
           }
         }
       end
 
-      def operator_objectid
+      def operator_code
         return unless company
         return { 'external' => company.registration_number } if company.registration_number
 
@@ -541,7 +541,7 @@ class Export::Ara < Export::Base
           id: uuid,
           name: name,
           number: number,
-          objectids: ara_codes
+          codes: ara_codes
         }
       end
 
@@ -590,7 +590,7 @@ class Export::Ara < Export::Base
         {
           id: uuid,
           name: name,
-          objectids: ara_codes
+          codes: ara_codes
         }
       end
 
@@ -639,7 +639,7 @@ class Export::Ara < Export::Base
         {
           id: uuid,
           name: published_journey_name,
-          objectids: ara_codes,
+          codes: ara_codes,
           line_id: line.get_objectid.local_id,
           direction_type: route.wayback,
           attributes: {

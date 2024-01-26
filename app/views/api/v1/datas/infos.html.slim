@@ -2,7 +2,6 @@
   h2
     = "Accès à l'API de données "
     strong= @publication_api.name
-
   p.alert.alert-info
     - if @publication_api.public?
       = "Cette API est publique"
@@ -10,7 +9,6 @@
       = "Pour accéder aux données de cette API, vous devez disposer d'une clé d'accès."
       br
       = "Contacter le propriétaire de l’API pour obtenir une clé d'accès."
-
   - if @publication_api.publication_api_sources.exists?
     h4 Ressources disponibles:
     ul
@@ -20,13 +18,11 @@
       = "La dernière publication de données a eu lieu le #{l @publication_api.last_publication_at, format: :short_with_time}."
   - else
     h4 Aucune Ressource disponible
-
   - if @publication_api.public?
     p
       # Pour tester l'accès à une ressource, vous pouvez utiliser le code suivant:
       pre
         = "curl -o #{params[:from] && params[:from].split('/').last || 'output.zip'} #{params[:from] || "<URL DE LA RESSOURCE>"}"
-
   - else
     h4 Authentification
     p
@@ -37,7 +33,6 @@
       em 5fa1f901a833aaec78
       = ", la requête doit inclure une entête HTTP :"
       pre Authorization: Token token="5fa1f901a833aaec78"
-
     p
       # Pour tester l'accès à une ressource, vous pouvez utiliser le code suivant:
       pre
@@ -48,13 +43,11 @@
         = "-o #{params[:from] && params[:from].split('/').last || 'output.zip'} \\"
         br
         = params[:from] || "<URL DE LA RESSOURCE>"
-
 - else
   h2
     = "Access to the "
     strong= @publication_api.name
     = " API"
-
   p.alert.alert-info
     - if @publication_api.public?
       = "This API is public"
@@ -62,7 +55,6 @@
       = "To gain access to this API, you need an authorization token."
       br
       = "Please contact the owner of this API to get an access token."
-
   - if @publication_api.publication_api_sources.exists?
     h4 Available resources:
     ul
@@ -72,13 +64,11 @@
       = "The last data publication has been performed on #{l @publication_api.last_publication_at, format: :short_with_time}."
   - else
     h4 No available resource
-
   - if @publication_api.public?
     p
       # To thest the access to a resource, you may use the following snippet:
       pre
         = "curl -o #{params[:from] && params[:from].split('/').last || 'output.zip'} #{params[:from] || "<URL DE LA RESSOURCE>"}"
-
   - else
     h4 Authentication
     p
@@ -89,7 +79,6 @@
       em 5fa1f901a833aaec78
       =", the request must contain the following HTTP header:"
       pre Authorization: Token token="5fa1f901a833aaec78"
-
     p
       # To thest the access to a resource, you may use the following snippet:
       pre

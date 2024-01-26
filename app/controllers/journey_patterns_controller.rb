@@ -2,7 +2,6 @@ class JourneyPatternsController < ChouetteController
   include ReferentialSupport
   defaults :resource_class => Chouette::JourneyPattern
 
-  respond_to :kml, :only => :show
   respond_to :json, :only => :available_specific_stop_places
   respond_to :geojson, only: :show
 

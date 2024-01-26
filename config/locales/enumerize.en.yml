@@ -68,12 +68,10 @@ en:
       neptune: "Neptune profile"
       gtfs: "GTFS"
       netex: "NeTEx profile"
-      kml: "KML"
     data_format_detail:
       neptune: ""
       gtfs: "General Transit Feed Specification"
       netex: "Experimental"
-      kml: "line, route, ... drawings on Keyhole Markup Language format"
     route:
       direction:
         straight_forward: 'Straight Forward'

@@ -23,7 +23,8 @@ class Api::V1::ImportsController < Api::V1::WorkbenchController
   end
 
   def show
-    @import = current_workbench.workbench_imports.find(params[:id])
+    import = current_workbench.workbench_imports.includes(:children).find(params[:id])
+    render json: {id: import.id, name: import.name, status: import.status, referential_ids: import.children.collect(&:referential_id).compact}
   end
 
   private

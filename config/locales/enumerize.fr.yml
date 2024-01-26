@@ -68,12 +68,10 @@ fr:
       neptune: "Profil Neptune"
       gtfs: "GTFS"
       netex: "Profil NeTEx"
-      kml: "KML"
     data_format_detail:
       neptune: ""
       gtfs: "General Transit Feed Specification défini par Google"
       netex: "Expérimental"
-      kml: "Tracés de lignes, séquences d'arrêts, ...  en 'Keyhole Markup Language'"
     route:
       direction:
         straight_forward: 'Aller'

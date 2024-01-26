@@ -9,7 +9,6 @@ class LinesController < ChouetteController
   belongs_to :line_referential, singleton: true
 
   respond_to :html, :xml, :json
-  respond_to :kml, :only => :show
   respond_to :js, :only => :index
 
   helper_method :candidate_line_providers

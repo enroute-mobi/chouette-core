@@ -42,9 +42,6 @@ en:
       clone_as_parent: "Clone as parent"
       clone_as_child: "Clone as child"
       default_geometry: "Compute missing geometries"
-      export_kml_place: "Export KML places"
-      export_kml_commercial: "Export KML commercial stop points"
-      export_kml_physical: "Export KML physical"
     filters:
       name_or_objectid: "Search by name or by objectid..."
       parent: "Enter a parent..."

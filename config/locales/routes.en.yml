@@ -9,8 +9,6 @@ en:
       edit_boarding_alighting: "Stop alighting and boarding"
       destroy: "Remove this route"
       destroy_confirm: "Are you sure you want destroy this route?"
-      export_kml: "Export KML route"
-      export_kml_all: "Export KML routes"
       add_stop_point: "Add stop point"
       new_stop_point: "Create new stop"
       reversed_vehicle_journey: "Reversed vehicle journeys"

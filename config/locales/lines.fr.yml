@@ -14,8 +14,6 @@ fr:
       destroy_confirm: "Etes vous sûr de supprimer cette ligne ?"
       destroy_selection_confirm: "Etes vous sûr de supprimer cette sélection de lignes ?"
       import: "Importer des lignes"
-      export_kml: "Export KML de la ligne"
-      export_kml_all: "Export KML des lignes"
       show: 'Consulter'
       show_network: 'Voir le réseau'
       show_company: 'Voir le transporteur principal'

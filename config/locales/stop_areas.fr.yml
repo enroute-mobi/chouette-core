@@ -43,9 +43,6 @@ fr:
       clone_as_parent: "Cloner pour créer un père"
       clone_as_child: "Cloner pour créer un enfant"
       default_geometry: "Calculer les géométries manquantes"
-      export_kml_place: "Export KML des pôles d'échange"
-      export_kml_commercial: "Export KML des arrêts commerciaux"
-      export_kml_physical: "Export KML des arrêts physiques"
     filters:
       name_or_objectid: "Recherche par nom ou par objectid..."
       parent: "Indiquez un parent..."

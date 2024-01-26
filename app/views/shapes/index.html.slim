@@ -39,7 +39,3 @@
       .col-md-6.col-sm-12
         h4.underline= t('lines.show.map')
         #route_map.large_map.mb-lg
-
-= javascript_tag do
-  | window.kml_url = "#{workbench_shape_referential_shapes_path(@workbench, format: :kml, q: params[:q]&.to_unsafe_h, page: params[:page]).html_safe}";
-

@@ -36,7 +36,7 @@ RSpec.describe Destination::PublicationApi, type: :model do
   end
 
   context '#do_transmit' do
-    let!(:publication) { create :publication, publication_setup: publication_setup, exports: [gtfs_export] }
+    let!(:publication) { create :publication, publication_setup: publication_setup, export: gtfs_export }
     let!(:destination) do
       create :publication_api_destination, publication_setup: publication_setup, publication_api: publication_api
     end
@@ -51,7 +51,7 @@ RSpec.describe Destination::PublicationApi, type: :model do
       expect { destination.transmit(publication) }.to change { publication_api.publication_api_sources.count }.by 0
     end
 
-    let(:new_publication) { create :publication, :with_netex_generic, exports: [netex_generic_export] }
+    let(:new_publication) { create :publication, :with_netex_generic, export: netex_generic_export }
     it 'should create a new publication_api_source if publication_api_source with same key does not exists' do
       create :publication_api_source, publication: publication, publication_api: publication_api, export: gtfs_export,
                                       key: 'gtfs.zip'
@@ -73,7 +73,7 @@ RSpec.describe Destination::PublicationApi, type: :model do
   end
 
   context '#api_is_not_already_used' do
-    let!(:publication) { create :publication, publication_setup: publication_setup, exports: [gtfs_export] }
+    let!(:publication) { create :publication, publication_setup: publication_setup, export: gtfs_export }
     let!(:destination) do
       create :publication_api_destination, publication_setup: publication_setup, publication_api: publication_api
     end
@@ -84,14 +84,6 @@ RSpec.describe Destination::PublicationApi, type: :model do
 
     it 'should return true if a publication with different export_options type exists' do
       new_publication_setup = create :publication_setup_netex_generic, workgroup: publication_setup.workgroup
-      new_destination = build :publication_api_destination, publication_setup: new_publication_setup,
-                                                            publication_api: publication_api
-      expect(new_destination.api_is_not_already_used).to be_truthy
-    end
-
-    it 'should return true if a publication with same export_options type but different published_per_line value exists' do
-      new_publication_setup = create :publication_setup, export_options: publication_setup.export_options,
-                                                         publish_per_line: true, workgroup: publication_setup.workgroup
       new_destination = build :publication_api_destination, publication_setup: new_publication_setup,
                                                             publication_api: publication_api
       expect(new_destination.api_is_not_already_used).to be_truthy
@@ -121,12 +113,6 @@ RSpec.describe Destination::PublicationApi, type: :model do
 
       netex_idfm_full_export = create(:netex_export)
       expect(destination.generate_key(netex_idfm_full_export)).to eq 'netex.zip'
-
-      publication_setup_gtfs_line = create(:publication_setup_gtfs, publish_per_line: true,
-                                                                    export_options: { type: 'Export::Gtfs', line_ids: [line_1.id] })
-      destination = build(:publication_api_destination, publication_setup: publication_setup_gtfs_line,
-                                                        publication_api: publication_api)
-      expect(destination.generate_key(export_with_line1)).to eq "lines/#{line_1.registration_number}-gtfs.zip"
     end
   end
 end

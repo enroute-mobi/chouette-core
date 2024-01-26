@@ -77,23 +77,11 @@ RSpec.describe PublicationMailer, type: :mailer do
     end
 
     context 'with wrong parameters' do
-      context 'with multiple exported files' do
-        let! (:other_export) {create :gtfs_export, file: file, publication: publication}
-        before do
-          destination_mail.update attached_export_file: true
-        end
-
-        it "shouldn't attach exported file" do
-          expect(email.attachments.count).to eq 0
-        end
-      end
-
       context 'with export file option set to false' do
         it "shouldn't attach exported file" do
           expect(email.attachments.count).to eq 0
         end
       end
-
     end
 
   end

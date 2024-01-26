@@ -39,7 +39,7 @@ RSpec.describe Destination::GoogleCloudStorage, type: :model do
         file: export_file
       )
     end
-    let(:publication) { create(:publication, parent: operation, exports: [export]) }
+    let(:publication) { create(:publication, parent: operation, export: export) }
 
     before do
       gcs_bucket_double = double('GCS bucket')

@@ -240,10 +240,6 @@ ChouetteIhm::Application.routes.draw do # rubocop:disable Metrics/BlockLength
       get :journey_patterns
     end
 
-    resources :autocomplete_stop_areas, only: %i[show index] do
-      get 'around', on: :member
-    end
-
     resources :autocomplete, only: [] do
       get :line_providers, on: :collection, defaults: { format: 'json' }
       get :stop_areas, on: :collection, defaults: { format: 'json' }
@@ -265,6 +261,8 @@ ChouetteIhm::Application.routes.draw do # rubocop:disable Metrics/BlockLength
           put 'save_boarding_alighting'
           get 'costs'
           post 'duplicate', to: 'routes#duplicate'
+          get 'retrieve_nearby_stop_areas'
+          get 'autocomplete_stop_areas'
         end
         collection do
           get 'fetch_opposite_routes'

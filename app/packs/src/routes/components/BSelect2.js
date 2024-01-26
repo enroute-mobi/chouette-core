@@ -3,13 +3,14 @@ import React, { Component } from 'react'
 import PropTypes from 'prop-types'
 import Select2 from 'react-select2-wrapper'
 import language from '../../helpers/select2/language'
+import { Path } from 'path-parser'
 
 
 // get JSON full path
-var origin = window.location.origin
-var path = window.location.pathname.split('/', 3).join('/')
+const path = new Path('/referentials/:referentialId/lines/:lineId/routes/:routeId')
+const { referentialId, lineId, routeId } = path.partialTest(location.pathname) || {}
 
-
+// This component should not be used elsewhere that in route editor for stop areas autocomplete
 export default class BSelect3 extends Component {
   constructor(props) {
     super(props)
@@ -98,7 +99,7 @@ class BSelect2 extends Component{
           theme: 'bootstrap',
           width: '100%',
           ajax: {
-            url: origin + path + '/autocomplete_stop_areas.json',
+            url: `${path.build({ referentialId, lineId, routeId })}/autocomplete_stop_areas.json`,
             dataType: 'json',
             delay: '500',
             data: function(params) {

@@ -150,7 +150,6 @@ module Chouette
       define Chouette::StopArea, :name
       define Chouette::StopArea, :parent
       define Chouette::StopArea, :referent
-      define Chouette::StopArea, :fare_code
       define Chouette::StopArea, :coordinates
       define Chouette::StopArea, :country_code
       define Chouette::StopArea, :street_name

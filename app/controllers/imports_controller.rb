@@ -1,6 +1,9 @@
-class ImportsController < ChouetteController
+# frozen_string_literal: true
+
+class ImportsController < Chouette::WorkbenchController
   include PolicyChecker
   include Downloadable
+  include ImportMessages
 
   skip_before_action :authenticate_user!, only: [:internal_download]
   defaults resource_class: Import::Base, collection_name: 'imports', instance_name: 'import'
@@ -39,18 +42,7 @@ class ImportsController < ChouetteController
         #   redirect_to params.merge(:page => 1)
         # end
         @contextual_cols = []
-        @contextual_cols << if workbench
-                              TableBuilderHelper::Column.new(key: :creator, attribute: 'creator')
-                            else
-                              TableBuilderHelper::Column.new(
-                                key: :workbench,
-                                name: Workbench.ts.capitalize,
-                                attribute: proc { |n| n.workbench.name },
-                                link_to: lambda do |import|
-                                  policy(import.workbench).show? ? import.workbench : nil
-                                end
-                              )
-                            end
+        @contextual_cols << TableBuilderHelper::Column.new(key: :creator, attribute: 'creator')
         @imports = decorate_collection(collection)
       end
     end
@@ -62,22 +54,7 @@ class ImportsController < ChouetteController
 
   protected
 
-  def parent
-    @parent ||= workgroup || workbench
-  end
-
-  def workbench
-    return unless params[:workbench_id]
-
-    @workbench ||= current_organisation&.workbenches&.find(params[:workbench_id])
-  end
-
-  def workgroup
-    return unless params[:workgroup_id]
-
-    @workgroup ||= current_organisation&.workgroups.owned&.find(params[:workgroup_id])
-  end
-
+  # rubocop:disable Naming/MemoizedInstanceVariableName
   def resource
     @import ||= parent.imports.find(params[:id])
   end
@@ -88,13 +65,14 @@ class ImportsController < ChouetteController
       import.creator   = current_user.name
     end
   end
+  # rubocop:enable Naming/MemoizedInstanceVariableName
 
   def scope
     parent.imports.where(type: 'Import::Workbench')
   end
 
   def search
-    @search ||= Search.from_params(params, workgroup: workgroup)
+    @search ||= Search.from_params(params)
   end
 
   def collection

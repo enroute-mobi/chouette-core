@@ -1,4 +1,6 @@
-class SourcesController < ChouetteController
+# frozen_string_literal: true
+
+class SourcesController < Chouette::WorkbenchController
   include ApplicationHelper
   include PolicyChecker
 
@@ -8,8 +10,6 @@ class SourcesController < ChouetteController
   after_action :decorate_source, only: [:create, :update]
 
   before_action :source_params, only: [:create, :update]
-
-  belongs_to :workbench
 
   respond_to :html, :xml, :json
 
@@ -23,7 +23,7 @@ class SourcesController < ChouetteController
         @sources = SourceDecorator.decorate(
           collection,
           context: {
-            workbench: @workbench
+            workbench: workbench
           }
         )
       end
@@ -42,8 +42,6 @@ class SourcesController < ChouetteController
   end
 
   protected
-
-  alias workbench parent
 
   def collection
     @sources = parent.sources.paginate(page: params[:page], per_page: 30)
@@ -85,6 +83,6 @@ class SourcesController < ChouetteController
       :retrieval_time_of_day,
       :retrieval_frequency,
       retrieval_days_of_week_attributes: [:monday, :tuesday, :wednesday, :thursday, :friday, :saturday, :sunday]
-    ).with_defaults(workbench_id: parent.id)
+    ).with_defaults(workbench_id: workbench.id)
   end
 end

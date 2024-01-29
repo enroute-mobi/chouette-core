@@ -1,8 +1,9 @@
-class PublicationApisController < ChouetteController
+# frozen_string_literal: true
+
+class PublicationApisController < Chouette::WorkgroupController
   include PolicyChecker
 
   defaults :resource_class => PublicationApi
-  belongs_to :workgroup
 
   def index
     index! do |format|
@@ -19,7 +20,7 @@ class PublicationApisController < ChouetteController
         @api_keys = PublicationApiKeyDecorator.decorate(
           @publication_api.api_keys.order('created_at DESC').paginate(page: params[:page]),
           context: {
-            workgroup: @workgroup,
+            workgroup: workgroup,
             publication_api: @publication_api
           }
         )
@@ -30,7 +31,7 @@ class PublicationApisController < ChouetteController
   private
 
   def resource
-    super.decorate(context: { workgroup: parent })
+    super.decorate(context: { workgroup: workgroup })
   end
 
   def collection
@@ -42,7 +43,7 @@ class PublicationApisController < ChouetteController
     PublicationApiDecorator.decorate(
       publication_apis,
       context: {
-        workgroup: parent
+        workgroup: workgroup
       }
     )
   end

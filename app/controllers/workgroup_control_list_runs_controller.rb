@@ -1,4 +1,6 @@
-class WorkgroupControlListRunsController < ChouetteController
+# frozen_string_literal: true
+
+class WorkgroupControlListRunsController < Chouette::WorkgroupController
   include ApplicationHelper
   include PolicyChecker
 
@@ -7,8 +9,6 @@ class WorkgroupControlListRunsController < ChouetteController
   defaults collection_name: 'control_list_runs', instance_name: 'control_list_run'
 
   before_action :init_facade, only: %i[show]
-
-  belongs_to :workgroup
 
   respond_to :html, :json
 
@@ -20,7 +20,7 @@ class WorkgroupControlListRunsController < ChouetteController
         @control_list_runs = WorkgroupControlListRunDecorator.decorate(
           collection,
           context: {
-            workgroup: @workgroup
+            workgroup: workgroup
           }
         )
       end
@@ -30,7 +30,6 @@ class WorkgroupControlListRunsController < ChouetteController
   protected
 
   alias control_list_run resource
-  alias workgroup parent
 
   def scope
     workgroup.control_list_runs

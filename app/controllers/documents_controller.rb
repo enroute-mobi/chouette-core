@@ -1,11 +1,11 @@
-class DocumentsController < ChouetteController
+# frozen_string_literal: true
+
+class DocumentsController < Chouette::WorkbenchController
   include ApplicationHelper
   include PolicyChecker
   include Downloadable
 
   defaults resource_class: Document
-
-  belongs_to :workbench
 
   def index
     index! do |format|
@@ -13,7 +13,7 @@ class DocumentsController < ChouetteController
         @documents = DocumentDecorator.decorate(
           collection,
           context: {
-            workbench: @workbench
+            workbench: workbench
           }
         )
       end
@@ -28,19 +28,19 @@ class DocumentsController < ChouetteController
   protected
 
   alias document resource
-  alias workbench parent
 
   def scope
     @scope ||= workbench.workgroup.documents
   end
 
   def resource
-    get_resource_ivar || set_resource_ivar(scope.find_by_id(params[:id]).decorate(context: { workbench: @workbench }))
+    get_resource_ivar || set_resource_ivar(scope.find_by(id: params[:id]).decorate(context: { workbench: workbench }))
   end
 
   def build_resource
-    get_resource_ivar || set_resource_ivar(end_of_association_chain.send(method_for_build,
-                                                                         *resource_params).decorate(context: { workbench: @workbench }))
+    get_resource_ivar || set_resource_ivar(
+      end_of_association_chain.send(method_for_build, *resource_params).decorate(context: { workbench: workbench })
+    )
   end
 
   def search

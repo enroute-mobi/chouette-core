@@ -1,9 +1,7 @@
 # frozen_string_literal: true
 
 # Browse all VehicleJourneys of the Referential
-class ReferentialVehicleJourneysController < ChouetteController
-  include ReferentialSupport
-
+class ReferentialVehicleJourneysController < Chouette::ReferentialController
   defaults resource_class: Chouette::VehicleJourney, collection_name: :vehicle_journeys
   belongs_to :referential
 

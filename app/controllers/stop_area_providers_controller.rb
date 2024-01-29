@@ -1,21 +1,25 @@
-class StopAreaProvidersController < ChouetteController
+# frozen_string_literal: true
+
+class StopAreaProvidersController < Chouette::StopAreaReferentialController
   include ApplicationHelper
 
   defaults :resource_class => StopAreaProvider
 
-  belongs_to :workbench
-  belongs_to :stop_area_referential, singleton: true
-
   respond_to :html, :json
 
-  def index
+  def index # rubocop:disable Metrics/MethodLength
     index! do |format|
       format.html {
         if collection.out_of_bounds?
           redirect_to params.merge(:page => 1)
         end
 
-        @stop_area_providers = StopAreaProviderDecorator.decorate(@stop_area_providers, context: {workbench: @workbench})
+        @stop_area_providers = StopAreaProviderDecorator.decorate(
+          @stop_area_providers,
+          context: {
+            workbench: workbench
+          }
+        )
       }
     end
   end
@@ -25,7 +29,7 @@ class StopAreaProvidersController < ChouetteController
       format.json do
         render json: resource.attributes.update(text: resource.name)
       end
-      @stop_area_provider = resource.decorate(context: {workbench: @workbench})
+      @stop_area_provider = resource.decorate(context: { workbench: workbench })
       format.html
     end
   end
@@ -34,7 +38,7 @@ class StopAreaProvidersController < ChouetteController
 
   def build_resource
     get_resource_ivar || super.tap do |stop_area_provider|
-      stop_area_provider.workbench = @workbench
+      stop_area_provider.workbench = workbench
     end
   end
 

@@ -1,4 +1,6 @@
-class DocumentProvidersController < ChouetteController
+# frozen_string_literal: true
+
+class DocumentProvidersController < Chouette::WorkbenchController
   include ApplicationHelper
   include PolicyChecker
 
@@ -8,8 +10,6 @@ class DocumentProvidersController < ChouetteController
   after_action :decorate_document_provider, only: %i[create update]
 
   before_action :document_provider_params, only: [:create, :update]
-
-  belongs_to :workbench
 
   def index
     index! do |format|
@@ -21,7 +21,7 @@ class DocumentProvidersController < ChouetteController
         @document_providers = DocumentProviderDecorator.decorate(
           collection,
           context: {
-            workbench: @workbench
+            workbench: workbench
           }
         )
       end
@@ -48,7 +48,7 @@ class DocumentProvidersController < ChouetteController
     @document_provider = DocumentProviderDecorator.decorate(
       object,
       context: {
-        workbench: @workbench
+        workbench: workbench
       }
     )
   end

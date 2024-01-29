@@ -1,7 +1,8 @@
-class SubscriptionsController < ChouetteController
+# frozen_string_literal: true
+
+class SubscriptionsController < ApplicationController
   layout "devise"
 
-  skip_before_action :authenticate_user!
   before_action :check_feature_is_activated
 
   def devise_mapping

@@ -1,4 +1,6 @@
-class AutocompleteController < ChouetteController
+# frozen_string_literal: true
+
+class AutocompleteController < Chouette::UserController
 
   ##############
   # Line scope #

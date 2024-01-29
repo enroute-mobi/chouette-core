@@ -1,12 +1,10 @@
 # frozen_string_literal: true
 
-class FareProvidersController < ChouetteController
+class FareProvidersController < Chouette::FareReferentialController
   include ApplicationHelper
   include PolicyChecker
 
   defaults resource_class: Fare::Provider
-
-  belongs_to :workbench
 
   respond_to :html, :json
 

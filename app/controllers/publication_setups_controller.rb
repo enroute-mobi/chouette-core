@@ -1,8 +1,9 @@
-class PublicationSetupsController < ChouetteController
+# frozen_string_literal: true
+
+class PublicationSetupsController < Chouette::WorkgroupController
   include PolicyChecker
 
   defaults :resource_class => PublicationSetup
-  belongs_to :workgroup
 
   before_action :build_export, only: %i[show new create edit update]
 
@@ -22,7 +23,7 @@ class PublicationSetupsController < ChouetteController
         @publications = PublicationDecorator.decorate(
           @publication_setup.publications.order('created_at DESC').paginate(page: params[:page]),
           context: {
-            workgroup: @workgroup,
+            workgroup: workgroup,
             publication_setup: @publication_setup
           }
         )
@@ -58,7 +59,7 @@ class PublicationSetupsController < ChouetteController
   end
 
   def resource
-    super.decorate(context: { workgroup: parent })
+    super.decorate(context: { workgroup: workgroup })
   end
 
   def collection
@@ -80,7 +81,7 @@ class PublicationSetupsController < ChouetteController
     PublicationSetupDecorator.decorate(
       publication_setups,
       context: {
-        workgroup: parent
+        workgroup: workgroup
       }
     )
   end

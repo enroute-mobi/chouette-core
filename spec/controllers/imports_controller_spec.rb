@@ -1,8 +1,10 @@
+# frozen_string_literal: true
+
 RSpec.describe ImportsController, type: :controller do
   let(:context) do
     Chouette.create do
       # To match organisation used by login_user
-      organisation = Organisation.find_by_code('first')
+      organisation = Organisation.find_by(code: 'first')
       workgroup owner: organisation do
         workbench organisation: organisation do
           referential
@@ -12,29 +14,25 @@ RSpec.describe ImportsController, type: :controller do
   end
 
   let(:referential) { context.referential }
-  let(:import) do
-    Import::Workbench.create!(name: 'Test', creator: 'test', file: fixture_file_upload('google-sample-feed.zip'),
-                              workbench: workbench)
-  end
-
   let(:workbench) { referential.workbench }
-  let(:workgroup) { referential.workgroup }
+
+  let(:import) do
+    Import::Workbench.create!(
+      name: 'Test',
+      creator: 'test',
+      file: fixture_file_upload('google-sample-feed.zip'),
+      workbench: workbench
+    )
+  end
 
   context 'logged in' do
     login_user
-    describe 'GET index' do
-      context 'on a workbench' do
-        let(:request) { get :index, params: { workbench_id: workbench.id } }
-        it 'should be successful' do
-          expect(request).to be_successful
-        end
-      end
 
-      context 'on a workgroup' do
-        let(:request) { get :index, params: { workgroup_id: workbench.workgroup_id } }
-        it 'should be successful' do
-          expect(request).to be_successful
-        end
+    describe 'GET index' do
+      let(:request) { get :index, params: { workbench_id: workbench.id } }
+
+      it 'should be successful' do
+        expect(request).to be_successful
       end
     end
 
@@ -71,21 +69,31 @@ RSpec.describe ImportsController, type: :controller do
 
       context 'in JSON format' do
         let(:import) { create :gtfs_import, workbench: workbench }
+
         it 'should be successful' do
           get :show, params: { workbench_id: workbench.id, id: import.id, format: :json }
           expect(response).to be_successful
         end
       end
     end
-  end
 
-  describe 'GET #download' do
-    login_user
+    describe 'GET #download' do
+      it 'should be successful' do
+        get :download, params: { workbench_id: workbench.id, id: import.id }
+        expect(response).to be_successful
+        expect(response.body).to eq(import.file.read)
+      end
+    end
 
-    it 'should be successful' do
-      get :download, params: { workbench_id: workbench.id, id: import.id }
-      expect(response).to be_successful
-      expect(response.body).to eq(import.file.read)
+    describe 'GET #messages' do
+      let(:import_resource) { create(:import_resource, import: import) }
+
+      it 'returns 3 lines in CSV file' do
+        %w[info warning error].map { |c| create(:import_message, resource: import_resource, criticity: c) }
+        params = { workbench_id: workbench.id, id: import.id, import_resource_id: import_resource.id, format: :csv }
+        get :messages, params: params
+        expect(response.body.split("\n").count).to eq(3)
+      end
     end
   end
 
@@ -136,7 +144,7 @@ RSpec.describe ImportsController::Search, type: :model do
   describe '#candidate_statuses' do
     subject { search.candidate_statuses }
 
-    Operation::UserStatus.all.each do |user_status|
+    Operation::UserStatus.all.each do |user_status| # rubocop:disable Rails/FindEach
       it "includes user status #{user_status}" do
         is_expected.to include(user_status)
       end
@@ -160,49 +168,7 @@ RSpec.describe ImportsController::Search, type: :model do
   describe '#workbenches' do
     subject { search.workbenches }
 
-    context 'when the Search is associated to a Workgroup' do
-      let(:context) do
-        Chouette.create do
-          workgroup(:first) { workbench }
-          workgroup(:other) { workbench }
-        end
-      end
-
-      let(:workgroup) { context.workgroup(:first) }
-      let(:search) { ImportsController::Search.new workgroup: workgroup }
-
-      context 'when workbench_ids is nil' do
-        before { search.workbench_ids = nil }
-        it { is_expected.to be_empty }
-      end
-
-      context 'when workbench_ids is empty' do
-        before { search.workbench_ids = [] }
-        it { is_expected.to be_empty }
-      end
-
-      context 'when workbench_ids contains the Workbench identifier from the associated Workgroup' do
-        let(:workbench) { workgroup.workbenches.first }
-        before { search.workbench_ids = [workbench.id] }
-
-        it 'includes this Workbench' do
-          is_expected.to include(workbench)
-        end
-      end
-
-      context 'when workbench_ids contains the Workbench identifier from another Workgroup' do
-        let(:workbench) { context.workgroup(:other).workbenches.first }
-        before { search.workbench_ids = [workbench.id] }
-
-        it "doesn't include this Workbench" do
-          is_expected.to_not include(workbench)
-        end
-      end
-    end
-
-    context "when the Search isn't associated to a Workgroup" do
-      it { is_expected.to be_empty }
-    end
+    it { is_expected.to be_empty }
   end
 
   describe '#query' do

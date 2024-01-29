@@ -1,5 +1,6 @@
-class JourneyPatternsCollectionsController < ChouetteController
-  include ReferentialSupport
+# frozen_string_literal: true
+
+class JourneyPatternsCollectionsController < Chouette::ReferentialController
   defaults :resource_class => Chouette::JourneyPattern
   before_action :user_permissions, only: :show
   skip_after_action :set_modifier_metadata

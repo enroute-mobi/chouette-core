@@ -1,23 +1,22 @@
-class ConnectionLinksController < ChouetteController
+# frozen_string_literal: true
+
+class ConnectionLinksController < Chouette::StopAreaReferentialController
   include ApplicationHelper
   include PolicyChecker
 
   defaults :resource_class => Chouette::ConnectionLink
 
-  belongs_to :workbench
-  belongs_to :stop_area_referential, singleton: true
-
   respond_to :html, :geojson
 
   def index
     index! do
-      @connection_links = ConnectionLinkDecorator.decorate(@connection_links, context: { workbench: @workbench })
+      @connection_links = ConnectionLinkDecorator.decorate(@connection_links, context: { workbench: workbench })
     end
   end
 
   def show
     show! do |format|
-      @connection_link = @connection_link.decorate context: { workbench: @workbench }
+      @connection_link = @connection_link.decorate context: { workbench: workbench }
 
       format.geojson { render 'connection_links/show.geo' }
     end
@@ -30,12 +29,11 @@ class ConnectionLinksController < ChouetteController
   protected
 
   alias_method :connection_link, :resource
-  alias_method :stop_area_referential, :parent
 
   def build_resource
     get_resource_ivar || super.tap do |connection_link|
       connection_link.departure_id ||= params[:departure_id]
-      connection_link.stop_area_provider ||= @workbench.default_stop_area_provider
+      connection_link.stop_area_provider ||= workbench.default_stop_area_provider
     end
   end
 

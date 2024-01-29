@@ -1,4 +1,6 @@
-class OrganisationsController < ChouetteController
+# frozen_string_literal: true
+
+class OrganisationsController < Chouette::ResourceController
 
   defaults :resource_class => Organisation
   respond_to :html, :only => [:edit, :show, :update]

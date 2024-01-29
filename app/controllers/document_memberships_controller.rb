@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-class DocumentMembershipsController < ChouetteController
+class DocumentMembershipsController < Chouette::ResourceController
   include ApplicationHelper
   include PolicyChecker
 
@@ -77,6 +77,8 @@ class DocumentMembershipsController < ChouetteController
   end
 
   private
+
+  alias current_workbench workbench
 
   def decorator_context
     {

@@ -1,18 +1,19 @@
-class NotificationRulesController < ChouetteController
+# frozen_string_literal: true
+
+class NotificationRulesController < Chouette::WorkbenchController
   include PolicyChecker
   include RansackDateFilter
 
   defaults resource_class: NotificationRule
-  belongs_to :workbench
 
   def index
     index! do |format|
       format.html {
         @notification_rules = NotificationRuleDecorator.decorate(
           collection,
-            context: {
-              workbench: @workbench
-            }
+          context: {
+            workbench: workbench
+          }
         )
       }
     end
@@ -65,6 +66,7 @@ class NotificationRulesController < ChouetteController
         operation_statuses: [],
         lines: []
       )
-      .with_defaults(workbench_id: parent.id, users: [], external_email: nil) # CHOUETTE-1713 (depending on the chosen target_type, some inputs are disabled, we then need to ensure default values)
+      .with_defaults(workbench_id: workbench.id, users: [], external_email: nil) # CHOUETTE-1713
+    # (depending on the chosen target_type, some inputs are disabled, we then need to ensure default values)
   end
 end

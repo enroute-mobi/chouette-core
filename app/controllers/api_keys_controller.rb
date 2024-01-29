@@ -1,10 +1,10 @@
-class ApiKeysController < ChouetteController
+# frozen_string_literal: true
+
+class ApiKeysController < Chouette::WorkbenchController
   defaults resource_class: ApiKey
 
-  belongs_to :workbench
   include PolicyChecker
 
-  before_action :load_workbench
   before_action only: :index do
     user_not_authorized unless current_user.has_permission?('api_keys.index')
   end
@@ -38,9 +38,5 @@ class ApiKeysController < ChouetteController
 
   def api_key_params
     params.require(:api_key).permit(:name)
-  end
-
-  def load_workbench
-    @workbench = parent
   end
 end

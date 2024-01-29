@@ -1,4 +1,6 @@
-class MacroListsController < ChouetteController
+# frozen_string_literal: true
+
+class MacroListsController < Chouette::WorkbenchController
   include ApplicationHelper
   include PolicyChecker
 
@@ -8,8 +10,6 @@ class MacroListsController < ChouetteController
   after_action :decorate_macro_list, only: %i[create update]
 
   before_action :macro_list_params, only: %i[create update]
-
-  belongs_to :workbench
 
   respond_to :html, :xml, :json
 
@@ -21,7 +21,7 @@ class MacroListsController < ChouetteController
         @macro_lists = MacroListDecorator.decorate(
           @macro_lists,
           context: {
-            workbench: @workbench
+            workbench: workbench
           }
         )
       end
@@ -31,7 +31,6 @@ class MacroListsController < ChouetteController
   protected
 
   alias macro_list resource
-  alias workbench parent
 
   def collection
     @macro_lists = parent.macro_lists.paginate(page: params[:page], per_page: 30)
@@ -78,6 +77,6 @@ class MacroListsController < ChouetteController
       :updated_at,
       macros_attributes: macro_params,
       macro_contexts_attributes: macro_context_params
-    ).with_defaults(workbench_id: parent.id)
+    ).with_defaults(workbench_id: workbench.id)
   end
 end

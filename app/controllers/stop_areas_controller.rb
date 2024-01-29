@@ -1,10 +1,9 @@
-class StopAreasController < ChouetteController
+# frozen_string_literal: true
+
+class StopAreasController < Chouette::StopAreaReferentialController
   include ApplicationHelper
 
   defaults :resource_class => Chouette::StopArea
-
-  belongs_to :workbench
-  belongs_to :stop_area_referential, singleton: true
 
   respond_to :html, :geojson, :xml, :json
   respond_to :js, :only => :index
@@ -30,7 +29,7 @@ class StopAreasController < ChouetteController
     @children = stop_area.children
   end
 
-  def index
+  def index # rubocop:disable Metrics/MethodLength
     if saved_search = saved_searches.find_by(id: params[:search_id])
       @search = saved_search.search
     end
@@ -43,9 +42,9 @@ class StopAreasController < ChouetteController
         @stop_areas = StopAreaDecorator.decorate(
           collection,
           context: {
-            workbench: @workbench
-            }
-          )
+            workbench: workbench
+          }
+        )
       }
     end
   end
@@ -60,7 +59,7 @@ class StopAreasController < ChouetteController
     create!
   end
 
-  def show
+  def show # rubocop:disable Metrics/MethodLength,Metrics/AbcSize
     show! do |format|
       format.geojson { render 'stop_areas/show.geo' }
 
@@ -71,8 +70,13 @@ class StopAreasController < ChouetteController
         render json: attributes
       end
 
-      @stop_area = @stop_area.decorate(context: { workbench: @workbench })
-      @connection_links = ConnectionLinkDecorator.decorate(@stop_area.connection_links.limit(4), context: {workbench: @workbench})
+      @stop_area = @stop_area.decorate(context: { workbench: workbench })
+      @connection_links = ConnectionLinkDecorator.decorate(
+        @stop_area.connection_links.limit(4),
+        context: {
+          workbench: workbench
+        }
+      )
     end
   end
 
@@ -107,17 +111,16 @@ class StopAreasController < ChouetteController
   end
 
   def saved_searches
-    @saved_searches ||= @workbench.saved_searches.for(Search::StopArea)
+    @saved_searches ||= workbench.saved_searches.for(Search::StopArea)
   end
 
   protected
 
   alias_method :stop_area, :resource
-  alias_method :stop_area_referential, :parent
 
   def build_resource
     get_resource_ivar || super.tap do |stop_area|
-      stop_area.stop_area_provider ||= @workbench.default_stop_area_provider
+      stop_area.stop_area_provider ||= workbench.default_stop_area_provider
     end
   end
 
@@ -126,7 +129,7 @@ class StopAreasController < ChouetteController
   end
 
   def search
-    @search ||= Search::StopArea.from_params(params, workbench: @workbench)
+    @search ||= Search::StopArea.from_params(params, workbench: workbench)
   end
 
   def collection
@@ -141,9 +144,6 @@ class StopAreasController < ChouetteController
   end
 
   private
-
-  alias_method :current_referential, :stop_area_referential
-  helper_method :current_referential
 
   def stop_area_params
     fields = [

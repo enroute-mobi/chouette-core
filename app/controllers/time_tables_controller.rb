@@ -1,5 +1,6 @@
-class TimeTablesController < ChouetteController
-  include ReferentialSupport
+# frozen_string_literal: true
+
+class TimeTablesController < Chouette::ReferentialController
   include TimeTablesHelper
   include RansackDateFilter
   before_action(only: [:index]) { set_date_time_params("bounding_dates", Date) }

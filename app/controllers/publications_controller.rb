@@ -1,10 +1,10 @@
-class PublicationsController < ChouetteController
+# frozen_string_literal: true
+
+class PublicationsController < Chouette::WorkgroupController
   include PolicyChecker
 
   defaults :resource_class => Publication
-  belongs_to :workgroup do
-    belongs_to :publication_setup
-  end
+  belongs_to :publication_setup
 
   respond_to :html
 
@@ -26,7 +26,7 @@ class PublicationsController < ChouetteController
     @exports = ExportDecorator.decorate(
       collection,
       context: {
-        parent: @workgroup
+        parent: workgroup
       }
     )
   end

@@ -1,4 +1,6 @@
-class MacroListRunsController < ChouetteController
+# frozen_string_literal: true
+
+class MacroListRunsController < Chouette::WorkbenchController
   include ApplicationHelper
   include PolicyChecker
 
@@ -9,7 +11,6 @@ class MacroListRunsController < ChouetteController
 
   before_action :init_facade, only: %i[show]
 
-  belongs_to :workbench
   belongs_to :macro_list, optional: true
 
   respond_to :html, :json
@@ -21,7 +22,7 @@ class MacroListRunsController < ChouetteController
 
         @macro_list_runs = MacroListRunDecorator.decorate(
           collection,
-          context: { workbench: @workbench }
+          context: { workbench: workbench }
         )
       end
     end
@@ -51,13 +52,6 @@ class MacroListRunsController < ChouetteController
     association_chain
 
     parent if parent.is_a?(Macro::List)
-  end
-
-  def workbench
-    # Ensure parent is loaded
-    association_chain
-
-    @workbench ||= parent.is_a?(Workbench) ? parent : parent&.workbench
   end
 
   def build_resource

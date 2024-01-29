@@ -1,4 +1,6 @@
-class DocumentTypesController < ChouetteController
+# frozen_string_literal: true
+
+class DocumentTypesController < Chouette::WorkgroupController
   include ApplicationHelper
   include PolicyChecker
 
@@ -9,11 +11,9 @@ class DocumentTypesController < ChouetteController
 
   before_action :document_type_params, only: [:create, :update]
 
-  belongs_to :workgroup
-
   respond_to :html, :xml, :json
 
-  def index
+  def index # rubocop:disable Metrics/MethodLength
     index! do |format|
       format.html do
         if collection.out_of_bounds?
@@ -23,7 +23,7 @@ class DocumentTypesController < ChouetteController
         @document_types = DocumentTypeDecorator.decorate(
           collection,
           context: {
-            workgroup: @workgroup,
+            workgroup: workgroup
           }
         )
       end
@@ -46,7 +46,7 @@ class DocumentTypesController < ChouetteController
     @document_type = DocumentTypeDecorator.decorate(
       object,
       context: {
-        workgroup: @workgroup
+        workgroup: workgroup
       }
     )
   end

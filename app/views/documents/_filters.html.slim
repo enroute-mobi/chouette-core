@@ -16,6 +16,6 @@
     .flex.items-center.mb-3
       = render partial: 'shared/per_page', locals: {f:f}
     .flex.items-center
-      = link_to t('actions.erase'), [@parent, :documents], class: 'btn btn-link'
+      = link_to t('actions.erase'), [parent, :documents], class: 'btn btn-link'
       = f.submit t('actions.filter'), class: 'btn btn-default'
 

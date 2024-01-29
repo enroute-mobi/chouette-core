@@ -1,11 +1,12 @@
-class MergesController < ChouetteController
+# frozen_string_literal: true
+
+class MergesController < Chouette::WorkbenchController
   include PolicyChecker
   include ActionView::Helpers::TagHelper
   include IconHelper
   include ReferentialsHelper
 
   defaults resource_class: Merge
-  belongs_to :workbench
 
   respond_to :html
 
@@ -37,7 +38,6 @@ class MergesController < ChouetteController
   protected
   
   alias merge resource
-  alias workbench parent
 
   def build_resource
     super.tap do |merge|

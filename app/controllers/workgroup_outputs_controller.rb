@@ -1,10 +1,11 @@
-class WorkgroupOutputsController < ChouetteController
+# frozen_string_literal: true
+
+class WorkgroupOutputsController < Chouette::WorkgroupController
   respond_to :html, only: [:show]
   defaults resource_class: Workgroup
 
   def show
-    @workgroup = current_organisation.workgroups.find params[:workgroup_id]
-    @aggregates = @workgroup.aggregates.order("created_at desc").paginate(page: params[:page], per_page: 30)
+    @aggregates = workgroup.aggregates.order('created_at desc').paginate(page: params[:page], per_page: 30)
     @aggregates = AggregateDecorator.decorate(@aggregates)
   end
 end

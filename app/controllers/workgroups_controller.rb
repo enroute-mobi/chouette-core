@@ -1,4 +1,6 @@
-class WorkgroupsController < ChouetteController
+# frozen_string_literal: true
+
+class WorkgroupsController < Chouette::ResourceController
   defaults resource_class: Workgroup
 
   include PolicyChecker
@@ -93,4 +95,6 @@ class WorkgroupsController < ChouetteController
       current_organisation.workgroups.build
     end
   end
+
+  alias current_workgroup resource
 end

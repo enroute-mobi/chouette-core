@@ -1,5 +1,6 @@
-class JourneyPatternsController < ChouetteController
-  include ReferentialSupport
+# frozen_string_literal: true
+
+class JourneyPatternsController < Chouette::ReferentialController
   defaults :resource_class => Chouette::JourneyPattern
 
   respond_to :json, :only => :available_specific_stop_places

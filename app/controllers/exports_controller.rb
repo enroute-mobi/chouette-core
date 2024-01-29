@@ -1,4 +1,6 @@
-class ExportsController < ChouetteController
+# frozen_string_literal: true
+
+class ExportsController < Chouette::WorkbenchController
   include PolicyChecker
   include Downloadable
 
@@ -24,7 +26,7 @@ class ExportsController < ChouetteController
     respond_to do |format|
       format.html
       format.json do
-        fragment = render_to_string(partial: "exports/show", formats: :html)
+        fragment = render_to_string(partial: 'exports/show', formats: :html)
         render json: { fragment: fragment }
       end
     end
@@ -37,18 +39,7 @@ class ExportsController < ChouetteController
         #   redirect_to params.merge(:page => 1)
         # end
         @contextual_cols = []
-        @contextual_cols << if workbench
-                              TableBuilderHelper::Column.new(key: :creator, attribute: 'creator')
-                            else
-                              TableBuilderHelper::Column.new(
-                                key: :workbench,
-                                name: Workbench.ts.capitalize,
-                                attribute: proc { |n| n.workbench.name },
-                                link_to: lambda do |export|
-                                  policy(export.workbench).show? ? export.workbench : nil
-                                end
-                              )
-                            end
+        @contextual_cols << TableBuilderHelper::Column.new(key: :creator, attribute: 'creator')
         @exports = decorate_collection(collection)
       end
     end
@@ -65,22 +56,7 @@ class ExportsController < ChouetteController
 
   protected
 
-  def parent
-    @parent ||= workgroup || workbench
-  end
-
-  def workbench
-    return unless params[:workbench_id]
-
-    @workbench ||= current_organisation&.workbenches&.find(params[:workbench_id])
-  end
-
-  def workgroup
-    return unless params[:workgroup_id]
-
-    @workgroup ||= current_organisation&.workgroups.owned&.find(params[:workgroup_id])
-  end
-
+  # rubocop:disable Naming/MemoizedInstanceVariableName
   def resource
     @export ||= parent.exports.find(params[:id])
   end
@@ -88,17 +64,18 @@ class ExportsController < ChouetteController
   def build_resource
     @export ||= Export::Base.new(*resource_params) do |export|
       export.workbench = workbench
-      export.workgroup = workgroup || workbench&.workgroup
+      export.workgroup = workbench.workgroup
       export.creator   = current_user.name
     end.decorate
   end
+  # rubocop:enable Naming/MemoizedInstanceVariableName
 
   def scope
     parent.exports
   end
 
   def search
-    @search ||= Search.from_params(params, workgroup: workgroup)
+    @search ||= Search.from_params(params)
   end
 
   def collection
@@ -107,8 +84,7 @@ class ExportsController < ChouetteController
 
   def export_params
     params.require(:export).permit(:name, :type, :referential_id, :notification_target, options: {}).tap do |export_params|
-      export_params[:workbench_id] = workbench&.id
-      export_params[:workgroup_id] = workgroup&.id || workbench&.workgroup&.id
+      export_params[:workbench_id] = workbench.id
       export_params[:creator] = current_user.name
       export_params[:user_id] = current_user.id
     end
@@ -131,11 +107,11 @@ class ExportsController < ChouetteController
 
   def load_referentials
     referential_ids = parent.referentials.exportable.pluck(:id)
-    referential_ids += (workgroup || workbench&.workgroup).output.referentials.pluck(:id)
+    referential_ids += workbench.workgroup.output.referentials.pluck(:id)
 
     @referential_options = Rabl::Renderer.new(
       'autocomplete/referentials',
-      Referential.where(id: referential_ids).order("created_at desc"),
+      Referential.where(id: referential_ids).order('created_at desc'),
       format: :hash,
       view_path: 'app/views'
     ).render

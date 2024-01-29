@@ -1,11 +1,12 @@
-class WorkgroupControlMessagesController < ChouetteController
+# frozen_string_literal: true
+
+class WorkgroupControlMessagesController < Chouette::WorkgroupController
   include Pundit::Authorization
 
   defaults collection_name: 'control_messages'
 
   respond_to :js
 
-  belongs_to :workgroup
   belongs_to :control_list_run
   belongs_to :control_run
 
@@ -17,7 +18,7 @@ class WorkgroupControlMessagesController < ChouetteController
       partial: 'control_list_runs/control_messages',
       locals: {
         messages: messages,
-        facade: OperationRunFacade.new(@control_list_run, @workgroup.owner_workbench)
+        facade: OperationRunFacade.new(@control_list_run, workgroup.owner_workbench)
       }
     )
 
@@ -27,6 +28,6 @@ class WorkgroupControlMessagesController < ChouetteController
   protected
 
   def pundit_user
-    UserContext.new(current_user, workgroup: @workgroup)
+    UserContext.new(current_user, workgroup: workgroup)
   end
 end

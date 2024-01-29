@@ -1,4 +1,6 @@
-class PointOfInterestCategoriesController < ChouetteController
+# frozen_string_literal: true
+
+class PointOfInterestCategoriesController < Chouette::TopologicReferentialController
   include ApplicationHelper
   include PolicyChecker
 
@@ -8,9 +10,6 @@ class PointOfInterestCategoriesController < ChouetteController
   after_action :decorate_point_of_interest_category, only: %i[create update]
 
   before_action :point_of_interest_category_params, only: [:create, :update]
-
-  belongs_to :workbench
-  belongs_to :shape_referential, singleton: true
 
   respond_to :html, :xml, :json
 
@@ -24,7 +23,7 @@ class PointOfInterestCategoriesController < ChouetteController
         @point_of_interest_categories = PointOfInterestCategoryDecorator.decorate(
           collection,
           context: {
-            workbench: @workbench,
+            workbench: workbench
           }
         )
       end
@@ -34,7 +33,6 @@ class PointOfInterestCategoriesController < ChouetteController
   protected
 
   alias point_of_interest_category resource
-  alias shape_referential parent
 
   def collection
     @point_of_interest_categories = parent.point_of_interest_categories.paginate(page: params[:page], per_page: 30)
@@ -47,7 +45,7 @@ class PointOfInterestCategoriesController < ChouetteController
     @point_of_interest_category = PointOfInterestCategoryDecorator.decorate(
       object,
       context: {
-        workbench: @workbench
+        workbench: workbench
       }
     )
   end

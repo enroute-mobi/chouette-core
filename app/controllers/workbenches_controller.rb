@@ -1,4 +1,6 @@
-class WorkbenchesController < ChouetteController
+# frozen_string_literal: true
+
+class WorkbenchesController < Chouette::ResourceController
   defaults resource_class: Workbench
   include PolicyChecker
 

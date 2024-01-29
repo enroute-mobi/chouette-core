@@ -22,7 +22,7 @@ RSpec.describe RoutesController, type: :controller do
   let(:zdep) { context.stop_area(:zdep) }
   let(:lda) { context.stop_area(:lda) }
 
-  it { is_expected.to be_kind_of(ChouetteController) }
+  it { is_expected.to be_kind_of(Chouette::ReferentialController) }
 
   shared_examples_for 'line and referential linked' do
     it 'assigns route.line as @line' do

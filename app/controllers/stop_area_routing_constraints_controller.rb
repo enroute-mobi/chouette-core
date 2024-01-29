@@ -1,4 +1,6 @@
-class StopAreaRoutingConstraintsController < ChouetteController
+# frozen_string_literal: true
+
+class StopAreaRoutingConstraintsController < Chouette::StopAreaReferentialController
   include ApplicationHelper
   include PolicyChecker
 
@@ -6,20 +8,21 @@ class StopAreaRoutingConstraintsController < ChouetteController
 
   defaults :resource_class => StopAreaRoutingConstraint
 
-  belongs_to :workbench
-  belongs_to :stop_area_referential, singleton: true
-
   respond_to :html, :json
 
-  def index
+  def index # rubocop:disable Metrics/MethodLength
     index! do |format|
       format.html {
         if collection.out_of_bounds?
           redirect_to params.merge(:page => 1)
         end
 
-        @stop_area_routing_constraints = StopAreaRoutingConstraintDecorator.decorate(@stop_area_routing_constraints,
-        context: { workbench: @workbench })
+        @stop_area_routing_constraints = StopAreaRoutingConstraintDecorator.decorate(
+          @stop_area_routing_constraints,
+          context: {
+            workbench: workbench
+          }
+        )
       }
       format.json
     end
@@ -27,18 +30,17 @@ class StopAreaRoutingConstraintsController < ChouetteController
 
   def show
     show! do |format|
-      @stop_area_routing_constraint = @stop_area_routing_constraint.decorate(context: { workbench: @workbench })
+      @stop_area_routing_constraint = @stop_area_routing_constraint.decorate(context: { workbench: workbench })
     end
   end
 
   protected
 
   alias_method :stop_area, :resource
-  alias_method :stop_area_referential, :parent
 
   def build_resource
     get_resource_ivar || super.tap do |routing_constraint|
-      routing_constraint.stop_area_provider ||= @workbench.default_stop_area_provider
+      routing_constraint.stop_area_provider ||= workbench.default_stop_area_provider
     end
   end
 

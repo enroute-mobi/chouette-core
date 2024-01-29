@@ -1,11 +1,12 @@
-class WorkgroupWorkbenchesController < ChouetteController
+# frozen_string_literal: true
+
+class WorkgroupWorkbenchesController < Chouette::WorkgroupController
   include PolicyChecker
   include ApplicationHelper
 
   defaults resource_class: Workbench
   defaults collection_name: 'workbenches', instance_name: 'workbench'
 
-  belongs_to :workgroup
   helper_method :has_restriction?
 
   def create
@@ -18,8 +19,6 @@ class WorkgroupWorkbenchesController < ChouetteController
   end
 
   protected
-
-  alias workgroup parent
 
   def has_restriction?(*restrictions)
     return false unless @workbench

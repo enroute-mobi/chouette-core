@@ -1,10 +1,10 @@
-class FareZonesController < ChouetteController
+# frozen_string_literal: true
+
+class FareZonesController < Chouette::FareReferentialController
   include ApplicationHelper
   include PolicyChecker
 
   defaults resource_class: Fare::Zone
-
-  belongs_to :workbench
 
   def index
     index! do |format|

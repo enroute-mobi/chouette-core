@@ -1,21 +1,21 @@
-class PublicationApiKeysController < ChouetteController
+# frozen_string_literal: true
+
+class PublicationApiKeysController < Chouette::WorkgroupController
   include PolicyChecker
 
   defaults :resource_class => PublicationApiKey, collection_name: :api_keys
-  belongs_to :workgroup do
-    belongs_to :publication_api
-  end
+  belongs_to :publication_api
 
   def create
-    create! { [@workgroup, @publication_api]}
+    create! { [workgroup, @publication_api] }
   end
 
   def update
-    update! { [@workgroup, @publication_api]}
+    update! { [workgroup, @publication_api] }
   end
 
   def destroy
-    destroy! { [@workgroup, @publication_api]}
+    destroy! { [workgroup, @publication_api] }
   end
 
   def publication_api_key_params

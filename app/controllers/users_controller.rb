@@ -1,4 +1,6 @@
-class UsersController < ChouetteController
+# frozen_string_literal: true
+
+class UsersController < Chouette::ResourceController
   include PolicyChecker
 
   before_action :authorize_resource, except: [:create, :index, :new, :new_invitation, :invite]

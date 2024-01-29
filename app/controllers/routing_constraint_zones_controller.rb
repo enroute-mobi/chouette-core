@@ -1,5 +1,6 @@
-class RoutingConstraintZonesController < ChouetteController
-  include ReferentialSupport
+# frozen_string_literal: true
+
+class RoutingConstraintZonesController < Chouette::ReferentialController
   include PolicyChecker
 
   defaults resource_class: Chouette::RoutingConstraintZone

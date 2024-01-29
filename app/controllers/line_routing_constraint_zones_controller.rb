@@ -1,4 +1,6 @@
-class LineRoutingConstraintZonesController < ChouetteController
+# frozen_string_literal: true
+
+class LineRoutingConstraintZonesController < Chouette::LineReferentialController
   include ApplicationHelper
   include PolicyChecker
 
@@ -6,20 +8,21 @@ class LineRoutingConstraintZonesController < ChouetteController
 
   before_action :decorate_line_routing_constraint_zone, only: %i[show new edit]
 
-  belongs_to :workbench
-  belongs_to :line_referential, singleton: true
-
   respond_to :html, :json
 
-  def index
+  def index # rubocop:disable Metrics/MethodLength
     index! do |format|
       format.html {
         if collection.out_of_bounds?
           redirect_to params.merge(:page => 1)
         end
 
-        @line_routing_constraint_zones = LineRoutingConstraintZoneDecorator.decorate(@line_routing_constraint_zones,
-        context: { workbench: @workbench })
+        @line_routing_constraint_zones = LineRoutingConstraintZoneDecorator.decorate(
+          @line_routing_constraint_zones,
+          context: {
+            workbench: workbench
+          }
+        )
       }
       format.json
     end
@@ -28,7 +31,6 @@ class LineRoutingConstraintZonesController < ChouetteController
   protected
 
   alias :line_routing_constraint_zone :resource
-  alias :line_referential :parent
 
   def collection
     @line_routing_constraint_zones = parent.line_routing_constraint_zones.paginate(page: params[:page], per_page: 30)
@@ -41,7 +43,7 @@ class LineRoutingConstraintZonesController < ChouetteController
     @line_routing_constraint_zone = LineRoutingConstraintZoneDecorator.decorate(
       object,
       context: {
-        workbench: @workbench
+        workbench: workbench
       }
     )
   end

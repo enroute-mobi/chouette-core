@@ -1,5 +1,6 @@
-class VehicleJourneysController < ChouetteController
-  include ReferentialSupport
+# frozen_string_literal: true
+
+class VehicleJourneysController < Chouette::ReferentialController
   include ActionView::Helpers::TextHelper
 
   defaults :resource_class => Chouette::VehicleJourney

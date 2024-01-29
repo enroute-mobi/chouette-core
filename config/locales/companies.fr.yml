@@ -61,7 +61,7 @@ fr:
         default_contact_email: "Email"
         default_contact_url: "Page web associée"
         private_contact_name: Nom de contact privé
-        private_contact_email: Email de contect privé
+        private_contact_email: Email de contact privé
         private_contact_phone: "Numéro de téléphone privé"
         private_contact_more: Commentaires de contact privé
         private_contact_url: "Page web privé"

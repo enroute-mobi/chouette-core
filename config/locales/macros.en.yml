@@ -25,7 +25,7 @@ en:
       macro/create_stop_area_referents:
         one: Create Referent Stop Areas
       macro/associate_stop_area_referent:
-        one: Assocate Stop Areas with a Referent
+        one: Associate Stop Areas with a Referent
       macro/create_shape:
         one: Create Shapes
       macro/define_postal_address:

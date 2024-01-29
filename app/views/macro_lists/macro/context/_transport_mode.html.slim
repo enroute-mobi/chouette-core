@@ -1,4 +1,4 @@
-= form.label Macro::Context::TransportMode.human_attribute_name(:transport_mode), class: 'flex mr-8 pt-0 control-label', required: true
+= form.label :transport_mode, class: 'flex mr-8 pt-0 control-label', required: true
 = form.input :transport_mode,
   collection: form.object.candidate_transport_modes.map { |t| ["enumerize.transport_mode.#{t}".t, t] },
   label: false,

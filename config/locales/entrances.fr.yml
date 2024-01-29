@@ -34,7 +34,7 @@ fr:
         name: "Nom"
         short_name: "Nom Court"
         stop_area: "Arrêt"
-        stop_area_provider: "Fournisseur d'arrêt"
+        stop_area_provider: "Fournisseur d'arrêts"
         entry_flag: "Entrée"
         exit_flag: "Sortie"
         entrance_type: "Type"

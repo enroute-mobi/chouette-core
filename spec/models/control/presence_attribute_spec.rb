@@ -10,7 +10,20 @@ RSpec.describe Control::PresenceAttribute do
     it { should validate_presence_of :target_attribute }
     it do
       should enumerize(:target_model).in(
-        %w[Line StopArea JourneyPattern VehicleJourney Company]
+        %w[
+          Line
+          StopArea
+          Entrance
+          PointOfInterest
+          Route
+          JourneyPattern
+          VehicleJourney
+          Shape
+          Company
+          Document
+          Network
+          ConnectionLink
+        ]
       )
     end
 

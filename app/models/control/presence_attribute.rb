@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Control
   class PresenceAttribute < Control::Base
 
@@ -8,7 +10,20 @@ module Control
         option :target_model
         option :target_attribute
 
-        enumerize :target_model, in: %w{Line StopArea JourneyPattern VehicleJourney Company}
+        enumerize :target_model, in: %w[
+          Line
+          StopArea
+          Entrance
+          PointOfInterest
+          Route
+          JourneyPattern
+          VehicleJourney
+          Shape
+          Company
+          Document
+          Network
+          ConnectionLink
+        ]
 
         validates :target_model, :target_attribute, :model_attribute, presence: true
 

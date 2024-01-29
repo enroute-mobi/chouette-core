@@ -215,23 +215,24 @@ module Chouette
       define Document, :name
 
       # Entrance
-      define Entrance, :address_line_1 # rubocop:disable Naming/VariableNumber
-      define Entrance, :city_name
-      define Entrance, :country
       define Entrance, :name
       define Entrance, :short_name
+      define Entrance, :address_line_1 # rubocop:disable Naming/VariableNumber
       define Entrance, :zip_code
+      define Entrance, :city_name
+      define Entrance, :country
 
       # PointOfInterest::Base
+      define PointOfInterest::Base, :name
+      define PointOfInterest::Base, :url
       define PointOfInterest::Base, :address_line_1 # rubocop:disable Naming/VariableNumber
+      define PointOfInterest::Base, :zip_code
       define PointOfInterest::Base, :city_name
       define PointOfInterest::Base, :country
       define PointOfInterest::Base, :email
-      define PointOfInterest::Base, :name
       define PointOfInterest::Base, :phone
       define PointOfInterest::Base, :postal_region
-      define PointOfInterest::Base, :url
-      define PointOfInterest::Base, :zip_code
+
 
       # Shape
       define Shape, :name

@@ -23,18 +23,20 @@ module Control
 
         def candidate_target_attributes # rubocop:disable Metrics/MethodLength,Metrics/AbcSize
           Chouette::ModelAttribute.collection do # rubocop:disable Metrics/BlockLength
-            # Chouette::StopArea
-            select Chouette::StopArea, :name
-            select Chouette::StopArea, :country_code
-            select Chouette::StopArea, :street_name
-            select Chouette::StopArea, :zip_code
-            select Chouette::StopArea, :city_name
-            select Chouette::StopArea, :url
-            select Chouette::StopArea, :time_zone
-            select Chouette::StopArea, :postal_region
-            select Chouette::StopArea, :registration_number
-            select Chouette::StopArea, :public_code
-            select Chouette::StopArea, :accessibility_limitation_description
+            # Chouette::Line
+            select Chouette::Line, :name
+            select Chouette::Line, :color
+            select Chouette::Line, :number
+            select Chouette::Line, :published_name
+            select Chouette::Line, :registration_number
+            select Chouette::Line, :text_color
+            select Chouette::Line, :url
+            # Temporary
+            select Chouette::Line, :transport_mode
+            select Chouette::Line, :transport_submode
+
+            # Chouette::Network
+            select Chouette::Network, :name
 
             # Chouette::Company
             select Chouette::Company, :name
@@ -67,17 +69,19 @@ module Control
             select Chouette::Company, :private_contact_url
             select Chouette::Company, :private_contact_more
 
-            # Chouette::Line
-            select Chouette::Line, :name
-            select Chouette::Line, :color
-            select Chouette::Line, :number
-            select Chouette::Line, :published_name
-            select Chouette::Line, :registration_number
-            select Chouette::Line, :text_color
-            select Chouette::Line, :url
-            # Temporary
-            select Chouette::Line, :transport_mode
-            select Chouette::Line, :transport_submode
+            # Chouette::StopArea
+            select Chouette::StopArea, :name
+            select Chouette::StopArea, :country_code
+            select Chouette::StopArea, :street_name
+            select Chouette::StopArea, :zip_code
+            select Chouette::StopArea, :city_name
+            select Chouette::StopArea, :url
+            select Chouette::StopArea, :time_zone
+            select Chouette::StopArea, :postal_region
+            select Chouette::StopArea, :registration_number
+            select Chouette::StopArea, :public_code
+            select Chouette::StopArea, :accessibility_limitation_description
+
 
             # Chouette::Route
             select Chouette::Route, :name
@@ -102,6 +106,12 @@ module Control
             select Entrance, :city_name
             select Entrance, :country
 
+            # Chouette::ConnectionLink
+            select Chouette::ConnectionLink, :name
+
+            # Document
+            select Document, :name
+
             # PointOfInterest
             select PointOfInterest::Base, :name
             select PointOfInterest::Base, :url
@@ -113,17 +123,8 @@ module Control
             select PointOfInterest::Base, :phone
             select PointOfInterest::Base, :postal_region
 
-            # Document
-            select Document, :name
-
             # Shape
             select Shape, :name
-
-            # Chouette::Network
-            select Chouette::Network, :name
-
-            # Chouette::ConnectionLink
-            select Chouette::ConnectionLink, :name
           end
         end
       end

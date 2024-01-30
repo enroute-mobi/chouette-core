@@ -6,6 +6,7 @@ RSpec.describe Control::CodeFormat do
   end
 
   describe Control::CodeFormat::Run do
+    let(:expected_format) { '[BFHJ][0-9]{4,6}-[A-Z]{3}' }
     it { should validate_presence_of :target_model }
     it { should validate_presence_of :target_code_space_id }
     it { should validate_presence_of :expected_format }
@@ -26,7 +27,7 @@ RSpec.describe Control::CodeFormat do
         options: {
           target_model: target_model,
           target_code_space_id: target_code_space_id,
-          expected_format: '[BFHJ][0-9]{4,6}-[A-Z]{3}'
+          expected_format: expected_format
         },
         position: 0
       )
@@ -45,7 +46,7 @@ RSpec.describe Control::CodeFormat do
           message_attributes: {
             'name' => source.try(:name) || source.id,
             'code_space_name' => 'test',
-            'expected_format' => '[BFHJ][0-9]{4,6}-[A-Z]{3}'
+            'expected_format' => expected_format
           },
           message_key: 'code_format'
         )
@@ -84,6 +85,14 @@ RSpec.describe Control::CodeFormat do
             subject
 
             expect(message_for_good_code).to be_nil
+          end
+        end
+
+        context 'when expected_format is just numbers' do
+          let(:expected_format) { '123' }
+
+          it 'does not crash' do
+            expect { subject }.to_not raise_error
           end
         end
       end

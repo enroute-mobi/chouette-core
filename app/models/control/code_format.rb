@@ -9,7 +9,7 @@ module Control
         enumerize :target_model, in: %w{Line StopArea VehicleJourney}
         option :target_model
         option :target_code_space_id
-        option :expected_format
+        option :expected_format, serialize: ActiveModel::Type::String
 
         validates :target_model, :target_code_space_id, :expected_format, presence: true
 

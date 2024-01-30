@@ -9,6 +9,10 @@ module Chouette
 
     private
 
+    def current_workgroup
+      workbench&.workgroup
+    end
+
     def workbench
       association_chain
       get_parent_ivar(:workbench)

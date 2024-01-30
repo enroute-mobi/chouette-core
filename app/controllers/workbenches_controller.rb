@@ -36,6 +36,16 @@ class WorkbenchesController < Chouette::ResourceController
     @workbench ||= current_organisation.workbenches.find params[:id]
   end
 
+  def current_workgroup
+    current_workbench&.workgroup
+  end
+
+  def current_workbench
+    return nil unless params[:id]
+
+    resource
+  end
+
   protected
 
   def scope

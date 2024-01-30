@@ -4,7 +4,7 @@
       = breadcrumbs display_single_fragment: true, class: "breadcrumbs flex items-center"
 
     .menu-item-group.ml-auto
-      - if !user_signed_in? && I18n.available_locales.size > 1
+      - if (local_assigns[:user] == false || !user_signed_in?) && I18n.available_locales.size > 1
         .dropdown.languages.menu-item
           = link_to 'javascript:void(0)', class: 'dropdown-toggle flex items-center relative', data: { toggle: 'dropdown' } do
             = image_tag("language_engine/#{selected_language}_flag.png", { :'data-locale' => "#{selected_language}" } )
@@ -18,7 +18,7 @@
         = link_to Rails.application.config.support_link, target: :blank, title: t('layouts.go_to_to_support_center'), class: 'menu-item' do
           = image_pack_tag("static/chaticon.svg", height: 25)
 
-      - if user_signed_in?
+      - if local_assigns[:user] != false && user_signed_in?
         = link_to 'javascript:void(0)',
           id: 'profile_dropdown',
           class: 'menu-item',
@@ -28,6 +28,6 @@
             span = current_user.name
             span.fa.fa-lg.fa-user
 
-  - if user_signed_in?
+  - if local_assigns[:user] != false && user_signed_in?
     = render 'layouts/navigation/nav_panel_operations'
     = render 'layouts/navigation/nav_panel_profile'

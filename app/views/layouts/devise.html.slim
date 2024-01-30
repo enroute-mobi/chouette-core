@@ -23,7 +23,7 @@ html lang=I18n.locale
   body.devise
     nav#main_nav
       // Top menu content
-      = render 'layouts/navigation/main_nav_top'
+      = render 'layouts/navigation/main_nav_top', user: false
     = render 'layouts/flash_messages', flash: flash
     = render 'layouts/navigation/page_header'
     = yield

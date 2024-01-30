@@ -22,7 +22,7 @@ module Lograge
     def current(name)
       method = "current_#{name}"
       controller.send(method)&.id
-    rescue NoMethodError
+    rescue NoMethodError, ActiveRecord::RecordNotFound
       nil
     end
 

@@ -23,7 +23,7 @@ RSpec.describe WorkgroupsController, :type => :controller do
       let(:workgroup) { context.workgroup(:other_workgroup)}
 
       it 'should not found the Workgroup' do
-        expect { request }.to raise_error(ActiveRecord::RecordNotFound)
+        expect(request).to render_template('errors/not_found')
       end
     end
   end

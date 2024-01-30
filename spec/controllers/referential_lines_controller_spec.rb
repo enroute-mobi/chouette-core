@@ -11,7 +11,7 @@ describe ReferentialLinesController, :type => :controller do
     let(:request){ get :show, params: { referential_id: referential.id, id: line.id }}
 
     it 'should respond with NOT FOUND' do
-      expect{request}.to raise_error(ActiveRecord::RecordNotFound)
+      expect(request).to render_template('errors/not_found')
     end
 
     context "when the line belongs to the referential" do

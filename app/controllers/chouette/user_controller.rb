@@ -9,7 +9,8 @@ module Chouette
     before_action :set_locale
     before_action :set_time_zone
 
-    rescue_from Pundit::NotAuthorizedError, with: :user_not_authorized
+    rescue_from ::ActiveRecord::RecordNotFound, with: :not_found
+    rescue_from ::Pundit::NotAuthorizedError, with: :user_not_authorized
 
     alias user_not_authorized forbidden
 

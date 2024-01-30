@@ -67,21 +67,21 @@ RSpec.describe UsersController, :type => :controller do
           context 'as visitor' do
             let(:profile){ :visitor }
             it 'should be forbidden' do
-              expect{ do_request }.to raise_error ActiveRecord::RecordNotFound
+              expect(do_request).to render_template('errors/not_found')
             end
           end
 
           context 'as editor' do
             let(:profile){ :editor }
             it 'should be forbidden' do
-              expect{ do_request }.to raise_error ActiveRecord::RecordNotFound
+              expect(do_request).to render_template('errors/not_found')
             end
           end
 
           context 'as admin' do
             let(:profile){ :admin }
             it 'should be authorized' do
-              expect{ do_request }.to raise_error ActiveRecord::RecordNotFound
+              expect(do_request).to render_template('errors/not_found')
             end
           end
         end

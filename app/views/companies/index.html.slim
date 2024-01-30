@@ -2,16 +2,9 @@
 
 .page_content
   .container-fluid
-    - if params[:q].present? or @companies.any?
-      .row
-        .col-lg-12
-          = search_form_for @q, url: workbench_line_referential_companies_path(@workbench), html: {method: :get}, class: 'form form-filter' do |f|
-            .input-group.search_bar
-              = f.search_field :name_or_short_id_cont, placeholder: t('.name_or_short_id_cont'), class: 'form-control'
-
-              span.input-group-btn
-                button.btn.btn-default#search-btn type='submit'
-                  span.fa.fa-search
+    .row
+      .col-lg-12
+        = render 'filters'
 
     - if @companies.any?
       .row
@@ -29,7 +22,7 @@
                 link_to: lambda do |company| \
                   workbench_line_referential_company_path(@workbench, company) \
                 end \
-              ) \
+              ), \
             ],
             cls: 'table has-search'
 

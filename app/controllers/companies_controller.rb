@@ -7,9 +7,9 @@ class CompaniesController < Chouette::LineReferentialController
   defaults :resource_class => Chouette::Company
 
   respond_to :html
-  respond_to :xml
   respond_to :json
-  respond_to :js, :only => :index
+
+  around_action :set_current_workgroup
 
   def autocomplete
     scope = line_referential.companies
@@ -22,11 +22,12 @@ class CompaniesController < Chouette::LineReferentialController
   def index
     index! do |format|
       format.html {
-        if collection.out_of_bounds?
-          redirect_to params.merge(:page => 1)
-        end
-
-        @companies = decorate_companies(@companies)
+        @companies = CompanyDecorator.decorate(
+          collection,
+          context: {
+            workbench: workbench,
+          }
+        )
       }
 
       format.json {
@@ -35,15 +36,14 @@ class CompaniesController < Chouette::LineReferentialController
     end
   end
 
-  def new
-    authorize resource_class
-    super
-  end
-
-  def create
-    authorize resource_class
-    build_resource
-    super
+  def show
+    show! do
+      @company = resource.decorate(
+        context: {
+          workbench: workbench,
+        }
+      )
+    end
   end
 
   protected
@@ -54,60 +54,57 @@ class CompaniesController < Chouette::LineReferentialController
     end
   end
 
+  def scope
+    parent.companies
+  end
+
+  def search
+    @search ||= Search::Company.from_params(params, line_referential: line_referential)
+  end
+
   def collection
-    scope = if(params.include?('line_id'))
-              line_referential.lines.find(params[:line_id]).companies
-            else
-              line_referential.companies
-            end
-
-    @q = scope.ransack(params[:q])
-    ids = @q.result(:distinct => true).pluck(:id)
-    result = scope.where(id: ids)
-
-    if sort_column && sort_direction
-      @companies ||= result.order(Arel.sql("lower(#{sort_column})" + ' ' + sort_direction)).paginate(:page => params[:page])
-    else
-      @companies ||= result.order('lower(name)').paginate(:page => params[:page])
-    end
+    @collection ||= search.search scope
   end
 
-  def resource
-    super.decorate(context: { workbench: workbench, referential: line_referential })
-  end
+  def set_current_workgroup(&block)
+    # Ensure that InheritedResources has defined parents (workbench, etc)
+    association_chain
 
-  def resource_url(company = nil)
-    workbench_line_referential_company_path(workbench, company || resource)
-  end
-
-  def collection_url
-    workbench_line_referential_companies_path(workbench)
+    CustomFieldsSupport.within_workgroup current_workgroup, &block
   end
 
   def company_params
-    fields = [:objectid, :object_version, :name, :short_name, :default_language, :default_contact_organizational_unit, :default_contact_operating_department_name, :code, :default_contact_phone, :default_contact_fax, :default_contact_email, :registration_number, :default_contact_url, :time_zone, :is_referent, :referent_id]
-    fields += [:house_number, :address_line_1, :address_line_2, :street, :town, :postcode, :postcode_extension ,:country_code, :fare_url]
-    fields += permitted_custom_fields_params(Chouette::Company.custom_fields(line_referential.workgroup))
+    fields = [
+      :objectid,
+      :object_version,
+      :name,
+      :short_name,
+      :default_language,
+      :default_contact_organizational_unit,
+      :default_contact_operating_department_name,
+      :code,
+      :default_contact_phone,
+      :default_contact_fax,
+      :default_contact_email,
+      :registration_number,
+      :default_contact_url,
+      :time_zone,
+      :is_referent,
+      :referent_id,
+      :house_number,
+      :address_line_1,
+      :address_line_2,
+      :street,
+      :town,
+      :postcode,
+      :postcode_extension,
+      :country_code,
+      :fare_url,
+      codes_attributes: [:id, :code_space_id, :value, :_destroy]
+    ]
     fields += %w(default_contact private_contact customer_service_contact).product(%w(name email phone url more)).map{ |k| k.join('_')}
-    params.require(:company).permit(fields, codes_attributes: [:id, :code_space_id, :value, :_destroy])
+    fields += permitted_custom_fields_params(Chouette::Company.custom_fields(line_referential.workgroup))
+    params.require(:company).permit(fields)
   end
 
-  private
-
-  def sort_column
-    line_referential.companies.column_names.include?(params[:sort]) ? params[:sort] : 'name'
-  end
-  def sort_direction
-    %w[asc desc].include?(params[:direction]) ?  params[:direction] : 'asc'
-  end
-
-  def decorate_companies(companies)
-    CompanyDecorator.decorate(
-      companies,
-      context: {
-        workbench: workbench,
-        referential: line_referential
-      }
-    )
-  end
 end

@@ -1,0 +1,15 @@
+= simple_form_for @search, url: request.path, method: "GET", html: { class: 'flex items-center tailwind-filters bg-grey relative pr-6' }, wrapper: :filters_form_tailwind  do |f|
+  = f.simple_fields_for :order, @search.order, defaults: { wrapper: false } do |form_order|
+    - form_order.object.attributes.keys.each do |attribute|
+      = form_order.input attribute, as: :hidden
+
+  .flex.flex-col.w-full
+    .flex.items-center.border-r.border-white
+      = f.input :text, label: false, wrapper_html: {class: "w-2/5"}, placeholder: I18n.t('simple_form.placeholders.search.text')
+
+  .flex.flex-col.justify-center.items-center.actions.ml-auto.py-3.w-80
+    .flex.items-center.mb-3
+      = render partial: 'shared/per_page', locals: {f:f}
+    .flex.items-center
+      = link_to t('actions.erase'), workbench_line_referential_companies_path(@workbench), class: 'btn btn-link'
+      = f.submit t('actions.filter'), class: 'btn btn-default'

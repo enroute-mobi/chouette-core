@@ -4,6 +4,7 @@ RSpec.describe Control::CodeFormat do
   it 'should be one of the available Control' do
     expect(Control.available).to include(described_class)
   end
+
   describe Control::CodeFormat::Run do
     let(:expected_format) { '[BFHJ][0-9]{4,6}-[A-Z]{3}' }
     it { should validate_presence_of :target_model }
@@ -87,13 +88,13 @@ RSpec.describe Control::CodeFormat do
           end
         end
 
-      context 'when expected_format is just numbers' do
-        let(:expected_format) { '123' }
+        context 'when expected_format is just numbers' do
+          let(:expected_format) { '123' }
 
-        it 'does not crash' do
-          expect { subject }.to_not raise_error
+          it 'does not crash' do
+            expect { subject }.to_not raise_error
+          end
         end
-      end
       end
 
       describe '#VehicleJourney' do
@@ -130,7 +131,8 @@ RSpec.describe Control::CodeFormat do
           it 'should not create a warning message for the VehicleJourney with a good code' do
             subject
 
-          expect(message_for_good_code).to be_nil
+            expect(message_for_good_code).to be_nil
+          end
         end
       end
     end

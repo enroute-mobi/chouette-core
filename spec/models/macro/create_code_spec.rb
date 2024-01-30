@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 RSpec.describe Macro::CreateCode do
   subject(:macro) { Macro::CreateCode.new }
 
@@ -81,15 +83,16 @@ RSpec.describe Macro::CreateCode do
     end
 
     describe '#run' do
-      context "when the macro has target_model 'StopArea', source_attribute 'registration_number' and target_code_space 'test'" do
+      subject { macro_run.run }
+
+      context "when the macro has target_model 'StopArea'" do
         let!(:macro_list_run) do
           Macro::List::Run.create workbench: context.workbench
         end
-
         let(:macro_run) do
           Macro::CreateCode::Run.create(
             target_model: 'StopArea',
-            source_attribute: 'registration_number',
+            source_attribute: source_attribute,
             target_code_space: 'test',
             macro_list_run: macro_list_run,
             position: 0
@@ -98,54 +101,146 @@ RSpec.describe Macro::CreateCode do
           end
         end
 
-        context "when a StopArea exists with a registration_number 'dummy'" do
+        let(:stop_area) { context.stop_area }
+
+        context "source_attribute 'registration_number' and target_code_space 'test'" do
+          let(:source_attribute) { 'registration_number' }
+
+          context "when a StopArea exists with a registration_number 'dummy'" do
+            let(:context) do
+              Chouette.create do
+                code_space short_name: 'test'
+                stop_area registration_number: 'dummy'
+                referential
+              end
+            end
+            let(:code_space) { context.code_space }
+
+            it "creates a code 'test' with value 'dummy' for this Stop Area" do
+              expected_change = change { stop_area.codes.find_by(code_space: code_space)&.value }
+                                .from(nil).to('dummy')
+              expect { subject }.to expected_change
+            end
+
+            context "when a StopArea exists with a code 'test'" do
+              let(:context) do
+                Chouette.create do
+                  code_space short_name: 'test'
+                  stop_area registration_number: 'dummy', codes: { test: 'unchanged' }
+                  referential
+                end
+              end
+
+              it "doesn't change the existing code for this Stop Area" do
+                change_code_value = change { stop_area.codes.find_by(code_space: code_space)&.value }
+                expect { subject }.to_not change_code_value
+              end
+            end
+
+            context "when a StopArea exists with a code 'other_test'" do
+              let(:context) do
+                Chouette.create do
+                  code_space :code_test, short_name: 'test'
+                  code_space :other_code_space, short_name: 'other_test'
+                  stop_area registration_number: 'dummy', codes: { other_test: 'unchanged' }
+                  referential
+                end
+              end
+              let(:code_space) { context.code_space(:code_test) }
+
+              it "creates a code 'test' with value 'dummy' for this Stop Area" do
+                expected_change = change { stop_area.codes.find_by(code_space: code_space)&.value }
+                                  .from(nil).to('dummy')
+                expect { subject }.to expected_change
+              end
+            end
+          end
+
+          context 'when a StopArea exists without a registration_number' do
+            let(:context) do
+              Chouette.create do
+                code_space short_name: 'test'
+                stop_area registration_number: nil
+                referential
+              end
+            end
+
+            it "doesn't create a code" do
+              expect { subject }.to_not(change { stop_area.reload.codes.count })
+            end
+          end
+        end
+
+        context "source_attribute 'code:other_test' and target_code_space 'test'" do
+          let(:source_attribute) { 'code:other_test' }
+
+          context "when a StopArea exists with a code 'other_test' 'dummy'" do
+            let(:context) do
+              Chouette.create do
+                code_space :code_space_test, short_name: 'test'
+                code_space :code_space_other_test, short_name: 'other_test'
+                stop_area codes: { other_test: 'dummy' }
+                referential
+              end
+            end
+            let(:code_space) { context.code_space(:code_space_test) }
+
+            it "creates a code 'test' with value 'dummy' for this Stop Area" do
+              expected_change = change { stop_area.codes.find_by(code_space: code_space)&.value }
+                                .from(nil).to('dummy')
+              expect { subject }.to expected_change
+            end
+          end
+
+          context "when a StopArea exists without a code 'other_test'" do
+            let(:context) do
+              Chouette.create do
+                code_space :code_space_test, short_name: 'test'
+                code_space :code_space_other_test, short_name: 'other_test'
+                stop_area
+                referential
+              end
+            end
+
+            it "doesn't create a code" do
+              expect { subject }.to_not(change { stop_area.reload.codes.count })
+            end
+          end
+        end
+      end
+
+      context "when the macro has target_model 'Line', source_attribute 'number' and target_code_space 'test'" do
+        let!(:macro_list_run) do
+          Macro::List::Run.create workbench: context.workbench
+        end
+        let(:macro_run) do
+          Macro::CreateCode::Run.create(
+            target_model: 'Line',
+            source_attribute: 'number',
+            target_code_space: 'test',
+            macro_list_run: macro_list_run,
+            position: 0
+          ).tap do |run|
+            allow(run).to receive(:workbench).and_return(context.workbench)
+          end
+        end
+
+        let(:line) { context.line }
+
+        context "when a Line exists with a number 'dummy'" do
           let(:context) do
             Chouette.create do
               code_space short_name: 'test'
-              stop_area registration_number: 'dummy'
+              line number: 'dummy'
               referential
             end
           end
           let(:code_space) { context.code_space }
-          let(:stop_area) { context.stop_area }
 
-          it "creates a code 'test' with value 'dummy' for this Stop Area" do
-            puts stop_area.codes.inspect
-            expected_change = change { stop_area.codes.find_by(code_space: code_space)&.value }
+          it "creates a code 'test' with value 'dummy' for this Line" do
+            expected_change = change { line.codes.find_by(code_space: code_space)&.value }
                               .from(nil).to('dummy')
-            expect { macro_run.run }.to expected_change
-          end
-        end
-
-        context "when a StopArea exists with a code 'test'" do
-          let(:context) do
-            Chouette.create do
-              code_space short_name: 'test'
-              stop_area codes: { test: 'unchanged' }
-              referential
-            end
-          end
-          let(:code_space) { context.code_space }
-          let(:stop_area) { context.stop_area }
-
-          it "doesn't change the existing code for this Stop Area" do
-            change_code_value = change { stop_area.codes.find_by(code_space: code_space)&.value }
-            expect { macro_run.run }.to_not change_code_value
-          end
-        end
-
-        context 'when a StopArea exists without a registration_number' do
-          let(:context) do
-            Chouette.create do
-              code_space short_name: 'test'
-              stop_area registration_number: nil
-              referential
-            end
-          end
-          let(:stop_area) { context.stop_area }
-
-          it "doesn't create a code" do
-            expect { macro_run.run }.to_not change { stop_area.reload.codes.count }
+            expect { subject }.to expected_change
           end
         end
       end
@@ -164,6 +259,10 @@ RSpec.describe Macro::CreateCode do
           )
         end
 
+        let(:vehicle_journey) { context.vehicle_journey }
+
+        before { context.referential.switch }
+
         context "when a VehicleJourney exists with a published_journey_identifier 'dummy'" do
           let(:context) do
             Chouette.create do
@@ -172,35 +271,42 @@ RSpec.describe Macro::CreateCode do
             end
           end
           let(:code_space) { context.code_space }
-          let(:vehicle_journey) { context.vehicle_journey }
-
-          before { context.referential.switch }
 
           it "creates a code 'test' with value 'dummy' for this Vehicle Journey" do
             expected_change = change { vehicle_journey.codes.find_by(code_space: code_space)&.value }
                               .from(nil).to('dummy')
-            expect { macro_run.run }.to expected_change
+            expect { subject }.to expected_change
           end
-        end
 
-        context "when a VehicleJourney exists with a code 'test'" do
-          let(:context) do
-            Chouette.create do
-              code_space short_name: 'test'
-              vehicle_journey
+          context "when a VehicleJourney exists with a code 'test'" do
+            let(:context) do
+              Chouette.create do
+                code_space short_name: 'test'
+                vehicle_journey published_journey_identifier: 'dummy', codes: { test: 'unchanged' }
+              end
+            end
+
+            it "doesn't change the existing code for this Vehicle Journey" do
+              change_code_value = change { vehicle_journey.codes.find_by(code_space: code_space)&.value }
+              expect { subject }.to_not change_code_value
             end
           end
-          let(:code_space) { context.code_space }
-          let(:vehicle_journey) { context.vehicle_journey }
 
-          before do
-            context.referential.switch
-            vehicle_journey.codes.create(code_space: code_space, value: 'unchanged')
-          end
+          context "when a VehicleJourney exists with a code 'other_test'" do
+            let(:context) do
+              Chouette.create do
+                code_space :code_test, short_name: 'test'
+                code_space :other_code_space, short_name: 'other_test'
+                vehicle_journey published_journey_identifier: 'dummy', codes: { other_test: 'unchanged' }
+              end
+            end
+            let(:code_space) { context.code_space(:code_test) }
 
-          it "doesn't change the existing code for this Vehicle Journey" do
-            change_code_value = change { vehicle_journey.codes.find_by(code_space: code_space)&.value }
-            expect { macro_run.run }.to_not change_code_value
+            it "creates a code 'test' with value 'dummy' for this Vehicle Journey" do
+              expected_change = change { vehicle_journey.codes.find_by(code_space: code_space)&.value }
+                                .from(nil).to('dummy')
+              expect { subject }.to expected_change
+            end
           end
         end
 
@@ -211,12 +317,9 @@ RSpec.describe Macro::CreateCode do
               vehicle_journey published_journey_identifier: nil
             end
           end
-          let(:vehicle_journey) { context.vehicle_journey }
-
-          before { context.referential.switch }
 
           it "doesn't create a code" do
-            expect { macro_run.run }.to_not change { vehicle_journey.reload.codes.count }
+            expect { subject }.to_not(change { vehicle_journey.reload.codes.count })
           end
         end
       end

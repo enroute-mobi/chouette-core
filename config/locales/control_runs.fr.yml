@@ -18,9 +18,9 @@ fr:
       control/format_attribute/run:
         one: Format d'un attribut
       control/model_status/run:
-        one: État d'un model
+        one: État d'un modèle
       control/service_count_trend/run:
-        one: Tendance du nombre de services
+        one: Tendance du nombre de Services
       control/journey_pattern_speed/run:
         one: Vitesses au sein des Missions
       control/presence_associated_model/run:

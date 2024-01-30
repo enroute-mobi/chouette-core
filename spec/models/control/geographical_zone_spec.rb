@@ -11,6 +11,10 @@ RSpec.describe Control::GeographicalZone do
   it { is_expected.to allow_value('48.8559324,2.2940166').for(:upper_left_input) }
   it { is_expected.to allow_value('48.8559324,2.2940166').for(:lower_right_input) }
 
+  it 'should be one of the available Control' do
+    expect(Control.available).to include(described_class)
+  end
+
   describe '#upper_left' do
     subject { control.upper_left }
 

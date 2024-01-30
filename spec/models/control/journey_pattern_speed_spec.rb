@@ -1,4 +1,10 @@
+# frozen_string_literal: true
+
 RSpec.describe Control::JourneyPatternSpeed do
+  it 'should be one of the available Control' do
+    expect(Control.available).to include(described_class)
+  end
+
   describe Control::JourneyPatternSpeed::Run do
     let(:control_list_run) do
       Control::List::Run.create referential: referential, workbench: workbench

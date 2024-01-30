@@ -20,13 +20,14 @@ RSpec.describe Macro::AssociateShape do
           referential do
             journey_pattern
           end
-          shape
+          shape :selected_shape
+          shape :other_shape
         end
       end
 
       let(:code_space) { context.code_space }
       let(:journey_pattern) { context.journey_pattern }
-      let(:shape) { context.shape }
+      let(:shape) { context.shape(:selected_shape) }
 
       before { context.referential.switch }
 
@@ -47,20 +48,20 @@ RSpec.describe Macro::AssociateShape do
             )
             expect(macro_run.macro_messages).to include(expected_message)
           end
+
+          context 'when the JourneyPattern has already a Shape' do
+            before { journey_pattern.update! shape: context.shape(:other_shape) }
+
+            it "doesn't change the Journey Pattern Shape" do
+              expect { subject }.to_not(change { journey_pattern.reload.shape })
+            end
+          end
         end
 
         context 'when no Shape has the Journey Pattern name as external code' do
           it "doesn't change the Journey Pattern Shape" do
             expect { subject }.to_not(change { journey_pattern.reload.shape })
           end
-        end
-      end
-
-      context 'when the JourneyPattern has already a Shape' do
-        before { journey_pattern.update! shape: shape }
-
-        it "doesn't change the Journey Pattern Shape" do
-          expect { subject }.to_not(change { journey_pattern.reload.shape })
         end
       end
     end

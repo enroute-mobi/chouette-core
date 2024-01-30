@@ -1,5 +1,11 @@
 # frozen_string_literal: true
 
+RSpec.describe Macro::CreateStopAreaReferents do
+  it 'should be one of the available Macro' do
+    expect(Macro.available).to include(described_class)
+  end
+end
+
 RSpec.describe Macro::CreateStopAreaReferents::Run do
   let(:macro_list_run) do
     Macro::List::Run.create workbench: context.workbench

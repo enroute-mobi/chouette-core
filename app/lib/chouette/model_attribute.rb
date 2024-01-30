@@ -2,31 +2,14 @@
 
 module Chouette
   class ModelAttribute
-    attr_reader :model_class, :name
+    attr_reader :model_class, :name, :options
 
-    # "StopArea", "Line", "Entrance", ...
-    def model_name
-      @model_name ||= model_class.model_name.to_s
+    def self.code(model_class, name)
+      "#{model_class.model_name.to_s.underscore}##{name}"
     end
 
-    # :stop_area, :line, :entrance, ...
-    def resource_name
-      @resource_name ||= model_name.underscore.to_sym
-    end
-
-    # "stop_areas", "lines", "journey_patterns"
-    def collection_name
-      @collection_name ||= model_name.underscore.pluralize
-    end
-
-    # "stop_area#name", "line#name", ...
-    def code
-      @code ||= "#{resource_name}##{name}"
-    end
-
-    # Find an Attribute
-    def self.find_by(attributes)
-      all.find_by attributes
+    def self.collection(&block)
+      Collection.new(&block)
     end
 
     # Returns the localized attribute name ("Nom", "Name", "Transporteur", etc)
@@ -37,131 +20,70 @@ module Chouette
       model_class.human_attribute_name(name)
     end
 
-    def ==(other)
-      other && code == other.code
-    end
-
-    def initialize(model_class, name)
+    def initialize(model_class, name, options = {})
       @model_class = model_class
       @name = name
+      @options = options
     end
 
-    def match_model?(model)
-      [model_class, model_name, resource_name].map(&:to_s).include?(model.to_s)
+    # TODO: CHOUETTE-3266 remove?
+    # "StopArea", "Line", "Entrance", ...
+    def model_name
+      @model_name ||= model_class.model_name.to_s
     end
 
-    def self.for(*model_classes, &block)
-      empty.for(*model_classes, &block)
+    # TODO: CHOUETTE-3266 remove?
+    # :stop_area, :line, :entrance, ...
+    def resource_name
+      @resource_name ||= model_name.underscore
     end
 
-    def self.all
-      Collection.new.all
+    # TODO: CHOUETTE-3266 only used once?
+    # "stop_areas", "lines", "journey_patterns"
+    def table_name
+      # @table_name ||= model_class.reflections["#{name}"]&.klass&.table_name
+      @table_name ||= model_class.table_name
+    end
+
+    # "stop_area#name", "line#name", ...
+    def code
+      @code ||= "#{resource_name}##{name}"
+    end
+
+    def ==(other)
+      other && code == other.code
     end
 
     class Collection
       include Enumerable
 
-      def initialize(attributes = [], &block)
-        @attributes = attributes
-        instance_eval(&block) if block_given?
-        freeze
-      end
+      @@model_attributes = []
+      cattr_reader :model_attributes
+      attr_reader :selected_model_attributes
 
-      attr_reader :attributes
+      def initialize(selected_model_attributes = [], &block)
+        @selected_model_attributes = selected_model_attributes
+        instance_exec(&block) if block_given?
+      end
 
       def each(&block)
-        attributes.each(&block)
+        selected_model_attributes.each(&block)
       end
 
-      def define(model_class, name)
-        add Chouette::ModelAttribute.new(model_class, name)
+      def self.define(model_class, name, options = {})
+        @@model_attributes << ModelAttribute.new(model_class, name, options)
       end
 
-      def add(attribute)
-        attributes << attribute
-      end
-
-      def for(*model_classes, &block)
-        model_classes = model_classes.flatten
-
-        attributes = self.attributes.select do |attribute|
-          model_classes.any? do |model_class|
-            attribute.match_model?(model_class)
-          end
-        end
-
-        Collection.new(attributes, &block)
-      end
-
-      def exclude(model_class, name)
-        name = name.to_sym
-
-        attributes.delete_if do |attribute|
-          attribute.match_model?(model_class) && attribute.name == name
+      def select(model_class, name)
+        selected_model_attribute = @@model_attributes.find { |m| m.code == ModelAttribute.code(model_class, name) }
+        if selected_model_attribute
+          selected_model_attributes << selected_model_attribute
+        else
+          Rails.logger.error "Selected Model attribute with class #{model_class} and name #{name} doesn't exist in the list"
         end
       end
 
-      def all # rubocop:disable Metrics/MethodLength,Metrics/AbcSize
-        # Chouette::StopArea
-        define Chouette::StopArea, :name
-        define Chouette::StopArea, :parent
-        define Chouette::StopArea, :referent
-        define Chouette::StopArea, :coordinates
-        define Chouette::StopArea, :country_code
-        define Chouette::StopArea, :street_name
-        define Chouette::StopArea, :zip_code
-        define Chouette::StopArea, :city_name
-        define Chouette::StopArea, :url
-        define Chouette::StopArea, :time_zone
-        define Chouette::StopArea, :waiting_time
-        define Chouette::StopArea, :postal_region
-        define Chouette::StopArea, :status
-        define Chouette::StopArea, :registration_number
-        define Chouette::StopArea, :public_code
-        define Chouette::StopArea, :compass_bearing
-        define Chouette::StopArea, :accessibility_limitation_description
-        define Chouette::StopArea, :mobility_impaired_accessibility
-        define Chouette::StopArea, :wheelchair_accessibility
-        define Chouette::StopArea, :step_free_accessibility
-        define Chouette::StopArea, :escalator_free_accessibility
-        define Chouette::StopArea, :lift_free_accessibility
-        define Chouette::StopArea, :audible_signals_availability
-        define Chouette::StopArea, :visual_signs_availability
-
-        # Chouette::Company
-        define Chouette::Company, :name
-        define Chouette::Company, :short_name
-        define Chouette::Company, :code
-        define Chouette::Company, :registration_number
-        define Chouette::Company, :time_zone
-        define Chouette::Company, :default_language
-        define Chouette::Company, :house_number
-        define Chouette::Company, :address_line_1 # rubocop:disable Naming/VariableNumber
-        define Chouette::Company, :address_line_2 # rubocop:disable Naming/VariableNumber
-        define Chouette::Company, :street
-        define Chouette::Company, :postcode
-        define Chouette::Company, :postcode_extension
-        define Chouette::Company, :town
-        define Chouette::Company, :country_code
-        define Chouette::Company, :default_contact_name
-        define Chouette::Company, :default_contact_email
-        define Chouette::Company, :default_contact_phone
-        define Chouette::Company, :default_contact_url
-        define Chouette::Company, :default_contact_more
-        define Chouette::Company, :customer_service_contact_name
-        define Chouette::Company, :customer_service_contact_email
-        define Chouette::Company, :customer_service_contact_phone
-        define Chouette::Company, :customer_service_contact_url
-        define Chouette::Company, :customer_service_contact_more
-        define Chouette::Company, :private_contact_name
-        define Chouette::Company, :private_contact_email
-        define Chouette::Company, :private_contact_phone
-        define Chouette::Company, :private_contact_url
-        define Chouette::Company, :private_contact_more
-
-        self
-      end
-
+      # TODO: CHOUETTE-3266 always used with model_name and name, maybe make an optimized version
       def find_by(attributes)
         find do |model_attribute|
           attributes.all? do |k, v|
@@ -169,10 +91,152 @@ module Chouette
           end
         end
       end
-    end
 
-    def self.empty(&block)
-      Collection.new [], &block
+      # Chouette::Line
+      define Chouette::Line, :name
+      define Chouette::Line, :active_from
+      define Chouette::Line, :active_until
+      define Chouette::Line, :color
+      define Chouette::Line, :company
+      define Chouette::Line, :secondary_companies
+      define Chouette::Line, :network
+      define Chouette::Line, :number
+      define Chouette::Line, :published_name
+      define Chouette::Line, :registration_number
+      define Chouette::Line, :text_color
+      define Chouette::Line, :transport_mode
+      define Chouette::Line, :transport_submode
+      define Chouette::Line, :url
+      define Chouette::Line, :routes
+
+      # Chouette::Network
+      define Chouette::Network, :name
+
+      # Chouette::Company
+      define Chouette::Company, :name
+      define Chouette::Company, :short_name
+      define Chouette::Company, :code
+      define Chouette::Company, :customer_service_contact_email
+      define Chouette::Company, :customer_service_contact_more
+      define Chouette::Company, :customer_service_contact_name
+      define Chouette::Company, :customer_service_contact_phone
+      define Chouette::Company, :customer_service_contact_url
+      define Chouette::Company, :default_contact_email
+      define Chouette::Company, :default_contact_fax
+      define Chouette::Company, :default_contact_more
+      define Chouette::Company, :default_contact_name
+      define Chouette::Company, :default_contact_operating_department_name
+      define Chouette::Company, :default_contact_organizational_unit
+      define Chouette::Company, :default_contact_phone
+      define Chouette::Company, :default_contact_url
+      define Chouette::Company, :default_language
+      define Chouette::Company, :private_contact_email
+      define Chouette::Company, :private_contact_more
+      define Chouette::Company, :private_contact_name
+      define Chouette::Company, :private_contact_phone
+      define Chouette::Company, :private_contact_url
+      define Chouette::Company, :address_line_1
+      define Chouette::Company, :address_line_2
+      define Chouette::Company, :country_code
+      define Chouette::Company, :house_number
+      define Chouette::Company, :postcode
+      define Chouette::Company, :postcode_extension
+      define Chouette::Company, :registration_number
+      define Chouette::Company, :street
+      define Chouette::Company, :time_zone
+      define Chouette::Company, :town
+
+      # Chouette::StopArea
+      define Chouette::StopArea, :name
+      define Chouette::StopArea, :parent
+      define Chouette::StopArea, :referent
+      define Chouette::StopArea, :coordinates
+      define Chouette::StopArea, :country_code
+      define Chouette::StopArea, :street_name
+      define Chouette::StopArea, :zip_code
+      define Chouette::StopArea, :city_name
+      define Chouette::StopArea, :url
+      define Chouette::StopArea, :time_zone
+      define Chouette::StopArea, :waiting_time
+      define Chouette::StopArea, :postal_region
+      define Chouette::StopArea, :public_code
+      define Chouette::StopArea, :registration_number
+      define Chouette::StopArea, :compass_bearing, data_type: :float
+      define Chouette::StopArea, :accessibility_limitation_description
+      define Chouette::StopArea, :escalator_free_accessibility
+      define Chouette::StopArea, :lift_free_accessibility
+      define Chouette::StopArea, :mobility_impaired_accessibility
+      define Chouette::StopArea, :step_free_accessibility
+      define Chouette::StopArea, :wheelchair_accessibility
+      define Chouette::StopArea, :audible_signals_availability
+      define Chouette::StopArea, :visual_signs_availability
+      define Chouette::StopArea, :lines
+      define Chouette::StopArea, :routes
+
+      # Chouette::Route
+      define Chouette::Route, :name
+      define Chouette::Route, :published_name
+      define Chouette::Route, :opposite_route
+      define Chouette::Route, :journey_patterns
+      define Chouette::Route, :vehicle_journeys
+      define Chouette::Route, :stop_points
+      define Chouette::Route, :wayback
+
+      # Chouette::JourneyPattern
+      define Chouette::JourneyPattern, :name
+      define Chouette::JourneyPattern, :published_name
+      define Chouette::JourneyPattern, :stop_points
+      define Chouette::JourneyPattern, :vehicle_journeys
+      define Chouette::JourneyPattern, :shape
+
+      # Chouette::VehicleJourney
+      define Chouette::VehicleJourney, :published_journey_name
+      define Chouette::VehicleJourney, :company
+      define Chouette::VehicleJourney, :transport_mode
+      define Chouette::VehicleJourney, :published_journey_identifier
+      define Chouette::VehicleJourney, :time_tables
+      define Chouette::VehicleJourney, :transport_mode
+
+      # Chouette::TimeTable
+      define Chouette::TimeTable, :dates
+      define Chouette::TimeTable, :periods
+
+      # Chouette::Footnote
+      define Chouette::Footnote, :code
+      define Chouette::Footnote, :label
+
+      # Chouette::RoutingConstraintZone
+      define Chouette::RoutingConstraintZone, :name
+
+      # Chouette::ConnectionLink
+      define Chouette::ConnectionLink, :name
+
+      # Document
+      define Document, :name
+
+      # Entrance
+      define Entrance, :name
+      define Entrance, :short_name
+      define Entrance, :address_line_1 # rubocop:disable Naming/VariableNumber
+      define Entrance, :zip_code
+      define Entrance, :city_name
+      define Entrance, :country
+
+      # PointOfInterest::Base
+      define PointOfInterest::Base, :name
+      define PointOfInterest::Base, :url
+      define PointOfInterest::Base, :address_line_1 # rubocop:disable Naming/VariableNumber
+      define PointOfInterest::Base, :zip_code
+      define PointOfInterest::Base, :city_name
+      define PointOfInterest::Base, :country
+      define PointOfInterest::Base, :email
+      define PointOfInterest::Base, :phone
+      define PointOfInterest::Base, :postal_region
+
+
+      # Shape
+      define Shape, :name
+
     end
   end
 end

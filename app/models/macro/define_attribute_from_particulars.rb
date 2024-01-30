@@ -9,6 +9,8 @@ module Macro
         option :target_attribute
 
         enumerize :target_model, in: %w[StopArea Company]
+
+        validates :target_model, :target_attribute, :model_attribute, presence: true
       end
 
       def model_attribute
@@ -16,34 +18,61 @@ module Macro
       end
 
       def candidate_target_attributes # rubocop:disable Metrics/MethodLength
-        Chouette::ModelAttribute.all.for(self.class.target_model.values) do
-          # Name attribute is always already defined
-          # The macro can't find referents without name
-          exclude 'StopArea', :name
-          exclude 'Company', :name
+        Chouette::ModelAttribute.collection do
 
-          # Status attribute is always already defined
-          # The macro can't find referents without status
-          exclude 'StopArea', :status
+          # Chouette::Company
+          select Chouette::Company, :short_name
+          select Chouette::Company, :code
+          select Chouette::Company, :customer_service_contact_email
+          select Chouette::Company, :customer_service_contact_more
+          select Chouette::Company, :customer_service_contact_name
+          select Chouette::Company, :customer_service_contact_phone
+          select Chouette::Company, :customer_service_contact_url
+          select Chouette::Company, :default_contact_email
+          select Chouette::Company, :default_contact_fax
+          select Chouette::Company, :default_contact_more
+          select Chouette::Company, :default_contact_name
+          select Chouette::Company, :default_contact_operating_department_name
+          select Chouette::Company, :default_contact_organizational_unit
+          select Chouette::Company, :default_contact_phone
+          select Chouette::Company, :default_contact_url
+          select Chouette::Company, :default_language
+          select Chouette::Company, :private_contact_email
+          select Chouette::Company, :private_contact_more
+          select Chouette::Company, :private_contact_name
+          select Chouette::Company, :private_contact_phone
+          select Chouette::Company, :private_contact_url
+          select Chouette::Company, :address_line_1
+          select Chouette::Company, :address_line_2
+          select Chouette::Company, :country_code
+          select Chouette::Company, :house_number
+          select Chouette::Company, :postcode
+          select Chouette::Company, :postcode_extension
+          select Chouette::Company, :street
+          select Chouette::Company, :time_zone
+          select Chouette::Company, :town
 
-          # The current registration number uniqueness makes it impossible
-          exclude 'StopArea', :registration_number
-
-          # belongs_to are not supported by the macro
-          exclude 'StopArea', :parent
-
-          # Referent .. has no referent
-          exclude 'StopArea', :referent
-          exclude 'Company', :referent
-
-          # Attributes use as criteria to create Stop Area Referent
-          exclude 'StopArea', :coordinates
-          exclude 'StopArea', :compass_bearing
+          # Chouette::StopArea
+          select Chouette::StopArea, :country_code
+          select Chouette::StopArea, :street_name
+          select Chouette::StopArea, :zip_code
+          select Chouette::StopArea, :city_name
+          select Chouette::StopArea, :url
+          select Chouette::StopArea, :time_zone
+          select Chouette::StopArea, :waiting_time
+          select Chouette::StopArea, :postal_region
+          select Chouette::StopArea, :public_code
+          select Chouette::StopArea, :accessibility_limitation_description
+          select Chouette::StopArea, :escalator_free_accessibility
+          select Chouette::StopArea, :lift_free_accessibility
+          select Chouette::StopArea, :mobility_impaired_accessibility
+          select Chouette::StopArea, :step_free_accessibility
+          select Chouette::StopArea, :wheelchair_accessibility
+          select Chouette::StopArea, :visual_signs_availability
+          select Chouette::StopArea, :audible_signals_availability
         end
       end
     end
-
-    validates :target_model, :target_attribute, :model_attribute, presence: true
 
     include Options
 

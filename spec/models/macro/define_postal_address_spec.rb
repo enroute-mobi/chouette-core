@@ -1,6 +1,13 @@
 # frozen_string_literal: true
 
 RSpec.describe Macro::DefinePostalAddress do
+  it { should validate_presence_of :target_model }
+  it do
+    should enumerize(:target_model).in(
+      %w[StopArea Entrance PointOfInterest]
+    )
+  end
+
   it 'should be one of the available Macro' do
     expect(Macro.available).to include(described_class)
   end

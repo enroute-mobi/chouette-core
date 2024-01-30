@@ -1,4 +1,10 @@
+# frozen_string_literal: true
+
 RSpec.describe Macro::AssociateStopAreaReferent::Run do
+  it 'should not be one of the available Macro' do
+    expect(Macro.available).not_to include(described_class)
+  end
+
   let(:macro_list_run) do
     Macro::List::Run.create workbench: context.workbench
   end

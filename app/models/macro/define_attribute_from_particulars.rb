@@ -70,8 +70,6 @@ module Macro
           select Chouette::StopArea, :wheelchair_accessibility
           select Chouette::StopArea, :visual_signs_availability
           select Chouette::StopArea, :audible_signals_availability
-          select Chouette::StopArea, :lines
-          select Chouette::StopArea, :routes
         end
       end
     end

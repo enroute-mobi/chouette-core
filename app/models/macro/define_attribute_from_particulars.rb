@@ -53,7 +53,6 @@ module Macro
           select Chouette::Company, :town
 
           # Chouette::StopArea
-          select Chouette::StopArea, :fare_code
           select Chouette::StopArea, :country_code
           select Chouette::StopArea, :street_name
           select Chouette::StopArea, :zip_code

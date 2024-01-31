@@ -6,6 +6,7 @@ module Chouette
     resources_configuration[:self].delete(:route_prefix)
 
     include ReferentialSupport
+    include WithinWorkgroup
 
     private
 

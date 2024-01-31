@@ -9,8 +9,6 @@ class CompaniesController < Chouette::LineReferentialController
   respond_to :html
   respond_to :json
 
-  around_action :set_current_workgroup
-
   def autocomplete
     scope = line_referential.companies
     scope = scope.referent_only if params[:referent_only]
@@ -64,13 +62,6 @@ class CompaniesController < Chouette::LineReferentialController
 
   def collection
     @collection ||= search.search scope
-  end
-
-  def set_current_workgroup(&block)
-    # Ensure that InheritedResources has defined parents (workbench, etc)
-    association_chain
-
-    CustomFieldsSupport.within_workgroup current_workgroup, &block
   end
 
   def company_params

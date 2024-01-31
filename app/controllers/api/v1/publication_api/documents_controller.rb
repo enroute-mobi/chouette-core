@@ -38,15 +38,10 @@ class Api::V1::PublicationApi::DocumentsController < Api::V1::PublicationApi::Ba
     def basename
       [
         publication_api_slug,
-        resource_type,
+        resource.model_name.element,
         resource_registration_number,
         document_type_short_name
       ].join('-')
-    end
-
-    def resource_type
-      # TODO: manage other kind of resource like StopArea
-      'line'
     end
 
     def extension
@@ -69,7 +64,7 @@ class Api::V1::PublicationApi::DocumentsController < Api::V1::PublicationApi::Ba
   end
 
   def published_resource
-    # TODO: manage other kind of resource like StopArea
-    published_referential.lines.where(registration_number: params[:line_registration_number]).sole
+    resources = params[:resources]
+    published_referential.send(resources).where(registration_number: params[:registration_number]).sole
   end
 end

@@ -16,7 +16,7 @@ const renderApp = ({ match }) => {
   return (
     <SWRConfig value={options}>
       <ShapeEditorMap
-        redirectURL={`/referentials/${referentialId}/lines/${lineId}/routes/${routeId}/journey_patterns_collection`}
+        redirectURL={`/referentials/${referentialId}/lines/${lineId}/routes/${routeId}/journey_patterns`}
         baseURL={`/referentials/${referentialId}/lines/${lineId}/routes/${routeId}/journey_patterns/${journeyPatternId}`}
         isEdit={action === 'edit'}
       />

@@ -65,15 +65,6 @@ class JourneyPatternsCollectionsController < Chouette::ReferentialController
     end
   end
 
-  def user_permissions
-    @features = Hash[*current_organisation.features.map{|f| [f, true]}.flatten].to_json
-    policy = policy(:journey_pattern)
-    @perms =
-      %w{create destroy update}.inject({}) do | permissions, action |
-        permissions.merge( "journey_patterns.#{action}" => policy.authorizes_action?(action) )
-      end.to_json
-  end
-
   def update
     state  = JSON.parse request.raw_post
     Chouette::JourneyPattern.state_update route, state
@@ -86,4 +77,13 @@ class JourneyPatternsCollectionsController < Chouette::ReferentialController
   end
 
   protected
+
+  def user_permissions
+    @features = Hash[*current_organisation.features.map{|f| [f, true]}.flatten].to_json
+    policy = policy(:journey_pattern)
+    @perms =
+      %w{create destroy update}.inject({}) do | permissions, action |
+        permissions.merge( "journey_patterns.#{action}" => policy.authorizes_action?(action) )
+      end.to_json
+  end
 end

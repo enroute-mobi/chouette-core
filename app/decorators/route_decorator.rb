@@ -18,7 +18,7 @@ class RouteDecorator < AF83::Decorator
           context[:referential],
           context[:line],
           object,
-          :journey_patterns_collection
+          :journey_patterns
         ]
       end
     end

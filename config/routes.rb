@@ -285,10 +285,9 @@ ChouetteIhm::Application.routes.draw do # rubocop:disable Metrics/BlockLength
           get 'fetch_opposite_routes'
           get 'fetch_user_permissions'
         end
-        resource :journey_patterns_collection, only: %i[show update]
-        resources :journey_patterns do
+        resource :journey_patterns, only: %i[show update], controller: :journey_patterns_collections
+        resources :journey_patterns, only: [] do
           member do
-            get 'new_vehicle_journey'
             get 'available_specific_stop_places'
             put 'unassociate_shape'
             put 'duplicate'

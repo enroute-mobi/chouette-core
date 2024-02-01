@@ -34,7 +34,7 @@ RSpec.describe Macro::ComputeServiceCounts do
 
     subject { macro_run.run }
 
-    it { expect { subject }.to change(referential.service_counts, :count).from(0) }
+    it { expect { subject }.to change(referential.service_counts, :count).from(0).to(14) }
 
     it do
       subject

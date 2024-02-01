@@ -163,6 +163,16 @@ class ReferentialsController < Chouette::ResourceController
     end
   end
 
+  def current_workgroup
+    current_workbench&.workgroup
+  end
+
+  def current_workbench
+    return nil unless params[:id]
+
+    resource&.workbench
+  end
+
   private
   def sort_column
     sortable_columns = Chouette::Line.column_names + ['networks.name', 'companies.name']

@@ -8,6 +8,7 @@ module CustomFieldsSupport
         raise "Two different current workgroups: current:#{current_workgroup.id} wanted:#{workgroup.id}"
       end
       Rails.logger.info "within_workgroup used twice"
+      return yield
     end
 
     Rails.logger.debug "Set current workgroup: #{workgroup&.id}"

@@ -52,6 +52,10 @@ module Control
         has_many :control_context_runs, class_name: 'Control::Context::Run'
       end
       has_many :control_messages, class_name: 'Control::Message', through: :control_runs
+      has_many :context_control_messages,
+               class_name: 'Control::Message',
+               through: :control_context_runs,
+               source: :control_messages
 
       has_one :processing, as: :processed
 
@@ -102,11 +106,10 @@ module Control
         end
         attr_reader :control_list_run
 
-        delegate :control_messages, to: :control_list_run
+        delegate :control_messages, :context_control_messages, to: :control_list_run
 
         def criticities
-          # reorder! to avoid problems with default order and pluck
-          @criticities ||= control_messages.reorder!.distinct.pluck(:criticity)
+          @criticities ||= (without_context_criticities + with_context_criticities).uniq
         end
 
         def worst_criticity
@@ -124,6 +127,17 @@ module Control
           else
             Operation.user_status.successful
           end
+        end
+
+        private
+
+        def without_context_criticities
+          # reorder! to avoid problems with default order and pluck
+          control_messages.reorder!.distinct.pluck(:criticity)
+        end
+
+        def with_context_criticities
+          context_control_messages.reorder!.distinct.pluck(:criticity)
         end
       end
 

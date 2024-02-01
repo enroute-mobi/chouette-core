@@ -95,15 +95,56 @@ module Chouette
 
           model :control_list do
             attribute(:name) { |n| "Control List #{n}" }
+
+            model :control do
+              attribute(:name) { |n| "Dummy #{n}" }
+              attribute :type, 'Control::Dummy'
+              attribute :target_model, 'StopArea'
+            end
+
+            model :control_context do
+              attribute(:name) { |n| "Context #{n}" }
+
+              transient :lines
+
+              after do
+                if new_instance.is_a?(Control::Context::Lines)
+                  new_instance.options['line_ids'] = Array(transient(:lines)).map(&:id)
+                end
+              end
+
+              model :control do
+                attribute(:name) { |n| "Dummy #{n}" }
+                attribute :type, 'Control::Dummy'
+                attribute :target_model, 'StopArea'
+              end
+            end
+          end
+
+          model :control_list_run do
+            attribute(:name) { |n| "Control List Run #{n}" }
+            attribute(:creator) { |n| "User #{n}" }
           end
 
           model :macro_list do
             attribute(:name) { |n| "Macro List #{n}" }
+
             model :macro do
               attribute(:name) { |n| "Dummy #{n}" }
-              attribute :type, "Macro::Dummy"
-              attribute :target_model, "StopArea"
-              attribute :expected_result, "info"
+              attribute :type, 'Macro::Dummy'
+              attribute :target_model, 'StopArea'
+              attribute :expected_result, 'info'
+            end
+
+            model :macro_context do
+              attribute(:name) { |n| "Context #{n}" }
+
+              model :macro do
+                attribute(:name) { |n| "Dummy #{n}" }
+                attribute :type, 'Macro::Dummy'
+                attribute :target_model, 'StopArea'
+                attribute :expected_result, 'info'
+              end
             end
           end
 

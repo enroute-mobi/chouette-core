@@ -61,6 +61,8 @@ module Control
         has_many :control_runs, -> { order(position: :asc) }, class_name: 'Control::Base::Run', dependent: :destroy
       end
 
+      has_many :control_messages, class_name: 'Control::Message', through: :control_runs
+
       store :options, coder: JSON
 
       delegate :referential, :workbench, to: :control_list_run

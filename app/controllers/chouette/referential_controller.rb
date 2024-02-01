@@ -11,10 +11,10 @@ module Chouette
     private
 
     def current_workgroup
-      current_workbrench&.workgroup
+      current_workbench&.workgroup
     end
 
-    def current_workbrench
+    def current_workbench
       referential&.workbench
     end
   end

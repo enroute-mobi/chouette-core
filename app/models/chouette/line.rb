@@ -21,6 +21,7 @@ module Chouette
     include ColorSupport
     include CodeSupport
     include ReferentSupport
+    include Documentable
 
     open_color_attribute
     open_color_attribute :text_color
@@ -51,9 +52,6 @@ module Chouette
 
     has_many :footnotes, inverse_of: :line, validate: true
     accepts_nested_attributes_for :footnotes, reject_if: :all_blank, allow_destroy: true
-
-    has_many :document_memberships, as: :documentable, dependent: :delete_all
-    has_many :documents, through: :document_memberships
 
     attr_reader :group_of_line_tokens
 
@@ -210,6 +208,10 @@ module Chouette
 
     def code
       get_objectid.try(:local_id)
+    end
+
+    def same_documentable_workbench?(workbench)
+      line_provider.workbench_id == workbench.id
     end
 
     private

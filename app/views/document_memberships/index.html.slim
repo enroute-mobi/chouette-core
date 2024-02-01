@@ -1,4 +1,4 @@
-- breadcrumb :document_memberships, @workbench, @line
+- breadcrumb :"#{documentable.class.name.demodulize.underscore}_document_memberships", @workbench, documentable
 .page_content
 	.container-fluid
 		- if @document_memberships.any?
@@ -43,7 +43,7 @@
 				.col-lg-12
 					= replacement_msg t('documents.search_no_results')
 
-		h2 = I18n.t('lines.actions.associate_other_documents')
+		h2 = I18n.t('documentable.actions.associate_other_documents')
 		.row
 			= simple_form_for @unassociated_documents_search, url: request.path, method: "GET", remote: true, html: { class: 'form form-filter' }  do |f|
 				.ffg-row

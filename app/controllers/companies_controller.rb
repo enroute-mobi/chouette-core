@@ -4,7 +4,7 @@ class CompaniesController < Chouette::LineReferentialController
   include ApplicationHelper
   include PolicyChecker
 
-  defaults :resource_class => Chouette::Company
+  defaults resource_class: Chouette::Company
 
   respond_to :html
   respond_to :json
@@ -12,25 +12,27 @@ class CompaniesController < Chouette::LineReferentialController
   def autocomplete
     scope = line_referential.companies
     scope = scope.referent_only if params[:referent_only]
-    args  = [].tap{|arg| 4.times{arg << "%#{params[:q]}%"}}
-    @companies = scope.where("unaccent(name) ILIKE unaccent(?) OR unaccent(short_name) ILIKE unaccent(?) OR registration_number ILIKE ? OR objectid ILIKE ?", *args).limit(50)
+    args  = [].tap { |arg| 4.times { arg << "%#{params[:q]}%" } }
+    @companies = scope.where(
+      'unaccent(name) ILIKE unaccent(?) OR unaccent(short_name) ILIKE unaccent(?) OR registration_number ILIKE ? OR objectid ILIKE ?', *args
+    ).limit(50)
     @companies
   end
 
   def index
     index! do |format|
-      format.html {
+      format.html do
         @companies = CompanyDecorator.decorate(
           collection,
           context: {
-            workbench: workbench,
+            workbench: workbench
           }
         )
-      }
+      end
 
-      format.json {
+      format.json do
         render json: @companies.to_json
-      }
+      end
     end
   end
 
@@ -38,7 +40,7 @@ class CompaniesController < Chouette::LineReferentialController
     show! do
       @company = resource.decorate(
         context: {
-          workbench: workbench,
+          workbench: workbench
         }
       )
     end
@@ -91,11 +93,13 @@ class CompaniesController < Chouette::LineReferentialController
       :postcode_extension,
       :country_code,
       :fare_url,
-      codes_attributes: [:id, :code_space_id, :value, :_destroy]
+      { codes_attributes: %i[id code_space_id value _destroy] }
     ]
-    fields += %w(default_contact private_contact customer_service_contact).product(%w(name email phone url more)).map{ |k| k.join('_')}
+    fields += %w[default_contact private_contact
+                 customer_service_contact].product(%w[name email phone url more]).map do |k|
+      k.join('_')
+    end
     fields += permitted_custom_fields_params(Chouette::Company.custom_fields(line_referential.workgroup))
     params.require(:company).permit(fields)
   end
-
 end

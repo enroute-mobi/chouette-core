@@ -93,6 +93,8 @@ ChouetteIhm::Application.routes.draw do # rubocop:disable Metrics/BlockLength
       resources :stop_areas do
         get :autocomplete, on: :collection
         get :fetch_connection_links, on: :member, defaults: { format: 'geojson' }
+
+        resources :document_memberships, only: %i[index create destroy], controller: :stop_area_document_memberships
       end
 
       resources :autocomplete, only: [] do
@@ -122,11 +124,15 @@ ChouetteIhm::Application.routes.draw do # rubocop:disable Metrics/BlockLength
           end
         end
 
-        resources :document_memberships, only: %i[index create destroy]
+        resources :document_memberships, only: %i[index create destroy], controller: :line_document_memberships
       end
+
       resources :companies do
         get :autocomplete, on: :collection
+
+        resources :document_memberships, only: %i[index create destroy], controller: :company_document_memberships
       end
+
       resources :networks
       resources :line_notices
     end
@@ -342,9 +348,11 @@ ChouetteIhm::Application.routes.draw do # rubocop:disable Metrics/BlockLength
       get 'datas/:slug/lines', to: 'datas#lines', as: :lines
 
       get 'datas/:slug/documents/lines/:registration_number/:document_type',
-          to: redirect('/api/v1/datas/%{slug}/lines/%{registration_number}/documents/%{document_type}')
+        to: redirect('/api/v1/datas/%{slug}/lines/%{registration_number}/documents/%{document_type}')
 
-      get 'datas/:slug/lines/:line_registration_number/documents/:document_type', to: 'publication_api/documents#show'
+      get 'datas/:slug/lines/:registration_number/documents/:document_type', to: 'publication_api/documents#show', resources: "lines"
+      get 'datas/:slug/stop_areas/:registration_number/documents/:document_type', to: 'publication_api/documents#show', resources: "stop_areas"
+      get 'datas/:slug/companies/:registration_number/documents/:document_type', to: 'publication_api/documents#show', resources: "companies"
 
       post 'datas/:slug/graphql', to: 'datas#graphql', as: :graphql
 

@@ -1,4 +1,8 @@
+# frozen_string_literal: true
+
 class CompanyDecorator < AF83::Decorator
+  include DocumentableDecorator
+
   decorates Chouette::Company
 
   set_scope { [ context[:workbench], :line_referential ] }

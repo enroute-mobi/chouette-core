@@ -1,0 +1,8 @@
+fr:
+  documentable:
+    no_documents: "Pas de document associé"
+    actions:
+      associate_other_documents: "Associer d'autres documents"
+    form:
+      sections:
+        documents: "Documents"

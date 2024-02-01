@@ -140,3 +140,11 @@
               = link_to t('connection_links.actions.new'), new_workbench_stop_area_referential_connection_link_path(@workbench, departure_id: @stop_area.id), class: 'btn btn-action large'
             .col-md-4
               = more_connections_link(@stop_area, @workbench) if @stop_area.connection_links.count > 4
+
+        = simple_block_for @stop_area, title: t('documentable.form.sections.documents') do
+          - if @stop_area.documents.any?
+            = @stop_area.documents_table
+          - else
+             = replacement_msg t('documentable.no_documents')
+          = link_to I18n.t('documentable.actions.associate_other_documents'), workbench_stop_area_referential_stop_area_document_memberships_path(@workbench, @stop_area), class: 'btn btn-primary my-2'
+          .mt-2

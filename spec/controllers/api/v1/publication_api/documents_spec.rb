@@ -35,7 +35,8 @@ RSpec.describe Api::V1::PublicationApi::DocumentsController, type: :controller d
       {
         slug: publication_api.slug,
         document_type: document_type.short_name,
-        line_registration_number: line.registration_number
+        registration_number: line.registration_number,
+        resources: 'lines'
       }
     end
 
@@ -45,13 +46,13 @@ RSpec.describe Api::V1::PublicationApi::DocumentsController, type: :controller d
     end
 
     context 'when no line is associated to the registration number' do
-      before { params[:line_registration_number] = 'dummy' }
+      before { params[:registration_number] = 'dummy' }
 
       it { expect { subject }.to raise_error(ActiveRecord::RecordNotFound) }
     end
 
     context 'when several lines are associated to the registration number' do
-      before do 
+      before do
         other_line = line.line_provider.lines.create! name: "Other"
         # Use the same registration number for other line (validation is skipped for #update_attribute)
         other_line.update_attribute :registration_number, line.registration_number
@@ -93,7 +94,7 @@ RSpec.describe Api::V1::PublicationApi::DocumentsController, type: :controller d
     end
 
     context 'when the associated document has a validity period with include the given Date' do
-      before do 
+      before do
         document.update validity_period: Period.after(1.month.from_now)
         params[:valid_on] = 2.months.from_now.to_date.to_s
       end

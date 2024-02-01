@@ -33,6 +33,8 @@ fr:
         one: Mettre à jour un attribut à partir du Référent
       macro/delete_vehicle_journeys/run:
         one: Supprimer toutes les courses
+      macro/compute_service_counts/run:
+        one: Calculer le nombre de services
     attributes:
       macro/base/run:
         name: Nom

@@ -53,6 +53,9 @@ fr:
   macro/delete_vehicle_journeys/run:
     messages:
       default: "%{count} course(s) ont été supprimée(s)"
+  macro/compute_service_counts/run:
+    messages:
+      default: "Les statistiques de courses de la ligne %{name} ont été définis"
   macro_messages:
     search_no_results_for_filter: "Aucun messages"
     no_address: "Aucune adresse"

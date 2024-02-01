@@ -53,6 +53,9 @@ en:
   macro/delete_vehicle_journeys/run:
     messages:
       default: "%{count} Vehicle Journeys have been deleted"
+  macro/compute_service_counts/run:
+    messages:
+      default: "The service counts of the line %{name} have been computed"
   macro_messages: 
     search_no_results_for_filter: "No messages found"
     no_address: "No address"

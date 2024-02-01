@@ -36,13 +36,14 @@ class ServiceCount < ActiveRecord::Base
   end
 
   class ComputeForReferentialBuilder
-    def initialize(referential)
+    def initialize(referential, lines: nil)
       @referential = referential
+      @lines = lines
 
       @current_attributes = nil
       @current_days_count = nil
     end
-    attr_reader :referential
+    attr_reader :referential, :lines
 
     def build # rubocop:disable Metrics/MethodLength
       Chouette::Benchmark.measure 'service_counts', referential: referential.id do
@@ -69,12 +70,14 @@ class ServiceCount < ActiveRecord::Base
     private
 
     def delete_all
-      ::ServiceCount.delete_all
+      request = ::ServiceCount
+      request = request.where(line_id: lines) if lines
+      request.delete_all
     end
 
     def inserter
       @inserter ||= ReferentialInserter.new(referential) do |config|
-        config.add(IdInserter)
+        config.add(lines ? NextIdInserter : IdInserter)
         config.add(CopyInserter)
       end
     end
@@ -133,7 +136,12 @@ class ServiceCount < ActiveRecord::Base
     end
 
     def time_tables
-      referential.time_tables
+      request = referential.time_tables
+      if lines
+        request = request.joins(vehicle_journeys: { journey_pattern: :route })
+                         .where(routes: { line_id: lines })
+      end
+      request
     end
 
     def time_tables_and_vehicle_journey_count_by_journey_pattern_id
@@ -151,17 +159,18 @@ class ServiceCount < ActiveRecord::Base
     end
 
     def time_tables_by_vehicle_journey_subquery # rubocop:disable Metrics/MethodLength
-      referential.vehicle_journeys
-                 .joins(:time_tables, journey_pattern: :route) \
-                 .select(
-                   'vehicle_journeys.id AS "vehicle_journey_id"',
-                   'journey_patterns.id AS journey_pattern_id',
-                   'routes.id AS route_id',
-                   'routes.line_id AS line_id',
-                   'array_agg(time_tables.id ORDER BY time_tables.id) AS "time_table_ids"'
-                 ) \
-                 .group('vehicle_journeys.id', 'journey_patterns.id', 'routes.id', 'routes.line_id')
-                 .to_sql
+      request = referential.vehicle_journeys
+                           .joins(:time_tables, journey_pattern: :route) \
+                           .select(
+                             'vehicle_journeys.id AS "vehicle_journey_id"',
+                             'journey_patterns.id AS journey_pattern_id',
+                             'routes.id AS route_id',
+                             'routes.line_id AS line_id',
+                             'array_agg(time_tables.id ORDER BY time_tables.id) AS "time_table_ids"'
+                           ) \
+                           .group('vehicle_journeys.id', 'journey_patterns.id', 'routes.id', 'routes.line_id')
+      request = request.where(routes: { line_id: lines }) if lines
+      request.to_sql
     end
   end
 end

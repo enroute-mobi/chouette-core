@@ -4,43 +4,50 @@ RSpec.describe ServiceCount, type: :model do
   describe '.compute_for_referential' do
     subject { ServiceCount.compute_for_referential(referential) }
 
+    # rubocop:disable Metrics/BlockLength
     let(:context) do
       Chouette.create do
-        referential do
-          time_table :time_table_a,
-                     int_day_types: Cuckoo::Timetable::DaysOfWeek::SATURDAY | Cuckoo::Timetable::DaysOfWeek::SUNDAY,
-                     periods: [Period.parse('2030-01-07..2030-01-20')]
+        workbench do
+          line :line1
+          line :line2
 
-          time_table :time_table_b,
-                     periods: [Period.parse('2030-01-14..2030-01-27')]
+          referential do
+            time_table :time_table_a,
+                       int_day_types: Cuckoo::Timetable::DaysOfWeek::SATURDAY | Cuckoo::Timetable::DaysOfWeek::SUNDAY,
+                       periods: [Period.parse('2030-01-07..2030-01-20')]
 
-          route do
-            journey_pattern :journey_pattern1 do
-              vehicle_journey time_tables: [:time_table_a]
-              vehicle_journey time_tables: [:time_table_a]
-              vehicle_journey time_tables: %i[time_table_a time_table_b]
-              vehicle_journey time_tables: [:time_table_b]
+            time_table :time_table_b,
+                       periods: [Period.parse('2030-01-14..2030-01-27')]
+
+            route(:route1, line: :line1) do
+              journey_pattern :journey_pattern1 do
+                vehicle_journey time_tables: [:time_table_a]
+                vehicle_journey time_tables: [:time_table_a]
+                vehicle_journey time_tables: %i[time_table_a time_table_b]
+                vehicle_journey time_tables: [:time_table_b]
+              end
             end
-          end
 
-          route do
-            journey_pattern :journey_pattern2 do
-              vehicle_journey time_tables: [:time_table_a]
+            route(:route2, line: :line2) do
+              journey_pattern :journey_pattern2 do
+                vehicle_journey time_tables: [:time_table_a]
+              end
             end
           end
         end
       end
     end
+    # rubocop:enable Metrics/BlockLength
 
     let(:referential) { context.referential }
 
     let(:journey_pattern) { context.journey_pattern(:journey_pattern1) }
-    let(:route) { journey_pattern.route }
-    let(:line) { route.line }
+    let(:route) { context.route(:route1) }
+    let(:line) { context.line(:line1) }
 
     let(:journey_pattern2) { context.journey_pattern(:journey_pattern2) }
-    let(:route2) { journey_pattern2.route }
-    let(:line2) { route2.line }
+    let(:route2) { context.route(:route2) }
+    let(:line2) { context.line(:line2) }
 
     before { referential.switch }
 
@@ -79,8 +86,9 @@ RSpec.describe ServiceCount, type: :model do
         ]
       )
     end
+    # rubocop:enable Layout/LineLength
 
-    context "when an empty timetable is present" do
+    context 'when an empty timetable is present' do
       before { referential.time_tables.first.periods.delete_all }
 
       it 'computes all service counts' do
@@ -92,34 +100,39 @@ RSpec.describe ServiceCount, type: :model do
       # rubocop:disable Metrics/BlockLength
       let(:context) do
         Chouette.create do
-          referential do
-            time_table :time_table_a,
-                       int_day_types: Cuckoo::Timetable::DaysOfWeek::SATURDAY | Cuckoo::Timetable::DaysOfWeek::SUNDAY,
-                       periods: [Period.parse('2030-01-07..2030-01-20')],
-                       dates: [
-                         Chouette::TimeTableDate.new(date: Date.parse('2030-01-12'), in_out: false),
-                         Chouette::TimeTableDate.new(date: Date.parse('2030-01-20'), in_out: false)
-                       ]
+          workbench do
+            line :line1
+            line :line2
 
-            time_table :time_table_b,
-                       periods: [Period.parse('2030-01-14..2030-01-27')],
-                       dates: [
-                         Chouette::TimeTableDate.new(date: Date.parse('2030-01-14'), in_out: false),
-                         Chouette::TimeTableDate.new(date: Date.parse('2030-01-27'), in_out: false)
-                       ]
+            referential do
+              time_table :time_table_a,
+                         int_day_types: Cuckoo::Timetable::DaysOfWeek::SATURDAY | Cuckoo::Timetable::DaysOfWeek::SUNDAY,
+                         periods: [Period.parse('2030-01-07..2030-01-20')],
+                         dates: [
+                           Chouette::TimeTableDate.new(date: Date.parse('2030-01-12'), in_out: false),
+                           Chouette::TimeTableDate.new(date: Date.parse('2030-01-20'), in_out: false)
+                         ]
 
-            route do
-              journey_pattern :journey_pattern1 do
-                vehicle_journey time_tables: [:time_table_a]
-                vehicle_journey time_tables: [:time_table_a]
-                vehicle_journey time_tables: %i[time_table_a time_table_b]
-                vehicle_journey time_tables: [:time_table_b]
+              time_table :time_table_b,
+                         periods: [Period.parse('2030-01-14..2030-01-27')],
+                         dates: [
+                           Chouette::TimeTableDate.new(date: Date.parse('2030-01-14'), in_out: false),
+                           Chouette::TimeTableDate.new(date: Date.parse('2030-01-27'), in_out: false)
+                         ]
+
+              route(:route1, line: :line1) do
+                journey_pattern :journey_pattern1 do
+                  vehicle_journey time_tables: [:time_table_a]
+                  vehicle_journey time_tables: [:time_table_a]
+                  vehicle_journey time_tables: %i[time_table_a time_table_b]
+                  vehicle_journey time_tables: [:time_table_b]
+                end
               end
-            end
 
-            route do
-              journey_pattern :journey_pattern2 do
-                vehicle_journey time_tables: [:time_table_a]
+              route(:route2, line: :line2) do
+                journey_pattern :journey_pattern2 do
+                  vehicle_journey time_tables: [:time_table_a]
+                end
               end
             end
           end
@@ -127,6 +140,7 @@ RSpec.describe ServiceCount, type: :model do
       end
       # rubocop:enable Metrics/BlockLength
 
+      # rubocop:disable Layout/LineLength
       it 'computes all service counts' do
         subject
         expect(ServiceCount.all).to match_array(
@@ -149,8 +163,34 @@ RSpec.describe ServiceCount, type: :model do
           ]
         )
       end
+      # rubocop:enable Layout/LineLength
     end
-    # rubocop:enable Layout/LineLength
+
+    context 'with lines option' do
+      subject { ServiceCount.compute_for_referential(referential, lines: [line2]) }
+
+      # rubocop:disable Layout/LineLength
+      before do
+        ServiceCount.create!(line_id: line.id, route_id: route.id, journey_pattern_id: journey_pattern.id, date: Date.parse('2030-01-12'), count: 21)
+        ServiceCount.create!(line_id: line2.id, route_id: route2.id, journey_pattern_id: journey_pattern2.id, date: Date.parse('2030-01-12'), count: 42)
+      end
+      # rubocop:enable Layout/LineLength
+
+      # rubocop:disable Layout/LineLength
+      it 'computes only service counts of provided lines' do
+        subject
+        expect(ServiceCount.all).to match_array(
+          [
+            have_attributes(line_id: line.id, route_id: route.id, journey_pattern_id: journey_pattern.id, date: Date.parse('2030-01-12'), count: 21),
+            have_attributes(line_id: line2.id, route_id: route2.id, journey_pattern_id: journey_pattern2.id, date: Date.parse('2030-01-12'), count: 1),
+            have_attributes(line_id: line2.id, route_id: route2.id, journey_pattern_id: journey_pattern2.id, date: Date.parse('2030-01-13'), count: 1),
+            have_attributes(line_id: line2.id, route_id: route2.id, journey_pattern_id: journey_pattern2.id, date: Date.parse('2030-01-19'), count: 1),
+            have_attributes(line_id: line2.id, route_id: route2.id, journey_pattern_id: journey_pattern2.id, date: Date.parse('2030-01-20'), count: 1)
+          ]
+        )
+      end
+      # rubocop:enable Layout/LineLength
+    end
   end
 
   describe 'scopes' do

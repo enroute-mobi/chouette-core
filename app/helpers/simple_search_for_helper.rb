@@ -1,10 +1,10 @@
 module SimpleSearchForHelper
   def simple_search_for(search, index_path, &block)
-    if search.saved_id
-      save_path = workbench_stop_areas_search_path(search.workbench, search)
+    if search.saved_search
+      save_path = saved_search_path(search.saved_search)
       save_method = :patch
     else
-      save_path = workbench_stop_areas_searches_path(search.workbench)
+      save_path = "#{index_path}/searches"
       save_method = :post
     end
 

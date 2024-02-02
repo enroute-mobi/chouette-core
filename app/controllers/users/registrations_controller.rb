@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class Users::RegistrationsController < Devise::RegistrationsController
   before_action :configure_account_update_params, only: [:update]
 
@@ -25,4 +27,8 @@ class Users::RegistrationsController < Devise::RegistrationsController
 
   private
 
+  def current_organisation
+    current_user.organisation
+  end
+  helper_method :current_organisation
 end

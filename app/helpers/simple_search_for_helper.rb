@@ -31,5 +31,22 @@ module SimpleSearchForHelper
 
   class FormBuilder < SimpleForm::FormBuilder
 
+    def text
+      input :text, label: false, width: 2
+    end
+
+    def input attribute, **options
+      width = options.delete(:width) || 1
+      options[:wrapper_html] ||= { class: "w-#{width}/5" }
+
+      super attribute, **options
+    end
+
+    def row(&block)
+      template.content_tag(:div, class: 'flex items-center border-t border-r border-white') do
+        yield
+      end
+    end
+
   end
 end

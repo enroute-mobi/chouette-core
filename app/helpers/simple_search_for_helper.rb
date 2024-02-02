@@ -1,6 +1,6 @@
 module SimpleSearchForHelper
-  def simple_search_for(search, url, &block)
-    if @search.saved_id
+  def simple_search_for(search, index_path, &block)
+    if search.saved_id
       save_path = workbench_stop_areas_search_path(search.workbench, search)
       save_method = :patch
     else
@@ -13,29 +13,23 @@ module SimpleSearchForHelper
       "x-data": "{ save_path: '#{save_path}', save_method: '#{save_method}'}"
     }
     options = {
-      url: url, 
+      url: index_path,
       method: "GET", 
       html: html, 
       wrapper: :filters_form_tailwind,
       builder: FormBuilder
     }
 
-    Rails.logger.debug "SimpleSearchForHelper #{options.inspect}"
+    locals = {
+      index_path: index_path,
+      search: search,
+      options: options,
+    }
 
-    simple_form_for(search, options) do |form|
-      form.simple_fields_for :order, search.order, defaults: { wrapper: false } do |form_order|
-        form_order.object.attributes.keys.each do |attribute|
-          concat form_order.input attribute, as: :hidden
-        end
-      end
-
-      block.call form
-    end
+    render layout: 'searches/form', locals: locals, &block
   end
 
   class FormBuilder < SimpleForm::FormBuilder
-
-
 
   end
 end

@@ -1,56 +1,17 @@
-/ = form.row do
-/   = form.input :text
-/ = form.row do
-/   = form.input :zip_code
-/   = form.input :input2, width: 2
-/ = form.row do
-/   = form.input :input3
-/   = form.input :parent_id,
-/       as: :ajax_select,
-/       collection: @search.selected_parent_collection,
-/       label_method: :display_name,
-/       input_html: { 'data-url': parent_stop_areas_workbench_autocomplete_index_path(@workbench, format: :json) }
-    
-/ - if @search.saved_id
-/   - save_path = workbench_stop_areas_search_path(@workbench, @search)
-/   - save_method = :patch
-/ - else
-/   - save_path = workbench_stop_areas_searches_path(@workbench)
-/   - save_method = :post
-
-/ = simple_form_for @search, url: workbench_stop_area_referential_stop_areas_path(@workbench), method: "GET", html: { class: 'flex items-center tailwind-filters bg-grey relative pr-6', "x-data": "{ save_path: '#{save_path}', save_method: '#{save_method}'}"}, wrapper: :filters_form_tailwind  do |f|
 = simple_search_for @search, workbench_stop_area_referential_stop_areas_path(@workbench) do |f|
-  .flex.flex-col.w-full
-    .flex.items-center.border-r.border-white.border-b x-show="saveSearchPanel"
-      = f.input :saved_name, wrapper_html: {class: "w-2/5"}
-      = f.input :saved_description, wrapper_html: {class: "w-2/5"}
-      = hidden_field_tag :_method, "post", "x-ref": "method", disabled: true
-      = hidden_field_tag :authenticity_token, form_authenticity_token, "x-ref": "authenticity_token", disabled: true
-      = f.submit t('searchs.actions.save'), class: 'btn btn-default ml-5', "@click": "$root.action = save_path ; $root.method = 'post' ; $refs.method.value = save_method; $refs.method.disabled = false; ; $refs.authenticity_token.disabled = false"
-      - if @search.saved_id
-        = link_to t('searchs.actions.destroy'), workbench_stop_areas_search_path(@workbench, @search), method: :delete, data: {:confirm => t('searchs.actions.destroy_confirm') }, class: 'btn btn-danger ml-5'
-
-    .flex.items-center.border-r.border-white.border-b
-      = f.input :text, label: false, wrapper_html: {class: "w-2/5"}
-    .flex.items-center.border-r.border-white
-      = f.input :zip_code, label: Chouette::StopArea.tmf('zip_code'), required: false, wrapper_html: {class: filter_item_class(params[:search], :zip_code)}, wrapper_html: {class: "w-1/5"}
-      = f.input :city_name, label: Chouette::StopArea.tmf('city_name'), required: false, wrapper_html: {class: filter_item_class(params[:search], :city_name)}, wrapper_html: {class: "w-1/5"}
-      = f.input :area_type, as: :autocomplete_select, wrapper_html: {class: "w-1/5"}
-      = f.input :statuses, as: :autocomplete_select, wrapper_html: {class: "w-1/5"}, input_html: { multiple: true, style: 'width: 100%' }
-      = f.input :is_referent, as: :autocomplete_select, wrapper_html: {class: "w-1/5"}
-    .flex.items-center.border-t.border-r.border-white
-      = f.input :parent_id,
+  .flex.items-center.border-r.border-white.border-b
+    = f.input :text, label: false, wrapper_html: {class: "w-2/5"}
+  .flex.items-center.border-r.border-white
+    = f.input :zip_code, label: Chouette::StopArea.tmf('zip_code'), required: false, wrapper_html: {class: filter_item_class(params[:search], :zip_code)}, wrapper_html: {class: "w-1/5"}
+    = f.input :city_name, label: Chouette::StopArea.tmf('city_name'), required: false, wrapper_html: {class: filter_item_class(params[:search], :city_name)}, wrapper_html: {class: "w-1/5"}
+    = f.input :area_type, as: :autocomplete_select, wrapper_html: {class: "w-1/5"}
+    = f.input :statuses, as: :autocomplete_select, wrapper_html: {class: "w-1/5"}, input_html: { multiple: true, style: 'width: 100%' }
+    = f.input :is_referent, as: :autocomplete_select, wrapper_html: {class: "w-1/5"}
+  .flex.items-center.border-t.border-r.border-white
+    = f.input :parent_id,
         as: :ajax_select,
         collection: @search.selected_parent_collection,
         label_method: :display_name,
         input_html: { 'data-url': parent_stop_areas_workbench_autocomplete_index_path(@workbench, format: :json) },
         wrapper_html: {class: "w-2/5"}
-      = f.input :stop_area_provider_id, as: :autocomplete_select, collection: @search.candidate_stop_area_providers, wrapper_html: {class: "w-2/5"}
-
-  .flex.flex-col.justify-center.items-center.actions.ml-auto.py-3.w-80
-    .flex.items-center.mb-3
-      = render partial: 'shared/per_page', locals: {f:f}
-    .flex.items-center
-      = link_to t('actions.erase'), workbench_stop_area_referential_stop_areas_path(@workbench), class: 'btn btn-link'
-      = f.submit t('actions.filter'), class: 'btn btn-default'
-
+    = f.input :stop_area_provider_id, as: :autocomplete_select, collection: @search.candidate_stop_area_providers, wrapper_html: {class: "w-2/5"}

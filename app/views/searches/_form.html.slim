@@ -1,0 +1,39 @@
+// Use by SimpleSearchForHelper#simple_search_for helper
+
+.flex.justify-end.mb-5
+  .flex.items-center.w-1/6
+    = button_tag t("searchs.actions.open_save_search_panel"),
+        class: 'mr-5 hover:text-enroute-blue open_search_panel',
+        id: 'open_search_panel',
+        'x-on:click.prevent': "saveSearchPanel = ! saveSearchPanel"
+      span.far.fa-save.fa-2x
+    = form_tag index_path, method: :get, "x-ref": "searchForm", class: "w-full"
+      = select_tag "search_id",
+        options_from_collection_for_select(@saved_searches, :id, :name, params[:search_id]),
+        class: "form-control select w-1/5",
+        "x-on:change": "$refs.searchForm.submit()",
+        include_blank: true
+
+= simple_form_for search, options do |f|
+  = f.simple_fields_for :order, search.order, defaults: { wrapper: false } do |form_order|
+    - search.order.attributes.keys.each do |attribute|
+      = form_order.input attribute, as: :hidden
+
+  .flex.flex-col.w-full
+    .flex.items-center.border-r.border-white.border-b x-show="saveSearchPanel"
+      = f.input :saved_name, wrapper_html: {class: "w-2/5"}
+      = f.input :saved_description, wrapper_html: {class: "w-2/5"}
+      = hidden_field_tag :_method, "post", "x-ref": "method"
+      = hidden_field_tag :authenticity_token, form_authenticity_token, "x-ref": "authenticity_token"
+      = f.submit t('searchs.actions.save'), class: 'btn btn-default ml-5', "@click": "$root.action = save_path ; $root.method = 'post' ; $refs.method.value = save_method; $refs.method.disabled = false; ; $refs.authenticity_token.disabled = false"
+      - if search.saved_id
+        = link_to t('searchs.actions.destroy'), workbench_stop_areas_search_path(search.workbench, search), method: :delete, data: {:confirm => t('searchs.actions.destroy_confirm') }, class: 'btn btn-danger ml-5'
+
+    = yield f
+
+  .flex.flex-col.justify-center.items-center.actions.ml-auto.py-3.w-80
+    .flex.items-center.mb-3
+      = render partial: 'shared/per_page', locals: {f:f}
+    .flex.items-center
+      = link_to t('actions.erase'), index_path, class: 'btn btn-link'
+      = f.submit t('actions.filter'), class: 'btn btn-default'

@@ -175,9 +175,9 @@ RSpec.describe LineDocumentMembershipsController, type: :controller do
 
           it 'is not found' do
             sign_in(@user)
-            expect do
+            expect(
               delete :destroy, params: { workbench_id: workbench.id, line_id: line.id, id: document_membership.id }
-            end.to raise_error(ActiveRecord::RecordNotFound)
+            ).to render_template('errors/not_found')
           end
         end
       end

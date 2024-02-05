@@ -37,7 +37,7 @@ RSpec.describe Macro::AssociateDocuments do
             line :line, name: 'Line Name'
             line :other
 
-            referential lines: [:line, :other] do
+            referential lines: %i[line other] do
               route stop_areas: %i[first middle last]
             end
           end
@@ -68,7 +68,8 @@ RSpec.describe Macro::AssociateDocuments do
           message_attributes: {
             'document_name' => 'test',
             'model_name' => model_name
-          }
+          },
+          source: source
         )
       end
 
@@ -86,6 +87,7 @@ RSpec.describe Macro::AssociateDocuments do
         let(:target_model) { 'StopArea' }
         let(:model_code_space) { stop_area_code_space }
         let(:model_name) { 'Stop Area Name' }
+        let(:source) { stop_area }
 
         it 'Should associate document with stop area' do
           expect { subject }.to change { document.memberships.count }.from(0).to(1)
@@ -97,6 +99,7 @@ RSpec.describe Macro::AssociateDocuments do
         let(:target_model) { 'Line' }
         let(:model_code_space) { line_code_space }
         let(:model_name) { 'Line Name' }
+        let(:source) { line }
 
         it 'Should associate document with line' do
           expect { subject }.to change { document.memberships.count }.from(0).to(1)

@@ -15,6 +15,7 @@ class RoutesController < Chouette::ReferentialController
   before_action :define_candidate_opposite_routes, only: %i[new edit fetch_opposite_routes]
 
   def index
+    @routes = collection
     index! do |format|
       format.html { redirect_to referential_line_path(@referential, @line) }
       format.geojson { render 'routes/index.geo' }

@@ -31,7 +31,7 @@ RSpec.describe Macro::AssociateDocuments do
 
           workbench organisation: Organisation.find_by_code('first') do
             stop_area :first, name: 'Stop Area Name', codes: { stop_area_code_space: 'dummy' }
-            stop_area :middle
+            stop_area :middle, codes: { stop_area_code_space: 'other dummy' }
             stop_area :last
 
             line :line, name: 'Line Name'

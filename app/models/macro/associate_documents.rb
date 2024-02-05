@@ -22,7 +22,8 @@ module Macro
 
       def run
         each_element_in_document_memberships do |document_membership, document_name, model_name|
-          create_message(document_membership, document_name, model_name) if document_membership.save
+          document_membership.save
+          create_message(document_membership, document_name, model_name)
         end
       end
 
@@ -44,7 +45,6 @@ module Macro
         PostgreSQLCursor::Cursor.new(query).each do |attributes|
           document_name = attributes.delete 'document_name'
           model_name = attributes.delete 'model_name'
-          attributes.merge! documentable_type: documentable_type
           document_membership = DocumentMembership.new attributes
 
           block.call document_membership, document_name, model_name
@@ -52,16 +52,17 @@ module Macro
       end
 
       def documentable_type
-        @documentable_type ||= "Chouette::#{target_model}"
+        @documentable_type ||= "'Chouette::#{target_model}'"
       end
 
       def query
         <<~SQL
-          SELECT 
-            documents_models_by_codes.document_id AS document_id, 
+          SELECT
+            documents_models_by_codes.document_id AS document_id,
             documents_models_by_codes.document_name AS document_name,
             documents_models_by_codes.model_name AS model_name,
-            documents_models_by_codes.model_id AS documentable_id
+            documents_models_by_codes.model_id AS documentable_id,
+            #{documentable_type} AS documentable_type
           FROM (#{documents_models_by_codes}) AS documents_models_by_codes
           LEFT JOIN (#{customized_document_memberships}) AS customized_document_memberships
           ON documents_models_by_codes.document_model_id = customized_document_memberships.document_model_id
@@ -75,7 +76,7 @@ module Macro
 
       def documents_models_by_codes
         <<~SQL
-          SELECT 
+          SELECT
             documents_with_codes.document_id AS document_id,
             documents_with_codes.document_name AS document_name,
             models_with_codes.model_id AS model_id,

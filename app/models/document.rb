@@ -8,6 +8,7 @@ class Document < ApplicationModel
 
   has_many :memberships, class_name: 'DocumentMembership', dependent: :delete_all
   has_many :lines, through: :memberships, source: :documentable, source_type: 'Chouette::Line'
+  has_many :stop_areas, through: :memberships, source: :documentable, source_type: 'Chouette::StopArea'
 
   mount_uploader :file, DocumentUploader
 

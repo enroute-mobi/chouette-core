@@ -9,8 +9,8 @@ module Scope
       @workbench = workbench
     end
 
-    delegate :lines, :companies, :stop_areas, :entrances, :networks,
-             :point_of_interests, :shapes, :documents, :connection_links, to: :workbench
+    delegate :lines, :companies, :stop_areas, :entrances, :document_memberships,
+             :networks, :point_of_interests, :shapes, :documents, :connection_links, to: :workbench
 
     def routes
       Chouette::Route.none
@@ -109,7 +109,7 @@ module Scope
 
     delegate :routes, :stop_points, :journey_patterns, :journey_pattern_stop_points, :vehicle_journey_at_stops,
              :time_tables, :time_table_periods, :time_table_dates, :service_counts, :vehicle_journeys, to: :referential
-    delegate :line_referential, :stop_area_referential, :shape_referential, :workgroup, to: :workbench
+    delegate :line_referential, :stop_area_referential, :shape_referential, :workgroup, :document_memberships, to: :workbench
     attr_reader :referential, :workbench
   end
 
@@ -158,7 +158,7 @@ module Scope
     end
 
     delegate :routes, :stop_points, :journey_patterns, :journey_pattern_stop_points, :vehicle_journeys, :vehicle_journey_at_stops,
-             :time_tables, :time_table_periods, :time_table_dates, :service_counts, to: :scope
+             :time_tables, :time_table_periods, :time_table_dates, :service_counts, :document_memberships, to: :scope
 
     private
 

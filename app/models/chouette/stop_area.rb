@@ -38,6 +38,9 @@ module Chouette
     has_many :stop_area_zones, class_name: 'Fare::StopAreaZone', dependent: :delete_all
     has_many :fare_zones, through: :stop_area_zones, source: :zone
 
+    has_many :document_memberships, as: :documentable, dependent: :delete_all
+    has_many :documents, through: :document_memberships
+
     scope :light, ->{ select(:id, :name, :city_name, :zip_code, :time_zone, :registration_number, :kind, :area_type, :time_zone, :stop_area_referential_id, :objectid) }
     scope :with_time_zone, -> { where.not time_zone: nil }
 

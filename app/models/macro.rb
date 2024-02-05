@@ -17,6 +17,7 @@ module Macro
       Macro::UpdateAttributeFromReferentToParticulars,
       Macro::DeleteVehicleJourneys,
       Macro::ComputeServiceCounts,
+      Macro::AssociateDocuments,
       Macro::Dummy # Keep this dummy last
     ]
   end

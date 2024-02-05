@@ -70,6 +70,7 @@ class Workbench < ApplicationModel
 
   has_many :document_providers
   has_many :documents, through: :document_providers
+  has_many :document_memberships, through: :documents, source: :memberships
 
   has_many :connection_links, through: :stop_area_providers
   has_many :entrances, through: :stop_area_providers

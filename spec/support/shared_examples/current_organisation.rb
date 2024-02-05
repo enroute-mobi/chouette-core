@@ -13,7 +13,7 @@ RSpec.shared_examples_for 'checks current_organisation' do |opts = {}|
     let(:organisation){ create :organisation }
 
     it 'should respond with NOT FOUND' do
-      expect{ request }.to raise_error(ActiveRecord::RecordNotFound)
+      expect(request).to render_template('errors/not_found')
     end
   end
 end

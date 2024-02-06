@@ -115,17 +115,22 @@ module Control
             "#{PREFIX_PROVIDERS[model_singular]}_providers"
           end
 
+          def where
+            <<~SQL
+              WHERE (codes.resource_type = '#{source_type}')
+                AND (codes.code_space_id = #{target_code_space.id})
+            SQL
+          end
+
           def query
             <<~SQL
               SELECT * FROM (
                 SELECT #{model_table_name}.*, codes.value AS code_value, #{duplicates_count} AS duplicates_count
                 FROM #{model_table_name}
                 #{inner_join}
-                WHERE (codes.resource_type = '#{source_type}')
-                  AND (codes.code_space_id = #{target_code_space.id})
-                  AND (#{model_table_name}.id IN (#{models.select(:id).to_sql}))
+                #{where}
               ) AS with_duplicates_count
-              WHERE duplicates_count > 1
+              WHERE duplicates_count > 1 AND (id IN (#{models.select(:id).to_sql}))
             SQL
           end
 
@@ -183,6 +188,14 @@ module Control
               INNER JOIN public.workbenches ON workbenches.id = #{providers}.workbench_id
               INNER JOIN public.workgroups ON workgroups.id = workbenches.workgroup_id
               INNER JOIN public.codes ON codes.resource_id = #{model_table_name}.id
+            SQL
+          end
+
+          def where
+            <<~SQL
+              WHERE (codes.resource_type = '#{source_type}')
+                AND (codes.code_space_id = #{target_code_space.id})
+                AND (workgroups.id = #{context.workgroup.id})
             SQL
           end
         end

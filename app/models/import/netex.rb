@@ -58,7 +58,7 @@ class Import::Netex < Import::Base
   end
 
   def time_tables_with_duplicated_periods
-    return unless referential.present?
+    return Chouette::TimeTable.none unless referential.present?
 
     referential.switch
     periods = referential.time_table_periods.overlapping_siblings

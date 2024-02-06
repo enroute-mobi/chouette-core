@@ -22,7 +22,9 @@ RSpec.describe Control::CodeUniqueness do
 
         stop_area_provider :other
         workbench :other
-        workgroup :other
+        workgroup :other do
+          code_space short_name: "test"
+        end
       end
     end
 
@@ -47,14 +49,13 @@ RSpec.describe Control::CodeUniqueness do
     let(:second_duplicate_stop) { context.stop_area :second }
     let(:not_expected_stop) { context.stop_area :last }
 
-
     let(:stop_area_provider) { first_duplicate_stop.stop_area_provider }
 
     let(:other_workgroup) { context.workgroup :other }
     let(:other_workbench) { context.workbench :other }
     let(:other_stop_area_provider) { context.stop_area_provider :other }
 
-    let(:target_code_space) { workgroup.code_spaces.find_by_short_name 'test' }
+    let(:target_code_space) { workgroup.code_spaces.find_by(short_name: 'test') }
 
     before { referential.switch }
 
@@ -69,6 +70,11 @@ RSpec.describe Control::CodeUniqueness do
 
         let(:first_expected_message) do
           an_object_having_attributes(
+            message_attributes: {
+              'name' => first_duplicate_stop.name,
+              'code_space' => 'test',
+              'code_value' => 'dummy'
+            },
             source: first_duplicate_stop,
             criticity: 'warning'
           )
@@ -77,6 +83,11 @@ RSpec.describe Control::CodeUniqueness do
         let(:second_expected_message) do
           an_object_having_attributes(
             source: second_duplicate_stop,
+            message_attributes: {
+              'name' => second_duplicate_stop.name,
+              'code_space' => 'test',
+              'code_value' => 'dummy'
+            },
             criticity: 'warning'
           )
         end
@@ -146,20 +157,35 @@ RSpec.describe Control::CodeUniqueness do
         context "When uniqueness scope is 'Workgroup'" do
           let(:uniqueness_scope) { 'workgroup' }
 
-          context 'with other workgroup' do
+          context 'with the same workgroup' do
             before do
-              workbench.update workgroup: other_workgroup
+              other_stop_area_provider.update workbench: other_workbench
+              first_duplicate_stop.update stop_area_provider: other_stop_area_provider
             end
 
-            let(:target_code_space) { other_workgroup.code_spaces.create short_name: 'test' }
+            let(:target_code_space) { other_workgroup.code_spaces.find_by(short_name: 'test') }
 
             it 'should create warning messages' do
               is_expected.to include(first_expected_message)
               is_expected.to include(second_expected_message)
             end
 
-            it 'should not ccreate message for the last stop area' do
+            it 'should not create message for the last stop area' do
               is_expected.not_to include(not_expected_message)
+            end
+          end
+
+          context 'with other workgroup' do
+            before do
+              other_workbench.update workgroup: other_workgroup
+              other_stop_area_provider.update workbench: other_workbench
+              first_duplicate_stop.update stop_area_provider: other_stop_area_provider
+            end
+
+            let(:target_code_space) { other_workgroup.code_spaces.find_by(short_name: 'test') }
+
+            it 'should not create warning messages' do
+              is_expected.to be_empty
             end
           end
         end

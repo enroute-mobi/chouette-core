@@ -429,7 +429,6 @@ en:
       shape_provider: Shape Provider
       document_provider: Document Provider
     uniqueness_scope:
-      all: All
       provider: By Provider
       workbench: By Workbench
       workgroup: By Workgroup

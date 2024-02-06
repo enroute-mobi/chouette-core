@@ -429,7 +429,6 @@ fr:
       shape_provider: Fournisseur Topologique
       document_provider: Fournisseur de Documents
     uniqueness_scope:
-      all: Tous
       provider: Par Fournisseur
       workbench: Par Espace de travail
       workgroup: Par Groupe de travail

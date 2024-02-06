@@ -16,7 +16,13 @@ module Control
         validates :target_model, :target_code_space_id, presence: true
 
         def target_code_space
-          @target_code_space ||= workgroup.code_spaces.find_by_id(target_code_space_id)
+          @target_code_space ||= code_space_scope.find_by_id(target_code_space_id)
+        end
+
+        def code_space_scope
+          return workgroup.code_spaces unless uniqueness_scope == 'workgroup'
+
+          CodeSpace
         end
       end
     end
@@ -82,9 +88,10 @@ module Control
           end
 
           def source_type
-            @source_type ||= begin
-              source_type = (target_model.constantize rescue "Chouette::#{target_model}".constantize).to_s rescue nil
-              source_type || 'PointOfInterest::Base'
+            @source_type ||= if target_model == 'PointOfInterest'
+              'PointOfInterest::Base'
+            else
+              ("Chouette::#{target_model}".constantize rescue target_model.constantize).to_s
             end
           end
 
@@ -111,7 +118,7 @@ module Control
           def query
             <<~SQL
               SELECT * FROM (
-                SELECT #{model_table_name}.*, #{duplicates_count} AS duplicates_count
+                SELECT #{model_table_name}.*, codes.value AS code_value, #{duplicates_count} AS duplicates_count
                 FROM #{model_table_name}
                 #{inner_join}
                 WHERE (codes.resource_type = '#{source_type}')

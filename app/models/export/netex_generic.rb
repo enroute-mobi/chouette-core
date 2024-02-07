@@ -1701,7 +1701,13 @@ class Export::NetexGeneric < Export::Base
       attr_accessor :validity_period
 
       def netex_resources
-        [day_type] + exported_periods + exported_dates
+        return [] unless day_type_assignment?
+
+        [day_type, exported_periods, exported_dates].flatten
+      end
+
+      def day_type_assignment?
+        decorated_dates.present? || decorated_periods.present?
       end
 
       def day_type

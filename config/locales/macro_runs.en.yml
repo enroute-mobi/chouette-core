@@ -35,6 +35,8 @@ en:
         one: Delete all Vehicle journeys
       macro/compute_service_counts:
         one: Compute service counts
+      macro/associate_documents/run:
+        one: Associate documents
     attributes:
       macro/base/run:
         name: Name
@@ -48,3 +50,6 @@ en:
         target_pattern: Target pattern
       macro/dummy/run:
         expected_result: Expected result
+      macro/associate_documents/run:
+        model_code_space: Model code space
+        document_code_space: Document code space

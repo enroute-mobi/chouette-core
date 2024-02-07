@@ -35,6 +35,8 @@ fr:
         one: Supprimer toutes les courses
       macro/compute_service_counts/run:
         one: Calculer le nombre de services
+      macro/associate_documents/run:
+        one: Associer les documents
     attributes:
       macro/base/run:
         name: Nom
@@ -51,4 +53,6 @@ fr:
       macro/update_attribute_from_referent_to_particulars/run:
         target_attribute: Attribut
         override_existing_value: Remplacer la valeur existante
-
+      macro/associate_documents/run:
+        model_code_space: Espace de code du modèle
+        document_code_space: Espace de code du document

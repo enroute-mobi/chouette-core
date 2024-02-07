@@ -1,12 +1,15 @@
 # frozen_string_literal: true
 
 class MergesController < Chouette::WorkbenchController
-  include PolicyChecker
   include ActionView::Helpers::TagHelper
   include IconHelper
   include ReferentialsHelper
 
   defaults resource_class: Merge
+
+  # rubocop:disable Rails/LexicallyScopedActionFilter
+  before_action :authorize_resource, only: %i[edit update destroy rollback]
+  # rubocop:enable Rails/LexicallyScopedActionFilter
 
   respond_to :html
 
@@ -30,7 +33,6 @@ class MergesController < Chouette::WorkbenchController
   end
 
   def rollback
-    authorize resource
     resource.rollback!
     redirect_to %i[workbench output]
   end
@@ -96,4 +98,6 @@ class MergesController < Chouette::WorkbenchController
       referential_processings
     end
   end
+
+  Policy::Authorizer::Controller.for(self, Policy::Authorizer::Legacy)
 end

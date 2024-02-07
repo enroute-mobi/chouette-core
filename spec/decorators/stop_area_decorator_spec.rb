@@ -1,24 +1,26 @@
+# frozen_string_literal: true
 
-RSpec.describe StopAreaDecorator do
+RSpec.describe StopAreaDecorator, type: :decorator do
+  include Pundit::PunditDecoratorPolicy
 
-  let(:stop_area) { Chouette::StopArea.new }
-  let(:decorator) { stop_area.decorate }
+  let(:object) { Chouette::StopArea.new }
 
   describe '#waiting_time_text' do
+    subject { decorator.waiting_time_text }
+
     it "returns '-' when waiting_time is nil" do
-      stop_area.waiting_time = nil
-      expect(decorator.waiting_time_text).to eq('-')
+      object.waiting_time = nil
+      is_expected.to eq('-')
     end
 
     it "returns '-' when waiting_time is zero" do
-      stop_area.waiting_time = 0
-      expect(decorator.waiting_time_text).to eq('-')
+      object.waiting_time = 0
+      is_expected.to eq('-')
     end
 
     it "returns '120 minutes' when waiting_time is 120" do
-      stop_area.waiting_time = 120
-      expect(decorator.waiting_time_text).to eq('120 minutes')
+      object.waiting_time = 120
+      is_expected.to eq('120 minutes')
     end
   end
-
 end

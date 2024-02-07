@@ -2,7 +2,6 @@
 
 class SourcesController < Chouette::WorkbenchController
   include ApplicationHelper
-  include PolicyChecker
 
   defaults :resource_class => Source
 
@@ -50,7 +49,7 @@ class SourcesController < Chouette::WorkbenchController
   private
 
   def decorate_source
-    object = source rescue build_resource
+    object = resource rescue build_resource
     @source = SourceDecorator.decorate(
       object,
       context: {
@@ -85,4 +84,6 @@ class SourcesController < Chouette::WorkbenchController
       retrieval_days_of_week_attributes: [:monday, :tuesday, :wednesday, :thursday, :friday, :saturday, :sunday]
     ).with_defaults(workbench_id: workbench.id)
   end
+
+  Policy::Authorizer::Controller.for(self, Policy::Authorizer::Legacy)
 end

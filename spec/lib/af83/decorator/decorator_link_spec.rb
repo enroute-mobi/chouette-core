@@ -1,4 +1,6 @@
-RSpec.describe AF83::Decorator::Link, type: :decorator do
+# frozen_string_literal: true
+
+RSpec.describe AF83::Decorator::Link do
   describe "#complete?" do
     context "on a imcomplete link" do
       it "should be false" do

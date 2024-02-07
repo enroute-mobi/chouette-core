@@ -2,8 +2,6 @@
 
 # Manage ProcessingRule::Workgroup on /workgroups/:id/processing_rules
 class WorkgroupProcessingRulesController < Chouette::WorkgroupController
-  include PolicyChecker
-
   defaults resource_class: ProcessingRule::Workgroup,
            route_instance_name: 'processing_rule_workgroup',
            route_collection_name: 'processing_rule_workgroups'
@@ -49,4 +47,6 @@ class WorkgroupProcessingRulesController < Chouette::WorkgroupController
       target_workbenches: []
     ).with_defaults(processable_type: Control::List.name)
   end
+
+  Policy::Authorizer::Controller.for(self, Policy::Authorizer::Legacy)
 end

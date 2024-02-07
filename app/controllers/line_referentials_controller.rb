@@ -8,4 +8,6 @@ class LineReferentialsController < Chouette::WorkbenchController
       @line_referential = LineReferentialDecorator.decorate(@line_referential, context: { workbench: workbench })
     end
   end
+
+  Policy::Authorizer::Controller.for(self, Policy::Authorizer::Legacy)
 end

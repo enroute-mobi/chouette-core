@@ -1,4 +1,4 @@
-RSpec.describe Chouette::NetworkPolicy, type: :policy do
+RSpec.describe Chouette::NetworkPolicy, type: :pundit_policy do
   #
   # let( :record ){ build_stubbed :network }
   # before { stub_policy_scope(record) }

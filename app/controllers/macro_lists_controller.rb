@@ -2,7 +2,6 @@
 
 class MacroListsController < Chouette::WorkbenchController
   include ApplicationHelper
-  include PolicyChecker
 
   defaults resource_class: Macro::List
 
@@ -79,4 +78,6 @@ class MacroListsController < Chouette::WorkbenchController
       macro_contexts_attributes: macro_context_params
     ).with_defaults(workbench_id: workbench.id)
   end
+
+  Policy::Authorizer::Controller.for(self, Policy::Authorizer::Legacy)
 end

@@ -2,7 +2,6 @@
 
 class PointOfInterestCategoriesController < Chouette::TopologicReferentialController
   include ApplicationHelper
-  include PolicyChecker
 
   defaults :resource_class => PointOfInterest::Category
 
@@ -60,4 +59,6 @@ class PointOfInterestCategoriesController < Chouette::TopologicReferentialContro
       codes_attributes: [:id, :code_space_id, :value, :_destroy],
     )
   end
+
+  Policy::Authorizer::Controller.for(self, Policy::Authorizer::Legacy)
 end

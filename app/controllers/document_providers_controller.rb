@@ -2,7 +2,6 @@
 
 class DocumentProvidersController < Chouette::WorkbenchController
   include ApplicationHelper
-  include PolicyChecker
 
   defaults resource_class: DocumentProvider
 
@@ -59,4 +58,6 @@ class DocumentProvidersController < Chouette::WorkbenchController
       :short_name
     )
   end
+
+  Policy::Authorizer::Controller.for(self, Policy::Authorizer::Legacy)
 end

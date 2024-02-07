@@ -9,6 +9,12 @@ module Chouette
 
     belongs_to :referential
 
+    # switch referential before finding resource
+    # rubocop:disable Rails/LexicallyScopedActionFilter
+    before_action :authorize_resource, only: %i[edit update destroy]
+    before_action :authorize_resource_class, only: %i[new create]
+    # rubocop:enable Rails/LexicallyScopedActionFilter
+
     include WithinWorkgroup
 
     private

@@ -3,8 +3,6 @@
 class ApiKeysController < Chouette::WorkbenchController
   defaults resource_class: ApiKey
 
-  include PolicyChecker
-
   before_action only: :index do
     user_not_authorized unless current_user.has_permission?('api_keys.index')
   end
@@ -39,4 +37,6 @@ class ApiKeysController < Chouette::WorkbenchController
   def api_key_params
     params.require(:api_key).permit(:name)
   end
+
+  Policy::Authorizer::Controller.for(self, Policy::Authorizer::Legacy)
 end

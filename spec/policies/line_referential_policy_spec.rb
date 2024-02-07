@@ -1,4 +1,4 @@
-RSpec.describe LineReferentialPolicy, type: :policy do
+RSpec.describe LineReferentialPolicy, type: :pundit_policy do
 
   let(:context) do
     Chouette.create do

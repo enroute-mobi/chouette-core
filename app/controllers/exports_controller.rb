@@ -1,7 +1,6 @@
 # frozen_string_literal: true
 
 class ExportsController < Chouette::WorkbenchController
-  include PolicyChecker
   include Downloadable
 
   skip_before_action :authenticate_user!, only: [:upload]
@@ -116,4 +115,6 @@ class ExportsController < Chouette::WorkbenchController
       view_path: 'app/views'
     ).render
   end
+
+  Policy::Authorizer::Controller.for(self, Policy::Authorizer::Legacy)
 end

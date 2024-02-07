@@ -1,8 +1,6 @@
 # frozen_string_literal: true
 
 class PublicationApisController < Chouette::WorkgroupController
-  include PolicyChecker
-
   defaults :resource_class => PublicationApi
 
   def index
@@ -53,4 +51,6 @@ class PublicationApisController < Chouette::WorkgroupController
     permitted_keys = [:name, :slug, :public]
     publication_api_params.permit(permitted_keys)
   end
+
+  Policy::Authorizer::Controller.for(self, Policy::Authorizer::Legacy)
 end

@@ -41,4 +41,6 @@ class OrganisationsController < Chouette::ResourceController
   def organisation_params
     params.require(:organisation).permit(:name)
   end
+
+  Policy::Authorizer::Controller.for(self, Policy::Authorizer::Legacy)
 end

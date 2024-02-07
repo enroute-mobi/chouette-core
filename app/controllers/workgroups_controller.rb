@@ -3,7 +3,6 @@
 class WorkgroupsController < Chouette::ResourceController
   defaults resource_class: Workgroup
 
-  include PolicyChecker
   before_action :authorize_resource, only: %i[setup_deletion remove_deletion]
 
   def create
@@ -97,4 +96,6 @@ class WorkgroupsController < Chouette::ResourceController
   end
 
   alias current_workgroup resource
+
+  Policy::Authorizer::Controller.for(self, Policy::Authorizer::Legacy)
 end

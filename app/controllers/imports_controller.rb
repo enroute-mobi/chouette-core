@@ -1,7 +1,6 @@
 # frozen_string_literal: true
 
 class ImportsController < Chouette::WorkbenchController
-  include PolicyChecker
   include Downloadable
   include ImportMessages
 
@@ -101,4 +100,6 @@ class ImportsController < Chouette::WorkbenchController
       Query::Import
     end
   end
+
+  Policy::Authorizer::Controller.for(self, Policy::Authorizer::Legacy)
 end

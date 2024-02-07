@@ -1,7 +1,6 @@
 # frozen_string_literal: true
 
 class WorkgroupExportsController < Chouette::WorkgroupController
-  include PolicyChecker
   include Downloadable
 
   def self.controller_path
@@ -79,4 +78,6 @@ class WorkgroupExportsController < Chouette::WorkgroupController
       Query::Export
     end
   end
+
+  Policy::Authorizer::Controller.for(self, Policy::Authorizer::Legacy)
 end

@@ -1,4 +1,4 @@
-RSpec.describe DocumentTypePolicy, type: :policy do
+RSpec.describe DocumentTypePolicy, type: :pundit_policy do
   subject { described_class.new UserContext.new(user, workgroup: workgroup), document_type }
 
   describe 'for edit and update actions' do

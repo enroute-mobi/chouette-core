@@ -11,4 +11,6 @@ class DashboardsController < Chouette::UserController
     @dashboard = Dashboard.create self
     @workbenches = current_organisation.workbenches
   end
+
+  Policy::Authorizer::Controller.for(self, Policy::Authorizer::Legacy)
 end

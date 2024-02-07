@@ -2,7 +2,6 @@
 
 class ControlListRunsController < Chouette::WorkbenchController
   include ApplicationHelper
-  include PolicyChecker
 
   defaults resource_class: Control::List::Run
 
@@ -125,4 +124,6 @@ class ControlListRunsController < Chouette::WorkbenchController
       .with_defaults(creator: current_user.name)
       .delete_if { |_, v| v.blank? }
   end
+
+  Policy::Authorizer::Controller.for(self, Policy::Authorizer::Legacy)
 end

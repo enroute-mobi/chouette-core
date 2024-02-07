@@ -157,19 +157,31 @@ module AF83::Decorator::EnhancedDecorator
     action_links(action, group: :secondary)
   end
 
-  def check_policy policy
-    policy_object = policy.to_s == "create" ? object.klass : object
-
-    if self.class.respond_to?(:policy_class)
-      policy_object = self
+  # rubocop:disable Metrics/AbcSize,Metrics/MethodLength
+  def check_policy(action, resource_class = nil)
+    if resource_class
+      policy_object = object
+      policy_args = [resource_class]
+    elsif !on_instance?
+      policy_object = policy_parent
+      policy_args = [object.klass]
+    elsif action.to_s == 'create'
+      policy_object = policy_parent
+      policy_args = object.class
+    else
+      policy_object = object
+      policy_args = []
     end
 
     policy_instance = h.policy(policy_object)
-    Rails.logger.debug "Check policy with #{policy_instance.class} for #{policy_object.class}##{policy}"
+    Rails.logger.debug do
+      "Check policy with #{policy_instance.class} for #{policy_object.class} #{action}? #{policy_args.join(', ')}"
+    end
 
-    method = "#{policy}?"
-    policy_instance.send(method)
+    method = "#{action}?"
+    policy_instance.send(method, *policy_args)
   end
+  # rubocop:enable Metrics/AbcSize,Metrics/MethodLength
 
   def check_feature feature
     h.has_feature? feature
@@ -179,5 +191,21 @@ module AF83::Decorator::EnhancedDecorator
     scope = self.class.scope
     scope = instance_exec &scope if scope.is_a? Proc
     scope
+  end
+
+  def policy_parent
+    return @policy_parent if @policy_parent
+
+    elements = Array(scope)
+    last_record_index = elements.rindex { |s| s.is_a?(ActiveRecord::Base) }
+    @policy_parent = if last_record_index
+                       elements[(last_record_index + 1)..].inject(elements[last_record_index], &:send)
+                     else
+                       h.current_user
+                     end
+  end
+
+  def on_instance?
+    false
   end
 end

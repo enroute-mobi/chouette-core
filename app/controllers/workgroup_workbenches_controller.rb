@@ -1,7 +1,6 @@
 # frozen_string_literal: true
 
 class WorkgroupWorkbenchesController < Chouette::WorkgroupController
-  include PolicyChecker
   include ApplicationHelper
 
   defaults resource_class: Workbench
@@ -28,16 +27,6 @@ class WorkgroupWorkbenchesController < Chouette::WorkgroupController
     end
   end
 
-  # A specific policy handles this controller, since the use cases are different between WorkgroupWorkbenchesController (controller that handles workbench administration related to workgroup)
-  # and WorkbenchesController (workbench management / edtioon / unrelated to administration)
-  def authorize_resource
-    authorize resource, policy_class: WorkgroupWorkbenchPolicy
-  end
-
-  def authorize_resource_class
-    authorize resource_class, policy_class: WorkgroupWorkbenchPolicy
-  end
-
   private
 
   def workbench_path
@@ -51,4 +40,20 @@ class WorkgroupWorkbenchesController < Chouette::WorkgroupController
   def workbench_params
     params.require(:workbench).permit(:name, restrictions: []).with_defaults(restrictions: [])
   end
+
+  # A specific policy handles this controller, since the use cases are different between WorkgroupWorkbenchesController (controller that handles workbench administration related to workgroup)
+  # and WorkbenchesController (workbench management / edtioon / unrelated to administration)
+  class PolicyAuthorizer < Policy::Authorizer::Legacy
+    def policy_class
+      PolicyLegacy
+    end
+  end
+
+  class PolicyLegacy < Policy::Legacy
+    def pundit_policy_class(_resource_class = nil)
+      ::WorkgroupWorkbenchPolicy
+    end
+  end
+
+  Policy::Authorizer::Controller.for(self, PolicyAuthorizer)
 end

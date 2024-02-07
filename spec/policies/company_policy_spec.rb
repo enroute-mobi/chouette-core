@@ -1,4 +1,4 @@
-RSpec.describe CompanyPolicy, type: :policy do
+RSpec.describe CompanyPolicy, type: :pundit_policy do
 
   let(:context) do
     Chouette.create do

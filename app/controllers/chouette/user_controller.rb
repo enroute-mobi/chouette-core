@@ -2,7 +2,7 @@
 
 module Chouette
   class UserController < ApplicationController
-    include Pundit
+    include Policy::Authorization
 
     before_action :authenticate_user!
     # already defined in ApplicationController but this declaration allows to put authenticate_user! before
@@ -10,7 +10,7 @@ module Chouette
     before_action :set_time_zone
 
     rescue_from ::ActiveRecord::RecordNotFound, with: :not_found
-    rescue_from ::Pundit::NotAuthorizedError, with: :user_not_authorized
+    rescue_from ::Policy::NotAuthorizedError, with: :user_not_authorized
 
     alias user_not_authorized forbidden
 
@@ -22,15 +22,6 @@ module Chouette
 
     def set_time_zone
       ::Time.zone = ::TimeZoneSelector.time_zone_for(current_user)
-    end
-
-    def pundit_user
-      ::UserContext.new(
-        current_user,
-        referential: @referential,
-        workbench: current_workbench,
-        workgroup: current_workgroup
-      )
     end
 
     def current_organisation

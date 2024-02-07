@@ -1,7 +1,6 @@
 # frozen_string_literal: true
 
 class LineNoticesController < Chouette::LineReferentialController
-  include PolicyChecker
   include ApplicationHelper
 
   defaults :resource_class => Chouette::LineNotice
@@ -86,4 +85,6 @@ class LineNoticesController < Chouette::LineReferentialController
   def load_line
     @line = parent.lines.find(params[:line_id]) if params[:line_id]
   end
+
+  Policy::Authorizer::Controller.for(self, Policy::Authorizer::Legacy)
 end

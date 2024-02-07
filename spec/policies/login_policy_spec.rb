@@ -1,4 +1,4 @@
-RSpec.describe LoginPolicy, type: :policy do
+RSpec.describe LoginPolicy, type: :pundit_policy do
   permissions :boiv? do
     it 'no permission starting with boiv:. →  denies' do
       expect( LoginPolicy.new(user_context.user) ).not_to be_boiv

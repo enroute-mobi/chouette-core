@@ -2,7 +2,6 @@
 
 class LinesController < Chouette::LineReferentialController
   include ApplicationHelper
-  include PolicyChecker
   include TransportModeFilter
 
   defaults :resource_class => Chouette::Line
@@ -51,15 +50,8 @@ class LinesController < Chouette::LineReferentialController
   end
 
   def new
-    authorize resource_class
     build_resource
     @line.transport_mode, @line.transport_submode = workgroup.default_transport_mode
-    super
-  end
-
-  def create
-    authorize resource_class
-    build_resource
     super
   end
 
@@ -159,4 +151,5 @@ class LinesController < Chouette::LineReferentialController
     out
   end
 
+  Policy::Authorizer::Controller.for(self, Policy::Authorizer::Legacy)
 end

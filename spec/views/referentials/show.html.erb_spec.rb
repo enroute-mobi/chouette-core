@@ -34,6 +34,7 @@ end
 
 # Legacy view specs
 RSpec.describe "referentials/show", type: :view do
+  include Pundit::PunditViewPolicy
 
   let(:referential) do
     referential = create(:workbench_referential)

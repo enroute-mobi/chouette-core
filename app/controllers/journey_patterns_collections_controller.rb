@@ -11,24 +11,14 @@ class JourneyPatternsCollectionsController < Chouette::ReferentialController
   belongs_to :line, parent_class: Chouette::Line
   belongs_to :route, parent_class: Chouette::Route
 
-  alias_method :vehicle_journeys, :collection
   alias_method :route, :parent
-  alias_method :vehicle_journey, :resource
 
   def show
-    @q = route.journey_patterns
-    if params[:q].present?
-      ids = @q.ransack(params[:q]).result(distinct: true).pluck(:id)
-      @q = @q.where(id: ids)
-    end
-    @q = @q.includes(:stop_points)
-    @ppage = 10
-    @journey_patterns ||= @q.paginate(page: params[:page], per_page: @ppage).order(:name)
     @custom_fields = Chouette::JourneyPattern.custom_fields_definitions(referential.workgroup)
 
     respond_to do |format|
       format.json do
-        @journey_patterns = @journey_patterns.includes(stop_points: {stop_area: :stop_area_referential})
+        @journey_patterns = journey_patterns.includes(stop_points: { stop_area: :stop_area_referential })
       end
       format.html do
         @stop_points_list = []
@@ -75,12 +65,27 @@ class JourneyPatternsCollectionsController < Chouette::ReferentialController
 
   protected
 
+  def journey_patterns # rubocop:disable Metrics/AbcSize
+    return @journey_patterns if @journey_patterns
+
+    @q = route.journey_patterns
+    if params[:q].present?
+      ids = @q.ransack(params[:q]).result(distinct: true).pluck(:id)
+      @q = @q.where(id: ids)
+    end
+    @q = @q.includes(:stop_points)
+    @ppage = 10
+    @journey_patterns = @q.paginate(page: params[:page], per_page: @ppage).order(:name)
+  end
+  alias resource journey_patterns
+
   def user_permissions
     @features = Hash[*current_organisation.features.map{|f| [f, true]}.flatten].to_json
-    policy = policy(:journey_pattern)
     @perms =
       %w{create destroy update}.inject({}) do | permissions, action |
-        permissions.merge( "journey_patterns.#{action}" => policy.authorizes_action?(action) )
+        permissions.merge( "journey_patterns.#{action}" => resource_policy.authorizes_action?(action) )
       end.to_json
   end
+
+  Policy::Authorizer::Controller.for(self, Policy::Authorizer::Legacy)
 end

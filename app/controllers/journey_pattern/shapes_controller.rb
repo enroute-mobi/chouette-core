@@ -67,8 +67,8 @@ module JourneyPattern
       policy = policy(shape)
 
       render json: {
-        canCreate: policy.create?,
-        canUpdate: policy.update?
+        canCreate: policy.authorizes_action?(:create),
+        canUpdate: policy.authorizes_action?(:update)
       }
     end
 
@@ -123,5 +123,7 @@ module JourneyPattern
         _params[:journey_pattern] = parent
       end.to_h.symbolize_keys
     end
+
+    Policy::Authorizer::Controller.for(self, Policy::Authorizer::Legacy)
   end
 end

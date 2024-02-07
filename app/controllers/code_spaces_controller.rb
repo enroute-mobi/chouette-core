@@ -24,4 +24,6 @@ class CodeSpacesController < Chouette::WorkgroupController
   def code_space_params
     params.require(:code_space).permit(:name, :short_name, :description, :allow_multiple_values)
   end
+
+  Policy::Authorizer::Controller.for(self, Policy::Authorizer::Legacy)
 end

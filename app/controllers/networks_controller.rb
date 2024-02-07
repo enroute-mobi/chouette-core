@@ -2,7 +2,6 @@
 
 class NetworksController < Chouette::LineReferentialController
   include ApplicationHelper
-  include PolicyChecker
 
   defaults :resource_class => Chouette::Network
 
@@ -20,17 +19,6 @@ class NetworksController < Chouette::LineReferentialController
         }
       )
     end
-  end
-
-  def new
-    authorize resource_class
-    new!
-  end
-
-  def create
-    authorize resource_class
-    build_resource
-    super
   end
 
   def index
@@ -90,4 +78,5 @@ class NetworksController < Chouette::LineReferentialController
     )
   end
 
+  Policy::Authorizer::Controller.for(self, Policy::Authorizer::Legacy)
 end

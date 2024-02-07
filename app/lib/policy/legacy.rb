@@ -12,10 +12,19 @@ module Policy
     def create?(resource_class)
       pundit_create_policy(resource_class).create?
     end
+    alias new? create?
+
+    undef edit?
+    undef update?
+    undef destroy?
 
     # Returns true if given action is permitted by associated Pundit policy
     def can?(action, *arguments)
-      pundit_policy.send "#{action}?", *arguments
+      if arguments.length == 1 && arguments[0].is_a?(Class) && arguments[0] < ActiveRecord::Base
+        pundit_create_policy(arguments[0]).send("#{action}?")
+      else
+        pundit_policy.send "#{action}?", *arguments
+      end
     end
 
     attr_reader :pundit_context
@@ -32,7 +41,12 @@ module Policy
 
     # [Private] Find Pundit policy class either for resource or given resource class
     def pundit_policy_class(resource_class = nil)
-      resource_class ||= resource.class
+      resource_class ||= if resource.is_a?(ActiveRecord::Relation)
+                           resource.klass
+                         else
+                           resource.class
+                         end
+
       Pundit::PolicyFinder.new(resource_class).policy
     end
   end

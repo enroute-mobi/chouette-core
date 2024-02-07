@@ -1,4 +1,6 @@
 describe "/lines/new", :type => :view do
+  include Pundit::PunditViewPolicy
+
   let(:context) { Chouette.create { line } }
 
   let!(:workbench) { assign :workbench, context.workbench }

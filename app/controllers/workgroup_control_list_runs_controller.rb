@@ -2,7 +2,6 @@
 
 class WorkgroupControlListRunsController < Chouette::WorkgroupController
   include ApplicationHelper
-  include PolicyChecker
 
   defaults resource_class: Control::List::Run
 
@@ -68,4 +67,6 @@ class WorkgroupControlListRunsController < Chouette::WorkgroupController
   alias facade init_facade
 
   helper_method :facade
+
+  Policy::Authorizer::Controller.for(self, Policy::Authorizer::Legacy)
 end

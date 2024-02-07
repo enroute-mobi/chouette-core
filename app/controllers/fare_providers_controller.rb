@@ -2,7 +2,6 @@
 
 class FareProvidersController < Chouette::FareReferentialController
   include ApplicationHelper
-  include PolicyChecker
 
   defaults resource_class: Fare::Provider
 
@@ -42,4 +41,6 @@ class FareProvidersController < Chouette::FareReferentialController
     ]
     params.require(:fare_provider).permit(fields)
   end
+
+  Policy::Authorizer::Controller.for(self, Policy::Authorizer::Legacy)
 end

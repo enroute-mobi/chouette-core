@@ -2,18 +2,17 @@
 
 class WorkbenchesController < Chouette::ResourceController
   defaults resource_class: Workbench
-  include PolicyChecker
 
   respond_to :html, except: :destroy
 
   def show
-    @single_workbench = @workbench.workgroup.workbenches.one?
+    @single_workbench = resource.workgroup.workbenches.one?
 
     @wbench_refs = ReferentialDecorator.decorate(
       collection,
       context: {
         current_workbench_id: params[:id],
-        workbench: @workbench
+        workbench: resource
       }
     )
   end
@@ -64,4 +63,6 @@ class WorkbenchesController < Chouette::ResourceController
   def collection
     @collection ||= search.search scope
   end
+
+  Policy::Authorizer::Controller.for(self, Policy::Authorizer::Legacy)
 end

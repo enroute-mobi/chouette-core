@@ -16,17 +16,6 @@ class StopAreasController < Chouette::StopAreaReferentialController
     @stop_areas
   end
 
-  def select_parent
-    @stop_area = stop_area
-    @parent = stop_area.parent
-  end
-
-  def add_children
-    authorize stop_area
-    @stop_area = stop_area
-    @children = stop_area.children
-  end
-
   def index # rubocop:disable Metrics/MethodLength
     if saved_search = saved_searches.find_by(id: params[:search_id])
       @search = saved_search.search
@@ -45,16 +34,6 @@ class StopAreasController < Chouette::StopAreaReferentialController
         )
       }
     end
-  end
-
-  def new
-    authorize resource_class
-    new!
-  end
-
-  def create
-    authorize resource_class
-    create!
   end
 
   def show # rubocop:disable Metrics/MethodLength,Metrics/AbcSize
@@ -84,27 +63,6 @@ class StopAreasController < Chouette::StopAreaReferentialController
 
     respond_to do |format|
       format.geojson { render 'connection_links/index.geo' }
-    end
-  end
-
-  def edit
-    authorize stop_area
-    super
-  end
-
-  def destroy
-    authorize stop_area
-    super
-  end
-
-  def update
-    authorize stop_area
-    update!
-  end
-
-  def zip_codes
-    respond_to do |format|
-      format.json { render :json => referential.stop_areas.collect(&:zip_code).compact.uniq.to_json }
     end
   end
 
@@ -181,4 +139,6 @@ class StopAreasController < Chouette::StopAreaReferentialController
     ] + permitted_custom_fields_params(Chouette::StopArea.custom_fields(stop_area_referential.workgroup))
     params.require(:stop_area).permit(fields)
   end
+
+  Policy::Authorizer::Controller.for(self, Policy::Authorizer::Legacy)
 end

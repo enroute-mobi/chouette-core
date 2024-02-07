@@ -1,11 +1,13 @@
 # frozen_string_literal: true
 
 class FootnotesController < Chouette::ReferentialController
-  before_action :authorize_resource
-
   defaults resource_class: Chouette::Footnote
 
   belongs_to :line, parent_class: Chouette::Line
+
+  # rubocop:disable Rails/LexicallyScopedActionFilter
+  before_action :authorize_resource_class, only: %i[new create edit_all update_all]
+  # rubocop:enable Rails/LexicallyScopedActionFilter
 
   def edit_all
     @footnotes = footnotes
@@ -29,7 +31,5 @@ class FootnotesController < Chouette::ReferentialController
       { footnotes_attributes: [ :code, :label, :_destroy, :id ] } )
   end
 
-  def authorize_resource
-    authorize resource_class, "#{action_name}?".to_sym
-  end
+  Policy::Authorizer::Controller.for(self, Policy::Authorizer::Legacy)
 end

@@ -3,7 +3,7 @@
 - content_for :page_header_content do
   .row.mb-sm
     .col-lg-12.text-right
-      - if policy(Referential).create?
+      - if resource_policy.create?(Referential)
         = link_to t('workbenches.actions.stop_area'), workbench_stop_area_referential_stop_areas_path(@workbench), class: 'btn btn-primary'
         = link_to t('workbenches.actions.lines'), workbench_line_referential_lines_path(@workbench), class: 'btn btn-primary'
         = link_to t('actions.import'), workbench_imports_path(@workbench), class: 'btn btn-primary' unless @workbench.workgroup.import_types.empty?

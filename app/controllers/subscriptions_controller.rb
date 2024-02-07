@@ -47,4 +47,6 @@ class SubscriptionsController < ApplicationController
   def check_feature_is_activated
     not_found unless Subscription.enabled?
   end
+
+  Policy::Authorizer::Controller.for(self, Policy::Authorizer::Legacy)
 end

@@ -23,7 +23,7 @@ class ReferentialLineDecorator < AF83::Decorator
 
     instance_decorator.action_link(
       if: ->() {
-        h.policy(Chouette::Route).create? &&
+        check_policy(:create, Chouette::Route) &&
           context[:referential].organisation == context[:current_organisation]
       },
       secondary: true

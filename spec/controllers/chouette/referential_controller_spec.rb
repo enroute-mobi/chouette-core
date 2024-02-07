@@ -13,6 +13,8 @@ describe Chouette::ReferentialController, type: :controller do
     end
     # rubocop:enable Lint/ConstantDefinitionInBlock,Style/ClassAndModuleChildren
 
+    before { allow(Policy::Authorizer::Controller).to receive(:default_class).and_return(Policy::Authorizer::Legacy) }
+
     describe self::DummysController, type: :controller do
       login_user
 

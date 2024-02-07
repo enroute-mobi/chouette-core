@@ -10,8 +10,6 @@ class TimeTablesController < Chouette::ReferentialController
   respond_to :json
   respond_to :js, :only => :index
 
-  include PolicyChecker
-
   def show
     show! do
       @year = params[:year] ? params[:year].to_i : @time_table.presenter.default_year
@@ -201,4 +199,6 @@ class TimeTablesController < Chouette::ReferentialController
       { :periods_attributes => [:period_start, :period_end, :_destroy, :id] }
     )
   end
+
+  Policy::Authorizer::Controller.for(self, Policy::Authorizer::Legacy)
 end

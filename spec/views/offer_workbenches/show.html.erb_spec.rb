@@ -12,6 +12,8 @@ RSpec::Matchers.define :have_box_for_item do |item, disabled|
 end
 
 RSpec.describe "workbenches/show", :type => :view do
+  include Pundit::PunditViewPolicy
+
   let(:context) do
     Chouette.create do
       workgroup do
@@ -29,6 +31,7 @@ RSpec.describe "workbenches/show", :type => :view do
 
   before :each do
     allow(view).to receive(:resource_class).and_return(Workbench)
+    allow(view).to receive(:resource).and_return(workbench)
     controller.request.path_parameters[:id] = workbench.id
 
     render

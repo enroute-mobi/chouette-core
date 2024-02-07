@@ -7,9 +7,6 @@ class RouteVehicleJourneysController < Chouette::ReferentialController
   alias_method :vehicle_journeys, :collection
 
   skip_after_action :set_modifier_metadata
-  before_action do
-    authorize parent
-  end
   before_action :user_permissions, only: :show
 
   def show # rubocop:disable Metrics/AbcSize,Metrics/MethodLength
@@ -74,6 +71,7 @@ class RouteVehicleJourneysController < Chouette::ReferentialController
       vehicle_journeys
     end
   end
+  alias resource collection
 
   def maybe_filter_by_departure_time(scope)
     if params[:q] &&
@@ -107,9 +105,8 @@ class RouteVehicleJourneysController < Chouette::ReferentialController
 
   def user_permissions
     @features = Hash[*current_organisation.features.map { |f| [f, true] }.flatten].to_json
-    policy = policy(:vehicle_journey)
     @perms = %w[create destroy update].inject({}) do |permissions, action|
-      permissions.merge("vehicle_journeys.#{action}" => policy.authorizes_action?(action))
+      permissions.merge("vehicle_journeys.#{action}" => resource_policy.authorizes_action?(action))
     end.to_json
   end
 
@@ -196,4 +193,6 @@ class RouteVehicleJourneysController < Chouette::ReferentialController
       }
     end
   end
+
+  Policy::Authorizer::Controller.for(self, Policy::Authorizer::Legacy)
 end

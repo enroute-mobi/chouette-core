@@ -1,4 +1,5 @@
-- current_organisation.workbenches.with_active_workgroup.order("workgroups.name").each do |workbench|
+- current_organisation.workbenches.with_active_workgroup.order("workgroups.name")\
+    .includes(:stop_area_referential, workgroup: :owner).each do |workbench|
   #menu-items.panel-group
     - if current_organisation.workbenches.many?
       .menu-title
@@ -64,7 +65,7 @@
       - if has_feature?(:stop_area_routing_constraints)
         = link_to workbench_stop_area_referential_stop_area_routing_constraints_path(workbench), class: 'list-group-item' do
           span = StopAreaRoutingConstraint.t.capitalize
-      - if policy(StopAreaProvider).create?
+      - if policy(workbench.stop_area_referential).create?(StopAreaProvider)
         = link_to workbench_stop_area_referential_stop_area_providers_path(workbench), class: 'list-group-item' do
           span = StopAreaProvider.t.capitalize
       = link_to workbench_stop_area_referential_entrances_path(workbench), class: 'list-group-item' do

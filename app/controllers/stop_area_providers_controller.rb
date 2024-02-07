@@ -43,10 +43,8 @@ class StopAreaProvidersController < Chouette::StopAreaReferentialController
   end
 
   def collection
-    scope = policy_scope(end_of_association_chain)
-
     @stop_area_providers ||= begin
-      stop_area_providers = scope.order(:name)
+      stop_area_providers = end_of_association_chain.order(:name)
       stop_area_providers = stop_area_providers.paginate(:page => params[:page])
       stop_area_providers
     end
@@ -59,4 +57,6 @@ class StopAreaProvidersController < Chouette::StopAreaReferentialController
     ]
     params.require(:stop_area_provider).permit(fields)
   end
+
+  Policy::Authorizer::Controller.for(self, Policy::Authorizer::Legacy)
 end

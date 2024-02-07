@@ -10,10 +10,6 @@ class StopAreaDocumentMembershipsController < DocumentMembershipsController
 
   protected
 
-  def documentable_policy_klass
-    StopAreaPolicy
-  end
-
   def collection_path_method
     :workbench_stop_area_referential_stop_area_document_memberships_path
   end
@@ -21,4 +17,6 @@ class StopAreaDocumentMembershipsController < DocumentMembershipsController
   def member_path_method
     :workbench_stop_area_referential_stop_area_document_membership_path
   end
+
+  Policy::Authorizer::Controller.for(self, Policy::Authorizer::Legacy)
 end

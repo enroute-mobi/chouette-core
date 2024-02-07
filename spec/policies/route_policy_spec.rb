@@ -1,4 +1,4 @@
-RSpec.describe Chouette::RoutePolicy, type: :policy do
+RSpec.describe Chouette::RoutePolicy, type: :pundit_policy do
 
   let( :record ){ build_stubbed :route }
 

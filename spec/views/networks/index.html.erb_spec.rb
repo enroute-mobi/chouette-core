@@ -1,4 +1,5 @@
 describe "/networks/index", :type => :view do
+  include Pundit::PunditViewPolicy
 
   let(:context) do
     Chouette.create do

@@ -2,7 +2,7 @@
 - content_for :page_header_content do
   .row.mb-sm
     .col-lg-12.text-right
-      - if policy(PublicationSetup.new(workgroup: @workgroup)).create? && policy(@workgroup).edit?
+      - if parent_policy.create?(PublicationSetup) && policy(@workgroup).edit?
         = link_to t('publication_setups.actions.create'), new_workgroup_publication_setup_path(@workgroup), class: 'btn btn-primary'
 
 .page_content

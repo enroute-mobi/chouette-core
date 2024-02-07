@@ -10,6 +10,20 @@ module Policy
 
     attr_reader :resource, :context
 
+    def create?(_resource_class)
+      false
+    end
+    alias new? create?
+
+    def update?
+      false
+    end
+    alias edit? update?
+
+    def destroy?
+      false
+    end
+
     include AroundMethod
     around_method :can?
 

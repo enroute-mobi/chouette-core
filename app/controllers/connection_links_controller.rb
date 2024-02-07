@@ -2,7 +2,6 @@
 
 class ConnectionLinksController < Chouette::StopAreaReferentialController
   include ApplicationHelper
-  include PolicyChecker
 
   defaults :resource_class => Chouette::ConnectionLink
 
@@ -82,4 +81,6 @@ class ConnectionLinksController < Chouette::StopAreaReferentialController
     ]
     params.require(:connection_link).permit(fields)
   end
+
+  Policy::Authorizer::Controller.for(self, Policy::Authorizer::Legacy)
 end

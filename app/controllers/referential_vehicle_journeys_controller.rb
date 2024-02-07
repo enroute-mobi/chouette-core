@@ -36,4 +36,6 @@ class ReferentialVehicleJourneysController < Chouette::ReferentialController
       }
     )
   end
+
+  Policy::Authorizer::Controller.for(self, Policy::Authorizer::Legacy)
 end

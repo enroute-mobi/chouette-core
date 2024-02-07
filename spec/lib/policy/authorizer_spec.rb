@@ -6,7 +6,7 @@ RSpec.describe Policy::Authorizer::Controller do
   let(:controller) { double }
 
   describe '.authorizer_class' do
-    subject { described_class.authorizer_class(UsersController.new) }
+    subject { described_class.authorizer_class(ApplicationController.new) }
 
     it { is_expected.to eq(Policy::Authorizer::Controller) }
 
@@ -17,8 +17,8 @@ RSpec.describe Policy::Authorizer::Controller do
       it { is_expected.to eq(default_class) }
     end
 
-    context 'when an exception is defined e.g. PermitAll for UsersController' do
-      before { Policy::Authorizer::Controller.for(UsersController, exception) }
+    context 'when an exception is defined e.g. PermitAll for ApplicationController' do
+      before { Policy::Authorizer::Controller.for(ApplicationController, exception) }
       let(:exception) { Policy::Authorizer::PermitAll }
 
       it { is_expected.to eq(exception) }

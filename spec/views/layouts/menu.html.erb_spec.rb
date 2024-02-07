@@ -1,4 +1,5 @@
 describe "/layouts/application", :type => :view do
+  include Pundit::PunditViewPolicy
 
   let(:organisation){ create :organisation }
   let!(:workbench){ create :workbench, organisation: organisation}

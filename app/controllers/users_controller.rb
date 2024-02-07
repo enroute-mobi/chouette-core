@@ -1,8 +1,6 @@
 # frozen_string_literal: true
 
 class UsersController < Chouette::ResourceController
-  include PolicyChecker
-
   before_action :authorize_resource, except: [:create, :index, :new, :new_invitation, :invite]
   before_action :authorize_resource_class, only: [:create, :index, :new, :new_invitation, :invite]
 
@@ -65,4 +63,6 @@ class UsersController < Chouette::ResourceController
   def resource
     @user = super.decorate
   end
+
+  Policy::Authorizer::Controller.for(self, Policy::Authorizer::Legacy)
 end

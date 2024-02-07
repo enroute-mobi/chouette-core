@@ -3,6 +3,8 @@
 class CleanUpsController < Chouette::ReferentialController
   defaults :resource_class => CleanUp
 
+  skip_before_action :authorize_resource_class
+
   def create
     create! do |success, _failure|
       success.html do
@@ -45,4 +47,6 @@ class CleanUpsController < Chouette::ReferentialController
   def begin_of_association_chain
     nil
   end
+
+  Policy::Authorizer::Controller.for(self, Policy::Authorizer::Legacy)
 end

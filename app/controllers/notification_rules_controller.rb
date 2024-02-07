@@ -1,7 +1,6 @@
 # frozen_string_literal: true
 
 class NotificationRulesController < Chouette::WorkbenchController
-  include PolicyChecker
   include RansackDateFilter
 
   defaults resource_class: NotificationRule
@@ -69,4 +68,6 @@ class NotificationRulesController < Chouette::WorkbenchController
       .with_defaults(workbench_id: workbench.id, users: [], external_email: nil) # CHOUETTE-1713
     # (depending on the chosen target_type, some inputs are disabled, we then need to ensure default values)
   end
+
+  Policy::Authorizer::Controller.for(self, Policy::Authorizer::Legacy)
 end

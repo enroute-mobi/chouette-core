@@ -1,10 +1,15 @@
-RSpec.describe ReferentialDecorator, type: %i[helper decorator] do
-  include Support::DecoratorHelpers
+# frozen_string_literal: true
 
-  let(:workbench) { build_stubbed :workbench }
-  let(:object) { build_stubbed :referential, workbench: workbench }
-  let(:referential) { object }
-  let(:user) { build_stubbed :user }
+RSpec.describe ReferentialDecorator, type: %i[helper decorator] do
+  include Pundit::PunditDecoratorPolicy
+
+  let(:current_workbench) { build_stubbed :workbench }
+  let(:current_referential) { build_stubbed :referential, workbench: current_workbench }
+  let(:object) { current_referential }
+
+  before do
+    allow(subject.h).to receive(:duplicate_workbench_referential_path).and_return new_workbench_referential_path(current_workbench, from: object.id)
+  end
 
   describe 'delegation' do
     it 'delegates all' do
@@ -27,20 +32,20 @@ RSpec.describe ReferentialDecorator, type: %i[helper decorator] do
       end
 
       context 'all rights and different organisation' do
-        let(:user) { build_stubbed :allmighty_user }
+        let(:current_user) { build_stubbed :allmighty_user }
 
         it 'has only default actions' do
           expect_action_link_elements.to match_array %w[Consulter Calendriers Dupliquer]
           expect_action_link_hrefs.to match_array([
                                                     [object],
                                                     referential_time_tables_path(object),
-                                                    new_workbench_referential_path(referential.workbench,
+                                                    new_workbench_referential_path(current_workbench,
                                                                                    from: object.id)
                                                   ])
         end
       end
       context 'all rights and same organisation' do
-        let(:user) { build_stubbed :allmighty_user, organisation: referential.organisation }
+        let(:current_user) { build_stubbed :allmighty_user, organisation: object.organisation }
         let(:action) { :index }
         context 'on index' do
           it 'has corresponding actions' do
@@ -50,10 +55,10 @@ RSpec.describe ReferentialDecorator, type: %i[helper decorator] do
                                                               [object],
                                                               [:edit, object],
                                                               referential_time_tables_path(object),
-                                                              new_workbench_referential_path(referential.workbench,
+                                                              new_workbench_referential_path(current_workbench,
                                                                                              from: object.id),
                                                               new_workbench_control_list_run_path(
-                                                                referential.workbench, referential_id: object.id
+                                                                current_workbench, referential_id: object.id
                                                               ),
                                                               archive_referential_path(object),
                                                               [object]
@@ -70,10 +75,10 @@ RSpec.describe ReferentialDecorator, type: %i[helper decorator] do
                                                               [:edit, object],
                                                               referential_vehicle_journeys_path(object),
                                                               referential_time_tables_path(object),
-                                                              new_workbench_referential_path(referential.workbench,
+                                                              new_workbench_referential_path(current_workbench,
                                                                                              from: object.id),
                                                               new_workbench_control_list_run_path(
-                                                                referential.workbench, referential_id: object.id
+                                                                current_workbench, referential_id: object.id
                                                               ),
                                                               archive_referential_path(object),
                                                               new_referential_clean_up_path(object),
@@ -84,8 +89,8 @@ RSpec.describe ReferentialDecorator, type: %i[helper decorator] do
 
         context 'with a failed referential' do
           before do
-            referential.ready = false
-            referential.failed_at = Time.now
+            object.ready = false
+            object.failed_at = Time.zone.now
           end
           context 'on index' do
             it 'has corresponding actions' do
@@ -116,8 +121,8 @@ RSpec.describe ReferentialDecorator, type: %i[helper decorator] do
 
     context 'archived referential' do
       before do
-        referential.ready = true
-        referential.archived_at = 42.seconds.ago
+        object.ready = true
+        object.archived_at = 42.seconds.ago
       end
       context 'no rights' do
         it 'has only show and calendar actions' do
@@ -126,27 +131,27 @@ RSpec.describe ReferentialDecorator, type: %i[helper decorator] do
       end
 
       context 'all rights and different organisation' do
-        let(:user) { build_stubbed :allmighty_user }
+        let(:current_user) { build_stubbed :allmighty_user }
         it 'has only default actions' do
           expect_action_link_elements.to match_array %w[Consulter Calendriers Dupliquer]
           expect_action_link_hrefs.to match_array([
                                                     [object],
                                                     referential_time_tables_path(object),
-                                                    new_workbench_referential_path(referential.workbench,
+                                                    new_workbench_referential_path(current_workbench,
                                                                                    from: object.id)
                                                   ])
         end
       end
 
       context 'all rights and same organisation' do
-        let(:user) { build_stubbed :allmighty_user, organisation: referential.organisation }
+        let(:current_user) { build_stubbed :allmighty_user, organisation: object.organisation }
         it 'has only default actions' do
           expect_action_link_elements.to match_array ['Consulter', 'Calendriers', 'Dupliquer', 'Désarchiver',
                                                       'Supprimer ce jeu de données']
           expect_action_link_hrefs.to match_array([
                                                     [object],
                                                     referential_time_tables_path(object),
-                                                    new_workbench_referential_path(referential.workbench,
+                                                    new_workbench_referential_path(current_workbench,
                                                                                    from: object.id),
                                                     unarchive_referential_path(object),
                                                     [object]
@@ -157,9 +162,9 @@ RSpec.describe ReferentialDecorator, type: %i[helper decorator] do
 
     context 'finalized offer' do
       before do
-        referential.ready = true
-        referential.failed_at = nil
-        referential.referential_suite_id = 1
+        object.ready = true
+        object.failed_at = nil
+        object.referential_suite_id = 1
       end
       context 'no rights' do
         it 'has only show and calendar actions' do
@@ -168,7 +173,7 @@ RSpec.describe ReferentialDecorator, type: %i[helper decorator] do
       end
 
       context 'all rights and different organisation' do
-        let(:user) { build_stubbed :allmighty_user }
+        let(:current_user) { build_stubbed :allmighty_user }
         it 'has only default actions' do
           expect_action_link_elements.to match_array %w[Consulter Calendriers]
           expect_action_link_hrefs.to match_array([
@@ -179,13 +184,13 @@ RSpec.describe ReferentialDecorator, type: %i[helper decorator] do
       end
 
       context 'all rights and same organisation' do
-        let(:user) { build_stubbed :allmighty_user, organisation: referential.organisation }
+        let(:current_user) { build_stubbed :allmighty_user, organisation: object.organisation }
         it 'has only default actions' do
           expect_action_link_elements.to match_array %w[Consulter Calendriers Contrôler]
           expect_action_link_hrefs.to match_array([
                                                     [object],
                                                     referential_time_tables_path(object),
-                                                    new_workbench_control_list_run_path(referential.workbench,
+                                                    new_workbench_control_list_run_path(current_workbench,
                                                                                         referential_id: object.id)
                                                   ])
         end

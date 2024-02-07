@@ -3,7 +3,6 @@
 class ReferentialsController < Chouette::ResourceController
   defaults :resource_class => Referential
   before_action :load_workbench
-  include PolicyChecker
 
   respond_to :html
   respond_to :json, :only => :show
@@ -106,8 +105,6 @@ class ReferentialsController < Chouette::ResourceController
   protected
 
   alias_method :referential, :resource
-  alias_method :current_referential, :referential
-  helper_method :current_referential
 
   def resource
     @referential ||= current_organisation.find_referential(params[:id]).decorate
@@ -167,11 +164,12 @@ class ReferentialsController < Chouette::ResourceController
     current_workbench&.workgroup
   end
 
-  def current_workbench
+  def current_referential
     return nil unless params[:id]
 
-    resource&.workbench
+    resource
   end
+  helper_method :current_referential
 
   private
   def sort_column
@@ -221,6 +219,9 @@ class ReferentialsController < Chouette::ResourceController
                    end
   end
 
-  alias_method :current_workbench, :load_workbench
+  alias parent load_workbench
+  alias current_workbench load_workbench
   helper_method :current_workbench
+
+  Policy::Authorizer::Controller.for(self, Policy::Authorizer::Legacy)
 end

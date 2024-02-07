@@ -1,4 +1,5 @@
 RSpec.describe "/organisations/show", type: :view do
+  include Pundit::PunditViewPolicy
 
   assign_organisation
 

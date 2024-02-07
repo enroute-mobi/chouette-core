@@ -1,7 +1,6 @@
 # frozen_string_literal: true
 
 class RoutesController < Chouette::ReferentialController
-  include PolicyChecker
   defaults resource_class: Chouette::Route
 
   respond_to :html, :xml, :json, :geojson
@@ -126,9 +125,10 @@ class RoutesController < Chouette::ReferentialController
   # React endpoints
 
   def fetch_user_permissions
+    policy = policy(end_of_association_chain)
     perms =
       %w[create destroy update].inject({}) do |permissions, action|
-        permissions.merge({ "routes.#{action}": policy(Chouette::Route).authorizes_action?(action) })
+        permissions.merge({ "routes.#{action}": policy.authorizes_action?(action) })
       end.to_json
 
     render json: perms
@@ -189,4 +189,6 @@ class RoutesController < Chouette::ReferentialController
       stop_points_attributes: %i[id _destroy position stop_area_id for_boarding for_alighting]
     )
   end
+
+  Policy::Authorizer::Controller.for(self, Policy::Authorizer::Legacy)
 end

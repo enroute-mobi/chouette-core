@@ -2,7 +2,6 @@
 
 class DocumentTypesController < Chouette::WorkgroupController
   include ApplicationHelper
-  include PolicyChecker
 
   defaults :resource_class => DocumentType
 
@@ -58,4 +57,6 @@ class DocumentTypesController < Chouette::WorkgroupController
       :description
     )
   end
+
+  Policy::Authorizer::Controller.for(self, Policy::Authorizer::Legacy)
 end

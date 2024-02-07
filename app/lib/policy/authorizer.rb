@@ -100,7 +100,11 @@ module Policy
       end
 
       def policy(resource)
-        Policy::Legacy.new(pundit_user_context, resource)
+        policy_class.new(pundit_user_context, resource)
+      end
+
+      def policy_class
+        Policy::Legacy
       end
     end
 

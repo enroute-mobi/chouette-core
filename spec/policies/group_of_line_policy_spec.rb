@@ -1,4 +1,4 @@
-RSpec.describe GroupOfLinePolicy, type: :policy do
+RSpec.describe GroupOfLinePolicy, type: :pundit_policy do
 
   let( :record ){ build_stubbed :group_of_line }
   before { stub_policy_scope(record) }

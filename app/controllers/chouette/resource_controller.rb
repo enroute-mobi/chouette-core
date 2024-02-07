@@ -7,6 +7,8 @@ module Chouette
     # To prevent a "chouette_" to be added to all its chidren
     resources_configuration[:self].delete(:route_prefix)
 
+    include PolicyChecker
+
     private
 
     def begin_of_association_chain

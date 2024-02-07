@@ -88,4 +88,6 @@ class SearchesController < Chouette::UserController
   def workbench
     @workbench ||= current_organisation.workbenches.find(params[:workbench_id])
   end
+
+  Policy::Authorizer::Controller.for(self, Policy::Authorizer::Legacy)
 end

@@ -2,7 +2,6 @@
 
 class PointOfInterestsController < Chouette::TopologicReferentialController
   include ApplicationHelper
-  include PolicyChecker
 
   defaults :resource_class => PointOfInterest::Base
 
@@ -77,4 +76,6 @@ class PointOfInterestsController < Chouette::TopologicReferentialController
       codes_attributes: [:id, :code_space_id, :value, :_destroy],
       point_of_interest_hours_attributes: [:id, :opening_time_of_day, :closing_time_of_day, :value, :_destroy, week_days_attributes: [:monday, :tuesday, :wednesday, :thursday, :friday, :saturday, :sunday]])
   end
+
+  Policy::Authorizer::Controller.for(self, Policy::Authorizer::Legacy)
 end

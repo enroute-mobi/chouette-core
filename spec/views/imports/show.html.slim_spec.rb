@@ -1,4 +1,6 @@
 RSpec.describe '/imports/show', type: :view do
+  include Pundit::PunditViewPolicy
+
   let(:workbench){ create :workbench }
   let(:workbench_import){ create :workbench_import, workbench: workbench }
   let(:resource){ create :import_resource, import: workbench_import }

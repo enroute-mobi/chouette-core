@@ -45,7 +45,7 @@ en:
       macro/compute_service_counts:
         one: Compute service counts
       macro/associate_documents:
-        one: Associer les documents
+        one: Associate Documents
     attributes:
       macro/base:
         name: Name

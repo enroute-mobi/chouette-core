@@ -44,7 +44,7 @@ fr:
         one: Supprimer toutes les courses
       macro/compute_service_counts:
         one: Calculer le nombre de services
-      macro/associate_documents/run:
+      macro/associate_documents:
         one: Associer les documents
     attributes:
       macro/base:

@@ -55,17 +55,6 @@ module Chouette::Sync
           target.point_of_interest_categories
         end
 
-        def codes_attributes
-          return [] unless key_list.present?
-
-          key_list.map do |netex_code|
-            {
-              short_name: netex_code.key,
-              value: netex_code.value
-            }
-          end
-        end
-
         class Hour
           def initialize(validity_conditions)
             @validity_conditions = validity_conditions

@@ -185,8 +185,15 @@ module Chouette
             short_name = code_attributes[:short_name]
             value = code_attributes[:value]
 
-            if (code_space = find_code_space(short_name))
-              model.codes.find_or_initialize_by code_space: code_space, value: value
+            if code_space = find_code_space(short_name)
+              if code_space.allow_multiple_values
+                model.codes.find_or_initialize_by code_space: code_space, value: value
+              elsif code = model.codes.find_by(code_space: code_space)
+                code.value = value
+                model.codes = [code]
+              else
+                model.codes.new code_space: code_space, value: value
+              end
             else
               (event.errors[:codes] ||= []) << { error: :invalid_code_space, value: short_name }
             end

@@ -4,6 +4,7 @@
       = f.input :short_name if @code_space.new_record?
       = f.input :name
       = f.input :description, as: :text
+      = f.input :allow_multiple_values, as: :switchable_checkbox
 
   .separator
 

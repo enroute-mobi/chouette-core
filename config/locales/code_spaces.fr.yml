@@ -10,6 +10,7 @@ fr:
         short_name: Nom Court
         name: Nom
         description: Description
+        allow_multiple_values: Autoriser plusieurs valeurs par modèle
   code_spaces:
     actions:
       new: Ajouter un Espace de Code

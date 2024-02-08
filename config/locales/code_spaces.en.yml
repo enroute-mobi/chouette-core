@@ -10,6 +10,7 @@ en:
         short_name: Short Name
         name: Name
         description: Description
+        allow_multiple_values: Allow multiple values per model
   code_spaces:
     actions:
       new: Add Code Space

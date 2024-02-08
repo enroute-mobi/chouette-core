@@ -13,7 +13,7 @@ module Chouette::Sync
         super options
       end
 
-      class Decorator < Chouette::Sync::Updater::ResourceDecorator
+      class Decorator < Chouette::Sync::Netex::Decorator
         delegate :contact_details, to: :operating_organisation_view, allow_nil: true
         delegate :target, to: :updater
 

@@ -15,5 +15,5 @@
             .mb-xs
               = replacement_msg t('point_of_interest_categories.no_codes')
           - else
-            - @point_of_interest_category.codes.each do |c|
-              = d.attribute :value, label: c.code_space.short_name, object: c
+            - codes_group_by_short_name(@point_of_interest_category.codes).each do |c|
+              = d.attribute :values, label: c.short_name, object: c

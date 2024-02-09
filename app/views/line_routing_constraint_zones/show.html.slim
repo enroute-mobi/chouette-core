@@ -22,5 +22,5 @@
             .mb-xs
               = replacement_msg t('line_routing_constraint_zones.no_codes')
           - else
-            - @line_routing_constraint_zone.codes.each do |c|
-              = d.attribute :value, label: c.code_space.short_name, object: c
+            - codes_group_by_short_name(@line_routing_constraint_zone.codes).each do |c|
+              = d.attribute :values, label: c.short_name, object: c

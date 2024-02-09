@@ -20,6 +20,5 @@
 						.mb-xs
 							= replacement_msg t('fare_zones.no_codes')
 					- else
-						- @fare_zone.codes.each do |c|
-							= d.attribute :value, label: c.code_space.short_name, object: c
-
+            - codes_group_by_short_name(@fare_zone.codes).each do |c|
+              = d.attribute :values, label: c.short_name, object: c

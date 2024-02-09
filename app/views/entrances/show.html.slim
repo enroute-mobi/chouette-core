@@ -33,8 +33,8 @@
             .mb-xs
               = replacement_msg t('entrances.no_codes')
           - else
-            - @entrance.codes.each do |c|
-              = d.attribute :value, label: c.code_space.short_name, object: c
+            - codes_group_by_short_name(@entrance.codes).each do |c|
+              = d.attribute :values, label: c.short_name, object: c
 
       .col-lg-6.col-md-6.col-sm-12.col-xs-12
         h4.underline= t('entrances.show.map')

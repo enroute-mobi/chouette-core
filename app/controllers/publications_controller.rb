@@ -8,26 +8,13 @@ class PublicationsController < Chouette::WorkgroupController
 
   respond_to :html
 
-  before_action :decorate_exports, only: :show
-
-  protected
-
-  def search
-    @search ||= Search::PublicationExport.from_params(params)
-  end
-
-  def collection
-    @collection ||= search.search(@publication.export)
-  end
-
-  private
-
-  def decorate_exports
-    @exports = ExportDecorator.decorate(
-      collection,
+  def show
+    @export = ExportDecorator.decorate(
+      @publication.export,
       context: {
         parent: workgroup
       }
     )
+    show!
   end
 end

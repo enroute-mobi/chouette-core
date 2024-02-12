@@ -17,7 +17,7 @@ class PublicationsController < Chouette::WorkgroupController
   end
 
   def collection
-    @collection ||= search.search(@publication.exports)
+    @collection ||= search.search(@publication.export)
   end
 
   private

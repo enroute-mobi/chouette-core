@@ -19,7 +19,8 @@ module Control
       Control::GeographicalZone,
       Control::ExpectedProvider,
       Control::ServicesOnlyInValidityPeriod,
-      Control::CodeUniqueness
+      Control::CodeUniqueness,
+      Control::ServiceCountInRange
     ]
   end
 end

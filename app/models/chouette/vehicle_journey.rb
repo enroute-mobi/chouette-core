@@ -47,6 +47,7 @@ module Chouette
     end
     validate :validate_passing_times_chronology
     validates :number, presence: true
+    validate :allow_multiple_code_values
 
     has_many :vehicle_journey_at_stops, -> { includes(:stop_point).order("stop_points.position") }, dependent: :destroy
     has_and_belongs_to_many :time_tables, :class_name => 'Chouette::TimeTable', :foreign_key => "vehicle_journey_id", :association_foreign_key => "time_table_id"
@@ -684,6 +685,13 @@ module Chouette
       end
 
       delete_all
+    end
+
+    def allow_multiple_code_values
+      codes_with_allow_multiple_values = codes.select { |code| !code.code_space.allow_multiple_values }
+      return unless codes_with_allow_multiple_values.group_by(&:code_space).find{|e| e.last.count > 1}
+
+      errors.add(:codes, :invalid)
     end
 
   end

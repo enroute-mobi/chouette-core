@@ -35,6 +35,8 @@ en:
         one: Services only in validity period
       control/code_uniqueness/run:
         one: Code uniqueness
+      control/service_count_in_range/run:
+        one: Service count in a range
     attributes:
       control/base/run:
         name: Name
@@ -81,3 +83,6 @@ en:
       control/code_uniqueness/run:
         target_code_space_id: Target code space
         uniqueness_scope: Uniqueness scope
+      control/service_count_in_range/run:
+        minimum_service_counts: Minimum service counts
+        maximum_service_counts: Maximum service counts

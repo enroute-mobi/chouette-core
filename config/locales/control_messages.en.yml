@@ -13,6 +13,7 @@ en:
     passing_times_in_time_range: "The vehicle journey %{name} contains hours not included in the expect time range"
     services_only_in_validity_period: "%{vehicle_journey_sum} passages are defined for line %{name} outside its validity period"
     code_uniqueness: "The %{target_model} '%{name}' has not an unique code '%{code_value}' in the code space '%{code_space}'"
+    service_count_in_range: "An anomaly on the line %{line} at %{date}"
     dummy: "The %{target_model} %{name} has been updated"
   activerecord:
     models:

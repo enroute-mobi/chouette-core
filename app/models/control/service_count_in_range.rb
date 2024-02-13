@@ -51,24 +51,24 @@ module Control
       end
 
       class Analysis
-
         def initialize(context, options)
           @context = context
           options.each { |k,v| send "#{k}=", v }
         end
         attr_accessor :context, :minimum_service_counts, :maximum_service_counts
 
+        delegate :service_counts, to: :context
+
         def anomalies
           PostgreSQLCursor::Cursor.new(query).map { |attributes| Anomaly.new(attributes) }
         end
 
         def query
-          context
-            .service_counts
+          service_counts
             .joins(:line)
             .group(:line_id, :date, 'lines.name')
             .select('SUM(count) AS sum_count', :line_id, :date, 'lines.name AS line_name')
-            .having('sum(count) < ? OR sum(count) > ?', minimum, maximum)
+            .having('SUM(count) < ? OR SUM(count) > ?', minimum, maximum)
             .to_sql
         end
 

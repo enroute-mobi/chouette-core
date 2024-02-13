@@ -54,6 +54,8 @@ fr:
         one: Services en période de validité
       control/code_uniqueness:
         one: Unicité du code
+      control/service_count_in_range:
+        one: Nombre de Services dans une portée donnée
     attributes:
       control/base:
         name: Nom
@@ -104,3 +106,6 @@ fr:
       control/code_uniqueness:
         target_code_space_id: Espace de code cible
         uniqueness_scope: Portée de l'unicité
+      control/service_count_in_range:
+        minimum_service_counts: Nombre de services minimal
+        maximum_service_counts: Nombre de services maximal

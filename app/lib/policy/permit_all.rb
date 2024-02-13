@@ -3,7 +3,9 @@
 module Policy
   # Policy which authorizes any action
   class PermitAll < Base
-    def can?(_action)
+    protected
+
+    def _can?(_action, *_args)
       true
     end
   end

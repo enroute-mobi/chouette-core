@@ -14,11 +14,6 @@ module Policy
         exceptions[controller_class] = authorizer
       end
 
-      # TODO: really required ?
-      def self.clear_exceptions!
-        exceptions.clear
-      end
-
       # Returns Authorizer to be used by a Controller instance
       def self.from(controller)
         authorizer_class(controller).new(controller)
@@ -36,12 +31,12 @@ module Policy
       end
 
       def context_class
-        # TODO: select the best Context class according to the Controller
-        Policy::Context::Base
+        controller.policy_context_class
       end
 
       # [Private] Returns Policy instance associated to the given resource
       def policy(resource)
+        resource = resource.object if resource.is_a?(::AF83::Decorator::EnhancedDecorator) # meh...
         policy_class(resource).new resource, context: context
       end
 

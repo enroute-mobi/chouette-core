@@ -8,26 +8,11 @@ module Policy
       @pundit_context = pundit_context
     end
 
-    # Returns true if given resource class can be create according Pundit policy
-    def create?(resource_class)
-      pundit_create_policy(resource_class).create?
-    end
-    alias new? create?
+    attr_reader :pundit_context
 
     undef edit?
     undef update?
     undef destroy?
-
-    # Returns true if given action is permitted by associated Pundit policy
-    def can?(action, *arguments)
-      if arguments.length == 1 && arguments[0].is_a?(Class) && arguments[0] < ActiveRecord::Base
-        pundit_create_policy(arguments[0]).send("#{action}?")
-      else
-        pundit_policy.send "#{action}?", *arguments
-      end
-    end
-
-    attr_reader :pundit_context
 
     # [Private] Returns Pundit Policy for resource
     def pundit_policy
@@ -48,6 +33,29 @@ module Policy
                          end
 
       Pundit::PolicyFinder.new(resource_class).policy
+    end
+
+    protected
+
+    # Returns true if given resource class can be create according Pundit policy
+    def _create?(resource_class)
+      pundit_create_policy(resource_class).create?
+    end
+    alias _new? _create?
+
+    # Returns true if given action is permitted by associated Pundit policy
+    def _can?(action, *arguments)
+      if arguments.length == 1 && arguments[0].is_a?(Class) && arguments[0] < ActiveRecord::Base
+        pundit_create_policy(arguments[0]).send("#{action}?")
+      else
+        pundit_policy.send "#{action}?", *arguments
+      end
+    end
+
+    private
+
+    def apply_strategies(_action, *_args)
+      true
     end
   end
 end

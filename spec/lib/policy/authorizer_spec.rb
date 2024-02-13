@@ -3,7 +3,7 @@
 RSpec.describe Policy::Authorizer::Controller do
   subject(:authorizer) { described_class.new(controller) }
 
-  let(:controller) { double }
+  let(:controller) { double policy_context_class: Policy::Context::Base }
 
   describe '.authorizer_class' do
     subject { described_class.authorizer_class(ApplicationController.new) }
@@ -23,7 +23,7 @@ RSpec.describe Policy::Authorizer::Controller do
 
       it { is_expected.to eq(exception) }
 
-      after { Policy::Authorizer::Controller.clear_exceptions! }
+      after { Policy::Authorizer::Controller.exceptions.delete(ApplicationController) }
     end
   end
 
@@ -76,11 +76,9 @@ RSpec.describe Policy::Authorizer::Controller do
     it { is_expected.to be_instance_of(Policy::Context::Base) }
 
     context 'when controller has a user "dummy"' do
-      let(:controller) { double current_user: 'dummy' }
+      let(:controller) { double policy_context_class: Policy::Context::User, current_user: 'dummy' }
 
-      # TODO: really needed ?
-      before { allow(authorizer).to receive(:context_class).and_return(Policy::Context::User) }
-
+      it { is_expected.to be_instance_of(Policy::Context::User) }
       it { is_expected.to have_attributes(user: 'dummy') }
     end
   end

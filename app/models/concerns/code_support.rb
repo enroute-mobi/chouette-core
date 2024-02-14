@@ -5,7 +5,6 @@ module CodeSupport
     has_many :codes, as: :resource, dependent: :delete_all
     accepts_nested_attributes_for :codes, allow_destroy: true, reject_if: :all_blank
     validates_associated :codes
-    validate :allow_multiple_values
 
     scope :by_code, ->(code_space, value) { joins(:codes).where(codes: { code_space: code_space, value: value }) }
     scope :without_code, ->(code_space) { where.not(id: joins(:codes).where(codes: { code_space_id: code_space })) }
@@ -28,13 +27,6 @@ module CodeSupport
         model.codes = [Code.new(code_space: code_space, value: value)]
         yield model if block_given?
       end
-    end
-
-    def allow_multiple_values
-      codes_with_allow_multiple_values = codes.select { |code| !code.code_space.allow_multiple_values }
-      return unless codes_with_allow_multiple_values.group_by(&:code_space).find{|e| e.last.count > 1}
-
-      errors.add(:codes, :invalid)
     end
   end
 end

@@ -15,15 +15,14 @@ class Destination::SFTP < ::Destination
   def do_transmit(publication, _report)
     secret_file.cache!
     Net::SFTP.start(host, username, port: port, keys: [secret_file.path], auth_methods: %w[publickey]) do |sftp|
-      publication.exports.each do |export|
-        next unless export[:file].present?
+      export = publication.export
+      next unless export[:file].present?
 
-        export.file.cache!
+      export.file.cache!
 
-        file_name = File.basename export.file.path
-        remote_file_path = "#{directory}/#{file_name}"
-        sftp.upload!(export.file.path, remote_file_path)
-      end
+      file_name = File.basename export.file.path
+      remote_file_path = "#{directory}/#{file_name}"
+      sftp.upload!(export.file.path, remote_file_path)
     end
   end
 end

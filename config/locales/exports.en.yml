@@ -51,25 +51,25 @@ en:
   activerecord:
     models:
       export:
-        zero:  "export"
-        one:   "export"
-        other: "exports"
+        zero:  "Export"
+        one:   "Export"
+        other: "Exports"
       neptune_export:
-        zero:  "export"
+        zero:  "Export"
         one:   "Neptune export"
-        other: "exports"
+        other: "Exports"
       csv_export:
-        zero:  "export"
+        zero:  "Export"
         one:   "CSV export"
-        other: "exports"
+        other: "Exports"
       gtfs_export:
-        zero:  "export"
+        zero:  "Export"
         one:   "GTFS export"
-        other: "exports"
+        other: "Exports"
       netex_export:
-        zero:  "export"
+        zero:  "Export"
         one:   "NeTEx export"
-        other: "exports"
+        other: "Exports"
     errors:
       models:
         export:

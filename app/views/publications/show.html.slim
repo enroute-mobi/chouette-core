@@ -13,50 +13,24 @@
       = processing_helper(@publication)
 
     .row
-      .col-lg-12
-        = render 'filters'
-        - if @exports.empty?
-          = replacement_msg t('exports.search_no_results')
-        - else
-          .h3 = Export::Base.t.capitalize
-          = table_builder_2 @exports,
-            [ \
-              TableBuilderHelper::Column.new( \
-                key: :status, \
-                attribute: ->(e){ operation_status(e) } \
-              ), \
-              TableBuilderHelper::Column.new( \
-                key: :type, \
-                attribute: :human_type \
-              ), \
-              TableBuilderHelper::Column.new( \
-                key: :name, \
-                attribute: :name, \
-                link_to: lambda do |export| \
-                  workgroup_export_path(@workgroup, export) \
-                end \
-              ), \
-              TableBuilderHelper::Column.new( \
-                key: :options, \
-                attribute: ->(e){ e.pretty_print_options } \
-              ), \
-              TableBuilderHelper::Column.new( \
-                key: :started_at, \
-                attribute: ->(n){ n.started_at ? l(n.started_at, format: :time) : '-' } \
-              ), \
-              TableBuilderHelper::Column.new( \
-                key: :ended_at, \
-                attribute: ->(n){ n.ended_at ? l(n.ended_at, format: :time) : '-' } \
-              ), \
-              TableBuilderHelper::Column.new( \
-                key: :file, \
-                  attribute: ->(export){ export.file.present? ? link_to('actions.download'.t, download_workgroup_export_path(@workgroup, export)) : "-" } \
-              ), \
-            ],
-            sortable: false,
-            cls: 'table',
-            action: :index
-          = new_pagination @exports, 'pull-right'
+      .col-lg-6.col-md-6.col-sm-12.col-xs-12
+        = simple_block_for @export, title: @export.model_name.human do |d|
+          = d.attribute :name, link: workgroup_export_path(@workgroup, @export)
+          = d.attribute :type, value: @export.human_type
+          = d.attribute :status, value: operation_status(@export.status, verbose: true)
+          - if @export.type != "Export::Netex"
+            = d.attribute :exported_lines, value_method: :display_selected_lines_to_export
+          = d.attribute :period, value_method: :display_period
+          - if @export.type == "Export::NetexGeneric"
+            = d.attribute :profile, value_method: :display_profile
+          - if @export.type == "Export::Gtfs"
+            = d.attribute :prefer_referent_stop_area, as: :boolean
+            = d.attribute :prefer_referent_company, as: :boolean
+            = d.attribute :prefer_referent_line, as: :boolean
+            = d.attribute :ignore_single_stop_station, as: :boolean
+            = d.attribute :ignore_parent_stop_places, as: :boolean
+          - if @export.type == "Export::Ara"
+            = d.attribute :include_stop_visits, as: :boolean
 
     .row
       .col-lg-12

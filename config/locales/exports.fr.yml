@@ -52,25 +52,25 @@ fr:
   activerecord:
     models:
       export:
-        zero:  "export"
-        one:   "export"
-        other: "exports"
+        zero:  "Export"
+        one:   "Export"
+        other: "Exports"
       neptune_export:
-        zero:  "export"
-        one:   "export Neptune"
-        other: "exports"
+        zero:  "Export"
+        one:   "Export Neptune"
+        other: "Exports"
       csv_export:
-        zero:  "export"
-        one:   "export CSV"
-        other: "exports"
+        zero:  "Export"
+        one:   "Export CSV"
+        other: "Exports"
       gtfs_export:
-        zero:  "export"
-        one:   "export GTFS"
-        other: "exports"
+        zero:  "Export"
+        one:   "Export GTFS"
+        other: "Exports"
       netex_export:
-        zero:  "export"
-        one:   "export NeTEx"
-        other: "exports"
+        zero:  "Export"
+        one:   "Export NeTEx"
+        other: "Exports"
     errors:
       models:
         export:

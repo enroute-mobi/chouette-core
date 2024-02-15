@@ -15,7 +15,7 @@
     .col-lg-12
       h2.mb-lg= Chouette::StopArea.tmf(:codes)
       = f.simple_fields_for(:codes) do |codes_form|
-        = render 'code_fields', f: codes_form
+        = render 'shared/code_fields', f: codes_form, code_spaces: @point_of_interest_category.shape_referential.workgroup.code_spaces.map {|c| [c.short_name, c.id]},
 
       .links.nested-linker
         = link_to_add_association t('entrances.form.add_code'), f, :codes, class: 'btn btn-primary'

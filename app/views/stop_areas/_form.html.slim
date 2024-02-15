@@ -139,7 +139,7 @@
       h2.mb-lg= Chouette::StopArea.tmf(:codes)
       = f.input :registration_number, required: stop_area_registration_number_is_required(f.object), input_html: {title: stop_area_registration_number_title(f.object), value: stop_area_registration_number_value(f.object)}
       = f.simple_fields_for(:codes) do |codes_form|
-        = render 'code_fields', f: codes_form
+        = render 'shared/code_fields', f: codes_form, code_spaces: @stop_area.workgroup.code_spaces.map {|c| [c.short_name, c.id]}
 
       .links.nested-linker
         = link_to_add_association t('stop_areas.form.add_code'), f, :codes, class: 'btn btn-primary'

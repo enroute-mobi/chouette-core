@@ -14,7 +14,7 @@ en:
     errors:
       models:
         code:
-          duplicate_code_spaces_in_codes: "The Code Space %{code_space} doesn't allow several values in the same model"
+          duplicate_code_spaces_in_codes: "The Code Space \"%{code_space}\" doesn't allow several values in the same model"
           duplicate_values_in_codes: Duplicate key value violates unique constraint
   code_spaces:
     actions:

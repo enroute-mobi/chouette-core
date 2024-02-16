@@ -23,9 +23,11 @@ GIT
 
 GIT
   remote: https://bitbucket.org/enroute-mobi/gtfs.git
-  revision: 21178151e8696c4469ee9465fbc88e963d55b43b
+  revision: 6127209df5af11d5f909fbbb9e40f80c7a82b65a
+  branch: CHOUETTE-3303-add-producer-and-authority-methods-to-attribution-gtfs
   specs:
     gtfs (0.3.6)
+      csv
       msgpack
       offline-sort
       rubyzip
@@ -229,6 +231,7 @@ GEM
     crass (1.0.6)
     css_parser (1.12.0)
       addressable
+    csv (3.2.8)
     database_cleaner (2.0.2)
       database_cleaner-active_record (>= 2, < 3)
     database_cleaner-active_record (2.1.0)

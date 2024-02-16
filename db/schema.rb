@@ -101,7 +101,6 @@ ActiveRecord::Schema.define(version: 2024_02_15_110746) do
     t.datetime "updated_at", null: false
     t.string "name"
     t.string "description"
-    t.boolean "allow_multiple_values", default: true, null: false
     t.index ["short_name", "workgroup_id"], name: "index_code_spaces_on_short_name_and_workgroup_id", unique: true
     t.index ["workgroup_id"], name: "index_code_spaces_on_workgroup_id"
   end

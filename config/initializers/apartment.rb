@@ -25,6 +25,7 @@ Apartment.configure do |config|
     'Calendar',
     'Chouette::LineNoticeMembership',
     'Chouette::Company',
+    'Chouette::Contract',
     'Chouette::Network',
     'Chouette::ConnectionLink',
     'Chouette::GroupOfLineMembership',

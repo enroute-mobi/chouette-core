@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2024_01_19_151212) do
+ActiveRecord::Schema.define(version: 2024_02_15_110746) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "btree_gin"
@@ -101,6 +101,7 @@ ActiveRecord::Schema.define(version: 2024_01_19_151212) do
     t.datetime "updated_at", null: false
     t.string "name"
     t.string "description"
+    t.boolean "allow_multiple_values", default: true, null: false
     t.index ["short_name", "workgroup_id"], name: "index_code_spaces_on_short_name_and_workgroup_id", unique: true
     t.index ["workgroup_id"], name: "index_code_spaces_on_workgroup_id"
   end
@@ -199,6 +200,12 @@ ActiveRecord::Schema.define(version: 2024_01_19_151212) do
     t.index ["objectid"], name: "connection_links_objectid_key", unique: true
     t.index ["stop_area_provider_id"], name: "index_connection_links_on_stop_area_provider_id"
     t.index ["stop_area_referential_id"], name: "index_connection_links_on_stop_area_referential_id"
+  end
+
+  create_table "contracts", force: :cascade do |t|
+    t.string "name"
+    t.bigint "company_id"
+    t.index ["company_id"], name: "index_contracts_on_company_id"
   end
 
   create_table "control_context_runs", force: :cascade do |t|
@@ -802,6 +809,8 @@ ActiveRecord::Schema.define(version: 2024_01_19_151212) do
     t.string "audible_signals_availability"
     t.string "visual_signs_availability"
     t.text "accessibility_limitation_description"
+    t.bigint "contract_id"
+    t.index ["contract_id"], name: "index_lines_on_contract_id"
     t.index ["line_provider_id"], name: "index_lines_on_line_provider_id"
     t.index ["line_referential_id", "registration_number"], name: "index_lines_on_referential_id_and_registration_number"
     t.index ["line_referential_id"], name: "index_lines_on_line_referential_id"

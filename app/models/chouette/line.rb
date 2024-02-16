@@ -30,6 +30,7 @@ module Chouette
 
     belongs_to :company
     belongs_to :network
+    belongs_to :contract
 
     # this 'light' relation prevents the custom fields loading
     belongs_to :company_light, lambda {

@@ -34,5 +34,6 @@ en:
         name: "Name"
         short_name: "Short Name"
         documents: "Documents"
+        workbench: "Workbench"
         updated_at: "Updated At"
         creator_id: "Create by"

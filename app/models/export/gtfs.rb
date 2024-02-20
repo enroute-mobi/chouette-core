@@ -80,6 +80,7 @@ class Export::Gtfs < Export::Base
     VehicleJourneyAtStops.new(self, filter_non_commercial: filter_non_commercial, ignore_time_zone: ignore_time_zone).export_part
 
     VehicleJourneyCompany.new(self).export_part
+    Contract.new(self).export_part
 
     FeedInfo.new(self).export_part
 
@@ -1382,6 +1383,45 @@ class Export::Gtfs < Export::Base
 
       def is_operator
         1
+      end
+    end
+  end
+
+  class Contract < Part
+    def export!
+      contracts.find_each do |contract|
+        target.attributions << Decorator.new(contract).attribution
+      end
+    end
+
+    def contracts
+      export_scope.contracts.joins(:lines).select('contracts.*', 'lines.registration_number AS route_id')
+    end
+
+    class Decorator < SimpleDelegator
+      def initialize(contract)
+        super contract
+      end
+
+      def attribution_attributes
+        {
+          attribution_id: attribution_id,
+          organization_name: name,
+          route_id: route_id,
+          is_producer: is_producer
+        }
+      end
+
+      def attribution
+        GTFS::Attribution.new attribution_attributes
+      end
+
+      def is_producer
+        1
+      end
+
+      def attribution_id
+        @attribution_id ||= SecureRandom.uuid
       end
     end
   end

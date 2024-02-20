@@ -102,7 +102,8 @@ module Export::Scope
 
     delegate :codes, to: :workgroup
 
-    delegate :vehicle_journeys, :vehicle_journey_at_stops, :journey_patterns, :routes, :stop_points, :time_tables, :referential_codes, :routing_constraint_zones, to: :referential
+    delegate :vehicle_journeys, :vehicle_journey_at_stops, :journey_patterns, :routes, :stop_points,
+             :time_tables, :referential_codes, :routing_constraint_zones, :contracts, to: :referential
 
     def organisations
       # Find organisations which provided metadata in the referential

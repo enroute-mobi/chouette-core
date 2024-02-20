@@ -1,18 +1,11 @@
 module Chouette
   class ActiveRecord < ::ApplicationModel
+    include NilIfBlank
+
     mattr_accessor :default_data_source_ref
 
     self.abstract_class = true
-    before_save :nil_if_blank, :set_data_source_ref
-
-    # to be overridden to set nullable attrs when empty
-    def self.nullable_attributes
-      []
-    end
-
-    def nil_if_blank
-      self.class.nullable_attributes.each { |attr| self[attr] = nil if self[attr].blank? }
-    end
+    before_save :set_data_source_ref
 
     def human_attribute_name(*args)
       self.class.human_attribute_name(*args)

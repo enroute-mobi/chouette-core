@@ -89,6 +89,7 @@ RSpec.describe Chouette::StopArea do
     end
   end
 
+  # rubocop:disable Naming/VariableNumber
   describe '.without_address' do
     subject { described_class.without_address }
 
@@ -112,8 +113,13 @@ RSpec.describe Chouette::StopArea do
       it { is_expected.to_not include(stop_area) }
     end
 
-    context 'when StopArea has no country code, street name, zipcode or city name' do
+    context 'when StopArea has nil country code, street name, zipcode and city name' do
       before { stop_area.update country_code: nil, street_name: nil, zip_code: nil, city_name: nil }
+      it { is_expected.to include(stop_area) }
+    end
+
+    context 'when StopArea has empty country code, street name, zipcode and city name' do
+      before { stop_area.update! country_code: '', street_name: '', zip_code: '', city_name: '' }
       it { is_expected.to include(stop_area) }
     end
   end
@@ -148,6 +154,7 @@ RSpec.describe Chouette::StopArea do
       it { expect { subject }.to change(stop_area, :city_name).to('dummy') }
     end
   end
+  # rubocop:enable Naming/VariableNumber
 end
 
 # DEPRECATED

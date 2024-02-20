@@ -204,7 +204,11 @@ ActiveRecord::Schema.define(version: 2024_02_15_110746) do
   create_table "contracts", force: :cascade do |t|
     t.string "name"
     t.bigint "company_id"
+    t.bigint "workbench_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
     t.index ["company_id"], name: "index_contracts_on_company_id"
+    t.index ["workbench_id"], name: "index_contracts_on_workbench_id"
   end
 
   create_table "control_context_runs", force: :cascade do |t|

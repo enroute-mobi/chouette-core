@@ -1,0 +1,52 @@
+fr:
+  contracts:
+    index:
+      title: Contracts
+    show:
+      title: "%{name}"
+    new:
+      title: "Créer un Contrat"
+    edit:
+      title: "Editer %{name}"
+    actions:
+      show: "Afficher ce Contrat"
+      new: "Créer un Contrat"
+      edit: "Editer ce Contrat"
+      destroy: "Supprimer ce Contrat"
+      destroy_confirm: "Etes vous sûr de supprimer ce Contrat ?"
+    form:
+      placeholders:
+      sections:
+        identification: "Identification"
+        associated_resources: "Ressources associées"
+        codes: "Codes"
+    search_no_results: "Aucun Contrat ne correspond à votre recherche"
+    flash:
+      associate:
+        notice: Le Contrat a été associé à la ligne avec succès
+        error: Le Contrat n'a pas pu être associé avec la ligne
+      unassociate:
+        notice: Le Contrat a été dissocié de la ligne avec succès
+        error: Le Contrat n'a pas pu être dissocié de la ligne
+    no_codes: "Ce Contrat n'a pas de codes"
+  activemodel:
+    attributes:
+      period:
+        from: Valide à partir de
+        to: Valide jusqu'au
+  activerecord:
+    models:
+      contract:
+        zero: "Contrat"
+        one: "Contrat"
+        other: "Contrats"
+    attributes:
+      contract:
+        name: "Nom"
+        company_id: "Transporteur"
+        company: "Transporteur"
+        lines: "Lignes"
+    errors:
+      models:
+        contract:
+          attributes:

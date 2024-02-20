@@ -648,6 +648,21 @@ crumb :new_code_space do |workgroup|
   parent :code_spaces, workgroup
 end
 
+crumb :contracts do |workbench|
+  link I18n.t('contracts.index.title'), workbench_contracts_path(workbench)
+  parent :workbench, workbench
+end
+
+crumb :contract do |workbench, contract|
+  link breadcrumb_name(contract), workbench_contract_path(workbench, contract)
+  parent :contracts, workbench
+end
+
+crumb :new_contract do |workbench|
+  link I18n.t('contracts.new.title')
+  parent :contracts, workbench
+end
+
 crumb :documents do |workbench|
   link I18n.t('documents.index.title'), workbench_documents_path(workbench)
   parent :workbench, workbench

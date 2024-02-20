@@ -1,0 +1,33 @@
+= simple_form_for([@workbench, @contract],
+    html: { \
+      multipart: true, \
+      class: 'tailwind-form', \
+      id: 'contract_form'\
+    }, \
+    wrapper: :horizontal_form_tailwind \
+  ) do |f|
+  .row
+    .col-lg-12
+      = f.input :name
+      = f.input :company_id, as: :autocomplete_select, collection: @workbench.companies, input_html: {class: "w-full"}
+
+  .separator.section_separator
+  .row
+    .col-lg-12
+      h2.my-16
+        = t('contracts.form.sections.associated_resources')
+      = f.association :lines, as: :autocomplete_select, collection: @workbench.lines, include_blank: true, input_html: {multiple: true, class: "w-full"}
+
+  .separator.section_separator
+  .row
+    .col-lg-12
+      h2.my-16
+        = Chouette::StopArea.tmf(:codes)
+      = f.simple_fields_for(:codes) do |codes_form|
+        = render 'code_fields', f: codes_form
+
+      .links.nested-linker
+        = link_to_add_association t('contracts.form.add_code'), f, :codes, class: 'btn btn-primary'
+
+  = cancel_button
+  = f.button :submit, t('actions.submit'), class: 'btn btn-default formSubmitr', form: 'contract_form'

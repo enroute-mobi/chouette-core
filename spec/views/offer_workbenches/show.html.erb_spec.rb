@@ -12,8 +12,6 @@ RSpec::Matchers.define :have_box_for_item do |item, disabled|
 end
 
 RSpec.describe "workbenches/show", :type => :view do
-  include Pundit::PunditViewPolicy
-
   let(:context) do
     Chouette.create do
       workgroup do
@@ -22,6 +20,9 @@ RSpec.describe "workbenches/show", :type => :view do
       end
     end
   end
+
+  let(:policy_context_class) { Policy::Context::Workbench }
+  let(:current_workbench) { workbench }
 
   let!(:workbench) { assign :workbench, context.workbench(:user_workbench) }
   let!(:same_organisation_referential) { context.referential(:user_referential) }

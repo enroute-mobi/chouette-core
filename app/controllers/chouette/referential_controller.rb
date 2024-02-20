@@ -17,6 +17,10 @@ module Chouette
 
     include WithinWorkgroup
 
+    def policy_context_class
+      Policy::Context::Referential
+    end
+
     private
 
     def current_workgroup

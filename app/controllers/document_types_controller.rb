@@ -57,6 +57,4 @@ class DocumentTypesController < Chouette::WorkgroupController
       :description
     )
   end
-
-  Policy::Authorizer::Controller.for(self, Policy::Authorizer::Legacy)
 end

@@ -1,8 +1,6 @@
 # frozen_string_literal: true
 
 RSpec.describe StopAreaDecorator, type: :decorator do
-  include Pundit::PunditDecoratorPolicy
-
   let(:object) { Chouette::StopArea.new }
 
   describe '#waiting_time_text' do

@@ -53,6 +53,14 @@ class WorkgroupsController < Chouette::ResourceController
     redirect_to resource
   end
 
+  def policy_context_class
+    if current_workgroup
+      Policy::Context::Workgroup
+    else
+      Policy::Context::User
+    end
+  end
+
   protected
 
   def scope
@@ -94,6 +102,4 @@ class WorkgroupsController < Chouette::ResourceController
   end
 
   alias current_workgroup resource
-
-  Policy::Authorizer::Controller.for(self, Policy::Authorizer::Legacy)
 end

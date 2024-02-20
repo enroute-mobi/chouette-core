@@ -154,6 +154,4 @@ class LinesController < Chouette::LineReferentialController
     out[:secondary_company_ids] = (out[:secondary_company_ids] || []).select(&:present?)
     out
   end
-
-  Policy::Authorizer::Controller.for(self, Policy::Authorizer::Legacy)
 end

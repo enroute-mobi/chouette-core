@@ -105,6 +105,4 @@ class CompaniesController < Chouette::LineReferentialController
     fields += permitted_custom_fields_params(Chouette::Company.custom_fields(line_referential.workgroup))
     params.require(:company).permit(fields)
   end
-
-  Policy::Authorizer::Controller.for(self, Policy::Authorizer::Legacy)
 end

@@ -1,10 +1,10 @@
 # frozen_string_literal: true
 
 RSpec.describe ReferentialDecorator, type: %i[helper decorator] do
-  include Pundit::PunditDecoratorPolicy
-
+  let(:policy_context_class) { Policy::Context::Workbench }
   let(:current_workbench) { build_stubbed :workbench }
-  let(:current_referential) { build_stubbed :referential, workbench: current_workbench }
+  let(:referential_workbench) { build_stubbed :workbench }
+  let(:current_referential) { build_stubbed :referential, workbench: referential_workbench }
   let(:object) { current_referential }
 
   before do
@@ -45,8 +45,10 @@ RSpec.describe ReferentialDecorator, type: %i[helper decorator] do
         end
       end
       context 'all rights and same organisation' do
-        let(:current_user) { build_stubbed :allmighty_user, organisation: object.organisation }
+        let(:current_user) { build_stubbed :allmighty_user }
+        let(:current_workbench) { referential_workbench }
         let(:action) { :index }
+
         context 'on index' do
           it 'has corresponding actions' do
             expect_action_link_elements(action).to match_array ['Consulter', 'Editer ce jeu de données', 'Calendriers',
@@ -144,7 +146,9 @@ RSpec.describe ReferentialDecorator, type: %i[helper decorator] do
       end
 
       context 'all rights and same organisation' do
-        let(:current_user) { build_stubbed :allmighty_user, organisation: object.organisation }
+        let(:current_user) { build_stubbed :allmighty_user }
+        let(:current_workbench) { referential_workbench }
+
         it 'has only default actions' do
           expect_action_link_elements.to match_array ['Consulter', 'Calendriers', 'Dupliquer', 'Désarchiver',
                                                       'Supprimer ce jeu de données']
@@ -184,7 +188,9 @@ RSpec.describe ReferentialDecorator, type: %i[helper decorator] do
       end
 
       context 'all rights and same organisation' do
-        let(:current_user) { build_stubbed :allmighty_user, organisation: object.organisation }
+        let(:current_user) { build_stubbed :allmighty_user }
+        let(:current_workbench) { referential_workbench }
+
         it 'has only default actions' do
           expect_action_link_elements.to match_array %w[Consulter Calendriers Contrôler]
           expect_action_link_hrefs.to match_array([

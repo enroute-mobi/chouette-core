@@ -12,6 +12,7 @@ class ReferentialsController < Chouette::ResourceController
   before_action :authorize_resource, except: %i[new create index show journey_patterns]
   # rubocop:enable Rails/LexicallyScopedActionFilter
   before_action :check_cloning_source_is_accessible, only: %i(new create)
+  before_action :resource, only: :show
   before_action :check_lines_outside_of_functional_scope, only: :show
 
   def index
@@ -103,6 +104,14 @@ class ReferentialsController < Chouette::ResourceController
     referential.switch
     jp = Chouette::JourneyPattern.find(params[:journey_pattern_id])
     redirect_to referential_line_route_journey_patterns_path(referential, jp.route.line, jp.route)
+  end
+
+  def policy_context_class
+    if current_referential
+      ::Policy::Context::Referential
+    else
+      ::Policy::Context::Workbench
+    end
   end
 
   protected
@@ -198,7 +207,12 @@ class ReferentialsController < Chouette::ResourceController
       metadatas_attributes: [:id, :first_period_begin, :first_period_end, periods_attributes: [:begin, :end, :id, :_destroy], :lines => []]
     )
     referential_params[:from_current_offer] = referential_params[:from_current_offer] == 'true'
-    referential_params[:urgent] = policy(Referential.new(organisation: current_organisation)).flag_urgent? && referential_params[:urgent] == 'true'
+    referential_params[:urgent] = referential_params[:urgent] == 'true' && \
+                                  policy(
+                                    current_workbench.referentials.build(
+                                      organisation: current_organisation
+                                    )
+                                  ).flag_urgent?
     referential_params
   end
 
@@ -226,5 +240,5 @@ class ReferentialsController < Chouette::ResourceController
   alias current_workbench load_workbench
   helper_method :current_workbench
 
-  Policy::Authorizer::Controller.for(self, Policy::Authorizer::Legacy)
+  alias parent_for_parent_policy current_workbench
 end

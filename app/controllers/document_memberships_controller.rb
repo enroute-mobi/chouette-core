@@ -43,11 +43,11 @@ class DocumentMembershipsController < Chouette::ResourceController
     redirect_to redirect_path
   end
 
-  protected
-
-  def authorize_resource_class
-    authorize_policy(parent_policy, nil, build_resource)
+  def policy_context_class
+    Policy::Context::Workbench
   end
+
+  protected
 
   alias document_membership resource
   alias documentable parent

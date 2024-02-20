@@ -98,10 +98,6 @@ module Chouette
       country.translations[I18n.locale.to_s] || country.name
     end
 
-    def same_documentable_workbench?(workbench)
-      line_provider.workbench_id == workbench.id
-    end
-
     private
 
     def define_line_referential

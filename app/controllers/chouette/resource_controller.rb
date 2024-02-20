@@ -9,6 +9,10 @@ module Chouette
 
     include PolicyChecker
 
+    def policy_context_class
+      Policy::Context::User
+    end
+
     private
 
     def begin_of_association_chain

@@ -17,6 +17,4 @@ class StopAreaDocumentMembershipsController < DocumentMembershipsController
   def member_path_method
     :workbench_stop_area_referential_stop_area_document_membership_path
   end
-
-  Policy::Authorizer::Controller.for(self, Policy::Authorizer::Legacy)
 end

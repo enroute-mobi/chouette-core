@@ -57,6 +57,4 @@ class StopAreaProvidersController < Chouette::StopAreaReferentialController
     ]
     params.require(:stop_area_provider).permit(fields)
   end
-
-  Policy::Authorizer::Controller.for(self, Policy::Authorizer::Legacy)
 end

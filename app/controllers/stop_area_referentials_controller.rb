@@ -43,6 +43,4 @@ class StopAreaReferentialsController < Chouette::WorkbenchController
 
     { locales: locales, stops_selection_displayed_fields: stops_selection_displayed_fields, route_edition_available_stops: route_edition_available_stops }
   end
-
-  Policy::Authorizer::Controller.for(self, Policy::Authorizer::Legacy)
 end

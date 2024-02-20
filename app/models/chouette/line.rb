@@ -220,10 +220,6 @@ module Chouette
       get_objectid.try(:local_id)
     end
 
-    def same_documentable_workbench?(workbench)
-      line_provider.workbench_id == workbench.id
-    end
-
     private
 
     def define_line_referential

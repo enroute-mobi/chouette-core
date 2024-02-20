@@ -58,6 +58,4 @@ class DocumentProvidersController < Chouette::WorkbenchController
       :short_name
     )
   end
-
-  Policy::Authorizer::Controller.for(self, Policy::Authorizer::Legacy)
 end

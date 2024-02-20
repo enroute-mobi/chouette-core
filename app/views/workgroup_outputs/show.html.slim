@@ -11,7 +11,7 @@
   .row.mb-sm
     .col-lg-12.text-right
       = link_to t('.see_current_output'), referential_path(@workgroup.output.current), class: 'btn btn-primary' if @workgroup.output&.current
-      - if policy(@workgroup).aggregate?
+      - if policy(@workgroup).create?(Aggregate)
         = link_to t('aggregates.actions.create'), new_workgroup_aggregate_path(@workgroup), class: 'btn btn-primary'
 
 .page_content

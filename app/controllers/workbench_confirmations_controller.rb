@@ -13,11 +13,13 @@ class WorkbenchConfirmationsController < Chouette::ResourceController
 
   protected
 
+  def authorize_resource_class
+    authorize_policy(parent_policy, :workbench_confirm?, Workbench)
+  end
+
   def workbench_confirmation_params
     params.require(:workbench_confirmation).permit(
       :invitation_code
     )
   end
-
-  Policy::Authorizer::Controller.for(self, Policy::Authorizer::Legacy)
 end

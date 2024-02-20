@@ -65,6 +65,4 @@ class UsersController < Chouette::ResourceController
   def resource
     @user = super.decorate
   end
-
-  Policy::Authorizer::Controller.for(self, Policy::Authorizer::Legacy)
 end

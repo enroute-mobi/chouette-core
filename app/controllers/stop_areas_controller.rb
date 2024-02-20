@@ -143,6 +143,4 @@ class StopAreasController < Chouette::StopAreaReferentialController
     ] + permitted_custom_fields_params(Chouette::StopArea.custom_fields(stop_area_referential.workgroup))
     params.require(:stop_area).permit(fields)
   end
-
-  Policy::Authorizer::Controller.for(self, Policy::Authorizer::Legacy)
 end

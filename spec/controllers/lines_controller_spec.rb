@@ -1,10 +1,12 @@
-RSpec.describe LinesController, :type => :controller do
+# frozen_string_literal: true
+
+RSpec.describe LinesController, type: :controller do
   login_user
 
-  let!(:context) do
+  let(:context) do
     Chouette.create do
-      workgroup do
-        workbench organisation: Organisation.find_by_code('first')
+      workgroup(owner: Organisation.find_by(code: 'first')) do
+        workbench organisation: Organisation.find_by(code: 'first')
       end
     end
   end

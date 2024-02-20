@@ -102,7 +102,6 @@ module Policy
     protected
 
     def _can?(_action, *_args)
-      # TODO: See CHOUETTE-3346
       false
     end
 

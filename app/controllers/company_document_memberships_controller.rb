@@ -17,6 +17,4 @@ class CompanyDocumentMembershipsController < DocumentMembershipsController
   def member_path_method
     :workbench_line_referential_company_document_membership_path
   end
-
-  Policy::Authorizer::Controller.for(self, Policy::Authorizer::Legacy)
 end

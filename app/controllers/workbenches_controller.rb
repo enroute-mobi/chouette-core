@@ -33,6 +33,14 @@ class WorkbenchesController < Chouette::ResourceController
     redirect_to resource
   end
 
+  def policy_context_class
+    if current_workbench
+      Policy::Context::Workbench
+    else
+      Policy::Context::Workgroup
+    end
+  end
+
   private
 
   def resource
@@ -67,6 +75,4 @@ class WorkbenchesController < Chouette::ResourceController
   def collection
     @collection ||= search.search scope
   end
-
-  Policy::Authorizer::Controller.for(self, Policy::Authorizer::Legacy)
 end

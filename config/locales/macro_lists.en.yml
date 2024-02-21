@@ -5,17 +5,17 @@ en:
     show:
       title: "%{name}"
     new:
-      title: "Create a Macro Lists"
+      title: "Create a Macro List"
     actions:
-      show: "Show this Macro Lists"
-      new: "Add a Macro Lists"
-      edit: "Edit this Macro Lists"
-      destroy: "Delete this Macro Lists"
-      destroy_confirm: "Are you sur to delete this Macro Lists ?"
+      show: "Show this Macro List"
+      new: "Add a Macro List"
+      edit: "Edit this Macro List"
+      destroy: "Delete this Macro List"
+      destroy_confirm: "Are you sur to delete this Macro List ?"
   macro_lists:
     actions:
       new: "Add a Macro List"
-      show: "Show Macro Lists Run"
+      show: "Show Macro Reports"
     search_no_results: "No Macro Lists match your search"
     errors:
     edit:
@@ -32,8 +32,8 @@ en:
   activerecord:
     models:
       macro/list:
-        zero:  "Macro Lists"
-        one:   "Macro Lists"
+        zero:  "Macro List"
+        one:   "Macro List"
         other: "Macro Lists"
     attributes:
       macro:

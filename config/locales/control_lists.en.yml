@@ -5,17 +5,17 @@ en:
     show:
       title: "%{name}"
     new:
-      title: "Create a Control Lists"
+      title: "Create a Control List"
     actions:
-      show: "Show this Control Lists"
-      new: "Add a Control Lists"
-      edit: "Edit this Control Lists"
-      destroy: "Delete this Control Lists"
-      destroy_confirm: "Are you sur to delete this Control Lists ?"
+      show: "Show this Control List"
+      new: "Add a Control List"
+      edit: "Edit this Control List"
+      destroy: "Delete this Control List"
+      destroy_confirm: "Are you sur to delete this Control List ?"
   control_lists:
     actions:
       new: "Add a Control List"
-      show: "Show Control Lists Run"
+      show: "Show Control Reports"
     search_no_results: "No Control Lists match your search"
     errors:
     edit:
@@ -32,8 +32,8 @@ en:
   activerecord:
     models:
       control/list:
-        zero:  "Control Lists"
-        one:   "Control Lists"
+        zero:  "Control List"
+        one:   "Control List"
         other: "Control Lists"
     attributes:
       control:

@@ -1,7 +1,7 @@
 en:
   macro/list/runs:
     index:
-      title: Macro Runs Reports
+      title: Macro Reports
     show:
       title: "%{name}"
     new:
@@ -14,30 +14,31 @@ en:
       destroy_confirm: "Are you sur to delete this report ?"
   macro_list_runs:
     actions:
-      new: "Execute this report"
+      new: "Execute a Macro List"
+      show: "Macro Reports"
     filters:
       name: Search by name
   macro_list_run:
     actions:
-      new: "Execute this report"
-      show: "Macro Runs Reports"
+      new: "Execute a Macro List"
+      show: "Show Macro Lists"
       create: "Create a report"
     new:
       title: "Create a report"
     index:
-      title: "Macro Runs Reports"
+      title: "Macro Reports"
     show:
       title: "%{name}"
       section:
         processing: Processing
         information: Information
-    search_no_results: "No Macro Runs Reports matching your search"
+    search_no_results: "No Macro Reports matching your search"
   activerecord:
     models:
       macro/list/run:
-        zero:  "Macro Runs Reports"
-        one:   "Macro Runs Report"
-        other: "Macro Runs Reports"
+        zero:  "Macro Reports"
+        one:   "Macro Report"
+        other: "Macro Reports"
     attributes:
       macro/list/run:
         user_status: Status

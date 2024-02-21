@@ -42,7 +42,14 @@ module OptionsHelper
       end
       opts[:collection] = export.instance_exec(&option_def[:collection]) if option_def[:collection].is_a?(Proc)
 
-      opts[:collection] = opts[:collection].push([t('none'), nil]) if option_def[:allow_blank]
+      if option_def[:allow_blank]
+        if opts[:collection].respond_to? :model
+           none = opts[:collection].model.new
+           opts[:collection] = [none] + opts[:collection].sort_by(&:name)
+        else
+          opts[:collection] = opts[:collection].push([t('none'), nil])
+        end
+      end
     end
     opts[:label] =  translate_option_key(type, attr)
 

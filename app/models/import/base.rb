@@ -58,7 +58,7 @@ class Import::Base < ApplicationModel
   def update_workgroup_providers?
     if options['update_workgroup_providers']
       true
-    elsif (parent_options = parent&.options).present?
+    elsif parent_options.present?
       parent_options['update_workgroup_providers'] == 'true'
     else
       false
@@ -68,7 +68,7 @@ class Import::Base < ApplicationModel
   def store_xml?
     if options['store_xml']
       true
-    elsif (parent_options = parent&.options).present?
+    elsif parent_options.present?
       parent_options['store_xml'] == 'true'
     else
       false
@@ -78,7 +78,7 @@ class Import::Base < ApplicationModel
   def disable_missing_resources?
     if options['disable_missing_resources']
       true
-    elsif (parent_options = parent&.options).present?
+    elsif parent_options.present?
       parent_options['disable_missing_resources'] == 'true'
     else
       false
@@ -88,11 +88,15 @@ class Import::Base < ApplicationModel
   def strict_mode?
     if options['strict_mode'] == 'true'
       true
-    elsif (parent_options = parent&.options).present?
+    elsif parent_options.present?
       parent_options['strict_mode'] == 'true'
     else
       false
     end
+  end
+
+  def parent_options
+    parent&.options
   end
 
   PERIOD_EXTREME_VALUE = 25.years

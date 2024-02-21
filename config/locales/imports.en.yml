@@ -123,6 +123,7 @@ en:
           strict_mode: Strict Mode (reset any undefined attribute)
           line_provider_id: Line Provider
           stop_area_provider_id: Stop Area Provider
+          specific_default_company_id: Specific default company
           shape_attribute_as_id: Attribute used as id
           import_category: Import type
           import_category_collection:

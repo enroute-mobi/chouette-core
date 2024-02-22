@@ -580,36 +580,55 @@ describe Chouette::VehicleJourney, type: :model do
     end
   end
 
-  describe "vjas_departure_time_must_be_before_next_stop_arrival_time",
-      skip: "Validation currently commented out because it interferes with day offsets" do
-
-    let(:vehicle_journey) { create :vehicle_journey }
-    let(:vjas) { vehicle_journey.vehicle_journey_at_stops }
-
-    it 'should add errors a stop departure_time is greater then next stop arrival time' do
-      vjas[0][:departure_time] = vjas[1][:arrival_time] + 1.minute
-      vehicle_journey.validate
-
-      expect(vjas[0].errors[:departure_time]).not_to be_blank
-      expect(vehicle_journey.errors.count).to eq(1)
-      expect(vehicle_journey).not_to be_valid
-    end
-
-    it 'should consider valid to have departure_time equal to next stop arrival time' do
-      vjas[0][:departure_time] = vjas[1][:arrival_time]
-      vehicle_journey.validate
-
-      expect(vjas[0].errors[:departure_time]).to be_blank
-      expect(vehicle_journey.errors).to be_empty
-      expect(vehicle_journey).to be_valid
-    end
-
-    it 'should not add errors when departure_time is less then next stop arrival time' do
-      vehicle_journey.validate
-      vjas.each do |stop|
-        expect(stop.errors).to be_empty
+  describe "vjas_departure_time_must_be_before_next_stop_arrival_time" do
+    let(:context) do
+      Chouette.create do
+        vehicle_journey
       end
-      expect(vehicle_journey).to be_valid
+    end
+
+    let(:vehicle_journey) { context.vehicle_journey }
+
+    context 'when second vehicle_journey_at_stop day offset is 1' do
+      before(:each) do
+        second_vjas = vehicle_journey.vehicle_journey_at_stops.second
+        second_vjas.departure_day_offset = 1
+        second_vjas.arrival_day_offset = 1
+      end
+
+      it 'returns true and vehicle journey should be valid' do
+        vehicle_journey.validate
+
+        expect(vehicle_journey).to be_valid
+        expect(vehicle_journey.vjas_departure_time_must_be_before_next_stop_arrival_time).to be_truthy
+      end
+
+      context 'and first vehicle journey at stop departure and arrival time are 22:55:00 and next one 00:05:00' do
+        before(:each) do
+          first_vjas = vehicle_journey.vehicle_journey_at_stops.first
+          first_vjas.arrival_time = "2000-01-01 22:55:00 UTC"
+          first_vjas.departure_time = "2000-01-01 22:55:00 UTC"
+          second_vjas = vehicle_journey.vehicle_journey_at_stops.second
+          second_vjas.departure_day_offset = 1
+          second_vjas.arrival_day_offset = 1
+          second_vjas.arrival_time = "2000-01-01 00:05:00 UTC"
+          second_vjas.departure_time = "2000-01-01 00:05:00 UTC"
+        end
+
+        it 'returns true and vehicle journey should be valid' do
+          vehicle_journey.validate
+
+          expect(vehicle_journey).to be_valid
+          expect(vehicle_journey.vjas_departure_time_must_be_before_next_stop_arrival_time).to be_truthy
+        end
+      end
+    end
+
+    context 'when all vehicle_journey_at_stop have a day offset 0' do
+      it 'returns true and vehicle journey should be valid' do
+        expect(vehicle_journey).to be_valid
+        expect(vehicle_journey.vjas_departure_time_must_be_before_next_stop_arrival_time).to be_truthy
+      end
     end
   end
 

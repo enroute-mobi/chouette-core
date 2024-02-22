@@ -10,7 +10,8 @@ module Policy
       [
         ::Chouette::Company,
         ::LineProvider,
-        ::Chouette::Line
+        ::Chouette::Line,
+        ::LineRoutingConstraintZone
       ].include?(resource_class)
     end
   end

@@ -70,6 +70,8 @@ module Policy
     # Context with associated Referential
     class Referential < Workbench
       attribute :referential
+
+      delegate :referential_read_only?, to: :referential
     end
   end
 end

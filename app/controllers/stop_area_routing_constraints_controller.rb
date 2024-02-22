@@ -74,6 +74,4 @@ class StopAreaRoutingConstraintsController < Chouette::StopAreaReferentialContro
   def stop_area_routing_constraint_params
     params.require(:stop_area_routing_constraint).permit(:from_id, :to_id, :both_way)
   end
-
-  Policy::Authorizer::Controller.for(self, Policy::Authorizer::Legacy)
 end

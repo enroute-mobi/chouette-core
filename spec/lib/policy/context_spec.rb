@@ -165,5 +165,18 @@ RSpec.describe Policy::Context do
     it { is_expected.to have_attribute(:workgroup) }
     it { is_expected.to have_attribute(:workbench) }
     it { is_expected.to have_attributes(referential: provider_referential) }
+
+    describe '#referential_read_only?' do
+      subject { policy_context.referential_read_only? }
+
+      context 'when the referential is read only' do
+        before { referential.archived_at = 1.day.ago }
+        it { is_expected.to be_truthy }
+      end
+
+      context 'when the referential is not read only' do
+        it { is_expected.to be_falsy }
+      end
+    end
   end
 end

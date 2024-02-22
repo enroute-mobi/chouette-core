@@ -4,10 +4,12 @@ RSpec.describe Policy::Line, type: :policy do
   describe '#create?' do
     subject { policy.create?(resource_class) }
 
+    let(:policy_context_class) { Policy::Context::Referential }
     let(:resource_class) { double }
 
     it { applies_strategy(Policy::Strategy::LineProvider) }
     it { applies_strategy(Policy::Strategy::Permission, :create, resource_class) }
+    it { does_not_apply_strategy(Policy::Strategy::Referential) }
 
     it { is_expected.to be_falsy }
 
@@ -16,9 +18,30 @@ RSpec.describe Policy::Line, type: :policy do
 
       it { applies_strategy(Policy::Strategy::LineProvider) }
       it { applies_strategy(::Policy::Strategy::Permission, :create, ::DocumentMembership) }
+      it { does_not_apply_strategy(Policy::Strategy::Referential) }
       it { applies_strategy(::Policy::Strategy::Permission, :update) }
 
       it { is_expected.to be_truthy }
+
+      context 'with Workbench context' do
+        let(:policy_context_class) { Policy::Context::Workbench }
+        it { is_expected.to be_truthy }
+      end
+    end
+
+    context 'with Chouette::RoutingConstraintZone' do
+      let(:resource_class) { Chouette::RoutingConstraintZone }
+
+      it { applies_strategy(Policy::Strategy::LineProvider) }
+      it { applies_strategy(Policy::Strategy::Permission, :create, Chouette::RoutingConstraintZone) }
+      it { applies_strategy(Policy::Strategy::Referential) }
+
+      it { is_expected.to be_truthy }
+
+      context 'with Workbench context' do
+        let(:policy_context_class) { Policy::Context::Workbench }
+        it { is_expected.to be_falsy }
+      end
     end
   end
 
@@ -27,6 +50,7 @@ RSpec.describe Policy::Line, type: :policy do
 
     it { applies_strategy(Policy::Strategy::LineProvider) }
     it { applies_strategy(Policy::Strategy::Permission, :update) }
+    it { does_not_apply_strategy(Policy::Strategy::Referential) }
 
     it { is_expected.to be_truthy }
   end
@@ -36,6 +60,7 @@ RSpec.describe Policy::Line, type: :policy do
 
     it { applies_strategy(Policy::Strategy::LineProvider) }
     it { applies_strategy(Policy::Strategy::Permission, :destroy) }
+    it { does_not_apply_strategy(Policy::Strategy::Referential) }
 
     it { is_expected.to be_truthy }
   end
@@ -45,6 +70,7 @@ RSpec.describe Policy::Line, type: :policy do
 
     it { applies_strategy(Policy::Strategy::LineProvider) }
     it { applies_strategy(Policy::Strategy::Permission, :update_activation_dates) }
+    it { does_not_apply_strategy(Policy::Strategy::Referential) }
 
     it do
       expect(policy).to receive(:around_can).with(:update_activation_dates).and_call_original

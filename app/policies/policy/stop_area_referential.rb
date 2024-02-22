@@ -9,7 +9,8 @@ module Policy
     def _create?(resource_class)
       [
         ::StopAreaProvider,
-        ::Chouette::StopArea
+        ::Chouette::StopArea,
+        ::StopAreaRoutingConstraint
       ].include?(resource_class)
     end
 

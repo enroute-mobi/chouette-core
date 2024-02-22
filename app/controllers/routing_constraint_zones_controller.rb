@@ -124,6 +124,4 @@ class RoutingConstraintZonesController < Chouette::ReferentialController
       Rails.logger.error("Error: An ITL must have at least two stop points")
     end
   end
-
-  Policy::Authorizer::Controller.for(self, Policy::Authorizer::Legacy)
 end

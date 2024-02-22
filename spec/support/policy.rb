@@ -9,9 +9,20 @@ module Support
         included do
           let(:resource) { double }
 
-          let(:policy_context_class) { ::Policy::Context::Empty }
-          let(:policy_context_provider) { double }
-          let(:policy_context) { policy_context_class.from(policy_context_provider) }
+          let(:current_user) { double(:current_user) }
+          let(:current_workgroup) { double(:current_workgroup) }
+          let(:current_workbench) { double(:current_workbench) }
+          let(:current_referential) { double(:current_referential) }
+          let(:policy_context_class) { described_class.context_class(nil) }
+          let(:policy_context_provider) do
+            double(
+              current_user: current_user,
+              current_workgroup: current_workgroup,
+              current_workbench: current_workbench,
+              current_referential: current_referential
+            )
+          end
+          let(:policy_context) { policy_context_class&.from(policy_context_provider) }
         end
       end
 
@@ -117,6 +128,7 @@ module Support
       include Policy::Lets
 
       included do
+        let(:policy_context_class) { described_class.context_class }
         let(:policy) { double(resource: resource, context: policy_context) }
 
         subject(:strategy) { described_class.new(policy) }

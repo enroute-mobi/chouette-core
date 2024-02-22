@@ -8,6 +8,20 @@ module Policy
   #   def something?
   #     around_can(:something) { true || false }
   #   end
+  #
+  # If that new action directly calls the context, .context_class(action) must return a context class that supports it.
+  #
+  #   def something?
+  #     around_can(:something) { context.workgroup.nil? }
+  #   end
+  #
+  #   def self.context_class(action)
+  #     if action == :something
+  #       ::Policy::Context::Workgroup
+  #     else
+  #       super
+  #     end
+  #   end
   class Base
     class << self
       def strategy_classes
@@ -24,6 +38,23 @@ module Policy
           strategy_classes[nil] ||= []
           strategy_classes[nil] << strategy_class
         end
+      end
+
+      def context_class(action)
+        @context_classes ||= Hash.new { |h, v| h[v] = context_class_for(v) }
+        @context_classes[action]
+      end
+
+      private
+
+      def context_class_for(action)
+        context_class = action.nil? ? nil : context_class(nil)
+        strategy_classes[action]&.each do |s|
+          next unless s.context_class
+
+          context_class = s.context_class if context_class.nil? || s.context_class < context_class
+        end
+        context_class
       end
     end
 
@@ -90,9 +121,20 @@ module Policy
     private
 
     def around_can(action, *args)
-      (apply_strategies(action, *args) && yield).tap do |result|
+      (check_context_class(action, *args) && apply_strategies(action, *args) && yield).tap do |result|
         log(action, *args) { "= #{result.inspect}" }
       end
+    end
+
+    def check_context_class(action, *args)
+      context_class = self.class.context_class(action)
+      return true if context_class.nil?
+      return true if context && context.class <= context_class
+
+      log(action, *args) do
+        "context #{context&.class.inspect} is incompatible with #{context_class}"
+      end
+      false
     end
 
     def apply_strategies(action, *args)

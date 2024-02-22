@@ -54,6 +54,10 @@ module Policy
 
     private
 
+    def check_context_class(_action, *_args)
+      true
+    end
+
     def apply_strategies(_action, *_args)
       true
     end

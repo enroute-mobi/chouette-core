@@ -1,10 +1,11 @@
 # frozen_string_literal: true
 
 RSpec.describe Policy::Base do
-  subject(:policy) { policy_class.new(resource) }
+  subject(:policy) { policy_class.new(resource, context: policy_context) }
 
   let(:policy_class) { Policy::Base }
   let(:resource) { double }
+  let(:policy_context) { nil }
 
   let(:resource_class) { double }
 
@@ -74,6 +75,133 @@ RSpec.describe Policy::Base do
         expect_any_instance_of(strategy_class).not_to receive(:apply)
         expect(policy.destroy?).to be_truthy
         expect(policy.nothing?).to be_truthy
+      end
+    end
+  end
+
+  describe '.context_class' do
+    subject { policy_class.context_class(:something) }
+
+    let(:policy_class) do
+      Class.new(Policy::Base) do
+        def self.name
+          'SomePolicy'
+        end
+
+        protected
+
+        def _can?(_, *_)
+          true
+        end
+      end
+    end
+    let(:nil_strategy_class) { Class.new(Policy::Strategy::Base) }
+    let(:user_strategy_class) do
+      Class.new(Policy::Strategy::Base) do
+        def self.context_class
+          Policy::Context::User
+        end
+      end
+    end
+    let(:workgroup_strategy_class) do
+      Class.new(Policy::Strategy::Base) do
+        def self.context_class
+          Policy::Context::Workgroup
+        end
+      end
+    end
+
+    it { is_expected.to be_nil }
+
+    it 'is nil when policy authorizes by a strategy without context class' do
+      policy_class.authorize_by(nil_strategy_class)
+      is_expected.to be_nil
+    end
+
+    it 'is context User when policy authorizes by a strategy with context User' do
+      policy_class.authorize_by(user_strategy_class)
+      is_expected.to eq(Policy::Context::User)
+    end
+
+    it 'is context Workgroup when policy authorizes 2 strategy with context User and a without context' do
+      policy_class.authorize_by(user_strategy_class)
+      policy_class.authorize_by(nil_strategy_class)
+      is_expected.to eq(Policy::Context::User)
+    end
+
+    it 'is context Workgroup when policy authorizes 2 strategies with context User and a context Workgroup' do
+      policy_class.authorize_by(user_strategy_class)
+      policy_class.authorize_by(workgroup_strategy_class)
+      is_expected.to eq(Policy::Context::Workgroup)
+    end
+
+    it 'is context Workgroup when policy authorizes 2 strategies with context Workgroup and a context User' do
+      policy_class.authorize_by(workgroup_strategy_class)
+      policy_class.authorize_by(user_strategy_class)
+      is_expected.to eq(Policy::Context::Workgroup)
+    end
+
+    it(
+      'is context Workgroup when policy authorizes a strategy with context User and ' \
+      'a strategy with context Workgroup with only option for the given action'
+    ) do
+      policy_class.authorize_by(user_strategy_class)
+      policy_class.authorize_by(workgroup_strategy_class, only: %i[something])
+      is_expected.to eq(Policy::Context::Workgroup)
+    end
+
+    it(
+      'is context User when policy authorizes a strategy with context User and ' \
+      'a strategy with context Workgroup with only option not for the given action'
+    ) do
+      policy_class.authorize_by(user_strategy_class)
+      policy_class.authorize_by(workgroup_strategy_class, only: %i[something_else])
+      is_expected.to eq(Policy::Context::User)
+    end
+
+    describe 'with #can?' do
+      subject { policy.can?(:something) }
+
+      before { allow(policy_class).to receive(:context_class).with(:something).and_return(policy_context_class) }
+
+      context 'when expected context class is nil' do
+        let(:policy_context_class) { nil }
+
+        context 'without given context' do
+          it { is_expected.to eq(true) }
+        end
+
+        context 'when given context is User' do
+          let(:policy_context) { Policy::Context::User.new }
+          it { is_expected.to eq(true) }
+        end
+      end
+
+      context 'when expected context class is User' do
+        let(:policy_context_class) { Policy::Context::User }
+
+        context 'without given context' do
+          it { is_expected.to eq(false) }
+        end
+
+        context 'when given context is User' do
+          let(:policy_context) { Policy::Context::User.new }
+          it { is_expected.to eq(true) }
+        end
+
+        context 'when given context is Workgroup' do
+          let(:policy_context) { Policy::Context::Workgroup.new }
+          it { is_expected.to eq(true) }
+        end
+      end
+
+      context 'when expected context class is Workgroup' do
+        let(:policy_context_class) { Policy::Context::Workgroup }
+
+        context 'when given context is User' do
+          let(:policy_context) { Policy::Context::User.new }
+          it { is_expected.to eq(false) }
+        end
       end
     end
   end

@@ -14,25 +14,39 @@ RSpec.describe Control::ServicesOnlyInValidityPeriod do
       )
     end
 
-    let(:journey_pattern1) { create :journey_pattern }
-    let(:journey_pattern2) { create :journey_pattern }
-
-    let(:line_referential) { create :line_referential }
-    let(:workbench) { create :workbench, line_referential: line_referential }
-    let!(:line) { create :line, line_referential: line_referential }
-    let!(:faulty_line) do 
-      create :line, name: 'Faulty Line' , line_referential: line_referential, active_from: '2030-01-01'.to_date
+    let(:context) do
+      Chouette.create do
+        workbench do
+          line :faulty_line, name: 'Faulty Line', active_from: '2030-01-01'.to_date
+          line :line
+    
+          referential do
+            route(line: :faulty_line) do
+              journey_pattern :journey_pattern1
+            end
+    
+            route(line: :line) do
+              journey_pattern :journey_pattern2
+            end
+          end
+        end
+      end
     end
+
+    let(:workbench) { context.workbench }
+    let(:referential) { context.referential }
+
+    let(:line) { context.line(:line) }
+    let(:faulty_line) { context.line(:faulty_line) }
 
     let(:route1) { journey_pattern1.route }
     let(:route2) { journey_pattern2.route }
 
-    let(:referential)  { create :workbench_referential, workbench: workbench }
-  
+    let(:journey_pattern1) { context.journey_pattern(:journey_pattern1) }
+    let(:journey_pattern2) { context.journey_pattern(:journey_pattern2) }
+
     before do
       referential.switch
-      journey_pattern1.route.update line: faulty_line
-      journey_pattern2.route.update line: line
 
       referential.service_counts.create([
         {

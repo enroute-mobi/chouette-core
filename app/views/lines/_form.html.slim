@@ -42,7 +42,7 @@
       h2.mb-lg= Chouette::Line.tmf(:codes)
       = f.input :registration_number
       = f.simple_fields_for(:codes) do |codes_form|
-        = render 'shared/code_fields', f: codes_form, code_spaces: @line.workgroup.code_spaces.map {|c| [c.short_name, c.id]},
+        = render 'shared/code_fields', f: codes_form, code_spaces: @line.workgroup.code_spaces.map { |c| [c.short_name, c.id] }
 
       .links.nested-linker
         = link_to_add_association t('lines.form.add_code'), f, :codes, class: 'btn btn-primary'

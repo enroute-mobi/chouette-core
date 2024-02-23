@@ -1,0 +1,14 @@
+.nested-fields.code
+  .wrapper
+    div
+      = f.input :id, as: :hidden, wrapper: false
+      = f.input :code_space_id,
+        as: :select,
+        collection: @stop_area.workgroup.code_spaces.map { |c| [c.short_name, c.id] },
+        label: false,
+        wrapper: false,
+        include_blank: false
+    div
+      = f.input :value, label: false, wrapper: :nested_fields
+    div
+      = link_to_remove_association '', f, class: 'fa fa-trash'

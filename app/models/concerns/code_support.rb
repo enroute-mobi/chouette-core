@@ -9,6 +9,8 @@ module CodeSupport
     scope :by_code, ->(code_space, value) { joins(:codes).where(codes: { code_space: code_space, value: value }) }
     scope :without_code, ->(code_space) { where.not(id: joins(:codes).where(codes: { code_space_id: code_space })) }
 
+    validate :validate_codes
+
     #
     # provider.stop_areas.first_or_initialize_by_code code_space, "A"
     #
@@ -26,6 +28,59 @@ module CodeSupport
       by_code(code_space, value).first_or_create do |model|
         model.codes = [Code.new(code_space: code_space, value: value)]
         yield model if block_given?
+      end
+    end
+  end
+
+  def validate_codes
+    unless Validators::CodeSpaceUniqueness.new(codes).valid? && Validators::ValueUniqueness.new(codes).valid?
+      errors.add(:codes, :invalid)
+    end
+  end
+
+  module Validators
+    class Base
+      def initialize(codes)
+        @codes = codes
+      end
+      attr_reader :codes
+
+      def valid?
+        validate.blank?
+      end
+    end
+
+    class CodeSpaceUniqueness < Base
+      def validate
+        return unless duplicated_codes.present?
+
+        duplicated_codes.each do |code|
+          code.errors.add(:value, :duplicate_code_spaces_in_codes, code_space: code.code_space.short_name)
+        end
+      end
+
+      def duplicated_codes
+        codes
+          .select { |code| !code.code_space.allow_multiple_values }
+          .group_by(&:code_space_id)
+          .map { |code_space_id, codes| codes if codes.many? }
+          .compact.flatten.uniq
+      end
+    end
+
+    class ValueUniqueness < Base
+      def validate
+        return unless duplicated_codes.present?
+
+        duplicated_codes.each do |code|
+          code.errors.add(:value, :duplicate_values_in_codes)
+        end
+      end
+
+      def duplicated_codes
+        codes
+          .group_by { |code| [code.code_space_id, code.value] }
+          .map { |_, codes| codes if codes.many? }.compact.flatten.uniq
       end
     end
   end

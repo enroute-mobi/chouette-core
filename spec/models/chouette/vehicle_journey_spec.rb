@@ -588,6 +588,7 @@ describe Chouette::VehicleJourney, type: :model do
     end
 
     let(:vehicle_journey) { context.vehicle_journey }
+    let(:subject) { vehicle_journey.vjas_departure_time_must_be_before_next_stop_arrival_time }
 
     context 'when second vehicle_journey_at_stop day offset is 1' do
       before(:each) do
@@ -597,10 +598,9 @@ describe Chouette::VehicleJourney, type: :model do
       end
 
       it 'returns true and vehicle journey should be valid' do
-        vehicle_journey.validate
-
+        expect(subject).to be_truthy
         expect(vehicle_journey).to be_valid
-        expect(vehicle_journey.vjas_departure_time_must_be_before_next_stop_arrival_time).to be_truthy
+
       end
 
       context 'and first vehicle journey at stop departure and arrival time are 22:55:00 and next one 00:05:00' do
@@ -616,10 +616,8 @@ describe Chouette::VehicleJourney, type: :model do
         end
 
         it 'returns true and vehicle journey should be valid' do
-          vehicle_journey.validate
-
+          expect(subject).to be_truthy
           expect(vehicle_journey).to be_valid
-          expect(vehicle_journey.vjas_departure_time_must_be_before_next_stop_arrival_time).to be_truthy
         end
       end
 
@@ -636,10 +634,8 @@ describe Chouette::VehicleJourney, type: :model do
         end
 
         it 'returns true and vehicle journey should be valid' do
-          vehicle_journey.validate
-
+          expect(subject).to be_truthy
           expect(vehicle_journey).to be_valid
-          expect(vehicle_journey.vjas_departure_time_must_be_before_next_stop_arrival_time).to be_truthy
         end
       end
     end
@@ -653,17 +649,55 @@ describe Chouette::VehicleJourney, type: :model do
           first_vjas.departure_day_offset = 1
           first_vjas.arrival_day_offset = 1
           second_vjas = vehicle_journey.vehicle_journey_at_stops.second
-          second_vjas.departure_day_offset = 1
-          second_vjas.arrival_day_offset = 1
           second_vjas.arrival_time = "2000-01-01 23:05:00 UTC"
           second_vjas.departure_time = "2000-01-01 23:05:00 UTC"
+          second_vjas.departure_day_offset = 1
+          second_vjas.arrival_day_offset = 1
         end
 
         it 'returns false and vehicle journey should not be valid' do
-          vehicle_journey.validate
-
+          expect(subject).to be_falsey
           expect(vehicle_journey).not_to be_valid
-          expect(vehicle_journey.vjas_departure_time_must_be_before_next_stop_arrival_time).to be_falsey
+        end
+      end
+
+      context 'and first vehicle journey at stop departure and arrival time are before 23:00 and next one 22:05:00' do
+        before(:each) do
+          first_vjas = vehicle_journey.vehicle_journey_at_stops.first
+          first_vjas.arrival_time = "2000-01-01 22:30:00 UTC"
+          first_vjas.departure_time = "2000-01-01 22:30:00 UTC"
+          first_vjas.departure_day_offset = 1
+          first_vjas.arrival_day_offset = 1
+          second_vjas = vehicle_journey.vehicle_journey_at_stops.second
+          second_vjas.arrival_time = "2000-01-01 22:05:00 UTC"
+          second_vjas.departure_time = "2000-01-01 22:05:00 UTC"
+          second_vjas.departure_day_offset = 1
+          second_vjas.arrival_day_offset = 1
+        end
+
+        it 'returns false and vehicle journey should not be valid' do
+          expect(subject).to be_falsey
+          expect(vehicle_journey).not_to be_valid
+        end
+      end
+
+      context 'and first vehicle journey at stop departure and arrival time are after 01:00:00 and next one 23:05:00' do
+        before(:each) do
+          first_vjas = vehicle_journey.vehicle_journey_at_stops.first
+          first_vjas.arrival_time = "2000-01-01 01:05:00 UTC"
+          first_vjas.departure_time = "2000-01-01 01:05:00 UTC"
+          first_vjas.departure_day_offset = 1
+          first_vjas.arrival_day_offset = 1
+          second_vjas = vehicle_journey.vehicle_journey_at_stops.second
+          second_vjas.arrival_time = "2000-01-01 23:05:00 UTC"
+          second_vjas.departure_time = "2000-01-01 23:05:00 UTC"
+          second_vjas.departure_day_offset = 1
+          second_vjas.arrival_day_offset = 1
+        end
+
+        it 'returns false and vehicle journey should not be valid' do
+          expect(subject).to be_falsey
+          expect(vehicle_journey).not_to be_valid
         end
       end
     end

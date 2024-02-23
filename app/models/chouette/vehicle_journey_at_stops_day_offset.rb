@@ -22,9 +22,8 @@ module Chouette
 
             if must_be_fixed?(time_of_day, previous_time_of_day)
               time_of_day = time_of_day.add day_offset: 1
+              vehicle_journey_at_stop.send "#{part}_time_of_day=", time_of_day
             end
-
-            vehicle_journey_at_stop.send "#{part}_time_of_day=", time_of_day
           end
           previous_time_of_day = time_of_day
         end

@@ -119,7 +119,7 @@ module Scope
       @workbench = workbench
     end
 
-    delegate :stop_area_providers, :shape_providers, :line_providers, :document_providers, to: :workbench
+    delegate :stop_area_providers, :shape_providers, :line_providers, :document_providers, :workgroup, to: :workbench
 
     def stop_areas
       scope.stop_areas.where(stop_area_provider: stop_area_providers)

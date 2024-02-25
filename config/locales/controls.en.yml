@@ -50,6 +50,8 @@ en:
         one: Expected provider
       control/passing_times_in_time_range:
         one: Passing times in a time range
+      control/code_uniqueness:
+        one: Code uniqueness
     attributes:
       control/base:
         name: Name
@@ -97,3 +99,6 @@ en:
         passing_time_scope: Passing time scope
         before: Before
         after: After
+      control/code_uniqueness:
+        target_code_space_id: Target code space
+        uniqueness_scope: Uniqueness scope

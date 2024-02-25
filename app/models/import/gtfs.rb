@@ -177,8 +177,8 @@ class Import::Gtfs < Import::Base # rubocop:disable Metrics/ClassLength
   end
 
   def specific_default_company
-    return nil unless parent_options.present? && parent_options['specific_default_company_id']
-    @specific_default_company ||= workbench.companies.find(parent_options['specific_default_company_id'])
+    return nil unless parent_options.present? && parent_options['specific_default_company_id'].present?
+    @specific_default_company ||= workbench.companies.find_by(id: parent_options['specific_default_company_id'])
   end
 
   class Agencies

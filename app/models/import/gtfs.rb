@@ -176,6 +176,11 @@ class Import::Gtfs < Import::Base # rubocop:disable Metrics/ClassLength
 
   end
 
+  def specific_default_company
+    return nil unless parent_options.present? && parent_options['specific_default_company_id'].present?
+    @specific_default_company ||= workbench.companies.find_by(id: parent_options['specific_default_company_id'])
+  end
+
   class Agencies
 
     def initialize(import)
@@ -183,10 +188,17 @@ class Import::Gtfs < Import::Base # rubocop:disable Metrics/ClassLength
     end
 
     attr_reader :import
-    delegate :source, :companies, :create_message, :save_model,
-             :default_company=, :default_time_zone, :default_time_zone=, to: :import
+    delegate :companies, :create_message, :save_model, :specific_default_company,
+             :source, :default_company=, :default_time_zone, :default_time_zone=, to: :import
 
     def import!
+      if specific_default_company
+          self.default_company = specific_default_company
+          self.default_time_zone = ActiveSupport::TimeZone[specific_default_company.time_zone]
+
+          return
+      end
+
       source.agencies.each do |agency|
         decorated_agency = Decorator.new(agency, default_time_zone: default_time_zone, mandatory_id: !default_agency?)
 

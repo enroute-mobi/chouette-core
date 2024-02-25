@@ -1,8 +1,9 @@
-module OptionsHelper
+# frozen_string_literal: true
 
-  def option_input form, export, attr, option_def, type
+module OptionsHelper
+  def option_input(form, export, attr, option_def, type)
     attr = option_def[:name] if option_def[:name].present?
-    parent_form ||= form
+    parent_form || form
 
     value = export.try(attr) || option_def[:default_value]
 
@@ -16,15 +17,15 @@ module OptionsHelper
       opts[:as] = :hidden
     elsif option_def[:ajax_collection]
       opts[:as] = :select
-      opts[:input_html].merge!({'data-domain-name': request.base_url})
+      opts[:input_html].merge!({ 'data-domain-name': request.base_url })
       opts[:collection] = []
-    elsif option_def[:type].to_s == "boolean"
+    elsif option_def[:type].to_s == 'boolean'
       opts[:as] = :switchable_checkbox
       opts[:input_html][:checked] = value
-    elsif option_def[:type].to_s == "array"
+    elsif option_def[:type].to_s == 'array'
       opts[:collection] = value.map { |v| { id: v, text: v } }
       opts[:input_html].merge!(
-        multiple: true,
+        multiple: true
       )
       opts[:as] = :tom_select
       opts[:config] = {
@@ -34,21 +35,26 @@ module OptionsHelper
 
     end
 
-    if option_def.has_key?(:collection)
-      if option_def[:collection].is_a?(Array) && !option_def[:collection].first.is_a?(Array)
-        opts[:collection] = option_def[:collection].map{|k| [translate_option_value(type, attr, k), k]}
-      else
-        opts[:collection] = option_def[:collection]
-      end
+    if option_def.key?(:collection)
+      opts[:collection] = if option_def[:collection].is_a?(Array) && !option_def[:collection].first.is_a?(Array)
+                            option_def[:collection].map { |k| [translate_option_value(type, attr, k), k] }
+                          else
+                            option_def[:collection]
+                          end
       opts[:collection] = export.instance_exec(&option_def[:collection]) if option_def[:collection].is_a?(Proc)
 
-      opts[:collection] = opts[:collection].push([t('none'), nil]) if option_def[:allow_blank]
+      if option_def[:allow_blank]
+        if opts[:collection].respond_to? :model
+          none = opts[:collection].model.new
+          opts[:collection] = [none] + opts[:collection].sort_by(&:name)
+        else
+          opts[:collection] = opts[:collection].push([t('none'), nil])
+        end
+      end
     end
-    opts[:label] =  translate_option_key(type, attr)
+    opts[:label] = translate_option_key(type, attr)
 
-    if attr == :import_category
-      opts[:input_html] = {'x-on:change': 'import_category = $event.target.value'}
-    end
+    opts[:input_html] = { 'x-on:change': 'import_category = $event.target.value' } if attr == :import_category
 
     out = form.input attr, opts
 
@@ -61,15 +67,15 @@ module OptionsHelper
     out
   end
 
-  def display_option_value record, option_name
+  def display_option_value(record, option_name)
     option = record.option_def(option_name)
     val = record.options[option_name.to_s]
 
     if option[:display]
-      self.instance_exec(val, &option[:display])
+      instance_exec(val, &option[:display])
     elsif option[:type] == :boolean
       val.to_s.t
-    elsif option.has_key?(:collection)
+    elsif option.key?(:collection)
       translate_option_value(record.object.class, option_name, val)
     else
       val
@@ -87,5 +93,4 @@ module OptionsHelper
     root = Destination if root < Destination
     root.tmf("#{parent_class.name.demodulize.underscore}.#{attr}_collection.#{key}", default: key)
   end
-
 end

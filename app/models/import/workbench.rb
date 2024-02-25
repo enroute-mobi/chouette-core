@@ -15,6 +15,7 @@ class Import::Workbench < Import::Base
   option :strict_mode, default_value: false, type: :boolean
   option :stop_area_provider_id, collection: ->(){ candidate_stop_area_providers.order(:name) }
   option :line_provider_id, collection: ->(){ candidate_line_providers.order(:name) }
+  option :specific_default_company_id , collection: ->(){ candidate_companies.order(:name) }, allow_blank: true
 
   has_many :children_processings, through: :children, source: :processings
   has_many :control_list_runs, through: :children_processings, source: :processed, source_type: 'Control::List::Run'
@@ -155,7 +156,7 @@ class Import::Workbench < Import::Base
     self.resources.map(&:referential).compact
   end
 
-  delegate :line_providers, :stop_area_providers, to: :workbench, prefix: :candidate
+  delegate :line_providers, :stop_area_providers, :companies, to: :workbench, prefix: :candidate
 
   # Invokes by IevInterfaces::Task#update_status
   # *only* when status is changed to successful

@@ -592,7 +592,6 @@ RSpec.describe Import::Gtfs do
     end
   end
 
-
   describe '#import_routes' do
     let(:import) { build_import 'google-sample-feed-with-color.zip' }
     it 'should create a line for each route' do
@@ -614,23 +613,27 @@ RSpec.describe Import::Gtfs do
       expect(workbench.line_referential.lines.includes(:company).pluck(*defined_attributes)).to match_array(expected_attributes)
     end
 
+    let(:agency_name){ 'name' }
+    let(:agency_id) { 'agency_id' }
+    let(:agency){
+      GTFS::Agency.new(
+        id: agency_id,
+        name: agency_name,
+        url: 'http://google.com',
+        timezone: 'America/Los_Angeles'
+      )
+    }
+    let(:route){
+      GTFS::Route.new(
+        id: 'route_id',
+        short_name: 'route',
+        agency_id: agency_id
+      )
+    }
+
+    let(:child) { Chouette::Line.find_by(registration_number: route.id) }
+
     context "with a company" do
-      let(:agency_name){ 'name' }
-      let(:agency){
-        GTFS::Agency.new(
-          id: 'agency_id',
-          name: agency_name,
-          url: 'http://google.com',
-          timezone: 'America/Los_Angeles'
-        )
-      }
-      let(:route){
-        GTFS::Route.new(
-          id: 'route_id',
-          short_name: 'route',
-          agency_id: 'agency_id'
-        )
-      }
       before(:each) do
         allow(import.source).to receive(:agencies) { [agency] }
         allow(import.source).to receive(:routes) { [route] }
@@ -640,7 +643,6 @@ RSpec.describe Import::Gtfs do
       it 'should link the line' do
         import.import_routes
         parent = Chouette::Company.find_by(registration_number: agency.id)
-        child = Chouette::Line.find_by(registration_number: route.id)
         expect(child.company).to eq parent
       end
 
@@ -650,6 +652,32 @@ RSpec.describe Import::Gtfs do
         it "shoud not create the line" do
           expect { import.import_routes }.to_not(change { Chouette::Line.count })
         end
+      end
+    end
+
+    context 'with a specific default Company' do
+      let(:agency_id) { nil }
+
+      let(:specific_default_company) do
+        import.workbench.default_line_provider.companies.create(
+          name: 'specific company',
+          time_zone: 'America/Los_Angeles',
+          objectid: 'test'
+        )
+      end
+
+      before do
+        allow(import).to receive(:specific_default_company).and_return(specific_default_company)
+
+        allow(import.source).to receive(:agencies) { [agency] }
+        allow(import.source).to receive(:routes) { [route] }
+        import.import_agencies
+      end
+
+      it 'should link the line' do
+        import.import_routes
+
+        expect(child.company).to eq specific_default_company
       end
     end
   end

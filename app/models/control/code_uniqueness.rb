@@ -16,7 +16,7 @@ module Control
         validates :target_model, :target_code_space_id, presence: true
 
         def target_code_space
-          @target_code_space ||= code_space_scope.find_by_id(target_code_space_id)
+          @target_code_space ||= code_space_scope.find_by(id: target_code_space_id)
         end
 
         def code_space_scope
@@ -89,10 +89,14 @@ module Control
 
           def source_type
             @source_type ||= if target_model == 'PointOfInterest'
-              'PointOfInterest::Base'
-            else
-              ("Chouette::#{target_model}".constantize rescue target_model.constantize).to_s
-            end
+                               'PointOfInterest::Base'
+                             else
+                               begin
+                                 "Chouette::#{target_model}".constantize
+                               rescue StandardError
+                                 target_model.constantize
+                               end.to_s
+                             end
           end
 
           def model_collection

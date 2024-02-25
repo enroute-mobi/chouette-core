@@ -8,7 +8,7 @@ RSpec.describe Control::CodeUniqueness do
 
     let(:context) do
       Chouette.create do
-        code_space short_name: "test"
+        code_space short_name: 'test'
 
         stop_area :first
         stop_area :second
@@ -23,7 +23,7 @@ RSpec.describe Control::CodeUniqueness do
         stop_area_provider :other
         workbench :other
         workgroup :other do
-          code_space short_name: "test"
+          code_space short_name: 'test'
         end
       end
     end
@@ -32,7 +32,7 @@ RSpec.describe Control::CodeUniqueness do
       described_class.create(
         control_list_run: control_list_run,
         criticity: 'warning',
-        options: { 
+        options: {
           target_model: target_model,
           target_code_space_id: target_code_space.id,
           uniqueness_scope: uniqueness_scope

@@ -30,7 +30,6 @@ module Chouette
 
     belongs_to :company
     belongs_to :network
-    belongs_to :contract
 
     # this 'light' relation prevents the custom fields loading
     belongs_to :company_light, lambda {
@@ -38,6 +37,7 @@ module Chouette
                                }, class_name: 'Chouette::Company', foreign_key: :company_id
 
     belongs_to_array_in_many :line_routing_constraint_zones, class_name: 'LineRoutingConstraintZone', array_name: :lines
+    belongs_to_array_in_many :contracts, class_name: '::Contract', array_name: :lines
 
     has_array_of :secondary_companies, class_name: 'Chouette::Company'
 

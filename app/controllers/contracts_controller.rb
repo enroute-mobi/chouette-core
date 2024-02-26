@@ -57,7 +57,7 @@ class ContractsController < Chouette::WorkbenchController
     params.require(:contract).permit(
       :name,
       :company_id,
-      line_ids: [],
+      lines: [],
       codes_attributes: %i[id code_space_id value _destroy]
     )
   end

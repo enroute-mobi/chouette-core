@@ -203,6 +203,7 @@ ActiveRecord::Schema.define(version: 2024_02_15_110746) do
 
   create_table "contracts", force: :cascade do |t|
     t.string "name"
+    t.bigint "line_ids", array: true
     t.bigint "company_id"
     t.bigint "workbench_id"
     t.datetime "created_at", null: false
@@ -812,8 +813,6 @@ ActiveRecord::Schema.define(version: 2024_02_15_110746) do
     t.string "audible_signals_availability"
     t.string "visual_signs_availability"
     t.text "accessibility_limitation_description"
-    t.bigint "contract_id"
-    t.index ["contract_id"], name: "index_lines_on_contract_id"
     t.index ["line_provider_id"], name: "index_lines_on_line_provider_id"
     t.index ["line_referential_id", "registration_number"], name: "index_lines_on_referential_id_and_registration_number"
     t.index ["line_referential_id"], name: "index_lines_on_line_referential_id"

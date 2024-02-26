@@ -16,7 +16,7 @@
     .col-lg-12
       h2.my-16
         = t('contracts.form.sections.associated_resources')
-      = f.association :lines, as: :autocomplete_select, collection: @workbench.lines, include_blank: true, input_html: {multiple: true, class: "w-full"}
+      = f.input :lines, as: :autocomplete_select, collection: @workbench.lines, include_blank: true, input_html: {multiple: true, class: "w-full"}
 
   .separator.section_separator
   .row

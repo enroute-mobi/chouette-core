@@ -74,6 +74,7 @@ fr:
         identification: "Identification"
         hierarchy: "Hiérarchie"
         location: "Localisation"
+        activation: "Activation"
         publication_data: "Publication"
         general: "Général"
         line_notices: "Notes de lignes"

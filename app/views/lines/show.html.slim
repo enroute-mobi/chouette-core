@@ -42,7 +42,6 @@
             = d.attribute :referent, as: :association, link: ->(referent) { workbench_line_referential_line_path(@workbench, referent) }
 
         = simple_block_for @line, title: t("lines.form.sections.internals") do |d|
-          = d.attribute :status, value_method: :human_status
           = d.attribute :line_provider, as: :association, link: ->(line_provider) { workbench_line_referential_line_provider_path(@workbench, @line.line_provider_id) }
           = d.attribute :comment
 
@@ -56,6 +55,11 @@
               = d.attribute :value, label: c.code_space.short_name, object: c
 
       .col-lg-6.col-md-6.col-sm-12.col-xs-12
+        = simple_block_for @line, title: t("lines.form.sections.activation") do |d|
+          = d.attribute :status, value_method: :human_status
+          = d.attribute :active_from, as: :date
+          = d.attribute :active_until, as: :date
+
         = simple_block_for @line, title: t("lines.form.sections.publication_data") do |d|
           = d.attribute :color, value: color_icon(@line.color)
           = d.attribute :text_color, value: color_icon(@line.text_color)

@@ -73,6 +73,7 @@ en:
         identification: "Identification"
         hierarchy: "Hierarchy"
         location: "Location"
+        activation: "Activation"
         publication_data: "Publication"
         general: "General"
         line_notices: "Line notices"

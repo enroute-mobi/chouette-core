@@ -381,7 +381,7 @@ RSpec.describe Import::Gtfs do
       before { import.import_without_status }
 
       it { expect(contract.name).to eq company_name }
-      it { expect(contract.lines).to eq expected_lines }
+      it { expect(contract.lines).to match_array expected_lines }
       it { expect(contract.company).to eq company }
       it { expect(contract.codes.map(&:value)).to eq %w(DTA) }
     end

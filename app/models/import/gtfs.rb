@@ -154,11 +154,12 @@ class Import::Gtfs < Import::Base # rubocop:disable Metrics/ClassLength
       def contract
         @contract ||= company.contracts.first_or_create_by_code(code_space, code_value) do |contract|
           contract.name = organization_name
+          contract.workbench = workbench
         end
       end
 
       def line
-        @line ||= company.lines.find_by(registration_number: route_id)
+        company.lines.find_by(registration_number: route_id)
       end
 
       def code_value
@@ -166,7 +167,9 @@ class Import::Gtfs < Import::Base # rubocop:disable Metrics/ClassLength
       end
 
       def attribute!
-        line.update contract: contract if line
+        return unless contract.persisted?
+
+        contract.update line_ids: [contract.line_ids, line.id].flatten.compact.uniq
       end
     end
   end

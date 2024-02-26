@@ -19,7 +19,7 @@
           = d.attribute :phone
 
       .col-lg-6.col-md-6.col-sm-12.col-xs-12
-        = simple_block_for @point_of_interest, title: Chouette::StopArea.tmf(:codes) do |d|
+        = simple_block_for @point_of_interest, title: t("layouts.form.sections.codes") do |d|
           - if @point_of_interest.codes.empty?
             .mb-xs
               = replacement_msg t('point_of_interests.no_codes')

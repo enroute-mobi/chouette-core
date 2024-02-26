@@ -10,15 +10,17 @@
         input_html: { style: 'width: 100%' },
         config: { placeholder: I18n.t('point_of_interests.form.point_of_interest_category_placeholder') }
       = f.association :shape_provider, as: :select, collection: @workbench.shape_providers, include_blank: false, label_method: :short_name
+
   .separator.section_separator
+  - code_spaces = @point_of_interest_category.shape_referential.workgroup.code_spaces.map { |c| [c.short_name, c.id] }
   .row
     .col-lg-12
-      h2.mb-lg= Chouette::StopArea.tmf(:codes)
+      h2.my-16= t("layouts.form.sections.codes")
       = f.simple_fields_for(:codes) do |codes_form|
-        = render 'shared/code_fields', f: codes_form, code_spaces: @point_of_interest_category.shape_referential.workgroup.code_spaces.map {|c| [c.short_name, c.id]},
+        = render 'shared/code_fields', f: codes_form, code_spaces: code_spaces
 
-      .links.nested-linker
-        = link_to_add_association t('entrances.form.add_code'), f, :codes, class: 'btn btn-primary'
+  .links.nested-linker
+    = link_to_add_association t('actions.add_code'), f, :codes, class: 'btn btn-primary', partial: 'shared/code_fields', render_options: {locals: { code_spaces: code_spaces }}
 
   = cancel_button
   = f.button :submit, t('actions.submit'), class: 'btn btn-default formSubmitr', form: 'point_of_interest_category_form'

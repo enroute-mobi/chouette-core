@@ -72,7 +72,6 @@ fr:
         custom_fields: "Champs personnalisés"
       address: "246 Boulevard Saint-Germain, 75007 Paris"
       geolocalize: "Géolocalisez "
-      add_code: Ajouter un code
     edit:
       title: "Editer l'arrêt %{name}"
     update:

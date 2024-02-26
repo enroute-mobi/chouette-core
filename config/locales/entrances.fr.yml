@@ -21,7 +21,6 @@ fr:
       sections:
         identification: "Identification"
         localization: "Localisation"
-      add_code: "Ajouter un code"
     no_codes: "Ce point d'accès n'a pas de code"
   activerecord:
     models:

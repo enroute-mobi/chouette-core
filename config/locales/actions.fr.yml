@@ -4,6 +4,7 @@ fr:
     actualize: 'Actualiser'
     add_referential: Ajoutez un jeu de données
     add: 'Ajouter'
+    add_code: 'Ajouter un code'
     archive: 'Archiver'
     cancel_destroy: Annuler suppresion
     clean_up: 'Nettoyer'

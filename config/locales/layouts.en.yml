@@ -60,6 +60,9 @@ en:
       error: "Error"
       alert: "Alert"
       notice: "Info"
+    form:
+      sections:
+        codes: Codes
     footer:
       support:
         title: "Support"

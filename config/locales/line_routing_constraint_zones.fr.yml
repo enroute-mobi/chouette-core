@@ -24,8 +24,6 @@ fr:
     form:
       line_placeholder: "Rechercher par nom de lignes"
       stop_area_placeholder: "Rechercher par nom d'arrêts"
-      add_code: Ajouter un code
-
   activerecord:
     models:
       line_routing_constraint_zone:

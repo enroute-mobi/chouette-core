@@ -19,7 +19,7 @@
         - attributes[Chouette::Company.tmf(:country_code)] = @company.country_code.present? ? label_for_country(@company.country_code) + ISO3166::Country[@company.country_code].translation(I18n.locale) : '-'
         = definition_list t("companies.form.sections.address"), attributes
 
-        = simple_block_for @company, title: Chouette::Company.tmf(:codes) do |d|
+        = simple_block_for @company, title: t("layouts.form.sections.codes") do |d|
           = d.attribute :registration_number
           - if @company.codes.empty?
             .mb-xs

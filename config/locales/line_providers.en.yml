@@ -18,7 +18,6 @@ en:
       sections:
         informations: "Informations"
         associated_resources: "Associated Resources"
-      add_code: "Add a code"
   activerecord:
     models:
       line_provider:

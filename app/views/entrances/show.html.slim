@@ -28,7 +28,7 @@
 
     .row
       .col-lg-6.col-md-6.col-sm-12.col-xs-12
-        = simple_block_for @entrance, title: Entrance.tmf(:codes) do |d|
+        = simple_block_for @entrance, title: t("layouts.form.sections.codes") do |d|
           - if @entrance.codes.empty?
             .mb-xs
               = replacement_msg t('entrances.no_codes')

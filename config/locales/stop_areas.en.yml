@@ -70,7 +70,6 @@ en:
         accessibility: "Accessibility"
         custom_fields: "Custom fields"
       address: "246 Boulevard Saint-Germain, 75007 Paris"
-      add_code: Add a code
       geolocalize: "Pinpoint "
     edit:
       title: "Update stop %{name}"

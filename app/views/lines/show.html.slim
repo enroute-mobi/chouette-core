@@ -45,7 +45,7 @@
           = d.attribute :line_provider, as: :association, link: ->(line_provider) { workbench_line_referential_line_provider_path(@workbench, @line.line_provider_id) }
           = d.attribute :comment
 
-        = simple_block_for @line, title: Chouette::StopArea.tmf(:codes) do |d|
+        = simple_block_for @line, title: t("layouts.form.sections.codes") do |d|
           = d.attribute :registration_number
           - if @line.codes.empty?
             .mb-xs

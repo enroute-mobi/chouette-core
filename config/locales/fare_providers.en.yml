@@ -17,6 +17,8 @@ en:
   fare_providers:
     index:
       title: Fare providers
+    new:
+      title: "Create a Fare provider"
     actions:
       new: "Create a Fare provider"
     form:

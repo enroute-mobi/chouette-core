@@ -17,6 +17,8 @@ fr:
   fare_providers:
     index:
       title: Fournisseurs de tarification
+    new:
+      title: "Créer un Fournisseur de tarification"
     actions:
       new: "Créer un Fournisseur de tarification"
     form:

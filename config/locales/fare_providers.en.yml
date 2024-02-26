@@ -47,6 +47,7 @@ en:
       fare/provider:
         uuid: ID
         name: Name
+        short_name: "Short name"
         fare_zones: Fare Zones
         workbench: Workbench
     errors:

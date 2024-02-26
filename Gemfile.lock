@@ -23,8 +23,7 @@ GIT
 
 GIT
   remote: https://bitbucket.org/enroute-mobi/gtfs.git
-  revision: 6127209df5af11d5f909fbbb9e40f80c7a82b65a
-  branch: CHOUETTE-3303-add-producer-and-authority-methods-to-attribution-gtfs
+  revision: 28d794e8212346bffbc3128acdfda4c4a1e0c1e8
   specs:
     gtfs (0.3.6)
       csv

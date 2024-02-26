@@ -220,7 +220,7 @@ RSpec.describe Export::Gtfs, type: [:model, :with_exportable_referential] do
     before do
       context.referential.switch
       line.update registration_number: 'test'
-      first_company.contracts.create(name: first_company.name, company: first_company, lines: [line], workbench: context.workbench)
+      first_company.contracts.create(name: first_company.name, company: first_company, line_ids: [line.id], workbench: context.workbench)
     end
 
     subject { export.target.attributions }

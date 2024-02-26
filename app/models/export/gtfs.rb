@@ -1390,12 +1390,14 @@ class Export::Gtfs < Export::Base
   class Contract < Part
     def export!
       contracts.find_each do |contract|
-        target.attributions << Decorator.new(contract).attribution
+        Decorator.new(contract).attributions.each do |attribution|
+          target.attributions << attribution
+        end
       end
     end
 
     def contracts
-      export_scope.contracts.joins(:lines).select('contracts.*', 'lines.registration_number AS route_id')
+      export_scope.contracts
     end
 
     class Decorator < SimpleDelegator
@@ -1403,17 +1405,16 @@ class Export::Gtfs < Export::Base
         super contract
       end
 
-      def attribution_attributes
-        {
-          attribution_id: attribution_id,
-          organization_name: name,
-          route_id: route_id,
-          is_producer: is_producer
-        }
+      def attributions
+        lines.map { |line| GTFS::Attribution.new attribution_attributes.merge(route_id: line.registration_number) }
       end
 
-      def attribution
-        GTFS::Attribution.new attribution_attributes
+      def attribution_attributes
+        {
+          organization_name: name,
+          is_producer: is_producer,
+          attribution_id: attribution_id
+        }
       end
 
       def is_producer
@@ -1421,7 +1422,7 @@ class Export::Gtfs < Export::Base
       end
 
       def attribution_id
-        @attribution_id ||= SecureRandom.uuid
+        SecureRandom.uuid
       end
     end
   end

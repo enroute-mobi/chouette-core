@@ -1,7 +1,7 @@
 en:
   control/list/runs:
     index:
-      title: Control Runs Reports
+      title: Control Reports
     show:
       title: "%{name}"
     new:
@@ -14,22 +14,23 @@ en:
       destroy_confirm: "Are you sur to delete this report ?"
   control_list_runs:
     actions:
-      new: "Execute this report"
+      new: "Execute a Control"
+      show: "Show Control Lists"
   control_list_run:
     actions:
-      new: "Execute this report"
-      show: "Control Runs Reports"
+      new: "Execute a Control List"
+      show: "Show Control Lists"
       create: "Create a report"
     new:
       title: "Create a report"
     index:
-      title: "Control Runs Reports"
+      title: "Control Reports"
     show:
       title: "%{name}"
       section:
         processing: Processing
         information: Information
-    search_no_results: "No Control Runs Reports matching your search"
+    search_no_results: "No Control Reports matching your search"
     filters:
       name: Search by name
     referentials:
@@ -39,9 +40,9 @@ en:
   activerecord:
     models:
       control/list/run:
-        zero:  "Control Runs Reports"
-        one:   "Control Runs Report"
-        other: "Control Runs Reports"
+        zero:  "Control Reports"
+        one:   "Control Report"
+        other: "Control Reports"
     attributes:
       control/list/run:
         user_status: Status

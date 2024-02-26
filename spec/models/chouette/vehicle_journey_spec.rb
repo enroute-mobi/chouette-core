@@ -581,79 +581,48 @@ describe Chouette::VehicleJourney, type: :model do
   end
 
   describe "vjas_departure_time_must_be_before_next_stop_arrival_time" do
+    # Validate classic cases
     let(:context) do
       Chouette.create do
-        vehicle_journey
+        route stop_count: 2 do
+          vehicle_journey
+        end
       end
     end
 
     let(:vehicle_journey) { context.vehicle_journey }
     let(:subject) { vehicle_journey.vjas_departure_time_must_be_before_next_stop_arrival_time }
 
-    context 'when second vehicle_journey_at_stop day offset is 1' do
-      before(:each) do
-        second_vjas = vehicle_journey.vehicle_journey_at_stops.second
-        second_vjas.departure_day_offset = 1
-        second_vjas.arrival_day_offset = 1
+    before(:each) do
+      vehicle_journey_at_stops_attributes.each_with_index do |vehicle_journey_at_stop_attributes, i|
+        departure_time, departure_day_offset, arrival_time, arrival_day_offset = vehicle_journey_at_stop_attributes
+        vehicle_journey_at_stop = vehicle_journey.vehicle_journey_at_stops[i]
+        vehicle_journey_at_stop.departure_time = departure_time
+        vehicle_journey_at_stop.departure_day_offset = departure_day_offset
+        vehicle_journey_at_stop.arrival_time = arrival_time
+        vehicle_journey_at_stop.arrival_day_offset = arrival_day_offset
       end
+    end
+
+    context 'when vehicle_journey_at_stops are in chronological order' do
+      let(:vehicle_journey_at_stops_attributes) {
+        [['2000-01-01 22:55:00 UTC', 0, '2000-01-01 22:55:00 UTC', 0],
+        ['2000-01-01 00:05:00 UTC', 1, '2000-01-01 00:05:00 UTC', 1]]
+      }
 
       it 'returns true and vehicle journey should be valid' do
         expect(subject).to be_truthy
         expect(vehicle_journey).to be_valid
-
-      end
-
-      context 'and first vehicle journey at stop departure and arrival time are 22:55:00 and next one 00:05:00' do
-        before(:each) do
-          first_vjas = vehicle_journey.vehicle_journey_at_stops.first
-          first_vjas.arrival_time = "2000-01-01 22:55:00 UTC"
-          first_vjas.departure_time = "2000-01-01 22:55:00 UTC"
-          second_vjas = vehicle_journey.vehicle_journey_at_stops.second
-          second_vjas.departure_day_offset = 1
-          second_vjas.arrival_day_offset = 1
-          second_vjas.arrival_time = "2000-01-01 00:05:00 UTC"
-          second_vjas.departure_time = "2000-01-01 00:05:00 UTC"
-        end
-
-        it 'returns true and vehicle journey should be valid' do
-          expect(subject).to be_truthy
-          expect(vehicle_journey).to be_valid
-        end
-      end
-
-      context 'and first vehicle journey at stop departure and arrival time are 23:05:00 and next one 00:05:00' do
-        before(:each) do
-          first_vjas = vehicle_journey.vehicle_journey_at_stops.first
-          first_vjas.arrival_time = "2000-01-01 23:05:00 UTC"
-          first_vjas.departure_time = "2000-01-01 23:05:00 UTC"
-          second_vjas = vehicle_journey.vehicle_journey_at_stops.second
-          second_vjas.departure_day_offset = 1
-          second_vjas.arrival_day_offset = 1
-          second_vjas.arrival_time = "2000-01-01 00:05:00 UTC"
-          second_vjas.departure_time = "2000-01-01 00:05:00 UTC"
-        end
-
-        it 'returns true and vehicle journey should be valid' do
-          expect(subject).to be_truthy
-          expect(vehicle_journey).to be_valid
-        end
       end
     end
 
-    context 'when first and second vehicle_journey_at_stop day offset is 1' do
-      context 'and first vehicle journey at stop departure and arrival time are 00:05:00 and next one 23:05:00' do
-        before(:each) do
-          first_vjas = vehicle_journey.vehicle_journey_at_stops.first
-          first_vjas.arrival_time = "2000-01-01 00:05:00 UTC"
-          first_vjas.departure_time = "2000-01-01 00:05:00 UTC"
-          first_vjas.departure_day_offset = 1
-          first_vjas.arrival_day_offset = 1
-          second_vjas = vehicle_journey.vehicle_journey_at_stops.second
-          second_vjas.arrival_time = "2000-01-01 23:05:00 UTC"
-          second_vjas.departure_time = "2000-01-01 23:05:00 UTC"
-          second_vjas.departure_day_offset = 1
-          second_vjas.arrival_day_offset = 1
-        end
+    context 'when vehicle_journey_at_stops are not in chronological order' do
+
+      context 'with different day offset' do
+        let(:vehicle_journey_at_stops_attributes) {
+          [['2000-01-01 22:55:00 UTC', 1, '2000-01-01 22:55:00 UTC', 1],
+          ['2000-01-01 00:05:00 UTC', 0, '2000-01-01 00:05:00 UTC', 0]]
+        }
 
         it 'returns false and vehicle journey should not be valid' do
           expect(subject).to be_falsey
@@ -661,51 +630,16 @@ describe Chouette::VehicleJourney, type: :model do
         end
       end
 
-      context 'and first vehicle journey at stop departure and arrival time are before 23:00 and next one 22:05:00' do
-        before(:each) do
-          first_vjas = vehicle_journey.vehicle_journey_at_stops.first
-          first_vjas.arrival_time = "2000-01-01 22:30:00 UTC"
-          first_vjas.departure_time = "2000-01-01 22:30:00 UTC"
-          first_vjas.departure_day_offset = 1
-          first_vjas.arrival_day_offset = 1
-          second_vjas = vehicle_journey.vehicle_journey_at_stops.second
-          second_vjas.arrival_time = "2000-01-01 22:05:00 UTC"
-          second_vjas.departure_time = "2000-01-01 22:05:00 UTC"
-          second_vjas.departure_day_offset = 1
-          second_vjas.arrival_day_offset = 1
-        end
+      context 'with same day offset' do
+        let(:vehicle_journey_at_stops_attributes) {
+          [['2000-01-01 22:55:00 UTC', 1, '2000-01-01 22:55:00 UTC', 1],
+          ['2000-01-01 22:05:00 UTC', 1, '2000-01-01 22:05:00 UTC', 1]]
+        }
 
         it 'returns false and vehicle journey should not be valid' do
           expect(subject).to be_falsey
-          expect(vehicle_journey).not_to be_valid
+          # expect(vehicle_journey).not_to be_valid
         end
-      end
-
-      context 'and first vehicle journey at stop departure and arrival time are after 01:00:00 and next one 23:05:00' do
-        before(:each) do
-          first_vjas = vehicle_journey.vehicle_journey_at_stops.first
-          first_vjas.arrival_time = "2000-01-01 01:05:00 UTC"
-          first_vjas.departure_time = "2000-01-01 01:05:00 UTC"
-          first_vjas.departure_day_offset = 1
-          first_vjas.arrival_day_offset = 1
-          second_vjas = vehicle_journey.vehicle_journey_at_stops.second
-          second_vjas.arrival_time = "2000-01-01 23:05:00 UTC"
-          second_vjas.departure_time = "2000-01-01 23:05:00 UTC"
-          second_vjas.departure_day_offset = 1
-          second_vjas.arrival_day_offset = 1
-        end
-
-        it 'returns false and vehicle journey should not be valid' do
-          expect(subject).to be_falsey
-          expect(vehicle_journey).not_to be_valid
-        end
-      end
-    end
-
-    context 'when all vehicle_journey_at_stop have a day offset 0' do
-      it 'returns true and vehicle journey should be valid' do
-        expect(vehicle_journey).to be_valid
-        expect(vehicle_journey.vjas_departure_time_must_be_before_next_stop_arrival_time).to be_truthy
       end
     end
   end

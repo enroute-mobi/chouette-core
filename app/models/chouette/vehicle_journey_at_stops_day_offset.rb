@@ -14,6 +14,7 @@ module Chouette
 
     def calculate!
       previous_time_of_day = nil
+      update_next_day_offsets = false
       @at_stops.each do |vehicle_journey_at_stop|
         %w{arrival departure}.each do |part|
           time_of_day = vehicle_journey_at_stop.send "#{part}_time_of_day"
@@ -21,9 +22,11 @@ module Chouette
             time_of_day = time_of_day.with_day_offset(previous_time_of_day.day_offset)
 
             if must_be_fixed?(time_of_day, previous_time_of_day)
+              update_next_day_offsets = true # Force next day offset update otherwise validation fails
               time_of_day = time_of_day.add day_offset: 1
-              vehicle_journey_at_stop.send "#{part}_time_of_day=", time_of_day
             end
+
+            vehicle_journey_at_stop.send "#{part}_time_of_day=", time_of_day if update_next_day_offsets
           end
           previous_time_of_day = time_of_day
         end

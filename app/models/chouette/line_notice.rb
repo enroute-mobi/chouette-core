@@ -40,6 +40,7 @@ module Chouette
     def protected?
       vehicle_journeys.exists?
     end
+    alias used? protected?
 
     private
 

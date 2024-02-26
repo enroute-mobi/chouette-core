@@ -25,6 +25,11 @@ RSpec.describe Policy::LineReferential, type: :policy do
       it { is_expected.to be_truthy }
     end
 
+    context 'Chouette::LineNotice' do
+      let(:resource_class) { Chouette::LineNotice }
+      it { is_expected.to be_truthy }
+    end
+
     context 'LineRoutingConstraintZone' do
       let(:resource_class) { LineRoutingConstraintZone }
       it { is_expected.to be_truthy }

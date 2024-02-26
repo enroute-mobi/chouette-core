@@ -1,11 +1,13 @@
-RSpec.describe LineNoticesController, :type => :controller do
+# frozen_string_literal: true
+
+RSpec.describe LineNoticesController, type: :controller do
   login_user
 
   let(:context) do
     Chouette.create do
-      workgroup do
+      workgroup(owner: Organisation.find_by(code: 'first')) do
         line_referential :first
-        workbench :first, organisation: Organisation.find_by_code('first') do
+        workbench :first, organisation: Organisation.find_by(code: 'first') do
           line_provider :first do
             line
             line_notice :first
@@ -13,7 +15,7 @@ RSpec.describe LineNoticesController, :type => :controller do
           end
         end
       end
-      workgroup do
+      workgroup(owner: Organisation.find_by(code: 'first')) do
         line_referential :other
         line_provider :other
         line_notice :other

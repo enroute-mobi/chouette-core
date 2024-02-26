@@ -1,12 +1,13 @@
+# frozen_string_literal: true
+
 class TimeTableDecorator < AF83::Decorator
   decorates Chouette::TimeTable
 
-  create_action_link if: ->{ check_policy(:create) && context[:referential].organisation == h.current_organisation } do |l|
-    l.href { h.new_referential_time_table_path(context[:referential]) }
-  end
+  set_scope { [context[:referential]] }
+
+  create_action_link
 
   with_instance_decorator do |instance_decorator|
-    instance_decorator.set_scope { context[:referential] }
     instance_decorator.crud
 
     instance_decorator.action_link policy: :actualize, if: ->{ object.calendar }, secondary: true do |l|

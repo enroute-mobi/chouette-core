@@ -4,9 +4,27 @@ RSpec.describe Policy::Referential, type: :policy do
   let(:resource) { referential }
   let(:policy_context_class) { Policy::Context::Referential }
 
+  describe '#create?' do
+    subject { policy.create?(resource_class) }
+
+    let(:resource_class) { double }
+
+    it { applies_strategy(Policy::Strategy::Referential) }
+    it { does_not_apply_strategy(Policy::Strategy::Workbench) }
+    it { applies_strategy(Policy::Strategy::Permission, :create, resource_class) }
+
+    it { is_expected.to be_falsy }
+
+    context 'Chouette::TimeTable' do
+      let(:resource_class) { Chouette::TimeTable }
+      it { is_expected.to be_truthy }
+    end
+  end
+
   describe '#update?' do
     subject { policy.update? }
 
+    it { does_not_apply_strategy(Policy::Strategy::Referential) }
     it { applies_strategy(Policy::Strategy::Workbench) }
     it { applies_strategy(Policy::Strategy::Permission, :update) }
 
@@ -31,6 +49,7 @@ RSpec.describe Policy::Referential, type: :policy do
   describe '#destroy?' do
     subject { policy.destroy? }
 
+    it { does_not_apply_strategy(Policy::Strategy::Referential) }
     it { applies_strategy(Policy::Strategy::Workbench) }
     it { applies_strategy(Policy::Strategy::Permission, :destroy) }
 
@@ -55,6 +74,7 @@ RSpec.describe Policy::Referential, type: :policy do
   describe '#browse?' do
     subject { policy.browse? }
 
+    it { does_not_apply_strategy(Policy::Strategy::Referential) }
     it { does_not_apply_strategy(Policy::Strategy::Workbench) }
     it { does_not_apply_strategy(Policy::Strategy::Permission) }
 
@@ -85,6 +105,7 @@ RSpec.describe Policy::Referential, type: :policy do
       allow(Policy::Workbench).to receive(:new).with(referential.workbench, context: policy_context).and_return(dbl)
     end
 
+    it { does_not_apply_strategy(Policy::Strategy::Referential) }
     it { does_not_apply_strategy(Policy::Strategy::Workbench) }
     it { does_not_apply_strategy(Policy::Strategy::Permission) }
 
@@ -112,6 +133,7 @@ RSpec.describe Policy::Referential, type: :policy do
   describe '#validate?' do
     subject { policy.validate? }
 
+    it { does_not_apply_strategy(Policy::Strategy::Referential) }
     it { applies_strategy(Policy::Strategy::Workbench) }
     it { does_not_apply_strategy(Policy::Strategy::Permission) }
 
@@ -129,6 +151,7 @@ RSpec.describe Policy::Referential, type: :policy do
   describe '#archive?' do
     subject { policy.archive? }
 
+    it { does_not_apply_strategy(Policy::Strategy::Referential) }
     it { applies_strategy(Policy::Strategy::Workbench) }
     it { does_not_apply_strategy(Policy::Strategy::Permission, :archive) }
     it { applies_strategy(Policy::Strategy::Permission, :update) }
@@ -165,6 +188,7 @@ RSpec.describe Policy::Referential, type: :policy do
 
     before { referential.archived_at = 42.seconds.ago }
 
+    it { does_not_apply_strategy(Policy::Strategy::Referential) }
     it { applies_strategy(Policy::Strategy::Workbench) }
     it { does_not_apply_strategy(Policy::Strategy::Permission, :unarchive) }
     it { applies_strategy(Policy::Strategy::Permission, :update) }
@@ -199,6 +223,7 @@ RSpec.describe Policy::Referential, type: :policy do
   describe '#flag_urgent?' do
     subject { policy.flag_urgent? }
 
+    it { does_not_apply_strategy(Policy::Strategy::Referential) }
     it { applies_strategy(Policy::Strategy::Workbench) }
     it { applies_strategy(Policy::Strategy::Permission, :flag_urgent) }
 

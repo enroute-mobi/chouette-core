@@ -2,8 +2,13 @@
 
 module Policy
   class Referential < Base
+    # NOTE: we cannot apply strategy Referential to :update
+    # since then we won't be able to apply :update strategies for :unarchive
+    # we also cannot apply strategy Referential for archive
+    # since this policy is sometimes checked in contexts without referential
+    authorize_by Strategy::Referential, only: %i[create]
     authorize_by Strategy::Workbench, only: %i[update destroy validate flag_urgent]
-    authorize_by Strategy::Permission, only: %i[update destroy flag_urgent]
+    authorize_by Strategy::Permission, only: %i[create update destroy flag_urgent]
 
     def browse?
       around_can(:browse) { resource.active? || resource.archived? }
@@ -40,6 +45,12 @@ module Policy
     end
 
     protected
+
+    def _create?(resource_class)
+      [
+        ::Chouette::TimeTable
+      ].include?(resource_class)
+    end
 
     def _update?
       !resource.referential_read_only?

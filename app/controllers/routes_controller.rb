@@ -199,6 +199,4 @@ class RoutesController < Chouette::ReferentialController
       stop_points_attributes: %i[id _destroy position stop_area_id for_boarding for_alighting]
     )
   end
-
-  Policy::Authorizer::Controller.for(self, Policy::Authorizer::Legacy)
 end

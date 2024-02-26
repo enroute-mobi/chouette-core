@@ -16,6 +16,7 @@ module Policy
 
     def _create?(resource_class)
       if [
+        ::Chouette::Route,
         ::Chouette::RoutingConstraintZone
       ].include?(resource_class)
         create_in_referential?(resource_class)

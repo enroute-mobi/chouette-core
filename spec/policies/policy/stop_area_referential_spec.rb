@@ -20,6 +20,11 @@ RSpec.describe Policy::StopAreaReferential, type: :policy do
       it { is_expected.to be_truthy }
     end
 
+    context 'Entrance' do
+      let(:resource_class) { Entrance }
+      it { is_expected.to be_truthy }
+    end
+
     context 'StopAreaRoutingConstraint' do
       let(:resource_class) { StopAreaRoutingConstraint }
       it { is_expected.to be_truthy }

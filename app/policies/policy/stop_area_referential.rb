@@ -10,6 +10,7 @@ module Policy
       [
         ::StopAreaProvider,
         ::Chouette::StopArea,
+        ::Entrance,
         ::StopAreaRoutingConstraint
       ].include?(resource_class)
     end

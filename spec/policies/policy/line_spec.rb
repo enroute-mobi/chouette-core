@@ -29,6 +29,21 @@ RSpec.describe Policy::Line, type: :policy do
       end
     end
 
+    context 'with Chouette::Route' do
+      let(:resource_class) { Chouette::Route }
+
+      it { applies_strategy(Policy::Strategy::LineProvider) }
+      it { applies_strategy(Policy::Strategy::Permission, :create, Chouette::Route) }
+      it { applies_strategy(Policy::Strategy::Referential) }
+
+      it { is_expected.to be_truthy }
+
+      context 'with Workbench context' do
+        let(:policy_context_class) { Policy::Context::Workbench }
+        it { is_expected.to be_falsy }
+      end
+    end
+
     context 'with Chouette::RoutingConstraintZone' do
       let(:resource_class) { Chouette::RoutingConstraintZone }
 

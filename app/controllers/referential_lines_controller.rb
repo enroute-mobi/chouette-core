@@ -50,6 +50,4 @@ class ReferentialLinesController < Chouette::ReferentialController
   def sort_route_direction
     %w[asc desc].include?(params[:direction]) ?  params[:direction] : 'asc'
   end
-
-  Policy::Authorizer::Controller.for(self, Policy::Authorizer::Legacy)
 end

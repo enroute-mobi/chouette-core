@@ -27,7 +27,7 @@ fr:
       document_provider:
         zero:  "Fournisseur de document"
         one: "Fournisseur de document"
-        other: "Fournisseurs de document"
+        other: "Fournisseurs de documents"
     attributes:
       document_provider:
         id: "ID"

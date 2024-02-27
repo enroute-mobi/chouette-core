@@ -53,8 +53,8 @@
       .col-lg-12
         h2.mb-lg= t("lines.form.sections.activation")
         = f.input :activated, as: :switchable_checkbox
-        = f.input :active_from, wrapper: :horizontal_date
-        = f.input :active_until, wrapper: :horizontal_date
+        = f.input :active_from, as: :date_picker
+        = f.input :active_until, as: :date_picker
 
   .separator.section_separator
   .row

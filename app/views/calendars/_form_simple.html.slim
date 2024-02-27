@@ -4,7 +4,7 @@
       .row
         .col-lg-12
           = f.input :name
-          - if policy(@calendar).share?
+          - if resource_policy.share?
             .col-lg-12
               = f.input :shared, as: :switchable_checkbox
 

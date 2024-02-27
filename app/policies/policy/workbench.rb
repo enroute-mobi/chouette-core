@@ -10,7 +10,8 @@ module Policy
       [
         ::Referential,
         ::DocumentProvider,
-        ::Document
+        ::Document,
+        ::Calendar
       ].include?(resource_class)
     end
 

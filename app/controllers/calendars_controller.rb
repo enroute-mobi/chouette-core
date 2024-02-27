@@ -129,6 +129,4 @@ class CalendarsController < Chouette::WorkbenchController
 
     scope
   end
-
-  Policy::Authorizer::Controller.for(self, Policy::Authorizer::Legacy)
 end

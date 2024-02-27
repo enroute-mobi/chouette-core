@@ -388,7 +388,7 @@ ChouetteIhm::Application.routes.draw do # rubocop:disable Metrics/BlockLength
     end
   end
 
-  resource :organisation, only: %i[show edit update] do
+  resource :organisation, only: %i[show] do
     resources :users do
       member do
         put :block

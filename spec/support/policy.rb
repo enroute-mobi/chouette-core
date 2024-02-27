@@ -175,6 +175,9 @@ module Support
           allow(view).to receive(:resource_policy) do
             view.policy(view.resource)
           end
+          allow(view).to receive(:parent_policy) do
+            view.policy(view.parent_for_parent_policy)
+          end
         end
       end
     end

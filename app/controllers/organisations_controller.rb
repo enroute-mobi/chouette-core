@@ -1,15 +1,9 @@
 # frozen_string_literal: true
 
 class OrganisationsController < Chouette::ResourceController
+  defaults resource_class: Organisation
 
-  defaults :resource_class => Organisation
-  respond_to :html, :only => [:edit, :show, :update]
-
-  def update
-    update! do |success, failure|
-      success.html { redirect_to organisation_path }
-    end
-  end
+  respond_to :html, only: %i[show]
 
   def show
     show! do
@@ -41,6 +35,4 @@ class OrganisationsController < Chouette::ResourceController
   def organisation_params
     params.require(:organisation).permit(:name)
   end
-
-  Policy::Authorizer::Controller.for(self, Policy::Authorizer::Legacy)
 end

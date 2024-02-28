@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module CodeSupport
   extend ActiveSupport::Concern
 
@@ -33,12 +35,13 @@ module CodeSupport
   end
 
   def validate_codes
-    unless Validators::CodeSpaceUniqueness.new(codes).valid? && Validators::ValueUniqueness.new(codes).valid?
-      errors.add(:codes, :invalid)
-    end
+    return if Validator::CodeSpaceUniqueness.new(codes).valid? &&
+              Validator::ValueUniqueness.new(codes).valid?
+
+    errors.add(:codes, :invalid)
   end
 
-  module Validators
+  module Validator
     class Base
       def initialize(codes)
         @codes = codes
@@ -46,41 +49,44 @@ module CodeSupport
       attr_reader :codes
 
       def valid?
-        validate.blank?
+        validate
       end
     end
 
     class CodeSpaceUniqueness < Base
       def validate
-        return unless duplicated_codes.present?
+        return true if duplicated_codes.empty?
 
         duplicated_codes.each do |code|
           code.errors.add(:value, :duplicate_code_spaces_in_codes, code_space: code.code_space.short_name)
         end
+
+        false
       end
 
       def duplicated_codes
         codes
-          .select { |code| !code.code_space.allow_multiple_values }
+          .reject { |code| code.code_space.allow_multiple_values }
           .group_by(&:code_space_id)
-          .map { |code_space_id, codes| codes if codes.many? }
-          .compact.flatten.uniq
+          .flat_map { |_, codes| codes.many? ? codes : [] }
       end
     end
 
     class ValueUniqueness < Base
       def validate
-        return unless duplicated_codes.present?
+        return true if duplicated_codes.empty?
 
         duplicated_codes.each do |code|
           code.errors.add(:value, :duplicate_values_in_codes)
         end
+
+        false
       end
 
       def duplicated_codes
         codes
           .group_by { |code| [code.code_space_id, code.value] }
-          .map { |_, codes| codes if codes.many? }.compact.flatten.uniq
+          .flat_map { |_, codes| codes.many? ? codes : [] }
       end
     end
   end

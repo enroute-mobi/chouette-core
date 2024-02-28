@@ -31,6 +31,8 @@ fr:
         one: Fournisseur attendu
       control/passing_times_in_time_range/run:
         one: Horaires inclus dans une période
+      control/services_only_in_validity_period/run:
+        one: Services en période de validité
       control/code_uniqueness/run:
         one: Unicité du code
     attributes:

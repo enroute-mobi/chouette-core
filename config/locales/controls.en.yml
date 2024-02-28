@@ -50,6 +50,8 @@ en:
         one: Expected provider
       control/passing_times_in_time_range:
         one: Passing times in a time range
+      control/services_only_in_validity_period:
+        one: Services only in validity period
       control/code_uniqueness:
         one: Code uniqueness
     attributes:

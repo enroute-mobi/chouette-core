@@ -18,6 +18,7 @@ module Control
       Control::PassingTimesInTimeRange,
       Control::GeographicalZone,
       Control::ExpectedProvider,
+      Control::ServicesOnlyInValidityPeriod,
       Control::CodeUniqueness
     ]
   end

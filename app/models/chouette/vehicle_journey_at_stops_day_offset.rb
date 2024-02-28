@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Chouette
   class VehicleJourneyAtStopsDayOffset
     def initialize(at_stops)
@@ -14,19 +16,19 @@ module Chouette
 
     def calculate!
       previous_time_of_day = nil
-      update_next_day_offsets = false
+      day_offset_base = 0
       @at_stops.each do |vehicle_journey_at_stop|
         %w{arrival departure}.each do |part|
           time_of_day = vehicle_journey_at_stop.send "#{part}_time_of_day"
           if previous_time_of_day && time_of_day
-            time_of_day = time_of_day.with_day_offset(previous_time_of_day.day_offset)
+            time_of_day = time_of_day.add day_offset: day_offset_base
 
             if must_be_fixed?(time_of_day, previous_time_of_day)
-              update_next_day_offsets = true # Force next day offset update otherwise validation fails
+              day_offset_base += 1
               time_of_day = time_of_day.add day_offset: 1
             end
 
-            vehicle_journey_at_stop.send "#{part}_time_of_day=", time_of_day if update_next_day_offsets
+            vehicle_journey_at_stop.send "#{part}_time_of_day=", time_of_day
           end
           previous_time_of_day = time_of_day
         end

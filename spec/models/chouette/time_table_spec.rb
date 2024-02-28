@@ -147,7 +147,7 @@ RSpec.describe Chouette::TimeTable, :type => :model do
   end
 
   context "#merge! with calendar" do
-    let(:calendar) { create(:calendar, date_ranges: [Time.zone.today + 1.year..Date.tomorrow + 1.year]) }
+    let(:calendar) { create(:calendar, date_ranges: [Time.zone.today + 1.year..Time.zone.today + 5.day + 1.year]) }
     let(:another_tt) { calendar.convert_to_time_table }
     let(:dates) { subject.dates.map(&:date) }
     let(:continuous_dates) { subject.continuous_dates.flatten.map(&:date) }

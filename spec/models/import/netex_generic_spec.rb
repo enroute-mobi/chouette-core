@@ -1400,7 +1400,7 @@ RSpec.describe Import::NetexGeneric do
               </TimetabledPassingTime>
               <TimetabledPassingTime>
                 <ArrivalTime>00:15:00</ArrivalTime>
-                <ArrivalDayOffset>1</ArrivalDayOffset>
+                <ArrivalDayOffset>1</ArrivalDayOffset>                
               </TimetabledPassingTime>
             </passingTimes>
           </ServiceJourney>

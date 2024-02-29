@@ -180,7 +180,7 @@ module Chouette
 
     def validate_passing_times_chronology
       passing_times.each_cons(2) do |previous_time_of_day, time_of_day|
-        if time_of_day < previous_time_of_day
+        if time_of_day.present? && previous_time_of_day.present? && time_of_day < previous_time_of_day
           # For the moment, a single/global error is defined
           errors.add :vehicle_journey_at_stops, :invalid_chronology
           return false

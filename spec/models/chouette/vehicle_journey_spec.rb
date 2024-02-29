@@ -654,6 +654,28 @@ describe Chouette::VehicleJourney, type: :model do
       end
     end
 
+    context 'when vehicle_journey_at_stops are in chronological order and use nil value for first arrival time and last departure time' do
+      let(:vehicle_journey) {
+        vehicle_journey = Chouette::VehicleJourney.new
+        [
+          [nil, '22:05'],
+          ['22:15', '22:15'],
+          ['22:35', '22:35'],
+          ['22:45', nil],
+        ].each do |arrival_time, departure_time, arrival_day_offset, departure_day_offset|
+          vehicle_journey.vehicle_journey_at_stops << Chouette::VehicleJourneyAtStop.new(
+                                                                            arrival_time: arrival_time,
+                                                                            departure_time: departure_time
+                                                                          )
+        end
+        vehicle_journey
+      }
+
+      it 'returns true' do
+        expect(subject).to be_truthy
+      end
+    end
+
     context 'when vehicle_journey_at_stops are not in chronological order' do
 
       context 'with different day offset' do

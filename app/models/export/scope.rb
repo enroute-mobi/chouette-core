@@ -240,6 +240,10 @@ module Export::Scope
       # TODO: we should filter Validities according zones & exported stop areas
       current_scope.fare_validities.by_products(fare_products)
     end
+
+    def contracts
+      current_scope.contracts.with_lines(lines)
+    end
   end
 
   # Selects VehicleJourneys in a Date range
@@ -279,6 +283,10 @@ module Export::Scope
 
     def metadatas
       current_scope.metadatas.with_lines(selected_line_ids)
+    end
+
+    def contracts
+      current_scope.contracts.with_lines(lines)
     end
   end
 

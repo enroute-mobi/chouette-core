@@ -92,12 +92,12 @@ class Import::Gtfs < Import::Base # rubocop:disable Metrics/ClassLength
 
     def import!
       source.attributions.each do |attribution|
-        decorator = Decorator.for(attribution).new(
+        decorator = Decorator.for(attribution)&.new(
           attribution,
           referential: referential,
           code_space: code_space,
           workbench: workbench
-        ) rescue nil
+        )
 
         decorator.attribute! if decorator
       end
@@ -152,22 +152,22 @@ class Import::Gtfs < Import::Base # rubocop:disable Metrics/ClassLength
       end
 
       def contract
-        @contract ||= company.contracts.first_or_create_by_code(code_space, code_value) do |contract|
+        @contract ||= company.contracts.first_or_initialize_by_code(code_space, code_value) do |contract|
           contract.name = organization_name
           contract.workbench = workbench
-        end
+        end if company
       end
 
       def line
-        company.lines.find_by(registration_number: route_id)
+        workbench.lines.find_by(registration_number: route_id)
       end
 
       def code_value
-        company.codes.first&.value || company.registration_number
+        company.registration_number || company.objectid
       end
 
       def attribute!
-        return unless contract.persisted?
+        return unless contract && line
 
         contract.update line_ids: [contract.line_ids, line.id].flatten.compact.uniq
       end

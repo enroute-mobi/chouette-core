@@ -160,6 +160,15 @@ class TimeOfDay
     second_offset - other.second_offset
   end
 
+  def ==(other)
+    second_offset == other.second_offset
+  end
+  alias eql? ==
+
+  def hash
+    second_offset
+  end
+
   INPUT_HASH_HOUR = 1
   INPUT_HASH_MINUTE = 2
   INPUT_HASH_SECOND = 3

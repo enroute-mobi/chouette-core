@@ -12,5 +12,11 @@ module Types
     def stop_areas
       LazyLoading::RouteStopAreas.new(context, object.id)
     end
+
+    field :stop_points, Types::StopPointType.connection_type, null: false,
+      description: "The Route's StopPoints"
+    def stop_points
+      LazyLoading::RouteStopPoints.new(context, object.id)
+    end
   end
 end

@@ -32,6 +32,26 @@ RSpec.describe Policy::Workbench, type: :policy do
       let(:resource_class) { Calendar }
       it { is_expected.to be_truthy }
     end
+
+    context 'Control::List' do
+      let(:resource_class) { Control::List }
+      it { is_expected.to be_truthy }
+    end
+
+    context 'Control::List::Run' do
+      let(:resource_class) { Control::List::Run }
+      it { is_expected.to be_truthy }
+    end
+
+    context 'Macro::List' do
+      let(:resource_class) { Macro::List }
+      it { is_expected.to be_truthy }
+    end
+
+    context 'Macro::List::Run' do
+      let(:resource_class) { Macro::List::Run }
+      it { is_expected.to be_truthy }
+    end
   end
 
   describe '#update?' do

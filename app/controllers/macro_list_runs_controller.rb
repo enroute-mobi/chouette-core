@@ -120,5 +120,7 @@ class MacroListRunsController < Chouette::WorkbenchController
       .delete_if { |_, v| v.blank? }
   end
 
-  Policy::Authorizer::Controller.for(self, Policy::Authorizer::Legacy)
+  def parent_for_parent_policy
+    macro_list || workbench
+  end
 end

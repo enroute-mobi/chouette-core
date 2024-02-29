@@ -83,6 +83,4 @@ class ControlListsController < Chouette::WorkbenchController
       control_contexts_attributes: control_context_params
     ).with_defaults(workbench_id: workbench.id)
   end
-
-  Policy::Authorizer::Controller.for(self, Policy::Authorizer::Legacy)
 end

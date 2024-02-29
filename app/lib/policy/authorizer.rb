@@ -42,7 +42,7 @@ module Policy
 
       # [Private] Returns Policy class name associated to the given resource
       def policy_class_name(resource)
-        "Policy::#{resource.class.name.demodulize}"
+        "Policy::#{resource.class.model_name}"
       end
 
       # [Private] Returns Policy class associated to the given resource

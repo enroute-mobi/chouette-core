@@ -22,6 +22,4 @@ class ControlMessagesController < Chouette::WorkbenchController
 
     render json: { html: html }
   end
-
-  Policy::Authorizer::Controller.for(self, Policy::Authorizer::Legacy)
 end

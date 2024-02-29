@@ -17,14 +17,23 @@ module Policy
 
       def required_permission(action, *args)
         if action == :create
-          "#{args[0].name.demodulize.underscore.pluralize}.#{action}"
+          "#{permission_namespace_from_class(args[0])}.#{action}"
         else
           "#{permission_namespace}.#{action}"
         end
       end
 
+      def permission_namespace_from_class(klass)
+        to_permission_namespace(klass.model_name.to_s)
+      end
+
       def permission_namespace
-        @permission_namespace ||= policy.class.name.demodulize.underscore.pluralize
+        @permission_namespace ||= to_permission_namespace(policy.class.name.sub(PERMISSION_NAMESPACE_REGEXP, ''))
+      end
+      PERMISSION_NAMESPACE_REGEXP = /\APolicy::/.freeze
+
+      def to_permission_namespace(class_name)
+        class_name.underscore.tr('/', '_').pluralize
       end
     end
   end

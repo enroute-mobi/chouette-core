@@ -41,6 +41,12 @@ RSpec.describe Policy::Authorizer::Controller do
 
       it { is_expected.to eq('Policy::StopArea') }
     end
+
+    context 'for Control::List resource' do
+      let(:resource) { Control::List.new }
+
+      it { is_expected.to eq('Policy::Control::List') }
+    end
   end
 
   describe '#policy_class' do

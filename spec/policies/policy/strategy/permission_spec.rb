@@ -29,6 +29,18 @@ RSpec.describe Policy::Strategy::Permission, type: :policy_strategy do
       context 'when the context has not permission' do
         it { is_expected.to be_falsy }
       end
+
+      context 'with Policy::Line' do
+        let(:policy_class) { Policy::Line }
+        let(:user_permissions) { ['lines.update'] }
+        it { is_expected.to be_truthy }
+      end
+
+      context 'with Control::List' do
+        let(:policy_class) { Policy::Control::List }
+        let(:user_permissions) { ['control_lists.update'] }
+        it { is_expected.to be_truthy }
+      end
     end
 
     context ':create' do
@@ -44,6 +56,24 @@ RSpec.describe Policy::Strategy::Permission, type: :policy_strategy do
 
       context 'when the context has not permission' do
         it { is_expected.to be_falsy }
+      end
+
+      context 'with Chouette::Line' do
+        let(:args) { Chouette::Line }
+
+        context 'when the context has permission' do
+          let(:user_permissions) { ['lines.create'] }
+          it { is_expected.to be_truthy }
+        end
+      end
+
+      context 'with Control::List' do
+        let(:args) { Control::List }
+
+        context 'when the context has permission' do
+          let(:user_permissions) { ['control_lists.create'] }
+          it { is_expected.to be_truthy }
+        end
       end
     end
   end

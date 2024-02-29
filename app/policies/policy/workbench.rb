@@ -11,7 +11,11 @@ module Policy
         ::Referential,
         ::DocumentProvider,
         ::Document,
-        ::Calendar
+        ::Calendar,
+        ::Control::List,
+        ::Control::List::Run,
+        ::Macro::List,
+        ::Macro::List::Run
       ].include?(resource_class)
     end
 

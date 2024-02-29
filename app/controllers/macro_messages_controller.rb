@@ -30,6 +30,4 @@ class MacroMessagesController < Chouette::WorkbenchController
       criticity: []
     )
   end
-
-  Policy::Authorizer::Controller.for(self, Policy::Authorizer::Legacy)
 end

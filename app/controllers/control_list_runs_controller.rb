@@ -93,7 +93,7 @@ class ControlListRunsController < Chouette::WorkbenchController
     rescue StandardError
       Control::List::Run.new(workbench: workbench)
     end
-    display_referential_links = object.referential.present? && policy(object.referential).show?
+    display_referential_links = object.referential.present?
 
     @facade ||= OperationRunFacade.new(object, current_workbench, display_referential_links: display_referential_links)
   end
@@ -125,5 +125,7 @@ class ControlListRunsController < Chouette::WorkbenchController
       .delete_if { |_, v| v.blank? }
   end
 
-  Policy::Authorizer::Controller.for(self, Policy::Authorizer::Legacy)
+  def parent_for_parent_policy
+    control_list || workbench
+  end
 end

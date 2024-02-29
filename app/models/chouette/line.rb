@@ -56,6 +56,7 @@ module Chouette
 
     validates :name, presence: true
     validate :transport_mode_and_submode_match
+    validate :active_from_less_than_active_until
     validates :registration_number, uniqueness: { scope: :line_provider_id }, allow_blank: true
 
     scope :by_text, lambda { |text|
@@ -155,6 +156,14 @@ module Chouette
 
     def companies
       line_referential.companies.where(id: company_ids)
+    end
+
+    def active_from_less_than_active_until
+      return unless active_from || active_until
+      if active_from > active_until
+        errors.add(:active_from, :active_from_less_than_active_until)
+        errors.add(:active_until, :active_from_less_than_active_until)
+      end
     end
 
     def active?(on_date = Time.now)

@@ -45,7 +45,7 @@ module Chouette
       except_in_inserter_context.validates :journey_pattern, presence: true
       except_in_inserter_context.before_validation :calculate_vehicle_journey_at_stop_day_offset
     end
-    validate :vjas_departure_time_must_be_before_next_stop_arrival_time
+    validate :validate_passing_times_chronology
     validates :number, presence: true
 
     has_many :vehicle_journey_at_stops, -> { includes(:stop_point).order("stop_points.position") }, dependent: :destroy
@@ -169,21 +169,24 @@ module Chouette
       joins(:time_tables).merge(Chouette::TimeTable.scheduled_on(date)).distinct
     end
 
-    def vjas_departure_time_must_be_before_next_stop_arrival_time
-      previous_time_of_day = nil
-      vehicle_journey_at_stops.each do |vehicle_journey_at_stop|
-        %w{arrival departure}.each do |part|
-          time_of_day = vehicle_journey_at_stop.send "#{part}_time_of_day"
-          # next unless time_of_day || previous_time_of_day
-
-          if time_of_day.present? && previous_time_of_day.present? && time_of_day < previous_time_of_day
-            # For the moment, a single/global error is defined
-            errors.add :vehicle_journey_at_stops, :invalid_chronology
-            return false
-          end
-          previous_time_of_day = time_of_day
+    # Returns ordered arrival/departure time of days for all Vehicle Journey stops
+    def passing_times
+      vehicle_journey_at_stops.flat_map do |vehicle_journey_at_stop|
+        %w{arrival departure}.map do |part|
+          vehicle_journey_at_stop.send "#{part}_time_of_day"
         end
       end
+    end
+
+    def validate_passing_times_chronology
+      passing_times.each_cons(2) do |previous_time_of_day, time_of_day|
+        if time_of_day.present? && previous_time_of_day.present? && time_of_day < previous_time_of_day
+          # For the moment, a single/global error is defined
+          errors.add :vehicle_journey_at_stops, :invalid_chronology
+          return false
+        end
+      end
+
       true
     end
 

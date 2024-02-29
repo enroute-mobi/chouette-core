@@ -44,6 +44,58 @@ RSpec.describe Chouette::VehicleJourney do
       it { is_expected.to contain_exactly(vehicle_journey) }
     end
   end
+
+  describe '#validate_passing_times_chronology' do
+    let(:subject) { vehicle_journey.validate_passing_times_chronology }
+
+    def self.time_of_day(definition)
+      if /(\d\d:\d\d) day:(\d)/ =~ definition
+        TimeOfDay.parse $1, day_offset: $2
+      else
+        TimeOfDay.parse definition
+      end
+    end
+
+    def self.vehicle_journey(*values)
+      Chouette::VehicleJourney.new(skip_custom_fields_initialization: true).tap do |vehicle_journey|
+        values.each do |value|
+          # To support both "22:55" and ["22:50", "22:55"]
+          value = [value] * 2 unless value.is_a?(Array)
+
+          # Create TimeOfDays
+          arrival_time_of_day, departure_time_of_day = value.map { |definition| time_of_day(definition) }
+
+          # Transmit TimeOfDays to Vehicle Journey At Stop only if it's not nil
+          vehicle_journey_at_stops_attributes = {}
+          vehicle_journey_at_stops_attributes[:arrival_time_of_day] = arrival_time_of_day if arrival_time_of_day
+          vehicle_journey_at_stops_attributes[:departure_time_of_day] = departure_time_of_day if departure_time_of_day
+
+          vehicle_journey_at_stop = Chouette::VehicleJourneyAtStop.new(vehicle_journey_at_stops_attributes)
+
+          vehicle_journey.vehicle_journey_at_stops << vehicle_journey_at_stop
+        end
+      end
+    end
+
+    [
+      [ vehicle_journey('22:55', '00:05 day:1'), true ],
+      [ vehicle_journey([nil, '22:05'], '22:15',['22:25', nil]), true ],
+      [ vehicle_journey('23:55', ['23:59', '00:01 day:1'], '00:05 day:1'), true ],
+      [ vehicle_journey('23:55', '23:55 day:1', '23:55 day:2'), true ],
+      [ vehicle_journey('23:55', '23:55'), true ],
+
+      [ vehicle_journey('23:55 day:1', '00:05'), false ],
+      [ vehicle_journey('22:55 day:1', '22:05 day:1'), false ],
+      [ vehicle_journey('23:55', ['23:59', '00:01'], '00:05 day:1'), false ],
+      [ vehicle_journey('23:55', ['23:59', '00:01'], '00:05'), false ],
+    ].each do |target, expected|
+      context "when passing times are #{target.passing_times.uniq.to_sentence(locale: :en)}" do
+        let(:vehicle_journey) { target }
+
+        it { is_expected.to expected ? be_truthy : be_falsey }
+      end
+    end
+  end
 end
 
 # DEPRECATED
@@ -577,39 +629,6 @@ describe Chouette::VehicleJourney, type: :model do
         expect(desc_result.first.id).to eq(vj3.id)
         expect(desc_result.last.id).to eq(vj1.id)
       end
-    end
-  end
-
-  describe "vjas_departure_time_must_be_before_next_stop_arrival_time",
-      skip: "Validation currently commented out because it interferes with day offsets" do
-
-    let(:vehicle_journey) { create :vehicle_journey }
-    let(:vjas) { vehicle_journey.vehicle_journey_at_stops }
-
-    it 'should add errors a stop departure_time is greater then next stop arrival time' do
-      vjas[0][:departure_time] = vjas[1][:arrival_time] + 1.minute
-      vehicle_journey.validate
-
-      expect(vjas[0].errors[:departure_time]).not_to be_blank
-      expect(vehicle_journey.errors.count).to eq(1)
-      expect(vehicle_journey).not_to be_valid
-    end
-
-    it 'should consider valid to have departure_time equal to next stop arrival time' do
-      vjas[0][:departure_time] = vjas[1][:arrival_time]
-      vehicle_journey.validate
-
-      expect(vjas[0].errors[:departure_time]).to be_blank
-      expect(vehicle_journey.errors).to be_empty
-      expect(vehicle_journey).to be_valid
-    end
-
-    it 'should not add errors when departure_time is less then next stop arrival time' do
-      vehicle_journey.validate
-      vjas.each do |stop|
-        expect(stop.errors).to be_empty
-      end
-      expect(vehicle_journey).to be_valid
     end
   end
 

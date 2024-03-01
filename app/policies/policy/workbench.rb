@@ -16,7 +16,8 @@ module Policy
         ::Control::List::Run,
         ::Macro::List,
         ::Macro::List::Run,
-        ::ProcessingRule::Workbench
+        ::ProcessingRule::Workbench,
+        ::NotificationRule
       ].include?(resource_class)
     end
 

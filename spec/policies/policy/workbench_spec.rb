@@ -57,6 +57,11 @@ RSpec.describe Policy::Workbench, type: :policy do
       let(:resource_class) { ProcessingRule::Workbench }
       it { is_expected.to be_truthy }
     end
+
+    context 'NotificationRule' do
+      let(:resource_class) { NotificationRule }
+      it { is_expected.to be_truthy }
+    end
   end
 
   describe '#update?' do

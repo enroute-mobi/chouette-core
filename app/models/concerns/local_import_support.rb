@@ -41,12 +41,7 @@ module LocalImportSupport
     if overlapping_referential_ids.present?
       create_message(
         criticity: :error,
-        message_attributes: {
-          referential_name: referential.name,
-          overlapped_name: overlapped.name,
-          overlapped_url: Rails.application.routes.url_helpers.workbench_referential_path(workbench, overlapped)
-        },
-        message_key: 'referential_creation_overlapping_existing_referential'
+        message_key: 'referential_creation_overlapping_existing_referential_block'
       )
     else
       create_message criticity: :error, message_key: :full_text, message_attributes: { text: e.message }

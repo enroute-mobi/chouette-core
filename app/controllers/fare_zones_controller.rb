@@ -40,6 +40,4 @@ class FareZonesController < Chouette::FareReferentialController
       codes_attributes: %i[id code_space_id value _destroy]
     )
   end
-
-  Policy::Authorizer::Controller.for(self, Policy::Authorizer::Legacy)
 end

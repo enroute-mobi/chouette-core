@@ -17,7 +17,9 @@ module Policy
         ::Macro::List,
         ::Macro::List::Run,
         ::ProcessingRule::Workbench,
-        ::NotificationRule
+        ::NotificationRule,
+        ::Fare::Provider,
+        ::Fare::Zone
       ].include?(resource_class)
     end
 

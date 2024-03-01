@@ -41,6 +41,4 @@ class FareProvidersController < Chouette::FareReferentialController
     ]
     params.require(:fare_provider).permit(fields)
   end
-
-  Policy::Authorizer::Controller.for(self, Policy::Authorizer::Legacy)
 end

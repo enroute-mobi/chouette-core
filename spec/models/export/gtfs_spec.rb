@@ -192,8 +192,19 @@ RSpec.describe Export::Gtfs, type: [:model, :with_exportable_referential] do
   end
 
   describe 'Contract Part' do
-    let(:export_scope) { Export::Scope::All.new context.referential }
-    let(:export) { Export::Gtfs.new export_scope: export_scope, workbench: context.workbench, workgroup: context.workgroup, referential: context.referential }
+    let(:export_scope) { Export::Scope::All.new referential }
+    let(:export) do
+      Export::Gtfs.new(
+        export_scope: export_scope,
+        workbench: workbench,
+        workgroup: workgroup,
+        referential: referential
+      )
+    end
+
+    let(:referential) { context.referential }
+    let(:workbench) { context.workbench }
+    let(:workgroup) { context.workgroup }
 
     let(:part) do
       Export::Gtfs::Contract.new export
@@ -218,8 +229,8 @@ RSpec.describe Export::Gtfs, type: [:model, :with_exportable_referential] do
     subject { export.target.attributions }
 
     before do
-      context.referential.switch
-      line.update registration_number: 'test'
+      referential.switch
+      export.index.register_route_id(line, 'route_id')
       first_company.contracts.create(name: first_company.name, company: first_company, line_ids: [line.id], workbench: context.workbench)
     end
 
@@ -228,7 +239,7 @@ RSpec.describe Export::Gtfs, type: [:model, :with_exportable_referential] do
     let(:expected_attributes) do
       {
         organization_name: 'first dummy',
-        route_id: 'test',
+        route_id: 'route_id',
         is_producer: 1
       }
     end

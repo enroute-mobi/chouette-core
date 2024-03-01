@@ -15,14 +15,20 @@ RSpec.describe Policy::Strategy::Permission, type: :policy_strategy do
     subject { strategy.apply(action, *args) }
 
     context ':update' do
-      # rubocop:disable Style/SingleLineMethods
-      let(:policy_class) { Class.new(Policy::Base) { def self.name; 'DummyPolicy'; end } }
-      # rubocop:enable Style/SingleLineMethods
+      let(:policy_class) do
+        Class.new(Policy::Base) do
+          def self.name
+            'Policy::DummyModel'
+          end
+
+          include Policy::Strategy::Permission::PolicyConcern
+        end
+      end
       let(:policy) { policy_class.new(resource, context: policy_context) }
       let(:action) { :update }
 
       context 'when the context has permission' do
-        let(:user_permissions) { ['dummy_policies.update'] }
+        let(:user_permissions) { ['dummy_models.update'] }
         it { is_expected.to be_truthy }
       end
 
@@ -30,16 +36,35 @@ RSpec.describe Policy::Strategy::Permission, type: :policy_strategy do
         it { is_expected.to be_falsy }
       end
 
-      context 'with Policy::Line' do
-        let(:policy_class) { Policy::Line }
-        let(:user_permissions) { ['lines.update'] }
+      context 'when policy class name has modules' do
+        let(:policy_class) do
+          Class.new(Policy::Base) do
+            def self.name
+              'Policy::Dummy::Model'
+            end
+
+            include Policy::Strategy::Permission::PolicyConcern
+          end
+        end
+        let(:user_permissions) { ['dummy_models.update'] }
         it { is_expected.to be_truthy }
       end
 
-      context 'with Control::List' do
-        let(:policy_class) { Policy::Control::List }
-        let(:user_permissions) { ['control_lists.update'] }
-        it { is_expected.to be_truthy }
+      context 'when policy class redefines .permission_namespace' do
+        let(:policy_class) do
+          Class.new(Policy::Base) do
+            include Policy::Strategy::Permission::PolicyConcern
+
+            def self.permission_namespace
+              'dummy_models'
+            end
+          end
+        end
+
+        context 'when the context has permission' do
+          let(:user_permissions) { ['dummy_models.update'] }
+          it { is_expected.to be_truthy }
+        end
       end
     end
 
@@ -58,20 +83,37 @@ RSpec.describe Policy::Strategy::Permission, type: :policy_strategy do
         it { is_expected.to be_falsy }
       end
 
-      context 'with Chouette::Line' do
-        let(:args) { Chouette::Line }
+      context 'when record class name has modules' do
+        # rubocop:disable Style/SingleLineMethods,Rails/ApplicationRecord
+        let(:args) { Class.new(ActiveRecord::Base) { def self.name; 'Dummy::Model'; end } }
+        # rubocop:enable Style/SingleLineMethods,Rails/ApplicationRecord
+
+        before { expect(Policy::Authorizer::Controller).to receive(:policy_class).with(args).and_return(nil) }
 
         context 'when the context has permission' do
-          let(:user_permissions) { ['lines.create'] }
+          let(:user_permissions) { ['dummy_models.create'] }
           it { is_expected.to be_truthy }
         end
       end
 
-      context 'with Control::List' do
-        let(:args) { Control::List }
+      context 'when record policy class redefines .permission_namespace' do
+        # rubocop:disable Style/SingleLineMethods,Rails/ApplicationRecord
+        let(:args) { Class.new(ActiveRecord::Base) { def self.name; 'WrongName'; end } }
+        # rubocop:enable Style/SingleLineMethods,Rails/ApplicationRecord
+        let(:policy_class) do
+          Class.new(Policy::Base) do
+            include Policy::Strategy::Permission::PolicyConcern
+
+            def self.permission_namespace
+              'dummy_models'
+            end
+          end
+        end
+
+        before { expect(Policy::Authorizer::Controller).to receive(:policy_class).with(args).and_return(policy_class) }
 
         context 'when the context has permission' do
-          let(:user_permissions) { ['control_lists.create'] }
+          let(:user_permissions) { ['dummy_models.create'] }
           it { is_expected.to be_truthy }
         end
       end

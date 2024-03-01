@@ -52,6 +52,11 @@ RSpec.describe Policy::Workbench, type: :policy do
       let(:resource_class) { Macro::List::Run }
       it { is_expected.to be_truthy }
     end
+
+    context 'ProcessingRule::Workbench' do
+      let(:resource_class) { ProcessingRule::Workbench }
+      it { is_expected.to be_truthy }
+    end
   end
 
   describe '#update?' do

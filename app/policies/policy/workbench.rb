@@ -6,7 +6,7 @@ module Policy
 
     protected
 
-    def _create?(resource_class)
+    def _create?(resource_class) # rubocop:disable Metrics/MethodLength
       [
         ::Referential,
         ::DocumentProvider,
@@ -15,7 +15,8 @@ module Policy
         ::Control::List,
         ::Control::List::Run,
         ::Macro::List,
-        ::Macro::List::Run
+        ::Macro::List::Run,
+        ::ProcessingRule::Workbench
       ].include?(resource_class)
     end
 

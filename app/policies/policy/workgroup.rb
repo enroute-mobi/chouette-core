@@ -24,7 +24,8 @@ module Policy
       else
         [
           ::DocumentType,
-          ::Workbench
+          ::Workbench,
+          ::ProcessingRule::Workgroup
         ].include?(resource_class)
       end
     end

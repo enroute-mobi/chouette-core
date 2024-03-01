@@ -47,6 +47,4 @@ class WorkgroupProcessingRulesController < Chouette::WorkgroupController
       target_workbenches: []
     ).with_defaults(processable_type: Control::List.name)
   end
-
-  Policy::Authorizer::Controller.for(self, Policy::Authorizer::Legacy)
 end

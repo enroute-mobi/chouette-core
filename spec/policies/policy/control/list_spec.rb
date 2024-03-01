@@ -1,6 +1,11 @@
 # frozen_string_literal: true
 
 RSpec.describe Policy::Control::List, type: :policy do
+  describe '.permission_namespace' do
+    subject { described_class.permission_namespace }
+    it { is_expected.to eq('control_lists') }
+  end
+
   describe '#create?' do
     subject { policy.create?(resource_class) }
 

@@ -47,6 +47,4 @@ class ProcessingRulesController < Chouette::WorkbenchController
       :operation_step
     )
   end
-
-  Policy::Authorizer::Controller.for(self, Policy::Authorizer::Legacy)
 end

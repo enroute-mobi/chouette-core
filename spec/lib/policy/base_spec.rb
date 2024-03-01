@@ -25,6 +25,62 @@ RSpec.describe Policy::Base do
       end
     end
 
+    describe '.strategy_classes' do
+      it 'is empty by default' do
+        expect(policy_class.strategy_classes).to eq({})
+      end
+
+      it 'includes strategy with authorization' do
+        policy_class.authorize_by(strategy_class)
+        expect(policy_class.strategy_classes).to eq({ nil => [strategy_class] })
+      end
+
+      context 'with inheritance' do
+        let(:sub_policy_class) { Class.new(policy_class) }
+
+        context 'with authorizations in subclass' do
+          before { sub_policy_class.authorize_by(strategy_class) }
+
+          it 'does not change superclass strategies' do
+            expect(policy_class.strategy_classes).to eq({})
+          end
+
+          it 'includes strategy in subclass' do
+            expect(sub_policy_class.strategy_classes).to eq({ nil => [strategy_class] })
+          end
+        end
+
+        context 'with authorizations in superclass' do
+          before { policy_class.authorize_by(strategy_class) }
+
+          it 'includes strategy in superclass' do
+            expect(policy_class.strategy_classes).to eq({ nil => [strategy_class] })
+          end
+
+          it 'includes strategy in subclass' do
+            expect(sub_policy_class.strategy_classes).to eq({ nil => [strategy_class] })
+          end
+        end
+
+        context 'with authorizations in both classes' do
+          let(:other_strategy_class) { Class.new(Policy::Strategy::Base) }
+
+          before do
+            policy_class.authorize_by(strategy_class)
+            sub_policy_class.authorize_by(other_strategy_class)
+          end
+
+          it 'includes only one strategy in superclass' do
+            expect(policy_class.strategy_classes).to eq({ nil => [strategy_class] })
+          end
+
+          it 'includes both strategies in subclass' do
+            expect(sub_policy_class.strategy_classes).to eq({ nil => [strategy_class, other_strategy_class] })
+          end
+        end
+      end
+    end
+
     context 'without option' do
       before { policy_class.authorize_by(strategy_class) }
 
@@ -75,6 +131,17 @@ RSpec.describe Policy::Base do
         expect_any_instance_of(strategy_class).not_to receive(:apply)
         expect(policy.destroy?).to be_truthy
         expect(policy.nothing?).to be_truthy
+      end
+    end
+
+    context 'with module' do
+      # rubocop:disable Style/ClassAndModuleChildren,Lint/ConstantDefinitionInBlock
+      let(:strategy_class) { Class.new(Policy::Strategy::Base) { module self::PolicyConcern; end } }
+      # rubocop:enable Style/ClassAndModuleChildren,Lint/ConstantDefinitionInBlock
+
+      it 'includes strategy concern' do
+        policy_class.authorize_by(strategy_class)
+        expect(policy_class).to include(strategy_class::PolicyConcern)
       end
     end
   end

@@ -3,6 +3,11 @@
 RSpec.describe Policy::Macro::List, type: :policy do
   let(:policy_context_class) { Policy::Context::Workbench }
 
+  describe '.permission_namespace' do
+    subject { described_class.permission_namespace }
+    it { is_expected.to eq('macro_lists') }
+  end
+
   describe '#create?' do
     subject { policy.create?(resource_class) }
 

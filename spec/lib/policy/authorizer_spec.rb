@@ -27,35 +27,43 @@ RSpec.describe Policy::Authorizer::Controller do
     end
   end
 
-  describe '#policy_class_name' do
-    subject { authorizer.policy_class_name(resource) }
+  describe '.policy_class_name' do
+    subject { described_class.policy_class_name(resource_class) }
 
-    context 'for User resource' do
-      let(:resource) { User.new }
+    context 'for User' do
+      let(:resource_class) { User }
 
       it { is_expected.to eq('Policy::User') }
     end
 
-    context 'for Chouette::StopArea resource' do
-      let(:resource) { Chouette::StopArea.new }
+    context 'for Chouette::StopArea' do
+      let(:resource_class) { Chouette::StopArea }
 
       it { is_expected.to eq('Policy::StopArea') }
     end
 
-    context 'for Control::List resource' do
-      let(:resource) { Control::List.new }
+    context 'for Control::List' do
+      let(:resource_class) { Control::List }
 
       it { is_expected.to eq('Policy::Control::List') }
     end
   end
 
-  describe '#policy_class' do
-    subject { authorizer.policy_class(resource) }
+  describe '.policy_class' do
+    subject { described_class.policy_class(resource_class) }
 
-    context 'for User resource' do
-      let(:resource) { User.new }
+    context 'for User' do
+      let(:resource_class) { User }
 
       it { is_expected.to eq(Policy::User) }
+    end
+
+    context 'for Dummy' do
+      # rubocop:disable Style/SingleLineMethods,Rails/ApplicationRecord
+      let(:resource_class) { Class.new(ActiveRecord::Base) { def self.name; 'Dummy'; end } }
+      # rubocop:enable Style/SingleLineMethods,Rails/ApplicationRecord
+
+      it { is_expected.to be_nil }
     end
   end
 
@@ -64,7 +72,7 @@ RSpec.describe Policy::Authorizer::Controller do
 
     context 'by default' do
       let(:resource) { double }
-      before { allow(authorizer).to receive(:policy_class).and_return(Policy::User) }
+      before { allow(described_class).to receive(:policy_class).and_return(Policy::User) }
 
       it { is_expected.to have_attributes(context: authorizer.context) }
     end

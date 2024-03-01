@@ -28,7 +28,9 @@ module Policy
         @strategy_classes ||= {}
       end
 
-      def authorize_by(strategy_class, **options)
+      def authorize_by(strategy_class, **options) # rubocop:disable Metrics/AbcSize
+        include strategy_class::PolicyConcern if strategy_class.constants.include?(:PolicyConcern)
+
         if options[:only]
           options[:only].each do |action|
             strategy_classes[action] ||= []
@@ -55,6 +57,14 @@ module Policy
           context_class = s.context_class if context_class.nil? || s.context_class < context_class
         end
         context_class
+      end
+
+      def inherited(base)
+        if instance_variable_defined?(:@strategy_classes)
+          base.instance_variable_set(:@strategy_classes, @strategy_classes.transform_values(&:dup))
+        end
+
+        super
       end
     end
 
@@ -150,7 +160,7 @@ module Policy
       end
     end
 
-    def log(action, *args, &content)
+    def log(action, *args, &content) # rubocop:disable Metrics/AbcSize
       return unless Rails.logger.debug?
 
       resource_description = "#{resource.class.name}##{resource.try(:id)}"
@@ -158,7 +168,8 @@ module Policy
       description = action.to_s
       description += " #{args.join(', ')}" if args.any?
 
-      Rails.logger.debug "[Policy] #{self.class.name.demodulize} #{resource_description} #{description} #{content.call}"
+      s = "[Policy] #{self.class.name['Policy::'.length..]} #{resource_description} #{description} #{content.call}"
+      Rails.logger.debug(s)
     end
   end
 end

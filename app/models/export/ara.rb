@@ -202,7 +202,16 @@ class Export::Ara < Export::Base
       def duplicated_registration_numbers
         # CHOUETTE-1787 Use model_class to load models before grouping it
         @duplicated_registration_numbers ||=
-          SortedSet.new(model_class.where(id: models.select(:id)).group(:registration_number).having("count(#{model_class.model_name.plural}.id) > 1").pluck(:registration_number))
+          begin
+            registration_numbers = model_class.
+                                     where(id: models.select(:id)).
+                                     where.not(registration_number: nil).
+                                     group(:registration_number).
+                                     having("count(#{model_class.model_name.plural}.id) > 1").
+                                     pluck(:registration_number)
+
+            SortedSet.new registration_numbers
+          end
       end
     end
 

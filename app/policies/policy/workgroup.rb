@@ -29,7 +29,8 @@ module Policy
           ::DocumentType,
           ::Workbench,
           ::ProcessingRule::Workgroup,
-          ::PublicationApi
+          ::PublicationApi,
+          ::CodeSpace
         ].include?(resource_class)
       end
     end

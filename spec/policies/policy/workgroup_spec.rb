@@ -60,6 +60,14 @@ RSpec.describe Policy::Workgroup, type: :policy do
 
       it { is_expected.to be_truthy }
     end
+
+    context 'CodeSpace' do
+      let(:resource_class) { CodeSpace }
+
+      it { does_not_apply_strategy(Policy::Strategy::Permission, :update) }
+
+      it { is_expected.to be_truthy }
+    end
   end
 
   describe '#update?' do

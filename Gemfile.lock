@@ -23,7 +23,8 @@ GIT
 
 GIT
   remote: https://bitbucket.org/enroute-mobi/gtfs.git
-  revision: 28d794e8212346bffbc3128acdfda4c4a1e0c1e8
+  revision: 4b45dbb7b49bcac9d0578d49d89dc421a6b6c030
+  branch: GTFS-46-sort-without-nil
   specs:
     gtfs (0.3.6)
       csv

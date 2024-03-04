@@ -45,7 +45,7 @@ class Export::Ara < Export::Base
   alias include_stop_visits? include_stop_visits
 
   def parts
-    @parts ||= [ Stops, Lines, Companies, VehicleJourneys ].tap do |parts|
+    @parts ||= [Stops, Lines, Companies, VehicleJourneys].tap do |parts|
       parts << StopVisits if include_stop_visits?
     end
   end
@@ -128,9 +128,7 @@ class Export::Ara < Export::Base
           unique_codes[registration_number_provider.short_name] = unique_code if unique_code
         end
 
-        if model.respond_to?(:objectid) && !unique_codes.key?('external')
-          unique_codes['external'] ||= model.objectid
-        end
+        unique_codes['external'] ||= model.objectid if model.respond_to?(:objectid) && !unique_codes.key?('external')
 
         unique_codes
       end
@@ -202,7 +200,16 @@ class Export::Ara < Export::Base
       def duplicated_registration_numbers
         # CHOUETTE-1787 Use model_class to load models before grouping it
         @duplicated_registration_numbers ||=
-          SortedSet.new(model_class.where(id: models.select(:id)).group(:registration_number).having("count(#{model_class.model_name.plural}.id) > 1").pluck(:registration_number))
+          begin
+            registration_numbers = model_class
+                                   .where(id: models.select(:id))
+                                   .where.not(registration_number: nil)
+                                   .group(:registration_number)
+                                   .having("count(#{model_class.model_name.plural}.id) > 1")
+                                   .pluck(:registration_number)
+
+            SortedSet.new registration_numbers
+          end
       end
     end
 
@@ -371,7 +378,7 @@ class Export::Ara < Export::Base
   end
 
   class StopVisits < Part
-    def vehicle_journey_at_stops # rubocop:disable Metrics/MethodLength
+    def vehicle_journey_at_stops
       sql_query = export_scope.vehicle_journey_at_stops.departure_arrival_base_query
       export_scope.vehicle_journey_at_stops.select('*').from(sql_query)
     end

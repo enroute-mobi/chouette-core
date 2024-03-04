@@ -393,7 +393,7 @@ class Export::Gtfs < Export::Base
           # The subquery allows to retrieve only distinct id and registration_number.
           query = <<~SQL
             select registration_number
-            from (#{exported_models.select(:id, :registration_number).distinct.to_sql}) as id_and_registration_number
+            from (#{exported_models.select(:id, :registration_number).where.not(registration_number: nil).distinct.to_sql}) as id_and_registration_number
             group by registration_number having count(id) > 1;
           SQL
 

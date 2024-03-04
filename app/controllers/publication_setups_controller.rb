@@ -84,6 +84,4 @@ class PublicationSetupsController < Chouette::WorkgroupController
       }
     )
   end
-
-  Policy::Authorizer::Controller.for(self, Policy::Authorizer::Legacy)
 end

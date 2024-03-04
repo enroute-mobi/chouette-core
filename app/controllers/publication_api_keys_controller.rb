@@ -21,6 +21,4 @@ class PublicationApiKeysController < Chouette::WorkgroupController
     permitted_keys = [:name]
     publication_api_key_params.permit(permitted_keys)
   end
-
-  Policy::Authorizer::Controller.for(self, Policy::Authorizer::Legacy)
 end

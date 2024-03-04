@@ -21,6 +21,14 @@ RSpec.describe Policy::Workgroup, type: :policy do
       it { is_expected.to be_truthy }
     end
 
+    context 'PublicationSetup' do
+      let(:resource_class) { PublicationSetup }
+
+      it { applies_strategy(Policy::Strategy::Permission, :update) }
+
+      it { is_expected.to be_truthy }
+    end
+
     context 'DocumentType' do
       let(:resource_class) { DocumentType }
 
@@ -39,6 +47,14 @@ RSpec.describe Policy::Workgroup, type: :policy do
 
     context 'ProcessingRule::Workgroup' do
       let(:resource_class) { ProcessingRule::Workgroup }
+
+      it { does_not_apply_strategy(Policy::Strategy::Permission, :update) }
+
+      it { is_expected.to be_truthy }
+    end
+
+    context 'PublicationApi' do
+      let(:resource_class) { PublicationApi }
 
       it { does_not_apply_strategy(Policy::Strategy::Permission, :update) }
 

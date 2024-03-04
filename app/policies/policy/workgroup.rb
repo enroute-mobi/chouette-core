@@ -18,14 +18,18 @@ module Policy
 
     protected
 
-    def _create?(resource_class)
-      if resource_class == ::Aggregate
+    def _create?(resource_class) # rubocop:disable Metrics/MethodLength
+      if [
+        ::Aggregate,
+        ::PublicationSetup
+      ].include?(resource_class)
         update?
       else
         [
           ::DocumentType,
           ::Workbench,
-          ::ProcessingRule::Workgroup
+          ::ProcessingRule::Workgroup,
+          ::PublicationApi
         ].include?(resource_class)
       end
     end

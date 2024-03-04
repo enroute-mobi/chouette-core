@@ -370,6 +370,21 @@ RSpec.describe Import::Gtfs do
         expect(vehicle_journey.company.name).to eq(company_name)
       end
     end
+
+    describe '#import_contract' do
+      let(:contract) { company.contracts.find_by name: company_name }
+
+      let(:import) { create_import 'google-sample-feed-with-attributions-contracts.zip' }
+      let(:company) { referential.companies.find_by name: company_name }
+      let(:expected_lines) { company.lines.where(registration_number: ['AB', 'BFC']) }
+
+      before { import.import_without_status }
+
+      it { expect(contract.name).to eq company_name }
+      it { expect(contract.lines).to match_array expected_lines }
+      it { expect(contract.company).to eq company }
+      it { expect(contract.codes.map(&:value)).to eq %w(DTA) }
+    end
   end
 
   describe '#import_stops' do

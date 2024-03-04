@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2024_01_19_151212) do
+ActiveRecord::Schema.define(version: 2024_02_15_110746) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "btree_gin"
@@ -199,6 +199,17 @@ ActiveRecord::Schema.define(version: 2024_01_19_151212) do
     t.index ["objectid"], name: "connection_links_objectid_key", unique: true
     t.index ["stop_area_provider_id"], name: "index_connection_links_on_stop_area_provider_id"
     t.index ["stop_area_referential_id"], name: "index_connection_links_on_stop_area_referential_id"
+  end
+
+  create_table "contracts", force: :cascade do |t|
+    t.string "name"
+    t.bigint "line_ids", array: true
+    t.bigint "company_id"
+    t.bigint "workbench_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["company_id"], name: "index_contracts_on_company_id"
+    t.index ["workbench_id"], name: "index_contracts_on_workbench_id"
   end
 
   create_table "control_context_runs", force: :cascade do |t|

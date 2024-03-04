@@ -191,6 +191,66 @@ RSpec.describe Export::Gtfs, type: [:model, :with_exportable_referential] do
     end
   end
 
+  describe 'Contract Part' do
+    let(:export_scope) { Export::Scope::All.new referential }
+    let(:export) do
+      Export::Gtfs.new(
+        export_scope: export_scope,
+        workbench: workbench,
+        workgroup: workgroup,
+        referential: referential
+      )
+    end
+
+    let(:referential) { context.referential }
+    let(:workbench) { context.workbench }
+    let(:workgroup) { context.workgroup }
+
+    let(:part) do
+      Export::Gtfs::Contract.new export
+    end
+
+    let(:context) do
+      Chouette.create do
+        line_provider do
+          company :first, name: 'first dummy'
+          company :second, name: 'second dummy'
+        end
+
+        vehicle_journey :first, objectid: 'objectid1', company: :first
+        vehicle_journey :second, objectid: 'objectid2', company: :second
+      end
+    end
+
+    let(:first_company) { context.company(:first) }
+    let(:first_vehicle_journey) { context.vehicle_journey(:first) }
+    let(:line) { first_vehicle_journey.line }
+
+    subject { export.target.attributions }
+
+    before do
+      referential.switch
+      export.index.register_route_id(line, 'route_id')
+      first_company.contracts.create(name: first_company.name, company: first_company, line_ids: [line.id], workbench: context.workbench)
+    end
+
+    subject { export.target.attributions }
+
+    let(:expected_attributes) do
+      {
+        organization_name: 'first dummy',
+        route_id: 'route_id',
+        is_producer: 1
+      }
+    end
+
+    it "should export attribution of the first company" do
+      part.export!
+
+      is_expected.to contain_exactly(an_object_having_attributes(expected_attributes))
+    end
+  end
+
   describe 'StopArea Part' do
     let(:export_scope) { Export::Scope::All.new context.referential }
     let(:index) { export.index }

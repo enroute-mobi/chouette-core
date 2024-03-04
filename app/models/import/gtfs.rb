@@ -79,23 +79,25 @@ class Import::Gtfs < Import::Base # rubocop:disable Metrics/ClassLength
     Attributions.new(self).import!
   end
 
-  class Attributions
-
+  class Base
     def initialize(import)
       @import = import
     end
-    attr_reader :import
 
+    attr_reader :import
+  end
+
+  class Attributions < Base
     delegate :source, :workbench, :referential, :code_space, to: :import
 
     def import!
       source.attributions.each do |attribution|
-        decorator = Decorator.for(attribution).new(
+        decorator = Decorator.for(attribution)&.new(
           attribution,
           referential: referential,
           code_space: code_space,
           workbench: workbench
-        ) rescue nil
+        )
 
         decorator.attribute! if decorator
       end
@@ -112,9 +114,17 @@ class Import::Gtfs < Import::Base # rubocop:disable Metrics/ClassLength
       attr_accessor :referential, :code_space, :workbench
 
       def self.for(gtfs_attribution)
-        [ TripOperatorDecorator ].find do |decorator_class|
+        [TripOperatorDecorator, ContractDecorator].find do |decorator_class|
           decorator_class.matches?(gtfs_attribution)
         end
+      end
+
+      def companies
+        @companies ||= workbench.companies.includes(:codes).where(name: organization_name)
+      end
+
+      def company
+        @company ||= companies.first unless companies.many?
       end
     end
 
@@ -127,16 +137,39 @@ class Import::Gtfs < Import::Base # rubocop:disable Metrics/ClassLength
         referential.vehicle_journeys.by_code(code_space, trip_id).first
       end
 
-      def company
-        unless (companies = workbench.companies.where(name: organization_name)).many?
-          companies.first
-        end
-      end
-
       def attribute!
         return if vehicle_journey.blank? || company.blank?
 
         vehicle_journey.update company: company
+      end
+    end
+
+    class ContractDecorator < Decorator
+      def self.matches?(gtfs_attribution)
+        gtfs_attribution.producer? && !gtfs_attribution.trip_id &&
+        gtfs_attribution.organization_name && !gtfs_attribution.operator? &&
+        gtfs_attribution.route_id && !gtfs_attribution.authority?
+      end
+
+      def contract
+        @contract ||= company.contracts.first_or_initialize_by_code(code_space, code_value) do |contract|
+          contract.name = organization_name
+          contract.workbench = workbench
+        end if company
+      end
+
+      def line
+        workbench.lines.find_by(registration_number: route_id)
+      end
+
+      def code_value
+        company.registration_number || company.objectid
+      end
+
+      def attribute!
+        return unless contract && line
+
+        contract.update line_ids: [contract.line_ids, line.id].flatten.compact.uniq
       end
     end
   end
@@ -181,12 +214,7 @@ class Import::Gtfs < Import::Base # rubocop:disable Metrics/ClassLength
     @specific_default_company ||= workbench.companies.find_by(id: parent_options['specific_default_company_id'])
   end
 
-  class Agencies
-
-    def initialize(import)
-      @import = import
-    end
-
+  class Agencies < Base
     attr_reader :import
     delegate :companies, :create_message, :save_model, :specific_default_company,
              :source, :default_company=, :default_time_zone, :default_time_zone=, to: :import
@@ -963,13 +991,7 @@ class Import::Gtfs < Import::Base # rubocop:disable Metrics/ClassLength
     resource.update_status_from_messages
   end
 
-  class Shapes
-
-    def initialize(import)
-      @import = import
-    end
-
-    attr_reader :import
+  class Shapes < Base
     delegate :source, :shape_provider, :code_space, :create_message, to: :import
 
     def import!
@@ -1063,13 +1085,7 @@ class Import::Gtfs < Import::Base # rubocop:disable Metrics/ClassLength
     resource.update_status_from_messages
   end
 
-  class FareProducts
-    def initialize(import)
-      @import = import
-    end
-
-    attr_reader :import
-
+  class FareProducts < Base
     delegate :code_space, :companies, :source, :fare_provider, :index, :default_company, to: :import
 
     def import!
@@ -1150,13 +1166,7 @@ class Import::Gtfs < Import::Base # rubocop:disable Metrics/ClassLength
     resource.update_status_from_messages
   end
 
-  class FareValidities
-    def initialize(import)
-      @import = import
-    end
-
-    attr_reader :import
-
+  class FareValidities < Base
     delegate :code_space, :lines, :source, :fare_provider, :index, to: :import
 
     def import!
@@ -1331,13 +1341,7 @@ class Import::Gtfs < Import::Base # rubocop:disable Metrics/ClassLength
     @status = 'failed' if resource.status == :ERROR
   end
 
-  class Services
-    def initialize(import)
-      @import = import
-    end
-
-    attr_reader :import
-
+  class Services < Base
     delegate :source, :time_tables_by_service_id, to: :import
 
     def import!

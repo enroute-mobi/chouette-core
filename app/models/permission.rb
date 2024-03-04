@@ -19,6 +19,7 @@ class Permission
         connection_links
         control_lists
         control_list_runs
+        contracts
         documents
         document_providers
         document_types

@@ -1,0 +1,52 @@
+en:
+  contracts:
+    index:
+      title: Contracts
+    show:
+      title: "%{name}"
+    new:
+      title: "Create a Contract"
+    edit:
+      title: "Edit %{name}"
+    actions:
+      show: "Show this Contract"
+      new: "Create a Contract"
+      edit: "Edit this Contract"
+      destroy: "Delete this Contract"
+      destroy_confirm: "Are you sure you want to delete this Contract ?"
+    form:
+      placeholders:
+      sections:
+        identification: "Identification"
+        associated_resources: "Associated Resources"
+        codes: "Codes"
+    search_no_results: "No Contracts match this search"
+    no_codes: "This Contract does not have any codes"
+    flash:
+      associate:
+        notice: The Contract is successfully associated to the line
+        error: The Contract could not be associated to the line
+      unassociate:
+        notice: The Contract is successfully unassociated to the line
+        error: The Contract could not be unassociated to the line
+  activemodel:
+    attributes:
+      period:
+        from: Valid after
+        to: Valid until
+  activerecord:
+    models:
+      contract:
+        zero:  "Contracts"
+        one: "Contract"
+        other: "Contracts"
+    attributes:
+      contract:
+        name: Name
+        company_id: Company
+        company: Company
+        lines: "Lines"
+    errors:
+      models:
+        contract:
+          attributes:

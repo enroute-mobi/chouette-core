@@ -1,0 +1,19 @@
+- breadcrumb :contract, @workbench, @contract
+- page_header_content_for @contract
+
+.page_content
+  .container-fluid
+		.col-lg-6.col-md-6.col-sm-12.col-xs-12
+			.row
+				= simple_block_for @contract, title: t('contracts.form.sections.identification') do |d|
+					= d.attribute :name
+					= d.attribute :company, as: :association, link: ->(company) { workbench_line_referential_company_path(@workbench, company) }
+					= d.attribute :lines, as: :associations, value: @contract.lines.sort_by(&:name), link: ->(child) { workbench_line_referential_lines_path(@workbench, child) }
+			.row
+				= simple_block_for @contract, title: Chouette::StopArea.tmf(:codes) do |d|
+				  - if @contract.codes.empty?
+						.mb-xs
+							= replacement_msg t('contracts.no_codes')
+				  - else
+						- @contract.codes.each do |c|
+							= d.attribute :value, label: c.code_space.short_name, object: c

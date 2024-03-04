@@ -102,7 +102,8 @@ module Export::Scope
 
     delegate :codes, to: :workgroup
 
-    delegate :vehicle_journeys, :vehicle_journey_at_stops, :journey_patterns, :routes, :stop_points, :time_tables, :referential_codes, :routing_constraint_zones, to: :referential
+    delegate :vehicle_journeys, :vehicle_journey_at_stops, :journey_patterns, :routes, :stop_points,
+             :time_tables, :referential_codes, :routing_constraint_zones, :contracts, to: :referential
 
     def organisations
       # Find organisations which provided metadata in the referential
@@ -239,6 +240,10 @@ module Export::Scope
       # TODO: we should filter Validities according zones & exported stop areas
       current_scope.fare_validities.by_products(fare_products)
     end
+
+    def contracts
+      current_scope.contracts.with_lines(lines)
+    end
   end
 
   # Selects VehicleJourneys in a Date range
@@ -278,6 +283,10 @@ module Export::Scope
 
     def metadatas
       current_scope.metadatas.with_lines(selected_line_ids)
+    end
+
+    def contracts
+      current_scope.contracts.with_lines(lines)
     end
   end
 

@@ -39,6 +39,7 @@ Apartment.configure do |config|
     'CrossReferentialIndexEntry',
     'CustomField',
     'CustomFieldGroup',
+    'Contract',
     'Document',
     'DocumentMembership',
     'DocumentProvider',

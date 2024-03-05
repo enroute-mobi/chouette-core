@@ -9,7 +9,7 @@
   .row
     .col-lg-12
       = f.input :name
-      = f.input :company_id, as: :autocomplete_select, collection: @workbench.companies, input_html: {class: "w-full"}
+      = f.association :company, as: :autocomplete_select, collection: @workbench.companies, input_html: {class: "w-full"}
 
   .separator.section_separator
   .row

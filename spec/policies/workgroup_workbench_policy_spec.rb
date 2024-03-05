@@ -67,7 +67,6 @@ RSpec.describe WorkgroupWorkbenchPolicy, type: :policy do
     let(:user) { workbench_user }
 
     it { is_expected.to permit_action(:show) }
-    it { is_expected.to_not permit_action(:show_invitation_code) }
 
     context 'with the permission "workbenches.update"' do
       before { user.permissions << 'workbenches.update' }
@@ -82,6 +81,5 @@ RSpec.describe WorkgroupWorkbenchPolicy, type: :policy do
     let(:user) { other_context.user }
 
     it { is_expected.to_not permit_action(:show) }
-    it { is_expected.to_not permit_action(:show_invitation_code) }
   end
 end

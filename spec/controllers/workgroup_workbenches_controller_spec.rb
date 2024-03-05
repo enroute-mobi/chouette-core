@@ -1,25 +1,37 @@
+# frozen_string_literal: true
+
 RSpec.describe WorkgroupWorkbenchesController, type: :controller do
   login_user
 
-  # TODO: change this with ChouetteFactory
-  let(:workbench) { create :workbench, organisation: @user.organisation }
-  let(:other_orga) { create :organisation }
+  let(:context) do
+    Chouette.create do
+      workgroup owner: Organisation.find_by(code: 'first') do
+        workbench organisation: Organisation.find_by(code: 'first')
+      end
+    end
+  end
+  let(:workbench) { context.workbench }
 
   describe 'GET show' do
-    context "when user's organisation is in the workgroup organisations list" do
-      it 'should respond with a 200' do
+    context "when user is the workgroup's owner" do
+      it 'should respond with ok' do
         get :show, params: { workgroup_id: workbench.workgroup_id, id: workbench.id }
-        expect(response).to have_http_status(200)
+        expect(response).to have_http_status(:ok)
       end
     end
 
-    context 'when user is not in the workgroup organisations list' do
-      before do
-        allow(@user).to receive(:organisation_id) { other_orga.id }
+    context 'when user is in the workgroup organisations list' do
+      let(:context) do
+        Chouette.create do
+          workgroup do
+            workbench organisation: Organisation.find_by(code: 'first')
+          end
+        end
       end
-      it 'should respond with a 200' do
+
+      it 'should respond with not found' do
         get :show, params: { workgroup_id: workbench.workgroup_id, id: workbench.id }
-        expect(response).to have_http_status(200)
+        expect(response).to have_http_status(:not_found)
       end
     end
   end
@@ -40,16 +52,12 @@ RSpec.describe WorkgroupWorkbenchesController, type: :controller do
     end
 
     without_permission 'workbenches.update' do
-      it 'should respond with 403' do
-        expect(request).to have_http_status 403
+      it 'should respond with forbidden' do
+        expect(request).to have_http_status(:forbidden)
       end
     end
 
     with_permission 'workbenches.update' do
-      it 'should respond with 403' do
-        expect(request).to have_http_status 403
-      end
-
       context "when user is the workgroup's owner" do
         before do
           workbench.workgroup.owner = @user.organisation
@@ -63,12 +71,25 @@ RSpec.describe WorkgroupWorkbenchesController, type: :controller do
         end
 
         context 'when params contains organisation_id' do
-          # TODO: change this with ChouetteFactory
-          let(:workbench_params) { { organisation_id: Organisation.last.id } }
+          let(:workbench_params) { { organisation_id: Chouette.create { organisation }.organisation } }
 
           it "doesn't change the Workbench organisation" do
             expect { request }.to_not(change { workbench.reload.organisation_id })
           end
+        end
+      end
+
+      context 'when user is in the workgroup organisations list' do
+        let(:context) do
+          Chouette.create do
+            workgroup do
+              workbench organisation: Organisation.find_by(code: 'first')
+            end
+          end
+        end
+
+        it 'should respond with not found' do
+          expect(request).to have_http_status(:not_found)
         end
       end
     end

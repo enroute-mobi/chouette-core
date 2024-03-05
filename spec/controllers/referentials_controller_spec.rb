@@ -1,5 +1,6 @@
-describe ReferentialsController, :type => :controller do
+# frozen_string_literal: true
 
+describe ReferentialsController, type: :controller do
   login_user
 
   let(:referential) { Referential.first }
@@ -49,12 +50,6 @@ describe ReferentialsController, :type => :controller do
         end
       end
     end
-  end
-
-  describe 'PUT archive' do
-    let(:referential){ create :referential, workbench: workbench, organisation: organisation }
-    let(:request){ put :archive, params: { id: referential.id }}
-    it_behaves_like 'checks current_organisation', success_code: 302
   end
 
   describe "POST #create" do
@@ -196,7 +191,6 @@ describe ReferentialsController, :type => :controller do
   end
 
   describe 'GET show' do
-
     before(:each) do
       line = create(:line, line_referential: referential.line_referential)
       referential.metadatas << create(:referential_metadata, lines: [line])
@@ -216,5 +210,44 @@ describe ReferentialsController, :type => :controller do
         expect(flash[:warning]).to eq(message)
       end
     end
+  end
+
+  describe 'PUT #update' do
+    let(:referential_workbench) { workbench }
+    let(:referential) do
+      create(:referential, workbench: referential_workbench, organisation: referential_workbench.organisation)
+    end
+    let(:request) { put :update, params: { id: referential.id, referential: { name: 'changed' } } }
+
+    it_behaves_like 'checks current_organisation', success_code: 302
+
+    context 'when the referential workbench has a different organisation from user' do
+      let(:context) do
+        Chouette.create do
+          workgroup do
+            workbench :expected_workbench, organisation: Organisation.find_by(code: 'first')
+            workbench do
+              referential :through_workgroup_referential
+            end
+          end
+        end
+      end
+      let(:referential) { context.referential(:through_workgroup_referential) }
+
+      it 'should respond with FORBIDDEN' do
+        expect(request).to render_template('errors/forbidden')
+      end
+
+      it 'assigns @workbench as the sole workbench having the same organisation as the user' do
+        request
+        expect(assigns(:workbench)).to eq(context.workbench(:expected_workbench))
+      end
+    end
+  end
+
+  describe 'PUT #archive' do
+    let(:referential) { create(:referential, workbench: workbench, organisation: organisation) }
+    let(:request) { put :archive, params: { id: referential.id } }
+    it_behaves_like 'checks current_organisation', success_code: 302
   end
 end

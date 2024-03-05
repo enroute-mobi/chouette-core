@@ -18,7 +18,7 @@ module Chouette
     end
 
     def current_workbench
-      referential&.workbench
+      referential&.workgroup&.workbenches&.find_by(organisation: current_organisation)
     end
   end
 end

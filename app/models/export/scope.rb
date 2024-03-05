@@ -100,10 +100,10 @@ module Export::Scope
     delegate :shapes, to: :shape_referential
     delegate :fare_zones, :fare_products, :fare_validities, to: :fare_referential
 
-    delegate :codes, to: :workgroup
+    delegate :codes, :contracts, to: :workgroup
 
     delegate :vehicle_journeys, :vehicle_journey_at_stops, :journey_patterns, :routes, :stop_points,
-             :time_tables, :referential_codes, :routing_constraint_zones, :contracts, to: :referential
+             :time_tables, :referential_codes, :routing_constraint_zones, to: :referential
 
     def organisations
       # Find organisations which provided metadata in the referential

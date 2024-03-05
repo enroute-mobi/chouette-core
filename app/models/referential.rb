@@ -125,10 +125,6 @@ class Referential < ApplicationModel
 
   after_destroy :clean_cross_referential_index!
 
-  def contracts
-    (workbench || workgroup).contracts
-  end
-
   def self.clean!
     Rails.logger.info "Cleaning Referentials (cooldown: #{TIME_BEFORE_CLEANING} days)"
     clean_scope.pluck(:id, :slug).each do |id, slug|

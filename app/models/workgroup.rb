@@ -36,6 +36,7 @@ class Workgroup < ApplicationModel
   has_many :control_list_runs, through: :workbenches
   has_many :processing_rules, class_name: "ProcessingRule::Workgroup"
   has_many :workbench_processing_rules, through: :workbenches, source: :processing_rules
+  has_many :contracts, through: :workbenches
 
   validates :name, presence: true, uniqueness: true
   validates_uniqueness_of :stop_area_referential_id

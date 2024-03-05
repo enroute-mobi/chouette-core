@@ -13,7 +13,7 @@ class Import::NetexGeneric < Import::Base
     when '.zip'
       Zip::File.open(file) do |zip_file|
         files_count = zip_file.glob('*').size
-        zip_file.glob('*.xml').size == files_count
+        zip_file.glob('**/*.xml').size == files_count
       end
     else
       false

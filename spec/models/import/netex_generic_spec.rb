@@ -41,6 +41,11 @@ RSpec.describe Import::NetexGeneric do
       let(:filename) { fixtures_path("sample_gtfs.zip") }
       it { is_expected.to be_falsy }
     end
+
+    context "when file is xml in subfolder" do
+      let(:filename) { fixtures_path("xml_in_subfolder.zip") }
+      it { is_expected.to be_truthy }
+    end
   end
 
   describe 'StopArea Referential Part' do

@@ -6,7 +6,6 @@ module JourneyPattern
     
     defaults singleton: true, resource_class: Shape, instance_name: 'shape'
 
-    belongs_to :referential
     belongs_to :line, parent_class: Chouette::Line
     belongs_to :route, parent_class: Chouette::Route
     belongs_to :journey_pattern, parent_class: Chouette::JourneyPattern

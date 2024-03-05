@@ -10,8 +10,6 @@ class TimeTablesController < Chouette::ReferentialController
   respond_to :json
   respond_to :js, :only => :index
 
-  belongs_to :referential
-
   include PolicyChecker
 
   def show

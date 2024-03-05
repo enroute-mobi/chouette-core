@@ -5,9 +5,7 @@ class FootnotesController < Chouette::ReferentialController
 
   defaults resource_class: Chouette::Footnote
 
-  belongs_to :referential do
-    belongs_to :line, :parent_class => Chouette::Line
-  end
+  belongs_to :line, parent_class: Chouette::Line
 
   def edit_all
     @footnotes = footnotes

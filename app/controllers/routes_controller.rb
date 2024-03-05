@@ -9,9 +9,8 @@ class RoutesController < Chouette::ReferentialController
   respond_to :geojson, only: %i[show index]
   respond_to :json, only: %i[retrieve_nearby_stop_areas autocomplete_stop_areas]
 
-  belongs_to :referential do
-    belongs_to :line, parent_class: Chouette::Line, optional: true, polymorphic: true
-  end
+  belongs_to :line, parent_class: Chouette::Line, optional: true, polymorphic: true
+
   before_action :define_candidate_opposite_routes, only: %i[new edit fetch_opposite_routes]
 
   def index

@@ -10,8 +10,6 @@ class ReferentialLinesController < Chouette::ReferentialController
   respond_to :geojson, :only => :show
   respond_to :js, :only => :index
 
-  belongs_to :referential
-
   def show
     @q = resource.routes.ransack(params[:q])
     @routes = @q.result

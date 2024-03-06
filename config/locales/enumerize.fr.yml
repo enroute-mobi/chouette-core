@@ -17,6 +17,7 @@ fr:
         aggregate: Agrégation
         source_retrieval: Récupération de données
         import: Import
+        publication: Publication
       operation_statuses:
         all: Tous
         successful: Succès
@@ -25,7 +26,6 @@ fr:
       rule_type: &notification_rule_rule_type
         block: Bloque
         notify: Notifie
-        publication: Publication
       target_type:
         user: Utilisateurs sélectionnés
         workbench:  Tous les utilisateurs de l'espace de travail

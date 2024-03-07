@@ -37,16 +37,7 @@
       = f.input :comment, as: :text, input_html: { rows: 5, title: t("formtastic.titles#{format_restriction_for_locales(@referential)}.stop_area.comment") }
 
   .separator.section_separator
-  - code_spaces = @line.workgroup.code_spaces.map { |c| [c.short_name, c.id] }
-  .row
-    .col-lg-12
-      h2.mb-lg= t("layouts.form.sections.codes")
-      = f.input :registration_number
-      = f.simple_fields_for(:codes) do |codes_form|
-        = render 'shared/code_fields', f: codes_form, code_spaces: code_spaces
-
-  .links.nested-linker
-    = link_to_add_association t('actions.add_code'), f, :codes, class: 'btn btn-primary', partial: 'shared/code_fields', render_options: {locals: { code_spaces: code_spaces }}
+  = render 'codes/form', form: f
 
   .separator.section_separator
   - if policy(@line).update_activation_dates?

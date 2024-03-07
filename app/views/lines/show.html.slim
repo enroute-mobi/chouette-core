@@ -45,14 +45,7 @@
           = d.attribute :line_provider, as: :association, link: ->(line_provider) { workbench_line_referential_line_provider_path(@workbench, @line.line_provider_id) }
           = d.attribute :comment
 
-        = simple_block_for @line, title: t("layouts.form.sections.codes") do |d|
-          = d.attribute :registration_number
-          - if @line.codes.empty?
-            .mb-xs
-              = replacement_msg t('lines.no_codes')
-          - else
-            - codes_group_by_short_name(@line.codes).each do |c|
-              = d.attribute :values, label: c.short_name, object: c
+        = render 'codes/block', model: @line
 
       .col-lg-6.col-md-6.col-sm-12.col-xs-12
         = simple_block_for @line, title: t("lines.form.sections.activation") do |d|

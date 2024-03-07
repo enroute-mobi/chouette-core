@@ -4,7 +4,7 @@
       = f.input :id, as: :hidden, wrapper: false
       = f.input :code_space_id,
         as: :select,
-        collection: @stop_area.workgroup.code_spaces.map { |c| [c.short_name, c.id] },
+        collection: current_workgroup.code_spaces.map { |c| [c.short_name, c.id] },
         label: false,
         wrapper: false,
         include_blank: false

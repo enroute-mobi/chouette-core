@@ -8,7 +8,7 @@ class MergesController < Chouette::WorkbenchController
   defaults resource_class: Merge
 
   # rubocop:disable Rails/LexicallyScopedActionFilter
-  before_action :authorize_resource, only: %i[edit update destroy rollback]
+  before_action :authorize_resource, except: %i[new create index show available_referentials]
   # rubocop:enable Rails/LexicallyScopedActionFilter
 
   respond_to :html

@@ -7,7 +7,7 @@ module PolicyChecker
 
   included do
     # rubocop:disable Rails/LexicallyScopedActionFilter
-    before_action :authorize_resource, only: %i[edit update destroy]
+    before_action :authorize_resource, except: %i[new create index show]
     before_action :authorize_resource_class, only: %i[new create]
     # rubocop:enable Rails/LexicallyScopedActionFilter
 

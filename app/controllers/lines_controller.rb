@@ -6,6 +6,10 @@ class LinesController < Chouette::LineReferentialController
 
   defaults :resource_class => Chouette::Line
 
+  # rubocop:disable Rails/LexicallyScopedActionFilter
+  before_action :authorize_resource, except: %i[new create index show autocomplete]
+  # rubocop:enable Rails/LexicallyScopedActionFilter
+
   respond_to :html, :xml, :json
   respond_to :js, :only => :index
 

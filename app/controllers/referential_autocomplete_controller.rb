@@ -1,6 +1,8 @@
 # frozen_string_literal: true
 
 class ReferentialAutocompleteController < Chouette::ReferentialController
+  skip_before_action :authorize_resource
+
   def lines
     @lines = referential.lines.order(:name).by_text(text).limit(50)
   end

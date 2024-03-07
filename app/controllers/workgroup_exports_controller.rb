@@ -9,6 +9,10 @@ class WorkgroupExportsController < Chouette::WorkgroupController
 
   defaults resource_class: Export::Base, collection_name: 'exports', instance_name: 'export'
 
+  # rubocop:disable Rails/LexicallyScopedActionFilter
+  before_action :authorize_resource, except: %i[new create index show download]
+  # rubocop:enable Rails/LexicallyScopedActionFilter
+
   def show
     @export = resource.decorate(context: { parent: parent })
     respond_to do |format|

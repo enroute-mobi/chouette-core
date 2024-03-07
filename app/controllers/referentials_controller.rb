@@ -8,6 +8,9 @@ class ReferentialsController < Chouette::ResourceController
   respond_to :json, :only => :show
   respond_to :js, :only => :show
 
+  # rubocop:disable Rails/LexicallyScopedActionFilter
+  before_action :authorize_resource, except: %i[new create index show journey_patterns]
+  # rubocop:enable Rails/LexicallyScopedActionFilter
   before_action :check_cloning_source_is_accessible, only: %i(new create)
   before_action :check_lines_outside_of_functional_scope, only: :show
 

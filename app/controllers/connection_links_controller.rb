@@ -5,6 +5,10 @@ class ConnectionLinksController < Chouette::StopAreaReferentialController
 
   defaults :resource_class => Chouette::ConnectionLink
 
+  # rubocop:disable Rails/LexicallyScopedActionFilter
+  before_action :authorize_resource, except: %i[new create index show get_connection_speeds]
+  # rubocop:enable Rails/LexicallyScopedActionFilter
+
   respond_to :html, :geojson
 
   def index

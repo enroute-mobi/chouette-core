@@ -23,6 +23,10 @@ class CalendarPolicy < ApplicationPolicy
     instance_permission('share')
   end
 
+  def month?
+    update?
+  end
+
   private
 
   def instance_permission(permission)

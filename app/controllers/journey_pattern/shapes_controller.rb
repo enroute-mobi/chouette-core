@@ -10,6 +10,11 @@ module JourneyPattern
     belongs_to :route, parent_class: Chouette::Route
     belongs_to :journey_pattern, parent_class: Chouette::JourneyPattern
 
+    # rubocop:disable Rails/LexicallyScopedActionFilter
+    before_action :authorize_resource, except: %i[new create index show get_user_permissions update_line]
+    before_action :authorize_resource_class, only: %i[new create]
+    # rubocop:enable Rails/LexicallyScopedActionFilter
+
     def new
       if resource
         flash[:warning] = I18n.t('shapes.errors.cannot_create')

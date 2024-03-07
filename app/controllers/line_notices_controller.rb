@@ -7,6 +7,11 @@ class LineNoticesController < Chouette::LineReferentialController
 
   before_action :load_line
 
+  # rubocop:disable Rails/LexicallyScopedActionFilter
+  before_action :authorize_resource, except: %i[new create index show attach]
+  before_action :authorize_resource_class, only: %i[new create attach]
+  # rubocop:enable Rails/LexicallyScopedActionFilter
+
   def index
     index! do |format|
       format.html {

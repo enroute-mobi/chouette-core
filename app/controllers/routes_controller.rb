@@ -10,7 +10,17 @@ class RoutesController < Chouette::ReferentialController
 
   belongs_to :line, parent_class: Chouette::Line, optional: true, polymorphic: true
 
+  # rubocop:disable Rails/LexicallyScopedActionFilter
+  before_action :authorize_resource, except: %i[
+    new create index show
+    costs
+    retrieve_nearby_stop_areas
+    autocomplete_stop_areas
+    fetch_opposite_routes
+    fetch_user_permissions
+  ]
   before_action :define_candidate_opposite_routes, only: %i[new edit fetch_opposite_routes]
+  # rubocop:enable Rails/LexicallyScopedActionFilter
 
   def index
     @routes = collection

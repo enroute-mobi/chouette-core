@@ -6,6 +6,7 @@ class FootnotesController < Chouette::ReferentialController
   belongs_to :line, parent_class: Chouette::Line
 
   # rubocop:disable Rails/LexicallyScopedActionFilter
+  before_action :authorize_resource, except: %i[new create index show edit_all update_all]
   before_action :authorize_resource_class, only: %i[new create edit_all update_all]
   # rubocop:enable Rails/LexicallyScopedActionFilter
 

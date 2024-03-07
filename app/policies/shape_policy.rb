@@ -12,6 +12,7 @@ class ShapePolicy < ApplicationPolicy
   def update?
     has_permission?('shapes.update')
   end
+  alias update_line? update?
 
   def destroy?
     has_permission?('shapes.destroy')

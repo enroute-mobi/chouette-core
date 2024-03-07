@@ -6,6 +6,10 @@ class DocumentsController < Chouette::WorkbenchController
 
   defaults resource_class: Document
 
+  # rubocop:disable Rails/LexicallyScopedActionFilter
+  before_action :authorize_resource, except: %i[new create index show download]
+  # rubocop:enable Rails/LexicallyScopedActionFilter
+
   def index
     index! do |format|
       format.html do

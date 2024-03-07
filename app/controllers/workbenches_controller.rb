@@ -5,6 +5,10 @@ class WorkbenchesController < Chouette::ResourceController
 
   respond_to :html, except: :destroy
 
+  # rubocop:disable Rails/LexicallyScopedActionFilter
+  before_action :authorize_resource, except: %i[new create index show delete_referentials]
+  # rubocop:enable Rails/LexicallyScopedActionFilter
+
   def show
     @single_workbench = resource.workgroup.workbenches.one?
 

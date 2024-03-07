@@ -3,8 +3,6 @@
 class WorkgroupsController < Chouette::ResourceController
   defaults resource_class: Workgroup
 
-  before_action :authorize_resource, only: %i[setup_deletion remove_deletion]
-
   def create
     @workgroup = Workgroup.create_with_organisation current_organisation, workgroup_params
     redirect_to(@workgroup)

@@ -9,6 +9,11 @@ class WorkgroupImportsController < Chouette::WorkgroupController
   end
 
   defaults resource_class: Import::Base, collection_name: 'imports', instance_name: 'import'
+
+  # rubocop:disable Rails/LexicallyScopedActionFilter
+  before_action :authorize_resource, except: %i[new create index show download messages]
+  # rubocop:enable Rails/LexicallyScopedActionFilter
+
   respond_to :json, :html
 
   def download

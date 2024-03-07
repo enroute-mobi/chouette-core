@@ -3,10 +3,6 @@
 class AggregatesController < Chouette::WorkgroupController
   defaults resource_class: Aggregate
 
-  # rubocop:disable Rails/LexicallyScopedActionFilter
-  before_action :authorize_resource, only: %i[edit update destroy rollback]
-  # rubocop:enable Rails/LexicallyScopedActionFilter
-
   respond_to :html
 
   def show

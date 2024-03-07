@@ -5,6 +5,10 @@ class CompaniesController < Chouette::LineReferentialController
 
   defaults resource_class: Chouette::Company
 
+  # rubocop:disable Rails/LexicallyScopedActionFilter
+  before_action :authorize_resource, except: %i[new create index show autocomplete]
+  # rubocop:enable Rails/LexicallyScopedActionFilter
+
   respond_to :html
   respond_to :json
 

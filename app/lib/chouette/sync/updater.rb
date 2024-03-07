@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Chouette
   module Sync
     class Updater
@@ -185,10 +187,10 @@ module Chouette
             short_name = code_attributes[:short_name]
             value = code_attributes[:value]
 
-            if code_space = find_code_space(short_name)
+            if (code_space = find_code_space(short_name))
               if code_space.allow_multiple_values
                 model.codes.find_or_initialize_by code_space: code_space, value: value
-              elsif code = model.codes.find_by(code_space: code_space)
+              elsif (code = model.codes.find_by(code_space: code_space))
                 code.value = value
                 model.codes = [code]
               else
@@ -234,7 +236,7 @@ module Chouette
           end
 
           def id
-            @id ||= default_provider&.id unless data_source_ref.present?
+            @id ||= default_provider&.id if data_source_ref.blank?
             @id ||= find_provider&.id
           end
 
@@ -303,7 +305,7 @@ module Chouette
         end
 
         def resources_by_id
-          @resources_by_id ||=  Hash[resources.map { |r| [r.send(resource_id_attribute).to_s, r] }]
+          @resources_by_id ||=  resources.index_by { |r| r.send(resource_id_attribute).to_s }
         end
 
         def resource_by_id(resource_id)
@@ -329,7 +331,7 @@ module Chouette
         end
 
         def new_resources_by_id
-          @new_resources ||= resources_by_id.dup
+          @new_resources_by_id ||= resources_by_id.dup
         end
 
         def resource_exists!(resource_id)
@@ -337,7 +339,7 @@ module Chouette
         end
 
         def new_resources
-          new_resources_by_id.values.each do |resource|
+          new_resources_by_id.each_value do |resource|
             yield decorate(resource)
           end
         end
@@ -394,7 +396,7 @@ module Chouette
                     model_ref.by_code(code_space, resource_ids).pluck(:id)
                   end
 
-            unless ids.present?
+            if ids.blank?
               key_field = model_id_attribute_from_reference_type(reference_type)
               ids = model_ref.where(key_field => resource_ids).pluck(:id)
             end

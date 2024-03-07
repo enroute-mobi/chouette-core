@@ -224,7 +224,6 @@ RSpec.describe Chouette::Sync::Updater do
   end
 
   describe Chouette::Sync::Updater::Models do
-
     subject(:models) { described_class.new(scope, updater: updater) }
     let(:scope) { double }
 
@@ -262,7 +261,7 @@ RSpec.describe Chouette::Sync::Updater do
         Chouette.create do
           code_space short_name: 'test'
 
-          stop_area :first, codes: { test: 'First value'}
+          stop_area :first, codes: { test: 'First value' }
           stop_area :second
 
           referential
@@ -275,7 +274,7 @@ RSpec.describe Chouette::Sync::Updater do
       let(:scope) { context.referential.stop_areas }
 
       let(:resource) { double id: 43, codes_attributes: codes_attributes }
-      let(:codes_attributes) { [{short_name: 'test', value: 'Other Value' }] }
+      let(:codes_attributes) { [{ short_name: 'test', value: 'Other Value' }] }
 
       before do
         allow(models).to receive(:model_id_attribute).and_return(:codes)
@@ -285,7 +284,7 @@ RSpec.describe Chouette::Sync::Updater do
       context 'when allow multiple values is false' do
         before { code_space.update allow_multiple_values: false }
 
-        context "when model is first_stop_area" do
+        context 'when model is first_stop_area' do
           let(:model) { first_stop_area }
 
           it "should change code value from 'First value' to 'Other Value'" do
@@ -293,30 +292,30 @@ RSpec.describe Chouette::Sync::Updater do
           end
         end
 
-        context "when model is second_stop_area" do
+        context 'when model is second_stop_area' do
           let(:model) { second_stop_area }
 
           it "should change code value from 'nil' to 'Other Value'" do
-            expect { subject }.to change { model.codes&.first&.value}.from(nil).to('Other Value')
+            expect { subject }.to change { model.codes&.first&.value }.from(nil).to('Other Value')
           end
         end
       end
 
       context 'when allow multiple values is true' do
-        context "when model is first_stop_area" do
+        context 'when model is first_stop_area' do
           let(:model) { first_stop_area }
-          let(:expected_code_values ) { ['First value', 'Other Value'] }
+          let(:expected_code_values) { ['First value', 'Other Value'] }
 
           it "should change code values from ['First value'] to ['First value', 'Other Value']" do
             expect { subject }.to change { model.codes.map(&:value) }.from(['First value']).to(expected_code_values)
           end
         end
 
-        context "when model is second_stop_area" do
+        context 'when model is second_stop_area' do
           let(:model) { second_stop_area }
 
           it "should change code values from 'nil' to 'Other Value'" do
-            expect { subject }.to change { model.codes&.first&.value}.from(nil).to('Other Value')
+            expect { subject }.to change { model.codes&.first&.value }.from(nil).to('Other Value')
           end
         end
       end

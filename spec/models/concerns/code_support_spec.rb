@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 RSpec.describe CodeSupport do
   describe CodeSupport::Validator::CodeSpaceUniqueness do
     subject(:validator) { described_class.new(codes) }

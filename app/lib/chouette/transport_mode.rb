@@ -5,8 +5,8 @@ module Chouette
     attr_reader :mode, :sub_mode
 
     def initialize(mode, sub_mode = nil)
-      self.mode = mode&.to_sym
-      self.sub_mode = sub_mode&.to_sym
+      @mode = mode&.to_sym
+      @sub_mode = sub_mode&.to_sym
     end
 
     def mode_human_name(locale: I18n.default_locale)
@@ -78,6 +78,7 @@ module Chouette
       funicular: %i[
         all_funicular_services
         funicular
+        street_cable_car
       ],
       tram: %i[
         city_tram
@@ -85,9 +86,11 @@ module Chouette
         regional_tram
         shuttle_tram
         sightseeing_tram
+        train_tram
         tram_train
       ],
       rail: %i[
+        airport_link_rail
         car_transport_rail_service
         cross_country_rail
         high_speed_rail
@@ -104,15 +107,17 @@ module Chouette
         special_train
         suburban_railway
         tourist_railway
-        train_tram
+        monorail
       ],
       coach: %i[
+        all_coach_services
         commuter_coach
         international_coach
         national_coach
         regional_coach
         shuttle_coach
         sightseeing_coach
+        school_coach
         special_coach
         tourist_coach
       ],
@@ -133,6 +138,7 @@ module Chouette
         shuttle_bus
         sightseeing_bus
         special_needs_bus
+        dedicated_lane_bus
       ],
       water: %i[
         international_car_ferry
@@ -155,6 +161,7 @@ module Chouette
         river_bus
         scheduled_ferry
         shuttle_ferry_service
+        canal_barge
       ],
       telecabin: %i[
         cable_car
@@ -189,12 +196,38 @@ module Chouette
       ],
       taxi: %i[
         all_taxi_services
+        app_taxi
         bike_taxi
         black_cab
         communal_taxi
+        charter_taxi
+        cycle_rickshaw
+        fiacre
         mini_cab
         rail_taxi
+        rickshaw
         water_taxi
+      ],
+      self_drive: %i[
+        all_hire_vehicles
+        all_vehicles
+        hire_scooter
+        hire_car
+        hire_van
+        hire_motorbike
+        hire_cycle
+        own_scooter
+        own_cycle
+        own_motorbike
+        own_car
+        own_van
+      ],
+      snow_and_ice: %i[
+        snow_mobile
+        snow_cat
+        snow_coach
+        terra_bus
+        wind_sled
       ]
     }.tap { |d| d.each { |mode, sub_modes| [mode, sub_modes.freeze] } }.freeze
   end

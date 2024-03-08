@@ -55,6 +55,18 @@ module Chouette
       (mode_candidates - except).map { |candidate| new candidate }
     end
 
+    def camelize_mode
+      return unless mode
+
+      String(mode).camelize(:lower)
+    end
+
+    def camelize_sub_mode
+      return unless sub_mode
+
+      String(sub_mode).camelize(:lower)
+    end
+
     private
 
     def sub_mode_candidates

@@ -55,6 +55,7 @@ module Chouette
     accepts_nested_attributes_for :footnotes, reject_if: :all_blank, allow_destroy: true
 
     attr_reader :group_of_line_tokens
+    attr_accessor :chouette_transport_mode
 
     validates :name, presence: true
     validate :transport_mode_and_submode_match
@@ -108,6 +109,15 @@ module Chouette
 
     def self.nullable_attributes
       %i[registration_number published_name number comment url color text_color]
+    end
+
+    def chouette_transport_mode
+      Chouette::TransportMode.new(transport_mode&.underscore, transport_submode&.underscore)
+    end
+
+    def chouette_transport_mode=(transport_mode)
+      self.transport_mode = transport_mode.camelize_mode
+      self.transport_submode = transport_mode.camelize_sub_mode
     end
 
     def geometry_presenter

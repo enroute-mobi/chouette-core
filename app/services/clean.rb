@@ -149,6 +149,22 @@ module Clean
         scope.vehicle_journeys.without_any_time_table.clean!
       end
     end
+
+    class NullifyCompany < Base
+      def clean!
+        scope.vehicle_journeys.where.not(company_id: existing_company_ids).in_batches.update_all(company_id: nil)
+      end
+
+      private
+
+      def existing_company_ids
+        scope.companies.select(:id).where(id: all_associated_company_ids)
+      end
+
+      def all_associated_company_ids
+        scope.vehicle_journeys.distinct.select(:company_id).where.not(company_id: nil)
+      end
+    end
   end
 
   module JourneyPattern

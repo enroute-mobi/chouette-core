@@ -3,7 +3,6 @@ fr:
     actions:
       destroy_confirm: "Etes vous sûr de supprimer ce fournisseur de lignes ?"
     search_no_results: "Aucun fournisseur de lignes"
-    no_codes: "Ce fournisseur de lignes n'a pas de code"
     index:
       title: "Fournisseurs de lignes"
     new:

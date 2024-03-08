@@ -29,7 +29,6 @@ en:
         internal: Internals
         codes: "Codes"
     search_no_results: "No Fare zones match this search"
-    no_codes: "This Fare zone does not have any codes"
     flash:
       associate:
         notice: The document is successfully associated to the line

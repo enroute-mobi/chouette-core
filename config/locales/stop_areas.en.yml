@@ -3,7 +3,6 @@ en:
     waiting_time_format: "%{value} minutes"
     search_no_results: "No stop area matching your query"
     no_specific_stops: "This stop area don't have any specific stop"
-    no_codes: "This stop area does not have any codes"
     no_custom_fields: "This stop area does not have any custom fields"
     errors:
       empty: Aucun stop_area_id

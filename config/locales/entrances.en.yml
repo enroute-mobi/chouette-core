@@ -21,7 +21,6 @@ en:
       sections:
         identification: "Identification"
         localization: "Localization"
-    no_codes: "This entry point has no code"
   activerecord:
     models:
       entrance:

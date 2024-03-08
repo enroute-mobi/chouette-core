@@ -1,6 +1,5 @@
 fr:
   line_routing_constraint_zones:
-    no_codes: "Cette Interdiction de Trafic local n'a pas de code"
     search_no_results: "Aucune Interdiction de Trafic local"
     actions:
       new: "Ajouter une ITL"

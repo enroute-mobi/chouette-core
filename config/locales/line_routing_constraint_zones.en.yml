@@ -1,6 +1,5 @@
 en:
   line_routing_constraint_zones:
-    no_codes: "This line routing constraint zone has no code"
     search_no_results: "No Local Traffic"
     actions:
       new: "Add an Line Routing Constraint Zone"

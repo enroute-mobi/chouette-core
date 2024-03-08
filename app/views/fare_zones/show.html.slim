@@ -15,10 +15,4 @@
           = d.attribute :fare_provider, link: ->(fare_provider) { workbench_fare_provider_path(@workbench, @fare_zone.fare_provider) }, value: @fare_zone.fare_provider.name
     .row
       .col-lg-6.col-md-6.col-sm-12.col-xs-12
-        = simple_block_for @fare_zone, title: Chouette::StopArea.tmf(:codes) do |d|
-          - if @fare_zone.codes.empty?
-            .mb-xs
-              = replacement_msg t('fare_zones.no_codes')
-          - else
-            - codes_group_by_short_name(@fare_zone.codes).each do |c|
-              = d.attribute :values, label: c.short_name, object: c
+        = render 'codes/block', model: @fare_zone

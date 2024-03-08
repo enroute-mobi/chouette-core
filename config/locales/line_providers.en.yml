@@ -3,7 +3,6 @@ en:
     actions:
       destroy_confirm: "Are you sur to delete this line provider ?"
     search_no_results: "No line providers"
-    no_codes: "Ce fournisseur de lignes n'a pas de code"
     index:
       title: "Line providers"
     new:

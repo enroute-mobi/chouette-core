@@ -10,10 +10,4 @@
           = d.attribute :parent, as: :association, link: ->(category) { workbench_shape_referential_point_of_interest_category_path(@workbench, category) }
 
       .col-lg-6.col-md-6.col-sm-12.col-xs-12
-        = simple_block_for @stop_area, title: t("layouts.form.sections.codes") do |d|
-          - if @point_of_interest_category.codes.empty?
-            .mb-xs
-              = replacement_msg t('point_of_interest_categories.no_codes')
-          - else
-            - codes_group_by_short_name(@point_of_interest_category.codes).each do |c|
-              = d.attribute :values, label: c.short_name, object: c
+        = render 'codes/block', model: @point_of_interest_category

@@ -1,6 +1,5 @@
 en:
   lines: &en_lines
-    no_codes: "This line has no code"
     actions:
       new: "Add a new line"
       edit: "Edit this line"

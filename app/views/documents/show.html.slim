@@ -14,13 +14,7 @@
           = d.attribute :to, as: :date, value: @document.validity_period&.to
 
       .row
-        = simple_block_for @document, title: t("layouts.form.sections.codes") do |d|
-          - if @document.codes.empty?
-            .mb-xs
-              = replacement_msg t('companys.no_codes')
-          - else
-            - codes_group_by_short_name(@document.codes).each do |c|
-              = d.attribute :values, label: c.short_name, object: c
+        = render 'codes/block', model: @document
 
 		.col-lg-6.col-md-6.col-sm-12.col-xs-12
 			= simple_block_for @document, title: t('documents.form.sections.content') do |d|

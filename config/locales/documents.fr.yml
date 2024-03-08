@@ -33,7 +33,6 @@ fr:
       unassociate:
         notice: Le document a été dissocié de la ligne avec succès
         error: Le document n'a pas pu être dissocié de la ligne
-    no_codes: "Ce Document n'a pas de codes"
   activemodel:
     attributes:
       period:

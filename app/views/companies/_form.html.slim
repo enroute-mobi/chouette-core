@@ -97,16 +97,8 @@
             = fa_icon :plus
             span= 'companies.actions.add_customer_service_contact'.t
 
-  - code_spaces = @company.workgroup.code_spaces.map { |c| [c.short_name, c.id] }
-  .row
-    .col-lg-12
-      h2.mb-lg= t("layouts.form.sections.codes")
-      = f.input :registration_number
-      = f.simple_fields_for(:codes) do |codes_form|
-        = render 'shared/code_fields', f: codes_form, code_spaces: code_spaces
-
-  .links.nested-linker
-    = link_to_add_association t('actions.add_code'), f, :codes, class: 'btn btn-primary', partial: 'shared/code_fields', render_options: {locals: { code_spaces: code_spaces }}
+  .separator.section_separator
+  = render 'codes/form', form: f
 
   - other_custom_fields = resource.custom_fields.except_for_sections(%w(identification contact general))
   - if other_custom_fields.present?

@@ -36,7 +36,7 @@ module Clean
 
       delegate :routes, :vehicle_journeys, :journey_patterns, :service_counts,
                :time_tables, :time_table_dates, :time_table_periods, :metadatas,
-               to: :referential
+               :companies, to: :referential
 
       alias timetables time_tables
       alias timetable_periods time_table_periods

@@ -42,6 +42,7 @@ module ChouetteIhm
     SmartEnv.add :RAILS_DB_NAME, default: 'chouette'
     SmartEnv.add :RAILS_DB_PASSWORD
     SmartEnv.add :RAILS_DB_POOLSIZE, default: '40'
+    SmartEnv.add :RAILS_DB_STATEMENT_TIMEOUT, default: '1800000'
     SmartEnv.add :RAILS_DB_PORT, default: '5432'
     SmartEnv.add :RAILS_DB_USER, default: 'chouette'
     # Public URL for this Chouette instance

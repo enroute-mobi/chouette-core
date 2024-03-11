@@ -9,3 +9,5 @@
   database: <%= SmartEnv['RAILS_DB_NAME'] %><%= SmartEnv['TEST_ENV_NUMBER'] %>
   username: <%= SmartEnv.fetch 'RAILS_DB_USER', default: 'chouette' %>
   password: <%= SmartEnv['RAILS_DB_PASSWORD'] %>
+  variables:
+    statement_timeout: <%= SmartEnv['RAILS_DB_STATEMENT_TIMEOUT'] %>

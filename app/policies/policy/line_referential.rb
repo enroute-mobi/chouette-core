@@ -12,7 +12,8 @@ module Policy
         ::LineProvider,
         ::Chouette::Line,
         ::Chouette::LineNotice,
-        ::LineRoutingConstraintZone
+        ::LineRoutingConstraintZone,
+        ::Chouette::Network
       ].include?(resource_class)
     end
   end

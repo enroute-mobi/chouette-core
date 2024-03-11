@@ -77,6 +77,4 @@ class NetworksController < Chouette::LineReferentialController
       }
     )
   end
-
-  Policy::Authorizer::Controller.for(self, Policy::Authorizer::Legacy)
 end

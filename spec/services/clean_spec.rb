@@ -836,7 +836,7 @@ RSpec.describe Clean::ServiceCount::InPeriod do
 end
 
 RSpec.describe Clean::VehicleJourney::NullifyCompany do
-  subject { described_class.new(referential).clean! }
+  subject { described_class.new(scope).clean! }
 
   let(:context) do
     Chouette.create do
@@ -856,7 +856,8 @@ RSpec.describe Clean::VehicleJourney::NullifyCompany do
   let(:second_vehicle_journey) { context.vehicle_journey(:second) }
 
   let(:referential) { context.referential }
-
+  let(:scope) { Clean::Scope::Referential.new referential }
+  
   before do
     referential.switch
   end

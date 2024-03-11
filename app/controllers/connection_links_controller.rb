@@ -85,6 +85,4 @@ class ConnectionLinksController < Chouette::StopAreaReferentialController
     ]
     params.require(:connection_link).permit(fields)
   end
-
-  Policy::Authorizer::Controller.for(self, Policy::Authorizer::Legacy)
 end

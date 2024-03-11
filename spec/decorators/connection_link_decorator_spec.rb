@@ -1,8 +1,6 @@
 # frozen_string_literal: true
 
 RSpec.describe ConnectionLinkDecorator, type: :decorator do
-  include Pundit::PunditDecoratorPolicy
-
   let(:object) { Chouette::ConnectionLink.new }
 
   describe "#name" do

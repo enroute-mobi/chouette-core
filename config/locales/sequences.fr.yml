@@ -1,0 +1,38 @@
+fr:
+  sequences:
+    index:
+      title: Séquences
+    show:
+      title: "%{name}"
+    new:
+      title: "Créer un Séquence"
+    edit:
+      title: "Editer %{name}"
+    actions:
+      show: "Afficher cette Séquence"
+      new: "Créer une Séquence"
+      edit: "Editer cette Séquence"
+      destroy: "Supprimer cette Séquence"
+      destroy_confirm: "Etes vous sûr de supprimer cette Séquence ?"
+    form:
+      placeholders:
+      sections:
+        identification: "Identification"
+    search_no_results: "Aucune Séquences ne correspond à votre recherche"
+  activerecord:
+    models:
+      sequence:
+        zero: "Séquence"
+        one: "Séquence"
+        other: "Séquences"
+    attributes:
+      sequence:
+        name: "Nom"
+        sequence_type: "Type"
+        description: Description
+        range_start: "Début de l'intervalle"
+        range_end: "Fin de l'intervalle"
+    errors:
+      models:
+        sequence:
+          attributes:

@@ -145,6 +145,8 @@ ChouetteIhm::Application.routes.draw do # rubocop:disable Metrics/BlockLength
 
     resources :contracts
 
+    resources :sequences
+
     resources :documents do
       get :download, on: :member
     end

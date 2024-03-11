@@ -28,12 +28,8 @@ module Policy
 
     protected
 
-    def _create?(resource_class) # rubocop:disable Metrics/MethodLength
+    def _create?(resource_class)
       if [
-        ::Chouette::LineNotice
-      ].include?(resource_class)
-        true
-      elsif [
         ::Chouette::Route,
         ::Chouette::RoutingConstraintZone
       ].include?(resource_class)

@@ -10,33 +10,8 @@ RSpec.describe Policy::LineReferential, type: :policy do
 
     it { is_expected.to be_falsy }
 
-    context 'Chouette::Company' do
-      let(:resource_class) { Chouette::Company }
-      it { is_expected.to be_truthy }
-    end
-
     context 'LineProvider' do
       let(:resource_class) { LineProvider }
-      it { is_expected.to be_truthy }
-    end
-
-    context 'Chouette::Line' do
-      let(:resource_class) { Chouette::Line }
-      it { is_expected.to be_truthy }
-    end
-
-    context 'Chouette::LineNotice' do
-      let(:resource_class) { Chouette::LineNotice }
-      it { is_expected.to be_truthy }
-    end
-
-    context 'LineRoutingConstraintZone' do
-      let(:resource_class) { LineRoutingConstraintZone }
-      it { is_expected.to be_truthy }
-    end
-
-    context 'Chouette::Network' do
-      let(:resource_class) { Chouette::Network }
       it { is_expected.to be_truthy }
     end
   end

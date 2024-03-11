@@ -29,9 +29,15 @@ class LineProvidersController < Chouette::LineReferentialController
   protected
 
   def build_resource
-    get_resource_ivar || super.tap do |line_provider|
+    get_resource_ivar || set_resource_ivar(
+      end_of_association_chain.send(method_for_build, *resource_params)
+    ).tap do |line_provider|
       line_provider.workbench = workbench
     end
+  end
+
+  def update_resource(object, attributes)
+    object.update(*attributes)
   end
 
   def collection
@@ -43,7 +49,7 @@ class LineProvidersController < Chouette::LineReferentialController
   end
 
   def line_provider_params
-   params.require(:line_provider).permit(
+    @line_provider_params ||= params.require(:line_provider).permit(
       :name,
       :short_name,
       :created_at,
@@ -51,4 +57,6 @@ class LineProvidersController < Chouette::LineReferentialController
       codes_attributes: [:id, :code_space_id, :value, :_destroy]
     )
   end
+
+  alias parent_for_parent_policy parent
 end

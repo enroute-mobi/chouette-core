@@ -1,12 +1,10 @@
+# frozen_string_literal: true
+
 module Chouette
   class LineNotice < Chouette::ActiveRecord
-    before_validation :define_line_referential, on: :create
-
     has_metadata
     include LineReferentialSupport
     include ObjectidSupport
-
-    belongs_to :line_provider, required: true
 
     # We will protect the notices that are used by vehicle_journeys
     scope :unprotected, -> {
@@ -41,12 +39,5 @@ module Chouette
       vehicle_journeys.exists?
     end
     alias used? protected?
-
-    private
-
-    def define_line_referential
-      # TODO Improve performance ?
-      self.line_referential ||= line_provider&.line_referential
-    end
   end
 end

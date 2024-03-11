@@ -217,6 +217,18 @@ module Chouette
                 lines.each { |line| line.line_notices << new_instance }
               end
             end
+
+            model :line_routing_constraint_zone do
+              transient :lines
+              transient :stop_areas
+
+              attribute(:name) { |n| "Line Routing Constraint Zone #{n}" }
+
+              after do |line_routing_constraint_zone|
+                line_routing_constraint_zone.lines = Array(transient(:lines))
+                line_routing_constraint_zone.stop_areas = Array(transient(:stop_areas))
+              end
+            end
           end
 
           model :stop_area_provider do
@@ -249,6 +261,29 @@ module Chouette
                 after do
                   new_instance.stop_area_provider = parent.stop_area_provider
                 end
+              end
+            end
+
+            model :stop_area_routing_constraint do
+              transient :from
+              transient :to
+
+              after do |stop_area_routing_constraint|
+                stop_area_routing_constraint.from = transient(:from)
+                stop_area_routing_constraint.to = transient(:to)
+              end
+            end
+
+            model :connection_link do
+              transient :departure
+              transient :arrival
+
+              attribute(:name) { |n| "Connection Link #{n}" }
+              attribute(:default_duration) { 0 }
+
+              after do |connection_link|
+                connection_link.departure = transient(:departure)
+                connection_link.arrival = transient(:arrival)
               end
             end
           end

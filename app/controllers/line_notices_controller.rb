@@ -47,12 +47,6 @@ class LineNoticesController < Chouette::LineReferentialController
 
   private
 
-  def build_resource
-    get_resource_ivar || super.tap do |line_notice|
-      line_notice.line_provider ||= workbench.default_line_provider
-    end
-  end
-
   def resource
     super.decorate(context: { workbench: workbench, line_referential: line_referential })
   end
@@ -81,21 +75,18 @@ class LineNoticesController < Chouette::LineReferentialController
   end
 
   def line_notice_params
-    params.require(:line_notice).permit( :title, :content, :object_id, :object_version)
+    @line_notice_params ||= params.require(:line_notice).permit(
+      :title,
+      :content,
+      :object_id,
+      :object_version,
+      :line_provider_id
+    )
     # TODO check if metadata needs to be included as param  t.jsonb "metadata", default: {}
-  end
-
-  def line_referential
-    association_chain
-    get_parent_ivar(:line_referential)
   end
 
   def line
     association_chain
     get_parent_ivar(:line) || nil
-  end
-
-  def parent_for_parent_policy
-    line || line_referential
   end
 end

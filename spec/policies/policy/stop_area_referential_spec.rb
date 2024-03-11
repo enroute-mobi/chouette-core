@@ -14,26 +14,6 @@ RSpec.describe Policy::StopAreaReferential, type: :policy do
       let(:resource_class) { StopAreaProvider }
       it { is_expected.to be_truthy }
     end
-
-    context 'Chouette::StopArea' do
-      let(:resource_class) { Chouette::StopArea }
-      it { is_expected.to be_truthy }
-    end
-
-    context 'Entrance' do
-      let(:resource_class) { Entrance }
-      it { is_expected.to be_truthy }
-    end
-
-    context 'StopAreaRoutingConstraint' do
-      let(:resource_class) { StopAreaRoutingConstraint }
-      it { is_expected.to be_truthy }
-    end
-
-    context 'Chouette::ConnectionLink' do
-      let(:resource_class) { Chouette::ConnectionLink }
-      it { is_expected.to be_truthy }
-    end
   end
 
   describe '#update?' do

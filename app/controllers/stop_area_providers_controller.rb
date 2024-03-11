@@ -37,9 +37,15 @@ class StopAreaProvidersController < Chouette::StopAreaReferentialController
   protected
 
   def build_resource
-    get_resource_ivar || super.tap do |stop_area_provider|
+    get_resource_ivar || set_resource_ivar(
+      end_of_association_chain.send(method_for_build, *resource_params)
+    ).tap do |stop_area_provider|
       stop_area_provider.workbench = workbench
     end
+  end
+
+  def update_resource(object, attributes)
+    object.update(*attributes)
   end
 
   def collection
@@ -51,10 +57,14 @@ class StopAreaProvidersController < Chouette::StopAreaReferentialController
   end
 
   def stop_area_provider_params
+    return @stop_area_provider_params if @stop_area_provider_params
+
     fields = [
       :name,
       {stop_area_ids: []}
     ]
-    params.require(:stop_area_provider).permit(fields)
+    @stop_area_provider_params = params.require(:stop_area_provider).permit(fields)
   end
+
+  alias parent_for_parent_policy parent
 end

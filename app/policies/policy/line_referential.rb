@@ -8,12 +8,7 @@ module Policy
 
     def _create?(resource_class)
       [
-        ::Chouette::Company,
-        ::LineProvider,
-        ::Chouette::Line,
-        ::Chouette::LineNotice,
-        ::LineRoutingConstraintZone,
-        ::Chouette::Network
+        ::LineProvider
       ].include?(resource_class)
     end
   end

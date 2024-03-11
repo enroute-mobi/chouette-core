@@ -32,21 +32,6 @@ RSpec.describe Policy::Line, type: :policy do
       end
     end
 
-    context 'Chouette::LineNotice' do
-      let(:resource_class) { Chouette::LineNotice }
-
-      it { applies_strategy(Policy::Strategy::LineProvider) }
-      it { applies_strategy(::Policy::Strategy::Permission, :create, Chouette::LineNotice) }
-      it { does_not_apply_strategy(Policy::Strategy::Referential) }
-
-      it { is_expected.to be_truthy }
-
-      context 'with Workbench context' do
-        let(:policy_context_class) { Policy::Context::Workbench }
-        it { is_expected.to be_truthy }
-      end
-    end
-
     context 'with Chouette::Route' do
       let(:resource_class) { Chouette::Route }
 

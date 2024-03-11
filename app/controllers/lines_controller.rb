@@ -13,8 +13,6 @@ class LinesController < Chouette::LineReferentialController
   respond_to :html, :xml, :json
   respond_to :js, :only => :index
 
-  helper_method :candidate_line_providers
-
   def autocomplete
     scope = line_referential.lines.referents
 
@@ -83,12 +81,6 @@ class LinesController < Chouette::LineReferentialController
 
   protected
 
-  def build_resource
-    get_resource_ivar || super.tap do |line|
-      line.line_provider ||= workbench.default_line_provider
-    end
-  end
-
   def scope
     parent.lines
   end
@@ -101,17 +93,14 @@ class LinesController < Chouette::LineReferentialController
     @collection ||= search.search scope
   end
 
-  def candidate_line_providers
-    @candidate_line_providers ||= workbench.line_providers.order(:name)
-  end
-
   delegate :workgroup, to: :workbench, allow_nil: true
 
   private
 
   def line_params
-    out = params.require(:line)
-    out = out.permit(
+    return @line_params if @line_params
+
+    out = params.require(:line).permit(
       :activated,
       :active_from,
       :active_until,
@@ -153,5 +142,6 @@ class LinesController < Chouette::LineReferentialController
     out[:line_notice_ids] = out[:line_notice_ids].split(',') if out[:line_notice_ids]
     out[:secondary_company_ids] = (out[:secondary_company_ids] || []).select(&:present?)
     out
+    @line_params = out
   end
 end

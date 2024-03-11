@@ -78,12 +78,6 @@ class StopAreasController < Chouette::StopAreaReferentialController
 
   alias_method :stop_area, :resource
 
-  def build_resource
-    get_resource_ivar || super.tap do |stop_area|
-      stop_area.stop_area_provider ||= workbench.default_stop_area_provider
-    end
-  end
-
   def scope
     parent.stop_areas
   end
@@ -99,6 +93,8 @@ class StopAreasController < Chouette::StopAreaReferentialController
   private
 
   def stop_area_params
+    return @stop_area_params if @stop_area_params
+
     fields = [
       :area_type,
       :children_ids,
@@ -141,6 +137,6 @@ class StopAreasController < Chouette::StopAreaReferentialController
       codes_attributes: [:id, :code_space_id, :value, :_destroy],
       localized_names: stop_area_referential.locales.map{|l| l[:code]}
     ] + permitted_custom_fields_params(Chouette::StopArea.custom_fields(stop_area_referential.workgroup))
-    params.require(:stop_area).permit(fields)
+    @stop_area_params = params.require(:stop_area).permit(fields)
   end
 end

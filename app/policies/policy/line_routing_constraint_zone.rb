@@ -2,6 +2,7 @@
 
 module Policy
   class LineRoutingConstraintZone < Base
+    authorize_by Strategy::LineProvider
     authorize_by Strategy::Permission
 
     protected

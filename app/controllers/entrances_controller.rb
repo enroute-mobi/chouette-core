@@ -59,7 +59,7 @@ class EntrancesController < Chouette::StopAreaReferentialController
   private
 
   def entrance_params
-    params.require(:entrance).permit(
+    @entrance_params ||= params.require(:entrance).permit(
       :objectid,
       :stop_area_id,
       :stop_area_provider_id,

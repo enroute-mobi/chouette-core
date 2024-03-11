@@ -61,6 +61,8 @@ class ConnectionLinksController < Chouette::StopAreaReferentialController
 
 
   def connection_link_params
+    return @connection_link_params if @connection_link_params
+
     fields = [
       :departure_id,
       :objectid,
@@ -81,8 +83,9 @@ class ConnectionLinksController < Chouette::StopAreaReferentialController
       :created_at,
       :updated_at,
       :metadata,
-      :both_ways
+      :both_ways,
+      :stop_area_provider_id
     ]
-    params.require(:connection_link).permit(fields)
+    @connection_link_params = params.require(:connection_link).permit(fields)
   end
 end

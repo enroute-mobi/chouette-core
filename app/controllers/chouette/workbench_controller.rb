@@ -14,6 +14,7 @@ module Chouette
     def current_workgroup
       workbench&.workgroup
     end
+    helper_method :current_workgroup
 
     def workbench
       association_chain

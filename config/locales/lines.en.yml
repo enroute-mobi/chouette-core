@@ -1,6 +1,5 @@
 en:
   lines: &en_lines
-    no_codes: "This line has no code"
     actions:
       new: "Add a new line"
       edit: "Edit this line"
@@ -83,7 +82,6 @@ en:
       group_of_lines: "Associated groups of lines"
       no_group_of_line: "No group of line"
       several_group_of_lines: "%{count} groups of lines"
-      add_code: "Add a Code"
   enumerize:
     line:
       mobility_impaired_accessibility:

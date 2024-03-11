@@ -37,15 +37,7 @@
       = f.input :comment, as: :text, input_html: { rows: 5, title: t("formtastic.titles#{format_restriction_for_locales(@referential)}.stop_area.comment") }
 
   .separator.section_separator
-  .row
-    .col-lg-12
-      h2.mb-lg= Chouette::Line.tmf(:codes)
-      = f.input :registration_number
-      = f.simple_fields_for(:codes) do |codes_form|
-        = render 'code_fields', f: codes_form
-
-      .links.nested-linker
-        = link_to_add_association t('lines.form.add_code'), f, :codes, class: 'btn btn-primary'
+  = render 'codes/form', form: f
 
   .separator.section_separator
   - if policy(@line).update_activation_dates?

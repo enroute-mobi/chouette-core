@@ -22,10 +22,4 @@
           = d.attribute :line_routing_constraint_zones, as: :count
     .row
       .col-lg-6.col-md-6.col-sm-12.col-xs-12
-        = simple_block_for @line_provider, title: LineProvider.tmf(:codes) do |d|
-          - if @line_provider.codes.empty?
-            .mb-xs
-              = replacement_msg t('line_providers.no_codes')
-          - else
-            - @line_provider.codes.each do |c|
-              = d.attribute :value, label: c.code_space.short_name, object: c
+        = render 'codes/block', model: @line_provider

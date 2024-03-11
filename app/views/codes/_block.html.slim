@@ -1,0 +1,8 @@
+= simple_block_for model, title: Code.model_name.human.pluralize do |d|
+  = d.attribute :registration_number if model.respond_to?(:registration_number)
+  - if model.codes.empty?
+    .mb-xs
+      = replacement_msg t('.no_code')
+  - else
+    - codes_group_by_short_name(model.codes).each do |c|
+      = d.attribute :values, label: c.short_name, object: c

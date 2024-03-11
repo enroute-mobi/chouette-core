@@ -29,7 +29,6 @@ fr:
         internal: "Interne"
         codes: "Codes"
     search_no_results: "Aucune Zones Tarifaires ne correspond à votre recherche"
-    no_codes: "Cette Zone Tarifaire n'a pas de codes"
     flash:
       associate:
         notice: Le Zone Tarifaire a été associé à la ligne avec succès

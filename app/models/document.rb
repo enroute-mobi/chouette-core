@@ -6,7 +6,6 @@ class Document < ApplicationModel
   belongs_to :document_type, required: true
   belongs_to :document_provider, required: true
 
-  has_many :codes, as: :resource, dependent: :delete_all
   has_many :memberships, class_name: 'DocumentMembership', dependent: :delete_all
   has_many :lines, through: :memberships, source: :documentable, source_type: 'Chouette::Line'
 
@@ -15,7 +14,6 @@ class Document < ApplicationModel
   attribute :validity_period, Period::Type.new, range: true
   validates :name, :file, :document_type_id, :document_provider_id, presence: true
 
-  validates_associated :codes
   # Can't use it for the moment because it fails with an error
   # "convert endless range to an array error due to Array conversion" in AssociatedValidator
   # validates_associated :validity_period

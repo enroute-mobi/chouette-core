@@ -16,7 +16,6 @@ en:
       destroy: "Delete this Point of interest category"
       destroy_confirm: "Are you sure you want to delete this Point of interest Category ?"
     search_no_results: "No Point of interest category matches your search"
-    no_codes: "This Point of interest category does not have any codes"
     errors:
     filters:
   point_of_interest/categories:

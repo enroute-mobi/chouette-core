@@ -29,7 +29,6 @@ en:
         associated_resources: "Associated Resources"
         codes: "Codes"
     search_no_results: "No Fare providers match this search"
-    no_codes: "This Fare provider does not have any codes"
     flash:
       associate:
         notice: The document is successfully associated to the line

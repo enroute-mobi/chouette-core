@@ -4,22 +4,17 @@
 
 .page_content
   .container-fluid
-		.col-lg-6.col-md-6.col-sm-12.col-xs-12
-			.row
-				= simple_block_for @document, title: t('documents.form.sections.identification') do |d|
-					= d.attribute :uuid
-					= d.attribute :name
-					= d.attribute :document_type, as: :association, link: ->(type) { workgroup_document_type_path(@workbench.workgroup, type) }
-					= d.attribute :from, as: :date, value: @document.validity_period&.from
-					= d.attribute :to, as: :date, value: @document.validity_period&.to
-			.row
-				= simple_block_for @document, title: Chouette::StopArea.tmf(:codes) do |d|
-				  - if @document.codes.empty?
-						.mb-xs
-							= replacement_msg t('documents.no_codes')
-				  - else
-						- @document.codes.each do |c|
-							= d.attribute :value, label: c.code_space.short_name, object: c
+    .col-lg-6.col-md-6.col-sm-12.col-xs-12
+      .row
+        = simple_block_for @document, title: t('documents.form.sections.identification') do |d|
+          = d.attribute :uuid
+          = d.attribute :name
+          = d.attribute :document_type, as: :association, link: ->(type) { workgroup_document_type_path(@workbench.workgroup, type) }
+          = d.attribute :from, as: :date, value: @document.validity_period&.from
+          = d.attribute :to, as: :date, value: @document.validity_period&.to
+
+      .row
+        = render 'codes/block', model: @document
 
 		.col-lg-6.col-md-6.col-sm-12.col-xs-12
 			= simple_block_for @document, title: t('documents.form.sections.content') do |d|

@@ -17,10 +17,4 @@
           = d.attribute :stop_areas, as: :associations, value: @line_routing_constraint_zone.stop_areas.sort_by(&:name), link: ->(child) { workbench_stop_area_referential_stop_areas_path(@workbench, child) }
 
       .col-lg-6.col-md-6.col-sm-12.col-xs-12
-        = simple_block_for @company, title: LineRoutingConstraintZone.tmf(:codes) do |d|
-          - if @line_routing_constraint_zone.codes.empty?
-            .mb-xs
-              = replacement_msg t('line_routing_constraint_zones.no_codes')
-          - else
-            - @line_routing_constraint_zone.codes.each do |c|
-              = d.attribute :value, label: c.code_space.short_name, object: c
+        = render 'codes/block', model: @line_routing_constraint_zone

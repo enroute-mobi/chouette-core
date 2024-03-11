@@ -10,6 +10,12 @@ fr:
         short_name: Nom Court
         name: Nom
         description: Description
+        allow_multiple_values: Autoriser plusieurs valeurs par modèle
+    errors:
+      models:
+        code:
+          duplicate_code_spaces_in_codes: "L'Espace de Codage \"%{code_space}\" n'autorise pas plusieurs valeurs pour un même modèle"
+          duplicate_values_in_codes: La valeur de clé en double viole la contrainte unique
   code_spaces:
     actions:
       new: Ajouter un Espace de Code

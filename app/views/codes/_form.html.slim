@@ -1,0 +1,9 @@
+.row
+  .col-lg-12
+    h2.mb-lg= Code.model_name.human.pluralize
+    = form.input :registration_number if form.object.respond_to?(:registration_number)
+    = form.simple_fields_for(:codes) do |codes_form|
+      = render 'codes/fields', f: codes_form
+
+.links.nested-linker
+  = link_to_add_association t('actions.add_code'), form, :codes, class: 'btn btn-primary', partial: 'codes/fields'

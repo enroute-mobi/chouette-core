@@ -29,7 +29,6 @@ fr:
         associated_resources: "Ressources associées"
         codes: "Codes"
     search_no_results: "Aucun Fournisseurs de tarification ne correspond à votre recherche"
-    no_codes: "ce Fournisseur de tarification n'a pas de codes"
     flash:
       associate:
         notice: Le Fournisseur de tarification a été associé à la ligne avec succès

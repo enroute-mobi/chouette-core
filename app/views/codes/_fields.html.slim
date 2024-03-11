@@ -4,11 +4,11 @@
       = f.input :id, as: :hidden, wrapper: false
       = f.input :code_space_id,
         as: :select,
-        collection: @point_of_interest.shape_referential.workgroup.code_spaces.map {|c| [c.short_name, c.id]},
+        collection: current_workgroup.code_spaces.map { |c| [c.short_name, c.id] },
         label: false,
         wrapper: false,
         include_blank: false
     div
-      = f.input :value, label: false, wrapper: false
+      = f.input :value, label: false, wrapper: :nested_fields
     div
       = link_to_remove_association '', f, class: 'fa fa-trash'

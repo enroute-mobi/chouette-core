@@ -22,6 +22,6 @@ class CodeSpacesController < Chouette::WorkgroupController
   end
 
   def code_space_params
-    params.require(:code_space).permit(:name, :short_name, :description)
+    params.require(:code_space).permit(:name, :short_name, :description, :allow_multiple_values)
   end
 end

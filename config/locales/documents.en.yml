@@ -26,7 +26,6 @@ en:
         internals: Internals
         codes: "Codes"
     search_no_results: "No Documents match this search"
-    no_codes: "This Document does not have any codes"
     flash:
       associate:
         notice: The document is successfully associated to the line

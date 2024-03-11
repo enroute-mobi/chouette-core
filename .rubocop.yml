@@ -10,3 +10,6 @@ Metrics/BlockLength:
 Rails/SkipsModelValidations:
   Exclude:
     - 'spec/**/*.rb'
+
+Style/Documentation:
+  Enabled: false

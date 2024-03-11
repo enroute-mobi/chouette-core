@@ -13,7 +13,7 @@ module Chouette::Sync
         super options
       end
 
-      class Decorator < Chouette::Sync::Updater::ResourceDecorator
+      class Decorator < Chouette::Sync::Netex::Decorator
         delegate :contact_details, to: :operating_organisation_view, allow_nil: true
         delegate :target, to: :updater
 
@@ -53,17 +53,6 @@ module Chouette::Sync
 
         def point_of_interest_categories
           target.point_of_interest_categories
-        end
-
-        def codes_attributes
-          return [] unless key_list.present?
-
-          key_list.map do |netex_code|
-            {
-              short_name: netex_code.key,
-              value: netex_code.value
-            }
-          end
         end
 
         class Hour

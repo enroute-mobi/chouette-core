@@ -16,10 +16,8 @@ module PointOfInterest
     has_many :codes, as: :resource, dependent: :delete_all
     has_many :point_of_interest_hours, dependent: :delete_all, class_name: 'PointOfInterest::Hour',
                                        foreign_key: :point_of_interest_id
-    accepts_nested_attributes_for :codes, allow_destroy: true, reject_if: :all_blank
     accepts_nested_attributes_for :point_of_interest_hours, allow_destroy: true, reject_if: :all_blank
 
-    validates_associated :codes
     validates_associated :point_of_interest_hours
     validates :name, :point_of_interest_category_id, presence: true
 

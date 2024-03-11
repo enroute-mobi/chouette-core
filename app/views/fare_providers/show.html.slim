@@ -3,24 +3,17 @@
 
 .page_content
   .container-fluid
-		.row
-			.col-lg-6.col-md-6.col-sm-12.col-xs-12
-					= simple_block_for @fare_provider, title: t('fare_providers.form.sections.identification') do |d|
-						= d.attribute :name
-						= d.attribute :short_name
-						= d.attribute :workbench, as: :association
-						= d.attribute :created_at, as: :datetime
-						= d.attribute :updated_at, as: :datetime
-			.col-lg-6.col-md-6.col-sm-12.col-xs-12
-					= simple_block_for @fare_provider, title: t('fare_providers.form.sections.associated_resources') do |d|
-						= d.attribute :fare_zones, as: :count
-		.row
-			.col-lg-6.col-md-6.col-sm-12.col-xs-12
-				= simple_block_for @fare_provider, title: Chouette::StopArea.tmf(:codes) do |d|
-					- if @fare_provider.codes.empty?
-						.mb-xs
-							= replacement_msg t('fare_providers.no_codes')
-					- else
-						- @fare_provider.codes.each do |c|
-							= d.attribute :value, label: c.code_space.short_name, object: c
-
+    .row
+      .col-lg-6.col-md-6.col-sm-12.col-xs-12
+          = simple_block_for @fare_provider, title: t('fare_providers.form.sections.identification') do |d|
+            = d.attribute :name
+            = d.attribute :short_name
+            = d.attribute :workbench, as: :association
+            = d.attribute :created_at, as: :datetime
+            = d.attribute :updated_at, as: :datetime
+      .col-lg-6.col-md-6.col-sm-12.col-xs-12
+          = simple_block_for @fare_provider, title: t('fare_providers.form.sections.associated_resources') do |d|
+            = d.attribute :fare_zones, as: :count
+    .row
+      .col-lg-6.col-md-6.col-sm-12.col-xs-12
+        = render 'codes/block', model: @fare_provider

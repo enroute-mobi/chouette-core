@@ -1,5 +1,6 @@
 module PointOfInterest
   class Category < ApplicationModel
+    include CodeSupport
 
     self.table_name = "point_of_interest_categories"
     validates :name, presence: true
@@ -9,11 +10,7 @@ module PointOfInterest
     belongs_to :parent, class_name: "PointOfInterest::Category", required: false
 
     has_many :point_of_interests, class_name: "PointOfInterest::Base", foreign_key: "point_of_interest_category_id", inverse_of: :point_of_interest_category
-    has_many :codes, as: :resource, dependent: :delete_all
     has_many :point_of_interest_categories, class_name: "PointOfInterest::Category", foreign_key: "parent_id"
-
-    accepts_nested_attributes_for :codes, allow_destroy: true, reject_if: :all_blank
-    validates_associated :codes
 
     before_validation :define_shape_referential, on: :create
 

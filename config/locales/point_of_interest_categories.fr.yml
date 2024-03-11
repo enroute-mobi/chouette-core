@@ -16,7 +16,6 @@ fr:
       destroy: "Supprimer cette Catégorie de Point d'intérêt"
       destroy_confirm: "Etes vous sûr de supprimer cette Catégorie de Point d'intérêt ?"
     search_no_results: "Aucune Catégorie de Point d'intérêt ne correspond à votre recherche"
-    no_codes: "Cette catégorie de point d’intérêt n’a pas de code"
     errors:
     filters:
   point_of_interest/categories:

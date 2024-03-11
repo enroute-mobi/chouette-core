@@ -6,6 +6,7 @@ module Chouette
     include CustomFieldsSupport
     include ObjectidSupport
     include TransportModeEnumerations
+    include ReferentialCodeSupport
 
     enum journey_category: { timed: 0, frequency: 1 }
 
@@ -23,8 +24,6 @@ module Chouette
     belongs_to :journey_pattern
     belongs_to :journey_pattern_only_objectid, -> {select("journey_patterns.id, journey_patterns.objectid")}, class_name: "Chouette::JourneyPattern", foreign_key: :journey_pattern_id
     has_many :stop_areas, through: :journey_pattern
-
-    has_many :codes, class_name: 'ReferentialCode', as: :resource, dependent: :destroy
 
     belongs_to_public :stop_area_routing_constraints,
       collection_name: :ignored_stop_area_routing_constraints,
@@ -137,8 +136,6 @@ module Chouette
     scope :with_lines, -> (lines) { joins(:route).where(routes: { line_id: lines }) }
 
     scope :by_text, ->(text) { text.blank? ? all : where('lower(vehicle_journeys.published_journey_name) LIKE :t or lower(vehicle_journeys.objectid) LIKE :t', t: "%#{text.downcase}%") }
-
-    scope :by_code, ->(code_space, value) { joins(codes: :code_space).where("referential_codes.code_space_id = ? AND value = ?", code_space, value) }
 
     # We need this for the ransack object in the filters
     ransacker :stop_area_ids

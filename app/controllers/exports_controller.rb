@@ -119,6 +119,4 @@ class ExportsController < Chouette::WorkbenchController
       view_path: 'app/views'
     ).render
   end
-
-  Policy::Authorizer::Controller.for(self, Policy::Authorizer::Legacy)
 end

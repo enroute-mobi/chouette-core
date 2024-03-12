@@ -14,18 +14,9 @@ module Policy
       end
     end
 
-    class << self
-      def context_class(action)
-        if action == :workbench_confirm
-          ::Policy::Context::User
-        else
-          super
-        end
-      end
-    end
-
     authorize_by NotSelfStrategy, only: %i[update destroy]
-    authorize_by Strategy::Permission, only: %i[create update destroy]
+    authorize_by Strategy::Permission, only: %i[create update destroy workbench_confirm]
+    permission_exception :workbench_confirm, 'workbenches.confirm'
 
     def block?
       around_can(:block) { update? && !resource.blocked? }
@@ -47,7 +38,7 @@ module Policy
     end
 
     def workbench_confirm?(_resource_class)
-      around_can(:workbench_confirm) { context.permission?('workbenches.confirm') }
+      around_can(:workbench_confirm) { true }
     end
 
     protected

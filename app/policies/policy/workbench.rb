@@ -18,7 +18,10 @@ module Policy
         ::ProcessingRule::Workbench,
         ::NotificationRule,
         ::Fare::Provider,
-        ::Contract
+        ::Contract,
+        ::Import::Base,
+        ::Export::Base,
+        ::ApiKey
       ].include?(resource_class)
     end
 

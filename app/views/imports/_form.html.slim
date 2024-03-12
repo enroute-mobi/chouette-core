@@ -20,7 +20,7 @@
       = form.input :notification_target, collection: Import::Base.notification_target_options, selected: :user
       - import.class.options.each do |attr, option_def|
         - next if (attr == :merge_method)
-        - if policy(import).option?(attr)
+        - if resource_policy.option?(attr)
           = option_input form, import, attr, option_def, import.class
 
 

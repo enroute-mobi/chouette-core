@@ -4,17 +4,15 @@ RSpec.describe Policy::User, type: :policy do
   let(:resource) { build_stubbed(:user) }
   let(:policy_context_class) { Policy::Context::User }
 
-  describe '.context_class' do
-    subject { described_class.context_class(action) }
+  describe '.permission_exceptions' do
+    subject { described_class.permission_exceptions }
 
-    context 'with :update' do
-      let(:action) { :update }
-      it { is_expected.to eq(Policy::Context::User) }
-    end
-
-    context 'with :workbench_confirm' do
-      let(:action) { :workbench_confirm }
-      it { is_expected.to eq(Policy::Context::User) }
+    it do
+      is_expected.to eq(
+        {
+          workbench_confirm: 'workbenches.confirm'
+        }
+      )
     end
   end
 
@@ -165,23 +163,12 @@ RSpec.describe Policy::User, type: :policy do
   describe '#workbench_confirm?' do
     subject { policy.workbench_confirm?(double) }
 
-    let(:policy_permission) { true }
-
-    before do
-      allow(policy_context).to receive(:permission?).with('workbenches.confirm').and_return(policy_permission)
-    end
-
     it { does_not_apply_strategy(Policy::User::NotSelfStrategy) }
-    it { does_not_apply_strategy(Policy::Strategy::Permission, :workbench_confirm) }
+    it { applies_strategy(Policy::Strategy::Permission, :workbench_confirm) }
 
     it do
       expect(policy).to receive(:around_can).with(:workbench_confirm).and_call_original
       is_expected.to be_truthy
-    end
-
-    context 'when the user cannot confirm workbenches' do
-      let(:policy_permission) { false }
-      it { is_expected.to be_falsy }
     end
   end
 end

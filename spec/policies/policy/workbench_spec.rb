@@ -67,6 +67,21 @@ RSpec.describe Policy::Workbench, type: :policy do
       let(:resource_class) { Contract }
       it { is_expected.to be_truthy }
     end
+
+    context 'Import::Base' do
+      let(:resource_class) { Import::Base }
+      it { is_expected.to be_truthy }
+    end
+
+    context 'Export::Base' do
+      let(:resource_class) { Export::Base }
+      it { is_expected.to be_truthy }
+    end
+
+    context 'ApiKey' do
+      let(:resource_class) { ApiKey }
+      it { is_expected.to be_truthy }
+    end
   end
 
   describe '#update?' do

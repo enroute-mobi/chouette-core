@@ -105,6 +105,4 @@ class ImportsController < Chouette::WorkbenchController
       Query::Import
     end
   end
-
-  Policy::Authorizer::Controller.for(self, Policy::Authorizer::Legacy)
 end

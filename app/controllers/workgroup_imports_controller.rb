@@ -42,7 +42,7 @@ class WorkgroupImportsController < Chouette::WorkgroupController
           name: Workbench.ts.capitalize,
           attribute: proc { |n| n.workbench.name },
           link_to: lambda do |import|
-            policy(import.workbench).show? ? import.workbench : nil
+            import.workbench
           end
         )
         @imports = decorate_collection(collection)
@@ -85,6 +85,4 @@ class WorkgroupImportsController < Chouette::WorkgroupController
       Query::Import
     end
   end
-
-  Policy::Authorizer::Controller.for(self, Policy::Authorizer::Legacy)
 end

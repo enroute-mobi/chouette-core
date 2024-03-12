@@ -47,6 +47,12 @@ RSpec.describe Policy::Authorizer::Controller do
 
       it { is_expected.to eq('Policy::Control::List') }
     end
+
+    context 'for Import::Base resource' do
+      let(:resource_class) { Import::Base }
+
+      it { is_expected.to eq('Policy::Import') }
+    end
   end
 
   describe '.policy_class' do

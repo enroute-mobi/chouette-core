@@ -34,7 +34,7 @@ class WorkgroupExportsController < Chouette::WorkgroupController
           name: Workbench.ts.capitalize,
           attribute: proc { |n| n.workbench.name },
           link_to: lambda do |export|
-            policy(export.workbench).show? ? export.workbench : nil
+            export.workbench
           end
         )
         @exports = decorate_collection(collection)
@@ -82,6 +82,4 @@ class WorkgroupExportsController < Chouette::WorkgroupController
       Query::Export
     end
   end
-
-  Policy::Authorizer::Controller.for(self, Policy::Authorizer::Legacy)
 end

@@ -7,7 +7,7 @@
       - unless @workbench
         = b.attribute :workbench, label: Workbench.ts.capitalize ,value: link_to_if_i_can(import.workbench.name, import.workbench)
       - import.visible_options.map do |k, v|
-        - if policy(import).option?(k)
+        - if resource_policy.option?(k)
           - if k == 'line_provider_id'
             = b.attribute k, label: t(k, scope: import.i18n_attribute_scope), value_method: :line_provider, as: :association
           - elsif k == 'stop_area_provider_id'

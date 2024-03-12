@@ -20,6 +20,14 @@ module Policy
           def permission_namespace
             @permission_namespace ||= ::Policy::Strategy::Permission.to_permission_namespace(name['Policy::'.length..])
           end
+
+          def permission_exceptions
+            @permission_exceptions ||= {}
+          end
+
+          def permission_exception(action, permission)
+            permission_exceptions[action] = permission
+          end
         end
       end
 
@@ -30,7 +38,10 @@ module Policy
       private
 
       def required_permission(action, *args)
-        if action == :create
+        exception = policy.class.permission_exceptions[action]
+        if exception
+          exception
+        elsif action == :create
           "#{permission_namespace_from_class(args[0])}.#{action}"
         else
           "#{policy.class.permission_namespace}.#{action}"

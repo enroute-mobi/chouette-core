@@ -11,6 +11,9 @@ RSpec.describe Policy::Strategy::Permission, type: :policy_strategy do
   end
 
   describe '#apply' do
+    let(:policy_class) { Class.new(Policy::Base) { include Policy::Strategy::Permission::PolicyConcern } }
+    let(:policy) { policy_class.new(resource, context: policy_context) }
+
     let(:args) { [] }
     subject { strategy.apply(action, *args) }
 
@@ -24,7 +27,6 @@ RSpec.describe Policy::Strategy::Permission, type: :policy_strategy do
           include Policy::Strategy::Permission::PolicyConcern
         end
       end
-      let(:policy) { policy_class.new(resource, context: policy_context) }
       let(:action) { :update }
 
       context 'when the context has permission' do
@@ -63,6 +65,25 @@ RSpec.describe Policy::Strategy::Permission, type: :policy_strategy do
 
         context 'when the context has permission' do
           let(:user_permissions) { ['dummy_models.update'] }
+          it { is_expected.to be_truthy }
+        end
+      end
+
+      context 'when policy class defines exceptions' do
+        let(:policy_class) do
+          Class.new(Policy::Base) do
+            include Policy::Strategy::Permission::PolicyConcern
+
+            permission_exception :update, 'dummier_models.dummier_action'
+          end
+        end
+
+        it 'registers permission exception' do
+          expect(policy_class.permission_exceptions).to eq({ update: 'dummier_models.dummier_action' })
+        end
+
+        context 'when the context has permission' do
+          let(:user_permissions) { ['dummier_models.dummier_action'] }
           it { is_expected.to be_truthy }
         end
       end

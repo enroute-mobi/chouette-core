@@ -19,6 +19,4 @@ class WorkbenchOutputsController < Chouette::WorkbenchController
       }
     )
   end
-
-  Policy::Authorizer::Controller.for(self, Policy::Authorizer::Legacy)
 end

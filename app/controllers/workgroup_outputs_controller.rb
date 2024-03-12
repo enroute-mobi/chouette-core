@@ -8,6 +8,4 @@ class WorkgroupOutputsController < Chouette::WorkgroupController
     @aggregates = workgroup.aggregates.order('created_at desc').paginate(page: params[:page], per_page: 30)
     @aggregates = AggregateDecorator.decorate(@aggregates)
   end
-
-  Policy::Authorizer::Controller.for(self, Policy::Authorizer::Legacy)
 end

@@ -47,6 +47,4 @@ class CleanUpsController < Chouette::ReferentialController
   def begin_of_association_chain
     nil
   end
-
-  Policy::Authorizer::Controller.for(self, Policy::Authorizer::Legacy)
 end

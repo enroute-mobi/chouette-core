@@ -20,28 +20,46 @@ RSpec.describe Control::ServiceCountInRange do
       )
     end
 
-    let(:first_journey_pattern) { create :journey_pattern }
-    let(:second_journey_pattern) { create :journey_pattern }
-    let(:third_journey_pattern) { create :journey_pattern }
+    let(:context) do
+      Chouette.create do
+        line :first
+        line :second
+        line :third
 
+        referential do
+          route :first, line: :first do
+            journey_pattern :first
+          end
 
-    let(:line_referential) { create :line_referential }
-    let(:workbench) { create :workbench, line_referential: line_referential }
+          route :second, line: :second do
+            journey_pattern :second
+          end
 
-    let!(:first_faulty_line) { create :line, line_referential: line_referential }
-    let!(:second_faulty_line) { create :line, line_referential: line_referential }
-    let!(:third_line) { create :line, line_referential: line_referential }
+          route :third, line: :third do
+            journey_pattern :third
+          end
+        end
+      end
+    end
 
-    let(:first_route) { first_journey_pattern.route }
-    let(:second_route) { second_journey_pattern.route }
-    let(:third_route) { third_journey_pattern.route }
+    let(:first_journey_pattern) { context.journey_pattern(:first) }
+    let(:second_journey_pattern) { context.journey_pattern(:second) }
+    let(:third_journey_pattern) { context.journey_pattern(:third) }
 
-    let(:referential)  { create :workbench_referential, workbench: workbench }
+    let(:workbench) { context.workbench }
+
+    let(:first_faulty_line) { first_route.line }
+    let(:second_faulty_line) { second_route.line }
+    let(:third_line) { third_route.line }
+
+    let(:first_route) { context.route :first }
+    let(:second_route) { context.route :second }
+    let(:third_route) { context.route :third }
+
+    let(:referential)  { context.referential}
   
     before do
       referential.switch
-      first_journey_pattern.route.update line: first_faulty_line
-      second_journey_pattern.route.update line: second_faulty_line
 
       ServiceCount.create([
         {

@@ -21,7 +21,8 @@ module Policy
         ::Contract,
         ::Import::Base,
         ::Export::Base,
-        ::ApiKey
+        ::ApiKey,
+        ::Merge
       ].include?(resource_class)
     end
 

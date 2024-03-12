@@ -82,6 +82,11 @@ RSpec.describe Policy::Workbench, type: :policy do
       let(:resource_class) { ApiKey }
       it { is_expected.to be_truthy }
     end
+
+    context 'Merge' do
+      let(:resource_class) { Merge }
+      it { is_expected.to be_truthy }
+    end
   end
 
   describe '#update?' do

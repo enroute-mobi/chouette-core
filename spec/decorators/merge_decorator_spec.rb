@@ -1,9 +1,7 @@
 # frozen_string_literal: true
 
 RSpec.describe MergeDecorator, type: %i[helper decorator] do
-  include Pundit::PunditDecoratorPolicy
-
-  let(:current_workbench) { create :workbench }
+  let(:policy_context_class) { Policy::Context::Workbench }
   let(:current_referential) { create :workbench_referential, workbench: current_workbench }
   let(:object) { build_stubbed :merge, workbench: current_workbench, new: current_referential }
   let(:current_merge) { true }

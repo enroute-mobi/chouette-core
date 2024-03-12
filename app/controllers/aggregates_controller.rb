@@ -41,6 +41,4 @@ class AggregatesController < Chouette::WorkgroupController
     aggregate_params[:user_id] ||= current_user.id
     aggregate_params
   end
-
-  Policy::Authorizer::Controller.for(self, Policy::Authorizer::Legacy)
 end

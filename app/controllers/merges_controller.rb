@@ -98,6 +98,4 @@ class MergesController < Chouette::WorkbenchController
       referential_processings
     end
   end
-
-  Policy::Authorizer::Controller.for(self, Policy::Authorizer::Legacy)
 end

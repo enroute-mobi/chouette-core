@@ -164,8 +164,13 @@ class Referential
         add_legacy_id_column
 
         execute "INSERT INTO #{target_full_name} (#{target_columns.join(',')}) (#{select_query})"
+        analyse
 
         self
+      end
+
+      def analyse
+        execute "ANALYSE #{target_full_name}"
       end
 
       private

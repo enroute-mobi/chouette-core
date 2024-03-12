@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Control
   class ServiceCountInRange < Control::Base
     module Options
@@ -7,7 +9,8 @@ module Control
         option :minimum_service_counts
         option :maximum_service_counts
 
-        validates :minimum_service_counts, :maximum_service_counts, numericality: { only_integer: true, allow_blank: true }
+        validates :minimum_service_counts, :maximum_service_counts,
+                  numericality: { only_integer: true, allow_blank: true }
       end
     end
     include Options
@@ -28,15 +31,15 @@ module Control
       def run
         analysis.anomalies.each do |anomaly|
           control_messages.create({
-            message_attributes: {
-              date: anomaly.date,
-              line: anomaly.line_name
-            },
-            criticity: criticity,
-            source_id: anomaly.line_id,
-            source_type: 'Chouette::Line',
-            message_key: :service_count_in_range
-          })
+                                    message_attributes: {
+                                      date: anomaly.date,
+                                      line: anomaly.line_name
+                                    },
+                                    criticity: criticity,
+                                    source_id: anomaly.line_id,
+                                    source_type: 'Chouette::Line',
+                                    message_key: :service_count_in_range
+                                  })
         end
       end
 
@@ -53,7 +56,7 @@ module Control
       class Analysis
         def initialize(context, options)
           @context = context
-          options.each { |k,v| send "#{k}=", v }
+          options.each { |k, v| send "#{k}=", v }
         end
         attr_accessor :context, :minimum_service_counts, :maximum_service_counts
 
@@ -74,7 +77,7 @@ module Control
 
         class Anomaly
           def initialize(attributes)
-            attributes.each { |k,v| send "#{k}=", v if respond_to?(k) }
+            attributes.each { |k, v| send "#{k}=", v if respond_to?(k) }
           end
           attr_accessor :line_id, :line_name, :date, :sum_count
         end

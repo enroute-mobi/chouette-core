@@ -23,11 +23,6 @@ RSpec.describe Policy::Workbench, type: :policy do
       it { is_expected.to be_truthy }
     end
 
-    context 'Document' do
-      let(:resource_class) { Document }
-      it { is_expected.to be_truthy }
-    end
-
     context 'Calendar' do
       let(:resource_class) { Calendar }
       it { is_expected.to be_truthy }

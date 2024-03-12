@@ -42,4 +42,8 @@ class DocumentDecorator < AF83::Decorator
   end
 
   with_instance_decorator(&:crud)
+
+  def policy_parent
+    context[:workbench].default_document_provider
+  end
 end

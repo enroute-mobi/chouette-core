@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 RSpec.describe Document, type: :model do
   it { should belong_to(:document_type).required }
   it { should belong_to(:document_provider).required }
@@ -8,24 +10,30 @@ RSpec.describe Document, type: :model do
   it { should validate_presence_of :document_type_id }
   it { should validate_presence_of :document_provider_id }
 
-  let(:context) do
-    Chouette.create do
-      workbench organisation: Organisation.find_by_code('first') do
-        line :first
+  describe '#document_type' do
+    describe 'validations' do
+      let(:context) do
+        Chouette.create do
+          workgroup do
+            document_type :document_type
+            document_provider :document_provider
+          end
+          workgroup do
+            document_type :other_document_type
+          end
+        end
       end
+      subject(:document) do
+        context.document_provider(:document_provider).documents.new(
+          name: 'test',
+          file: fixture_file_upload('sample_pdf.pdf')
+        )
+      end
+
+      it { is_expected.to allow_value(context.document_type(:document_type).id).for(:document_type_id) }
+      it { is_expected.not_to allow_value(context.document_type(:other_document_type).id).for(:document_type_id) }
     end
   end
-
-  let(:workbench) { context.workbench }
-  let(:line) { context.line(:first) }
-
-  let(:document_provider) { workbench.document_providers.create(name: 'document_provider_name') }
-  let(:document_type) do
- workbench.workgroup.document_types.create(name: 'document_type_name', short_name: 'toto') end
-  let(:file) { fixture_file_upload('sample_pdf.pdf') }
-  let(:document) do
- Document.create(name: 'test', document_type_id: document_type.id,
-                 document_provider_id: document_provider.id, file: file, validity_period: (Time.zone.today...Time.zone.today + 1.day)) end
 
   describe '#validity_period_attributes=' do
     subject(:document) { Document.new }

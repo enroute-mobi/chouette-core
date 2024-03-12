@@ -10,7 +10,6 @@ module Policy
       [
         ::Referential,
         ::DocumentProvider,
-        ::Document,
         ::Calendar,
         ::Control::List,
         ::Control::List::Run,

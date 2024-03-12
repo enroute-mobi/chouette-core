@@ -7,6 +7,12 @@ module Policy
 
     protected
 
+    def _create?(resource_class)
+      [
+        ::Document
+      ].include?(resource_class)
+    end
+
     def _update?
       true
     end

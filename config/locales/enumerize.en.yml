@@ -17,6 +17,7 @@ en:
         aggregate: Aggregate
         source_retrieval: Source Retrieval
         import: Import
+        publication: Publication
       operation_statuses:
         all: All
         successful: Success
@@ -25,11 +26,10 @@ en:
       rule_type: &notification_rule_rule_type
         block: Block
         notify: Notify
-        publication: Publication
       target_type:
         user: Selected users
         workbench:  All workbench's users
-        external_email: External enail
+        external_email: External email
     notification_target:
       user:       Only Me
       workbench:  All workbench's users

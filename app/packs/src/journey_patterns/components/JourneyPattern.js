@@ -7,6 +7,7 @@ import actions from '../actions'
 import xCrsfToken from '../../helpers/xCrsfToken'
 
 const path = new Path('/referentials/:referentialId/lines/:lineId/routes/:routeId')
+const vehicleJourneysPath = new Path('/referentials/:referentialId/routes/:routeId/vehicle_journeys')
 const params = path.partialTest(location.pathname)
 class MutationBuilder {
   constructor(fetchingApi, fetchJourneyPatterns, enterEditMode) {
@@ -79,8 +80,7 @@ export default function JourneyPattern({
   }
 
   const vehicleJourneyURL = jpOid => {
-    const routeURL = location.pathname.split('/', 7).join('/')
-    const vjURL = routeURL + '/vehicle_journeys?jp=' + jpOid
+    const vjURL = vehicleJourneysPath.build(params) + '?jp=' + jpOid
 
     return <a href={vjURL}>{I18n.t('journey_patterns.journey_pattern.vehicle_journey_at_stops')}</a>
   }

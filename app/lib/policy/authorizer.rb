@@ -20,13 +20,15 @@ module Policy
       end
 
       # [Private] Returns Policy class name associated to the given resource class
-      def self.policy_class_name(resource_class)
-        "Policy::#{resource_class.model_name}"
+      def self.policy_class_name(resource_or_resource_class)
+        result = "Policy::#{resource_or_resource_class.model_name}"
+        result = "#{result}Collection" if resource_or_resource_class.is_a?(ActiveRecord::Relation)
+        result
       end
 
       # Returns Policy class associated to the given resource class
-      def self.policy_class(resource_class)
-        policy_class_name(resource_class).safe_constantize
+      def self.policy_class(resource_or_resource_class)
+        policy_class_name(resource_or_resource_class).safe_constantize
       end
 
       def initialize(controller)
@@ -47,7 +49,7 @@ module Policy
       # [Private] Returns Policy instance associated to the given resource
       def policy(resource)
         resource = resource.object if resource.is_a?(::AF83::Decorator::EnhancedDecorator) # meh...
-        self.class.policy_class(resource.class).new resource, context: context
+        self.class.policy_class(resource).new resource, context: context
       end
 
       # [Private] Returns Authorizer class assocaited to the given Controller instance

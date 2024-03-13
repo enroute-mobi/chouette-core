@@ -163,7 +163,8 @@ module Policy
     def log(action, *args, &content) # rubocop:disable Metrics/AbcSize
       return unless Rails.logger.debug?
 
-      resource_description = "#{resource.class.name}##{resource.try(:id)}"
+      resource_description = resource.class.to_s
+      resource_description += "##{resource.id}" if resource.respond_to?(:id)
 
       description = action.to_s
       description += " #{args.join(', ')}" if args.any?

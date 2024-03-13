@@ -66,7 +66,7 @@ class RouteVehicleJourneysController < Chouette::ReferentialController
       route.line.line_notices.each do |line_notice|
         @footnotes << {
           code: line_notice.title,
-          label: truncate(line_notice.content, length: 120),
+          label: helpers.truncate(line_notice.content, length: 120),
           id: line_notice.id,
           line_notice: true
         }

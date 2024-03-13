@@ -186,6 +186,8 @@ class Merge < ApplicationModel
     end
 
     Clean::Timetable::Date::ExcludedWithoutPeriod.new(clean_scope).clean!
+    Clean::VehicleJourney::NullifyCompany.new(clean_scope).clean!
+
     CleanUp.new(clean_up_options).clean
     Clean::Timetable::Date::ExcludedWithoutPeriod.new(clean_scope).clean!
   end

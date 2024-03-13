@@ -834,3 +834,48 @@ RSpec.describe Clean::ServiceCount::InPeriod do
     end
   end
 end
+
+RSpec.describe Clean::VehicleJourney::NullifyCompany do
+  subject { described_class.new(scope).clean! }
+
+  let(:context) do
+    Chouette.create do
+      company :first
+
+      referential do
+        vehicle_journey company: :first
+      end
+    end
+  end
+
+  let(:company) { context.company(:first) }
+  let(:vehicle_journey) { context.vehicle_journey }
+
+  let(:referential) { context.referential }
+  let(:scope) { Clean::Scope::Referential.new referential }
+  
+  before { referential.switch }
+
+  context "when Vehicle Journey isn't associated to a Company" do
+    before { vehicle_journey.update_column :company_id, nil }
+    it 'keep intact Vehicle Journey' do
+      subject
+
+      expect(vehicle_journey).to exist_in_database
+    end
+  end
+
+  context 'when Vehicle Journey is associated to an existing Company' do
+    it 'keep intact Vehicle Journey company_id' do
+      expect { subject }.to_not(change { vehicle_journey.reload.company_id })
+    end
+  end
+
+  context 'when the company is deleted' do
+    before { company.delete }
+
+    it 'nullify Vehicle Journey company_id' do
+      expect { subject }.to change { vehicle_journey.reload.company_id }.from(company.id).to(nil)
+    end
+  end
+end

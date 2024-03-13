@@ -38,8 +38,13 @@ RSpec.describe Import::NetexGeneric do
     end
 
     context "when file is GTFS file" do
-      let(:filename) { fixtures_path("sample_gtfs.zip") }
+      let(:filename) { fixtures_path("google-sample-feed.zip") }
       it { is_expected.to be_falsy }
+    end
+
+    context "when file is Zip file with .xml in subfolders" do
+      let(:filename) { fixtures_path("xml_in_subfolder.zip") }
+      it { is_expected.to be_truthy }
     end
   end
 

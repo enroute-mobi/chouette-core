@@ -11,10 +11,13 @@ class Import::NetexGeneric < Import::Base
     when '.xml'
       true
     when '.zip'
-      Zip::File.open(file) do |zip_file|
-        files_count = zip_file.glob('*').size
-        zip_file.glob('*.xml').size == files_count
-      end
+      zip_index = Zip::CentralDirectory.new
+      File.open(file) { |f| zip_index.read_from_stream(f) }
+
+      file_entries = zip_index.entries.select(&:file?)
+      xml_entries = file_entries.select { |entry| File.extname(entry.name) == '.xml' }
+
+      xml_entries.count > 0 && file_entries.count == xml_entries.count
     else
       false
     end

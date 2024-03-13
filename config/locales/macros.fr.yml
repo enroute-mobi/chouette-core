@@ -46,6 +46,8 @@ fr:
         one: Calculer le nombre de services
       macro/associate_documents:
         one: Associer les documents
+      macro/create_code_from_sequence:
+        one: Créer code en séquence
     attributes:
       macro/base:
         name: Nom

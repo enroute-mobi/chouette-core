@@ -37,6 +37,8 @@ fr:
         one: Calculer le nombre de services
       macro/associate_documents/run:
         one: Associer les documents
+      macro/create_code_from_sequence:
+        one: Créer code en séquence
     attributes:
       macro/base/run:
         name: Nom
@@ -56,3 +58,6 @@ fr:
       macro/associate_documents/run:
         model_code_space: Espace de code du modèle
         document_code_space: Espace de code du document
+      macro/create_code_from_sequence/run:
+        sequence_id: Séquence
+        code_space_id: Espace de code

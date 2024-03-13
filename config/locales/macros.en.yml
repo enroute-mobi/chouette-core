@@ -46,6 +46,8 @@ en:
         one: Compute service counts
       macro/associate_documents:
         one: Associate Documents
+      macro/create_code_from_sequence:
+        one: Create code from sequence
     attributes:
       macro/base:
         name: Name

@@ -59,6 +59,9 @@ fr:
   macro/associate_documents/run:
     messages:
       default: "Le document '%{document_name}' a été associé à l'/la %{target_model} '%{model_name}'"
+  macro/create_code_from_sequence/run:
+    messages:
+      default: "Un code %{code_value} a été ajouté sur le/la/l' %{target_model} %{model_name}"
   macro_messages:
     search_no_results_for_filter: "Aucun messages"
     no_address: "Aucune adresse"

@@ -29,7 +29,7 @@ RSpec.describe Macro::AssociateDocuments do
           code_space :stop_area_code_space, short_name: 'stop_area_code_space'
           code_space :line_code_space, short_name: 'line_code_space'
 
-          workbench organisation: Organisation.find_by_code('first') do
+          workbench organisation: Organisation.find_by(code: 'first') do
             stop_area :first, name: 'Stop Area Name', codes: { stop_area_code_space: 'dummy' }
             stop_area :middle, codes: { stop_area_code_space: 'other dummy' }
             stop_area :last
@@ -49,10 +49,12 @@ RSpec.describe Macro::AssociateDocuments do
       let(:line) { context.line(:line) }
       let(:stop_area) { context.stop_area(:first) }
 
-      let(:document_provider) do 
+      let(:document_provider) do
         workbench.document_providers.create(name: 'document_provider_name', short_name: 'short_name')
       end
-      let(:document_type) { workbench.workgroup.document_types.create(name: 'document_type_name', short_name: 'short_name') }
+      let(:document_type) do
+        workbench.workgroup.document_types.create(name: 'document_type_name', short_name: 'short_name')
+      end
       let(:file) { fixture_file_upload('sample_pdf.pdf') }
 
       let(:document) do
@@ -60,7 +62,8 @@ RSpec.describe Macro::AssociateDocuments do
           name: 'test',
           document_type_id: document_type.id,
           file: file,
-          validity_period: (Time.zone.today...Time.zone.today + 1.day))
+          validity_period: (Time.zone.today...Time.zone.today + 1.day)
+        )
       end
 
       let(:expected_message) do
@@ -78,9 +81,9 @@ RSpec.describe Macro::AssociateDocuments do
       let(:stop_area_code_space) { context.code_space(:stop_area_code_space).id }
 
       before do
-         referential.switch
-         document.codes.create(code_space_id: document_code_space, value: 'dummy')
-         line.codes.create(code_space_id: line_code_space, value: 'dummy' )
+        referential.switch
+        document.codes.create(code_space_id: document_code_space, value: 'dummy')
+        line.codes.create(code_space_id: line_code_space, value: 'dummy')
       end
 
       describe 'StopArea' do

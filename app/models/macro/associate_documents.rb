@@ -93,7 +93,8 @@ module Macro
           .select(
             'documents.id AS document_id',
             'documents.name AS document_name',
-            'codes.value AS document_code_value')
+            'codes.value AS document_code_value'
+          )
           .joins(codes: :code_space)
           .where('code_spaces.id' => document_code_space)
           .to_sql
@@ -104,7 +105,8 @@ module Macro
           .select(
             "#{model_collection}.id AS model_id",
             "#{model_collection}.name AS model_name",
-            'codes.value AS model_code_value')
+            'codes.value AS model_code_value'
+          )
           .joins(codes: :code_space)
           .where('code_spaces.id' => model_code_space)
           .to_sql

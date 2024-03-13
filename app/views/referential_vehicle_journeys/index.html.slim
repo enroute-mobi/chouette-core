@@ -21,7 +21,7 @@
                 TableBuilderHelper::Column.new( \
                   key: :published_journey_name,
                   attribute: Proc.new {|v| v.published_journey_name.presence||I18n.t('none')},
-                  link_to: lambda { |vehicle_journey| referential_line_route_vehicle_journeys_path(@referential, vehicle_journey.route.line, vehicle_journey.route) } \
+                  link_to: lambda { |vehicle_journey| referential_route_vehicle_journeys_path(@referential, vehicle_journey.route) } \
                 ),
                 TableBuilderHelper::Column.new( \
                   key: :line, \

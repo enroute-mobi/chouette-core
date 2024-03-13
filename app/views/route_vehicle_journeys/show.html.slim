@@ -7,7 +7,7 @@
       = link_to I18n.t("time_tables.index.title"), [@referential, :time_tables], class: 'btn btn-primary sticky-action', target: :blank
       - if @route.opposite_route.present?
         - enable = @route.opposite_route.vehicle_journeys.exists?
-        = link_to(t('routes.actions.reversed_vehicle_journey'), [@referential, @route.line, @route.opposite_route, :vehicle_journeys], class: "btn btn-primary sticky-action #{enable ? '' : 'disabled'}")
+        = link_to(t('routes.actions.reversed_vehicle_journey'), [@referential, @route.opposite_route, :vehicle_journeys], class: "btn btn-primary sticky-action #{enable ? '' : 'disabled'}")
 
 .page_content
   .container-fluid
@@ -20,7 +20,7 @@
   | window.route_id = #{params[:route_id]};
   | window.referential_id = #{@referential.id};
   | window.companiesPath = '#{default_companies_path(@referential.line_referential)}';
-  | window.line_id = #{@line.id};
+  | window.line_id = #{@route.line.id};
   | window.stopPoints = #{(@stop_points_list.to_json).html_safe};
   | window.returnStopPoints = #{(@return_stop_points_list.to_json).html_safe};
   | window.jpOrigin = #{(@jp_origin.present? ? @jp_origin.attributes.update({full_schedule: @jp_origin.full_schedule?}).to_json  : "null").html_safe};
@@ -37,7 +37,7 @@
   | window.extra_headers = #{(@extra_headers.to_json).html_safe};
   | window.constraint_zones_routes = "#{url_for([@referential, @route.line, :routing_constraint_zones]).html_safe}";
   | window.companies_path = "#{default_companies_path(@referential.line_referential).html_safe}";
-  | window.available_specific_stop_places_path = "#{(url_for([@referential, @line, @route, :journey_patterns])+"/:journey_pattern_id:/available_specific_stop_places").html_safe}";
+  | window.available_specific_stop_places_path = "#{(url_for([@referential, @route.line, @route, :journey_patterns])+"/:journey_pattern_id:/available_specific_stop_places").html_safe}";
   | window.available_code_spaces = #{(@referential.workgroup&.code_spaces.to_json)&.html_safe};
 
 - if has_feature?(:stop_area_routing_constraints)
@@ -46,5 +46,5 @@
 
 - if has_feature?(:vehicle_journeys_return_route)
   = javascript_tag do
-    | window.returnRouteUrl = "#{(@route.opposite_route && url_for([@referential, @route.line, @route.opposite_route, :vehicle_journeys]) || "").html_safe}";
+    | window.returnRouteUrl = "#{(@route.opposite_route && url_for([@referential, @route.opposite_route, :vehicle_journeys]) || "").html_safe}";
 

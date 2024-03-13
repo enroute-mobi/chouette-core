@@ -234,10 +234,6 @@ module Chouette
 
     accepts_nested_attributes_for :vehicle_journey_at_stops, :allow_destroy => true
 
-    def presenter
-      @presenter ||= ::VehicleJourneyPresenter.new( self)
-    end
-
     def vehicle_journey_at_stops_matrix
       at_stops = self.vehicle_journey_at_stops.to_a.dup
       active_stop_point_ids = journey_pattern.stop_points.map(&:id)
@@ -389,16 +385,6 @@ module Chouette
       attrs
     end
 
-    def missing_stops_in_relation_to_a_journey_pattern(selected_journey_pattern)
-      selected_journey_pattern.stop_points - self.stop_points
-    end
-    def extra_stops_in_relation_to_a_journey_pattern(selected_journey_pattern)
-      self.stop_points - selected_journey_pattern.stop_points
-    end
-    def extra_vjas_in_relation_to_a_journey_pattern(selected_journey_pattern)
-      extra_stops = self.extra_stops_in_relation_to_a_journey_pattern(selected_journey_pattern)
-      self.vehicle_journey_at_stops.select { |vjas| extra_stops.include?( vjas.stop_point)}
-    end
     def time_table_tokens=(ids)
       self.time_table_ids = ids.split(",")
     end
@@ -412,17 +398,6 @@ module Chouette
       end
 
       dates.empty? ? [] : [dates.min, dates.max]
-    end
-
-    def update_journey_pattern( selected_journey_pattern)
-      return unless selected_journey_pattern.route_id==self.route_id
-
-      missing_stops_in_relation_to_a_journey_pattern(selected_journey_pattern).each do |sp|
-        self.vehicle_journey_at_stops.build( :stop_point => sp)
-      end
-      extra_vjas_in_relation_to_a_journey_pattern(selected_journey_pattern).each do |vjas|
-        vjas._destroy = true
-      end
     end
 
     def fill_passing_times!

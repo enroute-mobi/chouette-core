@@ -8,22 +8,7 @@ class TimeTablePresenter
     @time_table = time_table
   end
 
-  def time_table_state_code
-    if @time_table.validity_out_from_on?(Date.today)
-      "validity_out"
-    elsif @time_table.validity_out_between?(Date.today,Date.today+7.day)
-      "validity_out_soon"
-    else
-      "validity_regular"
-    end
-  end
-
   def time_table_bounding
-    return I18n.t('time_tables.time_table.empty') if @time_table.bounding_dates.empty?
-    "#{I18n.l(@time_table.bounding_dates.min)} #{I18n.l(@time_table.bounding_dates.max)}"
-  end
-
-  def time_tables_shortest_info
     return I18n.t('time_tables.time_table.empty') if @time_table.bounding_dates.empty?
     "#{I18n.l(@time_table.bounding_dates.min)} #{I18n.l(@time_table.bounding_dates.max)}"
   end

@@ -589,7 +589,7 @@ crumb :journey_patterns do |referential, route|
 end
 
 crumb :vehicle_journeys do |referential, route|
-  link I18n.t('vehicle_journeys.index.title', route: route.name), referential_line_route_vehicle_journeys_path(referential, route.line, route)
+  link I18n.t('vehicle_journeys.index.title', route: route.name), referential_route_vehicle_journeys_path(referential, route)
   parent :route, referential, route
 end
 

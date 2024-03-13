@@ -457,7 +457,7 @@ const actions = {
 
   submitVehicleJourneys : (dispatch, state, next) => {
     dispatch(actions.fetchingApi())
-    let urlJSON = window.location.pathname + "_collection.json"
+    let urlJSON = window.location.pathname + ".json"
     let hasError = false
     fetch(urlJSON, {
       credentials: 'same-origin',

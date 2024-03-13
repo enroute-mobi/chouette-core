@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 #
 # Provides all Clean strategies
 #
@@ -13,6 +15,7 @@ module Clean
     include Measurable
 
     attr_reader :scope
+
     def initialize(scope)
       @scope = scope
     end
@@ -27,9 +30,9 @@ module Clean
 
   # Manages/restricts the scope of cleaned data
   module Scope
-
     class Referential
       attr_reader :referential
+
       def initialize(referential)
         @referential = referential
       end
@@ -53,14 +56,13 @@ module Clean
       def unmodifiable_timetables?
         false
       end
-
     end
 
     class Line
-
       def initialize(scope, line_or_line_id)
         line_id = line_or_line_id.try(:id) || line_or_line_id
-        @scope, @line_id = scope, line_id
+        @scope = scope
+        @line_id = line_id
       end
       attr_reader :scope, :line_id
 
@@ -105,7 +107,7 @@ module Clean
       # changing a metadata out of the scope
       def restricted_metadata(metadata)
         # return nil unless metadata.line_ids.include? line_id
-        return metadata if metadata.line_ids == [ line_id ]
+        return metadata if metadata.line_ids == [line_id]
 
         restricted = metadata.dup
         restricted.id = nil
@@ -122,11 +124,11 @@ module Clean
         timetables.shared_by_several_lines?
       end
     end
-
   end
 
   class InPeriod < Base
     attr_accessor :period
+
     def initialize(scope, period)
       super scope
       @period = period
@@ -138,7 +140,7 @@ module Clean
         ServiceCount::InPeriod.new(scope, period),
         VehicleJourney::WithoutTimetable.new(scope),
         JourneyPattern::WithoutVehicleJourney.new(scope),
-        Route::WithoutJourneyPattern.new(scope),
+        Route::WithoutJourneyPattern.new(scope)
       ].each(&:clean!)
     end
   end
@@ -152,7 +154,9 @@ module Clean
 
     class NullifyCompany < Base
       def clean!
-        scope.vehicle_journeys.left_joins(:company).where.not(company_id: nil).where(companies: { id: nil }).update_all(company_id: nil)
+        scope.vehicle_journeys.left_joins(:company)
+             .where.not(company_id: nil).where(companies: { id: nil })
+             .update_all(company_id: nil) # rubocop:disable Rails/SkipsModelValidations
       end
     end
   end
@@ -176,6 +180,7 @@ module Clean
   module ServiceCount
     class InPeriod < Base
       attr_accessor :period
+
       def initialize(scope, period)
         super scope
         @period = period
@@ -204,16 +209,15 @@ module Clean
     # Delete or truncate TimeTables with periods or/and dates in the given period
     class InPeriod < Base
       attr_accessor :period
+
       def initialize(scope, period)
         super scope
         @period = period
       end
 
       def clean!
-        # TODO Duplicate TimeTables used by another Line in the same Period
-        if scope.unmodifiable_timetables?
-          raise "Can't modify shared timetables"
-        end
+        # TODO: Duplicate TimeTables used by another Line in the same Period
+        raise "Can't modify shared timetables" if scope.unmodifiable_timetables?
 
         # Delete dates
         Date::InPeriod.new(scope, period).clean!
@@ -225,12 +229,12 @@ module Clean
 
         scope.timetables.update_shortcuts
       end
-
     end
 
     module Date
       class InPeriod < Base
         attr_accessor :period
+
         def initialize(scope, period)
           super scope
           @period = period
@@ -260,6 +264,7 @@ module Clean
     module Period
       class InPeriod < Base
         attr_accessor :period
+
         def initialize(scope, period)
           super scope
           @period = period
@@ -269,25 +274,28 @@ module Clean
 
         # Delete periods which starts and finishs into the period
         def clean_into
-          criteria = [ 'period_start between :min and :max and period_end between :min and :max', min: period.min, max: period.max ]
+          criteria = ['period_start between :min and :max and period_end between :min and :max', {
+            min: period.min, max: period.max
+          }]
           timetable_periods.where(criteria).delete_all
         end
 
         # Truncate periods which starts before the period/range and finishs into the period/range
         def truncate_before
-          criteria = [ 'period_start < :min and period_end between :min and :max', min: period.min, max: period.max ]
-          timetable_periods.where(criteria).update_all period_end: period.min - 1
+          criteria = ['period_start < :min and period_end between :min and :max', { min: period.min, max: period.max }]
+          timetable_periods.where(criteria).update_all period_end: period.min - 1 # rubocop:disable Rails/SkipsModelValidations
         end
 
         # Truncate periods which starts into the period and finishs after the period
         def truncate_after
-          criteria = [ 'period_start between :min and :max and period_end > :max', min: period.min, max: period.max ]
-          timetable_periods.where(criteria).update_all period_start: period.max + 1
+          criteria = ['period_start between :min and :max and period_end > :max', { min: period.min, max: period.max }]
+          timetable_periods.where(criteria).update_all period_start: period.max + 1 # rubocop:disable Rails/SkipsModelValidations
         end
 
         def split_over
-          criteria = [ 'period_start < :min and period_end > :max', min: period.min, max: period.max ]
-          scope.timetable_periods.where(criteria).select(:id, :time_table_id, :period_start, :period_end).find_each do |initial_period|
+          criteria = ['period_start < :min and period_end > :max', { min: period.min, max: period.max }]
+          scope.timetable_periods.where(criteria).select(:id, :time_table_id, :period_start,
+                                                         :period_end).find_each do |initial_period|
             # Duplicate the period to create a new TimeTablePeriod after the clean period
             after_period = initial_period.dup
             # Update period_end of the initial period
@@ -307,7 +315,6 @@ module Clean
           scope.timetable_periods.transform_in_dates
         end
       end
-
     end
   end
 
@@ -335,6 +342,7 @@ module Clean
 
     class Before < Base
       attr_accessor :before
+
       def initialize(scope, before)
         super scope
         @before = before
@@ -362,6 +370,7 @@ module Clean
 
     class InPeriod < Base
       attr_accessor :period
+
       def initialize(scope, period)
         super scope
         @period = period

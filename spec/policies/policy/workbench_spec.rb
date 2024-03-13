@@ -87,6 +87,11 @@ RSpec.describe Policy::Workbench, type: :policy do
       let(:resource_class) { Merge }
       it { is_expected.to be_truthy }
     end
+
+    context 'Source' do
+      let(:resource_class) { Source }
+      it { is_expected.to be_truthy }
+    end
   end
 
   describe '#update?' do

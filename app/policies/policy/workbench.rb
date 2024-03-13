@@ -22,7 +22,8 @@ module Policy
         ::Import::Base,
         ::Export::Base,
         ::ApiKey,
-        ::Merge
+        ::Merge,
+        ::Source
       ].include?(resource_class)
     end
 

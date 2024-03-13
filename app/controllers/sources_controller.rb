@@ -84,6 +84,4 @@ class SourcesController < Chouette::WorkbenchController
       retrieval_days_of_week_attributes: [:monday, :tuesday, :wednesday, :thursday, :friday, :saturday, :sunday]
     ).with_defaults(workbench_id: workbench.id)
   end
-
-  Policy::Authorizer::Controller.for(self, Policy::Authorizer::Legacy)
 end

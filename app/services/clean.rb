@@ -152,17 +152,7 @@ module Clean
 
     class NullifyCompany < Base
       def clean!
-        scope.vehicle_journeys.where.not(company_id: existing_company_ids).in_batches.update_all(company_id: nil)
-      end
-
-      private
-
-      def existing_company_ids
-        scope.companies.select(:id).where(id: all_associated_company_ids)
-      end
-
-      def all_associated_company_ids
-        scope.vehicle_journeys.distinct.select(:company_id).where.not(company_id: nil)
+        scope.vehicle_journeys.left_joins(:company).where.not(company_id: nil).where(companies: { id: nil }).update_all(company_id: nil)
       end
     end
   end

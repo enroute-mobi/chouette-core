@@ -841,38 +841,41 @@ RSpec.describe Clean::VehicleJourney::NullifyCompany do
   let(:context) do
     Chouette.create do
       company :first
-      company :second
 
       referential do
-        vehicle_journey :first, company: :first
-        vehicle_journey :second, company: :second
+        vehicle_journey company: :first
       end
     end
   end
 
-  let(:first_company) { context.company(:first) }
-  let(:second_company) { context.company(:second) }
-
-  let(:second_vehicle_journey) { context.vehicle_journey(:second) }
+  let(:company) { context.company(:first) }
+  let(:vehicle_journey) { context.vehicle_journey }
 
   let(:referential) { context.referential }
   let(:scope) { Clean::Scope::Referential.new referential }
   
-  before do
-    referential.switch
-  end
+  before { referential.switch }
 
-  context 'when all vehicle journeys are associated with companies' do
-    it do
-      expect { subject }.to_not(change { referential.vehicle_journeys.map(&:company_id) })
+  context "when Vehicle Journey isn't associated to a Company" do
+    before { vehicle_journey.update_column :company_id, nil }
+    it 'keep intact Vehicle Journey' do
+      subject
+
+      expect(vehicle_journey).to exist_in_database
     end
   end
 
-  context 'when a company is deleted' do
-    it do
-      second_company.delete
+  context 'when Vehicle Journey is associated to an existing Company' do
+    it 'keep intact Vehicle Journey company_id' do
+      expect { subject }.to_not(change { vehicle_journey.reload.company_id })
+    end
+  end
 
-      expect { subject }.to change { second_vehicle_journey.reload.company_id }.from(second_company.id).to(nil)
+  context 'when the company is deleted' do
+    before { company.delete }
+
+    it 'nullify Vehicle Journey company_id' do
+      expect { subject }.to change { vehicle_journey.reload.company_id }.from(company.id).to(nil)
     end
   end
 end

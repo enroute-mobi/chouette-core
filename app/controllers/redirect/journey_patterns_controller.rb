@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Redirect
   class JourneyPatternsController < BaseController
     include ReferentialSupport
@@ -7,8 +9,11 @@ module Redirect
     end
 
     def show
-      redirect_to referential_line_route_journey_patterns_collection_path referential, journey_pattern.route.line,
-                                                                          journey_pattern.route
+      redirect_to referential_line_route_journey_patterns_path(
+        referential,
+        journey_pattern.route.line,
+        journey_pattern.route
+      )
     end
   end
 end

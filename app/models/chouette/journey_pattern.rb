@@ -123,15 +123,6 @@ module Chouette
       end
     end
 
-    # TODO: this a workarround
-    # otherwise, we loose the first stop_point
-    # when creating a new journey_pattern
-    def special_update
-      bck_sp = self.stop_points.map {|s| s}
-      self.update_attributes :stop_points => []
-      self.update_attributes :stop_points => bck_sp
-    end
-
     def departure_stop_point
       return unless departure_stop_point_id
       Chouette::StopPoint.find( departure_stop_point_id)

@@ -1,44 +1,68 @@
-RSpec.describe JourneyPatternsCollectionsController, :type => :controller do
+# frozen_string_literal: true
 
-  before do
-    @user = build_stubbed(:allmighty_user)
-  end
+RSpec.describe JourneyPatternsCollectionsController, type: :controller do
+  login_user
 
-  describe 'user_permissions' do
-    let( :referential ){ build_stubbed(:referential) }
-    let( :user_context ){ UserContext.new(@user, referential: referential) }
-
-    before do
-      allow(controller).to receive(:pundit_user).and_return(user_context)
-      allow(controller).to receive(:current_organisation).and_return(@user.organisation)
-    end
-
-    it 'computes them correctly if not authorized' do
-      expect( controller.user_permissions ).to eq({'journey_patterns.create'  => false,
-                                                   'journey_patterns.destroy' => false,
-                                                   'journey_patterns.update'  => false }.to_json)
-    end
-    it 'computes them correctly if authorized' do
-      @user.organisation_id = referential.organisation_id
-      expect( controller.user_permissions ).to eq({'journey_patterns.create'  => true,
-                                                   'journey_patterns.destroy' => true,
-                                                   'journey_patterns.update'  => true }.to_json)
+  let(:context) do
+    Chouette.create do
+      workbench(organisation: Organisation.find_by(code: 'first')) do
+        referential do
+          route
+        end
+      end
     end
   end
+  let(:referential) { context.referential }
+  let(:line) { route.line }
+  let(:route) { context.route }
 
-  context "get show" do
-    login_user
-
-    let( :referential ){ Referential.first }
-    let( :line ){ route.line }
-    let( :route ){ create(:route, referential: referential) }
-
-    let(:request){
-      get :show, params: { referential_id: referential.id, line_id: line.id, route_id: route.id, format: :json }
+  let(:base_params) do
+    {
+      'referential_id' => referential.id.to_s,
+      'line_id' => line.id.to_s,
+      'route_id' => route.id.to_s
     }
-    it 'should be successful' do
-      request
-      expect(response).to be_successful
+  end
+  let(:format) { nil }
+
+  describe 'GET show' do
+    subject { get :show, params: base_params, format: format }
+
+    context 'in JSON' do
+      let(:format) { 'json' }
+
+      it 'should be successful' do
+        subject
+        expect(response).to be_successful
+      end
+
+      it 'sets user permissions' do
+        subject
+
+        expect(JSON.parse(assigns(:features))).to be_a(Hash)
+        expect(JSON.parse(assigns(:perms))).to eq(
+          {
+            'journey_patterns.create' => true,
+            'journey_patterns.update' => true,
+            'journey_patterns.destroy' => true
+          }
+        )
+      end
+
+      it 'when user is not authorized' do
+        referential.update(archived_at: Time.zone.now)
+
+        subject
+
+        expect(JSON.parse(assigns(:features))).to be_a(Hash)
+        expect(JSON.parse(assigns(:perms))).to eq(
+          {
+            'journey_patterns.create' => false,
+            'journey_patterns.update' => false,
+            'journey_patterns.destroy' => false
+          }
+        )
+      end
     end
   end
 end

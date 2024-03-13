@@ -100,7 +100,7 @@ class ReferentialsController < Chouette::ResourceController
   def journey_patterns
     referential.switch
     jp = Chouette::JourneyPattern.find(params[:journey_pattern_id])
-    redirect_to referential_line_route_journey_patterns_collection_path(referential, jp.route.line, jp.route)
+    redirect_to referential_line_route_journey_patterns_path(referential, jp.route.line, jp.route)
   end
 
   protected

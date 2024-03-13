@@ -32,6 +32,7 @@ fr:
         description: Description
         range_start: "Début de l'intervalle"
         range_end: "Fin de l'intervalle"
+        values: Valeurs
     errors:
       models:
         sequence:

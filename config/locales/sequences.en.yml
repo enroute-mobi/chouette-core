@@ -32,6 +32,7 @@ fr:
         description: Description
         range_start: "Range start"
         range_end: "Range end"
+        values: Values
     errors:
       models:
         sequence:

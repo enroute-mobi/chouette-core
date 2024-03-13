@@ -136,7 +136,7 @@ en:
         hourly: Hourly
     sequence:
       sequence_type:
-        range_sequence: Range sequence
+        range_sequence: Range Sequence
     stop_area:
       area_type:
         zdep: ZDEp

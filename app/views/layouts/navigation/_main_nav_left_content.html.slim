@@ -54,6 +54,8 @@
         span = 'activerecord.models.document_provider.other'.t.capitalize
       = link_to workbench_processing_rule_workbenches_path(workbench), class: "list-group-item" do
         span = ProcessingRule::Workbench.t
+      = link_to workbench_sequences_path(workbench), class: "list-group-item" do
+        span = Sequence.model_name.human(count: 2)
 
     = main_nav_menu_item 'layouts.navbar.stop_area_referential'.t do
       = link_to workbench_stop_area_referential_stop_areas_path(workbench), class: "list-group-item" do

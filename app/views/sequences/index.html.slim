@@ -17,8 +17,13 @@
 							), \
               TableBuilderHelper::Column.new( \
                 key: :sequence_type, \
-                attribute: Proc.new {|sequence| sequence.sequence_type}, \
+                attribute: Proc.new {|sequence| t("enumerize.sequence.sequence_type.#{sequence.sequence_type}")}, \
 							), \
+              TableBuilderHelper::Column.new( \
+                key: :values, \
+                attribute: Proc.new { |sequence| sequence.range_values}, \
+                sortable: false,\
+              ), \
             ].compact,
             cls: 'table has-filter has-search'
 

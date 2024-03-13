@@ -9,4 +9,7 @@ class Sequence < ApplicationModel
 
   enumerize :sequence_type, in: %i[range_sequence], scope: true
 
+  def range_values
+    "#{range_start}-#{range_end}"
+  end
 end

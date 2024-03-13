@@ -1,0 +1,3 @@
+= form.input :target_model
+= form.input :model_code_space, collection: @workbench.workgroup.code_spaces.map {|c| [c.short_name, c.id]}, include_blank: false
+= form.input :document_code_space, collection: @workbench.workgroup.code_spaces.map {|c| [c.short_name, c.id]}, include_blank: false

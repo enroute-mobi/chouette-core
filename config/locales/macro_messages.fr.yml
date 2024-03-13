@@ -56,6 +56,9 @@ fr:
   macro/compute_service_counts/run:
     messages:
       default: "Les statistiques de courses de la ligne %{name} ont été définis"
+  macro/associate_documents/run:
+    messages:
+      default: "Le document '%{document_name}' a été associé à l'/la %{target_model} '%{model_name}'"
   macro_messages:
     search_no_results_for_filter: "Aucun messages"
     no_address: "Aucune adresse"

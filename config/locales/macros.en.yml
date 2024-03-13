@@ -44,6 +44,8 @@ en:
         one: Delete all Vehicle Journeys
       macro/compute_service_counts:
         one: Compute service counts
+      macro/associate_documents:
+        one: Associate Documents
     attributes:
       macro/base:
         name: Name
@@ -65,6 +67,9 @@ en:
       macro/update_attribute_from_referent_to_particulars:
         target_attribute: Attribut
         override_existing_value: Override existing value
+      macro/associate_documents:
+        model_code_space: Model code space
+        document_code_space: Document code space
   simple_form:
     placeholders:
       macro_base:

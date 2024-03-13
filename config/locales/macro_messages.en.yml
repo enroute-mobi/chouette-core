@@ -56,6 +56,9 @@ en:
   macro/compute_service_counts/run:
     messages:
       default: "The service counts of the line %{name} have been computed"
+  macro/associate_documents/run:
+    messages:
+      default: "The document '%{document_name}' has been associated with the %{target_model} '%{model_name}'"
   macro_messages: 
     search_no_results_for_filter: "No messages found"
     no_address: "No address"

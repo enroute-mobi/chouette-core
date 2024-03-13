@@ -9,8 +9,8 @@ module Scope
       @workbench = workbench
     end
 
-    delegate :lines, :companies, :stop_areas, :entrances, :networks,
-             :point_of_interests, :shapes, :documents, :connection_links, to: :workbench
+    delegate :lines, :companies, :stop_areas, :entrances, :document_memberships,
+             :networks, :point_of_interests, :shapes, :documents, :connection_links, to: :workbench
 
     def routes
       Chouette::Route.none

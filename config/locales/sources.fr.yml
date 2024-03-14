@@ -1,7 +1,7 @@
 fr:
   sources:
     index:
-      title: Source de données
+      title: Sources de données
     show:
       title: "%{name}"
     new:
@@ -37,7 +37,7 @@ fr:
       source:
         zero:  "Source de données"
         one:   "Source de données"
-        other: "Source de données"
+        other: "Sources de données"
     attributes:
       source:
         name: "Nom"

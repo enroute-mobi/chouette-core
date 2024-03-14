@@ -40,7 +40,7 @@ module Macro
       def create_message(model, code)
         attributes = {
           message_attributes: { model_name: model.name, code_value: code.value },
-          source: code
+          source: model
         }
 
         attributes.merge!(criticity: 'error', message_key: 'error') unless code.valid?

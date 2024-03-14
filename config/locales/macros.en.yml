@@ -62,6 +62,9 @@ en:
         target_model: Target Model
         target_pattern: Target Pattern
         expected_result: Expected result
+      macro/create_code_from_sequence:
+        sequence_id: Sequence
+        code_space_id: Code space
       macro/define_postal_address:
         target_model: Target Model
       macro/define_attribute_from_particulars:

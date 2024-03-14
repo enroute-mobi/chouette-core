@@ -37,7 +37,7 @@ fr:
         one: Calculer le nombre de services
       macro/associate_documents/run:
         one: Associer les documents
-      macro/create_code_from_sequence:
+      macro/create_code_from_sequence/run:
         one: Créer code en séquence
     attributes:
       macro/base/run:

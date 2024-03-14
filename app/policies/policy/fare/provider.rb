@@ -8,6 +8,12 @@ module Policy
 
       protected
 
+      def _create?(resource_class)
+        [
+          ::Fare::Zone
+        ].include?(resource_class)
+      end
+
       def _update?
         true
       end

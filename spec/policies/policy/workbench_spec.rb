@@ -62,11 +62,6 @@ RSpec.describe Policy::Workbench, type: :policy do
       let(:resource_class) { Fare::Provider }
       it { is_expected.to be_truthy }
     end
-
-    context 'Fare::Zone' do
-      let(:resource_class) { Fare::Zone }
-      it { is_expected.to be_truthy }
-    end
   end
 
   describe '#update?' do

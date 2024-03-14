@@ -34,7 +34,7 @@ class FareZonesController < Chouette::FareReferentialController
   private
 
   def fare_zone_params
-    params.require(:fare_zone).permit(
+    @fare_zone_params ||= params.require(:fare_zone).permit(
       :name,
       :fare_provider_id,
       codes_attributes: %i[id code_space_id value _destroy]

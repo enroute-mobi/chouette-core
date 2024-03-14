@@ -30,15 +30,25 @@ class FareProvidersController < Chouette::FareReferentialController
   end
 
   def build_resource
-    get_resource_ivar || set_resource_ivar(super.decorate(context: { workbench: workbench }))
+    get_resource_ivar || set_resource_ivar(
+      end_of_association_chain.send(method_for_build, *resource_params).decorate(context: { workbench: workbench })
+    )
+  end
+
+  def update_resource(object, attributes)
+    object.update(*attributes)
   end
 
   def fare_provider_params
+    return @fare_provider_params if @fare_provider_params
+
     fields = [
       :name,
       :short_name,
       codes_attributes: %i[id code_space_id value _destroy]
     ]
-    params.require(:fare_provider).permit(fields)
+    @fare_provider_params = params.require(:fare_provider).permit(fields)
   end
+
+  alias parent_for_parent_policy parent
 end

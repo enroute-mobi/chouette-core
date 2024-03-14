@@ -348,6 +348,7 @@ module Chouette
             model :fare_product do
               attribute(:name) { |n| "Fare Product #{n}" }
             end
+
             model :fare_validity do
               attribute(:name) { |n| "Fare Validity #{n}" }
               attribute(:expression) { Fare::Validity::Expression::All.new }
@@ -360,6 +361,10 @@ module Chouette
 
                 new_instance.products = products
               end
+            end
+
+            model :fare_zone do
+              attribute(:name) { |n| "Fare Zone #{n}" }
             end
           end
 

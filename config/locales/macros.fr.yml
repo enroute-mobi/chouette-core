@@ -71,6 +71,9 @@ fr:
       macro/associate_documents:
         model_code_space: Espace de code du modèle
         document_code_space: Espace de code du document
+      macro/create_code_from_sequence:
+        sequence_id: Séquence
+        code_space_id: Espace de code
   simple_form:
     placeholders:
       macro_base:

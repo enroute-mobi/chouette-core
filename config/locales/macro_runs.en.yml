@@ -55,3 +55,6 @@ en:
       macro/associate_documents/run:
         model_code_space: Model code space
         document_code_space: Document code space
+      macro/create_code_from_sequence/run:
+        sequence_id: Séquence
+        code_space_id: Espace de code

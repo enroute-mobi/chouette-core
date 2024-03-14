@@ -240,7 +240,7 @@ SimpleForm.setup do |config|
     b.use :hint,  wrap_with: { tag: 'p', class: 'help-block small' }
   end
 
-  config.wrappers :filters_form_tailwind, tag: 'div', class: 'flex items-center py-3 px-6 border-r border-white', error_class: 'has-error' do |b|
+  config.wrappers :filters_form_tailwind, tag: 'div', class: 'flex items-center py-3 px-6 border-white', error_class: 'has-error' do |b|
     b.use :html5
     b.use :placeholder
     b.optional :maxlength

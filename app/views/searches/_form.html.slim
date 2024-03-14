@@ -21,7 +21,9 @@
       = form_order.input attribute, as: :hidden
 
   .flex.flex-col.w-full
-    .flex.items-center.border-r.border-white.border-b x-show="saveSearchPanel"
+    = yield f
+
+    .flex.items-center.border-white x-show="saveSearchPanel"
       = f.input :saved_name, wrapper_html: {class: "w-2/5"}
       = f.input :saved_description, wrapper_html: {class: "w-2/5"}
       = hidden_field_tag :_method, "post", "x-ref": "method"
@@ -30,12 +32,10 @@
       - if search.saved_search
         = link_to t('searchs.actions.destroy'), saved_search_path(search.saved_search), method: :delete, data: { :confirm => t('searchs.actions.destroy_confirm') }, class: 'btn btn-danger ml-5'
 
-    = yield f
-
-  .flex.flex-col.justify-center.items-center.actions.ml-auto.py-3.w-80
-    .flex.items-center.mb-3
-      = f.label :per_page, class: 'control-label mr-3'
-      = f.input :per_page, as: :select, collection: [ 30, 50, 100 ], include_blank: false, label: false
+  .flex.flex-col.justify-center.items-center.actions.ml-auto.py-3.w-80.border-white.border-l.h-max
+    .flex.items-center.mb-3.ml-8
+      = f.label :per_page, class: 'control-label'
+      = f.input :per_page, as: :select, collection: [ 30, 50, 100 ], include_blank: false, label: false, width: 2, wrapper_html: {class: "border-none"}
     .flex.items-center
       = link_to t('actions.erase'), index_path, class: 'btn btn-link'
       = f.submit t('actions.filter'), class: 'btn btn-default'

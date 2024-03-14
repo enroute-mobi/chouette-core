@@ -9,13 +9,13 @@ module SimpleSearchForHelper
     end
 
     html = {
-      class: 'flex items-center tailwind-filters bg-grey relative pr-6', 
+      class: 'flex items-stretch tailwind-filters bg-grey relative pr-6',
       "x-data": "{ save_path: '#{save_path}', save_method: '#{save_method}'}"
     }
     options = {
       url: index_path,
-      method: "GET", 
-      html: html, 
+      method: "GET",
+      html: html,
       wrapper: :filters_form_tailwind,
       builder: FormBuilder
     }
@@ -37,13 +37,13 @@ module SimpleSearchForHelper
 
     def input attribute, **options
       width = options.delete(:width) || 1
-      options[:wrapper_html] ||= { class: "w-#{width}/5" }
+      options[:wrapper_html] ||= { class: "w-#{width}/5 border-l" }
 
       super attribute, **options
     end
 
     def row(&block)
-      template.content_tag(:div, class: 'flex items-center border-t border-r border-white') do
+      template.content_tag(:div, class: 'flex items-center border-t border-white') do
         yield
       end
     end

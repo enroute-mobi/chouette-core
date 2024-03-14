@@ -159,7 +159,7 @@ module Chouette
     end
 
     def active_from_less_than_active_until
-      return unless active_from || active_until
+      return unless active_from && active_until
       if active_from > active_until
         errors.add(:active_from, :active_from_less_than_active_until)
         errors.add(:active_until, :active_from_less_than_active_until)

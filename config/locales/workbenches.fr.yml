@@ -46,6 +46,9 @@ fr:
       text: |
         Vous avez reçu un code permettant de rejoindre ce groupe de travail appartenant a une autre organisation.
         En acceptant cette invitation, votre organisation aura un nouvel espace de travail pour collaborer avec ce groupe de travail.
+  workbench_confirmations:
+    create:
+      success: Bienvenue ! L'accès à l'Espace de travail %{workbench} dans le Groupe de Travail %{workgroup} est confirmé
 
   activerecord:
     models:

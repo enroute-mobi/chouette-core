@@ -21,7 +21,16 @@ class SubscriptionsController < ApplicationController
   def create
     if resource.save
       sign_in resource.user
-      redirect_to "/"
+
+      if resource.workbench_confirmation
+        # TODO: could be shared with WorkbenchConfirmationsController#create
+        workbench = resource.workbench_confirmation.workbench
+        flash[:notice] = t('workbench_confirmations.create.success', workbench: workbench.name, workgroup: workbench.workgroup.name)
+        redirect_to workbench_path workbench
+      else
+        redirect_to "/"
+      end
+
     else
       render "devise/registrations/new"
     end

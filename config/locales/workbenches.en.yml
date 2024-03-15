@@ -46,6 +46,9 @@ en:
       text:  |
         You received a confirmation code to join the Workgroup from another Organization.
         By accepting this invitation, our Organization will have a new Workbench to collaborate (and provide data) into this Workgroup.
+  workbench_confirmations:
+    create:
+      success: Welcome ! The access to Workbench %{workbench} in Workgroup %{workgroup} is confirmed
 
   activerecord:
     models:

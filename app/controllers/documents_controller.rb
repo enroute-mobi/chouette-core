@@ -3,6 +3,7 @@
 class DocumentsController < Chouette::WorkbenchController
   include ApplicationHelper
   include Downloadable
+  include ControllerResourceValidations
 
   defaults resource_class: Document
 
@@ -48,15 +49,12 @@ class DocumentsController < Chouette::WorkbenchController
     )
   end
 
-  def update_resource(object, attributes)
-    object.attributes = attributes[0]
-
-    unless candidate_document_providers.include?(object.document_provider)
-      object.valid? # validate the object before in order to compute all the other validations
-      object.errors.add(:document_provider_id, :invalid)
+  def controller_resource_validations(object)
+    errors = super
+    unless object.new_record? || candidate_document_providers.include?(object.document_provider)
+      errors << %i[document_provider_id invalid]
     end
-
-    object.save if object.errors.empty?
+    errors
   end
 
   def search

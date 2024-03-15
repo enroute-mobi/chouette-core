@@ -7,11 +7,11 @@
       = f.input :point_of_interest_category_id,
         as: :tom_select,
         required: true,
-        collection: @workbench.shape_referential.point_of_interest_categories.all.map { |l| {id: l.id, text: l.name } },
+        collection: candidate_point_of_interest_categories.all.map { |l| {id: l.id, text: l.name } },
         input_html: { style: 'width: 100%' },
         config: { placeholder: I18n.t('point_of_interests.form.point_of_interest_category_placeholder') }
       = f.input :url
-      = f.association :shape_provider, as: :select, collection: @workbench.shape_providers, include_blank: false, label_method: :short_name
+      = f.association :shape_provider, as: :select, collection: candidate_shape_providers, include_blank: false, label_method: :short_name
   .separator.section_separator
   .row
     .col-lg-12

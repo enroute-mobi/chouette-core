@@ -43,7 +43,7 @@ class ShapesController < Chouette::TopologicReferentialController
   end
 
   def shape_params
-    params.require(:shape).permit(:name)
+    @shape_params ||= params.require(:shape).permit(:name, :shape_provider_id)
   end
 
   Policy::Authorizer::Controller.for(self, Policy::Authorizer::Legacy)

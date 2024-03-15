@@ -5,6 +5,8 @@ module Chouette
     # To prevent a "chouette_" to be added to all its chidren
     resources_configuration[:self].delete(:route_prefix)
 
+    include ControllerResourceValidations
+
     protected
 
     def build_resource
@@ -15,15 +17,12 @@ module Chouette
       )
     end
 
-    def update_resource(object, attributes)
-      object.attributes = attributes[0]
-
-      unless candidate_fare_providers.include?(object.fare_provider)
-        object.valid? # validate the object before in order to compute all the other validations
-        object.errors.add(:fare_provider_id, :invalid)
+    def controller_resource_validations(object)
+      errors = super
+      unless object.new_record? || candidate_fare_providers.include?(object.fare_provider)
+        errors << %i[fare_provider_id invalid]
       end
-
-      object.save if object.errors.empty?
+      errors
     end
 
     def parent_for_parent_policy

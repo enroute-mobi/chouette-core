@@ -18,4 +18,8 @@ class ShapeDecorator < AF83::Decorator
     instance_decorator.crud
 
   end
+
+  def policy_parent
+    context[:workbench].default_shape_provider
+  end
 end

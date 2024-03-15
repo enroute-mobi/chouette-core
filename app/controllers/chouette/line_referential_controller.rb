@@ -5,6 +5,8 @@ module Chouette
     # To prevent a "chouette_" to be added to all its chidren
     resources_configuration[:self].delete(:route_prefix)
 
+    include ControllerResourceValidations
+
     belongs_to :line_referential, singleton: true
 
     def line_referential
@@ -24,15 +26,12 @@ module Chouette
       )
     end
 
-    def update_resource(object, attributes)
-      object.attributes = attributes[0]
-
-      unless candidate_line_providers.include?(object.line_provider)
-        object.valid? # validate the object before in order to compute all the other validations
-        object.errors.add(:line_provider_id, :invalid)
+    def controller_resource_validations(object)
+      errors = super
+      unless object.new_record? || candidate_line_providers.include?(object.line_provider)
+        errors << %i[line_provider_id invalid]
       end
-
-      object.save if object.errors.empty?
+      errors
     end
 
     def parent_for_parent_policy

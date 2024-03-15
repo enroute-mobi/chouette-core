@@ -8,8 +8,6 @@ class PointOfInterestCategoriesController < Chouette::TopologicReferentialContro
   before_action :decorate_point_of_interest_category, only: %i[show new edit]
   after_action :decorate_point_of_interest_category, only: %i[create update]
 
-  before_action :point_of_interest_category_params, only: [:create, :update]
-
   respond_to :html, :xml, :json
 
   def index
@@ -50,7 +48,7 @@ class PointOfInterestCategoriesController < Chouette::TopologicReferentialContro
   end
 
   def point_of_interest_category_params
-    params.require(:point_of_interest_category).permit(
+    @point_of_interest_category_params ||= params.require(:point_of_interest_category).permit(
       :name,
       :created_at,
       :updated_at,

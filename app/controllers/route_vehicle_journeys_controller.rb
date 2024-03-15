@@ -105,9 +105,11 @@ class RouteVehicleJourneysController < Chouette::ReferentialController
 
   def user_permissions
     @features = Hash[*current_organisation.features.map { |f| [f, true] }.flatten].to_json
-    @perms = %w[create destroy update].inject({}) do |permissions, action|
-      permissions.merge("vehicle_journeys.#{action}" => resource_policy.authorizes_action?(action))
-    end.to_json
+    @perms = {
+      'vehicle_journeys.create' => parent_policy.create?(Chouette::VehicleJourney),
+      'vehicle_journeys.update' => resource_policy.update?,
+      'vehicle_journeys.destroy' => resource_policy.destroy?
+    }.to_json
   end
 
   private
@@ -193,6 +195,4 @@ class RouteVehicleJourneysController < Chouette::ReferentialController
       }
     end
   end
-
-  Policy::Authorizer::Controller.for(self, Policy::Authorizer::Legacy)
 end

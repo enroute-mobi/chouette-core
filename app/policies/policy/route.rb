@@ -3,7 +3,7 @@
 module Policy
   class Route < Base
     authorize_by Strategy::Referential
-    authorize_by Strategy::Permission, only: %i[update destroy]
+    authorize_by Strategy::Permission, only: %i[create update destroy]
 
     def duplicate?
       around_can(:duplicate) do
@@ -13,6 +13,13 @@ module Policy
     alias create_opposite? duplicate?
 
     protected
+
+    def _create?(resource_class)
+      [
+        ::Chouette::JourneyPattern,
+        ::Chouette::VehicleJourney
+      ].include?(resource_class)
+    end
 
     def _update?
       true

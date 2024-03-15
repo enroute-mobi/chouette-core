@@ -53,7 +53,7 @@ module Policy
         if policy_class
           policy_class.permission_namespace
         else
-          self.class.to_permission_namespace(klass.name)
+          self.class.to_permission_namespace(klass.model_name.to_s)
         end
       end
     end

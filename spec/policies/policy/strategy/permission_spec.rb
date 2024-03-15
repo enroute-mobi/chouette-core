@@ -105,9 +105,20 @@ RSpec.describe Policy::Strategy::Permission, type: :policy_strategy do
       end
 
       context 'when record class name has modules' do
-        # rubocop:disable Style/SingleLineMethods,Rails/ApplicationRecord
-        let(:args) { Class.new(ActiveRecord::Base) { def self.name; 'Dummy::Model'; end } }
-        # rubocop:enable Style/SingleLineMethods,Rails/ApplicationRecord
+        # rubocop:disable Rails/ApplicationRecord
+        let(:args) do
+          Class.new(ActiveRecord::Base) do
+            def self.name
+              'Dummy::Model'
+            end
+
+            # redefinition since Dummy module does not exist
+            def self.model_name
+              ActiveModel::Name.new(self)
+            end
+          end
+        end
+        # rubocop:enable Rails/ApplicationRecord
 
         before { expect(Policy::Authorizer::Controller).to receive(:policy_class).with(args).and_return(nil) }
 

@@ -135,11 +135,12 @@ class RoutesController < Chouette::ReferentialController
   # React endpoints
 
   def fetch_user_permissions
-    policy = policy(end_of_association_chain)
-    perms =
-      %w[create destroy update].inject({}) do |permissions, action|
-        permissions.merge({ "routes.#{action}": policy.authorizes_action?(action) })
-      end.to_json
+    policy = policy(end_of_association_chain.new)
+    perms = {
+      'routes.create' => parent_policy.create?(Chouette::Route),
+      'routes.update' => policy.update?,
+      'routes.destroy' => policy.destroy?
+    }
 
     render json: perms
   end

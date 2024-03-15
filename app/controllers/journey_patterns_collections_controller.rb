@@ -81,11 +81,11 @@ class JourneyPatternsCollectionsController < Chouette::ReferentialController
 
   def user_permissions
     @features = Hash[*current_organisation.features.map{|f| [f, true]}.flatten].to_json
-    @perms =
-      %w{create destroy update}.inject({}) do | permissions, action |
-        permissions.merge( "journey_patterns.#{action}" => resource_policy.authorizes_action?(action) )
-      end.to_json
-  end
 
-  Policy::Authorizer::Controller.for(self, Policy::Authorizer::Legacy)
+    @perms = {
+      'journey_patterns.create' => parent_policy.create?(Chouette::JourneyPattern),
+      'journey_patterns.update' => resource_policy.update?,
+      'journey_patterns.destroy' => resource_policy.destroy?
+    }.to_json
+  end
 end

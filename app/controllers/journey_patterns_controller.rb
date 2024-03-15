@@ -46,6 +46,4 @@ class JourneyPatternsController < Chouette::ReferentialController
   def journey_pattern_params
     params.require(:journey_pattern).permit(:route_id, :objectid, :object_version, :name, :comment, :registration_number, :published_name, :departure_stop_point_id, :arrival_stop_point_id, {:stop_point_ids => []})
   end
-
-  Policy::Authorizer::Controller.for(self, Policy::Authorizer::Legacy)
 end

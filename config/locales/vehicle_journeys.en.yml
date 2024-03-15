@@ -31,22 +31,15 @@ en:
     vehicle_journey:
       title_stopless: "Vehicle journey %{name}"
       title: "Vehicle journey leaving from %{stop} at %{time}"
-    vehicle_journey_frequency:
-      title_stopless: "Vehicle journey frequency %{name}"
-      title: "Vehicle journey frequency leaving from %{stop} at %{time}"
-      title_frequency: "Vehicle journey frequency with %{interval}min leaving from %{stop} at %{time_first} to %{time_last}"
     actions:
       index: "Vehicle journeys"
       new: "Add a new vehicle journey"
-      new_frequency: "Add a new frequency vehicle journey"
       edit: "Edit this vehicle journey"
-      edit_frequency: "Edit this frequency vehicle journey"
       destroy: "Remove this vehicle journey"
       destroy_confirm: "Are you sure you want destroy this vehicle journey?"
       show: "Show timed vehicle journeys"
     new:
       title: "Add a new vehicle journey"
-      title_frequency: "Add a new frequency vehicle journey"
     edit:
       title_stopless: "Update vehicle journey %{name}"
       title: "Update vehicle journey %{name} leaving from %{stop} at %{time}"
@@ -84,8 +77,6 @@ en:
       slide_delta: "Shift of"
       starting_stop: "Departure"
       stop_title: "Stop"
-      submit_frequency_edit: "Edit frequency vehicle journey"
-      submit_frequency: "Create frequency vehicle journey"
       submit_timed_edit: "Edit vehicle journey"
       submit_timed: "Create vehicle journey"
       time_tables: "Associated timetables"

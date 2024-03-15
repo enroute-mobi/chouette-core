@@ -31,22 +31,15 @@ fr:
     vehicle_journey:
       title_stopless: "Course %{name}"
       title: "Course partant de %{stop} à %{time}"
-    vehicle_journey_frequency:
-      title_stopless: "Course en fréquence %{name}"
-      title: "Course en fréquence partant de %{stop} à %{time}"
-      title_frequency: "Course en fréquence de %{interval}min partant de %{stop} de %{time_first} à %{time_last}"
     actions:
       index: "Horaires des courses"
       new: "Ajouter une course à horaire"
-      new_frequency: "Ajouter une course en fréquence"
       edit: "Editer cette course à horaire"
-      edit_frequency: "Editer cette course en fréquence"
       destroy: "Supprimer cette course"
       destroy_confirm: "Etes vous sûr de supprimer cette course ?"
       show: "Voir les courses à horaire"
     new:
       title: "Ajouter une course à horaire"
-      title_frequency: "Ajouter une course en fréquence"
     edit:
       title_stopless: "Editer la course %{name}"
       title: "Editer la course partant de %{stop} à %{time}"
@@ -84,8 +77,6 @@ fr:
       slide_delta: "Avec un décalage de"
       starting_stop: "Origine"
       stop_title: "Arrêt"
-      submit_frequency_edit: "Editer course en fréquence"
-      submit_frequency: "Créer course en fréquence"
       submit_timed_edit: "Editer course"
       submit_timed: "Créer course"
       time_tables: "Calendriers associés à la course"

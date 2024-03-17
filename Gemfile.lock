@@ -414,7 +414,7 @@ GEM
       thor
     highline (2.1.0)
     html_tokenizer (0.0.7)
-    htmlbeautifier (1.4.2)
+    htmlbeautifier (1.4.3)
     htmlentities (4.3.4)
     httparty (0.21.0)
       mini_mime (>= 1.0.0)

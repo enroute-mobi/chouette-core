@@ -173,7 +173,7 @@ GEM
       smart_properties
     binding_of_caller (1.0.1)
       debug_inspector (>= 1.2.0)
-    bootsnap (1.17.1)
+    bootsnap (1.18.3)
       msgpack (~> 1.2)
     bootstrap-sass (3.4.1)
       autoprefixer-rails (>= 5.2.1)

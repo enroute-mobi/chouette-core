@@ -22,14 +22,14 @@
       [ \
         TableBuilderHelper::Column.new( \
           name: t('imports.show.referential_name'),
-          attribute: -> (r) { referential_link(r) },
-          if: -> (r) { r.referential },
+          attribute: -> (import) { link_to(import.name, referential_path(import.referential)) },
+          if: -> (import) { import.referential },
           sortable: false,
         ),
         TableBuilderHelper::Column.new( \
           key: :status,
           attribute: lambda do |n| \
-            link_to_if_i_can(operation_status(n.status, verbose: true, default_status: :pending), [@parent, n]) \
+            link_to(operation_status(n.status, verbose: true, default_status: :pending), [@parent, n]) \
           end,
           sortable: false,
         ),

@@ -17,11 +17,7 @@ class Devise::CasSessionsController < Devise::SessionsController
 
   def service
     warden.authenticate!(:scope => resource_name)
-    if LoginPolicy.new(current_user).boiv?
-      redirect_to after_sign_in_path_for(current_user)
-    else
-      destroy message: t('devise.sessions.new.unauthorized')
-    end
+    redirect_to after_sign_in_path_for(current_user)
   end
 
   def unregistered

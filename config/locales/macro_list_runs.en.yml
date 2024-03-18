@@ -21,6 +21,7 @@ en:
   macro_list_run:
     actions:
       new: "Execute a Macro List"
+      execute: "Execute this Macro List"
       show: "Show Macro Lists"
       create: "Create a report"
     new:

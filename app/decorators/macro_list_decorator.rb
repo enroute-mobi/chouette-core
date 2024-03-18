@@ -15,7 +15,7 @@ class MacroListDecorator < AF83::Decorator
     instance_decorator.edit_action_link
 
     instance_decorator.action_link(on: %i[show index], policy: :execute, secondary: :show) do |l|
-      l.content t('macro_list_run.actions.new')
+      l.content t('macro_list_run.actions.execute')
       l.href { h.new_workbench_macro_list_macro_list_run_path(scope, object) }
     end
 

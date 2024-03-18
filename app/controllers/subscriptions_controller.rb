@@ -1,22 +1,9 @@
 # frozen_string_literal: true
 
 class SubscriptionsController < ApplicationController
-  layout "devise"
+  layout 'devise'
 
   before_action :check_feature_is_activated
-
-  def devise_mapping
-    Devise.mappings[:user]
-  end
-  helper_method :devise_mapping
-
-  def resource
-    @subscription ||= Subscription.new subscription_params
-  end
-
-  def resource_class
-    Subscription
-  end
 
   def create
     if resource.save
@@ -25,23 +12,38 @@ class SubscriptionsController < ApplicationController
       if resource.workbench_confirmation
         # TODO: could be shared with WorkbenchConfirmationsController#create
         workbench = resource.workbench_confirmation.workbench
-        flash[:notice] = t('workbench_confirmations.create.success', workbench: workbench.name, workgroup: workbench.workgroup.name)
+        flash[:notice] =
+          t('workbench_confirmations.create.success', workbench: workbench.name, workgroup: workbench.workgroup.name)
         redirect_to workbench_path workbench
       else
-        redirect_to "/"
+        redirect_to '/'
       end
-
     else
-      render "devise/registrations/new"
+      render 'devise/registrations/new'
     end
   end
 
+  private
+
   def subscription_params
     params.require(:subscription)
-      .permit %i(organisation_name user_name email password password_confirmation workbench_invitation_code)
+          .permit %i[organisation_name user_name email password password_confirmation workbench_invitation_code]
   end
 
-  private
+  def devise_mapping
+    Devise.mappings[:user]
+  end
+  helper_method :devise_mapping
+
+  def subscription
+    @subscription ||= Subscription.new subscription_params
+  end
+  alias resource subscription
+
+  def resource_class
+    Subscription
+  end
+
   def check_feature_is_activated
     not_found unless Subscription.enabled?
   end

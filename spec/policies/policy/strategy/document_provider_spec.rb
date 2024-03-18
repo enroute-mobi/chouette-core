@@ -13,13 +13,14 @@ RSpec.describe Policy::Strategy::DocumentProvider, type: :policy_strategy do
     end
   end
   let(:resource) { context.document }
+  let(:policy_context_class) { Policy::Context::Workbench }
 
   let(:current_workbench) { context.workbench(:document_workbench) }
 
   describe '.context_class' do
     subject { described_class.context_class }
 
-    it { is_expected.to eq(Policy::Context::Workbench) }
+    it { is_expected.to eq(Policy::Context::HasWorkbench) }
   end
 
   describe '#apply' do

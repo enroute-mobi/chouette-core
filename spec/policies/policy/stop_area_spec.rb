@@ -1,6 +1,8 @@
 # frozen_string_literal: true
 
 RSpec.describe Policy::StopArea, type: :policy do
+  let(:policy_context_class) { Policy::Context::Workbench }
+
   describe '#create?' do
     subject { policy.create?(resource_class) }
 

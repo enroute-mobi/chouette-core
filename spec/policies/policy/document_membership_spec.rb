@@ -1,6 +1,8 @@
 # frozen_string_literal: true
 
 RSpec.describe Policy::DocumentMembership, type: :policy do
+  let(:policy_context_class) { Policy::Context::Workbench }
+
   describe '#destroy?' do
     subject { policy.destroy? }
 

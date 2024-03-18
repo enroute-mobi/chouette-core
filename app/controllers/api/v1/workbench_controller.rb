@@ -9,6 +9,10 @@ module Api
 
       before_action :authenticate
 
+      def policy_context_class
+        ::Policy::Context::OnlyWorkbench
+      end
+
       protected
 
       def current_workbench

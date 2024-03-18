@@ -5,7 +5,7 @@ module Policy
     class Workbench < Strategy::Base
       class << self
         def context_class
-          ::Policy::Context::Workbench
+          ::Policy::Context::HasWorkbench
         end
       end
 

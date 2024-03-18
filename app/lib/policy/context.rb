@@ -20,8 +20,40 @@ module Policy
     class Empty < Base
     end
 
+    # Context that can respond to permission?
+    module HasPermission
+      def permission?
+        raise NotImplementedError
+      end
+
+      private
+
+      def permissions
+        @permissions ||= Set.new(compute_permissions).freeze
+      end
+
+      def compute_permissions
+        raise NotImplementedError
+      end
+    end
+
+    # Context that have a workbench attribute
+    module HasWorkbench
+      extend ActiveSupport::Concern
+
+      included do
+        attribute :workbench
+      end
+
+      def workbench?(workbench)
+        self.workbench == workbench
+      end
+    end
+
     # Context with associated User
     class User < Base
+      include HasPermission
+
       attribute :user
 
       def user_organisation?(organisation)
@@ -33,10 +65,6 @@ module Policy
       end
 
       private
-
-      def permissions
-        @permissions ||= Set.new(compute_permissions).freeze
-      end
 
       def compute_permissions
         user.permissions || []
@@ -54,16 +82,28 @@ module Policy
 
     # Context with associated Workbench
     class Workbench < Workgroup
-      attribute :workbench
-
-      def workbench?(workbench)
-        self.workbench == workbench
-      end
+      include HasWorkbench
 
       private
 
       def compute_permissions
         super - (workbench.restrictions || [])
+      end
+    end
+
+    # Context with only a Workbench (no User nor Workgroup)
+    class OnlyWorkbench < Base
+      include HasPermission
+      include HasWorkbench
+
+      def permission?(permission)
+        !permissions.include?(permission)
+      end
+
+      private
+
+      def compute_permissions
+        workbench.restrictions || []
       end
     end
 

@@ -1,6 +1,8 @@
 # frozen_string_literal: true
 
 RSpec.describe Policy::ProcessingRule::Workgroup, type: :policy do
+  let(:policy_context_class) { Policy::Context::Workgroup }
+
   describe '.permission_namespace' do
     subject { described_class.permission_namespace }
     it { is_expected.to eq('processing_rules') }

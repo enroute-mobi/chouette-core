@@ -1,21 +1,27 @@
 # frozen_string_literal: true
 
 RSpec.describe Policy::Strategy::Permission, type: :policy_strategy do
-  let(:user_permissions) { nil }
-  let(:current_user) { build_stubbed(:user, permissions: user_permissions) }
+  let(:policy_class) { Class.new(Policy::Base) { include Policy::Strategy::Permission::PolicyConcern } }
+  let(:policy_context) { double(:policy_context) }
+  let(:policy) { policy_class.new(resource, context: policy_context) }
 
   describe '.context_class' do
     subject { described_class.context_class }
 
-    it { is_expected.to eq(Policy::Context::User) }
+    it { is_expected.to eq(Policy::Context::HasPermission) }
   end
 
   describe '#apply' do
-    let(:policy_class) { Class.new(Policy::Base) { include Policy::Strategy::Permission::PolicyConcern } }
-    let(:policy) { policy_class.new(resource, context: policy_context) }
-
     let(:args) { [] }
     subject { strategy.apply(action, *args) }
+
+    let(:expected_permission_result) { true }
+
+    before do
+      if expected_permission
+        expect(policy_context).to receive(:permission?).with(expected_permission).and_return(expected_permission_result)
+      end
+    end
 
     context ':update' do
       let(:policy_class) do
@@ -28,13 +34,14 @@ RSpec.describe Policy::Strategy::Permission, type: :policy_strategy do
         end
       end
       let(:action) { :update }
+      let(:expected_permission) { 'dummy_models.update' }
 
       context 'when the context has permission' do
-        let(:user_permissions) { ['dummy_models.update'] }
         it { is_expected.to be_truthy }
       end
 
       context 'when the context has not permission' do
+        let(:expected_permission_result) { false }
         it { is_expected.to be_falsy }
       end
 
@@ -48,7 +55,7 @@ RSpec.describe Policy::Strategy::Permission, type: :policy_strategy do
             include Policy::Strategy::Permission::PolicyConcern
           end
         end
-        let(:user_permissions) { ['dummy_models.update'] }
+
         it { is_expected.to be_truthy }
       end
 
@@ -63,10 +70,7 @@ RSpec.describe Policy::Strategy::Permission, type: :policy_strategy do
           end
         end
 
-        context 'when the context has permission' do
-          let(:user_permissions) { ['dummy_models.update'] }
-          it { is_expected.to be_truthy }
-        end
+        it { is_expected.to be_truthy }
       end
 
       context 'when policy class defines exceptions' do
@@ -77,15 +81,9 @@ RSpec.describe Policy::Strategy::Permission, type: :policy_strategy do
             permission_exception :update, 'dummier_models.dummier_action'
           end
         end
+        let(:expected_permission) { 'dummier_models.dummier_action' }
 
-        it 'registers permission exception' do
-          expect(policy_class.permission_exceptions).to eq({ update: 'dummier_models.dummier_action' })
-        end
-
-        context 'when the context has permission' do
-          let(:user_permissions) { ['dummier_models.dummier_action'] }
-          it { is_expected.to be_truthy }
-        end
+        it { is_expected.to be_truthy }
       end
     end
 
@@ -94,13 +92,14 @@ RSpec.describe Policy::Strategy::Permission, type: :policy_strategy do
       # rubocop:disable Style/SingleLineMethods,Rails/ApplicationRecord
       let(:args) { Class.new(ActiveRecord::Base) { def self.name; 'DummyModel'; end } }
       # rubocop:enable Style/SingleLineMethods,Rails/ApplicationRecord
+      let(:expected_permission) { 'dummy_models.create' }
 
       context 'when the context has permission' do
-        let(:user_permissions) { ['dummy_models.create'] }
         it { is_expected.to be_truthy }
       end
 
       context 'when the context has not permission' do
+        let(:expected_permission_result) { false }
         it { is_expected.to be_falsy }
       end
 
@@ -122,10 +121,7 @@ RSpec.describe Policy::Strategy::Permission, type: :policy_strategy do
 
         before { expect(Policy::Authorizer::Controller).to receive(:policy_class).with(args).and_return(nil) }
 
-        context 'when the context has permission' do
-          let(:user_permissions) { ['dummy_models.create'] }
-          it { is_expected.to be_truthy }
-        end
+        it { is_expected.to be_truthy }
       end
 
       context 'when record policy class redefines .permission_namespace' do
@@ -144,11 +140,26 @@ RSpec.describe Policy::Strategy::Permission, type: :policy_strategy do
 
         before { expect(Policy::Authorizer::Controller).to receive(:policy_class).with(args).and_return(policy_class) }
 
-        context 'when the context has permission' do
-          let(:user_permissions) { ['dummy_models.create'] }
-          it { is_expected.to be_truthy }
+        let(:expected_permission) { 'dummy_models.create' }
+      end
+    end
+  end
+
+  describe 'Policy.permission_exceptions' do
+    subject { policy_class.permission_exceptions }
+
+    it { is_expected.to eq({}) }
+
+    context 'when policy class defines exceptions' do
+      let(:policy_class) do
+        Class.new(Policy::Base) do
+          include Policy::Strategy::Permission::PolicyConcern
+
+          permission_exception :update, 'dummier_models.dummier_action'
         end
       end
+
+      it { is_expected.to eq({ update: 'dummier_models.dummier_action' }) }
     end
   end
 end

@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class Api::V1::ImportsController < Api::V1::WorkbenchController
   respond_to :json, only: [:show, :index, :create]
 
@@ -40,6 +42,4 @@ class Api::V1::ImportsController < Api::V1::WorkbenchController
     permitted_keys << {options: Import::Workbench.options.keys}
     params.require(:workbench_import).permit(permitted_keys)
   end
-
-  Policy::Authorizer::Controller.for(self, Policy::Authorizer::Legacy)
 end

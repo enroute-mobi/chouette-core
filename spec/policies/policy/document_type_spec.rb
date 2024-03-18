@@ -1,6 +1,8 @@
 # frozen_string_literal: true
 
 RSpec.describe Policy::DocumentType, type: :policy do
+  let(:policy_context_class) { Policy::Context::Workgroup }
+
   describe '#update?' do
     subject { policy.update? }
 

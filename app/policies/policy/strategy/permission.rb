@@ -5,7 +5,7 @@ module Policy
     class Permission < Strategy::Base
       class << self
         def context_class
-          ::Policy::Context::User
+          ::Policy::Context::HasPermission
         end
 
         def to_permission_namespace(class_name)

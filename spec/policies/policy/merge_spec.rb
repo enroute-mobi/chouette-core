@@ -1,6 +1,8 @@
 # frozen_string_literal: true
 
 RSpec.describe Policy::Merge, type: :policy do
+  let(:policy_context_class) { Policy::Context::Workbench }
+
   describe '#update?' do
     subject { policy.update? }
     it { is_expected.to be_falsy }

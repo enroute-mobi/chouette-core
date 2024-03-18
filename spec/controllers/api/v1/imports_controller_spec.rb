@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 RSpec.describe Api::V1::ImportsController, type: :controller do
   context 'unauthenticated' do
     include_context 'iboo wrong authorisation api user'

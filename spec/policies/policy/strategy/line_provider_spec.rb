@@ -4,11 +4,12 @@ RSpec.describe Policy::Strategy::LineProvider, type: :policy_strategy do
   let(:resource_line_provider_workbench) { build_stubbed(:workbench) }
   let(:resource_line_provider) { build_stubbed(:line_provider, workbench: resource_line_provider_workbench) }
   let(:resource) { double(line_provider: resource_line_provider) }
+  let(:policy_context_class) { Policy::Context::Workbench }
 
   describe '.context_class' do
     subject { described_class.context_class }
 
-    it { is_expected.to eq(Policy::Context::Workbench) }
+    it { is_expected.to eq(Policy::Context::HasWorkbench) }
   end
 
   describe '#apply' do

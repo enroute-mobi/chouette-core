@@ -1,6 +1,8 @@
 # frozen_string_literal: true
 
 RSpec.describe Policy::PublicationApi, type: :policy do
+  let(:policy_context_class) { Policy::Context::Workgroup }
+
   describe '#create?' do
     subject { policy.create?(resource_class) }
 

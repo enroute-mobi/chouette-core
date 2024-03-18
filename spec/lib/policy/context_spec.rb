@@ -150,6 +150,44 @@ RSpec.describe Policy::Context do
     end
   end
 
+  describe Policy::Context::OnlyWorkbench do
+    let(:provider_workbench) { workbench }
+    let(:provider) do
+      double(
+        current_workbench: provider_workbench
+      )
+    end
+
+    it { is_expected.to have_attributes(workbench: provider_workbench) }
+
+    describe '#workbench?' do
+      subject { policy_context.workbench?(workbench) }
+
+      context 'when the workbench is the same as the context' do
+        it { is_expected.to be_truthy }
+      end
+
+      context 'when the workbench is not the same as the context' do
+        let(:provider_workbench) { build_stubbed(:workbench) }
+        it { is_expected.to be_falsy }
+      end
+    end
+
+    describe '#permission?' do
+      subject { policy_context.permission?('models.permissions') }
+
+      context 'when the workbench has the restriction' do
+        before { workbench.restrictions = ['models.permissions'] }
+        it { is_expected.to be_falsy }
+      end
+
+      context 'when the workbench has not the restriction' do
+        before { workbench.restrictions = ['models.no_permissions'] }
+        it { is_expected.to be_truthy }
+      end
+    end
+  end
+
   describe Policy::Context::Referential do
     let(:provider_referential) { referential }
     let(:provider) do

@@ -69,11 +69,9 @@ module JourneyPattern
         Shape.new(shape_provider: shape_provider)
       end
 
-      policy = policy(shape)
-
       render json: {
-        canCreate: policy.authorizes_action?(:create),
-        canUpdate: policy.authorizes_action?(:update)
+        canCreate: parent_policy.create?(::Shape),
+        canUpdate: resource_policy.update?
       }
     end
 
@@ -129,6 +127,8 @@ module JourneyPattern
       end.to_h.symbolize_keys
     end
 
-    Policy::Authorizer::Controller.for(self, Policy::Authorizer::Legacy)
+    def resource_policy
+      @resource_policy ||= ::Policy::ShapeEditor.new(nil, context: ::Policy::Authorizer::Controller.from(self).context)
+    end
   end
 end

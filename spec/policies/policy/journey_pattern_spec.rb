@@ -3,6 +3,22 @@
 RSpec.describe Policy::JourneyPattern, type: :policy do
   let(:resource) { build_stubbed(:journey_pattern) }
 
+  describe '#create?' do
+    subject { policy.create?(resource_class) }
+
+    let(:resource_class) { double }
+
+    it { applies_strategy(Policy::Strategy::Referential) }
+    it { applies_strategy(Policy::Strategy::Permission, :create, resource_class) }
+
+    it { is_expected.to be_falsy }
+
+    context 'Shape' do
+      let(:resource_class) { Shape }
+      it { is_expected.to be_truthy }
+    end
+  end
+
   describe '#update?' do
     subject { policy.update? }
 

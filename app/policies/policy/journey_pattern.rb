@@ -3,7 +3,7 @@
 module Policy
   class JourneyPattern < Base
     authorize_by Strategy::Referential
-    authorize_by Strategy::Permission, only: %i[update]
+    authorize_by Strategy::Permission, only: %i[create update]
 
     alias unassociate_shape? update?
 
@@ -14,6 +14,10 @@ module Policy
     end
 
     protected
+
+    def _create?(resource_class)
+      resource_class == ::Shape
+    end
 
     def _update?
       true

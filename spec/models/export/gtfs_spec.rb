@@ -249,6 +249,32 @@ RSpec.describe Export::Gtfs, type: [:model, :with_exportable_referential] do
 
       is_expected.to contain_exactly(an_object_having_attributes(expected_attributes))
     end
+
+    describe Export::Gtfs::Contract::Decorator do
+      subject(:decorator) { described_class.new contract }
+
+      let(:contract) {  Contract.new }
+
+      describe '#attributions' do
+        subject { decorator.attributions }
+
+        context 'when Contract is associated to a Line outside the export scope' do
+          let(:included_line) { Chouette::Line.new registration_number: 'included' }
+          let(:excluded_line) { Chouette::Line.new registration_number: 'excluded' }
+
+          before do
+            allow(contract).to receive(:lines).and_return([included_line, excluded_line])
+          end
+
+          before do
+            route_id_for = -> (line) { line.registration_number unless line == excluded_line }
+            allow(decorator).to receive(:route_id).and_invoke(route_id_for)
+          end
+
+          it { is_expected.to match_array(an_object_having_attributes(route_id: 'included')) }
+        end
+      end
+    end
   end
 
   describe 'StopArea Part' do

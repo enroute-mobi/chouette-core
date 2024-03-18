@@ -132,7 +132,7 @@ RSpec.describe PointOfInterestsController, type: :controller do
       it { expect(response).to have_http_status(:not_found) }
     end
 
-    xcontext 'when the shape provider workbench is not the same as the current workbench' do
+    context 'when the shape provider workbench is not the same as the current workbench' do
       let(:point_of_interest) { context.point_of_interest(:other_point_of_interest) }
       it { expect(response).to have_http_status(:forbidden) }
     end
@@ -155,7 +155,7 @@ RSpec.describe PointOfInterestsController, type: :controller do
       it { expect(response).to have_http_status(:not_found) }
     end
 
-    xcontext 'when the shape provider workbench is not the same as the current workbench' do
+    context 'when the shape provider workbench is not the same as the current workbench' do
       let(:point_of_interest) { context.point_of_interest(:other_point_of_interest) }
       it { expect(response).to have_http_status(:forbidden) }
     end

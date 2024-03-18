@@ -87,6 +87,4 @@ class PointOfInterestsController < Chouette::TopologicReferentialController
     @candidate_point_of_interest_categories ||= @workbench.shape_referential.point_of_interest_categories
   end
   helper_method :candidate_point_of_interest_categories
-
-  Policy::Authorizer::Controller.for(self, Policy::Authorizer::Legacy)
 end

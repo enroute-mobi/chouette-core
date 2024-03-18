@@ -10,6 +10,10 @@ module Policy
       helper_method :policy
     end
 
+    def policy_context_class
+      ::Policy::Context::Empty
+    end
+
     private
 
     def authorize(record, query = nil, *args)

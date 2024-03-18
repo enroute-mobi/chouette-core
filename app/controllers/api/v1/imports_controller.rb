@@ -1,6 +1,4 @@
 class Api::V1::ImportsController < Api::V1::WorkbenchController
-  include Policy::Authorization
-
   respond_to :json, only: [:show, :index, :create]
 
   def create

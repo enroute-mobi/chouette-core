@@ -3,6 +3,8 @@
 module Api
   module V1
     class WorkbenchController < BaseController
+      include Policy::Authorization
+
       respond_to :json
 
       before_action :authenticate

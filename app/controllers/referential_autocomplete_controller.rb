@@ -34,6 +34,4 @@ class ReferentialAutocompleteController < Chouette::ReferentialController
   def route
     referential.routes.find_by_id(params[:route_id])
   end
-
-  Policy::Authorizer::Controller.for(self, Policy::Authorizer::Legacy)
 end

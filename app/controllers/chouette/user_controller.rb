@@ -14,6 +14,10 @@ module Chouette
 
     alias user_not_authorized forbidden
 
+    def policy_context_class
+      Policy::Context::User
+    end
+
     private
 
     def set_locale

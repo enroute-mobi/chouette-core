@@ -14,10 +14,6 @@ module PolicyChecker
     helper_method :resource_policy, :parent_policy
   end
 
-  def policy_context_class
-    Policy::Context::Empty
-  end
-
   protected
 
   def resource_policy

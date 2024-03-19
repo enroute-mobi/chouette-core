@@ -14,7 +14,7 @@ module Chouette
     end
 
     def sub_mode_human_name(locale: I18n.default_locale)
-      I18n.translate mode, scope: ['transport_modes.sub_modes', mode], locale: locale
+      I18n.translate sub_mode, scope: ['transport_modes', mode], locale: locale
     end
 
     def human_name(locale: I18n.default_locale, separator: ' / ')
@@ -32,6 +32,8 @@ module Chouette
     alias to_s code
 
     def self.from(code)
+      return unless code.present?
+
       new(*code.split('/'))
     end
 
@@ -70,7 +72,7 @@ module Chouette
     private
 
     def sub_mode_candidates
-      self.class.definitions[mode]
+      self.class.definitions[mode] || []
     end
 
     def self.mode_candidates
@@ -199,13 +201,6 @@ module Chouette
         shuttle_flight
         sightseeing_flight
       ],
-      hire_car: %i[
-        all_hire_vehicles
-        hire_car
-        hire_cycle
-        hire_motorbike
-        hire_van
-      ],
       taxi: %i[
         all_taxi_services
         app_taxi
@@ -240,7 +235,8 @@ module Chouette
         snow_coach
         terra_bus
         wind_sled
-      ]
+      ],
+      trolley_bus:[]
     }.tap { |d| d.each { |mode, sub_modes| [mode, sub_modes.freeze] } }.freeze
   end
 end

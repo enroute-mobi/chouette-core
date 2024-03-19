@@ -1,279 +1,316 @@
 fr:
   transport_modes:
     modes:
-      air: Air
       all: Tous les modes de transport
-      bicycle: Vélo
+      air: Air
       bus: Bus
-      cableway: Téléphérique
       coach: Autocar
-      ferry: Ferry
       funicular: Funiculaire
-      hireCar: Voiture de location
-      interchange: Interconnection
-      local_train: TER
-      long_distance_train: Train Grande Ligne
       metro: Métro
       other: Autre
-      private_vehicle: Voiture particulière
-      rail: Train
-      rapid_transit: RER
-      shuttle: Navette
+      self_drive: Conduite autonome
+      snow_and_ice: Neige & Glace
       taxi: Taxi
       telecabin: Télécabine
-      train: Train
-      tram: Tramway
-      tramway: Tramway
-      trolleyBus: Trolleybus
-      walk: Marche à pied
-      water: Eau
-      waterborne: Bac
-    sub_modes:
-      airport_boat_link: "Bateau d'aéroport"
-      airport_link_bus: "Bus d'aéroport"
-      airship_service: Aérostat
+      tram: Tram
+      trolley_bus: Trolleybus
+      rail: Ferré
+      water: Ferry / Bateau
+    air:
       all_funicular_services: Tous services de funiculaire
-      all_hire_vehicles: Tous véhicules de location
-      all_taxi_services: Service Taxi
-      bike_taxi: Taxi triporteur
-      black_cab: Taxi noir
-      cable_car: Téléphérique
-      cable_ferry: Ferry à câble
-      canal_barge: Péniche
-      car_transport_rail_service: Transport de véhicules par le train
-      chair_lift: Télésiège
-      city_tram: Tram urbain
-      communal_taxi: Taxi communal
-      commuter_coach: Car navette
-      cross_country_rail: Train national
-      dedicated_lane_bus: Bus à voie réservée
-      demand_and_response_bus: Bus à la demande
-      domestic_charter_flight: Vol Charter National
+      international_flight: Vol International
       domestic_flight: Vol intérieur
       domestic_scheduled_flight: Vol intérieur régulier
-      dragLift: Téléski
-      express_bus: Bus express
-      funicular: Funiculaire
-      helicopter_service: Service d'hélicoptère
-      high_frequency_bus: Bus à haute fréquence
-      high_speed_passenger_service: Navire public à grande vitesse
-      high_speed_rail: Train à grande vitesse
-      high_speed_vehicle_service: Navire à grande vitesse
-      hire_car: Voiture de location
-      hire_cycle: Vélo de location
-      hire_motorbike: Moto de location
-      hire_van: Fourgon de location
-      intercontinental_charter_flight: Vol Charter Intercontinental
       intercontinental_flight: Vol Intercontinental
-      international: International
-      international_car_ferry: Ferry international
+      shuttle_flight: Vol Navette
+      intercontinental_charter_flight: Vol Charter Intercontinental
       international_charter_flight: Vol Charter International
-      international_coach: Autocar international
-      international_flight: Vol International
-      international_passenger_ferry: Ferry public international
-      interregional_rail: Train interregional
-      lift: Ascenseur
-      local: Local
+      round_trip_charter_flight: Vol Charter aller-retour
+      sightseeing_flight: Vol touristique
+      helicopter_service: Service d'hélicoptère
+      domestic_charter_flight: Vol Charter National
+      schengen_area_flight: Schengen area flight
+      airship_service: Dirigeable
+      short_haul_international_flight: Vol court-courrier international
+    bus:
       local_bus: Bus local
-      local_car_ferry: Ferry local
-      local_passenger_ferry: Ferry public local
-      local_tram: Tram local
-      long_distance: Longue distance
-      metro: Métro
-      mini_cab: Véhicule avec chauffeur privé
+      regional_bus: Bus régional
+      express_bus: Bus express
+      night_bus: Bus de nuit
+      post_bus: Bus postal
+      special_needs_bus: Bus pour besoins particuliers
       mobility_bus: Bus Mobilité
       mobility_bus_for_registered_disabled: Bus adapté aux personnes à mobilité reduite
-      national_car_ferry: Ferry national
-      national_coach: Car interregional
-      national_passenger_ferry: Ferry public national
-      night_bus: Bus de nuit
-      night_rail: Train de nuit
-      night_train: Train de nuit
-      post_boat: Bateau postal
-      post_bus: Bus postal
-      rack_and_pinion_railway: Train à crémaillère
-      rail_replacement_bus: Bus de remplacement ferré
-      rail_shuttle: Train navette
-      rail_taxi: Taxi de gare
-      regional_bus: Bus régional
-      regional_car_ferry: Ferry régional
-      regional_coach: Car régional
-      regional_passenger_ferry: Ferry public régional
-      regional_rail: TER
-      regional_tram: Tram régional
-      replacement_rail_service: Train de remplacement
-      river_bus: Bus Navette fluviale
-      roadFerry_link: Ferry de liaison
-      round_trip_charter_flight: Vol Charter aller-retour
-      scheduled_ferry: Ferry régulier
-      schengen_area_flight: Vol Zone Schengen
-      school_and_public_serviceBus: Bus scolaire et de service public
-      school_boat: Bateau scolaire
-      school_bus: Bus scolaire
-      school_coach: Autocar scolaire
-      short_haul_international_flight: Vol court-courrier international
-      shuttle_bus: Bus navette
-      shuttle_coach: Car navette
-      shuttle_ferry_service: Ferry navette
-      shuttle_flight: Vol Navette
-      shuttle_tram: Tram navette
       sightseeing_bus: Bus touristique
-      sightseeing_coach: Car de visite
-      sightseeing_flight: Vol touristique
-      sightseeing_service: Service Touristique
-      sightseeing_tram: Tram de tourisme
-      sleeper_rail_service: Train couchette
+      shuttle_bus: Bus navette
+      high_frequency_bus: Bus à haute fréquence
+      dedicated_lane_bus: Bus à voie réservée
+      school_bus: Bus scolaire
+      school_and_public_service_bus: School and Public Service Bus
+      rail_replacement_bus: Bus de remplacement ferré
+      demand_and_response_bus: Bus à la demande
+      airport_link_bus: "Bus d'aéroport"
+    coach:
+      international_coach: Car international
+      national_coach: Car interregional
+      shuttle_coach: Car navette
+      regional_coach: Car régional
       special_coach: Car spécial
-      special_needs_bus: Bus pour besoins particuliers
-      special_train: Train spécial
-      street_cable_car: Cable Car
-      suburban_railway: Train périurbain
-      telecabin: Télécabine
-      telecabin_link: Téléphérique
+      school_coach: Car scolaire
+      sightseeing_coach: Car de visite
       tourist_coach: Car touristique
-      tourist_railway: Train touristique
-      train_ferry: Traversier-rail
-      train_tram: Train Tramway
-      tram_train: Tram Train
+      commuter_coach: Car de banlieue
+      all_coach_services: Tout mode de car
+    funicular:
+      funicular: Funiculaire
+      street_cable_car: Tramway par câble
+      all_funicular_services: Tout service funiculaire
+    metro:
+      metro: Métro
       tube: Tube
-      undefined_funicular: Funiculaire non défini
-      urban_railway: Rail urbain
+      urban_railway: Train urbain
+    self_drive:
+      hire_scooter: Scooter de location
+      hire_car: Voiture de location
+      hire_van: Fourgon de location
+      hire_motorbike: Moto de location
+      hire_cycle: Vélo de location
+      own_scooter: Scooter personnel
+      own_cycle: Vélo personnel
+      own_motorbike: Moto personnelle
+      own_car: Voiture personnelle
+      own_van: Fourgon personnel
+      all_hire_vehicles: Tout véhicule de location
+      all_vehicles: Tout véhicule
+    snow_and_ice:
+      snow_mobile: Motoneige
+      snow_cat: Autoneige
+      snow_coach: Autocar des neiges
+      terra_bus: Terra Bus
+      wind_sled: Traîneau à vent
+    taxi:
+      communal_taxi: Taxi communal
+      charter_taxi: Taxi nolisé / Taxi affrété
       water_taxi: Taxi fluviale
+      rail_taxi: Taxi de gare
+      bike_taxi: Taxi triporteur
+      black_cab: Taxi noir
+      mini_cab: Véhicule avec chauffeur privé
+      app_taxi: Taxi par application
+      fiacre: Fiacre
+      rickshaw: Pousse-pousse
+      cycle_rickshaw: Vélo pousse-pousse
+      all_taxi_services: Tout Service de Taxi
+    telecabin:
+      telecabin: Télécabine
+      cable_car: Téléphérique
+      lift: Ascenseur
+      chair_lift: Télésiège
+      drag_lift: Téléski
+      telecabin_link: Téléphérique
+    tram:
+      city_tram: Tram urbain
+      local_tram: Tram régional
+      sightseeing_tram: Tram panoramique
+      shuttle_tram: Tram navette
+      train_tram: Train tram
+      tram_train: Tram Train
+    rail:
+      local: Train local
+      high_speed_rail: Train à grande vitesse
+      suburban_railway: Train de banlieue
+      regional_rail: Train régional
+      interregional_rail: Train interrégional
+      long_distance: Train longue distance
+      international: Train international
+      night_train: Train de nuit
+      sleeper_rail_service: Train couchette
+      car_transport_rail_service: Train de transport de voiture
+      tourist_railway: Train touristique
+      airport_link_rail: Train de terminal aéroportuaire
+      rail_shuttle: Train navette
+      replacement_rail_service: Train de substitution
+      special_train: Train spécial
+      cross_country_rail: Train national
+      rack_and_pinion_railway: Train à crémaillère
+      monorail: Monorail
+    water:
+      international_car_ferry: Ferry international
+      national_car_ferry: Ferry national
+      regional_car_ferry: Ferry régional
+      local_car_ferry: Ferry local
+      international_passenger_ferry: Ferry public international
+      national_passenger_ferry: Ferry public national
+      regional_passenger_ferry: Ferry public régional
+      local_passenger_ferry: Ferry public local
+      post_boat: Bateau postal
+      train_ferry: Traversier-rail
+      road_ferry_link: Road Ferry Link
+      airport_boat_link: "Bateau d'aéroport"
+      high_speed_vehicle_service: Navire à grande vitesse
+      high_speed_passenger_service: Navire public à grande vitesse
+      sightseeing_service: Service Touristique
+      school_boat: Bateau scolaire
+      cable_ferry: Ferry à câble
+      river_bus: Bus Navette fluviale
+      scheduled_ferry: Ferry régulier
+      shuttle_ferry_service: Ferry navette
+      canal_barge: Péniche
 en:
   transport_modes:
     modes:
+      all: All transport modes
       air: Air
-      bicycle: Bicycle
       bus: Bus
-      cableway: Cableway
       coach: Coach
-      ferry: Ferry
-      funicular: Funicular
-      hireCar: Hire car
-      interchange: Interchange
-      local_train: Local train
-      long_distance_train: Long distance train
+      funicular: funicular
       metro: Metro
       other: Other
-      private_vehicle: Private vehicle
-      rail: Rail
-      rapid_transit: Rapid transit
-      shuttle: Shuttle
+      self_drive: Self drive
+      snow_and_ice: Snow and ice
       taxi: Taxi
       telecabin: Telecabin
-      train: Train
-      tram: Tramway
-      tramway: Tramway
-      trolleybus: Trolleybus
-      walk: Walk
+      tram: Tram
+      trolley_bus: Trolleybus
+      rail: Rail
       water: Water
-      waterborne: Waterborne
-    submodes:
-      airport_boat_link: Airport Boat Link
-      airport_link_bus: Airport Link Bus
-      airship_service: Airship service
-      all_funicular_services: All FunicularServices
-      all_hire_vehicles: All hire vehicles
-      all_taxi_services: All taxi services
-      bike_taxi: Bike taxi (Rickshaw)
-      black_cab: Registered taxi
-      cable_car: Aerial cable car
-      cable_ferry: Cable Ferry
-      canal_barge: Canal barge
-      carTransport_rail_service: Car Transport Rail Service
-      chair_lift: Chair lift
-      city_tram: City Tram
-      communal_taxi: Communal Taxi
-      commuter_coach: Commuter Coach
-      cross_country_rail: Cross Country Rail
-      dedicated_lane_bus: Dedicated lane bus
-      demand_and_response_bus: Demande and response Bus
-      domestic_charter_flight: Domestic Charter flight
-      domestic_flight: Domestic Flight
-      domestic_scheduled_flight: Scheduled domestic Flight
-      dragLift: Drag lift
-      express_bus: Express Bus
-      funicular: Funicular
-      helicopter_service: Helicopter service
-      high_frequency_bus: High frequency bus
-      high_speed_passenger_service: High Speed Passenger Service
-      high_speed_rail: High speed rail
-      high_speed_vehicle_service: High Speed Vehicle Service
-      hire_car: Hire car.
-      hire_cycle: Hire cycle.
-      hire_motorbike: Hire motorbike.
-      hire_van: Hire Van.
-      intercontinental_charter_flight: Intercontinental Flight
-      intercontinental_flight: Intercontinental Flight
-      international: International
-      international_car_ferry: International Car Ferry
-      international_charter_flight: International Charter Flight
-      international_coach: International Coach
-      international_flight: International Flight
-      international_passenger_ferry: International Passenger Ferry
-      interregional_rail: Interregional Rail
-      lift: Any lift
-      local: Local
-      local_bus: Local Bus
-      local_car_ferry: Local Car Ferry
-      local_passenger_ferry: Local Passenger Ferry
-      local_tram: Local Tram
-      long_distance: Long Distance
-      metro: Metro
-      mini_cab: Minicab service
-      mobility_bus: Mobility Bus
-      mobility_bus_for_registered_disabled: Mobility Bus for registered disabled
-      national_car_ferry: National Car Ferry
-      national_coach: National Coach
-      national_passenger_ferry: National Passenger Ferry
-      nigh_bus: Night Bus
-      night_train: Night Train
-      post_boat: Post Boat
-      post_bus: Post Bus
-      rack_and_pinion_railway: Rack and Pinion Railway
-      rail_replacement_bus: Rail Replacement Bus
-      rail_shuttle: Rail Shuttle
-      rail_taxi: Rail taxi
-      regional_bus: Regional Bus
-      regional_car_ferry: Regional Car Ferry
-      regional_coach: Regional Coach
-      regional_passenger_ferry: Regional Passenger Ferry
-      regional_rail: Regional rail
-      regional_tram: Regional Tram
-      replacement_rail_service: Replacement Rail Service
-      river_bus: River Bus
-      road_ferryLink: Road Ferry Link
-      round_trip_charter_flight: Roundtrip charter flight
-      scheduled_ferry: Scheduled Ferry
-      schengen_area_flight: Schengen area flight
-      school_and_public_service_bus: School and Public Service Bus
-      school_boat: School Boat
-      school_bus: School Bus
-      school_coach: School coach
-      short_haul_international_flight: Short haul international flight
-      shuttle_bus: Shuttle Bus
-      shuttle_coach: Shuttle Coach
-      shuttle_ferry_service: Shuttle Ferry Service
-      shuttle_flight: Shuttle Flight
-      shuttle_tram: Shuttle Tram
-      sightseeing_bus: Sightseeing Bus
-      sightseeing_coach: Sightseeing Coach
+    air:
+      all_funicular_services: All funicular services
+      international_flight: International flight
+      domestic_flight: Domestic flight
+      domestic_scheduled_flight: Intercontinental flight
+      intercontinental_flight: Intercontinental flight
+      shuttle_flight: Shuttle flight
+      intercontinental_charter_flight: Intercontinental charter flight
+      international_charter_flight: International charter flight
+      round_trip_charter_flight: Round trip charter flight
       sightseeing_flight: Sightseeing flight
-      sightseeing_service: Sightseeing Service
-      sightseeing_tram: Sightseeing Tram
-      sleeper_rail_service: Sleeper Train
-      special_coach: Special Coach
-      special_needs_bus: Special needs Bus
-      special_train: Special Train
+      helicopter_service: Helicopter service
+      domestic_charter_flight: Domestic charter flight
+      schengen_area_flight: Schengen area flight
+      airship_service: Airship service
+      short_haul_international_flight: Short haul international flight
+    bus:
+      local_bus: Local bus
+      regional_bus: Regional bus
+      express_bus: Express bus
+      night_bus: Night bus
+      post_bus: Post bus
+      special_needs_bus: Special needs bus
+      mobility_bus: Mobility bus
+      mobility_bus_for_registered_disabled: Mobility bus for registered disabled
+      sightseeing_bus: Sightseeing bus
+      shuttle_bus: Shuttle bus
+      high_frequency_bus: High frequency bus
+      dedicated_lane_bus: dedicated lane bus
+      school_bus: School bus
+      school_and_public_service_bus: School and public service bus
+      rail_replacement_bus: Rail replacement bus
+      demand_and_response_bus: Demand and response bus
+      airport_link_bus: Airport link bus
+    coach:
+      international_coach: International coach
+      national_coach: National coach
+      shuttle_coach: Shuttle coach
+      regional_coach: Regional coach
+      special_coach: Special coach
+      school_coach: School coach
+      sightseeing_coach: Sightseeing coach
+      tourist_coach: Tourist coach
+      commuter_coach: Commuter coach
+      all_coach_services: All coach services
+    funicular:
+      funicular: funicular
       street_cable_car: Street cable car
-      suburban_railway: Suburban Railway
-      telecabin: Telecabine lift
-      telecabin_link: Link between telecabines
-      tourist_coach: Tourist Coach
-      tourist_railway: Tourist Railway
-      train_ferry: Train Ferry
+      all_funicular_services: All funicular services
+    metro:
+      metro: Metro
+      tube: Tube
+      urban_railway: Urban railway
+    self_drive:
+      hire_scooter: Hire scooter
+      hire_car: Hire car
+      hire_van: Hire van
+      hire_motorbike: Hire motorbike
+      hire_cycle: Hire cycle
+      own_scooter: Own scooter
+      own_cycle: Own cycle
+      own_motorbike: Own motorbike
+      own_car: Own car
+      own_van: Own van
+      all_hire_vehicles: All hire vehicles
+      all_vehicles: All vehicles
+    snow_and_ice:
+      snow_mobile: Snow mobile
+      snow_cat: Snow cat
+      snow_coach: Snow coach
+      terra_bus: Terra Bus
+      wind_sled: Wind sled
+    taxi:
+      communal_taxi: Communal taxi
+      charter_taxi: Charter taxi
+      water_taxi: Water taxi
+      rail_taxi: Rail taxi
+      bike_taxi: Bike taxi
+      black_cab: Black cab
+      mini_cab: Mini cab
+      app_taxi: App taxi
+      fiacre: Fiacre
+      rickshaw: Rickshaw
+      cycle_rickshaw: Cycle rickshaw
+      all_taxi_services: All taxi services
+    telecabin:
+      telecabin: Telecabin
+      cable_car: Cable car
+      lift: Lift
+      chair_lift: Chair lift
+      drag_lift: Drag lift
+      telecabin_link: Telecabin link
+    tram:
+      city_tram: City tram
+      local_tram: Local tram
+      sightseeing_tram: Sightseeing tram
+      shuttle_tram: Shuttle tram
       train_tram: Train tram
       tram_train: Tram Train
-      tube: Tube
-      urban_railway: Urban Railway
-      water_taxi: Water Taxi
+    rail:
+      local: Local
+      high_speed_rail: High speed rail
+      suburban_railway: suburban railway
+      regional_rail: Regional rail
+      interregional_rail: Interregional rail
+      long_distance: Long distance
+      international: International
+      night_train: Night train
+      sleeper_rail_service: Sleeper rail service
+      car_transport_rail_service: Car transport rail service
+      tourist_railway: Tourist railway
+      airport_link_rail: Airport link rail
+      rail_shuttle: Rail shuttle
+      replacement_rail_service: Replacement rail service
+      special_train: Special train
+      cross_country_rail: Cross country rail
+      rack_and_pinion_railway: Rack and pinion railway
+      monorail: Monorail
+    water:
+      international_car_ferry: International car ferry
+      national_car_ferry: National car ferry
+      regional_car_ferry: Regional car ferry
+      local_car_ferry: Local car ferry
+      international_passenger_ferry: International passenger ferry
+      national_passenger_ferry: National passenger ferry
+      regional_passenger_ferry: Regional passenger ferry
+      local_passenger_ferry: Local passenger ferry
+      post_boat: Post boat
+      train_ferry: Train ferry
+      road_ferry_link: Road ferry link
+      airport_boat_link: Airport boat link
+      high_speed_vehicle_service: High speed vehicle service
+      high_speed_passenger_service: High speed passenger service
+      sightseeing_service: Sightseeing service
+      school_boat: School boat
+      cable_ferry: Cable ferry
+      river_bus: River bus
+      scheduled_ferry: Scheduled ferry
+      shuttle_ferry_service: Shuttle ferry service
+      canal_barge: Canal barge

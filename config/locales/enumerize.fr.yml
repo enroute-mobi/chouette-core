@@ -135,7 +135,7 @@ fr:
         hourly: Une fois par heure
     sequence:
       sequence_type:
-        range_sequence: Séquence de la gamme
+        range_sequence: Intervalle
     stop_area:
       area_type:
         zdep: ZDEp

@@ -9,7 +9,9 @@ class Sequence < ApplicationModel
 
   enumerize :sequence_type, in: %i[range_sequence], scope: true
 
-  validates :range_start, :range_end, numericality: { only_integer: true }
+  validates :range_start, :range_end, numericality: { only_integer: true }, allow_blank: false
+
+  validate :range_start_less_than_range_end
 
   def range_values
     "#{range_start}-#{range_end}"
@@ -21,5 +23,12 @@ class Sequence < ApplicationModel
     value_end = range_end if value_end > range_end
 
     (value_start..value_end).to_a
+  end
+
+  def range_start_less_than_range_end
+    return unless range_start && range_end
+    if range_start >= range_end
+      errors.add(:range_end, :range_start_less_than_range_end)
+    end
   end
 end

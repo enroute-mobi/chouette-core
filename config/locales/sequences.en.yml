@@ -8,6 +8,8 @@ fr:
       title: "Create a Sequence"
     edit:
       title: "Edit %{name}"
+    update:
+      title: "Edit %{name}"
     actions:
       show: "Display this Sequence"
       new: "Cerate a Sequence"
@@ -37,3 +39,5 @@ fr:
       models:
         sequence:
           attributes:
+            range_end:
+              range_start_less_than_range_end: "'Range start' must be less than 'Range end'"

@@ -9,8 +9,8 @@
   .row
     .col-lg-12
       = f.input :name
-      = f.input :sequence_type
       = f.input :description
+      = f.input :sequence_type, include_blank: false
       = f.input :range_start
       = f.input :range_end
 

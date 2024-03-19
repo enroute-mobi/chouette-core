@@ -8,6 +8,8 @@ fr:
       title: "Créer un Séquence"
     edit:
       title: "Editer %{name}"
+    update:
+      title: "Editer %{name}"
     actions:
       show: "Afficher cette Séquence"
       new: "Créer une Séquence"
@@ -18,7 +20,7 @@ fr:
       placeholders:
       sections:
         identification: "Identification"
-    search_no_results: "Aucune Séquences ne correspond à votre recherche"
+    search_no_results: "Aucune séquence ne correspond à votre recherche"
   activerecord:
     models:
       sequence:
@@ -37,3 +39,5 @@ fr:
       models:
         sequence:
           attributes:
+            range_end:
+              range_start_less_than_range_end: "'Début de l'intervalle' doit être inférieur à 'Fin de l'intervalle'"

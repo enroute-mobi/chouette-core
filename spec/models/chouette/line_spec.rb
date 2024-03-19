@@ -343,4 +343,59 @@ describe Chouette::Line, type: :model do
       expect(line.transport_submode).to eq('undefined')
     end
   end
+
+  describe '#active_from_less_than_active_until' do
+    let(:subject) { line.valid? }
+
+    let(:line_referential) { create :line_referential }
+    let(:line_provider) { create :line_provider }
+
+    let(:line) do
+      Chouette::Line.create(
+        objectid: 'objectid',
+        name: 'Line', active_from: active_from,
+        active_until: active_until,
+        line_referential: line_referential,
+        line_provider: line_provider
+      )
+    end
+
+    context 'When active_until is greater active_from' do
+      let(:active_from) { '2030-01-01'.to_date }
+      let(:active_until) { '2030-10-01'.to_date }
+
+      it { is_expected.to be_truthy }
+    end
+
+    context 'When active_until and active_from are empty' do
+      let(:active_from) { nil }
+      let(:active_until) { nil }
+
+      it { is_expected.to be_truthy }
+    end
+
+    context 'When active_until is not empty and active_from is empty' do
+      let(:active_from) { nil }
+      let(:active_until) { '2030-10-01'.to_date }
+
+      it { is_expected.to be_truthy }
+    end
+
+    context 'When active_until is empty and active_from is not empty' do
+      let(:active_from) { '2030-10-01'.to_date }
+      let(:active_until) { nil }
+
+      it { is_expected.to be_truthy }
+    end
+
+    context 'When active_from is greater active_until' do
+      let(:active_from) { '2030-09-01'.to_date }
+      let(:active_until) { '2030-01-01'.to_date }
+
+      let(:message_key) { line.errors.details[:active_until].first[:error] }
+      it { expect(message_key).to eq :active_from_less_than_active_until }
+
+      it { is_expected.to be_falsy }
+    end
+  end
 end

@@ -66,8 +66,7 @@ GIT
 
 GIT
   remote: https://bitbucket.org/enroute-mobi/netex.git
-  revision: a9dabeed6f093d8eaa4f774fa071390860e4b060
-  branch: NETEX-131-wrong-to-date-for-idfm
+  revision: 32949197fb7b7c586e4b665b7ae24dc4d36abed8
   specs:
     netex (0.1.2)
       activesupport

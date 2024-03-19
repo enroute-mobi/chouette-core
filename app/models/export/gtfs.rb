@@ -1414,9 +1414,13 @@ class Export::Gtfs < Export::Base
 
       def attributions
         lines.map do |line|
-          attributes = attribution_attributes.merge(route_id: route_id(line))
-          GTFS::Attribution.new attributes
-        end
+          associated_route_id = route_id(line)
+          # Ensure the associated Line is into the export scope
+          if associated_route_id.present?
+            attributes = attribution_attributes.merge(route_id: route_id(line))
+            GTFS::Attribution.new attributes
+          end
+        end.compact
       end
 
       def attribution_attributes

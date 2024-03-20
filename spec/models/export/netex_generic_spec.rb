@@ -58,181 +58,126 @@ RSpec.describe Export::NetexGeneric do
 
   end
 
-  describe "#stop_areas" do
+  describe Export::NetexGeneric::Scope do
+    describe "#stop_areas" do
+      let(:original_export_scope) do
+        # Creates a fake scope which only contains an initial StopArea
+        double "Export::Scope", stop_areas: context.referential.stop_areas.where(id: stop_area)
+      end
+      let(:export) { Export::NetexGeneric.new export_scope: original_export_scope, workgroup: context.workgroup }
 
-    let(:export_scope) do
-      # Creates a fake scope which only contains an initial StopArea
-      double "Export::Scope",
-             stop_areas: context.referential.stop_areas.where(id: stop_area)
-    end
-    let(:export) { Export::NetexGeneric.new export_scope: export_scope, workgroup: context.workgroup }
+      subject { export.export_scope.stop_areas }
 
-    subject { export.stop_areas }
+      context "when the Export scope contains a StopArea without parent" do
+        let(:context) do
+          Chouette.create do
+            stop_area
+            referential
+          end
+        end
 
-    context "when the Export scope contains a StopArea without parent" do
-      let(:context) do
-        Chouette.create do
-          stop_area
-          referential
+        let(:stop_area) { context.stop_area }
+
+        it "includes this StopArea" do
+          is_expected.to include(context.stop_area)
         end
       end
 
-      let(:stop_area) { context.stop_area }
+      context "when the Export scope contains a StopArea with a parent" do
+        let(:context) do
+          Chouette.create do
+            stop_area :parent, area_type: "zdlp"
+            stop_area :child, parent: :parent
+            referential
+          end
+        end
 
-      it "includes this StopArea" do
-        is_expected.to include(context.stop_area)
-      end
-    end
+        let(:parent) { context.stop_area :parent }
+        let(:stop_area) { context.stop_area :child }
 
-    context "when the Export scope contains a StopArea with a parent" do
-      let(:context) do
-        Chouette.create do
-          stop_area :parent, area_type: "zdlp"
-          stop_area :child, parent: :parent
-          referential
+        it "includes this StopArea and its parent" do
+          is_expected.to include(parent, stop_area)
         end
       end
 
-      let(:parent) { context.stop_area :parent }
-      let(:stop_area) { context.stop_area :child }
+      context "when the Export scope contains a StopArea with parents" do
+        let(:context) do
+          Chouette.create do
+            stop_area :group_of_stop_places, area_type: "gdl"
+            stop_area :stop_place, area_type: "lda", parent: :group_of_stop_places
+            stop_area :monomodal_stop_place, area_type: "zdlp", parent: :stop_place
+            stop_area :quay, parent: :monomodal_stop_place
+            referential
+          end
+        end
 
-      it "includes this StopArea and its parent" do
-        is_expected.to include(parent, stop_area)
-      end
-    end
+        let(:group_of_stop_places) { context.stop_area :group_of_stop_places }
+        let(:stop_place) { context.stop_area :stop_place }
+        let(:monomodal_stop_place) { context.stop_area :monomodal_stop_place }
+        let(:stop_area) { context.stop_area :quay }
 
-    context "when the Export scope contains a StopArea with parents" do
-      let(:context) do
-        Chouette.create do
-          stop_area :group_of_stop_places, area_type: "gdl"
-          stop_area :stop_place, area_type: "lda", parent: :group_of_stop_places
-          stop_area :monomodal_stop_place, area_type: "zdlp", parent: :stop_place
-          stop_area :quay, parent: :monomodal_stop_place
-          referential
+        it "includes the (Quay) StopArea" do
+          is_expected.to include(stop_area)
+        end
+
+        it "includes its Monomodal Stop Place parent" do
+          is_expected.to include(monomodal_stop_place)
+        end
+
+        it "includes its Stop Place parent" do
+          is_expected.to include(stop_place)
+        end
+
+        it "includes its Group Of Stop Places parent" do
+          is_expected.to include(group_of_stop_places)
         end
       end
 
-      let(:group_of_stop_places) { context.stop_area :group_of_stop_places }
-      let(:stop_place) { context.stop_area :stop_place }
-      let(:monomodal_stop_place) { context.stop_area :monomodal_stop_place }
-      let(:stop_area) { context.stop_area :quay }
+      context 'when the Export scope contains a StopArea with a referent' do
+        let(:context) do
+          Chouette.create do
+            stop_area :referent, is_referent: true
+            stop_area :child, referent: :referent
+            referential
+          end
+        end
 
-      it "includes the (Quay) StopArea" do
-        is_expected.to include(stop_area)
-      end
+        let(:referent) { context.stop_area :referent }
+        let(:stop_area) { context.stop_area :child }
 
-      it "includes its Monomodal Stop Place parent" do
-        is_expected.to include(monomodal_stop_place)
-      end
-
-      it "includes its Stop Place parent" do
-        is_expected.to include(stop_place)
-      end
-
-      it "includes its Group Of Stop Places parent" do
-        is_expected.to include(group_of_stop_places)
-      end
-    end
-
-    context 'when the Export scope contains a StopArea with a referent' do
-      let(:context) do
-        Chouette.create do
-          stop_area :referent, is_referent: true
-          stop_area :child, referent: :referent
-          referential
+        it 'includes this StopArea and its referent' do
+          is_expected.to include(referent, stop_area)
         end
       end
 
-      let(:referent) { context.stop_area :referent }
-      let(:stop_area) { context.stop_area :child }
+      context 'when the Export scope contains a StopArea with a referent and their parents' do
+        let(:context) do
+          Chouette.create do
+            stop_area :referent_parent, area_type: 'zdlp', is_referent: true
+            stop_area :referent, parent: :referent_parent, is_referent: true
 
-      it 'includes this StopArea and its referent' do
-        is_expected.to include(referent, stop_area)
-      end
-    end
-
-    context 'when the Export scope contains a StopArea with a referent and their parents' do
-      let(:context) do
-        Chouette.create do
-          stop_area :referent_parent, area_type: 'zdlp', is_referent: true
-          stop_area :referent, parent: :referent_parent, is_referent: true
-
-          stop_area :parent, area_type: 'zdlp'
-          stop_area :child, referent: :referent, parent: :parent
-          referential
+            stop_area :parent, area_type: 'zdlp'
+            stop_area :child, referent: :referent, parent: :parent
+            referential
+          end
         end
-      end
 
-      let(:referent_parent) { context.stop_area :referent_parent }
-      let(:referent) { context.stop_area :referent }
+        let(:referent_parent) { context.stop_area :referent_parent }
+        let(:referent) { context.stop_area :referent }
 
-      let(:parent) { context.stop_area :parent }
-      let(:stop_area) { context.stop_area :child }
+        let(:parent) { context.stop_area :parent }
+        let(:stop_area) { context.stop_area :child }
 
-      it "includes this StopArea and its referent" do
-        is_expected.to include(referent, stop_area)
-      end
-
-      it "includes this StopArea parent" do
-        is_expected.to include(parent)
-      end
-
-      it "includes this referent parent" do
-        is_expected.to include(referent_parent)
-      end
-    end
-
-    context 'when the Export scope contains a StopArea with accessibilitie attributes' do
-      subject { decorator.netex_attributes[:accessibility_assessment].limitations.first }
-
-      let(:context) do
-        Chouette.create do
-          stop_area :stop_area, wheelchair_accessibility: 'yes', step_free_accessibility: 'no', lift_free_accessibility: 'partial'
-          referential
+        it "includes this StopArea and its referent" do
+          is_expected.to include(referent, stop_area)
         end
-      end
-      let(:stop_area) { context.stop_area :stop_area }
-      let(:decorator) { Export::NetexGeneric::StopDecorator.new(stop_area) }
-      let(:netex_accessibility_attributes) do
-        {
-          wheelchair_access: 'true',
-          step_free_access: 'false',
-          escalator_free_access: 'unknown',
-          lift_free_access: 'partial',
-          audible_signals_available: 'unknown',
-          visual_signs_available: 'unknown'
-        }
-      end
 
-      it { is_expected.to an_object_having_attributes(netex_accessibility_attributes) }
-    end
-
-    describe "#custom_field" do
-      subject { decorator.netex_resource.key_list }
-
-      let!(:context) do
-        Chouette.create do
-          custom_field code: 'customfield1'
-          stop_area
+        it "includes this StopArea parent" do
+          is_expected.to include(parent)
         end
-      end
 
-      let(:custom_field) { context.custom_field }
-      let(:stop_area) { context.stop_area }
-
-      let(:decorator) { Export::NetexGeneric::StopDecorator.new stop_area }
-
-      context "when stop_area has a custom file value" do
-        before { stop_area.custom_field_values = { 'customfield1' => 'custom field value 1' } }
-
-        it "generate key_list custom field" do
-          is_expected.to include(
-            an_object_having_attributes({
-              key: "customfield1",
-              value: "custom field value 1",
-              type_of_key: "chouette::custom-field"
-            })
-          )
+        it "includes this referent parent" do
+          is_expected.to include(referent_parent)
         end
       end
     end
@@ -948,6 +893,54 @@ RSpec.describe Export::NetexGeneric do
           subject { quay_decorator.netex_resource.tag(:parent_id) }
 
           it { is_expected.to eq(parent_stop_place.objectid) }
+        end
+      end
+
+      describe '#accessibility_assessment' do
+        subject(:accessibility_assessment) { decorator.accessibility_assessment }
+
+        context 'limitation' do
+          subject { accessibility_assessment.limitation }
+
+          context 'when StopArea wheelchair_accessibility is yes' do
+            before { stop_area.wheelchair_accessibility = :yes }
+
+            it { is_expected.to have_attributes(wheelchair_access: 'true')  }
+          end
+
+          context 'when StopArea step_free_accessibility is no' do
+            before { stop_area.wheelchair_accessibility = :no }
+
+            it { is_expected.to have_attributes(wheelchair_access: 'false')  }
+          end
+
+          context 'when StopArea lift_free_accessibility is partial' do
+            before { stop_area.wheelchair_accessibility = :partial }
+
+            it { is_expected.to have_attributes(wheelchair_access: 'partial')  }
+          end
+        end
+      end
+
+      describe '#netex_custom_field_identifiers' do
+        subject(:netex_custom_field_identifiers) { decorator.netex_custom_field_identifiers }
+
+        context 'when the StopArea has no custom field' do
+          it { is_expected.to be_empty }
+        end
+
+        context 'when the StopArea has a custom field key = value' do
+          before { stop_area.custom_field_values = { "key" => "value"} }
+
+          it do
+            is_expected.to include(
+                             an_object_having_attributes(
+                               key: "key",
+                               value: "value",
+                               type_of_key: "chouette::custom-field"
+                             )
+                           )
+          end
         end
       end
     end

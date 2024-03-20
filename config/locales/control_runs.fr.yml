@@ -36,7 +36,7 @@ fr:
       control/code_uniqueness/run:
         one: Unicité du code
       control/service_count_in_range/run:
-        one: Nombre de Services dans un interval
+        one: Nombre de services dans un intervalle
     attributes:
       control/base/run:
         name: Nom

@@ -44,10 +44,6 @@ module PointOfInterest
 
     attr_writer :position_input
 
-    def self.policy_class
-      PointOfInterestPolicy
-    end
-
     def self.model_name
       ActiveModel::Name.new self, nil, 'PointOfInterest'
     end

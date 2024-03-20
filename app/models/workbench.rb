@@ -231,10 +231,6 @@ class Workbench < ApplicationModel
   class Confirmation
     include ActiveModel::Model
 
-    def self.policy_class
-      WorkbenchConfirmationPolicy
-    end
-
     attr_accessor :organisation, :user, :invitation_code
 
     CODE_FORMAT = /\A(?:(?:S|W)-)?\d{3}-\d{3}-\d{3}\z/.freeze

@@ -19,10 +19,6 @@ module Control
     scope :by_text, ->(text) { text.blank? ? all : where('lower(name) LIKE :t', t: "%#{text.downcase}%") }
     scope :shared, -> { where(shared: true) }
 
-    def self.policy_class
-      ControlListPolicy
-    end
-
     def used?
       processing_rules.exists?
     end
@@ -143,10 +139,6 @@ module Control
         def with_context_criticities
           context_control_messages.reorder!.distinct.pluck(:criticity)
         end
-      end
-
-      def self.policy_class
-        ControlListRunPolicy
       end
 
       def perform

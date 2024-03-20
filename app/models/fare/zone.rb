@@ -15,9 +15,5 @@ module Fare
 
     has_many :stop_area_zones, class_name: 'Fare::StopAreaZone', foreign_key: 'fare_zone_id', dependent: :delete_all
     has_many :stop_areas, through: :stop_area_zones
-
-    def self.policy_class
-      FareZonePolicy
-    end
   end
 end

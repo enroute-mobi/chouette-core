@@ -62,9 +62,6 @@ gem 'devise-encryptable', '>= 0.2.0'
 gem 'devise_invitable', '>= 2.0.6'
 gem 'devise_saml_authenticatable'
 
-# Authorization
-gem 'pundit'
-
 # Map, Geolocalization
 
 # See CHOUETTE-3264
@@ -178,7 +175,6 @@ group :test do
   gem 'rails-controller-testing', '>= 1.0.5'
   gem 'fuubar'
   gem 'rspec-benchmark'
-  gem 'pundit-matchers', '>= 1.7.0'
 
   gem 'rspec_junit_formatter'
   gem 'simplecov', require: false

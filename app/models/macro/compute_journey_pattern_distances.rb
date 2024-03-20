@@ -115,6 +115,7 @@ module Macro
                 where departure_position is not null
                   and arrival_position is not null
               ) as journey_pattern_distances
+            WHERE journey_pattern_id IN (#{journey_pattern_ids})
             GROUP BY journey_pattern_id;
           SQL
         end

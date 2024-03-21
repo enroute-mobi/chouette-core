@@ -110,6 +110,15 @@ module Chouette
       %i[registration_number published_name number comment url color text_color]
     end
 
+    def chouette_transport_mode
+      Chouette::TransportMode.new(transport_mode&.underscore, transport_submode&.underscore)
+    end
+
+    def chouette_transport_mode=(transport_mode)
+      self.transport_mode = transport_mode.camelize_mode
+      self.transport_submode = transport_mode.camelize_sub_mode
+    end
+
     def geometry_presenter
       Chouette::Geometry::LinePresenter.new self
     end

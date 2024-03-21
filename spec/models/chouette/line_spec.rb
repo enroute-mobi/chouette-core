@@ -1,5 +1,5 @@
 describe Chouette::Line, type: :model do
-  subject { create(:line) }
+  subject(:line) { create(:line) }
 
   it { should belong_to(:line_referential) }
   # it { is_expected.to validate_presence_of :network }
@@ -30,6 +30,28 @@ describe Chouette::Line, type: :model do
     # RAILS -> no submode = OK because we replace nil value by 'undefined'
     subject.transport_submode = nil
     expect(subject).to be_valid
+  end
+
+  describe '#chouette_transport_mode' do
+    subject { line.chouette_transport_mode.inspect }
+
+    context 'with transport_mode and transport_submode' do
+      before do
+        line.transport_mode = 'bus'
+        line.transport_submode = 'nightBus'
+      end
+
+      it { is_expected.to eq '#bus/night_bus' }
+    end
+
+    context 'with transport_mode and without transport_submode' do
+      before do
+        line.transport_mode = 'bus'
+        line.transport_submode = nil
+      end
+
+      it { is_expected.to eq '#bus' }
+    end
   end
 
   describe 'active scopes' do

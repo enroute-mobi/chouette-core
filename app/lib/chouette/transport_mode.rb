@@ -32,7 +32,7 @@ module Chouette
     alias to_s code
 
     def self.from(code)
-      return unless code.present?
+      return if code.blank?
 
       new(*code.split('/'))
     end
@@ -75,12 +75,14 @@ module Chouette
       self.class.definitions[mode] || []
     end
 
-    def self.mode_candidates
-      @mode_candidates ||= definitions.keys.freeze
-    end
+    class << self
+      def mode_candidates
+        @mode_candidates ||= definitions.keys.freeze
+      end
 
-    def self.definitions
-      DEFINITIONS
+      def definitions
+        DEFINITIONS
+      end
     end
 
     DEFINITIONS = {
@@ -236,7 +238,7 @@ module Chouette
         terra_bus
         wind_sled
       ],
-      trolley_bus:[]
+      trolley_bus: []
     }.tap { |d| d.each { |mode, sub_modes| [mode, sub_modes.freeze] } }.freeze
   end
 end

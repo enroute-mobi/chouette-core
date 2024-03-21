@@ -55,7 +55,6 @@ module Chouette
     accepts_nested_attributes_for :footnotes, reject_if: :all_blank, allow_destroy: true
 
     attr_reader :group_of_line_tokens
-    attr_accessor :chouette_transport_mode
 
     validates :name, presence: true
     validate :transport_mode_and_submode_match

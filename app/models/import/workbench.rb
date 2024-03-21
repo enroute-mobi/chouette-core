@@ -4,11 +4,11 @@ class Import::Workbench < Import::Base
   after_commit :launch_worker, :on => :create
 
   option :import_category, collection: %w(automatic shape_file netex_generic), default_value: 'automatic'
-  option :automatic_merge, default_value: false, depends: {option: :import_category, value: "automatic"}, type: :boolean
-  option :archive_on_fail, default_value: false, depends: {option: :import_category, value: "automatic"}, type: :boolean
-  option :flag_urgent, default_value: false, depends: {option: :import_category, value: "automatic"}, type: :boolean
-  option :merge_method, collection: %w(legacy experimental), default_value: 'legacy', depends: {option: :import_category, value: "automatic"}
-  option :shape_attribute_as_id, type: :string, depends: {option: :import_category, value: "shape_file"}
+  option :automatic_merge, default_value: false, depends: {option: :import_category, values: ["automatic", 'netex_generic']}, type: :boolean
+  option :archive_on_fail, default_value: false, depends: {option: :import_category, values: ["automatic", 'netex_generic']}, type: :boolean
+  option :flag_urgent, default_value: false, depends: {option: :import_category, values: ["automatic"]}, type: :boolean
+  option :merge_method, collection: %w(legacy experimental), default_value: 'legacy', depends: {option: :import_category, values: ["automatic"]}
+  option :shape_attribute_as_id, type: :string, depends: {option: :import_category, values: ["shape_file"]}
   option :update_workgroup_providers, default_value: false, type: :boolean
   option :store_xml, default_value: false, type: :boolean
   option :disable_missing_resources, default_value: false, type: :boolean

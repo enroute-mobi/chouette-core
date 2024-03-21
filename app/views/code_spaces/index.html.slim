@@ -29,6 +29,11 @@
                 sortable: false \
               ), \
               TableBuilderHelper::Column.new( \
+                key: :allow_multiple_values, \
+                attribute: Proc.new { |code_space| t("#{code_space.try(:allow_multiple_values)}").capitalize }, \
+                sortable: false \
+              ), \
+              TableBuilderHelper::Column.new( \
                 key: :created_at, \
                 attribute: 'created_at', \
                 sortable: false, \

@@ -29,3 +29,6 @@ en:
       title: Create new Code Space
     create:
       title: Create new Code Space
+    form:
+      sections:
+        identification: "Identification"

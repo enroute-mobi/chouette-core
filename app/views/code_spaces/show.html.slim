@@ -10,10 +10,9 @@
   .container-fluid
     .row
       .col-lg-6.col-md-6.col-sm-12.col-xs-12
-        = definition_list t("metadatas"),
-          {  \
-            CodeSpace.tmf('short_name') => @code_space.short_name, \
-            CodeSpace.tmf('name') => @code_space.name, \
-            CodeSpace.tmf('created_at') => @code_space.created_at, \
-            CodeSpace.tmf('updated_at') => @code_space.updated_at \
-          }
+        = simple_block_for @code_space, title: t('code_spaces.form.sections.identification') do |d|
+          = d.attribute :short_name
+          = d.attribute :name
+          = d.attribute :allow_multiple_values, as: :boolean
+          = d.attribute :created_at, as: :datetime
+          = d.attribute :updated_at, as: :datetime

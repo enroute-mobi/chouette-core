@@ -67,6 +67,7 @@ class Import::NetexGeneric < Import::Base
       referential.ready!
     rescue StandardError => e
       referential.failed!
+      referential.archive! if parent.archive_on_fail
       raise e
     end
 

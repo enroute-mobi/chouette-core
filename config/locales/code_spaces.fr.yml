@@ -29,3 +29,6 @@ fr:
       title: Ajouter un Espace de Code
     create:
       title: Ajouter un Espace de Code
+    form:
+      sections:
+        identification: "Identification"

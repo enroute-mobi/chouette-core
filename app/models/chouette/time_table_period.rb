@@ -1,7 +1,8 @@
+# frozen_string_literal: true
+
 module Chouette
-  class TimeTablePeriod < Chouette::ActiveRecord
+  class TimeTablePeriod < Referential::ActiveRecord
     include ChecksumSupport
-    acts_as_copy_target
 
     belongs_to :time_table, inverse_of: :periods
 

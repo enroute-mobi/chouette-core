@@ -1,12 +1,9 @@
-# coding: utf-8
+# frozen_string_literal: true
+
 module Chouette
-  class VehicleJourney < Chouette::TridentActiveRecord
-    has_metadata
-    include ChecksumSupport
+  class VehicleJourney < Referential::Model
     include CustomFieldsSupport
-    include ObjectidSupport
     include TransportModeEnumerations
-    include ReferentialCodeSupport
 
     enum journey_category: { timed: 0, frequency: 1 }
 

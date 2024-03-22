@@ -9,12 +9,14 @@ module ObjectidSupport
 
     scope :with_short_id, ->(q){
       return self.none unless self.exists?
-      referential = self&.last&.referential
+      # TODO: very ugly code :-/
+      referential = last&.referential
       self.all.merge referential.objectid_formatter.with_short_id(self, q)
     }
 
     ransacker :short_id do |parent|
-      referential = self&.last&.referential
+      # TODO: very ugly code :-/
+      referential = last&.referential
       referential.present? ? Arel.sql(referential.objectid_formatter.short_id_sql_expr(self)) : Arel.sql('objectid')
     end
 

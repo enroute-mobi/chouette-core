@@ -55,7 +55,7 @@ fr:
       control/code_uniqueness:
         one: Unicité du code
       control/service_count_in_range:
-        one: Nombre de Services dans un interval
+        one: Nombre de services dans un intervalle
     attributes:
       control/base:
         name: Nom

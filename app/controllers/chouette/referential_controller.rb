@@ -6,6 +6,9 @@ module Chouette
     resources_configuration[:self].delete(:route_prefix)
 
     include ReferentialSupport
+
+    belongs_to :referential
+
     include WithinWorkgroup
 
     private
@@ -15,7 +18,7 @@ module Chouette
     end
 
     def current_workbench
-      referential&.workbench
+      referential&.workgroup&.workbenches&.find_by(organisation: current_organisation)
     end
   end
 end

@@ -59,7 +59,7 @@ class WorkgroupsController < Chouette::ResourceController
   protected
 
   def scope
-    @scope ||= current_organisation.workgroups
+    @scope ||= current_organisation.owned_workgroups
   end
 
   def search
@@ -89,11 +89,11 @@ class WorkgroupsController < Chouette::ResourceController
   end
 
   def resource
-    @workgroup ||= if params[:id]
-      current_organisation.workgroups.find(params[:id]).decorate
-    else
-      current_organisation.workgroups.build
-    end
+    @workgroup ||= if params[:id] # rubocop:disable Naming/MemoizedInstanceVariableName
+                     current_organisation.owned_workgroups.find(params[:id]).decorate
+                   else
+                     current_organisation.owned_workgroups.build
+                   end
   end
 
   alias current_workgroup resource

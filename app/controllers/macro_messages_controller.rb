@@ -1,10 +1,12 @@
-class MacroMessagesController < ActionController::Base
+# frozen_string_literal: true
+
+class MacroMessagesController < Chouette::WorkbenchController
   include Pundit::Authorization
 
-	respond_to :js
-	inherit_resources
+  defaults resource_class: Macro::Message
 
-	belongs_to :workbench
+	respond_to :js
+
 	belongs_to :macro_list_run
 	belongs_to :macro_context_run, optional: true
 	belongs_to :macro_run

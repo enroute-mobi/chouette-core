@@ -2,9 +2,7 @@
 
 class RouteVehicleJourneysController < Chouette::ReferentialController
   defaults resource_class: Chouette::VehicleJourney
-  belongs_to :referential do
-    belongs_to :route, parent_class: Chouette::Route
-  end
+  belongs_to :route, parent_class: Chouette::Route
   alias_method :route, :parent
   alias_method :vehicle_journeys, :collection
 

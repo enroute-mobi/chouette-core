@@ -1,8 +1,6 @@
 # frozen_string_literal: true
 
 class CleanUpsController < Chouette::ReferentialController
-  belongs_to :referential
-
   defaults :resource_class => CleanUp
 
   def create

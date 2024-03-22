@@ -8,9 +8,7 @@ class RoutingConstraintZonesController < Chouette::ReferentialController
 
   # before_action :check_stoppoint_param, only: [:create, :update]
 
-  belongs_to :referential do
-    belongs_to :line, parent_class: Chouette::Line
-  end
+  belongs_to :line, parent_class: Chouette::Line
 
   def index
     index! do |format|

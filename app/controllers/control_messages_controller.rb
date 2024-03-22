@@ -1,10 +1,12 @@
-class ControlMessagesController < ActionController::Base
+# frozen_string_literal: true
+
+class ControlMessagesController < Chouette::WorkbenchController
   include Pundit::Authorization
 
-	respond_to :js
-	inherit_resources
+  defaults resource_class: Control::Message
 
-	belongs_to :workbench
+	respond_to :js
+
 	belongs_to :control_list_run
 	belongs_to :control_context_run, optional: true
 	belongs_to :control_run

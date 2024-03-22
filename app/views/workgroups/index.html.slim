@@ -21,10 +21,6 @@
               attribute: :description \
             ), \
             TableBuilderHelper::Column.new( \
-              key: 'owner', \
-              attribute: Proc.new { |n| n.owner.name } \
-            ), \
-            TableBuilderHelper::Column.new( \
               key: 'workbenches', \
               attribute: Proc.new { |n| n.workbenches.count }, \
               sortable: false \

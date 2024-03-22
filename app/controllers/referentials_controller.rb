@@ -214,9 +214,11 @@ class ReferentialsController < Chouette::ResourceController
   end
 
   def load_workbench
-    @workbench ||= current_organisation.workbenches.find(params[:workbench_id]) if params[:workbench_id]
-    @workbench ||= resource&.workbench if params[:id]
-    @workbench
+    @workbench ||= if params[:workbench_id] # rubocop:disable Naming/MemoizedInstanceVariableName
+                     current_organisation.workbenches.find(params[:workbench_id])
+                   elsif params[:id]
+                     resource.workgroup.workbenches.find_by!(organisation: current_organisation)
+                   end
   end
 
   alias_method :current_workbench, :load_workbench

@@ -8,11 +8,8 @@ class JourneyPatternsCollectionsController < Chouette::ReferentialController
   respond_to :html
   respond_to :json
 
-  belongs_to :referential do
-    belongs_to :line, :parent_class => Chouette::Line do
-      belongs_to :route, :parent_class => Chouette::Route
-    end
-  end
+  belongs_to :line, parent_class: Chouette::Line
+  belongs_to :route, parent_class: Chouette::Route
 
   alias_method :vehicle_journeys, :collection
   alias_method :route, :parent

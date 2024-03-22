@@ -7,7 +7,7 @@ module Chouette
 
     include WithinWorkgroup
 
-    belongs_to :workgroup
+    belongs_to :workgroup, collection_name: :owned_workgroups
 
     private
 

@@ -9,11 +9,6 @@ class WorkgroupWorkbenchPolicy < ApplicationPolicy
     workgroup.organisations.exists?(id: user.organisation_id)
   end
 
-  def show_invitation_code?
-    # Only users which can create a Workbench can see the invitation code
-    create?
-  end
-
   def update?
     workgroup_owner? && user.has_permission?('workbenches.update')
   end

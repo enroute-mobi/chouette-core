@@ -1,8 +1,9 @@
-module Chouette
-  class RelationshipRecord < Chouette::ActiveRecord
-    acts_as_copy_target
+# frozen_string_literal: true
 
+module Chouette
+  class RelationshipRecord < Referential::ActiveRecord
     self.abstract_class = true
+
     class << self
       def find_each_without_primary_key
         batch_size = 1000

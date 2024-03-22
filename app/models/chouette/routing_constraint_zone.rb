@@ -1,8 +1,10 @@
+# frozen_string_literal: true
+
 module Chouette
-  class RoutingConstraintZone < Chouette::TridentActiveRecord
-    has_metadata
+  class RoutingConstraintZone < Referential::ActiveRecord
     include ChecksumSupport
     include ObjectidSupport
+    has_metadata
 
     belongs_to :route
     has_array_of :stop_points, class_name: 'Chouette::StopPoint', order_by: :position

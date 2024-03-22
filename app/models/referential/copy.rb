@@ -86,7 +86,7 @@ class Referential
     end
 
     def copy_route_opposites
-      ActiveRecord::Base.connection.execute <<-SQL
+      ::ActiveRecord::Base.connection.execute <<-SQL
       UPDATE #{target_routes} AS target_routes SET
         opposite_route_id = source_routes.id
       FROM (
@@ -201,7 +201,7 @@ class Referential
       end
 
       def connection
-        @connection ||= ActiveRecord::Base.connection
+        @connection ||= ::ActiveRecord::Base.connection
       end
 
       def execute(query)

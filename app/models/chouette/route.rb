@@ -1,11 +1,11 @@
+# frozen_string_literal: true
+
 module Chouette
-  class Route < Chouette::TridentActiveRecord
+  class Route < Referential::Model
     has_metadata
 
     attr_accessor :prevent_costs_calculation
 
-    include ChecksumSupport
-    include ObjectidSupport
     extend Enumerize
 
     if SmartEnv.boolean("CHOUETTE_ROUTE_POSITION_CHECK") || !Rails.env.production?

@@ -1,4 +1,4 @@
-# coding: utf-8
+# frozen_string_literal: true
 
 module ReferentialSaveWithLock
   def save(options = {})
@@ -180,7 +180,7 @@ class Referential < ApplicationModel
       operations << klass.for_referential(self).limit(1).select("'#{klass.name}' as kind, id, created_at").order('created_at DESC').to_sql
     end
     sql = "SELECT * FROM ((#{operations.join(') UNION (')})) AS subquery ORDER BY subquery.created_at DESC"
-    res = ActiveRecord::Base.connection.execute(sql).first
+    res = ::ActiveRecord::Base.connection.execute(sql).first
     if res
       res["kind"].constantize.find(res["id"])
     end
@@ -443,7 +443,7 @@ class Referential < ApplicationModel
       delegate :each, :empty?, :inspect, to: :all
 
       def to_rows
-        ActiveRecord::Base.connection.select_all to_sql
+        ::ActiveRecord::Base.connection.select_all to_sql
       end
 
       def max_priority_condition
@@ -548,7 +548,7 @@ class Referential < ApplicationModel
     delegate :lines, :metadatas, to: :referential
 
     def updated_at_by_lines
-      @updated_at_by_lines ||= ActiveRecord::Base.connection.select_rows(query).map do |line_id, time|
+      @updated_at_by_lines ||= ::ActiveRecord::Base.connection.select_rows(query).map do |line_id, time|
         [ line_id, database_timezone.parse(time) ]
       end.to_h
     end
@@ -563,8 +563,10 @@ class Referential < ApplicationModel
   end
 
   def self.referential_ids_in_periode(range)
-    subquery = "SELECT DISTINCT(public.referential_metadata.referential_id) FROM public.referential_metadata, LATERAL unnest(periodes) period "
-    subquery << "WHERE period && '#{range_to_string(range)}'"
+    subquery = <<~SQL
+      SELECT DISTINCT(public.referential_metadata.referential_id) FROM public.referential_metadata, LATERAL unnest(periodes) period
+      WHERE period && '#{range_to_string(range)}'
+    SQL
     query = "SELECT * FROM public.referentials WHERE referentials.id IN (#{subquery})"
     self.connection.select_values(query).map(&:to_i)
   end
@@ -608,7 +610,7 @@ class Referential < ApplicationModel
   def detect_overlapped_referentials
     begin
       lock_table
-    rescue ActiveRecord::StatementInvalid
+    rescue ::ActiveRecord::StatementInvalid
       # Can occur when no transaction is started
       Rails.logger.warn "Can't retrieve lock before validating Referential #{slug}"
     end
@@ -678,7 +680,7 @@ class Referential < ApplicationModel
   end
 
   def destroy_schema
-    return unless ActiveRecord::Base.connection.schema_names.include?(slug)
+    return unless ::ActiveRecord::Base.connection.schema_names.include?(slug)
     Apartment::Tenant.drop slug
   end
 
@@ -831,7 +833,7 @@ class Referential < ApplicationModel
   def lock_table
     # No explicit unlock is needed as it will be released at the end of the
     # transaction.
-    ActiveRecord::Base.connection.execute(
+    ::ActiveRecord::Base.connection.execute(
       'LOCK public.referential_metadata IN SHARE ROW EXCLUSIVE MODE'
     )
   end

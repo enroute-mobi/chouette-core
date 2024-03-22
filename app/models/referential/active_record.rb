@@ -1,5 +1,8 @@
-module Chouette
-  class TridentActiveRecord < Chouette::ActiveRecord
+# frozen_string_literal: true
+
+# Base class for ActiveRecord stored into a Referential
+class Referential
+  class ActiveRecord < Chouette::ActiveRecord
     acts_as_copy_target
 
     self.abstract_class = true
@@ -24,9 +27,6 @@ module Chouette
       self.class.current_workgroup || referential&.workgroup
     end
 
-    def prefix
-      referential.prefix
-    end
-
+    delegate :prefix, to: :referential
   end
 end

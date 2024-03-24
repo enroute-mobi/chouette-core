@@ -58,6 +58,131 @@ RSpec.describe Export::NetexGeneric do
 
   end
 
+  describe Export::NetexGeneric::AlternateIdentifiersExtractor::Decorator do
+    subject(:decorator) { described_class.new(model, code_spaces: code_spaces) }
+    let(:model) { double }
+    let(:code_spaces) { Hash.new }
+
+    describe '#has_registration_number?' do
+      subject { decorator.has_registration_number? }
+
+      context 'when model has a registration number "dummy"' do
+        let(:model) { Chouette::StopArea.new registration_number: 'dummy' }
+
+        it { is_expected.to be_truthy }
+      end
+
+      context 'when model has a blank registration number' do
+        let(:model) { Chouette::StopArea.new registration_number: nil }
+
+        it { is_expected.to be_falsy }
+      end
+
+      context "when model doesn't support registration number" do
+        let(:model) { double }
+
+        it { is_expected.to be_falsy }
+      end
+    end
+
+    describe '#registration_number_value' do
+      subject { decorator.registration_number_value }
+
+      context 'when registration_number is "dummy"' do
+        let(:model) { double(registration_number: 'dummy') }
+
+        it { is_expected.to eq([['external', 'dummy']]) }
+      end
+
+      context 'when has_registration_number? is false' do
+        before { allow(decorator).to receive(:has_registration_number?).and_return(false) }
+
+        it { is_expected.to eq([]) }
+      end
+    end
+
+    describe '#has_codes?' do
+      subject { decorator.has_codes? }
+
+      context 'when the model supports codes' do
+        let(:model) { double(codes: []) }
+
+        it { is_expected.to be_truthy }
+      end
+
+      context "when the model doesn't support codes" do
+        let(:model) { double }
+
+        it { is_expected.to be_falsy }
+      end
+    end
+
+    describe '#codes_values' do
+      subject { decorator.codes_values }
+
+      context 'when model has codes first: 1 and second: 2' do
+        let(:code_spaces) { { 42 => 'first', 43 => 'second'} }
+
+        let(:model) do
+          double(
+            codes: [
+              Code.new(code_space_id: 42, value: '1'),
+              Code.new(code_space_id: 43, value: '2')
+            ]
+          )
+        end
+
+        it { is_expected.to eq([['first', '1'], ['second', '2']]) }
+      end
+
+      context "when model doesn't support codes" do
+        let(:model) { double }
+
+        it { is_expected.to eq([]) }
+      end
+    end
+
+    describe '#alternate_identifiers_values' do
+      subject { decorator.alternate_identifiers_values }
+
+      context "when registration_number_value is [['external', 'dummy']]" do
+        before do
+          allow(decorator).to receive(:registration_number_value) { [['external', 'dummy']] }
+        end
+
+        context "when codes_values is [['first', '1']]" do
+          before do
+            allow(decorator).to receive(:codes_values) { [['first', '1']] }
+          end
+
+          it { is_expected.to eq([['external', 'dummy'], ['first', '1']]) }
+        end
+      end
+    end
+
+    describe "#alternate_identifiers" do
+      subject { decorator.alternate_identifiers }
+
+      describe "when alternate_identifiers_values is [['external', 'dummy'], ['first', '1']]" do
+        before do
+          allow(decorator).to receive(:alternate_identifiers_values) {
+            [['external', 'dummy'], ['first', '1']]
+          }
+        end
+
+        let(:expected_key_values) do
+          [
+            Netex::KeyValue.new(key: 'external', value: 'dummy', type_of_key: "ALTERNATE_IDENTIFIER"),
+            Netex::KeyValue.new(key: 'first', value: '1', type_of_key: "ALTERNATE_IDENTIFIER"),
+          ]
+        end
+
+
+        it { is_expected.to eq(expected_key_values) }
+      end
+    end
+  end
+
   describe "#stop_areas" do
 
     let(:export_scope) do
@@ -226,12 +351,11 @@ RSpec.describe Export::NetexGeneric do
         before { stop_area.custom_field_values = { 'customfield1' => 'custom field value 1' } }
 
         it "generate key_list custom field" do
-          is_expected.to include(
-            an_object_having_attributes({
+          is_expected.to include(Netex::KeyValue.new(
               key: "customfield1",
               value: "custom field value 1",
               type_of_key: "chouette::custom-field"
-            })
+            )
           )
         end
       end
@@ -405,10 +529,10 @@ RSpec.describe Export::NetexGeneric do
         context "when netex_key is key_list" do
           let(:netex_key) { :key_list }
 
-          let(:key_list) { subject.map{ |e| [e.key, e.value] } }
-          let(:codes) { line.codes.map{ |code| [ code.code_space.short_name, code.value ] } }
+          let(:netex_alternate_identifiers) { double("result of #netex_alternate_identifiers") }
+          before { allow(decorator).to receive(:netex_alternate_identifiers) { netex_alternate_identifiers } }
 
-          it { expect(key_list).to match_array(codes) }
+          it { is_expected.to eq(decorator.netex_alternate_identifiers) }
         end
       end
 
@@ -466,7 +590,7 @@ RSpec.describe Export::NetexGeneric do
           before { company.update registration_number: 'RN' }
 
           it "generate key_list" do
-            is_expected.to include(an_object_having_attributes({key: "external", value: "RN", type_of_key: "ALTERNATE_IDENTIFIER" }))
+            is_expected.to include(Netex::KeyValue.new(key: "external", value: "RN", type_of_key: "ALTERNATE_IDENTIFIER"))
           end
         end
 
@@ -922,32 +1046,15 @@ RSpec.describe Export::NetexGeneric do
         end
       end
 
-      describe "#netex_alternate_identifiers" do
-        subject { decorator.netex_alternate_identifiers }
+      context "when StopArea has a parent" do
+        let(:quay) { context.stop_area :quay }
+        let(:parent_stop_place) { context.stop_area :parent_stop_place }
+        let(:quay_decorator) { Export::NetexGeneric::StopDecorator.new quay }
 
-        context "when StopArea registration number is 'dummy'" do
-          before { stop_area.registration_number = 'dummy' }
-          it { is_expected.to include(an_object_having_attributes(key: "external", value: "dummy", type_of_key: "ALTERNATE_IDENTIFIER")) }
-        end
+        subject { quay_decorator.netex_resource.tag(:parent_id) }
 
-        context "when StopArea registration number is nil" do
-          before { stop_area.registration_number = nil }
-          it { is_expected.to_not include(an_object_having_attributes(key: "external")) }
-        end
-
-        context "when StopArea code 'public' exists with value 'dummy'" do
-          before { stop_area.codes << Code.new(code_space: CodeSpace.new(short_name: 'public'), value: 'dummy') }
-          it { is_expected.to include(an_object_having_attributes(key: "public", value: "dummy", type_of_key: "ALTERNATE_IDENTIFIER")) }
-        end
-
-        context "when StopArea has parent_id tag" do
-          let(:quay) { context.stop_area :quay }
-          let(:parent_stop_place) { context.stop_area :parent_stop_place }
-          let(:quay_decorator) { Export::NetexGeneric::StopDecorator.new quay }
-
-          subject { quay_decorator.netex_resource.tag(:parent_id) }
-
-          it { is_expected.to eq(parent_stop_place.objectid) }
+        it "has a parent_id tag" do
+          is_expected.to eq(parent_stop_place.objectid)
         end
       end
     end
@@ -1271,7 +1378,7 @@ RSpec.describe Export::NetexGeneric do
           let(:time_table) { context.time_table }
           let(:referential) { context.referential }
 
-          let(:decorated_time_table) { Export::NetexGeneric::TimeTables::Decorator.new(time_table, validity_period) }
+          let(:decorated_time_table) { Export::NetexGeneric::TimeTables::Decorator.new(time_table, validity_period: validity_period) }
 
           before { referential.switch }
 
@@ -1311,7 +1418,7 @@ RSpec.describe Export::NetexGeneric do
           let(:time_table) { context.time_table }
           let(:referential) { context.referential }
 
-          let(:decorated_time_table) { Export::NetexGeneric::TimeTables::Decorator.new(time_table, validity_period) }
+          let(:decorated_time_table) { Export::NetexGeneric::TimeTables::Decorator.new(time_table, validity_period: validity_period) }
 
           before { referential.switch }
 
@@ -1373,7 +1480,7 @@ RSpec.describe Export::NetexGeneric do
           let(:time_table) { context.time_table }
           let(:referential) { context.referential }
 
-          let(:decorated_time_table) { Export::NetexGeneric::TimeTables::Decorator.new(time_table, validity_period) }
+          let(:decorated_time_table) { Export::NetexGeneric::TimeTables::Decorator.new(time_table, validity_period: validity_period) }
 
           before { referential.switch }
 

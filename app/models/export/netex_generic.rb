@@ -122,7 +122,8 @@ class Export::NetexGeneric < Export::Base
       options.each { |k,v| send "#{k}=", v }
     end
 
-    delegate :target, :resource_tagger, :export_scope, :workgroup, to: :export
+    delegate :target, :resource_tagger, :export_scope, :workgroup,
+             :alternate_identifiers_extractor, to: :export
 
     def part_name
       @part_name ||= self.class.name.demodulize.underscore
@@ -133,6 +134,18 @@ class Export::NetexGeneric < Export::Base
         export!
       end
     end
+
+    def decorate(model, **attributes)
+      attributes = attributes.merge(
+        alternate_identifiers_extractor: alternate_identifiers_extractor
+      )
+      decorator_class.new model, **attributes
+    end
+
+    def decorator_class
+      @decorator_class ||= self.class.const_get('Decorator')
+    end
+
   end
 
   class ResourceTagger
@@ -174,51 +187,69 @@ class Export::NetexGeneric < Export::Base
     end
   end
 
+  def alternate_identifiers_extractor
+    @alternate_identifiers_extractor ||= AlternateIdentifiersExtractor.new(workgroup&.code_spaces || [])
+  end
+
   class AlternateIdentifiersExtractor
-
-    def initialize(model)
-      @model = model
+    def initialize(code_spaces)
+      @code_spaces = code_spaces.map do |code_space|
+        [ code_space.id, code_space.short_name ]
+      end.to_h
     end
-    attr_reader :model
 
-    delegate :registration_number, :codes, to: :model
+    attr_reader :code_spaces
 
-    def registration_number_value
-      if has_registration_number?
-        [[ "external", registration_number ]]
-      else
-        []
+    def decorate(model)
+      Decorator.new(model, code_spaces: code_spaces)
+    end
+
+    class Decorator
+      def initialize(model, code_spaces: {})
+        @model = model
+        @code_spaces = code_spaces
       end
-    end
+      attr_reader :model, :code_spaces
 
-    def has_registration_number?
-      model.respond_to?(:registration_number) && registration_number.present?
-    end
+      delegate :registration_number, :codes, to: :model
 
-    def has_codes?
-      model.respond_to? :codes
-    end
-
-    def codes_values
-      if has_codes?
-        codes.map do |code|
-          [ code.code_space.short_name, code.value ]
+      def registration_number_value
+        if has_registration_number?
+          [[ "external", registration_number ]]
+        else
+          []
         end
-      else
-        []
+      end
+
+      def has_registration_number?
+        model.respond_to?(:registration_number) && registration_number.present?
+      end
+
+      def has_codes?
+        model.respond_to? :codes
+      end
+
+      def codes_values
+        if has_codes?
+          codes.map do |code|
+            code_space_short_name = code_spaces[code.code_space_id]
+            [ code_space_short_name, code.value ] if code_space_short_name
+          end.compact
+        else
+          []
+        end
+      end
+
+      def alternate_identifiers_values
+        registration_number_value + codes_values
+      end
+
+      def alternate_identifiers
+        alternate_identifiers_values.map do |key, value|
+          Netex::KeyValue.new key: key, value: value, type_of_key: "ALTERNATE_IDENTIFIER"
+        end
       end
     end
-
-    def alternate_identifiers_values
-      registration_number_value + codes_values
-    end
-
-    def alternate_identifiers
-      alternate_identifiers_values.map do |key, value|
-        Netex::KeyValue.new key: key, value: value, type_of_key: "ALTERNATE_IDENTIFIER"
-      end
-    end
-
   end
 
   class CustomFieldExtractor
@@ -303,7 +334,28 @@ class Export::NetexGeneric < Export::Base
     end
   end
 
-  class StopDecorator < SimpleDelegator
+  class ModelDecorator < SimpleDelegator
+    def initialize(model, **attributes)
+      super model
+
+      attributes.each { |k,v| send "#{k}=", v }
+    end
+
+    def model
+      __getobj__
+    end
+
+    attr_writer :alternate_identifiers_extractor
+    def alternate_identifiers_extractor
+      @alternate_identifiers_extractor ||= AlternateIdentifiersExtractor.new([])
+    end
+
+    def netex_alternate_identifiers
+      alternate_identifiers_extractor.decorate(model).alternate_identifiers
+    end
+  end
+
+  class StopDecorator < ModelDecorator
     include Accessibility
 
     def netex_attributes # rubocop:disable Metrics/MethodLength
@@ -340,10 +392,6 @@ class Export::NetexGeneric < Export::Base
 
     def key_list
       netex_alternate_identifiers + netex_custom_field_identifiers
-    end
-
-    def netex_alternate_identifiers
-      AlternateIdentifiersExtractor.new(self).alternate_identifiers
     end
 
     def netex_custom_field_identifiers
@@ -518,7 +566,7 @@ class Export::NetexGeneric < Export::Base
         )
     end
 
-    class Decorator < SimpleDelegator
+    class Decorator < ModelDecorator
 
       def netex_attributes
         {
@@ -527,7 +575,7 @@ class Export::NetexGeneric < Export::Base
           url: url,
           centroid: centroid,
           postal_address: postal_address,
-          key_list: key_list,
+          key_list: netex_alternate_identifiers,
           operating_organisation_view: operating_organisation_view,
           classifications: classifications,
           validity_conditions: validity_conditions,
@@ -568,10 +616,6 @@ class Export::NetexGeneric < Export::Base
 
       def classifications
         [ Netex::PointOfInterestClassificationView.new(name: category_name) ]
-      end
-
-      def key_list
-        AlternateIdentifiersExtractor.new(self).alternate_identifiers
       end
 
       def validity_conditions
@@ -653,17 +697,17 @@ class Export::NetexGeneric < Export::Base
     delegate :lines, to: :export_scope
 
     def export!
-      lines.includes(:company).find_each do |line|
+      lines.includes(:codes, :company).find_each do |line|
         resource_tagger.register_tag_for line
         tags = resource_tagger.tags_for(line.id)
         tagged_target = TaggedTarget.new(target, tags)
 
-        decorated_line = Decorator.new(line)
+        decorated_line = decorate(line)
         tagged_target << decorated_line.netex_resource
       end
     end
 
-    class Decorator < SimpleDelegator
+    class Decorator < ModelDecorator
       include Accessibility
 
       def netex_attributes
@@ -683,10 +727,6 @@ class Export::NetexGeneric < Export::Base
           valid_between: valid_between,
           raw_xml: import_xml
         }
-      end
-
-      def netex_alternate_identifiers
-        AlternateIdentifiersExtractor.new(self).alternate_identifiers
       end
 
       def netex_identifier
@@ -748,31 +788,24 @@ class Export::NetexGeneric < Export::Base
 
     def export!
       companies.find_each do |company|
-        decorated_company = Decorator.new(company)
+        decorated_company = decorate(company)
         target << decorated_company.netex_resource
       end
     end
 
-    class Decorator < SimpleDelegator
+    class Decorator < ModelDecorator
 
       def netex_attributes
         {
           id: objectid,
           name: name,
-          raw_xml: import_xml
-        }.tap do |attributes|
-          if netex_alternate_identifiers.present?
-            attributes[:key_list] = netex_alternate_identifiers
-          end
-        end
+          raw_xml: import_xml,
+          key_list: netex_alternate_identifiers
+        }
       end
 
       def netex_resource
         Netex::Operator.new netex_attributes
-      end
-
-      def netex_alternate_identifiers
-        AlternateIdentifiersExtractor.new(self).alternate_identifiers
       end
     end
 
@@ -784,13 +817,12 @@ class Export::NetexGeneric < Export::Base
 
     def export!
       networks.find_each do |network|
-        Rails.logger.debug { "Export Network #{network.inspect}" }
-        decorated_network = Decorator.new(network)
+        decorated_network = decorate(network)
         target << decorated_network.netex_resource
       end
     end
 
-    class Decorator < SimpleDelegator
+    class Decorator < ModelDecorator
 
       def netex_attributes
         {
@@ -993,11 +1025,11 @@ class Export::NetexGeneric < Export::Base
     delegate :routes, to: :export_scope
 
     def export!
-      routes.includes(:line, :stop_points).find_each do |route|
+      routes.includes(:line, :stop_points, :codes).find_each do |route|
         tags = resource_tagger.tags_for(route.line_id)
         tagged_target = TaggedTarget.new(target, tags)
 
-        decorated_route = Decorator.new(route)
+        decorated_route = decorate(route)
         # Export Direction before the Route to detect local reference
         tagged_target << decorated_route.direction if decorated_route.direction
         tagged_target << decorated_route.netex_resource
@@ -1008,7 +1040,7 @@ class Export::NetexGeneric < Export::Base
       end
     end
 
-    class Decorator < SimpleDelegator
+    class Decorator < ModelDecorator
 
       delegate :line_routing_constraint_zones, to: :line
 
@@ -1020,7 +1052,8 @@ class Export::NetexGeneric < Export::Base
           line_ref: line_ref,
           direction_ref: direction_ref,
           direction_type: direction_type,
-          points_in_sequence: points_in_sequence
+          points_in_sequence: points_in_sequence,
+          key_list: netex_alternate_identifiers
         }.tap do |attributes|
           attributes[:direction_ref] = direction_ref if published_name.present?
         end
@@ -1223,18 +1256,18 @@ class Export::NetexGeneric < Export::Base
     delegate :journey_patterns, to: :export_scope
 
     def export!
-      journey_patterns.includes(:route, stop_points: :stop_area).find_each do |journey_pattern|
+      journey_patterns.includes(:route, :codes, stop_points: :stop_area).find_each do |journey_pattern|
         tags = resource_tagger.tags_for(journey_pattern.route.line_id)
         tagged_target = TaggedTarget.new(target, tags)
 
-        decorated_journey_pattern = Decorator.new(journey_pattern)
+        decorated_journey_pattern = decorate(journey_pattern)
         # Export Destination Displays before the JourneyPattern to detect local reference
         tagged_target << decorated_journey_pattern.destination_display if journey_pattern.published_name.present?
         tagged_target << decorated_journey_pattern.netex_resource
       end
     end
 
-    class Decorator < SimpleDelegator
+    class Decorator < ModelDecorator
 
       def netex_attributes
         {
@@ -1242,7 +1275,8 @@ class Export::NetexGeneric < Export::Base
           data_source_ref: data_source_ref,
           name: name,
           route_ref: route_ref,
-          points_in_sequence: points_in_sequence
+          points_in_sequence: points_in_sequence,
+          key_list: netex_alternate_identifiers
         }.tap do |attributes|
           attributes[:destination_display_ref] = destination_display_ref if published_name.present?
         end
@@ -1447,12 +1481,9 @@ class Export::NetexGeneric < Export::Base
           name: published_journey_name,
           journey_pattern_ref: journey_pattern_ref,
           public_code: published_journey_identifier,
-          day_types: day_types
-        }.tap do |attributes|
-          if netex_alternate_identifiers
-            attributes[:key_list] = netex_alternate_identifiers
-          end
-        end
+          day_types: day_types,
+          key_list: netex_alternate_identifiers
+        }
       end
 
       def netex_resource
@@ -1680,8 +1711,8 @@ class Export::NetexGeneric < Export::Base
     delegate :validity_period, to: :export_scope
 
     def export!
-      time_tables.includes(:periods, :dates, :lines).find_each do |time_table|
-        decorated_time_table = Decorator.new(time_table, validity_period)
+      time_tables.includes(:periods, :dates, :lines, :codes).find_each do |time_table|
+        decorated_time_table = decorate(time_table, validity_period: validity_period)
 
         tags = resource_tagger.tags_for_lines(time_table.line_ids)
         tagged_target = TaggedTarget.new(target, tags)
@@ -1692,12 +1723,7 @@ class Export::NetexGeneric < Export::Base
       end
     end
 
-    class Decorator < SimpleDelegator
-
-      def initialize(time_table, validity_period=nil)
-        super time_table
-        @validity_period = validity_period
-      end
+    class Decorator < ModelDecorator
       attr_accessor :validity_period
 
       def netex_resources
@@ -1719,7 +1745,8 @@ class Export::NetexGeneric < Export::Base
           id: objectid,
           data_source_ref: data_source_ref,
           name: comment,
-          properties: properties
+          properties: properties,
+          key_list: netex_alternate_identifiers
         }
       end
 

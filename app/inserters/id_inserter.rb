@@ -23,9 +23,7 @@ class IdInserter < ByClassInserter
       model.id = next_primary_key
     end
 
-    def flush
-      @next_primary_key = 0
-    end
+    def flush; end
 
     private
 

@@ -59,7 +59,7 @@ module OptionsHelper
 
     if option_def[:depends]
       klass = 'hidden' if option_def[:hidden]
-      out = content_tag :div, class: klass, 'x-show': "import_category == '#{option_def[:depends][:value]}'" do
+      out = content_tag :div, class: klass, 'x-show': "'#{option_def[:depends][:values]}'.includes(import_category)" do
         out
       end.html_safe
     end

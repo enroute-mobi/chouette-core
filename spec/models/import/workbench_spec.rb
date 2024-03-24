@@ -300,14 +300,8 @@ RSpec.describe Import::Workbench do
     # Time.now.round simplifies Time comparaison in specs
     around { |example| Timecop.freeze(Time.now.round) { example.run } }
 
-    let(:referential) do
-      # FIXME: Use Chouette.create to create consistent models
-      create(:referential).tap do |referential|
-        create(:referential_metadata, referential: referential)
-      end
-    end
-
-    before { import_workbench.resources.create referential: referential }
+    let(:referential) { context.referential }
+    before { allow(import_workbench).to receive(:referentials).and_return([referential]) }
 
     it 'flag referential metadatas as urgent' do
       expect do
@@ -323,7 +317,7 @@ RSpec.describe Import::Workbench do
       end
     end
 
-    before { import_workbench.resources.create referential: referential }
+    before { allow(import_workbench).to receive(:referentials).and_return([referential]) }
 
     it 'create a new Merge' do
       expect { import_workbench.create_automatic_merge }.to change { Merge.count }.by(1)

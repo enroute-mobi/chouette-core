@@ -21,6 +21,8 @@ class Import::Workbench < Import::Base
   has_many :control_list_runs, through: :children_processings, source: :processed, source_type: 'Control::List::Run'
   has_many :macro_list_runs, through: :children_processings, source: :processed, source_type: 'Macro::List::Run'
 
+  has_many :referentials, through: :children
+
   def main_resource; self end
 
   def file_extension_whitelist
@@ -150,10 +152,6 @@ class Import::Workbench < Import::Base
     else
       return children_status
     end
-  end
-
-  def referentials
-    self.resources.map(&:referential).compact
   end
 
   delegate :line_providers, :stop_area_providers, :companies, to: :workbench, prefix: :candidate

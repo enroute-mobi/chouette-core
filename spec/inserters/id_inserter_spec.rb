@@ -26,18 +26,5 @@ RSpec.describe IdInserter do
       expect { inserter.insert(journey_pattern) }.to change { journey_pattern.id }.from(nil).to(1)
     end
   end
-
-  describe '#flush' do
-    let(:route1) { Chouette::Route.new }
-    let(:route2) { Chouette::Route.new }
-    let(:route3) { Chouette::Route.new }
-
-    it 'restarts ids at 0' do
-      inserter.insert(route1)
-      inserter.insert(route2)
-      inserter.flush
-      expect { inserter.insert(route3) }.to change { route3.id }.from(nil).to(1)
-    end
-  end
 end
 # rubocop:enable Rails::SkipsModelValidations

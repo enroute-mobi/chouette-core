@@ -216,6 +216,10 @@ class Import::NetexGeneric < Import::Base
 
     include Measurable
     measure :import!, as: ->(part) { part.class.name.demodulize }
+
+    def code_builder
+      @code_builder ||= CodeBuilder.new(import.workgroup.code_spaces)
+    end
   end
 
   class WithResourcePart < Part
@@ -355,19 +359,84 @@ class Import::NetexGeneric < Import::Base
     end
   end
 
+  class CodeBuilder
+    def initialize(code_spaces)
+      @code_spaces = code_spaces.index_by(&:short_name)
+    end
+
+    def code_space(short_name)
+      @code_spaces[short_name]
+    end
+
+    def decorate(key_list)
+      Decorator.new(key_list, builder: self)
+    end
+
+    class Decorator
+      def initialize(key_list, builder: nil)
+        @key_list = key_list
+        @builder = builder
+      end
+
+      attr_reader :key_list, :builder
+
+      delegate :code_space, to: :builder, allow_nil: true
+
+      def codes
+        key_list.map do |key_value|
+          from_key_value(key_value)
+        end.compact
+      end
+
+      def from_key_value(key_value)
+        return unless key_value.type_of_key == 'ALTERNATE_IDENTIFIER'
+
+        code(short_name: key_value.key, value: key_value.value)
+      end
+
+      def code(short_name:, value:)
+        if value.blank?
+          errors << :blank_code
+          return
+        end
+
+        code_space = code_space(short_name)
+        unless code_space
+          errors << :unknown_code_space
+          return
+        end
+
+        code_class.new(code_space: code_space, value: value)
+      end
+
+      def code_class
+        # TODO: should be defined as Code or ReferentailCode (when needed)
+        ::ReferentialCode
+      end
+
+      def errors
+        @errors ||= []
+      end
+
+      def valid?
+        errors.empty?
+      end
+    end
+  end
+
+  def referential_inserter
+    @referential_inserter ||= ReferentialInserter.new(referential) do |config|
+      config.add IdInserter
+      config.add TimestampsInserter
+      config.add CopyInserter
+    end
+  end
+
   module ReferentialPart
     extend ActiveSupport::Concern
 
     included do
-      delegate :referential, to: :import
-    end
-
-    def referential_inserter
-      @referential_inserter ||= ReferentialInserter.new(referential) do |config|
-        config.add IdInserter
-        config.add TimestampsInserter
-        config.add CopyInserter
-      end
+      delegate :referential_inserter, to: :import
     end
   end
 
@@ -383,7 +452,8 @@ class Import::NetexGeneric < Import::Base
           route_points: route_points,
           directions: directions,
           destination_displays: destination_displays,
-          line_provider: line_provider
+          line_provider: line_provider,
+          code_builder: code_builder
         )
 
         unless decorator.valid?
@@ -407,6 +477,11 @@ class Import::NetexGeneric < Import::Base
           referential_inserter.stop_points << stop_point
         end
 
+        route.codes.each do |code|
+          code.resource = route
+          referential_inserter.codes << code
+        end
+
         save_journey_patterns route
       else
         Rails.logger.debug { "Invalid Route: #{route.errors.inspect} #{route.journey_patterns.map(&:errors).inspect}" }
@@ -424,6 +499,11 @@ class Import::NetexGeneric < Import::Base
             journey_pattern_stop_point.journey_pattern_id = journey_pattern.id
             journey_pattern_stop_point.stop_point_id = journey_pattern_stop_point.stop_point.id
             referential_inserter.journey_pattern_stop_points << journey_pattern_stop_point
+          end
+
+          journey_pattern.codes.each do |code|
+            code.resource = journey_pattern
+            referential_inserter.codes << code
           end
 
           cache_route_journey_patterns(route, journey_pattern)
@@ -462,7 +542,7 @@ class Import::NetexGeneric < Import::Base
     end
 
     class Decorator < SimpleDelegator
-      def initialize(route, journey_patterns, scheduled_stop_points: nil, route_points: nil, directions: nil, destination_displays: nil, line_provider: nil)
+      def initialize(route, journey_patterns, scheduled_stop_points: nil, route_points: nil, directions: nil, destination_displays: nil, line_provider: nil, code_builder: nil)
         super route
 
         @journey_patterns = journey_patterns
@@ -471,9 +551,10 @@ class Import::NetexGeneric < Import::Base
         @directions = directions
         @destination_displays = destination_displays
         @line_provider = line_provider
+        @code_builder = code_builder
       end
       attr_accessor :journey_patterns, :scheduled_stop_points, :route_points, :directions, :line_provider,
-                    :destination_displays
+                    :destination_displays, :code_builder
 
       def chouette_line
         line = line_provider.lines.find_by(registration_number: line_ref&.ref)
@@ -499,7 +580,8 @@ class Import::NetexGeneric < Import::Base
           name: chouette_name,
           wayback: wayback,
           published_name: direction_name,
-          stop_points: stop_points
+          stop_points: stop_points,
+          codes: codes
         }
       end
 
@@ -529,6 +611,14 @@ class Import::NetexGeneric < Import::Base
 
       def direction_name
         direction&.name
+      end
+
+      def codes
+        return [] unless code_builder
+
+        code_builder.decorate(key_list).tap do |decorator|
+          errors.concat decorator.errors
+        end.codes
       end
 
       def route_point_refs
@@ -619,7 +709,7 @@ class Import::NetexGeneric < Import::Base
       end
       attr_accessor :route_decorator
 
-      delegate :destination_displays, to: :route_decorator
+      delegate :destination_displays, :code_builder, to: :route_decorator
 
       def chouette_journey_pattern
         Chouette::JourneyPattern.new journey_pattern_attributes
@@ -630,7 +720,8 @@ class Import::NetexGeneric < Import::Base
           registration_number: id,
           name: chouette_name,
           published_name: published_name,
-          journey_pattern_stop_points: journey_pattern_stop_points
+          journey_pattern_stop_points: journey_pattern_stop_points,
+          codes: codes
         }
       end
 
@@ -640,6 +731,14 @@ class Import::NetexGeneric < Import::Base
 
       def published_name
         destination_display&.front_text
+      end
+
+      def codes
+        return [] unless code_builder
+
+        code_builder.decorate(key_list).tap do |decorator|
+          # errors.concat decorator.errors
+        end.codes
       end
 
       def destination_display
@@ -819,7 +918,7 @@ class Import::NetexGeneric < Import::Base
     def import!
       each_day_type_with_assignements_and_periods do |day_type, day_type_assignments, operating_periods|
 
-        decorator = Decorator.new(day_type, day_type_assignments, operating_periods)
+        decorator = Decorator.new(day_type, day_type_assignments, operating_periods, code_builder: code_builder)
 
         unless decorator.valid?
           decorator.errors.each { |error| create_message error }
@@ -865,16 +964,22 @@ class Import::NetexGeneric < Import::Base
         time_table_period.time_table_id = time_table.id
         referential_inserter.time_table_periods << time_table_period
       end
+
+      time_table.codes.each do |code|
+        code.resource = time_table
+        referential_inserter.codes << code
+      end
     end
 
     class Decorator < SimpleDelegator
-      def initialize(day_type, day_type_assignments, operating_periods)
+      def initialize(day_type, day_type_assignments, operating_periods, code_builder: nil)
         super day_type
 
         @day_type_assignments = day_type_assignments
         @operating_periods = operating_periods
+        @code_builder = code_builder
       end
-      attr_reader :day_type_assignments
+      attr_reader :day_type_assignments, :code_builder
 
       def operating_periods
         @operating_periods.reject { |o| o.respond_to? :valid_day_bits }
@@ -936,8 +1041,16 @@ class Import::NetexGeneric < Import::Base
         name || "Default"
       end
 
+      def codes
+        return [] unless code_builder
+
+        code_builder.decorate(key_list).tap do |decorator|
+          errors.concat decorator.errors
+        end.codes
+      end
+
       def time_table
-        @time_table ||= Chouette::TimeTable.new(comment: chouette_name).apply(memory_timetable)
+        @time_table ||= Chouette::TimeTable.new(comment: chouette_name, codes: codes).apply(memory_timetable)
       end
 
       def base_timetable
@@ -969,7 +1082,7 @@ class Import::NetexGeneric < Import::Base
 
     def import!
       netex_source.service_journeys.each do |service_journey|
-        decorator = Decorator.new(service_journey, day_types, index_route_journey_patterns, index_time_tables)
+        decorator = Decorator.new(service_journey, day_types, index_route_journey_patterns, index_time_tables, code_builder: code_builder)
 
         unless decorator.valid?
           decorator.errors.each { |error| create_message error }
@@ -997,6 +1110,11 @@ class Import::NetexGeneric < Import::Base
           vehicle_journey_time_table.vehicle_journey_id = vehicle_journey.id
           referential_inserter.vehicle_journey_time_table_relationships << vehicle_journey_time_table
         end
+
+        vehicle_journey.codes.each do |code|
+          code.resource = vehicle_journey
+          referential_inserter.codes << code
+        end
       end
 
       referential_inserter.flush
@@ -1007,14 +1125,15 @@ class Import::NetexGeneric < Import::Base
     end
 
     class Decorator < SimpleDelegator
-      def initialize(service_journey, day_types, index_route_journey_patterns, index_time_tables)
+      def initialize(service_journey, day_types, index_route_journey_patterns, index_time_tables, code_builder: nil)
         super service_journey
 
         @day_types = day_types
         @index_route_journey_patterns = index_route_journey_patterns
         @index_time_tables = index_time_tables
+        @code_builder = code_builder
       end
-      attr_reader :day_types, :index_route_journey_patterns, :index_time_tables
+      attr_reader :day_types, :index_route_journey_patterns, :index_time_tables, :code_builder
 
       def valid?
         chouette_vehicle_journey
@@ -1057,7 +1176,8 @@ class Import::NetexGeneric < Import::Base
           published_journey_name: name,
           published_journey_identifier: id,
           vehicle_journey_at_stops: vehicle_journey_at_stops,
-          vehicle_journey_time_table_relationships: vehicle_journey_time_table_relationships
+          vehicle_journey_time_table_relationships: vehicle_journey_time_table_relationships,
+          codes: codes
         }
       end
 
@@ -1067,6 +1187,14 @@ class Import::NetexGeneric < Import::Base
 
       def chouette_stop_point_ids
         @chouette_stop_point_ids ||= (route_journey_pattern(:stop_point_ids) || [])
+      end
+
+      def codes
+        return [] unless code_builder
+
+        code_builder.decorate(key_list).tap do |decorator|
+          errors.concat decorator.errors
+        end.codes
       end
 
       def vehicle_journey_at_stops

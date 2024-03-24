@@ -1217,7 +1217,7 @@ RSpec.describe Import::NetexGeneric do
       end
     end
 
-    let(:new_referential) { Referential.where(name: 'test').last }
+    let(:new_referential) { import.referential }
     let(:stop_areas) { new_referential&.stop_areas }
     let(:route) { new_referential.routes.first }
 
@@ -1306,7 +1306,7 @@ RSpec.describe Import::NetexGeneric do
       end
     end
 
-    let(:new_referential) { Referential.where(name: 'test').last }
+    let(:new_referential) { import.referential }
     let(:time_table) { new_referential.time_tables.find_by(comment: 'Sample')}
 
     describe '#effective_days' do
@@ -1444,7 +1444,7 @@ RSpec.describe Import::NetexGeneric do
       end
     end
 
-    let(:new_referential) { Referential.where(name: 'test').last }
+    let(:new_referential) { import.referential }
     let(:vehicle_journey) { new_referential.vehicle_journeys.find_by(published_journey_identifier: 'service-journey')}
 
     describe '#vehicle_journey' do
@@ -1636,6 +1636,119 @@ RSpec.describe Import::NetexGeneric::RouteJourneyPatterns::Decorator do
       before { allow(decorator).to receive(:route_scheduled_point_ref).and_return(nil) }
 
       it { is_expected.to be_empty }
+    end
+  end
+
+  describe Import::NetexGeneric::CodeBuilder do
+    subject(:builder) { described_class.new(code_spaces) }
+    let(:code_spaces) { [] }
+
+    describe '#code_space' do
+      subject { builder.code_space(value) }
+      let(:value) { 'dummy' }
+
+      context 'when "dummy" value is given' do
+        context 'when no code space is defined' do
+          it { is_expected.to be_nil }
+        end
+
+        context 'when a CodeSpace "dummy" is defined' do
+          before { code_spaces << CodeSpace.new(short_name: 'dummy') }
+
+          it { is_expected.to have_attributes(short_name: 'dummy') }
+        end
+      end
+    end
+
+    describe Import::NetexGeneric::CodeBuilder::Decorator do
+      subject(:decorator) { described_class.new(key_list) }
+      let(:key_list) { [] }
+
+      describe '#code' do
+        subject { decorator.code(short_name: 'test', value: value) }
+        let(:value) { 'dummy' }
+
+        context "when given shortname doesn't match a CodeSpace" do
+          before { allow(decorator).to receive(:code_space) }
+
+          it { is_expected.to be_nil }
+          it { expect{ subject }.to change(decorator, :errors).from(be_empty).to(include(:unknown_code_space)) }
+        end
+
+        context 'when given short_name matchs a CodeSpace' do
+          before { allow(decorator).to receive(:code_space).and_return(code_space) }
+          let(:code_space) { CodeSpace.new(short_name: 'test') }
+
+          context 'when given value "dummy"' do
+            it { is_expected.to have_attributes(value: value) }
+            it { is_expected.to have_attributes(code_space: have_attributes(short_name: 'test')) }
+
+            it { expect{ subject }.to_not change(decorator, :errors).from(be_empty) }
+          end
+
+          context 'when given value is blank' do
+            let(:value) { nil }
+
+            it { is_expected.to be_nil }
+            it { expect{ subject }.to change(decorator, :errors).from(be_empty).to(include(:blank_code)) }
+          end
+        end
+      end
+
+      describe '#from_key_value' do
+        subject { decorator.from_key_value(key_value) }
+        let(:key_value) { Netex::KeyValue.new }
+
+        context 'when type_of_key is "ALTERNATE_IDENTIFIER"' do
+          before { key_value.type_of_key = 'ALTERNATE_IDENTIFIER' }
+
+          before do
+            key_value.key = double('KeyValue#key')
+            key_value.value = double('KeyValue#value')
+          end
+
+          it do
+            expect(decorator).to receive(:code).with(short_name: key_value.key, value: key_value.value)
+            subject
+          end
+        end
+
+        context 'when type_of_key is "dummy"' do
+          before { key_value.type_of_key = 'dummy' }
+          it { is_expected.to be_nil }
+        end
+
+        context 'when type_of_key is blank' do
+          before { key_value.type_of_key = nil }
+          it { is_expected.to be_nil }
+        end
+      end
+
+      describe 'codes' do
+        subject { decorator.codes }
+
+        context 'when key list is empty' do
+          it { is_expected.to be_empty }
+        end
+
+        context 'when key list' do
+          let(:key_list) { 3.times.map { Netex::KeyValue.new } }
+
+          it "create a Code for each KeyValue" do
+            key_list.each do |key_value|
+              expect(decorator).to receive(:from_key_value).with(key_value)
+            end
+
+            subject
+          end
+
+          it "ignores missing codes" do
+            allow(decorator).to receive(:from_key_value).and_return(nil)
+
+            is_expected.to be_empty
+          end
+        end
+      end
     end
   end
 end

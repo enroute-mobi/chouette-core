@@ -215,6 +215,7 @@ class Merge::Referential::Legacy < Merge::Referential::Base
                 Chouette::JourneyPattern.transaction do
                   journey_patterns.each do |journey_pattern|
                     Rails.logger.debug "Merge Journey Pattern #{journey_pattern.id}"
+                    journey_pattern_codes = ReferentialCode.unpersisted(journey_pattern.codes, code_spaces: code_spaces)
 
                     # find parent route by checksum
                     associated_line_id = referential_routes_lines[journey_pattern.route_id]
@@ -225,11 +226,13 @@ class Merge::Referential::Legacy < Merge::Referential::Base
 
                     if existing_journey_pattern
                       existing_journey_pattern.merge_metadata_from journey_pattern
+                      ReferentialCode.merge existing_journey_pattern.codes, journey_pattern_codes
                     else
                       objectid = existing_journey_pattern_objectids.add?(journey_pattern.objectid) ? journey_pattern.objectid : nil
                       attributes = journey_pattern.attributes.merge(
                         id: nil,
                         objectid: objectid,
+                        codes: journey_pattern_codes,
 
                         # all other primary must be changed
                         route_id: existing_associated_route.id,
@@ -577,7 +580,7 @@ class Merge::Referential::Legacy < Merge::Referential::Base
   def referential_journey_patterns
     @referential_journey_patterns ||= referential.switch do
       Chouette::Benchmark.measure("load_journey_patterns") do
-        referential.journey_patterns.all.to_a
+        referential.journey_patterns.includes(:codes).all.to_a
       end
     end
   end

@@ -70,6 +70,8 @@ class Merge::Referential::Legacy < Merge::Referential::Base
           Hash[referential.routes.where('opposite_route_id is not null').pluck(:id, :opposite_route_id)]
         end
 
+        code_spaces = workgroup.code_spaces.index_by(&:id)
+
         new.switch do
           existing_route_objectids = new.routes.distinct.pluck(:objectid).to_set
           existing_stop_points_objectids = new.stop_points.distinct.pluck(:objectid).to_set
@@ -83,15 +85,20 @@ class Merge::Referential::Legacy < Merge::Referential::Base
                   Chouette::Route.transaction do
                     routes.each do |route|
                       Rails.logger.debug "Merge Route #{route.id}"
+                      route_codes = ReferentialCode.unpersisted(route.codes, code_spaces: code_spaces)
+
                       existing_route = new.routes.find_by line_id: route.line_id, checksum: route.checksum
                       if existing_route
                         route_ids_mapping[route.id] = existing_route.id
+
                         existing_route.merge_metadata_from route
+                        ReferentialCode.merge existing_route.codes, route_codes
                       else
                         objectid = existing_route_objectids.add?(route.objectid) ? route.objectid : nil
                         attributes = route.attributes.merge(
                           id: nil,
                           objectid: objectid,
+                          codes: route_codes,
                           # line_id is the same
                           # all other primary must be changed
                           opposite_route_id: nil # merged after
@@ -554,7 +561,7 @@ class Merge::Referential::Legacy < Merge::Referential::Base
   def referential_routes
     @referential_routes ||= referential.switch do
       Chouette::Benchmark.measure("load_routes") do
-        referential.routes.all.to_a
+        referential.routes.includes(:codes).all.to_a
       end
     end
   end

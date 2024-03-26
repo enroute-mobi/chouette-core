@@ -140,7 +140,7 @@ class Export::NetexGeneric < Export::Base
     end
 
     delegate :target, :resource_tagger, :export_scope, :workgroup,
-             :alternate_identifiers_extractor, to: :export
+             :alternate_identifiers_extractor, :code_provider, to: :export
 
     def part_name
       @part_name ||= self.class.name.demodulize.underscore
@@ -156,7 +156,8 @@ class Export::NetexGeneric < Export::Base
       decorator_class = attributes.delete(:with) || default_decorator_class
 
       attributes = attributes.merge(
-        alternate_identifiers_extractor: alternate_identifiers_extractor
+        alternate_identifiers_extractor: alternate_identifiers_extractor,
+        code_provider: code_provider
       )
       decorator_class.new model, **attributes
     end
@@ -361,12 +362,23 @@ class Export::NetexGeneric < Export::Base
     end
 
     attr_writer :alternate_identifiers_extractor
+
     def alternate_identifiers_extractor
       @alternate_identifiers_extractor ||= AlternateIdentifiersExtractor.new([])
     end
 
     def netex_alternate_identifiers
       alternate_identifiers_extractor.decorate(model).alternate_identifiers
+    end
+
+    attr_writer :code_provider
+
+    def netex_identifier
+      code_provider.code(model)
+    end
+
+    def code_provider
+      @code_provider ||= Export::CodeProvider.null
     end
   end
 
@@ -737,7 +749,7 @@ class Export::NetexGeneric < Export::Base
 
       def netex_attributes
         {
-          id: objectid,
+          id: netex_identifier,
           name: netex_name,
           transport_mode: transport_mode,
           transport_submode: netex_transport_submode,
@@ -752,10 +764,6 @@ class Export::NetexGeneric < Export::Base
           valid_between: valid_between,
           raw_xml: import_xml
         }
-      end
-
-      def netex_identifier
-        @netex_identifier ||= Netex::ObjectId.parse(objectid)
       end
 
       def netex_name
@@ -797,7 +805,9 @@ class Export::NetexGeneric < Export::Base
       end
 
       def operator_ref
-        Netex::Reference.new(company.objectid, type: 'OperatorRef') if company
+        company_code = code_provider.companies.code(company)
+
+        Netex::Reference.new(company_code, type: 'OperatorRef') if company_code
       end
 
       def represented_by_group_ref

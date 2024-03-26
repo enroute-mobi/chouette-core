@@ -9,6 +9,13 @@ module Export
 
     attr_reader :export_scope
 
+    COLLECTIONS = %w[
+      stop_areas point_of_interests vehicle_journeys lines companies
+      entrances vehicle_journey_at_stops journey_patterns routes codes
+      time_tables referential_codes routing_constraint_zones networks
+      shapes fare_zones fare_products fare_validities contracts stop_points
+    ].freeze
+
     # Returns unique code for the given model (StopArea, etc)
     def code(model)
       return unless model&.id
@@ -16,17 +23,14 @@ module Export
       send(collection_name(model.class)).code(model.id)
     end
 
-    # TODO: should be generic (lines, companies, etc)
-    def stop_areas
-      @stop_areas ||= Model.new(export_scope.stop_areas, model_class: Chouette::StopArea).index
-    end
-
-    def point_of_interests
-      @point_of_interests ||= Model.new(export_scope.point_of_interests, model_class: PointOfInterest::Base).index
-    end
-
-    def vehicle_journeys
-      @vehicle_journeys ||= Model.new(export_scope.vehicle_journeys, model_class: Chouette::VehicleJourney).index
+    COLLECTIONS.each do |collection|
+      define_method collection do
+        unless instance_variable_get("@#{collection}")
+          instance_variable_set("@#{collection}", Model.new(export_scope.send(collection)).index)
+        else
+          instance_variable_set("@#{collection}", nil)
+        end
+      end
     end
 
     def collection_name(model_class)
@@ -35,13 +39,17 @@ module Export
     end
 
     class Model
-      def initialize(collection, model_class:)
+      def initialize(collection)
         @collection = collection
-        @model_class = model_class
+
         @codes = {}
       end
 
-      attr_reader :collection, :model_class
+      attr_reader :collection
+
+      def model_class
+        @model_class ||= collection.model
+      end
 
       ATTRIBUTES = %w[objectid uuid].freeze
       def attribute
@@ -59,7 +67,7 @@ module Export
       end
 
       def code(model_id)
-        @codes & [model_id] if model_id
+        @codes[model_id] if model_id
       end
     end
 

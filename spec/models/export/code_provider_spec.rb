@@ -31,15 +31,19 @@ RSpec.describe Export::CodeProvider do
   end
 
   describe '#lines' do
-    # TODO
+    subject { code_provider.lines }
+
+    before { allow(export_scope).to receive(:lines).and_return(Chouette::Line.none) }
+
+    it { is_expected.to have_attributes(model_class: Chouette::Line) }
+    it { is_expected.to have_attributes(collection: export_scope.lines) }
   end
 
   describe Export::CodeProvider::Model do
     context 'when model class is Chouette::StopArea' do
       subject(:model_code_provider) do
         Export::CodeProvider::Model.new(
-          Chouette::StopArea.none,
-          model_class: Chouette::StopArea
+          Chouette::StopArea.none
         )
       end
 

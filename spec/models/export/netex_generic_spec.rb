@@ -308,6 +308,42 @@ RSpec.describe Export::NetexGeneric do
     end
   end
 
+  describe '#netex_identifier' do
+    subject { decorator.netex_identifier }
+
+    let(:decorator) { Export::NetexGeneric::Lines::Decorator.new model, code_provider: code_provider}
+    let(:code_provider) { Export::CodeProvider.new export_scope}
+
+    let(:context) do
+      Chouette.create do
+        stop_area
+        referential
+      end
+    end
+
+    let(:export_scope) do
+      double "Export::Scope", lines: referential.lines, stop_areas: referential.stop_areas
+    end
+
+    let(:referential) { context.referential }
+
+    let(:expected_attribute) { model.send identifier }
+
+    describe '#lines' do
+      let(:model) { referential.lines.first }
+      let(:identifier) { :objectid }
+
+      it { is_expected.to eq expected_attribute }
+    end
+
+    describe '#stop_areas' do
+      let(:model) { referential.stop_areas.first }
+      let(:identifier) { :objectid }
+
+      it { is_expected.to eq expected_attribute }
+    end
+  end
+
   describe "Lines export" do
     describe Export::NetexGeneric::Lines::Decorator do
       let(:line) { Chouette::Line.new }
@@ -359,6 +395,16 @@ RSpec.describe Export::NetexGeneric do
 
       # heavy version (deprecated)
       describe "#netex_attributes" do
+        let(:decorator) { Export::NetexGeneric::Lines::Decorator.new line, code_provider: code_provider}
+        let(:code_provider) { Export::CodeProvider.new export_scope}
+        let(:export_scope) do
+          double(
+            "Export::Scope",
+            lines: Chouette::Line.where(id: line.id),
+            companies: Chouette::Company.where(id: [first_company_id, second_company_id])
+          )
+        end
+
         let!(:context) do
           Chouette.create do
             company :first
@@ -373,6 +419,7 @@ RSpec.describe Export::NetexGeneric do
         let(:active_from) { "2022-03-16".to_date }
         let(:active_until) { active_from + 3 }
         let(:first_company) { context.company(:first) }
+        let(:first_company_id) { first_company&.id}
         let(:second_company_id) { context.company(:second).id}
         let(:network) { context.network }
         let(:objectid) { 'chouette:Line:497d415e-fe15-46cf-9219-ee8bed76c95c:LOC' }

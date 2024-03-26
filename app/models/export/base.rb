@@ -130,6 +130,10 @@ class Export::Base < ApplicationModel
   end
   attr_writer :export_scope
 
+  def code_provider
+    @code_provider ||= Export::CodeProvider.new export_scope
+  end
+
   def human_name
     self.class.human_name(options)
   end

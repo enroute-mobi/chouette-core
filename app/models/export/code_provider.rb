@@ -20,7 +20,9 @@ module Export
     def code(model)
       return unless model&.id
 
-      send(collection_name(model.class)).code(model.id)
+      if collection = send(collection_name(model.class))
+        collection.code(model.id)
+      end
     end
 
     COLLECTIONS.each do |collection|

@@ -784,8 +784,9 @@ class Export::NetexGeneric < Export::Base
 
       def additional_operators
         secondary_companies.map do |company|
-          Netex::Reference.new(company&.objectid, type: 'OperatorRef')
-        end
+          company_code = code_provider.code(company) if code_provider
+          Netex::Reference.new(company_code, type: 'OperatorRef') if company_code
+        end.compact
       end
 
       def status
@@ -805,8 +806,7 @@ class Export::NetexGeneric < Export::Base
       end
 
       def operator_ref
-        company_code = code_provider.companies.code(company)
-
+        company_code = code_provider.code(company) if code_provider
         Netex::Reference.new(company_code, type: 'OperatorRef') if company_code
       end
 

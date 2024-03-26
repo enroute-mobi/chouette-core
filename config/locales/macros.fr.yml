@@ -48,6 +48,8 @@ fr:
         one: Associer les documents
       macro/create_code_from_sequence:
         one: Créer code en séquence
+      macro/create_code_from_uuid:
+        one: Créer un code à partir d’un UUID
     attributes:
       macro/base:
         name: Nom
@@ -73,6 +75,7 @@ fr:
         document_code_space: Espace de code du document
       macro/create_code_from_sequence:
         sequence_id: Séquence
+      macro/create_code_from_uuid:
         code_space_id: Espace de code
   simple_form:
     placeholders:

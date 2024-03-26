@@ -34,18 +34,18 @@ fr:
     messages:
       default: "L'adresse '%{address}' a été mise à jour sur un(e) %{target_model} %{name}"
       error: "L'adresse '%{address}' n'a pas pu être mise à jour sur un(e) %{target_model} %{name}"
-      no_address: "Adresse introuvable sur un(e) %{target_model} %{name}"      
+      no_address: "Adresse introuvable sur un(e) %{target_model} %{name}"
   macro/dummy/run:
     messages:
-      default: Simulation est en %{result} pour %{name}    
+      default: Simulation est en %{result} pour %{name}
   macro/update_stop_area_compass_bearing/run:
     messages:
       default: "L'orientation de l'arrêt %{name} a été mis à jour avec la valeur %{bearing}"
       error: "L'orientation de l'arrêt %{name} n'a pas pu être mis à jour avec la valeur %{bearing}"
   macro/associate_shape_according_waypoints/run:
     messages:
-      default: "Le tracé '%{shape}' a été associé à la Mission '%{name}'" 
-      error: "Le tracé '%{shape}' n'a pas pu être associé à la Mission '%{name}'" 
+      default: "Le tracé '%{shape}' a été associé à la Mission '%{name}'"
+      error: "Le tracé '%{shape}' n'a pas pu être associé à la Mission '%{name}'"
   macro/update_attribute_from_referent_to_particulars/run:
     messages:
       default: "L'attribut %{attribute_name} de %{name} a été mis à jour avec la valeur %{attribute_value}"
@@ -62,6 +62,9 @@ fr:
   macro/create_code_from_sequence/run:
     messages:
       default: "Un code %{code_value} a été ajouté sur le/la/l' %{target_model} %{model_name}"
+  macro/create_code_from_uuid/run:
+    messages:
+      default: "Un code %{code_value} a été ajouté sur un(e) %{target_model} %{model_name}"
   macro_messages:
     search_no_results_for_filter: "Aucun messages"
     no_address: "Aucune adresse"

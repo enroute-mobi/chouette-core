@@ -19,7 +19,7 @@ en:
       macro/dummy:
         one: Simulate Macro
       macro/associate_shape:
-        one: Associate Shapes according Code 
+        one: Associate Shapes according Code
       macro/update_stop_area_compass_bearing:
         one: Define Stop Area compass bearing from Shapes
       macro/create_stop_area_referents:
@@ -48,6 +48,8 @@ en:
         one: Associate Documents
       macro/create_code_from_sequence:
         one: Create code from Sequence
+      macro/create_code_from_uuid:
+        one: Create Code from UUID
     attributes:
       macro/base:
         name: Name
@@ -75,6 +77,8 @@ en:
       macro/associate_documents:
         model_code_space: Model code space
         document_code_space: Document code space
+      macro/create_code_from_uuid:
+        code_space_id: Code Space
   simple_form:
     placeholders:
       macro_base:

@@ -33,12 +33,14 @@ en:
         one: Update attribute from Referent
       macro/delete_vehicle_journeys/run:
         one: Delete all Vehicle journeys
-      macro/compute_service_counts:
+      macro/compute_service_counts/run:
         one: Compute service counts
       macro/associate_documents/run:
         one: Associate documents
       macro/create_code_from_sequence/run:
         one: Create code from sequence
+      macro/create_code_from_uuid/run:
+        one: Create Code from UUID
     attributes:
       macro/base/run:
         name: Name
@@ -58,3 +60,5 @@ en:
       macro/create_code_from_sequence/run:
         sequence_id: Séquence
         code_space_id: Espace de code
+      macro/create_code_from_uuid/run:
+        code_space_id: Code Space

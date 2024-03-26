@@ -19,6 +19,7 @@ module Macro
       Macro::ComputeServiceCounts,
       Macro::AssociateDocuments,
       Macro::CreateCodeFromSequence,
+      Macro::CreateCodeFromUuid,
       Macro::Dummy # Keep this dummy last
     ]
   end

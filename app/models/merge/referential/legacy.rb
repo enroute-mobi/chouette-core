@@ -36,6 +36,8 @@ class Merge::Referential::Legacy < Merge::Referential::Base
         end
       end
 
+      code_spaces = workgroup.code_spaces.index_by(&:id)
+
       CustomFieldsSupport.within_workgroup workgroup do
         # let's merge data :)
 
@@ -69,8 +71,6 @@ class Merge::Referential::Legacy < Merge::Referential::Base
         referential_route_opposite_route_ids = referential.switch do
           Hash[referential.routes.where('opposite_route_id is not null').pluck(:id, :opposite_route_id)]
         end
-
-        code_spaces = workgroup.code_spaces.index_by(&:id)
 
         new.switch do
           existing_route_objectids = new.routes.distinct.pluck(:objectid).to_set
@@ -292,8 +292,6 @@ class Merge::Referential::Legacy < Merge::Referential::Base
       end
 
       Chouette::ChecksumManager.inline do
-
-
         # Footnotes
 
         referential_footnotes = referential.switch do
@@ -323,6 +321,7 @@ class Merge::Referential::Legacy < Merge::Referential::Base
         end
 
         # Vehicle Journeys
+
         merge_vehicle_journeys
 
         # Time Tables
@@ -330,12 +329,12 @@ class Merge::Referential::Legacy < Merge::Referential::Base
         referential_time_tables_by_id, referential_time_tables_with_lines = referential.switch do
           Chouette::Benchmark.measure("load_time_tables") do
             time_tables_by_id = {}
-            referential.time_tables.includes(:dates, :periods).find_each do |t|
+            referential.time_tables.includes(:dates, :periods, :codes).find_each do |t|
               time_tables_by_id[t.id] = t
             end
 
             time_tables_with_associated_lines =
-              referential.time_tables.joins(vehicle_journeys: {route: :line}).pluck("lines.id", :id, "vehicle_journeys.id")
+              referential.time_tables.joins(vehicle_journeys: {route: :line}).distinct.pluck("lines.id", :id, "vehicle_journeys.id")
 
             # Because TimeTables will be modified according metadata periods
             # we're loading timetables per line (line is associated to a period list)
@@ -361,13 +360,31 @@ class Merge::Referential::Legacy < Merge::Referential::Base
                 Chouette::TimeTable.transaction do
                   batch.each do |properties|
                     time_table = referential_time_tables_by_id[properties[:id]]
+                    Rails.logger.debug { "Merge Timetable #{time_table.id} in Line #{line.id}/#{line.name}" }
+
+                    timetable_codes = ReferentialCode.unpersisted(time_table.codes, code_spaces: code_spaces)
+
+                    # As Timetables are duplicated for each Line, code values must be modified to distinct
+                    # Merge line registration number in code value
+                    timetable_codes.each do |timetable_code|
+                      value =
+                        if netex_identifier = Netex::ObjectId.parse(timetable_code.value)
+                          # Something:Timetable:dummy:LOC -> Something:Timetable:dummy-AB:LOC
+                          netex_identifier.merge(line.registration_number).to_s
+                        else
+                          # dummy -> dummy-AB
+                          [ timetable_code.value, line.registration_number ].join('-')
+                        end
+                      timetable_code.value = value
+                    end
 
                     # we can't test if TimeTable already exist by checksum
                     # because checksum is modified by intersect_periods!
 
                     attributes = time_table.attributes.merge(
                       id: nil,
-                      comment: "Ligne #{line.name} - #{time_table.comment}",
+                      comment: "#{line.name} - #{time_table.comment}",
+                      codes: timetable_codes,
                       calendar_id: nil
                     )
                     candidate_time_table = new.time_tables.build attributes
@@ -388,43 +405,43 @@ class Merge::Referential::Legacy < Merge::Referential::Base
                     end
 
                     candidate_time_table.intersect_periods! line_periods.periods(line_id)
-                    unless candidate_time_table.empty?
+                    next if candidate_time_table.empty?
 
-                      # FIXME
-                      candidate_time_table.set_current_checksum_source
-                      candidate_time_table.update_checksum
+                    # FIXME
+                    candidate_time_table.set_current_checksum_source
+                    candidate_time_table.update_checksum
 
-                      # after intersect_periods!, the checksum is the expected one
-                      # we can search an existing TimeTable
+                    # after intersect_periods!, the checksum is the expected one
+                    # we can search an existing TimeTable
 
-                      existing_time_table = line.time_tables.find_by checksum: candidate_time_table.checksum
+                    existing_time_table = line.time_tables.find_by checksum: candidate_time_table.checksum
 
-                      if existing_time_table
-                        existing_time_table.merge_metadata_from candidate_time_table
-                      else
-                        objectid = Chouette::TimeTable.where(objectid: time_table.objectid).exists? ? nil : time_table.objectid
-                        candidate_time_table.objectid = objectid
+                    if existing_time_table
+                      existing_time_table.merge_metadata_from candidate_time_table
+                      ReferentialCode.merge existing_time_table.codes, timetable_codes
+                    else
+                      objectid = Chouette::TimeTable.where(objectid: time_table.objectid).exists? ? nil : time_table.objectid
+                      candidate_time_table.objectid = objectid
 
-                        save_model! candidate_time_table
+                      save_model! candidate_time_table
 
-                        # Checksum is changed by #intersect_periods
-                        # if new_time_table.checksum != time_table.checksum
-                        #   raise "Checksum has changed: #{time_table.checksum_source} #{new_time_table.checksum_source}"
-                        # end
+                      # Checksum is changed by #intersect_periods
+                      # if new_time_table.checksum != time_table.checksum
+                      #   raise "Checksum has changed: #{time_table.checksum_source} #{new_time_table.checksum_source}"
+                      # end
 
-                        existing_time_table = candidate_time_table
-                      end
-
-                      # associate VehicleJourney
-
-                      new_vehicle_journey_id = existing_vehicle_journey_ids[properties[:vehicle_journey_id]]
-                      unless new_vehicle_journey_id
-                        raise "TimeTable #{existing_time_table.inspect} associated to a not-merged VehicleJourney: #{properties[:vehicle_journey_id]}"
-                      end
-
-                      associated_vehicle_journey = line.vehicle_journeys.find(new_vehicle_journey_id)
-                      associated_vehicle_journey.time_tables << existing_time_table
+                      existing_time_table = candidate_time_table
                     end
+
+                    # associate VehicleJourney
+
+                    new_vehicle_journey_id = existing_vehicle_journey_ids[properties[:vehicle_journey_id]]
+                    unless new_vehicle_journey_id
+                      raise "TimeTable #{existing_time_table.inspect} associated to a not-merged VehicleJourney: #{properties[:vehicle_journey_id]}"
+                    end
+
+                    associated_vehicle_journey = line.vehicle_journeys.find(new_vehicle_journey_id)
+                    associated_vehicle_journey.time_tables << existing_time_table
                   end
                 end
               end

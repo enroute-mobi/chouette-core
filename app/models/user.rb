@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class User < ApplicationModel
   extend Enumerize
   # Include default devise modules. Others available are:
@@ -16,7 +18,7 @@ class User < ApplicationModel
   end
 
   devise :invitable, :registerable, :validatable, :lockable, :timeoutable,
-         :recoverable, :rememberable, :trackable, authentication_type, *more_devise_modules
+         :recoverable, :rememberable, :trackable, :saml_authenticatable, authentication_type, *more_devise_modules
 
   if Subscription.enabled?
     self.allow_unconfirmed_access_for = 1.day

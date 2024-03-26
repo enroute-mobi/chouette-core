@@ -315,7 +315,7 @@ GEM
       htmlentities (~> 4.3.3)
       launchy (~> 2.1)
       mail (~> 2.7)
-    enumerize (2.8.0)
+    enumerize (2.8.1)
       activesupport (>= 3.2)
     erubi (1.12.0)
     et-orbi (1.2.7)
@@ -924,7 +924,7 @@ DEPENDENCIES
   draper (>= 4.0.2)
   ed25519
   email_spec
-  enumerize
+  enumerize (>= 2.8.1)
   factory_bot_rails (~> 6.2.0)
   faker
   faraday

@@ -105,7 +105,7 @@ gem 'active_attr', '>= 0.15.4'
 
 gem 'draper', '>= 4.0.2'
 
-gem 'enumerize'
+gem 'enumerize', '>= 2.8.1'
 gem 'deep_cloneable'
 gem 'nokogiri', '>= 1.14.3'
 

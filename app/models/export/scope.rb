@@ -97,7 +97,7 @@ module Export::Scope
     delegate :companies, :networks, to: :line_referential
     delegate :entrances, to: :stop_area_referential
 
-    delegate :shapes, to: :shape_referential
+    delegate :shapes, :point_of_interests, to: :shape_referential
     delegate :fare_zones, :fare_products, :fare_validities, to: :fare_referential
 
     delegate :codes, :contracts, to: :workgroup

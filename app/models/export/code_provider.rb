@@ -10,10 +10,9 @@ module Export
     attr_reader :export_scope
 
     COLLECTIONS = %w[
-      stop_areas point_of_interests vehicle_journeys lines companies
-      entrances vehicle_journey_at_stops journey_patterns routes codes
-      time_tables referential_codes routing_constraint_zones networks
-      shapes fare_zones fare_products fare_validities contracts stop_points
+      stop_areas point_of_interests vehicle_journeys lines companies entrances contracts
+      vehicle_journey_at_stops journey_patterns routes codes time_tables fare_validities shapes
+      referential_codes routing_constraint_zones networks fare_zones fare_products stop_points
     ].freeze
 
     # Returns unique code for the given model (StopArea, etc)
@@ -27,11 +26,7 @@ module Export
 
     COLLECTIONS.each do |collection|
       define_method collection do
-        unless instance_variable_get("@#{collection}")
-          instance_variable_set("@#{collection}", Model.new(export_scope.send(collection)).index)
-        else
-          instance_variable_set("@#{collection}", nil)
-        end
+        instance_variable_set("@#{collection}", Model.new(export_scope.send(collection)).index)
       end
     end
 
@@ -59,7 +54,7 @@ module Export
       end
 
       def index
-        @codes = collection.pluck(:id, attribute).to_h
+        @codes = collection.pluck(:id, attribute).to_h unless @codes.present?
 
         self
       end

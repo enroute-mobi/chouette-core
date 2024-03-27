@@ -374,7 +374,7 @@ class Export::NetexGeneric < Export::Base
     attr_writer :code_provider
 
     def netex_identifier
-      code_provider.code(model)
+      @netex_identifier ||= Netex::ObjectId.parse(code_provider.code(model))
     end
 
     def code_provider
@@ -405,10 +405,6 @@ class Export::NetexGeneric < Export::Base
           attributes[:place_types] = place_types
         end
       end
-    end
-
-    def netex_identifier
-      @netex_identifier ||= Netex::ObjectId.parse(objectid)
     end
 
     def netex_transport_mode
@@ -524,12 +520,12 @@ class Export::NetexGeneric < Export::Base
 
     def export!
       entrances.includes(:raw_import).find_each do |entrance|
-        decorated_entrance = Decorator.new(entrance)
+        decorated_entrance = decorate(entrance)
         target << decorated_entrance.netex_resource
       end
     end
 
-    class Decorator < SimpleDelegator
+    class Decorator < ModelDecorator
 
       def netex_attributes
         {
@@ -550,10 +546,6 @@ class Export::NetexGeneric < Export::Base
         Netex::StopPlaceEntrance.new(netex_attributes).with_tag(parent_id: parent_objectid)
       end
 
-      def netex_identifier
-        @netex_identifier ||= Netex::ObjectId.parse(objectid)
-      end
-
       def centroid
         Netex::Point.new(
           location: Netex::Location.new(longitude: longitude, latitude: latitude)
@@ -561,7 +553,7 @@ class Export::NetexGeneric < Export::Base
       end
 
       def postal_address_objectid
-        netex_identifier.change(type: 'PostalAddress').to_s
+        netex_identifier&.change(type: 'PostalAddress').to_s
       end
 
       def postal_address
@@ -607,7 +599,7 @@ class Export::NetexGeneric < Export::Base
 
       def netex_attributes
         {
-          id: uuid,
+          id: netex_identifier,
           name: name,
           url: url,
           centroid: centroid,
@@ -633,7 +625,7 @@ class Export::NetexGeneric < Export::Base
 
       def postal_address
         Netex::PostalAddress.new(
-          id: "Address:#{uuid}",
+          id: "Address:#{netex_identifier}",
           address_line_1: address_line_1,
           post_code: zip_code,
           town: city_name,
@@ -658,7 +650,7 @@ class Export::NetexGeneric < Export::Base
       def validity_conditions
         [].tap do |validity_conditions|
           point_of_interest_hours.find_each do |hour|
-            validity_condition = ValidityCondition.new(hour, uuid)
+            validity_condition = ValidityCondition.new(hour, netex_identifier)
             validity_conditions << Netex::AvailabilityCondition.new(
               day_types: validity_condition.day_types,
               timebands: validity_condition.timebands
@@ -832,7 +824,7 @@ class Export::NetexGeneric < Export::Base
 
       def netex_attributes
         {
-          id: objectid,
+          id: netex_identifier,
           name: name,
           raw_xml: import_xml,
           key_list: netex_alternate_identifiers
@@ -861,7 +853,7 @@ class Export::NetexGeneric < Export::Base
 
       def netex_attributes
         {
-          id: objectid,
+          id: netex_identifier,
           name: name,
           raw_xml: import_xml
         }
@@ -1081,7 +1073,7 @@ class Export::NetexGeneric < Export::Base
 
       def netex_attributes
         {
-          id: objectid,
+          id: netex_identifier,
           data_source_ref: data_source_ref,
           name: netex_name,
           line_ref: line_ref,
@@ -1102,12 +1094,8 @@ class Export::NetexGeneric < Export::Base
         published_name.presence || name
       end
 
-      def netex_identifier
-        @netex_identifier ||= Netex::ObjectId.parse(objectid)
-      end
-
       def direction_id
-        netex_identifier.change(type: 'Direction').to_s
+        Netex::ObjectId.parse(netex_identifier).change(type: 'Direction').to_s
       end
 
       def direction
@@ -1127,7 +1115,9 @@ class Export::NetexGeneric < Export::Base
       end
 
       def line_ref
-        Netex::Reference.new(line.objectid, type: Netex::Line) if line
+        if line_code = code_provider.code(line)
+          Netex::Reference.new(line_code, type: Netex::Line)
+        end
       end
 
       def points_in_sequence

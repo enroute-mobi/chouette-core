@@ -565,9 +565,15 @@ RSpec.describe Export::NetexGeneric do
       describe "#netex_attributes" do
         subject { decorator.netex_attributes }
 
-        it "uses Company objectid as id" do
-          company.objectid = "dummy"
-          is_expected.to include(id: company.objectid)
+        context 'when code provider is used to compute netex id' do
+          let(:company) { create(:company) }
+          let(:decorator) { Export::NetexGeneric::Companies::Decorator.new company, code_provider: code_provider }
+          let(:code_provider) { Export::CodeProvider.new export_scope}
+          let(:export_scope) { double("Export::Scope", companies: Chouette::Company.where(id: company))}
+
+          it "uses Company objectid as id" do
+            is_expected.to include(id: company.objectid)
+          end
         end
 
         it "uses Company name" do
@@ -666,15 +672,32 @@ RSpec.describe Export::NetexGeneric do
 
         subject { decorator.netex_attributes }
 
-        it "includes the same data_source_ref than the Route" do
-          route.data_source_ref = "dummy"
-          is_expected.to include(data_source_ref: route.data_source_ref)
-        end
+        context 'when code provider is used to compute netex id' do
+          let(:route) { create(:route) }
+          let(:decorator) { Export::NetexGeneric::Routes::Decorator.new route, code_provider: code_provider }
+          let(:code_provider) { Export::CodeProvider.new export_scope}
+          let(:export_scope) do
+            double("Export::Scope", routes: Chouette::Route.where(id: route), lines: Chouette::Line.where(id: route.line))
+          end
 
-        it "includes a direction_ref if a published_name is defined" do
-          route.objectid = "chouette:Route:1:"
-          route.published_name = "dummy"
-          is_expected.to have_key(:direction_ref)
+          it "uses Company objectid as id" do
+            is_expected.to include(id: route.objectid)
+          end
+
+          it "includes the same data_source_ref than the Route" do
+            route.data_source_ref = "dummy"
+            is_expected.to include(data_source_ref: route.data_source_ref)
+          end
+
+          it "includes a direction_ref if a published_name is defined" do
+            route.objectid = "chouette:Route:1:"
+            route.published_name = "dummy"
+            is_expected.to have_key(:direction_ref)
+          end
+
+          it "includes a line_ref if a line is defined" do
+            is_expected.to have_key(:line_ref)
+          end
         end
 
         it "doesn't include a direction_ref if a published_name isn't defined" do
@@ -1015,9 +1038,15 @@ RSpec.describe Export::NetexGeneric do
       describe "#netex_attributes" do
         subject { decorator.netex_attributes }
 
-        it 'uses StopArea objectid as id' do
-          stop_area.objectid = 'chouette:StopArea:f387baa1-fcb3-4171-9735-fee0515dde16:LOC'
-          is_expected.to include(id: a_string_eq_to(stop_area.objectid))
+        context 'when code provider is used to compute netex id' do
+          let(:stop_area) { create(:stop_area) }
+          let(:decorator) { Export::NetexGeneric::StopDecorator.new stop_area, code_provider: code_provider }
+          let(:code_provider) { Export::CodeProvider.new export_scope}
+          let(:export_scope) { double("Export::Scope", stop_areas: Chouette::StopArea.where(id: stop_area))}
+
+          it 'uses StopArea objectid as id' do
+            is_expected.to include(id: a_string_eq_to(stop_area.objectid))
+          end
         end
 
         context "when netex_quay? is true" do
@@ -1652,7 +1681,11 @@ RSpec.describe Export::NetexGeneric do
 
     let(:point_of_interest_category) { context.point_of_interest_category }
     let(:point_of_interest) { part.point_of_interests.first }
-    let(:decorator) { Export::NetexGeneric::PointOfInterests::Decorator.new point_of_interest }
+    let(:decorator) do
+      Export::NetexGeneric::PointOfInterests::Decorator.new point_of_interest, code_provider: code_provider
+    end
+    let(:code_provider) { Export::CodeProvider.new export_scope }
+    let(:export_scope) { Export::Scope::All.new context.workbench }
 
     describe Export::NetexGeneric::PointOfInterests::Decorator do
       subject { decorator.netex_attributes }

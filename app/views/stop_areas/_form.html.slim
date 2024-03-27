@@ -90,6 +90,7 @@
       - if has_feature?(:stop_area_waiting_time)
         = f.input :waiting_time, input_html: { min: 0 }
       = f.input :url
+      = f.input :transport_mode, as: :grouped_tom_select, required: false, collection: @stop_area.candidate_transport_modes, group_method: :last
 
   .separator.section_separator
 

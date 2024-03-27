@@ -83,6 +83,18 @@ module Chouette
       def definitions
         DEFINITIONS
       end
+
+      def tree
+        mode_candidates.map do |mode|
+          [
+            new(mode).human_name,
+            definitions[mode].map do |sub_mode|
+              transport_mode = new(mode, sub_mode)
+              [transport_mode.sub_mode_human_name, transport_mode.code]
+            end
+          ]
+        end
+      end
     end
 
     DEFINITIONS = {
@@ -240,5 +252,19 @@ module Chouette
       ],
       trolley_bus: []
     }.tap { |d| d.each { |mode, sub_modes| [mode, sub_modes.freeze] } }.freeze
+
+    class Type < ::ActiveRecord::Type::Value
+      def cast(value)
+        return unless value.present?
+
+        return TransportMode.from(value) if value.is_a?(String)
+      end
+
+      def serialize(value)
+        return unless value.present?
+
+        value.to_s
+      end
+    end
   end
 end

@@ -4,6 +4,7 @@ module Chouette
   class VehicleJourney < Referential::Model
     include CustomFieldsSupport
     include TransportModeEnumerations
+    has_metadata
 
     enum journey_category: { timed: 0, frequency: 1 }
 

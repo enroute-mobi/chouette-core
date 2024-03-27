@@ -188,4 +188,7 @@ class User < ApplicationModel
     UserMailer.invitation_from_user(self, from_user).deliver_now
   end
 
+  def must_sign_in_with_saml?
+    organisation&.authentication&.is_a?(Authentication::Saml)
+  end
 end

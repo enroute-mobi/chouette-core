@@ -329,7 +329,8 @@ ChouetteIhm::Application.routes.draw do # rubocop:disable Metrics/BlockLength
     invitations: 'users/invitations',
     passwords: 'users/passwords',
     registrations: 'users/registrations',
-    saml_sessions: 'users/saml_sessions'
+    saml_sessions: 'users/saml_sessions',
+    sessions: 'users/sessions'
   }
   devise_scope :user do
     get '/users/saml/sign_in/:organisation_code',
@@ -346,7 +347,7 @@ ChouetteIhm::Application.routes.draw do # rubocop:disable Metrics/BlockLength
     end
 
     unauthenticated :user do
-      target = 'devise/sessions#new'
+      target = 'users/sessions#new'
 
       target = 'devise/cas_sessions#new' if Rails.application.config.chouette_authentication_settings[:type] == 'cas'
 

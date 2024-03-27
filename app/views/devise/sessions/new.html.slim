@@ -20,26 +20,31 @@
 
               = form.input :email, :label => false, input_html: { :class => "form-control" }
 
-              .row
-                .col-md-6
-                  = form.input :password, :as => :password, :label => false, input_html: { :class => "form-control" }
+              - if user.email.present? && user.errors.empty?
+                .row
+                  .col-md-6
+                    = form.input :password, :as => :password, :label => false, input_html: { :class => "form-control" }
 
-                .col-md-6
-                  = form.button :submit, t("devise.sessions.new.commit"), :class => "btn-primary"
+                  .col-md-6
+                    = form.button :submit, t("devise.sessions.new.commit"), :class => "btn-primary"
 
-              .row.options
-                .col-md-6
-                  - if devise_mapping.rememberable?
-                    = form.input :remember_me, :as => :boolean if devise_mapping.rememberable?
+                .row.options
+                  .col-md-6
+                    - if devise_mapping.rememberable?
+                      = form.input :remember_me, :as => :boolean if devise_mapping.rememberable?
 
-                .col-md-6.new_password
-                  = mailer_link_to t("devise.links.new_password"), new_password_path(:user)
+                  .col-md-6.new_password
+                    = mailer_link_to t("devise.links.new_password"), new_password_path(:user)
 
-                  / FIXME ref #819
-                  - if false
-                    - if devise_mapping.confirmable? && controller_name != 'confirmations'
-                      br
-                      = mailer_link_to t("devise.links.new_confirmation"), new_confirmation_path(:user)
+                    / FIXME ref #819
+                    - if false
+                      - if devise_mapping.confirmable? && controller_name != 'confirmations'
+                        br
+                        = mailer_link_to t("devise.links.new_confirmation"), new_confirmation_path(:user)
+              - else
+                .row
+                  .col-md-12
+                    = form.button :submit, t("devise.sessions.new.commit"), :class => "btn-primary"
 
         = render 'devise/shared/support'
 

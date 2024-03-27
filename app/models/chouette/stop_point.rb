@@ -1,13 +1,17 @@
+# frozen_string_literal: true
+
 module Chouette
-  class StopPoint < Chouette::TridentActiveRecord
+  class StopPoint < Referential::ActiveRecord
+    include ObjectidSupport
+
     has_metadata
+
     def self.policy_class
       RoutePolicy
     end
 
     include ForBoardingEnumerations
     include ForAlightingEnumerations
-    include ObjectidSupport
 
     belongs_to :stop_area
     add_light_belongs_to :stop_area

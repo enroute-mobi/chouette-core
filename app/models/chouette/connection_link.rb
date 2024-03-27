@@ -1,5 +1,7 @@
+# frozen_string_literal: true
+
 module Chouette
-  class ConnectionLink < Chouette::TridentActiveRecord
+  class ConnectionLink < Chouette::ActiveRecord
     include StopAreaReferentialSupport
 
     has_metadata

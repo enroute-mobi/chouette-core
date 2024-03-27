@@ -1,10 +1,11 @@
+# frozen_string_literal: true
+
 module Chouette
-  class VehicleJourneyAtStop < ::ActiveRecord::Base
-    include Chouette::ForBoardingEnumerations
-    include Chouette::ForAlightingEnumerations
+  class VehicleJourneyAtStop < Referential::ActiveRecord
     include ChecksumSupport
 
-    acts_as_copy_target
+    include Chouette::ForBoardingEnumerations
+    include Chouette::ForAlightingEnumerations
 
     DAY_OFFSET_MAX = 2
 

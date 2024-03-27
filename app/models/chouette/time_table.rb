@@ -1,10 +1,10 @@
+# frozen_string_literal: true
+
 module Chouette
-  class TimeTable < Chouette::TridentActiveRecord
-    has_metadata
-    include ChecksumSupport
-    include ObjectidSupport
+  class TimeTable < Referential::Model
     include ApplicationDaysSupport
     include TimetableSupport
+    has_metadata
 
     attr_accessor :skip_save_shortcuts
 

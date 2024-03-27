@@ -1,9 +1,9 @@
+# frozen_string_literal: true
+
 module Chouette
-  class JourneyPattern < Chouette::TridentActiveRecord
-    has_metadata
-    include ChecksumSupport
+  class JourneyPattern < Referential::Model
     include CustomFieldsSupport
-    include ObjectidSupport
+    has_metadata
 
     belongs_to :route
     has_many :vehicle_journeys, :dependent => :destroy

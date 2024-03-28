@@ -26,6 +26,10 @@ module Export
 
     COLLECTIONS.each do |collection|
       define_method collection do
+        if index = instance_variable_get("@#{collection}")
+          return index
+        end
+
         instance_variable_set("@#{collection}", Model.new(export_scope.send(collection)).index)
       end
     end
@@ -59,7 +63,7 @@ module Export
       end
 
       def index
-        @codes = collection.pluck(:id, attribute).to_h unless @codes.present?
+        @codes = collection.pluck(:id, attribute).to_h
 
         self
       end

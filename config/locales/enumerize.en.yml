@@ -134,6 +134,9 @@ en:
         none: None
         daily: Daily
         hourly: Hourly
+    sequence:
+      sequence_type:
+        range_sequence: Range Sequence
     stop_area:
       area_type:
         zdep: ZDEp

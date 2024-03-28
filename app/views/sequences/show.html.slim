@@ -1,0 +1,13 @@
+- breadcrumb :sequence, @workbench, @sequence
+- page_header_content_for @sequence
+
+.page_content
+  .container-fluid
+		.col-lg-6.col-md-6.col-sm-12.col-xs-12
+			.row
+				= simple_block_for @sequence, title: t('sequences.form.sections.identification') do |d|
+					= d.attribute :name
+					= d.attribute :sequence_type, as: :enumerize
+					= d.attribute :description
+					= d.attribute :range_start
+					= d.attribute :range_end

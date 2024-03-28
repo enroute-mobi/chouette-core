@@ -663,6 +663,21 @@ crumb :new_contract do |workbench|
   parent :contracts, workbench
 end
 
+crumb :sequences do |workbench|
+  link I18n.t('sequences.index.title'), workbench_sequences_path(workbench)
+  parent :workbench, workbench
+end
+
+crumb :sequence do |workbench, sequence|
+  link breadcrumb_name(sequence), workbench_sequence_path(workbench, sequence)
+  parent :sequences, workbench
+end
+
+crumb :new_sequence do |workbench|
+  link I18n.t('sequences.new.title')
+  parent :sequences, workbench
+end
+
 crumb :documents do |workbench|
   link I18n.t('documents.index.title'), workbench_documents_path(workbench)
   parent :workbench, workbench

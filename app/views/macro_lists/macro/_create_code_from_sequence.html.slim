@@ -1,0 +1,4 @@
+= form.input :target_model
+= form.input :code_space_id, collection: @workbench.workgroup.code_spaces.map {|c| [c.short_name, c.id]}
+= form.input :format
+= form.input :sequence_id, collection: @workbench.sequences.map {|s| [s.name, s.id]}

@@ -133,6 +133,9 @@ fr:
         none: Jamais
         daily: Quotidiennement
         hourly: Une fois par heure
+    sequence:
+      sequence_type:
+        range_sequence: Intervalle
     stop_area:
       area_type:
         zdep: ZDEp

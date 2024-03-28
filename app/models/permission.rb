@@ -20,6 +20,7 @@ class Permission
         control_lists
         control_list_runs
         contracts
+        sequences
         documents
         document_providers
         document_types

@@ -19,4 +19,4 @@
             = link_to '', workbench_calendar_path(@workbench, @calendar, year: (@year - 1)), class: 'previous_page'
             = link_to '', workbench_calendar_path(@workbench, @calendar, year: (@year + 1)), class: 'next_page'
 
-    = render 'time_tables/show_time_table', time_table: @calendar, edit_url: [:edit, @workbench, @calendar], disabled: !policy(@calendar).update?
+    = render 'time_tables/show_time_table', time_table: @calendar, edit_url: [:edit, @workbench, @calendar], disabled: !resource_policy.update?

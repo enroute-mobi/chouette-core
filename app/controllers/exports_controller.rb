@@ -1,12 +1,15 @@
 # frozen_string_literal: true
 
 class ExportsController < Chouette::WorkbenchController
-  include PolicyChecker
   include Downloadable
+
+  defaults resource_class: Export::Base, collection_name: 'exports', instance_name: 'export'
 
   skip_before_action :authenticate_user!, only: [:upload]
   skip_before_action :verify_authenticity_token, only: [:upload]
-  defaults resource_class: Export::Base, collection_name: 'exports', instance_name: 'export'
+  # rubocop:disable Rails/LexicallyScopedActionFilter
+  before_action :authorize_resource, except: %i[new create index show upload download]
+  # rubocop:enable Rails/LexicallyScopedActionFilter
   before_action :load_referentials, only: %i[new create]
 
   # FIXME See CHOUETTE-207

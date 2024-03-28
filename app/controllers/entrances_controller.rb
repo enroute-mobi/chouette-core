@@ -2,7 +2,6 @@
 
 class EntrancesController < Chouette::StopAreaReferentialController
   include ApplicationHelper
-  include PolicyChecker
 
   defaults :resource_class => Entrance
 
@@ -60,7 +59,7 @@ class EntrancesController < Chouette::StopAreaReferentialController
   private
 
   def entrance_params
-    params.require(:entrance).permit(
+    @entrance_params ||= params.require(:entrance).permit(
       :objectid,
       :stop_area_id,
       :stop_area_provider_id,

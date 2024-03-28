@@ -1,4 +1,4 @@
-RSpec.describe NotificationRulePolicy, type: :policy do
+RSpec.describe NotificationRulePolicy, type: :pundit_policy do
 
   let( :record ){ build_stubbed :notification_rule }
 

@@ -1,11 +1,8 @@
 describe "/layouts/application", :type => :view do
-
   let(:organisation){ create :organisation }
   let!(:workbench){ create :workbench, organisation: organisation}
 
   before(:each) do
-    allow(view).to receive_messages :user_signed_in? => true
-    allow(view).to receive_messages :current_organisation => organisation
     allow(Rails.application.config).to receive_messages :portal_url => "portal_url"
     allow(Rails.application.config).to receive_messages :codifligne_url => "codifligne_url"
     allow(Rails.application.config).to receive_messages :reflex_url => "reflex_url"

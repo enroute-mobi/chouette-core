@@ -1,4 +1,4 @@
-RSpec.describe WorkgroupPolicy, type: :policy do
+RSpec.describe WorkgroupPolicy, type: :pundit_policy do
 
   let( :record ){ build_stubbed :workgroup }
 

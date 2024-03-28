@@ -1,26 +1,26 @@
-RSpec.describe ConnectionLinkDecorator do
+# frozen_string_literal: true
 
-  let(:connection_link) { Chouette::ConnectionLink.new }
-  let(:decorator) { connection_link.decorate }
+RSpec.describe ConnectionLinkDecorator, type: :decorator do
+  let(:object) { Chouette::ConnectionLink.new }
 
   describe "#name" do
     subject { decorator.name }
 
     before do
-      allow(connection_link).to receive(:default_name).and_return("Default Name")
+      allow(object).to receive(:default_name).and_return('Default Name')
     end
 
     context "when the name is empty" do
-      before { connection_link.name = "" }
+      before { object.name = '' }
       it "uses the default name" do
-        is_expected.to eq(connection_link.default_name)
+        is_expected.to eq(object.default_name)
       end
     end
 
     context "when the name is present" do
-      before { connection_link.name = "Not Empty" }
+      before { object.name = 'Not Empty' }
       it "uses the name" do
-        is_expected.to eq(connection_link.name)
+        is_expected.to eq(object.name)
       end
     end
   end

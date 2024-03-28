@@ -18,16 +18,6 @@ class StopAreaReferentialsController < Chouette::WorkbenchController
     end
   end
 
-  def edit
-    authorize resource
-    edit!
-  end
-
-  def update
-    authorize resource
-    update!
-  end
-
   protected
 
   def stop_area_referential_params

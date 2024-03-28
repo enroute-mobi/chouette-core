@@ -3,8 +3,6 @@
 class WorkbenchConfirmationsController < Chouette::ResourceController
   defaults resource_class: Workbench::Confirmation, singleton: true
 
-  include PolicyChecker
-
   def create
     create! do |success, _|
       workbench = @workbench_confirmation.workbench
@@ -14,6 +12,10 @@ class WorkbenchConfirmationsController < Chouette::ResourceController
   end
 
   protected
+
+  def authorize_resource_class
+    authorize_policy(parent_policy, :workbench_confirm?, Workbench)
+  end
 
   def workbench_confirmation_params
     params.require(:workbench_confirmation).permit(

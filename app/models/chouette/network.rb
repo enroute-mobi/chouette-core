@@ -1,13 +1,11 @@
+# frozen_string_literal: true
+
 module Chouette
   class Network < Chouette::ActiveRecord
-    before_validation :define_line_referential
-
     has_metadata
     include LineReferentialSupport
     include ObjectidSupport
     extend Enumerize
-
-    belongs_to :line_provider, required: true
 
     has_many :lines, dependent: :nullify
 
@@ -57,13 +55,6 @@ module Chouette
       @@source_type_names ||= Chouette::SourceType.all.select do |source_type_name|
         source_type_name.to_i > 0
       end
-    end
-
-    private
-
-    def define_line_referential
-      # TODO Improve performance ?
-      self.line_referential ||= line_provider&.line_referential
     end
   end
 end

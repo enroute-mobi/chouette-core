@@ -24,7 +24,7 @@
     - unless @publication_api.public?
       .row
         .col-lg-12.text-right
-          - if policy(PublicationApiKey).create?
+          - if resource_policy.create?(PublicationApiKey)
             = link_to t('publication_api_keys.actions.create'), new_workgroup_publication_api_publication_api_key_path(@workgroup, @publication_api), class: 'btn btn-primary'
 
         .col-lg-12

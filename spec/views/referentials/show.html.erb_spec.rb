@@ -34,30 +34,23 @@ end
 
 # Legacy view specs
 RSpec.describe "referentials/show", type: :view do
-
+  let(:policy_context_class) { Policy::Context::Workbench }
   let(:referential) do
-    referential = create(:workbench_referential)
+    referential = create(:workbench_referential, organisation: organisation, workbench: current_workbench)
     assign :referential, referential.decorate(context: {
       current_organisation: referential.organisation
     })
   end
-  let(:organisation){ referential.try(:organisation) }
   let(:permissions){ [] }
-  let(:current_organisation) { organisation }
-  let(:organisation) { referential.organisation }
   let(:readonly){ false }
 
   before :each do
     allow(referential.object).to receive(:referential_read_only?){ readonly }
 
     assign :reflines, []
-    allow(view).to receive(:current_organisation).and_return(current_organisation)
-    allow(view).to receive(:current_user).and_return(current_user)
     allow(view).to receive(:resource).and_return(referential)
     allow(view).to receive(:resource_class).and_return(referential.class)
     allow(view).to receive(:has_feature?).and_return(true)
-    allow(view).to receive(:user_signed_in?).and_return true
-    allow(view).to receive(:mutual_workbench).and_return referential.workbench
     controller.request.path_parameters[:id] = referential.id
     allow(view).to receive(:params).and_return(ActionController::Parameters.new(action: :show))
 
@@ -80,5 +73,4 @@ RSpec.describe "referentials/show", type: :view do
       end
     end
   end
-
 end

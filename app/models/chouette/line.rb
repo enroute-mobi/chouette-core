@@ -1,7 +1,7 @@
+# frozen_string_literal: true
+
 module Chouette
   class Line < Chouette::ActiveRecord
-    # Must be defined before ObjectidSupport
-    before_validation :define_line_referential, on: :create
     before_validation :update_unpermitted_blank_values
 
     has_metadata
@@ -25,8 +25,6 @@ module Chouette
 
     open_color_attribute
     open_color_attribute :text_color
-
-    belongs_to :line_provider, optional: false
 
     belongs_to :company
     belongs_to :network
@@ -220,16 +218,7 @@ module Chouette
       get_objectid.try(:local_id)
     end
 
-    def same_documentable_workbench?(workbench)
-      line_provider.workbench_id == workbench.id
-    end
-
     private
-
-    def define_line_referential
-      # TODO: Improve performance ?
-      self.line_referential ||= line_provider&.line_referential
-    end
 
     def update_unpermitted_blank_values
       self.transport_submode = :undefined if transport_submode.blank?

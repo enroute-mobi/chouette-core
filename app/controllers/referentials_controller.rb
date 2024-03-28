@@ -3,13 +3,16 @@
 class ReferentialsController < Chouette::ResourceController
   defaults :resource_class => Referential
   before_action :load_workbench
-  include PolicyChecker
 
   respond_to :html
   respond_to :json, :only => :show
   respond_to :js, :only => :show
 
+  # rubocop:disable Rails/LexicallyScopedActionFilter
+  before_action :authorize_resource, except: %i[new create index show journey_patterns]
+  # rubocop:enable Rails/LexicallyScopedActionFilter
   before_action :check_cloning_source_is_accessible, only: %i(new create)
+  before_action :resource, only: :show
   before_action :check_lines_outside_of_functional_scope, only: :show
 
   def index
@@ -103,11 +106,17 @@ class ReferentialsController < Chouette::ResourceController
     redirect_to referential_line_route_journey_patterns_path(referential, jp.route.line, jp.route)
   end
 
+  def policy_context_class
+    if current_referential
+      ::Policy::Context::Referential
+    else
+      ::Policy::Context::Workbench
+    end
+  end
+
   protected
 
   alias_method :referential, :resource
-  alias_method :current_referential, :referential
-  helper_method :current_referential
 
   def resource
     @referential ||= current_organisation.find_referential(params[:id]).decorate
@@ -167,11 +176,12 @@ class ReferentialsController < Chouette::ResourceController
     current_workbench&.workgroup
   end
 
-  def current_workbench
+  def current_referential
     return nil unless params[:id]
 
-    resource&.workbench
+    resource
   end
+  helper_method :current_referential
 
   private
   def sort_column
@@ -197,7 +207,12 @@ class ReferentialsController < Chouette::ResourceController
       metadatas_attributes: [:id, :first_period_begin, :first_period_end, periods_attributes: [:begin, :end, :id, :_destroy], :lines => []]
     )
     referential_params[:from_current_offer] = referential_params[:from_current_offer] == 'true'
-    referential_params[:urgent] = policy(Referential.new(organisation: current_organisation)).flag_urgent? && referential_params[:urgent] == 'true'
+    referential_params[:urgent] = referential_params[:urgent] == 'true' && \
+                                  policy(
+                                    current_workbench.referentials.build(
+                                      organisation: current_organisation
+                                    )
+                                  ).flag_urgent?
     referential_params
   end
 
@@ -221,6 +236,9 @@ class ReferentialsController < Chouette::ResourceController
                    end
   end
 
-  alias_method :current_workbench, :load_workbench
+  alias parent load_workbench
+  alias current_workbench load_workbench
   helper_method :current_workbench
+
+  alias parent_for_parent_policy current_workbench
 end

@@ -2,7 +2,6 @@
 
 class DocumentProvidersController < Chouette::WorkbenchController
   include ApplicationHelper
-  include PolicyChecker
 
   defaults resource_class: DocumentProvider
 

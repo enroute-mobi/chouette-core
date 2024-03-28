@@ -36,8 +36,6 @@ en:
       deactivate_confirm: "Are you sure you want to deactivate this stop ?"
       deleted_at: "Activated"
       destroy_confirm: "Are you sure you want destroy this stop and all of his children ?"
-      select_parent: "Create or modify the relation child -> parent"
-      add_children: "Create or modify the relation parent -> children"
       clone_as_parent: "Clone as parent"
       clone_as_child: "Clone as child"
       default_geometry: "Compute missing geometries"
@@ -105,10 +103,6 @@ en:
       selection_all: "All"
       area_type: "Area Type"
       advanced_search: "Advanced Search"
-    select_parent:
-      title: "Manage parent of stop area %{stop_area}"
-    add_children:
-      title: "Manage children of stop area %{stop_area}"
   enumerize:
     stop_area:
       mobility_impaired_accessibility:

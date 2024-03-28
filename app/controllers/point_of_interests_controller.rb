@@ -2,14 +2,11 @@
 
 class PointOfInterestsController < Chouette::TopologicReferentialController
   include ApplicationHelper
-  include PolicyChecker
 
   defaults :resource_class => PointOfInterest::Base
 
   before_action :decorate_point_of_interest, only: %i[show new edit]
   after_action :decorate_point_of_interest, only: %i[create update]
-
-  before_action :point_of_interest_params, only: [:create, :update]
 
   respond_to :html, :xml, :json
 
@@ -46,6 +43,14 @@ class PointOfInterestsController < Chouette::TopologicReferentialController
     @collection ||= search.search scope
   end
 
+  def controller_resource_validations(object)
+    errors = super
+    unless candidate_point_of_interest_categories.include?(object.point_of_interest_category)
+      errors << %i[point_of_interest_category_id invalid]
+    end
+    errors
+  end
+
   private
 
   def decorate_point_of_interest
@@ -59,7 +64,7 @@ class PointOfInterestsController < Chouette::TopologicReferentialController
   end
 
   def point_of_interest_params
-    params.require(:point_of_interest).permit(
+    @point_of_interest_params ||= params.require(:point_of_interest).permit(
       :name,
       :url,
       :position_input,
@@ -77,4 +82,9 @@ class PointOfInterestsController < Chouette::TopologicReferentialController
       codes_attributes: [:id, :code_space_id, :value, :_destroy],
       point_of_interest_hours_attributes: [:id, :opening_time_of_day, :closing_time_of_day, :value, :_destroy, week_days_attributes: [:monday, :tuesday, :wednesday, :thursday, :friday, :saturday, :sunday]])
   end
+
+  def candidate_point_of_interest_categories
+    @candidate_point_of_interest_categories ||= @workbench.shape_referential.point_of_interest_categories
+  end
+  helper_method :candidate_point_of_interest_categories
 end

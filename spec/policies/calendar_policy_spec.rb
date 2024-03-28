@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-RSpec.describe CalendarPolicy, type: :policy do
+RSpec.describe CalendarPolicy, type: :pundit_policy do
   let(:workbench) { build_stubbed(:workbench) }
   let(:user_context) { create_user_context(user, referential, workbench) }
   let(:record) { build_stubbed(:calendar) }

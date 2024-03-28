@@ -35,4 +35,8 @@ class LineDecorator < AF83::Decorator
   define_instance_method :human_status do
     h.t(status, scope: 'activerecord.attributes.line')
   end
+
+  def policy_parent
+    context[:workbench].default_line_provider
+  end
 end

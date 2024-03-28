@@ -1,4 +1,4 @@
-RSpec.describe DocumentPolicy, type: :policy do
+RSpec.describe DocumentPolicy, type: :pundit_policy do
   let(:context) do
     Chouette.create do
       organisation(:owner_organisation) { user :owner }

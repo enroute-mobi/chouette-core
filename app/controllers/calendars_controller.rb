@@ -1,8 +1,6 @@
 # frozen_string_literal: true
 
 class CalendarsController < Chouette::WorkbenchController
-  include PolicyChecker
-
   defaults resource_class: Calendar
   before_action :ransack_contains_date, only: [:index]
   respond_to :html

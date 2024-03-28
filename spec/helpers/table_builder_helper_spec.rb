@@ -1,43 +1,27 @@
 # coding: utf-8
 require 'htmlbeautifier'
 
-module TableBuilderHelper
-  include Pundit
-end
-
 describe TableBuilderHelper, type: :helper do
-  let(:features){ [] }
-  before do
-    allow_any_instance_of(AF83::Decorator::Link).to receive(:check_feature){|f|
-      features.include?(f)
-    }
-  end
+  include Support::Policy::Lets
 
   describe "#table_builder_2" do
-    it "builds a table" do
-      referential = create(:workbench_referential)
-      workbench = referential.workbench
-      referential.organisation.workbenches << workbench
+    let(:permissions) { %w[referentials.create referentials.update referentials.destroy] }
+    let(:policy_context_class) { Policy::Context::Workbench }
 
-      user_context = UserContext.new(
-        build_stubbed(
-          :user,
-          organisation: referential.organisation,
-          permissions: [
-            'referentials.create',
-            'referentials.update',
-            'referentials.destroy',
-          ]
-        ),
-        referential: referential
-      )
-      allow(helper).to receive(:pundit_user).and_return(user_context)
-      allow(helper).to receive(:current_user).and_return(user_context.user)
+    before do
+      allow(helper).to receive(:current_user).and_return(current_user)
+      allow(helper).to receive(:policy) do |resource|
+        policy_authorizer.policy(resource)
+      end
+    end
+
+    it "builds a table" do
+      referential = create(:workbench_referential, organisation: organisation, workbench: current_workbench)
+      workbench = referential.workbench
 
       referentials = [referential]
 
       allow(referentials).to receive(:model).and_return(Referential)
-      stub_policy_scope(referential)
 
       allow(helper).to receive(:params).and_return(ActionController::Parameters.new(
         controller: 'workbenches',
@@ -173,30 +157,13 @@ describe TableBuilderHelper, type: :helper do
     end
 
     it "can set a column as non-sortable" do
-      company = create(:company)
+      company = create(:company, line_provider: create(:line_provider, workbench: current_workbench))
       line_referential = company.line_referential
       workbench = company.line_provider.workbench
       referential = build_stubbed(
         :referential,
         line_referential: line_referential
       )
-
-      user_context = UserContext.new(
-        build_stubbed(
-          :user,
-          organisation: referential.organisation,
-          permissions: [
-            'referentials.create',
-            'referentials.edit',
-            'referentials.destroy'
-          ]
-        ),
-        referential: referential
-      )
-      allow(helper).to receive(:pundit_user).and_return(user_context)
-      allow(helper).to receive(:current_user).and_return(user_context.user)
-      allow(helper).to receive(:current_referential)
-        .and_return(line_referential)
 
       companies = [company]
 
@@ -212,7 +179,6 @@ describe TableBuilderHelper, type: :helper do
         companies,
         context: { workbench: workbench }
       )
-      stub_policy_scope(company)
 
       expected = <<-HTML
 <table class="table has-search">
@@ -285,30 +251,13 @@ describe TableBuilderHelper, type: :helper do
     end
 
     it "can set all columns as non-sortable" do
-      company = create(:company)
+      company = create(:company, line_provider: create(:line_provider, workbench: current_workbench))
       line_referential = company.line_referential
       workbench = company.line_provider.workbench
       referential = build_stubbed(
         :referential,
         line_referential: line_referential
       )
-
-      user_context = UserContext.new(
-        build_stubbed(
-          :user,
-          organisation: referential.organisation,
-          permissions: [
-            'referentials.create',
-            'referentials.edit',
-            'referentials.destroy'
-          ]
-        ),
-        referential: referential
-      )
-      allow(helper).to receive(:pundit_user).and_return(user_context)
-      allow(helper).to receive(:current_user).and_return(user_context.user)
-      allow(helper).to receive(:current_referential)
-        .and_return(line_referential)
 
       companies = [company]
 
@@ -324,7 +273,6 @@ describe TableBuilderHelper, type: :helper do
         companies,
         context: { workbench: workbench }
       )
-      stub_policy_scope(company)
 
       expected = <<-HTML
 <table class="table has-search">
@@ -397,22 +345,12 @@ describe TableBuilderHelper, type: :helper do
     end
 
     context "on a single row" do
-      let(:referential){ build_stubbed :workbench_referential }
-      let(:other_referential){ build_stubbed :workbench_referential }
-      let(:user_context){
-        UserContext.new(
-          build_stubbed(
-            :user,
-            organisation: referential.organisation,
-            permissions: [
-              'referentials.create',
-              'referentials.update',
-              'referentials.destroy',
-            ]
-          ),
-          referential: referential
-        )
-      }
+      let(:referential) do
+        build_stubbed :workbench_referential, organisation: organisation, workbench: current_workbench
+      end
+      let(:other_referential) do
+        build_stubbed :workbench_referential, organisation: organisation, workbench: current_workbench
+      end
       let(:columns){
         [
           TableBuilderHelper::Column.new(
@@ -429,12 +367,6 @@ describe TableBuilderHelper, type: :helper do
       let(:model_name){ "referential" }
       let(:other_tr){ helper.send(:tr, other_item, columns, selectable, links, overhead, model_name) }
       let(:items){ [item, other_item] }
-
-      before(:each){
-        allow(helper).to receive(:pundit_user).and_return(user_context)
-        allow(helper).to receive(:current_user).and_return(user_context.user)
-        allow(helper).to receive(:mutual_workbench).and_return(referential.workbench)
-      }
 
       context "with a condition" do
         let(:columns){

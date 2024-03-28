@@ -1,5 +1,4 @@
 describe "/networks/index", :type => :view do
-
   let(:context) do
     Chouette.create do
       workbench :second
@@ -10,6 +9,7 @@ describe "/networks/index", :type => :view do
     end
   end
 
+  let(:policy_context_class) { Policy::Context::Workbench }
   let(:workbench) { assign :workbench, context.workbench(:first) }
   let(:line_provider) { context.network(:first).line_provider }
   let(:line_referential) { assign :line_referential, line_provider.line_referential }

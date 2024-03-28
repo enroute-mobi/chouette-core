@@ -1,5 +1,5 @@
 # coding: utf-8
-RSpec.describe StopAreaPolicy, type: :policy do
+RSpec.describe StopAreaPolicy, type: :pundit_policy do
 
   let(:context) do
     Chouette.create do

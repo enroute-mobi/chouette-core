@@ -1,4 +1,6 @@
-RSpec.describe AF83::Decorator, type: :decorator do
+# frozen_string_literal: true
+
+RSpec.describe AF83::Decorator do
   describe(:parse_options) do
     let(:options){
       {primary: true, secondary: %i(index show), policy: :blublu, weight: 12}

@@ -1,4 +1,4 @@
-RSpec.describe ShapePolicy, type: :policy do
+RSpec.describe ShapePolicy, type: :pundit_policy do
 
 
   let(:context) do

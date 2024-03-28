@@ -15,4 +15,8 @@ class PointOfInterestCategoryDecorator < AF83::Decorator
     instance_decorator.edit_action_link
     instance_decorator.destroy_action_link
   end
+
+  def policy_parent
+    context[:workbench].default_shape_provider
+  end
 end

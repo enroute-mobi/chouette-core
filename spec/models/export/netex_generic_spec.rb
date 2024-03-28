@@ -633,7 +633,8 @@ RSpec.describe Export::NetexGeneric do
           name: "Line Routing Constraint Zone 1",
           stop_areas: [stop_area_0, stop_area_1],
           lines: [context.line_referential.lines.first],
-          line_referential: context.line_referential
+          line_referential: context.line_referential,
+          line_provider: context.line_referential.lines.first.line_provider
         )
       end
 

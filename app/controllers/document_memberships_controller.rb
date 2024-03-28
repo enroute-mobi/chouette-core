@@ -2,15 +2,11 @@
 
 class DocumentMembershipsController < Chouette::ResourceController
   include ApplicationHelper
-  include PolicyChecker
 
   defaults resource_class: DocumentMembership, collection_name: 'document_memberships',
            instance_name: 'document_membership'
 
   belongs_to :workbench
-
-  before_action :authorize_build_resource, only: %i[new create]
-  before_action :authorize_resource_class, only: %i[index]
 
   respond_to :js, only: :index
 
@@ -47,11 +43,11 @@ class DocumentMembershipsController < Chouette::ResourceController
     redirect_to redirect_path
   end
 
-  protected
-
-  def authorize_build_resource
-    authorize(build_resource)
+  def policy_context_class
+    Policy::Context::Workbench
   end
+
+  protected
 
   alias document_membership resource
   alias documentable parent
@@ -74,7 +70,7 @@ class DocumentMembershipsController < Chouette::ResourceController
   end
 
   def unassociated_documents
-    if documentable_policy_klass.new(pundit_user, documentable).update?
+    if parent_policy.update?
       workbench.documents.where.not(id: documentable.document_ids).paginate(page: params[:unassociated_documents_page],
                                                                             per_page: 30)
     else
@@ -84,10 +80,6 @@ class DocumentMembershipsController < Chouette::ResourceController
 
   def workbench
     @workbench ||= current_organisation.workbenches.find(params[:workbench_id])
-  end
-
-  def documentable_policy_klass
-    raise NotImplementedError
   end
 
   def collection_path_method

@@ -5,6 +5,10 @@ class StopAreasController < Chouette::StopAreaReferentialController
 
   defaults :resource_class => Chouette::StopArea
 
+  # rubocop:disable Rails/LexicallyScopedActionFilter
+  before_action :authorize_resource, except: %i[new create index show autocomplete fetch_connection_links]
+  # rubocop:enable Rails/LexicallyScopedActionFilter
+
   respond_to :html, :geojson, :xml, :json
   respond_to :js, :only => :index
 
@@ -14,17 +18,6 @@ class StopAreasController < Chouette::StopAreaReferentialController
     args  = [].tap{|arg| 4.times{arg << "%#{params[:q]}%"}}
     @stop_areas = scope.where("unaccent(name) ILIKE unaccent(?) OR unaccent(city_name) ILIKE unaccent(?) OR registration_number ILIKE ? OR objectid ILIKE ?", *args).limit(50)
     @stop_areas
-  end
-
-  def select_parent
-    @stop_area = stop_area
-    @parent = stop_area.parent
-  end
-
-  def add_children
-    authorize stop_area
-    @stop_area = stop_area
-    @children = stop_area.children
   end
 
   def index # rubocop:disable Metrics/MethodLength
@@ -45,16 +38,6 @@ class StopAreasController < Chouette::StopAreaReferentialController
         )
       }
     end
-  end
-
-  def new
-    authorize resource_class
-    new!
-  end
-
-  def create
-    authorize resource_class
-    create!
   end
 
   def show # rubocop:disable Metrics/MethodLength,Metrics/AbcSize
@@ -87,27 +70,6 @@ class StopAreasController < Chouette::StopAreaReferentialController
     end
   end
 
-  def edit
-    authorize stop_area
-    super
-  end
-
-  def destroy
-    authorize stop_area
-    super
-  end
-
-  def update
-    authorize stop_area
-    update!
-  end
-
-  def zip_codes
-    respond_to do |format|
-      format.json { render :json => referential.stop_areas.collect(&:zip_code).compact.uniq.to_json }
-    end
-  end
-
   def saved_searches
     @saved_searches ||= workbench.saved_searches.for(Search::StopArea)
   end
@@ -115,12 +77,6 @@ class StopAreasController < Chouette::StopAreaReferentialController
   protected
 
   alias_method :stop_area, :resource
-
-  def build_resource
-    get_resource_ivar || super.tap do |stop_area|
-      stop_area.stop_area_provider ||= workbench.default_stop_area_provider
-    end
-  end
 
   def scope
     parent.stop_areas
@@ -137,6 +93,8 @@ class StopAreasController < Chouette::StopAreaReferentialController
   private
 
   def stop_area_params
+    return @stop_area_params if @stop_area_params
+
     fields = [
       :area_type,
       :children_ids,
@@ -179,6 +137,6 @@ class StopAreasController < Chouette::StopAreaReferentialController
       codes_attributes: [:id, :code_space_id, :value, :_destroy],
       localized_names: stop_area_referential.locales.map{|l| l[:code]}
     ] + permitted_custom_fields_params(Chouette::StopArea.custom_fields(stop_area_referential.workgroup))
-    params.require(:stop_area).permit(fields)
+    @stop_area_params = params.require(:stop_area).permit(fields)
   end
 end

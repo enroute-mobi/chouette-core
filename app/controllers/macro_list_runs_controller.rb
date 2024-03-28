@@ -2,7 +2,6 @@
 
 class MacroListRunsController < Chouette::WorkbenchController
   include ApplicationHelper
-  include PolicyChecker
 
   defaults resource_class: Macro::List::Run
 
@@ -119,5 +118,9 @@ class MacroListRunsController < Chouette::WorkbenchController
       .permit(:name, :original_macro_list_id, :referential_id)
       .with_defaults(creator: current_user.name)
       .delete_if { |_, v| v.blank? }
+  end
+
+  def parent_for_parent_policy
+    macro_list || workbench
   end
 end

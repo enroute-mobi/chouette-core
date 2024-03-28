@@ -10,10 +10,6 @@ class LineDocumentMembershipsController < DocumentMembershipsController
 
   private
 
-  def documentable_policy_klass
-    LinePolicy
-  end
-
   def collection_path_method
     :workbench_line_referential_line_document_memberships_path
   end

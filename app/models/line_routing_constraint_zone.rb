@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class LineRoutingConstraintZone < ApplicationModel
   include LineReferentialSupport
   include CodeSupport

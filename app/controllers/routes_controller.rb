@@ -1,7 +1,6 @@
 # frozen_string_literal: true
 
 class RoutesController < Chouette::ReferentialController
-  include PolicyChecker
   defaults resource_class: Chouette::Route
 
   respond_to :html, :xml, :json, :geojson
@@ -11,7 +10,17 @@ class RoutesController < Chouette::ReferentialController
 
   belongs_to :line, parent_class: Chouette::Line, optional: true, polymorphic: true
 
+  # rubocop:disable Rails/LexicallyScopedActionFilter
+  before_action :authorize_resource, except: %i[
+    new create index show
+    costs
+    retrieve_nearby_stop_areas
+    autocomplete_stop_areas
+    fetch_opposite_routes
+    fetch_user_permissions
+  ]
   before_action :define_candidate_opposite_routes, only: %i[new edit fetch_opposite_routes]
+  # rubocop:enable Rails/LexicallyScopedActionFilter
 
   def index
     @routes = collection
@@ -126,10 +135,12 @@ class RoutesController < Chouette::ReferentialController
   # React endpoints
 
   def fetch_user_permissions
-    perms =
-      %w[create destroy update].inject({}) do |permissions, action|
-        permissions.merge({ "routes.#{action}": policy(Chouette::Route).authorizes_action?(action) })
-      end.to_json
+    policy = policy(end_of_association_chain.new)
+    perms = {
+      'routes.create' => parent_policy.create?(Chouette::Route),
+      'routes.update' => policy.update?,
+      'routes.destroy' => policy.destroy?
+    }
 
     render json: perms
   end

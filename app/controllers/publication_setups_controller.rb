@@ -1,10 +1,9 @@
 # frozen_string_literal: true
 
 class PublicationSetupsController < Chouette::WorkgroupController
-  include PolicyChecker
-
   defaults :resource_class => PublicationSetup
 
+  before_action :resource, only: %i[show]
   before_action :build_export, only: %i[show new create edit update]
 
   respond_to :html

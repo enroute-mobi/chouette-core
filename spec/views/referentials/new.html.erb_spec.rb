@@ -1,5 +1,4 @@
 describe "referentials/new", :type => :view do
-
   let(:context) do
     Chouette.create { workbench }
   end
@@ -9,6 +8,7 @@ describe "referentials/new", :type => :view do
 
   before(:each) do
     allow(view).to receive(:has_feature?).and_return(true)
+    allow(view).to receive(:resource).and_return(referential)
   end
 
   it "should have a textfield for name" do

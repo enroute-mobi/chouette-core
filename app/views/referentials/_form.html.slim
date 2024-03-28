@@ -16,7 +16,7 @@
         - if @referential.created_from
           = form.input :created_from, disabled: true, input_html: { value: Referential.find(@referential.created_from_id).name }
 
-      - if policy(@referential).flag_urgent? && !@referential.in_referential_suite?
+      - if resource_policy.flag_urgent? && !@referential.in_referential_suite?
         = form.input :urgent, as: :switchable_checkbox, input_html: { checked: @referential.urgent || @referential.contains_urgent_offer?  }
 
   .separator

@@ -10,6 +10,11 @@ module JourneyPattern
     belongs_to :route, parent_class: Chouette::Route
     belongs_to :journey_pattern, parent_class: Chouette::JourneyPattern
 
+    # rubocop:disable Rails/LexicallyScopedActionFilter
+    before_action :authorize_resource, except: %i[new create index show get_user_permissions update_line]
+    before_action :authorize_resource_class, only: %i[new create]
+    # rubocop:enable Rails/LexicallyScopedActionFilter
+
     def new
       if resource
         flash[:warning] = I18n.t('shapes.errors.cannot_create')
@@ -64,11 +69,9 @@ module JourneyPattern
         Shape.new(shape_provider: shape_provider)
       end
 
-      policy = policy(shape)
-
       render json: {
-        canCreate: policy.create?,
-        canUpdate: policy.update?
+        canCreate: parent_policy.create?(::Shape),
+        canUpdate: resource_policy.update?
       }
     end
 
@@ -122,6 +125,10 @@ module JourneyPattern
 
         _params[:journey_pattern] = parent
       end.to_h.symbolize_keys
+    end
+
+    def resource_policy
+      @resource_policy ||= ::Policy::ShapeEditor.new(nil, context: ::Policy::Authorizer::Controller.from(self).context)
     end
   end
 end

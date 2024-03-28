@@ -1,4 +1,4 @@
-RSpec.describe Chouette::LineNoticePolicy, type: :policy do
+RSpec.describe Chouette::LineNoticePolicy, type: :pundit_policy do
 
   let(:context) do
     Chouette.create do

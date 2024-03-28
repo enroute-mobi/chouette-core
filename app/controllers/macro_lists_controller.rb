@@ -2,7 +2,6 @@
 
 class MacroListsController < Chouette::WorkbenchController
   include ApplicationHelper
-  include PolicyChecker
 
   defaults resource_class: Macro::List
 

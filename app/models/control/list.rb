@@ -23,6 +23,10 @@ module Control
       ControlListPolicy
     end
 
+    def used?
+      processing_rules.exists?
+    end
+
     # control_list_run = control_list.build_run user: user, workbench: workbench, referential: target
     #
     # if control_list_run.save

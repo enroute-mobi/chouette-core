@@ -1,21 +1,23 @@
+# frozen_string_literal: true
+
 RSpec.describe Control::List do
   let(:context) do
-    Chouette.create { workbench }
+    Chouette.create do
+      control_list :control_list
+    end
   end
+
+  subject(:control_list) { context.control_list(:control_list) }
 
   describe ".table_name" do
     subject { described_class.table_name }
     it { is_expected.to eq("public.control_lists") }
   end
 
-  subject(:control_list) do
-    context.workbench.control_lists.create! name: "Test"
-  end
-
   it { is_expected.to validate_presence_of(:name) }
   it { is_expected.to belong_to(:workbench).required(true) }
 
-  describe ".controls"do
+  describe '#controls' do
     before do
       3.times do |n|
         control = Control::Dummy.new(name: "Test #{n}")
@@ -40,6 +42,26 @@ RSpec.describe Control::List do
 
     it "delete controls with list" do
       expect { control_list.destroy }.to change { Control::Base.count }.by(-3)
+    end
+  end
+
+  describe '#used?' do
+    subject { control_list.used? }
+
+    it { is_expected.to eq(false) }
+
+    context 'with processing rules' do
+      let(:context) do
+        Chouette.create do
+          workbench do
+            referential :target
+            control_list :control_list
+            processing_rule control_list: :control_list
+          end
+        end
+      end
+
+      it { is_expected.to eq(true) }
     end
   end
 end

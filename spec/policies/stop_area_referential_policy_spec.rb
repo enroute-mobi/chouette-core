@@ -1,4 +1,4 @@
-RSpec.describe StopAreaReferentialPolicy, type: :policy do
+RSpec.describe StopAreaReferentialPolicy, type: :pundit_policy do
 
   let(:context) do
     Chouette.create do

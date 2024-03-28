@@ -1,9 +1,7 @@
 # frozen_string_literal: true
 
 class WorkgroupControlMessagesController < Chouette::WorkgroupController
-  include Pundit::Authorization
-
-  defaults collection_name: 'control_messages'
+  defaults resource_class: Control::Message, collection_name: 'control_messages'
 
   respond_to :js
 
@@ -11,7 +9,6 @@ class WorkgroupControlMessagesController < Chouette::WorkgroupController
   belongs_to :control_run
 
   def index
-    authorize Control::Message
     messages = collection.paginate(page: params[:page], per_page: 15)
 
     html = render_to_string(
@@ -23,11 +20,5 @@ class WorkgroupControlMessagesController < Chouette::WorkgroupController
     )
 
     render json: { html: html }
-  end
-
-  protected
-
-  def pundit_user
-    UserContext.new(current_user, workgroup: workgroup)
   end
 end

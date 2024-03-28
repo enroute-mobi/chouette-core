@@ -1,4 +1,4 @@
-RSpec.describe JourneyPatternPolicy, type: :policy do
+RSpec.describe JourneyPatternPolicy, type: :pundit_policy do
 
   let( :record ){ build_stubbed :journey_pattern }
 

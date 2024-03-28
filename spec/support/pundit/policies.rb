@@ -1,26 +1,26 @@
 require 'pundit/rspec'
 
+module Pundit
+  module RSpec
+    module PolicyExampleGroup
+      def self.included(base)
+        base.metadata[:type] = :pundit_policy # monkey patch here
+        base.extend Pundit::RSpec::DSL
+        super
+      end
+    end
+  end
+end
+
 module Support
   module Pundit
     module Policies
-      def add_permissions(*permissions, to_user:)
-        to_user.permissions ||= []
-        to_user.permissions += permissions.flatten
-        # to_user.save if to_user.persisted?
-      end
-
       def create_user_context(user, referential, workbench = nil)
         UserContext.new(user, referential: referential, workbench: workbench)
       end
 
       def finalise_referential
         referential.referential_suite_id = random_int
-      end
-
-      def remove_permissions(*permissions, from_user:, save: false)
-        from_user.permissions ||= []
-        from_user.permissions -= permissions.flatten
-        from_user.save! if save
       end
     end
 
@@ -33,6 +33,7 @@ module Support
           let( :user )         { build_stubbed :user }
         end
       end
+
       def with_user_permission(permission, &blk)
         it "with user permission #{permission.inspect}" do
           add_permissions(permission, to_user: user)
@@ -40,25 +41,18 @@ module Support
         end
       end
     end
-
-    module FeaturePermissionMacros
-      def with_permissions(*permissions, &blk)
-        perms, options = permissions.partition{|x| String === x}
-        context "with permissions #{perms.inspect}...", *options do
-          before do
-            add_permissions(*permissions, to_user: @user)
-          end
-          instance_eval(&blk)
-        end
-      end
-    end
   end
 end
 
 RSpec.configure do | c |
-  c.include Support::Pundit::Policies, type: :controller
-  c.include Support::Pundit::Policies, type: :policy
-  c.extend Support::Pundit::PoliciesMacros, type: :policy
-  c.include Support::Pundit::Policies, type: :feature
-  c.extend Support::Pundit::FeaturePermissionMacros, type: :feature
+  # redefine pundit default configuration so we can claim ':policy' type
+  c.instance_variable_get(:@include_modules).items_and_filters.delete_if do |i|
+    i.first == Pundit::RSpec::PolicyExampleGroup
+  end
+  c.include Pundit::RSpec::PolicyExampleGroup, type: :pundit_policy
+
+  require Rails.root.join('spec/support/controller_spec_helper')
+  c.include ControllerSpecHelper::Permissions, type: :pundit_policy
+  c.include Support::Pundit::Policies, type: :pundit_policy
+  c.extend Support::Pundit::PoliciesMacros, type: :pundit_policy
 end

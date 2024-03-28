@@ -2,7 +2,6 @@
 
 class ControlListRunsController < Chouette::WorkbenchController
   include ApplicationHelper
-  include PolicyChecker
 
   defaults resource_class: Control::List::Run
 
@@ -94,7 +93,7 @@ class ControlListRunsController < Chouette::WorkbenchController
     rescue StandardError
       Control::List::Run.new(workbench: workbench)
     end
-    display_referential_links = object.referential.present? && policy(object.referential).show?
+    display_referential_links = object.referential.present?
 
     @facade ||= OperationRunFacade.new(object, current_workbench, display_referential_links: display_referential_links)
   end
@@ -124,5 +123,9 @@ class ControlListRunsController < Chouette::WorkbenchController
       .permit(:name, :original_control_list_id, :referential_id)
       .with_defaults(creator: current_user.name)
       .delete_if { |_, v| v.blank? }
+  end
+
+  def parent_for_parent_policy
+    control_list || workbench
   end
 end

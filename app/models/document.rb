@@ -21,6 +21,8 @@ class Document < ApplicationModel
   # validates_associated :validity_period
   validates :validity_period, valid: true
 
+  validate :validate_document_type_in_document_provider_workbench
+
   scope :with_type, ->(document_type) { where(document_type: document_type) }
   scope :valid_on, -> (date) { where('validity_period is null or validity_period @> DATE ?', date) }
 
@@ -60,4 +62,12 @@ class Document < ApplicationModel
     File.extname(file.path)[1..-1]
   end
 
+  private
+
+  def validate_document_type_in_document_provider_workbench
+    return unless document_type && document_provider
+    return if document_type.workgroup_id == document_provider.workbench.workgroup_id
+
+    errors.add(:document_type_id, :invalid)
+  end
 end

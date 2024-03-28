@@ -2,7 +2,6 @@
 
 class WorkgroupControlListRunsController < Chouette::WorkgroupController
   include ApplicationHelper
-  include PolicyChecker
 
   defaults resource_class: Control::List::Run
 
@@ -59,7 +58,7 @@ class WorkgroupControlListRunsController < Chouette::WorkgroupController
 
   def init_facade
     @facade ||= begin
-      display_referential_links = control_list_run.referential.present? && policy(control_list_run.referential).show?
+      display_referential_links = control_list_run.referential.present?
       OperationRunFacade.new(control_list_run, workgroup.owner_workbench,
                              display_referential_links: display_referential_links)
     end

@@ -16,7 +16,7 @@
     .col-lg-12
       h2.my-16
         = t('fare_zones.form.sections.internal')
-      = f.association :fare_provider, as: :select, collection: @workbench.fare_providers.order(:name), include_blank: false
+      = f.association :fare_provider, as: :select, collection: candidate_fare_providers, include_blank: false
 
   .separator.section_separator
 

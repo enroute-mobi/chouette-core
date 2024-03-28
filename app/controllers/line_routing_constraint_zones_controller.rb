@@ -2,7 +2,6 @@
 
 class LineRoutingConstraintZonesController < Chouette::LineReferentialController
   include ApplicationHelper
-  include PolicyChecker
 
   defaults :resource_class => LineRoutingConstraintZone
 
@@ -49,10 +48,11 @@ class LineRoutingConstraintZonesController < Chouette::LineReferentialController
   end
 
   def line_routing_constraint_zone_params
-    params.require(:line_routing_constraint_zone).permit(
+    @line_routing_constraint_zone_params ||= params.require(:line_routing_constraint_zone).permit(
       :name,
       :created_at,
       :updated_at,
+      :line_provider_id,
       lines: [],
       stop_areas: [],
       codes_attributes: [:id, :code_space_id, :value, :_destroy]

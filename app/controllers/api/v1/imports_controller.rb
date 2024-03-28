@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class Api::V1::ImportsController < Api::V1::WorkbenchController
   respond_to :json, only: [:show, :index, :create]
 

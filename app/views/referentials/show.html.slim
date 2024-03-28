@@ -18,7 +18,7 @@
         = definition_list t('metadatas'), attributes
 
     - unless @referential.ready?
-      - if (operation = @referential.last_operation) && policy(operation).show?
+      - if operation = @referential.last_operation
         .jumbotron.operation
             = operation_status(operation.status)
             span= "#{operation.class.ts}"

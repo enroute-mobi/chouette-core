@@ -15,10 +15,6 @@ class ImportDecorator < AF83::Decorator
     [:activerecord, :attributes, :import, short_type.to_sym]
   end
 
-  define_instance_method :referential_link do
-    h.referential_link(object)
-  end
-
   create_action_link if: -> { context[:parent].is_a? (Workbench) }
 
   with_instance_decorator do |instance_decorator|

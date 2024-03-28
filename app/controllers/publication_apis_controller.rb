@@ -1,8 +1,6 @@
 # frozen_string_literal: true
 
 class PublicationApisController < Chouette::WorkgroupController
-  include PolicyChecker
-
   defaults :resource_class => PublicationApi
 
   def index

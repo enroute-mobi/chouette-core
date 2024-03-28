@@ -2,18 +2,21 @@
 
 class WorkbenchesController < Chouette::ResourceController
   defaults resource_class: Workbench
-  include PolicyChecker
 
   respond_to :html, except: :destroy
 
+  # rubocop:disable Rails/LexicallyScopedActionFilter
+  before_action :authorize_resource, except: %i[new create index show delete_referentials]
+  # rubocop:enable Rails/LexicallyScopedActionFilter
+
   def show
-    @single_workbench = @workbench.workgroup.workbenches.one?
+    @single_workbench = resource.workgroup.workbenches.one?
 
     @wbench_refs = ReferentialDecorator.decorate(
       collection,
       context: {
         current_workbench_id: params[:id],
-        workbench: @workbench
+        workbench: resource
       }
     )
   end
@@ -28,6 +31,14 @@ class WorkbenchesController < Chouette::ResourceController
     end
     flash[:notice] = t('notice.referentials.deleted')
     redirect_to resource
+  end
+
+  def policy_context_class
+    if current_workbench
+      Policy::Context::Workbench
+    else
+      Policy::Context::Workgroup
+    end
   end
 
   private

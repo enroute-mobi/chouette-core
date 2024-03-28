@@ -1,7 +1,6 @@
 # frozen_string_literal: true
 
 class WorkgroupExportsController < Chouette::WorkgroupController
-  include PolicyChecker
   include Downloadable
 
   def self.controller_path
@@ -9,6 +8,10 @@ class WorkgroupExportsController < Chouette::WorkgroupController
   end
 
   defaults resource_class: Export::Base, collection_name: 'exports', instance_name: 'export'
+
+  # rubocop:disable Rails/LexicallyScopedActionFilter
+  before_action :authorize_resource, except: %i[new create index show download]
+  # rubocop:enable Rails/LexicallyScopedActionFilter
 
   def show
     @export = resource.decorate(context: { parent: parent })
@@ -31,7 +34,7 @@ class WorkgroupExportsController < Chouette::WorkgroupController
           name: Workbench.ts.capitalize,
           attribute: proc { |n| n.workbench.name },
           link_to: lambda do |export|
-            policy(export.workbench).show? ? export.workbench : nil
+            export.workbench
           end
         )
         @exports = decorate_collection(collection)

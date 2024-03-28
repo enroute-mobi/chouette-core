@@ -27,8 +27,9 @@ class Sequence < ApplicationModel
 
   def range_start_less_than_range_end
     return unless range_start && range_end
-    if range_start >= range_end
-      errors.add(:range_end, :range_start_less_than_range_end)
-    end
+
+    return unless range_start >= range_end
+
+    errors.add(:range_end, :range_start_less_than_range_end)
   end
 end

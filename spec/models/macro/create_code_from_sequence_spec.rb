@@ -6,9 +6,9 @@ RSpec.describe Macro::CreateCodeFromSequence do
   end
 
   describe Macro::CreateCodeFromSequence::Run do
-    let(:macro_run) do 
+    let(:macro_run) do
       described_class.create(
-        macro_list_run: macro_list_run, 
+        macro_list_run: macro_list_run,
         position: 0,
         options: {
           target_model: target_model,
@@ -41,7 +41,7 @@ RSpec.describe Macro::CreateCodeFromSequence do
     let(:sequence) do
       Sequence.create(
         name: 'Regional identifiers',
-        sequence_type: 'range_sequence', 
+        sequence_type: 'range_sequence',
         range_start: 1,
         range_end: 10,
         workbench: workbench
@@ -69,7 +69,7 @@ RSpec.describe Macro::CreateCodeFromSequence do
 
       describe 'StopArea' do
         let(:target_model) { 'StopArea' }
-        let(:model) { context.stop_area(:first)  }
+        let(:model) { context.stop_area(:first) }
         let(:code_value) { 'dummy:2' }
 
         it 'should create code' do

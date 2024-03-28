@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class SequencePolicy < ApplicationPolicy
   class Scope < Scope
     def resolve

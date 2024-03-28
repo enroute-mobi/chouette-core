@@ -57,7 +57,7 @@ module Macro
       end
 
       def models_with_code
-        @models_with_code || models.joins(:codes).where(codes: {code_space: code_space}).distinct
+        @models_with_code || models.joins(:codes).where(codes: { code_space: code_space }).distinct
       end
 
       def model_collection

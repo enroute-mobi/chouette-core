@@ -1,4 +1,5 @@
 # frozen_string_literal: true
+
 class SequenceDecorator < AF83::Decorator
   decorates Sequence
 

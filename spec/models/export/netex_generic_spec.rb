@@ -309,7 +309,7 @@ RSpec.describe Export::NetexGeneric do
   end
 
   describe '#netex_identifier' do
-    subject { decorator.netex_identifier }
+    subject { decorator.netex_identifier.to_s }
 
     let(:decorator) { Export::NetexGeneric::Lines::Decorator.new model, code_provider: code_provider}
     let(:code_provider) { Export::CodeProvider.new export_scope}
@@ -401,7 +401,8 @@ RSpec.describe Export::NetexGeneric do
           double(
             "Export::Scope",
             lines: Chouette::Line.where(id: line.id),
-            companies: Chouette::Company.where(id: [first_company_id, second_company_id])
+            companies: Chouette::Company.where(id: [first_company_id, second_company_id]),
+            networks: Chouette::Network.where(id: context.network)
           )
         end
 
@@ -931,7 +932,8 @@ RSpec.describe Export::NetexGeneric do
         double(
           "Export::Scope",
           routing_constraint_zones: Chouette::RoutingConstraintZone.where(id: routing_constraint_zone),
-          stop_points: Chouette::StopPoint.where(id: [first_stop_point.id, second_stop_point.id])
+          stop_points: Chouette::StopPoint.where(id: [first_stop_point.id, second_stop_point.id]),
+          lines: Chouette::Line.all
         )
       end
 
@@ -987,13 +989,14 @@ RSpec.describe Export::NetexGeneric do
         subject { decorator.line_refs }
 
         context "when no Line is associated" do
-          before { allow(decorator).to receive(:line).and_return(nil) }
+          before { decorator.route.update line: nil }
 
           it { is_expected.to be_nil }
         end
 
         context "when a Line 'chouette:Line:A:LOC' is associated" do
-          before { allow(decorator).to receive(:line).and_return(double(objectid: "chouette:Line:A:LOC")) }
+          before { decorator.route.line.update objectid: "chouette:Line:A:LOC" }
+
           it { is_expected.to contain_exactly(an_object_having_attributes(ref: 'chouette:Line:A:LOC')) }
         end
       end

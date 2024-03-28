@@ -165,7 +165,6 @@ class Export::NetexGeneric < Export::Base
     def default_decorator_class
       @decorator_class ||= self.class.const_get('Decorator')
     end
-
   end
 
   class ResourceTagger
@@ -387,7 +386,7 @@ class Export::NetexGeneric < Export::Base
 
     def netex_attributes # rubocop:disable Metrics/MethodLength
       {
-        id: netex_identifier,
+        id: netex_identifier.to_s,
         derived_from_object_ref: derived_from_object_ref,
         name: name,
         public_code: public_code,
@@ -529,7 +528,7 @@ class Export::NetexGeneric < Export::Base
 
       def netex_attributes
         {
-          id: netex_identifier,
+          id: netex_identifier.to_s,
           name: name,
           short_name: short_name,
           description: description,
@@ -599,7 +598,7 @@ class Export::NetexGeneric < Export::Base
 
       def netex_attributes
         {
-          id: netex_identifier,
+          id: uuid,
           name: name,
           url: url,
           centroid: centroid,
@@ -625,7 +624,7 @@ class Export::NetexGeneric < Export::Base
 
       def postal_address
         Netex::PostalAddress.new(
-          id: "Address:#{netex_identifier}",
+          id: "Address:#{uuid}",
           address_line_1: address_line_1,
           post_code: zip_code,
           town: city_name,
@@ -650,7 +649,7 @@ class Export::NetexGeneric < Export::Base
       def validity_conditions
         [].tap do |validity_conditions|
           point_of_interest_hours.find_each do |hour|
-            validity_condition = ValidityCondition.new(hour, netex_identifier)
+            validity_condition = ValidityCondition.new(hour, uuid)
             validity_conditions << Netex::AvailabilityCondition.new(
               day_types: validity_condition.day_types,
               timebands: validity_condition.timebands
@@ -741,7 +740,7 @@ class Export::NetexGeneric < Export::Base
 
       def netex_attributes
         {
-          id: netex_identifier,
+          id: netex_identifier.to_s,
           name: netex_name,
           transport_mode: transport_mode,
           transport_submode: netex_transport_submode,
@@ -798,12 +797,13 @@ class Export::NetexGeneric < Export::Base
       end
 
       def operator_ref
-        company_code = code_provider.code(company) if code_provider
+        company_code = code_provider.companies.code(company_id) if code_provider
         Netex::Reference.new(company_code, type: 'OperatorRef') if company_code
       end
 
       def represented_by_group_ref
-        Netex::Reference.new(network.objectid, type: 'NetworkRef') if network
+        network_code = code_provider.networks.code(network_id) if code_provider
+        Netex::Reference.new(network_code, type: 'NetworkRef') if network_code
       end
 
     end
@@ -824,7 +824,7 @@ class Export::NetexGeneric < Export::Base
 
       def netex_attributes
         {
-          id: netex_identifier,
+          id: netex_identifier.to_s,
           name: name,
           raw_xml: import_xml,
           key_list: netex_alternate_identifiers
@@ -853,7 +853,7 @@ class Export::NetexGeneric < Export::Base
 
       def netex_attributes
         {
-          id: netex_identifier,
+          id: netex_identifier.to_s,
           name: name,
           raw_xml: import_xml
         }
@@ -886,12 +886,8 @@ class Export::NetexGeneric < Export::Base
       position+1
     end
 
-    def netex_stop_point_identifier
-      @netex_stop_point_identifier ||= Netex::ObjectId.parse(netex_identifier)
-    end
-
     def point_on_route_id
-      netex_stop_point_identifier.change(type: 'PointOnRoute').to_s
+      netex_identifier.change(type: 'PointOnRoute').to_s
     end
 
     def route_point_ref
@@ -899,7 +895,7 @@ class Export::NetexGeneric < Export::Base
     end
 
     def route_point_ref_id
-      netex_stop_point_identifier.change(type: 'RoutePoint').to_s
+      netex_identifier.change(type: 'RoutePoint').to_s
     end
 
     def scheduled_stop_point
@@ -926,7 +922,7 @@ class Export::NetexGeneric < Export::Base
     end
 
     def scheduled_stop_point_id
-      @scheduled_stop_point_id ||= netex_stop_point_identifier.change(type: 'ScheduledStopPoint').to_s if netex_stop_point_identifier
+      @scheduled_stop_point_id ||= netex_identifier.change(type: 'ScheduledStopPoint').to_s if netex_identifier
     end
 
     def netex_quay?
@@ -953,7 +949,7 @@ class Export::NetexGeneric < Export::Base
     end
 
     def passenger_stop_assignment_id
-      netex_stop_point_identifier.change(type: 'PassengerStopAssignment').to_s if netex_stop_point_identifier
+      netex_identifier.change(type: 'PassengerStopAssignment').to_s if netex_identifier
     end
 
     def scheduled_stop_point_ref
@@ -981,7 +977,7 @@ class Export::NetexGeneric < Export::Base
     end
 
     def route_point_id
-      netex_stop_point_identifier.change(type: 'RoutePoint').to_s
+      netex_identifier.change(type: 'RoutePoint').to_s
     end
 
     def point_projection
@@ -996,7 +992,7 @@ class Export::NetexGeneric < Export::Base
     end
 
     def point_projection_id
-      netex_stop_point_identifier.change(type: 'PointProjection').to_s
+      netex_identifier.change(type: 'PointProjection').to_s
     end
 
     def project_to_point_ref
@@ -1037,7 +1033,7 @@ class Export::NetexGeneric < Export::Base
     end
 
     def stop_point_in_journey_pattern_id
-      self.class.stop_point_in_journey_pattern_id(netex_stop_point_identifier, journey_pattern_id)
+      self.class.stop_point_in_journey_pattern_id(netex_identifier, journey_pattern_id)
     end
   end
 
@@ -1067,7 +1063,7 @@ class Export::NetexGeneric < Export::Base
 
       def netex_attributes
         {
-          id: netex_identifier,
+          id: netex_identifier.to_s,
           data_source_ref: data_source_ref,
           name: netex_name,
           line_ref: line_ref,
@@ -1089,7 +1085,7 @@ class Export::NetexGeneric < Export::Base
       end
 
       def direction_id
-        Netex::ObjectId.parse(netex_identifier).change(type: 'Direction').to_s
+        netex_identifier.change(type: 'Direction').to_s
       end
 
       def direction
@@ -1109,7 +1105,7 @@ class Export::NetexGeneric < Export::Base
       end
 
       def line_ref
-        if line_code = code_provider.code(line)
+        if line_code = code_provider.lines.code(line_id)
           Netex::Reference.new(line_code, type: Netex::Line)
         end
       end
@@ -1160,7 +1156,9 @@ class Export::NetexGeneric < Export::Base
         end
 
         def line_refs
-          [Netex::Reference.new(line.objectid, type: 'LineRef')]
+          if line_code = code_provider.lines.code(route.line_id)
+            [Netex::Reference.new(line_code, type: 'LineRef')]
+          end
         end
 
         def stop_points
@@ -1228,7 +1226,7 @@ class Export::NetexGeneric < Export::Base
 
       def netex_attributes
         {
-          id: netex_identifier,
+          id: netex_identifier.to_s,
           data_source_ref: data_source_ref,
           name: name,
           members: scheduled_stop_point_refs,
@@ -1246,7 +1244,9 @@ class Export::NetexGeneric < Export::Base
       end
 
       def line_refs
-        [ Netex::Reference.new(line.objectid, type: 'LineRef') ] if line
+        if line_code = code_provider.lines.code(route.line_id)
+          [ Netex::Reference.new(line_code, type: 'LineRef') ]
+        end
       end
 
       def netex_resource
@@ -1285,7 +1285,7 @@ class Export::NetexGeneric < Export::Base
 
       def netex_attributes
         {
-          id: netex_identifier,
+          id: objectid,
           data_source_ref: data_source_ref,
           name: name,
           route_ref: route_ref,
@@ -1300,12 +1300,12 @@ class Export::NetexGeneric < Export::Base
         Netex::ServiceJourneyPattern.new netex_attributes
       end
 
-      def route_ref
-        Netex::Reference.new(route.objectid, type: 'RouteRef')
+      def route_ref 
+        Netex::Reference.new(code_provider.code(route), type: 'RouteRef')
       end
 
       def destination_display_id
-        Netex::ObjectId.parse(netex_identifier).change(type: 'DestinationDisplay').to_s
+        netex_identifier.change(type: 'DestinationDisplay').to_s
       end
 
       def destination_display
@@ -1482,7 +1482,7 @@ class Export::NetexGeneric < Export::Base
 
       def netex_attributes
         {
-          id: netex_identifier,
+          id: netex_identifier.to_s,
           data_source_ref: data_source_ref,
           name: published_journey_name,
           journey_pattern_ref: journey_pattern_ref,

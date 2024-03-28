@@ -62,7 +62,19 @@ class Referential
           .mapping(:vehicle_journey_id, with: :vehicle_journeys),
 
         Mapper
-          .new(source, target, :referential_codes, legacy_id: false)
+          .new(source, target, :referential_codes, legacy_id: false, where: "resource_type = 'Chouette::Route'")
+          .mapping(:resource_id, with: :routes),
+
+        Mapper
+          .new(source, target, :referential_codes, legacy_id: false, where: "resource_type = 'Chouette::JourneyPattern'")
+          .mapping(:resource_id, with: :journey_patterns),
+
+        Mapper
+          .new(source, target, :referential_codes, legacy_id: false, where: "resource_type = 'Chouette::TimeTable'")
+          .mapping(:resource_id, with: :time_tables),
+
+        Mapper
+          .new(source, target, :referential_codes, legacy_id: false, where: "resource_type = 'Chouette::VehicleJourney'")
           .mapping(:resource_id, with: :vehicle_journeys)
       ]
     end
@@ -99,14 +111,15 @@ class Referential
     end
 
     class Mapper
-      def initialize(source_referential, target_referential, table_name, legacy_id: true)
+      def initialize(source_referential, target_referential, table_name, legacy_id: true, where: nil)
         @table_name = table_name
         @source_referential = source_referential
         @target_referential = target_referential
         @legacy_id = legacy_id
+        @where = where
       end
 
-      attr_reader :table_name, :source_referential, :target_referential, :legacy_id
+      attr_reader :table_name, :source_referential, :target_referential, :legacy_id, :where
 
       def source_table
         @source_table ||= source_referential.schema.table(table_name)
@@ -129,7 +142,12 @@ class Referential
         SELECT #{select.join(',')}
         FROM #{source_full_name} source_table
         #{joins.join(' ')}
+        #{where_clause}
         SQL
+      end
+
+      def where_clause
+        "WHERE #{where}" if where.present?
       end
 
       def drop_legacy_id_column

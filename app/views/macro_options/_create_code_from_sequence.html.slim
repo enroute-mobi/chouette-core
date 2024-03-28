@@ -1,4 +1,4 @@
-= d.attribute :target_model, value: I18n.t(macro_run.target_model, scope: 'enumerize.target_model')
-= d.attribute :code_space_id, value: d.object.code_space.short_name
+= d.attribute :target_model, as: :enumerize
+= d.attribute :code_space, as: :association
 = d.attribute :format
-= d.attribute :sequence_id, value: d.object.sequence.name
+= d.attribute :sequence, as: :association

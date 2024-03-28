@@ -4,10 +4,6 @@ class SequencesController < Chouette::WorkbenchController
   include ApplicationHelper
   include PolicyChecker
 
-  defaults resource_class: Sequence
-
-  respond_to :html
-
   def index
     index! do |format|
       format.html do

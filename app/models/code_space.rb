@@ -11,4 +11,8 @@ class CodeSpace < ActiveRecord::Base
   # WARNING: required a Referential#switch
   has_many :referential_codes
 
+  def to_label
+    name || short_name
+  end
+
 end

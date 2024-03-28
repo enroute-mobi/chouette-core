@@ -35,7 +35,7 @@ module Export
       begin
         model_class.model_name.plural
       rescue
-        # When the model class is Chouette::StopPoint::Light::StopPoint
+        # When the model class is Chouette::StopPoint::Light::StopPoint...
         model_class.name.demodulize.underscore.pluralize
       end
     end

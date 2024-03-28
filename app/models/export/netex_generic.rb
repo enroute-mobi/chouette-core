@@ -1219,7 +1219,7 @@ class Export::NetexGeneric < Export::Base
         tags = resource_tagger.tags_for(routing_constraint_zone.route.line_id)
         tagged_target = TaggedTarget.new(target, tags)
 
-        decorated_zone = Decorator.new(routing_constraint_zone)
+        decorated_zone = Decorator.new(routing_constraint_zone, code_provider: code_provider)
         tagged_target << decorated_zone.netex_resource
       end
     end
@@ -1285,7 +1285,7 @@ class Export::NetexGeneric < Export::Base
 
       def netex_attributes
         {
-          id: objectid,
+          id: netex_identifier,
           data_source_ref: data_source_ref,
           name: name,
           route_ref: route_ref,
@@ -1304,12 +1304,8 @@ class Export::NetexGeneric < Export::Base
         Netex::Reference.new(route.objectid, type: 'RouteRef')
       end
 
-      def netex_identifier
-        @netex_identifier ||= Netex::ObjectId.parse(objectid)
-      end
-
       def destination_display_id
-        netex_identifier.change(type: 'DestinationDisplay').to_s
+        Netex::ObjectId.parse(netex_identifier).change(type: 'DestinationDisplay').to_s
       end
 
       def destination_display
@@ -1417,7 +1413,8 @@ class Export::NetexGeneric < Export::Base
         tags = resource_tagger.tags_for(vehicle_journey.line_id)
         tagged_target = TaggedTarget.new(target, tags)
 
-        decorated_vehicle_journey = Decorator.new(vehicle_journey, code_space_keys)
+        decorated_vehicle_journey =
+          Decorator.new(vehicle_journey, code_space_keys: code_space_keys, code_provider: code_provider)
         tagged_target << decorated_vehicle_journey.netex_resource
       end
     end
@@ -1480,17 +1477,12 @@ class Export::NetexGeneric < Export::Base
       end
     end
 
-    class Decorator < SimpleDelegator
-
-      def initialize(vehicle_journey, code_space_keys = nil)
-        super vehicle_journey
-        @code_space_keys = code_space_keys
-      end
+    class Decorator < ModelDecorator
       attr_accessor :code_space_keys
 
       def netex_attributes
         {
-          id: objectid,
+          id: netex_identifier,
           data_source_ref: data_source_ref,
           name: published_journey_name,
           journey_pattern_ref: journey_pattern_ref,

@@ -46,12 +46,7 @@ module Chouette
       end
     end
     has_many :vehicle_journey_at_stops, through: :vehicle_journeys
-    has_many :vehicle_journey_frequencies, :dependent => :destroy do
-      # Todo : I think there is a better way to do this.
-      def timeless
-        Chouette::Route.vehicle_journeys_timeless(proxy_association.owner.journey_patterns.pluck(:departure_stop_point_id))
-      end
-    end
+
     has_many :stop_points, -> { order("position") }, inverse_of: :route, dependent: :destroy do
       def find_by_stop_area(stop_area)
         stop_area_ids = Integer === stop_area ? [stop_area] : (stop_area.children_in_depth + [stop_area]).map(&:id)

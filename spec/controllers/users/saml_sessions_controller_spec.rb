@@ -78,8 +78,17 @@ RSpec.describe Users::SamlSessionsController, type: :controller do
 
     let(:saml_response_issuer) { saml_authentication.saml_idp_entity_id }
     let(:saml_response_attributes) { { 'primary_email' => [user_email.dup] } }
+    let(:session_invitation_token) { nil }
 
     before do
+      # If the user is not confirmable, he can connect without being invited.
+      # In these tests, we simulate subscription to test the most complicated cases.
+      unless Subscription.enabled?
+        allow_any_instance_of(User).to receive(:active_for_authentication?).and_wrap_original do |m|
+          m.call && m.receiver.accepted_or_not_invited?
+        end
+      end
+
       dbl_saml_response = double(
         :saml_response,
         issuers: [saml_response_issuer],
@@ -88,6 +97,8 @@ RSpec.describe Users::SamlSessionsController, type: :controller do
         sessionindex: '_16f570fbc0315007a0355dfea6b3c46c'
       )
       allow(OneLogin::RubySaml::Response).to receive(:new).and_return(dbl_saml_response)
+
+      session['user_invitation_token'] = session_invitation_token if session_invitation_token
 
       begin
         post :create, params: { SAMLResponse: 'whatever' }
@@ -131,6 +142,50 @@ RSpec.describe Users::SamlSessionsController, type: :controller do
       end
       # NOTE: it is the gem behavior but this will unfortunately lead to infinite loops
       it { is_expected.to redirect_to(/\A#{saml_authentication.saml_idp_sso_service_url}\?SAMLRequest=/) }
+    end
+
+    context 'when user is invited' do
+      let(:user_email) { 'invited@test.ex' }
+      let(:user) do
+        User.invite(
+          email: user_email,
+          name: 'invited',
+          profile: 'visitor',
+          organisation: organisation,
+          from_user: context.user(:user)
+        )[1]
+      end
+      let(:session_invitation_token) { user.instance_variable_get(:@raw_invitation_token) }
+
+      it { is_expected.to redirect_to('/') }
+
+      it 'signs in user' do
+        expect(warden.user).to eq(user)
+      end
+
+      it 'accepts user' do
+        expect { user.reload }.to change { user.invitation_accepted_at }.from(nil).to(be_present)
+      end
+
+      context 'without invitation token in session' do
+        let(:session_invitation_token) { nil }
+
+        it { is_expected.to redirect_to(/\A#{saml_authentication.saml_idp_sso_service_url}\?SAMLRequest=/) }
+
+        it 'does not accept user' do
+          expect { user.reload }.not_to(change { user.invitation_accepted_at })
+        end
+      end
+
+      context 'with wrong invitation token' do
+        let(:session_invitation_token) { 'wrong_token' }
+
+        it { is_expected.to redirect_to(/\A#{saml_authentication.saml_idp_sso_service_url}\?SAMLRequest=/) }
+
+        it 'does not accept user' do
+          expect { user.reload }.not_to(change { user.invitation_accepted_at })
+        end
+      end
     end
   end
 

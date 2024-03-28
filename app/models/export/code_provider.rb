@@ -32,7 +32,12 @@ module Export
 
     def collection_name(model_class)
       # Chouette::StopArea -> stop_areas
-      model_class.model_name.plural
+      begin
+        model_class.model_name.plural
+      rescue
+        # When the model class is Chouette::StopPoint::Light::StopPoint
+        model_class.name.demodulize.underscore.pluralize
+      end
     end
 
     class Model

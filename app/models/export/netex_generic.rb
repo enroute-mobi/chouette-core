@@ -867,14 +867,8 @@ class Export::NetexGeneric < Export::Base
 
   end
 
-  class StopPointDecorator < SimpleDelegator
-
+  class StopPointDecorator < ModelDecorator
     attr_accessor :journey_pattern_id, :route
-    def initialize(stop_point, journey_pattern_id: nil, route: nil)
-      super stop_point
-      @journey_pattern_id = journey_pattern_id
-      @route = route
-    end
 
     def point_on_route
       Netex::PointOnRoute.new point_on_route_attributes
@@ -892,12 +886,12 @@ class Export::NetexGeneric < Export::Base
       position+1
     end
 
-    def netex_identifier
-      @netex_identifier ||= Netex::ObjectId.parse(objectid)
+    def netex_stop_point_identifier
+      @netex_stop_point_identifier ||= Netex::ObjectId.parse(netex_identifier)
     end
 
     def point_on_route_id
-      netex_identifier.change(type: 'PointOnRoute').to_s
+      netex_stop_point_identifier.change(type: 'PointOnRoute').to_s
     end
 
     def route_point_ref
@@ -905,7 +899,7 @@ class Export::NetexGeneric < Export::Base
     end
 
     def route_point_ref_id
-      netex_identifier.change(type: 'RoutePoint').to_s
+      netex_stop_point_identifier.change(type: 'RoutePoint').to_s
     end
 
     def scheduled_stop_point
@@ -932,7 +926,7 @@ class Export::NetexGeneric < Export::Base
     end
 
     def scheduled_stop_point_id
-      @scheduled_stop_point_id ||= netex_identifier.change(type: 'ScheduledStopPoint').to_s if netex_identifier
+      @scheduled_stop_point_id ||= netex_stop_point_identifier.change(type: 'ScheduledStopPoint').to_s if netex_stop_point_identifier
     end
 
     def netex_quay?
@@ -959,7 +953,7 @@ class Export::NetexGeneric < Export::Base
     end
 
     def passenger_stop_assignment_id
-      netex_identifier.change(type: 'PassengerStopAssignment').to_s if netex_identifier
+      netex_stop_point_identifier.change(type: 'PassengerStopAssignment').to_s if netex_stop_point_identifier
     end
 
     def scheduled_stop_point_ref
@@ -987,7 +981,7 @@ class Export::NetexGeneric < Export::Base
     end
 
     def route_point_id
-      netex_identifier.change(type: 'RoutePoint').to_s
+      netex_stop_point_identifier.change(type: 'RoutePoint').to_s
     end
 
     def point_projection
@@ -1002,7 +996,7 @@ class Export::NetexGeneric < Export::Base
     end
 
     def point_projection_id
-      netex_identifier.change(type: 'PointProjection').to_s
+      netex_stop_point_identifier.change(type: 'PointProjection').to_s
     end
 
     def project_to_point_ref
@@ -1043,7 +1037,7 @@ class Export::NetexGeneric < Export::Base
     end
 
     def stop_point_in_journey_pattern_id
-      self.class.stop_point_in_journey_pattern_id(netex_identifier, journey_pattern_id)
+      self.class.stop_point_in_journey_pattern_id(netex_stop_point_identifier, journey_pattern_id)
     end
   end
 
@@ -1126,7 +1120,7 @@ class Export::NetexGeneric < Export::Base
 
       def decorated_stop_points
         @decorated_stop_points ||= stop_points.map do |stop_point|
-          StopPointDecorator.new stop_point, route: self
+          StopPointDecorator.new stop_point, route: self, code_provider: code_provider
         end
       end
 
@@ -1142,19 +1136,14 @@ class Export::NetexGeneric < Export::Base
 
       def routing_constraint_zones
         filter_line_routing_constraint_zones.map do |line_routing_constraint_zone|
-          LineRoutingConstraintZoneDecorator.new(line_routing_constraint_zone, self).netex_resource
+          LineRoutingConstraintZoneDecorator.new(line_routing_constraint_zone, route: self, code_provider: code_provider).netex_resource
         end
       end
 
-      class LineRoutingConstraintZoneDecorator < SimpleDelegator
+      class LineRoutingConstraintZoneDecorator < ModelDecorator
         delegate :line, to: :route
 
         attr_accessor :route
-
-        def initialize(line_routing_constraint_zone, route)
-          super line_routing_constraint_zone
-          @route = route
-        end
 
         def netex_attributes
           {
@@ -1180,7 +1169,7 @@ class Export::NetexGeneric < Export::Base
 
         def scheduled_stop_point_refs
           stop_points.map do |stop_point|
-            StopPointDecorator.new(stop_point).scheduled_stop_point_ref
+            StopPointDecorator.new(stop_point, code_provider: code_provider).scheduled_stop_point_ref
           end
         end
 
@@ -1201,7 +1190,7 @@ class Export::NetexGeneric < Export::Base
         tags = resource_tagger.tags_for(stop_point.line_id)
         tagged_target = TaggedTarget.new(target, tags)
 
-        decorated_stop_point = StopPointDecorator.new(stop_point)
+        decorated_stop_point = StopPointDecorator.new(stop_point, code_provider: code_provider)
         tagged_target << decorated_stop_point.scheduled_stop_point
         tagged_target << decorated_stop_point.passenger_stop_assignment
         tagged_target << decorated_stop_point.route_point
@@ -1235,11 +1224,11 @@ class Export::NetexGeneric < Export::Base
       end
     end
 
-    class Decorator < SimpleDelegator
+    class Decorator < ModelDecorator
 
       def netex_attributes
         {
-          id: objectid,
+          id: netex_identifier,
           data_source_ref: data_source_ref,
           name: name,
           members: scheduled_stop_point_refs,
@@ -1270,7 +1259,7 @@ class Export::NetexGeneric < Export::Base
 
       def decorated_stop_points
         stop_points.map do |stop_point|
-          StopPointDecorator.new stop_point
+          StopPointDecorator.new stop_point, code_provider: code_provider
         end
       end
     end

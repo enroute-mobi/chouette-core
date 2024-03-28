@@ -677,7 +677,12 @@ RSpec.describe Export::NetexGeneric do
           let(:decorator) { Export::NetexGeneric::Routes::Decorator.new route, code_provider: code_provider }
           let(:code_provider) { Export::CodeProvider.new export_scope}
           let(:export_scope) do
-            double("Export::Scope", routes: Chouette::Route.where(id: route), lines: Chouette::Line.where(id: route.line))
+            double(
+              "Export::Scope",
+              routes: Chouette::Route.where(id: route),
+              lines: Chouette::Line.where(id: route.line),
+              stop_points: route.stop_points
+            )
           end
 
           it "uses Company objectid as id" do
@@ -740,13 +745,19 @@ RSpec.describe Export::NetexGeneric do
       end
 
       describe "#stop_point_in_journey_pattern_id" do
-
         subject { decorator.stop_point_in_journey_pattern_id }
+
+        let(:stop_point) { create(:stop_point) }
+        let(:decorator) { Export::NetexGeneric::StopPointDecorator.new stop_point, code_provider: code_provider }
+        let(:code_provider) { Export::CodeProvider.new export_scope}
+        let(:export_scope) do
+          double("Export::Scope", stop_points: Chouette::StopPoint.where(id: stop_point))
+        end
 
         context "when journey_pattern_id is 'chouette:JourneyPattern:1:LOC' and object_id is 'chouette:StopPointInJourneyPattern:2:LOC' and " do
           before do
             decorator.journey_pattern_id = 'chouette:JourneyPattern:1:LOC'
-            stop_point.objectid = 'chouette:StopPointInJourneyPattern:2:LOC'
+            stop_point.update objectid: 'chouette:StopPointInJourneyPattern:2:LOC'
           end
 
           it { is_expected.to eq('chouette:StopPointInJourneyPattern:1-2:LOC') }
@@ -909,8 +920,20 @@ RSpec.describe Export::NetexGeneric do
     end
 
     describe Export::NetexGeneric::RoutingConstraintZones::Decorator do
-      let(:routing_constraint_zone) { Chouette::RoutingConstraintZone.new }
-      let(:decorator) { Export::NetexGeneric::RoutingConstraintZones::Decorator.new routing_constraint_zone }
+      let(:routing_constraint_zone) { create(:routing_constraint_zone) }
+      let(:decorator) do
+        Export::NetexGeneric::RoutingConstraintZones::Decorator.new routing_constraint_zone, code_provider: code_provider
+      end
+      let(:first_stop_point) { routing_constraint_zone.stop_points.first }
+      let(:second_stop_point) { routing_constraint_zone.stop_points.second }
+      let(:code_provider) { Export::CodeProvider.new export_scope}
+      let(:export_scope) do
+        double(
+          "Export::Scope",
+          routing_constraint_zones: Chouette::RoutingConstraintZone.where(id: routing_constraint_zone),
+          stop_points: Chouette::StopPoint.where(id: [first_stop_point.id, second_stop_point.id])
+        )
+      end
 
       describe '#netex_attributes' do
         subject { decorator.netex_attributes }
@@ -918,7 +941,8 @@ RSpec.describe Export::NetexGeneric do
         it { is_expected.to include(zone_use: "cannotBoardAndAlightInSameZone") }
 
         context "when RoutingConstraintZone objectid is 'chouette:RoutingConstraintZone:test:LOC'" do
-          before { routing_constraint_zone.objectid = "chouette:RoutingConstraintZone:test:LOC" }
+          before { routing_constraint_zone.update objectid: "chouette:RoutingConstraintZone:test:LOC" }
+
           it { is_expected.to include(id: routing_constraint_zone.objectid) }
         end
 
@@ -948,14 +972,14 @@ RSpec.describe Export::NetexGeneric do
 
         context "when the RoutingConstraintZone is associated with StopPoints 'chouette:StopPoint:A:LOC' and 'chouette:StopPoint:B:LOC" do
           before do
-            allow(routing_constraint_zone).to receive(:stop_points) do
-              %w{chouette:StopPoint:A:LOC chouette:StopPoint:B:LOC}.map do |objectid|
-                Chouette::StopPoint.new objectid: objectid
-              end
-            end
+            first_stop_point.update objectid: 'chouette:StopPoint:A:LOC'
+            second_stop_point.update objectid: 'chouette:StopPoint:B:LOC'
           end
 
-          it { is_expected.to contain_exactly(an_object_having_attributes(ref: 'chouette:ScheduledStopPoint:A:LOC'), an_object_having_attributes(ref: 'chouette:ScheduledStopPoint:B:LOC')) }
+          it do
+            is_expected.to contain_exactly(an_object_having_attributes(ref: 'chouette:ScheduledStopPoint:A:LOC'),
+                                           an_object_having_attributes(ref: 'chouette:ScheduledStopPoint:B:LOC'))
+          end
         end
       end
 
@@ -963,6 +987,8 @@ RSpec.describe Export::NetexGeneric do
         subject { decorator.line_refs }
 
         context "when no Line is associated" do
+          before { allow(decorator).to receive(:line).and_return(nil) }
+
           it { is_expected.to be_nil }
         end
 

@@ -10,13 +10,13 @@ module Chouette
     include TransportModeEnumerations
     enumerize_transport_submode
 
-    enumerize :mobility_impaired_accessibility, in: %i(unknown yes no partial), default: :unknown
-    enumerize :wheelchair_accessibility, in: %i(unknown yes no partial), default: :unknown
-    enumerize :step_free_accessibility, in: %i(unknown yes no partial), default: :unknown
-    enumerize :escalator_free_accessibility, in: %i(unknown yes no partial), default: :unknown
-    enumerize :lift_free_accessibility, in: %i(unknown yes no partial), default: :unknown
-    enumerize :audible_signals_availability, in: %i(unknown yes no partial), default: :unknown
-    enumerize :visual_signs_availability, in: %i(unknown yes no partial), default: :unknown
+    enumerize :mobility_impaired_accessibility, in: %i[unknown yes no partial], default: :unknown
+    enumerize :wheelchair_accessibility, in: %i[unknown yes no partial], default: :unknown
+    enumerize :step_free_accessibility, in: %i[unknown yes no partial], default: :unknown
+    enumerize :escalator_free_accessibility, in: %i[unknown yes no partial], default: :unknown
+    enumerize :lift_free_accessibility, in: %i[unknown yes no partial], default: :unknown
+    enumerize :audible_signals_availability, in: %i[unknown yes no partial], default: :unknown
+    enumerize :visual_signs_availability, in: %i[unknown yes no partial], default: :unknown
 
     include ColorSupport
     include CodeSupport
@@ -81,7 +81,7 @@ module Chouette
     }
 
     scope :active, lambda { |*args|
-      on_date = args.first || Time.now
+      on_date = args.first || Time.zone.now
       activated.active_from(on_date).active_until(on_date)
     }
 
@@ -139,7 +139,7 @@ module Chouette
     end
 
     def vehicle_journey_frequencies?
-      vehicle_journeys.unscoped.where(journey_category: 1).count > 0
+      vehicle_journeys.unscoped.where(journey_category: 1).count.positive?
     end
 
     def full_display_name
@@ -160,12 +160,13 @@ module Chouette
 
     def active_from_less_than_active_until
       return unless active_from && active_until
-      if active_from > active_until
-        errors.add(:active_until, :active_from_less_than_active_until)
-      end
+
+      return unless active_from > active_until
+
+      errors.add(:active_until, :active_from_less_than_active_until)
     end
 
-    def active?(on_date = Time.now)
+    def active?(on_date = Time.zone.now)
       on_date = on_date.to_date
 
       return false if deactivated

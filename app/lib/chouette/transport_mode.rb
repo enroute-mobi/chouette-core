@@ -86,11 +86,13 @@ module Chouette
 
       def tree
         mode_candidates.map do |mode|
+          transport_mode = new(mode)
           [
-            new(mode).human_name,
+            transport_mode.human_name,
+            [[transport_mode.human_name, transport_mode.code]] +
             definitions[mode].map do |sub_mode|
               transport_mode = new(mode, sub_mode)
-              [transport_mode.sub_mode_human_name, transport_mode.code]
+              [transport_mode.human_name, transport_mode.code]
             end
           ]
         end

@@ -13,7 +13,7 @@ RSpec.describe Policy::Control::List, type: :policy do
 
     let(:resource_class) { double }
 
-    it { applies_strategy(Policy::Strategy::Workbench) }
+    it { does_not_apply_strategy(Policy::Strategy::Workbench) }
     it { applies_strategy(Policy::Strategy::Permission, :create, resource_class) }
     it { does_not_apply_strategy(Policy::Strategy::NotUsed) }
 
@@ -52,7 +52,7 @@ RSpec.describe Policy::Control::List, type: :policy do
 
     before { allow(policy).to receive(:create?).with(Control::List::Run).and_return(policy_create_control_list_run) }
 
-    it { applies_strategy(Policy::Strategy::Workbench) }
+    it { does_not_apply_strategy(Policy::Strategy::Workbench) }
     it { does_not_apply_strategy(Policy::Strategy::Permission) }
     it { does_not_apply_strategy(Policy::Strategy::NotUsed) }
 

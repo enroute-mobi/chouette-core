@@ -130,6 +130,10 @@ fr:
               an_object_used_as_referent_must_be_flagged_as_referent: "Une ligne utilisée comme référente doit être signalée comme référente"
             is_referent:
               the_particulars_collection_should_be_empty: "Une ligne non-référente ne peut avoir des lignes particulières"
+            active_from:
+              active_from_less_than_active_until: "La date 'Active à partir du' doit commencer avant la date 'Active jusqu'au'"
+            active_until:
+              active_from_less_than_active_until: "La date 'Active jusqu'au' doit terminer après la date 'Active à partir du'"
     models:
       line:
         zero:  "ligne"

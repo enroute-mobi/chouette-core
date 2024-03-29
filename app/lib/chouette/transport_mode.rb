@@ -84,15 +84,15 @@ module Chouette
         DEFINITIONS
       end
 
-      def tree
+      def tree(locale: I18n.default_locale)
         mode_candidates.map do |mode|
           transport_mode = new(mode)
           [
-            transport_mode.human_name,
-            [[transport_mode.human_name, transport_mode.code]] +
+            transport_mode.human_name(locale: locale),
+            [[transport_mode.human_name(locale: locale), transport_mode.code]] +
             definitions[mode].map do |sub_mode|
               transport_mode = new(mode, sub_mode)
-              [transport_mode.human_name, transport_mode.code]
+              [transport_mode.human_name(locale: locale), transport_mode.code]
             end
           ]
         end

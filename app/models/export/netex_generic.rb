@@ -391,11 +391,11 @@ class Export::NetexGeneric < Export::Base
     end
 
     def netex_transport_mode
-      transport_mode.camelize_mode
+      transport_mode&.camelize_mode
     end
 
     def netex_transport_submode
-      transport_mode.camelize_sub_mode
+      transport_mode&.camelize_sub_mode
     end
 
     def parent_objectid

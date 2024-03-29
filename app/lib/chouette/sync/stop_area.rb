@@ -102,6 +102,10 @@ module Chouette::Sync
           nil
         end
 
+        def chouette_transport_mode
+          Chouette::TransportMode.new(transport_mode.underscore, transport_submode.underscore).code
+        end
+
         def model_attributes # rubocop:disable Metrics/AbcSize,Metrics/MethodLength
           {
             name: name,
@@ -124,7 +128,8 @@ module Chouette::Sync
             audible_signals_availability: accessibility.audible_signals_available,
             visual_signs_availability: accessibility.visual_signs_available,
             accessibility_limitation_description: accessibility.description,
-            import_xml: raw_xml
+            import_xml: raw_xml,
+            transport_mode: chouette_transport_mode
           }.tap do |attributes|
             attributes[:is_referent] = false if stop_area_is_particular
           end

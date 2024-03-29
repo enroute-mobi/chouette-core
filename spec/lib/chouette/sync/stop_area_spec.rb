@@ -217,6 +217,28 @@ RSpec.describe Chouette::Sync::StopArea do
         expect(particular_stop_area.reload).to have_attributes(expected_attributes)
       end
     end
+
+    describe '#transport_mode' do
+      let(:xml) do
+        %(
+          <StopPlace id="sample" dataSourceRef="FR1-ARRET_AUTO">
+            <Name>Stop Place Sample</Name>
+            <TransportMode>bus</TransportMode>
+            <TransportSubmode>
+              <BusSubmode>regionalBus</BusSubmode>
+            </TransportSubmode>
+          </StopPlace>
+        )
+      end
+
+      let(:stop_place) { stop_area('sample') }
+
+      before { sync.synchronize }
+
+      it 'should create stop area with transport mode' do
+        expect(stop_place.transport_mode.code).to eq 'bus/regional_bus'
+      end
+    end
   end
 
   describe Chouette::Sync::StopArea::Netex::Decorator do

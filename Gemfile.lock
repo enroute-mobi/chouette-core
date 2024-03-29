@@ -66,7 +66,8 @@ GIT
 
 GIT
   remote: https://bitbucket.org/enroute-mobi/netex.git
-  revision: 3c4a616e3888b186530aae059c41b205ca466d7f
+  revision: 8b4d12a354a6024c29006eb25e9300516962f1e9
+  branch: CHOUETTE-3590-add-transport-mode-stop-area-to-mapper
   specs:
     netex (0.1.2)
       activesupport

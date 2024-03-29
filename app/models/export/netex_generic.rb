@@ -375,7 +375,9 @@ class Export::NetexGeneric < Export::Base
         key_list: key_list,
         accessibility_assessment: accessibility_assessment,
         postal_address: postal_address,
-        url: url
+        url: url,
+        transport_mode: netex_transport_mode,
+        transport_submode: netex_transport_submode
       }.tap do |attributes|
         unless netex_quay?
           attributes[:parent_site_ref] = parent_site_ref
@@ -386,6 +388,14 @@ class Export::NetexGeneric < Export::Base
 
     def netex_identifier
       @netex_identifier ||= Netex::ObjectId.parse(objectid)
+    end
+
+    def netex_transport_mode
+      transport_mode.camelize_mode
+    end
+
+    def netex_transport_submode
+      transport_mode.camelize_sub_mode
     end
 
     def parent_objectid

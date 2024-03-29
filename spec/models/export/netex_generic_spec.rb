@@ -983,6 +983,11 @@ RSpec.describe Export::NetexGeneric do
           it { is_expected.to have_key(:parent_site_ref)}
           it { is_expected.to have_key(:place_types)}
         end
+
+        it 'uses StopArea transport mode as netex transport mode and sub mode' do
+          stop_area.transport_mode = 'bus/regional_bus'
+          is_expected.to include(transport_mode: a_string_eq_to('bus'), transport_submode:  a_string_eq_to('regionalBus'))
+        end
       end
 
       describe "#netex_resource" do
@@ -990,6 +995,12 @@ RSpec.describe Export::NetexGeneric do
         context "when netex_quay? is true" do
           before { allow(decorator).to receive(:parent_objectid).and_return("dummy") }
           it { is_expected.to have_tag(:parent_id)}
+        end
+
+        context "when Stoparea transport mode is 'bus/regional_bus'" do
+          before { allow(decorator).to receive(:transport_mode).and_return(Chouette::TransportMode.from('bus/regional_bus')) }
+
+          it { is_expected.to have_attributes(transport_mode: 'bus', transport_submode: 'regionalBus') }
         end
       end
 

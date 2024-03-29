@@ -867,8 +867,15 @@ class Export::NetexGeneric < Export::Base
 
   end
 
-  class StopPointDecorator < ModelDecorator
+  class StopPointDecorator < SimpleDelegator
     attr_accessor :journey_pattern_id, :route
+
+    def initialize(stop_point, journey_pattern_id: nil, route: nil, code_provider: nil)
+      super stop_point
+      @journey_pattern_id = journey_pattern_id
+      @route = route
+      @code_provider = code_provider
+    end
 
     def point_on_route
       Netex::PointOnRoute.new point_on_route_attributes
@@ -884,6 +891,14 @@ class Export::NetexGeneric < Export::Base
 
     def netex_order
       position+1
+    end
+
+    def netex_identifier
+      @netex_identifier ||= Netex::ObjectId.parse(code_provider.code(__getobj__))
+    end
+
+    def code_provider
+      @code_provider ||= Export::CodeProvider.null
     end
 
     def point_on_route_id
@@ -1217,7 +1232,7 @@ class Export::NetexGeneric < Export::Base
         tags = resource_tagger.tags_for(routing_constraint_zone.route.line_id)
         tagged_target = TaggedTarget.new(target, tags)
 
-        decorated_zone = Decorator.new(routing_constraint_zone, code_provider: code_provider)
+        decorated_zone = decorate(routing_constraint_zone)
         tagged_target << decorated_zone.netex_resource
       end
     end
@@ -1326,11 +1341,10 @@ class Export::NetexGeneric < Export::Base
 
       def decorated_stop_points
         @decorated_stop_points ||= stop_points.map do |stop_point|
-          StopPointDecorator.new(stop_point, journey_pattern_id: objectid)
+          StopPointDecorator.new(stop_point, journey_pattern_id: objectid, code_provider: code_provider)
         end
       end
     end
-
   end
 
   class VehicleJourneyAtStops < Part
@@ -1477,7 +1491,14 @@ class Export::NetexGeneric < Export::Base
       end
     end
 
-    class Decorator < ModelDecorator
+    class Decorator < SimpleDelegator
+
+      def initialize(vehicle_journey, code_space_keys: nil, code_provider: nil)
+        super vehicle_journey
+        @code_space_keys = code_space_keys
+        @code_provider = code_provider
+      end
+
       attr_accessor :code_space_keys
 
       def netex_attributes
@@ -1490,6 +1511,14 @@ class Export::NetexGeneric < Export::Base
           day_types: day_types,
           key_list: netex_alternate_identifiers
         }
+      end
+
+      def netex_identifier
+        @netex_identifier ||= Netex::ObjectId.parse(code_provider.code(__getobj__))
+      end
+
+      def code_provider
+        @code_provider ||= Export::CodeProvider.null
       end
 
       def netex_resource

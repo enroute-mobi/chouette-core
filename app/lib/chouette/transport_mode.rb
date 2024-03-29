@@ -255,15 +255,15 @@ module Chouette
 
     class Type < ::ActiveRecord::Type::Value
       def cast(value)
-        return unless value.present?
+        return if value.blank?
 
-        return TransportMode.from(value) if value.is_a?(String)
+        TransportMode.from(value) if value.is_a?(String)
       end
 
       def serialize(value)
-        return unless value.present?
+        return if value.blank?
 
-        value.to_s
+        value.code
       end
     end
   end

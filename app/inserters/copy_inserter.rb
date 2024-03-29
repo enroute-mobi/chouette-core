@@ -78,12 +78,16 @@ class CopyInserter < ByClassInserter
       model_class.copy_from csv_file
 
       csv_file.unlink
+
+      reset
+    end
+
+    def reset
+      @csv = @csv_file = nil
     end
 
     def reset_pk_sequence
-      target.switch do
-        connection.reset_pk_sequence! model_class.table_name
-      end
+      connection.reset_pk_sequence! model_class.table_name
     end
 
   end

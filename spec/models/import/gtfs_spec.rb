@@ -397,7 +397,7 @@ RSpec.describe Import::Gtfs do
       import.import_stops
 
       defined_attributes = [
-        :registration_number, :name, :parent_id, :latitude, :longitude, :comment, :public_code, :mobility_impaired_accessibility
+        :registration_number, :name, :parent_id, :latitude, :longitude, :comment, :public_code, :wheelchair_accessibility
       ]
       expected_attributes = [
         ["AMV", "Amargosa Valley (Demo)", nil, 36.641496, -116.40094,'amv', nil,'unknown'],

@@ -372,9 +372,9 @@ RSpec.describe Export::Gtfs, type: [:model, :with_exportable_referential] do
         ['unknown', '0'],
         ['yes', '1'],
         ['no', '2'],
-      ].each do |mobility_impaired_accessibility, expected|
-        context "when mobility_impaired_accessibility is #{mobility_impaired_accessibility.inspect}" do
-          before { stop_area.mobility_impaired_accessibility = mobility_impaired_accessibility }
+      ].each do |wheelchair_accessibility, expected|
+        context "when mobility_impaired_accessibility is #{wheelchair_accessibility.inspect}" do
+          before { stop_area.wheelchair_accessibility = wheelchair_accessibility }
           it { is_expected.to eq(expected) }
         end
       end

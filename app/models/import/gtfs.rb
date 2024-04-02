@@ -376,11 +376,11 @@ class Import::Gtfs < Import::Base # rubocop:disable Metrics/ClassLength
           case stop.wheelchair_boarding
           when '0'
             # Keep unchange a current mobility_impaired_accessibility value
-            stop_area.mobility_impaired_accessibility ||= 'unknown'
+            stop_area.wheelchair_accessibility ||= 'unknown'
           when '1'
-            stop_area.mobility_impaired_accessibility = 'yes'
+            stop_area.wheelchair_accessibility = 'yes'
           when '2'
-            stop_area.mobility_impaired_accessibility = 'no'
+            stop_area.wheelchair_accessibility = 'no'
           end
         end
 

@@ -103,7 +103,7 @@ module Chouette::Sync
         end
 
         def chouette_transport_mode
-          Chouette::TransportMode.new(transport_mode.underscore, transport_submode.underscore).code
+          Chouette::TransportMode.new(transport_mode&.underscore, transport_submode&.underscore).code
         end
 
         def model_attributes # rubocop:disable Metrics/AbcSize,Metrics/MethodLength

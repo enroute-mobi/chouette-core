@@ -376,7 +376,7 @@ en:
       none: None
       french: French (beta)
       european: European
-      'idfm/line': IdFM Publication Line
+      'idfm/iboo': IdFM Producer IBOO
       'idfm/full': IdFM Publication Full
     export_type:
       line: line

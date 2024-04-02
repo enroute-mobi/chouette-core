@@ -15,6 +15,7 @@ fr:
   control_list_run:
     actions:
       new: "Exécuter un Jeu de contrôles"
+      execute: "Exécuter ce Jeu de contrôles"
       show: "Voir les Jeux de contrôles"
       create: "Exécuter un Jeu de contrôles"
     new:

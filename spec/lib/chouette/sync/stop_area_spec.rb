@@ -224,9 +224,7 @@ RSpec.describe Chouette::Sync::StopArea do
           <StopPlace id="sample" dataSourceRef="FR1-ARRET_AUTO">
             <Name>Stop Place Sample</Name>
             <TransportMode>bus</TransportMode>
-            <TransportSubmode>
-              <BusSubmode>regionalBus</BusSubmode>
-            </TransportSubmode>
+            <BusSubmode>regionalBus</BusSubmode>
           </StopPlace>
         )
       end

@@ -34,7 +34,7 @@ RSpec.describe Macro::CreateCodeFromUuid do
       end
     end
 
-    let(:format) { 'dummy:%{value}' }
+    let(:format) { 'dummy:%{value}' } # rubocop:disable Style/FormatStringToken
     let(:code_space) { context.code_space }
     let(:referential) { context.referential }
     let(:workbench) { context.workbench }
@@ -54,7 +54,7 @@ RSpec.describe Macro::CreateCodeFromUuid do
 
       describe 'StopArea' do
         let(:target_model) { 'StopArea' }
-        let(:model) { context.stop_area(:first)  }
+        let(:model) { context.stop_area(:first) }
 
         it 'should create code' do
           expect { subject }.to change { model.codes.count }.from(0).to(1)

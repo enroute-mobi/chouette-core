@@ -33,7 +33,8 @@ module Macro
       end
 
       def create_message(model, code)
-        model_name = model.try(:name) || model.try(:published_journey_name) || model.try(:comment) || model.try(:uuid) || model.try(:get_objectid)&.local_id
+        model_name = model.try(:name) || model.try(:published_journey_name) ||
+                     model.try(:comment) || model.try(:uuid) || model.try(:get_objectid)&.local_id
 
         attributes = {
           message_attributes: { model_name: model_name, code_value: code.value },
@@ -62,7 +63,7 @@ module Macro
       end
 
       def format_code_space(uuid)
-        format.gsub('%{value}', uuid)
+        format.gsub('%{value}', uuid) # rubocop:disable Style/FormatStringToken
       end
     end
   end

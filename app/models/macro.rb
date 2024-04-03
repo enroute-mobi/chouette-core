@@ -20,6 +20,7 @@ module Macro
       Macro::AssociateDocuments,
       Macro::CreateCodeFromSequence,
       Macro::CreateCodeFromUuid,
+      Macro::DefineFrenchCodeInsee,
       Macro::Dummy # Keep this dummy last
     ]
   end

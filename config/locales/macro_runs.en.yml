@@ -41,6 +41,8 @@ en:
         one: Create code from sequence
       macro/create_code_from_uuid/run:
         one: Create Code from UUID
+      macro/define_french_code_insee/run:
+        one: Define French Code Insee
     attributes:
       macro/base/run:
         name: Name

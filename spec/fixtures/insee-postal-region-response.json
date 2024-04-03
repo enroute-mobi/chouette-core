@@ -1,0 +1,12 @@
+[
+  {
+    "nom": "Nantes",
+    "code": "44109",
+    "codeDepartement": "44",
+    "siren": "214401093",
+    "codeEpci": "244400404",
+    "codeRegion": "52",
+    "codesPostaux": ["44000", "44100", "44200", "44300"],
+    "population": 323204
+  }
+]

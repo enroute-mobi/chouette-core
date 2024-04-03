@@ -65,11 +65,16 @@ fr:
   macro/create_code_from_uuid/run:
     messages:
       default: "Un code %{code_value} a été ajouté sur un(e) %{target_model} %{model_name}"
+  macro/define_french_code_insee/run:
+    messages:
+      default: "Un code insee '%{postal_region}' a été mise à jour sur un(e) %{target_model} %{name}"
+      no_insee_code: "Code Insee introuvable sur un(e) %{target_model} %{name}"     
   macro_messages:
     search_no_results_for_filter: "Aucun messages"
     no_address: "Aucune adresse"
     invalid_address: "Adresse non valide"
     invalid: "Non valide"
+    no_insee_code: "Aucun insee code"
   activerecord:
     models:
       macro/message:

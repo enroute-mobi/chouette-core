@@ -33,8 +33,10 @@ module Macro
       end
 
       def create_message(model, code)
+        model_name = model.try(:name) || model.try(:published_journey_name) || model.try(:comment) || model.try(:uuid) || model.try(:get_objectid)&.local_id
+
         attributes = {
-          message_attributes: { model_name: model.name, code_value: code.value },
+          message_attributes: { model_name: model_name, code_value: code.value },
           source: model
         }
 
@@ -44,11 +46,7 @@ module Macro
       end
 
       def models_without_code
-        @models_without_code ||= models.where.not(id: models_with_code)
-      end
-
-      def models_with_code
-        @models_with_code || models.joins(:codes).where(codes: {code_space: code_space}).distinct
+        @models_without_code ||= models.without_code(code_space)
       end
 
       def model_collection

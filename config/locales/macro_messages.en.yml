@@ -34,10 +34,10 @@ en:
     messages:
       default: "Address '%{address}' has been updated on the %{target_model} %{name}"
       error: "Address '%{address}' can't be updated on the %{target_model} %{name}"
-      no_address: "Address not found on the %{target_model} %{name}"      
+      no_address: "Address not found on the %{target_model} %{name}"
   macro/dummy/run:
     messages:
-      default: Simulation is in %{result} for %{name}         
+      default: Simulation is in %{result} for %{name}
   macro/update_stop_area_compass_bearing/run:
     messages:
       default: "Compass bearing of of Stop area %{name} has been updated with value %{bearing}"
@@ -63,6 +63,10 @@ en:
     messages:
       default: "A code %{code_value} has been added for the %{target_model} %{model_name}"
   macro_messages: 
+  macro/create_code_from_uuid/run:
+    messages:
+      default: "A code %{code_value} has been added for the %{target_model} %{model_name}"
+  macro_messages:
     search_no_results_for_filter: "No messages found"
     no_address: "No address"
     invalid_address: "Invalid address"

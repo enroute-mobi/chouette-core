@@ -91,6 +91,7 @@
         = simple_block_for @stop_area, title: t("stop_areas.form.sections.usage") do |d|
           = d.attribute :waiting_time, as: :duration, value: @stop_area.waiting_time&.minutes
           = d.attribute :url, link: @stop_area.url
+          = d.attribute :transport_mode, value: @stop_area.transport_mode&.human_name
 
         = simple_block_for @stop_area, title: t("stop_areas.form.sections.fare") do |d|
           = d.attribute :fare_zones, as: :associations, value: @stop_area.fare_zones.sort_by(&:name), link: ->(fare_zone) { workbench_fare_zone_path(@workbench, fare_zone) }

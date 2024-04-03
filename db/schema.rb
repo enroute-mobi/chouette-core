@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2024_03_11_134245) do
+ActiveRecord::Schema.define(version: 2024_03_27_111529) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "btree_gin"
@@ -1427,6 +1427,7 @@ ActiveRecord::Schema.define(version: 2024_03_11_134245) do
     t.string "audible_signals_availability"
     t.string "visual_signs_availability"
     t.text "accessibility_limitation_description"
+    t.string "transport_mode"
     t.index ["custom_field_values"], name: "index_stop_areas_on_custom_field_values", using: :gin
     t.index ["name"], name: "index_stop_areas_on_name"
     t.index ["objectid", "stop_area_referential_id"], name: "stop_areas_objectid_key", unique: true

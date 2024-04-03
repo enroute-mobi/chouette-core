@@ -213,6 +213,7 @@ fr:
         lines: Lignes
         routes: Itinéraires
         fare_zones: Zones Tarifaires
+        transport_mode: Mode de transport
     errors:
       models:
         stop_area:

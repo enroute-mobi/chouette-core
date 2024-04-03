@@ -61,6 +61,8 @@ module Chouette
 
     belongs_to_array_in_many :line_routing_constraint_zones, class_name: "LineRoutingConstraintZone", array_name: :stop_areas
 
+    attribute :transport_mode, Chouette::TransportMode::Type.new
+
     attr_accessor :stop_area_type
     attr_accessor :children_ids
     attr_writer :coordinates
@@ -248,6 +250,10 @@ module Chouette
 
     def to_lat_lng
       Geokit::LatLng.new(latitude, longitude) if latitude and longitude
+    end
+
+    def candidate_transport_modes
+      Chouette::TransportMode.modes
     end
 
     def closest_children

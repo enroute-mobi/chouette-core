@@ -133,6 +133,7 @@ class StopAreasController < Chouette::StopAreaReferentialController
       :kind,
       :status,
       :stop_area_provider_id,
+      :transport_mode,
       fare_zone_ids: [],
       codes_attributes: [:id, :code_space_id, :value, :_destroy],
       localized_names: stop_area_referential.locales.map{|l| l[:code]}

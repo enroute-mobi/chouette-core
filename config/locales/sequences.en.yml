@@ -34,6 +34,7 @@ en:
         description: Description
         range_start: "Range start"
         range_end: "Range end"
+        static_list: Values
         values: Values
     errors:
       models:

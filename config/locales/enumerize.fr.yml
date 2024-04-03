@@ -143,6 +143,7 @@ fr:
     sequence:
       sequence_type:
         range_sequence: Intervalle
+        static_list: Liste statique
     stop_area:
       area_type:
         zdep: ZDEp

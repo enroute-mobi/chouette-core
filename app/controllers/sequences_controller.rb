@@ -57,7 +57,8 @@ class SequencesController < Chouette::WorkbenchController
       :sequence_type,
       :description,
       :range_start,
-      :range_end
+      :range_end,
+      static_list: []
     )
   end
 end

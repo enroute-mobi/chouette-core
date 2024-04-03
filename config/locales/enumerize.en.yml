@@ -144,6 +144,7 @@ en:
     sequence:
       sequence_type:
         range_sequence: Range Sequence
+        static_list: Static list
     stop_area:
       area_type:
         zdep: ZDEp

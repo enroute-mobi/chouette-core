@@ -54,6 +54,7 @@ en:
       macro/base:
         name: Name
         comments: Comments
+        target_model: Target Model
         options: Options
       macro/dummy:
         expected_result: Expected result
@@ -64,9 +65,6 @@ en:
         target_model: Target Model
         target_pattern: Target Pattern
         expected_result: Expected result
-      macro/create_code_from_sequence:
-        sequence_id: Sequence
-        code_space_id: Code space
       macro/define_postal_address:
         target_model: Target Model
       macro/define_attribute_from_particulars:
@@ -77,6 +75,9 @@ en:
       macro/associate_documents:
         model_code_space: Model code space
         document_code_space: Document code space
+      macro/create_code_from_sequence:
+        sequence_id: Sequence
+        code_space_id: Code space
       macro/create_code_from_uuid:
         code_space_id: Code Space
   simple_form:

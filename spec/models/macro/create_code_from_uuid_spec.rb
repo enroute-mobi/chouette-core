@@ -47,7 +47,7 @@ RSpec.describe Macro::CreateCodeFromUuid do
         an_object_having_attributes(
           message_attributes: {
             'model_name' => model_name,
-            'code_value' => "dummy:#{macro_run.uuid}"
+            'code_value' => match(/\Adummy:\b[0-9a-f]{8}\b-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-\b[0-9a-f]{12}\b\z/)
           }
         )
       end

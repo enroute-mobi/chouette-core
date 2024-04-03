@@ -1,3 +1,0 @@
-
-describe PublicationApiDecorator do
-end

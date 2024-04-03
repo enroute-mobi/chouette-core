@@ -19,4 +19,32 @@ RSpec.describe DocumentProvider, type: :model do
       it { is_expected.to be_valid }
     end
   end
+
+  describe '#used?' do
+    subject { document_provider.used? }
+
+    let(:context) do
+      Chouette.create do
+        workbench do
+          document_provider :document_provider
+        end
+      end
+    end
+    let(:document_provider) { context.document_provider(:document_provider) }
+
+    it { is_expected.to eq(false) }
+
+    context 'when document provider has documents' do
+      let(:context) do
+        Chouette.create do
+          workbench do
+            document_provider :document_provider
+            document document_provider: :document_provider
+          end
+        end
+      end
+
+      it { is_expected.to eq(true) }
+    end
+  end
 end

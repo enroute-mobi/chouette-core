@@ -9,7 +9,17 @@ module Chouette
 
     belongs_to :referential
 
+    # switch referential before finding resource
+    # rubocop:disable Rails/LexicallyScopedActionFilter
+    before_action :authorize_resource, except: %i[new create index show]
+    before_action :authorize_resource_class, only: %i[new create]
+    # rubocop:enable Rails/LexicallyScopedActionFilter
+
     include WithinWorkgroup
+
+    def policy_context_class
+      Policy::Context::Referential
+    end
 
     private
 

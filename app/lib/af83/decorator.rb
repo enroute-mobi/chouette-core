@@ -129,5 +129,9 @@ class AF83::Decorator < ModelDecorator
   class InstanceDecorator < Draper::Decorator
     include AF83::Decorator::EnhancedDecorator
     extend AF83::Decorator::EnhancedDecorator::ClassMethods
+
+    def on_instance?
+      true
+    end
   end
 end

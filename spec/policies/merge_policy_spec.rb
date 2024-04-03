@@ -1,4 +1,4 @@
-RSpec.describe MergePolicy, type: :policy do
+RSpec.describe MergePolicy, type: :pundit_policy do
 
   let( :record ){ build_stubbed :merge }
 

@@ -9,6 +9,10 @@ module Chouette
 
     belongs_to :workbench
 
+    def policy_context_class
+      Policy::Context::Workbench
+    end
+
     private
 
     def current_workgroup

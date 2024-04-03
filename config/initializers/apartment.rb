@@ -105,6 +105,7 @@ Apartment.configure do |config|
     'ReferentialCloning',
     'ReferentialMetadata',
     'ReferentialSuite',
+    'Sequence',
     'Shape',
     'ShapeProvider',
     'ShapeReferential',

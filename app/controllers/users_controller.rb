@@ -1,10 +1,10 @@
 # frozen_string_literal: true
 
 class UsersController < Chouette::ResourceController
-  include PolicyChecker
-
-  before_action :authorize_resource, except: [:create, :index, :new, :new_invitation, :invite]
-  before_action :authorize_resource_class, only: [:create, :index, :new, :new_invitation, :invite]
+  # rubocop:disable Rails/LexicallyScopedActionFilter
+  before_action :authorize_resource, except: %i[new create index show new_invitation invite]
+  before_action :authorize_resource_class, only: %i[new create new_invitation invite]
+  # rubocop:enable Rails/LexicallyScopedActionFilter
 
   defaults :resource_class => User
 

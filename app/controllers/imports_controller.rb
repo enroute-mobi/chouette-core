@@ -1,12 +1,16 @@
 # frozen_string_literal: true
 
 class ImportsController < Chouette::WorkbenchController
-  include PolicyChecker
   include Downloadable
   include ImportMessages
 
-  skip_before_action :authenticate_user!, only: [:internal_download]
   defaults resource_class: Import::Base, collection_name: 'imports', instance_name: 'import'
+
+  # rubocop:disable Rails/LexicallyScopedActionFilter
+  skip_before_action :authenticate_user!, only: [:internal_download]
+  before_action :authorize_resource, except: %i[new create index show download internal_download messages]
+  # rubocop:enable Rails/LexicallyScopedActionFilter
+
   respond_to :json, :html
 
   def internal_download

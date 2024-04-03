@@ -57,7 +57,7 @@ module AroundMethod
       method_name = name
 
       klass.define_method(protected_method) do |*args, &block|
-        send "around_#{method_name}"  do
+        send "around_#{method_name}", *args  do
           original.bind(self).call(*args, &block)
         end
       end

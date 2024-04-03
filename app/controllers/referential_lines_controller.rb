@@ -1,8 +1,6 @@
 # frozen_string_literal: true
 
 class ReferentialLinesController < Chouette::ReferentialController
-  include PolicyChecker
-
   defaults :resource_class => Chouette::Line, :collection_name => 'lines', :instance_name => 'line'
   respond_to :html
   respond_to :xml
@@ -52,5 +50,4 @@ class ReferentialLinesController < Chouette::ReferentialController
   def sort_route_direction
     %w[asc desc].include?(params[:direction]) ?  params[:direction] : 'asc'
   end
-
 end

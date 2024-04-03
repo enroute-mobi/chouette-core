@@ -37,8 +37,6 @@ fr:
       deactivate_confirm: "Etes vous sûr de désactiver cet arrêt ?"
       deleted_at: "Activé"
       destroy_confirm: "Etes vous sûr de supprimer cet arrêt ainsi que tous ses fils?"
-      select_parent: "Créer ou éditer la relation enfant -> parent"
-      add_children: "Créer ou éditer la relation parent -> enfants"
       clone_as_parent: "Cloner pour créer un père"
       clone_as_child: "Cloner pour créer un enfant"
       default_geometry: "Calculer les géométries manquantes"
@@ -106,10 +104,6 @@ fr:
       selection_all: "Tous"
       area_type: "Type d'arrêt"
       advanced_search: "Recherche avancée"
-    select_parent:
-      title: "Gérer le parent de l'arrêt %{stop_area}"
-    add_children:
-      title: "Gérer les fils de l'arrêt %{stop_area}"
   enumerize:
     stop_area:
       mobility_impaired_accessibility:
@@ -219,6 +213,7 @@ fr:
         lines: Lignes
         routes: Itinéraires
         fare_zones: Zones Tarifaires
+        transport_mode: Mode de transport
     errors:
       models:
         stop_area:

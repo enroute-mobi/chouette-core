@@ -23,4 +23,4 @@
             = link_to '', referential_time_table_path(@referential, @time_table, year: (@year - 1)), class: 'previous_page'
             = link_to '', referential_time_table_path(@referential, @time_table, year: (@year + 1)), class: 'next_page'
 
-    = render 'show_time_table', time_table: @time_table, edit_url: [:edit, @referential, @time_table], disabled: !policy(@time_table).update?
+    = render 'show_time_table', time_table: @time_table, edit_url: [:edit, @referential, @time_table], disabled: !resource_policy.update?

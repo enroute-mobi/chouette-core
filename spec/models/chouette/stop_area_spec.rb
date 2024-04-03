@@ -165,7 +165,7 @@ describe Chouette::StopArea, :type => :model do
   let!(:commercial_stop_point) { create :stop_area, :lda }
   let!(:stop_place) { create :stop_area, :zdlp }
 
-  it { should belong_to(:stop_area_referential) }
+  it { should belong_to(:stop_area_referential).required }
   it { should validate_presence_of :name }
   it { should validate_presence_of :kind }
   it { should validate_numericality_of :latitude }

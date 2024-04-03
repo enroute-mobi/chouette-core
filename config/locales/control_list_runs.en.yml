@@ -19,6 +19,7 @@ en:
   control_list_run:
     actions:
       new: "Execute a Control List"
+      execute: "Execute this Control"
       show: "Show Control Lists"
       create: "Create a report"
     new:

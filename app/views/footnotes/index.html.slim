@@ -1,7 +1,7 @@
 - breadcrumb :footnotes, @referential, @line
 
 - content_for :page_header_actions do
-  - if policy(Chouette::Footnote).edit_all?
+  - if resource_policy.edit_all?
     = link_to(t('actions.edit'), edit_all_referential_line_footnotes_path(@referential, @line), class: 'btn btn-primary')
 
 .page_content

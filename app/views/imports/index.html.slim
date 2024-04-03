@@ -21,7 +21,7 @@
                 key: :name, \
                 attribute: 'name', \
                 link_to: lambda do |import| \
-                  policy(import).show? ? [@parent, import] : nil \
+                  [@parent, import] \
                 end \
               ), \
               TableBuilderHelper::Column.new( \

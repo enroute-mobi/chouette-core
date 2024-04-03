@@ -1,5 +1,5 @@
 # coding: utf-8
-RSpec.describe ReferentialPolicy, type: :policy do
+RSpec.describe ReferentialPolicy, type: :pundit_policy do
 
   #
   # Collection Based Permissions differ from standard as there is no referential yet

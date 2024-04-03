@@ -10,10 +10,6 @@ class CompanyDocumentMembershipsController < DocumentMembershipsController
 
   protected
 
-  def documentable_policy_klass
-    CompanyPolicy
-  end
-
   def collection_path_method
     :workbench_line_referential_company_document_memberships_path
   end

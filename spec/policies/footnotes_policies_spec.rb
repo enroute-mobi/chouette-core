@@ -1,4 +1,4 @@
-RSpec.describe FootnotePolicy, type: :policy do
+RSpec.describe FootnotePolicy, type: :pundit_policy do
 
   let( :record ){ build_stubbed :footnote }
 

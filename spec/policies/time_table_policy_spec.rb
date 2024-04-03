@@ -1,4 +1,4 @@
-RSpec.describe TimeTablePolicy, type: :policy do
+RSpec.describe TimeTablePolicy, type: :pundit_policy do
 
   let( :record ){ build_stubbed :time_table }
 

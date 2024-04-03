@@ -1,7 +1,6 @@
 # frozen_string_literal: true
 
 class ShapesController < Chouette::TopologicReferentialController
-  include PolicyChecker
   # FIXME required by page_tile helper (?!)
   defaults :resource_class => Shape
 
@@ -44,7 +43,6 @@ class ShapesController < Chouette::TopologicReferentialController
   end
 
   def shape_params
-    params.require(:shape).permit(:name)
+    @shape_params ||= params.require(:shape).permit(:name, :shape_provider_id)
   end
-
 end

@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-RSpec.describe MacroListPolicy, type: :policy do
+RSpec.describe MacroListPolicy, type: :pundit_policy do
   let(:context) do
     Chouette.create do
       organisation(:user_organisation) { user :workbench_user }

@@ -23,4 +23,8 @@ class LineNoticeDecorator < AF83::Decorator
       l.confirm t('line_notices.confirm.detach')
     end
   end
+
+  def policy_parent
+    context[:workbench].default_line_provider
+  end
 end

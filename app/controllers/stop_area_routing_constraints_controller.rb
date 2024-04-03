@@ -2,7 +2,6 @@
 
 class StopAreaRoutingConstraintsController < Chouette::StopAreaReferentialController
   include ApplicationHelper
-  include PolicyChecker
 
   requires_feature :stop_area_routing_constraints
 
@@ -38,12 +37,6 @@ class StopAreaRoutingConstraintsController < Chouette::StopAreaReferentialContro
 
   alias_method :stop_area, :resource
 
-  def build_resource
-    get_resource_ivar || super.tap do |routing_constraint|
-      routing_constraint.stop_area_provider ||= workbench.default_stop_area_provider
-    end
-  end
-
   def collection
     scope = parent.stop_area_routing_constraints
     @q = scope.ransack(params[:q])
@@ -73,6 +66,11 @@ class StopAreaRoutingConstraintsController < Chouette::StopAreaReferentialContro
   end
 
   def stop_area_routing_constraint_params
-    params.require(:stop_area_routing_constraint).permit(:from_id, :to_id, :both_way)
+    @stop_area_routing_constraint_params ||= params.require(:stop_area_routing_constraint).permit(
+      :from_id,
+      :to_id,
+      :both_way,
+      :stop_area_provider_id
+    )
   end
 end

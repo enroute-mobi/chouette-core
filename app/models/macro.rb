@@ -18,6 +18,7 @@ module Macro
       Macro::DeleteVehicleJourneys,
       Macro::ComputeServiceCounts,
       Macro::AssociateDocuments,
+      Macro::CreateCodeFromSequence,
       Macro::Dummy # Keep this dummy last
     ]
   end

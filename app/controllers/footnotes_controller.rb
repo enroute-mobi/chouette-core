@@ -1,8 +1,6 @@
 # frozen_string_literal: true
 
 class FootnotesController < Chouette::ReferentialController
-  before_action :authorize_resource
-
   defaults resource_class: Chouette::Footnote
 
   belongs_to :line, parent_class: Chouette::Line
@@ -21,15 +19,12 @@ class FootnotesController < Chouette::ReferentialController
 
   alias_method :footnotes, :collection
   alias_method :line, :parent
+  alias resource collection
 
   private
 
   def line_params
     params.require(:line).permit(
       { footnotes_attributes: [ :code, :label, :_destroy, :id ] } )
-  end
-
-  def authorize_resource
-    authorize resource_class, "#{action_name}?".to_sym
   end
 end

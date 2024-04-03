@@ -12,4 +12,8 @@ class ConnectionLinkDecorator < AF83::Decorator
   with_instance_decorator do |instance_decorator|
     instance_decorator.crud
   end
+
+  def policy_parent
+    context[:workbench].default_stop_area_provider
+  end
 end

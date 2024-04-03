@@ -2,8 +2,6 @@
 
 # Manage ProcessingRule::Workbench on /workbenches/:id/processing_rules
 class ProcessingRulesController < Chouette::WorkbenchController
-  include PolicyChecker
-
   defaults resource_class: ProcessingRule::Workbench,
            route_instance_name: 'processing_rule_workbench',
            route_collection_name: 'processing_rule_workbenches'

@@ -61,7 +61,7 @@
     .col-lg-12
       h2.mb-lg= t("stop_areas.form.sections.internals")
       = f.input :status, as: :select, collection: stop_area_status_options, include_blank: false
-      = f.association :stop_area_provider, as: :select, collection: @workbench.stop_area_providers, include_blank: false
+      = f.association :stop_area_provider, as: :select, collection: candidate_stop_area_providers, include_blank: false
       = f.input :comment, as: :text, input_html: {rows: 5, title: t("formtastic.titles#{format_restriction_for_locales(@referential)}.stop_area.comment")}
 
   .separator.section_separator
@@ -90,6 +90,7 @@
       - if has_feature?(:stop_area_waiting_time)
         = f.input :waiting_time, input_html: { min: 0 }
       = f.input :url
+      = f.input :transport_mode, as: :transport_mode, required: false, collection: @stop_area.candidate_transport_modes
 
   .separator.section_separator
 

@@ -1,7 +1,7 @@
 class GroupedTomSelectInput < SimpleForm::Inputs::GroupedCollectionSelectInput
   delegate :content_tag, :concat, :javascript_additional_packs, to: :template
 
-  def input(wrapper_options)
+  def input(_wrapper_options)
     label_method, value_method = detect_collection_methods
 
     config = options.fetch(:config, {})
@@ -25,9 +25,9 @@ class GroupedTomSelectInput < SimpleForm::Inputs::GroupedCollectionSelectInput
     )
   end
 
-	private
+  private
 
-	def group_method
-		@group_method ||= (options.delete(:group_method) || :last)
-	end
+  def group_method
+    @group_method ||= options.delete(:group_method) || :last
+  end
 end

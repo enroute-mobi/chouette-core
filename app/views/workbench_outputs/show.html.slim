@@ -5,7 +5,7 @@
   .row.mb-sm
     .col-lg-12.text-right
       = link_to t('.see_current_output'), referential_path(@workbench.output.current), class: 'btn btn-primary' if @workbench.output&.current
-      - if policy(Merge).create?
+      - if parent_policy.create?(Merge)
         = link_to t('merges.actions.create'), new_workbench_merge_path(@workbench), class: 'btn btn-primary'
 
 .page_content

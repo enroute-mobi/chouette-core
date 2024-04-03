@@ -114,6 +114,7 @@ fr:
       sightseeing_tram: Tram panoramique
       shuttle_tram: Tram navette
       train_tram: Train tram
+      regional_tram: Tram régional
       tram_train: Tram Train
     rail:
       local: Train local
@@ -272,6 +273,7 @@ en:
       sightseeing_tram: Sightseeing tram
       shuttle_tram: Shuttle tram
       train_tram: Train tram
+      regional_tram: Regional Tram
       tram_train: Tram Train
     rail:
       local: Local

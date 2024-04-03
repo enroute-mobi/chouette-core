@@ -1,0 +1,35 @@
+- breadcrumb :sequences, @workbench
+
+.page_content
+  .container-fluid
+    .row
+      .col-lg-12
+        / = render 'filters'
+    - if @sequences.any?
+      .row
+        .col-lg-12
+          = table_builder_2 @sequences,
+            [ \
+              TableBuilderHelper::Column.new( \
+                key: :name, \
+                attribute: :name, \
+                link_to: -> (sequence) { workbench_sequence_path(@workbench, sequence) } \
+              ), \
+              TableBuilderHelper::Column.new( \
+                key: :sequence_type, \
+                attribute: Proc.new {|sequence| t("enumerize.sequence.sequence_type.#{sequence.sequence_type}")}, \
+              ), \
+              TableBuilderHelper::Column.new( \
+                key: :values, \
+                attribute: Proc.new { |sequence| sequence.range_values}, \
+                sortable: false,\
+              ), \
+            ].compact,
+            cls: 'table has-filter has-search'
+
+          = new_pagination @sequences, 'pull-right'
+
+    - unless @sequences.any?
+      .row.mt-xs
+        .col-lg-12
+          = replacement_msg t('sequences.search_no_results')

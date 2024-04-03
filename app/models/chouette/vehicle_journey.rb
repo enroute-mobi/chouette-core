@@ -5,6 +5,8 @@ module Chouette
     include CustomFieldsSupport
     include TransportModeEnumerations
 
+    has_metadata
+
     enum journey_category: { timed: 0, frequency: 1 }
 
     # default_scope { where(journey_category: journey_categories[:timed]) }

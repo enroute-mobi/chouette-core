@@ -1,7 +1,6 @@
 # frozen_string_literal: true
 
 class WorkgroupWorkbenchesController < Chouette::WorkgroupController
-  include PolicyChecker
   include ApplicationHelper
 
   defaults resource_class: Workbench
@@ -26,16 +25,6 @@ class WorkgroupWorkbenchesController < Chouette::WorkgroupController
     restrictions.all? do |restriction|
       @workbench.has_restriction? restriction
     end
-  end
-
-  # A specific policy handles this controller, since the use cases are different between WorkgroupWorkbenchesController (controller that handles workbench administration related to workgroup)
-  # and WorkbenchesController (workbench management / edtioon / unrelated to administration)
-  def authorize_resource
-    authorize resource, policy_class: WorkgroupWorkbenchPolicy
-  end
-
-  def authorize_resource_class
-    authorize resource_class, policy_class: WorkgroupWorkbenchPolicy
   end
 
   private

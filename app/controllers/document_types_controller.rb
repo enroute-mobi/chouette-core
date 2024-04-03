@@ -2,7 +2,6 @@
 
 class DocumentTypesController < Chouette::WorkgroupController
   include ApplicationHelper
-  include PolicyChecker
 
   defaults :resource_class => DocumentType
 

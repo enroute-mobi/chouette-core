@@ -1,4 +1,4 @@
-RSpec.describe ConnectionLinkPolicy, type: :policy do
+RSpec.describe ConnectionLinkPolicy, type: :pundit_policy do
 
   let(:context) do
     Chouette.create do

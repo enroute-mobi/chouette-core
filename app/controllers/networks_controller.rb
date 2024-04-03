@@ -2,7 +2,6 @@
 
 class NetworksController < Chouette::LineReferentialController
   include ApplicationHelper
-  include PolicyChecker
 
   defaults :resource_class => Chouette::Network
 
@@ -20,17 +19,6 @@ class NetworksController < Chouette::LineReferentialController
         }
       )
     end
-  end
-
-  def new
-    authorize resource_class
-    new!
-  end
-
-  def create
-    authorize resource_class
-    build_resource
-    super
   end
 
   def index
@@ -62,16 +50,22 @@ class NetworksController < Chouette::LineReferentialController
   end
 
   def network_params
-    params.require(:network).permit(:objectid, :object_version, :version_date, :description, :name, :registration_number, :source_name, :source_type_name, :source_identifier, :comment )
+    @network_params ||= params.require(:network).permit(
+      :objectid,
+      :object_version,
+      :version_date,
+      :description,
+      :name,
+      :registration_number,
+      :source_name,
+      :source_type_name,
+      :source_identifier,
+      :comment,
+      :line_provider_id
+    )
   end
 
   private
-
-  def build_resource
-    get_resource_ivar || super.tap do |network|
-      network.line_provider ||= workbench.default_line_provider
-    end
-  end
 
   def sort_column
     line_referential.networks.column_names.include?(params[:sort]) ? params[:sort] : 'name'
@@ -89,5 +83,4 @@ class NetworksController < Chouette::LineReferentialController
       }
     )
   end
-
 end

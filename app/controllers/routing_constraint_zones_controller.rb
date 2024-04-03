@@ -1,8 +1,6 @@
 # frozen_string_literal: true
 
 class RoutingConstraintZonesController < Chouette::ReferentialController
-  include PolicyChecker
-
   defaults resource_class: Chouette::RoutingConstraintZone
   respond_to :html, :xml, :json
 
@@ -126,5 +124,4 @@ class RoutingConstraintZonesController < Chouette::ReferentialController
       Rails.logger.error("Error: An ITL must have at least two stop points")
     end
   end
-
 end

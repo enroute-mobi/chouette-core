@@ -15,7 +15,7 @@
     .row
       .col-lg-12
         h2.col-md-9= User.t
-        - if policy(@organisation).invite_user?
+        - if parent_policy.new_invitation?(User)
           .col-md-3
             = link_to [:new_invitation, :organisation, :users], class: 'btn btn-primary pull-right' do
               i.fa.fa-envelope

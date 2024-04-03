@@ -21,6 +21,9 @@ RSpec.describe "workbenches/show", :type => :view do
     end
   end
 
+  let(:policy_context_class) { Policy::Context::Workbench }
+  let(:current_workbench) { workbench }
+
   let!(:workbench) { assign :workbench, context.workbench(:user_workbench) }
   let!(:same_organisation_referential) { context.referential(:user_referential) }
   let!(:different_organisation_referential) { context.referential(:other_referential) }
@@ -29,6 +32,7 @@ RSpec.describe "workbenches/show", :type => :view do
 
   before :each do
     allow(view).to receive(:resource_class).and_return(Workbench)
+    allow(view).to receive(:resource).and_return(workbench)
     controller.request.path_parameters[:id] = workbench.id
 
     render

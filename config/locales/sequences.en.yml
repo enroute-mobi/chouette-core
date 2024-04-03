@@ -1,0 +1,43 @@
+en:
+  sequences:
+    index:
+      title: Sequences
+    show:
+      title: "%{name}"
+    new:
+      title: "Create a Sequence"
+    edit:
+      title: "Edit %{name}"
+    update:
+      title: "Edit %{name}"
+    actions:
+      show: "Display this Sequence"
+      new: "Create a Sequence"
+      edit: "Edit a Sequence"
+      destroy: "Delete this Sequence"
+      destroy_confirm: "Are you sure you want to delete this Sequence ?"
+    form:
+      placeholders:
+      sections:
+        identification: "Identification"
+    search_no_results: "No Sequences match this search"
+  activerecord:
+    models:
+      sequence:
+        zero: "Sequence"
+        one: "Sequence"
+        other: "Sequences"
+    attributes:
+      sequence:
+        name: "Name"
+        sequence_type: "Type"
+        description: Description
+        range_start: "Range start"
+        range_end: "Range end"
+        values: Values
+    errors:
+      models:
+        sequence:
+          attributes:
+            range_end:
+              range_start_less_than_range_end: "'Range start' must be less than 'Range end'"

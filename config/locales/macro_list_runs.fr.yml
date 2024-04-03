@@ -20,6 +20,7 @@ fr:
   macro_list_run:
     actions:
       new: "Exécuter un Jeu d'instructions"
+      execute: "Exécuter ce Jeu d'instructions"
       show: "Voir les Jeux d'instructions"
       create: "Exécuter un Jeu d'instructions"
     new:

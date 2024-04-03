@@ -1351,13 +1351,15 @@ class Import::NetexGeneric < Import::Base
           name: name,
           stop_areas: stop_areas,
           lines: chouette_lines,
-          line_referential: line_referential
+          line_referential: line_referential,
+          line_provider: line_provider
         }
       end
 
       delegate :line_referential, to: :line_provider
 
       def line_routing_constraint_zone
+        # TODO: CHOUETTE-3346 this seems untested
         line_provider.line_routing_constraint_zones.first_or_initialize_by_code(code_space, code_value) do |zone|
           zone.attributes = attributes
         end

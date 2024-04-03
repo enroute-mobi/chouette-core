@@ -13,7 +13,7 @@
       h2.my-16
         = t("documents.form.sections.identification")
       = f.input :name
-      = f.input :document_type_id, as: :select, collection: @workbench.workgroup.document_types
+      = f.input :document_type_id, as: :select, collection: candidate_document_types
       = f.simple_fields_for :validity_period, @document.validity_period || Period.new do |validity_period_form|
         = validity_period_form.input :from, as: :date_picker
         = validity_period_form.input :to, as: :date_picker
@@ -42,7 +42,7 @@
     .col-lg-12
       h2.my-16
         = t('documents.form.sections.internals')
-      = f.input :document_provider_id, as: :select, collection: @workbench.document_providers, include_blank: false
+      = f.input :document_provider_id, as: :select, collection: candidate_document_providers, include_blank: false
 
   .separator.section_separator
 

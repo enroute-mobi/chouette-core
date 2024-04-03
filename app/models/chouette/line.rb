@@ -1,7 +1,7 @@
+# frozen_string_literal: true
+
 module Chouette
   class Line < Chouette::ActiveRecord
-    # Must be defined before ObjectidSupport
-    before_validation :define_line_referential, on: :create
     before_validation :update_unpermitted_blank_values
 
     has_metadata
@@ -10,13 +10,13 @@ module Chouette
     include TransportModeEnumerations
     enumerize_transport_submode
 
-    enumerize :mobility_impaired_accessibility, in: %i(unknown yes no partial), default: :unknown
-    enumerize :wheelchair_accessibility, in: %i(unknown yes no partial), default: :unknown
-    enumerize :step_free_accessibility, in: %i(unknown yes no partial), default: :unknown
-    enumerize :escalator_free_accessibility, in: %i(unknown yes no partial), default: :unknown
-    enumerize :lift_free_accessibility, in: %i(unknown yes no partial), default: :unknown
-    enumerize :audible_signals_availability, in: %i(unknown yes no partial), default: :unknown
-    enumerize :visual_signs_availability, in: %i(unknown yes no partial), default: :unknown
+    enumerize :mobility_impaired_accessibility, in: %i[unknown yes no partial], default: :unknown
+    enumerize :wheelchair_accessibility, in: %i[unknown yes no partial], default: :unknown
+    enumerize :step_free_accessibility, in: %i[unknown yes no partial], default: :unknown
+    enumerize :escalator_free_accessibility, in: %i[unknown yes no partial], default: :unknown
+    enumerize :lift_free_accessibility, in: %i[unknown yes no partial], default: :unknown
+    enumerize :audible_signals_availability, in: %i[unknown yes no partial], default: :unknown
+    enumerize :visual_signs_availability, in: %i[unknown yes no partial], default: :unknown
 
     include ColorSupport
     include CodeSupport
@@ -25,8 +25,6 @@ module Chouette
 
     open_color_attribute
     open_color_attribute :text_color
-
-    belongs_to :line_provider, optional: false
 
     belongs_to :company
     belongs_to :network
@@ -58,6 +56,7 @@ module Chouette
 
     validates :name, presence: true
     validate :transport_mode_and_submode_match
+    validate :active_from_less_than_active_until
     validates :registration_number, uniqueness: { scope: :line_provider_id }, allow_blank: true
 
     scope :by_text, lambda { |text|
@@ -82,7 +81,7 @@ module Chouette
     }
 
     scope :active, lambda { |*args|
-      on_date = args.first || Time.now
+      on_date = args.first || Time.zone.now
       activated.active_from(on_date).active_until(on_date)
     }
 
@@ -140,7 +139,7 @@ module Chouette
     end
 
     def vehicle_journey_frequencies?
-      vehicle_journeys.unscoped.where(journey_category: 1).count > 0
+      vehicle_journeys.unscoped.where(journey_category: 1).count.positive?
     end
 
     def full_display_name
@@ -159,7 +158,15 @@ module Chouette
       line_referential.companies.where(id: company_ids)
     end
 
-    def active?(on_date = Time.now)
+    def active_from_less_than_active_until
+      return unless active_from && active_until
+
+      return unless active_from > active_until
+
+      errors.add(:active_until, :active_from_less_than_active_until)
+    end
+
+    def active?(on_date = Time.zone.now)
       on_date = on_date.to_date
 
       return false if deactivated
@@ -220,16 +227,7 @@ module Chouette
       get_objectid.try(:local_id)
     end
 
-    def same_documentable_workbench?(workbench)
-      line_provider.workbench_id == workbench.id
-    end
-
     private
-
-    def define_line_referential
-      # TODO: Improve performance ?
-      self.line_referential ||= line_provider&.line_referential
-    end
 
     def update_unpermitted_blank_values
       self.transport_submode = :undefined if transport_submode.blank?

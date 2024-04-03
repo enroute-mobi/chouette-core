@@ -44,22 +44,32 @@ class Export::NetexGeneric < Export::Base
   end
 
   delegate :stop_area_referential, to: :workgroup
-  delegate :shape_referential, to: :workgroup
 
-  def stop_areas
-    @stop_areas ||=
-      ::Query::StopArea.new(stop_area_referential.stop_areas).
-        self_referents_and_ancestors(export_scope.stop_areas)
+  class Scope < SimpleDelegator
+    def initialize(export_scope, export:)
+      super export_scope
+
+      @export = export
+    end
+
+    attr_reader :export
+    delegate :stop_area_referential, to: :export
+
+    def stop_areas
+      @stop_areas ||=
+        ::Query::StopArea.new(stop_area_referential.stop_areas).
+          self_referents_and_ancestors(__getobj__.stop_areas)
+    end
+
+    def entrances
+      # Must unscope the entrances to find entrances associated with all exported Stop Areas
+      # (including parent Stop Areas)
+      stop_area_referential.entrances.where(stop_area: stop_areas)
+    end
   end
 
-  def entrances
-    # Must unscope the entrances to find entrances associated with all exported Stop Areas
-    # (including parent Stop Areas)
-    stop_area_referential.entrances.where(stop_area: stop_areas)
-  end
-
-  def point_of_interests
-    shape_referential.point_of_interests
+  def export_scope
+    @local_export_scope ||= Scope.new(super, export: self)
   end
 
   def resource_tagger
@@ -272,64 +282,60 @@ class Export::NetexGeneric < Export::Base
   end
 
   module Accessibility
-    extend ActiveSupport::Concern
+    def accessibility_assessment
+      return unless accessibility_assessment?
 
-    included do
-      def accessibility_assessment
-        return unless accessibility_assessment?
+      Netex::AccessibilityAssessment.new(
+        id: netex_identifier&.change(type: 'AccessibilityAssessment').to_s,
+        mobility_impaired_access: netex_value(mobility_impaired_accessibility),
+        limitations: [accessibility_limitation].compact,
+        validity_conditions: [availability_condition].compact
+      )
+    end
 
-        Netex::AccessibilityAssessment.new(
-          id: netex_identifier&.change(type: 'AccessibilityAssessment').to_s,
-          mobility_impaired_access: netex_value(mobility_impaired_accessibility),
-          limitations: [accessibility_limitation].compact,
-          validity_conditions: [availability_condition].compact
-        )
+    def accessibility_limitation
+      return unless accessibility_limitation?
+
+      Netex::AccessibilityLimitation.new(
+        wheelchair_access: netex_value(wheelchair_accessibility),
+        step_free_access: netex_value(step_free_accessibility),
+        escalator_free_access: netex_value(escalator_free_accessibility),
+        lift_free_access: netex_value(lift_free_accessibility),
+        audible_signals_available: netex_value(audible_signals_availability),
+        visual_signs_available: netex_value(visual_signs_availability)
+      )
+    end
+
+    def netex_value(value)
+      case value
+      when 'yes'
+        'true'
+      when 'no'
+        'false'
+      else
+        value
       end
+    end
 
-      def accessibility_limitation
-        return unless accessibility_limitation?
+    def availability_condition
+      return unless accessibility_limitation_description.present?
 
-        Netex::AccessibilityLimitation.new(
-          wheelchair_access: netex_value(wheelchair_accessibility),
-          step_free_access: netex_value(step_free_accessibility),
-          escalator_free_access: netex_value(escalator_free_accessibility),
-          lift_free_access: netex_value(lift_free_accessibility),
-          audible_signals_available: netex_value(audible_signals_availability),
-          visual_signs_available: netex_value(visual_signs_availability)
-        )
-      end
+      Netex::AvailabilityCondition.new(
+        id: netex_identifier.change(type: 'AvailabilityCondition').to_s,
+        description: accessibility_limitation_description
+      )
+    end
 
-      def netex_value(value)
-        case value
-        when 'yes'
-          'true'
-        when 'no'
-          'false'
-        else
-          value
-        end
-      end
+    def accessibility_assessment?
+      accessibility_limitation? || availability_condition.present? || mobility_impaired_accessibility != 'unknown'
+    end
 
-      def availability_condition
-        return unless accessibility_limitation_description.present?
-
-        Netex::AvailabilityCondition.new(
-          id: netex_identifier.change(type: 'AvailabilityCondition').to_s,
-          description: accessibility_limitation_description
-        )
-      end
-
-      def accessibility_assessment?
-        accessibility_limitation? || availability_condition.present? || mobility_impaired_accessibility != 'unknown'
-      end
-
-      def accessibility_limitation?
-        %i[
+    def accessibility_limitation?
+      %i[
           wheelchair_accessibility step_free_accessibility escalator_free_accessibility
           lift_free_accessibility audible_signals_availability visual_signs_availability
         ].any? do |attribute|
-          send(attribute) != :unknown
-        end
+        send(attribute) != :unknown
       end
     end
   end
@@ -369,7 +375,9 @@ class Export::NetexGeneric < Export::Base
         key_list: key_list,
         accessibility_assessment: accessibility_assessment,
         postal_address: postal_address,
-        url: url
+        url: url,
+        transport_mode: netex_transport_mode,
+        transport_submode: netex_transport_submode
       }.tap do |attributes|
         unless netex_quay?
           attributes[:parent_site_ref] = parent_site_ref
@@ -380,6 +388,14 @@ class Export::NetexGeneric < Export::Base
 
     def netex_identifier
       @netex_identifier ||= Netex::ObjectId.parse(objectid)
+    end
+
+    def netex_transport_mode
+      transport_mode&.camelize_mode
+    end
+
+    def netex_transport_submode
+      transport_mode&.camelize_sub_mode
     end
 
     def parent_objectid
@@ -457,7 +473,7 @@ class Export::NetexGeneric < Export::Base
 
   class Quays < Part
 
-    delegate :stop_areas, to: :export
+    delegate :stop_areas, to: :export_scope
 
     def export!
       stop_areas.where(area_type: Chouette::AreaType::QUAY).includes(:codes, :parent, :referent).find_each do |stop_area|
@@ -470,7 +486,7 @@ class Export::NetexGeneric < Export::Base
 
   class StopPlaces < Part
 
-    delegate :stop_areas, to: :export
+    delegate :stop_areas, to: :export_scope
 
     def export!
       stop_areas.where.not(area_type: Chouette::AreaType::QUAY).includes(:codes, :entrances, :parent, :referent).find_each do |stop_area|
@@ -483,7 +499,7 @@ class Export::NetexGeneric < Export::Base
 
   class Entrances < Part
 
-    delegate :entrances, to: :export
+    delegate :entrances, to: :export_scope
 
     def export!
       entrances.includes(:raw_import).find_each do |entrance|
@@ -557,7 +573,7 @@ class Export::NetexGeneric < Export::Base
     end
 
     def point_of_interests
-      export.point_of_interests
+      export_scope.point_of_interests
         .includes(:codes, :point_of_interest_hours)
         .joins(:point_of_interest_category)
         .select(

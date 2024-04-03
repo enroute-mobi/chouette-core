@@ -143,17 +143,6 @@ module ApplicationHelper
     link_to t('cancel'), cancel_path, method: :get, class: 'btn btn-cancel formSubmitr', data: {:confirm =>  t('cancel_confirm')}
   end
 
-  def link_to_if_i_can label, url, object: nil, permission: :show
-    object ||= url
-    object = object.last if object.is_a?(Array)
-
-    if object && Pundit.policy(UserContext.new(current_user), object) && Pundit.policy(UserContext.new(current_user), object).send("#{permission}?")
-      link_to label, url
-    else
-      label
-    end
-  end
-
   def link_to_if_table condition, label, url
      condition == false ? label = '-' : label
      link_to_if(condition, label, url)

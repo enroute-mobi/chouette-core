@@ -27,4 +27,8 @@ class StopAreaDecorator < AF83::Decorator
   define_instance_method :codes do
     object.codes.joins(:code_space).order('code_spaces.short_name ASC')
   end
+
+  def policy_parent
+    context[:workbench].default_stop_area_provider
+  end
 end

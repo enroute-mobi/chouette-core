@@ -37,6 +37,8 @@ en:
         one: Compute service counts
       macro/associate_documents/run:
         one: Associate documents
+      macro/create_code_from_sequence/run:
+        one: Create code from sequence
     attributes:
       macro/base/run:
         name: Name
@@ -53,3 +55,6 @@ en:
       macro/associate_documents/run:
         model_code_space: Model code space
         document_code_space: Document code space
+      macro/create_code_from_sequence/run:
+        sequence_id: Séquence
+        code_space_id: Espace de code

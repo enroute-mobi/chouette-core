@@ -2,7 +2,6 @@
 
 class SourcesController < Chouette::WorkbenchController
   include ApplicationHelper
-  include PolicyChecker
 
   defaults :resource_class => Source
 
@@ -50,7 +49,7 @@ class SourcesController < Chouette::WorkbenchController
   private
 
   def decorate_source
-    object = source rescue build_resource
+    object = resource rescue build_resource
     @source = SourceDecorator.decorate(
       object,
       context: {

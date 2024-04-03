@@ -2,12 +2,12 @@
       - if import.is_a?(Import::Workbench)
         = b.attribute :filename, label: t('filename', scope: import.i18n_attribute_scope), value_method: :file_identifier
       = b.attribute :status, value: operation_status(import.status, verbose: true)
-      - if import.referential_link
-        = b.attribute :referential, value_method: :referential_link
+      - if import.referential
+        = b.attribute :referential, value: link_to(import.referential.name, import.referential)
       - unless @workbench
-        = b.attribute :workbench, label: Workbench.ts.capitalize ,value: link_to_if_i_can(import.workbench.name, import.workbench)
+        = b.attribute :workbench, label: Workbench.ts.capitalize, value: import.workbench.name
       - import.visible_options.map do |k, v|
-        - if policy(import).option?(k)
+        - if resource_policy.option?(k)
           - if k == 'line_provider_id'
             = b.attribute k, label: t(k, scope: import.i18n_attribute_scope), value_method: :line_provider, as: :association
           - elsif k == 'stop_area_provider_id'

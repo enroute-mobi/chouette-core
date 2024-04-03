@@ -2,7 +2,6 @@
 
 class ControlListsController < Chouette::WorkbenchController
   include ApplicationHelper
-  include PolicyChecker
 
   defaults resource_class: Control::List, collection_name: :control_lists_shared_with_workgroup
 

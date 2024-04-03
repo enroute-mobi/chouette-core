@@ -1,4 +1,4 @@
-RSpec.describe RoutingConstraintZonePolicy, type: :policy do
+RSpec.describe RoutingConstraintZonePolicy, type: :pundit_policy do
 
   let( :record ){ build_stubbed :routing_constraint_zone }
 

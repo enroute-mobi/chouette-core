@@ -1,4 +1,4 @@
-RSpec.describe ApplicationPolicy, type: :policy do
+RSpec.describe ApplicationPolicy, type: :pundit_policy do
 
   permissions :organisation_match? do
 

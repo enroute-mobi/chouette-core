@@ -274,10 +274,6 @@ class Referential < ApplicationModel
     Chouette::VehicleJourney.all
   end
 
-  def vehicle_journey_frequencies
-    Chouette::VehicleJourneyFrequency.all
-  end
-
   def vehicle_journey_at_stops
     Chouette::VehicleJourneyAtStop.all
   end

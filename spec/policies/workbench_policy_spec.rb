@@ -1,4 +1,4 @@
-RSpec.describe WorkbenchPolicy, type: :policy do
+RSpec.describe WorkbenchPolicy, type: :pundit_policy do
 
     permissions :show? do
       let( :record ){ build_stubbed :workbench }

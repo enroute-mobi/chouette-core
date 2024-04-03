@@ -1,44 +1,43 @@
-module IntegrationSpecHelper
+# frozen_string_literal: true
 
-  def paginate_collection klass, decorator, page=1, context={}
+module IntegrationSpecHelper
+  extend ActiveSupport::Concern
+
+  class_methods do
+    def with_permission(permission, &block)
+      context "with permission #{permission}" do
+        let(:permissions) { [permission] }
+        context('', &block) if block_given?
+      end
+    end
+
+    def with_feature(feature, &block)
+      context "with feature #{feature}" do
+        let(:features) { [feature] }
+        context('', &block) if block_given?
+      end
+    end
+  end
+
+  def paginate_collection(klass, decorator, page = 1, context = {})
     collection = klass.page(page)
     if decorator
-      if decorator < AF83::Decorator
-        collection = decorator.decorate(collection, context: context)
-      else
-        collection = ModelDecorator.decorate(collection, with: decorator, context: context)
-      end
+      collection = if decorator < AF83::Decorator
+                     decorator.decorate(collection, context: context)
+                   else
+                     ModelDecorator.decorate(collection, with: decorator, context: context)
+                   end
     end
     collection
   end
 
-  def build_paginated_collection factory, decorator, opts={}
+  def build_paginated_collection(factory, decorator, opts = {})
     context = opts.delete(:context) || {}
     count = opts.delete(:count) || 2
     page = opts.delete(:page) || 1
     klass = nil
     count.times { klass = create(factory, opts).class }
     paginate_collection klass, decorator, page, context
-  end
-
-  module Methods
-    def with_permission permission, &block
-      context "with permission #{permission}" do
-        let(:permissions){ [permission] }
-        context('', &block) if block_given?
-      end
-    end
-
-    def with_feature feature, &block
-      context "with feature #{feature}" do
-        let(:features){ [feature] }
-        context('', &block) if block_given?
-      end
-    end
-  end
-
-  def self.included into
-    into.extend Methods
   end
 end
 

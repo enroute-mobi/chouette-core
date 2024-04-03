@@ -52,6 +52,10 @@ module Chouette
       end
     end
 
+    def self_and_sub_modes
+      [self, *sub_modes]
+    end
+
     def self.modes(except: [])
       except = except.map(&:to_sym)
       (mode_candidates - except).map { |candidate| new candidate }
@@ -240,5 +244,19 @@ module Chouette
       ],
       trolley_bus: []
     }.tap { |d| d.each { |mode, sub_modes| [mode, sub_modes.freeze] } }.freeze
+
+    class Type < ::ActiveRecord::Type::Value
+      def cast(value)
+        return if value.blank?
+
+        TransportMode.from(value) if value.is_a?(String)
+      end
+
+      def serialize(value)
+        return if value.blank?
+
+        value.code
+      end
+    end
   end
 end

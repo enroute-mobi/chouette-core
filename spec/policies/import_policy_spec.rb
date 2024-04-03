@@ -1,5 +1,5 @@
 # coding: utf-8
-RSpec.describe ImportPolicy, type: :policy do
+RSpec.describe ImportPolicy, type: :pundit_policy do
 
   let(:record) { create :import }
   before { user.organisation = create(:organisation) }

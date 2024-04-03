@@ -1,23 +1,22 @@
 # frozen_string_literal: true
 
 class AggregatesController < Chouette::WorkgroupController
-  include PolicyChecker
-
   defaults resource_class: Aggregate
 
   respond_to :html
 
   def show
-    @aggregate = @aggregate.decorate(context: { workgroup: workgroup })
-    @workbench = workgroup.owner_workbench
-    @processing = processing
-    @aggregate_resources = @aggregate.resources.order(
-      params[:sort] || :referential_created_at => params[:direction] || :desc
-    )
+    show! do
+      @aggregate = @aggregate.decorate(context: { workgroup: workgroup })
+      @workbench = workgroup.owner_workbench
+      @processing = processing
+      @aggregate_resources = @aggregate.resources.order(
+        params[:sort] || :referential_created_at => params[:direction] || :desc
+      )
+    end
   end
 
   def rollback
-    authorize resource
     resource.rollback!
     redirect_to [:workgroup, :output]
   end

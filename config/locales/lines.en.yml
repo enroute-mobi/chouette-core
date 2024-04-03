@@ -211,6 +211,10 @@ en:
               an_object_used_as_referent_must_be_flagged_as_referent: "A line used as referent must be flagged as referent"
             is_referent:
               the_particulars_collection_should_be_empty: "A non-referent line can't have particular companies"
+            active_from:
+              active_from_less_than_active_until: "The 'from' date must begin before the 'to' date."
+            active_until:
+              active_from_less_than_active_until: "The 'until' date must end after the 'from' date."
   formtastic:
     titles:
       line:

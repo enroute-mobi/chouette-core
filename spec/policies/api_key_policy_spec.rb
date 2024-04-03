@@ -1,4 +1,4 @@
-RSpec.describe ApiKeyPolicy do
+RSpec.describe ApiKeyPolicy, type: :pundit_policy do
   let(:workbench) { create :workbench }
   let(:record) { build_stubbed :api_key, workbench: workbench }
   before { stub_policy_scope(record) }

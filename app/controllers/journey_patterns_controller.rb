@@ -9,10 +9,16 @@ class JourneyPatternsController < Chouette::ReferentialController
   belongs_to :line, parent_class: Chouette::Line
   belongs_to :route, parent_class: Chouette::Route
 
+  # rubocop:disable Rails/LexicallyScopedActionFilter
+  before_action :authorize_resource, except: %i[
+    new create index show
+    new_vehicle_journey
+    available_specific_stop_places
+  ]
+  # rubocop:enable Rails/LexicallyScopedActionFilter
+
   alias route parent
   alias journey_pattern resource
-
-  include PolicyChecker
 
   def available_specific_stop_places
     render json: journey_pattern.available_specific_stop_places.map { |parent_id, children| [ parent_id, children.map { |s| s.as_json.merge("short_id" => s.get_objectid.short_id) } ] }.to_json, status: :ok

@@ -2,14 +2,13 @@
 
 module PointOfInterest
   class Base < ApplicationModel
+    include ShapeReferentialSupport
     include NilIfBlank
     include CodeSupport
     include RawImportSupport
 
     self.table_name = 'point_of_interests'
 
-    belongs_to :shape_referential, required: true
-    belongs_to :shape_provider, required: true
     belongs_to :point_of_interest_category, class_name: 'PointOfInterest::Category', optional: false,
                                             inverse_of: :point_of_interests, required: true
 
@@ -21,7 +20,6 @@ module PointOfInterest
     validates_associated :point_of_interest_hours
     validates :name, :point_of_interest_category_id, presence: true
 
-    before_validation :define_shape_referential, on: :create
     before_validation :position_from_input
 
     # rubocop:disable Naming/VariableNumber
@@ -71,12 +69,6 @@ module PointOfInterest
       self.address_line_1 = address.house_number_and_street_name
       self.zip_code = address.post_code
       self.city_name = address.city_name
-    end
-
-    private
-
-    def define_shape_referential
-      self.shape_referential ||= shape_provider&.shape_referential
     end
   end
 end

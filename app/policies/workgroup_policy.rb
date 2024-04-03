@@ -16,6 +16,9 @@ class WorkgroupPolicy < ApplicationPolicy
   def update?
     (record.owner == user.organisation) && user.has_permission?('workgroups.update')
   end
+  alias edit_aggregate? update?
+  alias edit_merge? update?
+  alias edit_transport_modes? update?
 
   def aggregate?
     update? && user.has_permission?('aggregates.create')

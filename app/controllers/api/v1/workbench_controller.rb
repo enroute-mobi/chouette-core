@@ -3,13 +3,14 @@
 module Api
   module V1
     class WorkbenchController < BaseController
-      include Pundit
+      include Policy::Authorization
+
       respond_to :json
 
       before_action :authenticate
 
-      def pundit_user
-        UserContext.new(nil, workbench: current_workbench)
+      def policy_context_class
+        ::Policy::Context::OnlyWorkbench
       end
 
       protected

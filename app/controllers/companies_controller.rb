@@ -2,9 +2,12 @@
 
 class CompaniesController < Chouette::LineReferentialController
   include ApplicationHelper
-  include PolicyChecker
 
   defaults resource_class: Chouette::Company
+
+  # rubocop:disable Rails/LexicallyScopedActionFilter
+  before_action :authorize_resource, except: %i[new create index show autocomplete]
+  # rubocop:enable Rails/LexicallyScopedActionFilter
 
   respond_to :html
   respond_to :json
@@ -48,12 +51,6 @@ class CompaniesController < Chouette::LineReferentialController
 
   protected
 
-  def build_resource
-    get_resource_ivar || super.tap do |company|
-      company.line_provider ||= workbench.default_line_provider
-    end
-  end
-
   def scope
     parent.companies
   end
@@ -67,6 +64,8 @@ class CompaniesController < Chouette::LineReferentialController
   end
 
   def company_params
+    return @company_params if @company_params
+
     fields = [
       :objectid,
       :object_version,
@@ -93,6 +92,7 @@ class CompaniesController < Chouette::LineReferentialController
       :postcode_extension,
       :country_code,
       :fare_url,
+      :line_provider_id,
       { codes_attributes: %i[id code_space_id value _destroy] }
     ]
     fields += %w[default_contact private_contact
@@ -100,6 +100,6 @@ class CompaniesController < Chouette::LineReferentialController
       k.join('_')
     end
     fields += permitted_custom_fields_params(Chouette::Company.custom_fields(line_referential.workgroup))
-    params.require(:company).permit(fields)
+    @company_params = params.require(:company).permit(fields)
   end
 end

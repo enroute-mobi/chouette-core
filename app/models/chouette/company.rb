@@ -1,16 +1,8 @@
+# frozen_string_literal: true
+
 module Chouette
-  module WorkgroupFromClass
-    def workgroup
-      self.class.current_workgroup || super
-    end
-  end
-
   class Company < Chouette::ActiveRecord
-    before_validation :define_line_referential, on: :create
-
     has_metadata
-
-    prepend WorkgroupFromClass
 
     include LineReferentialSupport
     include ObjectidSupport
@@ -96,17 +88,6 @@ module Chouette
       return unless country
 
       country.translations[I18n.locale.to_s] || country.name
-    end
-
-    def same_documentable_workbench?(workbench)
-      line_provider.workbench_id == workbench.id
-    end
-
-    private
-
-    def define_line_referential
-      # TODO: Improve performance ?
-      self.line_referential ||= line_provider&.line_referential
     end
   end
 end

@@ -1,5 +1,4 @@
 RSpec.describe "/organisations/show", type: :view do
-
   assign_organisation
 
   let(:organisation) { first_organisation }
@@ -10,6 +9,7 @@ RSpec.describe "/organisations/show", type: :view do
   before do
     allow(view).to receive(:resource){ organisation }
     allow(view).to receive(:resource_class){ organisation.class }
+    allow(view).to receive(:parent_for_parent_policy) { user }
   end
 
   it "should render each User" do

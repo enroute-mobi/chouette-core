@@ -1,17 +1,14 @@
+# frozen_string_literal: true
+
 class Shape < ApplicationModel
+  include ShapeReferentialSupport
   include CodeSupport
 
-  belongs_to :shape_referential, required: true
-  belongs_to :shape_provider, required: true
   has_many :waypoints, -> { order(:position) }, inverse_of: :shape, dependent: :delete_all
 
   delegate :workbench, :to => :shape_provider, :allow_nil => true
 
   validates :geometry, presence: true
-  # TODO May be usefull, but must not impact performance
-  # validates :shape_provider, inclusion: { in: ->(shape) { shape.shape_referential.shape_providers } }, if: :shape_referential
-
-  before_validation :define_shape_referential, on: :create
 
   scope :by_text, -> (text) { text.blank? ? all : where('unaccent(shapes.name) ILIKE :t OR shapes.uuid::varchar LIKE :t', t: "%#{text.downcase}%") }
 
@@ -40,10 +37,4 @@ class Shape < ApplicationModel
   ransacker :uuid do
     Arel.sql("#{table_name}.uuid::varchar")
   end
-
-  def define_shape_referential
-    # TODO Improve performance ?
-    self.shape_referential ||= shape_provider&.shape_referential
-  end
-
 end

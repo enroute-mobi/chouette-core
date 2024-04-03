@@ -60,7 +60,7 @@ module Macro
       end
 
       def uuid
-        @uuid ||= SecureRandom.uuid
+        SecureRandom.uuid
       end
 
       def format_code_space(uuid)

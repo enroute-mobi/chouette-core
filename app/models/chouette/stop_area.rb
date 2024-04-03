@@ -253,7 +253,7 @@ module Chouette
     end
 
     def candidate_transport_modes
-      Chouette::TransportMode.tree(locale: I18n.locale)
+      Chouette::TransportMode.modes
     end
 
     def closest_children

@@ -52,6 +52,10 @@ module Chouette
       end
     end
 
+    def self_and_sub_modes
+      [self, *sub_modes]
+    end
+
     def self.modes(except: [])
       except = except.map(&:to_sym)
       (mode_candidates - except).map { |candidate| new candidate }
@@ -82,20 +86,6 @@ module Chouette
 
       def definitions
         DEFINITIONS
-      end
-
-      def tree(locale: I18n.default_locale)
-        mode_candidates.map do |mode|
-          transport_mode = new(mode)
-          [
-            transport_mode.human_name(locale: locale),
-            [[transport_mode.human_name(locale: locale), transport_mode.code]] +
-            definitions[mode].map do |sub_mode|
-              transport_mode = new(mode, sub_mode)
-              [transport_mode.human_name(locale: locale), transport_mode.code]
-            end
-          ]
-        end
       end
     end
 

@@ -415,11 +415,11 @@ class Export::NetexGeneric < Export::Base
     end
 
     def parent_objectid
-      parent&.objectid
+      @parent_objectid ||= code_provider.stop_areas.code(parent_id)
     end
 
     def derived_from_object_ref
-      referent&.objectid
+      code_provider.stop_areas.code(referent_id)
     end
 
     def key_list
@@ -492,7 +492,7 @@ class Export::NetexGeneric < Export::Base
     delegate :stop_areas, to: :export_scope
 
     def export!
-      stop_areas.where(area_type: Chouette::AreaType::QUAY).includes(:codes, :parent, :referent).find_each do |stop_area|
+      stop_areas.where(area_type: Chouette::AreaType::QUAY).includes(:codes).find_each do |stop_area|
         netex_resource = decorate(stop_area, with: StopDecorator).netex_resource
         target << netex_resource
       end
@@ -505,7 +505,7 @@ class Export::NetexGeneric < Export::Base
     delegate :stop_areas, to: :export_scope
 
     def export!
-      stop_areas.where.not(area_type: Chouette::AreaType::QUAY).includes(:codes, :entrances, :parent, :referent).find_each do |stop_area|
+      stop_areas.where.not(area_type: Chouette::AreaType::QUAY).includes(:codes, :entrances).find_each do |stop_area|
         stop_place = decorate(stop_area, with: StopDecorator).netex_resource
         target << stop_place
       end
@@ -725,7 +725,7 @@ class Export::NetexGeneric < Export::Base
     delegate :lines, to: :export_scope
 
     def export!
-      lines.includes(:codes, :company).find_each do |line|
+      lines.includes(:codes).find_each do |line|
         resource_tagger.register_tag_for line
         tags = resource_tagger.tags_for(line.id)
         tagged_target = TaggedTarget.new(target, tags)
@@ -774,8 +774,10 @@ class Export::NetexGeneric < Export::Base
       end
 
       def additional_operators
-        secondary_companies.map do |company|
-          company_code = code_provider.code(company) if code_provider
+        return unless secondary_company_ids
+
+        secondary_company_ids.map do |company_id|
+          company_code = code_provider.companies.code(company_id)
           Netex::Reference.new(company_code, type: 'OperatorRef') if company_code
         end.compact
       end
@@ -1158,12 +1160,16 @@ class Export::NetexGeneric < Export::Base
 
         def netex_attributes
           {
-            id: Netex::ObjectId.merge(route.objectid, id, type: "RoutingConstraintZone"),
+            id: merged_id,
             name: name,
             members: scheduled_stop_point_refs,
             lines: line_refs,
             zone_use: zone_use
           }
+        end
+
+        def merged_id
+          Netex::ObjectId.merge(code_provider.code(route), id, type: "RoutingConstraintZone")
         end
 
         def zone_use
@@ -1228,7 +1234,7 @@ class Export::NetexGeneric < Export::Base
     delegate :routing_constraint_zones, to: :export_scope
 
     def export!
-      routing_constraint_zones.includes(route: :line).find_each do |routing_constraint_zone|
+      routing_constraint_zones.includes(:route).find_each do |routing_constraint_zone|
         tags = resource_tagger.tags_for(routing_constraint_zone.route.line_id)
         tagged_target = TaggedTarget.new(target, tags)
 
@@ -1252,10 +1258,6 @@ class Export::NetexGeneric < Export::Base
 
       def scheduled_stop_point_refs
         decorated_stop_points.map(&:scheduled_stop_point_ref)
-      end
-
-      def line
-        route&.line
       end
 
       def line_refs
@@ -1300,7 +1302,7 @@ class Export::NetexGeneric < Export::Base
 
       def netex_attributes
         {
-          id: objectid,
+          id: netex_identifier.to_s,
           data_source_ref: data_source_ref,
           name: name,
           route_ref: route_ref,
@@ -1316,7 +1318,7 @@ class Export::NetexGeneric < Export::Base
       end
 
       def route_ref 
-        Netex::Reference.new(code_provider.code(route), type: 'RouteRef')
+        Netex::Reference.new(code_provider.routes.code(route_id), type: 'RouteRef')
       end
 
       def destination_display_id
@@ -1341,7 +1343,7 @@ class Export::NetexGeneric < Export::Base
 
       def decorated_stop_points
         @decorated_stop_points ||= stop_points.map do |stop_point|
-          StopPointDecorator.new(stop_point, journey_pattern_id: objectid, code_provider: code_provider)
+          StopPointDecorator.new(stop_point, journey_pattern_id: netex_identifier.to_s, code_provider: code_provider)
         end
       end
     end
@@ -1654,16 +1656,20 @@ class Export::NetexGeneric < Export::Base
 
   class PeriodDecorator < SimpleDelegator
 
-    attr_accessor :day_type_ref, :time_table
-    def initialize(period, day_type_ref)
+    attr_accessor :day_type_ref, :time_table, :code_provider
+    def initialize(period, day_type_ref, code_provider = nil)
       super period
-      @day_type_ref = day_type_ref
 
+      @day_type_ref = day_type_ref
       @time_table = period.time_table
+      @code_provider = code_provider
     end
 
     def netex_identifier
-      @netex_identifier ||= Netex::ObjectId.parse(time_table.objectid)
+      @netex_identifier ||= begin
+        code_time_table = code_provider.time_tables.code(time_table.id) if code_provider
+        Netex::ObjectId.parse(code_time_table) if code_time_table
+      end
     end
 
     def operating_period
@@ -1671,7 +1677,7 @@ class Export::NetexGeneric < Export::Base
     end
 
     def operating_period_id
-      netex_identifier.merge(id, type: 'OperatingPeriod').to_s
+      netex_identifier&.merge(id, type: 'OperatingPeriod').to_s
     end
 
     def operating_period_attributes
@@ -1684,7 +1690,7 @@ class Export::NetexGeneric < Export::Base
     end
 
     def day_type_assignment_id
-      netex_identifier.merge("p#{id}", type: 'DayTypeAssignment').to_s
+      netex_identifier&.merge("p#{id}", type: 'DayTypeAssignment').to_s
     end
 
     def day_type_assignment
@@ -1709,15 +1715,20 @@ class Export::NetexGeneric < Export::Base
 
   class DateDecorator < SimpleDelegator
 
-    attr_accessor :day_type_ref
-    def initialize(date, day_type_ref)
+    attr_accessor :day_type_ref, :time_table, :code_provider
+    def initialize(date, day_type_ref, code_provider = nil)
       super date
+
       @day_type_ref = day_type_ref
       @time_table = date.time_table
+      @code_provider = code_provider
     end
 
     def netex_identifier
-      @netex_identifier ||= Netex::ObjectId.parse(time_table.objectid)
+      @netex_identifier ||= begin
+        code_time_table = code_provider.time_tables.code(time_table.id) if code_provider
+        Netex::ObjectId.parse(code_time_table) if code_time_table
+      end
     end
 
     def day_type_assignment
@@ -1725,7 +1736,7 @@ class Export::NetexGeneric < Export::Base
     end
 
     def date_type_assignment_id
-      netex_identifier.merge("d#{id}", type: 'DayTypeAssignment').to_s
+      netex_identifier&.merge("d#{id}", type: 'DayTypeAssignment').to_s
     end
 
     def day_type_assignment_attributes
@@ -1777,7 +1788,7 @@ class Export::NetexGeneric < Export::Base
 
       def day_type_attributes
         {
-          id: objectid,
+          id: netex_identifier.to_s,
           data_source_ref: data_source_ref,
           name: comment,
           properties: properties,
@@ -1786,7 +1797,7 @@ class Export::NetexGeneric < Export::Base
       end
 
       def day_type_ref
-        @day_type_ref ||= Netex::Reference.new(objectid, type: 'DayTypeRef')
+        @day_type_ref ||= Netex::Reference.new(netex_identifier.to_s, type: 'DayTypeRef')
       end
 
       def properties
@@ -1803,12 +1814,12 @@ class Export::NetexGeneric < Export::Base
       end
 
       def candidate_periods
-        @candidate_periods ||= periods.select { |period| period.intersect?(validity_period) }
+        @candidate_periods ||= validity_period ? periods.select { |period| period.intersect?(validity_period) } : periods
       end
 
       def decorated_periods
         @decorated_periods ||= candidate_periods.map do |period|
-          PeriodDecorator.new(period, day_type_ref)
+          PeriodDecorator.new(period, day_type_ref, code_provider)
         end
       end
 
@@ -1819,7 +1830,10 @@ class Export::NetexGeneric < Export::Base
       end
 
       def candidate_included_dates
-        dates.select(&:included?).select { |date| validity_period.include? date.date }
+        included_dates = dates.select(&:included?)
+        return included_dates unless validity_period
+
+        included_dates.select { |date| validity_period.include? date.date }
       end
 
       def candidate_dates
@@ -1832,7 +1846,7 @@ class Export::NetexGeneric < Export::Base
 
       def decorated_dates
         @decorated_dates ||= candidate_dates.map do |date|
-          DateDecorator.new(date, day_type_ref)
+          DateDecorator.new(date, day_type_ref, code_provider)
         end
       end
     end

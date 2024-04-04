@@ -11,15 +11,15 @@ module Export
 
     COLLECTIONS = %w[
       stop_areas point_of_interests vehicle_journeys lines companies entrances contracts
-      vehicle_journey_at_stops journey_patterns routes codes time_tables fare_validities shapes
-      referential_codes routing_constraint_zones networks fare_zones fare_products stop_points
+      vehicle_journey_at_stops journey_patterns routes codes time_tables fare_validities 
+      routing_constraint_zones networks fare_zones fare_products stop_points shapes
     ].freeze
 
     # Returns unique code for the given model (StopArea, etc)
     def code(model)
       return unless model&.id
 
-      if collection = send(collection_name(model.class))
+      if collection = send(collection_name(model))
         collection.code(model.id)
       end
     end
@@ -34,13 +34,12 @@ module Export
       end
     end
 
-    def collection_name(model_class)
-      # Chouette::StopArea -> stop_areas
+    def collection_name(model)
       begin
-        model_class.model_name.plural
+        model.model_name.collection
       rescue
         # When the model class is Chouette::StopPoint::Light::StopPoint...
-        model_class.name.demodulize.underscore.pluralize
+        model.class.name.demodulize.underscore.pluralize
       end
     end
 

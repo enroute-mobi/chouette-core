@@ -8,6 +8,8 @@ class DocumentMembershipsController < Chouette::ResourceController
 
   belongs_to :workbench
 
+  before_action :authorize_create_document_memberships, only: %i[index]
+
   respond_to :js, only: :index
 
   def index
@@ -93,6 +95,10 @@ class DocumentMembershipsController < Chouette::ResourceController
   private
 
   alias current_workbench workbench
+
+  def authorize_create_document_memberships
+    authorize_policy(parent_policy, :create?, DocumentMembership)
+  end
 
   def decorator_context
     {

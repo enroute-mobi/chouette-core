@@ -33,26 +33,38 @@ RSpec.describe LineDocumentMembershipsController, type: :controller do
   let(:document_membership_policy) { double }
 
   describe 'GET #index' do
+    let(:user_can_create_document_memberships) { true }
+    let(:user_can_update_lines) { true }
+    let(:request) { get :index, params: { workbench_id: workbench.id, line_id: line.id } }
+
     before do
       line.documents << document
       unassociated_document
+
+      fk_policy = double
+      allow(fk_policy).to receive(:create?).with(DocumentMembership).and_return(user_can_create_document_memberships)
+      allow(fk_policy).to receive(:update?).and_return(user_can_update_lines)
+      expect(controller).to receive(:parent_policy).at_least(1).and_return(fk_policy)
+
+      request
+    end
+
+    context 'when user cannot create document memberships' do
+      let(:user_can_create_document_memberships) { false }
+      it { expect(response).to have_http_status(:forbidden) }
     end
 
     context 'when user cannot update lines' do
-      before { expect(controller).to receive(:parent_policy).and_return(double(update?: false)) }
+      let(:user_can_update_lines) { false }
 
       it 'does not return unassociated documents' do
-        get :index, params: { workbench_id: workbench.id, line_id: line.id }
         expect(assigns(:document_memberships).map(&:document)).to eq([document])
         expect(assigns(:unassociated_documents).map(&:document)).to eq([])
       end
     end
 
     context 'when user can update lines' do
-      before { expect(controller).to receive(:parent_policy).and_return(double(update?: true)) }
-
       it 'returns unassociated documents' do
-        get :index, params: { workbench_id: workbench.id, line_id: line.id }
         expect(assigns(:document_memberships).map(&:document)).to eq([document])
         expect(assigns(:unassociated_documents).map(&:document)).to eq([unassociated_document])
       end

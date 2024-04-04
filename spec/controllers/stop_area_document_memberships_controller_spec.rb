@@ -9,6 +9,8 @@ RSpec.describe StopAreaDocumentMembershipsController, type: :controller do
         document_type :document_type
 
         workbench organisation: Organisation.find_by(code: 'first') do
+          document_provider :document_provider
+
           stop_area :stop_area1
           stop_area :other_stop_area
 
@@ -31,26 +33,38 @@ RSpec.describe StopAreaDocumentMembershipsController, type: :controller do
   let(:document_membership_policy) { double }
 
   describe 'GET #index' do
+    let(:user_can_create_document_memberships) { true }
+    let(:user_can_update_stop_areas) { true }
+    let(:request) { get :index, params: { workbench_id: workbench.id, stop_area_id: stop_area.id } }
+
     before do
       stop_area.documents << document
       unassociated_document
+
+      fk_policy = double
+      allow(fk_policy).to receive(:create?).with(DocumentMembership).and_return(user_can_create_document_memberships)
+      allow(fk_policy).to receive(:update?).and_return(user_can_update_stop_areas)
+      expect(controller).to receive(:parent_policy).at_least(1).and_return(fk_policy)
+
+      request
+    end
+
+    context 'when user cannot create document memberships' do
+      let(:user_can_create_document_memberships) { false }
+      it { expect(response).to have_http_status(:forbidden) }
     end
 
     context 'when user cannot update stop areas' do
-      before { expect(controller).to receive(:parent_policy).and_return(double(update?: false)) }
+      let(:user_can_update_stop_areas) { false }
 
       it 'does not return unassociated documents' do
-        get :index, params: { workbench_id: workbench.id, stop_area_id: stop_area.id }
         expect(assigns(:document_memberships).map(&:document)).to eq([document])
         expect(assigns(:unassociated_documents).map(&:document)).to eq([])
       end
     end
 
     context 'when user can update stop areas' do
-      before { expect(controller).to receive(:parent_policy).and_return(double(update?: true)) }
-
       it 'returns unassociated documents' do
-        get :index, params: { workbench_id: workbench.id, stop_area_id: stop_area.id }
         expect(assigns(:document_memberships).map(&:document)).to eq([document])
         expect(assigns(:unassociated_documents).map(&:document)).to eq([unassociated_document])
       end

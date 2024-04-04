@@ -1,0 +1,8 @@
+= simple_block_for documentable, title: t('documentable.form.sections.documents') do
+  - if documentable.documents.any?
+    = documentable.documents_table
+  - else
+      = replacement_msg t('documentable.no_documents')
+  - if resource_policy.create?(DocumentMembership)
+    = link_to I18n.t('documentable.actions.associate_other_documents'), document_memberships_path, class: 'btn btn-primary my-2'
+  .mt-2

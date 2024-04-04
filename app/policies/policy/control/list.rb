@@ -3,7 +3,7 @@
 module Policy
   module Control
     class List < Base
-      authorize_by Strategy::Workbench
+      authorize_by Strategy::Workbench, only: %i[update destroy]
       authorize_by Strategy::Permission, only: %i[create update destroy]
       authorize_by Strategy::NotUsed, only: %i[destroy]
 

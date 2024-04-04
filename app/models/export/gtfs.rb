@@ -482,7 +482,7 @@ class Export::Gtfs < Export::Base
       end
 
       def gtfs_wheelchair_boarding
-        case mobility_impaired_accessibility
+        case wheelchair_accessibility
         when nil, 'unknown'
           '0'
         when 'yes'

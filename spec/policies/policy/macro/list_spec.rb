@@ -1,27 +1,12 @@
 # frozen_string_literal: true
 
 RSpec.describe Policy::Macro::List, type: :policy do
+  let(:resource) { Chouette::Factory.create { macro_list } }
   let(:policy_context_class) { Policy::Context::Workbench }
 
   describe '.permission_namespace' do
     subject { described_class.permission_namespace }
     it { is_expected.to eq('macro_lists') }
-  end
-
-  describe '#create?' do
-    subject { policy.create?(resource_class) }
-
-    let(:resource_class) { double }
-
-    it { applies_strategy(Policy::Strategy::Permission, :create, resource_class) }
-    it { does_not_apply_strategy(Policy::Strategy::NotUsed) }
-
-    it { is_expected.to be_falsy }
-
-    context 'with Macro::List::Run' do
-      let(:resource_class) { Macro::List::Run }
-      it { is_expected.to be_truthy }
-    end
   end
 
   describe '#update?' do
@@ -45,9 +30,13 @@ RSpec.describe Policy::Macro::List, type: :policy do
   describe '#execute?' do
     subject { policy.execute? }
 
-    let(:policy_create_macro_list_run) { true }
+    let(:workbench_policy_create_macro_list_run) { true }
 
-    before { allow(policy).to receive(:create?).with(Macro::List::Run).and_return(policy_create_macro_list_run) }
+    before do
+      dbl = double
+      expect(dbl).to receive(:create?).with(Macro::List::Run).and_return(workbench_policy_create_macro_list_run)
+      expect(Policy::Workbench).to receive(:new).with(resource.workbench, context: policy_context).and_return(dbl)
+    end
 
     it { does_not_apply_strategy(Policy::Strategy::Permission) }
     it { does_not_apply_strategy(Policy::Strategy::NotUsed) }
@@ -57,8 +46,8 @@ RSpec.describe Policy::Macro::List, type: :policy do
       is_expected.to be_truthy
     end
 
-    context 'when user cannot create macro list run' do
-      let(:policy_create_macro_list_run) { false }
+    context 'when a create macro list run cannot be created from a workbench' do
+      let(:workbench_policy_create_macro_list_run) { false }
       it { is_expected.to be_falsy }
     end
   end

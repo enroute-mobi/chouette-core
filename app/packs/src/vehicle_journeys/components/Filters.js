@@ -7,6 +7,10 @@ import TimetableSelect2 from'./tools/select2s/TimetableSelect2'
 
 export default function Filters({filters, pagination, onFilter, onResetFilters, onUpdateStartTimeFilter, onUpdateEndTimeFilter, onToggleWithoutSchedule, onToggleWithoutTimeTable, onSelect2Timetable, onSelect2JourneyPattern, onSelect2VehicleJourney, vehicleJourneys }) {
   const [filtersKey, setFiltersKey] = useState(5)
+  const [isOpen, setOpen] = useState(false);
+  const ToggleClass = () => {
+    setOpen(!isOpen);
+   };
 
   const resetFilters = e => {
     setFiltersKey(value => value ^ 5)
@@ -73,7 +77,7 @@ export default function Filters({filters, pagination, onFilter, onResetFilters, 
 
           <div className='ffg-row'>
             {/* Plage horaire */}
-            <div className='form-group togglable'>
+            <div className={'form-group togglable' + (isOpen ? " open" : "")} onClick={ToggleClass}>
               <label className='control-label'>{I18n.t("vehicle_journeys.form.departure_range.label")}</label>
               <div className='filter_menu'>
                 <div className='form-group time filter_menu-item'>

@@ -20,7 +20,7 @@
               TableBuilderHelper::Column.new( \
                 key: :processable_id, \
                 attribute: -> (pr) { pr.processable.name }, \
-                link_to: -> (pr) { url_for([pr.processable.workbench, pr.processable]) }, \
+                link_to: -> (pr) { url_for([@workbench, pr.processable]) }, \
                 sortable: false,\
               ), \
             ],

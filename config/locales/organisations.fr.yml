@@ -9,6 +9,10 @@ fr:
     show:
       users: "Utilisateurs"
       title: "Mon organisation"
+    form:
+      sections:
+        information: "Informations"
+        identity_provider: "Fournisseur d'identité"
   activerecord:
     models:
       organisation:
@@ -21,5 +25,17 @@ fr:
         data_format_restrictions_by_default: "Appliquer les contraintes format des données par defaut"
         data_format: "Format de données"
         geoportail_key: "Clé de l'API du Geoportail IGN"
-        created_at: Créée le
+        created_at: Crée le
         code: Code
+      authentication/base:
+        name: "Nom"
+      authentication/saml:
+        subtype: "Type"
+        saml_idp_entity_id: "SAML Entity ID"
+        saml_idp_sso_service_url: "SAML SSO Service url"
+        saml_idp_slo_service_url: "SAML SLO Service url"
+        saml_idp_cert: "SAML Certificat"
+        saml_idp_cert_fingerprint: "SAML Certificat Fingerprint"
+        saml_idp_cert_fingerprint_algorithm: "SAML Certificat Fingerprint Algorithm"
+        saml_authn_context: "SAML Authn context"
+        saml_email_attribute: "SAML Email Attribute"

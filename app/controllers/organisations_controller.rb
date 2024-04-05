@@ -20,21 +20,6 @@ class OrganisationsController < Chouette::ResourceController
     end
   end
 
-  protected
-
-  def update_resource(object, attributes)
-    organisation_attributes = attributes[0].except(:authentication)
-    object.attributes = organisation_attributes
-    authentication_attributes = attributes[0][:authentication]
-    # TODO destruction if all attributes are blank
-    if object.authentication
-      object.authentication.attributes = authentication_attributes
-    else
-      object.build_authentication(authentication_attributes)
-    end
-    object.transaction { object.authentication.save && object.save }
-  end
-
   private
 
   def sort_column
@@ -56,7 +41,7 @@ class OrganisationsController < Chouette::ResourceController
   def organisation_params
     params.require(:organisation).permit(
       :name,
-      authentication: %i[
+      authentication_attributes: %i[
         type
         name
         subtype

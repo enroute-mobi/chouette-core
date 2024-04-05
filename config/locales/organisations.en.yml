@@ -9,6 +9,10 @@ en:
     show:
       users: "Users"
       title: "My organization"
+    form:
+      sections:
+        information: "Information"
+        identity_provider: "Identity Provider"
   activerecord:
     models:
       organisation:
@@ -23,3 +27,15 @@ en:
         geoportail_key: "IGN Geoportail Key"
         created_at: Created at
         code: Code
+      authentication/base:
+        name: "Name"
+      authentication/saml:
+        subtype: "Type"
+        saml_idp_entity_id: "SAML Entity ID"
+        saml_idp_sso_service_url: "SAML SSO Service url"
+        saml_idp_slo_service_url: "SAML SLO Service url"
+        saml_idp_cert: "SAML Certificat"
+        saml_idp_cert_fingerprint: "SAML Certificat Fingerprint"
+        saml_idp_cert_fingerprint_algorithm: "SAML Certificat Fingerprint Algorithm"
+        saml_authn_context: "SAML Authn context"
+        saml_email_attribute: "SAML Email Attribute"

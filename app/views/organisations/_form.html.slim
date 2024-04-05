@@ -1,8 +1,15 @@
 = simple_form_for @organisation, url: organisation_path, html: { class: 'form-horizontal', id: 'organisation_form' }, wrapper: :horizontal_form do |f|
-  = f.simple_fields_for(:authentication, @organisation.authentication) do |sub_f|
+  h2.my-16
+    = t("organisations.form.sections.information")
+  = f.input :name
+  = f.input :code, disabled: true
+  = f.simple_fields_for(:authentication, @organisation.authentication || Authentication::Saml.new) do |sub_f|
     = sub_f.input :type, as: :hidden, input_html: { value: 'Authentication::Saml' }
-    = sub_f.input :name
+    .separator.section_separator
+    h2.my-16
+      = t("organisations.form.sections.identity_provider")
     = sub_f.input :subtype, as: :select, collection: Authentication::Saml.subtype.values
+    = sub_f.input :name
     = sub_f.input :saml_idp_entity_id
     = sub_f.input :saml_idp_sso_service_url
     = sub_f.input :saml_idp_slo_service_url

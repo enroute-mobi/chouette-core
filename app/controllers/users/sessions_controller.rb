@@ -23,7 +23,9 @@ module Users
 
     # copied from Devise::SessionsController#new (this code has to be updated every time the gem is updated)
     def render_sign_in_second_step
-      self.resource = resource_class.new(sign_in_params)
+      new_resource = resource_class.new(sign_in_params)
+      new_resource.organisation = resource.organisation if resource
+      self.resource = new_resource
       clean_up_passwords(resource)
       render :new
     end

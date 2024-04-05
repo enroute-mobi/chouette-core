@@ -1565,6 +1565,7 @@ ActiveRecord::Schema.define(version: 2024_04_03_205758) do
     t.string "profile"
     t.string "user_locale"
     t.string "time_zone", limit: 255, default: "Paris"
+    t.boolean "enable_internal_password_authentication", default: false, null: false
     t.index ["email"], name: "index_users_on_email", unique: true
     t.index ["invitation_token"], name: "index_users_on_invitation_token", unique: true
     t.index ["profile"], name: "index_users_on_profile"

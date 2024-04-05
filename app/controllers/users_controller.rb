@@ -57,7 +57,7 @@ class UsersController < Chouette::ResourceController
 
   private
   def user_params
-    keys = %i[name profile]
+    keys = %i[name profile enable_internal_password_authentication]
     keys << :email unless params[:action] == 'update'
     params.require(:user).permit(*keys)
   end

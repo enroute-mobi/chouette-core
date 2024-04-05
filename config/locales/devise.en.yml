@@ -14,6 +14,7 @@ en:
         unauthorized: "Failed to connect due to missing Chouette connection rights"
         no_account: "You don't have an account yet ?"
         sign_up: "Sign up"
+        sign_in_with: "Sign in with %{authentication}"
     confirmations:
       new:
         title: Resend confirmation instructions

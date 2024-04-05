@@ -15,4 +15,9 @@
                 = form.input :password, as: :password
                 = form.input :password_confirmation, as: :password
 
+            - if resource.organisation&.authentication
+              .row
+                .col-md-12
+                  = link_to(t('sign_in_with', scope: %i[devise sessions new], authentication: resource.organisation.authentication.name), resource.organisation.authentication.sign_in_url(self), class: 'btn btn-default btn-primary')
+
             = form.button :submit, value: t('actions.submit'), class: 'btn-info btn-default formSubmitr', form: 'invitation_form'

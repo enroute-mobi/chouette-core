@@ -42,6 +42,7 @@ class User < ApplicationModel
   validates :organisation, presence: true
   validates :email, presence: true, uniqueness: true
   validates :name, presence: true
+  validates :enable_internal_password_authentication, inclusion: { in: [true, false] }
 
   enumerize :user_locale, in: %w(fr en), default: 'fr'
 
@@ -189,6 +190,6 @@ class User < ApplicationModel
   end
 
   def must_sign_in_with_saml?
-    organisation&.authentication&.is_a?(Authentication::Saml)
+    !enable_internal_password_authentication && organisation&.authentication&.is_a?(Authentication::Saml)
   end
 end

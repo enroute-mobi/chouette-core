@@ -62,6 +62,7 @@ en:
         last_sign_in_at: Last connection
         user_locale: Language
         time_zone: Time Zone
+        enable_internal_password_authentication: "Allow password authentication"
     errors:
       models:
         calendar:

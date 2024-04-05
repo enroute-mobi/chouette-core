@@ -41,6 +41,12 @@
                       - if devise_mapping.confirmable? && controller_name != 'confirmations'
                         br
                         = mailer_link_to t("devise.links.new_confirmation"), new_confirmation_path(:user)
+
+                - if user.organisation&.authentication
+                  .row
+                    .col-md-12
+                      = link_to(t('.sign_in_with', authentication: user.organisation.authentication.name), user.organisation.authentication.sign_in_url(self), class: 'btn btn-default btn-primary')
+
               - else
                 .row
                   .col-md-12

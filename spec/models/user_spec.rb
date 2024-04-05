@@ -151,6 +151,9 @@ RSpec.describe User, :type => :model do
   describe '#must_sign_in_with_saml?' do
     subject { user.must_sign_in_with_saml? }
 
+    let(:enable_internal_password_authentication) { false }
+    let(:user) { build :user, enable_internal_password_authentication: enable_internal_password_authentication }
+
     it { is_expected.to be_falsy }
 
     context 'when user organisation has a SAML authentication' do
@@ -166,6 +169,11 @@ RSpec.describe User, :type => :model do
       end
 
       it { is_expected.to be_truthy }
+
+      context 'when user is allow to authenticate with password' do
+        let(:enable_internal_password_authentication) { true }
+        it { is_expected.to be_falsy }
+      end
     end
   end
 end

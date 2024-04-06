@@ -41,6 +41,8 @@ fr:
         one: Créer code en séquence
       macro/create_code_from_uuid/run:
         one: Créer un code à partir d’un UUID
+      macro/define_french_code_insee/run:
+        one: Définir le code INSEE
     attributes:
       macro/base/run:
         name: Nom

@@ -23,6 +23,7 @@
           = d.attribute :address_line_1
           = d.attribute :zip_code
           = d.attribute :city_name
+          = d.attribute :postal_region
           = d.attribute :country
           = d.attribute :stop_area_provider, as: :association, link: workbench_stop_area_referential_stop_area_provider_path(@workbench, @entrance.stop_area_provider), label: StopAreaProvider.model_name.human
 

@@ -1,7 +1,7 @@
 class Export::NetexGeneric < Export::Base
   include LocalExportSupport
 
-  option :profile, enumerize: %w[none french european idfm/full idfm/iboo], default: :none
+  option :profile, enumerize: %w[none french european idfm/iboo idfm/icar idfm/full], default: :none
   option :duration
   option :from, serialize: ActiveModel::Type::Date
   option :to, serialize: ActiveModel::Type::Date

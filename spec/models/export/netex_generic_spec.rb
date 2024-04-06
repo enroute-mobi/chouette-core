@@ -1832,60 +1832,93 @@ RSpec.describe Export::NetexGeneric do
   describe Export::NetexGeneric::ResourceTagger do
     subject(:tagger) { Export::NetexGeneric::ResourceTagger.new }
 
+
     def mock_line(id:, objectid:, name:, company_id:, company_name:)
-      double(id: id, objectid: objectid, name: name,
-             company: double(objectid: company_id, name: company_name))
+      double(id: id, name: name, company_id: company_id,
+             company: double(name: company_name))
+    end
+
+    describe '#register_tag_for' do
+      context "when 'dummy' is associated to the given Line id" do
+        let(:line) { Chouette::Line.new id: 42 }
+
+        before do
+          allow(tagger.code_provider).to receive_message_chain(:lines, :code) { 'dummy' }
+        end
+
+        it do
+          expect { tagger.register_tag_for(line) }.to change {
+            tagger.tags_for(line.id)
+          }.from({}).to(line_id: 'dummy')
+        end
+      end
+
+      context "when Line name is 'dummy'" do
+        let(:line) { Chouette::Line.new id: 42, name: 'dummy' }
+
+        it do
+          expect { tagger.register_tag_for(line) }.to change {
+            tagger.tags_for(line.id)
+          }.from({}).to(line_name: 'dummy')
+        end
+      end
+
+      context "when 'dummy' is associated to the Line Company" do
+        let(:line) { Chouette::Line.new id: 42, company_id: 1 }
+
+        before do
+          allow(tagger.code_provider).to receive_message_chain(:companies, :code) { 'dummy' }
+        end
+
+        it do
+          expect { tagger.register_tag_for(line) }.to change {
+            tagger.tags_for(line.id)
+          }.from({}).to(operator_id: 'dummy')
+        end
+      end
+
+      context "when associated Company name is 'dummy'" do
+        let(:line) { Chouette::Line.new id: 42, company: Chouette::Company.new(name: 'dummy') }
+
+        it do
+          expect { tagger.register_tag_for(line) }.to change {
+            tagger.tags_for(line.id)
+          }.from({}).to(operator_name: 'dummy')
+        end
+      end
     end
 
     describe "#tags_for_lines" do
-      subject { tagger.tags_for_lines(lines.map(&:id)) }
+      subject { tagger.tags_for_lines(line_ids) }
 
-      before do
-        lines.each { |line| tagger.register_tag_for(line) }
+      context 'when the given line ids is empty' do
+        let(:line_ids) { [] }
+
+        it { is_expected.to be_empty }
       end
 
-      context "when a single line is given" do
-        let(:line) do
-          mock_line(id: 1, objectid: "1", name: "Test",
-                    company_id: "1", company_name: "Dummy")
-        end
-        let(:lines) { [ line ] }
+      context 'when the given line ids is [ 1 ]' do
+        let(:line_ids) { [ 1 ] }
 
-        it "returns tags associated to the line" do
-          is_expected.to eq(tagger.tags_for(line.id))
+        context 'when tags for Line 1 are { key: "value" }' do
+          before { allow(tagger).to receive(:tags_for).with(1).and_return(key: 'value') }
+
+          it { is_expected.to eq(key: "value") }
         end
       end
 
-      context "when several lines are given" do
-        context "with the same Company" do
-          let(:lines) do
-            [
-              mock_line(id: 1, objectid: "1", name: "Test 1",
-                        company_id: "1", company_name: "Dummy"),
-              mock_line(id: 2, objectid: "2", name: "Test 2",
-                        company_id: "1", company_name: "Dummy"),
-            ]
-          end
+      context 'when the given line ids is [ 1, 2 ]' do
+        let(:line_ids) { [ 1, 2 ] }
 
-          it "returns tags associated to the Company" do
-            is_expected.to eq({operator_id: "1", operator_name: "Dummy"})
-          end
-        end
-
-        context "with several Companies" do
-          let(:lines) do
-            [
-              mock_line(id: 1, objectid: "1", name: "Test 1",
-                        company_id: "1", company_name: "Dummy"),
-              mock_line(id: 2, objectid: "2", name: "Test 2",
-                        company_id: "2", company_name: "Other"),
-            ]
+        context 'when tags for Line 1 are { key: "first" } and Line 2 are { key: "second" }' do
+          before do
+            allow(tagger).to receive(:tags_for).with(1).and_return(key: 'first')
+            allow(tagger).to receive(:tags_for).with(2).and_return(key: 'second')
           end
 
           it { is_expected.to be_empty }
         end
       end
-
     end
   end
 end

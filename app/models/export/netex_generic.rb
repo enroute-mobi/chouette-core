@@ -80,7 +80,7 @@ class Export::NetexGeneric < Export::Base
   end
 
   def resource_tagger
-    @resource_tagger ||= ResourceTagger.new
+    @resource_tagger ||= ResourceTagger.new(code_provider: code_provider)
   end
 
   def export_file
@@ -168,6 +168,13 @@ class Export::NetexGeneric < Export::Base
   end
 
   class ResourceTagger
+    def initialize(code_provider: nil)
+      @code_provider = code_provider
+    end
+
+    def code_provider
+      @code_provider ||= Export::CodeProvider.null
+    end
 
     # Returns tags for several lines.
     # Returns only uniq values accross all given lines
@@ -192,11 +199,11 @@ class Export::NetexGeneric < Export::Base
 
     def register_tag_for(line)
       tag_index[line.id] = {
-        line_id: line.objectid,
+        line_id: code_provider.lines.code(line.id),
         line_name: line.name,
-        operator_id: line.company&.objectid,
+        operator_id: code_provider.companies.code(line.company_id),
         operator_name: line.company&.name
-      }
+      }.compact
     end
 
     protected

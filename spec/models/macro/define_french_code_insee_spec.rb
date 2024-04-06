@@ -45,10 +45,9 @@ RSpec.describe Macro::DefineFrenchCodeInsee do
       end
 
       context 'when the stop area has no postal region' do
-
         before(:each) do
           insee_postal_region_response = File.read('spec/fixtures/insee-postal-region-response.json')
-          stub_request(:get, "https://geo.api.gouv.fr/communes?lat=47.2372428&lon=-1.5767392").to_return(
+          stub_request(:get, 'https://geo.api.gouv.fr/communes?lat=47.2372428&lon=-1.5767392').to_return(
             status: 200, body: insee_postal_region_response
           )
         end

@@ -23,7 +23,7 @@ module Macro
         models_without_postal_region.find_in_batches(batch_size: BATCH_SIZE) do |group|
           group.each { |model| Updater.new(model, macro_messages).update }
 
-          sleep 1 
+          sleep 1
         end
       end
 
@@ -32,7 +32,7 @@ module Macro
           @model = model
           @messages = messages
         end
-        attr_reader :model, :messages, :postal_region
+        attr_reader :model, :messages
 
         def update
           unless postal_region
@@ -74,7 +74,7 @@ module Macro
         end
 
         def uri
-          @uri ||= URI("https://geo.api.gouv.fr/communes").tap do |uri|
+          @uri ||= URI('https://geo.api.gouv.fr/communes').tap do |uri|
             uri.query = URI.encode_www_form(params)
           end
         end
@@ -84,11 +84,11 @@ module Macro
         end
 
         def body
-          @body ||= response.is_a?(Net::HTTPSuccess)? JSON.parse(response.body).first : {}
+          @body ||= response.is_a?(Net::HTTPSuccess) ? JSON.parse(response.body).first : {}
         end
 
         def code
-          @code ||= body.dig('code')
+          @code ||= body['code']
         end
       end
 

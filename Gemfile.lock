@@ -692,7 +692,7 @@ GEM
     rgeo-shapefile (3.1.0)
       dbf (~> 4.0)
       rgeo (>= 1.0)
-    rmagick (5.4.4)
+    rmagick (5.5.0)
       observer (~> 0.1)
       pkg-config (~> 1.4)
     roo (2.10.1)

@@ -40,6 +40,10 @@ class ExportDecorator < AF83::Decorator
     I18n.t("enumerize.profile.#{profile}")
   end
 
+  define_instance_method :display_code_space do
+    object.workgroup.code_spaces.find_by(id: object.exported_code_space)&.short_name
+  end
+
   define_instance_method :line_ids_options do
     return [] unless object.line_ids
 

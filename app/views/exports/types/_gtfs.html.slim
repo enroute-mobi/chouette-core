@@ -3,6 +3,8 @@
 = form.simple_fields_for(resource_type, @export) do |sub_form|
   = render 'exports/options/period', form: sub_form
   = render 'exports/options/exported_lines', form: sub_form
+  - if has_feature?("export_with_code_space")
+    = render 'exports/options/exported_code_space', form: sub_form
   = sub_form.input :prefer_referent_stop_area, as: :switchable_checkbox
   = sub_form.input :prefer_referent_company, as: :switchable_checkbox
   = sub_form.input :prefer_referent_line, as: :switchable_checkbox

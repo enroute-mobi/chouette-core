@@ -111,6 +111,7 @@ fr:
         from: De
         to: Vers
         exported_lines: Lignes exportées
+        exported_code_space: Espace de Code exporté
         profile: Profil
         prefer_referent_stop_area: Préférer les arrêts Référents
         prefer_referent_line: Préférer les lignes Référentes

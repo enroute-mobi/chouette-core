@@ -21,6 +21,23 @@ RSpec.describe Authentication::Saml, type: :model do
     end
   end
 
+  describe '#sign_in_url' do
+    subject { saml_authentication.sign_in_url(helper) }
+
+    let(:organisation) { Chouette::Factory.create { organisation }.organisation }
+    let(:saml_authentication) { Authentication::Saml.new(organisation: organisation) }
+    let(:helper) do
+      h = double
+      expect(h).to(
+        receive(:organisation_code_new_saml_user_session_url).with(organisation.code)
+                                                             .and_return('http://test.ex/users/saml/sign_in/code')
+      )
+      h
+    end
+
+    it { is_expected.to eq('http://test.ex/users/saml/sign_in/code') }
+  end
+
   describe '#devise_saml_settings' do
     subject { saml_authentication.devise_saml_settings }
 

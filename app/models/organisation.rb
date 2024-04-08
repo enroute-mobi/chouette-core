@@ -30,7 +30,7 @@ class Organisation < ApplicationModel
   validates_presence_of :name
   validates_uniqueness_of :code
 
-  accepts_nested_attributes_for :authentication, reject_if: :all_blank
+  accepts_nested_attributes_for :authentication, allow_destroy: true, update_only: true
 
   def find_referential(referential_id)
     organisation_referential = referentials.find_by id: referential_id

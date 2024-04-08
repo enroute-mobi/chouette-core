@@ -5,12 +5,17 @@
   .container-fluid
     .row
       .col-lg-6.col-md-6.col-sm-12.col-xs-12
-        - attributes = {}
-        - attributes[Organisation.tmf(:name)] = @organisation.name
-        - attributes[Organisation.tmf(:code)] = @organisation.code
-        - attributes[Organisation.tmf(:created_at)] = l(@organisation.created_at)
-        = definition_list t('metadatas'), attributes
+        = simple_block_for @organisation, title: t('organisations.form.sections.informations') do |d|
+          = d.attribute :name
+          = d.attribute :code
+          = d.attribute :created_at, as: :date
 
+      .col-lg-6.col-md-6.col-sm-12.col-xs-12
+        - if @organisation.authentication
+          = simple_block_for @organisation.authentication, title: t('organisations.form.sections.identity_provider') do |d|
+            = d.attribute :name
+            = d.attribute :subtype, as: :enumerize
+            = d.attribute :sign_in_url, value: @organisation.authentication.sign_in_url(self), link: @organisation.authentication.sign_in_url(self)
 
     .row
       .col-lg-12

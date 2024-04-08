@@ -15,6 +15,10 @@ module Authentication
       ]
     end
 
+    def sign_in_url(helper)
+      helper.organisation_code_new_saml_user_session_url(organisation.code)
+    end
+
     def devise_saml_settings # rubocop:disable Metrics/MethodLength
       result = {
         idp_sso_service_url: saml_idp_sso_service_url,

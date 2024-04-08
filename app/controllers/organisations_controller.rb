@@ -39,9 +39,10 @@ class OrganisationsController < Chouette::ResourceController
   end
 
   def organisation_params
-    params.require(:organisation).permit(
+    result = params.require(:organisation).permit(
       :name,
       authentication_attributes: %i[
+        id
         type
         name
         subtype
@@ -56,5 +57,7 @@ class OrganisationsController < Chouette::ResourceController
         saml_email_attribute
       ]
     )
+    result[:authentication_attributes][:_destroy] = '1' if result[:authentication_attributes][:type].blank?
+    result
   end
 end

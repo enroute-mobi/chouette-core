@@ -7,6 +7,7 @@ module Authentication
     extend Enumerize
     include NilIfBlank
 
+    enumerize :type, in: %w[Authentication::Saml]
     belongs_to :organisation, inverse_of: :authentication, required: true
 
     validates :type, :name, presence: true
@@ -22,6 +23,10 @@ module Authentication
       return nil unless subtype
 
       @subtype_data ||= self.class::Subtype.const_get(subtype.classify.to_sym)
+    end
+
+    def sign_in_url(_helper)
+      raise NotImplementedError
     end
   end
 end

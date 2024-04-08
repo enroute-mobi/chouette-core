@@ -146,13 +146,15 @@ class Export::NetexGeneric < Export::Base
     end
 
     def decorate(model, **attributes)
+      decorator_class = attributes.delete(:with) || default_decorator_class
+
       attributes = attributes.merge(
         alternate_identifiers_extractor: alternate_identifiers_extractor
       )
       decorator_class.new model, **attributes
     end
 
-    def decorator_class
+    def default_decorator_class
       @decorator_class ||= self.class.const_get('Decorator')
     end
 
@@ -477,7 +479,7 @@ class Export::NetexGeneric < Export::Base
 
     def export!
       stop_areas.where(area_type: Chouette::AreaType::QUAY).includes(:codes, :parent, :referent).find_each do |stop_area|
-        netex_resource = StopDecorator.new(stop_area).netex_resource
+        netex_resource = decorate(stop_area, with: StopDecorator).netex_resource
         target << netex_resource
       end
     end
@@ -490,7 +492,7 @@ class Export::NetexGeneric < Export::Base
 
     def export!
       stop_areas.where.not(area_type: Chouette::AreaType::QUAY).includes(:codes, :entrances, :parent, :referent).find_each do |stop_area|
-        stop_place = StopDecorator.new(stop_area).netex_resource
+        stop_place = decorate(stop_area, with: StopDecorator).netex_resource
         target << stop_place
       end
     end
@@ -567,7 +569,7 @@ class Export::NetexGeneric < Export::Base
 
     def export!
       point_of_interests.find_each do |point_of_interest|
-        decorated_point_of_interest = Decorator.new(point_of_interest)
+        decorated_point_of_interest = decorate(point_of_interest)
         target << decorated_point_of_interest.netex_resource
       end
     end

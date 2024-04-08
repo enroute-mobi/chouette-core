@@ -66,7 +66,11 @@ en:
     messages:
       default: "An INSEE code '%{postal_region}' has been defined for the %{target_model} %{model_name}"
       no_insee_code: "No INSEE code found on the %{target_model} %{name}"
-  macro_messages: 
+  macro/define_stop_area_transport_mode/run:
+    messages:
+      default: "The transport mode %{transport_mode} has been defined on the Stop Area %{name}"
+      error: "The transport mode %{transport_mode} can't be defined on the Stop Area %{name}"
+  macro_messages:
   macro/create_code_from_uuid/run:
     messages:
       default: "A code %{code_value} has been added for the %{target_model} %{model_name}"

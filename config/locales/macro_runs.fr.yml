@@ -43,6 +43,8 @@ fr:
         one: Créer un code à partir d’un UUID
       macro/define_french_code_insee/run:
         one: Définir le code INSEE
+      macro/define_stop_area_transport_mode/run:
+        one: Definir le mode de tranport des arrets
     attributes:
       macro/base/run:
         name: Nom

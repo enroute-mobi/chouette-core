@@ -69,6 +69,10 @@ fr:
     messages:
       default: "Un Code INSEE '%{postal_region}' a été défini sur un(e) %{target_model} %{name}"
       no_insee_code: "Code INSEE introuvable sur un(e) %{target_model} %{name}"
+  macro/define_stop_area_transport_mode/run:
+    messages:
+      default: "Le mode de transport %{transport_mode} a été défini sur l'arrêt %{name}"
+      error: "Le mode de transport %{transport_mode} ne peut pas être défini sur l'arrêt %{name}"
   macro_messages:
     search_no_results_for_filter: "Aucun messages"
     no_address: "Aucune adresse"

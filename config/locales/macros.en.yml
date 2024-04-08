@@ -52,6 +52,8 @@ en:
         one: Create Code from UUID
       macro/define_french_code_insee:
         one: Define French Code Insee
+      macro/define_stop_area_transport_mode:
+        one: Define Stop Area transport mode
     attributes:
       macro/base:
         name: Name

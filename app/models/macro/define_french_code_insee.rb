@@ -101,7 +101,7 @@ module Macro
       end
 
       def models
-        @models ||= scope.send(model_collection).with_position.without_address
+        @models ||= scope.send(model_collection).with_position
       end
     end
   end

@@ -24,6 +24,10 @@ module Export
       end
     end
 
+    def codes(models)
+      models.map { |model| code(model) }.compact
+    end
+
     COLLECTIONS.each do |collection|
       define_method collection do
         if index = instance_variable_get("@#{collection}")
@@ -74,6 +78,10 @@ module Export
       def code(model_id)
         @codes[model_id] if model_id
       end
+
+      def codes(model_ids)
+        model_ids.map { |model_id| code(model_id) }.compact
+      end
     end
 
     # Default implementation when a real Export::CodeProvider isn't provided
@@ -85,7 +93,11 @@ module Export
     end
 
     class Null
-      def code(model_or_id); end
+      def code(_model_or_id); end
+
+      def codes(_models_or_ids)
+        []
+      end
 
       def method_missing(name, *arguments)
         return self if name.end_with?('s') && arguments.empty?

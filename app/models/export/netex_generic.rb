@@ -1432,12 +1432,11 @@ class Export::NetexGeneric < Export::Base
 
   class VehicleJourneys < Part
     def export!
-      vehicle_journeys.find_each(batch_size: 10_000) do |vehicle_journey|
+      vehicle_journeys.each_instance do |vehicle_journey|
         tags = resource_tagger.tags_for(vehicle_journey.line_id)
         tagged_target = TaggedTarget.new(target, tags)
 
-        decorated_vehicle_journey =
-          Decorator.new(vehicle_journey, code_space_keys: code_space_keys, code_provider: code_provider)
+        decorated_vehicle_journey = decorate(vehicle_journey, code_space_keys: code_space_keys)
         tagged_target << decorated_vehicle_journey.netex_resource
       end
     end
@@ -1446,6 +1445,7 @@ class Export::NetexGeneric < Export::Base
       Query.new(export_scope.vehicle_journeys).scope
     end
 
+    # TODO: integrate this use case in AlternateIdentifiersExtractor
     def code_space_keys
       @code_space_keys ||= workgroup.code_spaces.pluck(:id, :short_name).to_h
     end
@@ -1458,10 +1458,10 @@ class Export::NetexGeneric < Export::Base
       attr_accessor :vehicle_journeys
 
       def scope
-        scope = vehicle_journeys.joins(journey_pattern: :route).select(selected)
+        scope = vehicle_journeys.joins(:route).select(selected)
 
         scope = scope.left_joins(:codes).select(vehicle_journey_codes).group(group_by)
-        scope.joins(:time_tables).select(time_table_objectids)
+        scope.joins(:vehicle_journey_time_table_relationships).select(time_table_ids)
       end
 
       private
@@ -1469,14 +1469,13 @@ class Export::NetexGeneric < Export::Base
       def selected
         <<~SQL
           vehicle_journeys.*,
-          routes.line_id AS line_id,
-          journey_patterns.objectid AS journey_pattern_objectid
+          routes.line_id AS line_id
         SQL
       end
 
-      def time_table_objectids
+      def time_table_ids
         <<~SQL
-          array_agg(time_tables.objectid) AS time_table_objectids
+          array_agg(time_tables_vehicle_journeys.time_table_id) AS timetable_ids
         SQL
       end
 
@@ -1494,19 +1493,12 @@ class Export::NetexGeneric < Export::Base
       def group_by
         <<~SQL
           vehicle_journeys.id,
-          routes.line_id,
-          journey_patterns.objectid
+          routes.line_id
         SQL
       end
     end
 
-    class Decorator < SimpleDelegator
-
-      def initialize(vehicle_journey, code_space_keys: nil, code_provider: nil)
-        super vehicle_journey
-        @code_space_keys = code_space_keys
-        @code_provider = code_provider
-      end
+    class Decorator < ModelDecorator
 
       attr_accessor :code_space_keys
 
@@ -1520,14 +1512,6 @@ class Export::NetexGeneric < Export::Base
           day_types: day_types,
           key_list: netex_alternate_identifiers
         }
-      end
-
-      def netex_identifier
-        @netex_identifier ||= Netex::ObjectId.parse(code_provider.code(__getobj__))
-      end
-
-      def code_provider
-        @code_provider ||= Export::CodeProvider.null
       end
 
       def netex_resource
@@ -1556,17 +1540,24 @@ class Export::NetexGeneric < Export::Base
       end
 
       def journey_pattern_ref
-        Netex::Reference.new(journey_pattern_objectid, type: 'JourneyPatternRef')
+        Netex::Reference.new(journey_pattern_code, type: 'JourneyPatternRef')
       end
 
-      def journey_pattern_objectid
-        __getobj__.try(:journey_pattern_objectid) || journey_pattern&.objectid
+      def journey_pattern_code
+        code_provider.journey_patterns.code(journey_pattern_id)
+      end
+
+      def timetable_codes
+        if identifiers = try(:timetable_ids)
+          code_provider.time_tables.codes(identifiers)
+        else
+          code_provider.codes(time_tables)
+        end
       end
 
       def day_types
-        objectids = try(:time_table_objectids) || time_tables.pluck(:objectid)
-        objectids.map do |objectid|
-          Netex::Reference.new(objectid, type: 'DayTypeRef')
+        timetable_codes.map do |code|
+          Netex::Reference.new(code, type: 'DayTypeRef')
         end
       end
     end

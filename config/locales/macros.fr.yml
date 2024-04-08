@@ -64,7 +64,7 @@ fr:
         source_attribute: Attribut de la source
         source_pattern: Modèle de source
         target_code_space: Espace code cible
-        target_model: Modèle de cible
+        target_model: Modèle cible
         target_pattern: Modèle de cible
         expected_result: Résultat attendu
       macro/define_postal_address:

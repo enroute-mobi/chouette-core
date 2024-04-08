@@ -1359,7 +1359,7 @@ class Export::NetexGeneric < Export::Base
   class VehicleJourneyAtStops < Part
     def export!
       vehicle_journey_at_stops.find_each_light do |light_vehicle_journey_at_stop|
-        decorated_vehicle_journey_at_stop = Decorator.new(light_vehicle_journey_at_stop)
+        decorated_vehicle_journey_at_stop = decorate(light_vehicle_journey_at_stop)
         target << decorated_vehicle_journey_at_stop.netex_resource
       end
     end
@@ -1370,14 +1370,13 @@ class Export::NetexGeneric < Export::Base
         .order(:vehicle_journey_id, "stop_points.position": :asc)
         .select(
           "vehicle_journey_at_stops.*",
-          "journey_patterns.objectid AS journey_pattern_objectid",
-          "vehicle_journeys.objectid AS vehicle_journey_objectid",
-          "stop_points.objectid AS stop_point_objectid",
+          "vehicle_journeys.journey_pattern_id AS journey_pattern_id",
+          "vehicle_journeys.id AS vehicle_journey_id",
           "stop_areas.time_zone AS time_zone",
         )
     end
 
-    class Decorator < SimpleDelegator
+    class Decorator < ModelDecorator
       def netex_attributes
         {
           departure_time: stop_time_departure_time,
@@ -1389,27 +1388,27 @@ class Export::NetexGeneric < Export::Base
       end
 
       def netex_resource
-        Netex::TimetabledPassingTime.new(netex_attributes).with_tag(parent_id: parent_id)
+        Netex::TimetabledPassingTime.new(netex_attributes).with_tag(parent_id: parent_code)
       end
 
-      def netex_identifier
-        @netex_identifier ||= Netex::ObjectId.parse(stop_point_objectid)
+      def parent_code
+        code_provider.vehicle_journeys.code(vehicle_journey_id)
       end
 
-      def parent_id
-        vehicle_journey_objectid
+      def journey_pattern_id
+        __getobj__.try(:journey_pattern_id) || journey_pattern&.id
       end
 
-      def journey_pattern_objectid
-        __getobj__.try(:journey_pattern_objectid) || journey_pattern&.objectid
+      def stop_point_code
+        code_provider.stop_points.code(stop_point_id)
       end
 
-      def stop_point_objectid
-        __getobj__.try(:stop_point_objectid) || stop_point&.objectid
+      def journey_pattern_code
+        code_provider.journey_patterns.code(journey_pattern_id)
       end
 
       def stop_point_in_journey_pattern_id
-        StopPointDecorator.stop_point_in_journey_pattern_id(stop_point_objectid, journey_pattern_objectid)
+        StopPointDecorator.stop_point_in_journey_pattern_id(stop_point_code, journey_pattern_code)
       end
 
       def stop_point_in_journey_pattern_ref

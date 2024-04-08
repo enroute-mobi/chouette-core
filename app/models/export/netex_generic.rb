@@ -1,7 +1,7 @@
 class Export::NetexGeneric < Export::Base
   include LocalExportSupport
 
-  option :profile, enumerize: %w[none french european idfm/line idfm/full], default: :none
+  option :profile, enumerize: %w[none french european idfm/iboo idfm/icar idfm/full], default: :none
   option :duration
   option :from, serialize: ActiveModel::Type::Date
   option :to, serialize: ActiveModel::Type::Date
@@ -10,6 +10,8 @@ class Export::NetexGeneric < Export::Base
   option :line_provider_ids, serialize: :map_ids
   option :period, default_value: 'all_periods', enumerize: %w[all_periods only_next_days static_day_period]
   option :exported_lines, default_value: 'all_line_ids', enumerize: %w[line_ids company_ids line_provider_ids all_line_ids]
+  option :participant_ref
+  option :profile_options, default_value: {}
 
   validate :ensure_is_valid_period
 
@@ -23,7 +25,12 @@ class Export::NetexGeneric < Export::Base
   end
 
   def target
-    @target ||= Netex::Target.build export_file, profile: netex_profile, validity_periods: [export_scope.validity_period]
+    @target ||= Netex::Target.build(export_file,
+                                    profile: netex_profile,
+                                    publication_timestamp: Time.zone.now,
+                                    participant_ref: participant_ref,
+                                    validity_periods: [export_scope.validity_period],
+                                    profile_options: profile_options)
   end
   attr_writer :target
 

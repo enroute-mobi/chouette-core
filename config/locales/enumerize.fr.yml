@@ -376,8 +376,9 @@ fr:
       none: Aucun
       french: France (beta)
       european: Européen
-      'idfm/line': IdFM Publication Ligne
       'idfm/full': IdFM Publication Complet
+      'idfm/iboo': IdFM Producteur IBOO
+      'idfm/icar': IdFM Producteur ICAR
     export_type:
       line: line
       full: full

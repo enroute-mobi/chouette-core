@@ -2,10 +2,12 @@
 
 module Policy
   class Organisation < Base
+    authorize_by Strategy::Permission
+
     protected
 
     def _update?
-      true # TODO
+      true
     end
   end
 end

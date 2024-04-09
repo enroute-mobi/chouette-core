@@ -732,9 +732,9 @@ RSpec.describe Export::NetexGeneric do
 
     end
 
-    describe Export::NetexGeneric::StopPointDecorator do
+    describe Export::NetexGeneric::StopPointDecorator::Base do
       let(:stop_point) { Chouette::StopPoint.new position: 0 }
-      let(:decorator) { Export::NetexGeneric::StopPointDecorator.new stop_point }
+      let(:decorator) { described_class.new stop_point }
 
       describe "#netex_order" do
         subject { decorator.netex_order }
@@ -744,24 +744,22 @@ RSpec.describe Export::NetexGeneric do
         end
 
       end
+    end
 
-      describe "#stop_point_in_journey_pattern_id" do
-        subject { decorator.stop_point_in_journey_pattern_id }
+    describe Export::NetexGeneric::StopPointDecorator::StopPointInJourneyPattern do
+      let(:stop_point) { Chouette::StopPoint.new }
+      let(:decorator) { described_class.new stop_point, journey_pattern_id: 42 }
 
-        let(:stop_point) { create(:stop_point) }
-        let(:decorator) { Export::NetexGeneric::StopPointDecorator.new stop_point, code_provider: code_provider }
-        let(:code_provider) { Export::CodeProvider.new export_scope}
-        let(:export_scope) do
-          double("Export::Scope", stop_points: Chouette::StopPoint.where(id: stop_point))
-        end
+      describe "#netex_identifier" do
+        subject { decorator.netex_identifier.to_s }
 
-        context "when journey_pattern_id is 'chouette:JourneyPattern:1:LOC' and object_id is 'chouette:StopPointInJourneyPattern:2:LOC' and " do
+        context "when journey_pattern is identified by 'chouette:JourneyPattern:1:LOC' and StopPoint by 'chouette:Something:A:LOC'" do
           before do
-            decorator.journey_pattern_id = 'chouette:JourneyPattern:1:LOC'
-            stop_point.update objectid: 'chouette:StopPointInJourneyPattern:2:LOC'
+            allow(decorator).to receive(:journey_pattern_code) { 'chouette:JourneyPattern:1:LOC' }
+            allow(decorator).to receive(:stop_point_code) { 'chouette:Something:A:LOC' }
           end
 
-          it { is_expected.to eq('chouette:StopPointInJourneyPattern:1-2:LOC') }
+          it { is_expected.to eq('chouette:StopPointInJourneyPattern:A-1:LOC') }
         end
       end
 
@@ -770,7 +768,14 @@ RSpec.describe Export::NetexGeneric do
 
         context "when for_boarding is 'normal'" do
           before { stop_point.for_boarding = "normal" }
+
           it { is_expected.to be_truthy }
+        end
+
+        context "when for_boarding is 'other'" do
+          before { stop_point.for_boarding = "other" }
+
+          it { is_expected.to be_falsy }
         end
       end
 
@@ -779,9 +784,21 @@ RSpec.describe Export::NetexGeneric do
 
         context "when for_alighting is 'normal'" do
           before { stop_point.for_alighting = "normal" }
+
           it { is_expected.to be_truthy }
         end
+
+        context "when for_alighting is 'other'" do
+          before { stop_point.for_alighting = "other" }
+
+          it { is_expected.to be_falsy }
+        end
       end
+    end
+
+    describe Export::NetexGeneric::StopPointDecorator::PassengerStopAssignment do
+      let(:stop_point) { Chouette::StopPoint.new }
+      let(:decorator) { described_class.new stop_point }
 
       describe "#netex_quay?" do
         subject { decorator.netex_quay? }
@@ -810,12 +827,11 @@ RSpec.describe Export::NetexGeneric do
           it { is_expected.to have_attributes(quay_ref: an_instance_of(Netex::Reference)) }
         end
 
-        context "when the assocaited Stop Place is not a Quay" do
+        context "when the associated Stop Place is not a Quay" do
           before { allow(decorator).to receive(:netex_quay?).and_return(false) }
           it { is_expected.to have_attributes(stop_place_ref: an_instance_of(Netex::Reference)) }
         end
       end
-
     end
 
     describe Export::NetexGeneric::Routes::Decorator::LineRoutingConstraintZoneDecorator do
@@ -1171,7 +1187,7 @@ RSpec.describe Export::NetexGeneric do
 
     let(:target) { MockNetexTarget.new }
     let(:export_scope) { Export::Scope::All.new context.referential }
-    let(:export) { Export::NetexGeneric.new export_scope: export_scope, target: target }
+    let(:export) { Export::NetexGeneric.new export_scope: export_scope, target: target, workgroup: context.workgroup }
 
     let(:part) do
       Export::NetexGeneric::StopPoints.new export

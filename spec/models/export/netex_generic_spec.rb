@@ -308,6 +308,42 @@ RSpec.describe Export::NetexGeneric do
     end
   end
 
+  describe '#netex_identifier' do
+    subject { decorator.netex_identifier.to_s }
+
+    let(:decorator) { Export::NetexGeneric::Lines::Decorator.new model, code_provider: code_provider}
+    let(:code_provider) { Export::CodeProvider.new export_scope}
+
+    let(:context) do
+      Chouette.create do
+        stop_area
+        referential
+      end
+    end
+
+    let(:export_scope) do
+      double "Export::Scope", lines: referential.lines, stop_areas: referential.stop_areas
+    end
+
+    let(:referential) { context.referential }
+
+    let(:expected_attribute) { model.send identifier }
+
+    describe '#lines' do
+      let(:model) { referential.lines.first }
+      let(:identifier) { :objectid }
+
+      it { is_expected.to eq expected_attribute }
+    end
+
+    describe '#stop_areas' do
+      let(:model) { referential.stop_areas.first }
+      let(:identifier) { :objectid }
+
+      it { is_expected.to eq expected_attribute }
+    end
+  end
+
   describe "Lines export" do
     describe Export::NetexGeneric::Lines::Decorator do
       let(:line) { Chouette::Line.new }
@@ -359,6 +395,17 @@ RSpec.describe Export::NetexGeneric do
 
       # heavy version (deprecated)
       describe "#netex_attributes" do
+        let(:decorator) { Export::NetexGeneric::Lines::Decorator.new line, code_provider: code_provider}
+        let(:code_provider) { Export::CodeProvider.new export_scope}
+        let(:export_scope) do
+          double(
+            "Export::Scope",
+            lines: Chouette::Line.where(id: line.id),
+            companies: Chouette::Company.where(id: [first_company_id, second_company_id]),
+            networks: Chouette::Network.where(id: context.network)
+          )
+        end
+
         let!(:context) do
           Chouette.create do
             company :first
@@ -373,6 +420,7 @@ RSpec.describe Export::NetexGeneric do
         let(:active_from) { "2022-03-16".to_date }
         let(:active_until) { active_from + 3 }
         let(:first_company) { context.company(:first) }
+        let(:first_company_id) { first_company&.id}
         let(:second_company_id) { context.company(:second).id}
         let(:network) { context.network }
         let(:objectid) { 'chouette:Line:497d415e-fe15-46cf-9219-ee8bed76c95c:LOC' }
@@ -518,9 +566,15 @@ RSpec.describe Export::NetexGeneric do
       describe "#netex_attributes" do
         subject { decorator.netex_attributes }
 
-        it "uses Company objectid as id" do
-          company.objectid = "dummy"
-          is_expected.to include(id: company.objectid)
+        context 'when code provider is used to compute netex id' do
+          let(:company) { create(:company) }
+          let(:decorator) { Export::NetexGeneric::Companies::Decorator.new company, code_provider: code_provider }
+          let(:code_provider) { Export::CodeProvider.new export_scope}
+          let(:export_scope) { double("Export::Scope", companies: Chouette::Company.where(id: company))}
+
+          it "uses Company objectid as id" do
+            is_expected.to include(id: company.objectid)
+          end
         end
 
         it "uses Company name" do
@@ -619,15 +673,37 @@ RSpec.describe Export::NetexGeneric do
 
         subject { decorator.netex_attributes }
 
-        it "includes the same data_source_ref than the Route" do
-          route.data_source_ref = "dummy"
-          is_expected.to include(data_source_ref: route.data_source_ref)
-        end
+        context 'when code provider is used to compute netex id' do
+          let(:route) { create(:route) }
+          let(:decorator) { Export::NetexGeneric::Routes::Decorator.new route, code_provider: code_provider }
+          let(:code_provider) { Export::CodeProvider.new export_scope}
+          let(:export_scope) do
+            double(
+              "Export::Scope",
+              routes: Chouette::Route.where(id: route),
+              lines: Chouette::Line.where(id: route.line),
+              stop_points: route.stop_points
+            )
+          end
 
-        it "includes a direction_ref if a published_name is defined" do
-          route.objectid = "chouette:Route:1:"
-          route.published_name = "dummy"
-          is_expected.to have_key(:direction_ref)
+          it "uses Company objectid as id" do
+            is_expected.to include(id: route.objectid)
+          end
+
+          it "includes the same data_source_ref than the Route" do
+            route.data_source_ref = "dummy"
+            is_expected.to include(data_source_ref: route.data_source_ref)
+          end
+
+          it "includes a direction_ref if a published_name is defined" do
+            route.objectid = "chouette:Route:1:"
+            route.published_name = "dummy"
+            is_expected.to have_key(:direction_ref)
+          end
+
+          it "includes a line_ref if a line is defined" do
+            is_expected.to have_key(:line_ref)
+          end
         end
 
         it "doesn't include a direction_ref if a published_name isn't defined" do
@@ -656,9 +732,9 @@ RSpec.describe Export::NetexGeneric do
 
     end
 
-    describe Export::NetexGeneric::StopPointDecorator do
+    describe Export::NetexGeneric::StopPointDecorator::Base do
       let(:stop_point) { Chouette::StopPoint.new position: 0 }
-      let(:decorator) { Export::NetexGeneric::StopPointDecorator.new stop_point }
+      let(:decorator) { described_class.new stop_point }
 
       describe "#netex_order" do
         subject { decorator.netex_order }
@@ -668,18 +744,22 @@ RSpec.describe Export::NetexGeneric do
         end
 
       end
+    end
 
-      describe "#stop_point_in_journey_pattern_id" do
+    describe Export::NetexGeneric::StopPointDecorator::StopPointInJourneyPattern do
+      let(:stop_point) { Chouette::StopPoint.new }
+      let(:decorator) { described_class.new stop_point, journey_pattern_id: 42 }
 
-        subject { decorator.stop_point_in_journey_pattern_id }
+      describe "#netex_identifier" do
+        subject { decorator.netex_identifier.to_s }
 
-        context "when journey_pattern_id is 'chouette:JourneyPattern:1:LOC' and object_id is 'chouette:StopPointInJourneyPattern:2:LOC' and " do
+        context "when journey_pattern is identified by 'chouette:JourneyPattern:1:LOC' and StopPoint by 'chouette:Something:A:LOC'" do
           before do
-            decorator.journey_pattern_id = 'chouette:JourneyPattern:1:LOC'
-            stop_point.objectid = 'chouette:StopPointInJourneyPattern:2:LOC'
+            allow(decorator).to receive(:journey_pattern_code) { 'chouette:JourneyPattern:1:LOC' }
+            allow(decorator).to receive(:stop_point_code) { 'chouette:Something:A:LOC' }
           end
 
-          it { is_expected.to eq('chouette:StopPointInJourneyPattern:1-2:LOC') }
+          it { is_expected.to eq('chouette:StopPointInJourneyPattern:A-1:LOC') }
         end
       end
 
@@ -688,7 +768,14 @@ RSpec.describe Export::NetexGeneric do
 
         context "when for_boarding is 'normal'" do
           before { stop_point.for_boarding = "normal" }
+
           it { is_expected.to be_truthy }
+        end
+
+        context "when for_boarding is 'other'" do
+          before { stop_point.for_boarding = "other" }
+
+          it { is_expected.to be_falsy }
         end
       end
 
@@ -697,9 +784,21 @@ RSpec.describe Export::NetexGeneric do
 
         context "when for_alighting is 'normal'" do
           before { stop_point.for_alighting = "normal" }
+
           it { is_expected.to be_truthy }
         end
+
+        context "when for_alighting is 'other'" do
+          before { stop_point.for_alighting = "other" }
+
+          it { is_expected.to be_falsy }
+        end
       end
+    end
+
+    describe Export::NetexGeneric::StopPointDecorator::PassengerStopAssignment do
+      let(:stop_point) { Chouette::StopPoint.new }
+      let(:decorator) { described_class.new stop_point }
 
       describe "#netex_quay?" do
         subject { decorator.netex_quay? }
@@ -728,12 +827,11 @@ RSpec.describe Export::NetexGeneric do
           it { is_expected.to have_attributes(quay_ref: an_instance_of(Netex::Reference)) }
         end
 
-        context "when the assocaited Stop Place is not a Quay" do
+        context "when the associated Stop Place is not a Quay" do
           before { allow(decorator).to receive(:netex_quay?).and_return(false) }
           it { is_expected.to have_attributes(stop_place_ref: an_instance_of(Netex::Reference)) }
         end
       end
-
     end
 
     describe Export::NetexGeneric::Routes::Decorator::LineRoutingConstraintZoneDecorator do
@@ -839,8 +937,21 @@ RSpec.describe Export::NetexGeneric do
     end
 
     describe Export::NetexGeneric::RoutingConstraintZones::Decorator do
-      let(:routing_constraint_zone) { Chouette::RoutingConstraintZone.new }
-      let(:decorator) { Export::NetexGeneric::RoutingConstraintZones::Decorator.new routing_constraint_zone }
+      let(:routing_constraint_zone) { create(:routing_constraint_zone) }
+      let(:decorator) do
+        Export::NetexGeneric::RoutingConstraintZones::Decorator.new routing_constraint_zone, code_provider: code_provider
+      end
+      let(:first_stop_point) { routing_constraint_zone.stop_points.first }
+      let(:second_stop_point) { routing_constraint_zone.stop_points.second }
+      let(:code_provider) { Export::CodeProvider.new export_scope}
+      let(:export_scope) do
+        double(
+          "Export::Scope",
+          routing_constraint_zones: Chouette::RoutingConstraintZone.where(id: routing_constraint_zone),
+          stop_points: Chouette::StopPoint.where(id: [first_stop_point.id, second_stop_point.id]),
+          lines: Chouette::Line.all
+        )
+      end
 
       describe '#netex_attributes' do
         subject { decorator.netex_attributes }
@@ -848,7 +959,8 @@ RSpec.describe Export::NetexGeneric do
         it { is_expected.to include(zone_use: "cannotBoardAndAlightInSameZone") }
 
         context "when RoutingConstraintZone objectid is 'chouette:RoutingConstraintZone:test:LOC'" do
-          before { routing_constraint_zone.objectid = "chouette:RoutingConstraintZone:test:LOC" }
+          before { routing_constraint_zone.update objectid: "chouette:RoutingConstraintZone:test:LOC" }
+
           it { is_expected.to include(id: routing_constraint_zone.objectid) }
         end
 
@@ -878,14 +990,14 @@ RSpec.describe Export::NetexGeneric do
 
         context "when the RoutingConstraintZone is associated with StopPoints 'chouette:StopPoint:A:LOC' and 'chouette:StopPoint:B:LOC" do
           before do
-            allow(routing_constraint_zone).to receive(:stop_points) do
-              %w{chouette:StopPoint:A:LOC chouette:StopPoint:B:LOC}.map do |objectid|
-                Chouette::StopPoint.new objectid: objectid
-              end
-            end
+            first_stop_point.update objectid: 'chouette:StopPoint:A:LOC'
+            second_stop_point.update objectid: 'chouette:StopPoint:B:LOC'
           end
 
-          it { is_expected.to contain_exactly(an_object_having_attributes(ref: 'chouette:ScheduledStopPoint:A:LOC'), an_object_having_attributes(ref: 'chouette:ScheduledStopPoint:B:LOC')) }
+          it do
+            is_expected.to contain_exactly(an_object_having_attributes(ref: 'chouette:ScheduledStopPoint:A:LOC'),
+                                           an_object_having_attributes(ref: 'chouette:ScheduledStopPoint:B:LOC'))
+          end
         end
       end
 
@@ -893,11 +1005,14 @@ RSpec.describe Export::NetexGeneric do
         subject { decorator.line_refs }
 
         context "when no Line is associated" do
+          before { decorator.route.update line: nil }
+
           it { is_expected.to be_nil }
         end
 
         context "when a Line 'chouette:Line:A:LOC' is associated" do
-          before { allow(decorator).to receive(:line).and_return(double(objectid: "chouette:Line:A:LOC")) }
+          before { decorator.route.line.update objectid: "chouette:Line:A:LOC" }
+
           it { is_expected.to contain_exactly(an_object_having_attributes(ref: 'chouette:Line:A:LOC')) }
         end
       end
@@ -968,9 +1083,15 @@ RSpec.describe Export::NetexGeneric do
       describe "#netex_attributes" do
         subject { decorator.netex_attributes }
 
-        it 'uses StopArea objectid as id' do
-          stop_area.objectid = 'chouette:StopArea:f387baa1-fcb3-4171-9735-fee0515dde16:LOC'
-          is_expected.to include(id: a_string_eq_to(stop_area.objectid))
+        context 'when code provider is used to compute netex id' do
+          let(:stop_area) { create(:stop_area) }
+          let(:decorator) { Export::NetexGeneric::StopDecorator.new stop_area, code_provider: code_provider }
+          let(:code_provider) { Export::CodeProvider.new export_scope}
+          let(:export_scope) { double("Export::Scope", stop_areas: Chouette::StopArea.where(id: stop_area))}
+
+          it 'uses StopArea objectid as id' do
+            is_expected.to include(id: a_string_eq_to(stop_area.objectid))
+          end
         end
 
         context "when netex_quay? is true" do
@@ -1007,7 +1128,9 @@ RSpec.describe Export::NetexGeneric do
       context "when StopArea has a parent" do
         let(:quay) { context.stop_area :quay }
         let(:parent_stop_place) { context.stop_area :parent_stop_place }
-        let(:quay_decorator) { Export::NetexGeneric::StopDecorator.new quay }
+        let(:quay_decorator) { Export::NetexGeneric::StopDecorator.new quay, code_provider: code_provider }
+        let(:code_provider) { Export::CodeProvider.new export_scope }
+        let(:export_scope) { double("Export::Scope", stop_areas: Chouette::StopArea.all) }
 
         subject { quay_decorator.netex_resource.tag(:parent_id) }
 
@@ -1064,7 +1187,7 @@ RSpec.describe Export::NetexGeneric do
 
     let(:target) { MockNetexTarget.new }
     let(:export_scope) { Export::Scope::All.new context.referential }
-    let(:export) { Export::NetexGeneric.new export_scope: export_scope, target: target }
+    let(:export) { Export::NetexGeneric.new export_scope: export_scope, target: target, workgroup: context.workgroup }
 
     let(:part) do
       Export::NetexGeneric::StopPoints.new export
@@ -1317,11 +1440,13 @@ RSpec.describe Export::NetexGeneric do
   describe 'TimeTables export' do
 
     describe Export::NetexGeneric::TimeTableDecorator do
-      let(:time_table) { Chouette::TimeTable.new }
-      let(:decorated_tt) { Export::NetexGeneric::TimeTables::Decorator.new time_table }
+      let(:time_table) { create(:time_table) }
+      let(:decorated_tt) { Export::NetexGeneric::TimeTables::Decorator.new time_table, code_provider: code_provider }
       let(:netex_resources) { decorated_tt.netex_resources }
       let(:operating_periods) { netex_resources.select { |r| r.is_a? Netex::OperatingPeriod }}
       let(:day_type_assignments) { netex_resources.select { |r| r.is_a? Netex::DayTypeAssignment }}
+      let(:code_provider) { Export::CodeProvider.new export_scope }
+      let(:export_scope) { double("Export::Scope", time_tables: Chouette::TimeTable.all) }
 
       describe '#day_type_attributes' do
         let(:day_type_attributes) { decorated_tt.day_type_attributes }
@@ -1504,14 +1629,16 @@ RSpec.describe Export::NetexGeneric do
     end
 
     describe Export::NetexGeneric::PeriodDecorator do
-      let(:time_table) { Chouette::TimeTable.new objectid: 'chouette:TimeTable:test:LOC' }
+      let(:time_table) { create(:time_table) }
 
       let(:period) do
         Chouette::TimeTablePeriod.new period_start: Date.parse('2021-01-01'),
                                       period_end: Date.parse('2021-12-31'),
                                       time_table: time_table
       end
-      let(:decorator) { Export::NetexGeneric::PeriodDecorator.new period, nil }
+      let(:decorator) { Export::NetexGeneric::PeriodDecorator.new period, nil, code_provider }
+      let(:code_provider) { Export::CodeProvider.new export_scope }
+      let(:export_scope) { double("Export::Scope", time_tables: Chouette::TimeTable.all) }
 
       describe "#operating_period_attributes" do
         subject { decorator.operating_period_attributes }
@@ -1541,13 +1668,14 @@ RSpec.describe Export::NetexGeneric do
     end
 
     describe Export::NetexGeneric::DateDecorator do
-      let(:time_table) { Chouette::TimeTable.new objectid: 'chouette:TimeTable:test:LOC' }
+      let(:time_table) { create(:time_table) }
 
       let(:date) do
         Chouette::TimeTableDate.new date: Date.parse('2021-01-01'), time_table: time_table
       end
-      let(:decorator) { Export::NetexGeneric::DateDecorator.new date, nil }
-
+      let(:decorator) { Export::NetexGeneric::DateDecorator.new date, nil, code_provider }
+      let(:code_provider) { Export::CodeProvider.new export_scope }
+      let(:export_scope) { double("Export::Scope", time_tables: Chouette::TimeTable.all) }
       subject { decorator.day_type_assignment_attributes }
 
       it 'has a id with the DayTypeAssignment type' do
@@ -1605,7 +1733,11 @@ RSpec.describe Export::NetexGeneric do
 
     let(:point_of_interest_category) { context.point_of_interest_category }
     let(:point_of_interest) { part.point_of_interests.first }
-    let(:decorator) { Export::NetexGeneric::PointOfInterests::Decorator.new point_of_interest }
+    let(:decorator) do
+      Export::NetexGeneric::PointOfInterests::Decorator.new point_of_interest, code_provider: code_provider
+    end
+    let(:code_provider) { Export::CodeProvider.new export_scope }
+    let(:export_scope) { Export::Scope::All.new context.workbench }
 
     describe Export::NetexGeneric::PointOfInterests::Decorator do
       subject { decorator.netex_attributes }
@@ -1716,60 +1848,93 @@ RSpec.describe Export::NetexGeneric do
   describe Export::NetexGeneric::ResourceTagger do
     subject(:tagger) { Export::NetexGeneric::ResourceTagger.new }
 
+
     def mock_line(id:, objectid:, name:, company_id:, company_name:)
-      double(id: id, objectid: objectid, name: name,
-             company: double(objectid: company_id, name: company_name))
+      double(id: id, name: name, company_id: company_id,
+             company: double(name: company_name))
+    end
+
+    describe '#register_tag_for' do
+      context "when 'dummy' is associated to the given Line id" do
+        let(:line) { Chouette::Line.new id: 42 }
+
+        before do
+          allow(tagger.code_provider).to receive_message_chain(:lines, :code) { 'dummy' }
+        end
+
+        it do
+          expect { tagger.register_tag_for(line) }.to change {
+            tagger.tags_for(line.id)
+          }.from({}).to(line_id: 'dummy')
+        end
+      end
+
+      context "when Line name is 'dummy'" do
+        let(:line) { Chouette::Line.new id: 42, name: 'dummy' }
+
+        it do
+          expect { tagger.register_tag_for(line) }.to change {
+            tagger.tags_for(line.id)
+          }.from({}).to(line_name: 'dummy')
+        end
+      end
+
+      context "when 'dummy' is associated to the Line Company" do
+        let(:line) { Chouette::Line.new id: 42, company_id: 1 }
+
+        before do
+          allow(tagger.code_provider).to receive_message_chain(:companies, :code) { 'dummy' }
+        end
+
+        it do
+          expect { tagger.register_tag_for(line) }.to change {
+            tagger.tags_for(line.id)
+          }.from({}).to(operator_id: 'dummy')
+        end
+      end
+
+      context "when associated Company name is 'dummy'" do
+        let(:line) { Chouette::Line.new id: 42, company: Chouette::Company.new(name: 'dummy') }
+
+        it do
+          expect { tagger.register_tag_for(line) }.to change {
+            tagger.tags_for(line.id)
+          }.from({}).to(operator_name: 'dummy')
+        end
+      end
     end
 
     describe "#tags_for_lines" do
-      subject { tagger.tags_for_lines(lines.map(&:id)) }
+      subject { tagger.tags_for_lines(line_ids) }
 
-      before do
-        lines.each { |line| tagger.register_tag_for(line) }
+      context 'when the given line ids is empty' do
+        let(:line_ids) { [] }
+
+        it { is_expected.to be_empty }
       end
 
-      context "when a single line is given" do
-        let(:line) do
-          mock_line(id: 1, objectid: "1", name: "Test",
-                    company_id: "1", company_name: "Dummy")
-        end
-        let(:lines) { [ line ] }
+      context 'when the given line ids is [ 1 ]' do
+        let(:line_ids) { [ 1 ] }
 
-        it "returns tags associated to the line" do
-          is_expected.to eq(tagger.tags_for(line.id))
+        context 'when tags for Line 1 are { key: "value" }' do
+          before { allow(tagger).to receive(:tags_for).with(1).and_return(key: 'value') }
+
+          it { is_expected.to eq(key: "value") }
         end
       end
 
-      context "when several lines are given" do
-        context "with the same Company" do
-          let(:lines) do
-            [
-              mock_line(id: 1, objectid: "1", name: "Test 1",
-                        company_id: "1", company_name: "Dummy"),
-              mock_line(id: 2, objectid: "2", name: "Test 2",
-                        company_id: "1", company_name: "Dummy"),
-            ]
-          end
+      context 'when the given line ids is [ 1, 2 ]' do
+        let(:line_ids) { [ 1, 2 ] }
 
-          it "returns tags associated to the Company" do
-            is_expected.to eq({operator_id: "1", operator_name: "Dummy"})
-          end
-        end
-
-        context "with several Companies" do
-          let(:lines) do
-            [
-              mock_line(id: 1, objectid: "1", name: "Test 1",
-                        company_id: "1", company_name: "Dummy"),
-              mock_line(id: 2, objectid: "2", name: "Test 2",
-                        company_id: "2", company_name: "Other"),
-            ]
+        context 'when tags for Line 1 are { key: "first" } and Line 2 are { key: "second" }' do
+          before do
+            allow(tagger).to receive(:tags_for).with(1).and_return(key: 'first')
+            allow(tagger).to receive(:tags_for).with(2).and_return(key: 'second')
           end
 
           it { is_expected.to be_empty }
         end
       end
-
     end
   end
 end

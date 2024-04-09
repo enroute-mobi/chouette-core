@@ -80,7 +80,7 @@ class Export::NetexGeneric < Export::Base
   end
 
   def resource_tagger
-    @resource_tagger ||= ResourceTagger.new
+    @resource_tagger ||= ResourceTagger.new(code_provider: code_provider)
   end
 
   def export_file
@@ -140,7 +140,7 @@ class Export::NetexGeneric < Export::Base
     end
 
     delegate :target, :resource_tagger, :export_scope, :workgroup,
-             :alternate_identifiers_extractor, to: :export
+             :alternate_identifiers_extractor, :code_provider, to: :export
 
     def part_name
       @part_name ||= self.class.name.demodulize.underscore
@@ -156,7 +156,8 @@ class Export::NetexGeneric < Export::Base
       decorator_class = attributes.delete(:with) || default_decorator_class
 
       attributes = attributes.merge(
-        alternate_identifiers_extractor: alternate_identifiers_extractor
+        alternate_identifiers_extractor: alternate_identifiers_extractor,
+        code_provider: code_provider
       )
       decorator_class.new model, **attributes
     end
@@ -164,10 +165,16 @@ class Export::NetexGeneric < Export::Base
     def default_decorator_class
       @decorator_class ||= self.class.const_get('Decorator')
     end
-
   end
 
   class ResourceTagger
+    def initialize(code_provider: nil)
+      @code_provider = code_provider
+    end
+
+    def code_provider
+      @code_provider ||= Export::CodeProvider.null
+    end
 
     # Returns tags for several lines.
     # Returns only uniq values accross all given lines
@@ -192,11 +199,11 @@ class Export::NetexGeneric < Export::Base
 
     def register_tag_for(line)
       tag_index[line.id] = {
-        line_id: line.objectid,
+        line_id: code_provider.lines.code(line.id),
         line_name: line.name,
-        operator_id: line.company&.objectid,
+        operator_id: code_provider.companies.code(line.company_id),
         operator_name: line.company&.name
-      }
+      }.compact
     end
 
     protected
@@ -361,12 +368,33 @@ class Export::NetexGeneric < Export::Base
     end
 
     attr_writer :alternate_identifiers_extractor
+
     def alternate_identifiers_extractor
       @alternate_identifiers_extractor ||= AlternateIdentifiersExtractor.new([])
     end
 
     def netex_alternate_identifiers
       alternate_identifiers_extractor.decorate(model).alternate_identifiers
+    end
+
+    attr_writer :code_provider
+
+    def netex_identifier
+      @netex_identifier ||= Netex::ObjectId.parse(code_provider.code(model))
+    end
+
+    def code_provider
+      @code_provider ||= Export::CodeProvider.null
+    end
+
+    def decorate(model, **attributes)
+      decorator_class = attributes.delete(:with) || default_decorator_class
+
+      attributes = attributes.merge(
+        alternate_identifiers_extractor: alternate_identifiers_extractor,
+        code_provider: code_provider
+      )
+      decorator_class.new model, **attributes
     end
   end
 
@@ -375,7 +403,7 @@ class Export::NetexGeneric < Export::Base
 
     def netex_attributes # rubocop:disable Metrics/MethodLength
       {
-        id: netex_identifier,
+        id: netex_identifier.to_s,
         derived_from_object_ref: derived_from_object_ref,
         name: name,
         public_code: public_code,
@@ -395,10 +423,6 @@ class Export::NetexGeneric < Export::Base
       end
     end
 
-    def netex_identifier
-      @netex_identifier ||= Netex::ObjectId.parse(objectid)
-    end
-
     def netex_transport_mode
       transport_mode&.camelize_mode
     end
@@ -408,11 +432,11 @@ class Export::NetexGeneric < Export::Base
     end
 
     def parent_objectid
-      parent&.objectid
+      @parent_objectid ||= code_provider.stop_areas.code(parent_id)
     end
 
     def derived_from_object_ref
-      referent&.objectid
+      code_provider.stop_areas.code(referent_id)
     end
 
     def key_list
@@ -485,7 +509,7 @@ class Export::NetexGeneric < Export::Base
     delegate :stop_areas, to: :export_scope
 
     def export!
-      stop_areas.where(area_type: Chouette::AreaType::QUAY).includes(:codes, :parent, :referent).find_each do |stop_area|
+      stop_areas.where(area_type: Chouette::AreaType::QUAY).includes(:codes).find_each do |stop_area|
         netex_resource = decorate(stop_area, with: StopDecorator).netex_resource
         target << netex_resource
       end
@@ -498,7 +522,7 @@ class Export::NetexGeneric < Export::Base
     delegate :stop_areas, to: :export_scope
 
     def export!
-      stop_areas.where.not(area_type: Chouette::AreaType::QUAY).includes(:codes, :entrances, :parent, :referent).find_each do |stop_area|
+      stop_areas.where.not(area_type: Chouette::AreaType::QUAY).includes(:codes, :entrances).find_each do |stop_area|
         stop_place = decorate(stop_area, with: StopDecorator).netex_resource
         target << stop_place
       end
@@ -512,16 +536,16 @@ class Export::NetexGeneric < Export::Base
 
     def export!
       entrances.includes(:raw_import).find_each do |entrance|
-        decorated_entrance = Decorator.new(entrance)
+        decorated_entrance = decorate(entrance)
         target << decorated_entrance.netex_resource
       end
     end
 
-    class Decorator < SimpleDelegator
+    class Decorator < ModelDecorator
 
       def netex_attributes
         {
-          id: netex_identifier,
+          id: netex_identifier.to_s,
           name: name,
           short_name: short_name,
           description: description,
@@ -538,10 +562,6 @@ class Export::NetexGeneric < Export::Base
         Netex::StopPlaceEntrance.new(netex_attributes).with_tag(parent_id: parent_objectid)
       end
 
-      def netex_identifier
-        @netex_identifier ||= Netex::ObjectId.parse(objectid)
-      end
-
       def centroid
         Netex::Point.new(
           location: Netex::Location.new(longitude: longitude, latitude: latitude)
@@ -549,7 +569,7 @@ class Export::NetexGeneric < Export::Base
       end
 
       def postal_address_objectid
-        netex_identifier.change(type: 'PostalAddress').to_s
+        netex_identifier&.change(type: 'PostalAddress').to_s
       end
 
       def postal_address
@@ -722,7 +742,7 @@ class Export::NetexGeneric < Export::Base
     delegate :lines, to: :export_scope
 
     def export!
-      lines.includes(:codes, :company).find_each do |line|
+      lines.includes(:company, :codes).find_each do |line|
         resource_tagger.register_tag_for line
         tags = resource_tagger.tags_for(line.id)
         tagged_target = TaggedTarget.new(target, tags)
@@ -737,7 +757,7 @@ class Export::NetexGeneric < Export::Base
 
       def netex_attributes
         {
-          id: objectid,
+          id: netex_identifier.to_s,
           name: netex_name,
           transport_mode: transport_mode,
           transport_submode: netex_transport_submode,
@@ -752,10 +772,6 @@ class Export::NetexGeneric < Export::Base
           valid_between: valid_between,
           raw_xml: import_xml
         }
-      end
-
-      def netex_identifier
-        @netex_identifier ||= Netex::ObjectId.parse(objectid)
       end
 
       def netex_name
@@ -775,9 +791,12 @@ class Export::NetexGeneric < Export::Base
       end
 
       def additional_operators
-        secondary_companies.map do |company|
-          Netex::Reference.new(company&.objectid, type: 'OperatorRef')
-        end
+        return unless secondary_company_ids
+
+        secondary_company_ids.map do |company_id|
+          company_code = code_provider.companies.code(company_id)
+          Netex::Reference.new(company_code, type: 'OperatorRef') if company_code
+        end.compact
       end
 
       def status
@@ -797,11 +816,13 @@ class Export::NetexGeneric < Export::Base
       end
 
       def operator_ref
-        Netex::Reference.new(company.objectid, type: 'OperatorRef') if company
+        company_code = code_provider.companies.code(company_id) if code_provider
+        Netex::Reference.new(company_code, type: 'OperatorRef') if company_code
       end
 
       def represented_by_group_ref
-        Netex::Reference.new(network.objectid, type: 'NetworkRef') if network
+        network_code = code_provider.networks.code(network_id) if code_provider
+        Netex::Reference.new(network_code, type: 'NetworkRef') if network_code
       end
 
     end
@@ -822,7 +843,7 @@ class Export::NetexGeneric < Export::Base
 
       def netex_attributes
         {
-          id: objectid,
+          id: netex_identifier.to_s,
           name: name,
           raw_xml: import_xml,
           key_list: netex_alternate_identifiers
@@ -851,7 +872,7 @@ class Export::NetexGeneric < Export::Base
 
       def netex_attributes
         {
-          id: objectid,
+          id: netex_identifier.to_s,
           name: name,
           raw_xml: import_xml
         }
@@ -865,183 +886,291 @@ class Export::NetexGeneric < Export::Base
 
   end
 
-  class StopPointDecorator < SimpleDelegator
+  module StopPointDecorator
+    class Base < SimpleDelegator
+      def initialize(stop_point, **attributes)
+        super stop_point
 
-    attr_accessor :journey_pattern_id, :route
-    def initialize(stop_point, journey_pattern_id: nil, route: nil)
-      super stop_point
-      @journey_pattern_id = journey_pattern_id
-      @route = route
-    end
-
-    def point_on_route
-      Netex::PointOnRoute.new point_on_route_attributes
-    end
-
-    def point_on_route_attributes
-      {
-        id: point_on_route_id,
-        order: netex_order,
-        route_point_ref: route_point_ref
-      }
-    end
-
-    def netex_order
-      position+1
-    end
-
-    def netex_identifier
-      @netex_identifier ||= Netex::ObjectId.parse(objectid)
-    end
-
-    def point_on_route_id
-      netex_identifier.change(type: 'PointOnRoute').to_s
-    end
-
-    def route_point_ref
-      Netex::Reference.new(route_point_ref_id, type: 'RoutePointRef')
-    end
-
-    def route_point_ref_id
-      netex_identifier.change(type: 'RoutePoint').to_s
-    end
-
-    def scheduled_stop_point
-      Netex::ScheduledStopPoint.new(scheduled_stop_point_attributes)
-    end
-
-    def scheduled_stop_point_attributes
-      {
-        id: scheduled_stop_point_id,
-        data_source_ref: route_data_source_ref,
-      }
-    end
-
-    def route_data_source_ref
-      __getobj__.try(:route_data_source_ref) || route&.data_source_ref
-    end
-
-    def stop_area_objectid
-      __getobj__.try(:stop_area_objectid) || stop_area&.objectid
-    end
-
-    def stop_area_area_type
-      __getobj__.try(:stop_area_area_type) || stop_area&.area_type
-    end
-
-    def scheduled_stop_point_id
-      @scheduled_stop_point_id ||= netex_identifier.change(type: 'ScheduledStopPoint').to_s if netex_identifier
-    end
-
-    def netex_quay?
-      stop_area_area_type&.to_sym == Chouette::AreaType::QUAY
-    end
-
-    def passenger_stop_assignment
-      Netex::PassengerStopAssignment.new(passenger_stop_assignment_attributes).tap do |passenger_stop_assignment|
-        if netex_quay?
-          passenger_stop_assignment.quay_ref = quay_ref
-        else
-          passenger_stop_assignment.stop_place_ref = stop_place_ref
+        attributes.each do |k,v|
+          writer_method = "#{k}="
+          send writer_method, v if respond_to?(writer_method)
         end
       end
-    end
 
-    def passenger_stop_assignment_attributes
-      {
-        id: passenger_stop_assignment_id,
-        data_source_ref: route_data_source_ref,
-        order: 0,
-        scheduled_stop_point_ref: scheduled_stop_point_ref
-      }
-    end
+      def stop_point
+        __getobj__
+      end
 
-    def passenger_stop_assignment_id
-      netex_identifier.change(type: 'PassengerStopAssignment').to_s if netex_identifier
-    end
+      def netex_identifier
+        # Use stop_points.code to support more easily PseudoStopPoint
+        @netex_identifier ||= Netex::ObjectId.parse(stop_point_code)
+      end
 
-    def scheduled_stop_point_ref
-      Netex::Reference.new(scheduled_stop_point_id, type: 'ScheduledStopPointRef')
-    end
+      def stop_point_code
+        code_provider.stop_points.code(stop_point.id)
+      end
 
-    def quay_ref
-      Netex::Reference.new(stop_area_objectid, type: 'QuayRef')
-    end
+      attr_writer :code_provider
 
-    def stop_place_ref
-      Netex::Reference.new(stop_area_objectid, type: 'StopPlaceRef')
-    end
+      def code_provider
+        @code_provider ||= Export::CodeProvider.null
+      end
 
-    def route_point
-      Netex::RoutePoint.new(route_point_attributes)
-    end
+      def netex_order
+        position+1
+      end
 
-    def route_point_attributes
-      {
-        id: route_point_id,
-        projections: point_projection,
-        data_source_ref: route_data_source_ref
-      }
-    end
+      attr_writer :data_source_ref
 
-    def route_point_id
-      netex_identifier.change(type: 'RoutePoint').to_s
-    end
+      def data_source_ref
+        stop_point.try(:data_source_ref) || @data_source_ref
+      end
 
-    def point_projection
-      [Netex::PointProjection.new(point_projection_attributes)]
-    end
-
-    def point_projection_attributes
-      {
-        id: point_projection_id,
-        project_to_point_ref: project_to_point_ref
-      }
-    end
-
-    def point_projection_id
-      netex_identifier.change(type: 'PointProjection').to_s
-    end
-
-    def project_to_point_ref
-      # Netex::Reference.new(scheduled_stop_point_id, type: 'ProjectToPointRef')
-      Netex::Reference.new(scheduled_stop_point_id, type: 'ScheduledStopPoint')
-    end
-
-    def stop_point_in_journey_pattern
-      Netex::StopPointInJourneyPattern.new stop_point_in_journey_pattern_attributes
-    end
-
-    def stop_point_in_journey_pattern_attributes
-      {
-        id: stop_point_in_journey_pattern_id,
-        order: position+1,
-        scheduled_stop_point_ref: scheduled_stop_point_ref,
-        for_boarding: netex_for_boarding,
-        for_alighting: netex_for_alighting
-      }
-    end
-
-    def netex_for_boarding
-      for_boarding == "normal"
-    end
-
-    def netex_for_alighting
-      for_alighting == "normal"
-    end
-
-    def self.stop_point_in_journey_pattern_id(stop_point_objectid, journey_pattern_objectid)
-      merged_object_id = Netex::ObjectId.merge(journey_pattern_objectid, stop_point_objectid, type: "StopPointInJourneyPattern")
-
-      if merged_object_id
-        merged_object_id.to_s
-      else
-        "#{journey_pattern_objectid}-#{stop_point_objectid}"
+      def decorate(with:)
+        with.new(stop_point, code_provider: code_provider)
       end
     end
 
-    def stop_point_in_journey_pattern_id
-      self.class.stop_point_in_journey_pattern_id(netex_identifier, journey_pattern_id)
+    # <Route ...>
+    #   <pointsInSequence>
+    #     <PointOnRoute id="chouette:PointOnRoute:2f924949-e287-4f10-bbe0-4a50f9debf9e:LOC" version="any" order="1">
+    #       <RoutePointRef ref="chouette:RoutePoint:2f924949-e287-4f10-bbe0-4a50f9debf9e:LOC" version="any"/>
+    #     </PointOnRoute>
+    #     <PointOnRoute id="chouette:PointOnRoute:95c5bfc9-62f9-4490-9a57-3fa2fd6c3013:LOC" version="any" order="2">
+    #       <RoutePointRef ref="chouette:RoutePoint:95c5bfc9-62f9-4490-9a57-3fa2fd6c3013:LOC" version="any"/>
+    #     </PointOnRoute>
+    #   </pointsInSequence>
+    # </Route>
+    class PointOnRoute < Base
+      def point_on_route
+        Netex::PointOnRoute.new point_on_route_attributes
+      end
+
+      def netex_identifier
+        @netex_identifier ||= super.change(type: 'PointOnRoute')
+      end
+
+      def point_on_route_attributes
+        {
+          id: netex_identifier.to_s,
+          order: netex_order,
+          route_point_ref: route_point_ref
+        }
+      end
+
+      def route_point_ref
+        decorate(with: RoutePoint).route_point_ref
+      end
+    end
+
+    # Create a RoutePoint or a RoutePointRef from a Chouette::StopPoint
+    #
+    # <RoutePoint id="chouette:RoutePoint:2f924949-e287-4f10-bbe0-4a50f9debf9e:LOC" version="any">
+    #   <projections>
+    #     <PointProjection id="chouette:PointProjection:2f924949-e287-4f10-bbe0-4a50f9debf9e:LOC" version="any">
+    #       <ProjectToPointRef ref="chouette:ScheduledStopPoint:2f924949-e287-4f10-bbe0-4a50f9debf9e:LOC" version="any"/>
+    #     </PointProjection>
+    #   </projections>
+    # </RoutePoint>
+    class RoutePoint < Base
+      def route_point
+        Netex::RoutePoint.new(route_point_attributes)
+      end
+
+      def route_point_attributes
+        {
+          id: netex_identifier.to_s,
+          projections: point_projection,
+          data_source_ref: data_source_ref
+        }
+      end
+
+      def netex_identifier
+        @netex_identifier ||= super.change(type: 'RoutePoint')
+      end
+
+      def route_point_ref
+        Netex::Reference.new(netex_identifier.to_s, type: 'RoutePointRef')
+      end
+
+      def point_projection
+        [Netex::PointProjection.new(point_projection_attributes)]
+      end
+
+      def point_projection_attributes
+        {
+          id: point_projection_id,
+          project_to_point_ref: scheduled_stop_point_ref
+        }
+      end
+
+      def point_projection_id
+        netex_identifier.change(type: 'PointProjection').to_s
+      end
+
+      def scheduled_stop_point_ref
+        decorate(with: ScheduledStopPoint).scheduled_stop_point_ref
+      end
+    end
+
+    # Create ScheduledStopPoint or ScheduledStopPointRef from a Chouette::StopPoint
+    #
+    #   <ScheduledStopPoint id="chouette:ScheduledStopPoint:2f924949-e287-4f10-bbe0-4a50f9debf9e:LOC" version="any"/>
+    #   <ScheduledStopPointRef ref="chouette:ScheduledStopPoint:2f924949-e287-4f10-bbe0-4a50f9debf9e:LOC"/>
+    class ScheduledStopPoint < Base
+      def scheduled_stop_point
+        Netex::ScheduledStopPoint.new(scheduled_stop_point_attributes)
+      end
+
+      def scheduled_stop_point_ref
+        Netex::Reference.new(netex_identifier.to_s, type: 'ScheduledStopPointRef')
+      end
+
+      def scheduled_stop_point_attributes
+        {
+          id: netex_identifier.to_s,
+          data_source_ref: data_source_ref
+        }
+      end
+
+      def netex_identifier
+        @netex_identifier ||= super&.change(type: 'ScheduledStopPoint')
+      end
+    end
+
+    # Create a PassengerStopAssignment from a Chouette::StopPoint
+    #
+    # <PassengerStopAssignment id="chouette:PassengerStopAssignment:2f924949-e287-4f10-bbe0-4a50f9debf9e:LOC" version="any" order="0">
+    #   <ScheduledStopPointRef ref="chouette:ScheduledStopPoint:2f924949-e287-4f10-bbe0-4a50f9debf9e:LOC" version="any"/>
+    #   <QuayRef ref="chouette:StopArea:fe90c70f-d9ac-45cd-b044-0d4adcfaa997:LOC"/>
+    # </PassengerStopAssignment>
+    class PassengerStopAssignment < Base
+      def netex_identifier
+        @netex_identifier ||= super&.change(type: 'PassengerStopAssignment')
+      end
+
+      def stop_area_code
+        code_provider.stop_areas.code(stop_area_id)
+      end
+
+      def stop_area_area_type
+        __getobj__.try(:stop_area_area_type) || stop_area&.area_type
+      end
+
+      def netex_quay?
+        stop_area_area_type&.to_sym == Chouette::AreaType::QUAY
+      end
+
+      def passenger_stop_assignment
+        Netex::PassengerStopAssignment.new(passenger_stop_assignment_attributes).tap do |passenger_stop_assignment|
+          if netex_quay?
+            passenger_stop_assignment.quay_ref = quay_ref
+          else
+            passenger_stop_assignment.stop_place_ref = stop_place_ref
+          end
+        end
+      end
+
+      def passenger_stop_assignment_attributes
+        {
+          id: netex_identifier.to_s,
+          data_source_ref: data_source_ref,
+          order: 0,
+          scheduled_stop_point_ref: scheduled_stop_point_ref
+        }
+      end
+
+      def quay_ref
+        Netex::Reference.new(stop_area_code, type: 'QuayRef')
+      end
+
+      def stop_place_ref
+        Netex::Reference.new(stop_area_code, type: 'StopPlaceRef')
+      end
+
+      def scheduled_stop_point_ref
+        decorate(with: ScheduledStopPoint).scheduled_stop_point_ref
+      end
+    end
+
+    # Create a StopPointInJourneyPattern from a Chouette::StopPoint and a JourneyPattern identifier
+    # <ServiceJourneyPattern ...>
+    #   <pointsInSequence>
+    #     <StopPointInJourneyPattern id="chouette:StopPointInJourneyPattern:6969284b-5a42-46a5-b5e1-ae3d2d35bd23-2f924949-e287-4f10-bbe0-4a50f9debf9e:LOC" version="any" order="1">
+    #       <ScheduledStopPointRef ref="chouette:ScheduledStopPoint:2f924949-e287-4f10-bbe0-4a50f9debf9e:LOC" version="any"/>
+    #       <ForAlighting>true</ForAlighting>
+    #       <ForBoarding>true</ForBoarding>
+    #     </StopPointInJourneyPattern>
+    #     <StopPointInJourneyPattern id="chouette:StopPointInJourneyPattern:6969284b-5a42-46a5-b5e1-ae3d2d35bd23-95c5bfc9-62f9-4490-9a57-3fa2fd6c3013:LOC" version="any" order="2">
+    #       <ScheduledStopPointRef ref="chouette:ScheduledStopPoint:95c5bfc9-62f9-4490-9a57-3fa2fd6c3013:LOC" version="any"/>
+    #       <ForAlighting>true</ForAlighting>
+    #       <ForBoarding>true</ForBoarding>
+    #     </StopPointInJourneyPattern>
+    #   </pointsInSequence>
+    # </ServiceJourneyPattern>
+    class StopPointInJourneyPattern < Base
+      def initialize(stop_point, journey_pattern_id:, **attributes)
+        super stop_point, attributes
+        @journey_pattern_id = journey_pattern_id
+      end
+
+      attr_reader :journey_pattern_id
+
+      def stop_point_in_journey_pattern
+        Netex::StopPointInJourneyPattern.new stop_point_in_journey_pattern_attributes
+      end
+
+      def stop_point_in_journey_pattern_ref
+        Netex::Reference.new(netex_identifier.to_s, type: Netex::StopPointInJourneyPattern)
+      end
+
+      def stop_point_in_journey_pattern_attributes
+        {
+          id: netex_identifier.to_s,
+          order: netex_order,
+          scheduled_stop_point_ref: scheduled_stop_point_ref,
+          for_boarding: netex_for_boarding,
+          for_alighting: netex_for_alighting
+        }
+      end
+
+      def netex_identifier
+        @netex_identifier ||= super.merge(Netex::ObjectId.parse(journey_pattern_code), type: "StopPointInJourneyPattern")
+      end
+
+      def journey_pattern_code
+        code_provider.journey_patterns.code(journey_pattern_id)
+      end
+
+      def netex_for_boarding
+        for_boarding == "normal"
+      end
+
+      def netex_for_alighting
+        for_alighting == "normal"
+      end
+
+      def scheduled_stop_point_ref
+        decorate(with: ScheduledStopPoint).scheduled_stop_point_ref
+      end
+    end
+
+    # Creates a 'pseudo' StopPoint with only id attribute
+    # Allows to use (some) Decorators from a stop_point_id
+    #
+    #   pseudo_stop_point = StopPointDecorator.pseudo_stop_point(id: stop_point_id)
+    #   decorate(pseudo_stop_point, journey_pattern_id: journey_pattern_id, with: StopPointDecorator::StopPointInJourneyPattern)
+    #
+    def self.pseudo_stop_point(**attributes)
+      PseudoStopPoint.new(**attributes)
+    end
+
+    class PseudoStopPoint
+      def initialize(id:)
+        @id = id
+      end
+
+      attr_reader :id
     end
   end
 
@@ -1071,7 +1200,7 @@ class Export::NetexGeneric < Export::Base
 
       def netex_attributes
         {
-          id: objectid,
+          id: netex_identifier.to_s,
           data_source_ref: data_source_ref,
           name: netex_name,
           line_ref: line_ref,
@@ -1090,10 +1219,6 @@ class Export::NetexGeneric < Export::Base
 
       def netex_name
         published_name.presence || name
-      end
-
-      def netex_identifier
-        @netex_identifier ||= Netex::ObjectId.parse(objectid)
       end
 
       def direction_id
@@ -1117,16 +1242,18 @@ class Export::NetexGeneric < Export::Base
       end
 
       def line_ref
-        Netex::Reference.new(line.objectid, type: Netex::Line) if line
+        if line_code = code_provider.lines.code(line_id)
+          Netex::Reference.new(line_code, type: Netex::Line)
+        end
       end
 
       def points_in_sequence
-        decorated_stop_points.map(&:point_on_route)
+        decorated_point_on_routes.map(&:point_on_route)
       end
 
-      def decorated_stop_points
+      def decorated_point_on_routes
         @decorated_stop_points ||= stop_points.map do |stop_point|
-          StopPointDecorator.new stop_point, route: self
+          decorate(stop_point, data_source_ref: data_source_ref, with: StopPointDecorator::PointOnRoute)
         end
       end
 
@@ -1142,23 +1269,18 @@ class Export::NetexGeneric < Export::Base
 
       def routing_constraint_zones
         filter_line_routing_constraint_zones.map do |line_routing_constraint_zone|
-          LineRoutingConstraintZoneDecorator.new(line_routing_constraint_zone, self).netex_resource
+          LineRoutingConstraintZoneDecorator.new(line_routing_constraint_zone, route: self, code_provider: code_provider).netex_resource
         end
       end
 
-      class LineRoutingConstraintZoneDecorator < SimpleDelegator
+      class LineRoutingConstraintZoneDecorator < ModelDecorator
         delegate :line, to: :route
 
         attr_accessor :route
 
-        def initialize(line_routing_constraint_zone, route)
-          super line_routing_constraint_zone
-          @route = route
-        end
-
         def netex_attributes
           {
-            id: Netex::ObjectId.merge(route.objectid, id, type: "RoutingConstraintZone"),
+            id: merged_id,
             name: name,
             members: scheduled_stop_point_refs,
             lines: line_refs,
@@ -1166,12 +1288,18 @@ class Export::NetexGeneric < Export::Base
           }
         end
 
+        def merged_id
+          Netex::ObjectId.merge(code_provider.code(route), id, type: "RoutingConstraintZone")
+        end
+
         def zone_use
           "cannotBoardAndAlightInSameZone"
         end
 
         def line_refs
-          [Netex::Reference.new(line.objectid, type: 'LineRef')]
+          if line_code = code_provider.lines.code(route.line_id)
+            [Netex::Reference.new(line_code, type: 'LineRef')]
+          end
         end
 
         def stop_points
@@ -1180,7 +1308,7 @@ class Export::NetexGeneric < Export::Base
 
         def scheduled_stop_point_refs
           stop_points.map do |stop_point|
-            StopPointDecorator.new(stop_point).scheduled_stop_point_ref
+            decorate(stop_point, with: StopPointDecorator::ScheduledStopPoint).scheduled_stop_point_ref
           end
         end
 
@@ -1201,10 +1329,12 @@ class Export::NetexGeneric < Export::Base
         tags = resource_tagger.tags_for(stop_point.line_id)
         tagged_target = TaggedTarget.new(target, tags)
 
-        decorated_stop_point = StopPointDecorator.new(stop_point)
-        tagged_target << decorated_stop_point.scheduled_stop_point
-        tagged_target << decorated_stop_point.passenger_stop_assignment
-        tagged_target << decorated_stop_point.route_point
+        tagged_target <<
+          decorate(stop_point, with: StopPointDecorator::ScheduledStopPoint).scheduled_stop_point
+        tagged_target <<
+          decorate(stop_point, with: StopPointDecorator::PassengerStopAssignment).passenger_stop_assignment
+        tagged_target <<
+          decorate(stop_point, with: StopPointDecorator::RoutePoint).route_point
       end
     end
 
@@ -1213,10 +1343,9 @@ class Export::NetexGeneric < Export::Base
     def selected
       [
         'stop_points.*',
-        'stop_areas.objectid AS stop_area_objectid',
         'stop_areas.area_type AS stop_area_area_type',
         'routes.line_id AS line_id',
-        'routes.data_source_ref AS route_data_source_ref',
+        'routes.data_source_ref AS data_source_ref',
       ]
     end
   end
@@ -1226,20 +1355,20 @@ class Export::NetexGeneric < Export::Base
     delegate :routing_constraint_zones, to: :export_scope
 
     def export!
-      routing_constraint_zones.includes(route: :line).find_each do |routing_constraint_zone|
+      routing_constraint_zones.includes(:route).find_each do |routing_constraint_zone|
         tags = resource_tagger.tags_for(routing_constraint_zone.route.line_id)
         tagged_target = TaggedTarget.new(target, tags)
 
-        decorated_zone = Decorator.new(routing_constraint_zone)
+        decorated_zone = decorate(routing_constraint_zone)
         tagged_target << decorated_zone.netex_resource
       end
     end
 
-    class Decorator < SimpleDelegator
+    class Decorator < ModelDecorator
 
       def netex_attributes
         {
-          id: objectid,
+          id: netex_identifier.to_s,
           data_source_ref: data_source_ref,
           name: name,
           members: scheduled_stop_point_refs,
@@ -1249,15 +1378,15 @@ class Export::NetexGeneric < Export::Base
       end
 
       def scheduled_stop_point_refs
-        decorated_stop_points.map(&:scheduled_stop_point_ref)
-      end
-
-      def line
-        route&.line
+        stop_points.map do |stop_point|
+          decorate(stop_point, with: StopPointDecorator::ScheduledStopPoint).scheduled_stop_point_ref
+        end
       end
 
       def line_refs
-        [ Netex::Reference.new(line.objectid, type: 'LineRef') ] if line
+        if line_code = code_provider.lines.code(route.line_id)
+          [ Netex::Reference.new(line_code, type: 'LineRef') ]
+        end
       end
 
       def netex_resource
@@ -1267,12 +1396,6 @@ class Export::NetexGeneric < Export::Base
       def zone_use
         "cannotBoardAndAlightInSameZone"
       end
-
-      def decorated_stop_points
-        stop_points.map do |stop_point|
-          StopPointDecorator.new stop_point
-        end
-      end
     end
   end
 
@@ -1281,7 +1404,7 @@ class Export::NetexGeneric < Export::Base
     delegate :journey_patterns, to: :export_scope
 
     def export!
-      journey_patterns.includes(:route, :codes, stop_points: :stop_area).find_each do |journey_pattern|
+      journey_patterns.includes(:route, :codes, :stop_points).find_each do |journey_pattern|
         tags = resource_tagger.tags_for(journey_pattern.route.line_id)
         tagged_target = TaggedTarget.new(target, tags)
 
@@ -1296,7 +1419,7 @@ class Export::NetexGeneric < Export::Base
 
       def netex_attributes
         {
-          id: objectid,
+          id: netex_identifier.to_s,
           data_source_ref: data_source_ref,
           name: name,
           route_ref: route_ref,
@@ -1311,12 +1434,8 @@ class Export::NetexGeneric < Export::Base
         Netex::ServiceJourneyPattern.new netex_attributes
       end
 
-      def route_ref
-        Netex::Reference.new(route.objectid, type: 'RouteRef')
-      end
-
-      def netex_identifier
-        @netex_identifier ||= Netex::ObjectId.parse(objectid)
+      def route_ref 
+        Netex::Reference.new(code_provider.routes.code(route_id), type: 'RouteRef')
       end
 
       def destination_display_id
@@ -1341,17 +1460,16 @@ class Export::NetexGeneric < Export::Base
 
       def decorated_stop_points
         @decorated_stop_points ||= stop_points.map do |stop_point|
-          StopPointDecorator.new(stop_point, journey_pattern_id: objectid)
+          decorate(stop_point, journey_pattern_id: id, with: StopPointDecorator::StopPointInJourneyPattern)
         end
       end
     end
-
   end
 
   class VehicleJourneyAtStops < Part
     def export!
       vehicle_journey_at_stops.find_each_light do |light_vehicle_journey_at_stop|
-        decorated_vehicle_journey_at_stop = Decorator.new(light_vehicle_journey_at_stop)
+        decorated_vehicle_journey_at_stop = decorate(light_vehicle_journey_at_stop)
         target << decorated_vehicle_journey_at_stop.netex_resource
       end
     end
@@ -1362,14 +1480,13 @@ class Export::NetexGeneric < Export::Base
         .order(:vehicle_journey_id, "stop_points.position": :asc)
         .select(
           "vehicle_journey_at_stops.*",
-          "journey_patterns.objectid AS journey_pattern_objectid",
-          "vehicle_journeys.objectid AS vehicle_journey_objectid",
-          "stop_points.objectid AS stop_point_objectid",
+          "vehicle_journeys.journey_pattern_id AS journey_pattern_id",
+          "vehicle_journeys.id AS vehicle_journey_id",
           "stop_areas.time_zone AS time_zone",
         )
     end
 
-    class Decorator < SimpleDelegator
+    class Decorator < ModelDecorator
       def netex_attributes
         {
           departure_time: stop_time_departure_time,
@@ -1381,31 +1498,24 @@ class Export::NetexGeneric < Export::Base
       end
 
       def netex_resource
-        Netex::TimetabledPassingTime.new(netex_attributes).with_tag(parent_id: parent_id)
+        Netex::TimetabledPassingTime.new(netex_attributes).with_tag(parent_id: parent_code)
       end
 
-      def netex_identifier
-        @netex_identifier ||= Netex::ObjectId.parse(stop_point_objectid)
+      def parent_code
+        code_provider.vehicle_journeys.code(vehicle_journey_id)
       end
 
-      def parent_id
-        vehicle_journey_objectid
+      def journey_pattern_id
+        __getobj__.try(:journey_pattern_id) || journey_pattern&.id
       end
 
-      def journey_pattern_objectid
-        __getobj__.try(:journey_pattern_objectid) || journey_pattern&.objectid
+      def decorated_stop_point
+        decorate(pseudo_stop_point, journey_pattern_id: journey_pattern_id, with: StopPointDecorator::StopPointInJourneyPattern)
       end
+      delegate :stop_point_in_journey_pattern_ref, to: :decorated_stop_point
 
-      def stop_point_objectid
-        __getobj__.try(:stop_point_objectid) || stop_point&.objectid
-      end
-
-      def stop_point_in_journey_pattern_id
-        StopPointDecorator.stop_point_in_journey_pattern_id(stop_point_objectid, journey_pattern_objectid)
-      end
-
-      def stop_point_in_journey_pattern_ref
-        Netex::Reference.new(stop_point_in_journey_pattern_id, type: Netex::StopPointInJourneyPattern)
+      def pseudo_stop_point
+        StopPointDecorator.pseudo_stop_point(id: stop_point_id)
       end
 
       def netex_time time_of_day
@@ -1424,11 +1534,11 @@ class Export::NetexGeneric < Export::Base
 
   class VehicleJourneys < Part
     def export!
-      vehicle_journeys.find_each(batch_size: 10_000) do |vehicle_journey|
+      vehicle_journeys.each_instance do |vehicle_journey|
         tags = resource_tagger.tags_for(vehicle_journey.line_id)
         tagged_target = TaggedTarget.new(target, tags)
 
-        decorated_vehicle_journey = Decorator.new(vehicle_journey, code_space_keys)
+        decorated_vehicle_journey = decorate(vehicle_journey, code_space_keys: code_space_keys)
         tagged_target << decorated_vehicle_journey.netex_resource
       end
     end
@@ -1437,6 +1547,7 @@ class Export::NetexGeneric < Export::Base
       Query.new(export_scope.vehicle_journeys).scope
     end
 
+    # TODO: integrate this use case in AlternateIdentifiersExtractor
     def code_space_keys
       @code_space_keys ||= workgroup.code_spaces.pluck(:id, :short_name).to_h
     end
@@ -1449,10 +1560,10 @@ class Export::NetexGeneric < Export::Base
       attr_accessor :vehicle_journeys
 
       def scope
-        scope = vehicle_journeys.joins(journey_pattern: :route).select(selected)
+        scope = vehicle_journeys.joins(:route).select(selected)
 
         scope = scope.left_joins(:codes).select(vehicle_journey_codes).group(group_by)
-        scope.joins(:time_tables).select(time_table_objectids)
+        scope.joins(:vehicle_journey_time_table_relationships).select(time_table_ids)
       end
 
       private
@@ -1460,14 +1571,13 @@ class Export::NetexGeneric < Export::Base
       def selected
         <<~SQL
           vehicle_journeys.*,
-          routes.line_id AS line_id,
-          journey_patterns.objectid AS journey_pattern_objectid
+          routes.line_id AS line_id
         SQL
       end
 
-      def time_table_objectids
+      def time_table_ids
         <<~SQL
-          array_agg(time_tables.objectid) AS time_table_objectids
+          array_agg(time_tables_vehicle_journeys.time_table_id) AS timetable_ids
         SQL
       end
 
@@ -1485,23 +1595,18 @@ class Export::NetexGeneric < Export::Base
       def group_by
         <<~SQL
           vehicle_journeys.id,
-          routes.line_id,
-          journey_patterns.objectid
+          routes.line_id
         SQL
       end
     end
 
-    class Decorator < SimpleDelegator
+    class Decorator < ModelDecorator
 
-      def initialize(vehicle_journey, code_space_keys = nil)
-        super vehicle_journey
-        @code_space_keys = code_space_keys
-      end
       attr_accessor :code_space_keys
 
       def netex_attributes
         {
-          id: objectid,
+          id: netex_identifier.to_s,
           data_source_ref: data_source_ref,
           name: published_journey_name,
           journey_pattern_ref: journey_pattern_ref,
@@ -1537,17 +1642,24 @@ class Export::NetexGeneric < Export::Base
       end
 
       def journey_pattern_ref
-        Netex::Reference.new(journey_pattern_objectid, type: 'JourneyPatternRef')
+        Netex::Reference.new(journey_pattern_code, type: 'JourneyPatternRef')
       end
 
-      def journey_pattern_objectid
-        __getobj__.try(:journey_pattern_objectid) || journey_pattern&.objectid
+      def journey_pattern_code
+        code_provider.journey_patterns.code(journey_pattern_id)
+      end
+
+      def timetable_codes
+        if identifiers = try(:timetable_ids)
+          code_provider.time_tables.codes(identifiers)
+        else
+          code_provider.codes(time_tables)
+        end
       end
 
       def day_types
-        objectids = try(:time_table_objectids) || time_tables.pluck(:objectid)
-        objectids.map do |objectid|
-          Netex::Reference.new(objectid, type: 'DayTypeRef')
+        timetable_codes.map do |code|
+          Netex::Reference.new(code, type: 'DayTypeRef')
         end
       end
     end
@@ -1644,16 +1756,20 @@ class Export::NetexGeneric < Export::Base
 
   class PeriodDecorator < SimpleDelegator
 
-    attr_accessor :day_type_ref, :time_table
-    def initialize(period, day_type_ref)
+    attr_accessor :day_type_ref, :time_table, :code_provider
+    def initialize(period, day_type_ref, code_provider = nil)
       super period
-      @day_type_ref = day_type_ref
 
+      @day_type_ref = day_type_ref
       @time_table = period.time_table
+      @code_provider = code_provider
     end
 
     def netex_identifier
-      @netex_identifier ||= Netex::ObjectId.parse(time_table.objectid)
+      @netex_identifier ||= begin
+        code_time_table = code_provider.time_tables.code(time_table.id) if code_provider
+        Netex::ObjectId.parse(code_time_table) if code_time_table
+      end
     end
 
     def operating_period
@@ -1661,7 +1777,7 @@ class Export::NetexGeneric < Export::Base
     end
 
     def operating_period_id
-      netex_identifier.merge(id, type: 'OperatingPeriod').to_s
+      netex_identifier&.merge(id, type: 'OperatingPeriod').to_s
     end
 
     def operating_period_attributes
@@ -1674,7 +1790,7 @@ class Export::NetexGeneric < Export::Base
     end
 
     def day_type_assignment_id
-      netex_identifier.merge("p#{id}", type: 'DayTypeAssignment').to_s
+      netex_identifier&.merge("p#{id}", type: 'DayTypeAssignment').to_s
     end
 
     def day_type_assignment
@@ -1699,15 +1815,20 @@ class Export::NetexGeneric < Export::Base
 
   class DateDecorator < SimpleDelegator
 
-    attr_accessor :day_type_ref
-    def initialize(date, day_type_ref)
+    attr_accessor :day_type_ref, :time_table, :code_provider
+    def initialize(date, day_type_ref, code_provider = nil)
       super date
+
       @day_type_ref = day_type_ref
       @time_table = date.time_table
+      @code_provider = code_provider
     end
 
     def netex_identifier
-      @netex_identifier ||= Netex::ObjectId.parse(time_table.objectid)
+      @netex_identifier ||= begin
+        code_time_table = code_provider.time_tables.code(time_table.id) if code_provider
+        Netex::ObjectId.parse(code_time_table) if code_time_table
+      end
     end
 
     def day_type_assignment
@@ -1715,7 +1836,7 @@ class Export::NetexGeneric < Export::Base
     end
 
     def date_type_assignment_id
-      netex_identifier.merge("d#{id}", type: 'DayTypeAssignment').to_s
+      netex_identifier&.merge("d#{id}", type: 'DayTypeAssignment').to_s
     end
 
     def day_type_assignment_attributes
@@ -1767,7 +1888,7 @@ class Export::NetexGeneric < Export::Base
 
       def day_type_attributes
         {
-          id: objectid,
+          id: netex_identifier.to_s,
           data_source_ref: data_source_ref,
           name: comment,
           properties: properties,
@@ -1776,7 +1897,7 @@ class Export::NetexGeneric < Export::Base
       end
 
       def day_type_ref
-        @day_type_ref ||= Netex::Reference.new(objectid, type: 'DayTypeRef')
+        @day_type_ref ||= Netex::Reference.new(netex_identifier.to_s, type: 'DayTypeRef')
       end
 
       def properties
@@ -1793,12 +1914,12 @@ class Export::NetexGeneric < Export::Base
       end
 
       def candidate_periods
-        @candidate_periods ||= periods.select { |period| period.intersect?(validity_period) }
+        @candidate_periods ||= validity_period ? periods.select { |period| period.intersect?(validity_period) } : periods
       end
 
       def decorated_periods
         @decorated_periods ||= candidate_periods.map do |period|
-          PeriodDecorator.new(period, day_type_ref)
+          PeriodDecorator.new(period, day_type_ref, code_provider)
         end
       end
 
@@ -1809,7 +1930,10 @@ class Export::NetexGeneric < Export::Base
       end
 
       def candidate_included_dates
-        dates.select(&:included?).select { |date| validity_period.include? date.date }
+        included_dates = dates.select(&:included?)
+        return included_dates unless validity_period
+
+        included_dates.select { |date| validity_period.include? date.date }
       end
 
       def candidate_dates
@@ -1822,7 +1946,7 @@ class Export::NetexGeneric < Export::Base
 
       def decorated_dates
         @decorated_dates ||= candidate_dates.map do |date|
-          DateDecorator.new(date, day_type_ref)
+          DateDecorator.new(date, day_type_ref, code_provider)
         end
       end
     end

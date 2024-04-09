@@ -89,6 +89,39 @@ RSpec.describe Export::Ara do
     end
   end
 
+  describe 'Scope' do
+    subject(:scope) { Export::Ara::Scope.new(export_scope, export: export) }
+    let(:export_scope) { double }
+    let(:export) { double }
+
+    describe '#stop_areas' do
+      subject { scope.stop_areas }
+
+      context 'when a StopArea has a parent' do
+        let(:context) do
+          Chouette.create do
+            stop_area :parent, area_type: Chouette::AreaType::STOP_PLACE.to_s
+            stop_area :referent, is_referent: true
+            stop_area :exported, parent: :parent, referent: :referent
+          end
+        end
+
+        before do
+          allow(export).to receive(:stop_area_referential) { context.stop_area_referential }
+          allow(export_scope).to receive(:stop_areas) { context.stop_area_referential.stop_areas.where(id: stop_area.id) }
+        end
+
+        let(:stop_area) { context.stop_area(:exported) }
+        let(:parent) { stop_area.parent }
+        let(:referent) { stop_area.referent }
+
+        it 'includes both Stop Area and its parent' do
+          is_expected.to include(stop_area, parent, referent)
+        end
+      end
+    end
+  end
+
   describe 'Stops export' do
     describe Export::Ara::Stops::Decorator do
       subject(:decorator) { described_class.new(stop_area) }
@@ -173,28 +206,6 @@ RSpec.describe Export::Ara do
     let(:target) { [] }
     subject(:part) { Export::Ara::Stops.new export_scope: scope, target: target, context: export_context }
     let(:scope) { double stop_areas: context.stop_area_referential.stop_areas, codes: context.workgroup.codes }
-
-    describe '#stop_areas' do
-      subject { part.stop_areas }
-
-      context 'when a StopArea has a parent' do
-        let(:context) do
-          Chouette.create do
-            stop_area :parent, area_type: Chouette::AreaType::STOP_PLACE.to_s
-            stop_area :referent, is_referent: true
-            stop_area :exported, parent: :parent, referent: :referent
-          end
-        end
-
-        let(:stop_area) { context.stop_area(:exported) }
-        let(:parent) { stop_area.parent }
-        let(:referent) { stop_area.referent }
-
-        it 'includes both Stop Area and its parent' do
-          is_expected.to include(stop_area, parent, referent)
-        end
-      end
-    end
 
     context 'when two Stop Areas are exported' do
       let(:context) do

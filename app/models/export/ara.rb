@@ -294,8 +294,34 @@ class Export::Ara < Export::Base
     end
   end
 
+  delegate :stop_area_referential, to: :referential
+
+  class Scope < SimpleDelegator
+    def initialize(export_scope, export:)
+      super export_scope
+
+      @export = export
+    end
+
+    def export_scope
+      __getobj__
+    end
+
+    attr_reader :export
+    delegate :stop_area_referential, to: :export
+
+    def stop_areas
+      @stop_areas ||= ::Query::StopArea.new(stop_area_referential.stop_areas).self_referents_and_ancestors(export_scope.stop_areas)
+    end
+  end
+
+  def export_scope
+    @local_export_scope ||= Scope.new(super, export: self)
+  end
+
   class Stops < Part
     delegate :stop_area_referential, to: :context
+    delegate :stop_areas, to: :export_scope
 
     def export!
       stop_areas.includes(:parent, :referent, :lines, codes: :code_space).find_each do |stop_area|
@@ -303,22 +329,8 @@ class Export::Ara < Export::Base
       end
     end
 
-    def stop_areas
-      ::Query::StopArea.new(stop_area_referential.stop_areas).self_referents_and_ancestors(export_scope.stop_areas)
-    end
-
-    class CodeScope < SimpleDelegator
-      def initialize(part)
-        @part = part
-        super part.export_scope
-      end
-      attr_reader :part
-
-      delegate :stop_areas, to: :part
-    end
-
     def code_provider
-      @code_provider ||= CodeProvider::Model.new scope: CodeScope.new(self), model_class: Chouette::StopArea
+      @code_provider ||= CodeProvider::Model.new scope: export_scope, model_class: Chouette::StopArea
     end
 
     # Creates an Ara::StopArea from a StopArea

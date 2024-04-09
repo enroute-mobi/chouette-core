@@ -8,11 +8,14 @@ class PublicationsController < Chouette::WorkgroupController
 
   def show
     @export = ExportDecorator.decorate(
-      @publication.export,
+      publication.export,
       context: {
         parent: workgroup
       }
     )
     show!
   end
+
+  alias publication resource
+
 end

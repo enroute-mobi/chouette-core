@@ -4,6 +4,7 @@ class PublicationDecorator < AF83::Decorator
   set_scope { [context[:workgroup], context[:publication_setup]] }
 
   with_instance_decorator do |instance_decorator|
-    instance_decorator.crud
+    instance_decorator.show_action_link
   end
+
 end

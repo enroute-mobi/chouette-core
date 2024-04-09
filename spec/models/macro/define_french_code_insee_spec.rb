@@ -13,16 +13,7 @@ RSpec.describe Macro::DefineFrenchCodeInsee do
   end
 
   describe Macro::DefineFrenchCodeInsee::Run do
-    let(:context) do
-      Chouette.create do
-        stop_area :stop_area, name: 'stop area', latitude: 47.2372428, longitude: -1.5767392
-        referential
-      end
-    end
-
-    let(:workgroup) { context.workgroup }
-    let(:referential) { context.referential }
-    let(:workbench) { referential.workbench }
+    let(:workbench) { context.workbench }
     let(:stop_area) { context.stop_area(:stop_area) }
 
     let(:macro_list_run) do
@@ -40,37 +31,59 @@ RSpec.describe Macro::DefineFrenchCodeInsee do
     describe '.run' do
       subject { macro_run.run }
 
-      before do
-        referential.switch
-      end
-
       context 'when the stop area has no postal region' do
         before(:each) do
-          insee_postal_region_response = File.read('spec/fixtures/insee-postal-region-response.json')
-          stub_request(:get, 'https://geo.api.gouv.fr/communes?lat=47.2372428&lon=-1.5767392').to_return(
-            status: 200, body: insee_postal_region_response
-          )
+          stub_request(:get, url).to_return(status: 200, body: insee_postal_region_response)
         end
 
-        it 'should update address into stop area' do
-          expect do
+        context 'when the postion is in France' do
+          let(:context) do
+            Chouette.create do
+              stop_area :stop_area, name: 'stop area', latitude: 47.2372428, longitude: -1.5767392
+            end
+          end
+
+          let(:url) { 'https://geo.api.gouv.fr/communes?lat=47.2372428&lon=-1.5767392' }
+          let(:insee_postal_region_response) { read_fixture('insee-postal-region-response.json') }
+
+          it 'should update postal_region into stop area' do
+            expect do
+              subject
+              stop_area.reload
+            end.to change(stop_area, :postal_region).to('44109')
+          end
+
+          it 'creates a message for each stop area' do
             subject
-            stop_area.reload
-          end.to change(stop_area, :postal_region).to('44109')
+
+            expected_message = an_object_having_attributes(
+              criticity: 'info',
+              message_attributes: {
+                'name' => stop_area.name,
+                'postal_region' => '44109'
+              },
+              source: stop_area
+            )
+            expect(macro_run.macro_messages).to include(expected_message)
+          end
         end
 
-        it 'creates a message for each stop area' do
-          subject
+        context 'when the postion is not in France' do
+          let(:context) do
+            Chouette.create do
+              stop_area :stop_area, name: 'stop area', latitude: 36.868446, longitude: -116.784582
+            end
+          end
 
-          expected_message = an_object_having_attributes(
-            criticity: 'info',
-            message_attributes: {
-              'name' => stop_area.name,
-              'postal_region' => '44109'
-            },
-            source: stop_area
-          )
-          expect(macro_run.macro_messages).to include(expected_message)
+          let(:url) { 'https://geo.api.gouv.fr/communes?lat=36.868446&lon=-116.784582' }
+          let(:insee_postal_region_response) { read_fixture('insse-postal-region-empty-response.json') }
+
+          it 'should not update postal_region into stop area' do
+            expect do
+              subject
+              stop_area.reload
+            end.not_to change(stop_area, :postal_region)
+          end
         end
       end
     end

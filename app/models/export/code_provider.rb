@@ -3,15 +3,16 @@
 module Export
   # Manage all unique codes for a given Export::Scope
   class CodeProvider
-    def initialize(export_scope)
+    def initialize(export_scope, code_space: nil)
       @export_scope = export_scope
+      @code_space = code_space
     end
 
-    attr_reader :export_scope
+    attr_reader :export_scope, :code_space
 
     COLLECTIONS = %w[
       stop_areas point_of_interests vehicle_journeys lines companies entrances contracts
-      vehicle_journey_at_stops journey_patterns routes codes time_tables fare_validities 
+      vehicle_journey_at_stops journey_patterns routes time_tables fare_validities
       routing_constraint_zones networks fare_zones fare_products stop_points shapes
     ].freeze
 
@@ -48,27 +49,81 @@ module Export
     end
 
     class Model
-      def initialize(collection)
+      def initialize(collection, code_space = nil)
         @collection = collection
+        @code_space = code_space
 
         @codes = {}
       end
 
-      attr_reader :collection
-
-      def model_class
-        @model_class ||= collection.model
-      end
-
-      ATTRIBUTES = %w[objectid uuid].freeze
-      def attribute
-        (ATTRIBUTES & model_class.column_names).first
-      end
+      attr_reader :collection, :code_space
 
       def index
-        @codes = collection.pluck(:id, attribute).to_h
+        @codes = Index.new(collection, code_space).codes
 
         self
+      end
+
+      class Index
+        def initialize(collection, code_space = nil)
+          @collection = collection
+          @code_space = code_space
+        end
+
+        attr_reader :collection, :code_space
+
+        def model_class
+          @model_class ||= collection.model
+        end
+  
+        ATTRIBUTES = %w[objectid uuid].freeze
+        def attribute
+          (ATTRIBUTES & model_class.column_names).first
+        end
+  
+        def codes
+          return indexes_with_codes if support_codes?
+
+          indexes_without_codes
+        end
+
+        def time_table
+          @time_table ||= collection.model_name.collection
+        end
+
+        def indexes_without_codes
+          collection.pluck(:id, attribute).to_h
+        end
+
+        def indexes_with_codes
+          @indexes_with_codes = {}
+
+          collection
+            .left_joins(:codes)
+            .select(*select)
+            .each { |model| fetch_code(model, @indexes_with_codes) }
+
+          @indexes_with_codes
+        end
+
+        def fetch_code(model, indexes)
+          if model.count <= 1 && model.code_value && model.code_space_id == code_space.id
+            indexes[model.id] = model.code_value
+          elsif indexes[model.id].blank?
+            indexes[model.id] = model.send(attribute)
+          end
+        end
+
+        def select
+          [
+            :id, attribute, "COUNT(#{time_table}.id) OVER (PARTITION BY codes.code_space_id, #{time_table}.id)",
+            :stop_area_referential_id, 'codes.code_space_id AS code_space_id', 'codes.value AS code_value'
+          ]
+        end
+
+        def support_codes?
+          code_space.present? && collection.reflect_on_association(:codes).present?
+        end
       end
 
       def register(model_id, as: value)

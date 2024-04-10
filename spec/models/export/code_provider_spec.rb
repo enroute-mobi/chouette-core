@@ -26,7 +26,6 @@ RSpec.describe Export::CodeProvider do
 
     before { allow(export_scope).to receive(:stop_areas).and_return(Chouette::StopArea.none) }
 
-    it { is_expected.to have_attributes(model_class: Chouette::StopArea) }
     it { is_expected.to have_attributes(collection: export_scope.stop_areas) }
   end
 
@@ -35,17 +34,12 @@ RSpec.describe Export::CodeProvider do
 
     before { allow(export_scope).to receive(:lines).and_return(Chouette::Line.none) }
 
-    it { is_expected.to have_attributes(model_class: Chouette::Line) }
     it { is_expected.to have_attributes(collection: export_scope.lines) }
   end
 
-  describe Export::CodeProvider::Model do
+  describe Export::CodeProvider::Model::Index do
     context 'when model class is Chouette::StopArea' do
-      subject(:model_code_provider) do
-        Export::CodeProvider::Model.new(
-          Chouette::StopArea.none
-        )
-      end
+      subject(:model_code_provider) { described_class.new Chouette::StopArea.none }
 
       describe '#attribute' do
         subject { model_code_provider.attribute }
@@ -53,7 +47,47 @@ RSpec.describe Export::CodeProvider do
         it { is_expected.to eq('objectid') }
       end
 
-      # TODO
+      describe '#codes' do
+        subject { described_class.new(Chouette::StopArea.all, code_space).codes }
+
+        let(:context) do
+          Chouette.create do
+            code_space short_name: 'test'
+            code_space :other, short_name: 'other'
+
+            stop_area :first, codes: { test: 'first code' }
+            stop_area :second, codes: { test: 'second code', other: 'other second code' }
+            stop_area :third, objectid: 'third objectid', codes: { other: 'other third code' }
+            stop_area :last, objectid: 'last objectid'
+          end
+        end
+
+        let(:code_space) { context.code_space }
+        let(:first) { context.stop_area(:first) }
+        let(:second) { context.stop_area(:second) }
+        let(:third) { context.stop_area(:third) }
+        let(:last) { context.stop_area(:last) }
+
+        it do
+          expected_codes = {
+            first.id => 'first code',
+            second.id => 'second code',
+            third.id => 'third objectid:::LOC',
+            last.id => 'last objectid:::LOC'
+          }
+
+          is_expected.to eq expected_codes
+        end
+
+        context 'when there are many codes in the same Code Space' do
+          before { first.codes.create(code_space: code_space, value: 'first code 2') }
+
+          it 'should not use codes and take objectid for the first stop area' do
+
+            expect(subject[first.id]).to eq first.objectid
+          end
+        end
+      end
     end
 
     context 'when model class is PointOfInterest' do

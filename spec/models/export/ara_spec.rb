@@ -90,14 +90,15 @@ RSpec.describe Export::Ara do
   end
 
   describe 'Scope' do
-    subject(:scope) { Export::Ara::Scope.new(export_scope, export: export) }
-    let(:export_scope) { double }
-    let(:export) { double }
+    subject(:scope) { Export::Ara::DailyScope.new(export, day) }
+    let(:day) { Date.current }
+    let(:original_scope) { double }
+    let(:export) { double export_scope: original_scope }
 
     describe '#stop_areas' do
       subject { scope.stop_areas }
 
-      context 'when a StopArea has a parent' do
+      context 'when a Stop Area has a Parent and a Referent' do
         let(:context) do
           Chouette.create do
             stop_area :parent, area_type: Chouette::AreaType::STOP_PLACE.to_s
@@ -108,7 +109,7 @@ RSpec.describe Export::Ara do
 
         before do
           allow(export).to receive(:stop_area_referential) { context.stop_area_referential }
-          allow(export_scope).to receive(:stop_areas) { context.stop_area_referential.stop_areas.where(id: stop_area.id) }
+          allow(original_scope).to receive(:stop_areas) { context.stop_area_referential.stop_areas.where(id: stop_area.id) }
         end
 
         let(:stop_area) { context.stop_area(:exported) }
@@ -117,6 +118,31 @@ RSpec.describe Export::Ara do
 
         it 'includes both Stop Area and its parent' do
           is_expected.to include(stop_area, parent, referent)
+        end
+      end
+    end
+
+    describe '#lines' do
+      subject { scope.lines }
+
+      context 'when a Line has a Refernt' do
+        let(:context) do
+          Chouette.create do
+            line :referent, is_referent: true
+            line :exported, referent: :referent
+          end
+        end
+
+        before do
+          allow(export).to receive(:line_referential) { context.line_referential }
+          allow(original_scope).to receive(:lines) { context.line_referential.lines.where(id: line.id) }
+        end
+
+        let(:line) { context.line(:exported) }
+        let(:referent) { line.referent }
+
+        it 'includes both Line and its parent' do
+          is_expected.to include(line, referent)
         end
       end
     end

@@ -45,6 +45,28 @@ module Query
       end
     end
 
+    # Select in the current scope Lines which are the referents of the given Lines .. and the given Lines themselves
+    #
+    # For example, into an Export:
+    #
+    #    Query::Line.new(line_referential.lines).self_and_referents(export_scope.lines)
+    #
+    # TODO Could use a nice RecurviseQuery common object
+    def self_and_referents(relation) # rubocop:disable Metrics/MethodLength
+      tree_sql = <<-SQL
+        WITH RECURSIVE referent_tree(id) AS (
+           #{relation.select(:id).to_sql}
+          UNION
+            SELECT #{table_name}.referent_id
+            FROM referent_tree
+            JOIN #{table_name} ON #{table_name}.id = referent_tree.id
+            WHERE #{table_name}.referent_id is not null
+        )
+        SELECT id FROM referent_tree
+      SQL
+      scope.where("#{table_name}.id IN (#{tree_sql})")
+    end
+
     # TODO Could use a nice RecurviseQuery common object
     delegate :table_name, to: Chouette::Line
     private :table_name

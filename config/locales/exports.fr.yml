@@ -120,6 +120,8 @@ fr:
         include_stop_visits: "Inclure les Passages aux Arrêts"
         ignore_parent_stop_places: "Ignorer les arrêts Parents"
         period: Période exportée
+        participant_ref: Netex Participant Ref
+        profile_options: Paramètres du profil Netex
       export:
         <<: *attrs
         base:

@@ -22,7 +22,7 @@ describe Chouette::ReferentialController, type: :controller do
             workbench(:organisation_workbench, organisation: Organisation.find_by(code: 'first')) do
               referential :organisation_referential, organisation: Organisation.find_by(code: 'first')
             end
-            workbench do
+            workbench(:other_workbench) do
               referential :through_workgroup_referential
             end
           end
@@ -53,8 +53,9 @@ describe Chouette::ReferentialController, type: :controller do
       end
 
       let(:expected_workbench) { context.workbench(:organisation_workbench) }
+      let(:workbench) { expected_workbench }
 
-      before { get :index, params: { referential_id: referential.id } }
+      before { get :index, params: { workbench_id: workbench.id, referential_id: referential.id } }
 
       context 'when the referential workbench has the same organisation as user' do
         let(:referential) { context.referential(:organisation_referential) }
@@ -74,6 +75,14 @@ describe Chouette::ReferentialController, type: :controller do
 
       context 'when the referential is unrelated to user organisation' do
         let(:referential) { context.referential(:other_referential) }
+
+        it 'should respond with NOT FOUND' do
+          expect(response).to have_http_status(:not_found)
+        end
+      end
+
+      context 'when the workbench is unrelated to user organisation' do
+        let(:workbench) { context.workbench(:other_workbench) }
 
         it 'should respond with NOT FOUND' do
           expect(response).to have_http_status(:not_found)

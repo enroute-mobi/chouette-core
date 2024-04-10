@@ -3,7 +3,7 @@
 class TimeTableDecorator < AF83::Decorator
   decorates Chouette::TimeTable
 
-  set_scope { [context[:referential]] }
+  set_scope { [context[:workbench], context[:referential]] }
 
   create_action_link
 
@@ -12,23 +12,13 @@ class TimeTableDecorator < AF83::Decorator
 
     instance_decorator.action_link policy: :actualize, if: ->{ object.calendar }, secondary: true do |l|
       l.content t('actions.actualize')
-      l.href do
-         h.actualize_referential_time_table_path(
-          context[:referential],
-          object
-        )
-      end
+      l.href { h.actualize_workbench_referential_time_table_path(context[:workbench], context[:referential], object) }
       l.method :post
     end
 
     instance_decorator.action_link policy: :duplicate, secondary: true do |l|
       l.content t('actions.duplicate')
-      l.href do
-        h.duplicate_referential_time_table_path(
-          context[:referential],
-          object
-        )
-      end
+      l.href { h.duplicate_workbench_referential_time_table_path(context[:workbench], context[:referential], object) }
       l.icon :clone
     end
   end

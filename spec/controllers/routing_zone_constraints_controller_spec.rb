@@ -17,7 +17,14 @@ RSpec.describe RoutingConstraintZonesController do
   let(:q) { {} }
 
   describe 'GET index' do
-    let(:request) { get :index, params: { referential_id: referential.id, line_id: route.line_id, q: q } }
+    let(:request) do
+      get :index, params: {
+        workbench_id: referential.workbench.id,
+        referential_id: referential.id,
+        line_id: route.line_id,
+        q: q
+      }
+    end
 
     before { referential.update objectid_format: :netex }
 

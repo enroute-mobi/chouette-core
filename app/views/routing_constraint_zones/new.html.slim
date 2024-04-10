@@ -1,4 +1,4 @@
-- breadcrumb :routing_constraint_zones, @referential, @line
+- breadcrumb :routing_constraint_zones, @workbench, @referential, @line
 
 .page_content
   .container-fluid
@@ -9,7 +9,7 @@
           .row
             .col-lg-12
               = form.input :name
-              = form.input :route_id, collection: @line.routes.with_at_least_three_stop_points, include_blank: false, input_html: { class: 'new_routing_constraint_zone_route', data: {url: new_referential_line_routing_constraint_zone_path(@referential, @line), object: @routing_constraint_zone.to_json }}
+              = form.input :route_id, collection: @line.routes.with_at_least_three_stop_points, include_blank: false, input_html: { class: 'new_routing_constraint_zone_route', data: {url: new_workbench_referential_line_routing_constraint_zone_path(@workbench, @referential, @line), object: @routing_constraint_zone.to_json }}
 
               .separator
 

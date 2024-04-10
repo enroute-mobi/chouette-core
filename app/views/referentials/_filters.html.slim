@@ -1,4 +1,4 @@
-= search_form_for @q, url: referential_path(@referential.id), class: 'form form-filter' do |f|
+= search_form_for @q, url: workbench_referential_path(@workbench, @referential.id), class: 'form form-filter' do |f|
   .ffg-row
     .input-group.search_bar class=filter_item_class(params[:q], :name_or_number_or_short_id_cont)
       = f.search_field :name_or_number_or_short_id_cont, class: 'form-control', placeholder: t('.name_or_number_or_short_id')
@@ -22,5 +22,5 @@
         = f.input :company_id_eq_any, collection: company_ids, as: :check_boxes, label: false, label_method: lambda{|l| ("<span>#{Chouette::Company.find(l).name}</span>").html_safe}, required: false, wrapper_html: { class: 'checkbox_list' }
 
   .actions
-    = link_to t('actions.erase'), referential_path(@referential), class: 'btn btn-link'
+    = link_to t('actions.erase'), workbench_referential_path(@workbench, @referential), class: 'btn btn-link'
     = f.submit t('actions.filter'), class: 'btn btn-default'

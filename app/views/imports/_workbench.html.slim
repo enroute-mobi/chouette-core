@@ -22,7 +22,7 @@
       [ \
         TableBuilderHelper::Column.new( \
           name: t('imports.show.referential_name'),
-          attribute: -> (import) { link_to(import.name, referential_path(import.referential)) },
+          attribute: -> (import) { link_to(import.name, workbench_referential_path(@workbench, import.referential)) },
           if: -> (import) { import.referential },
           sortable: false,
         ),

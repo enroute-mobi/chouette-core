@@ -82,7 +82,7 @@ export default class VehicleJourneysList extends Component {
   }
 
   timeTableURL(tt) {
-    let refURL = window.location.pathname.split('/', 3).join('/')
+    let refURL = window.location.pathname.split('/', 5).join('/')
     let ttURL = refURL + '/time_tables/' + tt.id
 
     return (

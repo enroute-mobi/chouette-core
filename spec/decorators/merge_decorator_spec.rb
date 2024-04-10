@@ -80,7 +80,7 @@ RSpec.describe MergeDecorator, type: %i[helper decorator] do
 
         it 'has corresponding actions' do
           expect_action_link_elements(action).to eq [t('merges.actions.see_associated_offer')]
-          expect_action_link_hrefs(action).to eq([referential_path(object.new)])
+          expect_action_link_hrefs(action).to eq([workbench_referential_path(current_workbench, object.new)])
         end
 
         context 'with a non-current merge' do
@@ -88,7 +88,7 @@ RSpec.describe MergeDecorator, type: %i[helper decorator] do
 
           it 'has corresponding actions' do
             expect_action_link_elements(action).to eq [t('merges.actions.see_associated_offer')]
-            expect_action_link_hrefs(action).to eq([referential_path(object.new)])
+            expect_action_link_hrefs(action).to eq([workbench_referential_path(current_workbench, object.new)])
           end
 
           context 'in the right organisation' do
@@ -98,7 +98,7 @@ RSpec.describe MergeDecorator, type: %i[helper decorator] do
 
             it 'has corresponding actions' do
               expect_action_link_elements(action).to eq [t('merges.actions.see_associated_offer')]
-              expect_action_link_hrefs(action).to eq([referential_path(object.new)])
+              expect_action_link_hrefs(action).to eq([workbench_referential_path(current_workbench, object.new)])
             end
 
             context 'with the rollback permission' do
@@ -108,7 +108,7 @@ RSpec.describe MergeDecorator, type: %i[helper decorator] do
 
               it 'has corresponding actions' do
                 expect_action_link_elements(action).to eq ['Revenir à cette offre', t('merges.actions.see_associated_offer')]
-                expect_action_link_hrefs(action).to eq([rollback_workbench_merge_path(current_workbench, object), referential_path(object.new)])
+                expect_action_link_hrefs(action).to eq([rollback_workbench_merge_path(current_workbench, object), workbench_referential_path(current_workbench, object.new)])
               end
             end
           end

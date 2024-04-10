@@ -17,9 +17,9 @@ module MergesHelper
 
   def merge_metadatas(merge)
     {
-      Merge.tmf(:referentials) => merge.referentials.map{ |r| link_to(decorate_referential_name(r), referential_path(r)) }.join(', ').html_safe,
+      Merge.tmf(:referentials) => merge.referentials.map{ |r| link_to(decorate_referential_name(r), workbench_referential_path(merge.workbench, r)) }.join(', ').html_safe,
       Merge.tmf(:status) => operation_status(merge.status, verbose: true, i18n_prefix: "merges.statuses"),
-      Merge.tmf(:new) => merge.new ? link_to(merge.new.name, referential_path(merge.new)) : '-',
+      Merge.tmf(:new) => merge.new ? link_to(merge.new.name, workbench_referential_path(merge.workbench, merge.new)) : '-',
       Merge.tmf(:contains_urgent_offer) => boolean_icon(merge.contains_urgent_offer?)
     }
   end

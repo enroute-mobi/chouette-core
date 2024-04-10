@@ -14,6 +14,7 @@ class RoutingConstraintZonesController < Chouette::ReferentialController
         @routing_constraint_zones = RoutingConstraintZoneDecorator.decorate(
           @routing_constraint_zones,
           context: {
+            workbench: @workbench,
             referential: referential,
             line: parent
           }
@@ -25,10 +26,13 @@ class RoutingConstraintZonesController < Chouette::ReferentialController
 
   def show
     show! do |format|
-      @routing_constraint_zone = @routing_constraint_zone.decorate(context: {
-        referential: referential,
-        line: parent
-      })
+      @routing_constraint_zone = @routing_constraint_zone.decorate(
+        context: {
+          workbench: @workbench,
+          referential: referential,
+          line: parent
+        }
+      )
     end
   end
 

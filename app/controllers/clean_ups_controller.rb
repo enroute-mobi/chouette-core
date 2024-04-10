@@ -8,7 +8,7 @@ class CleanUpsController < Chouette::ReferentialController
   def create
     create! do |success, _failure|
       success.html do
-        redirect_to @referential
+        redirect_to workbench_referential_path(@workbench, @referential)
       end
     end
   end
@@ -42,9 +42,5 @@ class CleanUpsController < Chouette::ReferentialController
       clean_up_params[:end_date] = @referential.metadatas_period.max
     end
     pp clean_up_params
-  end
-
-  def begin_of_association_chain
-    nil
   end
 end

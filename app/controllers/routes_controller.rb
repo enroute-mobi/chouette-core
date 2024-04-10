@@ -25,7 +25,7 @@ class RoutesController < Chouette::ReferentialController
   def index
     @routes = collection
     index! do |format|
-      format.html { redirect_to referential_line_path(@referential, @line) }
+      format.html { redirect_to workbench_referential_line_path(current_workbench, @referential, @line) }
       format.geojson { render 'routes/index.geo' }
     end
   end
@@ -37,7 +37,7 @@ class RoutesController < Chouette::ReferentialController
   def save_boarding_alighting
     @route = route
     if @route.update!(route_params)
-      redirect_to referential_line_route_path(@referential, @line, @route)
+      redirect_to workbench_referential_line_route_path(current_workbench, @referential, @line, @route)
     else
       render 'edit_boarding_alighting'
     end
@@ -79,6 +79,7 @@ class RoutesController < Chouette::ReferentialController
 
     show! do |format|
       @route = @route.decorate(context: {
+                                 workbench: @workbench,
                                  referential: @referential,
                                  line: @line
                                })
@@ -91,7 +92,7 @@ class RoutesController < Chouette::ReferentialController
 
   def destroy
     destroy! do |success, _failure|
-      success.html { redirect_to referential_line_path(@referential, @line) }
+      success.html { redirect_to workbench_referential_line_path(current_workbench, @referential, @line) }
     end
   end
 
@@ -125,7 +126,7 @@ class RoutesController < Chouette::ReferentialController
     source = Chouette::Route.find(params[:id])
     route = source.duplicate params[:opposite]
     flash[:notice] = t('routes.duplicate.success')
-    redirect_to referential_line_path(@referential, route.line)
+    redirect_to workbench_referential_line_path(current_workbench, @referential, route.line)
   end
 
   def costs

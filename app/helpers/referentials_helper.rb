@@ -64,14 +64,10 @@ module ReferentialsHelper
     render partial: "referentials/overview", locals: {referential: referential, overview: service}
   end
 
-  def mutual_workbench workbench
-    return unless workbench
-    current_user.organisation.workbenches.where(workgroup_id: workbench.workgroup_id).last
-  end
+  def workgroup_referential_path(workgroup, referential)
+    workbench = current_user.workbenches.find_by(workgroup: workgroup)
+    return nil unless workbench
 
-  def duplicate_workbench_referential_path referential
-    workbench = mutual_workbench referential.workbench
-    raise "Missing workbench for referential #{referential.name}" unless workbench.present?
-    new_workbench_referential_path(workbench, from: referential.id)
+    workbench_referential_path(workbench, referential)
   end
 end

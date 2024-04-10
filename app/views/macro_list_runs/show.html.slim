@@ -9,7 +9,7 @@
         = simple_block_for @macro_list_run, title: t('macro_list_run.show.section.information') do |d|
           = d.attribute :name
           = d.attribute :original_macro_list, as: :association, link: (workbench_macro_list_path(@workbench, @macro_list_run.original_macro_list) if @macro_list_run.original_macro_list)
-          = d.attribute :referential, as: :association, link: (referential_path(@macro_list_run.referential) if @macro_list_run.referential)
+          = d.attribute :referential, as: :association, link: (workbench_referential_path(@workbench, @macro_list_run.referential) if @macro_list_run.referential)
           = d.attribute :user_status, value: operation_user_status(@macro_list_run)
 
       .col-lg-6.col-md-6.col-sm-12.col-xs-12

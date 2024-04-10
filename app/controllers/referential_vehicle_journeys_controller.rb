@@ -32,7 +32,8 @@ class ReferentialVehicleJourneysController < Chouette::ReferentialController
     VehicleJourneyDecorator.decorate(
       vehicle_journeys,
       context: {
-        referential: referential
+        referential: referential,
+        workbench: current_workbench
       }
     )
   end

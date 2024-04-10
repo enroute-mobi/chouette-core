@@ -29,9 +29,7 @@ describe TableBuilderHelper, type: :helper do
         id: referentials[0].workbench.id
       ))
 
-      referentials = ReferentialDecorator.decorate(
-        referentials
-      )
+      referentials = ReferentialDecorator.decorate(referentials, context: { workbench: workbench })
 
       expected = <<-HTML
 <table class="table has-filter has-search">
@@ -56,7 +54,7 @@ describe TableBuilderHelper, type: :helper do
             <td>
                 <div class="checkbox"><input type="checkbox" name="#{referential.id}" id="#{referential.id}" value="#{referential.id}" /><label for="#{referential.id}"></label></div>
             </td>
-            <td title="Voir" class="name"><a href="/referentials/#{referential.id}">#{referential.name}</a></td>
+            <td title="Voir" class="name"><a href="/workbenches/#{workbench.id}/referentials/#{referential.id}">#{referential.name}</a></td>
             <td>
                 <div class='td-block'><span class='sb sb-lg sb-preparing'></span><span>En préparation</span></div>
             </td>
@@ -71,17 +69,17 @@ describe TableBuilderHelper, type: :helper do
                     <div class="btn dropdown-toggle" data-toggle="dropdown"><span class="fa fa-cog"></span></div>
                     <div class="dropdown-menu">
                         <ul class="primary">
-                            <li class=""><a href="/referentials/#{referential.id}"><span class='mr-xs fa fa-eye'></span>Consulter</a></li>
-                            <li class=""><a href="/referentials/#{referential.id}/edit"><span class='mr-xs fa fa-pencil-alt'></span>Editer ce jeu de données</a></li>
+                            <li class=""><a href="/workbenches/#{workbench.id}/referentials/#{referential.id}"><span class='mr-xs fa fa-eye'></span>Consulter</a></li>
+                            <li class=""><a href="/workbenches/#{workbench.id}/referentials/#{referential.id}/edit"><span class='mr-xs fa fa-pencil-alt'></span>Editer ce jeu de données</a></li>
                         </ul>
                         <ul class="other">
-                            <li class=""><a href="/referentials/#{referential.id}/time_tables">Calendriers</a></li>
+                            <li class=""><a href="/workbenches/#{workbench.id}/referentials/#{referential.id}/time_tables">Calendriers</a></li>
                             <li class=""><a href="/workbenches/#{workbench.id}/referentials/new?from=#{referential.id}">Dupliquer</a></li>
                             <li class=""><a href="/workbenches/#{workbench.id}/control_list_runs/new?referential_id=#{referential.id}">Contrôler</a></li>
-                            <li class=""><a rel="nofollow" data-method="put" href="/referentials/#{referential.id}/archive">Archiver</a></li>
+                            <li class=""><a rel="nofollow" data-method="put" href="/workbenches/#{workbench.id}/referentials/#{referential.id}/archive">Archiver</a></li>
                         </ul>
                         <ul class="footer">
-                            <li class=" delete-action"><a data-confirm="Etes vous sûr de vouloir supprimer ce jeu de données ?" rel="nofollow" data-method="delete" href="/referentials/#{referential.id}"><span class='mr-xs fa fa-trash text-danger'></span>Supprimer ce jeu de données</a></li>
+                            <li class=" delete-action"><a data-confirm="Etes vous sûr de vouloir supprimer ce jeu de données ?" rel="nofollow" data-method="delete" href="/workbenches/#{workbench.id}/referentials/#{referential.id}"><span class='mr-xs fa fa-trash text-danger'></span>Supprimer ce jeu de données</a></li>
                         </ul>
                     </div>
                 </div>
@@ -98,7 +96,7 @@ describe TableBuilderHelper, type: :helper do
             key: :name,
             attribute: 'name',
             link_to: lambda do |referential|
-              referential_path(referential)
+              workbench_referential_path(current_workbench, referential)
             end
           ),
           TableBuilderHelper::Column.new(
@@ -359,8 +357,8 @@ describe TableBuilderHelper, type: :helper do
           ),
         ]
       }
-      let(:item){ referential.decorate }
-      let(:other_item){ other_referential.decorate }
+      let(:item){ referential.decorate(context: { workbench: current_workbench }) }
+      let(:other_item){ other_referential.decorate(context: { workbench: current_workbench }) }
       let(:selectable){ false }
       let(:links){ [:show] }
       let(:overhead){ [] }

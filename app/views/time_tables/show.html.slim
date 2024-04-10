@@ -1,5 +1,5 @@
 - require 'calendar_helper'
-- breadcrumb :time_table, @referential, @time_table
+- breadcrumb :time_table, @workbench, @referential, @time_table
 - page_header_content_for @time_table
 
 - content_for :page_header_title, t('time_tables.show.title', name: @time_table.comment), flush: true
@@ -20,7 +20,7 @@
         .pagination.pull-right
           = @year
           .page_links
-            = link_to '', referential_time_table_path(@referential, @time_table, year: (@year - 1)), class: 'previous_page'
-            = link_to '', referential_time_table_path(@referential, @time_table, year: (@year + 1)), class: 'next_page'
+            = link_to '', workbench_referential_time_table_path(@workbench, @referential, @time_table, year: (@year - 1)), class: 'previous_page'
+            = link_to '', workbench_referential_time_table_path(@workbench, @referential, @time_table, year: (@year + 1)), class: 'next_page'
 
     = render 'show_time_table', time_table: @time_table, edit_url: [:edit, @referential, @time_table], disabled: !resource_policy.update?

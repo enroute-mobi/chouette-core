@@ -7,6 +7,7 @@ module Chouette
 
     include ReferentialSupport
 
+    belongs_to :workbench
     belongs_to :referential
 
     # switch referential before finding resource
@@ -24,11 +25,12 @@ module Chouette
     private
 
     def current_workgroup
-      current_workbench&.workgroup
+      workbench.workgroup
     end
 
-    def current_workbench
-      referential&.workgroup&.workbenches&.find_by(organisation: current_organisation)
+    def workbench
+      @workbench ||= begin_of_association_chain.workbenches.find(params[:workbench_id])
     end
+    alias current_workbench workbench
   end
 end

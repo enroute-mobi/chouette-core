@@ -27,7 +27,10 @@ RSpec.describe "workbenches/show", :type => :view do
   let!(:workbench) { assign :workbench, context.workbench(:user_workbench) }
   let!(:same_organisation_referential) { context.referential(:user_referential) }
   let!(:different_organisation_referential) { context.referential(:other_referential) }
-  let!(:referentials) { assign :wbench_refs, paginate_collection(workbench.all_referentials, ReferentialDecorator) }
+  let!(:referentials) do
+    assign :wbench_refs,
+           paginate_collection(workbench.all_referentials, ReferentialDecorator, 1, workbench: current_workbench)
+  end
   let!(:search) { assign :search, Search::Referential.new(workbench: workbench) }
 
   before :each do
@@ -38,7 +41,15 @@ RSpec.describe "workbenches/show", :type => :view do
     render
   end
 
-  it { should have_link_for_each_item(referentials, "show", -> (referential){ view.referential_path(referential) }) }
+  it do
+    is_expected.to(
+      have_link_for_each_item(
+        referentials,
+        'show',
+        ->(referential) { view.workbench_referential_path(current_workbench, referential) }
+      )
+    )
+  end
 
   context "without permission" do
     it "should disable all the checkboxes" do

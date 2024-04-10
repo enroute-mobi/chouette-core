@@ -1,8 +1,8 @@
-- breadcrumb :footnotes, @referential, @line
+- breadcrumb :footnotes, @workbench, @referential, @line
 
 - content_for :page_header_actions do
   - if resource_policy.edit_all?
-    = link_to(t('actions.edit'), edit_all_referential_line_footnotes_path(@referential, @line), class: 'btn btn-primary')
+    = link_to(t('actions.edit'), edit_all_workbench_referential_line_footnotes_path(@workbench, @referential, @line), class: 'btn btn-primary')
 
 .page_content
   .container-fluid

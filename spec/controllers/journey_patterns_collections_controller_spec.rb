@@ -12,12 +12,14 @@ RSpec.describe JourneyPatternsCollectionsController, type: :controller do
       end
     end
   end
+  let(:workbench) { context.workbench }
   let(:referential) { context.referential }
   let(:line) { route.line }
   let(:route) { context.route }
 
   let(:base_params) do
     {
+      'workbench_id' => workbench.id.to_s,
       'referential_id' => referential.id.to_s,
       'line_id' => line.id.to_s,
       'route_id' => route.id.to_s

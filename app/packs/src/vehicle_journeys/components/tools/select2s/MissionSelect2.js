@@ -1,9 +1,9 @@
 import React from 'react'
 import { Async as Select } from 'react-select'
 
-import { getReferentialId, getRouteId } from '../../../../helpers/url_params'
+import { getWorkbenchId, getReferentialId, getRouteId } from '../../../../helpers/url_params'
 
-const path = `/referentials/${getReferentialId()}/autocomplete/journey_patterns`
+const path = `/workbenches/${getWorkbenchId()}/referentials/${getReferentialId()}/autocomplete/journey_patterns`
 
 const JPSelect2 = ({ isFilter, onSelect2JourneyPattern, selectedItem }) =>  (
   <Select

@@ -1,4 +1,4 @@
-= search_form_for @q, url: referential_time_tables_path(@referential), html: { method: :get, class: 'form form-filter' } do |f|
+= search_form_for @q, url: workbench_referential_time_tables_path(@workbench, @referential), html: { method: :get, class: 'form form-filter' } do |f|
   .ffg-row
     .input-group.search_bar class=filter_item_class(params[:q], :comment_cont)
       = f.text_field :comment_cont, :placeholder => "#{t('time_tables.index.comment')}", class: 'form-control'

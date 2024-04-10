@@ -10,6 +10,7 @@ describe '/route_vehicle_journeys/show', type: :view do
     end
   end
 
+  let!(:workbench) { assign :workbench, context.workbench }
   let!(:referential) { assign :referential, context.referential }
   let!(:line) { assign :line, context.line(:first) }
   let!(:route) { assign :route, context.route }
@@ -29,7 +30,11 @@ describe '/route_vehicle_journeys/show', type: :view do
     let!(:route) { assign :route, create(:route, :with_opposite, line: line) }
 
     it "should have an 'opposite route timetable' button" do
-      href = view.referential_route_vehicle_journeys_path(referential, route.opposite_route)
+      href = view.workbench_referential_route_vehicle_journeys_path(
+        context.referential.workbench,
+        referential,
+        route.opposite_route
+      )
       oppposite_button_selector = "a[href=\"#{href}\"]"
 
       expect(view.content_for(:page_header_content)).to have_selector oppposite_button_selector

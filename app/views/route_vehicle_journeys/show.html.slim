@@ -1,13 +1,13 @@
-- breadcrumb :vehicle_journeys, @referential, @route
+- breadcrumb :vehicle_journeys, @workbench, @referential, @route
 - content_for :page_header_resource_name, Chouette::VehicleJourney.ts.pluralize.capitalize, flush: true
 - content_for :page_header_title, t('vehicle_journeys.index.title', route: @route.name)
 - content_for :page_header_content do
   .row.mb-sm
     .col-lg-12.text-right
-      = link_to I18n.t("time_tables.index.title"), [@referential, :time_tables], class: 'btn btn-primary sticky-action', target: :blank
+      = link_to I18n.t("time_tables.index.title"), [@workbench, @referential, :time_tables], class: 'btn btn-primary sticky-action', target: :blank
       - if @route.opposite_route.present?
         - enable = @route.opposite_route.vehicle_journeys.exists?
-        = link_to(t('routes.actions.reversed_vehicle_journey'), [@referential, @route.opposite_route, :vehicle_journeys], class: "btn btn-primary sticky-action #{enable ? '' : 'disabled'}")
+        = link_to(t('routes.actions.reversed_vehicle_journey'), [@workbench, @referential, @route.opposite_route, :vehicle_journeys], class: "btn btn-primary sticky-action #{enable ? '' : 'disabled'}")
 
 .page_content
   .container-fluid
@@ -19,6 +19,7 @@
   | window.default_line_notices_path = '#{default_line_notices_path(@referential.line_referential)}';
   | window.route_id = #{params[:route_id]};
   | window.referential_id = #{@referential.id};
+  | window.workbench_id = #{@workbench.id};
   | window.companiesPath = '#{default_companies_path(@referential.line_referential)}';
   | window.line_id = #{@route.line.id};
   | window.stopPoints = #{(@stop_points_list.to_json).html_safe};
@@ -35,9 +36,9 @@
   | window.all_missions = #{(@all_missions.to_json).html_safe};
   | window.custom_fields = #{(@custom_fields.to_json).html_safe};
   | window.extra_headers = #{(@extra_headers.to_json).html_safe};
-  | window.constraint_zones_routes = "#{url_for([@referential, @route.line, :routing_constraint_zones]).html_safe}";
+  | window.constraint_zones_routes = "#{url_for([@workbench, @referential, @route.line, :routing_constraint_zones]).html_safe}";
   | window.companies_path = "#{default_companies_path(@referential.line_referential).html_safe}";
-  | window.available_specific_stop_places_path = "#{(url_for([@referential, @route.line, @route, :journey_patterns])+"/:journey_pattern_id:/available_specific_stop_places").html_safe}";
+  | window.available_specific_stop_places_path = "#{(url_for([@workbench, @referential, @route.line, @route, :journey_patterns])+"/:journey_pattern_id:/available_specific_stop_places").html_safe}";
   | window.available_code_spaces = #{(@referential.workgroup&.code_spaces.to_json)&.html_safe};
 
 - if has_feature?(:stop_area_routing_constraints)
@@ -46,5 +47,5 @@
 
 - if has_feature?(:vehicle_journeys_return_route)
   = javascript_tag do
-    | window.returnRouteUrl = "#{(@route.opposite_route && url_for([@referential, @route.opposite_route, :vehicle_journeys]) || "").html_safe}";
+    | window.returnRouteUrl = "#{(@route.opposite_route && url_for([@workbench, @referential, @route.opposite_route, :vehicle_journeys]) || "").html_safe}";
 

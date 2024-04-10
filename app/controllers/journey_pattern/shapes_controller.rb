@@ -18,7 +18,7 @@ module JourneyPattern
     def new
       if resource
         flash[:warning] = I18n.t('shapes.errors.cannot_create')
-        return redirect_to edit_referential_line_route_journey_pattern_shapes_path(parents) 
+        return redirect_to edit_workbench_referential_line_route_journey_pattern_shapes_path(parents)
       end
 
       respond_to do |format|
@@ -33,12 +33,12 @@ module JourneyPattern
     def edit
       if !resource
         flash[:warning] = I18n.t('shapes.errors.cannot_edit')
-        return redirect_to new_referential_line_route_journey_pattern_shapes_path(parents)
+        return redirect_to new_workbench_referential_line_route_journey_pattern_shapes_path(parents)
       end
 
       # if resource.waypoints.empty?
       #   flash[:warning] = I18n.t('shapes.errors.cannot_edit_imported_shape')
-      #   return redirect_to new_referential_line_route_journey_pattern_shapes_path(parents)
+      #   return redirect_to new_workbench_referential_line_route_journey_pattern_shapes_path(parents)
       # end
 
       respond_to do |format|
@@ -86,7 +86,7 @@ module JourneyPattern
     def create_or_update_callback
       return -> (success, failure) do
         success.json do
-          response.set_header('Location', referential_line_route_journey_patterns_path(*parents.first(3)))
+          response.set_header('Location', workbench_referential_line_route_journey_patterns_path(*parents.first(4)))
           render json: {}, status: 201
         end
 

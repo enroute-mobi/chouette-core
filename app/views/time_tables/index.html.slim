@@ -1,4 +1,4 @@
-- breadcrumb :time_tables, @referential
+- breadcrumb :time_tables, @workbench, @referential
 
 .page_content
   .container-fluid
@@ -24,7 +24,7 @@
                 key: :comment, \
                 attribute: 'comment', \
                 link_to: lambda do |time_table| \
-                  referential_time_table_path(@referential, time_table) \
+                  workbench_referential_time_table_path(@workbench, @referential, time_table) \
                 end \
               ), \
               TableBuilderHelper::Column.new( \

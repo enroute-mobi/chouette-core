@@ -2,7 +2,7 @@ import React from 'react'
 import { Async as Select } from 'react-select'
 import { Path } from 'path-parser'
 
-const params = new Path('/referentials/:referentialId/lines/:lineId/routes/:routeId').partialTest(location.pathname)
+const params = new Path('/workbenches/:workbenchId/referentials/:referentialId/lines/:lineId/routes/:routeId').partialTest(location.pathname)
 const comapniesPathParams = new Path('/workbenches/:workbenchId/line_referential/companies').partialTest(window.companiesPath || '') // Doing for to let specs pass (could not find a wat to mock window values properly)
 
 const path = `/workbenches/${comapniesPathParams?.workbenchId}/autocomplete/companies`

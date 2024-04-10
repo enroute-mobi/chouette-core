@@ -11,13 +11,13 @@ const options = {
 }
 
 const renderApp = ({ match }) => {
-  const { action, journeyPatternId, lineId, referentialId, routeId } = match.params
+  const { action, journeyPatternId, lineId, routeId, referentialId, workbenchId } = match.params
 
   return (
     <SWRConfig value={options}>
       <ShapeEditorMap
-        redirectURL={`/referentials/${referentialId}/lines/${lineId}/routes/${routeId}/journey_patterns`}
-        baseURL={`/referentials/${referentialId}/lines/${lineId}/routes/${routeId}/journey_patterns/${journeyPatternId}`}
+        redirectURL={`/workbenches/${workbenchId}/referentials/${referentialId}/lines/${lineId}/routes/${routeId}/journey_patterns`}
+        baseURL={`/workbenches/${workbenchId}/referentials/${referentialId}/lines/${lineId}/routes/${routeId}/journey_patterns/${journeyPatternId}`}
         isEdit={action === 'edit'}
       />
     </SWRConfig>
@@ -28,7 +28,7 @@ export default function App() {
   return (
     <BrowserRouter>
       <Route
-        path={'/referentials/:referentialId/lines/:lineId/routes/:routeId/journey_patterns/:journeyPatternId/shapes/:action'}
+        path={'/workbenches/:workbenchId/referentials/:referentialId/lines/:lineId/routes/:routeId/journey_patterns/:journeyPatternId/shapes/:action'}
         render={renderApp}
       />
     </BrowserRouter>

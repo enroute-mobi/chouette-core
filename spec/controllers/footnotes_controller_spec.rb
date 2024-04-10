@@ -12,7 +12,9 @@ RSpec.describe FootnotesController, :type => :controller do
   end
 
   describe "GET edit_all" do
-    let(:request){ get :edit_all, params: { line_id: line.id, referential_id: referential.id }}
+    let(:request) do
+      get :edit_all, params: { line_id: line.id, referential_id: referential.id, workbench_id: workbench.id }
+    end
 
     it 'should respond with 403' do
       expect(request).to have_http_status 403
@@ -33,7 +35,14 @@ RSpec.describe FootnotesController, :type => :controller do
   end
 
   describe "PATCH update_all" do
-    let(:request){ patch :update_all, params: { line_id: line.id, referential_id: referential.id, line: { footnotes_attributes: [{ code: "" }] }}}
+    let(:request) do
+      patch :update_all, params: {
+        line_id: line.id,
+        referential_id: referential.id,
+        workbench_id: workbench.id,
+        line: { footnotes_attributes: [{ code: '' }] }
+      }
+    end
 
     it 'should respond with 403' do
       expect(request).to have_http_status 403
@@ -47,7 +56,14 @@ RSpec.describe FootnotesController, :type => :controller do
       before do
         line.footnotes.create code: 'foo'
       end
-      let(:request){ patch :update_all, params: { line_id: line.id, referential_id: referential.id, line: { footnotes_attributes: [{ id: line.footnotes.last.id, _destroy: '1', code: 'foo', label: 'bar' }] }}}
+      let(:request) do
+        patch :update_all, params: {
+          line_id: line.id,
+          referential_id: referential.id,
+          workbench_id: workbench.id,
+          line: { footnotes_attributes: [{ id: line.footnotes.last.id, _destroy: '1', code: 'foo', label: 'bar' }] }
+        }
+      end
 
       it 'should destroy marked footnotes' do
         expect{ request }.to change { line.footnotes.count }.to 0

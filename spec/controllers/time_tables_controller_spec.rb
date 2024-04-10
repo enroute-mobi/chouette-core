@@ -4,7 +4,13 @@ RSpec.describe TimeTablesController, :type => :controller do
   login_user
 
   describe 'POST create' do
-    let(:request){ post :create, params: { referential_id: referential.id, time_table: time_table_params }}
+    let(:request) do
+      post :create, params: {
+        workbench_id: referential.workbench.id,
+        referential_id: referential.id,
+        time_table: time_table_params
+      }
+    end
     let(:time_table_params){{comment: "test"}}
 
     it "should create a timetable" do

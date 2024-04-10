@@ -12,7 +12,7 @@ class FootnotesController < Chouette::ReferentialController
 
   def update_all
     line.update(line_params)
-    redirect_to referential_line_footnotes_path(@referential, @line)
+    redirect_to workbench_referential_line_footnotes_path(current_workbench, @referential, @line)
   end
 
   protected

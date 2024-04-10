@@ -1,9 +1,9 @@
 import React from 'react'
 import { Async as Select } from 'react-select'
 
-import { getReferentialId, getRouteId } from '../../../../helpers/url_params'
+import { getWorkbenchId, getReferentialId, getRouteId } from '../../../../helpers/url_params'
 
-const path = `/referentials/${getReferentialId()}/autocomplete/time_tables`
+const path = `/workbenches/${getWorkbenchId()}/referentials/${getReferentialId()}/autocomplete/time_tables`
 
 const TTSelect2 = ({ isFilter, onSelect2Timetable, selectedItem }) => (
   <Select

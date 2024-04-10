@@ -40,12 +40,93 @@ ChouetteIhm::Application.routes.draw do # rubocop:disable Metrics/BlockLength
     end
 
     delete :referentials, on: :member, action: :delete_referentials
-    resources :referentials, only: %w[new create index show] do
+    resources :referentials do # rubocop:disable Metrics/BlockLength
+      resources :autocomplete, controller: 'referential_autocomplete', only: [] do
+        defaults format: :json do
+          collection do
+            get :companies
+            get :lines
+            get :journey_patterns
+            get :time_tables
+            get :vehicle_journeys
+          end
+        end
+      end
+
+      member do
+        put :archive
+        put :unarchive
+        get :journey_patterns
+      end
+
+      resources :autocomplete, only: [] do
+        get :line_providers, on: :collection, defaults: { format: 'json' }
+        get :stop_areas, on: :collection, defaults: { format: 'json' }
+        get :parent_stop_areas, on: :collection, defaults: { format: 'json' }
+        get :stop_area_providers, on: :collection, defaults: { format: 'json' }
+      end
+
+      resources :lines, controller: 'referential_lines', only: %i[show] do # rubocop:disable Metrics/BlockLength
+        resources :footnotes do
+          collection do
+            get 'edit_all'
+            patch 'update_all'
+          end
+        end
+
+        resources :routes do # rubocop:disable Metrics/BlockLength
+          member do
+            get 'edit_boarding_alighting'
+            put 'save_boarding_alighting'
+            get 'costs'
+            post 'duplicate', to: 'routes#duplicate'
+            get 'retrieve_nearby_stop_areas'
+            get 'autocomplete_stop_areas'
+          end
+          collection do
+            get 'fetch_opposite_routes'
+            get 'fetch_user_permissions'
+          end
+          resource :journey_patterns, only: %i[show update], controller: :journey_patterns_collections
+          resources :journey_patterns, only: [] do
+            member do
+              get 'available_specific_stop_places'
+              put 'unassociate_shape'
+              put 'duplicate'
+            end
+
+            resource :shapes, except: :index, module: 'journey_pattern' do
+              collection do
+                defaults format: :json do
+                  get :get_user_permissions
+                  put :update_line
+                end
+              end
+            end
+          end
+        end
+        resources :routing_constraint_zones
+      end
+
+      resources :routes, only: [] do
+        resource :vehicle_journeys, only: %i[show update], controller: :route_vehicle_journeys
+      end
+
+      resources :vehicle_journeys, controller: 'referential_vehicle_journeys', only: [:index]
+
+      resources :time_tables do
+        member do
+          post 'actualize'
+          get 'duplicate'
+          get 'month', defaults: { format: :json }
+        end
+      end
+      resources :clean_ups
+
       scope module: 'redirect', only: :show do
         resources :routes
         resources :journey_patterns
         resources :vehicle_journeys
-        resources :time_tables
       end
     end
 
@@ -238,90 +319,6 @@ ChouetteIhm::Application.routes.draw do # rubocop:disable Metrics/BlockLength
     resources :exports, only: %i[index show], controller: :workgroup_exports do
       get :download, on: :member
     end
-  end
-
-  resources :referentials, except: %w[new create index] do # rubocop:disable Metrics/BlockLength
-    resources :autocomplete, controller: 'referential_autocomplete', only: [] do
-      defaults format: :json do
-        collection do
-          get :companies
-          get :lines
-          get :journey_patterns
-          get :time_tables
-          get :vehicle_journeys
-        end
-      end
-    end
-
-    member do
-      put :archive
-      put :unarchive
-      get :journey_patterns
-    end
-
-    resources :autocomplete, only: [] do
-      get :line_providers, on: :collection, defaults: { format: 'json' }
-      get :stop_areas, on: :collection, defaults: { format: 'json' }
-      get :parent_stop_areas, on: :collection, defaults: { format: 'json' }
-      get :stop_area_providers, on: :collection, defaults: { format: 'json' }
-    end
-
-    resources :lines, controller: 'referential_lines', only: %i[show] do # rubocop:disable Metrics/BlockLength
-      resources :footnotes do
-        collection do
-          get 'edit_all'
-          patch 'update_all'
-        end
-      end
-
-      resources :routes do # rubocop:disable Metrics/BlockLength
-        member do
-          get 'edit_boarding_alighting'
-          put 'save_boarding_alighting'
-          get 'costs'
-          post 'duplicate', to: 'routes#duplicate'
-          get 'retrieve_nearby_stop_areas'
-          get 'autocomplete_stop_areas'
-        end
-        collection do
-          get 'fetch_opposite_routes'
-          get 'fetch_user_permissions'
-        end
-        resource :journey_patterns, only: %i[show update], controller: :journey_patterns_collections
-        resources :journey_patterns, only: [] do
-          member do
-            get 'available_specific_stop_places'
-            put 'unassociate_shape'
-            put 'duplicate'
-          end
-
-          resource :shapes, except: :index, module: 'journey_pattern' do
-            collection do
-              defaults format: :json do
-                get :get_user_permissions
-                put :update_line
-              end
-            end
-          end
-        end
-      end
-      resources :routing_constraint_zones
-    end
-
-    resources :routes, only: [] do
-      resource :vehicle_journeys, only: %i[show update], controller: :route_vehicle_journeys
-    end
-
-    resources :vehicle_journeys, controller: 'referential_vehicle_journeys', only: [:index]
-
-    resources :time_tables do
-      member do
-        post 'actualize'
-        get 'duplicate'
-        get 'month', defaults: { format: :json }
-      end
-    end
-    resources :clean_ups
   end
 
   devise_for :users, controllers: {

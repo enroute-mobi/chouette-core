@@ -33,7 +33,7 @@ end
 
 crumb :workbench_output do |workbench|
   link I18n.t('workbench_outputs.show.title'), workbench_output_path(workbench)
-  parent :workbench, mutual_workbench(workbench)
+  parent :workbench, workbench
 end
 
 crumb :workgroup_output do |workgroup|
@@ -284,33 +284,29 @@ crumb :aggregate do |aggregate|
   parent :aggregates, aggregate.workgroup
 end
 
-crumb :referential do |referential|
-  link breadcrumb_name(referential), referential_path(referential)
-  if referential.workbench
-    parent :workbench, mutual_workbench(referential.workbench || referential.workgroup.workbenches.last)
-  else
-    parent :workgroup_output, referential.workgroup
-  end
+crumb :referential do |workbench, referential|
+  link breadcrumb_name(referential), workbench_referential_path(workbench, referential)
+  parent :workbench, workbench
 end
 
-crumb :referentials do |referential|
-  link I18n.t('referentials.index.title'), workbench_path(current_workbench)
-  parent :workbench, mutual_workbench(current_workbench)
+crumb :referentials do |workbench|
+  link I18n.t('referentials.index.title'), workbench_path(workbench)
+  parent :workbench, workbench
 end
 
-crumb :referential_vehicle_journeys do |referential|
-  link I18n.t('referential_vehicle_journeys.index.title'), referential_vehicle_journeys_path(referential)
-  parent :referential, referential
+crumb :referential_vehicle_journeys do |workbench, referential|
+  link I18n.t('referential_vehicle_journeys.index.title'), workbench_referential_vehicle_journeys_path(workbench, referential)
+  parent :referential, workbench, referential
 end
 
-crumb :time_tables do |referential|
-  link I18n.t('time_tables.index.title'), referential_time_tables_path(referential)
-  parent :referential, referential
+crumb :time_tables do |workbench, referential|
+  link I18n.t('time_tables.index.title'), workbench_referential_time_tables_path(workbench, referential)
+  parent :referential, workbench, referential
 end
 
-crumb :time_table do |referential, time_table|
-  link breadcrumb_name(time_table, 'comment'), referential_time_table_path(referential, time_table)
-  parent :time_tables, referential
+crumb :time_table do |workbench, referential, time_table|
+  link breadcrumb_name(time_table, 'comment'), workbench_referential_time_table_path(workbench, referential, time_table)
+  parent :time_tables, workbench, referential
 end
 
 crumb :imports_parent do |imports_parent|
@@ -538,39 +534,39 @@ crumb :calendar do |workgroup, calendar|
   parent :calendars, workgroup
 end
 
-crumb :referential_line do |referential, line|
-  link breadcrumb_name(line), referential_line_path(referential, line)
-  parent :referential, referential
+crumb :referential_line do |workbench, referential, line|
+  link breadcrumb_name(line), workbench_referential_line_path(workbench, referential, line)
+  parent :referential, workbench, referential
 end
 
-crumb :footnotes do |referential, line|
-  link I18n.t('footnotes.index.title'), referential_line_footnotes_path(referential, line)
-  parent :referential_line, referential, line
+crumb :footnotes do |workbench, referential, line|
+  link I18n.t('footnotes.index.title'), workbench_referential_line_footnotes_path(workbench, referential, line)
+  parent :referential_line, workbench, referential, line
 end
 
-crumb :routing_constraint_zones do |referential, line|
-  link I18n.t('routing_constraint_zones.index.title'), referential_line_routing_constraint_zones_path(referential, line)
-  parent :referential_line, referential, line
+crumb :routing_constraint_zones do |workbench, referential, line|
+  link I18n.t('routing_constraint_zones.index.title'), workbench_referential_line_routing_constraint_zones_path(workbench, referential, line)
+  parent :referential_line, workbench, referential, line
 end
 
-crumb :routing_constraint_zone do |referential, line, routing_constraint_zone|
-  link breadcrumb_name(routing_constraint_zone), referential_line_routing_constraint_zone_path(referential, line, routing_constraint_zone)
-  parent :routing_constraint_zones, referential, line
+crumb :routing_constraint_zone do |workbench, referential, line, routing_constraint_zone|
+  link breadcrumb_name(routing_constraint_zone), workbench_referential_line_routing_constraint_zone_path(workbench, referential, line, routing_constraint_zone)
+  parent :routing_constraint_zones, workbench, referential, line
 end
 
-crumb :route do |referential, route|
-  link I18n.t('routes.index.title', route: route.name), referential_line_route_path(referential, route.line, route)
-  parent :referential_line, referential, route.line
+crumb :route do |workbench, referential, route|
+  link I18n.t('routes.index.title', route: route.name), workbench_referential_line_route_path(workbench, referential, route.line, route)
+  parent :referential_line, workbench, referential, route.line
 end
 
-crumb :journey_patterns do |referential, route|
-  link I18n.t('journey_patterns.index.title', route: route.name), referential_line_route_journey_patterns_path(referential, route.line, route)
-  parent :route, referential, route
+crumb :journey_patterns do |workbench, referential, route|
+  link I18n.t('journey_patterns.index.title', route: route.name), workbench_referential_line_route_journey_patterns_path(workbench, referential, route.line, route)
+  parent :route, workbench, referential, route
 end
 
-crumb :vehicle_journeys do |referential, route|
-  link I18n.t('vehicle_journeys.index.title', route: route.name), referential_route_vehicle_journeys_path(referential, route)
-  parent :route, referential, route
+crumb :vehicle_journeys do |workbench, referential, route|
+  link I18n.t('vehicle_journeys.index.title', route: route.name), workbench_referential_route_vehicle_journeys_path(workbench, referential, route)
+  parent :route, workbench, referential, route
 end
 
 crumb :workgroup_aggregation_settings do |workgroup|

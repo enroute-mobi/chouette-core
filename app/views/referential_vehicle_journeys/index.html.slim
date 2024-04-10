@@ -1,4 +1,4 @@
-- breadcrumb :referential_vehicle_journeys, @referential
+- breadcrumb :referential_vehicle_journeys, @workbench, @referential
 - content_for :page_header_title, t('.title')
 
 .page_content
@@ -21,13 +21,13 @@
                 TableBuilderHelper::Column.new( \
                   key: :published_journey_name,
                   attribute: Proc.new {|v| v.published_journey_name.presence||I18n.t('none')},
-                  link_to: lambda { |vehicle_journey| referential_route_vehicle_journeys_path(@referential, vehicle_journey.route) } \
+                  link_to: lambda { |vehicle_journey| workbench_referential_route_vehicle_journeys_path(@workbench, @referential, vehicle_journey.route) } \
                 ),
                 TableBuilderHelper::Column.new( \
                   key: :line, \
                   attribute: Proc.new {|v| v.route.line.name}, \
                   sortable: false,
-                  link_to: lambda { |vehicle_journey| referential_line_path(@referential, vehicle_journey.route.line) } \
+                  link_to: lambda { |vehicle_journey| workbench_referential_line_path(@workbench, @referential, vehicle_journey.route.line) } \
                 ), \
                 TableBuilderHelper::Column.new( \
                   key: :company, \
@@ -38,7 +38,7 @@
                   key: :route,
                   attribute: Proc.new {|v| v.route.name},
                   sortable: false,
-                  link_to: lambda { |vehicle_journey| referential_line_route_path(@referential, vehicle_journey.route.line, vehicle_journey.route) } \
+                  link_to: lambda { |vehicle_journey| workbench_referential_line_route_path(@workbench, @referential, vehicle_journey.route.line, vehicle_journey.route) } \
                 ),
                 TableBuilderHelper::Column.new( \
                   key: :departure_time, \

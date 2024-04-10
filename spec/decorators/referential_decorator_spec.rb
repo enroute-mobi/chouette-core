@@ -5,11 +5,8 @@ RSpec.describe ReferentialDecorator, type: %i[helper decorator] do
   let(:current_workbench) { build_stubbed :workbench }
   let(:referential_workbench) { build_stubbed :workbench }
   let(:current_referential) { build_stubbed :referential, workbench: referential_workbench }
+  let(:context) { { workbench: current_workbench } }
   let(:object) { current_referential }
-
-  before do
-    allow(subject.h).to receive(:duplicate_workbench_referential_path).and_return new_workbench_referential_path(current_workbench, from: object.id)
-  end
 
   describe 'delegation' do
     it 'delegates all' do
@@ -27,7 +24,9 @@ RSpec.describe ReferentialDecorator, type: %i[helper decorator] do
     context 'unarchived referential' do
       context 'no rights' do
         it 'has only show and Calendar actions' do
-          expect_action_link_hrefs.to match_array([[object], referential_time_tables_path(object)])
+          expect_action_link_hrefs.to match_array(
+            [[current_workbench, object], workbench_referential_time_tables_path(context[:workbench], object)]
+          )
         end
       end
 
@@ -37,8 +36,8 @@ RSpec.describe ReferentialDecorator, type: %i[helper decorator] do
         it 'has only default actions' do
           expect_action_link_elements.to match_array %w[Consulter Calendriers Dupliquer]
           expect_action_link_hrefs.to match_array([
-                                                    [object],
-                                                    referential_time_tables_path(object),
+                                                    [current_workbench, object],
+                                                    workbench_referential_time_tables_path(current_workbench, object),
                                                     new_workbench_referential_path(current_workbench,
                                                                                    from: object.id)
                                                   ])
@@ -54,16 +53,22 @@ RSpec.describe ReferentialDecorator, type: %i[helper decorator] do
             expect_action_link_elements(action).to match_array ['Consulter', 'Editer ce jeu de données', 'Calendriers',
                                                                 'Dupliquer', 'Contrôler', 'Archiver', 'Supprimer ce jeu de données']
             expect_action_link_hrefs(action).to match_array([
-                                                              [object],
-                                                              [:edit, object],
-                                                              referential_time_tables_path(object),
+                                                              [current_workbench, object],
+                                                              [:edit, current_workbench, object],
+                                                              workbench_referential_time_tables_path(
+                                                                current_workbench,
+                                                                object
+                                                              ),
                                                               new_workbench_referential_path(current_workbench,
                                                                                              from: object.id),
                                                               new_workbench_control_list_run_path(
                                                                 current_workbench, referential_id: object.id
                                                               ),
-                                                              archive_referential_path(object),
-                                                              [object]
+                                                              archive_workbench_referential_path(
+                                                                current_workbench,
+                                                                object
+                                                              ),
+                                                              [current_workbench, object]
                                                             ])
           end
         end
@@ -74,17 +79,29 @@ RSpec.describe ReferentialDecorator, type: %i[helper decorator] do
             expect_action_link_elements(action).to match_array ['Courses', 'Editer ce jeu de données', 'Calendriers',
                                                                 'Dupliquer', 'Contrôler', 'Archiver', 'Nettoyer', 'Supprimer ce jeu de données']
             expect_action_link_hrefs(action).to match_array([
-                                                              [:edit, object],
-                                                              referential_vehicle_journeys_path(object),
-                                                              referential_time_tables_path(object),
+                                                              [:edit, current_workbench, object],
+                                                              workbench_referential_vehicle_journeys_path(
+                                                                current_workbench,
+                                                                object
+                                                              ),
+                                                              workbench_referential_time_tables_path(
+                                                                current_workbench,
+                                                                object
+                                                              ),
                                                               new_workbench_referential_path(current_workbench,
                                                                                              from: object.id),
                                                               new_workbench_control_list_run_path(
                                                                 current_workbench, referential_id: object.id
                                                               ),
-                                                              archive_referential_path(object),
-                                                              new_referential_clean_up_path(object),
-                                                              [object]
+                                                              archive_workbench_referential_path(
+                                                                current_workbench,
+                                                                object
+                                                              ),
+                                                              new_workbench_referential_clean_up_path(
+                                                                current_workbench,
+                                                                object
+                                                              ),
+                                                              [current_workbench, object]
                                                             ])
           end
         end
@@ -100,8 +117,8 @@ RSpec.describe ReferentialDecorator, type: %i[helper decorator] do
                 'Consulter', 'Supprimer ce jeu de données'
               ]
               expect_action_link_hrefs(action).to match_array([
-                                                                [object],
-                                                                [object]
+                                                                [current_workbench, object],
+                                                                [current_workbench, object]
                                                               ])
             end
           end
@@ -113,7 +130,7 @@ RSpec.describe ReferentialDecorator, type: %i[helper decorator] do
                 'Supprimer ce jeu de données'
               ]
               expect_action_link_hrefs(action).to eq([
-                                                       [object]
+                                                       [current_workbench, object]
                                                      ])
             end
           end
@@ -128,7 +145,9 @@ RSpec.describe ReferentialDecorator, type: %i[helper decorator] do
       end
       context 'no rights' do
         it 'has only show and calendar actions' do
-          expect_action_link_hrefs.to match_array([[object], referential_time_tables_path(object)])
+          expect_action_link_hrefs.to match_array(
+            [[current_workbench, object], workbench_referential_time_tables_path(current_workbench, object)]
+          )
         end
       end
 
@@ -137,8 +156,8 @@ RSpec.describe ReferentialDecorator, type: %i[helper decorator] do
         it 'has only default actions' do
           expect_action_link_elements.to match_array %w[Consulter Calendriers Dupliquer]
           expect_action_link_hrefs.to match_array([
-                                                    [object],
-                                                    referential_time_tables_path(object),
+                                                    [current_workbench, object],
+                                                    workbench_referential_time_tables_path(current_workbench, object),
                                                     new_workbench_referential_path(current_workbench,
                                                                                    from: object.id)
                                                   ])
@@ -153,12 +172,18 @@ RSpec.describe ReferentialDecorator, type: %i[helper decorator] do
           expect_action_link_elements.to match_array ['Consulter', 'Calendriers', 'Dupliquer', 'Désarchiver',
                                                       'Supprimer ce jeu de données']
           expect_action_link_hrefs.to match_array([
-                                                    [object],
-                                                    referential_time_tables_path(object),
+                                                    [current_workbench, object],
+                                                    workbench_referential_time_tables_path(
+                                                      current_workbench,
+                                                      object
+                                                    ),
                                                     new_workbench_referential_path(current_workbench,
                                                                                    from: object.id),
-                                                    unarchive_referential_path(object),
-                                                    [object]
+                                                    unarchive_workbench_referential_path(
+                                                      current_workbench,
+                                                      object
+                                                    ),
+                                                    [current_workbench, object]
                                                   ])
         end
       end
@@ -172,7 +197,9 @@ RSpec.describe ReferentialDecorator, type: %i[helper decorator] do
       end
       context 'no rights' do
         it 'has only show and calendar actions' do
-          expect_action_link_hrefs.to match_array([[object], referential_time_tables_path(object)])
+          expect_action_link_hrefs.to match_array(
+            [[current_workbench, object], workbench_referential_time_tables_path(current_workbench, object)]
+          )
         end
       end
 
@@ -181,8 +208,8 @@ RSpec.describe ReferentialDecorator, type: %i[helper decorator] do
         it 'has only default actions' do
           expect_action_link_elements.to match_array %w[Consulter Calendriers]
           expect_action_link_hrefs.to match_array([
-                                                    [object],
-                                                    referential_time_tables_path(object)
+                                                    [current_workbench, object],
+                                                    workbench_referential_time_tables_path(current_workbench, object)
                                                   ])
         end
       end
@@ -194,8 +221,8 @@ RSpec.describe ReferentialDecorator, type: %i[helper decorator] do
         it 'has only default actions' do
           expect_action_link_elements.to match_array %w[Consulter Calendriers Contrôler]
           expect_action_link_hrefs.to match_array([
-                                                    [object],
-                                                    referential_time_tables_path(object),
+                                                    [current_workbench, object],
+                                                    workbench_referential_time_tables_path(current_workbench, object),
                                                     new_workbench_control_list_run_path(current_workbench,
                                                                                         referential_id: object.id)
                                                   ])

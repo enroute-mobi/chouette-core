@@ -18,18 +18,18 @@
         as: :ajax_select,
         collection: @search.selected_from_stop_area_collection,
         label_method: :display_name,
-        input_html: { 'data-url': stop_areas_referential_autocomplete_index_url(current_referential) },
+        input_html: { 'data-url': stop_areas_workbench_referential_autocomplete_index_url(@workbench, current_referential) },
         wrapper_html: {class: "w-1/3"}
       = f.input :to_stop_area_id, placeholder: I18n.t('simple_form.placeholders.search.stop_area_id'),
         as: :ajax_select,
         collection: @search.selected_to_stop_area_collection,
         label_method: :display_name,
-        input_html: { 'data-url': stop_areas_referential_autocomplete_index_url(current_referential) },
+        input_html: { 'data-url': stop_areas_workbench_referential_autocomplete_index_url(@workbench, current_referential) },
         wrapper_html: {class: "w-1/3"}
 
   .flex.flex-col.justify-center.items-center.actions.ml-auto.py-3.w-80
     .flex.items-center.mb-3
       = render partial: 'shared/per_page', locals: {f:f}
     .flex.items-center
-      = link_to t('actions.erase'), [@parent, :vehicle_journeys], class: 'btn btn-link'
+      = link_to t('actions.erase'), [@workbench, @parent, :vehicle_journeys], class: 'btn btn-link'
       = f.submit t('actions.filter'), class: 'btn btn-default'

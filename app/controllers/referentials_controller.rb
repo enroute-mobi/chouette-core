@@ -45,12 +45,13 @@ class ReferentialsController < Chouette::ResourceController
   def show
     resource.switch if resource.ready?
     show! do |format|
-      @referential = @referential.decorate()
+      @referential = @referential.decorate(context: { workbench: @workbench })
       @reflines = lines_collection.paginate(page: params[:page], per_page: 10)
       @reflines = ReferentialLineDecorator.decorate(
         @reflines,
         context: {
           referential: referential,
+          workbench: @workbench,
           current_organisation: current_organisation
         }
       )
@@ -103,7 +104,7 @@ class ReferentialsController < Chouette::ResourceController
   def journey_patterns
     referential.switch
     jp = Chouette::JourneyPattern.find(params[:journey_pattern_id])
-    redirect_to referential_line_route_journey_patterns_path(referential, jp.route.line, jp.route)
+    redirect_to workbench_referential_line_route_journey_patterns_path(current_workbench, referential, jp.route.line, jp.route)
   end
 
   def policy_context_class
@@ -229,11 +230,7 @@ class ReferentialsController < Chouette::ResourceController
   end
 
   def load_workbench
-    @workbench ||= if params[:workbench_id] # rubocop:disable Naming/MemoizedInstanceVariableName
-                     current_organisation.workbenches.find(params[:workbench_id])
-                   elsif params[:id]
-                     resource.workgroup.workbenches.find_by!(organisation: current_organisation)
-                   end
+    @workbench ||= current_organisation.workbenches.find(params[:workbench_id])
   end
 
   alias parent load_workbench

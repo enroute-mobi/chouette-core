@@ -1,4 +1,4 @@
-- breadcrumb :routing_constraint_zones, @referential, @line
+- breadcrumb :routing_constraint_zones, @workbench, @referential, @line
 
 .page_content
   .container-fluid
@@ -21,7 +21,8 @@
                 key: :name, \
                 attribute: 'name', \
                 link_to: lambda do |routing_constraint_zone| \
-                  referential_line_routing_constraint_zone_path( \
+                  workbench_referential_line_routing_constraint_zone_path( \
+                    @workbench, \
                     @referential, \
                     @line, \
                     routing_constraint_zone \

@@ -17,7 +17,7 @@ export default class TimetablesEditVehicleJourney extends Component {
   }
 
   timeTableURL(tt) {
-    let refURL = window.location.pathname.split('/', 3).join('/')
+    let refURL = window.location.pathname.split('/', 5).join('/')
     return refURL + '/time_tables/' + tt.id
   }
 

@@ -144,6 +144,7 @@ RSpec.describe AutocompleteController, type: :controller do
 
       it "returns the complete list when the search parameter is not found" do
         get :line_providers, params: {
+          workbench_id: workbench.id,
           referential_id: referential.id
         }
         expect(assigns(:line_providers)).to match_array referential.line_providers
@@ -152,6 +153,7 @@ RSpec.describe AutocompleteController, type: :controller do
 
       it "returns a line_provider when the short name contains the search parameter" do
         get :line_providers, params: {
+          workbench_id: workbench.id,
           referential_id: referential.id,
           q: 'LP1'
         }
@@ -248,6 +250,7 @@ RSpec.describe AutocompleteController, type: :controller do
 
       it "returns the complete list when the search parameter is not found" do
         get :stop_areas, params: {
+          workbench_id: workbench.id,
           referential_id: referential.id
         }
         expect(assigns(:stop_areas)).to match_array [stop_area]
@@ -256,6 +259,7 @@ RSpec.describe AutocompleteController, type: :controller do
 
       it "returns a stop_area when the name contains the search parameter" do
         get :stop_areas, params: {
+          workbench_id: workbench.id,
           referential_id: referential.id,
           q: 'Stop Area 1'
         }
@@ -265,6 +269,7 @@ RSpec.describe AutocompleteController, type: :controller do
 
       it "returns a stop_area when the objectid contains the search parameter" do
         get :stop_areas, params: {
+          workbench_id: workbench.id,
           referential_id: referential.id,
           q: stop_area.get_objectid.short_id
         }
@@ -293,6 +298,7 @@ RSpec.describe AutocompleteController, type: :controller do
     context "for a workbench" do
       it "returns the complete list when the search parameter is not found" do
         get :stop_area_providers, params: {
+          workbench_id: workbench.id,
           workbench_id: workbench.id
         }
         expect(assigns(:stop_area_providers)).to match_array workbench.stop_area_providers
@@ -302,6 +308,7 @@ RSpec.describe AutocompleteController, type: :controller do
       it "returns a stop_area_provider when the name contains the search parameter" do
         get :stop_area_providers, params: {
           workbench_id: workbench.id,
+          workbench_id: workbench.id,
           q: 'Stop Area Provider 1'
         }
         expect(assigns(:stop_area_providers).to_a).to eq [stop_area_provider]
@@ -310,6 +317,7 @@ RSpec.describe AutocompleteController, type: :controller do
 
       it "returns a stop_area_provider when the objectid contains the search parameter" do
         get :stop_area_providers, params: {
+          workbench_id: workbench.id,
           workbench_id: workbench.id,
           q: stop_area_provider.get_objectid.short_id
         }
@@ -323,6 +331,7 @@ RSpec.describe AutocompleteController, type: :controller do
 
       it "returns the complete list when the search parameter is not found" do
         get :stop_area_providers, params: {
+          workbench_id: workbench.id,
           referential_id: referential.id
         }
         expect(assigns(:stop_area_providers)).to match_array referential.stop_area_providers
@@ -331,6 +340,7 @@ RSpec.describe AutocompleteController, type: :controller do
 
       it "returns a stop_area_provider when the name contains the search parameter" do
         get :stop_area_providers, params: {
+          workbench_id: workbench.id,
           referential_id: referential.id,
           q: 'Stop Area Provider 1'
         }
@@ -340,6 +350,7 @@ RSpec.describe AutocompleteController, type: :controller do
 
       it "returns a stop_area_provider when the objectid contains the search parameter" do
         get :stop_area_providers, params: {
+          workbench_id: workbench.id,
           referential_id: referential.id,
           q: stop_area_provider.get_objectid.short_id
         }

@@ -142,6 +142,11 @@ class Export::Gtfs < Export::Base
     @index ||= Index.new
   end
 
+  # For the moment, the GTFS Export doesn't support 'no' code space
+  def code_space
+    @code_space ||= super || workgroup.code_spaces.default
+  end
+
   def code_spaces
     @code_spaces ||= CodeSpaces.new code_space, scope: export_scope
   end

@@ -32,6 +32,10 @@ module CodeSupport
         yield model if block_given?
       end
     end
+
+    def self.code_table
+      'public.codes'
+    end
   end
 
   def validate_codes

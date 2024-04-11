@@ -21,51 +21,123 @@ RSpec.describe Export::CodeProvider do
     end
   end
 
-  describe '#stop_areas' do
-    subject { code_provider.stop_areas }
-
-    before { allow(export_scope).to receive(:stop_areas).and_return(Chouette::StopArea.none) }
-
-    it { is_expected.to have_attributes(model_class: Chouette::StopArea) }
-    it { is_expected.to have_attributes(collection: export_scope.stop_areas) }
-  end
-
-  describe '#lines' do
-    subject { code_provider.lines }
-
-    before { allow(export_scope).to receive(:lines).and_return(Chouette::Line.none) }
-
-    it { is_expected.to have_attributes(model_class: Chouette::Line) }
-    it { is_expected.to have_attributes(collection: export_scope.lines) }
-  end
-
-  describe Export::CodeProvider::Model do
+  describe Export::CodeProvider::Indexer do
     context 'when model class is Chouette::StopArea' do
-      subject(:model_code_provider) do
-        Export::CodeProvider::Model.new(
-          Chouette::StopArea.none
-        )
-      end
+      subject(:model_code_provider) { described_class.new Chouette::StopArea.none }
 
-      describe '#attribute' do
-        subject { model_code_provider.attribute }
+      describe '#default_attribute' do
+        subject { model_code_provider.default_attribute }
 
         it { is_expected.to eq('objectid') }
       end
 
-      # TODO
+      describe '#index' do
+        describe 'with a dedicated CodeSpace' do
+          subject { described_class.new(context.stop_area_referential.stop_areas, code_space: code_space).index }
+
+          let(:context) do
+            Chouette.create do
+              code_space short_name: 'test'
+              code_space :other, short_name: 'other'
+
+              stop_area :first, codes: { test: 'first' }
+              stop_area :second, codes: { test: 'second', other: 'second' }
+              stop_area :third, objectid: 'third_objectid::LOC', codes: { other: 'value' }
+              stop_area :last, objectid: 'last_objectid::LOC', codes: { test: 'first' }
+            end
+          end
+
+          let(:code_space) { context.code_space }
+          let(:first) { context.stop_area(:first) }
+          let(:second) { context.stop_area(:second) }
+          let(:third) { context.stop_area(:third) }
+          let(:last) { context.stop_area(:last) }
+
+          it do
+            expected_codes = {
+              first.id => 'first',
+              second.id => 'second',
+              third.id => 'third_objectid::LOC',
+              last.id => 'last_objectid::LOC'
+            }
+
+            is_expected.to eq expected_codes
+          end
+        end
+
+        describe 'with registration number' do
+          subject { described_class.new(context.stop_area_referential.stop_areas, code_space: context.workgroup.code_spaces.default).index }
+
+          let(:context) do
+            Chouette.create do
+              stop_area :first, registration_number: 'first'
+              stop_area :second, registration_number: 'second'
+              stop_area :third, objectid: 'third_objectid::LOC', registration_number: nil
+              # stop_area :last, objectid: 'last_objectid::LOC', registration_number: 'first'
+            end
+          end
+
+          let(:code_space) { context.code_space }
+          let(:first) { context.stop_area(:first) }
+          let(:second) { context.stop_area(:second) }
+          let(:third) { context.stop_area(:third) }
+          # let(:last) { context.stop_area(:last) }
+
+          it do
+            expected_codes = {
+              first.id => 'first',
+              second.id => 'second',
+              third.id => 'third_objectid::LOC',
+              # last.id => 'last_objectid::LOC'
+            }
+
+            is_expected.to eq expected_codes
+          end
+        end
+      end
     end
 
     context 'when model class is PointOfInterest' do
-      # TODO
+      subject(:model_code_provider) { described_class.new PointOfInterest::Base.none }
 
-      describe '#attribute' do
-        # TODO
+      describe '#default_attribute' do
+        subject { model_code_provider.default_attribute }
 
-        xit { is_expected.to eq('uuid') }
+        it { is_expected.to eq('uuid') }
       end
 
-      # TODO
+      describe '#index' do
+        subject { described_class.new(context.shape_referential.point_of_interests, code_space: code_space).index }
+
+        let(:context) do
+          Chouette.create do
+            code_space short_name: 'test'
+            code_space :other, short_name: 'other'
+
+            point_of_interest :first, codes: { test: 'first' }
+            point_of_interest :second, codes: { test: 'second', other: 'second' }
+            point_of_interest :third, uuid: '91a8cf58-21f5-405b-868b-15ef92954c47', codes: { other: 'value' }
+            point_of_interest :last, uuid: 'a82a120d-128c-4085-8595-fc81118c3cca', codes: { test: 'first' }
+          end
+        end
+
+        let(:code_space) { context.code_space }
+        let(:first) { context.point_of_interest(:first) }
+        let(:second) { context.point_of_interest(:second) }
+        let(:third) { context.point_of_interest(:third) }
+        let(:last) { context.point_of_interest(:last) }
+
+        it do
+          expected_codes = {
+            first.id => 'first',
+            second.id => 'second',
+            third.id => '91a8cf58-21f5-405b-868b-15ef92954c47',
+            last.id => 'a82a120d-128c-4085-8595-fc81118c3cca'
+          }
+
+          is_expected.to eq(expected_codes)
+        end
+      end
     end
   end
 

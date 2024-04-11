@@ -307,9 +307,17 @@ module Chouette
 
               model :point_of_interest do
                 attribute(:name) { |n| "Point of interest #{n}" }
+
+                transient :codes, {}
+
                 after do
                   new_instance.shape_referential = parent.shape_referential
                   new_instance.shape_provider = parent.shape_provider
+
+                  transient(:codes).each do |code_space_short_name, value|
+                    code_space = parent.shape_referential.workgroup.code_spaces.find_by!(short_name: code_space_short_name)
+                    new_instance.codes.build(code_space: code_space, value: value)
+                  end
                 end
                 model :point_of_interest_hours do
                   attribute(:opening_time_of_day) { TimeOfDay.new(14) }

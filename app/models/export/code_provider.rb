@@ -31,11 +31,13 @@ module Export
 
     COLLECTIONS.each do |collection|
       define_method collection do
-        if index = instance_variable_get("@#{collection}")
-          return index
+        if model = instance_variable_get("@#{collection}")
+          return model
         end
 
-        instance_variable_set("@#{collection}", Model.new(export_scope.send(collection)).index)
+        scope_collection = export_scope.send(collection)
+        model = Model.new.index(Indexer.new(scope_collection, code_space: code_space))
+        instance_variable_set("@#{collection}", model)
       end
     end
 
@@ -48,82 +50,90 @@ module Export
       end
     end
 
-    class Model
-      def initialize(collection, code_space = nil)
+    class Indexer
+      def initialize(collection, code_space: nil)
         @collection = collection
         @code_space = code_space
-
-        @codes = {}
       end
 
       attr_reader :collection, :code_space
 
-      def index
-        @codes = Index.new(collection, code_space).codes
-
-        self
+      def model_class
+        @model_class ||= collection.model
       end
 
-      class Index
-        def initialize(collection, code_space = nil)
-          @collection = collection
-          @code_space = code_space
+      delegate :code_table, to: :model_class
+
+      ATTRIBUTES = %w[objectid uuid].freeze
+      def default_attribute
+        (ATTRIBUTES & model_class.column_names).first
+      end
+
+      def index
+        if code_space && model_with_codes?
+          index_with_codes
+        else
+          index_without_codes
         end
+      end
 
-        attr_reader :collection, :code_space
+      def index_without_codes
+        collection.pluck(:id, default_attribute).to_h
+      end
 
-        def model_class
-          @model_class ||= collection.model
+      def query_with_code
+        <<~SQL
+          select id_with_default_attribute.id, COALESCE(code, default_attribute) as code
+          from (#{collection.select(:id, "#{model_class.table_name}.#{default_attribute}::varchar as default_attribute").to_sql}) id_with_default_attribute
+          left join (
+            select distinct on (code) id, code from (#{code_query.to_sql}) id_with_code
+          ) id_with_uniq_code
+          on (id_with_uniq_code.id = id_with_default_attribute.id)
+        SQL
+      end
+
+      def index_with_codes
+        model_class.connection.select_rows(query_with_code).to_h
+      end
+
+      def with_code_query
+        collection.left_joins(:codes).where(code_table => { code_space_id: code_space.id }).select(:id, "#{code_table}.value as code")
+      end
+
+      def with_registration_number_query
+        collection.select(:id, "registration_number as code")
+      end
+
+      def code_query
+        unless default_code_space? && model_with_registration_number?
+          with_code_query
+        else
+          with_registration_number_query
         end
-  
-        ATTRIBUTES = %w[objectid uuid].freeze
-        def attribute
-          (ATTRIBUTES & model_class.column_names).first
-        end
-  
-        def codes
-          return indexes_with_codes if support_codes?
+      end
 
-          indexes_without_codes
-        end
+      def model_with_codes?
+        collection.reflect_on_association(:codes).present?
+      end
 
-        def time_table
-          @time_table ||= collection.model_name.collection
-        end
+      def model_with_registration_number?
+        model_class.column_names.include?("registration_number")
+      end
 
-        def indexes_without_codes
-          collection.pluck(:id, attribute).to_h
-        end
+      def default_code_space?
+        code_space&.default?
+      end
+    end
 
-        def indexes_with_codes
-          @indexes_with_codes = {}
+    class Model
+      def initialize
+        @codes = {}
+      end
 
-          collection
-            .left_joins(:codes)
-            .select(*select)
-            .each { |model| fetch_code(model, @indexes_with_codes) }
+      def index(indexer)
+        @codes = indexer.index
 
-          @indexes_with_codes
-        end
-
-        def fetch_code(model, indexes)
-          if model.count <= 1 && model.code_value && model.code_space_id == code_space.id
-            indexes[model.id] = model.code_value
-          elsif indexes[model.id].blank?
-            indexes[model.id] = model.send(attribute)
-          end
-        end
-
-        def select
-          [
-            :id, attribute, "COUNT(#{time_table}.id) OVER (PARTITION BY codes.code_space_id, #{time_table}.id)",
-            :stop_area_referential_id, 'codes.code_space_id AS code_space_id', 'codes.value AS code_value'
-          ]
-        end
-
-        def support_codes?
-          code_space.present? && collection.reflect_on_association(:codes).present?
-        end
+        self
       end
 
       def register(model_id, as: value)

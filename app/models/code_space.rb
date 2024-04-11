@@ -15,4 +15,8 @@ class CodeSpace < ActiveRecord::Base
     name || short_name
   end
 
+  def default?
+    short_name == DEFAULT_SHORT_NAME
+  end
+
 end

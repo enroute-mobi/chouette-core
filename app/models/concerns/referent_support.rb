@@ -8,6 +8,7 @@ module ReferentSupport
     scope :referents, -> { where is_referent: true }
     scope :particulars, -> { where.not is_referent: true }
     scope :with_referent, -> { where.not referent: nil }
+    scope :without_referent, -> { where referent: nil }
 
     has_many :particulars, class_name: name, foreign_key: 'referent_id'
 

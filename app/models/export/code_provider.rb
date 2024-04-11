@@ -136,8 +136,8 @@ module Export
         self
       end
 
-      def register(model_id, as: value)
-        @codes[model_id] = value
+      def register(model_id, as:)
+        @codes[model_id] = as if as
       end
 
       def code(model_id)
@@ -146,6 +146,10 @@ module Export
 
       def codes(model_ids)
         model_ids.map { |model_id| code(model_id) }.compact
+      end
+
+      def alias(model_id, as:)
+        register model_id, as: code(as)
       end
     end
 

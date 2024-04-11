@@ -7,7 +7,7 @@
       - if @export.type != "Export::Netex"
         = d.attribute :exported_lines, value_method: :display_selected_lines_to_export
         = d.attribute :participant_ref
-        = d.attribute :profile_options
+        = d.attribute :profile_options, value_method: :display_profile_options
       = d.attribute :exported_code_space, value_method: :display_code_space
       = d.attribute :period, value_method: :display_period
       - if @export.type == "Export::NetexGeneric"

@@ -90,6 +90,7 @@ class ExportsController < Chouette::WorkbenchController
       export_params[:workbench_id] = workbench.id
       export_params[:creator] = current_user.name
       export_params[:user_id] = current_user.id
+      export_params[:options][:profile_options] = export_params[:options][:profile_options].to_json
     end
   end
 

@@ -14,7 +14,7 @@
       .range x-show="sequence_type == 'range_sequence'"
         = f.input :range_start, input_html: { "x-bind:disabled" => "sequence_type != 'range_sequence'" }
         = f.input :range_end, input_html: { "x-bind:disabled" => "sequence_type != 'range_sequence'" }
-      = f.input :static_list, as: :editable_select, wrapper: :horizontal_input_editable_select_tailwind, wrapper_html: { 'x-show': "sequence_type == 'static_list'" }, input_html: { multiple: true }
+      = f.input :static_list, as: :editable_select, collection: @sequence.static_list, include_blank: false, selected: @sequence.static_list, wrapper: :horizontal_input_editable_select_tailwind, wrapper_html: { 'x-show': "sequence_type == 'static_list'" }, input_html: { multiple: true }
 
   = cancel_button
   = f.button :submit, t('actions.submit'), class: 'btn btn-default formSubmitr', form: 'sequence_form'

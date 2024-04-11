@@ -69,7 +69,6 @@ class SourcesController < Chouette::WorkbenchController
       :import_option_automatic_merge,
       :import_option_archive_on_fail,
       :import_option_update_workgroup_providers,
-      :import_option_process_gtfs_route_ids,
       :import_option_store_xml,
       :import_option_disable_missing_resources,
       :import_option_strict_mode,
@@ -81,7 +80,8 @@ class SourcesController < Chouette::WorkbenchController
       :downloader_option_raw_authorization,
       :retrieval_time_of_day,
       :retrieval_frequency,
-      retrieval_days_of_week_attributes: [:monday, :tuesday, :wednesday, :thursday, :friday, :saturday, :sunday]
+      retrieval_days_of_week_attributes: [:monday, :tuesday, :wednesday, :thursday, :friday, :saturday, :sunday],
+      import_option_process_gtfs_route_ids: []
     ).with_defaults(workbench_id: workbench.id)
   end
 end

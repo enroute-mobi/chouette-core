@@ -15,6 +15,11 @@ class Sequence < ApplicationModel
     "#{range_start}-#{range_end}"
   end
 
+  # Force empty value deletion sends by select input
+  def static_list=(static_list)
+    @static_list = static_list.reject(&:blank?)
+  end
+
   def values(offset: 1, limit: 1000)
     values = []
     if sequence_type.range_sequence?
@@ -32,7 +37,6 @@ class Sequence < ApplicationModel
 
   def range_start_less_than_range_end
     return unless range_start && range_end
-
     return unless range_start >= range_end
 
     errors.add(:range_end, :range_start_less_than_range_end)

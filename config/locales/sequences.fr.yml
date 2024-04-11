@@ -2,6 +2,7 @@ fr:
   sequences:
     index:
       title: Séquences
+      static_list_values: valeurs
     show:
       title: "%{name}"
     new:

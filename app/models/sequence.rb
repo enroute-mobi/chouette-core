@@ -16,13 +16,18 @@ class Sequence < ApplicationModel
   end
 
   def values(offset: 1, limit: 1000)
-    return unless range_start && range_end
-
-    value_start = range_start + (offset - 1) * limit
-    value_end = value_start + limit - 1
-    value_end = range_end if value_end > range_end
-
-    (value_start..value_end).to_a
+    values = []
+    if sequence_type.range_sequence?
+      return [] unless range_start && range_end
+      value_start = offset
+      value_end = value_start + limit
+      value_end = range_end if value_end > range_end
+      values = (value_start..value_end).to_a
+    else
+      return [] if static_list.blank?
+      values = static_list.sort.slice(offset, limit + offset) || []
+    end
+    values
   end
 
   def range_start_less_than_range_end

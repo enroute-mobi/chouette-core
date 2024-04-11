@@ -10,7 +10,7 @@
     .col-lg-12 x-data="{ sequence_type: '#{@sequence.sequence_type}'}"
       = f.input :name
       = f.input :description
-      = f.input :sequence_type, include_blank: false, input_html: { 'x-on:change': 'sequence_type = $event.target.value' }
+      = f.input :sequence_type, include_blank: false, input_html: { 'x-on:change': 'sequence_type = $event.target.value' }, disabled: @sequence.persisted?
       .range x-show="sequence_type == 'range_sequence'"
         = f.input :range_start, input_html: { "x-bind:disabled" => "sequence_type != 'range_sequence'" }
         = f.input :range_end, input_html: { "x-bind:disabled" => "sequence_type != 'range_sequence'" }

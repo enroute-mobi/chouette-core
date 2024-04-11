@@ -6,12 +6,17 @@
       = d.attribute :referential, value: (@export.referential.present? ? link_to(@export.referential.name, [@export.referential]) : "-")
       - if @export.type != "Export::Netex"
         = d.attribute :exported_lines, value_method: :display_selected_lines_to_export
+<<<<<<< HEAD
         = d.attribute :participant_ref
         = d.attribute :profile_options, value_method: :display_profile_options
       = d.attribute :exported_code_space, value_method: :display_code_space
+=======
+>>>>>>> cc8f3d715 (CHOUETTE-3603 fix specs)
       = d.attribute :period, value_method: :display_period
       - if @export.type == "Export::NetexGeneric"
         = d.attribute :profile, value_method: :display_profile
+        = d.attribute :participant_ref
+        = d.attribute :profile_options, value_method: :display_profile_options
       - if @export.type == "Export::Gtfs"
         = d.attribute :prefer_referent_stop_area, as: :boolean
         = d.attribute :prefer_referent_company, as: :boolean

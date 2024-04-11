@@ -13,6 +13,7 @@ class Export::NetexGeneric < Export::Base
   option :participant_ref
   option :profile_options, default_value: {}
   option :prefer_referent_line, default_value: false, enumerize: [true, false], serialize: ActiveModel::Type::Boolean
+  option :exported_code_space
 
   validate :ensure_is_valid_period
 

@@ -93,7 +93,7 @@ RSpec.describe Export::Ara do
     subject(:scope) { Export::Ara::DailyScope.new(export, day) }
     let(:day) { Date.current }
     let(:original_scope) { double }
-    let(:export) { double export_scope: original_scope }
+    let(:export) { double build_export_scope: original_scope }
 
     describe '#stop_areas' do
       subject { scope.stop_areas }

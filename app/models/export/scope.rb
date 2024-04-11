@@ -53,10 +53,12 @@ module Export::Scope
 
   class Options
     attr_reader :referential
-    attr_accessor :duration, :date_range, :line_ids, :line_provider_ids, :company_ids, :export_id
+    attr_accessor :duration, :date_range, :line_ids, :line_provider_ids, :company_ids, :export_id, :stateful
 
     def initialize(referential, attributes = {})
       @referential = referential
+
+      @stateful = true
       attributes.each { |k, v| send "#{k}=", v }
     end
 
@@ -77,7 +79,11 @@ module Export::Scope
         builder.lines(line_ids) if line_ids
         builder.period(date_range) if date_range
         builder.scheduled
-        builder.stateful(export_id)
+        if stateful
+          builder.stateful(export_id)
+        else
+          Rails.logger.debug "Disable stateful scope"
+        end
       end
     end
 
@@ -146,6 +152,10 @@ module Export::Scope
 
     def vehicle_journeys
       @vehicle_journeys ||= current_scope.vehicle_journeys
+    end
+
+    def inspect
+      "#<#{self.class}:#{object_id} @current_scope=#{current_scope.inspect}>"
     end
   end
 

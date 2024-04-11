@@ -125,8 +125,16 @@ class Export::Base < ApplicationModel
     @public_code_space ||= workgroup.code_spaces.public if workgroup
   end
 
+  def export_scope_options
+    { date_range: date_range, line_ids: line_ids, export_id: id }
+  end
+
+  def build_export_scope
+    Export::Scope.build(referential, export_scope_options)
+  end
+
   def export_scope
-    @export_scope ||= Export::Scope.build(referential, date_range: date_range, line_ids: line_ids, export_id: id)
+    @export_scope ||= build_export_scope
   end
   attr_writer :export_scope
 

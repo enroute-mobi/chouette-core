@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 RSpec.describe User, :type => :model do
   # it { should validate_uniqueness_of :email }
   # it { should validate_presence_of :name }
@@ -146,4 +148,32 @@ RSpec.describe User, :type => :model do
     }
   end
 
+  describe '#must_sign_in_with_saml?' do
+    subject { user.must_sign_in_with_saml? }
+
+    let(:enable_internal_password_authentication) { false }
+    let(:user) { build :user, enable_internal_password_authentication: enable_internal_password_authentication }
+
+    it { is_expected.to be_falsy }
+
+    context 'when user organisation has a SAML authentication' do
+      before do
+        Authentication::Saml.create!(
+          organisation: user.organisation,
+          name: 'SAML',
+          subtype: 'google',
+          saml_idp_entity_id: 'http://idp.saml.ex/metadata',
+          saml_idp_sso_service_url: 'http://idp.saml.ex/sign_in',
+          saml_idp_cert: 'some_certificate'
+        )
+      end
+
+      it { is_expected.to be_truthy }
+
+      context 'when user is allow to authenticate with password' do
+        let(:enable_internal_password_authentication) { true }
+        it { is_expected.to be_falsy }
+      end
+    end
+  end
 end

@@ -66,6 +66,7 @@ fr:
         invitation_sent_at: Invitation envoyée le
         user_locale: Langue
         time_zone: Fuseau Horaire
+        enable_internal_password_authentication: "Autoriser l'authentification par mot de passe"
     errors:
       models:
         calendar:

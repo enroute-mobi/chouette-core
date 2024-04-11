@@ -1,7 +1,9 @@
-# coding: utf-8
+# frozen_string_literal: true
+
 class Organisation < ApplicationModel
   include DataFormatEnumerations
 
+  has_one :authentication, class_name: 'Authentication::Base', dependent: :destroy
   has_many :users, dependent: :destroy
   has_many :referentials, dependent: :destroy
 
@@ -27,6 +29,8 @@ class Organisation < ApplicationModel
 
   validates_presence_of :name
   validates_uniqueness_of :code
+
+  accepts_nested_attributes_for :authentication, allow_destroy: true, update_only: true
 
   def find_referential(referential_id)
     organisation_referential = referentials.find_by id: referential_id

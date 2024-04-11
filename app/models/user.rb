@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class User < ApplicationModel
   extend Enumerize
   # Include default devise modules. Others available are:
@@ -16,7 +18,7 @@ class User < ApplicationModel
   end
 
   devise :invitable, :registerable, :validatable, :lockable, :timeoutable,
-         :recoverable, :rememberable, :trackable, authentication_type, *more_devise_modules
+         :recoverable, :rememberable, :trackable, :saml_authenticatable, authentication_type, *more_devise_modules
 
   if Subscription.enabled?
     self.allow_unconfirmed_access_for = 1.day
@@ -40,6 +42,7 @@ class User < ApplicationModel
   validates :organisation, presence: true
   validates :email, presence: true, uniqueness: true
   validates :name, presence: true
+  validates :enable_internal_password_authentication, inclusion: { in: [true, false] }
 
   enumerize :user_locale, in: %w(fr en), default: 'fr'
 
@@ -186,4 +189,7 @@ class User < ApplicationModel
     UserMailer.invitation_from_user(self, from_user).deliver_now
   end
 
+  def must_sign_in_with_saml?
+    !enable_internal_password_authentication && organisation&.authentication&.is_a?(Authentication::Saml)
+  end
 end

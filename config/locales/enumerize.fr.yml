@@ -5,6 +5,13 @@ fr:
         for_boarding: "Non défini"
         for_alighting: "Non défini"
   enumerize:
+    authentication/base:
+      type:
+        "Authentication::Saml": "SAML"
+    authentication/saml:
+      subtype:
+        google: 'Google'
+        azure: 'Azure AD'
     operation:
       status:
         new: Nouveau

@@ -60,6 +60,7 @@ gem 'devise', '>= 4.9.3'
 gem 'devise_cas_authenticatable', '~> 1'
 gem 'devise-encryptable', '>= 0.2.0'
 gem 'devise_invitable', '>= 2.0.6'
+gem 'devise_saml_authenticatable'
 
 # Authorization
 gem 'pundit'

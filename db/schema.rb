@@ -57,6 +57,26 @@ ActiveRecord::Schema.define(version: 2024_04_03_205758) do
     t.bigint "workbench_id"
   end
 
+  create_table "authentications", force: :cascade do |t|
+    t.bigint "organisation_id", null: false
+    t.string "name", null: false
+    t.string "type", null: false
+    t.string "subtype"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.string "saml_idp_entity_id"
+    t.string "saml_idp_sso_service_url"
+    t.string "saml_idp_slo_service_url"
+    t.text "saml_idp_cert"
+    t.string "saml_idp_cert_fingerprint"
+    t.string "saml_idp_cert_fingerprint_algorithm"
+    t.string "saml_authn_context"
+    t.string "saml_email_attribute"
+    t.index ["organisation_id", "name"], name: "index_authentications_on_organisation_id_and_name", unique: true
+    t.index ["saml_idp_entity_id"], name: "index_authentications_on_saml_idp_entity_id"
+    t.index ["type"], name: "index_authentications_on_type"
+  end
+
   create_table "calendars", force: :cascade do |t|
     t.string "name"
     t.daterange "date_ranges", array: true
@@ -1545,6 +1565,7 @@ ActiveRecord::Schema.define(version: 2024_04_03_205758) do
     t.string "profile"
     t.string "user_locale"
     t.string "time_zone", limit: 255, default: "Paris"
+    t.boolean "enable_internal_password_authentication", default: false, null: false
     t.index ["email"], name: "index_users_on_email", unique: true
     t.index ["invitation_token"], name: "index_users_on_invitation_token", unique: true
     t.index ["profile"], name: "index_users_on_profile"
@@ -1666,6 +1687,7 @@ ActiveRecord::Schema.define(version: 2024_04_03_205758) do
     t.index ["shape_referential_id"], name: "index_workgroups_on_shape_referential_id"
   end
 
+  add_foreign_key "authentications", "organisations"
   add_foreign_key "calendars", "workbenches"
   add_foreign_key "control_runs", "control_context_runs"
   add_foreign_key "controls", "control_contexts"

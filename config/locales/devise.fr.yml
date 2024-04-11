@@ -14,6 +14,7 @@ fr:
         unauthorized: "Vous ne pouvez pas vous connecter car vous n'avez pas les permissions pour accéder à Chouette"
         no_account: "Vous n'avez pas de compte ?"
         sign_up: "S'inscrire"
+        sign_in_with: "Se connecter avec %{authentication}"
     confirmations:
       new:
         title: Renvoyer le mail de confirmation

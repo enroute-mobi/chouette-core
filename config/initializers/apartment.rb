@@ -22,6 +22,8 @@ Apartment.configure do |config|
     'Aggregate',
     'Aggregate::Resource',
     'ApiKey',
+    'Authentication::Base',
+    'Authentication::Saml',
     'Calendar',
     'Chouette::LineNoticeMembership',
     'Chouette::Company',

@@ -294,6 +294,9 @@ GEM
     devise_invitable (2.0.9)
       actionmailer (>= 5.0)
       devise (>= 4.6)
+    devise_saml_authenticatable (1.9.1)
+      devise (> 2.0.0)
+      ruby-saml (~> 1.7)
     diff-lcs (1.5.1)
     digest-crc (0.6.5)
       rake (>= 12.0.0, < 14.0.0)
@@ -756,6 +759,9 @@ GEM
     ruby-graphviz (1.2.5)
       rexml
     ruby-progressbar (1.13.0)
+    ruby-saml (1.16.0)
+      nokogiri (>= 1.13.10)
+      rexml
     ruby-statistics (3.0.0)
     ruby2_keywords (0.0.5)
     rubycas-client (2.3.9)
@@ -920,6 +926,7 @@ DEPENDENCIES
   devise-i18n (>= 1.10.2)
   devise_cas_authenticatable (~> 1)
   devise_invitable (>= 2.0.6)
+  devise_saml_authenticatable
   dogstatsd-ruby
   dotenv-rails (>= 2.7.6)
   draper (>= 4.0.2)

@@ -88,6 +88,7 @@ class Permission
       permissions << "merges.rollback"
       permissions << "aggregates.rollback"
       permissions << "api_keys.index"
+      permissions << 'organisations.update'
       permissions << "workgroups.update"
       permissions << "referentials.flag_urgent"
       permissions << "imports.update_workgroup_providers"
@@ -170,7 +171,7 @@ class Permission
     end
 
     profile :admin, Permission.full
-    profile :editor, Permission.full.grep_v(/^users/)
+    profile :editor, Permission.full.grep_v(/^users/).grep_v(/^organisations/)
     profile :visitor, %w{sessions.create}
   end
 end

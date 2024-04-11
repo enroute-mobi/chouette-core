@@ -3,7 +3,7 @@
 class OrganisationsController < Chouette::ResourceController
   defaults resource_class: Organisation
 
-  respond_to :html, only: %i[show]
+  respond_to :html, only: %i[show edit update]
 
   def show
     show! do
@@ -11,6 +11,12 @@ class OrganisationsController < Chouette::ResourceController
       @users = UserDecorator.decorate(
         @q.result.paginate(page: params[:page]).order(sort_params)
       )
+    end
+  end
+
+  def update
+    update! do
+      organisation_path
     end
   end
 
@@ -29,10 +35,29 @@ class OrganisationsController < Chouette::ResourceController
   end
 
   def resource
-    @organisation = current_organisation
+    @organisation = current_organisation.decorate
   end
 
   def organisation_params
-    params.require(:organisation).permit(:name)
+    result = params.require(:organisation).permit(
+      :name,
+      authentication_attributes: %i[
+        id
+        type
+        name
+        subtype
+        saml_idp_entity_id
+        saml_idp_entity_id
+        saml_idp_sso_service_url
+        saml_idp_slo_service_url
+        saml_idp_cert
+        saml_idp_cert_fingerprint
+        saml_idp_cert_fingerprint_algorithm
+        saml_authn_context
+        saml_email_attribute
+      ]
+    )
+    result[:authentication_attributes][:_destroy] = '1' if result[:authentication_attributes][:type].blank?
+    result
   end
 end

@@ -41,6 +41,8 @@ class ExportDecorator < AF83::Decorator
   end
 
   define_instance_method :display_code_space do
+    return unless object.try(:exported_code_space)
+
     object.workgroup.code_spaces.find_by(id: object.exported_code_space)&.short_name
   end
 

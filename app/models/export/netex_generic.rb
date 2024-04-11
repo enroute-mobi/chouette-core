@@ -12,6 +12,7 @@ class Export::NetexGeneric < Export::Base
   option :exported_lines, default_value: 'all_line_ids', enumerize: %w[line_ids company_ids line_provider_ids all_line_ids]
   option :participant_ref
   option :profile_options, default_value: {}
+  option :prefer_referent_line, default_value: false, enumerize: [true, false], serialize: ActiveModel::Type::Boolean
 
   validate :ensure_is_valid_period
 
@@ -50,7 +51,7 @@ class Export::NetexGeneric < Export::Base
     profile? ? "zip" : 'xml'
   end
 
-  delegate :stop_area_referential, to: :workgroup
+  delegate :stop_area_referential, :line_referential, to: :workgroup
 
   class Scope < SimpleDelegator
     def initialize(export_scope, export:)
@@ -60,18 +61,85 @@ class Export::NetexGeneric < Export::Base
     end
 
     attr_reader :export
-    delegate :stop_area_referential, to: :export
+    delegate :stop_area_referential, :line_referential, to: :export
+
+    def current_scope
+      __getobj__
+    end
 
     def stop_areas
       @stop_areas ||=
         ::Query::StopArea.new(stop_area_referential.stop_areas).
-          self_referents_and_ancestors(__getobj__.stop_areas)
+          self_referents_and_ancestors(current_scope.stop_areas)
     end
 
     def entrances
       # Must unscope the entrances to find entrances associated with all exported Stop Areas
       # (including parent Stop Areas)
       stop_area_referential.entrances.where(stop_area: stop_areas)
+    end
+
+    def lines_class
+      prefer_referent_lines? ? Lines::PreferReferents : Lines::Default
+    end
+
+    def lines
+      @lines ||= lines_class.new(self).lines
+      #  prefer_referent_lines? ? lines_or_referents : lines_and_referents
+    end
+
+    module Lines
+      class Base
+        def initialize(export_scope)
+          @export_scope = export_scope
+        end
+
+        attr_reader :export_scope
+        delegate :line_referential, :current_scope, to: :export_scope
+
+        def all_lines
+          line_referential.lines
+        end
+
+        def original_scoped_lines
+          current_scope.lines
+        end
+      end
+
+      class Default < Base
+        def lines_and_referents
+          ::Query::Line.new(all_lines).self_and_referents(original_scoped_lines)
+        end
+
+        alias lines lines_and_referents
+      end
+
+      class PreferReferents < Base
+        def lines_or_referents
+          line_referential.lines.where(id: lines_or_referent_ids)
+        end
+
+        alias lines lines_or_referents
+
+        def lines_or_referent_ids
+          [
+            original_scoped_lines.without_referent,
+            all_lines.where(id: original_scoped_lines.with_referent.select(:referent_id))
+          ].flat_map { |relation| relation.pluck(:id) }.uniq
+        end
+      end
+    end
+
+    def prefer_referent_lines?
+      export.prefer_referent_line
+    end
+
+    def referenced_lines
+      if prefer_referent_lines?
+        current_scope.lines.particulars.with_referent
+      else
+        Chouette::Line.none
+      end
     end
   end
 
@@ -742,6 +810,10 @@ class Export::NetexGeneric < Export::Base
     delegate :lines, to: :export_scope
 
     def export!
+      export_scope.referenced_lines.pluck(:id, :referent_id).each do |line_id, referent_id|
+        code_provider.lines.alias(line_id, as: referent_id)
+      end
+
       lines.includes(:company, :codes).find_each do |line|
         resource_tagger.register_tag_for line
         tags = resource_tagger.tags_for(line.id)
@@ -770,7 +842,8 @@ class Export::NetexGeneric < Export::Base
           accessibility_assessment: accessibility_assessment,
           status: status,
           valid_between: valid_between,
-          raw_xml: import_xml
+          raw_xml: import_xml,
+          derived_from_object_ref: derived_from_object_ref
         }
       end
 
@@ -788,6 +861,10 @@ class Export::NetexGeneric < Export::Base
           from_date: from_date,
           to_date: to_date
         )
+      end
+
+      def derived_from_object_ref
+        code_provider.lines.code(referent_id)
       end
 
       def additional_operators

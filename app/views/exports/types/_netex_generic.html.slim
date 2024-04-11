@@ -4,3 +4,4 @@
   = render 'exports/options/period', form: sub_form
   = sub_form.input :profile, as: :select, include_blank: false
   = render 'exports/options/exported_lines', form: sub_form
+  = sub_form.input :prefer_referent_line, as: :switchable_checkbox

@@ -84,7 +84,7 @@ module Macro
         end
 
         def body
-          @body ||= response.is_a?(Net::HTTPSuccess) ? JSON.parse(response.body).first : {}
+          @body ||= response.is_a?(Net::HTTPSuccess) ? (JSON.parse(response.body).first || {}) : {}
         end
 
         def code

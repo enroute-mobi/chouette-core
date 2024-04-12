@@ -13,6 +13,7 @@ class Export::NetexGeneric < Export::Base
   option :participant_ref
   option :profile_options, default_value: {}
   option :prefer_referent_line, default_value: false, enumerize: [true, false], serialize: ActiveModel::Type::Boolean
+  option :exported_code_space
 
   validate :ensure_is_valid_period
 
@@ -448,7 +449,7 @@ class Export::NetexGeneric < Export::Base
     attr_writer :code_provider
 
     def netex_identifier
-      @netex_identifier ||= Netex::ObjectId.parse(code_provider.code(model))
+      @netex_identifier ||= Code::Value.parse(code_provider.code(model))
     end
 
     def code_provider
@@ -980,7 +981,7 @@ class Export::NetexGeneric < Export::Base
 
       def netex_identifier
         # Use stop_points.code to support more easily PseudoStopPoint
-        @netex_identifier ||= Netex::ObjectId.parse(stop_point_code)
+        @netex_identifier ||= Code::Value.parse(stop_point_code)
       end
 
       def stop_point_code
@@ -1212,7 +1213,7 @@ class Export::NetexGeneric < Export::Base
       end
 
       def netex_identifier
-        @netex_identifier ||= super.merge(Netex::ObjectId.parse(journey_pattern_code), type: "StopPointInJourneyPattern")
+        @netex_identifier ||= super.merge(Code::Value.parse(journey_pattern_code), type: "StopPointInJourneyPattern")
       end
 
       def journey_pattern_code
@@ -1366,7 +1367,7 @@ class Export::NetexGeneric < Export::Base
         end
 
         def merged_id
-          Netex::ObjectId.merge(code_provider.code(route), id, type: "RoutingConstraintZone")
+          Code::Value.merge(code_provider.code(route), id, type: "RoutingConstraintZone")
         end
 
         def zone_use
@@ -1787,7 +1788,7 @@ class Export::NetexGeneric < Export::Base
       end
 
       def objectid
-        Netex::ObjectId.merge(vehicle_journey_objectid, stop_point_position, type: 'VehicleJourneyStopAssignment').to_s
+        Code::Value.merge(vehicle_journey_objectid, stop_point_position, type: 'VehicleJourneyStopAssignment').to_s
       end
 
       def stop_point_position
@@ -1845,7 +1846,7 @@ class Export::NetexGeneric < Export::Base
     def netex_identifier
       @netex_identifier ||= begin
         code_time_table = code_provider.time_tables.code(time_table.id) if code_provider
-        Netex::ObjectId.parse(code_time_table) if code_time_table
+        Code::Value.parse(code_time_table) if code_time_table
       end
     end
 
@@ -1904,7 +1905,7 @@ class Export::NetexGeneric < Export::Base
     def netex_identifier
       @netex_identifier ||= begin
         code_time_table = code_provider.time_tables.code(time_table.id) if code_provider
-        Netex::ObjectId.parse(code_time_table) if code_time_table
+        Code::Value.parse(code_time_table) if code_time_table
       end
     end
 

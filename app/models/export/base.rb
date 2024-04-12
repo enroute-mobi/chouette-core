@@ -113,12 +113,9 @@ class Export::Base < ApplicationModel
   end
 
   def code_space
-    # User option in the future
-    @code_space ||= workgroup.code_spaces.default if workgroup
-  end
+    return nil unless workgroup && exported_code_space
 
-  def cache_code_spaces
-    @code_spaces ||= workgroup.code_spaces.pluck(:id, :short_name).to_h
+    @code_space ||= workgroup.code_spaces.find_by(id: exported_code_space)
   end
 
   def public_code_space
@@ -131,7 +128,7 @@ class Export::Base < ApplicationModel
   attr_writer :export_scope
 
   def code_provider
-    @code_provider ||= Export::CodeProvider.new export_scope
+    @code_provider ||= Export::CodeProvider.new export_scope, code_space: code_space
   end
 
   def human_name

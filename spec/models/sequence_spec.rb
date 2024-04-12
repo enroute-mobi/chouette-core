@@ -12,11 +12,19 @@ RSpec.describe Sequence do
       end
     end
 
-    context 'with sequence_type static_list' do
+    context 'with sequence_type static_list from a to z' do
       let(:sequence) { Sequence.new name: 'static list', sequence_type: :static_list, static_list: ("a".."z").to_a }
 
-      it 'and offset 2 and limit 10 it should return letter values from c to k' do
+      it 'and offset 2 and limit 10 it should return letter values from c to n' do
         expect(sequence.values(offset: 2, limit: 10)).to eq(("c".."n").to_a)
+      end
+    end
+
+    context 'with sequence_type static_list []' do
+      let(:sequence) { Sequence.new name: 'static list', sequence_type: :static_list, static_list: [] }
+
+      it 'and offset 2 and limit 10 it should return []' do
+        expect(sequence.values(offset: 2, limit: 10)).to eq([])
       end
     end
 

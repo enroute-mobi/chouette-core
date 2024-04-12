@@ -17,7 +17,7 @@ class Sequence < ApplicationModel
 
   # Force empty value deletion sends by select input
   def static_list=(static_list)
-    @static_list = static_list.reject(&:blank?)
+    write_attribute :static_list, static_list&.reject(&:blank?)
   end
 
   def values(offset: 1, limit: 1000)

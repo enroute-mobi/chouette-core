@@ -50,15 +50,22 @@ class Export::Ara < Export::Base
     end
   end
 
+  def export_scope_options
+    # Disable stateful Export::Scope to make DailyScope works correctly
+    super.merge(stateful: false)
+  end
+
   def generate_export_file
     period.each do |day|
       # For each day, a scope selects models to be exported
-      daily_scope = DailyScope.new export_scope, day
+      daily_scope = DailyScope.new self, day
 
-      target.model_name(day) do |model_name|
-        # For each day, each kind of model is exported
-        parts.each do |part|
-          part.new(context: Context.new(self), export_scope: daily_scope, target: model_name).export
+      Rails.logger.tagged(day) do
+        target.model_name(day) do |model_name|
+          # For each day, each kind of model is exported
+          parts.each do |part|
+            part.new(context: Context.new(self), export_scope: daily_scope, target: model_name).export
+          end
         end
       end
     end
@@ -74,23 +81,38 @@ class Export::Ara < Export::Base
     def initialize(export)
       @export = export
     end
-    attr_reader :export
 
-    delegate :referential, to: :export
-    delegate :stop_area_referential, to: :referential
+    private
+
+    attr_reader :export
   end
 
   # Use Export::Scope::Scheduled which scopes all models according to vehicle_journeys
-  class DailyScope < Export::Scope::Scheduled
-    def initialize(export_scope, day)
-      super export_scope
+  class DailyScope < Export::Scope::Base
+    def initialize(export, day)
+      super export.build_export_scope
+      @export = export
       @day = day
+
+      current_scope.final_scope = self if current_scope.respond_to?(:final_scope=)
     end
 
-    attr_reader :day
+    attr_reader :export, :day
+
+    delegate :stop_area_referential, :line_referential, to: :export
 
     def vehicle_journeys
       @vehicle_journeys ||= current_scope.vehicle_journeys.scheduled_on(day)
+    end
+
+    def stop_areas
+      @stop_areas ||= ::Query::StopArea.new(stop_area_referential.stop_areas)
+                                       .self_referents_and_ancestors(current_scope.stop_areas)
+    end
+
+    def lines
+      @lines ||= ::Query::Line.new(line_referential.lines)
+                              .self_and_referents(current_scope.lines)
     end
   end
 
@@ -289,13 +311,17 @@ class Export::Ara < Export::Base
 
     def export
       Chouette::Benchmark.measure name do
-        export!
+        Rails.logger.tagged(name) do
+          export!
+        end
       end
     end
   end
 
+  delegate :stop_area_referential, :line_referential, to: :referential
+
   class Stops < Part
-    delegate :stop_area_referential, to: :context
+    delegate :stop_areas, to: :export_scope
 
     def export!
       stop_areas.includes(:parent, :referent, :lines, codes: :code_space).find_each do |stop_area|
@@ -303,22 +329,8 @@ class Export::Ara < Export::Base
       end
     end
 
-    def stop_areas
-      ::Query::StopArea.new(stop_area_referential.stop_areas).self_referents_and_ancestors(export_scope.stop_areas)
-    end
-
-    class CodeScope < SimpleDelegator
-      def initialize(part)
-        @part = part
-        super part.export_scope
-      end
-      attr_reader :part
-
-      delegate :stop_areas, to: :part
-    end
-
     def code_provider
-      @code_provider ||= CodeProvider::Model.new scope: CodeScope.new(self), model_class: Chouette::StopArea
+      @code_provider ||= CodeProvider::Model.new scope: export_scope, model_class: Chouette::StopArea
     end
 
     # Creates an Ara::StopArea from a StopArea
@@ -384,7 +396,8 @@ class Export::Ara < Export::Base
     end
 
     def export!
-      vehicle_journey_at_stops.includes(:vehicle_journey, stop_point: :stop_area).find_each do |stop_visit|
+      included = { vehicle_journey: [:company, { route: { line: :company } }], stop_point: :stop_area }
+      vehicle_journey_at_stops.includes(included).find_each(batch_size: 10_000) do |stop_visit|
         target << Decorator.new(stop_visit, day: export_scope.day).ara_model
       end
     end
@@ -522,7 +535,7 @@ class Export::Ara < Export::Base
     delegate :lines, to: :export_scope
 
     def export!
-      lines.find_each do |line|
+      lines.includes(codes: :code_space).find_each do |line|
         target << Decorator.new(line, code_provider: code_provider).ara_model
       end
     end
@@ -548,7 +561,8 @@ class Export::Ara < Export::Base
           id: uuid,
           name: name,
           number: number,
-          codes: ara_codes
+          codes: ara_codes,
+          referent_id: referent_uuid
         }
       end
 
@@ -559,6 +573,10 @@ class Export::Ara < Export::Base
       # TODO: To be shared
       def uuid
         get_objectid.local_id
+      end
+
+      def referent_uuid
+        referent&.get_objectid&.local_id
       end
 
       # TODO: To be shared

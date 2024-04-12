@@ -7,7 +7,7 @@ module Query
     #
     # For example, into an Export:
     #
-    #    Query::StopArea.new(stop_area_referential).self_and_ancestors(export_scope.stop_areas)
+    #    Query::StopArea.new(stop_area_referential.stop_areas).self_and_ancestors(export_scope.stop_areas)
     #
     # TODO Could use a nice RecurviseQuery common object
     def self_and_ancestors(relation) # rubocop:disable Metrics/MethodLength

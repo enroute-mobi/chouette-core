@@ -73,55 +73,53 @@ export default function Filters({filters, pagination, onFilter, onResetFilters, 
 
           <div className='ffg-row'>
             {/* Plage horaire */}
-            <div className='form-group togglable'>
-              <label className='control-label'>{I18n.t("vehicle_journeys.form.departure_range.label")}</label>
-              <div className='filter_menu'>
-                <div className='form-group time filter_menu-item'>
-                  <label className='control-label time'>{I18n.t("vehicle_journeys.form.departure_range.start")}</label>
-                  <div className='form-inline'>
-                    <div className='input-group time'>
-                      <input
-                        type='number'
-                        className='form-control'
-                        min='00'
-                        max='23'
-                        onChange={(e) => {onUpdateStartTimeFilter(e, 'hour')}}
-                        value={filters.query.interval.start.hour}
-                        />
-                      <span>:</span>
-                      <input
-                        type='number'
-                        className='form-control'
-                        min='00'
-                        max='59'
-                        onChange={(e) => {onUpdateStartTimeFilter(e, 'minute')}}
-                        value={filters.query.interval.start.minute}
-                        />
-                    </div>
+            <div className='form-group flex'>
+            <label className='control-label'>{I18n.t("vehicle_journeys.form.departure_range.label")}</label>
+              <div className='flex time filter_menu-item mr-5'>
+                <label className='control-label time'>{I18n.t("vehicle_journeys.form.departure_range.start")}</label>
+                <div className='form-inline'>
+                  <div className='input-group time'>
+                    <input
+                      type='number'
+                      className='form-control'
+                      min='00'
+                      max='23'
+                      onChange={(e) => {onUpdateStartTimeFilter(e, 'hour')}}
+                      value={filters.query.interval.start.hour}
+                      />
+                    <span>:</span>
+                    <input
+                      type='number'
+                      className='form-control'
+                      min='00'
+                      max='59'
+                      onChange={(e) => {onUpdateStartTimeFilter(e, 'minute')}}
+                      value={filters.query.interval.start.minute}
+                      />
                   </div>
                 </div>
-                <div className='form-group time filter_menu-item'>
-                  <label className='control-label time'>{I18n.t("vehicle_journeys.form.departure_range.end")}</label>
-                  <div className='form-inline'>
-                    <div className='input-group time'>
-                      <input
-                        type='number'
-                        className='form-control'
-                        min='00'
-                        max='23'
-                        onChange={(e) => {onUpdateEndTimeFilter(e, 'hour')}}
-                        value={filters.query.interval.end.hour}
-                        />
-                      <span>:</span>
-                      <input
-                        type='number'
-                        className='form-control'
-                        min='00'
-                        max='59'
-                        onChange={(e) => {onUpdateEndTimeFilter(e, 'minute')}}
-                        value={filters.query.interval.end.minute}
-                        />
-                    </div>
+              </div>
+              <div className='flex time filter_menu-item'>
+                <label className='control-label time'>{I18n.t("vehicle_journeys.form.departure_range.end")}</label>
+                <div className='form-inline'>
+                  <div className='input-group time'>
+                    <input
+                      type='number'
+                      className='form-control'
+                      min='00'
+                      max='23'
+                      onChange={(e) => {onUpdateEndTimeFilter(e, 'hour')}}
+                      value={filters.query.interval.end.hour}
+                      />
+                    <span>:</span>
+                    <input
+                      type='number'
+                      className='form-control'
+                      min='00'
+                      max='59'
+                      onChange={(e) => {onUpdateEndTimeFilter(e, 'minute')}}
+                      value={filters.query.interval.end.minute}
+                      />
                   </div>
                 </div>
               </div>

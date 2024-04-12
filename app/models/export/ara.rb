@@ -497,12 +497,14 @@ class Export::Ara < Export::Base
         { external: uuid }
       end
 
+      delegate :time_zone, to: :vehicle_journey_at_stop
+
       def ara_departure_time
-        departure_time_of_day&.to_time(day)&.strftime(EXPORT_TIME_FORMAT)
+        departure_time_of_day&.to_time(day, time_zone: time_zone)&.strftime(EXPORT_TIME_FORMAT)
       end
 
       def ara_arrival_time
-        arrival_time_of_day&.to_time(day)&.strftime(EXPORT_TIME_FORMAT)
+        arrival_time_of_day&.to_time(day, time_zone: time_zone)&.strftime(EXPORT_TIME_FORMAT)
       end
     end
   end

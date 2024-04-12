@@ -152,9 +152,11 @@ class TimeOfDay
     ::Time.new(2000, 1, 1, hour, minute, second, '+00:00')
   end
 
-  def to_time(date)
-    ::Time.new(date.year, date.month, date.mday, hour, minute, second,
-               utc_offset) + day_offset.days
+  def to_time(date, time_zone:)
+    time_zone.local(
+      date.year, date.month, date.mday,
+      hour, minute, second
+    ) + day_offset.days
   end
 
   def to_iso_8601

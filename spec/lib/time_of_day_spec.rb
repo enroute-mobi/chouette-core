@@ -272,4 +272,18 @@ RSpec.describe TimeOfDay do
       end
     end
   end
+
+  describe '#to_time' do
+    [
+      [ TimeOfDay.new(12), '2030-01-01', 'Europe/Paris', '2030-01-01 12:00:00+01:00' ],
+      [ TimeOfDay.new(12), '2030-07-01', 'Europe/Paris', '2030-07-01 12:00:00+02:00' ],
+      # [ TimeOfDay.new(12, utc_offset: 1.hour), '2030-07-01', '12:00:00-01:00' ]
+    ].each do |time_of_day, date, time_zone, expected_time|
+      context "with TimeOfDay #{time_of_day} when given date is #{date} in '#{time_zone}'" do
+        subject { time_of_day.to_time(Date.parse(date), time_zone: ActiveSupport::TimeZone[time_zone]) }
+
+        it { is_expected.to eq(Time.parse(expected_time)) }
+      end
+    end
+  end
 end

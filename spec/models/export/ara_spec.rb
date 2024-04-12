@@ -274,7 +274,9 @@ RSpec.describe Export::Ara do
       describe 'the Ara File target' do
         subject do
           part.export!
-          target end
+          target
+        end
+
         it { is_expected.to match_array([an_instance_of(Ara::File::Line)] * 2) }
 
         it 'contains Line having a number' do
@@ -481,6 +483,34 @@ RSpec.describe Export::Ara do
   end
 
   describe 'StopVisit export' do
+    context 'when Stop Visits are exported' do
+      let(:context) do
+        Chouette.create { vehicle_journey }
+      end
+      let(:target) { [] }
+      let(:referential) { context.referential }
+      let(:vehicle_journey) { context.vehicle_journey }
+      let(:day) { Time.new(2022, 6, 30, 2, 2, 2, '+02:00') }
+
+      let(:part) { Export::Ara::StopVisits.new export_scope: referential, target: target }
+
+      before do
+        referential.switch
+        allow(referential).to receive(:day) { day }
+      end
+
+      describe 'the Ara File target' do
+        subject do
+          part.export!
+          target
+        end
+
+        let(:at_stops_count) { vehicle_journey.vehicle_journey_at_stops.count }
+
+        it { is_expected.to match_array([an_instance_of(Ara::File::StopVisit)] * at_stops_count) }
+      end
+    end
+
     describe Export::Ara::StopVisits::Decorator do
       let(:vehicle_journey_at_stop) { Chouette::VehicleJourneyAtStop.new }
       subject(:decorator) { Export::Ara::StopVisits::Decorator.new vehicle_journey_at_stop, day: Date.current }
@@ -666,152 +696,57 @@ RSpec.describe Export::Ara do
               let(:expected_schedule) do
                 {
                   Kind: 'aimed',
-                  ArrivalTime: '2030-01-01T15:00:00+00:00',
-                  DepartureTime: '2030-01-01T15:05:00+00:00'
+                  ArrivalTime: '2030-01-01T15:00:00-08:00',
+                  DepartureTime: '2030-01-01T15:05:00-08:00'
                 }
               end
 
               it { is_expected.to include(expected_schedule) }
             end
           end
-        end
 
-        context 'when day is 2030-07-01 (summer time)' do
-          before { decorator.day = Date.parse('2030-07-01') }
+          context 'when StopArea time zone is "Europe/Paris"' do
+            let(:stop_area) { Chouette::StopArea.new time_zone: 'Europe/Paris' }
+            before { vehicle_journey_at_stop.stop_point = Chouette::StopPoint.new(stop_area: stop_area) }
 
-          context 'when arrival_time is 15:00:00 and departure_time is 15:05:00' do
-            before do
-              vehicle_journey_at_stop.arrival_time = '15:00:00'
-              vehicle_journey_at_stop.departure_time = '15:05:00'
+            context 'when arrival_time is 15:00:00 and departure_time is 15:05:00' do
+              before do
+                vehicle_journey_at_stop.arrival_time = '15:00:00'
+                vehicle_journey_at_stop.departure_time = '15:05:00'
+              end
+
+              context 'when day is 2030-07-01 (winter time)' do
+                before { decorator.day = Date.parse('2030-01-01') }
+
+                let(:expected_schedule) do
+                  {
+                    Kind: 'aimed',
+                    ArrivalTime: '2030-01-01T15:00:00+01:00',
+                    DepartureTime: '2030-01-01T15:05:00+01:00'
+                  }
+                end
+
+                it { is_expected.to include(expected_schedule) }
+              end
+
+              context 'when day is 2030-07-01 (summer time)' do
+                before { decorator.day = Date.parse('2030-07-01') }
+
+
+                let(:expected_schedule) do
+                  {
+                    Kind: 'aimed',
+                    ArrivalTime: '2030-07-01T15:00:00+02:00',
+                    DepartureTime: '2030-07-01T15:05:00+02:00'
+                  }
+                end
+
+                it { is_expected.to include(expected_schedule) }
+              end
             end
-
-            let(:expected_schedule) do
-              {
-                Kind: 'aimed',
-                ArrivalTime: '2030-01-01T16:00:00+00:00',
-                DepartureTime: '2030-01-01T16:05:00+00:00'
-              }
-            end
-
-            it { is_expected.to include(expected_schedule) }
           end
         end
       end
     end
-
-    context 'when Stop Visits are exported' do
-      let(:context) do
-        Chouette.create { vehicle_journey }
-      end
-      let(:target) { [] }
-      let(:referential) { context.referential }
-      let(:vehicle_journey) { context.vehicle_journey }
-      let(:day) { Time.new(2022, 6, 30, 2, 2, 2, '+02:00') }
-
-      let(:part) { Export::Ara::StopVisits.new export_scope: referential, target: target }
-
-      before do
-        referential.switch
-        allow(referential).to receive(:day) { day }
-      end
-
-      describe 'the Ara File target' do
-        subject do
-          part.export!
-          target end
-
-        let(:at_stops_count) { vehicle_journey.vehicle_journey_at_stops.count }
-
-        it { is_expected.to match_array([an_instance_of(Ara::File::StopVisit)] * at_stops_count) }
-
-        describe Export::Ara::StopVisits::Decorator do
-          context 'with the first stop_visit' do
-            let(:vehicle_journey_at_stop) { vehicle_journey.vehicle_journey_at_stops.first }
-            let(:stop_visit_decorator) { Export::Ara::StopVisits::Decorator.new(vehicle_journey_at_stop, day: day) }
-
-            let(:expected_attributes) do
-              {
-                schedules: [{
-                  'Kind': 'aimed',
-                  'DepartureTime': '2022-06-30T15:01:00+00:00'
-                }],
-                passage_order: '1'
-              }
-            end
-
-            before do
-              vehicle_journey_at_stop.update(
-                arrival_time: '2000-01-01T19:01:00+000'.to_datetime,
-                departure_time: '2000-01-01T15:01:00+0000'.to_datetime
-              )
-              vehicle_journey_at_stop.stop_point.update position: 0
-            end
-
-            it 'should create stop_visits with the correct attributes' do
-              expect(stop_visit_decorator.ara_model).to have_attributes(expected_attributes)
-            end
-
-            describe '#format_departure_date' do
-              let(:test_date) { Time.new(2000, 1, 1, 19, 1, 1, 'Z') }
-              subject(:departure_time) { stop_visit_decorator.format_departure_date(test_date) }
-
-              context 'with zero day offset' do
-                it { is_expected.to eq('2022-06-30T19:01:01+00:00') }
-              end
-
-              context 'with 1 day offset' do
-                before { vehicle_journey_at_stop.update(departure_day_offset: 1) }
-                it { is_expected.to eq('2022-07-01T19:01:01+00:00') }
-              end
-            end
-
-            describe '#format_arrival_date' do
-              let(:test_date) { Time.new(2000, 1, 1, 19, 1, 1, 'Z') }
-              subject(:arrival_time) { stop_visit_decorator.format_arrival_date(test_date) }
-
-              context 'with zero day offset' do
-                it { is_expected.to eq('2022-06-30T19:01:01+00:00') }
-              end
-
-              context 'with 1 day offset' do
-                before { vehicle_journey_at_stop.update(arrival_day_offset: 1) }
-                it { is_expected.to eq('2022-07-01T19:01:01+00:00') }
-              end
-            end
-          end
-
-          context 'with the last stop_visit' do
-            let(:vehicle_journey_at_stop) { vehicle_journey.vehicle_journey_at_stops.last }
-            let(:stop_visit_decorator) { Export::Ara::StopVisits::Decorator.new(vehicle_journey_at_stop, day: day) }
-
-            let(:expected_attributes) do
-              {
-                schedules: [{
-                  'Kind': 'aimed',
-                  'ArrivalTime': '2022-06-30T19:01:00+00:00'
-                }],
-                passage_order: '3'
-              }
-            end
-
-            before do
-              vehicle_journey_at_stop.update(
-                arrival_time: '2000-01-01T19:01:00+000'.to_datetime,
-                departure_time: '2000-01-01T15:01:00+0000'.to_datetime
-              )
-              vehicle_journey_at_stop.stop_point.update position: 2
-            end
-
-            it 'should create stop_visits with the correct attributes' do
-              expect(stop_visit_decorator.ara_model).to have_attributes(expected_attributes)
-            end
-          end
-
-        end
-
-        it { is_expected.to match_array([an_instance_of(Ara::StopVisit)] * at_stops_count) }
-      end
-    end
-
   end
 end

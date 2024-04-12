@@ -114,6 +114,7 @@ class Export::Base < ApplicationModel
 
   def code_space
     return nil unless workgroup && exported_code_space
+
     @code_space ||= workgroup.code_spaces.find_by(id: exported_code_space)
   end
 

@@ -97,7 +97,11 @@ module Export
       end
 
       def with_code_query
-        collection.left_joins(:codes).where(code_table => { code_space_id: code_space.id }).select(:id, "#{code_table}.value as code")
+        collection.left_joins(:codes).
+          where(code_table => { code_space_id: code_space.id }).
+          select(:id, "unnest(array_agg(#{code_table}.value)) as code").
+          group(:id, "#{code_table}.code_space_id").having("count(*) = 1")
+        # Don't ask why it's working -- Hai Hue, Alban
       end
 
       def with_registration_number_query

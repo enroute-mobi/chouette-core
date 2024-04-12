@@ -43,6 +43,7 @@ RSpec.describe Export::CodeProvider do
               stop_area :first, codes: { test: 'first' }
               stop_area :second, codes: { test: 'second', other: 'second' }
               stop_area :third, objectid: 'third_objectid::LOC', codes: { other: 'value' }
+              stop_area :fourth, objectid: 'fourth_objectid::LOC', codes: { test: [ 'fourth1', 'fourth2' ] }
               stop_area :last, objectid: 'last_objectid::LOC', codes: { test: 'first' }
             end
           end
@@ -51,6 +52,7 @@ RSpec.describe Export::CodeProvider do
           let(:first) { context.stop_area(:first) }
           let(:second) { context.stop_area(:second) }
           let(:third) { context.stop_area(:third) }
+          let(:fourth) { context.stop_area(:fourth) }
           let(:last) { context.stop_area(:last) }
 
           it do
@@ -58,6 +60,7 @@ RSpec.describe Export::CodeProvider do
               first.id => 'first',
               second.id => 'second',
               third.id => 'third_objectid::LOC',
+              fourth.id => 'fourth_objectid::LOC',
               last.id => 'last_objectid::LOC'
             }
 

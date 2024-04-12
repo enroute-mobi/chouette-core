@@ -94,12 +94,11 @@ class Export::Ara < Export::Base
       @export = export
       @day = day
 
-      if current_scope.respond_to?(:final_scope=)
-        current_scope.final_scope = self
-      end
+      current_scope.final_scope = self if current_scope.respond_to?(:final_scope=)
     end
 
     attr_reader :export, :day
+
     delegate :stop_area_referential, :line_referential, to: :export
 
     def vehicle_journeys
@@ -107,11 +106,13 @@ class Export::Ara < Export::Base
     end
 
     def stop_areas
-      @stop_areas ||= ::Query::StopArea.new(stop_area_referential.stop_areas).self_referents_and_ancestors(current_scope.stop_areas)
+      @stop_areas ||= ::Query::StopArea.new(stop_area_referential.stop_areas)
+                                       .self_referents_and_ancestors(current_scope.stop_areas)
     end
 
     def lines
-      @lines ||= ::Query::Line.new(line_referential.lines).self_and_referents(current_scope.lines)
+      @lines ||= ::Query::Line.new(line_referential.lines)
+                              .self_and_referents(current_scope.lines)
     end
   end
 
@@ -395,7 +396,8 @@ class Export::Ara < Export::Base
     end
 
     def export!
-      vehicle_journey_at_stops.includes(vehicle_journey: [:company, route: { line: :company }], stop_point: :stop_area).find_each(batch_size: 10_000) do |stop_visit|
+      included = { vehicle_journey: [:company, { route: { line: :company } }], stop_point: :stop_area }
+      vehicle_journey_at_stops.includes(included).find_each(batch_size: 10_000) do |stop_visit|
         target << Decorator.new(stop_visit, day: export_scope.day).ara_model
       end
     end

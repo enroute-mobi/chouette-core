@@ -82,7 +82,7 @@ module Export::Scope
         if stateful
           builder.stateful(export_id)
         else
-          Rails.logger.debug "Disable stateful scope"
+          Rails.logger.debug 'Disable stateful scope'
         end
       end
     end

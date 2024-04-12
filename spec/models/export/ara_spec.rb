@@ -109,7 +109,9 @@ RSpec.describe Export::Ara do
 
         before do
           allow(export).to receive(:stop_area_referential) { context.stop_area_referential }
-          allow(original_scope).to receive(:stop_areas) { context.stop_area_referential.stop_areas.where(id: stop_area.id) }
+          allow(original_scope).to receive(:stop_areas) do
+            context.stop_area_referential.stop_areas.where(id: stop_area.id)
+          end
         end
 
         let(:stop_area) { context.stop_area(:exported) }

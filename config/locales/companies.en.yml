@@ -116,5 +116,3 @@ en:
     hints:
       company:
         default_language: "Use a two letters code (en, fr ...)"
-  referential_companies:
-    <<: *en_companies

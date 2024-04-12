@@ -270,6 +270,3 @@ en:
     hints:
       stop_area:
         registration_number: Leave empty for automatic value.
-
-  referential_stop_areas:
-    <<: *en_stop_areas

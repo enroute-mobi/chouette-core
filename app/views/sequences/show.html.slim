@@ -9,6 +9,8 @@
 					= d.attribute :name
 					= d.attribute :sequence_type, as: :enumerize
 					= d.attribute :description
-					= d.attribute :range_start
-					= d.attribute :range_end
-					= d.attribute :static_list, as: :array
+					- if @sequence.sequence_type.range_sequence?
+					  = d.attribute :range_start
+					  = d.attribute :range_end
+                    - if @sequence.sequence_type.static_list?
+					  = d.attribute :static_list, as: :array

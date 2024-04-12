@@ -34,7 +34,7 @@ module CodeSupport
     end
 
     def self.code_table
-      'public.codes'
+      Code.arel_table
     end
   end
 

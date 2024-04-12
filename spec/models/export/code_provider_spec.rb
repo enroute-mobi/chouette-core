@@ -43,7 +43,7 @@ RSpec.describe Export::CodeProvider do
               stop_area :first, codes: { test: 'first' }
               stop_area :second, codes: { test: 'second', other: 'second' }
               stop_area :third, objectid: 'third_objectid::LOC', codes: { other: 'value' }
-              stop_area :fourth, objectid: 'fourth_objectid::LOC', codes: { test: [ 'fourth1', 'fourth2' ] }
+              stop_area :fourth, objectid: 'fourth_objectid::LOC', codes: { test: %w[fourth1 fourth2] }
               stop_area :last, objectid: 'last_objectid::LOC', codes: { test: 'first' }
             end
           end

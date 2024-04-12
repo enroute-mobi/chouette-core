@@ -17,7 +17,7 @@ module ReferentialCodeSupport
     }
 
     def self.code_table
-      'referential_codes'
+      ReferentialCode.arel_table
     end
   end
 end

@@ -2,7 +2,6 @@
 
 module Policy
   class NotificationRule < Base
-    authorize_by Strategy::Workbench
     authorize_by Strategy::Permission
 
     protected

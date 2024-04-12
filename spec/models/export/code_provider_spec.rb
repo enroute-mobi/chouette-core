@@ -21,7 +21,41 @@ RSpec.describe Export::CodeProvider do
     end
   end
 
-  describe Export::CodeProvider::Indexer do
+  describe Export::CodeProvider::Indexer::StopPoints do
+    describe '#index' do
+      subject { described_class.new(context.referential.stop_points, code_provider: code_provider).index }
+
+      let(:code_provider) { Export::CodeProvider.new(double(routes: context.referential.routes), code_space: code_space) }
+
+      let(:context) do
+        Chouette.create do
+          code_space short_name: 'test'
+
+          route :first, codes: { test: 'first' }
+          route :second, codes: { test: 'ACME:Route:A:LOC' }
+        end
+      end
+
+      before do
+        context.referential.switch
+      end
+
+      let(:code_space) { context.code_space }
+      let(:first_route) { context.route(:first) }
+      let(:second_route) { context.route(:second) }
+
+      it do
+        expected_codes = {
+          first_route.stop_points.first.id => eq('StopPoint:first-0'),
+          second_route.stop_points.last.id => Netex::ObjectId.parse('ACME:StopPoint:A-2:LOC'),
+        }
+
+        is_expected.to include(expected_codes)
+      end
+    end
+  end
+
+  describe Export::CodeProvider::Indexer::Default do
     context 'when model class is Chouette::StopArea' do
       subject(:model_code_provider) { described_class.new Chouette::StopArea.none }
 

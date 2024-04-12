@@ -108,7 +108,7 @@ module Export
         def with_code_query
           code_value = Arel::Nodes::NamedFunction.new(
             'unnest', [
-              Arel::Nodes::NamedFunction.new('array_agg', [Code.arel_table[:value]])
+              Arel::Nodes::NamedFunction.new('array_agg', [code_table[:value]])
             ]
           ).as('code')
 

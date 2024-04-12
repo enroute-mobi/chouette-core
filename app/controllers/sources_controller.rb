@@ -3,21 +3,19 @@
 class SourcesController < Chouette::WorkbenchController
   include ApplicationHelper
 
-  defaults :resource_class => Source
+  defaults resource_class: Source
 
-  before_action :decorate_source, only: [:show, :new, :edit]
-  after_action :decorate_source, only: [:create, :update]
+  before_action :decorate_source, only: %i[show new edit]
+  after_action :decorate_source, only: %i[create update]
 
-  before_action :source_params, only: [:create, :update]
+  before_action :source_params, only: %i[create update]
 
   respond_to :html, :xml, :json
 
   def index
     index! do |format|
       format.html do
-        if collection.out_of_bounds?
-          redirect_to params.merge(:page => 1)
-        end
+        redirect_to params.merge(page: 1) if collection.out_of_bounds?
 
         @sources = SourceDecorator.decorate(
           collection,
@@ -49,7 +47,11 @@ class SourcesController < Chouette::WorkbenchController
   private
 
   def decorate_source
-    object = resource rescue build_resource
+    object = begin
+      resource
+    rescue StandardError
+      build_resource
+    end
     @source = SourceDecorator.decorate(
       object,
       context: {
@@ -80,7 +82,7 @@ class SourcesController < Chouette::WorkbenchController
       :downloader_option_raw_authorization,
       :retrieval_time_of_day,
       :retrieval_frequency,
-      retrieval_days_of_week_attributes: [:monday, :tuesday, :wednesday, :thursday, :friday, :saturday, :sunday],
+      retrieval_days_of_week_attributes: %i[monday tuesday wednesday thursday friday saturday sunday],
       import_option_process_gtfs_route_ids: []
     ).with_defaults(workbench_id: workbench.id)
   end

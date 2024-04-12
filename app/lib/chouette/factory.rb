@@ -448,7 +448,14 @@ module Chouette
                 end
               end
 
+              transient :codes, {}
+
               after do |route|
+                transient(:codes).each do |code_space_short_name, value|
+                  code_space = route.workgroup.code_spaces.find_by!(short_name: code_space_short_name)
+                  route.codes.build(code_space: code_space, value: value)
+                end
+
                 (transient(:stop_areas, resolve_instances: true) || []).each do |stop_area|
                   stop_point = build_model(:stop_point)
                   stop_point.stop_area = stop_area

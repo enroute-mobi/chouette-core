@@ -12,7 +12,6 @@ RSpec.describe Policy::Sequence, type: :policy do
   end
 
   describe '#destroy?' do
-
     subject { policy.destroy? }
 
     it { applies_strategy(Policy::Strategy::Permission, :destroy) }

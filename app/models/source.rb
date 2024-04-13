@@ -161,7 +161,7 @@ class Source < ApplicationModel
   end
 
   def import_option_process_gtfs_route_ids
-    (import_options["process_gtfs_route_ids"] || []).join(",")
+    (import_options["process_gtfs_route_ids"] || [])
   end
 
   def import_option_store_xml
@@ -196,8 +196,9 @@ class Source < ApplicationModel
     import_options["update_workgroup_providers"] = value
   end
 
+  # Use compact to delete empty value
   def import_option_process_gtfs_route_ids=(value)
-    import_options["process_gtfs_route_ids"] = value.delete('\t\r\n').split(',')
+    import_options["process_gtfs_route_ids"] = value.reject(&:blank?)
   end
 
   def import_option_store_xml=(value)

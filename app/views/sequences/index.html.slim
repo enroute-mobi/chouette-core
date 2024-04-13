@@ -21,7 +21,7 @@
               ), \
               TableBuilderHelper::Column.new( \
                 key: :values, \
-                attribute: Proc.new { |sequence| sequence.range_values}, \
+                attribute: Proc.new { |sequence| sequence.sequence_type.range_sequence? ? sequence.range_values : "#{sequence.static_list.count} #{t('.static_list_values')}" }, \
                 sortable: false,\
               ), \
             ].compact,

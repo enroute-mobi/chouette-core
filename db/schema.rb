@@ -1282,6 +1282,7 @@ ActiveRecord::Schema.define(version: 2024_04_03_205758) do
     t.bigint "workbench_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.string "static_list", default: [], array: true
     t.index ["workbench_id"], name: "index_sequences_on_workbench_id"
   end
 

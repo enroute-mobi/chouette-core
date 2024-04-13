@@ -2,6 +2,7 @@ en:
   sequences:
     index:
       title: Sequences
+      static_list_values: values
     show:
       title: "%{name}"
     new:
@@ -34,6 +35,7 @@ en:
         description: Description
         range_start: "Range start"
         range_end: "Range end"
+        static_list: Values
         values: Values
     errors:
       models:

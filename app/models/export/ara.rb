@@ -409,6 +409,7 @@ class Export::Ara < Export::Base
         super stop_visit
         @day = day
       end
+      attr_accessor :day
 
       def vehicle_journey_at_stop
         __getobj__
@@ -498,11 +499,7 @@ class Export::Ara < Export::Base
       def schedules
         return unless arrival_time || departure_time
 
-        aimed_schedule = { 'Kind': 'aimed' }
-        aimed_schedule[:ArrivalTime] = format_arrival_date(arrival_time) if arrival_time
-        aimed_schedule[:DepartureTime] = format_departure_date(departure_time) if departure_time
-
-        [aimed_schedule]
+        [ { 'Kind': 'aimed', 'ArrivalTime': ara_arrival_time, 'DepartureTime': ara_departure_time }.compact ]
       end
 
       def uuid
@@ -513,20 +510,14 @@ class Export::Ara < Export::Base
         { external: uuid }
       end
 
-      def format_departure_date(date)
-        (date.change(
-          year: @day.year,
-          month: @day.month,
-          day: @day.day
-        ) + departure_day_offset.days).strftime(EXPORT_TIME_FORMAT)
+      delegate :time_zone, to: :vehicle_journey_at_stop
+
+      def ara_departure_time
+        departure_time_of_day&.to_time(day, time_zone: time_zone)&.strftime(EXPORT_TIME_FORMAT)
       end
 
-      def format_arrival_date(date)
-        (date.change(
-          year: @day.year,
-          month: @day.month,
-          day: @day.day
-        ) + arrival_day_offset.days).strftime(EXPORT_TIME_FORMAT)
+      def ara_arrival_time
+        arrival_time_of_day&.to_time(day, time_zone: time_zone)&.strftime(EXPORT_TIME_FORMAT)
       end
     end
   end

@@ -5,6 +5,7 @@ FactoryBot.define do
     name { "MyString" }
     referentials { [ create(:referential) ] }
     new {nil}
+    creator { 'test' }
 
     trait :successful do
       after(:create) do |a|

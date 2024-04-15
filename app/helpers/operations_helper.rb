@@ -17,7 +17,6 @@ module OperationsHelper
       cls = 'success' if status == 'successful'
       cls = 'success' if status == 'ok'
       cls = 'warning' if status == 'warning'
-      cls = 'warning' if status == 'successful_with_warnings'
       cls = 'disabled' if status == 'canceled'
       cls = 'danger' if %w[failed aborted error].include? status
 

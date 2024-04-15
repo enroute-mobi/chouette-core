@@ -2,6 +2,7 @@ FactoryBot.define do
   factory :publication do
     association :publication_setup
     association :parent, factory: :aggregate
+    creator { 'test' }
 
     ended_at {Time.now}
 

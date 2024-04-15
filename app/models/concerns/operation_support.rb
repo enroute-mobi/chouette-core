@@ -16,6 +16,7 @@ module OperationSupport
     belongs_to :new, class_name: '::Referential'
     has_many :publications, as: :parent, dependent: :destroy
 
+    validates :creator, presence: true
     validate :has_at_least_one_referential, :on => :create
     validate :check_other_operations, :on => :create
 
@@ -65,7 +66,8 @@ module OperationSupport
 
   def publish(options = {})
     workgroup.publication_setups.enabled.each do |publication_setup|
-      publication_setup.publish self, options
+      publication = publication_setup.publish(self, options)
+      publication.enqueue
     end
   end
 

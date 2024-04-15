@@ -1,8 +1,6 @@
-class Publication < ApplicationModel
-  extend Enumerize
+# frozen_string_literal: true
 
-  enumerize :status, in: %w[new pending successful failed running successful_with_warnings], default: :new
-
+class Publication < Operation
   belongs_to :publication_setup
   has_one :export, class_name: 'Export::Base', dependent: :destroy
   belongs_to :parent, polymorphic: true
@@ -11,36 +9,8 @@ class Publication < ApplicationModel
 
   validates :publication_setup, :parent, presence: true
 
-  after_commit :publish, on: :create
-
-  status.values.each do |s|
-    define_method "#{s}!" do
-      update status: s
-    end
-
-    define_method "#{s}?" do
-      status.to_s == s
-    end
-  end
-
-  def running!
-    update_columns status: :running, started_at: Time.now
-  end
-
   has_one :workgroup, through: :publication_setup
   has_one :organisation, through: :workgroup, source: :owner
-
-  %i[failed successful successful_with_warnings].each do |s|
-    define_method "#{s}!" do
-      update status: s, ended_at: Time.now
-    end
-  end
-
-  def publish
-    return unless new?
-    pending!
-    enqueue_job :run
-  end
 
   def pretty_date
     I18n.l(created_at)
@@ -50,47 +20,26 @@ class Publication < ApplicationModel
     self.class.tmf('name', setup_name: publication_setup.name, date: pretty_date)
   end
 
-  def run
-    raise 'Publication ran twice' if running?
-
-    running!
-    run_export
-
-  rescue => e
-    Chouette::Safe.capture "Publication ##{id} failed", e
-    failed!
-  end
-
   def referential
     parent.new
   end
 
-  def run_export
+  def perform
     referential.switch do
       all_synchronous = true
 
       export_builder.build_export.tap do |export|
         all_synchronous = all_synchronous && export.synchronous
-        begin
-          Rails.logger.info "Launching export #{export.name}"
-          export.save!
-        rescue => e
-          Chouette::Safe.capture "Publication Export ##{export.id} failed", e
-          failed!
-          return
-        end
 
-        if export.synchronous && !export.successful?
-          Rails.logger.error "Publication Export '#{export.name}' failed"
-          failed!
-          return
-        end
+        Rails.logger.info "Launching export #{export.name}"
+        export.save!
+
+        raise "Publication Export '#{export.name}' failed" if export.synchronous && !export.successful?
       end
 
       return unless all_synchronous
 
       send_to_destinations
-      infer_status
       # Send notification for synchronous exports (Publication Netex Generic, GTFS...)
       workbench = workgroup.owner_workbench
       workbench.notification_center.notify(self) if workbench
@@ -101,11 +50,12 @@ class Publication < ApplicationModel
     publication_setup.destinations.each { |destination| destination.transmit(self) }
   end
 
-  def infer_status
-    failed! && return unless export.successful?
-
-    new_status = reports.all?(&:successful?) ? :successful : :successful_with_warnings
-    send("#{new_status}!")
+  def final_user_status
+    if export.successful?
+      reports.all?(&:successful?) ? Operation.user_status.successful : Operation.user_status.warning
+    else
+      Operation.user_status.failed
+    end
   end
 
   def previous

@@ -1149,6 +1149,9 @@ ActiveRecord::Schema.define(version: 2024_06_03_124932) do
     t.datetime "started_at"
     t.datetime "ended_at"
     t.boolean "rollback"
+    t.string "creator"
+    t.string "user_status", null: false
+    t.string "error_uuid"
     t.index ["parent_type", "parent_id"], name: "index_publications_on_parent_type_and_parent_id"
     t.index ["publication_setup_id"], name: "index_publications_on_publication_setup_id"
   end

@@ -43,7 +43,7 @@ class PublicationSetup < ApplicationModel
   end
 
   def publish(operation, options = {})
-    attributes = options.merge(parent: operation)
+    attributes = options.merge(creator: operation.creator, parent: operation)
     publications.create!(attributes)
   end
 

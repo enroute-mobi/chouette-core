@@ -6,7 +6,7 @@
   .container-fluid
     .row
       .col-lg-6.col-md-6.col-sm-12.col-xs-12
-        - metadatas = { Publication.tmf(:status) => operation_status(@publication, verbose: true) }
+        - metadatas = { Publication.tmf(:status) => operation_user_status(@publication) }
         - metadatas.update( PublicationSetup.ts => link_to(@publication_setup.name, [@workgroup, @publication_setup]) )
         - metadatas.update( Publication.tmf(:parent) => link_to("#{@publication.parent.class.ts} #{@publication.parent.name}", workbench_referential_path(owner_workbench, @publication.parent.new)) )
         = definition_list t('metadatas'), metadatas
@@ -14,22 +14,23 @@
 
     .row
       .col-lg-6.col-md-6.col-sm-12.col-xs-12
-        = simple_block_for @export, title: @export.model_name.human do |d|
-          = d.attribute :name, link: workgroup_export_path(@workgroup, @export)
-          = d.attribute :type, value: @export.human_type
-          = d.attribute :status, value: operation_status(@export.status, verbose: true)
-          = d.attribute :exported_lines, value_method: :display_selected_lines_to_export
-          = d.attribute :period, value_method: :display_period
-          - if @export.type == "Export::NetexGeneric"
-            = d.attribute :profile, value_method: :display_profile
-          - if @export.type == "Export::Gtfs"
-            = d.attribute :prefer_referent_stop_area, as: :boolean
-            = d.attribute :prefer_referent_company, as: :boolean
-            = d.attribute :prefer_referent_line, as: :boolean
-            = d.attribute :ignore_single_stop_station, as: :boolean
-            = d.attribute :ignore_parent_stop_places, as: :boolean
-          - if @export.type == "Export::Ara"
-            = d.attribute :include_stop_visits, as: :boolean
+        - if @export.object
+          = simple_block_for @export, title: @export.model_name.human do |d|
+            = d.attribute :name, link: workgroup_export_path(@workgroup, @export)
+            = d.attribute :type, value: @export.human_type
+            = d.attribute :status, value: operation_status(@export.status, verbose: true)
+            = d.attribute :exported_lines, value_method: :display_selected_lines_to_export
+            = d.attribute :period, value_method: :display_period
+            - if @export.type == "Export::NetexGeneric"
+              = d.attribute :profile, value_method: :display_profile
+            - if @export.type == "Export::Gtfs"
+              = d.attribute :prefer_referent_stop_area, as: :boolean
+              = d.attribute :prefer_referent_company, as: :boolean
+              = d.attribute :prefer_referent_line, as: :boolean
+              = d.attribute :ignore_single_stop_station, as: :boolean
+              = d.attribute :ignore_parent_stop_places, as: :boolean
+            - if @export.type == "Export::Ara"
+              = d.attribute :include_stop_visits, as: :boolean
 
     .row
       .col-lg-12

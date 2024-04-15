@@ -20,6 +20,22 @@ ActiveRecord::Schema.define(version: 2024_04_23_123123) do
   enable_extension "postgis"
   enable_extension "unaccent"
 
+  create_table "accessibility_assessments", force: :cascade do |t|
+    t.string "name"
+    t.string "mobility_impaired_accessibility"
+    t.string "wheelchair_accessibility"
+    t.string "step_free_accessibility"
+    t.string "escalator_free_accessibility"
+    t.string "lift_free_accessibility"
+    t.string "audible_signals_availability"
+    t.string "visual_signs_availability"
+    t.text "accessibility_limitation_description"
+    t.bigint "referential_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["referential_id"], name: "index_accessibility_assessments_on_referential_id"
+  end
+
   create_table "aggregate_resources", force: :cascade do |t|
     t.string "workbench_name"
     t.integer "position"

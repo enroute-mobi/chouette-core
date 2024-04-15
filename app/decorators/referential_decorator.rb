@@ -5,6 +5,11 @@ class ReferentialDecorator < AF83::Decorator
 
   with_instance_decorator do |instance_decorator|
     instance_decorator.action_link secondary: :show, on: :show, policy: :browse do |l|
+      l.content t('accessibility_assessments.index.title')
+      l.href { h.workbench_referential_accessibility_assessments_path(context[:workbench], object) }
+    end
+
+    instance_decorator.action_link secondary: :show, on: :show, policy: :browse do |l|
       l.content t('referential_vehicle_journeys.index.title')
       l.href { h.workbench_referential_vehicle_journeys_path(context[:workbench], object) }
     end

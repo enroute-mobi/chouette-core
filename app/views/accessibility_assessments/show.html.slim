@@ -1,0 +1,21 @@
+- breadcrumb :accessibility_assessment, @workbench, @referential, @accessibility_assessment
+
+.page_content
+  .container-fluid
+    .row
+      .col-md-6.col-sm-12
+        = simple_block_for @accessibility_assessment, title: t("accessibility_assessments.form.sections.identification") do |d|
+          = d.attribute :name
+
+        = render 'codes/block', model: @accessibility_assessment
+
+      .col-lg-6.col-md-6.col-sm-12.col-xs-12
+        = simple_block_for @accessibility_assessment, title: t("accessibility_assessments.form.sections.accessibility") do |d|
+          = d.attribute :mobility_impaired_accessibility, as: :enumerize
+          = d.attribute :wheelchair_accessibility, as: :enumerize
+          = d.attribute :step_free_accessibility, as: :enumerize
+          = d.attribute :escalator_free_accessibility, as: :enumerize
+          = d.attribute :lift_free_accessibility, as: :enumerize
+          = d.attribute :audible_signals_availability, as: :enumerize
+          = d.attribute :visual_signs_availability, as: :enumerize
+          = d.attribute :accessibility_limitation_description

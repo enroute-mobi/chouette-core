@@ -71,6 +71,7 @@ class Referential < ApplicationModel
   has_many :networks, through: :line_referential
   has_many :line_providers, through: :line_referential
   has_many :metadatas, class_name: "ReferentialMetadata", inverse_of: :referential, dependent: :delete_all
+  has_many :accessibility_assessments
   accepts_nested_attributes_for :metadatas
 
   belongs_to :stop_area_referential

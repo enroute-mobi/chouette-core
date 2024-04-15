@@ -66,6 +66,8 @@ ChouetteIhm::Application.routes.draw do # rubocop:disable Metrics/BlockLength
         get :stop_area_providers, on: :collection, defaults: { format: 'json' }
       end
 
+      resources :accessibility_assessments
+
       resources :lines, controller: 'referential_lines', only: %i[show] do # rubocop:disable Metrics/BlockLength
         resources :footnotes do
           collection do

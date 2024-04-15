@@ -53,7 +53,7 @@ fr:
       macro/define_french_code_insee:
         one: Définir le code INSEE
       macro/define_stop_area_transport_mode:
-        one: Definir le mode de tranport des arrets
+        one: Définir le mode de tranport des arrêts
     attributes:
       macro/base:
         name: Nom

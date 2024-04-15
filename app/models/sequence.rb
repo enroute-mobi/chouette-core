@@ -12,6 +12,7 @@ class Sequence < ApplicationModel
                                                                                                       sequence.sequence_type.range_sequence?
                                                                                                     }
   validate :range_start_less_than_range_end, if: proc { |sequence| sequence.sequence_type.range_sequence? }
+  validate :uniq_values_for_static_list, if: proc { |sequence| sequence.sequence_type.static_list? }
 
   def range_values
     "#{range_start}-#{range_end}"
@@ -44,5 +45,9 @@ class Sequence < ApplicationModel
     return unless range_start >= range_end
 
     errors.add(:range_end, :range_start_less_than_range_end)
+  end
+
+  def uniq_values_for_static_list
+    errors.add(:static_list, :uniq_values_for_static_list) if static_list.uniq != static_list
   end
 end

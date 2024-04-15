@@ -16,7 +16,7 @@ module Macro
         end
 
         def update
-          if stop_area.update transport_mode: chouette_transport_mode
+          if stop_area.update transport_mode: chouette_transport_mode.code
             create_message
           else
             create_message criticity: 'error', message_key: 'error'
@@ -25,7 +25,7 @@ module Macro
 
         def chouette_transport_mode
           @chouette_transport_mode ||= 
-            ::Chouette::TransportMode.new(line_transport_mode, line_transport_submode).code
+            ::Chouette::TransportMode.new(line_transport_mode, line_transport_submode)
         end
 
         def line_transport_mode
@@ -46,7 +46,7 @@ module Macro
           attributes.merge!(
             message_attributes: {
               name: stop_area.name,
-              transport_mode: chouette_transport_mode
+              transport_mode: chouette_transport_mode.human_name
             },
             source: stop_area
           )
@@ -63,28 +63,28 @@ module Macro
             "lines.transport_submode AS line_transport_submode")
           .joins(routes: :line)
           .where(id: candidate_stop_area_ids)
+          .distinct
       end
 
       def candidate_stop_area_ids
         Chouette::StopArea
           .select(:id)
-          .where(transport_mode: nil)
-          .where('line_transport_mode IS NOT NULL')
-          .from("(#{base_query}) stop_areas")
+          .from("(#{base_query.to_sql}) stop_area_ids")
           .group(:id)
-          .having('count(id) = 1')
+          .having('count(*) = 1')
       end
 
       def base_query
        scope
         .stop_areas
+        .where(transport_mode: nil)
+        .where.not(routes: { lines: { transport_mode: nil } })
+        .distinct
         .select(
-          'public.stop_areas.*',
+          'public.stop_areas.id',
           'public.lines.transport_mode AS line_transport_mode',
           'public.lines.transport_submode AS line_transport_submode')
         .joins(routes: :line)
-        .distinct
-        .to_sql
       end
     end
   end

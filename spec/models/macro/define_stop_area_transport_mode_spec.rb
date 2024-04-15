@@ -88,7 +88,7 @@ RSpec.describe Macro::DefineStopAreaTransportMode do
             criticity: 'info',
             message_attributes: {
               'name' => second_stop_area.name,
-              'transport_mode' => 'bus'
+              'transport_mode' => 'Bus'
             },
             source: second_stop_area
           )
@@ -97,7 +97,7 @@ RSpec.describe Macro::DefineStopAreaTransportMode do
             criticity: 'info',
             message_attributes: {
               'name' => third_stop_area.name,
-              'transport_mode' => 'tram'
+              'transport_mode' => 'Tram'
             },
             source: third_stop_area
           )

@@ -339,10 +339,14 @@ class Merge::Referential::Legacy < Merge::Referential::Base
             # Because TimeTables will be modified according metadata periods
             # we're loading timetables per line (line is associated to a period list)
             #
-            # line_id: [ { time_table.id, vehicle_journey.checksum } ]
-            time_tables_by_lines = time_tables_with_associated_lines.inject(Hash.new { |h,k| h[k] = [] }) do |hash, row|
-              hash[row.shift] << {id: row.first, vehicle_journey_id: row.second}
-              hash
+            # { line.id => { time_table.id => [ vehicle_journey.id, vehicle_journey.id ], ... }, ... }
+
+            time_tables_by_lines = Hash.new do |h,line_id|
+              h[line_id] = Hash.new { |h,time_table_id| h[time_table_id] = [] }
+            end
+
+            time_tables_with_associated_lines.each do |(line_id, time_table_id, vehicle_journey_id)|
+              time_tables_by_lines[line_id][time_table_id] << vehicle_journey_id
             end
 
             [ time_tables_by_id, time_tables_by_lines ]
@@ -351,15 +355,18 @@ class Merge::Referential::Legacy < Merge::Referential::Base
 
         new.switch do
           Chouette::Benchmark.measure("time_tables") do
-            referential_time_tables_with_lines.each do |line_id, time_tables_properties|
+            referential_time_tables_with_lines.each do |line_id, time_tables_with_vehicle_journey_ids|
               # Because TimeTables will be modified according metadata periods
               # we're loading timetables per line (line is associated to a period list)
               line = workbench.line_referential.lines.find(line_id)
 
-              time_tables_properties.each_slice(30) do |batch|
+              Rails.logger.debug { "Merge Line #{line.id}/#{line.name} #{time_tables_with_vehicle_journey_ids.size} Timetables" }
+
+              # Merge all TimeTables associated with this Line .. by batch of 100
+              time_tables_with_vehicle_journey_ids.each_slice(100) do |batch|
                 Chouette::TimeTable.transaction do
-                  batch.each do |properties|
-                    time_table = referential_time_tables_by_id[properties[:id]]
+                  batch.each do |time_table_id, vehicle_journey_ids|
+                    time_table = referential_time_tables_by_id[time_table_id]
                     Rails.logger.debug { "Merge Timetable #{time_table.id} in Line #{line.id}/#{line.name}" }
 
                     timetable_codes = ReferentialCode.unpersisted(time_table.codes, code_spaces: code_spaces)
@@ -417,31 +424,29 @@ class Merge::Referential::Legacy < Merge::Referential::Base
                     existing_time_table = line.time_tables.find_by checksum: candidate_time_table.checksum
 
                     if existing_time_table
+                      Rails.logger.debug "Find existing TimeTable #{existing_time_table.id} for #{candidate_time_table.checksum}"
                       existing_time_table.merge_metadata_from candidate_time_table
                       ReferentialCode.merge existing_time_table.codes, timetable_codes
                     else
+                      Rails.logger.debug "Create new TimeTable for #{candidate_time_table.checksum}"
                       objectid = Chouette::TimeTable.where(objectid: time_table.objectid).exists? ? nil : time_table.objectid
                       candidate_time_table.objectid = objectid
 
                       save_model! candidate_time_table
 
-                      # Checksum is changed by #intersect_periods
-                      # if new_time_table.checksum != time_table.checksum
-                      #   raise "Checksum has changed: #{time_table.checksum_source} #{new_time_table.checksum_source}"
-                      # end
-
                       existing_time_table = candidate_time_table
                     end
 
-                    # associate VehicleJourney
-
-                    new_vehicle_journey_id = existing_vehicle_journey_ids[properties[:vehicle_journey_id]]
-                    unless new_vehicle_journey_id
-                      raise "TimeTable #{existing_time_table.inspect} associated to a not-merged VehicleJourney: #{properties[:vehicle_journey_id]}"
+                    # associate VehicleJourneys with this TimeTable
+                    new_vehicle_journey_ids = vehicle_journey_ids.map do |vehicle_journey_id|
+                      new_vehicle_journey_id = existing_vehicle_journey_ids[vehicle_journey_id]
+                      unless new_vehicle_journey_id
+                        raise "TimeTable #{existing_time_table.inspect} associated to a not-merged VehicleJourney: #{vehicle_journey_id}"
+                      end
+                      new_vehicle_journey_id
                     end
 
-                    associated_vehicle_journey = line.vehicle_journeys.find(new_vehicle_journey_id)
-                    associated_vehicle_journey.time_tables << existing_time_table
+                    existing_time_table.vehicle_journeys << line.vehicle_journeys.find(new_vehicle_journey_ids)
                   end
                 end
               end

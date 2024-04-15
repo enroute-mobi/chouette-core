@@ -43,3 +43,5 @@ en:
           attributes:
             range_end:
               range_start_less_than_range_end: "'Range start' must be less than 'Range end'"
+            static_list:
+              uniq_values_for_static_list: Values should be uniq

@@ -43,3 +43,5 @@ fr:
           attributes:
             range_end:
               range_start_less_than_range_end: "'Début de l'intervalle' doit être inférieur à 'Fin de l'intervalle'"
+            static_list:
+              uniq_values_for_static_list: Les valeurs doivent être uniques

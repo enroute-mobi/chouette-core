@@ -24,17 +24,15 @@ module Macro
         end
 
         def chouette_transport_mode
-          @chouette_transport_mode ||= 
+          @chouette_transport_mode ||=
             ::Chouette::TransportMode.new(line_transport_mode, line_transport_submode)
         end
 
-        def line_transport_mode
-          stop_area.line_transport_mode
-        end
+        delegate :line_transport_mode, to: :stop_area
 
         def line_transport_submode
           return nil if stop_area.line_transport_submode == 'undefined'
-            
+
           stop_area.line_transport_submode
         end
 
@@ -59,8 +57,9 @@ module Macro
           .stop_areas
           .select(
             'public.stop_areas.*',
-            "lines.transport_mode AS line_transport_mode",
-            "lines.transport_submode AS line_transport_submode")
+            'lines.transport_mode AS line_transport_mode',
+            'lines.transport_submode AS line_transport_submode'
+          )
           .joins(routes: :line)
           .where(id: candidate_stop_area_ids)
           .distinct
@@ -75,16 +74,17 @@ module Macro
       end
 
       def base_query
-       scope
-        .stop_areas
-        .where(transport_mode: nil)
-        .where.not(routes: { lines: { transport_mode: nil } })
-        .distinct
-        .select(
-          'public.stop_areas.id',
-          'public.lines.transport_mode AS line_transport_mode',
-          'public.lines.transport_submode AS line_transport_submode')
-        .joins(routes: :line)
+        scope
+          .stop_areas
+          .where(transport_mode: nil)
+          .where.not(routes: { lines: { transport_mode: nil } })
+          .distinct
+          .select(
+            'public.stop_areas.id',
+            'public.lines.transport_mode AS line_transport_mode',
+            'public.lines.transport_submode AS line_transport_submode'
+          )
+          .joins(routes: :line)
       end
     end
   end

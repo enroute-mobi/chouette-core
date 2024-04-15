@@ -1,7 +1,6 @@
 # frozen_string_literal: true
 
 RSpec.describe Macro::DefineStopAreaTransportMode do
-
   it 'should be one of the available Macro' do
     expect(Macro.available).to include(described_class)
   end
@@ -21,7 +20,6 @@ RSpec.describe Macro::DefineStopAreaTransportMode do
           route line: :line, stop_areas: %i[first second last]
           route line: :other, stop_areas: %i[first third last]
         end
-      
       end
     end
 
@@ -57,7 +55,7 @@ RSpec.describe Macro::DefineStopAreaTransportMode do
           expect do
             subject
             second_stop_area.reload
-          end.to change{ second_stop_area.transport_mode&.code }.from(nil).to('bus')
+          end.to change { second_stop_area.transport_mode&.code }.from(nil).to('bus')
         end
 
         it 'should update transport_mode from other into third stop area' do
@@ -71,14 +69,14 @@ RSpec.describe Macro::DefineStopAreaTransportMode do
           expect do
             subject
             first_stop_area.reload
-          end.not_to change { first_stop_area.transport_mode&.code }
+          end.not_to(change { first_stop_area.transport_mode&.code })
         end
 
         it 'should not change transport_mode for the last stop area' do
           expect do
             subject
             last_stop_area.reload
-          end.not_to change { last_stop_area.transport_mode }
+          end.not_to(change { last_stop_area.transport_mode })
         end
 
         it 'creates a message for each stop area' do

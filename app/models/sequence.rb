@@ -34,7 +34,7 @@ class Sequence < ApplicationModel
     else
       return [] if static_list.blank?
 
-      values = static_list.sort.slice(offset, limit + offset) || []
+      values = static_list.sort.slice(offset - 1, limit) || []
     end
     values
   end

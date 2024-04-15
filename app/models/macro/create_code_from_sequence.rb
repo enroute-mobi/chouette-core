@@ -86,7 +86,7 @@ module Macro
         def value
           unless code_values.any?
             @code_values = possible_code_values(offset, BATCH_SIZE)
-            @offset += 1
+            @offset += BATCH_SIZE
           end
 
           @code_values.shift

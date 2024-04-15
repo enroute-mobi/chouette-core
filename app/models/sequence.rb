@@ -24,20 +24,19 @@ class Sequence < ApplicationModel
   end
 
   def values(offset: 1, limit: 1000)
-    values = []
     if sequence_type.range_sequence?
       return [] unless range_start && range_end
 
-      value_start = offset
+      value_start = range_start + offset - 1
       value_end = value_start + limit
       value_end = range_end if value_end > range_end
-      values = (value_start..value_end).to_a
+
+      (value_start..value_end).to_a
     else
       return [] if static_list.blank?
 
-      values = static_list.sort.slice(offset - 1, limit) || []
+      static_list.sort.slice(offset - 1, limit) || []
     end
-    values
   end
 
   def range_start_less_than_range_end

@@ -3,8 +3,8 @@
   .w-4/6.flex.flex-col.items-start.relative x-data="handler()"
     template[x-for="(field, index) in fields" :key="index"]
       .flex.w-2/5.mb-5
-        input.form-control.mr-5 x-model="field.first_profile_option" type="text" x-bind:name="`export[options][profile_options]first_profile_option[${index}]`"
-        input.form-control.mr-5 x-model="field.second_profile_option" type="text" x-bind:name="`export[options][profile_options]second_profile_option[${index}]`"
+        input.form-control.mr-5 x-model="field.key" type="text" x-bind:name="`export[options][profile_options][${index}][key]`"
+        input.form-control.mr-5 x-model="field.value" type="text" x-bind:name="`export[options][profile_options][${index}][value]`"
         button type="button" class="btn btn-danger btn-small" @click="removeField(index)"
           = t('actions.delete')
     button type="button" class="btn btn-info" @click="addNewField()"

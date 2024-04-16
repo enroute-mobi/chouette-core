@@ -31,10 +31,11 @@ class ExportDecorator < AF83::Decorator
   end
 
   define_instance_method :display_profile_options do
-    object.profile_options['first_profile_option'].map do |key, first_value|
-      second_value = object.profile_options['second_profile_option'][key]
-      [first_value, second_value].join(' : ')
-    end.join('<br/>').html_safe
+    displayed_profile_options = ""
+    object.profile_options.each_pair do |key, profile_option|
+      displayed_profile_options += "#{', ' if key.to_i > 0}#{profile_option['key']} : #{profile_option['value']}"
+    end
+    displayed_profile_options
   end
 
   define_instance_method :display_period do

@@ -32,8 +32,9 @@ class ExportDecorator < AF83::Decorator
 
   define_instance_method :display_profile_options do
     displayed_profile_options = ""
-    object.profile_options.each_pair do |key, profile_option|
-      displayed_profile_options += "#{', ' if key.to_i > 0}#{profile_option['key']} : #{profile_option['value']}"
+    object.profile_options.each_pair do |key, value|
+      displayed_profile_options += ", " if displayed_profile_options.present?
+      displayed_profile_options += "#{key} : #{value}"
     end
     displayed_profile_options
   end

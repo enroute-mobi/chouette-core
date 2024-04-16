@@ -452,6 +452,14 @@ class Export::NetexGeneric < Export::Base
       @netex_identifier ||= Code::Value.parse(code_provider.code(model))
     end
 
+    def netex_attributes
+      {
+        id: netex_identifier.to_s,
+        changed: updated_at,
+        created: created_at
+      }
+    end
+
     def code_provider
       @code_provider ||= Export::CodeProvider.null
     end
@@ -471,25 +479,26 @@ class Export::NetexGeneric < Export::Base
     include Accessibility
 
     def netex_attributes # rubocop:disable Metrics/MethodLength
-      {
-        id: netex_identifier.to_s,
-        derived_from_object_ref: derived_from_object_ref,
-        name: name,
-        public_code: public_code,
-        centroid: centroid,
-        raw_xml: import_xml,
-        key_list: key_list,
-        accessibility_assessment: accessibility_assessment,
-        postal_address: postal_address,
-        url: url,
-        transport_mode: netex_transport_mode,
-        transport_submode: netex_transport_submode
-      }.tap do |attributes|
-        unless netex_quay?
-          attributes[:parent_site_ref] = parent_site_ref
-          attributes[:place_types] = place_types
+      super.merge(
+        {
+          derived_from_object_ref: derived_from_object_ref,
+          name: name,
+          public_code: public_code,
+          centroid: centroid,
+          raw_xml: import_xml,
+          key_list: key_list,
+          accessibility_assessment: accessibility_assessment,
+          postal_address: postal_address,
+          url: url,
+          transport_mode: netex_transport_mode,
+          transport_submode: netex_transport_submode
+        }.tap do |attributes|
+          unless netex_quay?
+            attributes[:parent_site_ref] = parent_site_ref
+            attributes[:place_types] = place_types
+          end
         end
-      end
+      )
     end
 
     def netex_transport_mode
@@ -613,18 +622,19 @@ class Export::NetexGeneric < Export::Base
     class Decorator < ModelDecorator
 
       def netex_attributes
-        {
-          id: netex_identifier.to_s,
-          name: name,
-          short_name: short_name,
-          description: description,
-          centroid: centroid,
-          postal_address: postal_address,
-          entrance_type: entrance_type,
-          is_entry: entry?,
-          is_exit: exit?,
-          raw_xml: raw_xml,
-        }
+        super.merge(
+          {
+            name: name,
+            short_name: short_name,
+            description: description,
+            centroid: centroid,
+            postal_address: postal_address,
+            entrance_type: entrance_type,
+            is_entry: entry?,
+            is_exit: exit?,
+            raw_xml: raw_xml,
+          }
+        )
       end
 
       def netex_resource
@@ -829,23 +839,24 @@ class Export::NetexGeneric < Export::Base
       include Accessibility
 
       def netex_attributes
-        {
-          id: netex_identifier.to_s,
-          name: netex_name,
-          transport_mode: transport_mode,
-          transport_submode: netex_transport_submode,
-          operator_ref: operator_ref,
-          public_code: number,
-          represented_by_group_ref: represented_by_group_ref,
-          presentation: presentation,
-          additional_operators: additional_operators,
-          key_list: netex_alternate_identifiers,
-          accessibility_assessment: accessibility_assessment,
-          status: status,
-          valid_between: valid_between,
-          raw_xml: import_xml,
-          derived_from_object_ref: derived_from_object_ref
-        }
+        super.merge(
+          {
+            name: netex_name,
+            transport_mode: transport_mode,
+            transport_submode: netex_transport_submode,
+            operator_ref: operator_ref,
+            public_code: number,
+            represented_by_group_ref: represented_by_group_ref,
+            presentation: presentation,
+            additional_operators: additional_operators,
+            key_list: netex_alternate_identifiers,
+            accessibility_assessment: accessibility_assessment,
+            status: status,
+            valid_between: valid_between,
+            raw_xml: import_xml,
+            derived_from_object_ref: derived_from_object_ref
+          }
+        )
       end
 
       def netex_name
@@ -920,12 +931,13 @@ class Export::NetexGeneric < Export::Base
     class Decorator < ModelDecorator
 
       def netex_attributes
-        {
-          id: netex_identifier.to_s,
-          name: name,
-          raw_xml: import_xml,
-          key_list: netex_alternate_identifiers
-        }
+        super.merge(
+          {
+            name: name,
+            raw_xml: import_xml,
+            key_list: netex_alternate_identifiers
+          }
+        )
       end
 
       def netex_resource
@@ -949,11 +961,12 @@ class Export::NetexGeneric < Export::Base
     class Decorator < ModelDecorator
 
       def netex_attributes
-        {
-          id: netex_identifier.to_s,
-          name: name,
-          raw_xml: import_xml
-        }
+        super.merge(
+          {
+            name: name,
+            raw_xml: import_xml
+          }
+        )
       end
 
       def netex_resource
@@ -1277,18 +1290,19 @@ class Export::NetexGeneric < Export::Base
       delegate :line_routing_constraint_zones, to: :line
 
       def netex_attributes
-        {
-          id: netex_identifier.to_s,
-          data_source_ref: data_source_ref,
-          name: netex_name,
-          line_ref: line_ref,
-          direction_ref: direction_ref,
-          direction_type: direction_type,
-          points_in_sequence: points_in_sequence,
-          key_list: netex_alternate_identifiers
-        }.tap do |attributes|
-          attributes[:direction_ref] = direction_ref if published_name.present?
-        end
+        super.merge(
+          {
+            data_source_ref: data_source_ref,
+            name: netex_name,
+            line_ref: line_ref,
+            direction_ref: direction_ref,
+            direction_type: direction_type,
+            points_in_sequence: points_in_sequence,
+            key_list: netex_alternate_identifiers
+          }.tap do |attributes|
+            attributes[:direction_ref] = direction_ref if published_name.present?
+          end
+        )
       end
 
       def netex_resource
@@ -1445,14 +1459,15 @@ class Export::NetexGeneric < Export::Base
     class Decorator < ModelDecorator
 
       def netex_attributes
-        {
-          id: netex_identifier.to_s,
-          data_source_ref: data_source_ref,
-          name: name,
-          members: scheduled_stop_point_refs,
-          lines: line_refs,
-          zone_use: zone_use
-        }
+        super.merge(
+          {
+            data_source_ref: data_source_ref,
+            name: name,
+            members: scheduled_stop_point_refs,
+            lines: line_refs,
+            zone_use: zone_use
+          }
+        )
       end
 
       def scheduled_stop_point_refs
@@ -1496,16 +1511,17 @@ class Export::NetexGeneric < Export::Base
     class Decorator < ModelDecorator
 
       def netex_attributes
-        {
-          id: netex_identifier.to_s,
-          data_source_ref: data_source_ref,
-          name: name,
-          route_ref: route_ref,
-          points_in_sequence: points_in_sequence,
-          key_list: netex_alternate_identifiers
-        }.tap do |attributes|
-          attributes[:destination_display_ref] = destination_display_ref if published_name.present?
-        end
+        super.merge(
+          {
+            data_source_ref: data_source_ref,
+            name: name,
+            route_ref: route_ref,
+            points_in_sequence: points_in_sequence,
+            key_list: netex_alternate_identifiers
+          }.tap do |attributes|
+            attributes[:destination_display_ref] = destination_display_ref if published_name.present?
+          end
+        )
       end
 
       def netex_resource
@@ -1684,15 +1700,16 @@ class Export::NetexGeneric < Export::Base
       attr_accessor :code_space_keys
 
       def netex_attributes
-        {
-          id: netex_identifier.to_s,
-          data_source_ref: data_source_ref,
-          name: published_journey_name,
-          journey_pattern_ref: journey_pattern_ref,
-          public_code: published_journey_identifier,
-          day_types: day_types,
-          key_list: netex_alternate_identifiers
-        }
+        super.merge(
+          {
+            data_source_ref: data_source_ref,
+            name: published_journey_name,
+            journey_pattern_ref: journey_pattern_ref,
+            public_code: published_journey_identifier,
+            day_types: day_types,
+            key_list: netex_alternate_identifiers
+          }
+        )
       end
 
       def netex_resource

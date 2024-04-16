@@ -353,6 +353,41 @@ RSpec.describe Export::NetexGeneric do
     end
   end
 
+  describe 'created and changed attributes' do
+    subject { decorator.netex_attributes }
+
+    let(:decorator) { Export::NetexGeneric::Lines::Decorator.new model, code_provider: code_provider}
+    let(:code_provider) { Export::CodeProvider.new export_scope}
+
+    let(:context) do
+      Chouette.create do
+        stop_area
+        referential
+      end
+    end
+
+    let(:export_scope) do
+      double "Export::Scope", lines: referential.lines, companies: Chouette::Company.none, networks: Chouette::Network.none
+    end
+
+    let(:referential) { context.referential }
+
+    let(:expected_attributes) do
+      { 
+        created: model.created_at,
+        changed: model.updated_at
+      }
+    end
+
+    describe '#lines' do
+      let(:model) { referential.lines.first }
+
+      it { is_expected.to match hash_including(expected_attributes) }
+
+      it { expect(decorator.netex_resource).to an_object_having_attributes(expected_attributes) }
+    end
+  end
+
   describe "Lines export" do
     describe Export::NetexGeneric::Lines::Decorator do
       let(:line) { Chouette::Line.new }

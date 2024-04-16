@@ -19,7 +19,7 @@ module Chouette
       day_offset_base = 0
       @at_stops.each do |vehicle_journey_at_stop|
         %w{arrival departure}.each do |part|
-          time_of_day = vehicle_journey_at_stop.send "#{part}_time_of_day"
+          time_of_day = vehicle_journey_at_stop.send "#{part}_local_time_of_day"
           if previous_time_of_day && time_of_day
             time_of_day = time_of_day.add day_offset: day_offset_base
 

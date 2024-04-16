@@ -80,6 +80,32 @@ describe Chouette::VehicleJourneyAtStopsDayOffset do
           .and change(at_stops[3], :arrival_day_offset).by(2)
           .and change(at_stops[3], :departure_day_offset).by(2)
       end
+
+      it "increments day offset even when a time zone is present" do
+        at_stops = []
+        [
+          ['23:30', '23:50'],
+          ['00:05', '00:15'],
+          ['00:30', '00:35']
+        ].each do |arrival_time, departure_time|
+          at_stops << Chouette::VehicleJourneyAtStop.new.tap do |vehicle_journey_at_stop|
+            vehicle_journey_at_stop.arrival_time_of_day = TimeOfDay.parse(arrival_time, utc_offset: 3600)
+            vehicle_journey_at_stop.departure_time_of_day = TimeOfDay.parse(departure_time, utc_offset: 3600)
+          end.tap do |vehicle_journey_at_stop|
+            # Simulate a StopArea time zone
+            allow(vehicle_journey_at_stop).to receive(:time_zone_offset).and_return(3600)
+          end
+        end
+
+        offsetter = Chouette::VehicleJourneyAtStopsDayOffset.new(at_stops)
+
+        expect{ offsetter.calculate! }.to not_change(at_stops[0], :arrival_day_offset)
+          .and not_change(at_stops[0], :departure_day_offset)
+          .and change(at_stops[1], :arrival_day_offset).by(1)
+          .and change(at_stops[1], :departure_day_offset).by(1)
+          .and change(at_stops[2], :arrival_day_offset).by(1)
+          .and change(at_stops[2], :departure_day_offset).by(1)
+      end
     end
 
     context 'when first vehicle journey at stops departure and arrival < 23 and second vehicle journey at stops departure and arrival <= 1' do

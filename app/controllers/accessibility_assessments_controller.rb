@@ -54,7 +54,8 @@ class AccessibilityAssessmentsController < Chouette::ReferentialController
       :lift_free_accessibility,
       :audible_signals_availability,
       :visual_signs_availability,
-      :accessibility_limitation_description
+      :accessibility_limitation_description,
+      codes_attributes: [:id, :code_space_id, :value, :_destroy],
     )
   end
 end

@@ -32,7 +32,7 @@
                 ), \
               TableBuilderHelper::Column.new( \
                 key: :status, \
-                attribute: Proc.new { |n| operation_status(n.status, verbose: true) }, \
+                attribute: Proc.new { |n| operation_user_status(n) }, \
               ), \
               TableBuilderHelper::Column.new( \
                 key: :created_at, \

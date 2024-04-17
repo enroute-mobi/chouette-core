@@ -24,20 +24,14 @@ class Publication < Operation
     parent.new
   end
 
-  def perform
+  def perform # rubocop:disable Metrics/AbcSize
     referential.switch do
-      all_synchronous = true
-
       export_builder.build_export.tap do |export|
-        all_synchronous = all_synchronous && export.synchronous
-
         Rails.logger.info "Launching export #{export.name}"
         export.save!
 
         raise "Publication Export '#{export.name}' failed" if export.synchronous && !export.successful?
       end
-
-      return unless all_synchronous
 
       send_to_destinations
       # Send notification for synchronous exports (Publication Netex Generic, GTFS...)

@@ -66,8 +66,7 @@ GIT
 
 GIT
   remote: https://bitbucket.org/enroute-mobi/netex.git
-  revision: 98517c2a6dc48b0713eb9707f2260cbae4d187af
-  branch: CHOUETTE-3603-define-netex-profile-options
+  revision: 41e1ab74f17538fdb4c52f5c42aeac7d4665aacf
   specs:
     netex (0.1.2)
       activesupport

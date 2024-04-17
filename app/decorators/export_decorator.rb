@@ -30,6 +30,15 @@ class ExportDecorator < AF83::Decorator
     object.workgroup.line_referential.lines.where(id: object.line_ids).limit(15).pluck(:name).join(", ")
   end
 
+  define_instance_method :display_profile_options do
+    displayed_profile_options = ""
+    object.profile_options.each_pair do |key, value|
+      displayed_profile_options += ", " if displayed_profile_options.present?
+      displayed_profile_options += "#{key} : #{value}"
+    end
+    displayed_profile_options
+  end
+
   define_instance_method :display_period do
     return "#{I18n.l(from, format: :default)} - #{I18n.l(to, format: :default)}" if(respond_to?(:from) && respond_to?(:to) && from.present? && to.present?)
     return "#{I18n.t('enumerize.period.only_next_days')} :  #{duration}" if duration.present?

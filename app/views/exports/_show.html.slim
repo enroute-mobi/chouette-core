@@ -10,6 +10,8 @@
       = d.attribute :period, value_method: :display_period
       - if @export.type == "Export::NetexGeneric"
         = d.attribute :profile, value_method: :display_profile
+        = d.attribute :participant_ref
+        = d.attribute :profile_options, value_method: :display_profile_options
       - if @export.type == "Export::Gtfs"
         = d.attribute :prefer_referent_stop_area, as: :boolean
         = d.attribute :prefer_referent_company, as: :boolean

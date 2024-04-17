@@ -118,6 +118,8 @@ en:
         include_stop_visits: "Include Stop Visits"
         ignore_parent_stop_places: "Ignore parent Stop Places"
         period: Exported periods
+        participant_ref: Netex Participant Ref
+        profile_options: Netex Profile Settings
       export:
         <<: *attrs
         base:

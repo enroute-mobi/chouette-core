@@ -11,7 +11,7 @@ class Export::NetexGeneric < Export::Base
   option :period, default_value: 'all_periods', enumerize: %w[all_periods only_next_days static_day_period]
   option :exported_lines, default_value: 'all_line_ids', enumerize: %w[line_ids company_ids line_provider_ids all_line_ids]
   option :participant_ref
-  option :profile_options, default_value: {}
+  option :profile_options, default_value: {}, serialize: ActiveRecord::Type::Json
   option :prefer_referent_line, default_value: false, enumerize: [true, false], serialize: ActiveModel::Type::Boolean
   option :exported_code_space
 
@@ -1512,7 +1512,7 @@ class Export::NetexGeneric < Export::Base
         Netex::ServiceJourneyPattern.new netex_attributes
       end
 
-      def route_ref 
+      def route_ref
         Netex::Reference.new(code_provider.routes.code(route_id), type: 'RouteRef')
       end
 

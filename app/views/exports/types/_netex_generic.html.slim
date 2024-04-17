@@ -7,3 +7,6 @@
   = sub_form.input :prefer_referent_line, as: :switchable_checkbox
   - if has_feature?("export_with_code_space")
     = render 'exports/options/exported_code_space', form: sub_form
+  = sub_form.input :participant_ref
+  = render 'exports/options/profile_options', form: sub_form
+

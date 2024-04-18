@@ -45,11 +45,11 @@ class NotificationRule < ApplicationModel
   validates :workbench, :notification_type, :target_type, presence: true
 
   validates :priority, numericality: {
-    only_integer: true,
-    greater_than_or_equal_to: 1, less_than_or_equal_to: 1000
-  }
+              only_integer: true,
+              greater_than_or_equal_to: 1, less_than_or_equal_to: 1000
+            }
   validates :users, length: { minimum: 1 }, if: proc { |rule| rule.target_type == 'user' }
-  validates :external_email, presence: true, if: proc { |rule| rule.target_type == 'external_email' }
+  validates :external_email, email: true, if: proc { |rule| rule.target_type == 'external_email' }
 
   def target_class
     "#{self.class}::Target::#{target_type.classify}".constantize

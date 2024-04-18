@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 RSpec.describe SubscriptionsController, type: :controller do
   let(:params){{
     user_name: "foo",
@@ -29,13 +31,15 @@ RSpec.describe SubscriptionsController, type: :controller do
     end
 
     context "with all data set" do
-      let(:params){{
-        organisation_name: "organisation_name",
-        user_name: "user_name",
-        email: "email@email.com",
-        password: "password",
-        password_confirmation: "password",
-      }}
+      let(:params) do
+        {
+          organisation_name: 'organisation_name',
+          user_name: 'user_name',
+          email: 'email@email.com',
+          password: 'password$42',
+          password_confirmation: 'password$42'
+        }
+      end
 
       before(:each) do
         allow(Subscription).to receive(:enabled?) { true }

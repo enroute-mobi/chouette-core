@@ -6,7 +6,7 @@ RSpec.describe Users::SessionsController, type: :controller do
   before do
     allow(warden).to receive(:authenticate!).and_wrap_original do |m, *args|
       params = m.receiver.params
-      if params[:user] && params[:user][:email] == user.email && params[:user][:password] == 'user_password'
+      if params[:user] && params[:user][:email] == user.email && params[:user][:password] == 'user_password$42'
         user
       else
         _, opts = m.receiver.send(:_retrieve_scope_and_opts, args)
@@ -42,7 +42,7 @@ RSpec.describe Users::SessionsController, type: :controller do
   let(:context) do
     Chouette::Factory.create do
       organisation do
-        user(password: 'user_password', password_confirmation: 'user_password')
+        user(password: 'user_password$42', password_confirmation: 'user_password$42')
       end
     end
   end
@@ -90,7 +90,7 @@ RSpec.describe Users::SessionsController, type: :controller do
     end
 
     context 'with login and password' do
-      let(:create_params) { { user: { email: user.email, password: 'user_password' } } }
+      let(:create_params) { { user: { email: user.email, password: 'user_password$42' } } }
 
       it { is_expected.to redirect_to('/') }
 

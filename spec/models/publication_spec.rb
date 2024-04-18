@@ -1,11 +1,10 @@
 # frozen_string_literal: true
 
 RSpec.describe Publication, type: :model do
-  it { should belong_to :publication_setup }
-  it { should belong_to :parent }
+  it { is_expected.to belong_to(:publication_setup).required(true) }
+  it { is_expected.to belong_to(:referential).required(true) }
+  it { is_expected.to belong_to(:parent).required(false) }
   it { should have_one :export }
-  it { should validate_presence_of :publication_setup }
-  it { should validate_presence_of :parent }
 
   it { is_expected.to have_one(:workgroup) }
   it { is_expected.to have_one(:organisation) }
@@ -15,8 +14,16 @@ RSpec.describe Publication, type: :model do
     { type: export_type, duration: 90, prefer_referent_stop_area: false, ignore_single_stop_station: false }
   end
   let(:publication_setup) { create :publication_setup, export_options: export_options }
-  let(:publication) { create :publication, parent: operation, publication_setup: publication_setup, creator: 'test' }
   let(:referential) { first_referential }
+  let(:publication) do
+    create(
+      :publication,
+      referential: first_referential,
+      parent: operation,
+      publication_setup: publication_setup,
+      creator: 'test'
+    )
+  end
   let(:operation) { create :aggregate, referentials: [first_referential] }
 
   before(:each) do

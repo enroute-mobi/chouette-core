@@ -198,6 +198,8 @@ class Export::Base < ApplicationModel
 
   protected
 
+  alias referential_for_publication referential
+
   # Expected and used file extension
   # Can be overrided by sub classes
   def file_extension

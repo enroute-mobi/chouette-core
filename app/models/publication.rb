@@ -1,13 +1,12 @@
 # frozen_string_literal: true
 
 class Publication < Operation
-  belongs_to :publication_setup
+  belongs_to :publication_setup, required: true
   has_one :export, class_name: 'Export::Base', dependent: :destroy
+  belongs_to :referential, required: true
   belongs_to :parent, polymorphic: true
   has_many :reports, class_name: 'DestinationReport', dependent: :destroy
   has_many :publication_api_sources, class_name: 'PublicationApiSource', dependent: :destroy
-
-  validates :publication_setup, :parent, presence: true
 
   has_one :workgroup, through: :publication_setup
   has_one :organisation, through: :workgroup, source: :owner
@@ -18,10 +17,6 @@ class Publication < Operation
 
   def name
     self.class.tmf('name', setup_name: publication_setup.name, date: pretty_date)
-  end
-
-  def referential
-    parent.new
   end
 
   def perform # rubocop:disable Metrics/AbcSize

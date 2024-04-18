@@ -195,6 +195,9 @@ class Aggregate < ApplicationModel
     acts_as_list scope: :aggregate
   end
 
+  alias referential_for_publication new
+  protected :referential_for_publication
+
   private
 
   def prepare_new

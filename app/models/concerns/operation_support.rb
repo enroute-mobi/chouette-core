@@ -64,11 +64,19 @@ module OperationSupport
     referentials.any?(&:contains_urgent_offer?)
   end
 
-  def publish(options = {})
+  def publish(publication_attributes = {})
+    publication_attributes = publication_attributes.merge(parent: self, creator: creator)
     workgroup.publication_setups.enabled.each do |publication_setup|
-      publication = publication_setup.publish(self, options)
+      publication = publication_setup.publish(referential_for_publication, publication_attributes)
       publication.enqueue
     end
+  end
+
+  def publish_with_setup(publication_setup, publication_attributes = {})
+    publication_attributes = publication_attributes.merge(parent: self, creator: creator)
+    publication = publication_setup.publish(referential_for_publication, publication_attributes)
+    publication.enqueue
+    publication
   end
 
   def clean_previous_operations
@@ -195,5 +203,11 @@ module OperationSupport
 
   def current?
     output.current == new
+  end
+
+  protected
+
+  def referential_for_publication
+    raise NotImplementedError
   end
 end

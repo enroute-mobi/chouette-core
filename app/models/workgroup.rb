@@ -127,8 +127,7 @@ class Workgroup < ApplicationModel
       if aggregate
         publication_setups.where(force_daily_publishing: true).each do |ps|
           Rails.logger.info "[Workgroup ##{id}] Start daily publication #{name}"
-          publication = ps.publish(aggregate)
-          publication.enqueue
+          aggregate.publish_with_setup(ps)
         end
       end
 

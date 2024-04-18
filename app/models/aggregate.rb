@@ -25,7 +25,7 @@ class Aggregate < ApplicationModel
 
     workgroup.output.update current: new
     following_aggregates.each(&:cancel!)
-    publish rollback: true
+    publish
     workgroup.aggregated!
   end
 

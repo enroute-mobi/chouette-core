@@ -1148,7 +1148,6 @@ ActiveRecord::Schema.define(version: 2024_06_03_124932) do
     t.string "status"
     t.datetime "started_at"
     t.datetime "ended_at"
-    t.boolean "rollback"
     t.string "creator"
     t.string "user_status", null: false
     t.string "error_uuid"

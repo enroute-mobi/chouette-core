@@ -451,9 +451,11 @@ module Chouette
               transient :codes, {}
 
               after do |route|
-                transient(:codes).each do |code_space_short_name, value|
-                  code_space = route.workgroup.code_spaces.find_by!(short_name: code_space_short_name)
-                  route.codes.build(code_space: code_space, value: value)
+                transient(:codes).each do |code_space_short_name, values|
+                  Array(values).each do |value|
+                    code_space = route.workgroup.code_spaces.find_by!(short_name: code_space_short_name)
+                    route.codes.build(code_space: code_space, value: value)
+                  end
                 end
 
                 (transient(:stop_areas, resolve_instances: true) || []).each do |stop_area|
@@ -538,6 +540,8 @@ module Chouette
               attribute(:comment) { |n| "TimeTable #{n}" }
               attribute :int_day_types, TimeTable::EVERYDAY
 
+              transient :codes, {}
+
               after do
                 Array(transient(:dates_included)).each do |date|
                   new_instance.dates.build in_out: true, date: date
@@ -547,6 +551,13 @@ module Chouette
                 end
                 Array(transient(:periods)).each do |period|
                   new_instance.periods.build range: period
+                end
+
+                transient(:codes).each do |code_space_short_name, values|
+                  Array(values).each do |value|
+                    code_space = new_instance.workgroup.code_spaces.find_by!(short_name: code_space_short_name)
+                    new_instance.codes.build(code_space: code_space, value: value)
+                  end
                 end
               end
             end

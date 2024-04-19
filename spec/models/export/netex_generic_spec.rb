@@ -58,6 +58,15 @@ RSpec.describe Export::NetexGeneric do
 
   end
 
+  describe "#participant_ref" do
+    subject { export.participant_ref }
+
+    context "by default" do
+      let(:export) { Export::NetexGeneric.new }
+      it { is_expected.to eq('enRoute') }
+    end
+  end
+
   describe Export::NetexGeneric::AlternateIdentifiersExtractor::Decorator do
     subject(:decorator) { described_class.new(model, code_spaces: code_spaces) }
     let(:model) { double }

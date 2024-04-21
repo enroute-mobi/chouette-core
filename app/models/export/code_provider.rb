@@ -67,6 +67,10 @@ module Export
 
         attr_reader :collection, :code_space
 
+        def unique_collection
+          @unique_collection ||= model_class.where(id: collection.select(:id))
+        end
+
         def model_class
           @model_class ||= collection.model
         end
@@ -93,7 +97,7 @@ module Export
         def query_with_code
           <<~SQL
           select id_with_default_attribute.id, COALESCE(code, default_attribute) as code
-          from (#{collection.select(:id, "#{model_class.table_name}.#{default_attribute}::varchar as default_attribute").to_sql}) id_with_default_attribute
+          from (#{unique_collection.select(:id, "#{model_class.table_name}.#{default_attribute}::varchar as default_attribute").to_sql}) id_with_default_attribute
           left join (
             select distinct on (code) id, code from (#{code_query.to_sql}) id_with_code
           ) id_with_uniq_code
@@ -112,10 +116,10 @@ module Export
             ]
           ).as('code')
 
-          collection.left_joins(:codes)
+          unique_collection.left_joins(:codes)
             .where(code_table[:code_space_id].eq(code_space.id))
             .select(:id, code_value)
-            .group(:id, code_table[:code_space_id]).having('count(*) = 1')
+            .group(:id).having('count(*) = 1')
         end
 
         def with_registration_number_query

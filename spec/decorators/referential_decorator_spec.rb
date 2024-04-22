@@ -81,6 +81,10 @@ RSpec.describe ReferentialDecorator, type: %i[helper decorator] do
               'Dupliquer', 'Contrôler', 'Archiver', 'Nettoyer', 'Supprimer ce jeu de données']
             expect_action_link_hrefs(action).to match_array([
                                                               [:edit, current_workbench, object],
+                                                              workbench_referential_accessibility_assessments_path(
+                                                                current_workbench,
+                                                                object
+                                                              ),
                                                               workbench_referential_vehicle_journeys_path(
                                                                 current_workbench,
                                                                 object

@@ -10,7 +10,7 @@
     #restrictions
       .col-lg-12.permissions
         h2.mb-lg= t("workgroup_workbenches.show.restrictions")
-        - permissions_array_to_hash(Workbench.available_restriction.sort).each do |feature, feature_restriction|
+        - permissions_array_to_hash(Workbench.available_restriction).each do |feature, feature_restriction|
           .feature-header
             .feature-title
               = t("permissions.features.#{feature}")

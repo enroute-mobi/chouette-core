@@ -22,15 +22,6 @@ class StopAreaRoutingConstraint < ApplicationModel
 
   after_save :update_vehicle_journey_checksums
 
-  def clean_ignored_stop_area_routing_constraint_ids
-    vehicle_journeys.each do |vj|
-      vj.update ignored_stop_area_routing_constraint_ids: vj.ignored_stop_area_routing_constraint_ids - [self.id]
-    end
-  end
-
-  # we need to do this before_destroy because after the cross referentials index has been cleaned
-  before_destroy :clean_ignored_stop_area_routing_constraint_ids
-
   scope :with_stop, ->(stop_id){
     stop_id = stop_id.id if stop_id.respond_to?(:id)
     where('from_id = :stop_id OR to_id = :stop_id', stop_id: stop_id)

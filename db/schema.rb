@@ -1651,8 +1651,6 @@ ActiveRecord::Schema.define(version: 2024_06_04_133209) do
     t.string "data_source_ref"
     t.jsonb "custom_field_values", default: {}
     t.jsonb "metadata", default: {}
-    t.bigint "ignored_routing_contraint_zone_ids", default: [], array: true
-    t.bigint "ignored_stop_area_routing_constraint_ids", default: [], array: true
     t.bigint "line_notice_ids", default: [], array: true
     t.bigint "accessibility_assessment_id"
     t.bigint "service_facility_set_ids", default: [], array: true

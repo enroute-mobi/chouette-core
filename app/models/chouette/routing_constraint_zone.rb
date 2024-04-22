@@ -11,14 +11,6 @@ module Chouette
 
     attr_accessor :allow_entire_journey
 
-    belongs_to_array_in_many :vehicle_journeys, class_name: 'Chouette::VehicleJourney', array_name: :ignored_routing_contraint_zones
-
-    def update_vehicle_journey_checksums
-      vehicle_journeys.each(&:update_checksum!)
-    end
-    after_save :update_vehicle_journey_checksums
-    after_commit :clean_ignored_routing_contraint_zone_ids, on: :destroy
-
     validates_presence_of :name, :stop_points, :route_id
     validate :stop_points_belong_to_route, :at_least_two_stop_points_selected
     validate :not_all_stop_points_selected, unless: :allow_entire_journey
@@ -34,12 +26,6 @@ module Chouette
     scope :order_by_route_name, ->(direction) do
       joins(:route)
         .order("routes.name #{direction}")
-    end
-
-    def clean_ignored_routing_contraint_zone_ids
-      vehicle_journeys.find_each do |vj|
-        vj.update ignored_routing_contraint_zone_ids: vj.ignored_routing_contraint_zone_ids - [self.id]
-      end
     end
 
     def checksum_attributes(db_lookup = true)

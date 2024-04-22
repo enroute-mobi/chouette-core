@@ -27,10 +27,6 @@ module Chouette
 
     has_many :stop_areas, through: :journey_pattern
 
-    belongs_to_public :stop_area_routing_constraints,
-      collection_name: :ignored_stop_area_routing_constraints,
-      index_collection: -> { Chouette::VehicleJourney.where.not('ignored_stop_area_routing_constraint_ids = ARRAY[]::bigint[]') }
-
     has_array_of :line_notices, class_name: 'Chouette::LineNotice'
     belongs_to_public :line_notices,
       index_collection: -> { Chouette::VehicleJourney.where.not('line_notice_ids = ARRAY[]::bigint[]') }
@@ -38,8 +34,6 @@ module Chouette
     delegate :line, to: :route, allow_nil: true
 
     has_and_belongs_to_many :footnotes, :class_name => 'Chouette::Footnote'
-    has_array_of :ignored_routing_contraint_zones, class_name: 'Chouette::RoutingConstraintZone'
-    has_array_of :ignored_stop_area_routing_constraints, class_name: 'StopAreaRoutingConstraint'
 
     with_options(if: -> { validation_context != :inserter }) do |except_in_inserter_context|
       except_in_inserter_context.validates :route, presence: true
@@ -208,14 +202,6 @@ module Chouette
         attrs << vjas.uniq.sort_by { |s| s.stop_point&.position }.map(&:checksum)
         attrs << service_facility_set_ids
         attrs << accessibility_assessment_id
-
-        # The double condition prevents a SQL query "WHERE 1=0"
-        if ignored_routing_contraint_zone_ids.present? && ignored_routing_contraint_zones.present?
-          attrs << ignored_routing_contraint_zones.map(&:checksum).sort
-        end
-        if ignored_stop_area_routing_constraint_ids.present? && ignored_stop_area_routing_constraints.present?
-          attrs << ignored_stop_area_routing_constraints.map(&:checksum).sort
-        end
       end
     end
 
@@ -370,9 +356,7 @@ module Chouette
         'published_journey_identifier',
         'published_journey_name',
         'journey_pattern_id',
-        'company_id',
-        'ignored_routing_contraint_zone_ids',
-        'ignored_stop_area_routing_constraint_ids'
+        'company_id'
       ).to_hash
 
       if item['journey_pattern']

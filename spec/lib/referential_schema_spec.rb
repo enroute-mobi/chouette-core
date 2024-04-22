@@ -32,7 +32,7 @@ RSpec.describe ReferentialSchema do
     end
   end
 
-  describe '#analyse' do 
+  describe '#analyse' do
     subject { referential_schema.analyse }
 
     it 'performs an ANALYSE for each table' do
@@ -211,7 +211,6 @@ RSpec.describe ReferentialSchema do
           number mobility_restricted_suitability flexible_service
           journey_category created_at updated_at checksum checksum_source
           data_source_ref custom_field_values metadata
-          ignored_routing_contraint_zone_ids ignored_stop_area_routing_constraint_ids
           line_notice_ids accessibility_assessment_id service_facility_set_ids
         ]
 

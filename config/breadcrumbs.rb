@@ -298,26 +298,6 @@ crumb :referentials do |referential|
   parent :workbench, mutual_workbench(current_workbench)
 end
 
-crumb :referential_companies do |referential|
-  link I18n.t('companies.index.title'), referential_companies_path(referential)
-  parent :referential, referential
-end
-
-crumb :referential_company do |referential, company|
-  link breadcrumb_name(company), referential_company_path(referential, company)
-  parent :referential_companies, referential
-end
-
-crumb :referential_networks do |referential|
-  link I18n.t('networks.index.title'), referential_networks_path
-  parent :referential, referential
-end
-
-crumb :referential_network do |referential, network|
-  link  breadcrumb_name(network), referential_network_path(referential, network)
-  parent :referential_networks, referential
-end
-
 crumb :referential_vehicle_journeys do |referential|
   link I18n.t('referential_vehicle_journeys.index.title'), referential_vehicle_journeys_path(referential)
   parent :referential, referential

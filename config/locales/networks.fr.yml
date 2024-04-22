@@ -64,6 +64,3 @@ fr:
     show: Voir
     edit: Editer
     delete: Supprimer
-
-  referential_networks:
-    <<: *fr_networks

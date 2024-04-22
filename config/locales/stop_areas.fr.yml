@@ -273,6 +273,3 @@ fr:
     hints:
       stop_area:
         registration_number: Laisser blanc pour assigner une valeur automatiquement.
-
-  referential_stop_areas:
-    <<: *fr_stop_areas

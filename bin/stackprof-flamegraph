@@ -1,0 +1,10 @@
+#!/bin/sh
+
+file=$1
+html_file=${file}.html
+bundle exec stackprof --d3-flamegraph ${file} > ${html_file}
+
+echo "Open report ${html_file}"
+
+browser=${BROWSER:-xdg-open}
+$browser ${html_file}

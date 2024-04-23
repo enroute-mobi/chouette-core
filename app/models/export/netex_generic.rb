@@ -1546,8 +1546,13 @@ class Export::NetexGeneric < Export::Base
 
   class VehicleJourneyAtStops < Part
     def export!
+      stop_point_in_journey_pattern_ref_cache = {}
+
       vehicle_journey_at_stops.find_each_light do |light_vehicle_journey_at_stop|
-        decorated_vehicle_journey_at_stop = decorate(light_vehicle_journey_at_stop)
+        decorated_vehicle_journey_at_stop = decorate(
+          light_vehicle_journey_at_stop,
+          stop_point_in_journey_pattern_ref_cache: stop_point_in_journey_pattern_ref_cache
+        )
         target << decorated_vehicle_journey_at_stop.netex_resource
       end
     end
@@ -1587,13 +1592,21 @@ class Export::NetexGeneric < Export::Base
         __getobj__.try(:journey_pattern_id) || journey_pattern&.id
       end
 
+      def stop_point_in_journey_pattern_ref
+        stop_point_in_journey_pattern_ref_cache[[stop_point_id, journey_pattern_id]] ||= decorated_stop_point.stop_point_in_journey_pattern_ref
+      end
+
       def decorated_stop_point
         decorate(pseudo_stop_point, journey_pattern_id: journey_pattern_id, with: StopPointDecorator::StopPointInJourneyPattern)
       end
-      delegate :stop_point_in_journey_pattern_ref, to: :decorated_stop_point
 
       def pseudo_stop_point
         StopPointDecorator.pseudo_stop_point(id: stop_point_id)
+      end
+
+      attr_writer :stop_point_in_journey_pattern_ref_cache
+      def stop_point_in_journey_pattern_ref_cache
+        @stop_point_in_journey_pattern_ref_cache ||= {}
       end
 
       def netex_time time_of_day

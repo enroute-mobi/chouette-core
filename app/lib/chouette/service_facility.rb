@@ -4,7 +4,7 @@ module Chouette
   class ServiceFacility
     attr_reader :category, :sub_category
 
-    def initialize(category, sub_category)
+    def initialize(category, sub_category=nil)
       @category = category&.to_sym
       @sub_category = sub_category&.to_sym
     end
@@ -28,22 +28,45 @@ module Chouette
     end
 
     def code
-      [category, sub_category].compact.join('_')
+      [category, sub_category].compact.join('/')
     end
     alias to_s code
 
+    def self.from(code)
+      return if code.blank?
+
+      new(*code.split('/'))
+    end
+
     def valid?
-      self.class.categories_candidates.include?(category) &&
+      self.class.category_candidates.include?(category) &&
         (sub_category.nil? || sub_category_candidates.include?(sub_category))
     end
+
+    def sub_categories
+      sub_category_candidates.map do |candidate|
+        self.class.new category, candidate
+      end
+    end
+
+    def self_and_sub_categories
+      [self, *sub_categories]
+    end
+
+    def self.categories(except: [])
+      except = except.map(&:to_sym)
+      (category_candidates - except).map { |candidate| new candidate }
+    end
+
+    private
 
     def sub_category_candidates
       self.class.definitions[category] || []
     end
 
     class << self
-      def categories_candidates
-        @mode_candidates ||= definitions.keys.freeze
+      def category_candidates
+        @category_candidates ||= definitions.keys.freeze
       end
 
       def definitions
@@ -204,7 +227,7 @@ module Chouette
         services_for_army_families
         nursery_service
       ],
-      dender: %i[
+      gender: %i[
         female
         male
         unspecified
@@ -411,7 +434,7 @@ module Chouette
         additiona_unloading
         additional_unloading
         unknown
-      ]    
+      ]
     }.tap { |d| d.each { |type, restrictions| [type, restrictions.freeze] } }.freeze
   end
 end

@@ -1,0 +1,34 @@
+fr:
+  service_facility_sets:
+    index:
+      title: Ensembles d'installations de services
+    show:
+      title: "%{name}"
+    new:
+      title: "Créer un Ensemble d'installations de services"
+    edit:
+      title: "Editer %{name}"
+    actions:
+      show: "Afficher cet Ensemble d'installations de services"
+      new: "Créer un Ensemble d'installations de services"
+      edit: "Editer cet Ensemble d'installations de services"
+      destroy: "Supprimer cet Ensemble d'installations de services"
+      destroy_confirm: "Etes vous sûr de supprimer cetEnsemble d'installations de services ?"
+    search_no_results: "Aucun Ensemble d'installations de services ne correspond à votre recherche"
+    form:
+      sections:
+        identification: "Identification"
+        associated_services: "Services"
+    filters:
+    errors:
+  activerecord:
+    models:
+      service_facility_set:
+        zero:  "Ensemble d'installations de services"
+        one:   "Ensemble d'installations de services"
+        other: "Ensembles d'installations de services"
+    attributes:
+      service_facility_set:
+        name: "Nom"
+        associated_services: Services associés
+        codes: Codes

@@ -114,6 +114,8 @@ ChouetteIhm::Application.routes.draw do # rubocop:disable Metrics/BlockLength
 
       resources :vehicle_journeys, controller: 'referential_vehicle_journeys', only: [:index]
 
+      resources :service_facility_sets
+
       resources :time_tables do
         member do
           post 'actualize'

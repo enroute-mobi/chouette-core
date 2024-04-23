@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2024_04_03_205758) do
+ActiveRecord::Schema.define(version: 2024_04_23_123123) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "btree_gin"
@@ -1295,6 +1295,15 @@ ActiveRecord::Schema.define(version: 2024_04_03_205758) do
     t.index ["journey_pattern_id"], name: "journey_pattern_id"
     t.index ["line_id"], name: "line_id"
     t.index ["route_id"], name: "route_id"
+  end
+
+  create_table "service_facility_sets", force: :cascade do |t|
+    t.string "name"
+    t.string "associated_services", default: [], array: true
+    t.bigint "referential_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["referential_id"], name: "index_service_facility_sets_on_referential_id"
   end
 
   create_table "shape_providers", force: :cascade do |t|

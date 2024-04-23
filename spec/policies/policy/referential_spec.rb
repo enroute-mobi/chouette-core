@@ -37,6 +37,11 @@ RSpec.describe Policy::Referential, type: :policy do
       it { does_not_apply_strategy(Policy::Strategy::Workbench) }
       it { applies_strategy(Policy::Strategy::Permission, :create, Chouette::RoutingConstraintZone) }
 
+    end
+
+    context 'ServiceFacilitySet' do
+      let(:resource_class) { ServiceFacilitySet }
+
       it { is_expected.to be_truthy }
     end
   end

@@ -237,8 +237,9 @@ class Operation < ApplicationModel
     end
 
     def target_file
-      @target_file ||= "tmp/#{operation.class}-#{Time.now.strftime('%Y%m%d-%H%M%S')}.prof"
+      @target_file ||= "tmp/#{operation.class}-#{Time.zone.now.strftime('%Y%m%d-%H%M%S')}.prof"
     end
+
     def around(&block)
       if self.class.enabled?
         logger.debug "Profiling available into #{target_file}"

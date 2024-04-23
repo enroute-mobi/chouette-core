@@ -30,7 +30,7 @@ class TimeOfDay
   alias sec second
 
   def initialize(hour, minute = nil, second = nil, day_offset: nil, utc_offset: nil, time_zone: nil)
-    utc_offset = time_zone.utc_offset if time_zone
+    utc_offset = self.class.zone_utc_offset(time_zone) if time_zone
 
     @hour = hour.to_i
     @minute = minute.to_i

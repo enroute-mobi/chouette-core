@@ -1942,16 +1942,24 @@ class Export::NetexGeneric < Export::Base
     delegate :validity_period, to: :export_scope
 
     def export!
-      time_tables.includes(:periods, :dates, :lines, :codes).find_each do |time_table|
+      time_tables.includes(:periods, :dates, :codes).find_each do |time_table|
         decorated_time_table = decorate(time_table, validity_period: validity_period)
 
-        tags = resource_tagger.tags_for_lines(time_table.line_ids)
+        tags = resource_tagger.tags_for_lines(time_table_line_ids[time_table.id])
         tagged_target = TaggedTarget.new(target, tags)
 
         decorated_time_table.netex_resources.each do |resource|
           tagged_target << resource
         end
       end
+    end
+
+    def time_table_line_ids
+       @timetable_line_ids ||=
+         time_tables
+           .left_joins(:lines)
+           .group(:id)
+           .pluck(:id, 'array_agg(distinct line_id) as line_ids').to_h
     end
 
     class Decorator < ModelDecorator

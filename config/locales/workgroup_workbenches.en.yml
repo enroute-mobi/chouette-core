@@ -2,3 +2,9 @@ fr:
   workgroup_workbenches:
     show:
       restrictions: Restrictions
+    form:
+      sections:
+        owner: "Owner"
+      owner:
+        none: "None (provider a confirmation code)"
+        current: "Our own organisation"

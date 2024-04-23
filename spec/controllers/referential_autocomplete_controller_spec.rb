@@ -22,6 +22,7 @@ RSpec.describe ReferentialAutocompleteController, type: :controller do
 
     it 'returns the complete list when the search parameter is not found' do
       get :lines, params: {
+        workbench_id: workbench.id,
         referential_id: referential.id
       }
       expect(assigns(:lines)).to match_array [first_line]
@@ -30,6 +31,7 @@ RSpec.describe ReferentialAutocompleteController, type: :controller do
 
     it 'returns a line when the name contains the search parameter' do
       get :lines, params: {
+        workbench_id: workbench.id,
         referential_id: referential.id,
         q: 'Line one'
       }
@@ -39,6 +41,7 @@ RSpec.describe ReferentialAutocompleteController, type: :controller do
 
     it 'returns a line when the number contains the search parameter' do
       get :lines, params: {
+        workbench_id: workbench.id,
         referential_id: referential.id,
         q: 'L1'
       }
@@ -48,6 +51,7 @@ RSpec.describe ReferentialAutocompleteController, type: :controller do
 
     it 'returns a line when the published name contains the search parameter' do
       get :lines, params: {
+        workbench_id: workbench.id,
         referential_id: referential.id,
         q: 'First'
       }
@@ -73,6 +77,7 @@ RSpec.describe ReferentialAutocompleteController, type: :controller do
 
     it 'returns the complete list when the search parameter is not found' do
       get :companies, params: {
+        workbench_id: workbench.id,
         referential_id: referential.id
       }
       expect(assigns(:companies)).to match_array [company]
@@ -81,6 +86,7 @@ RSpec.describe ReferentialAutocompleteController, type: :controller do
 
     it 'returns a company when the name contains the search parameter' do
       get :companies, params: {
+        workbench_id: workbench.id,
         referential_id: referential.id,
         q: 'Company one'
       }
@@ -90,6 +96,7 @@ RSpec.describe ReferentialAutocompleteController, type: :controller do
 
     it 'returns a company when the short name contains the search parameter' do
       get :companies, params: {
+        workbench_id: workbench.id,
         referential_id: referential.id,
         q: 'C1'
       }

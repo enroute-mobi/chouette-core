@@ -117,7 +117,7 @@ class NetexImportCreator
           "referential_creation_overlapping_existing_referential",
           referential_name: referential.name,
           overlapped_name: overlapped.name,
-          overlapped_url:  Rails.application.routes.url_helpers.referential_path(overlapped)
+          overlapped_url:  Rails.application.routes.url_helpers.workbench_referential_path(workbench, overlapped)
         )
       else
         create_message(

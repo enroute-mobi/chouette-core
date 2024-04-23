@@ -7,8 +7,8 @@ import { Path } from 'path-parser'
 
 
 // get JSON full path
-const path = new Path('/referentials/:referentialId/lines/:lineId/routes/:routeId')
-const { referentialId, lineId, routeId } = path.partialTest(location.pathname) || {}
+const path = new Path('/workbenches/:workbenchId/referentials/:referentialId/lines/:lineId/routes/:routeId')
+const { workbenchId, referentialId, lineId, routeId } = path.partialTest(location.pathname) || {}
 
 // This component should not be used elsewhere that in route editor for stop areas autocomplete
 export default class BSelect3 extends Component {
@@ -99,7 +99,7 @@ class BSelect2 extends Component{
           theme: 'bootstrap',
           width: '100%',
           ajax: {
-            url: `${path.build({ referentialId, lineId, routeId })}/autocomplete_stop_areas.json`,
+            url: `${path.build({ workbenchId, referentialId, lineId, routeId })}/autocomplete_stop_areas.json`,
             dataType: 'json',
             delay: '500',
             data: function(params) {

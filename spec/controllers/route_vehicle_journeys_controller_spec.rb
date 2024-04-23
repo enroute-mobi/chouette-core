@@ -14,11 +14,14 @@ RSpec.describe RouteVehicleJourneysController, type: :controller do
       end
     end
   end
+  let(:workbench) { context.workbench }
   let(:referential) { context.referential }
   let(:route) { context.route }
   let(:vehicle_journey) { context.vehicle_journey }
 
-  let(:base_params) { { 'referential_id' => referential.id.to_s, 'route_id' => route.id.to_s } }
+  let(:base_params) do
+    { 'workbench_id' => workbench.id, 'referential_id' => referential.id.to_s, 'route_id' => route.id.to_s }
+  end
   let(:format) { nil }
 
   describe 'GET show' do

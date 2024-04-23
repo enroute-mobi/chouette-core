@@ -1,7 +1,7 @@
 class RoutingConstraintZoneDecorator < AF83::Decorator
   decorates Chouette::RoutingConstraintZone
 
-  set_scope { [context[:referential], context[:line]] }
+  set_scope { [context[:workbench], context[:referential], context[:line]] }
 
   # Action links require:
   #   context: {

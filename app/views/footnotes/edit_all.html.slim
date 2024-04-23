@@ -1,11 +1,11 @@
-- breadcrumb :footnotes, @referential, @line
+- breadcrumb :footnotes, @workbench, @referential, @line
 
 .page_content
   .container-fluid
     .row
       .col-lg-12
         .row
-          = simple_form_for [@referential, @line], url: update_all_referential_line_footnotes_path(@referential, @line), html: {id: 'notes_form'} do |form|
+          = simple_form_for [@referential, @line], url: update_all_workbench_referential_line_footnotes_path(@workbench, @referential, @line), html: {id: 'notes_form'} do |form|
 
 
             = form.simple_fields_for :footnotes do |f|

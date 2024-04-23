@@ -1,4 +1,4 @@
-- breadcrumb :referential_line, @referential, @line
+- breadcrumb :referential_line, @workbench, @referential, @line
 - page_header_content_for @line
 - javascript_additional_packs 'referential_lines/show'
 
@@ -40,7 +40,7 @@
                     key: :name, \
                     attribute: 'name', \
                     link_to: lambda do |route| \
-                      referential_line_route_path(@referential, @line, route) \
+                      workbench_referential_line_route_path(@workbench, @referential, @line, route) \
                     end \
                   ), \
                   TableBuilderHelper::Column.new( \

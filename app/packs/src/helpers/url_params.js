@@ -5,6 +5,7 @@ export const getId = type => {
 }
 
 export const getWorkgroupId = () => getId('workgroups')
+export const getWorkbenchId = () => getId('workbenches')
 export const getReferentialId = () => getId('referentials')
 export const getLineId = () => getId('lines')
 export const getRouteId = () => getId('routes')

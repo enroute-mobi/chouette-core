@@ -6,8 +6,8 @@ import Alpine from 'alpinejs'
 import actions from '../actions'
 import xCrsfToken from '../../helpers/xCrsfToken'
 
-const path = new Path('/referentials/:referentialId/lines/:lineId/routes/:routeId')
-const vehicleJourneysPath = new Path('/referentials/:referentialId/routes/:routeId/vehicle_journeys')
+const path = new Path('/workbenches/:workbenchId/referentials/:referentialId/lines/:lineId/routes/:routeId')
+const vehicleJourneysPath = new Path('/workbenches/:workbenchId/referentials/:referentialId/routes/:routeId/vehicle_journeys')
 const params = path.partialTest(location.pathname)
 class MutationBuilder {
   constructor(fetchingApi, fetchJourneyPatterns, enterEditMode) {

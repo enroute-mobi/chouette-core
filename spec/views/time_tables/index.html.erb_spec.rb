@@ -12,7 +12,7 @@ describe "/time_tables/index", :type => :view do
   # it "should render a show link for each group" do
   #   render
   #   time_tables.each do |time_table|
-  #     expect(rendered).to have_selector("a[href='#{view.referential_time_table_path(referential, time_table)}']", :text => time_table.comment)
+  #     expect(rendered).to have_selector("a[href='#{view.workbench_referential_time_table_path(current_workbench, referential, time_table)}']", :text => time_table.comment)
   #   end
   # end
   #

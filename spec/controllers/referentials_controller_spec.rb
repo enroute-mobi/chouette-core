@@ -202,7 +202,7 @@ describe ReferentialsController, type: :controller do
         out_scope_lines = referential.lines_outside_of_scope
         message = I18n.t("referentials.show.lines_outside_of_scope", count: out_scope_lines.count, lines: out_scope_lines.pluck(:name).join(", "), organisation: referential.organisation.name)
 
-        get :show, params: { id: referential.id }
+        get :show, params: { workbench_id: workbench.id, id: referential.id }
 
         expect(out_scope_lines.count).to eq(1)
         expect(referential.organisation.lines_scope).to be_nil
@@ -217,7 +217,7 @@ describe ReferentialsController, type: :controller do
     let(:referential) do
       create(:referential, workbench: referential_workbench, organisation: referential_workbench.organisation)
     end
-    let(:request) { put :update, params: { id: referential.id, referential: { name: 'changed' } } }
+    let(:request) { put :update, params: { workbench_id: referential_workbench.id, id: referential.id, referential: { name: 'changed' } } }
 
     it_behaves_like 'checks current_organisation', success_code: 302
 
@@ -226,28 +226,32 @@ describe ReferentialsController, type: :controller do
         Chouette.create do
           workgroup do
             workbench :expected_workbench, organisation: Organisation.find_by(code: 'first')
-            workbench do
+            workbench :other_workbench do
               referential :through_workgroup_referential
             end
           end
         end
       end
+      let(:referential_workbench) { context.workbench(:expected_workbench) }
       let(:referential) { context.referential(:through_workgroup_referential) }
 
       it 'should respond with FORBIDDEN' do
         expect(request).to render_template('errors/forbidden')
       end
 
-      it 'assigns @workbench as the sole workbench having the same organisation as the user' do
-        request
-        expect(assigns(:workbench)).to eq(context.workbench(:expected_workbench))
+      context 'when the workbench is unrelated to user organisation' do
+        let(:referential_workbench) { context.workbench(:other_workbench) }
+
+        it 'should respond with NOT FOUND' do
+          expect(request).to have_http_status(:not_found)
+        end
       end
     end
   end
 
   describe 'PUT #archive' do
     let(:referential) { create(:referential, workbench: workbench, organisation: organisation) }
-    let(:request) { put :archive, params: { id: referential.id } }
+    let(:request) { put :archive, params: { workbench_id: workbench, id: referential.id } }
     it_behaves_like 'checks current_organisation', success_code: 302
   end
 end

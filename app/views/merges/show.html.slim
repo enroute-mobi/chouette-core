@@ -15,7 +15,7 @@
               TableBuilderHelper::Column.new( \
                 name: t('.table_headers.referentials'),
                 attribute: lambda do |referential| \
-                  link_to(decorate_referential_name(referential), referential_path(referential)) \
+                  link_to(decorate_referential_name(referential), workbench_referential_path(@workbench, referential)) \
                 end,
                 sortable: false,
               ),
@@ -53,7 +53,7 @@
                 TableBuilderHelper::Column.new( \
                   name: t('.table_headers.merged_referential'),
                   attribute: lambda do |referential| \
-                    link_to(decorate_referential_name(referential), referential_path(referential)) \
+                    link_to(decorate_referential_name(referential), workbench_referential_path(@workbench, referential)) \
                   end,
                   sortable: false,
                 ),

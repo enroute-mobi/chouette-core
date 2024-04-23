@@ -2,10 +2,10 @@
   .panel-heading
     .panel-title.clearfix
       span.pull-right
-        = link_to edit_referential_path(referential), class: 'btn btn-default btn-sm' do
+        = link_to edit_workbench_referential_path(@workbench, referential), class: 'btn btn-default btn-sm' do
           span.fa.fa-pencil-alt
 
-        = link_to referential_path(referential), method: :delete, data: { confirm: t('referentials.actions.destroy_confirm')}, class: 'btn btn-danger btn-sm' do
+        = link_to workbench_referential_path(@workbench, referential), method: :delete, data: { confirm: t('referentials.actions.destroy_confirm')}, class: 'btn btn-danger btn-sm' do
           span.fa.fa-trash-o
 
       h5
@@ -30,4 +30,4 @@
       = "#{referential.human_attribute_name('time_tables')} : "
       span.time_tables_count
 
-= javascript_include_tag referential_path(referential, format: :js)
+= javascript_include_tag workbench_referential_path(@workbench, referential, format: :js)

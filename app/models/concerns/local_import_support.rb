@@ -45,7 +45,7 @@ module LocalImportSupport
         message_attributes: {
           referential_name: referential.name,
           overlapped_name: overlapped.name,
-          overlapped_url: Rails.application.routes.url_helpers.referential_path(overlapped)
+          overlapped_url: Rails.application.routes.url_helpers.workbench_referential_path(workbench, overlapped)
         },
         message_key: 'referential_creation_overlapping_existing_referential'
       )

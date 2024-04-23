@@ -40,7 +40,7 @@
         .lines= I18n.t("referentials.overview.head.lines")
       .lines
         - overview.lines.each do |line|
-          = link_to [overview.referential, line.referential_line], class: 'line', title: line.name do
+          = link_to [@workbench, overview.referential, line.referential_line], class: 'line', title: line.name do
             - if line.number.present?
               .number style="background-color: #{line.color.present? ? "##{line.color}" : 'whitesmoke'}; color: #{line.color && line.text_color ? "##{line.text_color}" : '#4b4b4b'}"
                 = line.number

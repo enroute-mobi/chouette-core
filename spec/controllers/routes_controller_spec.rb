@@ -45,7 +45,8 @@ RSpec.describe RoutesController, type: :controller do
     before(:each) do
       get :index, params: {
         line_id: route.line_id,
-        referential_id: referential.id
+        referential_id: referential.id,
+        workbench_id: referential.workbench.id
       }
     end
 
@@ -57,6 +58,7 @@ RSpec.describe RoutesController, type: :controller do
       post :create, params: {
         line_id: route.line_id,
         referential_id: referential.id,
+        workbench_id: referential.workbench.id,
         route: { name: 'changed' }
       }
     end
@@ -71,6 +73,7 @@ RSpec.describe RoutesController, type: :controller do
       put :update, params: {
         id: route.id, line_id: route.line_id,
         referential_id: referential.id,
+        workbench_id: referential.workbench.id,
         route: route.attributes.update({ 'name' => 'New name' })
       }
     end
@@ -98,7 +101,8 @@ RSpec.describe RoutesController, type: :controller do
       get :show, params: {
         id: route.id,
         line_id: route.line_id,
-        referential_id: referential.id
+        referential_id: referential.id,
+        workbench_id: referential.workbench.id
       }
     end
 
@@ -113,6 +117,7 @@ RSpec.describe RoutesController, type: :controller do
     it 'creates a new route' do
       expect do
         post :duplicate, params: {
+          workbench_id: referential.workbench.id,
           referential_id: referential.id,
           line_id: route.line_id,
           id: route.id
@@ -128,6 +133,7 @@ RSpec.describe RoutesController, type: :controller do
       it 'creates a new route on the opposite way' do
         expect do
           post :duplicate, params: {
+            workbench_id: referential.workbench.id,
             referential_id: referential.id,
             line_id: route.line_id,
             id: route.id,
@@ -146,21 +152,36 @@ RSpec.describe RoutesController, type: :controller do
 
   describe 'GET #autocomplete_stop_areas' do
     it 'should be successful' do
-      get :autocomplete_stop_areas, params: { referential_id: referential.id, line_id: line.id, id: route.id }
+      get :autocomplete_stop_areas, params: {
+        workbench_id: referential.workbench.id,
+        referential_id: referential.id,
+        line_id: line.id,
+        id: route.id
+      }
       expect(response).to be_successful
     end
 
     context 'search by name' do
       it 'should be successful' do
-        get :autocomplete_stop_areas,
-            params: { referential_id: referential.id, line_id: line.id, id: route.id, q: 'écolà', format: :json }
+        get :autocomplete_stop_areas, format: :json, params: {
+          workbench_id: referential.workbench.id,
+          referential_id: referential.id,
+          line_id: line.id,
+          id: route.id,
+          q: 'écolà'
+        }
         expect(response).to be_successful
         expect(assigns(:stop_areas)).to eq([zdep])
       end
 
       it 'should be accent insensitive' do
-        get :autocomplete_stop_areas,
-            params: { referential_id: referential.id, line_id: line.id, id: route.id, q: 'ecola', format: :json }
+        get :autocomplete_stop_areas, format: :json, params: {
+          workbench_id: referential.workbench.id,
+          referential_id: referential.id,
+          line_id: line.id,
+          id: route.id,
+          q: 'ecola'
+        }
         expect(response).to be_successful
         expect(assigns(:stop_areas)).to eq([zdep])
       end
@@ -169,8 +190,13 @@ RSpec.describe RoutesController, type: :controller do
     describe 'without feature route_stop_areas_all_types' do
       let(:scope) { :route_editor }
       let(:request) do
-        get :autocomplete_stop_areas,
-            params: { referential_id: referential.id, line_id: line.id, id: route.id, scope: scope }
+        get :autocomplete_stop_areas, params: {
+          workbench_id: referential.workbench.id,
+          referential_id: referential.id,
+          line_id: line.id,
+          id: route.id,
+          scope: scope
+        }
       end
 
       it 'should filter stop areas based on type' do
@@ -191,8 +217,13 @@ RSpec.describe RoutesController, type: :controller do
     describe 'without feature route_stop_areas_all_types' do
       let(:scope) { :route_editor }
       let(:request) do
-        get :autocomplete_stop_areas,
-            params: { referential_id: referential.id, line_id: line.id, id: route.id, scope: scope }
+        get :autocomplete_stop_areas, params: {
+          workbench_id: referential.workbench.id,
+          referential_id: referential.id,
+          line_id: line.id,
+          id: route.id,
+          scope: scope
+        }
       end
 
       with_feature :route_stop_areas_all_types do

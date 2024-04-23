@@ -1,13 +1,13 @@
-module Redirect
-  class RoutesController < BaseController
-    include ReferentialSupport
+# frozen_string_literal: true
 
+module Redirect
+  class RoutesController < ReferentialBaseController
     def route
       referential.routes.find(params[:id])
     end
 
     def show
-      redirect_to referential_line_route_path referential, route.line, route
+      redirect_to workbench_referential_line_route_path workbench, referential, route.line, route
     end
   end
 end

@@ -1,7 +1,7 @@
 class RouteDecorator < AF83::Decorator
   decorates Chouette::Route
 
-  set_scope { [context[:referential], context[:line]] }
+  set_scope { [context[:workbench], context[:referential], context[:line]] }
 
   with_instance_decorator do |instance_decorator|
     instance_decorator.show_action_link
@@ -15,6 +15,7 @@ class RouteDecorator < AF83::Decorator
       l.content t('journey_patterns.actions.index')
       l.href do
         [
+          context[:workbench],
           context[:referential],
           context[:line],
           object,
@@ -30,6 +31,7 @@ class RouteDecorator < AF83::Decorator
       l.content t('vehicle_journeys.actions.index')
       l.href do
         [
+          context[:workbench],
           context[:referential],
           object,
           :vehicle_journeys
@@ -44,7 +46,8 @@ class RouteDecorator < AF83::Decorator
       l.content t('routes.duplicate.title')
       l.method :post
       l.href do
-        h.duplicate_referential_line_route_path(
+        h.duplicate_workbench_referential_line_route_path(
+          context[:workbench],
           context[:referential],
           context[:line],
           object
@@ -61,7 +64,8 @@ class RouteDecorator < AF83::Decorator
       l.method :post
       l.disabled { object.opposite_route.present? }
       l.href do
-        h.duplicate_referential_line_route_path(
+        h.duplicate_workbench_referential_line_route_path(
+          context[:workbench],
           context[:referential],
           context[:line],
           object,

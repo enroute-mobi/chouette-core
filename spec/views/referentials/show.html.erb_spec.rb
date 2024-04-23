@@ -37,9 +37,13 @@ RSpec.describe "referentials/show", type: :view do
   let(:policy_context_class) { Policy::Context::Workbench }
   let(:referential) do
     referential = create(:workbench_referential, organisation: organisation, workbench: current_workbench)
-    assign :referential, referential.decorate(context: {
-      current_organisation: referential.organisation
-    })
+    assign :workbench, current_workbench
+    assign :referential, referential.decorate(
+      context: {
+        workbench: current_workbench,
+        current_organisation: referential.organisation
+      }
+    )
   end
   let(:permissions){ [] }
   let(:readonly){ false }
@@ -58,18 +62,24 @@ RSpec.describe "referentials/show", type: :view do
   end
 
   it "should not present edit button" do
-    expect(rendered).to_not have_selector("a[href=\"#{view.edit_referential_path(referential)}\"]")
+    expect(rendered).to_not have_selector(
+      "a[href=\"#{view.edit_workbench_referential_path(current_workbench, referential)}\"]"
+    )
   end
 
   with_permission "referentials.update" do
     it "should present edit button" do
-      expect(rendered).to have_selector("a[href=\"#{view.edit_referential_path(referential)}\"]")
+      expect(rendered).to have_selector(
+        "a[href=\"#{view.edit_workbench_referential_path(current_workbench, referential)}\"]"
+      )
     end
 
     context "with a readonly referential" do
       let(:readonly){ true }
       it "should not present edit button" do
-        expect(rendered).to_not have_selector("a[href=\"#{view.edit_referential_path(referential)}\"]")
+        expect(rendered).to_not have_selector(
+          "a[href=\"#{view.edit_workbench_referential_path(current_workbench, referential)}\"]"
+        )
       end
     end
   end

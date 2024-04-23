@@ -19,6 +19,7 @@ class TimeTablesController < Chouette::ReferentialController
     show! do
       @year = params[:year] ? params[:year].to_i : @time_table.presenter.default_year
       @time_table = @time_table.decorate(context: {
+        workbench: @workbench,
         referential: @referential
       })
       @calendar = @time_table.calendar
@@ -43,7 +44,7 @@ class TimeTablesController < Chouette::ReferentialController
 
     create! do |success, failure|
       success.html do
-        redirect_to referential_time_table_path(@referential, @time_table)
+        redirect_to workbench_referential_time_table_path(current_workbench, @referential, @time_table)
       end
       failure.html { render :new }
     end
@@ -85,7 +86,7 @@ class TimeTablesController < Chouette::ReferentialController
       @time_table.actualize
       flash[:notice] = t('.success')
     end
-    redirect_to referential_time_table_path @referential, @time_table
+    redirect_to workbench_referential_time_table_path current_workbench, @referential, @time_table
   end
 
   protected
@@ -146,11 +147,11 @@ class TimeTablesController < Chouette::ReferentialController
   end
 
   def resource_url(time_table = nil)
-    referential_time_table_path(referential, time_table || resource)
+    workbench_referential_time_table_path(current_workbench, referential, time_table || resource)
   end
 
   def collection_url
-    referential_time_tables_path(referential)
+    workbench_referential_time_tables_path(current_workbench, referential)
   end
 
   private
@@ -178,6 +179,7 @@ class TimeTablesController < Chouette::ReferentialController
     TimeTableDecorator.decorate(
       time_tables,
       context: {
+        workbench: @workbench,
         referential: @referential
       }
     )

@@ -26,7 +26,7 @@
               TableBuilderHelper::Column.new( \
                 key: :name, \
                 attribute: lambda do |referential| \
-                  link_to(referential.name, referential_path(referential)) \
+                  link_to(referential.name, workbench_referential_path(@workbench, referential)) \
                 end \
               ), \
               TableBuilderHelper::Column.new( \

@@ -27,6 +27,7 @@ class ReferentialLinesController < Chouette::ReferentialController
       @routes,
       context: {
         referential: referential,
+        workbench: current_workbench,
         line: @line
       }
     )
@@ -36,6 +37,7 @@ class ReferentialLinesController < Chouette::ReferentialController
         @line,
         context: {
           referential: referential,
+          workbench: current_workbench,
           current_organisation: current_organisation
         }
       )

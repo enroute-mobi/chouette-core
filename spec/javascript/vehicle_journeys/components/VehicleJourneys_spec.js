@@ -8,7 +8,7 @@ import I18n from '../../support/jest-i18n'
 beforeEach(() => {
   Object.defineProperty(window, 'location', {
     get() {
-      return { pathname: '/referentials/1/lines/1/routes/1' }
+      return { pathname: '/workbenches/1/referentials/1/lines/1/routes/1' }
     }
   })
 })

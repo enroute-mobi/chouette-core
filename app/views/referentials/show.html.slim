@@ -1,4 +1,4 @@
-- breadcrumb @referential
+- breadcrumb :referential, @workbench, @referential
 - page_header_content_for @referential
 - javascript_additional_packs 'referential_overview/index'
 
@@ -14,7 +14,7 @@
           - attributes[@referential.human_attribute_name(:merged_at)] = @referential.merged_at ? l(@referential.merged_at) : '-'
           - attributes[@referential.human_attribute_name(:urgent)] = boolean_icon(@referential.contains_urgent_offer?)
         - if @referential.created_from
-          - attributes[@referential.human_attribute_name(:created_from)] = link_to(@referential.created_from.name, @referential.created_from)
+          - attributes[@referential.human_attribute_name(:created_from)] = link_to(@referential.created_from.name, [@workbench, @referential.created_from])
         = definition_list t('metadatas'), attributes
 
     - unless @referential.ready?
@@ -48,7 +48,7 @@
                   key: :name, \
                   attribute: 'name', \
                   link_to: lambda do |line| \
-                    referential_line_path(@referential, line) \
+                    workbench_referential_line_path(@workbench, @referential, line) \
                   end \
                 ), \
                 TableBuilderHelper::Column.new( \

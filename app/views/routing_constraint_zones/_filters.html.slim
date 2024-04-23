@@ -1,4 +1,4 @@
-= search_form_for @q, url: referential_line_routing_constraint_zones_path(@referential, @line), class: 'form form-filter' do |f|
+= search_form_for @q, url: workbench_referential_line_routing_constraint_zones_path(@workbench, @referential, @line), class: 'form form-filter' do |f|
   .ffg-row
     .input-group.search_bar class=filter_item_class(params[:q], :name_or_short_id_cont)
       = f.search_field :name_or_short_id_cont, class: 'form-control', placeholder: t('.name_or_short_id_cont')
@@ -12,5 +12,5 @@
       = f.input :route_id_eq, as: :select, collection: @line.routing_constraint_zones.pluck(:route_id).uniq, label: false, label_method: lambda { |r| @line.routing_constraint_zones.find_by(route_id: r).route_name }, input_html: { 'data-select2ed': 'true', 'data-select2ed-placeholder': t('.associated_route.placeholder') }, wrapper_html: { class: 'select2ed'}
 
   .actions
-    = link_to t('actions.erase'), referential_line_routing_constraint_zones_path(@referential, @line), class: 'btn btn-link'
+    = link_to t('actions.erase'), workbench_referential_line_routing_constraint_zones_path(@workbench, @referential, @line), class: 'btn btn-link'
     = f.submit t('actions.filter'), class: 'btn btn-default'

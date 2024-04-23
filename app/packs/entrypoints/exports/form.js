@@ -48,7 +48,7 @@ class Store {
 		const suffix = suffixMap.get(this.exportedLines)
 
 		if (this.isExport) {
-			prefix = (this.exportedLines == 'line_provider_ids') ? `/workbenches/${this.workbenchOrWorkgroupId}` : `/referentials/${this.referentialId}`
+			prefix = (this.exportedLines == 'line_provider_ids') ? `/workbenches/${this.workbenchOrWorkgroupId}` : `/workbenches/${this.workbenchOrWorkgroupId}/referentials/${this.referentialId}`
 		} else {
 			prefix = `/workgroups/${this.workbenchOrWorkgroupId}`
 		}

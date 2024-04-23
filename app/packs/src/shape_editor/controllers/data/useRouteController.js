@@ -10,7 +10,7 @@ import store from '../../shape.store'
 // Custom hook which responsability is to fetch a new GeoJSON when the journeyPatternId change
 export default function useRouteController(_isEdit) {
   // Route params
-  const { referentialId, lineId, routeId } = useParams()
+  const { workbenchId, referentialId, lineId, routeId } = useParams()
 
   // Event handlers
   const onSuccess = data => {
@@ -22,7 +22,7 @@ export default function useRouteController(_isEdit) {
   }
 
   const { mutate: fetchRoute } = useSWR(
-    `/referentials/${referentialId}/lines/${lineId}/routes/${routeId}.geojson`,
+    `/workbenches/workbenchId/referentials/${referentialId}/lines/${lineId}/routes/${routeId}.geojson`,
     url => fetch(url).then(res => res.text()),
     { onSuccess, revalidateOnMount: false })
 

@@ -1,4 +1,4 @@
-- breadcrumb :journey_patterns, @referential, @route
+- breadcrumb :journey_patterns, @workbench, @referential, @route
 - page_header_content_for @route
 - content_for :page_header_resource_name, Chouette::JourneyPattern.ts.pluralize.capitalize, flush: true
 - content_for :page_header_title, t('journey_patterns.index.title', route: @route.name), flush: true
@@ -22,7 +22,7 @@
   | window.journeyPatternsPerPage = #{@ppage};
   | window.perms = #{raw @perms};
   | window.features = #{raw @features};
-  | window.routeCostsUrl = "#{costs_referential_line_route_url(@referential, @route.line, @route, format: :json).html_safe}";
+  | window.routeCostsUrl = "#{costs_workbench_referential_line_route_url(@workbench, @referential, @route.line, @route, format: :json).html_safe}";
   | window.custom_fields = #{(@custom_fields.to_json).html_safe};
   | window.route = "#{URI.escape(route_json_for_edit(@route, serialize: true))}";
   | window.lineColor = "#{@route.line.color_hex}";

@@ -3,6 +3,6 @@ h2.mail-title
 p== t('mailers.merge_mailer.finished.body', merge_name: @merge.name, status: I18n.t("operation_support.statuses.#{@status}"))
 p
   - if @merge.successful?
-    = mailer_button(t('mailers.merge_mailer.button'), referential_url(@merge.new))
+    = mailer_button(t('mailers.merge_mailer.button'), workbench_referential_url(@merge.workbench, @merge.new))
   - else
     = mailer_button(t('mailers.merge_mailer.button'), workbench_merge_url(@merge.workbench, @merge))

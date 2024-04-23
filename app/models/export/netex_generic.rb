@@ -1959,13 +1959,12 @@ class Export::NetexGeneric < Export::Base
       end
 
       def day_type_attributes
-        {
-          id: netex_identifier.to_s,
+        netex_attributes.merge(
           data_source_ref: data_source_ref,
           name: comment,
           properties: properties,
           key_list: netex_alternate_identifiers
-        }
+        )
       end
 
       def day_type_ref

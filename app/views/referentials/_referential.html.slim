@@ -9,7 +9,7 @@
           span.fa.fa-trash-o
 
       h5
-        = link_to [@referential, referential], class: 'preview', title: "#{Referential.model_name.human.capitalize} #{referential.name}" do
+        = link_to(referential, workbench_referential_path(@workbench, referential)), class: 'preview', title: "#{Referential.model_name.human.capitalize} #{referential.name}" do
           span.name
             = truncate(referential.name, :length => 30)
 

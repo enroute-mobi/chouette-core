@@ -7,8 +7,8 @@
       .col-lg-6.col-md-6.col-sm-12.col-xs-12
         = definition_list t('metadatas'),
           { @routing_constraint_zone.human_attribute_name(:name) => @routing_constraint_zone.try(:name),
-            @routing_constraint_zone.human_attribute_name(:route) => link_to(@routing_constraint_zone.try(:route_name), [@referential, @line, @routing_constraint_zone.route]),
-            @routing_constraint_zone.human_attribute_name(:line) => link_to(@line.name, [@referential, @line]),
+            @routing_constraint_zone.human_attribute_name(:route) => link_to(@routing_constraint_zone.try(:route_name), [@workbench, @referential, @line, @routing_constraint_zone.route]),
+            @routing_constraint_zone.human_attribute_name(:line) => link_to(@line.name, [@workbench, @referential, @line]),
             @routing_constraint_zone.human_attribute_name(:checksum) => @routing_constraint_zone.checksum}
 
     .row

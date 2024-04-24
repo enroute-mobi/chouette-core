@@ -1499,6 +1499,35 @@ RSpec.describe Export::Gtfs, type: [:model, :with_exportable_referential] do
       end
     end
 
+    describe '#bikes_allowed' do
+      subject { decorator.gtfs_bikes_allowed }
+
+      let(:service_facility_set ) { ServiceFacilitySet.new(id: rand(100)) }
+
+      before do
+        service_facility_set.associated_services = associated_services
+        allow(vehicle_journey).to receive(:service_facility_set).and_return(service_facility_set)
+      end
+
+      context "when associated_services is 'luggage_carriage/cycles_allowed'" do
+        let(:associated_services) { ['luggage_carriage/cycles_allowed'] }
+
+        it { is_expected.to eq '1' }
+      end
+
+      context "when associated services is 'luggage_carriage/no_cycles'" do
+        let(:associated_services) { ['luggage_carriage/no_cycles'] }
+
+        it { is_expected.to eq '2' }
+      end
+
+      context "when associated services is many" do
+        let(:associated_services) { ['luggage_carriage/no_cycles', 'luggage_carriage/baggage_storage'] }
+
+        it { is_expected.to eq nil }
+      end
+    end
+
     describe '#services' do
       subject { decorator.services }
 

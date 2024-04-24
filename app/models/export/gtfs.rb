@@ -952,8 +952,12 @@ class Export::Gtfs < Export::Base
     delegate :vehicle_journeys, to: :export_scope
 
     def export!
-      vehicle_journeys.includes(:time_tables, :journey_pattern, :codes, route: :line).find_each do |vehicle_journey|
-        decorated_vehicle_journey = Decorator.new(vehicle_journey, index: index, code_provider: code_spaces.vehicle_journeys)
+      vehicle_journeys.includes(
+        :time_tables, :journey_pattern,
+        :service_facility_set, :codes, route: :line
+      ).find_each do |vehicle_journey|
+        decorated_vehicle_journey =
+          Decorator.new(vehicle_journey, index: index, code_provider: code_spaces.vehicle_journeys)
 
         decorated_vehicle_journey.services.each do |service|
           trip_attributes = decorated_vehicle_journey.trip_attributes(service)
@@ -1038,6 +1042,21 @@ class Export::Gtfs < Export::Base
         end
       end
 
+      def associated_services
+        @associated_services ||= service_facility_set&.associated_services || []
+      end
+
+      def gtfs_bikes_allowed
+        return unless associated_services.count == 1
+
+        case associated_services&.first&.code
+        when 'luggage_carriage/cycles_allowed'
+          '1'
+        when 'luggage_carriage/no_cycles'
+          '2'
+        end
+      end
+
       def trip_attributes(service)
         {
           route_id: route_id,
@@ -1047,9 +1066,9 @@ class Export::Gtfs < Export::Base
           direction_id: direction_id,
           shape_id: gtfs_shape_id,
           headsign: gtfs_headsign,
-          wheelchair_accessible: gtfs_wheelchair_accessibility
+          wheelchair_accessible: gtfs_wheelchair_accessibility,
+          bikes_allowed: gtfs_bikes_allowed
           # block_id: TO DO
-          # bikes_allowed: TO DO
         }
       end
     end

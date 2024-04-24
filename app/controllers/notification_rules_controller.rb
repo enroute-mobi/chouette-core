@@ -18,23 +18,6 @@ class NotificationRulesController < Chouette::WorkbenchController
     end
   end
 
-  def new
-    @notification_rule = NotificationRule.new.decorate(context: { workbench: parent })
-    new!
-  end
-
-  def show
-    show! do
-      @notification_rule = @notification_rule.decorate(context: { workbench: parent })
-    end
-  end
-
-  def edit
-    edit! do
-      @notification_rule = @notification_rule.decorate(context: { workbench: parent })
-    end
-  end
-
   def scope
     parent.notification_rules
   end
@@ -47,11 +30,23 @@ class NotificationRulesController < Chouette::WorkbenchController
     @collection ||= search.search scope
   end
 
+  protected
+
+  def build_resource
+    get_resource_ivar || set_resource_ivar(super.decorate(context: { workbench: parent }))
+  end
+
+  def resource
+    get_resource_ivar || set_resource_ivar(super.decorate(context: { workbench: parent }))
+  end
+
   private
 
   def notification_rule_params
     # TODO This horrible hack is made to avoid errors when PostgreSQL read empty string for period
-    params['notification_rule']['period'] = nil if params['notification_rule']['period'] == ""
+    if params['notification_rule'] && params['notification_rule']['period'].blank?
+      params['notification_rule']['period'] = nil
+    end
     params
       .require(:notification_rule)
       .permit(

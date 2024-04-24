@@ -120,7 +120,7 @@ RSpec.describe Chouette::ServiceFacility do
       context 'when sub category is :audio_information' do
         let(:sub_category) { :audio_information }
 
-        it { is_expected.to eq('accessibility_info_audio_information') }
+        it { is_expected.to eq('accessibility_info/audio_information') }
       end
     end
   end

@@ -13,8 +13,10 @@ class ServiceFacilitySet < ActiveRecord::Base
   end
 
   def display_associated_services
-    associated_services.map do |associated_service|
-      Chouette::ServiceFacility.from(associated_service)&.human_name
-    end.reject(&:blank?).join(', ')
+    associated_services.map(&:human_name).join(', ')
+  end
+
+  def associated_services
+    super.reject(&:blank?).map { |associated_service| Chouette::ServiceFacility.from(associated_service) }
   end
 end

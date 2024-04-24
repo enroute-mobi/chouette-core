@@ -805,18 +805,18 @@ RSpec.describe Import::Gtfs do
     it "should create a VehicleJourney for each trip" do
       import.import_stop_times
       defined_attributes = ->(v) {
-        [v.published_journey_name, v.time_tables.first&.comment]
+        [v.published_journey_name, v.time_tables.first&.comment, v.service_facility_set&.associated_services]
       }
       expected_attributes = [
-        ["CITY2", "FULLW"],
-        ["AB1", "FULLW"],
-        ["AB2", "FULLW"],
-        ["BFC1", "FULLW"],
-        ["BFC2", "FULLW"],
-        ["AAMV1", "WE"],
-        ["AAMV2", "WE"],
-        ["AAMV3", "WE"],
-        ["AAMV4", "WE"]
+        ["CITY2", "FULLW", ['luggage_carriage/no_cycles']],
+        ["AB1", "FULLW", ['luggage_carriage/cycles_allowed']],
+        ["AB2", "FULLW", ['luggage_carriage/cycles_allowed']],
+        ["BFC1", "FULLW", nil],
+        ["BFC2", "FULLW", nil],
+        ["AAMV1", "WE", nil],
+        ["AAMV2", "WE", nil],
+        ["AAMV3", "WE", nil],
+        ["AAMV4", "WE", nil]
       ]
       expect(import.referential.vehicle_journeys.map(&defined_attributes)).to match_array(expected_attributes)
     end

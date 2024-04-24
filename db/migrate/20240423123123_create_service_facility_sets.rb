@@ -9,5 +9,7 @@ class CreateServiceFacilitySets < ActiveRecord::Migration[5.2]
         t.timestamps
       end
     end
+
+    add_reference :vehicle_journeys, :service_facility_set
   end
 end

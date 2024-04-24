@@ -12,6 +12,7 @@ module Users
       user_params = sign_in_params
       return unless user_params[:email].present? && user_params[:password].blank?
 
+      user_params.slice!(*resource_class.authentication_keys)
       self.resource = resource_class.find_for_database_authentication(user_params)
 
       if resource&.must_sign_in_with_saml?

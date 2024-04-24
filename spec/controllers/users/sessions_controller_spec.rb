@@ -14,7 +14,7 @@ RSpec.describe Users::SessionsController, type: :controller do
       end
     end
     allow(User).to receive(:find_for_database_authentication) do |conditions|
-      user if conditions[:email] == user.email
+      User.find_for_authentication(conditions)
     end
   end
   # and recreate the routes
@@ -96,6 +96,11 @@ RSpec.describe Users::SessionsController, type: :controller do
 
       it 'signs in user' do
         expect(warden.user).to eq(user)
+      end
+
+      context 'when password is empty' do
+        let(:create_params) { { user: { email: user.email, password: '' } } }
+        it { is_expected.to render_template(:new) }
       end
     end
   end

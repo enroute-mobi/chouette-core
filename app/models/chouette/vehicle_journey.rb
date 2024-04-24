@@ -18,6 +18,7 @@ module Chouette
     end
 
     belongs_to :company
+    belongs_to :accessibility_assessment, class_name: '::AccessibilityAssessment', optional: true
     belongs_to :company_light, -> {select(:id, :objectid, :line_referential_id)}, class_name: "Chouette::Company", foreign_key: :company_id
     belongs_to :route
     belongs_to :journey_pattern

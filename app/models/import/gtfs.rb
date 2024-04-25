@@ -222,7 +222,10 @@ class Import::Gtfs < Import::Base # rubocop:disable Metrics/ClassLength
     def import!
       if specific_default_company
           self.default_company = specific_default_company
-          self.default_time_zone = ActiveSupport::TimeZone[specific_default_company.time_zone]
+
+          if specific_default_company&.time_zone
+            self.default_time_zone = ActiveSupport::TimeZone[specific_default_company.time_zone]
+          end
 
           return
       end

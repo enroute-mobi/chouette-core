@@ -805,7 +805,11 @@ RSpec.describe Import::Gtfs do
     it "should create a VehicleJourney for each trip" do
       import.import_stop_times
       defined_attributes = ->(v) {
-        [v.published_journey_name, v.time_tables.first&.comment, v.service_facility_set&.associated_services]
+        [
+          v.published_journey_name,
+          v.time_tables.first&.comment,
+          v.service_facility_set&.associated_services&.map(&:code)
+        ]
       }
       expected_attributes = [
         ["CITY2", "FULLW", ['luggage_carriage/no_cycles']],

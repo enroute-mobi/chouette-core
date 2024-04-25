@@ -10,7 +10,7 @@
       - if @dashboard.workbench.output && @dashboard.workbench.output.referentials.present?
         - @dashboard.workbench.output.referentials.first(5).each do |referential|
           .list-group
-            = link_to referential.name, workbench_referential_path(@workbench, referential), class: 'list-group-item'
+            = link_to referential.name, workbench_referential_path(@dashboard.workbench, referential), class: 'list-group-item'
       - else
         .panel-body
           em.small.text-muted = t('.no_content')
@@ -45,7 +45,7 @@
       - if @dashboard.referentials.present?
         .list-group
           - @dashboard.referentials.order(created_at: :desc).first(5).each_with_index do |referential, i|
-            = link_to referential.name, workbench_referential_path(@workbench, referential), class: 'list-group-item' if i < 6
+            = link_to referential.name, workbench_referential_path(@dashboard.workbench, referential), class: 'list-group-item' if i < 6
 
       - else
         .panel-body

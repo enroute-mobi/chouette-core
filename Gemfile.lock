@@ -66,7 +66,8 @@ GIT
 
 GIT
   remote: https://bitbucket.org/enroute-mobi/netex.git
-  revision: caa48d196627dd5ca4a6d08c8fc41abdd36e5ee4
+  revision: ebf29744fbc5462bd37f430af03f5a893bd1e760
+  branch: NETEX-135-service-journey-pattern-type
   specs:
     netex (0.1.2)
       activesupport

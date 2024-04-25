@@ -33,12 +33,14 @@ module Chouette
     end
     helper_method :current_organisation
 
-    def current_workbench
-      nil
-    end
-
     def current_workgroup
       nil
     end
+    helper_method :current_workgroup
+
+    def current_workbench
+      nil
+    end
+    helper_method :current_workbench
   end
 end

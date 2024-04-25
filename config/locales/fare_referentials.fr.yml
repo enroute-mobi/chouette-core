@@ -1,0 +1,6 @@
+fr:
+  activerecord:
+    models:
+      fare/referential:
+        one: "Référentiel Tarifaire"
+        other: "Référentiels Tarifaires"

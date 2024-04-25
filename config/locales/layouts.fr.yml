@@ -15,24 +15,14 @@ fr:
       select_referential_for_more_features: "Sélectionnez un jeu de données pour accéder à plus de fonctionnalités"
       select_referential_datas: "Sélection des données"
       return_to_dashboard: "Retour au Tableau de Bord"
-      dashboard: Tableau de bord
       referential_datas: "Données"
-      shape_referential: "Référentiel Topologique"
-      line_referential: "Référentiel de lignes"
-      stop_area_referential: "Référentiel d'arrêts"
-      fare_referential: "Référentiel Tarifaire"
       settings: "Paramètres"
-      current_offer:
-        one: Offres courante
-        other: Offres courantes
       workbench_outputs:
         organisation: Offre de mon organisation
         workgroup: Offre du groupe de travail
         edit_workgroup: Configuration de l'application
       configuration: Paramétrages
       organisation_configuration: Mon organisation
-      workgroups_configuration: Groupes de travail
-      security_configuration: Sécurité
       tools: Outils
       icar: iCAR
       ilico: iLICO
@@ -40,15 +30,14 @@ fr:
       support: Support
       shapes: Tracés
       workbench:
-        subtitle: Espace de travail
         notification_rules: Centre de notification
       workgroup:
-        subtitle: Groupe de Travail
         edit_aggregate: Agrégation
         edit_merge: Finalisation
-        edit_transport_modes: Modes de transport
       publications:
         subtitle: Publications
+      explore: "Explorer"
+      administrate: "Administrer"
     history_tag:
       title: "Métadonnées"
       created_at: "Créé le"

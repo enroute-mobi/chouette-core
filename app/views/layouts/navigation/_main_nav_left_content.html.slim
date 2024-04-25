@@ -1,136 +1,147 @@
-- current_organisation.workbenches.with_active_workgroup.order("workgroups.name")\
-    .includes(workgroup: :owner, stop_area_referential: :workgroup).each do |workbench|
-  - can_edit_workgroup = workbench.workgroup.owner == current_organisation
+- workbench = current_workbench && current_user.workbenches.include?(current_workbench) ? current_workbench : \
+              current_user.workbenches.size == 1                                        ? current_user.workbenches.first : nil
+- workgroup = current_workgroup && current_workgroup.owner == current_organisation ? current_workgroup : \
+              workbench && workbench.workgroup.owner == current_organisation       ? workbench.workgroup : nil
 
-  #menu-items.panel-group
-    - if current_organisation.workbenches.many?
-      .menu-title
-        = workbench.workgroup.name
-    = main_nav_menu_item 'layouts.navbar.current_offer.other'.t do
-      = link_to root_path, class: "list-group-item" do
-        span = 'layouts.navbar.dashboard'.t
-      = link_to workbench_output_path(workbench), class: 'list-group-item' do
-        span = 'layouts.navbar.workbench_outputs.organisation'.t
-      = link_to workgroup_output_path(workbench.workgroup), class: 'list-group-item' do
-        span = 'layouts.navbar.workbench_outputs.workgroup'.t
-
-    - if can_edit_workgroup
-      = main_nav_menu_item 'activerecord.models.workgroup.one'.t.capitalize do
-        = link_to workgroup_imports_path(workbench.workgroup), class: "list-group-item" do
-          span = 'activerecord.models.import.other'.t.capitalize
-        = link_to workgroup_exports_path(workbench.workgroup), class: "list-group-item" do
-          span = 'activerecord.models.export.other'.t.capitalize
-        = link_to workgroup_control_list_runs_path(workbench.workgroup), class: "list-group-item" do
+#menu-items
+  - if workbench
+    .panel-group
+      = main_nav_menu_item "#{Workbench.model_name.human.capitalize} #{workbench.name}" do
+        = link_to workbench_path(workbench), class: 'list-group-item' do
+          span = Referential.model_name.human(count: 2).capitalize
+        = link_to workbench_output_path(workbench), class: 'list-group-item' do
+          span = Merge.model_name.human(count: 2)
+        = link_to workbench_imports_path(workbench), class: 'list-group-item' do
+          span = Import::Base.model_name.human(count: 2).capitalize
+        - if workbench.workgroup.export_types.present?
+          = link_to workbench_exports_path(workbench), class: 'list-group-item' do
+            span = Export::Base.model_name.human(count: 2)
+        = link_to workbench_calendars_path(workbench), class: 'list-group-item' do
+          span = Calendar.model_name.human(count: 2).capitalize
+        = link_to workbench_control_lists_path(workbench), class: 'list-group-item' do
+          span = Control::List.model_name.human(count: 2)
+        = link_to workbench_control_list_runs_path(workbench), class: 'list-group-item' do
           span = Control::List::Run.model_name.human(count: 2)
-        = link_to workgroup_code_spaces_path(workbench.workgroup), class: 'list-group-item' do
-          span = 'activerecord.models.code_space.other'.t.capitalize
-        = link_to workgroup_document_types_path(workbench.workgroup), class: 'list-group-item' do
-          span = 'activerecord.models.document_type.other'.t.capitalize
-        = link_to workgroup_processing_rule_workgroups_path(workbench.workgroup), class: "list-group-item" do
-          span = ProcessingRule::Workgroup.t
+        = link_to workbench_macro_lists_path(workbench), class: 'list-group-item' do
+          span = Macro::List.model_name.human(count: 2)
+        = link_to workbench_macro_list_runs_path(workbench), class: 'list-group-item' do
+          span = Macro::List::Run.model_name.human(count: 2)
+        = link_to workbench_sources_path(workbench), class: 'list-group-item' do
+          span = Source.model_name.human(count: 2)
+        = link_to workbench_contracts_path(workbench), class: 'list-group-item' do
+          span = Contract.model_name.human(count: 2)
+        = link_to workbench_documents_path(workbench), class: 'list-group-item' do
+          span = Document.model_name.human(count: 2)
+        = link_to workbench_document_providers_path(workbench), class: 'list-group-item' do
+          span = DocumentProvider.model_name.human(count: 2)
+        = link_to workbench_processing_rule_workbenches_path(workbench), class: 'list-group-item' do
+          span = ProcessingRule::Workbench.model_name.human(count: 2)
+        = link_to workbench_sequences_path(workbench), class: 'list-group-item' do
+          span = Sequence.model_name.human(count: 2)
 
-    = main_nav_menu_item 'activerecord.models.workbench.one'.t.capitalize do
-      = link_to workbench_path(workbench), class: "list-group-item" do
-        span = 'activerecord.models.referential.other'.t.capitalize
-      = link_to workbench_imports_path(workbench), class: "list-group-item" do
-        span = 'activerecord.models.import.other'.t.capitalize
-      - if workbench.workgroup.export_types.present?
-        = link_to workbench_exports_path(workbench), class: "list-group-item" do
-          span = 'activerecord.models.export.other'.t.capitalize
-      = link_to workbench_calendars_path(workbench), class: 'list-group-item' do
-        span = 'activerecord.models.calendar.other'.t.capitalize
-      = link_to workbench_control_lists_path(workbench), class: "list-group-item" do
-        span = Control::List.model_name.human(count: 2)
-      = link_to workbench_control_list_runs_path(workbench), class: "list-group-item" do
-        span = Control::List::Run.model_name.human(count: 2)
-      = link_to workbench_macro_lists_path(workbench), class: "list-group-item" do
-        span = Macro::List.model_name.human(count: 2)
-      = link_to workbench_macro_list_runs_path(workbench), class: "list-group-item" do
-        span = Macro::List::Run.model_name.human(count: 2)
-      = link_to workbench_sources_path(workbench), class: "list-group-item" do
-        span = 'activerecord.models.source.other'.t.capitalize
-      = link_to workbench_contracts_path(workbench), class: "list-group-item" do
-        span = 'activerecord.models.contract.other'.t.capitalize
-      = link_to workbench_documents_path(workbench), class: "list-group-item" do
-        span = 'activerecord.models.document.other'.t.capitalize
-      = link_to workbench_document_providers_path(workbench), class: 'list-group-item' do
-        span = 'activerecord.models.document_provider.other'.t.capitalize
-      = link_to workbench_processing_rule_workbenches_path(workbench), class: "list-group-item" do
-        span = ProcessingRule::Workbench.t
-      = link_to workbench_sequences_path(workbench), class: "list-group-item" do
-        span = Sequence.model_name.human.pluralize
+      = main_nav_menu_item StopAreaReferential.model_name.human do
+        = link_to workbench_stop_area_referential_stop_areas_path(workbench), class: 'list-group-item' do
+          span = Chouette::StopArea.model_name.human(count: 2).capitalize
+        - if has_feature?(:stop_area_connection_links)
+          = link_to workbench_stop_area_referential_connection_links_path(workbench), class: 'list-group-item' do
+            span = Chouette::ConnectionLink.model_name.human(count: 2).capitalize
+        - if has_feature?(:stop_area_routing_constraints)
+          = link_to workbench_stop_area_referential_stop_area_routing_constraints_path(workbench), class: 'list-group-item' do
+            span = StopAreaRoutingConstraint.model_name.human(count: 2)
+        = link_to workbench_stop_area_referential_entrances_path(workbench), class: 'list-group-item' do
+          span = Entrance.model_name.human(count: 2)
+        - if policy(workbench.stop_area_referential).create?(StopAreaProvider)
+          = link_to workbench_stop_area_referential_stop_area_providers_path(workbench), class: 'list-group-item' do
+            span = StopAreaProvider.model_name.human(count: 2)
 
-    = main_nav_menu_item 'layouts.navbar.stop_area_referential'.t do
-      = link_to workbench_stop_area_referential_stop_areas_path(workbench), class: "list-group-item" do
-        span = Chouette::StopArea.t.capitalize
-      - if has_feature?(:stop_area_connection_links)
-        = link_to workbench_stop_area_referential_connection_links_path(workbench), class: 'list-group-item' do
-          span = Chouette::ConnectionLink.t.capitalize
-      - if has_feature?(:stop_area_routing_constraints)
-        = link_to workbench_stop_area_referential_stop_area_routing_constraints_path(workbench), class: 'list-group-item' do
-          span = StopAreaRoutingConstraint.t.capitalize
-      - if policy(workbench.stop_area_referential).create?(StopAreaProvider)
-        = link_to workbench_stop_area_referential_stop_area_providers_path(workbench), class: 'list-group-item' do
-          span = StopAreaProvider.t.capitalize
-      = link_to workbench_stop_area_referential_entrances_path(workbench), class: 'list-group-item' do
-        span = Entrance.t.capitalize
-      = link_to workbench_stop_area_referential_path(workbench), class: "list-group-item" do
-        span = 'stop_area_referentials.show.title'.t
+      = main_nav_menu_item LineReferential.model_name.human do
+        = link_to workbench_line_referential_lines_path(workbench), class: 'list-group-item' do
+          span = Chouette::Line.model_name.human(count: 2).capitalize
+        = link_to workbench_line_referential_networks_path(workbench), class: 'list-group-item' do
+          span = Chouette::Network.model_name.human(count: 2).capitalize
+        = link_to workbench_line_referential_companies_path(workbench), class: 'list-group-item' do
+          span = Chouette::Company.model_name.human(count: 2).capitalize
+        = link_to workbench_line_referential_line_notices_path(workbench), class: 'list-group-item' do
+          span = Chouette::LineNotice.model_name.human(count: 2).capitalize
+        = link_to workbench_line_referential_line_routing_constraint_zones_path(workbench), class: 'list-group-item' do
+          span = LineRoutingConstraintZone.model_name.human(count: 2)
+        = link_to workbench_line_referential_line_providers_path(workbench), class: 'list-group-item' do
+          span = LineProvider.model_name.human(count: 2)
 
-    = main_nav_menu_item 'layouts.navbar.line_referential'.t do
-      = link_to workbench_line_referential_lines_path(workbench), class: "list-group-item" do
-        span = Chouette::Line.t.capitalize
-      = link_to workbench_line_referential_networks_path(workbench), class: "list-group-item" do
-        span = Chouette::Network.t.capitalize
-      = link_to workbench_line_referential_companies_path(workbench), class: "list-group-item" do
-        span = Chouette::Company.t.capitalize
-      = link_to workbench_line_referential_line_notices_path(workbench), class: "list-group-item" do
-        span = Chouette::LineNotice.t.capitalize
-      = link_to workbench_line_referential_line_routing_constraint_zones_path(workbench), class: 'list-group-item' do
-        span = LineRoutingConstraintZone.t.capitalize
-      = link_to workbench_line_referential_line_providers_path(workbench), class: 'list-group-item' do
-        span = LineProvider.t.capitalize
-      = link_to workbench_line_referential_path(workbench), class: "list-group-item" do
-        span = 'line_referentials.show.title'.t
+      = main_nav_menu_item ShapeReferential.model_name.human.capitalize do
+        = link_to workbench_shape_referential_shapes_path(workbench), class: 'list-group-item' do
+          span = Shape.model_name.human(count: 2).capitalize
+        = link_to workbench_shape_referential_point_of_interests_path(workbench), class: 'list-group-item' do
+          span = PointOfInterest::Base.model_name.human(count: 2)
+        = link_to workbench_shape_referential_point_of_interest_categories_path(workbench), class: 'list-group-item' do
+          span = PointOfInterest::Category.model_name.human(count: 2)
 
-    = main_nav_menu_item 'layouts.navbar.shape_referential'.t do
-      = link_to workbench_shape_referential_shapes_path(workbench), class: 'list-group-item' do
-        span = Shape.t.capitalize
-      = link_to workbench_shape_referential_point_of_interests_path(workbench), class: 'list-group-item' do
-        span = PointOfInterest::Base.t.capitalize
-      = link_to workbench_shape_referential_point_of_interest_categories_path(workbench), class: 'list-group-item' do
-        span = PointOfInterest::Category.t.capitalize
+      = main_nav_menu_item Fare::Referential.model_name.human do
+        = link_to workbench_fare_zones_path(workbench), class: 'list-group-item' do
+          span = Fare::Zone.model_name.human(count: 2)
+        = link_to workbench_fare_providers_path(workbench), class: 'list-group-item' do
+          span = Fare::Provider.model_name.human(count: 2)
 
-    = main_nav_menu_item 'layouts.navbar.fare_referential'.t do
-      = link_to workbench_fare_zones_path(workbench), class: "list-group-item" do
-        span = Fare::Zone.model_name.human(count: 2)
-      = link_to workbench_fare_providers_path(workbench), class: 'list-group-item' do
-        span = Fare::Provider.model_name.human(count: 2)
+      = main_nav_menu_item t('layouts.navbar.configuration') do
+        = link_to workbench_notification_rules_path(workbench), class: 'list-group-item' do
+          span = t('layouts.navbar.workbench.notification_rules')
+        - if current_user.has_permission?('api_keys.index')
+          = link_to workbench_api_keys_path(workbench), class: 'list-group-item' do
+            span = ApiKey.model_name.human(count: 2)
 
-    = main_nav_menu_item 'layouts.navbar.configuration'.t do
-      .subtitle= 'layouts.navbar.workbench.subtitle'.t
-      = link_to workbench_notification_rules_path(workbench), class: 'list-group-item level-2' do
-        span = 'layouts.navbar.workbench.notification_rules'.t
-      - if can_edit_workgroup
-        .subtitle= 'layouts.navbar.workgroup.subtitle'.t
-        = link_to [:edit_aggregate, workbench.workgroup], class: 'list-group-item level-2' do
-          span = 'layouts.navbar.workgroup.edit_aggregate'.t
-        = link_to [:edit_merge, workbench.workgroup], class: 'list-group-item level-2' do
-          span = 'layouts.navbar.workgroup.edit_merge'.t
-        = link_to [:edit_transport_modes, workbench.workgroup], class: 'list-group-item level-2' do
-          span = 'layouts.navbar.workgroup.edit_transport_modes'.t
-      - if can_edit_workgroup
-        .subtitle= 'layouts.navbar.publications.subtitle'.t
-        = link_to [workbench.workgroup, :publication_setups], class: 'list-group-item level-2' do
-          span = PublicationSetup.t
-        = link_to [workbench.workgroup, :publication_apis], class: 'list-group-item level-2' do
-          span = PublicationApi.t
-      - if current_user.has_permission?('api_keys.index')
-        = link_to workbench_api_keys_path(workbench), class: 'list-group-item' do
-          span = 'layouts.navbar.security_configuration'.t
 
-= link_to workgroups_path do
-  span = 'layouts.navbar.workgroups_configuration'.t
+  - if workgroup
+    .panel-group
+      = main_nav_menu_item "#{Workgroup.model_name.human} #{workgroup.name}" do
+        = link_to workgroup_output_path(workgroup), class: 'list-group-item' do
+          span = t('layouts.navbar.workbench_outputs.workgroup')
+        = link_to workgroup_imports_path(workgroup), class: 'list-group-item' do
+          span = Import::Base.model_name.human(count: 2).capitalize
+        = link_to workgroup_exports_path(workgroup), class: 'list-group-item' do
+          span = Export::Base.model_name.human(count: 2)
+        = link_to workgroup_control_list_runs_path(workgroup), class: 'list-group-item' do
+          span = Control::List::Run.model_name.human(count: 2)
+        = link_to [workgroup, :publication_setups], class: 'list-group-item' do
+          span = PublicationSetup.model_name.human(count: 2)
+        = link_to [workgroup, :publication_apis], class: 'list-group-item' do
+          span = PublicationApi.model_name.human(count: 2)
+        = link_to workgroup_code_spaces_path(workgroup), class: 'list-group-item' do
+          span = CodeSpace.model_name.human(count: 2)
+        = link_to workgroup_document_types_path(workgroup), class: 'list-group-item' do
+          span = DocumentType.model_name.human(count: 2)
+        = link_to workgroup_processing_rule_workgroups_path(workgroup), class: 'list-group-item' do
+          span = ProcessingRule::Workgroup.model_name.human(count: 2)
 
-= link_to organisation_path do
-  span = 'layouts.navbar.organisation_configuration'.t
+      = main_nav_menu_item t('layouts.navbar.configuration') do
+        = link_to [:edit_aggregate, workgroup], class: 'list-group-item' do
+          span = t('layouts.navbar.workgroup.edit_aggregate')
+        = link_to [:edit_merge, workgroup], class: 'list-group-item' do
+          span = t('layouts.navbar.workgroup.edit_merge')
+
+
+  .panel-group
+    .menu-item.panel
+      .panel-heading
+        h4.panel-title
+          = link_to root_path do
+            span = Dashboard.model_name.human
+
+    - current_user_workbenches = current_user.workbenches.includes(workgroup: :owner)
+    - if current_user_workbenches.any?
+      = main_nav_menu_item t('layouts.navbar.explore') do
+        - current_user_workbenches.group_by { |w| w.workgroup.name }.sort_by(&:first).each do |_, workbenches|
+          - workgroup = workbenches.first.workgroup
+          - if workgroup.owner == current_organisation
+            = link_to [workgroup], class: 'list-group-item' do
+              span = workgroup.name
+          - else
+            span.list-group-item = workgroup.name
+          - workbenches.sort_by(&:name).each do |workbench|
+            = link_to [workbench], class: 'list-group-item level-2' do
+              span = workbench.name
+
+    = main_nav_menu_item t('layouts.navbar.administrate') do
+      = link_to workgroups_path, class: 'list-group-item' do
+        span = Workgroup.model_name.human(count: 2)
+      = link_to organisation_path, class: 'list-group-item' do
+        span = t('layouts.navbar.organisation_configuration')

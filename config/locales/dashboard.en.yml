@@ -20,3 +20,8 @@ en:
     aggregates:
       title: Workgroup offers
       none: No aggregation
+  activemodel:
+    models:
+      dashboard:
+        one: "Dashboard"
+        other: "Dashboards"

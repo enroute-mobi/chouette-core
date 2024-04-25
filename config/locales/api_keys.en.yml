@@ -17,8 +17,9 @@ en:
       title: "Update api key"
   activerecord:
     models:
-      one: "Api Key"
-      other: "Api keys"
+      api_key:
+        one: "Api Key"
+        other: "Api keys"
     attributes:
       api_key:
         name: "Name"

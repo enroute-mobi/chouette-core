@@ -64,7 +64,7 @@ class WorkgroupsController < Chouette::ResourceController
   protected
 
   def scope
-    @scope ||= current_organisation.owned_workgroups
+    @scope ||= current_organisation.owned_workgroups.distinct
   end
 
   def search
@@ -101,5 +101,9 @@ class WorkgroupsController < Chouette::ResourceController
                    end
   end
 
-  alias current_workgroup resource
+  def current_workgroup
+    return nil unless params[:id]
+
+    resource
+  end
 end

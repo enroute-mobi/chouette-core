@@ -6,14 +6,11 @@
 #   end
 #
 class Dashboard
+  extend ActiveModel::Translation
   include ActiveModel::Conversion
 
   @@default_class = self
   mattr_accessor :default_class
-
-  def self.model_name
-    ActiveModel::Name.new Dashboard, Dashboard, "Dashboard"
-  end
 
   attr_reader :context
   def initialize(context)

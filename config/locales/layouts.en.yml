@@ -15,24 +15,14 @@ en:
       select_referential_for_more_features: "Select data set for more foeatures"
       select_referential_datas: "Select datas"
       return_to_dashboard: "Return to Dashboard"
-      dashboard: Dashboard
       referential_datas: "Datas"
-      shape_referential: "Topological Referential"
-      line_referential: "Line Referential"
-      stop_area_referential: "Stop Area Referential"
-      fare_referential: "Fare Referential"
       settings: "Settings"
-      current_offer:
-        one: Current offer
-        other: Current offers
       workbench_outputs:
         organisation: Organization offers
         workgroup: Workgroup offers
         edit_workgroup: App configuration
       configuration: Settings
       organisation_configuration: My organization
-      workgroups_configuration: Workgroups
-      security_configuration: Security
       tools: Tools
       icar: iCAR
       ilico: iLICO
@@ -40,15 +30,14 @@ en:
       support: Support
       shapes: Shapes
       workbench:
-        subtitle: Workbench
         notification_rules: Notification center
       workgroup:
-        subtitle: Workgroup
         edit_aggregate: Aggregation settings
         edit_merge: Merge settings
-        edit_transport_modes: Transport modes
       publications:
         subtitle: Publications
+      explore: "Explore"
+      administrate: "Administrate"
     history_tag:
       title: "Metadatas"
       created_at: "Created at"

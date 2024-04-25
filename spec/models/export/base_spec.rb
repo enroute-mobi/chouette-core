@@ -85,14 +85,14 @@ RSpec.describe Export::Base, type: :model do
     before(:each) { export.exportables.create export: export }
 
     context 'when export is destroyed' do
-      it "must destroy all associated Exportables" do
-        expect{ export.destroy }.to change { Exportable.count }.from(1).to(0)
+      it 'must destroy all associated Exportables' do
+        expect{ export.destroy }.to change { export.exportables.count }.from(1).to(0)
       end
     end
 
     context 'when export run' do
-      it "must destroy all associated Exportables" do
-        expect{ export.run }.to change { Exportable.count }.from(1).to(0)
+      it 'must destroy all associated Exportables' do
+        expect{ export.run }.to change { export.exportables.count }.from(1).to(0)
       end
     end
   end

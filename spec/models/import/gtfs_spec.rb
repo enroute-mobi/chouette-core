@@ -805,18 +805,18 @@ RSpec.describe Import::Gtfs do
     it "should create a VehicleJourney for each trip" do
       import.import_stop_times
       defined_attributes = ->(v) {
-        [v.published_journey_name, v.time_tables.first&.comment, v.accessibility_assessment&.name]
+        [v.published_journey_name, v.time_tables.first&.comment]
       }
       expected_attributes = [
-        ["CITY2", "FULLW", "GTFS - Mobility reduced passenger not suitable"],
-        ["AB1", "FULLW", "GTFS - Mobility reduced passenger suitable"],
-        ["AB2", "FULLW", "GTFS - Mobility reduced passenger suitable"],
-        ["BFC1", "FULLW", nil],
-        ["BFC2", "FULLW", nil],
-        ["AAMV1", "WE", nil],
-        ["AAMV2", "WE", nil],
-        ["AAMV3", "WE", nil],
-        ["AAMV4", "WE", nil]
+        ["CITY2", "FULLW"],
+        ["AB1", "FULLW"],
+        ["AB2", "FULLW"],
+        ["BFC1", "FULLW"],
+        ["BFC2", "FULLW"],
+        ["AAMV1", "WE"],
+        ["AAMV2", "WE"],
+        ["AAMV3", "WE"],
+        ["AAMV4", "WE"]
       ]
       expect(import.referential.vehicle_journeys.map(&defined_attributes)).to match_array(expected_attributes)
     end
@@ -904,6 +904,30 @@ RSpec.describe Import::Gtfs do
           ['AAMV2', []],
           ['AAMV3', []],
           ['AAMV4', []]
+        ]
+
+        expect(import.referential.vehicle_journeys.map(&defined_attributes)).to match_array(expected_attributes)
+      end
+    end
+
+    context 'with accessibility assesment' do
+      let(:import) { build_import 'google-sample-feed-with-accessibility-assesment.zip' }
+
+      it "should create a VehicleJourney for each trip" do
+        import.import_stop_times
+        defined_attributes = ->(v) {
+          [v.published_journey_name, v.accessibility_assessment&.name]
+        }
+        expected_attributes = [
+          ["CITY2", "GTFS - Mobility reduced passenger not suitable"],
+          ["AB1", "GTFS - Mobility reduced passenger suitable"],
+          ["AB2", "GTFS - Mobility reduced passenger suitable"],
+          ["BFC1", nil],
+          ["BFC2", nil],
+          ["AAMV1", nil],
+          ["AAMV2", nil],
+          ["AAMV3", nil],
+          ["AAMV4", nil]
         ]
 
         expect(import.referential.vehicle_journeys.map(&defined_attributes)).to match_array(expected_attributes)

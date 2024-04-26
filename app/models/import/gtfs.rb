@@ -632,17 +632,18 @@ class Import::Gtfs < Import::Base # rubocop:disable Metrics/ClassLength
   def accessibility_assessment(wheelchair_accessible)
     case wheelchair_accessible
     when '1'
-      referential.accessibility_assessments.first_or_initialize_by_code(code_space, 'gtfs-wheelchair-accessible') do |a|
+      shape_provider.accessibility_assessments.first_or_initialize_by_code(code_space, 'gtfs-wheelchair-accessible') do |a|
         a.name = 'GTFS - Mobility reduced passenger suitable'
         a.mobility_impaired_accessibility = 'yes'
       end
     when '2'
-      referential.accessibility_assessments.first_or_initialize_by_code(code_space, 'gtfs-wheelchair-not-accessible') do |a|
+      shape_provider.accessibility_assessments.first_or_initialize_by_code(code_space, 'gtfs-wheelchair-not-accessible') do |a|
         a.name = 'GTFS - Mobility reduced passenger not suitable'
         a.mobility_impaired_accessibility = 'no'
       end
     end
   end
+  private :accessibility_assessment
 
   def process_trip(resource, trip, stop_times)
     begin

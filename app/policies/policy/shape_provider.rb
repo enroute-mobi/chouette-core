@@ -10,7 +10,8 @@ module Policy
       [
         ::PointOfInterest::Category,
         ::PointOfInterest::Base,
-        ::ServiceFacilitySet
+        ::ServiceFacilitySet,
+        ::AccessibilityAssessment
       ].include?(resource_class)
     end
   end

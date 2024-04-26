@@ -1,4 +1,4 @@
-= simple_form_for [@workbench, @referential, @accessibility_assessment], html: {class: 'form-horizontal', id: 'accessibility_assessments_form'}, wrapper: :horizontal_form do |f|
+= simple_form_for [@workbench, :shape_referential, @accessibility_assessment], html: {class: 'form-horizontal', id: 'accessibility_assessments_form'}, wrapper: :horizontal_form do |f|
   .row
     .col-lg-12
       h2.mb-lg= t("accessibility_assessments.form.sections.identification")

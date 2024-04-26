@@ -1,4 +1,4 @@
-- breadcrumb :accessibility_assessments, @workbench, @referential
+- breadcrumb :accessibility_assessments, @workbench
 
 .page_content
   .container-fluid
@@ -15,7 +15,7 @@
                 key: :name, \
                 attribute: 'name', \
                 link_to: lambda do |accessibility_assessment| \
-                  workbench_referential_accessibility_assessment_path(@workbench, @referential, accessibility_assessment) \
+                  workbench_shape_referential_accessibility_assessment_path(@workbench, accessibility_assessment) \
                 end \
               ), \
               TableBuilderHelper::Column.new( \

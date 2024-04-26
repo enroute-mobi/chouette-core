@@ -2,6 +2,7 @@
 
 module Policy
   class AccessibilityAssessment < Base
+    authorize_by Strategy::ShapeProvider
     authorize_by Strategy::Permission
 
     protected

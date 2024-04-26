@@ -26,5 +26,10 @@ RSpec.describe Policy::ShapeProvider, type: :policy do
       let(:resource_class) { ServiceFacilitySet }
       it { is_expected.to be_truthy }
     end
+
+    context 'AccessibilityAssessment' do
+      let(:resource_class) { AccessibilityAssessment }
+      it { is_expected.to be_truthy }
+    end
   end
 end

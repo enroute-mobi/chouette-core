@@ -165,19 +165,19 @@ crumb :new_source do |workbench|
   parent :sources, workbench
 end
 
-crumb :accessibility_assessments do |workbench, referential|
-  link I18n.t('accessibility_assessments.index.title'), workbench_referential_accessibility_assessments_path(workbench, referential)
-  parent :referential, workbench, referential
+crumb :accessibility_assessments do |workbench|
+  link I18n.t('accessibility_assessments.index.title'), workbench_shape_referential_accessibility_assessments_path(workbench)
+  parent :workbench, workbench
 end
 
-crumb :accessibility_assessment do |workbench, referential, accessibility_assessment|
-  link breadcrumb_name(accessibility_assessment), workbench_referential_accessibility_assessment_path(referential, accessibility_assessment)
-  parent :accessibility_assessments, workbench, referential
+crumb :accessibility_assessment do |workbench, accessibility_assessment|
+  link breadcrumb_name(accessibility_assessment), workbench_shape_referential_accessibility_assessment_path(workbench, accessibility_assessment)
+  parent :accessibility_assessments, workbench
 end
 
-crumb :new_accessibility_assessment do |workbench, referential|
+crumb :new_accessibility_assessment do |workbench|
   link I18n.t('accessibility_assessments.new.title')
-  parent :accessibility_assessments, workbench, referential
+  parent :accessibility_assessments, workbench
 end
 
 crumb :macro_list_runs do |workbench|

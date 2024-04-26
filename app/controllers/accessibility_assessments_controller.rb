@@ -1,9 +1,6 @@
 # frozen_string_literal: true
 
-class AccessibilityAssessmentsController < Chouette::ReferentialController
-  include ApplicationHelper
-  include PolicyChecker
-
+class AccessibilityAssessmentsController < Chouette::TopologicReferentialController
   defaults resource_class: AccessibilityAssessment
 
   def index
@@ -12,8 +9,7 @@ class AccessibilityAssessmentsController < Chouette::ReferentialController
         @accessibility_assessments = AccessibilityAssessmentDecorator.decorate(
           collection,
           context: {
-            workbench: workbench,
-            referential: referential
+            workbench: workbench
           }
         )
       end
@@ -25,17 +21,15 @@ class AccessibilityAssessmentsController < Chouette::ReferentialController
   alias accessibility_assessment resource
 
   def scope
-    @scope ||= referential.accessibility_assessments
+    @scope ||= workbench.shape_referential.accessibility_assessments
   end
 
   def resource
-    get_resource_ivar || set_resource_ivar(scope.find_by(id: params[:id]).decorate(context: { workbench: workbench, referential: referential }))
+    super.decorate(context: { workbench: workbench })
   end
 
   def build_resource
-    get_resource_ivar || set_resource_ivar(
-      end_of_association_chain.send(method_for_build, *resource_params).decorate(context: { workbench: workbench, referential: referential })
-    )
+    super.decorate(context: { workbench: workbench })
   end
 
   def collection

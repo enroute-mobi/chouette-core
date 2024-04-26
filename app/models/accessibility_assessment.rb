@@ -1,12 +1,10 @@
 class AccessibilityAssessment < ActiveRecord::Base
   include CodeSupport
+  include ShapeReferentialSupport
+  include NilIfBlank
   extend Enumerize
 
-  belongs_to :referential, required: true
-
   validates :name, presence: true
-
-  delegate :workbench, to: :referential
 
   enumerize :mobility_impaired_accessibility, in: %i[unknown yes no partial], default: :unknown
   enumerize :wheelchair_accessibility, in: %i[unknown yes no partial], default: :unknown

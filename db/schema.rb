@@ -21,6 +21,7 @@ ActiveRecord::Schema.define(version: 2024_04_23_123123) do
   enable_extension "unaccent"
 
   create_table "accessibility_assessments", force: :cascade do |t|
+    t.uuid "uuid", default: -> { "gen_random_uuid()" }, null: false
     t.string "name"
     t.string "mobility_impaired_accessibility"
     t.string "wheelchair_accessibility"
@@ -30,10 +31,12 @@ ActiveRecord::Schema.define(version: 2024_04_23_123123) do
     t.string "audible_signals_availability"
     t.string "visual_signs_availability"
     t.text "accessibility_limitation_description"
-    t.bigint "referential_id"
+    t.bigint "shape_referential_id"
+    t.bigint "shape_provider_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.index ["referential_id"], name: "index_accessibility_assessments_on_referential_id"
+    t.index ["shape_provider_id"], name: "index_accessibility_assessments_on_shape_provider_id"
+    t.index ["shape_referential_id"], name: "index_accessibility_assessments_on_shape_referential_id"
   end
 
   create_table "aggregate_resources", force: :cascade do |t|

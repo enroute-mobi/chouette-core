@@ -20,7 +20,6 @@ Apartment.configure do |config|
   config.excluded_models = [
     'TimeZone',
     'Aggregate',
-    'AccessibilityAssessment',
     'Aggregate::Resource',
     'ApiKey',
     'Authentication::Base',

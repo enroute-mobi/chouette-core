@@ -1506,7 +1506,7 @@ RSpec.describe Export::Gtfs, type: [:model, :with_exportable_referential] do
 
       before do
         service_facility_set.associated_services = associated_services
-        allow(vehicle_journey).to receive(:service_facility_set).and_return(service_facility_set)
+        allow(vehicle_journey).to receive(:service_facility_sets).and_return([service_facility_set])
       end
 
       context "when associated_services is 'luggage_carriage/cycles_allowed'" do
@@ -1522,6 +1522,13 @@ RSpec.describe Export::Gtfs, type: [:model, :with_exportable_referential] do
       end
 
       context "when associated services is many" do
+        let(:other_service_facility_set ) { ServiceFacilitySet.new(id: rand(100) + rand(100)) }
+
+        before do
+          service_facility_set.associated_services = associated_services
+          other_service_facility_set.associated_services = associated_services
+          allow(vehicle_journey).to receive(:service_facility_sets).and_return([service_facility_set, other_service_facility_set])
+        end
         let(:associated_services) { ['luggage_carriage/no_cycles', 'luggage_carriage/baggage_storage'] }
 
         it { is_expected.to eq nil }

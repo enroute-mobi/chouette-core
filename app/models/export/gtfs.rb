@@ -1043,16 +1043,15 @@ class Export::Gtfs < Export::Base
       end
 
       def associated_services
-        @associated_services ||= service_facility_set&.associated_services || []
+        @associated_services ||= service_facility_sets.first&.associated_services || []
       end
 
       def gtfs_bikes_allowed
-        return unless associated_services.count == 1
+        return if service_facility_sets.many?
 
-        case associated_services&.first&.code
-        when 'luggage_carriage/cycles_allowed'
+        if associated_services.find{ |a| a.code == 'luggage_carriage/cycles_allowed' }
           '1'
-        when 'luggage_carriage/no_cycles'
+        elsif associated_services.find{ |a| a.code == 'luggage_carriage/no_cycles' }
           '2'
         end
       end

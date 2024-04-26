@@ -53,6 +53,7 @@ class RoutingConstraintZonesController < Chouette::ReferentialController
 
   alias_method :routing_constraint_zone, :resource
   alias_method :line, :parent
+  alias parent_for_parent_policy referential
 
   def collection
     @q = line.routing_constraint_zones.ransack(params[:q])

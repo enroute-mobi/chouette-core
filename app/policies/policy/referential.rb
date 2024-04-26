@@ -48,6 +48,8 @@ module Policy
 
     def _create?(resource_class)
       [
+        ::Chouette::Route,
+        ::Chouette::RoutingConstraintZone,
         ::Chouette::TimeTable
       ].include?(resource_class)
     end

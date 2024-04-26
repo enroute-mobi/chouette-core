@@ -12,7 +12,6 @@ class RoutingConstraintZoneDecorator < AF83::Decorator
   create_action_link(
     if: ->() {
       check_policy(:create) &&
-        context[:referential].organisation == h.current_organisation &&
         context[:line].routes.with_at_least_three_stop_points.length > 0
     }
   )
@@ -35,5 +34,9 @@ class RoutingConstraintZoneDecorator < AF83::Decorator
     instance_decorator.destroy_action_link do |l|
       l.data {{ confirm: h.t('routing_constraint_zones.actions.destroy_confirm') }}
     end
+  end
+
+  def policy_parent
+    context[:referential]
   end
 end

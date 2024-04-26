@@ -1,4 +1,4 @@
-- breadcrumb :service_facility_sets, @workbench, @referential
+- breadcrumb :service_facility_sets, @workbench
 
 .page_content
   .container-fluid
@@ -15,7 +15,7 @@
                 key: :name, \
                 attribute: 'name', \
                 link_to: lambda do |service_facility_set| \
-                  workbench_referential_service_facility_set_path(@workbench, @referential, service_facility_set) \
+                  workbench_shape_referential_service_facility_set_path(@workbench, service_facility_set) \
                 end \
               ), \
               TableBuilderHelper::Column.new( \

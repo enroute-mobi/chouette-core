@@ -115,7 +115,6 @@ Apartment.configure do |config|
     'StopAreaReferential',
     'StopAreaReferentialMembership',
     'StopAreaRoutingConstraint',
-    'ServiceFacilitySet',
     'Source',
     'Source::Retrieval',
     'Search::Save',

@@ -1,12 +1,12 @@
 class ServiceFacilitySet < ActiveRecord::Base
   include CodeSupport
+  include ShapeReferentialSupport
+  include NilIfBlank
   extend Enumerize
 
-  belongs_to :referential, required: true
+  has_array_of :vehicle_journeys, class_name: 'Chouette::VehicleJourney'
 
   validates :name, presence: true
-
-  delegate :workbench, to: :referential
 
   def candidate_categories
     Chouette::ServiceFacility.categories

@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-class ServiceFacilitySetsController < Chouette::ReferentialController
+class ServiceFacilitySetsController < Chouette::TopologicReferentialController
   include ApplicationHelper
   include PolicyChecker
 
@@ -12,8 +12,7 @@ class ServiceFacilitySetsController < Chouette::ReferentialController
         @service_facility_sets = ServiceFacilitySetDecorator.decorate(
           collection,
           context: {
-            workbench: workbench,
-            referential: referential
+            workbench: workbench
           }
         )
       end
@@ -25,16 +24,16 @@ class ServiceFacilitySetsController < Chouette::ReferentialController
   alias service_facility_set resource
 
   def scope
-    @scope ||= referential.service_facility_sets
+    @scope ||= workbench.shape_referential.service_facility_sets
   end
 
   def resource
-    get_resource_ivar || set_resource_ivar(scope.find_by(id: params[:id]).decorate(context: { workbench: workbench, referential: referential }))
+    get_resource_ivar || set_resource_ivar(scope.find_by(id: params[:id]).decorate(context: { workbench: workbench, shape_referential: shape_referential }))
   end
 
   def build_resource
     get_resource_ivar || set_resource_ivar(
-      end_of_association_chain.send(method_for_build, *resource_params).decorate(context: { workbench: workbench, referential: referential })
+      end_of_association_chain.send(method_for_build, *resource_params).decorate(context: { workbench: workbench, shape_referential: shape_referential })
     )
   end
 

@@ -381,19 +381,19 @@ crumb :organisation do |organisation|
   link breadcrumb_name(organisation), organisation_path
 end
 
-crumb :service_facility_sets do |workbench, referential|
-  link I18n.t('service_facility_sets.index.title'), workbench_referential_service_facility_sets_path(workbench, referential)
-  parent :referential, workbench, referential
+crumb :service_facility_sets do |workbench|
+  link I18n.t('service_facility_sets.index.title'), workbench_shape_referential_service_facility_sets_path(workbench)
+  parent :workbench, workbench
 end
 
-crumb :service_facility_set do |workbench, referential, service_facility_set|
-  link breadcrumb_name(service_facility_set), workbench_referential_service_facility_set_path(referential, service_facility_set)
-  parent :service_facility_sets, workbench, referential
+crumb :service_facility_set do |workbench, service_facility_set|
+  link breadcrumb_name(service_facility_set), workbench_shape_referential_service_facility_set_path(workbench, service_facility_set)
+  parent :service_facility_sets, workbench
 end
 
-crumb :new_service_facility_set do |workbench, referential|
+crumb :new_service_facility_set do |workbench|
   link I18n.t('service_facility_sets.new.title')
-  parent :service_facility_sets, workbench, referential
+  parent :service_facility_sets, workbench
 end
 
 crumb :stop_area_referential do |workbench|

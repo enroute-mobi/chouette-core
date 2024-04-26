@@ -5,44 +5,44 @@ RSpec.describe Users::InvitationsController, type: :controller do
     @request.env['devise.mapping'] = Devise.mappings[:user]
   end
 
-  let(:context) do
-    Chouette::Factory.create do
-      organisation do
-        user
+  describe '#edit' do
+    let(:context) do
+      Chouette::Factory.create do
+        organisation do
+          user
+        end
       end
     end
-  end
-  let(:organisation) { context.organisation }
-  let(:saml_authentication) do
-    Authentication::Saml.create!(
-      organisation: organisation,
-      name: 'SAML',
-      subtype: 'google',
-      saml_idp_entity_id: 'http://idp.saml.ex/metadata',
-      saml_idp_sso_service_url: 'http://idp.saml.ex/sign_in',
-      saml_idp_cert: 'some_certificate'
-    )
-  end
-  let(:from_user) { context.user }
+    let(:organisation) { context.organisation }
+    let(:saml_authentication) do
+      Authentication::Saml.create!(
+        organisation: organisation,
+        name: 'SAML',
+        subtype: 'google',
+        saml_idp_entity_id: 'http://idp.saml.ex/metadata',
+        saml_idp_sso_service_url: 'http://idp.saml.ex/sign_in',
+        saml_idp_cert: 'some_certificate'
+      )
+    end
+    let(:from_user) { context.user }
 
-  let(:create_saml_authentication) { false }
+    let(:create_saml_authentication) { false }
 
-  let(:user) do
-    User.invite(
-      email: 'invited@test.ex',
-      name: 'invited',
-      profile: 'visitor',
-      organisation: organisation,
-      from_user: from_user
-    )[1]
-  end
-  let(:invitation_token) { user.instance_variable_get(:@raw_invitation_token) }
+    let(:user) do
+      User.invite(
+        email: 'invited@test.ex',
+        name: 'invited',
+        profile: 'visitor',
+        organisation: organisation,
+        from_user: from_user
+      )[1]
+    end
+    let(:invitation_token) { user.instance_variable_get(:@raw_invitation_token) }
 
-  before { saml_authentication if create_saml_authentication }
+    before { saml_authentication if create_saml_authentication }
 
-  subject { response }
+    subject { response }
 
-  describe '#edit' do
     before { get :edit, params: { invitation_token: invitation_token } }
 
     it { is_expected.to render_template(:edit) }
@@ -58,5 +58,13 @@ RSpec.describe Users::InvitationsController, type: :controller do
         expect(session_invitation_token).to eq(invitation_token)
       end
     end
+  end
+
+  describe '#new' do
+    login_user
+
+    before { get :new }
+
+    it { expect(response).to have_http_status(:not_found) }
   end
 end

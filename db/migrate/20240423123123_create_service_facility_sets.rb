@@ -11,7 +11,7 @@ class CreateServiceFacilitySets < ActiveRecord::Migration[5.2]
         t.timestamps
       end
 
-      add_reference :vehicle_journeys, :service_facility_set
+      add_column :vehicle_journeys, :service_facility_set_ids, :bigint, array: true, default: []
     end
   end
 end

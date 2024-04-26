@@ -1631,13 +1631,12 @@ ActiveRecord::Schema.define(version: 2024_04_23_123123) do
     t.bigint "ignored_routing_contraint_zone_ids", default: [], array: true
     t.bigint "ignored_stop_area_routing_constraint_ids", default: [], array: true
     t.bigint "line_notice_ids", default: [], array: true
-    t.bigint "service_facility_set_id"
+    t.bigint "service_facility_set_ids", default: [], array: true
     t.index ["checksum"], name: "index_vehicle_journeys_on_checksum"
     t.index ["custom_field_values"], name: "index_vehicle_journeys_on_custom_field_values", using: :gin
     t.index ["journey_pattern_id"], name: "index_vehicle_journeys_on_journey_pattern_id"
     t.index ["objectid"], name: "vehicle_journeys_objectid_key", unique: true
     t.index ["route_id"], name: "index_vehicle_journeys_on_route_id"
-    t.index ["service_facility_set_id"], name: "index_vehicle_journeys_on_service_facility_set_id"
   end
 
   create_table "waypoints", force: :cascade do |t|

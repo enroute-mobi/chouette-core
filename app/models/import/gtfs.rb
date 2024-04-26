@@ -615,12 +615,12 @@ class Import::Gtfs < Import::Base # rubocop:disable Metrics/ClassLength
   def service_facility_set(bikes_allowed)
     case bikes_allowed
     when '1'
-      referential.service_facility_sets.first_or_initialize_by_code(code_space, 'gtfs-bikes-allowed') do |s|
+      shape_provider.service_facility_sets.first_or_create_by_code(code_space, 'gtfs-bikes-allowed') do |s|
         s.name = 'GTFS - Bikes allowed'
         s.associated_services = ['luggage_carriage/cycles_allowed']
       end
     when '2'
-      referential.service_facility_sets.first_or_initialize_by_code(code_space, 'gtfs-bikes-not-allowed') do |s|
+      shape_provider.service_facility_sets.first_or_create_by_code(code_space, 'gtfs-bikes-not-allowed') do |s|
         s.name = 'GTFS - Bikes not allowed'
         s.associated_services = ['luggage_carriage/no_cycles']
       end
@@ -637,7 +637,10 @@ class Import::Gtfs < Import::Base # rubocop:disable Metrics/ClassLength
       vehicle_journey = journey_pattern.vehicle_journeys.build route: journey_pattern.route, skip_custom_fields_initialization: true
       vehicle_journey.published_journey_name = trip.short_name.presence || trip.id
       vehicle_journey.codes.build code_space: code_space, value: trip.id
-      vehicle_journey.service_facility_set = service_facility_set(trip.bikes_allowed)
+
+      if service_facility_set_id = service_facility_set(trip.bikes_allowed)&.id
+        vehicle_journey.service_facility_set_ids << service_facility_set_id
+      end
 
       ApplicationModel.skipping_objectid_uniqueness do
         save_model vehicle_journey, resource: resource

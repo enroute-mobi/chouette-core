@@ -4,9 +4,9 @@ class ServiceFacilitySet < ActiveRecord::Base
   include NilIfBlank
   extend Enumerize
 
-  has_array_of :vehicle_journeys, class_name: 'Chouette::VehicleJourney'
+  belongs_to_array_in_many :vehicle_journeys, class_name: 'Chouette::VehicleJourney', array_name: :service_facility_sets
 
-  validates :name, presence: true
+  validates :name, :associated_services, presence: true
 
   def candidate_categories
     Chouette::ServiceFacility.categories

@@ -147,7 +147,7 @@ class Workbench < ApplicationModel
   end
 
   def self.available_restriction
-    ["referentials.flag_urgent"]
+    ["referentials.create", "referentials.flag_urgent", "imports.create", "merges.create"]
   end
 
   def last_merged_data

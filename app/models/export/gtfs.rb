@@ -952,10 +952,7 @@ class Export::Gtfs < Export::Base
     delegate :vehicle_journeys, to: :export_scope
 
     def export!
-      vehicle_journeys.includes(
-        :time_tables, :journey_pattern,
-        :service_facility_set, :codes, route: :line
-      ).find_each do |vehicle_journey|
+      vehicle_journeys.includes(:time_tables, :journey_pattern,:codes, route: :line).find_each do |vehicle_journey|
         decorated_vehicle_journey =
           Decorator.new(vehicle_journey, index: index, code_provider: code_spaces.vehicle_journeys)
 

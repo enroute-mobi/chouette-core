@@ -24,12 +24,6 @@ module Chouette
 
     private
 
-    def current_workgroup
-      workbench.workgroup
-    end
-
-    helper_method :current_workgroup
-
     def workbench
       @workbench ||= begin_of_association_chain.workbenches.find(params[:workbench_id])
     end

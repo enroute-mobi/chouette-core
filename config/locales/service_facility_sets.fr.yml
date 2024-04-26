@@ -1,20 +1,20 @@
 fr:
   service_facility_sets:
     index:
-      title: Ensembles d'installations de services
+      title: Ensemble de Services
     show:
       title: "%{name}"
     new:
-      title: "Créer un Ensemble d'installations de services"
+      title: "Créer un Ensemble de Services"
     edit:
       title: "Editer %{name}"
     actions:
-      show: "Afficher cet Ensemble d'installations de services"
-      new: "Créer un Ensemble d'installations de services"
-      edit: "Editer cet Ensemble d'installations de services"
-      destroy: "Supprimer cet Ensemble d'installations de services"
-      destroy_confirm: "Etes vous sûr de supprimer cetEnsemble d'installations de services ?"
-    search_no_results: "Aucun Ensemble d'installations de services ne correspond à votre recherche"
+      show: "Afficher cet Ensemble de Services"
+      new: "Créer un Ensemble de Services"
+      edit: "Editer cet Ensemble de Services"
+      destroy: "Supprimer cet Ensemble de Services"
+      destroy_confirm: "Etes vous sûr de supprimer cet Ensemble de Services ?"
+    search_no_results: "Aucun Ensemble de Services ne correspond à votre recherche"
     form:
       sections:
         identification: "Identification"
@@ -24,9 +24,9 @@ fr:
   activerecord:
     models:
       service_facility_set:
-        zero:  "Ensemble d'installations de services"
-        one:   "Ensemble d'installations de services"
-        other: "Ensembles d'installations de services"
+        zero:  "Ensemble de Services"
+        one:   "Ensemble de Services"
+        other: "Ensemble de Services"
     attributes:
       service_facility_set:
         name: "Nom"

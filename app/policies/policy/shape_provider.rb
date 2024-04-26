@@ -9,7 +9,8 @@ module Policy
     def _create?(resource_class)
       [
         ::PointOfInterest::Category,
-        ::PointOfInterest::Base
+        ::PointOfInterest::Base,
+        ::ServiceFacilitySet
       ].include?(resource_class)
     end
   end

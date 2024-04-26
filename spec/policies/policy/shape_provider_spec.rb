@@ -21,5 +21,10 @@ RSpec.describe Policy::ShapeProvider, type: :policy do
       let(:resource_class) { PointOfInterest::Base }
       it { is_expected.to be_truthy }
     end
+
+    context 'ServiceFacilitySet' do
+      let(:resource_class) { ServiceFacilitySet }
+      it { is_expected.to be_truthy }
+    end
   end
 end

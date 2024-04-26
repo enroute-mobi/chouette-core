@@ -50,8 +50,7 @@ module Policy
       [
         ::Chouette::Route,
         ::Chouette::RoutingConstraintZone,
-        ::Chouette::TimeTable,
-        ::ServiceFacilitySet
+        ::Chouette::TimeTable
       ].include?(resource_class)
     end
 

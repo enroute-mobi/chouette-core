@@ -2,6 +2,7 @@
 
 module Policy
   class ServiceFacilitySet < Base
+    authorize_by Strategy::ShapeProvider
     authorize_by Strategy::Permission
 
     protected

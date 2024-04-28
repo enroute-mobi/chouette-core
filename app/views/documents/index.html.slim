@@ -23,8 +23,7 @@
               TableBuilderHelper::Column.new( \
                 key: :document_type_id, \
                 attribute: -> (doc) { doc.document_type.name }, \
-                sortable: false, \
-                link_to: -> (doc) { workgroup_document_type_path(@workbench.workgroup, doc.document_type) } \
+                sortable: false \
               ), \
               TableBuilderHelper::Column.new( \
                 key: :document_provider_id, \

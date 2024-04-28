@@ -21,7 +21,6 @@
 								name: Document.human_attribute_name(:document_type_id), \
 								attribute: -> (document_membership) { document_membership.document.document_type.name }, \
 								sortable: false, \
-								link_to: -> (document_membership) { workgroup_document_type_path(@workbench.workgroup, document_membership.document.document_type) } \
 							), \
 							TableBuilderHelper::Column.new( \
 								name: Document.human_attribute_name(:from), \

@@ -9,7 +9,7 @@
         = simple_block_for @document, title: t('documents.form.sections.identification') do |d|
           = d.attribute :uuid
           = d.attribute :name
-          = d.attribute :document_type, as: :association, link: ->(type) { workgroup_document_type_path(@workbench.workgroup, type) }
+          = d.attribute :document_type, as: :association
           = d.attribute :from, as: :date, value: @document.validity_period&.from
           = d.attribute :to, as: :date, value: @document.validity_period&.to
 

@@ -17,7 +17,6 @@
           key: :document_type_id, \
           attribute: -> (doc) { doc.document_type.name }, \
           sortable: false, \
-          link_to: -> (doc) { workgroup_document_type_path(@workbench.workgroup, doc.document_type) } \
         ), \
         TableBuilderHelper::Column.new( \
           key: :from, \

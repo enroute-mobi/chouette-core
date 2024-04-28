@@ -18,8 +18,7 @@ module DocumentableDecorator
           TableBuilderHelper::Column.new( \
             key: :document_type_id,
             attribute: ->(doc) { doc.document_type.short_name },
-            sortable: false,
-            link_to: ->(doc) { h.workgroup_document_type_path(context[:workbench].workgroup, doc.document_type) }
+            sortable: false
           )
         ],
         sortable: false,

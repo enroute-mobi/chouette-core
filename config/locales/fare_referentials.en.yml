@@ -1,0 +1,6 @@
+fr:
+  activerecord:
+    models:
+      fare/referential:
+        one: "Fare Referential"
+        other: "Fare Referentials"

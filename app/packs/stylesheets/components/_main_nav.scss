@@ -152,7 +152,7 @@ $menuW: 300px;
                   color: rgba(#fff, 1);
                   transition: 0.2s;
                 }
-                &:after {
+                &[data-toggle=collapse]:after {
                   font-family: "Font Awesome 5 Free";
                   font-weight: 900;
                   content: "\f078";

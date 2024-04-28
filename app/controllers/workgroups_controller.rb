@@ -101,5 +101,9 @@ class WorkgroupsController < Chouette::ResourceController
                    end
   end
 
-  alias current_workgroup resource
+  def current_workgroup
+    return nil unless params[:id]
+
+    resource
+  end
 end

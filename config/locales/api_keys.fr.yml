@@ -17,8 +17,9 @@ fr:
       title: "Editer la clé d'accès API"
   activerecord:
     models:
-      one: "Clé d'accès API"
-      other: "Clés d'accès API"
+      api_key:
+        one: "Clé d'accès API"
+        other: "Clés d'accès API"
     attributes:
       api_key:
         name: "Nom"

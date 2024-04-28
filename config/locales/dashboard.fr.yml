@@ -23,3 +23,8 @@ fr:
     aggregates:
       title: Offre du groupe de travail
       none: Aucune agrégation
+  activemodel:
+    models:
+      dashboard:
+        one: "Tableau de bord"
+        other: "Tableaux de bord"

@@ -559,7 +559,7 @@ GEM
     os (1.1.4)
     ox (2.14.18)
     parallel (1.24.0)
-    parallel_tests (4.6.1)
+    parallel_tests (4.7.1)
       parallel
     parser (3.3.0.5)
       ast (~> 2.4.1)
@@ -816,7 +816,7 @@ GEM
     sorted_set (1.0.3)
       rbtree
       set (~> 1.0)
-    spring (4.2.0)
+    spring (4.2.1)
     spring-commands-rspec (1.0.4)
       spring (>= 0.9.1)
     sprockets (3.7.3)

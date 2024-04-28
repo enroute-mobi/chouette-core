@@ -64,7 +64,7 @@ class WorkgroupsController < Chouette::ResourceController
   protected
 
   def scope
-    @scope ||= current_organisation.owned_workgroups.distinct
+    @scope ||= current_organisation.owned_workgroups
   end
 
   def search

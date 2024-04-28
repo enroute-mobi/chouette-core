@@ -36,6 +36,46 @@ RSpec.describe WorkgroupWorkbenchesController, type: :controller do
     end
   end
 
+  describe 'POST create' do
+    let(:workbench_params) do
+      {
+        name: 'new workbench name',
+        current_organisation: ''
+      }
+    end
+
+    let(:request) do
+      post :create, params: { workgroup_id: workbench.workgroup_id.to_s, workbench: workbench_params }
+    end
+
+    before { workbench } # to init all objects first
+
+    it 'creates a new workbench without organisation' do
+      expect { request }.to change { Workbench.count }.by(1)
+      expect(Workbench.last).to have_attributes(
+        name: 'new workbench name',
+        organisation_id: nil
+      )
+    end
+
+    context 'with "in our own organisation"' do
+      let(:workbench_params) do
+        {
+          name: 'new workbench name',
+          current_organisation: '1'
+        }
+      end
+
+      it 'creates a new workbench with current organisation' do
+        expect { request }.to change { Workbench.count }.by(1)
+        expect(Workbench.last).to have_attributes(
+          name: 'new workbench name',
+          organisation_id: Organisation.find_by(code: 'first').id
+        )
+      end
+    end
+  end
+
   describe 'PATCH update' do
     let(:workbench_params) do
       {

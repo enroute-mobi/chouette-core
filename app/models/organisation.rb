@@ -15,9 +15,9 @@ class Organisation < ApplicationModel
 
   has_many :workbenches, dependent: :destroy
   has_many :line_providers, through: :workbenches
-  has_many :workgroups, through: :workbenches do
+  has_many :workgroups, -> { distinct }, through: :workbenches do
     def owned
-      where(owner_id: proxy_association.owner.id)
+      where(owner_id: proxy_association.owner.id).distinct
     end
   end
   has_many :custom_fields, through: :workgroups

@@ -94,7 +94,7 @@
     .panel-group
       = main_nav_menu_item "#{Workgroup.model_name.human} #{workgroup.name}" do
         = link_to workgroup_output_path(workgroup), class: 'list-group-item' do
-          span = t('layouts.navbar.workbench_outputs.workgroup')
+          span = Aggregate.model_name.human(count: 2).capitalize
         = link_to workgroup_imports_path(workgroup), class: 'list-group-item' do
           span = Import::Base.model_name.human(count: 2).capitalize
         = link_to workgroup_exports_path(workgroup), class: 'list-group-item' do

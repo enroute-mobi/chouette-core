@@ -74,19 +74,20 @@
             = link_to Chouette::Company.model_name.human.pluralize.capitalize, workbench_line_referential_companies_path(workbench), class: 'list-group-item'
             = link_to Chouette::Network.model_name.human.pluralize(I18n.locale).capitalize, workbench_line_referential_networks_path(workbench), class: 'list-group-item'
 
-      .panel.panel-default
-        .panel-heading
-          h3.panel-title.with_actions
-            div
-              = link_to I18n.t("dashboards.aggregates.title", count: workbench.workgroup.aggregates.size), workgroup_output_path(workbench.workgroup)
-              span.badge.ml-xs = workbench.workgroup.aggregates.count if workbench.workgroup.aggregates.present?
-            div
-              = link_to '', workgroup_output_path(workbench.workgroup), class: ' fa fa-chevron-right pull-right'
+      - if workbench.workgroup.owner == current_organisation
+        .panel.panel-default
+          .panel-heading
+            h3.panel-title.with_actions
+              div
+                = link_to I18n.t("dashboards.aggregates.title", count: workbench.workgroup.aggregates.size), workgroup_output_path(workbench.workgroup)
+                span.badge.ml-xs = workbench.workgroup.aggregates.count if workbench.workgroup.aggregates.present?
+              div
+                = link_to '', workgroup_output_path(workbench.workgroup), class: ' fa fa-chevron-right pull-right'
 
-        - if workbench.workgroup.aggregates.present?
-          .list-group
-            - workbench.workgroup.aggregates.order("created_at desc").limit(5).each do |aggregate|
-              = link_to t("aggregates.show.title", name: aggregate.name.capitalize).html_safe, workgroup_aggregate_path(aggregate.workgroup, aggregate), class: 'list-group-item'
-        - else
-          .panel-body
-            em.small.text-muted = t('dashboards.aggregates.none')
+          - if workbench.workgroup.aggregates.present?
+            .list-group
+              - workbench.workgroup.aggregates.order("created_at desc").limit(5).each do |aggregate|
+                = link_to t("aggregates.show.title", name: aggregate.name.capitalize).html_safe, workgroup_aggregate_path(aggregate.workgroup, aggregate), class: 'list-group-item'
+          - else
+            .panel-body
+              em.small.text-muted = t('dashboards.aggregates.none')

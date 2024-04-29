@@ -45,6 +45,7 @@ class NotificationRule < ApplicationModel
               greater_than_or_equal_to: 1, less_than_or_equal_to: 1000
             }
   validates :users, length: { minimum: 1 }, if: Proc.new { |rule| rule.target_type == 'user' }
+  validates :external_email, presence: true, if: Proc.new { |rule| rule.target_type == 'external_email' }
 
   def target_class
     "#{self.class}::Target::#{target_type.classify}".constantize

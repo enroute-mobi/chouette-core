@@ -41,7 +41,7 @@ RSpec.describe NotificationRule, type: :model do
       notification_rule.workbench = context.workbench
     end
 
-    let(:user) { context.user}
+    let(:user) { context.user }
 
     it { is_expected.to allow_value([user]).for(:users) }
     it { is_expected.to_not allow_value([]).for(:users) }

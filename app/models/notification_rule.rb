@@ -1,10 +1,12 @@
+# frozen_string_literal: true
+
 class NotificationRule < ApplicationModel
   extend Enumerize
 
-  enumerize :notification_type, in: %w(import merge aggregate source_retrieval publication), default: :import
-  enumerize :target_type, in: %w(workbench user external_email), default: :workbench, predicates: true
-  enumerize :rule_type, in: %w(block notify), default: :block
-  enumerize :operation_statuses, in: %w(successful warning failed), multiple: true
+  enumerize :notification_type, in: %w[import merge aggregate source_retrieval publication], default: :import
+  enumerize :target_type, in: %w[workbench user external_email], default: :workbench, predicates: true
+  enumerize :rule_type, in: %w[block notify], default: :block
+  enumerize :operation_statuses, in: %w[successful warning failed], multiple: true
 
   # Associations
   belongs_to :workbench, class_name: '::Workbench'
@@ -13,12 +15,14 @@ class NotificationRule < ApplicationModel
   has_array_of :users
 
   # Scopes
-  scope :in_period, -> (value) { query.in_period(value).scope }
-  scope :covering, -> (daterange) { where(period: nil).or where('period @> daterange(:begin, :end)', begin: daterange.min, end: daterange.max) }
+  scope :in_period, ->(value) { query.in_period(value).scope }
+  scope :covering, lambda { |daterange|
+                     where(period: nil).or where('period @> daterange(:begin, :end)', begin: daterange.min, end: daterange.max)
+                   }
   scope :active, -> { covering(Time.zone.today..Time.zone.today) }
-  scope :by_email, -> (value) { query.email(value).scope }
-  scope :for_statuses, -> (value) { query.operation_statuses(value).scope }
-  scope :for_lines, -> (value) { query.lines(value).scope }
+  scope :by_email, ->(value) { query.email(value).scope }
+  scope :for_statuses, ->(value) { query.operation_statuses(value).scope }
+  scope :for_lines, ->(value) { query.lines(value).scope }
 
   class << self
     def for_operation(operation)
@@ -41,11 +45,11 @@ class NotificationRule < ApplicationModel
   validates :workbench, :notification_type, :target_type, presence: true
 
   validates :priority, numericality: {
-              only_integer: true,
-              greater_than_or_equal_to: 1, less_than_or_equal_to: 1000
-            }
-  validates :users, length: { minimum: 1 }, if: Proc.new { |rule| rule.target_type == 'user' }
-  validates :external_email, presence: true, if: Proc.new { |rule| rule.target_type == 'external_email' }
+    only_integer: true,
+    greater_than_or_equal_to: 1, less_than_or_equal_to: 1000
+  }
+  validates :users, length: { minimum: 1 }, if: proc { |rule| rule.target_type == 'user' }
+  validates :external_email, presence: true, if: proc { |rule| rule.target_type == 'external_email' }
 
   def target_class
     "#{self.class}::Target::#{target_type.classify}".constantize
@@ -58,15 +62,15 @@ class NotificationRule < ApplicationModel
 
   def self.recipients(initial_recipients = [])
     all.reduce(initial_recipients) do |recipients, rule|
-			case rule.rule_type
-			when 'notify'
-          recipients | rule.recipients
-			when 'block'
+      case rule.rule_type
+      when 'notify'
+        recipients | rule.recipients
+      when 'block'
         recipients - rule.recipients
-			else
+      else
         recipients
-			end
-		end.uniq
+      end
+    end.uniq
   end
 
   module Target
@@ -76,6 +80,7 @@ class NotificationRule < ApplicationModel
       end
 
       attr_reader :notification_rule
+
       delegate :workbench, to: :notification_rule
     end
 
@@ -99,6 +104,7 @@ class NotificationRule < ApplicationModel
       def users
         workbench.users.where(id: user_ids)
       end
+
       def recipients
         users.pluck(:email)
       end

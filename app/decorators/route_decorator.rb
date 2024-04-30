@@ -78,4 +78,8 @@ class RouteDecorator < AF83::Decorator
       l.data {{ confirm: h.t('routes.actions.destroy_confirm') }}
     end
   end
+
+  def policy_parent
+    context[:referential]
+  end
 end

@@ -4,9 +4,8 @@ module Policy
   class Line < Base
     prepend ::Policy::Documentable
 
-    authorize_by Strategy::LineProvider, only: %i[create update destroy update_activation_dates]
+    authorize_by Strategy::LineProvider, only: %i[update destroy update_activation_dates]
     authorize_by Strategy::Permission, only: %i[create update destroy update_activation_dates]
-    authorize_by Strategy::Referential, only: %i[create_in_referential]
 
     def attach?(resource_class)
       around_can(:attach) do
@@ -28,29 +27,12 @@ module Policy
 
     protected
 
-    def _create?(resource_class)
-      if [
-        ::Chouette::Route,
-        ::Chouette::RoutingConstraintZone
-      ].include?(resource_class)
-        create_in_referential?(resource_class)
-      else
-        false
-      end
-    end
-
     def _update?
       true
     end
 
     def _destroy?
       true
-    end
-
-    private
-
-    def create_in_referential?(resource_class)
-      around_can(:create_in_referential, resource_class) { true }
     end
   end
 end

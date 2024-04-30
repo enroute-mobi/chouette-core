@@ -46,16 +46,16 @@ RSpec.describe Policy::Route, type: :policy do
   describe '#duplicate?' do
     subject { policy.duplicate? }
 
-    it { applies_strategy(Policy::Strategy::Referential) }
-    it { does_not_apply_strategy(Policy::Strategy::Permission) }
-
     let(:line_policy_create_route) { true }
 
     before do
-      fk_policy = double
-      expect(fk_policy).to receive(:create?).with(Chouette::Route).and_return(line_policy_create_route)
-      expect(Policy::Line).to receive(:new).with(resource.line, context: policy_context).and_return(fk_policy)
+      dbl = double
+      expect(dbl).to receive(:create?).with(Chouette::Route).and_return(line_policy_create_route)
+      expect(Policy::Referential).to receive(:new).with(resource.referential, context: policy_context).and_return(dbl)
     end
+
+    it { applies_strategy(Policy::Strategy::Referential) }
+    it { does_not_apply_strategy(Policy::Strategy::Permission) }
 
     it do
       expect(policy).to receive(:around_can).with(:duplicate).and_call_original

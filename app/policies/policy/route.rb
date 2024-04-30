@@ -7,7 +7,7 @@ module Policy
 
     def duplicate?
       around_can(:duplicate) do
-        ::Policy::Line.new(resource.line, context: context).create?(resource.class)
+        ::Policy::Referential.new(resource.referential, context: context).create?(resource.class)
       end
     end
     alias create_opposite? duplicate?

@@ -153,6 +153,7 @@ class RoutesController < Chouette::ReferentialController
   protected
 
   alias route resource
+  alias parent_for_parent_policy referential
 
   def collection
     @q = parent.routes.ransack(params[:q])

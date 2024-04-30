@@ -7,59 +7,21 @@ RSpec.describe Policy::Line, type: :policy do
   describe '#create?' do
     subject { policy.create?(resource_class) }
 
-    let(:policy_context_class) { Policy::Context::Referential }
     let(:resource_class) { double }
 
-    it { applies_strategy(Policy::Strategy::LineProvider) }
+    it { does_not_apply_strategy(Policy::Strategy::LineProvider) }
     it { applies_strategy(Policy::Strategy::Permission, :create, resource_class) }
-    it { does_not_apply_strategy(Policy::Strategy::Referential) }
 
     it { is_expected.to be_falsy }
 
     context 'DocumentMembership' do
       let(:resource_class) { ::DocumentMembership }
 
-      it { applies_strategy(Policy::Strategy::LineProvider) }
       it { applies_strategy(::Policy::Strategy::Permission, :create, ::DocumentMembership) }
-      it { does_not_apply_strategy(Policy::Strategy::Referential) }
+      it { applies_strategy(Policy::Strategy::LineProvider) }
       it { applies_strategy(::Policy::Strategy::Permission, :update) }
 
       it { is_expected.to be_truthy }
-
-      context 'with Workbench context' do
-        let(:policy_context_class) { Policy::Context::Workbench }
-        it { is_expected.to be_truthy }
-      end
-    end
-
-    context 'with Chouette::Route' do
-      let(:resource_class) { Chouette::Route }
-
-      it { applies_strategy(Policy::Strategy::LineProvider) }
-      it { applies_strategy(Policy::Strategy::Permission, :create, Chouette::Route) }
-      it { applies_strategy(Policy::Strategy::Referential) }
-
-      it { is_expected.to be_truthy }
-
-      context 'with Workbench context' do
-        let(:policy_context_class) { Policy::Context::Workbench }
-        it { is_expected.to be_falsy }
-      end
-    end
-
-    context 'with Chouette::RoutingConstraintZone' do
-      let(:resource_class) { Chouette::RoutingConstraintZone }
-
-      it { applies_strategy(Policy::Strategy::LineProvider) }
-      it { applies_strategy(Policy::Strategy::Permission, :create, Chouette::RoutingConstraintZone) }
-      it { applies_strategy(Policy::Strategy::Referential) }
-
-      it { is_expected.to be_truthy }
-
-      context 'with Workbench context' do
-        let(:policy_context_class) { Policy::Context::Workbench }
-        it { is_expected.to be_falsy }
-      end
     end
   end
 

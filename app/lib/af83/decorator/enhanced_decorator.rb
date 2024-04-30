@@ -158,9 +158,9 @@ module AF83::Decorator::EnhancedDecorator
   end
 
   # rubocop:disable Metrics/AbcSize,Metrics/MethodLength
-  def check_policy(action, resource_class = nil)
+  def check_policy(action, resource_class = nil, **options)
     if resource_class
-      policy_object = object
+      policy_object = options[:object] || object
       policy_args = [resource_class]
     elsif !on_instance?
       policy_object = policy_parent
@@ -169,7 +169,7 @@ module AF83::Decorator::EnhancedDecorator
       policy_object = policy_parent
       policy_args = object.class
     else
-      policy_object = object
+      policy_object = options[:object] || object
       policy_args = []
     end
 

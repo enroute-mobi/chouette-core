@@ -151,6 +151,8 @@ class Export::Gtfs < Export::Base
     @code_spaces ||= CodeSpaces.new code_space, scope: export_scope
   end
 
+  delegate :shape_referential, to: :workgroup
+
   # Use dedicated "Resource" Find an unique code for a given Resource
   #
   # @example
@@ -374,7 +376,7 @@ class Export::Gtfs < Export::Base
     end
 
     delegate :target, :index, :export_scope, :messages, :date_range, :code_spaces, :public_code_space, :code_space,
-             :prefer_referent_stop_area, :prefer_referent_company, :prefer_referent_line, :referential, to: :export
+             :prefer_referent_stop_area, :prefer_referent_company, :prefer_referent_line, :referential, :shape_referential, to: :export
 
     def part_name
       @part_name ||= self.class.name.demodulize.underscore
@@ -953,8 +955,12 @@ class Export::Gtfs < Export::Base
 
     def export!
       vehicle_journeys.includes(:time_tables, :journey_pattern,:codes, route: :line).find_each do |vehicle_journey|
-        decorated_vehicle_journey =
-          Decorator.new(vehicle_journey, index: index, code_provider: code_spaces.vehicle_journeys)
+        decorated_vehicle_journey = Decorator.new(
+          vehicle_journey,
+          index: index,
+          code_provider: code_spaces.vehicle_journeys,
+          bikes_allowed_resolver: bikes_allowed_resolver
+        )
 
         decorated_vehicle_journey.services.each do |service|
           trip_attributes = decorated_vehicle_journey.trip_attributes(service)
@@ -968,17 +974,84 @@ class Export::Gtfs < Export::Base
       end
     end
 
+    def bikes_allowed_resolver
+      @bikes_allowed_resolver ||= BikesAllowedResolver.new(
+        service_facility_sets: shape_referential&.service_facility_sets
+      )
+    end
+
+    class BikesAllowedResolver
+
+      def initialize(service_facility_sets: nil)
+        @service_facility_sets = service_facility_sets
+      end
+
+      attr_reader :service_facility_sets
+
+      def for_associated_services(associated_services)
+        if associated_services.find { |a| a.code == 'luggage_carriage/cycles_allowed' }
+          '1'
+        elsif associated_services.find { |a| a.code == 'luggage_carriage/no_cycles' }
+          '2'
+        else
+          '0'
+        end
+      end
+
+      def for_service_facility_set(service_facility_set)
+        for_associated_services(service_facility_set.associated_services)
+      end
+
+      def for_service_facility_sets(service_facility_sets)
+        sole(service_facility_sets.map { |set| for_service_facility_set(set) })
+      end
+
+      def for_service_facility_set_id(service_facility_set_id)
+        cache[service_facility_set_id] ||= for_service_facility_set(
+          service_facility_sets.find(service_facility_set_id)
+        )
+      end
+
+      def for_service_facility_set_ids(service_facility_set_ids)
+        sole(service_facility_set_ids.map { |id| for_service_facility_set_id(id) })
+      end
+
+      def sole(values)
+        values.uniq!
+        values.clear if values.many?
+
+        values.first || '0'
+      end
+
+      def cache
+        @cache ||= {}
+      end
+
+      def for_vehicle_journey(vehicle_journey)
+        if service_facility_sets
+          for_service_facility_set_ids(vehicle_journey.service_facility_set_ids)
+        else
+          for_service_facility_sets(vehicle_journey.service_facility_sets)
+        end
+      end
+    end
+
     class Decorator < SimpleDelegator
 
       # index is optional to make tests easier
-      def initialize(vehicle_journey, index: nil, code_provider: nil)
+      def initialize(vehicle_journey, index: nil, code_provider: nil, bikes_allowed_resolver: nil)
         super vehicle_journey
         @index = index
         @code_provider = code_provider
+        @bikes_allowed_resolver = bikes_allowed_resolver
       end
 
       attr_reader :index
       attr_accessor :code_provider
+
+      def bikes_allowed_resolver
+        @bikes_allowed_resolver ||= BikesAllowedResolver.new
+      end
 
       def route_id
         index.route_id(route.line_id) if route
@@ -1039,18 +1112,8 @@ class Export::Gtfs < Export::Base
         end
       end
 
-      def associated_services
-        @associated_services ||= service_facility_sets.first&.associated_services || []
-      end
-
       def gtfs_bikes_allowed
-        return if service_facility_sets.many?
-
-        if associated_services.find{ |a| a.code == 'luggage_carriage/cycles_allowed' }
-          '1'
-        elsif associated_services.find{ |a| a.code == 'luggage_carriage/no_cycles' }
-          '2'
-        end
+        bikes_allowed_resolver&.for_vehicle_journey(self)
       end
 
       def trip_attributes(service)
@@ -1065,7 +1128,7 @@ class Export::Gtfs < Export::Base
           wheelchair_accessible: gtfs_wheelchair_accessibility,
           bikes_allowed: gtfs_bikes_allowed
           # block_id: TO DO
-        }
+        }.tap { |a| Rails.logger.debug a.inspect }
       end
     end
 

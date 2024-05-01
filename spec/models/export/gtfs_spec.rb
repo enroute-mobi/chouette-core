@@ -1502,11 +1502,13 @@ RSpec.describe Export::Gtfs, type: [:model, :with_exportable_referential] do
     describe '#bikes_allowed' do
       subject { decorator.gtfs_bikes_allowed }
 
-      let(:service_facility_set ) { ServiceFacilitySet.new(id: rand(100)) }
+      let(:service_facility_set) { ServiceFacilitySet.new(associated_services: associated_services) }
+      let(:associated_services) { [] }
+
+      let(:service_facility_sets) { [ service_facility_set ] }
 
       before do
-        service_facility_set.associated_services = associated_services
-        allow(vehicle_journey).to receive(:service_facility_sets).and_return([service_facility_set])
+        allow(vehicle_journey).to receive(:service_facility_sets).and_return(service_facility_sets)
       end
 
       context "when associated_services is 'luggage_carriage/cycles_allowed'" do
@@ -1521,17 +1523,14 @@ RSpec.describe Export::Gtfs, type: [:model, :with_exportable_referential] do
         it { is_expected.to eq '2' }
       end
 
-      context "when associated services is many" do
-        let(:other_service_facility_set ) { ServiceFacilitySet.new(id: rand(100) + rand(100)) }
+      context "when associated services contains both 'luggage_carriage/cycles_allowed' and 'luggage_carriage/no_cycles'" do
+        let(:associated_services) { ['luggage_carriage/cycles_allowed'] }
 
         before do
-          service_facility_set.associated_services = associated_services
-          other_service_facility_set.associated_services = associated_services
-          allow(vehicle_journey).to receive(:service_facility_sets).and_return([service_facility_set, other_service_facility_set])
+          service_facility_sets << ServiceFacilitySet.new(associated_services: ['luggage_carriage/no_cycles'])
         end
-        let(:associated_services) { ['luggage_carriage/no_cycles', 'luggage_carriage/baggage_storage'] }
 
-        it { is_expected.to eq nil }
+        it { is_expected.to eq '0' }
       end
     end
 

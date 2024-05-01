@@ -25,7 +25,7 @@ RSpec.describe Chouette::ServiceFacility do
       context 'when category is :accessibility_info' do
         let(:category) { :accessibility_info }
 
-        it { is_expected.to eq('Accessibility infomation') }
+        it { is_expected.to eq('Accessibility information') }
       end
     end
   end

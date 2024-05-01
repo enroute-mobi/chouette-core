@@ -9,16 +9,16 @@ module Chouette
       @sub_category = sub_category&.to_sym
     end
 
-    def category_human_name(locale: I18n.default_locale)
+    def category_human_name(locale: I18n.locale)
       I18n.translate category, scope: 'service_facilities.categories', locale: locale
     end
 
-    def sub_category_human_name(locale: I18n.default_locale)
+    def sub_category_human_name(locale: I18n.locale)
       I18n.translate sub_category, scope: ['service_facilities', category], locale: locale
     end
     alias short_human_name sub_category_human_name
 
-    def human_name(locale: I18n.default_locale, separator: ' - ')
+    def human_name(locale: I18n.locale, separator: ' - ')
       return unless valid?
 
       [].tap do |parts|

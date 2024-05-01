@@ -22,6 +22,8 @@ module Chouette
     belongs_to :route
     belongs_to :journey_pattern
     belongs_to :journey_pattern_only_objectid, -> {select("journey_patterns.id, journey_patterns.objectid")}, class_name: "Chouette::JourneyPattern", foreign_key: :journey_pattern_id
+    has_array_of :service_facility_sets, class_name: '::ServiceFacilitySet'
+
     has_many :stop_areas, through: :journey_pattern
 
     belongs_to_public :stop_area_routing_constraints,
@@ -203,6 +205,7 @@ module Chouette
         vjas =  self.vehicle_journey_at_stops
         vjas += VehicleJourneyAtStop.where(vehicle_journey_id: self.id) if db_lookup && !self.new_record?
         attrs << vjas.uniq.sort_by { |s| s.stop_point&.position }.map(&:checksum)
+        attrs << service_facility_set_ids if service_facility_set_ids.present?
 
         # The double condition prevents a SQL query "WHERE 1=0"
         if ignored_routing_contraint_zone_ids.present? && ignored_routing_contraint_zones.present?

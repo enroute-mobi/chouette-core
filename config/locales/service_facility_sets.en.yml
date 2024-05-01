@@ -1,0 +1,34 @@
+en:
+  service_facility_sets:
+    index:
+      title: Service Facility Sets
+    show:
+      title: "%{name}"
+    new:
+      title: "Create a Service Facility Set"
+    edit:
+      title: "Edit %{name}"
+    actions:
+      show: "Display this Service Facility Sets"
+      new: "Create a Service Facility Sets"
+      edit: "Edit this Service Facility Sets"
+      destroy: "Delete this Service Facility Sets"
+      destroy_confirm: "Are you sure you want destroy this Service Facility Sets ?"
+    search_no_results: "No Service Facility Sets matching your query"
+    form:
+      sections:
+        identification: "Identification"
+        associated_services: "Services"
+    filters:
+    errors:
+  activerecord:
+    models:
+      service_facility_set:
+        zero:  "Service Facility Set"
+        one:   "Service Facility Set"
+        other: "Service Facility Sets"
+    attributes:
+      service_facility_set:
+        name: Name
+        associated_services: Associated Services
+        codes: Codes

@@ -28,7 +28,7 @@ class ConfigBuilder {
       default: {
         valueField: 'id',
         labelField: 'text',
-        plugins: ['clear_button'],
+        plugins: ['clear_button', 'remove_button'],
         render: {
           item: (data, escape) => (
             `<div data-group="${data.group}">${escape(data.text)}</div>`

@@ -108,6 +108,7 @@ Apartment.configure do |config|
     'ReferentialMetadata',
     'ReferentialSuite',
     'Sequence',
+    'ServiceFacilitySet',
     'Shape',
     'ShapeProvider',
     'ShapeReferential',

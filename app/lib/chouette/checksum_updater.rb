@@ -36,7 +36,15 @@ module Chouette
     def vehicle_journeys
       measure "vehicle_journeys" do
         update_in_batches scope.vehicle_journey_at_stops.select(:id, :departure_time, :arrival_time, :departure_day_offset, :arrival_day_offset, :stop_area_id)
-        update_in_batches scope.vehicle_journeys.select(:id, :custom_field_values, :published_journey_name, :published_journey_identifier, :ignored_routing_contraint_zone_ids, :ignored_stop_area_routing_constraint_ids, :company_id, :line_notice_ids).includes(:company_light, :footnotes, :vehicle_journey_at_stops)
+        update_in_batches(
+          scope
+            .vehicle_journeys
+            .select(
+              :id, :custom_field_values, :published_journey_name, :published_journey_identifier,
+              :ignored_routing_contraint_zone_ids, :ignored_stop_area_routing_constraint_ids,
+              :company_id, :line_notice_ids, :service_facility_set_ids
+            ).includes(:company_light, :footnotes, :vehicle_journey_at_stops)
+        )
       end
     end
 

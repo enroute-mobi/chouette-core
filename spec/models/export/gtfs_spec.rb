@@ -1499,6 +1499,41 @@ RSpec.describe Export::Gtfs, type: [:model, :with_exportable_referential] do
       end
     end
 
+    describe '#bikes_allowed' do
+      subject { decorator.gtfs_bikes_allowed }
+
+      let(:service_facility_set) { ServiceFacilitySet.new(associated_services: associated_services) }
+      let(:associated_services) { [] }
+
+      let(:service_facility_sets) { [ service_facility_set ] }
+
+      before do
+        allow(vehicle_journey).to receive(:service_facility_sets).and_return(service_facility_sets)
+      end
+
+      context "when associated_services is 'luggage_carriage/cycles_allowed'" do
+        let(:associated_services) { ['luggage_carriage/cycles_allowed'] }
+
+        it { is_expected.to eq '1' }
+      end
+
+      context "when associated services is 'luggage_carriage/no_cycles'" do
+        let(:associated_services) { ['luggage_carriage/no_cycles'] }
+
+        it { is_expected.to eq '2' }
+      end
+
+      context "when associated services contains both 'luggage_carriage/cycles_allowed' and 'luggage_carriage/no_cycles'" do
+        let(:associated_services) { ['luggage_carriage/cycles_allowed'] }
+
+        before do
+          service_facility_sets << ServiceFacilitySet.new(associated_services: ['luggage_carriage/no_cycles'])
+        end
+
+        it { is_expected.to eq '0' }
+      end
+    end
+
     describe '#services' do
       subject { decorator.services }
 

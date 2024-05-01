@@ -1,0 +1,14 @@
+- breadcrumb :service_facility_set, @workbench, @service_facility_set
+
+.page_content
+  .container-fluid
+    .row
+      .col-md-6.col-sm-12
+        = simple_block_for @service_facility_set, title: t("service_facility_sets.form.sections.identification") do |d|
+          = d.attribute :name
+
+        = render 'codes/block', model: @service_facility_set
+
+      .col-lg-6.col-md-6.col-sm-12.col-xs-12
+        = simple_block_for @service_facility_set, title: t("service_facility_sets.form.sections.associated_services") do |d|
+          = d.attribute :associated_services, value: @service_facility_set.display_associated_services

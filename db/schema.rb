@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2024_04_03_205758) do
+ActiveRecord::Schema.define(version: 2024_04_23_123123) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "btree_gin"
@@ -1297,6 +1297,18 @@ ActiveRecord::Schema.define(version: 2024_04_03_205758) do
     t.index ["route_id"], name: "route_id"
   end
 
+  create_table "service_facility_sets", force: :cascade do |t|
+    t.uuid "uuid", default: -> { "gen_random_uuid()" }, null: false
+    t.string "name"
+    t.string "associated_services", default: [], array: true
+    t.bigint "shape_referential_id"
+    t.bigint "shape_provider_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["shape_provider_id"], name: "index_service_facility_sets_on_shape_provider_id"
+    t.index ["shape_referential_id"], name: "index_service_facility_sets_on_shape_referential_id"
+  end
+
   create_table "shape_providers", force: :cascade do |t|
     t.string "short_name", null: false
     t.bigint "workbench_id", null: false
@@ -1619,6 +1631,7 @@ ActiveRecord::Schema.define(version: 2024_04_03_205758) do
     t.bigint "ignored_routing_contraint_zone_ids", default: [], array: true
     t.bigint "ignored_stop_area_routing_constraint_ids", default: [], array: true
     t.bigint "line_notice_ids", default: [], array: true
+    t.bigint "service_facility_set_ids", default: [], array: true
     t.index ["checksum"], name: "index_vehicle_journeys_on_checksum"
     t.index ["custom_field_values"], name: "index_vehicle_journeys_on_custom_field_values", using: :gin
     t.index ["journey_pattern_id"], name: "index_vehicle_journeys_on_journey_pattern_id"

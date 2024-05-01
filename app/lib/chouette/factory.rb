@@ -328,6 +328,13 @@ module Chouette
               end
             end
 
+            model :service_facility_set do
+              attribute(:name) { |n| "Service facility set #{n}" }
+              attribute :associated_services, ['accessibility_info/audio_information']
+              after do
+                new_instance.shape_referential = parent.shape_referential
+              end
+            end
           end
 
           model :document_provider do

@@ -1,0 +1,34 @@
+- breadcrumb :service_facility_sets, @workbench
+
+.page_content
+  .container-fluid
+    .row
+      .col-lg-12
+        / = render partial: 'filters'
+
+    - if @service_facility_sets.any?
+      .row
+        .col-lg-12
+          = table_builder_2 @service_facility_sets,
+            [ \
+              TableBuilderHelper::Column.new( \
+                key: :name, \
+                attribute: 'name', \
+                link_to: lambda do |service_facility_set| \
+                  workbench_shape_referential_service_facility_set_path(@workbench, service_facility_set) \
+                end \
+              ), \
+              TableBuilderHelper::Column.new( \
+                key: :associated_services, \
+                attribute: Proc.new { |service_facility_set| service_facility_set.display_associated_services }, \
+                sortable: false \
+              ), \
+            ],
+            cls: 'table has-filter has-search'
+
+          = new_pagination @service_facility_sets, 'pull-right'
+
+    - unless @service_facility_sets.any?
+      .row.mt-xs
+        .col-lg-12
+          = replacement_msg 'service_facility_sets.search_no_results'.t

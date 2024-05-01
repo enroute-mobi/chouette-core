@@ -381,6 +381,21 @@ crumb :organisation do |organisation|
   link breadcrumb_name(organisation), organisation_path
 end
 
+crumb :service_facility_sets do |workbench|
+  link I18n.t('service_facility_sets.index.title'), workbench_shape_referential_service_facility_sets_path(workbench)
+  parent :workbench, workbench
+end
+
+crumb :service_facility_set do |workbench, service_facility_set|
+  link breadcrumb_name(service_facility_set), workbench_shape_referential_service_facility_set_path(workbench, service_facility_set)
+  parent :service_facility_sets, workbench
+end
+
+crumb :new_service_facility_set do |workbench|
+  link I18n.t('service_facility_sets.new.title')
+  parent :service_facility_sets, workbench
+end
+
 crumb :stop_area_referential do |workbench|
   link I18n.t('stop_area_referentials.show.title'), workbench_stop_area_referential_path(workbench)
   parent :workbench, workbench

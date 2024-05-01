@@ -612,6 +612,23 @@ class Import::Gtfs < Import::Base # rubocop:disable Metrics/ClassLength
     end
   end
 
+  def service_facility_set(bikes_allowed)
+    case bikes_allowed
+    when '1'
+      @service_facility_set_cycles_allowed ||= shape_provider.service_facility_sets.first_or_create_by_code(code_space, 'gtfs-bikes-allowed') do |s|
+        s.name = 'GTFS - Bikes allowed'
+        s.associated_services = ['luggage_carriage/cycles_allowed']
+      end
+    when '2'
+      @service_facility_set_no_cycle ||= shape_provider.service_facility_sets.first_or_create_by_code(code_space, 'gtfs-bikes-not-allowed') do |s|
+        s.name = 'GTFS - Bikes not allowed'
+        s.associated_services = ['luggage_carriage/no_cycles']
+      end
+    end
+  end
+
+  private :service_facility_set
+
   def process_trip(resource, trip, stop_times)
     begin
       raise InvalidTripSingleStopTime unless stop_times.many?
@@ -620,6 +637,10 @@ class Import::Gtfs < Import::Base # rubocop:disable Metrics/ClassLength
       vehicle_journey = journey_pattern.vehicle_journeys.build route: journey_pattern.route, skip_custom_fields_initialization: true
       vehicle_journey.published_journey_name = trip.short_name.presence || trip.id
       vehicle_journey.codes.build code_space: code_space, value: trip.id
+
+      if service_facility_set = service_facility_set(trip.bikes_allowed)
+        vehicle_journey.service_facility_sets << service_facility_set
+      end
 
       ApplicationModel.skipping_objectid_uniqueness do
         save_model vehicle_journey, resource: resource

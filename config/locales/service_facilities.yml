@@ -1,0 +1,727 @@
+fr:
+  service_facilities:
+    categories:
+      accessibility_info: Informations d'accessibilité
+      mobility: Mobilité
+      passenger_information: Informations sur les passagers
+      safety: Sécurité
+      access: Accès
+      vehicle_access: Accès aux véhicules
+      accessibility_tool: Outil d'accessibilité
+      accommodation_access: Accès au hébergement
+      accommodation: Hébergement
+      assistance: Assistance
+      assistance_availability: Disponibilité de l'assistance
+      berth: Mouillage
+      boarding_permission: Autorisation d'embarquement
+      couchette: Couchette
+      emergency: Urgence
+      family: Famille
+      dender: Dendre
+      hire: Location
+      luggage_carriage: Transport de bagages
+      luggage_locker: Casier à bagages
+      luggage_service: Service de bagages
+      meeting_point: Point de rencontre
+      money: Argent
+      meal: Repas
+      nuisance: Nuisance
+      parking: Parking
+      car_service: service automobile
+      medical: médicale
+      passenger_comms: Communication passagers
+      passenger_information_equipment: Equipement d'information des passagers
+      catering: Restauration
+      reserved_space: Espace réservé
+      retail_facility: Installation de vente au détail
+      staffing: Dotation en personnel
+      ticketing: billetterie
+      scope_of_ticket: Portée du billet
+      vehicle_loading: Chargement du véhicule
+    accessibility_info:
+      audio_information: Informations audio
+      audio_for_hearing_impaired: Audio pour des malentendants
+      visual_displays: Affichages visuels
+      displays_for_visually_impaired: Présentoirs pour des malvoyants
+      large_print_timetables: Horaires en gros caractères
+      other: Autre
+    mobility:
+      low_floor: Plancher bas
+      step_free_access: Etape d'accès libre
+      suitable_for_wheelchairs: Adapté aux fauteuils roulants
+      suitable_for_heaviliy_disabled: Adapté aux personnes lourdement handicapées
+      boarding_assistance: Aide à l'embarquement
+      onboard_assistance: Assistance à bord
+      unaccompanied_minor_assistance: Assistance aux mineurs non accompagnés
+      tactile_platform_edges: Bords de plateforme tactiles
+      tactile_guiding_strips: Bandes de guidage tactiles
+      unknown: Inconnue
+    passenger_information:
+      next_stop_indicator: Indicateur d'arrêt suivant
+      stop_announcements: Annonces d'arrêt
+      passenger_information_display: Affichage d'informations sur les passagers
+      real_time_connections: Connexions en temps réel
+      other: Autre
+    safety:
+      cc_tv: CCTV
+      mobile_coverage: Couverture mobile
+      sos_points: Points SOS
+      staffed: Doté en personnel
+    access:
+      lift: Ascenseur
+      wheelchair_lift: Ascenseur pour fauteuil roulant
+      escalator: Escalier mécanique
+      travelator: Voyageur
+      ramp: Rampe
+      automatic_ramp: Rampe automatique
+      steps: Pas
+      stairs: Escaliers
+      sliding_step: Marche coulissante
+      shuttle: Navette
+      narrow_entrance: Entrée étroite
+      barrier: Barrière
+      low_floor_access: Accès au plancher bas
+      validator: Validateur
+      unknown: Inconnue
+    vehicle_access:
+      wheelchair_lift: Ascenseur pour fauteuil roulant
+      manual_ramp: rampe manuelle
+      automatic_ramp: rampe automatique
+      steps: Pas
+      sliding_step: Marche coulissante
+      narrow_entrance: Entrée étroite
+      validator: Validateur
+      unknown: Inconnue
+    accessibility_tool:
+      wheelchair: Fauteuil roulant
+      walkingstick: Bâton de randonnée
+      audio_navigator: Navigateur audio
+      visual_navigator: Navigation visuelle
+      passenger_cart: Chariot de passager
+      pushchair: Poussette
+      umbrella: Parapluie
+      buggy: Petit chariot
+      other: Autre
+    accommodation_access:
+      free_seating: Place libre
+      reservation: Reservation
+      standing: Debout
+      other: Autre
+    accommodation:
+      seating: sièges
+      sleeper: Lit
+      single_sleeper: Lit simple
+      double_sleeper: Lit double
+      special_sleeper: Lit spécial
+      couchette: Couchette
+      single_couchette: Couchette simple
+      double_couchette: Couchette double
+      special_seating: Siège spécial
+      reclining_seats: sièges inclinables
+      baby_compartment: Compartiment bébé
+      family_carriage: Voiture familiale
+      recreation_area: Zone de loisirs
+      panorama_coach: Autocar panoramique
+      pullman_coach: Entraîneur pullman
+      standing: Debout
+      unknown: Inconnue
+    assistance:
+      personal_assistance: assistance personnelle
+      boarding_assistance: Aide à l'embarquement
+      wheelchair_assistance: Assistance en fauteuil roulant
+      unaccompanied_minor_assistance: Assistance aux mineurs non accompagnés
+      wheelchair_use: Utilisation d'un fauteuil roulant
+      conductor: Conducteur
+      information: Information
+      other: Autre
+      none: Aucune
+      any: N'importe quel
+    assistance_availability:
+      available: Disponible
+      available_if_booked: Disponible s'il y a une réservation
+      available_at_certain_times: Disponible à certaines heures
+      none: Aucune
+      unknown: Inconnue
+    berth:
+      upper: Supérieure
+      lower: Inférieure
+      both: Les deux
+    boarding_permission:
+      normal: Normal
+      early_boarding_possible_before_departure: Embarquement anticipé possible avant le départ
+      late_alighting_possible_after_arrival: Débarquement tardif possible après l'arrivée
+      overnight_stay_onboard_allowed: Nuitée à bord autorisée
+    couchette:
+      t2: T2
+      t3: T3
+      c1: C1
+      c2: C2
+      c3: C3
+      c4: C4
+      c5: C5
+      c6: C6
+      wheelchair: Fauteuil roulant
+      other: Autre
+      unknown: Inconnue
+    emergency:
+      police: Police
+      fire: Feu
+      first_aid: Premiers secours
+      sos_point: Point SOS
+      other: Autre
+    family:
+      none: Aucune
+      services_for_children: Services pour les enfants
+      services_for_army_families: Services aux familles des militaires
+      nursery_service: Service de crèche
+    dender:
+      female: Femelle
+      male: Mâle
+      unspecified: Non spécifié
+    hire:
+      unknown: Inconnue
+      scooter_hire: Location de scooter
+      vehicle_hire: Location de véhicule
+      car_hire: Location de voiture
+      motor_cycle_hire: Location de moto
+      cycle_hire: Location de vélos
+      taxi: Taxi
+      boat_hire: Location de bateau
+      recreation_device_hire: Location d'appareils de loisirs
+      other: Autre
+    luggage_carriage:
+      unknown: Inconnue
+      no_baggage_storage: Pas de stockage de bagages
+      baggage_storage: Stockage de bagages
+      luggage_racks: Porte-bagages
+      ski_racks: Porte-skis
+      ski_racks_on_rear: Porte-skis à l'arrière
+      extra_large_luggage_racks: Porte-bagages extra larges
+      baggage_van: Fourgon à bagages
+      no_cycles: Pas de vélo
+      cycles_allowed: Vélos autorisés
+      cycles_allowed_in_van: Vélos autorisés en van
+      cycles_allowed_in_carriage: Vélos autorisés en voiture
+      cycles_allowed_with_reservation: Vélos autorisés avec une réservation
+      vehicle_transport: Transport de véhicules
+    luggage_locker:
+      other: Autre
+      lockers: Casiers
+      oversize_lockers: Casiers surdimensionnés
+      left_luggage_counter: Consignes à bagages surdimensionnées
+      bike_rack: Porte-vélos
+      cloakroom: Vestiaire
+    luggage_service:
+      left_luggage: Consigne à bagages
+      porterage: Portage
+      free_trolleys: Chariots gratuits
+      paid_trolleys: Chariots payants
+      collect_and_deliver_to_station: Récupérer et livrer en gare
+      baggage_check_in_check_out: Enregistrement des bagages départ
+      other: Autre
+    meeting_point:
+      meeting_point: point de rencontre
+      group_meeting: réunion de groupe
+      school_meeting_point: point de rendez-vous scolaire
+      other: Autre
+    money:
+      cash_machine: distributeur automatique de billets
+      bank: Banque
+      insurance: assurance
+      bureau_de_change: bureau de change
+      other: Autre
+    meal:
+      breakfast: petit-déjeuner
+      lunch: déjeuner
+      dinner: dîner
+      snack: collation
+      drinks: boissons
+    nuisance:
+      unknown: Inconnue
+      smoking: fumeur
+      no_smoking: Interdiction de fumer
+      family_area: espace familial
+      childfree_area: espace sans enfants
+      animals_allowed: animaux admis
+      no_animals: Interdiction d'animaux
+      breastfeeding_friendly: adapté à l'allaitement
+      mobile_phone_use_zone: zone d'utilisation du téléphone portable
+      mobile_phone_free_zone: zone interdite aux téléphones portables
+    parking:
+      unknown: Inconnue
+      car_park: parking
+      park_and_ride_park: parc relais
+      motorcycle_park: parc moto
+      cycle_park: parc à vélos
+      rental_car_park: parking de location
+      coach_park: parking pour autocars
+    car_service:
+      unknown: Inconnue
+      valet_parking: service de voiturier
+      car_wash: Lave-Auto
+      valet_car_wash: lave-auto avec voiturier
+      car_valet_clean: voiturier propre
+      oil_change: vidange
+      engine_warming: réchauffement du moteur
+      petrol: pétrole
+      battery_care: entretien de la batterie
+      recharging: recharge
+      tyre_check: contrôle des pneus
+      other: Autre
+    medical:
+      unknown: Inconnue
+      defibrillator: défibrillateur
+      alcohol_test: test d'alcoolémie
+    passenger_comms:
+      unknown: Inconnue
+      free_wifi: Wifi gratuit
+      public_wifi: Wi-Fi public
+      power_supply_sockets: prises d'alimentation
+      telephone: Télephone
+      audio_entertainment: divertissement audio
+      video_entertainment: divertissement vidéo
+      business_services: les services aux entreprises
+      internet: internet
+      post_office: bureau de poste
+      post_box: boîte aux lettres
+    passenger_information_equipment:
+      timetable_poster: affiche d'horaire
+      fare_information: informations sur les tarifs
+      line_network_plan: plan du réseau de lignes
+      line_timetable: horaire de la ligne
+      stop_timetable: horaire d'arrêt
+      journey_planning: planification de voyage
+      interactive_kiosk: kiosque interactif
+      information_desk: bureau d'information
+      network_status: Etat du réseau
+      real_time_disruptions: perturbations en temps réel
+      real_time_departures: départs en temps réel
+      other: Autre
+    catering:
+      bar: Bar 
+      bistro: Bistro
+      buffet: Buffet
+      no_food_available: Aucune nourriture disponible
+      no_beverages_available: Aucune boisson disponible
+      restaurant: Restaurant
+      first_class_restaurant: restaurant de première classe
+      trolley: Chariot
+      coffee_shop: Café-restaurant
+      hot_food_service: service de plats chauds
+      self_service: libre service
+      snacks: collations
+      food_vending_machine: distributeur automatique de nourriture
+      beverage_vending_machine: distributeur automatique de boissons
+      mini_bar: mini-bar
+      breakfast_in_car: Petit déjeuner en voiture
+      meal_at_seat: repas à place
+      other: Autre
+      unknown: Inconnue
+    reserved_space:
+      unknown: Inconnue
+      lounge: salon
+      hall: salle
+      meeting_point: point de rencontre
+      group_point: point de groupe
+      reception: réception
+      shelter: abri
+      seats: sièges
+    retail_facility:
+      unknown: Inconnue
+      food: Nourriture
+      newspaper_tobacco: tabac à journaux
+      recreation_travel: voyage récréatif
+      hygiene_health_beauty: hygiène santé beauté
+      fashion_accessories: accessoires de mode
+      bank_finance_insurance: banque finance assurance
+      cash_machine: distributeur automatique de billets
+      currency_exchange: échange de devises
+      tourism_service: service touristique
+      photo_booth: cabine photo
+    staffing:
+      full_time: temps plein
+      part_time: temps partiel
+      unmanned: sans équipage
+    ticketing:
+      unknown: Inconnue
+      ticket_machines: distributeurs de billets
+      ticket_office: guichet
+      ticket_on_demand_machines: distributeurs de billets à la demande
+      mobile_ticketing: billetterie mobile
+    scope_of_ticket:
+      unknown: Inconnue
+      local_ticket: billet local
+      national_ticket: billet national
+      international_ticket: billet international
+    vehicle_loading:
+      loading: Chargement
+      unloading: Déchargement
+      additional_loading: Chargement supplémentaire
+      additiona_unloading: Déchargement supplémentaire
+      additional_unloading: Déchargement supplémentaire
+      unknown: Inconnue
+      none: Aucune
+
+en:
+  service_facilities:
+    categories:
+      accessibility_info: Accessibility information
+      mobility: Mobility
+      passenger_information: Passenger information
+      safety: safety
+      access: access
+      vehicle_access: Vehicle access
+      accessibility_tool: Accessibility tool
+      accommodation_access: Accommodation access
+      accommodation: Accommodation
+      assistance: Assistance
+      assistance_availability: Assistance availability
+      berth: berth
+      boarding_permission: Boarding permission
+      couchette: Couchette
+      emergency: Emergency
+      family: Family
+      dender: Dender
+      hire: Hire
+      luggage_carriage: Luggage carriage
+      luggage_locker: Luggage locker
+      luggage_service: Luggage service
+      meeting_point: Meeting point
+      money: Money
+      meal: Meal
+      nuisance: Nuisance
+      parking: Parking
+      car_service: Car service
+      medical: Medical
+      passenger_comms: Passenger communications
+      passenger_information_equipment: Passenger information equipment
+      catering: Catering
+      reserved_space: Reserved space
+      retail_facility: Retail facility
+      staffing: Staffing
+      ticketing: Ticketing
+      scope_of_ticket: Scope of ticket
+      vehicle_loading: Vehicle loading
+    accessibility_info:
+      audio_information: Audio information
+      audio_for_hearing_impaired: Audio for hearing impaired
+      visual_displays: Visual displays
+      displays_for_visually_impaired: Displays for visually impaired
+      large_print_timetables: Large print timetables
+      other: Other
+    mobility:
+      low_floor: Low floor
+      step_free_access: Step free access
+      suitable_for_wheelchairs: Suitable for wheelchairs
+      suitable_for_heaviliy_disabled: Suitable for heaviliy disabled
+      boarding_assistance: Boarding assistance
+      onboard_assistance: Onboard assistance
+      unaccompanied_minor_assistance: Unaccompanied minor assistance
+      tactile_platform_edges: Tactile platform edges
+      tactile_guiding_strips: Tactile guiding strips
+      unknown: Unknown
+    passenger_information:
+      next_stop_indicator: Next stop indicator
+      stop_announcements: Stop announcements
+      passenger_information_display: Passenger information display
+      real_time_connections: Real time connections
+      other: Other
+    safety:
+      cc_tv: CCTV
+      mobile_coverage: Mobile coverage
+      sos_points: Sos points
+      staffed: Staffed
+    access:
+      lift: Lift
+      wheelchair_lift: Wheelchair lift
+      escalator: Escalator
+      travelator: Travelator
+      ramp: Ramp
+      automatic_ramp: Automatic ramp
+      steps: Steps
+      stairs: Stairs
+      sliding_step: Sliding_step
+      shuttle: Shuttle
+      narrow_entrance: Narrow entrance
+      barrier: Barrier
+      low_floor_access: Low floor access
+      validator: Validator
+      unknown: Unknown
+    vehicle_access:
+      wheelchair_lift: Wheelchair lift
+      manual_ramp: Manual ramp
+      automatic_ramp: Automatic ramp
+      steps: Steps
+      sliding_step: Sliding step
+      narrow_entrance: Narrow entrance
+      validator: Validator
+      unknown: Unknown
+    accessibility_tool:
+      wheelchair: Wheelchair
+      walkingstick: Walkingstick
+      audio_navigator: Audio navigator
+      visual_navigator: Visual navigator
+      passenger_cart: Passenger cart
+      pushchair: Pushchair
+      umbrella: Umbrella
+      buggy: Buggy
+      other: Other
+    accommodation_access:
+      free_seating: Free seating
+      reservation: Reservation
+      standing: Standing
+      other: Other
+    accommodation:
+      seating: Seating
+      sleeper: Sleeper
+      single_sleeper: Single sleeper
+      double_sleeper: Double sleeper
+      special_sleeper: Special sleeper
+      couchette: Couchette
+      single_couchette: Single couchette
+      double_couchette: Double couchette
+      special_seating: Special seating
+      reclining_seats: Reclining seats
+      baby_compartment: Baby compartment
+      family_carriage: Family carriage
+      recreation_area: Recreation area
+      panorama_coach: Panorama coach
+      pullman_coach: Pullman coach
+      standing: Standing
+      unknown: Unknown
+    assistance:
+      personal_assistance: Personal assistance
+      boarding_assistance: Boarding assistance
+      wheelchair_assistance: Wheelchair assistance
+      unaccompanied_minor_assistance: Unaccompanied minor assistance
+      wheelchair_use: Wheelchair use
+      conductor: Conductor
+      information: Information
+      other: Other
+      none: None
+      any: Any
+    assistance_availability:
+      available: Available
+      available_if_booked: Available if booked
+      available_at_certain_times: Available at certain times
+      none: None
+      unknown: Unknown
+    berth:
+      upper: Ppper
+      lower: Lower
+      both: Both
+    boarding_permission:
+      normal: Normal
+      early_boarding_possible_before_departure: Early boarding possible before departure
+      late_alighting_possible_after_arrival: Late alighting possible after arrival
+      overnight_stay_onboard_allowed: Overnight stay onboard allowed
+    couchette:
+      t2: T2
+      t3: T3
+      c1: C1
+      c2: C2
+      c3: C3
+      c4: C4
+      c5: C5
+      c6: C6
+      wheelchair: Wheelchair
+      other: Other
+      unknown: Unknown
+    emergency:
+      police: Police
+      fire: Fire
+      first_aid: First aid
+      sos_point: Sos point
+      other: Other
+    family:
+      none: None
+      services_for_children: Services for children
+      services_for_army_families: Services for army families
+      nursery_service: Nursery service
+    dender:
+      female: Female
+      male: Male
+      unspecified: Unspecified
+    hire:
+      unknown: Unknown
+      scooter_hire: Scooter hire
+      vehicle_hire: Vehicle hire
+      car_hire: Car hire
+      motor_cycle_hire: Motor cycle hire
+      cycle_hire: Cycle hire
+      taxi: Taxi
+      boat_hire: Boat hire
+      recreation_device_hire: Recreation device hire
+      other: Other
+    luggage_carriage:
+      unknown: Unknown
+      no_baggage_storage: No baggage storage
+      baggage_storage: Baggage storage
+      luggage_racks: Luggage racks
+      ski_racks: Ski racks
+      ski_racks_on_rear: Ski racks on rear
+      extra_large_luggage_racks: Extra large luggage racks
+      baggage_van: Baggage van
+      no_cycles: No cycles
+      cycles_allowed: Cycles allowed
+      cycles_allowed_in_van: Cycles allowed in van
+      cycles_allowed_in_carriage: Cycles allowed in carriage
+      cycles_allowed_with_reservation: Cycles allowed with reservation
+      vehicle_transport: Vehicle transport
+    luggage_locker:
+      other: Other
+      lockers: Lockers
+      oversize_lockers: Oversize lockers
+      left_luggage_counter: Left luggage counter
+      bike_rack: Bike rack
+      cloakroom: Cloakroom
+    luggage_service:
+      left_luggage: Left luggage
+      porterage: Porterage
+      free_trolleys: Free trolleys
+      paid_trolleys: Paid trolleys
+      collect_and_deliver_to_station: Collect and deliver to station
+      baggage_check_in_check_out: Baggage check in check out
+      other: Other
+    meeting_point:
+      meeting_point: Meeting_point
+      group_meeting: Group meeting
+      school_meeting_point: School meeting point
+      other: Other
+    money:
+      cash_machine: Cash machine
+      bank: Bank
+      insurance: Insurance
+      bureau_de_change: Bureau de change
+      other: Other
+    meal:
+      breakfast: Breakfast
+      lunch: Lunch
+      dinner: Dinner
+      snack: Snack
+      drinks: Drinks
+    nuisance:
+      unknown: Unknown
+      smoking: Smoking
+      no_smoking: No smoking
+      family_area: Family area
+      childfree_area: Childfree area
+      animals_allowed: Animals allowed
+      no_animals: No animals
+      breastfeeding_friendly: Breastfeeding friendly
+      mobile_phone_use_zone: Mobile phone use zone
+      mobile_phone_free_zone: Mobile phone free zone
+    parking:
+      unknown: Unknown
+      car_park: Car park
+      park_and_ride_park: Park and ride park
+      motorcycle_park: Motorcycle park
+      cycle_park: Cycle park
+      rental_car_park: Rental car park
+      coach_park: Coach park
+    car_service:
+      unknown: unknown
+      valet_parking: Valet parking
+      car_wash: Car wash
+      valet_car_wash: Valet car wash
+      car_valet_clean: Car valet clean
+      oil_change: Oil change
+      engine_warming: Engine warming
+      petrol: Petrol
+      battery_care: Battery_care
+      recharging: Recharging
+      tyre_check: Tyre check
+      other: Other
+    medical:
+      unknown: Unknown
+      defibrillator: Defibrillator
+      alcohol_test: Alcohol test
+    passenger_comms:
+      unknown: Unknown
+      free_wifi: Free wifi
+      public_wifi: Public wifi
+      power_supply_sockets: Power supply sockets
+      telephone: Telephone
+      audio_entertainment: Audio entertainment
+      video_entertainment: Video entertainment
+      business_services: Business services
+      internet: Internet
+      post_office: Post office
+      post_box: Post box
+    passenger_information_equipment:
+      timetable_poster: Timetable poster
+      fare_information: Fare information
+      line_network_plan: Line network plan
+      line_timetable: Line timetable
+      stop_timetable: Stop timetable
+      journey_planning: Journey planning
+      interactive_kiosk: Interactive kiosk
+      information_desk: Information_desk
+      network_status: Network status
+      real_time_disruptions: Real time disruptions
+      real_time_departures: Real time departures
+      other: other
+    catering:
+      bar: Bar 
+      bistro: Bistro
+      buffet: Buffet
+      no_food_available: No food available
+      no_beverages_available: No beverages available
+      restaurant: Restaurant
+      first_class_restaurant: First class restaurant
+      trolley: Trolley
+      coffee_shop: Coffee shop
+      hot_food_service: Hot food service
+      self_service: Self service
+      snacks: Snacks
+      food_vending_machine: Food vending machine
+      beverage_vending_machine: Beverage vending machine
+      mini_bar: Mini bar
+      breakfast_in_car: Breakfast in car
+      meal_at_seat: Meal at seat
+      other: Other
+      unknown: Unknown
+    reserved_space:
+      unknown: Unknown
+      lounge: Lounge
+      hall: Hall
+      meeting_point: Meeting point
+      group_point: Group point
+      reception: Reception
+      shelter: Shelter
+      seats: Seats
+    retail_facility:
+      unknown: Unknown
+      food: Food
+      newspaper_tobacco: Rewspaper tobacco
+      recreation_travel: Recreation travel
+      hygiene_health_beauty: Hygiene health beauty
+      fashion_accessories: Fashion accessories
+      bank_finance_insurance: Bank finance insurance
+      cash_machine: Cash machine
+      currency_exchange: Currency exchange
+      tourism_service: Tourism service
+      photo_booth: Photo booth
+    staffing:
+      full_time: Full time
+      part_time: Part time
+      unmanned: Unmanned
+    ticketing:
+      unknown: Unknown
+      ticket_machines: Ticket machines
+      ticket_office: Ticket office
+      ticket_on_demand_machines: Ticket on demand machines
+      mobile_ticketing: Mobile_ticketing
+    scope_of_ticket:
+      unknown: Unknown
+      local_ticket: Local ticket
+      national_ticket: National ticket
+      international_ticket: International ticket
+    vehicle_loading:
+      loading: Loading
+      unloading: Unloading
+      additional_loading: Additional loading
+      additiona_unloading: Additiona unloading
+      additional_unloading: Additional unloading
+      unknown: Nnknown
+      none: None

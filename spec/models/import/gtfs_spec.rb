@@ -882,6 +882,33 @@ RSpec.describe Import::Gtfs do
         expect{ import.import_stop_times }.to_not change { Chouette::VehicleJourney.count }
       end
     end
+
+    context 'with service facility set' do
+      let(:import) { build_import 'google-sample-feed-with-service-facilities.zip' }
+
+      it 'should create a VehicleJourney with service facility for each trip' do
+        import.import_stop_times
+        defined_attributes = ->(v) {
+          [
+            v.published_journey_name,
+            v.service_facility_sets.map{ |s| s.associated_services.map(&:code) }.flatten
+          ]
+        }
+        expected_attributes = [
+          ['CITY2', ['luggage_carriage/no_cycles']],
+          ['AB1', ['luggage_carriage/cycles_allowed']],
+          ['AB2', ['luggage_carriage/cycles_allowed']],
+          ['BFC1', []],
+          ['BFC2', []],
+          ['AAMV1', []],
+          ['AAMV2', []],
+          ['AAMV3', []],
+          ['AAMV4', []]
+        ]
+
+        expect(import.referential.vehicle_journeys.map(&defined_attributes)).to match_array(expected_attributes)
+      end
+    end
   end
 
   describe "#import" do

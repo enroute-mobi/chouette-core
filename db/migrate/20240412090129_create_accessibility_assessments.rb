@@ -17,8 +17,8 @@ class CreateAccessibilityAssessments < ActiveRecord::Migration[5.2]
 
         t.timestamps
       end
-
-      add_reference :vehicle_journeys, :accessibility_assessment
     end
+
+    add_reference :vehicle_journeys, :accessibility_assessment, index: false
   end
 end

@@ -1650,9 +1650,8 @@ ActiveRecord::Schema.define(version: 2024_04_23_123123) do
     t.bigint "ignored_routing_contraint_zone_ids", default: [], array: true
     t.bigint "ignored_stop_area_routing_constraint_ids", default: [], array: true
     t.bigint "line_notice_ids", default: [], array: true
-    t.bigint "service_facility_set_ids", default: [], array: true
     t.bigint "accessibility_assessment_id"
-    t.index ["accessibility_assessment_id"], name: "index_vehicle_journeys_on_accessibility_assessment_id"
+    t.bigint "service_facility_set_ids", default: [], array: true
     t.index ["checksum"], name: "index_vehicle_journeys_on_checksum"
     t.index ["custom_field_values"], name: "index_vehicle_journeys_on_custom_field_values", using: :gin
     t.index ["journey_pattern_id"], name: "index_vehicle_journeys_on_journey_pattern_id"

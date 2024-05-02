@@ -910,8 +910,8 @@ RSpec.describe Import::Gtfs do
       end
     end
 
-    context 'with accessibility assesment' do
-      let(:import) { build_import 'google-sample-feed-with-accessibility-assesment.zip' }
+    context 'with accessibility assessment' do
+      let(:import) { build_import 'google-sample-feed-with-accessibility-assessment.zip' }
 
       it "should create a VehicleJourney for each trip" do
         import.import_stop_times

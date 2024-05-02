@@ -629,6 +629,24 @@ class Import::Gtfs < Import::Base # rubocop:disable Metrics/ClassLength
 
   private :service_facility_set
 
+  def accessibility_assessment(wheelchair_accessible)
+    case wheelchair_accessible
+    when '1'
+      @accessibility_assessment_wheelchair_accessible ||=
+        shape_provider.accessibility_assessments.first_or_initialize_by_code(code_space, 'gtfs-wheelchair-accessible') do |a|
+          a.name = 'GTFS - Mobility reduced passenger suitable'
+          a.wheelchair_accessibility = 'yes'
+        end
+    when '2'
+      @accessibility_assessment_wheelchair_not_accessible ||=
+        shape_provider.accessibility_assessments.first_or_initialize_by_code(code_space, 'gtfs-wheelchair-not-accessible') do |a|
+          a.name = 'GTFS - Mobility reduced passenger not suitable'
+          a.wheelchair_accessibility = 'no'
+        end
+    end
+  end
+  private :accessibility_assessment
+
   def process_trip(resource, trip, stop_times)
     begin
       raise InvalidTripSingleStopTime unless stop_times.many?
@@ -637,6 +655,7 @@ class Import::Gtfs < Import::Base # rubocop:disable Metrics/ClassLength
       vehicle_journey = journey_pattern.vehicle_journeys.build route: journey_pattern.route, skip_custom_fields_initialization: true
       vehicle_journey.published_journey_name = trip.short_name.presence || trip.id
       vehicle_journey.codes.build code_space: code_space, value: trip.id
+      vehicle_journey.accessibility_assessment = accessibility_assessment(trip.wheelchair_accessible)
 
       if service_facility_set = service_facility_set(trip.bikes_allowed)
         vehicle_journey.service_facility_sets << service_facility_set

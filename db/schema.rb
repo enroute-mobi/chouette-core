@@ -20,6 +20,25 @@ ActiveRecord::Schema.define(version: 2024_04_23_123123) do
   enable_extension "postgis"
   enable_extension "unaccent"
 
+  create_table "accessibility_assessments", force: :cascade do |t|
+    t.uuid "uuid", default: -> { "gen_random_uuid()" }, null: false
+    t.string "name"
+    t.string "mobility_impaired_accessibility"
+    t.string "wheelchair_accessibility"
+    t.string "step_free_accessibility"
+    t.string "escalator_free_accessibility"
+    t.string "lift_free_accessibility"
+    t.string "audible_signals_availability"
+    t.string "visual_signs_availability"
+    t.text "accessibility_limitation_description"
+    t.bigint "shape_referential_id"
+    t.bigint "shape_provider_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["shape_provider_id"], name: "index_accessibility_assessments_on_shape_provider_id"
+    t.index ["shape_referential_id"], name: "index_accessibility_assessments_on_shape_referential_id"
+  end
+
   create_table "aggregate_resources", force: :cascade do |t|
     t.string "workbench_name"
     t.integer "position"
@@ -1631,6 +1650,7 @@ ActiveRecord::Schema.define(version: 2024_04_23_123123) do
     t.bigint "ignored_routing_contraint_zone_ids", default: [], array: true
     t.bigint "ignored_stop_area_routing_constraint_ids", default: [], array: true
     t.bigint "line_notice_ids", default: [], array: true
+    t.bigint "accessibility_assessment_id"
     t.bigint "service_facility_set_ids", default: [], array: true
     t.index ["checksum"], name: "index_vehicle_journeys_on_checksum"
     t.index ["custom_field_values"], name: "index_vehicle_journeys_on_custom_field_values", using: :gin

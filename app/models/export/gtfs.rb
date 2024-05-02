@@ -954,7 +954,7 @@ class Export::Gtfs < Export::Base
     delegate :vehicle_journeys, to: :export_scope
 
     def export!
-      vehicle_journeys.includes(:time_tables, :journey_pattern,:codes, route: :line).find_each do |vehicle_journey|
+      vehicle_journeys.includes(:time_tables, :journey_pattern, :accessibility_assessment, :codes, route: :line).find_each do |vehicle_journey|
         decorated_vehicle_journey = Decorator.new(
           vehicle_journey,
           index: index,
@@ -1100,9 +1100,9 @@ class Export::Gtfs < Export::Base
       end
 
       def gtfs_wheelchair_accessibility
-        return unless line
+        assessment = accessibility_assessment || line
 
-        case line.mobility_impaired_accessibility
+        case assessment&.wheelchair_accessibility
         when nil, 'unknown'
           '0'
         when 'yes'

@@ -18,6 +18,7 @@ module Chouette
     end
 
     belongs_to :company
+    belongs_to :accessibility_assessment, class_name: '::AccessibilityAssessment', optional: true
     belongs_to :company_light, -> {select(:id, :objectid, :line_referential_id)}, class_name: "Chouette::Company", foreign_key: :company_id
     belongs_to :route
     belongs_to :journey_pattern
@@ -205,7 +206,8 @@ module Chouette
         vjas =  self.vehicle_journey_at_stops
         vjas += VehicleJourneyAtStop.where(vehicle_journey_id: self.id) if db_lookup && !self.new_record?
         attrs << vjas.uniq.sort_by { |s| s.stop_point&.position }.map(&:checksum)
-        attrs << service_facility_set_ids if service_facility_set_ids.present?
+        attrs << service_facility_set_ids
+        attrs << accessibility_assessment_id
 
         # The double condition prevents a SQL query "WHERE 1=0"
         if ignored_routing_contraint_zone_ids.present? && ignored_routing_contraint_zones.present?

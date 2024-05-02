@@ -13,6 +13,7 @@ class Permission
     def all_resources
       %w[
         aggregates
+        accessibility_assessments
         api_keys
         calendars
         code_spaces

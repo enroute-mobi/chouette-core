@@ -8,6 +8,7 @@ class ShapeProvider < ApplicationModel
   has_many :point_of_interests, class_name: 'PointOfInterest::Base', dependent: :delete_all
   has_many :point_of_interest_categories, class_name: 'PointOfInterest::Category', dependent: :delete_all
   has_many :service_facility_sets, class_name: 'ServiceFacilitySet', dependent: :delete_all
+  has_many :accessibility_assessments, class_name: 'AccessibilityAssessment', dependent: :delete_all
 
   validates :short_name, presence: true
 

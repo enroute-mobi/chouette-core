@@ -1,0 +1,78 @@
+en:
+  accessibility_assessments:
+    index:
+      title: Accessibility Assessments
+    show:
+      title: "%{name}"
+    new:
+      title: "Create a Accessibility Assessments"
+    edit:
+      title: "Edit %{name}"
+    actions:
+      show: "Display this Accessibility Assessments"
+      new: "Create a Accessibility Assessments"
+      edit: "Edit this Accessibility Assessments"
+      destroy: "Delete this Accessibility Assessments"
+      destroy_confirm: "Are you sure you want destroy this Accessibility Assessments ?"
+    search_no_results: "No Accessibility Assessments matching your query"
+    form:
+      sections:
+        identification: "Identification"
+        accessibility: "Accessibility"
+    filters:
+    errors:
+  enumerize:
+    accessibility_assessment:
+      mobility_impaired_accessibility:
+        unknown: Unknown
+        'yes': 'Yes'
+        'no': 'No'
+        partial: Partial
+      wheelchair_accessibility:
+        unknown: Unknown
+        'yes': 'Yes'
+        'no': 'No'
+        partial: Partial
+      step_free_accessibility:
+        unknown: Unknown
+        'yes': 'Yes'
+        'no': 'No'
+        partial: Partial
+      escalator_free_accessibility:
+        unknown: Unknown
+        'yes': 'Yes'
+        'no': 'No'
+        partial: Partial
+      lift_free_accessibility:
+        unknown: Unknown
+        'yes': 'Yes'
+        'no': 'No'
+        partial: Partial
+      audible_signals_availability:
+        unknown: Unknown
+        'yes': 'Yes'
+        'no': 'No'
+        partial: Partial
+      visual_signs_availability:
+        unknown: Unknown
+        'yes': 'Yes'
+        'no': 'No'
+        partial: Partial
+  activerecord:
+    models:
+      accessibility_assessment:
+        zero:  "Accessibility Assessment"
+        one:   "Accessibility Assessment"
+        other: "Accessibility Assessments"
+    attributes:
+      accessibility_assessment:
+        name: "Name"
+        mobility_impaired_accessibility: "Access for mobility impaired users"
+        wheelchair_accessibility: "Wheelchair Access"
+        step_free_accessibility: "Step Free Access"
+        escalator_free_accessibility: "Escalator Free Access"
+        lift_free_accessibility: "Lift Free Access"
+        audible_signals_availability: "Audible Signals Available"
+        visual_signs_availability: "Visual Signs Available"
+        accessibility_limitation_description: "Description"
+        codes: Codes

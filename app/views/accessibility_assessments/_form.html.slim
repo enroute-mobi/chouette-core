@@ -1,0 +1,30 @@
+= simple_form_for [@workbench, :shape_referential, @accessibility_assessment], html: {class: 'form-horizontal', id: 'accessibility_assessments_form'}, wrapper: :horizontal_form do |f|
+  .row
+    .col-lg-12
+      h2.mb-lg= t("accessibility_assessments.form.sections.identification")
+      = f.input :name
+
+  .separator.section_separator
+
+  .row
+    .col-lg-12
+      h2.mb-lg= t("accessibility_assessments.form.sections.accessibility")
+      = f.input :mobility_impaired_accessibility, as: :select, include_blank: false
+  .row
+    .col-md-6
+      = f.input :wheelchair_accessibility, as: :select, include_blank: false
+      = f.input :step_free_accessibility, as: :select, include_blank: false
+      = f.input :escalator_free_accessibility, as: :select, include_blank: false
+    .col-md-6
+      = f.input :lift_free_accessibility, as: :select, include_blank: false
+      = f.input :audible_signals_availability, as: :select, include_blank: false
+      = f.input :visual_signs_availability, as: :select, include_blank: false
+  .row
+    .col-lg-12
+      = f.input :accessibility_limitation_description
+
+  .separator.section_separator
+  = render 'codes/form', form: f
+
+  = cancel_button
+  = f.button :submit, t('actions.submit'), class: 'btn btn-default formSubmitr', form: 'accessibility_assessments_form'

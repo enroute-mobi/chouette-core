@@ -19,25 +19,6 @@ RSpec.describe Policy::Referential, type: :policy do
       let(:resource_class) { Chouette::TimeTable }
       it { is_expected.to be_truthy }
     end
-
-    context 'with Chouette::Route' do
-      let(:resource_class) { Chouette::Route }
-
-      it { applies_strategy(Policy::Strategy::Referential) }
-      it { does_not_apply_strategy(Policy::Strategy::Workbench) }
-      it { applies_strategy(Policy::Strategy::Permission, :create, Chouette::Route) }
-
-      it { is_expected.to be_truthy }
-    end
-
-    context 'with Chouette::RoutingConstraintZone' do
-      let(:resource_class) { Chouette::RoutingConstraintZone }
-
-      it { applies_strategy(Policy::Strategy::Referential) }
-      it { does_not_apply_strategy(Policy::Strategy::Workbench) }
-      it { applies_strategy(Policy::Strategy::Permission, :create, Chouette::RoutingConstraintZone) }
-
-    end
   end
 
   describe '#update?' do

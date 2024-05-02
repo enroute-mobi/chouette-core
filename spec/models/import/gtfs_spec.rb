@@ -909,6 +909,30 @@ RSpec.describe Import::Gtfs do
         expect(import.referential.vehicle_journeys.map(&defined_attributes)).to match_array(expected_attributes)
       end
     end
+
+    context 'with accessibility assessment' do
+      let(:import) { build_import 'google-sample-feed-with-accessibility-assessment.zip' }
+
+      it "should create a VehicleJourney for each trip" do
+        import.import_stop_times
+        defined_attributes = ->(v) {
+          [v.published_journey_name, v.accessibility_assessment&.name]
+        }
+        expected_attributes = [
+          ["CITY2", "GTFS - Mobility reduced passenger not suitable"],
+          ["AB1", "GTFS - Mobility reduced passenger suitable"],
+          ["AB2", "GTFS - Mobility reduced passenger suitable"],
+          ["BFC1", nil],
+          ["BFC2", nil],
+          ["AAMV1", nil],
+          ["AAMV2", nil],
+          ["AAMV3", nil],
+          ["AAMV4", nil]
+        ]
+
+        expect(import.referential.vehicle_journeys.map(&defined_attributes)).to match_array(expected_attributes)
+      end
+    end
   end
 
   describe "#import" do

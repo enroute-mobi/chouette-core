@@ -21,6 +21,7 @@ Apartment.configure do |config|
     'TimeZone',
     'Aggregate',
     'Aggregate::Resource',
+    'AccessibilityAssessment',
     'ApiKey',
     'Authentication::Base',
     'Authentication::Saml',

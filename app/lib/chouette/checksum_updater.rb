@@ -42,7 +42,7 @@ module Chouette
             .select(
               :id, :custom_field_values, :published_journey_name, :published_journey_identifier,
               :ignored_routing_contraint_zone_ids, :ignored_stop_area_routing_constraint_ids,
-              :company_id, :line_notice_ids, :service_facility_set_ids
+              :company_id, :line_notice_ids, :service_facility_set_ids, :accessibility_assessment_id
             ).includes(:company_light, :footnotes, :vehicle_journey_at_stops)
         )
       end

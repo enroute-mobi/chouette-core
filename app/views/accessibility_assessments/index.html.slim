@@ -1,0 +1,35 @@
+- breadcrumb :accessibility_assessments, @workbench
+
+.page_content
+  .container-fluid
+    .row
+      .col-lg-12
+        / = render partial: 'filters'
+
+    - if @accessibility_assessments.any?
+      .row
+        .col-lg-12
+          = table_builder_2 @accessibility_assessments,
+            [ \
+              TableBuilderHelper::Column.new( \
+                key: :name, \
+                attribute: 'name', \
+                link_to: lambda do |accessibility_assessment| \
+                  workbench_shape_referential_accessibility_assessment_path(@workbench, accessibility_assessment) \
+                end \
+              ), \
+              TableBuilderHelper::Column.new( \
+                key: :accessibility_limitation_description, \
+                attribute: Proc.new { |accessibility_assessment| accessibility_assessment.accessibility_limitation_description&.truncate(100) }, \
+                sortable: false \
+              ), \
+            ],
+            cls: 'table has-filter has-search'
+
+          = new_pagination @accessibility_assessments, 'pull-right'
+
+    - unless @accessibility_assessments.any?
+      .row.mt-xs
+        .col-lg-12
+          = replacement_msg 'accessibility_assessments.search_no_results'.t
+

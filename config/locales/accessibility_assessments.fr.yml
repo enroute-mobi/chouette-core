@@ -1,0 +1,78 @@
+fr:
+  accessibility_assessments:
+    index:
+      title: Descriptions d'Accessibilité
+    show:
+      title: "%{name}"
+    new:
+      title: "Créer une Description d'Accessibilité"
+    edit:
+      title: "Editer %{name}"
+    actions:
+      show: "Afficher cette Description d'Accessibilité"
+      new: "Créer une Description d'Accessibilité"
+      destroy: "Supprimer cette Description d'Accessibilité"
+      edit: "Editer cette Description d'Accessibilité"
+      destroy_confirm: "Etes vous sûr de supprimer cette Description d'Accessibilité ?"
+    search_no_results: "Aucune Description d'Accessibilité ne correspond à votre recherche"
+    form:
+      sections:
+        identification: "Identification"
+        accessibility: "Accessibilité"
+    filters:
+    errors:
+  enumerize:
+    accessibility_assessment:
+      mobility_impaired_accessibility:
+        unknown: Inconnu
+        'yes': Oui
+        'no': Non
+        partial: Partiel
+      wheelchair_accessibility:
+        unknown: Inconnu
+        'yes': Oui
+        'no': Non
+        partial: Partiel
+      step_free_accessibility:
+        unknown: Inconnu
+        'yes': Oui
+        'no': Non
+        partial: Partiel
+      escalator_free_accessibility:
+        unknown: Inconnu
+        'yes': Oui
+        'no': Non
+        partial: Partiel
+      lift_free_accessibility:
+        unknown: Inconnu
+        'yes': Oui
+        'no': Non
+        partial: Partiel
+      audible_signals_availability:
+        unknown: Inconnu
+        'yes': Oui
+        'no': Non
+        partial: Partiel
+      visual_signs_availability:
+        unknown: Inconnu
+        'yes': Oui
+        'no': Non
+        partial: Partiel
+  activerecord:
+    models:
+      accessibility_assessment:
+        zero:  "Description d'Accessibilité"
+        one:   "Description d'Accessibilité"
+        other: "Descriptions d'Accessibilité"
+    attributes:
+      accessibility_assessment:
+        name: "Nom"
+        mobility_impaired_accessibility: "Accès pour voyageur à mobilité réduite"
+        wheelchair_accessibility: "Accès en fauteuil roulant"
+        step_free_accessibility: "Accès sans marche"
+        escalator_free_accessibility: "Accès sans escalator"
+        lift_free_accessibility: "Accès sans ascenseur"
+        audible_signals_availability: "Signalétique auditive disponible"
+        visual_signs_availability: "Signalétique visuelle disponible"
+        accessibility_limitation_description: "Description"
+        codes: Codes

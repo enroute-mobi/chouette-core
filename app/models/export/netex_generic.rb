@@ -263,10 +263,11 @@ class Export::NetexGeneric < Export::Base
     end
 
     def tags_for line_id
+      line_id = aliases.fetch(line_id, line_id)
       tag_index[line_id]
     end
 
-    def register_tag_for(line)
+    def register_tags_for(line)
       tag_index[line.id] = {
         line_id: code_provider.lines.code(line.id),
         line_name: line.name,
@@ -275,7 +276,15 @@ class Export::NetexGeneric < Export::Base
       }.compact
     end
 
+    def alias_tags_for(line_id, as:)
+      aliases[line_id] = as
+    end
+
     protected
+
+    def aliases
+      @aliases ||= {}
+    end
 
     def tag_index
       @tag_index ||= Hash.new { |h,k| h[k] = {} }
@@ -821,10 +830,11 @@ class Export::NetexGeneric < Export::Base
     def export!
       export_scope.referenced_lines.pluck(:id, :referent_id).each do |line_id, referent_id|
         code_provider.lines.alias(line_id, as: referent_id)
+        resource_tagger.alias_tags_for line_id, as: referent_id
       end
 
       lines.includes(:company, :codes).find_each do |line|
-        resource_tagger.register_tag_for line
+        resource_tagger.register_tags_for line
         tags = resource_tagger.tags_for(line.id)
         tagged_target = TaggedTarget.new(target, tags)
 

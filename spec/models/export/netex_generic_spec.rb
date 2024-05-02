@@ -679,7 +679,7 @@ RSpec.describe Export::NetexGeneric do
     end
 
     it "create Netex::Routes with line_id tag" do
-      routes.each { |route| export.resource_tagger.register_tag_for(route.line) }
+      routes.each { |route| export.resource_tagger.register_tags_for(route.line) }
       part.export!
       expect(target.resources).to all(have_tag(:line_id))
     end
@@ -1225,7 +1225,7 @@ RSpec.describe Export::NetexGeneric do
       subject { target.resources }
 
       it "have line_id tag" do
-        context.routes.each { |route| export.resource_tagger.register_tag_for(route.line) }
+        context.routes.each { |route| export.resource_tagger.register_tags_for(route.line) }
         part.export!
         is_expected.to all(have_tag(:line_id))
       end
@@ -1289,7 +1289,7 @@ RSpec.describe Export::NetexGeneric do
     end
 
     it "create Netex resources with line_id tag" do
-      context.routes.each { |route| export.resource_tagger.register_tag_for(route.line) }
+      context.routes.each { |route| export.resource_tagger.register_tags_for(route.line) }
       part.export!
       expect(target.resources).to all(have_tag(:line_id))
     end
@@ -1329,7 +1329,7 @@ RSpec.describe Export::NetexGeneric do
           vjas.update(stop_area: vjas.stop_point.stop_area)
         end
 
-        export.resource_tagger.register_tag_for line
+        export.resource_tagger.register_tags_for line
       end
 
       it 'should create a Netex::VehicleJourneyStopAssignment' do
@@ -1389,7 +1389,7 @@ RSpec.describe Export::NetexGeneric do
     before { context.referential.switch }
 
     it "create Netex resources with line_id tag" do
-      context.routes.each { |route| export.resource_tagger.register_tag_for(route.line) }
+      context.routes.each { |route| export.resource_tagger.register_tags_for(route.line) }
       part.export!
       expect(target.resources).to all(have_tag(:line_id))
     end
@@ -1848,13 +1848,12 @@ RSpec.describe Export::NetexGeneric do
   describe Export::NetexGeneric::ResourceTagger do
     subject(:tagger) { Export::NetexGeneric::ResourceTagger.new }
 
-
     def mock_line(id:, objectid:, name:, company_id:, company_name:)
       double(id: id, name: name, company_id: company_id,
              company: double(name: company_name))
     end
 
-    describe '#register_tag_for' do
+    describe '#register_tags_for' do
       context "when 'dummy' is associated to the given Line id" do
         let(:line) { Chouette::Line.new id: 42 }
 
@@ -1863,7 +1862,7 @@ RSpec.describe Export::NetexGeneric do
         end
 
         it do
-          expect { tagger.register_tag_for(line) }.to change {
+          expect { tagger.register_tags_for(line) }.to change {
             tagger.tags_for(line.id)
           }.from({}).to(line_id: 'dummy')
         end
@@ -1873,7 +1872,7 @@ RSpec.describe Export::NetexGeneric do
         let(:line) { Chouette::Line.new id: 42, name: 'dummy' }
 
         it do
-          expect { tagger.register_tag_for(line) }.to change {
+          expect { tagger.register_tags_for(line) }.to change {
             tagger.tags_for(line.id)
           }.from({}).to(line_name: 'dummy')
         end
@@ -1887,7 +1886,7 @@ RSpec.describe Export::NetexGeneric do
         end
 
         it do
-          expect { tagger.register_tag_for(line) }.to change {
+          expect { tagger.register_tags_for(line) }.to change {
             tagger.tags_for(line.id)
           }.from({}).to(operator_id: 'dummy')
         end
@@ -1897,7 +1896,7 @@ RSpec.describe Export::NetexGeneric do
         let(:line) { Chouette::Line.new id: 42, company: Chouette::Company.new(name: 'dummy') }
 
         it do
-          expect { tagger.register_tag_for(line) }.to change {
+          expect { tagger.register_tags_for(line) }.to change {
             tagger.tags_for(line.id)
           }.from({}).to(operator_name: 'dummy')
         end
@@ -1933,6 +1932,23 @@ RSpec.describe Export::NetexGeneric do
           end
 
           it { is_expected.to be_empty }
+        end
+      end
+    end
+
+    describe '#alias_tags_for' do
+      context 'when tags are registred for for Line 1' do
+        let(:line) { Chouette::Line.new id: 1, name: 'dummy' }
+        let(:aliased_line_id) { 2 }
+
+        before do
+          tagger.register_tags_for(line)
+        end
+
+        it do
+          expect { tagger.alias_tags_for(2, as: line.id) }.to change {
+            tagger.tags_for(aliased_line_id)
+          }.from({}).to(tagger.tags_for(line.id))
         end
       end
     end

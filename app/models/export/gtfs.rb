@@ -1100,7 +1100,9 @@ class Export::Gtfs < Export::Base
       end
 
       def gtfs_wheelchair_accessibility
-        case accessibility_assessment&.mobility_impaired_accessibility
+        assessment = accessibility_assessment || line
+
+        case assessment&.wheelchair_accessibility
         when nil, 'unknown'
           '0'
         when 'yes'

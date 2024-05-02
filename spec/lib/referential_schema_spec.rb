@@ -212,7 +212,7 @@ RSpec.describe ReferentialSchema do
           journey_category created_at updated_at checksum checksum_source
           data_source_ref custom_field_values metadata
           ignored_routing_contraint_zone_ids ignored_stop_area_routing_constraint_ids
-          line_notice_ids service_facility_set_ids accessibility_assessment_id
+          line_notice_ids accessibility_assessment_id service_facility_set_ids
         ]
 
         expect(table.columns).to eq(expected)

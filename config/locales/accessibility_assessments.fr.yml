@@ -1,20 +1,20 @@
 fr:
   accessibility_assessments:
     index:
-      title: Description d'Accessibilités
+      title: Descriptions d'Accessibilité
     show:
       title: "%{name}"
     new:
-      title: "Créer une Description d'Accessibilités"
+      title: "Créer une Description d'Accessibilité"
     edit:
       title: "Editer %{name}"
     actions:
-      show: "Afficher cette Description d'Accessibilités"
-      new: "Créer une Description d'Accessibilités"
-      edit: "Editer cette Description d'Accessibilités"
-      destroy: "Supprimer cette Description d'Accessibilités"
-      destroy_confirm: "Etes vous sûr de supprimer cette Description d'Accessibilités ?"
-    search_no_results: "Aucune Description d'Accessibilités ne correspond à votre recherche"
+      show: "Afficher cette Description d'Accessibilité"
+      new: "Créer une Description d'Accessibilité"
+      destroy: "Supprimer cette Description d'Accessibilité"
+      edit: "Editer cette Description d'Accessibilité"
+      destroy_confirm: "Etes vous sûr de supprimer cette Description d'Accessibilité ?"
+    search_no_results: "Aucune Description d'Accessibilité ne correspond à votre recherche"
     form:
       sections:
         identification: "Identification"
@@ -63,7 +63,7 @@ fr:
       accessibility_assessment:
         zero:  "Description d'Accessibilité"
         one:   "Description d'Accessibilité"
-        other: "Description d'Accessibilités"
+        other: "Descriptions d'Accessibilité"
     attributes:
       accessibility_assessment:
         name: "Nom"

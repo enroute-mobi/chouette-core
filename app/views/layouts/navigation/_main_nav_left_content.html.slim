@@ -78,7 +78,7 @@
         = link_to workbench_shape_referential_service_facility_sets_path(workbench), class: 'list-group-item' do
           span = ServiceFacilitySet.model_name.human.pluralize
         = link_to workbench_shape_referential_accessibility_assessments_path(workbench), class: 'list-group-item' do
-          span = AccessibilityAssessment.model_name.human.pluralize
+          span = AccessibilityAssessment.model_name.human(count: 2)
 
       = main_nav_menu_item Fare::Referential.model_name.human do
         = link_to workbench_fare_zones_path(workbench), class: 'list-group-item' do

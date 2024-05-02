@@ -1,4 +1,4 @@
-class AccessibilityAssessment < ActiveRecord::Base
+class AccessibilityAssessment < ApplicationModel
   include CodeSupport
   include ShapeReferentialSupport
   include NilIfBlank

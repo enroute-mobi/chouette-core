@@ -1,7 +1,7 @@
 = search_form_for @q, url: workbench_referential_line_path(@workbench, @referential, @line), class: 'form form-filter' do |f|
   .ffg-row
     .input-group.search_bar class=filter_item_class(params[:q], :name_or_short_id_cont)
-      = f.search_field :name_or_short_id_cont, class: 'form-control', placeholder: t('.name_or_short_id_cont')
+      = f.search_field :name_cont, class: 'form-control', placeholder: t('.name_or_short_id_cont')
       span.input-group-btn
         button.btn.btn-default#search-btn type='submit'
           span.fa.fa-search

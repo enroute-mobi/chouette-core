@@ -8,11 +8,11 @@ fr:
     edit:
       title: "Editer le référentiel %{name}"
     show:
-      title: 'Référentiel de tracés'
+      title: 'Référentiel Topologique'
       status: État
       message: Message
   activerecord:
     models:
       shape_referential:
-        one: "référentiel de tracés"
-        other: "référentiels de tracés"
+        one: "Référentiel Topologique"
+        other: "Référentiels Topologique"

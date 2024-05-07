@@ -8,11 +8,11 @@ en:
     edit:
       title: "Edit %{name} referential"
     show:
-      title: Shape referential
+      title: Topological Referential
       state: Status
       message: Message
   activerecord:
     models:
       shape_referentials:
-        one:   "shape referential"
-        other: "shape referentials"
+        one:   "Topological Referential"
+        other: "Topological Referentials"

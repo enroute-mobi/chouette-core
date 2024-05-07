@@ -68,7 +68,7 @@
         = link_to workbench_line_referential_line_providers_path(workbench), class: 'list-group-item' do
           span = LineProvider.model_name.human(count: 2)
 
-      = main_nav_menu_item ShapeReferential.model_name.human.capitalize do
+      = main_nav_menu_item ShapeReferential.model_name.human do
         = link_to workbench_shape_referential_shapes_path(workbench), class: 'list-group-item' do
           span = Shape.model_name.human(count: 2).capitalize
         = link_to workbench_shape_referential_point_of_interests_path(workbench), class: 'list-group-item' do

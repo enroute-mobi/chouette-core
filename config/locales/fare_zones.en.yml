@@ -41,9 +41,9 @@ en:
   activerecord:
     models:
       fare/zone:
-        zero:  "Fare zones"
-        one: "Fare zone"
-        other: "Fare zones"
+        zero:  "Fare Zone"
+        one: "Fare Zone"
+        other: "Fare Zones"
     attributes:
       fare/zone:
         uuid: ID

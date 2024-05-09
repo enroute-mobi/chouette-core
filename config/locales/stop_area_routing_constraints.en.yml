@@ -30,9 +30,9 @@ en:
   activerecord:
     models:
       stop_area_routing_constraint:
-        zero:  "StopAreas Routing Constraint"
-        one:   "StopAreas Routing Constraint"
-        other: "StopAreas Routing Constraints"
+        zero:  "Stop Area Routing Constraint"
+        one:   "Stop Area Routing Constraint"
+        other: "Stop Area Routing Constraints"
     attributes:
       stop_area_routing_constraint:
         name: "Nom"
@@ -49,7 +49,7 @@ en:
         stop_area_routing_constraint:
           attributes:
             to:
-              must_be_in_same_referential: Both stops miust belong to the same referential
+              must_be_in_same_referential: Both stops must belong to the same referential
               must_be_a_different_stop: The 2 stops must be distinct
             from:
               must_be_in_same_referential: Both stops must belong to the same referential

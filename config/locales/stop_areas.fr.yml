@@ -2,22 +2,22 @@ fr:
   stop_areas: &fr_stop_areas
     waiting_time_format: "%{value} minutes"
     search_no_results: "Aucun arrêt ne correspond à votre recherche"
-    no_specific_stops: "Cet arrêt n'a aucun arrêt particulier"
-    no_custom_fields: "Cet arrêt n'a pas de Champs personnalisés"
+    no_specific_stops: "Cet Arrêt n'a aucun Arrêt particulier"
+    no_custom_fields: "Cet Arrêt n'a pas de Champs personnalisés"
     errors:
       empty: Aucun stop_area_id
       parent_area_type: ne peut être de type %{area_type}
-      parent_kind: "doit être du même type que l'arrêt enfant : %{kind}"
-      incorrect_kind_area_type: Ce type d'arrêt est invalide pour cette catégorie
+      parent_kind: "doit être du même type que l'Arrêt enfant : %{kind}"
+      incorrect_kind_area_type: Ce type d'Arrêt est invalide pour cette catégorie
       registration_number:
         already_taken: Déjà utilisé
         cannot_be_empty: Ce champ est requis
         invalid: "Valeur invalide (valeur attendue: \"%{mask}\")"
       parent_id:
-        must_be_absent: Un parent ne peut être sélectionné pour un arrêt non commercial
+        must_be_absent: Un parent ne peut être sélectionné pour un Arrêt non commercial
       referent_id:
-        cannot_be_referent_and_specific: Un arrêt ne peut être à la fois référent et arrêt spécifique
-    default_geometry_success: "%{count} arrêts édités"
+        cannot_be_referent_and_specific: Un Arrêt ne peut être à la fois référent et Arrêt spécifique
+    default_geometry_success: "%{count} Arrêts édités"
     stop_area:
       no_position: "Pas de position"
       no_object: "Aucun(e)"
@@ -26,35 +26,35 @@ fr:
       accessibility: "Accessibilité"
       custom_fields: "Champs personnalisés"
     actions:
-      new: "Ajouter un arrêt"
-      create: "Ajouter un arrêt"
-      edit: "Editer cet arrêt"
-      update: "Editer cet arrêt"
+      new: "Ajouter un Arrêt"
+      create: "Ajouter un Arrêt"
+      edit: "Editer cet Arrêt"
+      update: "Editer cet Arrêt"
       destroy: "Supprimer"
-      activate: "Activer cet arrêt"
-      deactivate: "Désactiver cet arrêt"
-      activate_confirm: "Etes vous sûr d'activer cet arrêt ?"
-      deactivate_confirm: "Etes vous sûr de désactiver cet arrêt ?"
+      activate: "Activer cet Arrêt"
+      deactivate: "Désactiver cet Arrêt"
+      activate_confirm: "Etes vous sûr d'activer cet Arrêt ?"
+      deactivate_confirm: "Etes vous sûr de désactiver cet Arrêt ?"
       deleted_at: "Activé"
-      destroy_confirm: "Etes vous sûr de supprimer cet arrêt ainsi que tous ses fils?"
+      destroy_confirm: "Etes vous sûr de supprimer cet Arrêt ainsi que tous ses fils?"
       clone_as_parent: "Cloner pour créer un père"
       clone_as_child: "Cloner pour créer un enfant"
       default_geometry: "Calculer les géométries manquantes"
     filters:
       name_or_objectid: "Recherche par nom ou par objectid..."
       parent: "Indiquez un parent..."
-      stop_area_provider: "Indiquez un fournisseur d'arrêt..."
+      stop_area_provider: "Indiquez un fournisseur d'Arrêt..."
       zip_code: Indiquez un code postal...
       city_name: Indiquez un nom de commune...
-      area_type: "Indiquez un type d'arrêt..."
+      area_type: "Indiquez un type d'Arrêt..."
     statuses:
       in_creation: En création
       confirmed: Activé
       deactivated: Désactivé
     new:
-      title: "Ajouter un arrêt"
+      title: "Ajouter un Arrêt"
     create:
-      title: "Ajouter un arrêt"
+      title: "Ajouter un Arrêt"
     form:
       sections:
         identification: "Identification"
@@ -70,9 +70,9 @@ fr:
       address: "246 Boulevard Saint-Germain, 75007 Paris"
       geolocalize: "Géolocalisez "
     edit:
-      title: "Editer l'arrêt %{name}"
+      title: "Editer l'Arrêt %{name}"
     update:
-      title: "Editer l'arrêt %{name}"
+      title: "Editer l'Arrêt %{name}"
     show:
       title: "%{name}"
       geographic_data: "Données géographiques"
@@ -80,7 +80,7 @@ fr:
       itl_managment: "Gestion des liens de l'ITL"
       stop_managment: "Relations parent-enfant"
       access_managment: "Gestion des accès et liens associés"
-      not_editable: "Le type d'arrêt est non modifiable"
+      not_editable: "Le type d'Arrêt est non modifiable"
       more: "Et %{count} supplémentaire(s)"
       connections:
         title: "Correspondances"
@@ -93,7 +93,7 @@ fr:
         no_connection: "Pas de correspondance associée"
         more: "Et %{count} supplémentaire(s)"
     genealogical:
-      genealogical: "Lien entre arrêts"
+      genealogical: "Lien entre Arrêts"
       genealogical_routing: "Liens de l'ITL"
     index:
       name: "Recherche par nom..."
@@ -102,7 +102,7 @@ fr:
       title: "Arrêts"
       selection: "Filtrer sur"
       selection_all: "Tous"
-      area_type: "Type d'arrêt"
+      area_type: "Type d'Arrêt"
       advanced_search: "Recherche avancée"
   enumerize:
     stop_area:
@@ -144,9 +144,9 @@ fr:
   activerecord:
     models:
       stop_area:
-        zero: "arrêt"
-        one: "arrêt"
-        other: "arrêts"
+        zero: "Arrêt"
+        one: "Arrêt"
+        other: "Arrêts"
     attributes:
       stop_area:
         id: "ID"
@@ -163,8 +163,8 @@ fr:
         deactivated: "Désactivé"
         deleted_at: "Désactivé le"
         comment: "Commentaire"
-        stop_area_type: "Type d'arrêt"
-        area_type: "Type d'arrêt"
+        stop_area_type: "Type d'Arrêt"
+        area_type: "Type d'Arrêt"
         nearest_topic_name: "Point d'intérêt le plus proche"
         street_name: "Nom de la rue"
         country_code: "Pays"
@@ -206,8 +206,8 @@ fr:
         postal_region: "Région postale"
         waiting_time: Temps de desserte (minutes)
         status: État
-        stop_area_provider_id: Fournisseur d'arrêts
-        stop_area_provider: Fournisseur d'arrêts
+        stop_area_provider_id: Fournisseur d'Arrêts
+        stop_area_provider: Fournisseur d'Arrêts
         codes: Codes
         distance: Distance
         lines: Lignes
@@ -219,9 +219,9 @@ fr:
         stop_area:
           attributes:
             is_referent:
-              the_particulars_collection_should_be_empty: la collection des arrêts particuliers doit être vide
+              the_particulars_collection_should_be_empty: la collection des Arrêts particuliers doit être vide
             referent_id:
-              an_object_used_as_referent_must_be_flagged_as_referent: un arrêt utilisé en référent doit être référencé en tant que référent
+              an_object_used_as_referent_must_be_flagged_as_referent: un Arrêt utilisé en référent doit être référencé en tant que référent
               a_referent_cannot_have_a_referent: un référent ne peut pas référencer un référent
   formtastic:
     titles:

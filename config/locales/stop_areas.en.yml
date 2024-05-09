@@ -1,22 +1,22 @@
 en:
   stop_areas: &en_stop_areas
     waiting_time_format: "%{value} minutes"
-    search_no_results: "No stop area matching your query"
-    no_specific_stops: "This stop area don't have any specific stop"
-    no_custom_fields: "This stop area does not have any custom fields"
+    search_no_results: "No Stop Area matching your query"
+    no_specific_stops: "This Stop Area don't have any specific stop"
+    no_custom_fields: "This Stop Area does not have any custom fields"
     errors:
       empty: Aucun stop_area_id
       parent_area_type: can not be of type %{area_type}
-      parent_kind: "must have the same kind as the child stop area : %{kind}"
+      parent_kind: "must have the same kind as the child Stop Area : %{kind}"
       registration_number:
         already_taken: Already taken
         cannot_be_empty: This field is mandatory
         invalid: "Incorrect value (expected value: \"%{mask}\")"
       parent_id:
-        must_be_absent: A non commercial stop area cannot have a parent
+        must_be_absent: A non commercial Stop Area cannot have a parent
       referent_id:
-        cannot_be_referent_and_specific: "A stop area can't be both referent and specific"
-    default_geometry_success: "%{count} modified stop areas"
+        cannot_be_referent_and_specific: "A Stop Area can't be both referent and specific"
+    default_geometry_success: "%{count} modified Stop Areas"
     stop_area:
       no_position: "No Position"
       no_object: "Nothing"
@@ -25,11 +25,11 @@ en:
       accessibility: "Accessibility"
       custom_fields: "Custom fields"
     actions:
-      new: "Add a stop area"
-      create: "Add a stop area"
-      edit: "Edit stop area"
-      update: "Edit stop area"
-      destroy: "Delete stop area"
+      new: "Add a Stop Area"
+      create: "Add a Stop Area"
+      edit: "Edit Stop Area"
+      update: "Edit Stop Area"
+      destroy: "Delete Stop Area"
       activate: "Activate this stop"
       deactivate: "Deactivate this stop"
       activate_confirm: "Are you sure you want to activate this stop ?"
@@ -83,7 +83,7 @@ en:
       more: "and %{count} more"
       connections:
         title: "Connections"
-        stop: "Stop area"
+        stop: "Stop Area"
         duration: "Duration"
         direction: "Direction"
         both_ways: "Both ways"
@@ -92,10 +92,10 @@ en:
         no_connection: "No connection associated"
         more: "And %{count} more"
     genealogical:
-      genealogical: "Links between stop area"
+      genealogical: "Links between Stop Area"
       genealogical_routing: "Routing constraint's links"
     index:
-      title: "Stop areas"
+      title: "Stop Areas"
       name: "Search by name..."
       zip_code: "Zip Code"
       city_name: "City name"
@@ -143,9 +143,9 @@ en:
   activerecord:
     models:
       stop_area:
-        zero: "stop area"
-        one: "stop area"
-        other: "stop areas"
+        zero: "Stop Area"
+        one: "Stop Area"
+        other: "Stop Areas"
     attributes:
       stop_area:
         full_id: "Full ID"
@@ -195,7 +195,7 @@ en:
         parent_id: "Parent"
         is_referent: "Referent"
         referent: "Referent"
-        referent_id: "Referent stop area"
+        referent_id: "Referent Stop Area"
         specific_stops: "Specific stops"
         coordinates: "Coordinates"
         zip_code: "Zip code"
@@ -216,10 +216,10 @@ en:
         stop_area:
           attributes:
             is_referent:
-              the_particulars_collection_should_be_empty: particulars stop area collection should be empty
+              the_particulars_collection_should_be_empty: particulars Stop Area collection should be empty
             referent_id:
-              an_object_used_as_referent_must_be_flagged_as_referent: a stop area used as referent must be flagged as referent
-              a_referent_cannot_have_a_referent: a stop area referent can't have a referent
+              an_object_used_as_referent_must_be_flagged_as_referent: a Stop Area used as referent must be flagged as referent
+              a_referent_cannot_have_a_referent: a Stop Area referent can't have a referent
   formtastic:
     titles:
       stop_area:

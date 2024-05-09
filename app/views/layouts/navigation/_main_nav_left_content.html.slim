@@ -41,7 +41,7 @@
 
       = main_nav_menu_item StopAreaReferential.model_name.human do
         = link_to workbench_stop_area_referential_stop_areas_path(workbench), class: 'list-group-item' do
-          span = Chouette::StopArea.model_name.human(count: 2).capitalize
+          span = Chouette::StopArea.model_name.human(count: 2)
         - if has_feature?(:stop_area_connection_links)
           = link_to workbench_stop_area_referential_connection_links_path(workbench), class: 'list-group-item' do
             span = Chouette::ConnectionLink.model_name.human(count: 2).capitalize

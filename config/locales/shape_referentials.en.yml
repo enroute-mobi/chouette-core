@@ -13,6 +13,6 @@ en:
       message: Message
   activerecord:
     models:
-      shape_referentials:
+      shape_referential:
         one:   "Topological Referential"
         other: "Topological Referentials"

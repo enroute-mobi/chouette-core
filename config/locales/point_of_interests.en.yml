@@ -1,20 +1,20 @@
 en:
   point_of_interests:
     index:
-      title: Points of interest
+      title: Points of Interest
     show:
       title: "%{name}"
     new:
-      title: "Create a Point of interest"
+      title: "Create a Point of Interest"
     edit:
       title: "Editer %{name}"
     actions:
-      show: "Show this Point of interest"
-      show_categories: "Show Point of interest Categories"
-      new: "Create a Point of interest"
-      edit: "Edit this Point of interest"
-      destroy: "Delete this Point of interest"
-      destroy_confirm: "Are you sure you want to delete this Point of interest ?"
+      show: "Show this Point of Interest"
+      show_categories: "Show Point of Interest Categories"
+      new: "Create a Point of Interest"
+      edit: "Edit this Point of Interest"
+      destroy: "Delete this Point of Interest"
+      destroy_confirm: "Are you sure you want to delete this Point of Interest ?"
     form:
       sections:
         identification: "Identification"
@@ -22,10 +22,10 @@ en:
         contact: "Contact"
         hours: "Hours"
         codes: "Codes"
-      point_of_interest_category_placeholder: Search by name of Point of interest Category
+      point_of_interest_category_placeholder: Search by name of Point of Interest Category
       add_hours: "Add hour"
-    search_no_results: "No Point of interest matches your search"
-    no_hours: "This Point of interest does not have any hours"
+    search_no_results: "No Point of Interest matches your search"
+    no_hours: "This Point of Interest does not have any hours"
     errors:
     filters:
     days:
@@ -39,9 +39,9 @@ en:
   activerecord:
     models:
       point_of_interest:
-        zero:  "Point of interest"
-        one: "Point of interest"
-        other: "Point of interest"
+        zero:  "Point of Interest"
+        one: "Point of Interest"
+        other: "Points of Interest"
     attributes:
       point_of_interest:
         name: "Name"

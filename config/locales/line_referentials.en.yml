@@ -1,9 +1,9 @@
 en:
   line_referentials:
     show:
-      title: Line referential
+      title: Line Referential
   activerecord:
     models:
       line_referential:
-        one:   "line referential"
-        other: "line referentials"
+        one:   "Line Referential"
+        other: "Line Referentials"

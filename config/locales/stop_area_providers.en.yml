@@ -1,12 +1,12 @@
 en:
   stop_area_providers:
     actions:
-      destroy_confirm: "Are you sur to delete this stop area provider ?"
-    search_no_results: "No stop area providers"
+      destroy_confirm: "Are you sur to delete this Stop Area Provider ?"
+    search_no_results: "No Stop Area Provider"
     index:
-      title: "Stop area providers"
+      title: "Stop Area Providers"
     new:
-      title: "Add a stop area provider"
+      title: "Add a Stop Area Provider"
     show:
       title: "%{name}"
     edit:
@@ -16,8 +16,8 @@ en:
   activerecord:
     models:
       stop_area_provider:
-        one: "Stop area provider"
-        other: "Stop area providers"
+        one: "Stop Area Provider"
+        other: "Stop Area Providers"
     attributes:
       stop_area_provider:
         name: Name

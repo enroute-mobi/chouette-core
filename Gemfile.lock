@@ -435,7 +435,7 @@ GEM
       has_scope (~> 0.6)
       railties (>= 5.2, < 7.1)
       responders (>= 2, < 4)
-    jbuilder (2.11.5)
+    jbuilder (2.12.0)
       actionview (>= 5.0.0)
       activesupport (>= 5.0.0)
     jquery-rails (4.6.0)

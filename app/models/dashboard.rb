@@ -17,6 +17,8 @@ class Dashboard
     @context = context
   end
 
+  delegate :current_user, to: :context
+
   def self.create(context)
     default_class.new context
   end

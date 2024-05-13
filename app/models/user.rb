@@ -79,6 +79,13 @@ class User < ApplicationModel
     super + %w[with_profiles with_states]
   end
 
+  # called in Chouette::WorkgroupController:
+  #   - begin_of_association_chain = user inherited from Chouette::UserController
+  #   - belongs_to :workgroup, collection_name: :owned_workgroups defined in Chouette::WorkgroupController
+  def owned_workgroups
+    organisation&.owned_workgroups || Workgroup.none
+  end
+
   # Callback invoked by DeviseCasAuthenticable::Model#authernticate_with_cas_ticket
   def cas_extra_attributes=(extra_attributes)
      self.class.cas_updater&.update self, extra_attributes

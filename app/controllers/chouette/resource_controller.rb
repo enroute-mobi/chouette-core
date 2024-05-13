@@ -12,7 +12,7 @@ module Chouette
     private
 
     def begin_of_association_chain
-      current_organisation
+      current_user
     end
   end
 end

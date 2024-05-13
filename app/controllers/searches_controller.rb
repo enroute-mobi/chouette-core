@@ -86,6 +86,6 @@ class SearchesController < Chouette::UserController
   helper_method :saved_searches
 
   def workbench
-    @workbench ||= current_organisation.workbenches.find(params[:workbench_id])
+    @workbench ||= current_user.workbenches.find(params[:workbench_id])
   end
 end

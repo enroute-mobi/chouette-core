@@ -1,10 +1,10 @@
 module Stif
   class Dashboard < ::Dashboard
     def workbench
-      if current_organisation.workbenches.length > 1
+      if current_user.workbenches.length > 1
         Rails.logger.error("Organisation #{current_organisation.name} should have only one workbench")
       end
-      @workbench ||= current_organisation.workbenches.first
+      @workbench ||= current_user.workbenches.first
     end
 
     def workgroup

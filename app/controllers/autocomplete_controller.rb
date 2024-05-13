@@ -85,22 +85,22 @@ class AutocompleteController < Chouette::UserController
   end
 
   def stop_area_referential
-    @stop_area_referential ||= current_organisation.workgroups.find(params[:workgroup_id]).stop_area_referential if params[:workgroup_id]
+    @stop_area_referential ||= current_user.workgroups.find(params[:workgroup_id]).stop_area_referential if params[:workgroup_id]
   end
 
   def line_referential
-    @line_referential ||= current_organisation.workgroups.find(params[:workgroup_id]).line_referential if params[:workgroup_id]
+    @line_referential ||= current_user.workgroups.find(params[:workgroup_id]).line_referential if params[:workgroup_id]
   end
 
   def shape_referential
-    @shape_referential ||= current_organisation.workgroups.find(params[:workgroup_id]).shape_referential if params[:workgroup_id]
+    @shape_referential ||= current_user.workgroups.find(params[:workgroup_id]).shape_referential if params[:workgroup_id]
   end
 
   def workbench
-    @workbench ||= current_organisation.workbenches.find(params[:workbench_id]) if params[:workbench_id]
+    @workbench ||= current_user.workbenches.find(params[:workbench_id]) if params[:workbench_id]
   end
 
   def referential
-    @referential ||= current_organisation.find_referential(params[:referential_id]) if params[:referential_id]
+    @referential ||= current_user.find_referential(params[:referential_id]) if params[:referential_id]
   end
 end

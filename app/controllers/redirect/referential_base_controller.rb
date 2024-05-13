@@ -7,7 +7,7 @@ module Redirect
     private
 
     def workbench
-      @workbench ||= current_organisation.workbenches.find(params[:workbench_id])
+      @workbench ||= current_user.workbenches.find(params[:workbench_id])
     end
   end
 end

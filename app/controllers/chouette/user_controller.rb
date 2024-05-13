@@ -28,6 +28,10 @@ module Chouette
       ::Time.zone = ::TimeZoneSelector.time_zone_for(current_user)
     end
 
+    def begin_of_association_chain
+      current_user
+    end
+
     def current_organisation
       current_user&.organisation
     end

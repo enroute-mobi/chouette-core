@@ -9,6 +9,6 @@ class DashboardsController < Chouette::UserController
 
   def show
     @dashboard = Dashboard.create self
-    @workbenches = current_organisation.workbenches
+    @workbenches = current_user.workbenches
   end
 end

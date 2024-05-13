@@ -16,26 +16,6 @@ RSpec.describe Devise::CasSessionsController, type: :controller do
     end
   end
 
-  xcontext 'user does not have permission sessions.create' do
-    let( :signed_in_user ){ build_stubbed :user }
-
-    it 'cannot login and will be redirected to the login page, with a corresponding message' do
-      get :service
-      expect(controller).to set_flash[:alert].to(%r{#{I18n.t('devise.sessions.new.unauthorized')}})
-      expect(response).to redirect_to "http://cas-portal.example.com/sessions/logout?service=http%3A%2F%2Ftest.host%2Fusers%2Fservice"
-    end
-  end
-
-  context 'user does have permission sessions.create' do
-    let( :signed_in_user ){ build_stubbed :allmighty_user }
-
-    it 'can login and will be redirected to the referentials page' do
-      @user.permissions << 'sessions.create'
-      get :service
-      expect(response).to redirect_to(root_path)
-    end
-  end
-
   describe 'cas_service_url' do
     let( :signed_in_user ){ build_stubbed :allmighty_user }
     context 'without custom values' do

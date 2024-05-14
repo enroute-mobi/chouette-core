@@ -42,5 +42,10 @@ module Chouette
       nil
     end
     helper_method :current_workbench
+
+    def owner_workbench
+      nil
+    end
+    helper_method :owner_workbench
   end
 end

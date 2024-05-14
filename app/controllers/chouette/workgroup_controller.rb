@@ -20,5 +20,9 @@ module Chouette
       get_parent_ivar(:workgroup)
     end
     alias current_workgroup workgroup
+
+    def owner_workbench
+      @owner_workbench ||= workgroup.owner_workbench
+    end
   end
 end

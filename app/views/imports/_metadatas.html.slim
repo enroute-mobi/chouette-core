@@ -3,7 +3,7 @@
         = b.attribute :filename, label: t('filename', scope: import.i18n_attribute_scope), value_method: :file_identifier
       = b.attribute :status, value: operation_status(import.status, verbose: true)
       - if import.referential
-        = b.attribute :referential, value: link_to(import.referential.name, [@workbench, import.referential])
+        = b.attribute :referential, value: link_to(import.referential.name, [owner_workbench, import.referential])
       - unless @workbench
         = b.attribute :workbench, label: Workbench.ts.capitalize, value: import.workbench.name
       - import.visible_options.map do |k, v|

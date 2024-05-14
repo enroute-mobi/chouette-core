@@ -177,10 +177,18 @@ class ReferentialsController < Chouette::ResourceController
     current_workbench&.workgroup
   end
 
+  def current_workbench
+    load_workbench
+  rescue ActiveRecord::RecordNotFound
+    nil
+  end
+
   def current_referential
     return nil unless params[:id]
 
     resource
+  rescue ActiveRecord::RecordNotFound
+    nil
   end
   helper_method :current_referential
 
@@ -234,8 +242,5 @@ class ReferentialsController < Chouette::ResourceController
   end
 
   alias parent load_workbench
-  alias current_workbench load_workbench
-  helper_method :current_workbench
-
-  alias parent_for_parent_policy current_workbench
+  alias parent_for_parent_policy load_workbench
 end

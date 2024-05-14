@@ -87,7 +87,7 @@ module Policy
       private
 
       def compute_permissions
-        super - (workbench.restrictions || [])
+        super - (workbench&.restrictions || [])
       end
     end
 
@@ -103,7 +103,7 @@ module Policy
       private
 
       def compute_permissions
-        workbench.restrictions || []
+        workbench&.restrictions || []
       end
     end
 

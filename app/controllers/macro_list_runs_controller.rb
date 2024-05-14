@@ -45,7 +45,7 @@ class MacroListRunsController < Chouette::WorkbenchController
   protected
 
   alias macro_list_run resource
-  alias parent_for_parent_policy current_workbench
+  alias parent_for_parent_policy workbench
 
   def macro_list
     # Ensure parent is loaded

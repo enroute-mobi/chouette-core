@@ -476,6 +476,11 @@ crumb :line_referential do |workbench|
   parent :workbench, workbench
 end
 
+crumb :lines_searches do |workbench|
+  link Search::Save.model_name.human(count: 2)
+  parent :lines, workbench
+end
+
 crumb :companies do |workbench|
   link I18n.t('companies.index.title'), workbench_line_referential_companies_path(workbench)
   parent :line_referential, workbench

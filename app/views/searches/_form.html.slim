@@ -23,9 +23,9 @@
   .flex.flex-col.w-full
     = yield f
 
-    .flex.items-center.border-white x-show="saveSearchPanel"
-      = f.input :saved_name, wrapper_html: {class: "w-2/5"}
-      = f.input :saved_description, wrapper_html: {class: "w-2/5"}
+    .flex.items-center.border-t.border-white x-show="saveSearchPanel"
+      = f.input :saved_name, wrapper_html: {class: "border-l w-2/5"}
+      = f.input :saved_description, wrapper_html: {class: "border-l w-2/5"}
       = hidden_field_tag :_method, "post", "x-ref": "method"
       = hidden_field_tag :authenticity_token, form_authenticity_token, "x-ref": "authenticity_token"
       = f.submit t('searchs.actions.save'), class: 'btn btn-default ml-5', "@click": "$root.action = save_path ; $root.method = 'post' ; $refs.method.value = save_method; $refs.method.disabled = false; ; $refs.authenticity_token.disabled = false"

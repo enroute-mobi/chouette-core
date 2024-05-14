@@ -189,6 +189,7 @@ ChouetteIhm::Application.routes.draw do # rubocop:disable Metrics/BlockLength
     end
 
     resource :line_referential, only: %i[show] do
+      resources :searches, only: %i[index show create update destroy], path: ':parent_resources/searches'
       resources :line_routing_constraint_zones
 
       resources :line_providers

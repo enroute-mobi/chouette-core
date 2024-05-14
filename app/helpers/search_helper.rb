@@ -6,6 +6,10 @@ module SearchHelper
     workbench_stop_area_referential_search_path workbench, saved_search.id, parent_resources: :stop_areas
   end
 
+  def workbench_lines_search_path(workbench, saved_search)
+    workbench_line_referential_search_path workbench, saved_search.id, parent_resources: :lines
+  end
+
   def saved_search_path(saved_search)
     parent_resources = saved_search.search_type.demodulize.underscore.pluralize.to_sym
 

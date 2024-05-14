@@ -15,7 +15,8 @@ module Search
     enumerize :transport_mode, in: TransportModeEnumerations.transport_modes, multiple: true
 		enumerize :statuses, in: ::Chouette::Line.statuses, i18n_scope: 'lines.statuses'
 
-		attr_accessor :line_referential
+    attr_accessor :workbench
+    delegate :line_referential, to: :workbench
 
 		def period
       Period.new(from: valid_before_date, to: valid_after_date).presence

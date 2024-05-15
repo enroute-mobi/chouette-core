@@ -99,6 +99,7 @@ module Control
             # Chouette::Route
             select Chouette::Route, :name
             select Chouette::Route, :published_name
+            select Chouette::Route, :wayback
 
             # Chouette::JourneyPattern
             select Chouette::JourneyPattern, :name

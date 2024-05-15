@@ -85,13 +85,12 @@ class Import::NetexGeneric < Import::Base
 
     return if referential_builder.valid?
 
-    create_message(
+    # create_message has a strange behavior in this context
+    messages.build(
       criticity: :error,
       message_key: 'referential_creation_overlapping_existing_referential_block'
     )
     self.overlapping_referential_ids = referential_builder.overlapping_referential_ids
-
-    raise 'Referential creation overlapping existing referential'
   end
 
   def referential_metadata

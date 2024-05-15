@@ -38,7 +38,7 @@ en:
       parent: Parent
       status: State
       overlapping: Overlapping
-      overlapping_tips: you can archive or delete these DataSets before restarting a new import
+      overlapping_tips: You can archive or delete these DataSets before restarting a new import
       netex:
         table_title: "Status of analyzed files"
         table_explanation: "When calendriers.xml and/or commun.xml are not imported, then all lines file are not processed."

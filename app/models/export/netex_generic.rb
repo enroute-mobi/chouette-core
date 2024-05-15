@@ -493,6 +493,7 @@ class Export::NetexGeneric < Export::Base
           derived_from_object_ref: derived_from_object_ref,
           name: name,
           public_code: public_code,
+          private_code: private_code,
           centroid: centroid,
           raw_xml: import_xml,
           key_list: key_list,
@@ -588,6 +589,10 @@ class Export::NetexGeneric < Export::Base
 
     def netex_resource_class
       netex_quay? ? Netex::Quay : Netex::StopPlace
+    end
+
+    def private_code
+      registration_number
     end
   end
 

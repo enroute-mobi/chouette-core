@@ -37,34 +37,65 @@ RSpec.describe Macro::DefineFrenchCodeInsee do
         end
 
         context 'when the postion is in France' do
-          let(:context) do
-            Chouette.create do
-              stop_area :stop_area, name: 'stop area', latitude: 47.2372428, longitude: -1.5767392
-            end
-          end
-
           let(:url) { 'https://geo.api.gouv.fr/communes?lat=47.2372428&lon=-1.5767392' }
           let(:insee_postal_region_response) { read_fixture('insee-postal-region-response.json') }
 
-          it 'should update postal_region into stop area' do
-            expect do
+          context 'when postal region is nil' do
+            let(:context) do
+              Chouette.create do
+                stop_area :stop_area, name: 'stop area', latitude: 47.2372428, longitude: -1.5767392, postal_region: nil
+              end
+            end
+
+            it 'should update postal_region into stop area' do
+              expect do
+                subject
+                stop_area.reload
+              end.to change(stop_area, :postal_region).to('44109')
+            end
+
+            it 'creates a message for each stop area' do
               subject
-              stop_area.reload
-            end.to change(stop_area, :postal_region).to('44109')
+
+              expected_message = an_object_having_attributes(
+                criticity: 'info',
+                message_attributes: {
+                  'name' => stop_area.name,
+                  'postal_region' => '44109'
+                },
+                source: stop_area
+              )
+              expect(macro_run.macro_messages).to include(expected_message)
+            end
           end
 
-          it 'creates a message for each stop area' do
-            subject
+          context 'when postal region is a empty string' do
+            let(:context) do
+              Chouette.create do
+                stop_area :stop_area, name: 'stop area', latitude: 47.2372428, longitude: -1.5767392, postal_region: ''
+              end
+            end
 
-            expected_message = an_object_having_attributes(
-              criticity: 'info',
-              message_attributes: {
-                'name' => stop_area.name,
-                'postal_region' => '44109'
-              },
-              source: stop_area
-            )
-            expect(macro_run.macro_messages).to include(expected_message)
+            it 'should update postal_region into stop area' do
+              expect do
+                subject
+                stop_area.reload
+              end.to change(stop_area, :postal_region).to('44109')
+            end
+
+            it 'creates a message for each stop area' do
+              subject
+
+              expected_message = an_object_having_attributes(
+                criticity: 'info',
+                message_attributes: {
+                  'name' => stop_area.name,
+                  'postal_region' => '44109'
+                },
+                source: stop_area
+              )
+              expect(macro_run.macro_messages).to include(expected_message)
+            end
           end
         end
 

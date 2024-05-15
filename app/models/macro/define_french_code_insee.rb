@@ -93,7 +93,7 @@ module Macro
       end
 
       def models_without_postal_region
-        @models_without_postal_region ||= models.where(postal_region: nil)
+        @models_without_postal_region ||= models.where(postal_region: [nil, ''])
       end
 
       def model_collection

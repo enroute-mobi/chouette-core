@@ -21,7 +21,6 @@ module LocalImportSupport
   def import
     Chouette::Benchmark.measure "import_#{import_type}", id: id do
       update status: 'running', started_at: Time.now
-      @progress = 0
 
       ActiveRecord::Base.cache do
         import_without_status
@@ -29,29 +28,20 @@ module LocalImportSupport
 
       processor.after([referential])
 
-      @progress = nil
       @status ||= 'successful'
       referential&.active!
       update status: @status, ended_at: Time.now
+    end
+  rescue InvalidReferential
+    update status: 'failed', ended_at: Time.now
+    if overlapping_referential_ids.present?
+      create_message criticity: :error, message_key: 'referential_creation_overlapping_existing_referential_block'
     end
   rescue StandardError => e
     update status: 'failed', ended_at: Time.now
     Chouette::Safe.capture "#{self.class.name} ##{id} failed", e
 
-    if (referential && overlapped_referential_ids = referential.overlapped_referential_ids).present?
-      overlapped = Referential.find overlapped_referential_ids.last
-      create_message(
-        criticity: :error,
-        message_attributes: {
-          referential_name: referential.name,
-          overlapped_name: overlapped.name,
-          overlapped_url: Rails.application.routes.url_helpers.workbench_referential_path(workbench, overlapped)
-        },
-        message_key: 'referential_creation_overlapping_existing_referential'
-      )
-    else
-      create_message criticity: :error, message_key: :full_text, message_attributes: { text: e.message }
-    end
+    create_message criticity: :error, message_key: :full_text, message_attributes: { text: e.message }
     referential&.failed!
   ensure
     main_resource&.save
@@ -77,25 +67,66 @@ module LocalImportSupport
     end
   end
 
-  def create_referential
-    Chouette::Benchmark.measure 'create_referential' do
-      self.referential ||= Referential.new(
-        name: referential_name,
-        organisation_id: workbench.organisation_id,
-        workbench_id: workbench.id,
-        metadatas: [referential_metadata],
+  def referential_builder
+    @referential_builder ||= ReferentialBuilder.new(workbench, name: referential_name, metadata: referential_metadata)
+  end
+
+  # Create a Referential with given name and medata
+  class ReferentialBuilder
+    def initialize(workbench, name:, metadata:)
+      @workbench = workbench
+      @name = name
+      @metadata = metadata
+    end
+    attr_reader :workbench, :name, :metadata
+
+    delegate :organisation, to: :workbench
+
+    def create(&block)
+      if valid?
+        Rails.logger.debug "Create imported Referential: #{referential.inspect}"
+        block.call referential
+      else
+        Rails.logger.debug "Can't created imported Referential: #{referential.inspect}"
+      end
+    end
+
+    def referential
+      @referential ||= workbench.referentials.create(
+        name: name,
+        organisation: organisation,
+        metadatas: [metadata],
         ready: false
       )
-
-      begin
-        self.referential.save!
-      rescue ActiveRecord::RecordInvalid
-        # No double capture for Chouette::Safe
-        Rails.logger.error "Unable to create referential: #{self.referential.errors.messages}"
-        raise
-      end
-      main_resource.update referential: referential if main_resource
     end
+
+    def valid?
+      @valid ||= referential.valid?
+    end
+
+    def overlapping_referential_ids
+      @overlapping_referential_ids ||= referential.overlapped_referential_ids
+    end
+  end
+
+  # DEPRECATED Use #within_referential
+  def create_referential
+    Chouette::Benchmark.measure 'create_referential' do
+      self.referential ||= referential_builder.referential
+
+      main_resource.update referential: referential if main_resource
+
+      unless referential_builder.valid?
+        self.overlapping_referential_ids = referential_builder.overlapping_referential_ids
+        raise InvalidReferential
+      end
+
+      referential
+    end
+  end
+
+  # DEPRECATED Use #within_referential
+  class InvalidReferential < StandardError
   end
 
   def referential_name

@@ -85,14 +85,12 @@ class Import::NetexGeneric < Import::Base
 
     return if referential_builder.valid?
 
-    # Create a global error message
-    messages.create criticity: :error, message_key: 'referential_creation_overlapping_existing_referential'
-    # Save overlapping referentials for user display
-    # self.overlapping_referential_ids = referential_builder.overlapping_referential_ids
-  end
-
-  def referential_builder
-    @referential_builder ||= ReferentialBuilder.new(workbench, name: name, metadata: referential_metadata)
+    # create_message has a strange behavior in this context
+    messages.build(
+      criticity: :error,
+      message_key: 'referential_creation_overlapping_existing_referential_block'
+    )
+    self.overlapping_referential_ids = referential_builder.overlapping_referential_ids
   end
 
   def referential_metadata
@@ -100,44 +98,6 @@ class Import::NetexGeneric < Import::Base
 
     @referential_metadata ||=
       ReferentialMetadata.new line_ids: imported_line_ids, periodes: [netex_source.validity_period]
-  end
-
-  # Create a Referential with given name and medata
-  class ReferentialBuilder
-    def initialize(workbench, name:, metadata:)
-      @workbench = workbench
-      @name = name
-      @metadata = metadata
-    end
-    attr_reader :workbench, :name, :metadata
-
-    delegate :organisation, to: :workbench
-
-    def create(&block)
-      if valid?
-        Rails.logger.debug "Create imported Referential: #{referential.inspect}"
-        block.call referential
-      else
-        Rails.logger.debug "Can't created imported Referential: #{referential.inspect}"
-      end
-    end
-
-    def referential
-      @referential ||= workbench.referentials.create(
-        name: name,
-        organisation: organisation,
-        metadatas: [metadata],
-        ready: false
-      )
-    end
-
-    def valid?
-      @valid ||= referential.valid?
-    end
-
-    def overlapping_referential_ids
-      @overlapping_referential_ids ||= referential.overlapped_referential_ids
-    end
   end
 
   # TODO: why the resource statuses are not checked automaticaly ??

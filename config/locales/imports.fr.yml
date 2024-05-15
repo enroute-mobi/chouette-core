@@ -40,7 +40,7 @@ fr:
       status: État
       referential: Jeu de données
       overlapping: Chevauchement
-      overlapping_tips: vous pouvez archiver ou supprimer ces Jeux de Données avant de relancer le même import
+      overlapping_tips: Vous pouvez archiver ou supprimer ces Jeux de Données avant de relancer le même import
       netex:
         table_title: "État des fichiers analysés"
         table_explanation: "Dans le cas ou le(s) fichiers calendriers.xml et/ou commun.xml sont dans un état non importé, alors tous les fichiers lignes sont automatiquement dans un état non traité."

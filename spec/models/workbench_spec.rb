@@ -147,6 +147,60 @@ RSpec.describe Workbench, type: :model do
     end
   end
 
+  describe '#find_referential!' do
+    let(:workbench) { context.workbench(:workbench) }
+    let(:referential) { context.referential(:referential) }
+    let(:referential_id) { referential.id }
+
+    subject { workbench.find_referential!(referential_id) }
+
+    context "when referential is workbench's referentials" do
+      let(:context) do
+        Chouette.create do
+          workgroup do
+            workbench :workbench do
+              referential :referential
+            end
+          end
+        end
+      end
+
+      it 'should return referential' do
+        is_expected.to eq(referential)
+      end
+    end
+
+    context "when referential is in workgroup's output referentials" do
+      let(:context) do
+        Chouette.create do
+          workgroup do
+            workbench :workbench
+            referential :referential
+          end
+        end.tap do |c|
+          c.workgroup.output.referentials << c.referential(:referential)
+        end
+      end
+
+      it 'should return referential' do
+        is_expected.to eq(referential)
+      end
+    end
+
+    context 'when none of the above' do
+      let(:context) do
+        Chouette.create do
+          workbench :workbench
+        end
+      end
+      let(:referential_id) { 0 }
+
+      it 'should raise an error' do
+        expect { subject }.to raise_error(ActiveRecord::RecordNotFound)
+      end
+    end
+  end
+
   describe "#create_default_prefix" do
     subject { workbench.create_default_prefix }
 

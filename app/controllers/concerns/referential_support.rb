@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module ReferentialSupport
   extend ActiveSupport::Concern
 
@@ -22,7 +24,6 @@ module ReferentialSupport
   end
 
   def find_referential
-    current_organisation.find_referential params[:referential_id]
+    workbench.find_referential!(params[:referential_id])
   end
-
 end

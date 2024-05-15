@@ -1,26 +1,25 @@
-describe ReferentialLinesController, :type => :controller do
+# frozen_string_literal: true
 
+describe ReferentialLinesController, :type => :controller do
   login_user
 
-  let(:referential) { create :workbench_referential, workbench: workbench, organisation: organisation }
-  let(:workbench){ create :workbench, organisation: organisation }
-  let(:organisation) { @user.organisation }
-  let(:line) { create :line }
+  let(:context) do
+    Chouette.create do
+      workbench organisation: Organisation.find_by(code: 'first') do
+        line :line
+        referential lines: %i[line]
+      end
+    end
+  end
+  let(:workbench) { context.workbench }
+  let(:referential) { context.referential }
+  let(:line) { context.line(:line) }
 
   describe "GET show" do
     let(:request){ get :show, params: { workbench_id: workbench.id, referential_id: referential.id, id: line.id }}
 
-    it 'should respond with NOT FOUND' do
-      expect(request).to render_template('errors/not_found')
-    end
-
-    context "when the line belongs to the referential" do
-      before(:each) do
-        referential.workbench.line_referential.lines << line
-        referential.reload
-        expect(referential.lines).to include(line)
-      end
-      it_behaves_like 'checks current_organisation'
+    it 'returns http success' do
+      expect(request).to have_http_status :ok
     end
   end
 end

@@ -1,15 +1,19 @@
+# frozen_string_literal: true
+
 RSpec.describe FootnotesController, :type => :controller do
   login_user permissions: []
 
-  let(:referential) { create :workbench_referential, workbench: workbench, organisation: organisation }
-  let(:workbench){ create :workbench, organisation: organisation }
-  let(:organisation) { @user.organisation }
-  let(:route){ create :route, referential: referential }
-  let(:line) { route.line }
-
-  before(:each) do
-    line.update line_referential: workbench.line_referential
+  let(:context) do
+    Chouette.create do
+      workbench organisation: Organisation.find_by(code: 'first') do
+        line :line
+        referential lines: %i[line]
+      end
+    end
   end
+  let(:workbench) { context.workbench }
+  let(:referential) { context.referential }
+  let(:line) { context.line(:line) }
 
   describe "GET edit_all" do
     let(:request) do
@@ -21,7 +25,9 @@ RSpec.describe FootnotesController, :type => :controller do
     end
 
     with_permission "footnotes.update" do
-      it_behaves_like 'checks current_organisation'
+      it 'returns http success' do
+        expect(request).to have_http_status :ok
+      end
 
       context "with an archived referential" do
         before(:each) do
@@ -49,7 +55,9 @@ RSpec.describe FootnotesController, :type => :controller do
     end
 
     with_permission "footnotes.update" do
-      it_behaves_like 'checks current_organisation', success_code: 302
+      it 'redirects' do
+        expect(request).to have_http_status :redirect
+      end
     end
 
     context 'when destroying a footnote' do

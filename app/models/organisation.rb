@@ -32,23 +32,6 @@ class Organisation < ApplicationModel
 
   accepts_nested_attributes_for :authentication, allow_destroy: true, update_only: true
 
-  def find_referential(referential_id)
-    organisation_referential = referentials.find_by id: referential_id
-    return organisation_referential if organisation_referential
-
-    workbenches.find_each do |workbench|
-      workbench_referential = workbench.all_referentials.find_by id: referential_id
-      return workbench_referential if workbench_referential
-    end
-
-    workgroups.find_each do |workgroup|
-      output_referential = workgroup.output.referentials.find(referential_id.to_i)
-      return output_referential if output_referential
-    end
-
-    raise ActiveRecord::RecordNotFound
-  end
-
   def functional_scope
     JSON.parse( (sso_attributes || {}).fetch('functional_scope', '[]') )
   end

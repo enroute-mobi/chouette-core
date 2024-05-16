@@ -22,29 +22,29 @@ RSpec.describe NotificationRule, type: :model do
   it { is_expected.to enumerize(:rule_type).in(:notify, :block).with_default(:block) }
   it { is_expected.to enumerize(:operation_statuses).in(:successful, :warning, :failed).with_multiple(true) }
 
-  context 'when target type is external_email' do
-    before { notification_rule.target_type = 'external_email' }
+  describe '#users' do
+    it { is_expected.to allow_value([]).for(:users) }
 
-    it { is_expected.to validate_presence_of(:external_email) }
+    context 'when target_type is "user"' do
+      let(:user) { Chouette.create { user }.user }
+
+      before { subject.target_type = 'user' }
+
+      it { is_expected.to allow_value([user]).for(:users) }
+      it { is_expected.not_to allow_value([]).for(:users) }
+    end
   end
 
-  context 'when target type is user' do
-    let(:context) do
-      Chouette.create do
-        workbench
-        user
-      end
+  describe '#external_email' do
+    it { is_expected.to allow_value('').for(:external_email) }
+
+    context 'when target_type is "external_email"' do
+      before { subject.target_type = 'external_email' }
+
+      it { is_expected.to allow_value('user@text.ex').for(:external_email) }
+      it { is_expected.not_to allow_value('').for(:external_email) }
+      it { is_expected.not_to allow_value('not-an-email').for(:external_email) }
     end
-
-    before do
-      notification_rule.target_type = 'user'
-      notification_rule.workbench = context.workbench
-    end
-
-    let(:user) { context.user }
-
-    it { is_expected.to allow_value([user]).for(:users) }
-    it { is_expected.to_not allow_value([]).for(:users) }
   end
 
   describe '.covering' do

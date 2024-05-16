@@ -1676,6 +1676,19 @@ ActiveRecord::Schema.define(version: 2024_06_04_133209) do
     t.index ["stop_area_id"], name: "index_waypoints_on_stop_area_id"
   end
 
+  create_table "workbench_sharings", force: :cascade do |t|
+    t.string "name", null: false
+    t.bigint "workbench_id", null: false
+    t.string "recipient_type", null: false
+    t.bigint "recipient_id"
+    t.string "invitation_code"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["invitation_code"], name: "index_workbench_sharings_on_invitation_code"
+    t.index ["recipient_type", "recipient_id", "workbench_id"], name: "index_workbench_sharings_uq_on_recipient_and_workbench", unique: true, where: "((recipient_type IS NOT NULL) AND (recipient_id IS NOT NULL))"
+    t.index ["workbench_id"], name: "index_workbench_sharings_on_workbench_id"
+  end
+
   create_table "workbenches", force: :cascade do |t|
     t.string "name"
     t.bigint "organisation_id"
@@ -1752,4 +1765,5 @@ ActiveRecord::Schema.define(version: 2024_06_04_133209) do
   add_foreign_key "vehicle_journey_at_stops", "vehicle_journeys", name: "vjas_vj_fkey", on_delete: :cascade
   add_foreign_key "vehicle_journeys", "journey_patterns", name: "vj_jp_fkey", on_delete: :cascade
   add_foreign_key "vehicle_journeys", "routes", name: "vj_route_fkey", on_delete: :cascade
+  add_foreign_key "workbench_sharings", "workbenches"
 end

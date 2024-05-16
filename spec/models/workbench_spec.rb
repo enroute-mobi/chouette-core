@@ -24,9 +24,9 @@ RSpec.describe Workbench, type: :model do
       it { is_expected.to_not validate_presence_of(:organisation) }
       it { is_expected.to_not validate_presence_of(:prefix) }
 
-      context "when another Workbench has the invitation code '123456" do
-        let!(:context) { Chouette.create { workbench invitation_code: '123-456-789' } }
-        it { is_expected.to_not allow_value('123-456-789').for(:invitation_code) }
+      context 'when another Workbench has the invitation code "W-123-456-789"' do
+        let!(:context) { Chouette.create { workbench invitation_code: 'W-123-456-789' } }
+        it { is_expected.to_not allow_value('W-123-456-789').for(:invitation_code) }
       end
     end
 
@@ -223,10 +223,10 @@ RSpec.describe Workbench, type: :model do
     subject { workbench.create_invitation_code }
 
     it "defines Workbench invitation_code" do
-      expect { subject }.to change(workbench, :invitation_code).from(nil).to(matching(/\d{3}-\d{3}-\d{3}/))
+      expect { subject }.to change(workbench, :invitation_code).from(nil).to(matching(/\AW-\d{3}-\d{3}-\d{3}\z/))
     end
 
-    it { is_expected.to match(/\d{3}-\d{3}-\d{3}/) }
+    it { is_expected.to match(/\AW-\d{3}-\d{3}-\d{3}\z/) }
   end
 
   describe "on creation" do

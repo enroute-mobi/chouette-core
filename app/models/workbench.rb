@@ -23,6 +23,8 @@ class Workbench < ApplicationModel
   belongs_to :locked_referential_to_aggregate, class_name: 'Referential'
 
   has_many :users, through: :organisation
+  has_many :sharings, class_name: 'Workbench::Sharing', dependent: :destroy
+
   has_many :lines, -> (workbench) { workbench.workbench_scopes.lines_scope(self) }, through: :line_referential
   has_many :stop_areas, -> (workbench) { workbench.workbench_scopes.stop_areas_scope(self) }, through: :stop_area_referential
   has_many :networks, through: :line_referential
@@ -222,7 +224,7 @@ class Workbench < ApplicationModel
   end
 
   def create_invitation_code
-    self.invitation_code	||= 3.times.map { "%03d" % SecureRandom.random_number(1000) }.join('-')
+    self.invitation_code ||= "W-#{3.times.map { format('%03d', SecureRandom.random_number(1000)) }.join('-')}"
   end
 
   class Confirmation

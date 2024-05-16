@@ -32,6 +32,8 @@ class User < ApplicationModel
   # attr_accessible :email, :password, :current_password, :password_confirmation, :remember_me, :name, :organisation_attributes
   belongs_to :organisation
   has_many :workbenches, through: :organisation
+  has_many :workbench_sharings, class_name: 'Workbench::Sharing', dependent: :destroy,
+                                as: :recipient, inverse_of: :recipient
   has_many :workgroups, through: :workbenches
   has_many :imports, dependent: :nullify, class_name: 'Import::Base'
   has_many :exports, dependent: :nullify, class_name: 'Export::Base'

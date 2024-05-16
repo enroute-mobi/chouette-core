@@ -12,7 +12,7 @@ RSpec.describe Control::CodeFormat do
     it { should validate_presence_of :expected_format }
     it do
       should enumerize(:target_model).in(
-        %w[Line StopArea VehicleJourney]
+        %w[Line StopArea VehicleJourney Shape]
       )
     end
 

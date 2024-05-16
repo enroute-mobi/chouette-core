@@ -65,7 +65,7 @@ en:
         new:
           password: "Must include at least 1 letter, 1 number and 1 special character"
         edit:
-          password: "Leave it blank if you don't want to change it, must include at least 1 letter, 1 number and 1 special character"
+          password: "Leave it blank if you don't want to change it. It must include at least 1 letter, 1 number and 1 special character"
           current_password: "We need your current password to confirm your changes"
     placeholders:
       user:

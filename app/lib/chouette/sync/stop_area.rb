@@ -76,10 +76,6 @@ module Chouette::Sync
           postal_address&.town
         end
 
-        def stop_area_is_particular
-          derived_from_object_ref.present?
-        end
-
         def stop_area_parent_ref
           (parent_site_ref || parent_zone_ref)&.ref
         end
@@ -95,7 +91,7 @@ module Chouette::Sync
         end
 
         def stop_area_referent_id
-          return unless stop_area_is_particular
+          return unless particular?
 
           pending_referent id, derived_from_object_ref
 
@@ -131,7 +127,7 @@ module Chouette::Sync
             import_xml: raw_xml,
             transport_mode: chouette_transport_mode
           }.tap do |attributes|
-            attributes[:is_referent] = false if stop_area_is_particular
+            attributes[:is_referent] = false if particular?
           end
         end
       end

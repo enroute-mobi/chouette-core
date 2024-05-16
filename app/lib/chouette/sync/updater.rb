@@ -11,9 +11,10 @@ module Chouette
       end
 
       attr_accessor :source, :target, :update_batch_size, :default_provider, :resource_type, :resource_id_attribute,
-                    :resource_decorator, :model_type, :model_id_attribute, :code_space, :strict_mode
+                    :resource_decorator, :model_type, :model_id_attribute, :code_space, :strict_mode, :ignore_particulars
 
       alias strict_mode? strict_mode
+      alias ignore_particulars? ignore_particulars
 
       include Event::HandlerSupport
 
@@ -104,7 +105,8 @@ module Chouette
           @updater = updater
         end
 
-        delegate :model_id_attribute, :event_handler, :workgroup, :code_space, :target, :provider, :strict_mode?,
+        delegate :model_id_attribute, :event_handler, :workgroup, :code_space, :target,
+                 :provider, :strict_mode?, :ignore_particulars?,
                  to: :updater
 
         def with_resource_ids(resource_ids)
@@ -129,13 +131,16 @@ module Chouette
           # To avoid problem if resource returns by mistake an id attribute
           Rails.logger.warn "Can't update primary key with resource: #{resource.class}" if attributes.delete(:id)
 
+          if ignore_particulars? && resource.particular?
+            attributes = attributes.slice(:referent_id)
+          end
+
           if model_id_attribute == :codes
             attributes[:codes_attributes] = [{ value: resource.id, code_space: code_space }]
           else
             attributes[model_id_attribute] = resource.id
           end
 
-          # Could be conditionnal
           unless strict_mode?
             attributes.delete_if do |_, value|
               IGNORED_ATTRIBUTE_VALUES.include? value
@@ -146,6 +151,8 @@ module Chouette
         end
 
         def create(resource)
+          return if ignore_particulars? && resource.particular?
+
           attributes = prepare_attributes(resource)
           model = scope.build attributes
 
@@ -305,7 +312,7 @@ module Chouette
         end
 
         def resources_by_id
-          @resources_by_id ||=  resources.index_by { |r| r.send(resource_id_attribute).to_s }
+          @resources_by_id ||= resources.index_by { |r| r.send(resource_id_attribute).to_s }
         end
 
         def resource_by_id(resource_id)

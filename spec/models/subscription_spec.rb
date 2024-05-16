@@ -83,8 +83,8 @@ RSpec.describe Subscription do
     # it { is_expected.to validate_confirmation_of(:password) }
     context "when password confirmation doesn't match" do
       before do
-        subscription.password = 'some value'
-        subscription.password_confirmation = 'other value'
+        subscription.password = 'some value$42'
+        subscription.password_confirmation = 'other value$42'
       end
 
       it 'an error is present on this attribute' do
@@ -100,7 +100,7 @@ RSpec.describe Subscription do
   describe 'save' do
     before do
       subscription.attributes = { organisation_name: 'Test', user_name: 'Test', email: 'example@chouette.test' }
-      subscription.password = subscription.password_confirmation = 'Dummy but Strong'
+      subscription.password = subscription.password_confirmation = 'Dummy but Strong$42'
     end
 
     context "when Subscription isn't valid" do

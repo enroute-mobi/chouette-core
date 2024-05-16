@@ -6,8 +6,8 @@ FactoryBot.define do
     sequence(:name) { |n| "chouette#{n}" }
     sequence(:username) { |n| "chouette#{n}" }
     sequence(:email) { |n| "chouette#{n}@dryade.priv" }
-    password {"secret"}
-    password_confirmation {"secret"}
+    password { 'secret42$' }
+    password_confirmation { 'secret42$' }
     factory :allmighty_user do
       permissions {Support::Permissions.all_permissions}
     end

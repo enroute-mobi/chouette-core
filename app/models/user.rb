@@ -178,11 +178,6 @@ class User < ApplicationModel
     [false, user]
   end
 
-  def with_random_password
-    self.password = self.password_confirmation = SecureRandom.alphanumeric(30)
-    self
-  end
-
   def invite_from_user!(from_user)
     generate_invitation_token!
     update invitation_sent_at: Time.now
@@ -192,4 +187,37 @@ class User < ApplicationModel
   def must_sign_in_with_saml?
     !enable_internal_password_authentication && organisation&.authentication&.is_a?(Authentication::Saml)
   end
+
+  module Password
+    extend ActiveSupport::Concern
+
+    included do
+      validate :validate_password_complexity
+    end
+
+    def with_random_password
+      password = SecureRandom.alphanumeric(27) + \
+                 PASSWORD_CHARS.sample + \
+                 PASSWORD_NUMBERS.sample + \
+                 PASSWORD_SPECIALS.sample
+      password = password.chars.shuffle.join
+      self.password = self.password_confirmation = password
+      self
+    end
+
+    private
+
+    def validate_password_complexity
+      return if password.blank?
+      return if password.match(PASSWORD_REGEXP)
+
+      errors.add(:password, :must_be_complex)
+    end
+
+    PASSWORD_CHARS = (('A'..'Z').to_a + ('a'..'z').to_a).freeze
+    PASSWORD_NUMBERS = ('0'..'9').to_a.freeze
+    PASSWORD_SPECIALS = (('!'..'~').to_a - PASSWORD_CHARS - PASSWORD_NUMBERS).freeze
+    PASSWORD_REGEXP = /(?=.*[a-zA-Z])(?=.*\d)(?=.*[^a-zA-Z\d])/.freeze
+  end
+  include Password
 end

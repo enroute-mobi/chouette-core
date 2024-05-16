@@ -69,6 +69,10 @@ fr:
         enable_internal_password_authentication: "Autoriser l'authentification par mot de passe"
     errors:
       models:
+        user:
+          attributes:
+            password:
+              must_be_complex: "doit contenir au moins 1 lettre, 1 nombre et 1 caractère spécial"
         calendar:
           attributes:
             permissions:

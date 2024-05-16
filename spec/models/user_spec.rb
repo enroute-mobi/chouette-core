@@ -5,6 +5,34 @@ RSpec.describe User, :type => :model do
   # it { should validate_presence_of :name }
   it { should enumerize(:user_locale).in(*I18n.available_locales) }
 
+  describe 'validation' do
+    describe 'password' do
+      [
+        'Totototo$4',
+        'totototo$4',
+        'Totototo@4',
+        'Totototo 4'
+      ].each do |password|
+        it { is_expected.to allow_value(password).for(:password) }
+      end
+
+      it 'is expected to allow :password generated with #with_random_password' do
+        is_expected.to allow_value(User.new.with_random_password.password).for(:password)
+      end
+
+      [
+        ['be blank', ''],
+        ['not contain any special character', 'totototo4'],
+        ['not contain any number', 'totototo$'],
+        ['have less than 9 characters', 'tototo$4']
+      ].each do |desc, password|
+        it "is expected not to allow :password to #{desc}" do
+          is_expected.not_to allow_value(password).for(:password)
+        end
+      end
+    end
+  end
+
   describe "#destroy" do
     let!(:organisation){create(:organisation)}
     let!(:user){create(:user, :organisation => organisation)}
@@ -139,13 +167,7 @@ RSpec.describe User, :type => :model do
   describe "#with_random_password" do
     subject { User.new.with_random_password }
 
-    let(:random_format) { /[a-zA-Z0-9]{30}/ }
-
-    it {
-      is_expected.to have_attributes(
-                       password: a_string_matching(random_format),
-                       password_confirmation: a_string_matching(random_format))
-    }
+    it { expect(subject.password).to eq(subject.password_confirmation) }
   end
 
   describe '#must_sign_in_with_saml?' do

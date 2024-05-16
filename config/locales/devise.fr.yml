@@ -63,8 +63,10 @@ fr:
         remember_me: Se souvenir de moi
     hints:
       user:
+        new:
+          password: "Doit contenir au moins 1 lettre, 1 nombre et 1 caractère spécial"
         edit:
-          password: Laissez le vide si vous ne voulez pas le changer
+          password: "Laissez le vide si vous ne voulez pas le changer. Il doit contenir au moins 1 lettre, 1 nombre et 1 caractère spécial"
           current_password: "Nous avons besoin de votre mot de passe pour confirmer les changements"
     placeholders:
       user:

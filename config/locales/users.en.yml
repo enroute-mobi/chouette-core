@@ -65,6 +65,10 @@ en:
         enable_internal_password_authentication: "Allow password authentication"
     errors:
       models:
+        user:
+          attributes:
+            password:
+              must_be_complex: "must include at least 1 letter, 1 number and 1 special character"
         calendar:
           attributes:
             permissions:

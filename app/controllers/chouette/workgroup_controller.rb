@@ -24,5 +24,6 @@ module Chouette
     def owner_workbench
       @owner_workbench ||= workgroup.owner_workbench
     end
+    helper_method :owner_workbench
   end
 end

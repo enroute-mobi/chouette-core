@@ -24,6 +24,5 @@ module Chouette
       get_parent_ivar(:workbench)
     end
     alias current_workbench workbench
-    alias owner_workbench workbench
   end
 end

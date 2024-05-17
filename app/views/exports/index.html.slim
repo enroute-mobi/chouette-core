@@ -30,7 +30,7 @@
                 key: :referential, \
                 attribute: Proc.new { |n| \
                   if n.referential.present? then \
-                    link_to(n.referential.name, n.workbench ? [n.workbench, n.referential] : workgroup_referential_path(@workgroup, n.referential)) \
+                    link_to(n.referential.name, workbench_referential_path(@workbench, n.referential)) \
                   else \
                     "-" \
                   end \

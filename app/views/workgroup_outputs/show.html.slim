@@ -10,7 +10,7 @@
 - content_for :page_header_content do
   .row.mb-sm
     .col-lg-12.text-right
-      = link_to t('.see_current_output'), workgroup_referential_path(@workgroup, @workgroup.output.current), class: 'btn btn-primary' if @workgroup.output&.current
+      = link_to t('.see_current_output'), workbench_referential_path(owner_workbench, @workgroup.output.current), class: 'btn btn-primary' if @workgroup.output&.current
       - if parent_policy.create?(Aggregate)
         = link_to t('aggregates.actions.create'), new_workgroup_aggregate_path(@workgroup), class: 'btn btn-primary'
 

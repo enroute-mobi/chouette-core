@@ -40,6 +40,10 @@ class ImportsController < Chouette::WorkbenchController
   end
 
   def index
+    if saved_search = saved_searches.find_by(id: params[:search_id])
+      @search = saved_search.search
+    end
+
     index! do |format|
       format.html do
         # if collection.out_of_bounds?
@@ -54,6 +58,10 @@ class ImportsController < Chouette::WorkbenchController
 
   def create
     create! { [parent, resource] }
+  end
+
+  def saved_searches
+    @saved_searches ||= workbench.saved_searches.for(::Search::Import)
   end
 
   protected

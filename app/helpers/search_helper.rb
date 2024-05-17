@@ -11,6 +11,10 @@ module SearchHelper
     url_for([saved_search.parent, :line_referential, saved_search, { parent_resources: :lines }])
   end
 
+  def workbench_imports_search_path(workbench, saved_search)
+    workbench_search_path workbench, saved_search.id, parent_resources: :imports
+  end
+
   def saved_search_path(saved_search)
     parent_resources = saved_search.search_type.demodulize.underscore.pluralize.to_sym
 

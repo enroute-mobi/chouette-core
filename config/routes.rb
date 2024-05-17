@@ -13,6 +13,7 @@ ChouetteIhm::Application.routes.draw do # rubocop:disable Metrics/BlockLength
   end
 
   resources :workbenches, only: %i[show] do # rubocop:disable Metrics/BlockLength
+    resources :searches, only: %i[index show create update destroy], path: ':parent_resources/searches'
     resources :api_keys
 
     resources :autocomplete, only: [] do
@@ -247,6 +248,7 @@ ChouetteIhm::Application.routes.draw do # rubocop:disable Metrics/BlockLength
       get :download, on: :member
       get :internal_download, on: :member
     end
+
     get 'imports/:id/import_resources/:import_resource_id/messages',
         to: 'imports#messages',
         as: 'import_import_resource_import_messages'

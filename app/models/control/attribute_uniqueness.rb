@@ -20,19 +20,19 @@ module Control
         end
 
         def candidate_target_attributes
-          Chouette::ModelAttribute.empty do
+          Chouette::ModelAttribute.collection do
             # Chouette::StopArea
-            define Chouette::StopArea, :name
-            define Chouette::StopArea, :registration_number
+            select Chouette::StopArea, :name
+            select Chouette::StopArea, :registration_number
             # Chouette::Company
-            define Chouette::Company, :name
-            define Chouette::Company, :registration_number
+            select Chouette::Company, :name
+            select Chouette::Company, :registration_number
             # Chouette::Line
-            define Chouette::Line, :name
-            define Chouette::Line, :registration_number
+            select Chouette::Line, :name
+            select Chouette::Line, :registration_number
             # Chouette::VehicleJourney
-            define Chouette::VehicleJourney, :published_journey_name
-            define Chouette::VehicleJourney, :published_journey_identifier
+            select Chouette::VehicleJourney, :published_journey_name
+            select Chouette::VehicleJourney, :published_journey_identifier
           end
         end
 

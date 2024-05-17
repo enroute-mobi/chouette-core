@@ -131,9 +131,7 @@ module Chouette
           # To avoid problem if resource returns by mistake an id attribute
           Rails.logger.warn "Can't update primary key with resource: #{resource.class}" if attributes.delete(:id)
 
-          if ignore_particulars? && resource.particular?
-            attributes = attributes.slice(:referent_id)
-          end
+          attributes = attributes.slice(:referent_id) if ignore_particulars? && resource.particular?
 
           if model_id_attribute == :codes
             attributes[:codes_attributes] = [{ value: resource.id, code_space: code_space }]

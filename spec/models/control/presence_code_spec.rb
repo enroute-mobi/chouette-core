@@ -10,7 +10,7 @@ RSpec.describe Control::PresenceCode do
     it { should validate_presence_of :target_code_space_id }
     it do
       should enumerize(:target_model).in(
-        %w[Line StopArea VehicleJourney]
+        %w[Line StopArea VehicleJourney Shape]
       )
     end
 

@@ -6,7 +6,7 @@ module Control
       extend ActiveSupport::Concern
 
       included do
-        enumerize :target_model, in: %w{Line StopArea VehicleJourney}
+        enumerize :target_model, in: %w{Line StopArea VehicleJourney Shape}
         option :target_model
         option :target_code_space_id
         option :expected_format, serialize: ActiveModel::Type::String

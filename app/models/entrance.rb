@@ -29,6 +29,7 @@ class Entrance < ActiveRecord::Base
       zip_code
       city_name
       country
+      postal_region
     ]
   end
   # rubocop:enable Naming/VariableNumber

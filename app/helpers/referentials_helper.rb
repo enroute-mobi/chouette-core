@@ -63,11 +63,4 @@ module ReferentialsHelper
     service = ReferentialOverview.new referential, self
     render partial: "referentials/overview", locals: {referential: referential, overview: service}
   end
-
-  def workgroup_referential_path(workgroup, referential)
-    workbench = current_user.workbenches.find_by(workgroup: workgroup)
-    return nil unless workbench
-
-    workbench_referential_path(workbench, referential)
-  end
 end

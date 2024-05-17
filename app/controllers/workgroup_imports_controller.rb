@@ -24,7 +24,9 @@ class WorkgroupImportsController < Chouette::WorkgroupController
   def show
     @import = resource.decorate(context: { parent: parent })
     respond_to do |format|
-      format.html
+      format.html do
+        @workbench = owner_workbench
+      end
       format.json do
         fragment = render_to_string(partial: "imports/#{@import.short_type}", formats: :html)
         render json: { fragment: fragment }

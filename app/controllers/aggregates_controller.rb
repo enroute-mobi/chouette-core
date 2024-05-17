@@ -8,7 +8,6 @@ class AggregatesController < Chouette::WorkgroupController
   def show
     show! do
       @aggregate = @aggregate.decorate(context: { workgroup: workgroup })
-      @workbench = workgroup.owner_workbench
       @processing = processing
       @aggregate_resources = @aggregate.resources.order(
         params[:sort] || :referential_created_at => params[:direction] || :desc

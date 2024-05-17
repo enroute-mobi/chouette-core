@@ -95,6 +95,16 @@ class Import::Base < ApplicationModel
     end
   end
 
+  def ignore_particulars?
+    if options['ignore_particulars'] == 'true'
+      true
+    elsif parent_options.present?
+      parent_options['ignore_particulars'] == 'true'
+    else
+      false
+    end
+  end
+
   def parent_options
     parent&.options
   end

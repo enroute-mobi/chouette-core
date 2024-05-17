@@ -248,13 +248,13 @@ RSpec.describe Chouette::Sync::StopArea do
       subject { decorator.model_attributes }
 
       context 'when stop_area_is_particular is false' do
-        before { allow(decorator).to receive(:stop_area_is_particular).and_return(false) }
+        before { allow(decorator).to receive(:particular?).and_return(false) }
 
         it { is_expected.to_not have_key(:is_referent) }
       end
 
       context 'when stop_area_is_particular is true' do
-        before { allow(decorator).to receive(:stop_area_is_particular).and_return(true) }
+        before { allow(decorator).to receive(:particular?).and_return(true) }
 
         it { is_expected.to include(is_referent: false) }
       end

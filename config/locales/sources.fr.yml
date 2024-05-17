@@ -50,10 +50,11 @@ fr:
         import_option_automatic_merge: Finalisation automatique des jeux de données importés
         import_option_archive_on_fail: Archivage automatique en cas d'erreur
         import_option_update_workgroup_providers: Autorisation des changements sur les ressources de l'Espace de travail
-        import_option_process_gtfs_route_ids: Filtre par lignes (uniquement pour le Gtfs)
+        import_option_process_gtfs_route_ids: Filtre par lignes (uniquement pour le GTFS)
         import_option_store_xml: Conserver les definitions XML originelles
         import_option_disable_missing_resources: Désactiver les arrêts et lignes manquantes
         import_option_strict_mode: Mode strict (tout attribut non défini est réinitialisé)
+        import_option_ignore_particulars: Ignorer les ressources Particulières
         import_option_line_provider_id: Fournisseur de lignes
         import_option_line_provider: Fournisseur de lignes
         import_option_stop_area_provider_id: Fournisseur d'arrêts

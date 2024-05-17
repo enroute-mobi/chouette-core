@@ -121,6 +121,7 @@ en:
           store_xml: Store original XML resources
           disable_missing_resources: Disable missing Stop Areas and Lines
           strict_mode: Strict Mode (reset any undefined attribute)
+          ignore_particulars: Ignore Particular resources
           line_provider_id: Line Provider
           stop_area_provider_id: Stop Area Provider
           specific_default_company_id: Specific default company

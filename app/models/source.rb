@@ -176,6 +176,10 @@ class Source < ApplicationModel
     import_options["strict_mode"]
   end
 
+  def import_option_ignore_particulars
+    import_options["ignore_particulars"]
+  end
+
   def import_option_line_provider_id
     import_options["line_provider_id"]
   end
@@ -211,6 +215,10 @@ class Source < ApplicationModel
 
   def import_option_strict_mode=(value)
     import_options["strict_mode"] = value
+  end
+
+  def import_option_ignore_particulars=(value)
+    import_options["ignore_particulars"] = value
   end
 
   def import_option_line_provider_id=(value)

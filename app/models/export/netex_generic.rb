@@ -27,7 +27,7 @@ class Export::NetexGeneric < Export::Base
   end
 
   def target
-    @target ||= Netex::Target.build(export_file,
+    @target ||= ::Netex::Target.build(export_file,
                                     profile: netex_profile,
                                     publication_timestamp: Time.zone.now,
                                     participant_ref: participant_ref,

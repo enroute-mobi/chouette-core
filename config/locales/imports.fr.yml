@@ -131,6 +131,7 @@ fr:
           store_xml: Conserver les definitions XML originelles
           disable_missing_resources: Désactiver les arrêts et lignes manquantes
           strict_mode: Mode strict (tout attribut non défini est réinitialisé)
+          ignore_particulars: Ignorer les ressources Particulières
           line_provider_id: Fournisseur de lignes
           stop_area_provider_id: Fournisseur d'arrêts
           specific_default_company_id: Transporteur par défaut spécifique

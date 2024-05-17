@@ -21,6 +21,10 @@ module Chouette::Sync
         end
       end
 
+      def particular?
+        derived_from_object_ref.present?
+      end
+
       protected
 
       def accessibility

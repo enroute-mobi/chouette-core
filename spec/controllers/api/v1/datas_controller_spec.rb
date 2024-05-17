@@ -1,5 +1,8 @@
+# frozen_string_literal: true
+
 RSpec.describe Api::V1::DatasController, type: :controller do
-  let(:gtfs_export){ create :gtfs_export}
+  let(:gtfs_export_file) { fixture_file_upload('OFFRE_TRANSDEV_2017030112251.zip') }
+  let(:gtfs_export) { create(:gtfs_export, file: gtfs_export_file) }
 
   describe 'GET #info' do
     it 'should not be successful' do
@@ -22,18 +25,29 @@ RSpec.describe Api::V1::DatasController, type: :controller do
       let(:publication_api) { create(:publication_api, public: true) }
       let(:publication_gtfs) { create(:publication, publication_setup: create(:publication_setup)) }
 
-        it 'should not be successful without a publication_api_source' do
-          expect{ get_request }.to raise_error ActiveRecord::RecordNotFound
+      it 'should not be successful without a publication_api_source' do
+        expect{ get_request }.to raise_error ActiveRecord::RecordNotFound
+      end
+
+      context 'with a publication_api_source' do
+        let!(:publication_api_source_gtfs) { create(:publication_api_source, publication_api: publication_api, publication: publication_gtfs, export: gtfs_export, key: "gtfs.zip") }
+        let(:slug) { publication_api.slug }
+        it 'should be successful' do
+          get_request
+          expect(response).to be_successful
         end
 
-        context 'with a publication_api_source' do
-          let!(:publication_api_source_gtfs) { create(:publication_api_source, publication_api: publication_api, publication: publication_gtfs, export: gtfs_export, key: "gtfs.zip") }
-          let(:slug) { publication_api.slug }
+        context 'without export file' do
+          let(:gtfs_export_file) { nil }
+
           it 'should be successful' do
             get_request
-            expect(response).to be_successful
+            expect(response).to have_http_status(:not_found)
+            expect(response.content_type).to eq('text/html')
+            expect(response).to render_template('missing_file_error.html.slim', layout: 'layouts/api')
           end
         end
+      end
     end
 
     describe 'get #redirect' do

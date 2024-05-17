@@ -66,7 +66,8 @@ GIT
 
 GIT
   remote: https://bitbucket.org/enroute-mobi/netex.git
-  revision: fe0b775d45398e75d3575a0f321da0585fd31bb4
+  revision: d26c09fdc57ffa6710fdeb2d86deac2bbb268f09
+  branch: NETEX-137-avoid-error-when-participant-ref-not-string
   specs:
     netex (0.1.2)
       activesupport

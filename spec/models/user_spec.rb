@@ -116,7 +116,10 @@ RSpec.describe User, :type => :model do
       Permission::Profile.each do |profile|
         user.profile = profile
         expect(user.profile).to eq profile.to_s
-        expect(user.permissions).to eq Permission::Profile.permissions_for(profile)
+        permissions = Permission::Profile.permissions_for(profile)
+        expect(user.permissions).to eq permissions
+        next if permissions.empty?
+
         user.permissions.pop
         user.validate
         expect(user.profile).to eq 'custom'

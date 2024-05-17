@@ -2,7 +2,7 @@ module Support
   module Permissions extend self
 
     def all_permissions
-      @__all_permissions__ ||= _destructive_permissions + %w{sessions.create}
+      @__all_permissions__ ||= _destructive_permissions
     end
 
     private

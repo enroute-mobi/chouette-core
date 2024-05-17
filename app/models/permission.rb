@@ -73,7 +73,7 @@ class Permission
     end
 
     def base
-      all_destructive_permissions + %w{sessions.create workbenches.update}
+      all_destructive_permissions + %w{workbenches.update}
     end
 
     def extended
@@ -174,6 +174,6 @@ class Permission
 
     profile :admin, Permission.full
     profile :editor, Permission.full.grep_v(/^users/).grep_v(/^organisations/)
-    profile :visitor, %w{sessions.create}
+    profile :visitor, []
   end
 end

@@ -66,8 +66,7 @@ GIT
 
 GIT
   remote: https://bitbucket.org/enroute-mobi/netex.git
-  revision: 252a50fd624d210bbc871b18e2858591b55f193e
-  branch: NETEX-136-avoid-tenths-of-second
+  revision: fe0b775d45398e75d3575a0f321da0585fd31bb4
   specs:
     netex (0.1.2)
       activesupport

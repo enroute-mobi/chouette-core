@@ -108,6 +108,67 @@ RSpec.describe User, :type => :model do
     end
   end
 
+  describe '#workbenches' do
+    subject { user.workbenches }
+
+    let(:context) do
+      Chouette.create do
+        organisation name: 'user_organisation' do
+          user name: 'user'
+        end
+      end
+    end
+    let(:organisation) { context.organisation }
+    let(:user) { context.user }
+
+    context 'when workbench has some organisation as user' do
+      let(:workbench) do
+        organisation
+        Chouette.create do
+          workbench organisation: Organisation.find_by(name: 'user_organisation')
+        end.workbench
+      end
+
+      it { is_expected.to include(workbench) }
+    end
+
+    context 'when workbench is shared with user' do
+      let(:workbench) do
+        user
+        Chouette.create do
+          workbench do
+            workbench_sharing recipient: User.find_by(name: 'user')
+          end
+        end.workbench
+      end
+
+      it { is_expected.to include(workbench) }
+    end
+
+    context "when workbench is shared with user's organisation" do
+      let(:workbench) do
+        organisation
+        Chouette.create do
+          workbench do
+            workbench_sharing recipient: Organisation.find_by(name: 'user_organisation')
+          end
+        end.workbench
+      end
+
+      it { is_expected.to include(workbench) }
+    end
+
+    context 'with unrelated workbench' do
+      let(:workbench) do
+        Chouette.create do
+          workbench
+        end.workbench
+      end
+
+      it { is_expected.not_to include(workbench) }
+    end
+  end
+
   let(:user) { build :user, permissions: [] }
   describe '#profile' do
     it 'should be :custom by default' do

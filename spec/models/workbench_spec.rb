@@ -309,7 +309,7 @@ RSpec.describe Workbench, type: :model do
       let(:context) { Chouette.create { workbench organisation: nil } }
 
       it { is_expected.to have_attributes(organisation: a_nil_value, prefix: a_nil_value) }
-      it { is_expected.to have_attributes(invitation_code: matching(/\d{3}-\d{3}-\d{3}/)) }
+      it { is_expected.to have_attributes(invitation_code: match(/\AW-\d{3}-\d{3}-\d{3}\z/)) }
     end
   end
 
@@ -348,16 +348,6 @@ RSpec.describe Workbench, type: :model do
       )
     end
   end
-end
-
-RSpec.describe Workbench::Confirmation do
-  it { is_expected.to_not allow_value('dummy', '123456789').for(:invitation_code) }
-
-  context "when a Workbench exists with invitation code '123-456-789'" do
-    let!(:context) { Chouette.create { workbench invitation_code: '123-456-789' } }
-
-    it { is_expected.to allow_value('123-456-789').for(:invitation_code) }
-  end
 
   describe "#control_lists_shared_with_workgroup" do
     let(:context) do
@@ -379,5 +369,21 @@ RSpec.describe Workbench::Confirmation do
 
     it { is_expected.to match_array([first_control_list, second_control_list]) }
     it { is_expected.not_to include(third_control_list)}
+  end
+end
+
+RSpec.describe Workbench::Confirmation do
+  it { is_expected.to_not allow_value('dummy', '123-456-789').for(:invitation_code) }
+  context 'when a Workbench exists with invitation code "W-123-456-789"' do
+    before { Chouette.create { workbench invitation_code: 'W-123-456-789' } }
+    it { is_expected.to allow_value('W-123-456-789').for(:invitation_code) }
+  end
+  context 'when a Workbench exists with invitation code "123-456-789"' do
+    before { Chouette.create { workbench invitation_code: '123-456-789' } }
+    it { is_expected.to allow_value('123-456-789').for(:invitation_code) }
+  end
+  context 'when a Workbench exists with invitation code "Z-123-456-789"' do
+    before { Chouette.create { workbench invitation_code: 'Z-123-456-789' } }
+    it { is_expected.not_to allow_value('123-456-789').for(:invitation_code) }
   end
 end

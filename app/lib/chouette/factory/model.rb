@@ -4,13 +4,17 @@ module Chouette
       include Log
 
       attr_reader :name
-      attr_accessor :required, :singleton
+      attr_accessor :required, :singleton, :association_name
       def initialize(name, options = {})
         @name = name
 
         {required: false, singleton: false}.merge(options).each do |k,v|
           send "#{k}=", v
         end
+      end
+
+      def association_name
+        @association_name ||= name.to_s.pluralize
       end
 
       alias required? required
@@ -105,7 +109,7 @@ module Chouette
                 parent.send("build_#{name}", attributes_values)
               else
                 # Then Parent#models
-                parent.send(name.to_s.pluralize).build attributes_values
+                parent.send(association_name).build attributes_values
               end
             else
               klass.new attributes_values

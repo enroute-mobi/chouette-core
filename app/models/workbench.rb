@@ -236,7 +236,7 @@ class Workbench < ApplicationModel
 
     attr_accessor :organisation, :invitation_code
 
-    CODE_FORMAT = /\A\d{3}-\d{3}-\d{3}\z/
+    CODE_FORMAT = /\A(?:W-)?\d{3}-\d{3}-\d{3}\z/.freeze
 
     validates :organisation, :invitation_code, presence: true
     validates :invitation_code, format: { with: CODE_FORMAT }

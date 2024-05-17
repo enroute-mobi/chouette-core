@@ -85,6 +85,11 @@ module Chouette
           attribute(:name) { |n| "Workbench #{n}" }
           attribute(:organisation) { build_root_model :organisation }
 
+          model :workbench_sharing, association_name: :sharings do
+            attribute(:name) { |n| "Sharing #{n}" }
+            attribute(:recipient) { build_root_model :organisation }
+          end
+
           model :notification_rule do
             attribute(:priority) { 10 }
             attribute(:notification_type) { 'import' }

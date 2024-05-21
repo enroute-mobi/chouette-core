@@ -21,6 +21,9 @@ fr:
       cannot_edit_imported_shape: "Edition impossible d'un tracé importé"
       cannot_create: "Création impossible : cette mission possede deja un tracé"
       must_have_enough_waypoints: "Suppression impossible : un tracé doit avoir au moins 2 waypoints"
+    form:
+      sections:
+        identification: "Identification"
   activerecord:
     models:
       shape:

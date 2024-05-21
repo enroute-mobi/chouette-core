@@ -1,8 +1,12 @@
 = simple_form_for [@workbench, :shape_referential, @shape].compact, html: {class: 'form-horizontal', id: 'shape_form'}, wrapper: :horizontal_form do |f|
   .row
     .col-lg-12
+      h2.mb-lg= t('shapes.form.sections.identification')
       = f.input :name
-  .separator
+
+      .separator.section_separator
+
+      = render 'codes/form', form: f
 
     = cancel_button
     = f.button :submit, t('actions.submit'), class: 'btn btn-default formSubmitr', form: 'shape_form'

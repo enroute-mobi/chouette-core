@@ -234,9 +234,9 @@ class Workbench < ApplicationModel
       WorkbenchConfirmationPolicy
     end
 
-    attr_accessor :organisation, :invitation_code
+    attr_accessor :organisation, :user, :invitation_code
 
-    CODE_FORMAT = /\A(?:W-)?\d{3}-\d{3}-\d{3}\z/.freeze
+    CODE_FORMAT = /\A(?:(?:S|W)-)?\d{3}-\d{3}-\d{3}\z/.freeze
 
     validates :organisation, :invitation_code, presence: true
     validates :invitation_code, format: { with: CODE_FORMAT }
@@ -244,16 +244,34 @@ class Workbench < ApplicationModel
     validate :workbench_exists
 
     def workbench
-      @workbench ||= Workbench.where(invitation_code: invitation_code).where.not(workgroup: existing_workgroups).first
-    end
-
-    def existing_workgroups
-      if organisation
-        organisation.workgroups
+      if workbench_sharing?
+        workbench_sharing&.workbench
       else
-        Workgroup.none
+        @workbench ||= ::Workbench.where(organisation_id: nil, invitation_code: invitation_code).first
       end
     end
+
+    def workbench_sharing
+      return nil unless workbench_sharing?
+
+      @workbench_sharing ||= ::Workbench::Sharing.where(recipient_id: nil, invitation_code: invitation_code).first
+    end
+
+    def save
+      return false unless valid?
+
+      if workbench_sharing?
+        workbench_sharing.update(recipient: workbench_sharing_recipient)
+      else
+        workbench.update(organisation: organisation, invitation_code: nil)
+      end
+    end
+
+    def save!
+      save || raise(ActiveRecord::RecordNotSaved.new("Failed to save the record", self))
+    end
+
+    private
 
     def workbench_exists
       unless workbench
@@ -261,13 +279,16 @@ class Workbench < ApplicationModel
       end
     end
 
-    def save
-      return false unless valid?
-      workbench.update organisation: organisation, invitation_code: nil
+    def workbench_sharing?
+      invitation_code.start_with?('S-')
     end
 
-    def save!
-      save || raise(ActiveRecord::RecordNotSaved.new("Failed to save the record", self))
+    def workbench_sharing_recipient
+      if workbench_sharing.recipient_type == 'User'
+        user
+      else
+        organisation
+      end
     end
   end
 

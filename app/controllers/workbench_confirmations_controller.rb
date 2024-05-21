@@ -15,8 +15,10 @@ class WorkbenchConfirmationsController < Chouette::ResourceController
 
   protected
 
-  def begin_of_association_chain
-    current_organisation
+  def build_resource
+    get_resource_ivar || set_resource_ivar(
+      Workbench::Confirmation.new(organisation: current_organisation, user: current_user, **resource_params[0])
+    )
   end
 
   def authorize_resource_class

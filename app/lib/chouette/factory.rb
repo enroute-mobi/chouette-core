@@ -87,7 +87,12 @@ module Chouette
 
           model :workbench_sharing, association_name: :sharings do
             attribute(:name) { |n| "Sharing #{n}" }
-            attribute(:recipient) { build_root_model :organisation }
+
+            transient(:recipient) { build_root_model(:organisation) }
+
+            after do
+              new_instance.recipient = transient(:recipient) if new_instance.recipient_type.nil?
+            end
           end
 
           model :notification_rule do

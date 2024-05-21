@@ -36,8 +36,11 @@ class Subscription
   def workbench_confirmation
     return unless workbench_invitation_code.present?
 
-    @workbench_confirmation ||=
-      organisation.build_workbench_confirmation(invitation_code: workbench_invitation_code)
+    @workbench_confirmation ||= Workbench::Confirmation.new(
+      invitation_code: workbench_invitation_code,
+      organisation: organisation,
+      user: user
+    )
   end
 
   def workgroup

@@ -43,6 +43,10 @@ class ShapesController < Chouette::TopologicReferentialController
   end
 
   def shape_params
-    @shape_params ||= params.require(:shape).permit(:name, :shape_provider_id)
+    @shape_params ||= params.require(:shape).permit(
+      :name,
+      :shape_provider_id,
+      codes_attributes: %i[id code_space_id value _destroy]
+    )
   end
 end

@@ -50,6 +50,8 @@ module Control
             select Chouette::StopArea, :compass_bearing
             select Chouette::StopArea, :coordinates
             select Chouette::StopArea, :waiting_time
+            select Chouette::StopArea, :referent
+            select Chouette::StopArea, :parent
 
             # Chouette::Company
             select Chouette::Company, :name
@@ -97,6 +99,7 @@ module Control
             # Chouette::Route
             select Chouette::Route, :name
             select Chouette::Route, :published_name
+            select Chouette::Route, :wayback
 
             # Chouette::JourneyPattern
             select Chouette::JourneyPattern, :name
@@ -216,10 +219,6 @@ module Control
         def faulty_models
           query.send query_method
         end
-      end
-
-      def model_attribute_code
-        @model_attribute_code ||= "#{target_model.underscore}##{target_attribute}"
       end
 
       def model_collection

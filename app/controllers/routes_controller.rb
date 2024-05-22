@@ -84,7 +84,10 @@ class RoutesController < Chouette::ReferentialController
                                  line: @line
                                })
 
-      @route_sp = StopPointDecorator.decorate(@route_sp)
+      @route_sp = StopPointDecorator.decorate(@route_sp,
+                                                context: {
+                                                  workbench: @workbench
+                                              })
 
       format.geojson { render 'routes/show.geo' }
     end

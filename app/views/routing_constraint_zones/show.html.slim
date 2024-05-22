@@ -18,7 +18,7 @@
             TableBuilderHelper::Column.new( \
               name: t('.route_stop_points'), \
               attribute: lambda do |stop_point| \
-                link_to(stop_point.stop_area.formatted_selection_details.html_safe, default_stop_area_path(stop_point.stop_area), class: :open) \
+                link_to(stop_point.stop_area.formatted_selection_details.html_safe, workbench_stop_area_referential_path(stop_point.stop_area), class: :open) \
               end \
             ),
             TableBuilderHelper::Column.new( \

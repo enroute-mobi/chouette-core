@@ -2,8 +2,6 @@
 
 module Redirect
   class BaseController < Chouette::UserController
-    include DefaultPathHelper
-    rescue_from DefaultPathHelper::NoDefaultWorkbenchError, with: :not_default_workbench
 
     private
 

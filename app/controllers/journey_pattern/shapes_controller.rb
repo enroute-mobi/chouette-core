@@ -2,8 +2,7 @@
 
 module JourneyPattern
   class ShapesController < ::Chouette::ReferentialController
-    include DefaultPathHelper
-    
+
     defaults singleton: true, resource_class: Shape, instance_name: 'shape'
 
     belongs_to :line, parent_class: Chouette::Line
@@ -52,13 +51,13 @@ module JourneyPattern
 
     def create
       @shape = Shapes::Create.call(**shape_params)
-      
+
       create!(&create_or_update_callback)
     end
 
     def update
       @shape = Shapes::Update.call(**shape_params)
-      
+
       update!(&create_or_update_callback)
     end
 
@@ -104,12 +103,12 @@ module JourneyPattern
       JSON.parse(request.raw_post.presence || "{}")
     end
 
-    def workbench
-      @workbench ||= default_workbench(resource: parent.line)
-    end
+    # def workbench
+    #   @workbench ||= default_workbench(resource: parent.line)
+    # end
 
     def resource_params
-      [{}] # Needed to avoid ActiveRecord::Mismatch error with update! since Shapes::Update is handling the update 
+      [{}] # Needed to avoid ActiveRecord::Mismatch error with update! since Shapes::Update is handling the update
     end
 
     def shape_provider

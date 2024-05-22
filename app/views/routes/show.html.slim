@@ -31,7 +31,7 @@
               key: :name, \
               attribute: Proc.new { |s| content_tag :span, s.stop_area&.name, class: s.stop_area&.area_type }, \
               link_to: lambda do |stop_point| \
-                default_stop_area_path(stop_point.stop_area) \
+                workbench_stop_area_referential_stop_area_path(@workbench, stop_point.stop_area) \
               end \
             ), \
             TableBuilderHelper::Column.new( \

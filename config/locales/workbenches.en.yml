@@ -9,6 +9,7 @@ en:
         pending_invitation:
           title: Pending Invitation
           text: You can share this code with another organisation to allow them to join our workgroup.
+        sharings: "Sharings"
     new:
       title: Add a workbench
       text: The new Workbench will provide you an invitation code
@@ -37,6 +38,7 @@ en:
       affect_ccset: "Configure"
       lines: "Lines"
       stop_area: "Stop Areas"
+      add_sharing: "Add new sharing"
     errors:
       locked_referential_to_aggregate:
         must_belong_to_output: Must belong to workbench's output

@@ -1,0 +1,18 @@
+fr:
+  workbench/sharings:
+    form:
+      sections:
+        recipient: "Destinataire"
+    new:
+      title: "Ajouter un partage d'un espace de travail"
+
+  activerecord:
+    models:
+      workbench/sharing:
+        zero: "Partage d'un espace de travail"
+        one: "Partage d'un espace de travail"
+        other: "Partages d'un espace de travail"
+    attributes:
+      workbench/sharing:
+        name: "Nom"
+        invitation_code: "Code de confirmation"

@@ -21,6 +21,11 @@ crumb :add_workbench do |workgroup|
   parent :workgroup, workgroup
 end
 
+crumb :add_workbench_sharing do |workbench|
+  link I18n.t('workbench/sharings.new.title'), '#'
+  parent :workbench, workbench
+end
+
 crumb :workbench_confirmation do
   link I18n.t('workbench_confirmation.new.title'), workbench_confirmation_path
   parent :workgroups

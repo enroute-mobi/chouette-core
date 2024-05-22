@@ -9,6 +9,7 @@ fr:
         pending_invitation:
           title: Invitation en attente
           text: Vous pouvez partager ce code de confirmation avec une autre organisation pour qu'ils puissent rejoindre votre groupe de travail.
+        sharings: "Partages"
     new:
       title: Ajouter un espace de travail
       text: Ce nouvel espace de travail vous fournira un code d'invitation.
@@ -37,6 +38,7 @@ fr:
       affect_ccset: "Configurer"
       lines: "Lignes"
       stop_area: "Arrêts"
+      add_sharing: "Ajouter un partage"
     errors:
       locked_referential_to_aggregate:
         must_belong_to_output: Doit être une offre finalisée

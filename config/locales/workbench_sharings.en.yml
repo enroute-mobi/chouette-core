@@ -1,0 +1,18 @@
+en:
+  workbench/sharings:
+    form:
+      sections:
+        recipient: "Recipient"
+    new:
+      title: "Add a workbench sharing"
+
+  activerecord:
+    models:
+      workbench/sharing:
+        zero: "Workbench Sharing"
+        one: "Workbench Sharing"
+        other: "Workbench Sharings"
+    attributes:
+      workbench/sharing:
+        name: "Name"
+        invitation_code: "Confirmation code"

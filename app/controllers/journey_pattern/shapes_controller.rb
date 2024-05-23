@@ -97,7 +97,7 @@ module JourneyPattern
     end
 
     def parents
-      [ referential, parent.line, parent.route, parent ]
+      [workbench, referential, parent.line, parent.route, parent]
     end
 
     def payload

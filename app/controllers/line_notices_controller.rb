@@ -45,6 +45,18 @@ class LineNoticesController < Chouette::LineReferentialController
     redirect_to [workbench, :line_referential, line, :line_notices]
   end
 
+  protected
+
+  def parent_for_parent_policy
+    if params[:action] == 'attach'
+      line
+    elsif line
+      line.line_provider
+    else
+      super
+    end
+  end
+
   private
 
   def resource

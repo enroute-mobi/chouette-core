@@ -7,7 +7,10 @@ class LineNoticeDecorator < AF83::Decorator
     l.content t('line_notices.actions.new')
   end
 
-  action_link if: Proc.new { context[:line].present? }, secondary: true, policy: :attach do |l|
+  action_link(
+    if: proc { context[:line].present? && check_policy(:attach, Chouette::LineNotice, object: context[:line]) },
+    secondary: true
+  ) do |l|
     l.content t('line_notices.actions.attach')
     l.href { [:attach, *scope, :line_notices] }
     l.icon 'link'

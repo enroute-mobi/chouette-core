@@ -360,7 +360,10 @@ class Merge::Referential::Legacy < Merge::Referential::Base
               # we're loading timetables per line (line is associated to a period list)
               line = workbench.line_referential.lines.find(line_id)
 
-              Rails.logger.debug { "Merge Line #{line.id}/#{line.name} #{time_tables_with_vehicle_journey_ids.size} Timetables" }
+              line_code = line.registration_number || line.objectid
+              line_code = Netex::ObjectId.parse(line_code) || line_code
+
+              Rails.logger.debug { "Merge Line #{line.id}/#{line.name}/#{line_code} #{time_tables_with_vehicle_journey_ids.size} Timetables" }
 
               # Merge all TimeTables associated with this Line .. by batch of 100
               time_tables_with_vehicle_journey_ids.each_slice(100) do |batch|
@@ -377,7 +380,7 @@ class Merge::Referential::Legacy < Merge::Referential::Base
                       value =
                         if netex_identifier = Netex::ObjectId.parse(timetable_code.value)
                           # Something:Timetable:dummy:LOC -> Something:Timetable:dummy-AB:LOC
-                          netex_identifier.merge(line.registration_number).to_s
+                          netex_identifier.merge(line_code).to_s
                         else
                           # dummy -> dummy-AB
                           [ timetable_code.value, line.registration_number ].join('-')

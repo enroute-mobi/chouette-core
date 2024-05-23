@@ -32,7 +32,7 @@ class FareZonesController < Chouette::FareReferentialController
   end
 
   def collection
-    super.order(sort_column => sort_direction)
+    @collection ||= workbench.fare_referential.fare_zones.order(sort_column => sort_direction)
   end
 
   private

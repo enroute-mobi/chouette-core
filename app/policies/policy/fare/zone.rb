@@ -4,6 +4,7 @@ module Policy
   module Fare
     class Zone < Base
       authorize_by Strategy::Permission
+      authorize_by Strategy::FareProvider
 
       protected
 

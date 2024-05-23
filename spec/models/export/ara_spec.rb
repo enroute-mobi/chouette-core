@@ -735,8 +735,8 @@ RSpec.describe Export::Ara do
               let(:expected_schedule) do
                 {
                   Kind: 'aimed',
-                  ArrivalTime: '2030-01-01T15:00:00-08:00',
-                  DepartureTime: '2030-01-01T15:05:00-08:00'
+                  ArrivalTime: '2030-01-01T07:00:00-08:00',
+                  DepartureTime: '2030-01-01T07:05:00-08:00'
                 }
               end
 
@@ -760,8 +760,8 @@ RSpec.describe Export::Ara do
                 let(:expected_schedule) do
                   {
                     Kind: 'aimed',
-                    ArrivalTime: '2030-01-01T15:00:00+01:00',
-                    DepartureTime: '2030-01-01T15:05:00+01:00'
+                    ArrivalTime: '2030-01-01T16:00:00+01:00',
+                    DepartureTime: '2030-01-01T16:05:00+01:00'
                   }
                 end
 
@@ -775,8 +775,8 @@ RSpec.describe Export::Ara do
                 let(:expected_schedule) do
                   {
                     Kind: 'aimed',
-                    ArrivalTime: '2030-07-01T15:00:00+02:00',
-                    DepartureTime: '2030-07-01T15:05:00+02:00'
+                    ArrivalTime: '2030-07-01T16:00:00+02:00',
+                    DepartureTime: '2030-07-01T16:05:00+02:00'
                   }
                 end
 

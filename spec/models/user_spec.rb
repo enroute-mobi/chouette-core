@@ -130,6 +130,17 @@ RSpec.describe User, :type => :model do
       end
 
       it { is_expected.to include(workbench) }
+
+      context 'but the workbench is hidden' do
+        let(:workbench) do
+          organisation
+          Chouette.create do
+            workbench organisation: Organisation.find_by(name: 'user_organisation'), hidden: true
+          end.workbench
+        end
+
+        it { is_expected.not_to include(workbench) }
+      end
     end
 
     context 'when workbench is shared with user' do
@@ -143,6 +154,19 @@ RSpec.describe User, :type => :model do
       end
 
       it { is_expected.to include(workbench) }
+
+      context 'and the workbench is hidden' do
+        let(:workbench) do
+          user
+          Chouette.create do
+            workbench hidden: true do
+              workbench_sharing recipient: User.find_by(name: 'user')
+            end
+          end.workbench
+        end
+
+        it { is_expected.to include(workbench) }
+      end
     end
 
     context "when workbench is shared with user's organisation" do
@@ -156,6 +180,19 @@ RSpec.describe User, :type => :model do
       end
 
       it { is_expected.to include(workbench) }
+
+      context 'and the workbench is hidden' do
+        let(:workbench) do
+          user
+          Chouette.create do
+            workbench hidden: true do
+              workbench_sharing recipient: Organisation.find_by(name: 'user_organisation')
+            end
+          end.workbench
+        end
+
+        it { is_expected.to include(workbench) }
+      end
     end
 
     context 'with unrelated workbench' do

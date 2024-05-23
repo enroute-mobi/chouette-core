@@ -91,7 +91,7 @@ class User < ApplicationModel
 
   def workbenches
     Workbench.left_outer_joins(:sharings) \
-             .where(workbenches: { organisation_id: organisation_id }) \
+             .where(workbenches: { organisation_id: organisation_id, hidden: false }) \
              .or(
                Workbench.left_outer_joins(:sharings) \
                         .where(workbench_sharings: { recipient_type: 'User', recipient_id: id })

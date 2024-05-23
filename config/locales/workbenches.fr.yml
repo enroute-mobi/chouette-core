@@ -64,6 +64,7 @@ fr:
         last_merged_data: Dernière finalisation
         priority: Priorité
         invitation_code: Code de confirmation
+        hidden: "Caché"
   activemodel:
     attributes:
       workbench/confirmation:

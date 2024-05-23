@@ -63,6 +63,7 @@ en:
         organisation: Organization
         last_merged_data: Last merged data
         priority: Priority
+        hidden: "Hidden"
   activemodel:
     attributes:
       workbench/confirmation:

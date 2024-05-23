@@ -513,11 +513,11 @@ class Export::Ara < Export::Base
       delegate :time_zone, to: :vehicle_journey_at_stop
 
       def ara_departure_time
-        departure_time_of_day&.to_time(day, time_zone: time_zone)&.strftime(EXPORT_TIME_FORMAT)
+        departure_local_time_of_day&.to_time(day, time_zone: time_zone)&.strftime(EXPORT_TIME_FORMAT)
       end
 
       def ara_arrival_time
-        arrival_time_of_day&.to_time(day, time_zone: time_zone)&.strftime(EXPORT_TIME_FORMAT)
+        arrival_local_time_of_day&.to_time(day, time_zone: time_zone)&.strftime(EXPORT_TIME_FORMAT)
       end
     end
   end

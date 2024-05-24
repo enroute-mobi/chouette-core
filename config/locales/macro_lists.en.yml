@@ -24,6 +24,8 @@ en:
       title: "Macro Lists"
     show:
       title: "%{name}"
+    new:
+      title: "Create a Macro List"
     form:
       sections:
         macros: "Macro Lists"

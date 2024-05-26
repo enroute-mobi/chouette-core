@@ -179,7 +179,7 @@ GEM
     bullet (7.1.6)
       activesupport (>= 3.0.0)
       uniform_notifier (~> 1.11)
-    bummr (0.6.0)
+    bummr (1.0.0)
       rainbow
       thor
     bundler-audit (0.9.1)

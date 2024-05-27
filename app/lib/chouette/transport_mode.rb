@@ -9,15 +9,15 @@ module Chouette
       @sub_mode = sub_mode&.to_sym
     end
 
-    def mode_human_name(locale: I18n.default_locale)
+    def mode_human_name(locale: I18n.locale)
       I18n.translate mode, scope: 'transport_modes.modes', locale: locale
     end
 
-    def sub_mode_human_name(locale: I18n.default_locale)
+    def sub_mode_human_name(locale: I18n.locale)
       I18n.translate sub_mode, scope: ['transport_modes', mode], locale: locale
     end
 
-    def human_name(locale: I18n.default_locale, separator: ' / ')
+    def human_name(locale: I18n.locale, separator: ' / ')
       return unless valid?
 
       [].tap do |parts|

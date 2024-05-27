@@ -6,7 +6,7 @@ if ENV['SENTRY_DSN']
     config.release = Nest::Version.current.name
 
     # Disable transaction report
-    config.traces_sample_rate = 0
+    config.enable_tracing = false
   end
 
   app = ENV.fetch 'SENTRY_APP', 'chouette-core'

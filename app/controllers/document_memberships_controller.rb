@@ -94,7 +94,11 @@ class DocumentMembershipsController < Chouette::ResourceController
 
   private
 
-  alias current_workbench workbench
+  def current_workbench
+    workbench
+  rescue ActiveRecord::RecordNotFound
+    nil
+  end
 
   def authorize_create_document_memberships
     authorize_policy(parent_policy, :create?, DocumentMembership)

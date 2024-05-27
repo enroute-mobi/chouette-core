@@ -44,7 +44,7 @@ class ControlListRunsController < Chouette::WorkbenchController
   protected
 
   alias control_list_run resource
-  alias parent_for_parent_policy current_workbench
+  alias parent_for_parent_policy workbench
 
   def control_list
     # Ensure parent is loaded

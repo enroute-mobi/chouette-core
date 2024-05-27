@@ -19,7 +19,12 @@ module Chouette
       association_chain
       get_parent_ivar(:workgroup)
     end
-    alias current_workgroup workgroup
+
+    def current_workgroup
+      workgroup
+    rescue ::ActiveRecord::RecordNotFound
+      nil
+    end
 
     def owner_workbench
       @owner_workbench ||= workgroup.owner_workbench

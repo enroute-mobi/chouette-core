@@ -3,7 +3,6 @@ module ReferentialSupport
 
   included do
     before_action :switch_referential
-    alias_method :current_referential, :referential
     helper_method :current_referential
   end
 
@@ -14,6 +13,12 @@ module ReferentialSupport
 
   def referential
     @referential ||= find_referential
+  end
+
+  def current_referential
+    referential
+  rescue ActiveRecord::RecordNotFound
+    nil
   end
 
   def find_referential

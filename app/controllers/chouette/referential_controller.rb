@@ -27,6 +27,11 @@ module Chouette
     def workbench
       @workbench ||= begin_of_association_chain.workbenches.find(params[:workbench_id])
     end
-    alias current_workbench workbench
+
+    def current_workbench
+      workbench
+    rescue ::ActiveRecord::RecordNotFound
+      nil
+    end
   end
 end

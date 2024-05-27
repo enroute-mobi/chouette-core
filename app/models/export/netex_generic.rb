@@ -1978,7 +1978,7 @@ class Export::NetexGeneric < Export::Base
     delegate :validity_period, to: :export_scope
 
     def export_part
-      time_tables.includes(:periods, :dates, :lines, :codes).find_each do |time_table|
+      time_tables.includes(:periods, :dates, :codes).find_each do |time_table|
         decorated_time_table = decorate(time_table, validity_period: validity_period)
 
         tags = resource_tagger.tags_for_lines(time_table_line_ids[time_table.id])

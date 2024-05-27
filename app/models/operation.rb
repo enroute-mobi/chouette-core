@@ -128,6 +128,24 @@ class Operation < ApplicationModel
     Rails.logger
   end
 
+  module CallbackSupport
+    extend ActiveSupport::Concern
+
+    included do
+      mattr_reader :callback_classes, default: []
+    end
+
+    module ClassMethods
+      def callback(callback_class)
+        callback_classes << callback_class
+      end
+    end
+
+    def callbacks
+      callback_classes.map { |callback_class| callback_class.new(self) }
+    end
+  end
+
   class Callback
     def initialize(operation)
       @operation = operation
@@ -210,6 +228,25 @@ class Operation < ApplicationModel
   class Bullet < Callback
     def around(&block)
       ::Bullet.profile(&block)
+    end
+  end
+
+  class StackProf < Callback
+    def self.enabled?
+      ENV['CHOUETTE_PROFILING'] == 'true'
+    end
+
+    def target_file
+      @target_file ||= "tmp/#{operation.class}-#{Time.zone.now.strftime('%Y%m%d-%H%M%S')}.prof"
+    end
+
+    def around(&block)
+      if self.class.enabled?
+        logger.debug "Profiling available into #{target_file}"
+        ::StackProf.run(mode: :cpu, raw: true, out: target_file, &block)
+      else
+        block.call
+      end
     end
   end
 
@@ -297,11 +334,7 @@ class Operation < ApplicationModel
 
   protected
 
-  mattr_reader :callback_classes, default: []
-
-  def self.callback(callback_class)
-    callback_classes << callback_class
-  end
+  include CallbackSupport
 
   # Define logics to be performed before and after Operation#perform
   callback LogTagger
@@ -312,10 +345,6 @@ class Operation < ApplicationModel
   callback Notifier
   callback Referential
   callback StatusChanger
-
-  def callbacks
-    callback_classes.map { |callback_class| callback_class.new(self) }
-  end
 
   include AroundMethod
   around_method :perform

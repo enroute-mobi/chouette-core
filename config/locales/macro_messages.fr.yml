@@ -73,6 +73,10 @@ fr:
     messages:
       default: "Le mode de transport %{transport_mode} a été défini sur l'arrêt %{name}"
       error: "Le mode de transport %{transport_mode} ne peut pas être défini sur l'arrêt %{name}"
+  macro/force_attribute_value/run:
+    messages:
+      default: "L'attribut %{target_attribute} du/de la %{target_model} %{name} a été mis à jour"
+      error: "L'attribut %{target_attribute} du/de la %{target_model} %{name} n'a pu été modifié"
   macro_messages:
     search_no_results_for_filter: "Aucun messages"
     no_address: "Aucune adresse"

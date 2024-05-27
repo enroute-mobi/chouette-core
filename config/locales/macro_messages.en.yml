@@ -70,6 +70,10 @@ en:
     messages:
       default: "The transport mode %{transport_mode} has been defined on the Stop Area %{name}"
       error: "The transport mode %{transport_mode} can't be defined on the Stop Area %{name}"
+  macro/force_attribute_value/run:
+    messages:
+      default: "The attribute %{target_attribute} of %{target_model} %{name} has been updated"
+      error: "The attribute %{target_attribute} of %{target_model} %{name} can't be modified"
   macro_messages:
   macro/create_code_from_uuid/run:
     messages:

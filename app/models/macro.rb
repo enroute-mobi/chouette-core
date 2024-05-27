@@ -22,6 +22,7 @@ module Macro
       Macro::CreateCodeFromUuid,
       Macro::DefineFrenchCodeInsee,
       Macro::DefineStopAreaTransportMode,
+      Macro::ForceAttributeValue,
       Macro::Dummy # Keep this dummy last
     ]
   end

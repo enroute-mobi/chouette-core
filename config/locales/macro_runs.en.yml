@@ -45,6 +45,8 @@ en:
         one: Define French Code Insee
       macro/define_stop_area_transport_mode/run:
         one: Define Stop Area transport mode
+      macro/force_attribute_value/run:
+        one: Force attribute value
     attributes:
       macro/base/run:
         name: Name
@@ -66,3 +68,7 @@ en:
         code_space_id: Espace de code
       macro/create_code_from_uuid/run:
         code_space_id: Code Space
+      macro/force_attribute_value/run:
+        target_model: Target Model
+        target_attribute: Attribute
+        expected_value: Expected value

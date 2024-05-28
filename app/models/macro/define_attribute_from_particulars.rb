@@ -96,8 +96,8 @@ module Macro
 
         attributes = {
           message_attributes: {
-            name: referent.name, attribute_name:
-            referent.class.human_attribute_name(attribute_name),
+            name: referent.name,
+            target_attribute: attribute_name,
             attribute_value: attribute_value
           },
           source: referent

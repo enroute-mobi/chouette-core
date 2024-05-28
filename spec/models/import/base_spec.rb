@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 RSpec.describe Import::Base, type: :model do
   subject(:import) { Import::Base.new }
 
@@ -160,6 +162,110 @@ RSpec.describe Import::Base, type: :model do
       let(:options) { {} }
 
       it { is_expected.to eq(workbench.default_stop_area_provider) }
+    end
+  end
+
+  describe '#workgroup_control_list_run' do
+    subject { import.workgroup_control_list_run }
+
+    let(:context) do
+      Chouette.create do
+        workgroup do
+          workbench do
+            control_list :control_list, shared: true
+          end
+          workgroup_processing_rule control_list: :control_list, operation_step: 'after_import'
+        end
+      end
+    end
+    let(:workbench) { context.workbench }
+    let(:control_list) { context.control_list(:control_list) }
+
+    let(:import) do
+      Import::Gtfs.create!(
+        workbench: workbench,
+        local_file: open_fixture('google-sample-feed.zip'),
+        creator: 'test',
+        name: 'test'
+      ).tap(&:import)
+    end
+    let(:control_list_run) do
+      import.processings.find { |p| p.processed.try(:original_control_list) == control_list }.processed
+    end
+
+    it { is_expected.to have_attributes(processed: control_list_run) }
+
+    context 'when processed is destroyed' do
+      before { control_list_run.destroy }
+      it { is_expected.to be_nil }
+    end
+  end
+
+  describe '#workbench_macro_list_run' do
+    subject { import.workbench_macro_list_run }
+
+    let(:context) do
+      Chouette.create do
+        workbench do
+          macro_list :macro_list
+          workbench_processing_rule macro_list: :macro_list, operation_step: 'after_import'
+        end
+      end
+    end
+    let(:workbench) { context.workbench }
+    let(:macro_list) { context.macro_list(:macro_list) }
+
+    let(:import) do
+      Import::Gtfs.create!(
+        workbench: workbench,
+        local_file: open_fixture('google-sample-feed.zip'),
+        creator: 'test',
+        name: 'test'
+      ).tap(&:import)
+    end
+    let(:macro_list_run) do
+      import.processings.find { |p| p.processed.try(:original_macro_list) == macro_list }.processed
+    end
+
+    it { is_expected.to have_attributes(processed: macro_list_run) }
+
+    context 'when processed is destroyed' do
+      before { macro_list_run.destroy }
+      it { is_expected.to be_nil }
+    end
+  end
+
+  describe '#workbench_control_list_run' do
+    subject { import.workbench_control_list_run }
+
+    let(:context) do
+      Chouette.create do
+        workbench do
+          control_list :control_list, shared: true
+          workbench_processing_rule control_list: :control_list, operation_step: 'after_import'
+        end
+      end
+    end
+    let(:workbench) { context.workbench }
+    let(:control_list) { context.control_list(:control_list) }
+
+    let(:import) do
+      Import::Gtfs.create!(
+        workbench: workbench,
+        local_file: open_fixture('google-sample-feed.zip'),
+        creator: 'test',
+        name: 'test'
+      ).tap(&:import)
+    end
+    let(:control_list_run) do
+      import.processings.find { |p| p.processed.try(:original_control_list) == control_list }.processed
+    end
+
+    it { is_expected.to have_attributes(processed: control_list_run) }
+
+    context 'when processed is destroyed' do
+      before { control_list_run.destroy }
+      it { is_expected.to be_nil }
     end
   end
 end

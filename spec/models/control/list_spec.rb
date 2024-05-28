@@ -56,7 +56,7 @@ RSpec.describe Control::List do
           workbench do
             referential :target
             control_list :control_list
-            processing_rule control_list: :control_list
+            workbench_processing_rule control_list: :control_list
           end
         end
       end

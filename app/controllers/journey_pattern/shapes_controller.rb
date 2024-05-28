@@ -103,10 +103,6 @@ module JourneyPattern
       JSON.parse(request.raw_post.presence || "{}")
     end
 
-    # def workbench
-    #   @workbench ||= default_workbench(resource: parent.line)
-    # end
-
     def resource_params
       [{}] # Needed to avoid ActiveRecord::Mismatch error with update! since Shapes::Update is handling the update
     end

@@ -16,3 +16,5 @@ fr:
       workbench/sharing:
         name: "Nom"
         invitation_code: "Code de confirmation"
+        recipient_type: "Type de Destinataire"
+        recipient_id: "Destinataire"

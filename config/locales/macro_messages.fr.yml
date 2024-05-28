@@ -76,7 +76,7 @@ fr:
   macro/force_attribute_value/run:
     messages:
       default: "L'attribut %{target_attribute} du/de la %{target_model} %{name} a été mis à jour"
-      error: "L'attribut %{target_attribute} du/de la %{target_model} %{name} n'a pu été modifié"
+      error: "L'attribut %{target_attribute} du/de la %{target_model} %{name} n'a pas pu être modifié"
   macro_messages:
     search_no_results_for_filter: "Aucun messages"
     no_address: "Aucune adresse"

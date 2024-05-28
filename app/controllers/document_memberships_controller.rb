@@ -81,7 +81,7 @@ class DocumentMembershipsController < Chouette::ResourceController
   end
 
   def workbench
-    @workbench ||= current_organisation.workbenches.find(params[:workbench_id])
+    @workbench ||= current_user.workbenches.find(params[:workbench_id])
   end
 
   def collection_path_method

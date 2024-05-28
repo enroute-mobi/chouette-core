@@ -65,4 +65,8 @@ class UsersController < Chouette::ResourceController
   def resource
     @user = super.decorate
   end
+
+  def begin_of_association_chain
+    current_organisation
+  end
 end

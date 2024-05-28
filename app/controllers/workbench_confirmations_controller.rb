@@ -13,6 +13,10 @@ class WorkbenchConfirmationsController < Chouette::ResourceController
 
   protected
 
+  def begin_of_association_chain
+    current_organisation
+  end
+
   def authorize_resource_class
     authorize_policy(parent_policy, :workbench_confirm?, Workbench)
   end

@@ -44,7 +44,7 @@ class WorkbenchesController < Chouette::ResourceController
   private
 
   def resource
-    @workbench ||= current_organisation.workbenches.find params[:id]
+    @workbench ||= current_user.workbenches.find params[:id]
   end
 
   def current_workgroup

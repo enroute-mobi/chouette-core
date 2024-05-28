@@ -1,10 +1,10 @@
-- @dashboard.current_organisation.workbenches.with_active_workgroup.each do |workbench|
+- @dashboard.current_user.workbenches.with_active_workgroup.each do |workbench|
   .row
-    - if @dashboard.current_organisation.workbenches.many?
+    - if @dashboard.current_user.workbenches.many?
       .col-lg-12
         h2 = workbench.workgroup.name
     .col-sm-6.col-xs-12
-      - unless @dashboard.current_organisation.workbenches.many?
+      - unless @dashboard.current_user.workbenches.many?
         .panel.panel-default
           .panel-heading
             h3.panel-title.with_actions
@@ -27,7 +27,7 @@
         .panel-heading
           h3.panel-title.with_actions
             div
-              - if @dashboard.current_organisation.workbenches.many?
+              - if @dashboard.current_user.workbenches.many?
                 = link_to Workbench.ts, workbench_path(workbench)
               - else
                 = link_to t('dashboards.workbench.title', name: workbench.name), workbench_path(workbench)

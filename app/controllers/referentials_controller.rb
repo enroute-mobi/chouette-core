@@ -1,8 +1,7 @@
 # frozen_string_literal: true
 
-class ReferentialsController < Chouette::ResourceController
+class ReferentialsController < Chouette::WorkbenchController
   defaults :resource_class => Referential
-  before_action :load_workbench
 
   respond_to :html
   respond_to :json, :only => :show
@@ -178,10 +177,12 @@ class ReferentialsController < Chouette::ResourceController
   end
 
   def current_workbench
-    load_workbench
+    workbench
   rescue ActiveRecord::RecordNotFound
     nil
   end
+
+  alias parent_for_parent_policy workbench
 
   def current_referential
     return nil unless params[:id]
@@ -236,11 +237,4 @@ class ReferentialsController < Chouette::ResourceController
       flash[:warning] = I18n.t("referentials.show.lines_outside_of_scope", count: lines.count, lines: lines.pluck(:name).to_sentence, organisation: @referential.organisation.name)
     end
   end
-
-  def load_workbench
-    @workbench ||= current_organisation.workbenches.find(params[:workbench_id])
-  end
-
-  alias parent load_workbench
-  alias parent_for_parent_policy load_workbench
 end

@@ -25,7 +25,7 @@ RSpec.describe ExportMailer, type: :mailer do
 
     let(:expected_content) do
       I18n.t("mailers.export_mailer.finished.body", export_name: export.name,
-             status: I18n.t("operation_support.statuses.#{export.status}"))
+             status: I18n.t("mailers.statuses.#{export.status}"))
     end
 
     it { is_expected.to include(expected_content) }

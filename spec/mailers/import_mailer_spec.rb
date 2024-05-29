@@ -23,7 +23,7 @@ RSpec.describe ImportMailer, type: :mailer do
 
     let(:expected_content) do
       I18n.t("mailers.import_mailer.finished.body", import_name: import.name,
-             status: I18n.t("operation_support.statuses.#{import.status}"))
+             status: I18n.t("mailers.statuses.#{import.status}"))
     end
 
     it { is_expected.to include(expected_content) }

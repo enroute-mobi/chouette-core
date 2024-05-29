@@ -14,5 +14,9 @@ module Query
     def without_country
       scope.where(country_code: nil)
     end
+
+    def is_referent(value)
+      where(value, :eq, :is_referent)
+    end
   end
 end

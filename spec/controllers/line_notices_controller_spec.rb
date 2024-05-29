@@ -18,9 +18,7 @@ RSpec.describe LineNoticesController, type: :controller do
         end
       end
       workgroup do
-        workbench(:other_workbench, organisation: organisation) do
-          line :other_line
-        end
+        workbench(:other_workbench, organisation: organisation)
       end
     end
   end
@@ -40,64 +38,52 @@ RSpec.describe LineNoticesController, type: :controller do
     let(:context) do
       Chouette.create do
         workgroup(owner: Organisation.find_by(code: 'first')) do
-          line_referential :first
-          workbench :first, organisation: Organisation.find_by(code: 'first') do
-            line_provider :first do
-              line
+          workbench :workbench, organisation: Organisation.find_by(code: 'first') do
+            line_provider(:line_provider) do
+              line :line
               line_notice :first
-              line_notice :second
+              line_notice :second, lines: [:line]
             end
           end
         end
         workgroup(owner: Organisation.find_by(code: 'first')) do
-          line_referential :other
-          line_provider :other
-          line_notice :other
+          line_notice :other_line_notice, lines: [:line]
         end
       end
     end
 
-    let(:workbench) { context.workbench(:first) }
-    let(:line_referential) { context.line_referential(:first) }
-    let(:line_provider) { context.line_provider(:first) }
-    let(:line) { context.line }
+    let(:line_provider) { context.line_provider(:line_provider) }
     let(:line_notices) { line_provider.line_notices }
+    let(:other_line_notice) { context.line_notice(:other_line_notice) }
 
-    let(:other_line_referential) { context.line_referential(:other) }
-    let(:other_line_provider) { context.line_provider(:other) }
-    let(:other_line_notice) { context.line_notice(:other) }
+    let(:index_params) { base_params }
+    let(:request) { get :index, params: index_params }
 
-    before do
-      line_notices.second.lines << line
-      other_line_notice.lines << line
-    end
+    before { request }
 
     it 'should be successful' do
-      get :index, params: { workbench_id: workbench.id }
       expect(response).to be_successful
-      expect(assigns(:line_notices)).to include(line_notices.first)
-      expect(assigns(:line_notices)).to include(line_notices.last)
-      expect(assigns(:line_notices)).to_not include(other_line_notice)
+      expect(assigns(:line_notices)).to match_array(line_notices)
     end
 
-    context "with filters" do
-      let(:title_or_content_cont){ line_notices.first.title }
-      let(:lines_id_eq){ line_notices.last.lines.first.id }
+    context 'with filters' do
+      context 'on title or content' do
+        let(:index_params) { base_params.merge({ q: { title_or_content_cont: line_notices.first.title } }) }
 
-      it "should filter on title or content" do
-        get :index, params: { workbench_id: workbench.id, q: {title_or_content_cont: title_or_content_cont} }
-        expect(response).to be_successful
-        expect(assigns(:line_notices)).to include(line_notices.first)
-        expect(assigns(:line_notices)).to_not include(line_notices.last)
-        expect(assigns(:line_notices)).to_not include(other_line_notice)
+        it 'filters' do
+          expect(response).to be_successful
+          expect(assigns(:line_notices)).to match_array([line_notices.first])
+        end
       end
 
-      it "should filter by associated line id" do
-        get :index, params: { workbench_id: workbench.id, q: {lines_id_eq: lines_id_eq} }
-        expect(response).to be_successful
-        expect(assigns(:line_notices)).to_not include(line_notices.first)
-        expect(assigns(:line_notices)).to include(line_notices.last)
-        expect(assigns(:line_notices)).to_not include(other_line_notice)
+      context 'by associated line id' do
+        let(:index_params) { base_params.merge({ q: { lines_id_eq: line_notices.last.lines.first.id } }) }
+
+        it 'filters' do
+          expect(response).to be_successful
+          expect(assigns(:line_notices)).to match_array([line_notices.last])
+          expect(assigns(:filtered_line)).to eq(line_notices.last.lines.first)
+        end
       end
     end
   end
@@ -124,33 +110,6 @@ RSpec.describe LineNoticesController, type: :controller do
         it { expect(response).to have_http_status(:not_found) }
       end
     end
-
-    context 'from a line' do
-      let(:base_params) { { 'workbench_id' => workbench.id.to_s, 'line_id' => line.id.to_s } }
-
-      it { is_expected.to render_template('line_notices/new') }
-
-      context 'when the params contain a line provider' do
-        let(:request) do
-          get :new, params: base_params.merge({ 'line_notice' => { 'line_provider_id' => line_provider.id.to_s } })
-        end
-
-        context 'of the current workbench' do
-          let(:line_provider) { context.line_provider(:line_provider) }
-          it { is_expected.to render_template('line_notices/new') }
-        end
-
-        context 'of another workbench' do
-          let(:line_provider) { context.line_provider(:other_line_provider) }
-          it { expect(response).to have_http_status(:not_found) }
-        end
-      end
-
-      context 'of another workbench' do
-        let(:line) { context.line(:other_line) }
-        it { expect(response).to have_http_status(:not_found) }
-      end
-    end
   end
 
   describe 'POST #create' do
@@ -165,6 +124,11 @@ RSpec.describe LineNoticesController, type: :controller do
       expect(line_referential.line_notices.last.line_provider).to eq(workbench.default_line_provider)
     end
 
+    it 'redirects to line notices path' do
+      request
+      expect(response).to redirect_to workbench_line_referential_line_notices_path(workbench)
+    end
+
     context 'with a line provider' do
       let(:line_notice_attrs) { base_line_notice_attrs.merge({ 'line_provider_id' => line_provider.id.to_s }) }
 
@@ -172,46 +136,11 @@ RSpec.describe LineNoticesController, type: :controller do
 
       context 'of the current workbench' do
         let(:line_provider) { context.line_provider(:line_provider) }
-        it { expect(response).to have_http_status(:redirect) }
+        it { expect(response).to redirect_to workbench_line_referential_line_notices_path(workbench) }
       end
 
       context 'of another workbench' do
         let(:line_provider) { context.line_provider(:other_line_provider) }
-        it { expect(response).to have_http_status(:not_found) }
-      end
-    end
-
-    context 'from a line' do
-      let(:base_params) { { 'workbench_id' => workbench.id.to_s, 'line_id' => line.id.to_s } }
-
-      it 'should create a new line notice' do
-        expect { request }.to change { line_referential.line_notices.count }.by 1
-      end
-
-      it 'assigns default line provider' do
-        request
-        expect(line_referential.line_notices.last.line_provider).to eq(workbench.default_line_provider)
-      end
-
-      context 'with a line provider' do
-        let(:line_notice_attrs) { base_line_notice_attrs.merge({ 'line_provider_id' => line_provider.id.to_s }) }
-
-        before { request }
-
-        context 'of the current workbench' do
-          let(:line_provider) { context.line_provider(:line_provider) }
-          it { expect(response).to have_http_status(:redirect) }
-        end
-
-        context 'of another workbench' do
-          let(:line_provider) { context.line_provider(:other_line_provider) }
-          it { expect(response).to have_http_status(:not_found) }
-        end
-      end
-
-      context 'of another workbench' do
-        let(:line) { context.line(:other_line) }
-        before { request }
         it { expect(response).to have_http_status(:not_found) }
       end
     end
@@ -233,27 +162,6 @@ RSpec.describe LineNoticesController, type: :controller do
       let(:line_notice) { context.line_notice(:other_line_notice) }
       it { expect(response).to have_http_status(:forbidden) }
     end
-
-    context 'from a line' do
-      let(:base_params) { { 'workbench_id' => workbench.id.to_s, 'line_id' => line.id.to_s } }
-
-      it { is_expected.to render_template('line_notices/edit') }
-
-      context 'when the line referential workbench is not the same as the current workbench' do
-        let(:workbench) { context.workbench(:other_workbench) }
-        it { expect(response).to have_http_status(:not_found) }
-      end
-
-      context 'when the line provider workbench is not the same as the current workbench' do
-        let(:line_notice) { context.line_notice(:other_line_notice) }
-        it { expect(response).to have_http_status(:forbidden) }
-      end
-
-      context 'when the line is not in current workbench line referential' do
-        let(:line) { context.line(:other_line) }
-        it { expect(response).to have_http_status(:not_found) }
-      end
-    end
   end
 
   describe 'PUT #update' do
@@ -263,8 +171,11 @@ RSpec.describe LineNoticesController, type: :controller do
 
     before { request }
 
-    it { expect(response).to have_http_status(:redirect) }
     it { expect { line_notice.reload }.to change { line_notice.title }.to('test') }
+
+    it 'redirects to line notice path' do
+      expect(response).to redirect_to workbench_line_referential_line_notice_path(workbench, line_notice)
+    end
 
     context 'when the line referential workbench is not the same as the current workbench' do
       let(:workbench) { context.workbench(:other_workbench) }
@@ -281,7 +192,7 @@ RSpec.describe LineNoticesController, type: :controller do
 
       context 'of the current workbench' do
         let(:line_provider) { context.line_provider(:line_provider) }
-        it { expect(response).to have_http_status(:redirect) }
+        it { expect(response).to redirect_to workbench_line_referential_line_notice_path(workbench, line_notice) }
       end
 
       context 'of another workbench' do
@@ -289,41 +200,27 @@ RSpec.describe LineNoticesController, type: :controller do
         it { is_expected.to render_template('line_notices/edit') }
       end
     end
+  end
 
-    context 'from a line' do
-      let(:base_params) { { 'workbench_id' => workbench.id.to_s, 'line_id' => line.id.to_s } }
+  describe 'DELETE #destroy' do
+    let(:request) { delete :destroy, params: base_params.merge({ 'id' => line_notice.id.to_s }) }
 
-      it { expect(response).to have_http_status(:redirect) }
-      it { expect { line_notice.reload }.to change { line_notice.title }.to('test') }
+    before { request }
 
-      context 'when the line referential workbench is not the same as the current workbench' do
-        let(:workbench) { context.workbench(:other_workbench) }
-        it { expect(response).to have_http_status(:not_found) }
-      end
+    it { expect { line_notice.reload }.to raise_error(ActiveRecord::RecordNotFound) }
 
-      context 'when the line provider workbench is not the same as the current workbench' do
-        let(:line_notice) { context.line_notice(:other_line_notice) }
-        it { expect(response).to have_http_status(:forbidden) }
-      end
+    it 'redirects to line notices path' do
+      expect(response).to redirect_to workbench_line_referential_line_notices_path(workbench)
+    end
 
-      context 'when the params contain a line provider' do
-        let(:line_notice_attrs) { base_line_notice_attrs.merge({ 'line_provider_id' => line_provider.id.to_s }) }
+    context 'when the line referential workbench is not the same as the current workbench' do
+      let(:workbench) { context.workbench(:other_workbench) }
+      it { expect(response).to have_http_status(:not_found) }
+    end
 
-        context 'of the current workbench' do
-          let(:line_provider) { context.line_provider(:line_provider) }
-          it { expect(response).to have_http_status(:redirect) }
-        end
-
-        context 'of another workbench' do
-          let(:line_provider) { context.line_provider(:other_line_provider) }
-          it { is_expected.to render_template('line_notices/edit') }
-        end
-      end
-
-      context 'when the line is not in current workbench line referential' do
-        let(:line) { context.line(:other_line) }
-        it { expect(response).to have_http_status(:not_found) }
-      end
+    context 'when the line provider workbench is not the same as the current workbench' do
+      let(:line_notice) { context.line_notice(:other_line_notice) }
+      it { expect(response).to have_http_status(:forbidden) }
     end
   end
 end

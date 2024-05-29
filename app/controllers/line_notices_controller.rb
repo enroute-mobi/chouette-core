@@ -1,59 +1,28 @@
 # frozen_string_literal: true
 
 class LineNoticesController < Chouette::LineReferentialController
-  include ApplicationHelper
-
-  defaults :resource_class => Chouette::LineNotice
-
-  belongs_to :line, parent_class: Chouette::Line, optional: true
-
-  # rubocop:disable Rails/LexicallyScopedActionFilter
-  before_action :authorize_resource, except: %i[new create index show attach]
-  before_action :authorize_resource_class, only: %i[new create attach]
-  # rubocop:enable Rails/LexicallyScopedActionFilter
+  defaults resource_class: Chouette::LineNotice
 
   def index
     index! do |format|
-      format.html {
+      format.html do
         @line_notices = LineNoticeDecorator.decorate(
-          @line_notices.order('created_at DESC'),
+          @line_notices,
           context: {
             workbench: workbench,
-            line_referential: line_referential,
-            line: line
+            line_referential: line_referential
           }
         )
-      }
-    end
-  end
-
-  def create
-    build_resource
-    create! do
-      if line
-        line.line_notices << @line_notice
-        line.save
-        [workbench, :line_referential, line, :line_notices]
-      else
-        [workbench, :line_referential, :line_notices]
+        if params[:q] && params[:q][:lines_id_eq].present?
+          @filtered_line = Chouette::Line.find(params[:q][:lines_id_eq])
+        end
       end
     end
   end
 
-  def detach
-    line.update line_notice_ids: (line.line_notice_ids - [params[:id].to_i])
-    redirect_to [workbench, :line_referential, line, :line_notices]
-  end
-
-  protected
-
-  def parent_for_parent_policy
-    if params[:action] == 'attach'
-      line
-    elsif line
-      line.line_provider
-    else
-      super
+  def create
+    create! do
+      collection_url
     end
   end
 
@@ -64,25 +33,17 @@ class LineNoticesController < Chouette::LineReferentialController
   end
 
   def sort_column
-    (line_referential.line_notices.column_names).include?(params[:sort]) ? params[:sort] : 'id'
+    line_referential.line_notices.column_names.include?(params[:sort]) ? params[:sort] : 'id'
   end
 
   def sort_direction
-    %w[asc desc].include?(params[:direction]) ?  params[:direction] : 'asc'
+    %w[asc desc].include?(params[:direction]) ? params[:direction] : 'asc'
   end
 
   def collection
     @line_notices ||= begin
-      scope = line_referential.line_notices
-      scope = scope.joins(:lines).where('lines.id': line.id) if line
-      @filtered_line = Chouette::Line.find(params[:q][:lines_id_eq]) if params[:q] && params[:q][:lines_id_eq].present?
-      @q = scope.ransack(params[:q])
-      if sort_column && sort_direction
-        line_notices ||= @q.result(:distinct => true).order(sort_column + ' ' + sort_direction).paginate(:page => params[:page])
-      else
-        line_notices ||= @q.result(:distinct => true).order(:number).paginate(:page => params[:page])
-      end
-      line_notices
+      @q = line_referential.line_notices.ransack(params[:q])
+      @q.result(distinct: true).order(sort_column => sort_direction).paginate(page: params[:page])
     end
   end
 
@@ -95,10 +56,5 @@ class LineNoticesController < Chouette::LineReferentialController
       :line_provider_id
     )
     # TODO check if metadata needs to be included as param  t.jsonb "metadata", default: {}
-  end
-
-  def line
-    association_chain
-    get_parent_ivar(:line) || nil
   end
 end

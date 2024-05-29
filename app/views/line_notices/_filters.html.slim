@@ -1,4 +1,4 @@
-= search_form_for @q, url: [@workbench, :line_referential, @line, :line_notices].compact, html: {method: :get}, class: 'form form-filter' do |f|
+= search_form_for @q, url: search_url, html: { method: :get }, id: 'new_search', class: 'form form-filter' do |f|
 
   .ffg-row
     .input-group.search_bar class=filter_item_class(params[:q], :title_or_content_cont)

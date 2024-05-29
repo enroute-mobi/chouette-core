@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 RSpec.describe Policy::Line, type: :policy do
-  let(:resource) { build_stubbed(:line) }
+  let(:resource) { double(:line, line_provider: double(:line_provider)) }
   let(:policy_context_class) { Policy::Context::Workbench }
 
   describe '#create?' do
@@ -23,6 +23,31 @@ RSpec.describe Policy::Line, type: :policy do
 
       it { is_expected.to be_truthy }
     end
+
+    context 'Chouette::LineNotice' do
+      let(:resource_class) { ::Chouette::LineNotice }
+
+      let(:policy_line_notice_create) { true }
+
+      it { applies_strategy(::Policy::Strategy::Permission, :create, ::Chouette::LineNotice) }
+      it { applies_strategy(Policy::Strategy::LineProvider) }
+      it { applies_strategy(::Policy::Strategy::Permission, :update) }
+
+      before do
+        fk_policy = double
+        expect(fk_policy).to receive(:create?).with(Chouette::LineNotice).and_return(policy_line_notice_create)
+        expect(Policy::LineProvider).to(
+          receive(:new).with(resource.line_provider, context: policy_context).and_return(fk_policy)
+        )
+      end
+
+      it { is_expected.to be_truthy }
+
+      context 'when the user cannot create a line notice from a line provider' do
+        let(:policy_line_notice_create) { false }
+        it { is_expected.to be_falsy }
+      end
+    end
   end
 
   describe '#update?' do
@@ -43,46 +68,6 @@ RSpec.describe Policy::Line, type: :policy do
     it { does_not_apply_strategy(Policy::Strategy::Referential) }
 
     it { is_expected.to be_truthy }
-  end
-
-  describe '#attach?' do
-    subject { policy.attach?(resource_class) }
-
-    let(:resource_class) { double }
-
-    it { does_not_apply_strategy(Policy::Strategy::LineProvider) }
-    it { does_not_apply_strategy(Policy::Strategy::Permission, :apply) }
-    it { does_not_apply_strategy(Policy::Strategy::Referential) }
-
-    it do
-      expect(policy).to receive(:around_can).with(:attach).and_call_original
-      is_expected.to be_falsy
-    end
-
-    context 'with Chouette::LineNotice' do
-      let(:resource_class) { Chouette::LineNotice }
-
-      let(:policy_line_notice_update) { true }
-
-      before do
-        fk_policy = double
-        expect(fk_policy).to receive(:update?).and_return(policy_line_notice_update)
-        expect(Policy::LineNotice).to receive(:new).with(
-          an_object_having_attributes(
-            line_referential: resource.line_referential,
-            line_provider: resource.line_provider
-          ),
-          context: policy_context
-        ).and_return(fk_policy)
-      end
-
-      it { is_expected.to be_truthy }
-
-      context 'when the user cannot update a line notice' do
-        let(:policy_line_notice_update) { false }
-        it { is_expected.to be_falsy }
-      end
-    end
   end
 
   describe '#update_activation_dates?' do

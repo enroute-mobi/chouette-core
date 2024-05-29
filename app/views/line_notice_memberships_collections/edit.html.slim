@@ -1,11 +1,11 @@
-- breadcrumb :attach_notice, @line_referential, @line
+- breadcrumb :edit_line_notice_memberships, @workbench, @line
 - javascript_additional_packs 'line_notices/attach'
 
 .page_content
   .container-fluid
     .row
       .col-lg-8.col-lg-offset-2.col-md-8.col-md-offset-2.col-sm-10.col-sm-offset-1
-        = simple_form_for @line, url: workbench_line_referential_line_path(@workbench, @line), html: {class: 'form-horizontal', id: 'attach_form'}, wrapper: :horizontal_form do |form|
+        = simple_form_for @line, url: workbench_line_referential_line_line_notice_memberships_path(@workbench, @line), html: {class: 'form-horizontal', id: 'attach_form'}, wrapper: :horizontal_form do |form|
           .row
             .col-lg-12
               = form.hidden_field :line_notice_ids

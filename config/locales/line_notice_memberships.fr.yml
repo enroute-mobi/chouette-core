@@ -1,0 +1,16 @@
+fr:
+  line_notice_memberships:
+    actions:
+      new: "Ajouter une Note de ligne"
+      edit: "Associer et dissocier des Notes de ligne"
+      destroy: "Dissocier cette Note de ligne"
+      destroy_confirm: "Êtes-vous sur de vouloir dissocier cette note de cette ligne ?"
+    new:
+      title: "Ajouter une Note de ligne"
+    index:
+      title: "Notes de lignes"
+  activerecord:
+    attributes:
+      line_notice_membership:
+        title: "Titre"
+        content: "Texte"

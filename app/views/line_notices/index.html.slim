@@ -1,11 +1,11 @@
-- breadcrumb :line_notices, @workbench, @line
+- breadcrumb :line_notices, @workbench
 
 .page_content
   .container-fluid
     - if params[:q].present? or @line_notices.any?
       .row
         .col-lg-12
-          = render 'filters'
+          = render 'line_notices/filters', search_url: [@workbench, :line_referential, :line_notices]
     - if @line_notices.any?
       .row
         .col-lg-12
@@ -15,7 +15,7 @@
                 key: :title, \
                 attribute: 'title', \
                 link_to: lambda do |line_notice| \
-                  [@workbench, :line_referential, line_notice] \
+                  [@workbench, :line_referential, line_notice.object] \
                 end \
               ),
               TableBuilderHelper::Column.new( \

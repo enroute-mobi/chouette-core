@@ -501,7 +501,7 @@ crumb :network do |workbench, network|
   parent :networks, workbench
 end
 
-crumb :line_notices do |workbench, line|
+crumb :line_notices do |workbench, line = nil|
   link I18n.t('line_notices.index.title'), workbench_line_referential_line_notices_path(workbench)
   if line
     parent :line, workbench, line
@@ -515,9 +515,14 @@ crumb :line_notice do |workbench, line_notice|
   parent :line_notices, workbench
 end
 
-crumb :attach_notice do |line_referential, line|
-  link 'line_notices.actions.attach'.t
-  parent line, line_referential
+crumb :new_line_notice_membership do |workbench, line|
+  link I18n.t('line_notice_memberships.actions.new.title')
+  parent line, workbench
+end
+
+crumb :edit_line_notice_memberships do |workbench, line|
+  link I18n.t('line_notice_memberships.actions.edit')
+  parent line, workbench
 end
 
 crumb :line_providers do |workbench|

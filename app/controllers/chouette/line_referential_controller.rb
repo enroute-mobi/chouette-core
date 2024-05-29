@@ -44,10 +44,16 @@ module Chouette
 
     private
 
-    def line_provider_from_params
-      return nil unless params[resource_instance_name] && params[resource_instance_name][:line_provider_id].present?
+    def line_provider_id_from_params
+      return nil unless params[resource_instance_name] && params[resource_instance_name][:line_provider_id]
 
-      candidate_line_providers.find(params[resource_instance_name][:line_provider_id])
+      params[resource_instance_name][:line_provider_id]
+    end
+
+    def line_provider_from_params
+      return nil if line_provider_id_from_params.blank?
+
+      candidate_line_providers.find(line_provider_id_from_params)
     end
 
     def line_provider_for_build

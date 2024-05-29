@@ -5,12 +5,12 @@ en:
     show:
       title: "%{name}"
     new:
-      title: "Create a Accessibility Assessments"
+      title: "Create a Accessibility Assessment"
     edit:
       title: "Edit %{name}"
     actions:
       show: "Display this Accessibility Assessments"
-      new: "Create a Accessibility Assessments"
+      new: "Create a Accessibility Assessment"
       edit: "Edit this Accessibility Assessments"
       destroy: "Delete this Accessibility Assessments"
       destroy_confirm: "Are you sure you want destroy this Accessibility Assessments ?"

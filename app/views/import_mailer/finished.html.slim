@@ -1,4 +1,4 @@
 h2.mail-title
   == 'mailers.hello'.t
-p== t('mailers.import_mailer.finished.body', import_name: @import.name, status: I18n.t("operation_support.statuses.#{@import_status}"))
+p== t('mailers.import_mailer.finished.body', import_name: @import.name, status: I18n.t("mailers.statuses.#{@status}"))
 p= mailer_button(t('mailers.import_mailer.button'), workbench_import_url(@import.workbench, @import))

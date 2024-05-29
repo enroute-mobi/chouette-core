@@ -3,6 +3,18 @@ fr:
     info_contact: 'Pour toute question, notre équipe de support est joignable sur '
     footer: 'est conçu et développé par'
     hello: 'Bonjour,'
+    statuses:
+      aborted:    🔴 Annulé
+      canceled:   🔴 Annulé
+      error:      🔴 Échec
+      failed:     🔴 Échec
+      new:        Nouveau
+      ok:         🟢 Succès
+      pending:    🕦 En attente
+      running:    🕦 En cours
+      successful: 🟢 Succès
+      warning:    🟠 Avertissement
+      successful_with_warnings: 🟠 Succès (avec avertissements)
     import_mailer:
       button: Voir l'import
       finished:
@@ -67,7 +79,7 @@ fr:
         button: Voir l'Agrégation
         subject: L'agrégation est terminée
         body: |
-          Vous avez lancé l'agrégation <strong>"%{agg_name}"</strong>. <br/>
+          Vous avez lancé l'agrégation <strong>"%{agg_name}"</strong>.<br/>
           Elle est maintenant terminée.<br/>
           Le statut de l'opération est : <strong>%{status}</strong>.
     publication_mailer:

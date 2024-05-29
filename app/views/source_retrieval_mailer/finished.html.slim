@@ -1,5 +1,5 @@
 h2.mail-title
   == 'mailers.hello'.t
 
-p== t('mailers.source_retrieval_mailer.finished.body', source_name: @operation.source.name, status: @operation.user_status.text)
+p== t('mailers.source_retrieval_mailer.finished.body', source_name: @operation.source.name, status: I18n.t("mailers.statuses.#{@status}"))
 p= mailer_button(t('mailers.source_retrieval_mailer.button'), workbench_source_url(@operation.workbench, @operation.source))

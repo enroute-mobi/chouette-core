@@ -23,6 +23,10 @@ class LinesController < Chouette::LineReferentialController
   end
 
   def index
+    if saved_search = saved_searches.find_by(id: params[:search_id])
+      @search = saved_search.search
+    end
+
     index! do |format|
       format.html {
         @lines = LineDecorator.decorate(
@@ -79,6 +83,10 @@ class LinesController < Chouette::LineReferentialController
     end
   end
 
+  def saved_searches
+    @saved_searches ||= workbench.saved_searches.for(Search::Line)
+  end
+
   protected
 
   def scope
@@ -86,7 +94,7 @@ class LinesController < Chouette::LineReferentialController
   end
 
   def search
-    @search ||= Search::Line.from_params(params, line_referential: line_referential)
+    @search ||= Search::Line.from_params(params, workbench: workbench)
   end
 
   def collection

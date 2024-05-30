@@ -84,6 +84,8 @@ class MergesController < Chouette::WorkbenchController
     def build
       merge.processings.each do |processing|
         processed = processing.processed
+        next unless processed
+
         referential_id = processed.referential_id
 
         if processing.processed_type == 'Macro::List::Run'

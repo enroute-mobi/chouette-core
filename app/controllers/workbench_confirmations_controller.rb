@@ -5,9 +5,11 @@ class WorkbenchConfirmationsController < Chouette::ResourceController
 
   def create
     create! do |success, _|
-      workbench = @workbench_confirmation.workbench
-      flash[:notice] = t('.success', workbench: workbench.name, workgroup: workbench.workgroup.name)
-      success.html { redirect_to workbench_path workbench }
+      success.html do
+        workbench = @workbench_confirmation.workbench
+        flash[:notice] = t('.success', workbench: workbench.name, workgroup: workbench.workgroup.name)
+        redirect_to workbench_path workbench
+      end
     end
   end
 

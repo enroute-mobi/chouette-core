@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 class WorkgroupsController < Chouette::ResourceController
-  defaults resource_class: Workgroup
+  defaults resource_class: Workgroup, collection_name: :owned_workgroups
 
   def create
     @workgroup = Workgroup.create_with_organisation current_organisation, workgroup_params

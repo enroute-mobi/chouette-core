@@ -160,8 +160,10 @@ const actions = {
       }
     })
     .then(() => {
-      dispatch(actions.exitEditMode())
-      actions.fetchJourneyPatterns(dispatch)
+      if (!hasError) {
+        dispatch(actions.exitEditMode())
+        actions.fetchJourneyPatterns(dispatch)
+      }
     })
   },
   fetchJourneyPatterns : (dispatch, currentPage, nextPage) => {
@@ -190,7 +192,7 @@ const actions = {
     }
     let urlJSON = window.location.pathname + str
     let hasError = false
-  
+
     return fetch(urlJSON, {
       credentials: 'same-origin',
     }).then(response => {

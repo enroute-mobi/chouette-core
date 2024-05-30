@@ -11,6 +11,7 @@ module Search
     attribute :statuses
 		attribute :valid_after_date, type: Date
     attribute :valid_before_date, type: Date
+		attribute :is_referent
 
     enumerize :transport_mode, in: TransportModeEnumerations.transport_modes, multiple: true
 		enumerize :statuses, in: ::Chouette::Line.statuses, i18n_scope: 'lines.statuses'
@@ -33,7 +34,12 @@ module Search
 				.transport_mode(transport_mode)
 				.statuses(statuses)
 				.in_period(period)
+				.is_referent(is_referent)
     end
+
+		def is_referent
+			flag(super)
+		end
 
 		def candidate_networks
 			line_referential.networks.order(Arel.sql('lower(name) asc'))
@@ -52,6 +58,10 @@ module Search
 		end
 
 		private
+
+		def flag(value)
+			ActiveModel::Type::Boolean.new.cast(value)
+		end
 
     class Order < ::Search::Order
       attribute :name, default: :asc

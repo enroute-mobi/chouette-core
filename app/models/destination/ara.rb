@@ -4,6 +4,7 @@ class Destination
   class Ara < ::Destination
     option :ara_url
     option :credentials
+    option :force_import, type: :boolean, default_value: true
 
     validates :ara_url, presence: true
     validates :credentials, presence: true
@@ -30,7 +31,7 @@ class Destination
     end
 
     def send_to_ara(file, report)
-      payload = { "force": true }
+      payload = { "force": force_import }
 
       request = Net::HTTP::Post.new(uri)
       request['Authorization'] = "Token token=#{credentials}"

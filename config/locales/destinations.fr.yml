@@ -60,6 +60,7 @@ fr:
         ara:
           ara_url: URL du Réferential
           credentials: Token d'identification
+          force_import: Remplacer les données existantes
         google_cloud_storage:
           project: Projet
           bucket:  Bucket

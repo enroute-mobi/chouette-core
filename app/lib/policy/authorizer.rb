@@ -48,6 +48,8 @@ module Policy
 
       # [Private] Returns Policy instance associated to the given resource
       def policy(resource)
+        return ::Policy::DenyAll.instance if resource.nil?
+
         resource = resource.object if resource.is_a?(::AF83::Decorator::EnhancedDecorator) # meh...
         self.class.policy_class(resource).new resource, context: context
       end

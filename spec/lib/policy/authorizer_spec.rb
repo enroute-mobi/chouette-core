@@ -87,6 +87,18 @@ RSpec.describe Policy::Authorizer::Controller do
       let(:resource) { User.new }
 
       it { is_expected.to be_instance_of(Policy::User) }
+
+      context 'when decorated' do
+        let(:resource) { super().decorate }
+
+        it { is_expected.to be_instance_of(Policy::User) }
+      end
+    end
+
+    context 'for nil' do
+      let(:resource) { nil }
+
+      it { is_expected.to eq(Policy::DenyAll.instance) }
     end
   end
 

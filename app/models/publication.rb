@@ -19,19 +19,19 @@ class Publication < Operation
     self.class.tmf('name', setup_name: publication_setup.name, date: pretty_date)
   end
 
-  def perform # rubocop:disable Metrics/AbcSize
+  def perform # rubocop:disable Metrics/MethodLength
     referential.switch do
       export_builder.build_export.tap do |export|
         Rails.logger.info "Launching export #{export.name}"
         export.save!
 
-        raise "Publication Export '#{export.name}' failed" if export.synchronous && !export.successful?
+        if export.synchronous && !export.successful?
+          Rails.logger.error "Publication Export '#{export.name}' failed"
+          return # rubocop:disable Lint/NonLocalExitFromIterator
+        end
       end
 
       send_to_destinations
-      # Send notification for synchronous exports (Publication Netex Generic, GTFS...)
-      workbench = workgroup.owner_workbench
-      workbench.notification_center.notify(self) if workbench
     end
   end
 

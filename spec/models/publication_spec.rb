@@ -61,6 +61,20 @@ RSpec.describe Publication, type: :model do
         expect(publication).to receive(:send_to_destinations)
         subject
       end
+
+      it 'should send notifications' do
+        create(:workbench, workgroup: publication.workgroup, organisation: publication.workgroup.owner)
+        publication.workgroup.owner_workbench.notification_rules.create!(
+          notification_type: 'publication',
+          rule_type: 'notify',
+          target_type: 'external_email',
+          external_email: 'user@test.ex'
+        )
+
+        expect { subject }.to change { Delayed::Job.count }.by(1)
+        expect(Delayed::Job.last.payload_object.job_data['job_class']).to eq('ActionMailer::DeliveryJob')
+        expect(Delayed::Job.last.payload_object.job_data['arguments']).to include('user@test.ex')
+      end
     end
 
     context 'when the export raises an error' do

@@ -272,7 +272,7 @@ class Operation < ApplicationModel
   class Notifier < Callback
     # To support operations without workbench
     def workbench
-      operation.try(:workbench)
+      operation.try(:workbench) || operation.try(:workgroup)&.owner_workbench
     end
     delegate :notification_center, to: :workbench, allow_nil: true
 

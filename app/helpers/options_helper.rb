@@ -4,7 +4,7 @@ module OptionsHelper
   def option_input(form, export, attr, option_def, type)
     attr = option_def[:name] if option_def[:name].present?
 
-    value = export.try(attr) || option_def[:default_value]
+    value = export.try(attr).nil? ? option_def[:default_value] : export.try(attr)
 
     opts = {
       input_html: { value: value },

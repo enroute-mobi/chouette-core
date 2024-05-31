@@ -92,7 +92,7 @@ module SimpleBlockForHelper
           attribute_method = :get_objectid
         end
 
-        raw_value = resource.send(attribute_method)
+        raw_value = resource.send(attribute_method) if resource.respond_to? attribute_method
       end
 
       label = options[:label] || resource.class.human_attribute_name(attribute_name)

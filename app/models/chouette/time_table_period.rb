@@ -98,5 +98,10 @@ module Chouette
       single_day_periods.delete_all
     end
 
+    def to_days_bit
+      range.map do |date|
+        time_table.days_of_week.match_date?(date) ? '1' : '0'
+      end.join
+    end
   end
 end

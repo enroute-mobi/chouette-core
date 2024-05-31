@@ -1665,6 +1665,16 @@ RSpec.describe Export::NetexGeneric do
         end
       end
 
+      describe '#to_days_bit' do
+        let(:period) do
+          Chouette::TimeTablePeriod.new period_start: Date.parse('2021-01-01'),
+                                        period_end: Date.parse('2021-01-04'),
+                                        time_table: time_table
+        end
+
+        it { expect(decorator.operating_period.class).to eq Netex::UicOperatingPeriod }
+        it { expect(period.to_days_bit).to eq '1111' }
+      end
     end
 
     describe Export::NetexGeneric::DateDecorator do

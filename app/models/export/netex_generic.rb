@@ -1894,7 +1894,7 @@ class Export::NetexGeneric < Export::Base
     end
 
     def operating_period
-      Netex::OperatingPeriod.new operating_period_attributes
+      Netex::UicOperatingPeriod.new operating_period_attributes
     end
 
     def operating_period_id
@@ -1906,7 +1906,8 @@ class Export::NetexGeneric < Export::Base
         id: operating_period_id,
         data_source_ref: time_table.data_source_ref,
         from_date: period_start,
-        to_date: period_end
+        to_date: period_end,
+        valid_day_bits: to_days_bit
       }
     end
 

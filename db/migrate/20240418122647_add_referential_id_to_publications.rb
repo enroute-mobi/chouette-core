@@ -18,12 +18,6 @@ class AddReferentialIdToPublications < ActiveRecord::Migration[5.2]
                     FROM aggregates
                     WHERE aggregates.id = publications.parent_id
                   )
-                WHEN 'Export::Base' THEN
-                  (
-                    SELECT exports.referential_id
-                    FROM exports
-                    WHERE exports.id = publications.parent_id
-                  )
               END
             )
         SQL

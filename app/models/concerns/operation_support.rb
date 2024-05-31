@@ -65,10 +65,8 @@ module OperationSupport
   end
 
   def publish(publication_attributes = {})
-    publication_attributes = publication_attributes.merge(parent: self, creator: creator)
     workgroup.publication_setups.enabled.each do |publication_setup|
-      publication = publication_setup.publish(referential_for_publication, publication_attributes)
-      publication.enqueue
+      publish_with_setup(publication_setup, publication_attributes)
     end
   end
 

@@ -47,10 +47,6 @@ class Publication < Operation
     end
   end
 
-  def previous
-    publication_setup.publications.order(created_at: :desc).where.not(id: self).first
-  end
-
   def export_builder
     ExportBuilder.new(self)
   end

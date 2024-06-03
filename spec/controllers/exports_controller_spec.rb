@@ -129,22 +129,6 @@ RSpec.describe ExportsController, type: :controller do
       expect(response.body).to eq(export.file.read)
     end
   end
-
-  describe 'POST #upload' do
-    context 'with the token' do
-      it 'should be successful' do
-        post :upload, params: parent_params.merge({ id: export.id, token: export.token_upload })
-        expect(response).to be_successful
-      end
-    end
-
-    context 'without the token' do
-      it 'should be unsuccessful' do
-        post :upload, params: parent_params.merge({ id: export.id, token: 'foo' })
-        expect(response).to_not be_successful
-      end
-    end
-  end
 end
 
 RSpec.describe ExportsController::Search, type: :model do

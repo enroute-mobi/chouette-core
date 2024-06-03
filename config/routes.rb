@@ -257,7 +257,6 @@ ChouetteIhm::Application.routes.draw do # rubocop:disable Metrics/BlockLength
         as: 'import_import_resource_import_messages'
 
     resources :exports do
-      post :upload, on: :member
       get :download, on: :member
     end
   end
@@ -386,10 +385,6 @@ ChouetteIhm::Application.routes.draw do # rubocop:disable Metrics/BlockLength
       get 'browser_environment', to: 'browser_environment#show', defaults: { format: 'json' }
 
       namespace :internals do
-        post 'netex_exports/:id/upload', to: 'netex_exports#upload'
-
-        get 'netex_exports/:id/notify_parent', to: 'netex_exports#notify_parent'
-
         resources :netex_imports, only: :create do
           member do
             get :notify_parent

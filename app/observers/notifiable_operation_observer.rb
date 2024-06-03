@@ -1,5 +1,5 @@
 class NotifiableOperationObserver < ActiveRecord::Observer
-  observe Export::Gtfs, Export::Netex, Export::NetexGeneric, Import::Workbench, Aggregate, Merge
+  observe Export::Gtfs, Export::NetexGeneric, Import::Workbench, Aggregate, Merge
 
   def after_update(operation)
     return unless email_sendable_for?(operation)

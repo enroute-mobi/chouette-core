@@ -13,10 +13,6 @@ template[x-if="type == 'Export::Gtfs'"]
   div
     = render 'exports/types/gtfs', form: form, resource_type: resource_type
 
-template[x-if="type == 'Export::Netex'"]
-  div
-    = render 'exports/types/netex', form: form, resource_type: resource_type
-
 template[x-if="type == 'Export::NetexGeneric'"]
   div
     = render 'exports/types/netex_generic', form: form, resource_type: resource_type

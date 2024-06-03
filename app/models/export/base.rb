@@ -35,11 +35,6 @@ class Export::Base < ApplicationModel
   validates_presence_of :creator
   validates_integrity_of :file
 
-  before_save :initialize_fields, on: :create
-  def initialize_fields
-    self.token_upload ||= SecureRandom.urlsafe_base64
-  end
-
   def has_feature?(feature)
     organisation = self.organisation || workgroup&.owner
     organisation&.has_feature?(feature)
@@ -152,22 +147,12 @@ class Export::Base < ApplicationModel
     update_columns status: :failed, ended_at: Time.now
   end
 
-  def notify_publication
-    return false unless finished?
-    return false if notified_parent_at
-    return false unless publication.present?
-
-    update_column :notified_parent_at, Time.now
-    publication&.child_change
-    true
-  end
-
   def self.model_name
     ActiveModel::Name.new Export::Base, Export::Base, 'Export'
   end
 
   def self.user_visible_descendants
-    [Export::Gtfs, Export::NetexGeneric, Export::Netex].select(&:user_visible?)
+    [Export::Gtfs, Export::NetexGeneric].select(&:user_visible?)
   end
 
   def self.user_visible?
@@ -225,30 +210,4 @@ class Export::Base < ApplicationModel
     unless workgroup.export_types.include?(type)
     end
   end
-
-  # Call IEV to delete when Export::Netex is deleted
-  def call_iev_callback
-    return if self.class.finished_statuses.include?(status)
-    threaded_call_boiv_iev
-  end
-
-  def threaded_call_boiv_iev
-    return if Rails.env.test?
-    Thread.new(&method(:call_boiv_iev))
-  end
-
-  def call_boiv_iev
-    Rails.logger.error("Begin IEV call for import")
-
-    # Java code expects tasks in NEW status
-    # Don't change status before calling iev
-
-    Net::HTTP.get iev_callback_url
-    Rails.logger.error("End IEV call for import")
-  rescue Exception => e
-    aborted!
-    referential&.failed!
-    Chouette::Safe.capture "IEV server error", e
-  end
-
 end

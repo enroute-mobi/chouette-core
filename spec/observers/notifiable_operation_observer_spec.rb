@@ -8,7 +8,7 @@ RSpec.describe NotifiableOperationObserver do
 
   describe "after_update" do
     [
-      Export::Gtfs, Export::Netex, Export::NetexGeneric,
+      Export::Gtfs, Export::NetexGeneric,
       Import::Workbench, Merge
     ].each do |operation_class|
       context "when operation is an #{operation_class}" do

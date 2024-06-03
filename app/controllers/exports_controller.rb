@@ -5,24 +5,10 @@ class ExportsController < Chouette::WorkbenchController
 
   defaults resource_class: Export::Base, collection_name: 'exports', instance_name: 'export'
 
-  skip_before_action :authenticate_user!, only: [:upload]
-  skip_before_action :verify_authenticity_token, only: [:upload]
   # rubocop:disable Rails/LexicallyScopedActionFilter
-  before_action :authorize_resource, except: %i[new create index show upload download]
+  before_action :authorize_resource, except: %i[new create index show download]
   # rubocop:enable Rails/LexicallyScopedActionFilter
   before_action :load_referentials, only: %i[new create]
-
-  # FIXME See CHOUETTE-207
-  def upload
-    resource = Export::Base.find params[:id]
-    if params[:token] == resource.token_upload
-      resource.file = params[:file]
-      resource.save!
-      render json: {status: :ok}
-    else
-      user_not_authorized
-    end
-  end
 
   def show
     @export = resource.decorate(context: { parent: parent })

@@ -14,5 +14,11 @@ module Query
     def without_country
       scope.where(country_code: nil)
     end
+
+    def is_referent(value)
+      change_scope(if: value.present?) do |scope|
+        scope.where(is_referent: value)
+      end
+    end
   end
 end

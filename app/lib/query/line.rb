@@ -46,7 +46,9 @@ module Query
     end
 
     def is_referent(value)
-      where(value, :eq, :is_referent)
+      change_scope(if: value.present?) do |scope|
+        scope.where(is_referent: value)
+      end
     end
 
     # Select in the current scope Lines which are the referents of the given Lines .. and the given Lines themselves

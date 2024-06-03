@@ -7,8 +7,6 @@ class Workbench
     defaults resource_class: ::Workbench::Sharing
     defaults collection_name: 'sharings', instance_name: 'workbench_sharing'
 
-    skip_before_action :authorize_resource_class
-
     def create
       create! { workbench_path }
     end

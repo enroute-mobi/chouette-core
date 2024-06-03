@@ -45,6 +45,10 @@ module Query
       end
     end
 
+    def is_referent(value)
+      where(value, :eq, :is_referent)
+    end
+
     # Select in the current scope Lines which are the referents of the given Lines .. and the given Lines themselves
     #
     # For example, into an Export:

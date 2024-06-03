@@ -37,13 +37,13 @@
   | window.custom_fields = #{(@custom_fields.to_json).html_safe};
   | window.extra_headers = #{(@extra_headers.to_json).html_safe};
   | window.constraint_zones_routes = "#{url_for([@workbench, @referential, @route.line, :routing_constraint_zones]).html_safe}";
-  | window.companies_path = "#{workbench_line_referential_companies_path(@workbench, @referential.line_referential).html_safe}";
+  | window.companies_path = "#{workbench_line_referential_companies_path(@workbench, @referential.line_referential)}";
   | window.available_specific_stop_places_path = "#{(url_for([@workbench, @referential, @route.line, @route, :journey_patterns])+"/:journey_pattern_id:/available_specific_stop_places").html_safe}";
   | window.available_code_spaces = #{(@referential.workgroup&.code_spaces.to_json)&.html_safe};
 
 - if has_feature?(:stop_area_routing_constraints)
   = javascript_tag do
-    | window.stop_area_constraints_routes = "#{workbench_stop_area_referential_stop_area_routing_constraints_path(@workbench, @referential.stop_area_referential).html_safe}";
+    | window.stop_area_constraints_routes = "#{workbench_stop_area_referential_stop_area_routing_constraints_path(@workbench, @referential.stop_area_referential)}";
 
 - if has_feature?(:vehicle_journeys_return_route)
   = javascript_tag do

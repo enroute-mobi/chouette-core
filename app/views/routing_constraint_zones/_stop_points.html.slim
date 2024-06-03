@@ -1,7 +1,7 @@
 - stop_points.each do |stop_point|
   .wrapper
       div
-        = link_to default_stop_area_path(stop_point.stop_area), class: 'navlink', title: "Voir l'arrêt" do
+        = link_to workbench_stop_area_referential_stop_area_path(@workbench, stop_point.stop_area), class: 'navlink', title: "Voir l'arrêt" do
           span = stop_point.stop_area.name
 
       - referential.stop_area_referential.enabled_stops_selection_displayed_fields.each do |f|

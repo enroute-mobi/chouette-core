@@ -18,7 +18,7 @@
               TableBuilderHelper::Column.new( \
                 key: :company_id, \
                 attribute: Proc.new {|contract| contract.company&.name}, \
-                link_to: -> (contract) { redirect_company_path(contract.company) } \
+                link_to: -> (contract) { workbench_line_referential_company_path(@workbench, contract.company) } \
 							), \
               TableBuilderHelper::Column.new( \
                 key: :lines, \

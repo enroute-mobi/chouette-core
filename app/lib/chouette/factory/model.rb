@@ -4,7 +4,8 @@ module Chouette
       include Log
 
       attr_reader :name
-      attr_accessor :required, :singleton, :association_name
+      attr_writer :association_name
+      attr_accessor :required, :singleton
       def initialize(name, options = {})
         @name = name
 

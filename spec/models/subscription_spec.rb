@@ -160,7 +160,7 @@ RSpec.describe Subscription do
       end
 
       it "doesn't create a Workgroup" do
-        expect { subject }.to_not change { Workgroup.count }
+        expect { subject }.not_to(change { Workgroup.count })
       end
 
       describe 'workbench' do
@@ -193,7 +193,7 @@ RSpec.describe Subscription do
         end
 
         it "doesn't create a Workgroup" do
-          expect { subject }.to_not change { Workgroup.count }
+          expect { subject }.not_to(change { Workgroup.count })
         end
 
         it 'workbench does not change its Organisation' do
@@ -215,7 +215,7 @@ RSpec.describe Subscription do
         end
 
         it "doesn't create a Workgroup" do
-          expect { subject }.to_not change { Workgroup.count }
+          expect { subject }.not_to(change { Workgroup.count })
         end
 
         it 'workbench does not change its Organisation' do

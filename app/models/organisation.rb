@@ -14,8 +14,8 @@ class Organisation < ApplicationModel
   has_many :line_referentials, through: :line_referential_memberships
 
   has_many :workbenches, dependent: :destroy
-  has_many :workbench_sharings, class_name: 'Workbench::Sharing', dependent: :destroy,
-           as: :recipient, inverse_of: :recipient
+  has_many :workbench_sharings,
+           class_name: 'Workbench::Sharing', dependent: :destroy, as: :recipient, inverse_of: :recipient
   has_many :line_providers, through: :workbenches
   has_many :workgroups, -> { distinct }, through: :workbenches do
     def owned

@@ -19,7 +19,7 @@ RSpec.describe AggregateMailer, type: :mailer do
 
     let(:expected_content) do
       I18n.t("mailers.aggregate_mailer.finished.body", agg_name: aggregate.name,
-             status: I18n.t("operation_support.statuses.#{aggregate.status}"))
+             status: I18n.t("mailers.statuses.#{aggregate.status}"))
     end
 
     it { is_expected.to include(expected_content) }

@@ -1,4 +1,4 @@
 h2.mail-title
   == 'mailers.hello'.t
-p== t("mailers.#{@publication.class.name.underscore}_mailer.finished.body", pub_name: @publication.name, status: I18n.t("publications.statuses.#{@status}"))
+p== t("mailers.#{@publication.class.name.underscore}_mailer.finished.body", pub_name: @publication.name, status: I18n.t("mailers.statuses.#{@status}"))
 p= mailer_button(t("mailers.#{@publication.class.name.underscore}_mailer.finished.button"), workgroup_publication_setup_publication_url(@publication.workgroup, @publication.publication_setup_id, @publication))

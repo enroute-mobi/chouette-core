@@ -1,4 +1,4 @@
 h2.mail-title
   == 'mailers.hello'.t
-p== t("mailers.#{@aggregate.class.name.underscore}_mailer.finished.body", agg_name: @aggregate.name, status: I18n.t("aggregates.statuses.#{@status}"))
+p== t("mailers.#{@aggregate.class.name.underscore}_mailer.finished.body", agg_name: @aggregate.name, status: I18n.t("mailers.statuses.#{@status}"))
 p= mailer_button(t("mailers.#{@aggregate.class.name.underscore}_mailer.finished.button"), workgroup_aggregate_url(@aggregate.workgroup, @aggregate))

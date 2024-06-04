@@ -19,7 +19,7 @@ RSpec.describe MergeMailer, type: :mailer do
 
     let(:expected_content) do
       I18n.t("mailers.merge_mailer.finished.body", merge_name: merge.name,
-             status: I18n.t("operation_support.statuses.#{merge.status}"))
+             status: I18n.t("mailers.statuses.#{merge.status}"))
     end
 
     it { is_expected.to include(expected_content) }

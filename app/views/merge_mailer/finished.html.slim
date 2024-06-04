@@ -1,6 +1,6 @@
 h2.mail-title
   == 'mailers.hello'.t
-p== t('mailers.merge_mailer.finished.body', merge_name: @merge.name, status: I18n.t("operation_support.statuses.#{@status}"))
+p== t('mailers.merge_mailer.finished.body', merge_name: @merge.name, status: I18n.t("mailers.statuses.#{@status}"))
 p
   - if @merge.successful?
     = mailer_button(t('mailers.merge_mailer.button'), workbench_referential_url(@merge.workbench, @merge.new))

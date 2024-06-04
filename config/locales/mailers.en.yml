@@ -3,31 +3,42 @@ en:
     info_contact: 'If you have any question, our support team is reachable at '
     footer: 'is designed and developped by'
     hello: 'Hello,'
+    statuses:
+      aborted:    🔴 Aborted
+      canceled:   🔴 Canceled
+      error:      🔴 Error
+      failed:     🔴 Failed
+      new:        New
+      ok:         🟢 Successful
+      pending:    🕦 Pending
+      running:    🕦 Running
+      successful: 🟢 Successful
+      warning:    🟠 Warning
+      successful_with_warnings: 🟠 Successful (with warnings)
     import_mailer:
       button: See Import
       finished:
         subject: The import is over
         body: |
-          Hello,<br/><br/>
-          You launched the import %{import_name}.<br/>
+          You launched the import <strong>"%{import_name}"</strong>.<br/>
           It is now over.<br/>
-          The operation status is : %{status}<br/><br/>
+          The operation status is : <strong>%{status}</strong>
     export_mailer:
       button: See export
       finished:
         subject: The export is over
         body: |
-          You launched the export %{export_name}.<br/>
+          You launched the export <strong>"%{export_name}"</strong>.<br/>
           It is now over.<br/>
-          The operation status is %{status}<br/><br/>
+          The operation status is <strong>%{status}</strong>
     merge_mailer:
       button: See current offer
       finished:
         subject: Merge is done
         body: |
-          You launched the merge %{merge_name}.<br/>
+          You launched the merge <strong>"%{merge_name}"</strong>.<br/>
           It is now over.<br/>
-          The operation status is %{status}<br/><br/>
+          The operation status is <strong>%{status}</strong>
     subscription_mailer:
       created:
         subject: A new user signed up
@@ -70,8 +81,8 @@ en:
         button: See Aggregation
         subject: The aggregation is over
         body: |
-          Hello, the aggregation is over
-          You started the aggregation %{agg_name}. The operation is now over. It is %{status}
+          You started the aggregation <strong>"%{agg_name}"</strong>.<br/>
+          The operation is now over.<br/>
           The operation status is %{status}<br/><br/>
     publication_mailer:
       publish:
@@ -82,9 +93,9 @@ en:
         button: See the publication
         subject: The publication is over
         body: |
-          Hello, the publication is over
-          You started a publication %{pub_name}. The operation is now over. It is %{status}
-          The operation status is %{status}<br/><br/>
+          You started a publication <strong>"%{pub_name}"</strong>. <br/>
+          The operation is now over.<br/>
+          The operation status is : <strong>%{status}</strong>.
     source_retrieval_mailer:
       button: See Source
       finished:

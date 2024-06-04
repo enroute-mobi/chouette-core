@@ -21,7 +21,7 @@ RSpec.describe SourceRetrievalMailer, type: :mailer do
     subject(:body) { email.body.raw_source.gsub("\r\n", "\n") }
 
     let(:expected_content) do
-      I18n.t('mailers.source_retrieval_mailer.finished.body', source_name: source.name, status: 'Succès')
+      I18n.t('mailers.source_retrieval_mailer.finished.body', source_name: source.name, status: I18n.t("mailers.statuses.successful"))
     end
 
     it { is_expected.to include(expected_content) }

@@ -2,7 +2,7 @@
 class PublicationMailerPreview < ActionMailer::Preview
 
   def publish
-    dest = Destination::Mail.new(publication_setup_id: 1, name: 'test destination', recipients: ["test@test.com"], email_title: "Publication par Mail", email_text: "Bonjour", attached_export_file: true)
+    dest = Destination::Mail.new(publication_setup_id: 1, name: 'test destination', recipients: ["test@test.com"], email_title: "Publication par Mail", email_text: "Bonjour", attached_export_file: false)
     PublicationMailer.publish(Publication.first, dest)
   end
 

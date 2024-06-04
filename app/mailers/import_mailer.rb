@@ -1,8 +1,8 @@
 class ImportMailer < ApplicationMailer
 
-  def finished(import_id, recipient, import_status = nil)
+  def finished(import_id, recipient, status = nil)
     @import = Import::Base.find(import_id)
-    @import_status = import_status || @import.status
+    @status = status || @import.status
     mail to: recipient, subject: mail_subject
   end
 end

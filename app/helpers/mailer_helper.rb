@@ -42,7 +42,7 @@ module MailerHelper
     Chouette::Config.mailer.subject_prefix
   end
 
-  def mail_subject(i18n: nil, operation_status: nil, method: 'finished', attributes: {})
+  def mail_subject(i18n: nil, method: 'finished', attributes: {})
     i18n ||= "mailers.#{self.class.name.underscore}.#{method}.subject"
     if @status
       operation_status ||= "mailers.statuses.#{@status}"

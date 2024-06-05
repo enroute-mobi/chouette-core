@@ -34,7 +34,7 @@ RSpec.describe LineNoticeMembershipsCollectionsController, type: :controller do
 
   let(:base_params) { { 'workbench_id' => workbench.id.to_s, 'line_id' => line.id.to_s } }
 
-  before { @user.update(permissions: %w[lines.update line_notices.create line_notices.update line_notices.destroy]) }
+  before { @user.update(permissions: %w[lines.update line_notice_memberships.create line_notice_memberships.destroy]) }
 
   describe 'GET #edit' do
     let(:request) { get :edit, params: base_params }

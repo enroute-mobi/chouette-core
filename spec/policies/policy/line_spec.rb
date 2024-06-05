@@ -48,6 +48,18 @@ RSpec.describe Policy::Line, type: :policy do
         it { is_expected.to be_falsy }
       end
     end
+
+    context 'Chouette::LineNoticeMembership' do
+      let(:resource_class) { ::Chouette::LineNoticeMembership }
+
+      let(:policy_line_notice_create) { true }
+
+      it { applies_strategy(::Policy::Strategy::Permission, :create, ::Chouette::LineNoticeMembership) }
+      it { applies_strategy(Policy::Strategy::LineProvider) }
+      it { applies_strategy(::Policy::Strategy::Permission, :update) }
+
+      it { is_expected.to be_truthy }
+    end
   end
 
   describe '#update?' do

@@ -42,12 +42,12 @@ class LineNoticeMembershipsController < Chouette::LineReferentialController
     )
   end
 
-  def parent_for_parent_policy
-    line
-  end
-
   def authorize_resource_class
     authorize_policy(parent_policy, nil, Chouette::LineNotice)
+  end
+
+  def parent_for_parent_policy
+    line
   end
 
   private

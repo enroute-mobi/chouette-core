@@ -13,6 +13,8 @@ RSpec.describe Policy::LineNoticeMembership, type: :policy do
   describe '#destroy?' do
     subject { policy.destroy? }
 
+    it { applies_strategy(::Policy::Strategy::Permission, :destroy) }
+
     let(:policy_line_update) { true }
 
     before do

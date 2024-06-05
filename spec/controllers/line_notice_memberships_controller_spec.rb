@@ -35,7 +35,15 @@ RSpec.describe LineNoticeMembershipsController, type: :controller do
   let(:base_line_notice_attrs) { { 'title' => 'test' } }
   let(:line_notice_attrs) { base_line_notice_attrs }
 
-  before { @user.update(permissions: %w[lines.update line_notices.create line_notices.update line_notices.destroy]) }
+  before do
+    @user.update(
+      permissions: %w[
+        lines.update
+        line_notices.create
+        line_notice_memberships.create line_notice_memberships.destroy
+      ]
+    )
+  end
 
   describe 'GET #index' do
     let(:context) do

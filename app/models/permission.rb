@@ -99,6 +99,8 @@ class Permission
       permissions << "sources.retrieve"
       permissions << "document_memberships.create"
       permissions << "document_memberships.destroy"
+      permissions << 'line_notice_memberships.create'
+      permissions << 'line_notice_memberships.destroy'
     end
 
     def referentials

@@ -2,6 +2,8 @@
 
 module Policy
   class LineNoticeMembership < Base
+    authorize_by Strategy::Permission
+
     protected
 
     def _destroy?

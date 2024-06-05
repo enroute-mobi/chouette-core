@@ -4,11 +4,9 @@ class Import::Base < ApplicationModel
   include NotifiableSupport
   include PurgeableResource
 
-  attr_accessor :code_space
-  after_initialize :initialize_space_code
-
   has_many :processings, as: :operation, dependent: :destroy
   has_array_of :overlapping_referentials, class_name: '::Referential'
+  belongs_to :code_space, optional: false, default: -> { workgroup&.code_spaces.default }
 
   scope :unfinished, -> { where 'notified_parent_at IS NULL' }
   scope :having_status, ->(statuses) { where(status: statuses ) }
@@ -44,11 +42,6 @@ class Import::Base < ApplicationModel
 
   def workgroup
     workbench&.workgroup
-  end
-
-  def code_space_default
-    # User option in the future
-    @code_space ||= workgroup.code_spaces.default if workgroup
   end
 
   def public_code_space
@@ -277,11 +270,5 @@ class Import::Base < ApplicationModel
   def initialize_fields
     super
     self.token_download ||= SecureRandom.urlsafe_base64
-  end
-
-  def initialize_space_code
-    unless self.code_space.present?
-      self.code_space = code_space_default
-    end
   end
 end

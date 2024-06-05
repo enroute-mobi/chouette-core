@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2024_06_03_124932) do
+ActiveRecord::Schema.define(version: 2024_06_04_133209) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "btree_gin"
@@ -722,6 +722,7 @@ ActiveRecord::Schema.define(version: 2024_06_03_124932) do
     t.datetime "notified_recipients_at"
     t.bigint "user_id"
     t.bigint "overlapping_referential_ids", default: [], array: true
+    t.bigint "code_space_id", null: false
     t.index ["referential_id"], name: "index_imports_on_referential_id"
     t.index ["workbench_id"], name: "index_imports_on_workbench_id"
   end

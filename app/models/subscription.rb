@@ -18,21 +18,11 @@ class Subscription
   end
 
   def organisation
-    @organisation ||= Organisation.new(
-      name: organisation_name,
-      code: organisation_name&.parameterize,
-      features: Feature.all
-    )
+    @organisation ||= Organisation.new(organisation_params)
   end
 
   def user
-    @user ||= organisation.users.build(
-      name: user_name,
-      email: email,
-      password: password,
-      password_confirmation: password_confirmation,
-      profile: :admin
-    )
+    @user ||= organisation.users.build(user_params)
   end
 
   def workbench_confirmation
@@ -66,6 +56,31 @@ class Subscription
     end
 
     true
+  end
+
+  private
+
+  def organisation_params
+    {
+      name: organisation_name,
+      code: organisation_name&.parameterize,
+      features: Feature.all
+    }
+  end
+
+  def user_params # rubocop:disable Metrics/MethodLength
+    user_params = {
+      name: user_name,
+      email: email,
+      password: password,
+      password_confirmation: password_confirmation,
+      profile: :admin
+    }
+    if organisation.has_feature?('create_workgroup_permission_on_subscription')
+      user_params[:profile] = :custom
+      user_params[:permissions] = Permission::Profile.permissions_for(:admin) + ['workgroups.create']
+    end
+    user_params
   end
 
   # ActiveModel::Validator isn't instance oriented ..

@@ -49,6 +49,8 @@ module Macro
     end
 
     class Run < ApplicationModel
+      include OptionsSupport
+
       self.table_name = 'macro_context_runs'
 
       belongs_to :macro_list_run, class_name: 'Macro::List::Run', optional: false, inverse_of: :macro_context_runs
@@ -85,3 +87,5 @@ end
 
 # STI
 require_dependency 'macro/context/transport_mode'
+require_dependency 'macro/context/saved_search'
+

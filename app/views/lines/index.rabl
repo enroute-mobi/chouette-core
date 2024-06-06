@@ -1,4 +1,4 @@
-collection @lines
+collection @collection
 
 node do |line|
   {

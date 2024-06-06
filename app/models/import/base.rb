@@ -4,9 +4,11 @@ class Import::Base < ApplicationModel
   include NotifiableSupport
   include PurgeableResource
 
+  after_initialize :set_defaults
+
   has_many :processings, as: :operation, dependent: :destroy
   has_array_of :overlapping_referentials, class_name: '::Referential'
-  belongs_to :code_space, optional: false, default: -> { workgroup&.code_spaces.default }
+  belongs_to :code_space, optional: false, default: -> { default_code_space }
 
   scope :unfinished, -> { where 'notified_parent_at IS NULL' }
   scope :having_status, ->(statuses) { where(status: statuses ) }
@@ -263,6 +265,14 @@ class Import::Base < ApplicationModel
     when "application/xml", "text/xml"
       "xml"
     end
+  end
+
+  def default_code_space
+    workgroup.code_spaces.default if workgroup
+  end
+
+  def set_defaults
+    self.code_space ||= default_code_space
   end
 
   private

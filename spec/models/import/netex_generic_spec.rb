@@ -479,7 +479,7 @@ RSpec.describe Import::NetexGeneric do
         }
       end
 
-      let(:code_space) {workgroup.code_spaces.first}
+      let(:code_space) { workgroup.code_spaces.default }
       let(:stop_area) {::Chouette::StopArea.find_by_registration_number("stop-place-1")}
 
       context "when import has space code input" do
@@ -488,25 +488,6 @@ RSpec.describe Import::NetexGeneric do
           import.code_space = code_space
           import.part(:stop_area_referential).import!
         end
-
-        it "should import stop_area" do
-          expect(stop_area.reload).not_to be_nil
-        end
-
-        it "should import entrance" do
-          expect(entrance.reload).not_to be_nil
-        end
-
-        it "should create association between stop_area and entrance" do
-          expect(entrance&.stop_area).to eq(stop_area)
-          expect(stop_area&.entrances).to eq([entrance])
-        end
-      end
-
-      context "when import has no space code input" do
-        let(:entrance) {::Entrance.by_code(import.code_space_default, "entrance-1").first}
-
-        before { import.part(:stop_area_referential).import! }
 
         it "should import stop_area" do
           expect(stop_area.reload).not_to be_nil

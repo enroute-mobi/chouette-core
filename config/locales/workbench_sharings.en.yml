@@ -5,6 +5,9 @@ en:
         recipient: "Recipient"
     new:
       title: "Add a workbench sharing"
+    actions:
+      new: "Add new sharing"
+      destroy_confirm: "Are you sure you want to delete this sharing?"
 
   activerecord:
     models:

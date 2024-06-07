@@ -14,6 +14,12 @@ class Workbench
 
     before_validation :create_invitation_code, on: :create, if: :pending?
 
+    class << self
+      def model_name
+        ActiveModel::Name.new(self, parent)
+      end
+    end
+
     def pending?
       recipient_id.blank?
     end

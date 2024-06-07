@@ -274,7 +274,7 @@ ChouetteIhm::Application.routes.draw do # rubocop:disable Metrics/BlockLength
     resources :processing_rules, as: 'processing_rule_workgroups', controller: 'workgroup_processing_rules'
 
     resources :workbenches, controller: :workgroup_workbenches, only: %i[new create show edit update] do
-      resource :sharings, controller: 'workbench/sharings', only: %i[new create destroy]
+      resources :sharings, controller: 'workbench/sharings', only: %i[new create destroy]
     end
 
     resource :output, controller: :workgroup_outputs

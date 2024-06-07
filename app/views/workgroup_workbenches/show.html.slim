@@ -36,7 +36,7 @@
         .definition-list
           .dl-head
             = t('workbenches.show.sections.sharings')
-        = table_builder_2 @workbench.sharings,
+        = table_builder_2 @workbench_sharings,
           [ \
             TableBuilderHelper::Column.new( \
               key: :name, \
@@ -49,5 +49,8 @@
           ],
           cls: 'table workbench_sharings',
           action: :index
-        .flex
-          = link_to(t('workbenches.actions.add_sharing'), new_workgroup_workbench_sharings_path(@workgroup, @workbench), class: 'btn btn-primary ml-auto')
+        - if @workbench_sharings.action_links.any?
+          .flex
+            - @workbench_sharings.action_links.each do |link|
+              = link.to_html do |l|
+                - l.class 'btn btn-primary ml-auto'

@@ -5,6 +5,9 @@ fr:
         recipient: "Destinataire"
     new:
       title: "Ajouter un partage d'un espace de travail"
+    actions:
+      new: "Ajouter un partage"
+      destroy_confirm: "Etes vous sûr de vouloir supprimer ce partage ?"
 
   activerecord:
     models:

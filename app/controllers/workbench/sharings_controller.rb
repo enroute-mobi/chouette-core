@@ -11,6 +11,10 @@ class Workbench
       create! { workbench_path }
     end
 
+    def destroy
+      destroy! { workbench_path }
+    end
+
     private
 
     def workbench_path
@@ -18,7 +22,7 @@ class Workbench
     end
 
     def workbench_sharing_params
-      @workbench_sharing_params ||= params.require(:workbench_sharing).permit(:name, :recipient_type, :recipient_id)
+      @workbench_sharing_params ||= params.require(:sharing).permit(:name, :recipient_type, :recipient_id)
     end
   end
 end

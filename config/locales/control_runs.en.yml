@@ -60,6 +60,9 @@ en:
         target_code_space_id: Target code space
         target_code_space: Target code space
         expected_format: Expected format
+      control/format_attribute/run:
+        target_attribute: Target Attribute
+        expected_format: Expected format
       control/model_status/run:
         expected_status: Expected status
       control/service_count_trend/run:

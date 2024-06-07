@@ -13,10 +13,6 @@ FactoryBot.define do
       association :publication_setup, factory: :publication_setup_gtfs_by_lines
     end
 
-    trait :with_idfm_netex_full do
-      association :publication_setup, factory: :publication_setup_idfm_netex_full
-    end
-
     trait :with_netex_generic do
       association :publication_setup, factory: :publication_setup_netex_generic
     end

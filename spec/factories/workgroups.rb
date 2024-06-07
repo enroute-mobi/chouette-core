@@ -4,7 +4,7 @@ FactoryBot.define do
     association :line_referential
     association :stop_area_referential
     association :owner, factory: :organisation
-    export_types { %w[Export::Gtfs Export::Netex Export::NetexGeneric] }
+    export_types { %w[Export::Gtfs Export::NetexGeneric] }
     nightly_aggregate_days { '1111111' }
   end
 end

@@ -82,7 +82,7 @@ class ExportDecorator < AF83::Decorator
     end
 
     add_option.call(:duration, display_period)
-    add_option.call(:exported_lines, display_selected_lines_to_export) unless object.is_a?(Export::Netex)
+    add_option.call(:exported_lines, display_selected_lines_to_export)
     add_option.call(:profile, display_profile) if object.is_a?(Export::NetexGeneric)
 
     if object.is_a?(Export::Gtfs)

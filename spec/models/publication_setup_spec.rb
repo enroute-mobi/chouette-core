@@ -33,9 +33,9 @@ RSpec.describe PublicationSetup, type: :model, use_chouette_factory: true do
   before(:each) { referential.switch }
 
   describe '.same_api_usage' do
-    let(:publication_setup1) { PublicationSetup.create(name: "PS1", workgroup: context.workgroup, export_options: { type: 'Export::Netex'} ) }
-    let(:publication_setup2) { PublicationSetup.create(name: "PS2", workgroup: context.workgroup, export_options: { type: 'Export::Gtfs'} ) }
-    let(:publication_setup3) { PublicationSetup.create(name: "PS3", workgroup: context.workgroup, export_options: { type: 'Export::Gtfs'} ) }
+    let!(:publication_setup1) { PublicationSetup.create(name: "PS1", workgroup: context.workgroup, export_options: { type: 'Export::NetexGeneric'} ) }
+    let!(:publication_setup2) { PublicationSetup.create(name: "PS2", workgroup: context.workgroup, export_options: { type: 'Export::Ara'} ) }
+    let!(:publication_setup3) { PublicationSetup.create(name: "PS3", workgroup: context.workgroup, export_options: { type: 'Export::Gtfs'} ) }
 
     context "when publication setup in argument doesn't exist" do
       let(:search_publication_setup) { PublicationSetup.new(name: "Search", workgroup: context.workgroup, export_options: { type: 'Export::Gtfs' } ) }

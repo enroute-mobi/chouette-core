@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2024_05_21_100547) do
+ActiveRecord::Schema.define(version: 2024_06_03_124932) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "btree_gin"
@@ -555,9 +555,7 @@ ActiveRecord::Schema.define(version: 2024_05_21_100547) do
     t.string "file"
     t.datetime "started_at"
     t.datetime "ended_at"
-    t.string "token_upload"
     t.string "type"
-    t.datetime "notified_parent_at"
     t.integer "current_step", default: 0
     t.integer "total_steps", default: 0
     t.string "creator"

@@ -14,8 +14,4 @@ FactoryBot.define do
   factory :publication_setup_netex_generic, :parent => :publication_setup do
     export_options { { type: "Export::NetexGeneric", duration: 200, profile: :none } }
   end
-
-  factory :publication_setup_idfm_netex_full, :parent => :publication_setup do
-    export_options { { type:  "Export::Netex", export_type: :full, duration: 60} }
-  end
 end

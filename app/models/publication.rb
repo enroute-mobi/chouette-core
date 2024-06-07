@@ -101,18 +101,6 @@ class Publication < ApplicationModel
     publication_setup.destinations.each { |destination| destination.transmit(self) }
   end
 
-  def child_change
-    Rails.logger.info "child_change for #{inspect}"
-
-    if export.finished? && running?
-      send_to_destinations
-      infer_status
-      # Send notification for asynchronous exports (Publication Netex java)
-      workbench = workgroup.owner_workbench
-      workbench.notification_center.notify(self) if workbench
-    end
-  end
-
   def infer_status
     failed! && return unless export.successful?
 

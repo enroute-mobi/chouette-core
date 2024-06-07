@@ -110,9 +110,6 @@ RSpec.describe Destination::PublicationApi, type: :model do
 
       netex_export = create(:netex_generic_export)
       expect(destination.generate_key(netex_export)).to eq 'netex.zip'
-
-      netex_idfm_full_export = create(:netex_export)
-      expect(destination.generate_key(netex_idfm_full_export)).to eq 'netex.zip'
     end
   end
 end

@@ -1,6 +1,6 @@
 en:
   control_messages:
-    default: "Message on line %{name}"
+    default: "Message on %{target_model} %{name}"
     presence_code: "The %{target_model} %{name} hasn’t got the code space %{code_space_name}"
     presence_custom_field: "The %{target_model} %{name} hasn’t got the custom field %{custom_field}"
     code_format: "The %{target_model} %{name} hasn’t got the code space %{code_space_name} with the expected format %{expected_format}"

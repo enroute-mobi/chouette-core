@@ -7,6 +7,7 @@ en:
       new: New Publication
       edit: Edit Publication
       destroy_confirm: "Are you sure you want destroy this publication setup ?"
+      publish: "Publish now"
     show:
       title: "%{name}"
     form:

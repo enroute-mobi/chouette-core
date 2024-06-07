@@ -288,7 +288,7 @@ ChouetteIhm::Application.routes.draw do # rubocop:disable Metrics/BlockLength
     end
 
     resources :publication_setups do
-      resources :publications, only: :show
+      resources :publications, only: [:create, :show]
     end
 
     resources :publication_apis do

@@ -7,6 +7,7 @@ fr:
       new: Nouvelle Publication
       edit: Modifier une Publication
       destroy_confirm: "Etes vous sûr de supprimer cette Publication ?"
+      publish: "Publier maintenant"
     show:
       title: "%{name}"
     form:

@@ -36,7 +36,7 @@
               ), \
               TableBuilderHelper::Column.new( \
                 name: t(".table_headers.aggregated_at"), \
-                attribute:  Proc.new { |n| n.aggregated_at ? l(n.aggregated_at, format: :short_with_time) : '-' }\
+                attribute:  Proc.new { |n| n.last_aggregate ? l(n.last_aggregate.ended_at, format: :short_with_time) : '-' }\
               ), \
               TableBuilderHelper::Column.new( \
                 key: :creator, \

@@ -12,6 +12,9 @@ en:
       title: "New merged offer"
     show:
       title: "Merged offer %{name}"
+      last_aggregate: "Associated aggregate"
+      last_aggregated_at: "Aggregated at"
+      last_aggregated_referential: "Aggregated Dataset"
       table_headers: 
         referentials: Referentials
         merged_referential: Merged dataset
@@ -27,7 +30,8 @@ en:
       create: Merge data sets
       rollback: Rollback
       rollback_confirm: Are you sure to rollback to this finalized offer ?
-      see_associated_offer: See related data
+      see_aggregated_offer: "See aggregated dataset"
+      see_associated_offer: "See merged dataset"
     statuses:
       new: New
       pending: Pending

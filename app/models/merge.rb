@@ -23,8 +23,10 @@ class Merge < ApplicationModel
   end
 
   def last_aggregate
+    return nil unless new_id
+
     @last_aggregate ||= workgroup.aggregates \
-                                 .successful.where(['? = ANY(referential_ids)', new.id]) \
+                                 .successful.where(['? = ANY(referential_ids)', new_id]) \
                                  .order(created_at: :desc) \
                                  .first
   end

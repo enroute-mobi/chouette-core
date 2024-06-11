@@ -1,20 +1,41 @@
+- javascript_additional_packs 'sequences/form'
+
 = simple_form_for([@workbench, @sequence],
     html: { \
       multipart: true, \
       class: 'tailwind-form', \
-      id: 'sequence_form'\
+      id: 'sequence_form', \
+      'x-data': "sequenceForm(#{@sequence.alpine_state(true)})" \
     }, \
     wrapper: :horizontal_form_tailwind \
   ) do |f|
   .row
-    .col-lg-12 x-data="{ sequence_type: '#{@sequence.sequence_type}'}"
+    .col-lg-12
       = f.input :name
       = f.input :description
       = f.input :sequence_type, include_blank: false, input_html: { 'x-on:change': 'sequence_type = $event.target.value' }, disabled: @sequence.persisted?
       .range x-show="sequence_type == 'range_sequence'"
         = f.input :range_start, input_html: { "x-bind:disabled" => "sequence_type != 'range_sequence'" }
         = f.input :range_end, input_html: { "x-bind:disabled" => "sequence_type != 'range_sequence'" }
-      = f.input :static_list, as: :editable_select, collection: @sequence.static_list, include_blank: false, selected: @sequence.static_list, wrapper: :horizontal_input_editable_select_tailwind, wrapper_html: { 'x-show': "sequence_type == 'static_list'" }, input_html: { multiple: true }
+      .static_list x-show="sequence_type == 'static_list'" x-data="clipboardComponent()"
+        = f.input :static_list, as: :text, input_html: { "x-on:paste" => "pasteFromClipboard", "x-on:input": "updateItems($event)", "x-on:blur": "finalizeItems", "x-bind:value"=> "static_list", rows: 5, class: "placeholder-gray-500" }, placeholder: I18n.t('sequences.form.placeholders.static_list')
+        .flex.items-center.mb-10
+          .flex.justify-end.text-right.w-2/6.mr-8.mb-0.control-label.pt-0.text.optional
+          .w-4/6.flex.items-center.relative
+            table.w-full.border-collapse.mt-4
+              thead
+                tr.bg-gray-200.text-left.text-lg.uppercase
+                  th.px-6.py-4.font-medium.text-gray-900 = t("activerecord.attributes.sequence.values")
+                  th.px-6.py-4.font-medium.text-gray-900
+              tbody
+                template x-for="(item, index) in static_list" :key="index"
+                  tr :class="index % 2 === 0 ? 'bg-gray-50' : 'bg-white'"
+                    td.px-6.py-4.text-gray-700
+                      span.font-semibold x-text="item"
+                    td.px-6.py-4.text-right
+                      button.inline-flex.items-center.justify-center.bg-red-500.text-white.px-4.py-2.rounded.hover:bg-red-600.focus:outline-none.focus:ring-2.focus:ring-offset-2.focus:ring-red-500 @click="removeItem(index)"
+                        i.fas.fa-trash.mr-2
+                        span Supprimer
 
   = cancel_button
   = f.button :submit, t('actions.submit'), class: 'btn btn-default formSubmitr', form: 'sequence_form'

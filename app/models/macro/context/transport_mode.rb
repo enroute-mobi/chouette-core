@@ -8,6 +8,10 @@ class Macro::Context::TransportMode < Macro::Context
   end
 
   class Run < Macro::Context::Run
+    def transport_mode
+      Chouette::TransportMode.new(options[:transport_mode])
+    end
+
     def scope(initial_scope = parent.scope)
       Scope.new(initial_scope, options[:transport_mode])
     end

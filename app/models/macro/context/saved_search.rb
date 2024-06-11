@@ -30,23 +30,23 @@ class Macro::Context::SavedSearch < Macro::Context
       Scope.new(initial_scope, parent.workbench, options[:saved_search_id])
     end
 
+    delegate :saved_searches, to: :workbench
+
+    def saved_search
+      @saved_search ||= saved_searches.find_by(id: options[:saved_search_id])
+    end
+
     class Scope
-      def initialize(initial_scope, workbench, saved_search_id)
+      def initialize(initial_scope, workbench, saved_search)
         @initial_scope = initial_scope
-        @saved_search_id = saved_search_id
+        @saved_search = saved_search
         @workbench = workbench
       end
 
-      delegate :saved_searches, to: :workbench
-
-      attr_reader :initial_scope, :saved_search_id, :workbench
+      attr_reader :initial_scope, :saved_search, :workbench
 
       def search
         @search ||= saved_search&.search
-      end
-
-      def saved_search
-        @saved_search ||= saved_searches.find_by(id: saved_search_id)
       end
 
       def search_type

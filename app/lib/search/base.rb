@@ -10,6 +10,11 @@ module Search
 
     attr_accessor :saved_name, :saved_description
 
+    SAVED_SEARCH_ATTRIBUTE_MAPPING = {
+      name: :saved_name,
+      description: :saved_description
+    }.freeze
+
     def initialize(attributes = {})
       apply_defaults
 
@@ -39,8 +44,14 @@ module Search
     def saved_search=(saved_search)
       @saved_search = saved_search
 
-      self.saved_name = saved_search.name
-      self.saved_description = saved_search.description
+      SAVED_SEARCH_ATTRIBUTE_MAPPING.each do |k, v|
+        self[v] = saved_search[k]
+      end
+
+      errors.copy!(saved_search.errors)
+      rewrite_keys = ->(k) { SAVED_SEARCH_ATTRIBUTE_MAPPING[k] }
+      errors.messages.transform_keys!(&rewrite_keys)
+      errors.details.transform_keys!(&rewrite_keys)
     end
 
     # TODO: Why the default ActiveAttr::AttributeDefaults#apply_defaults

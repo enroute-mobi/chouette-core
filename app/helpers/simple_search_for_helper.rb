@@ -1,6 +1,6 @@
 module SimpleSearchForHelper
   def simple_search_for(search, index_path, &block)
-    if search.saved_search
+    if search.saved_search&.persisted?
       save_path = saved_search_path(search.saved_search)
       save_method = :patch
     else

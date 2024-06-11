@@ -26,15 +26,13 @@ class SearchesController < Chouette::UserController
   def create
     @search = search_class.from_params(params, workbench: workbench)
 
-    if @search.valid?
-      saved_search = saved_searches.create(
-        name: params[:search][:saved_name],
-        description: params[:search][:saved_description],
-        creator: current_user.name,
-        search_attributes: @search.attributes
-      )
-      @search = saved_search.search
-    end
+    saved_search = saved_searches.create(
+      name: params[:search][:saved_name],
+      description: params[:search][:saved_description],
+      creator: current_user.name,
+      search_attributes: @search.attributes
+    )
+    @search = saved_search.search
 
     render :index
   end

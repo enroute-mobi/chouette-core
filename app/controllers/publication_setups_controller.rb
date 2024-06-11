@@ -53,8 +53,13 @@ class PublicationSetupsController < Chouette::WorkgroupController
       :force_daily_publishing,
       :workgroup_id,
       destinations_attributes: destination_options,
-      export_options: {}
-    )
+      export_options: {},
+    ).tap do |publication_setup_params|
+      if params[:export] && params[:export][:options] && publication_setup_params[:export_options][:type] == "Export::NetexGeneric"
+        publication_setup_params[:export_options][:profile_options] =
+          Hash[params[:export][:options][:profile_options].values.map{ |v| [v['key'], v['value']] }].to_json
+      end
+    end
   end
 
   def resource

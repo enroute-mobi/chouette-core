@@ -7,6 +7,7 @@ class Store {
 		exportedLines = 'all_line_ids',
 		period = 'all_periods',
 		referentialId = '',
+		profileOptions = null,
 		isExport = null,
 		duration = null,
 		from = null,
@@ -16,6 +17,7 @@ class Store {
 		this.exportedLines = exportedLines
 		this.period = period
 		this.referentialId = referentialId
+		this.profileOptions = profileOptions
 		this.isExport = isExport
 		this.duration = duration
 		this.from = from
@@ -25,7 +27,7 @@ class Store {
 		this.exportType = isExport ? null : 'full'
 		this.baseName = isExport ? 'export_options' : 'publication_setup_export_options'
 
-		bindAll(this, 'getExportedLinesSelectURL', 'handleReferentialIdUpdate')
+		bindAll(this, 'getExportedLinesSelectURL', 'handleReferentialIdUpdate', 'handleProfileOptions')
 	}
 
 	init() {
@@ -66,7 +68,21 @@ class Store {
 			tomselect.load('')
 		})
 	}
+
+	handleProfileOptions() {
+		return {
+			fields: Object.entries(this.profileOptions ? JSON.parse(this.profileOptions) : {}).map((kv) => { return { key: kv[0], value: kv[1] } } ),
+			addNewField() {
+					this.fields.push({
+							key: '',
+							value: ''
+					 });
+				},
+				removeField(index) {
+					 this.fields.splice(index, 1);
+				 }
+			}
+	}
 }
 
 Alpine.data('exportForm', state => new Store(state))
-

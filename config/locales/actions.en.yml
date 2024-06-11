@@ -5,6 +5,7 @@ en:
     add_referential: Add a referential
     add: "Add"
     add_code: 'Add a Code'
+    add_setting: 'Add a setting'
     archive: "Archive"
     cancel_destroy: Cancel destroy
     clean_up: 'Purge'

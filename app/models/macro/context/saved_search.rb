@@ -86,6 +86,14 @@ class Macro::Context::SavedSearch < Macro::Context
         initial_scope.stop_areas.where(id: stop_points.select(:stop_area_id))
       end
 
+      def companies
+        initial_scope.companies.where(id: lines.where.not(company_id: nil).select(:company_id).distinct)
+      end
+
+      def networks
+        initial_scope.companies.where(id: lines.where.not(network_id: nil).select(:network_id).distinct)
+      end
+
       def entrances
         initial_scope.entrances.where(stop_area: stop_areas)
       end

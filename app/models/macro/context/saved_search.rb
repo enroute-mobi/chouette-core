@@ -27,7 +27,7 @@ class Macro::Context::SavedSearch < Macro::Context
 
   class Run < Macro::Context::Run
     def scope(initial_scope = parent.scope)
-      Scope.new(initial_scope, parent.workbench, options[:saved_search_id])
+      Scope.new(initial_scope, saved_search)
     end
 
     delegate :saved_searches, to: :workbench
@@ -37,13 +37,12 @@ class Macro::Context::SavedSearch < Macro::Context
     end
 
     class Scope
-      def initialize(initial_scope, workbench, saved_search)
+      def initialize(initial_scope, saved_search)
         @initial_scope = initial_scope
         @saved_search = saved_search
-        @workbench = workbench
       end
 
-      attr_reader :initial_scope, :saved_search, :workbench
+      attr_reader :initial_scope, :saved_search
 
       def search
         @search ||= saved_search&.search

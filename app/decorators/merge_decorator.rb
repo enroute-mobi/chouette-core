@@ -18,7 +18,7 @@ class MergeDecorator < AF83::Decorator
     end
 
     instance_decorator.action_link(
-      primary: :show,
+      secondary: :show,
       if: -> () { object.successful? && object.last_aggregate }
     ) do |l|
       l.content t('merges.actions.see_aggregated_offer')

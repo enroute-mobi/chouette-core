@@ -28,9 +28,9 @@
           h3.panel-title.with_actions
             div
               - if @dashboard.current_user.workbenches.many?
-                = link_to Workbench.ts, workbench_path(workbench)
-              - else
                 = link_to t('dashboards.workbench.title', name: workbench.name), workbench_path(workbench)
+              - else
+                = link_to Workbench.model_name.human.capitalize, workbench_path(workbench)
               span.badge.ml-xs = workbench.all_referentials.uniq.count if workbench.all_referentials.present?
 
             div

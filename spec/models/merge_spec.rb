@@ -87,5 +87,10 @@ RSpec.describe Merge do
     ensure
       Timecop.return
     end
+
+    context 'when merge has not yet run' do
+      let(:merge) { workbench.merges.create!(referentials: referentials) }
+      it { is_expected.to be_nil }
+    end
   end
 end

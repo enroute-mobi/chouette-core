@@ -60,6 +60,7 @@ en:
         ara:
           ara_url: Referential URL
           credentials: Import Token
+          force_import: Replace existing data
         google_cloud_storage:
           project: Project
           bucket:  Bucket

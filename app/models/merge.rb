@@ -22,6 +22,13 @@ class Merge < ApplicationModel
     new_id == workbench.output.current_id
   end
 
+  def last_aggregate
+    @last_aggregate ||= workgroup.aggregates \
+                                 .successful.where(['? = ANY(referential_ids)', new.id]) \
+                                 .order(created_at: :desc) \
+                                 .first
+  end
+
   def rollback!
     raise 'You cannot rollback to the current version' if current?
 

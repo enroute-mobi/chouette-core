@@ -18,18 +18,19 @@ class MergeDecorator < AF83::Decorator
     end
 
     instance_decorator.action_link(
-      if: -> () { object.status === 'successful' && object.new.present? }
+      secondary: :show,
+      if: -> () { object.successful? && object.last_aggregate }
+    ) do |l|
+      l.content t('merges.actions.see_aggregated_offer')
+      l.href { h.workbench_referential_path(context[:workbench], object.last_aggregate.new) }
+    end
+
+    instance_decorator.action_link(
+      primary: :show,
+      if: -> () { object.successful? && object.new.present? }
     ) do |l|
       l.content t('merges.actions.see_associated_offer')
       l.href { h.workbench_referential_path(context[:workbench], object.new) }
     end
-  end
-
-  define_instance_method :aggregated_at do
-    return nil unless object.successful?
-
-    scope = Aggregate.successful.where(workgroup_id: object.workgroup.id)
-    scope = scope.where("referential_ids @> ARRAY[?]::bigint[]", [object.new_id])
-    scope.order('created_at ASC').last&.ended_at
   end
 end

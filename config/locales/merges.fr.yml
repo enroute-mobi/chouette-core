@@ -12,6 +12,9 @@ fr:
       title: "Nouvelle finalisation de l'offre"
     show:
       title: "Finalisation de l'offre %{name}"
+      last_aggregate: "Aggrégation associée"
+      last_aggregated_at: "Aggrégée le"
+      last_aggregated_referential: "Jeu de données aggrégé"
       table_headers: 
         referentials: Référentiels
         merged_referential: Offre finalisée
@@ -27,7 +30,8 @@ fr:
       create: Finaliser des Jeux de Données
       rollback: 'Revenir à cette offre'
       rollback_confirm: Etes vous sûr de vouloir revenir à cette offre finalisée ?
-      see_associated_offer: Voir l'offre associée
+      see_aggregated_offer: "Voir l'offre aggrégée"
+      see_associated_offer: "Voir l'offre finalisée"
     statuses:
       new: Nouveau
       pending: En attente

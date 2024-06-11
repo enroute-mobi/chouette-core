@@ -29,7 +29,7 @@
       = hidden_field_tag :_method, "post", "x-ref": "method"
       = hidden_field_tag :authenticity_token, form_authenticity_token, "x-ref": "authenticity_token"
       = f.submit t('searchs.actions.save'), class: 'btn btn-default ml-5', "@click": "$root.action = save_path ; $root.method = 'post' ; $refs.method.value = save_method; $refs.method.disabled = false; ; $refs.authenticity_token.disabled = false"
-      - if search.saved_search
+      - if search.saved_search&.persisted?
         = link_to t('searchs.actions.destroy'), saved_search_path(search.saved_search), method: :delete, data: { :confirm => t('searchs.actions.destroy_confirm') }, class: 'btn btn-danger ml-5'
 
   .flex.flex-col.justify-center.items-center.actions.ml-auto.py-3.w-80.border-white.border-l.h-max

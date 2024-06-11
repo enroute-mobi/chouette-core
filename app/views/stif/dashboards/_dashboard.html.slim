@@ -15,21 +15,22 @@
         .panel-body
           em.small.text-muted = t('.no_content')
 
-    .panel.panel-default
-      .panel-heading
-        h3.panel-title.with_actions
-          = link_to t('.idf'), workgroup_output_path(@dashboard.workgroup)
-          span.badge.ml-xs = @dashboard.workgroup.aggregates.count if @dashboard.workgroup.aggregates.present?
-          div
-            = link_to '', workgroup_output_path(@dashboard.workgroup), class: ' fa fa-chevron-right pull-right'
+    - if @dashboard.workgroup.owner == current_organisation
+      .panel.panel-default
+        .panel-heading
+          h3.panel-title.with_actions
+            = link_to t('.idf'), workgroup_output_path(@dashboard.workgroup)
+            span.badge.ml-xs = @dashboard.workgroup.aggregates.count if @dashboard.workgroup.aggregates.present?
+            div
+              = link_to '', workgroup_output_path(@dashboard.workgroup), class: ' fa fa-chevron-right pull-right'
 
-      - if @dashboard.workgroup.aggregates.present?
-        .list-group
-          - @dashboard.workgroup.aggregates.order("created_at desc").limit(5).each do |aggregate|
-            = link_to t("aggregates.show.title", name: aggregate.name.capitalize).html_safe, workgroup_aggregate_path(aggregate.workgroup, aggregate), class: 'list-group-item'
-      - else
-        .panel-body
-          em.small.text-muted = t('dashboards.aggregates.none')
+        - if @dashboard.workgroup.aggregates.present?
+          .list-group
+            - @dashboard.workgroup.aggregates.order("created_at desc").limit(5).each do |aggregate|
+              = link_to t("aggregates.show.title", name: aggregate.name.capitalize).html_safe, workgroup_aggregate_path(aggregate.workgroup, aggregate), class: 'list-group-item'
+        - else
+          .panel-body
+            em.small.text-muted = t('dashboards.aggregates.none')
 
   .col-lg-6.col-md-6.col-sm-6.col-xs-12
     .panel.panel-default
@@ -51,22 +52,21 @@
         .panel-body
           em.small.text-muted = t('.no_content')
 
-    - if workbench.workgroup.owner == current_organisation
-      .panel.panel-default
-        .panel-heading
-          h3.panel-title.with_actions
-            div
-              = link_to t('.calendars'), workbench_calendars_path(@dashboard.workbench)
-              span.badge.ml-xs = @dashboard.workbench.calendars_with_shared.count if @dashboard.workbench.calendars_with_shared.present?
+    .panel.panel-default
+      .panel-heading
+        h3.panel-title.with_actions
+          div
+            = link_to t('.calendars'), workbench_calendars_path(@dashboard.workbench)
+            span.badge.ml-xs = @dashboard.workbench.calendars_with_shared.count if @dashboard.workbench.calendars_with_shared.present?
 
-            div
-              = link_to '', workbench_calendars_path(@dashboard.workbench), class: ' fa fa-chevron-right pull-right', title: t('.see')
+          div
+            = link_to '', workbench_calendars_path(@dashboard.workbench), class: ' fa fa-chevron-right pull-right', title: t('.see')
 
-        - if @dashboard.calendars.present?
-          .list-group
-            - @dashboard.calendars.first(5).each_with_index do |calendar, i|
-              = link_to calendar.name, workbench_calendar_path(@dashboard.workbench, calendar), class: 'list-group-item' if i < 6
+      - if @dashboard.calendars.present?
+        .list-group
+          - @dashboard.calendars.first(5).each_with_index do |calendar, i|
+            = link_to calendar.name, workbench_calendar_path(@dashboard.workbench, calendar), class: 'list-group-item' if i < 6
 
-        - else
-          .panel-body
-            em.small.text-muted = t('.no_content')
+      - else
+        .panel-body
+          em.small.text-muted = t('.no_content')

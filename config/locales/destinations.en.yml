@@ -76,20 +76,24 @@ en:
           port: Port
           directory: Directory
           username: Username
+      destination/dummy:
+        result: Expected outcome
+      destination/ara:
+        ara_url: Referential URL
+        credentials: Import Token
+        force_import: Replace existing data
+      destination/google_cloud_storage:
+        project: Project
+        bucket:  Bucket
       destination/mail:
         recipients: Recipients
         link_to_api: Include link to API
         attached_export_file: Attached export file
-      destination/dummy:
-        result: Expected outcome
       destination/sftp:
         host: Host
         port: Port
         directory: Directory
         username: Username
-      destination/googlecloudstorage:
-        project: Project
-        bucket:  Bucket
     errors:
       models:
         destination/mail:

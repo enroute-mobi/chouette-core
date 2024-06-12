@@ -5,7 +5,7 @@
       multipart: true, \
       class: 'tailwind-form', \
       id: 'sequence_form', \
-      'x-data': "sequenceForm(#{@sequence.alpine_state(true)})" \
+      'x-data': "sequenceForm(#{@sequence.alpine_state()})" \
     }, \
     wrapper: :horizontal_form_tailwind \
   ) do |f|
@@ -33,7 +33,7 @@
                     td.px-6.py-4.text-gray-700
                       span.font-semibold x-text="item"
                     td.px-6.py-4.text-right
-                      button.inline-flex.items-center.justify-center.bg-red-500.text-white.px-4.py-2.rounded.hover:bg-red-600.focus:outline-none.focus:ring-2.focus:ring-offset-2.focus:ring-red-500 @click="removeItem(index)"
+                      div.inline-flex.items-center.justify-center.bg-red-500.text-white.px-4.py-2.rounded.hover:bg-red-600.focus:outline-none.focus:ring-2.focus:ring-offset-2.focus:ring-red-500 @click="removeItem(index)"
                         i.fas.fa-trash.mr-2
                         span Supprimer
 

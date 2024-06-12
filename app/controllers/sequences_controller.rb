@@ -60,7 +60,7 @@ class SequencesController < Chouette::WorkbenchController
       :range_end,
       :static_list
     ).tap do |sequence_params|
-      sequence_params[:static_list] = params[:sequence][:static_list].split(/[\s,\n]+/)
+      sequence_params[:static_list] = params[:sequence][:static_list].split(/\n+/)
     end
   end
 end

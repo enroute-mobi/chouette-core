@@ -31,7 +31,7 @@ class Store {
 			},
 			updateItems(event) {
 				const inputValue = event.target.value;
-				const newItems = inputValue.split(/[\n]+/).map(item => item.trim()).filter(item => item);
+				const newItems = inputValue.split(/\n+/).map(item => item.trim()).filter(item => item);
 				this.static_list = Array.from(new Set(newItems)); // Remove duplicates
 				this.updateTextArea();
 			},

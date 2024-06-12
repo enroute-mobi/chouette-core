@@ -9,7 +9,7 @@ class SequenceDecorator < Af83::Decorator
 
   with_instance_decorator(&:crud)
 
-  define_instance_method :alpine_state do |is_export|
+  define_instance_method :alpine_state do
     initial_state = { sequence_type: object.sequence_type, static_list: object.static_list }
 
     object.static_list.reduce(initial_state) do |result, (k, v)|

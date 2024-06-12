@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class DestinationReport < ActiveRecord::Base
   extend Enumerize
 
@@ -19,7 +21,7 @@ class DestinationReport < ActiveRecord::Base
   end
 
   def failed! message: nil, backtrace: nil
-    update ended_at: Time.now, status: :failed, error_message: message, error_backtrace: backtrace.to_json
+    update ended_at: Time.now, status: :failed, error_message: message, error_backtrace: backtrace&.to_json
   end
 
   def success!

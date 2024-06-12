@@ -166,7 +166,7 @@ module Chouette::Sync
         end
         attr_reader :attribute, :updater
 
-        delegate :report_invalid_model, :scope, :model_id_attribute, to: :updater
+        delegate :report_invalid_model, :scope, :model_id_attribute, :find_model, :find_models, to: :updater
 
         def declare(resource_id, reference)
           pendings[resource_id] ||= reference
@@ -178,13 +178,13 @@ module Chouette::Sync
 
         def update
           pendings.each do |resource_id, reference|
-            child = scope.find_by(model_id_attribute => resource_id)
+            child = find_model resource_id
             unless child
               Rails.logger.debug { "Can't find child #{model_id_attribute}=#{resource_id} to define #{attribute}=#{reference}" }
               next
             end
 
-            referenced = scope.find_by(model_id_attribute => reference)
+            referenced = find_model reference
             unless referenced
               Rails.logger.warn "Can't find reference with #{attribute} #{reference} for StopArea #{resource_id}"
               next
@@ -209,7 +209,7 @@ module Chouette::Sync
         end
 
         def pending_referents
-          scope.where(model_id_attribute => pendings.values)
+          find_models pendings.values
         end
       end
 

@@ -24,6 +24,10 @@ module Chouette
         @resources ||= source.send(resource_type.to_s.pluralize)
       end
 
+      def use_code?
+        (code_space && !code_space.default?) || model_id_attribute == :codes
+      end
+
       def resources_in_batches
         resources.each_slice(update_batch_size) do |resources_batch|
           yield Batch.new(resources_batch, updater: self)
@@ -63,6 +67,18 @@ module Chouette
 
       def provider
         @provider ||= Provider.new target, default_provider
+      end
+
+      def find_model(resource_id)
+        find_models([resource_id]).first
+      end
+
+      def find_models(resource_ids)
+        if use_code?
+          scope.by_code(code_space, resource_ids)
+        else
+          scope.where(model_id_attribute => resource_ids)
+        end
       end
 
       class Provider
@@ -106,20 +122,28 @@ module Chouette
         end
 
         delegate :model_id_attribute, :event_handler, :workgroup, :code_space, :target,
-                 :provider, :strict_mode?, :ignore_particulars?,
-                 to: :updater
+                 :provider, :strict_mode?, :ignore_particulars?, :use_code?, :find_model,
+                 :find_models, to: :updater
 
         def with_resource_ids(resource_ids)
-          scope.where(model_id_attribute => resource_ids).find_each do |model|
+          find_models(resource_ids).find_each do |model|
             resource_id = model.send model_id_attribute
             yield model, resource_id
           end
         end
 
         def with_codes(resource_ids)
-          scope.by_code(code_space, resource_ids).find_each do |model|
+          find_models(resource_ids).find_each do |model|
             value = model.codes&.first&.value
             yield model, value
+          end
+        end
+
+        def with_models_ids(resource_ids, &block)
+          if use_code?
+            with_codes resource_ids, &block
+          else
+            with_resource_ids resource_ids, &block
           end
         end
 
@@ -133,7 +157,7 @@ module Chouette
 
           attributes = attributes.slice(:referent_id) if ignore_particulars? && resource.particular?
 
-          if model_id_attribute == :codes
+          if use_code?
             attributes[:codes_attributes] = [{ value: resource.id, code_space: code_space }]
           else
             attributes[model_id_attribute] = resource.id
@@ -317,16 +341,8 @@ module Chouette
           resources_by_id.fetch resource_id
         end
 
-        def with_model_ids
-          if model_id_attribute == :codes
-            'with_codes'
-          else
-            'with_resource_ids'
-          end
-        end
-
         def existing_models
-          models.send(with_model_ids, resource_ids) do |model, resource_id|
+          models.with_models_ids(resource_ids) do |model, resource_id|
             resource = resource_by_id(resource_id)
 
             yield model, decorate(resource)
@@ -395,11 +411,12 @@ module Chouette
           def identifiers
             return [] if resource_ids.empty? || !model_ref
 
-            ids = if support_model_id_attribute?
-                    model_ref.where(model_id_attribute => resource_ids).pluck(:id)
-                  elsif support_codes?
-                    model_ref.by_code(code_space, resource_ids).pluck(:id)
-                  end
+            ids =
+              if code_space&.default? && support_model_id_attribute?
+                model_ref.where(model_id_attribute => resource_ids).pluck(:id)
+              elsif support_codes?
+                model_ref.by_code(code_space, resource_ids).pluck(:id)
+              end
 
             if ids.blank?
               key_field = model_id_attribute_from_reference_type(reference_type)

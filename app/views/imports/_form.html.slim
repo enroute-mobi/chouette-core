@@ -23,7 +23,8 @@
         - if resource_policy.option?(attr)
           = option_input form, import, attr, option_def, import.class
 
-
+      - if has_feature?("import_with_code_space")
+        = form.association :code_space, collection: workbench.workgroup.code_spaces, include_blank: false
 
   = cancel_button
   = form.button :submit, t('actions.submit'), class: 'btn btn-default formSubmitr', form: 'wb_import_form'

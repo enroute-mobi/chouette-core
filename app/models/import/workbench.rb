@@ -100,8 +100,15 @@ module Import
     end
 
     def create_child_import(klass)
-      klass.create! parent_type: self.class.name, parent_id: id, workbench: workbench, file: File.new(file.path),
-                    name: name, creator: 'Web service'
+      klass.create!(
+        parent_type: self.class.name,
+        parent_id: id,
+        workbench: workbench,
+        file: File.new(file.path),
+        name: name,
+        creator: 'Web service',
+        code_space: code_space
+      )
     rescue Exception => e
       Chouette::Safe.capture "Import::Workbench ##{id} Child import #{file_type} creation failed", e
 

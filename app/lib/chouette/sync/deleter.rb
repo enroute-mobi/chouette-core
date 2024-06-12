@@ -31,8 +31,8 @@ module Chouette
         delete useless_identifiers
       end
 
-      def model_uses_code?
-        model_id_attribute == :codes
+      def use_code?
+        (code_space && !code_space.default?) || model_id_attribute == :codes
       end
 
       protected
@@ -43,13 +43,13 @@ module Chouette
 
       def existing_models(identifiers = nil)
         if identifiers
-          if model_uses_code?
+          if use_code?
             scope.by_code(code_space, identifiers)
           else
             scope.where(model_id_attribute => identifiers)
           end
         else
-          if model_uses_code?
+          if use_code?
             scope.without_code(code_space)
           else
             scope.where.not(model_id_attribute => nil)
@@ -58,7 +58,7 @@ module Chouette
       end
 
       def existing_identifiers
-        if model_uses_code?
+        if use_code?
           code_space.codes.where(resource: existing_models).pluck(:value)
         else
           existing_models.distinct(model_id_attribute).pluck(model_id_attribute)

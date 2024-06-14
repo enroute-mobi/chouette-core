@@ -7,11 +7,12 @@ class PublicationsController < Chouette::WorkgroupController
   respond_to :html
 
   def create
-    aggregate = @workgroup.aggregates.where(status: 'successful').last
+    referential = @workgroup.output.current
 
-    @publication = aggregate.publish_with_setup(parent)
+    @publication = publication_setup.publish(referential, creator: current_user.name)
+    @publication.enqueue
 
-    redirect_to workgroup_publication_setup_path(@workgroup, parent)
+    redirect_to workgroup_publication_setup_path(@workgroup, publication_setup)
   end
 
   def show
@@ -25,5 +26,5 @@ class PublicationsController < Chouette::WorkgroupController
   end
 
   alias publication resource
-
+  alias publication_setup parent
 end

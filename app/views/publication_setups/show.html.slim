@@ -27,7 +27,7 @@
               TableBuilderHelper::Column.new( \
                 key: :parent, \
                 attribute: Proc.new do |publication| \
-                  link_to "#{publication.parent.class.ts} #{publication.parent.name}", [@workgroup, @publication_setup, publication] \
+                  publication.parent ? link_to("#{publication.parent.class.ts} #{publication.parent.name}", [@workgroup, @publication_setup, publication]) : '-' \
                 end, \
                 ), \
               TableBuilderHelper::Column.new( \

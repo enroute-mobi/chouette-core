@@ -8,7 +8,7 @@
       .col-lg-6.col-md-6.col-sm-12.col-xs-12
         - metadatas = { Publication.tmf(:status) => operation_user_status(@publication) }
         - metadatas.update( PublicationSetup.ts => link_to(@publication_setup.name, [@workgroup, @publication_setup]) )
-        - metadatas.update( Publication.tmf(:parent) => link_to("#{@publication.parent.class.ts} #{@publication.parent.name}", workbench_referential_path(owner_workbench, @publication.parent.new)) )
+        - metadatas.update( Publication.tmf(:parent) => @publication.parent ? link_to("#{@publication.parent.model_name.human} #{@publication.parent.name}", workbench_referential_path(owner_workbench, @publication.parent.new)) : '-' )
         = definition_list t('metadatas'), metadatas
       = processing_helper(@publication)
 

@@ -26,5 +26,5 @@
   | window.custom_fields = #{(@custom_fields.to_json).html_safe};
   | window.route = "#{URI.escape(route_json_for_edit(@route, serialize: true))}";
   | window.lineColor = "#{@route.line.color_hex}";
-  | window.shape_url = "#{workbench_shape_referential_shapes_path(@workbench, @referential.workgroup.shape_referential)}";
+  | window.shape_url = "#{workbench_shape_referential_shapes_path(@workbench)}";
   | window.shapes_url = "#{shapes_workgroup_autocomplete_index_path(@referential.workgroup)}";

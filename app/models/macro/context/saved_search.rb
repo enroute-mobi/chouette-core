@@ -61,16 +61,18 @@ class Macro::Context::SavedSearch < Macro::Context
         when :lines
           search.without_pagination.search(initial_scope.lines)
         when :stop_areas
-          initial_scope.lines.where(routes: routes.select(:id)).distinct
+          initial_scope.lines.joins(:routes).where("routes.id IN (#{routes.select(:id).to_sql})").distinct
         else
           initial_scope.lines
         end
       end
 
       def routes
-        return initial_scope.routes.where(stop_points: stop_points.select(:id)).distinct if collection_name == :stop_areas
-
-        initial_scope.routes.where(line: lines)
+        if collection_name == :stop_areas
+          initial_scope.routes.joins(:stop_points).where("stop_points.id IN (#{stop_points.select(:id).to_sql})").distinct
+        else
+          initial_scope.routes.where(line: lines)
+        end
       end
 
       def stop_points
@@ -90,7 +92,7 @@ class Macro::Context::SavedSearch < Macro::Context
       end
 
       def networks
-        initial_scope.companies.where(id: lines.where.not(network_id: nil).select(:network_id).distinct)
+        initial_scope.networks.where(id: lines.where.not(network_id: nil).select(:network_id).distinct)
       end
 
       def entrances

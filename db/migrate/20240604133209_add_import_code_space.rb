@@ -21,7 +21,7 @@ class AddImportCodeSpace < ActiveRecord::Migration[5.2]
 
           Import::Base.connection.execute update_query
 
-          change_column_null :imports, :code_space_id, false
+          # change_column_null :imports, :code_space_id, false
         end
       end
     end

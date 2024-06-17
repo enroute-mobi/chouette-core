@@ -148,6 +148,10 @@ class Source < ApplicationModel
     candidate_stop_area_providers.find_by(id: import_option_stop_area_provider_id) || workbench.default_stop_area_provider
   end
 
+  def import_option_code_space
+    workbench.workgroup.code_spaces.find_by(id: import_option_code_space_id)
+  end
+
   def import_option_automatic_merge
     import_options["automatic_merge"]
   end
@@ -192,6 +196,10 @@ class Source < ApplicationModel
     import_options["automatic_merge"] = value
   end
 
+  def import_option_code_space_id
+    import_options['code_space_id']
+  end
+
   def import_option_archive_on_fail=(value)
     import_options["archive_on_fail"] = value
   end
@@ -227,6 +235,10 @@ class Source < ApplicationModel
 
   def import_option_stop_area_provider_id=(value)
     import_options["stop_area_provider_id"] = value
+  end
+
+  def import_option_code_space_id=(value)
+    import_options['code_space_id'] = value
   end
 
   def update_workgroup_providers?

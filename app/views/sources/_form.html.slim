@@ -44,6 +44,8 @@
       = f.input :import_option_process_gtfs_route_ids, as: :editable_select, collection: @source.import_option_process_gtfs_route_ids, selected: @source.import_option_process_gtfs_route_ids, include_blank: false, wrapper: :horizontal_input_editable_select_tailwind, input_html: { multiple: true }
       = f.input :import_option_stop_area_provider_id, as: :select, collection: @source.candidate_stop_area_providers.order(:name), include_blank: false
       = f.input :import_option_line_provider_id, as: :select, collection: @source.candidate_line_providers.order(:name), include_blank: false
+      - if has_feature?("import_with_code_space")
+        = f.input :import_option_code_space_id, as: :select, collection: @workbench.workgroup.code_spaces, include_blank: true
 
   = cancel_button
   = f.button :submit, t('actions.submit'), class: 'btn btn-default formSubmitr', form: 'source_form'

@@ -59,6 +59,8 @@ en:
         import_option_line_provider: Line Provider
         import_option_stop_area_provider_id: Stop Area Provider
         import_option_stop_area_provider: Stop Area Provider
+        import_option_code_space_id: "Code Space"
+        import_option_code_space: "Code Space"
         enabled: "Enabled"
         retrieval_time_of_day: "Retrieval time"
         retrieval_days_of_week: "Retrieval days"

@@ -343,4 +343,43 @@ RSpec.describe Source::ScheduledJob do
       end
     end
   end
+
+  describe '#import_option_code_space' do
+    let(:context) do
+      Chouette.create do
+        workgroup do
+          code_space
+          source retrieval_frequency: 'daily'
+        end
+      end
+    end
+    let(:source) { context.source }
+    let(:code_space) { context.code_space }
+
+    subject { source.import_option_code_space }
+
+    context 'when no import_option_code_space_id option is defined' do
+      before { source.import_options['import_option_code_space_id'] = nil }
+
+      it 'does not use any code space' do
+        is_expected.to be_nil
+      end
+    end
+
+    context 'when code_space_id option matches one of the candidate code spaces' do
+      before { source.import_options['code_space_id'] = code_space.id }
+
+      it 'uses the candidate code space' do
+        is_expected.to eq(code_space)
+      end
+    end
+
+    context "when code_space_id option doesn't match one of the code spaces" do
+      before { source.import_options['code_space_id'] = 42 }
+
+      it 'does not use any code space' do
+        is_expected.to be_nil
+      end
+    end
+  end
 end

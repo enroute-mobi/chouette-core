@@ -77,6 +77,7 @@ class SourcesController < Chouette::WorkbenchController
       :import_option_ignore_particulars,
       :import_option_line_provider_id,
       :import_option_stop_area_provider_id,
+      :import_option_code_space_id,
       :created_at,
       :updated_at,
       :downloader_type,

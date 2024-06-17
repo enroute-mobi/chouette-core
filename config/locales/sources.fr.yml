@@ -59,6 +59,8 @@ fr:
         import_option_line_provider: Fournisseur de lignes
         import_option_stop_area_provider_id: Fournisseur d'arrêts
         import_option_stop_area_provider: Fournisseur d'arrêts
+        import_option_code_space_id: "Espace de code"
+        import_option_code_space: "Espace de code"
         enabled: "Activée"
         retrieval_time_of_day: "Heure de récupération"
         retrieval_days_of_week: "Jours de récupération"

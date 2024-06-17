@@ -25,6 +25,8 @@
           = d.attribute :import_option_process_gtfs_route_ids, as: :array
           = d.attribute :import_option_stop_area_provider, as: :association
           = d.attribute :import_option_line_provider, as: :association
+          - if has_feature?("import_with_code_space")
+            = d.attribute :import_option_code_space, as: :association
     .row
       .col-lg-6.col-md-6.col-sm-12.col-xs-12
         = simple_block_for @source, title: t('sources.form.sections.retrieval') do |d|

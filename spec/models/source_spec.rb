@@ -175,6 +175,15 @@ RSpec.describe Source::Retrieval do
         it { is_expected.to include(import_category: 'netex_generic') }
       end
     end
+
+    describe 'code_space_id' do
+      it { is_expected.to include(code_space_id: nil) }
+
+      context 'when source has a code space id option' do
+        let(:source) { Source.new(import_options: { 'code_space_id' => 42 }) }
+        it { is_expected.to include(code_space_id: 42) }
+      end
+    end
   end
 
   describe '#processing_options' do

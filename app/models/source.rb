@@ -643,13 +643,15 @@ class Source < ApplicationModel
     end
 
     def import_attributes
+      import_options = import_workbench_options
       {
         name: import_name,
         creator: creator,
         file: imported_file,
-        options: import_workbench_options,
+        options: import_options.except('code_space_id'),
         type: 'Import::Workbench',
-        import_category: import_category
+        import_category: import_category,
+        code_space_id: import_options['code_space_id']
       }
     end
 

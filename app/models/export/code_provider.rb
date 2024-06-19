@@ -13,7 +13,7 @@ module Export
     COLLECTIONS = %w[
       stop_areas point_of_interests vehicle_journeys lines companies entrances contracts
       vehicle_journey_at_stops journey_patterns routes time_tables fare_validities
-      routing_constraint_zones networks fare_zones fare_products stop_points shapes
+      routing_constraint_zones networks fare_zones fare_products stop_points shapes line_notices
     ].freeze
 
     # Returns unique code for the given model (StopArea, etc)

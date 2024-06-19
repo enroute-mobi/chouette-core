@@ -5,6 +5,7 @@ module Chouette
     has_metadata
     include LineReferentialSupport
     include ObjectidSupport
+    include CodeSupport
 
     # We will protect the notices that are used by vehicle_journeys
     scope :unprotected, -> {

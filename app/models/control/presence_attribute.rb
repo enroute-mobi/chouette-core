@@ -92,6 +92,8 @@ module Control
             select Chouette::Line, :registration_number
             select Chouette::Line, :text_color
             select Chouette::Line, :url
+            select Chouette::Line, :referent_id
+
             # Temporary
             select Chouette::Line, :transport_mode
             select Chouette::Line, :transport_submode

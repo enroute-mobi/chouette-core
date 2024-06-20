@@ -261,6 +261,7 @@ ChouetteIhm::Application.routes.draw do # rubocop:disable Metrics/BlockLength
   resource :workbench_confirmation, only: %i[new create]
 
   resources :workgroups, except: [:destroy] do # rubocop:disable Metrics/BlockLength
+    resources :searches, only: %i[index show create update destroy], path: ':parent_resources/searches'
     put :setup_deletion, on: :member
     put :remove_deletion, on: :member
 

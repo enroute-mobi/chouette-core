@@ -15,6 +15,10 @@ module SearchHelper
     workbench_search_path workbench, saved_search.id, parent_resources: :imports
   end
 
+  def workgroup_imports_search_path(workgroup, saved_search)
+    workgroup_search_path workgroup, saved_search.id, parent_resources: :imports
+  end
+
   def saved_search_path(saved_search)
     parent_resources = saved_search.search_type.demodulize.underscore.pluralize.to_sym
 

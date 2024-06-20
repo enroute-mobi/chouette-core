@@ -1,12 +1,9 @@
-= simple_search_for @search, workbench_imports_path(@workbench) do |f|
+= simple_search_for @search, imports_path do |f|
   = f.row
     = f.name
   = f.row
     = f.input :statuses, collection: @search.candidate_statuses.map(&:slug), label_method: lambda{|slug| ("<span>" + operation_status(slug, verbose: true) + "</span>").html_safe}, wrapper_html: { class: "checkbox_list"}
-    / - if @parent.is_a?(Workgroup)
-    /   .form-group.togglable class=filter_item_class(params[:search], :workbench_ids)
-    /     = f.label :workbench_ids, class: 'control-label'
-    /     = f.input :workbench_ids, as: :check_boxes, collection: @search.candidate_workbenches.order('name'), label: false, label_method: lambda{|workbench| ("<span>" + workbench.name + "</span>").html_safe}, value_method: lambda{|workbench| workbench.id.to_s}, wrapper_html: { class: "checkbox_list"}
-    /     = f.input :workbench_ids, collection: @search.candidate_workbenches.order('name'), input_html: { multiple: true, style: 'width: 100%' }
+    - if @parent.is_a?(Workgroup)
+        = f.input :workbench_ids, as: :autocomplete_select, collection: @search.candidate_workbenches.order('name'), input_html: { multiple: true, style: 'width: 100%' }
     = f.input :start_date, as: :date_picker
     = f.input :end_date, as: :date_picker

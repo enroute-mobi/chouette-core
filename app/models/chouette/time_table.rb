@@ -602,7 +602,7 @@ module Chouette
         end
 
         periods.each do |period|
-          timetable.periods << Cuckoo::Timetable::Period.new(period.period_start, period.period_end, days_of_week)
+          timetable.periods << period.to_timetable_period
         end
       end
     end

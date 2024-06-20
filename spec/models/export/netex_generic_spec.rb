@@ -1673,7 +1673,7 @@ RSpec.describe Export::NetexGeneric do
         end
 
         it { expect(decorator.operating_period.class).to eq Netex::UicOperatingPeriod }
-        it { expect(period.to_days_bit).to eq '1111' }
+        it { expect(decorator.valid_day_bits).to eq '1111' }
       end
     end
 

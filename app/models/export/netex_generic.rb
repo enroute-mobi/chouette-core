@@ -1907,8 +1907,12 @@ class Export::NetexGeneric < Export::Base
         data_source_ref: time_table.data_source_ref,
         from_date: period_start,
         to_date: period_end,
-        valid_day_bits: to_days_bit
+        valid_day_bits: valid_day_bits
       }
+    end
+
+    def valid_day_bits
+      to_days_bit.bitset.to_s
     end
 
     def day_type_assignment_id

@@ -99,46 +99,116 @@ class Workgroup < ApplicationModel
   attribute :nightly_aggregate_time, TimeOfDay::Type::TimeWithoutZone.new
 
   def aggregate_urgent_data!
-    target_referentials = aggregatable_referentials.select do |r|
-      aggregated_at.blank? || (r.flagged_urgent_at.present? && r.flagged_urgent_at > aggregated_at)
-    end
-
-    return if target_referentials.empty?
-
-    aggregates.create!(referentials: aggregatable_referentials, creator: 'webservice', notification_target: nil, automatic_operation: true)
+    UrgentAggregator.new(
+      self,
+      aggregate_attributes: { creator: 'webservice', automatic_operation: true }
+    ).run
   end
 
-  def nightly_aggregate!
-    Rails.logger.debug "[Workgroup ##{id}]: Test nightly aggregate time frame"
+  def nightly_aggregate! # rubocop:disable Metrics/MethodLength:
+    aggregator = Aggregator.new(
+      self,
+      aggregate_attributes: { creator: 'CRON', notification_target: nightly_aggregate_notification_target },
+      daily_publications: true,
+      log: true
+    )
+    aggregator.log('Test nightly aggregate time frame', debug: true)
     return unless nightly_aggregate_timeframe?
 
-    Rails.logger.info "[Workgroup ##{id}] Check nightly Aggregate (at #{nightly_aggregate_time})"
+    aggregator.log("Check nightly Aggregate (at #{nightly_aggregate_time})")
+    update_column :nightly_aggregated_at, Time.current # rubocop:disable Rails/SkipsModelValidations
 
-    update_column :nightly_aggregated_at, Time.current
+    aggregator.run
+  end
 
-    target_referentials = aggregatable_referentials.select do |r|
-      aggregated_at.blank? || (r.created_at > aggregated_at)
+  class Aggregator
+    def initialize(workgroup, **options)
+      @workgroup = workgroup
+      @options = options
     end
+    attr_reader :workgroup, :options
 
-    if target_referentials.empty?
-      Rails.logger.info "[Workgroup ##{id}] No Aggregate is required"
-
-      aggregate = aggregates.where(status: 'successful').last
-
-      if aggregate
-        publication_setups.where(force_daily_publishing: true).each do |ps|
-          Rails.logger.info "[Workgroup ##{id}] Start daily publication #{name}"
-          aggregate.publish_with_setup(ps)
-        end
+    def run
+      if aggregate?
+        aggregate!
+      elsif daily_publications?
+        daily_publish!
       end
-
-      return
     end
 
-    Rails.logger.info "[Workgroup ##{id}] Start nightly Aggregate"
+    def aggregatable_referentials
+      @aggregatable_referentials ||= workgroup.aggregatable_referentials
+    end
 
-    aggregates.create!(referentials: aggregatable_referentials, creator: 'CRON', notification_target: nightly_aggregate_notification_target)
+    def target_referentials
+      @target_referentials ||= if workgroup.aggregated_at
+                                 aggregatable_referentials.select { |r| select_target_referential?(r) }
+                               else
+                                 aggregatable_referentials
+                               end
+    end
 
+    def aggregate?
+      target_referentials.any?
+    end
+
+    def daily_publications?
+      options[:daily_publications]
+    end
+
+    def last_successful_aggregate
+      @last_successful_aggregate ||= workgroup.aggregates.successful.last
+    end
+
+    def log?
+      options[:log]
+    end
+
+    def log(msg, debug: false)
+      return unless log?
+
+      full_msg = "[Workgroup ##{workgroup.id}] #{msg}"
+      if debug
+        Rails.logger.debug(full_msg)
+      else
+        Rails.logger.info(full_msg)
+      end
+    end
+
+    protected
+
+    def select_target_referential?(referential)
+      referential.created_at > workgroup.aggregated_at
+    end
+
+    private
+
+    def aggregate!
+      log('Start Aggregate')
+      workgroup.aggregates.create!(
+        referentials: aggregatable_referentials,
+        creator: 'creator',
+        **(options[:aggregate_attributes] || {})
+      )
+    end
+
+    def daily_publish!
+      log('No Aggregate is required')
+      return unless last_successful_aggregate
+
+      workgroup.publication_setups.where(force_daily_publishing: true).find_each do |publication_setup|
+        log("Start daily publication #{publication_setup.name}")
+        last_successful_aggregate.publish_with_setup(publication_setup)
+      end
+    end
+  end
+
+  class UrgentAggregator < Aggregator
+    protected
+
+    def select_target_referential?(referential)
+      referential.flagged_urgent_at && referential.flagged_urgent_at > workgroup.aggregated_at
+    end
   end
 
   def nightly_aggregate_timeframe?

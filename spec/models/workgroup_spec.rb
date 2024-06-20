@@ -90,7 +90,8 @@ RSpec.describe Workgroup, type: :model do
         it 'aggregates all current referentials' do
           expect { subject }.to change { workgroup.aggregates.count }.by(1).and change { Delayed::Job.count }.by(1)
           expect(workgroup.aggregates.last).to have_attributes(
-            referentials: match_array(%i[
+            referentials: match_array(
+              %i[
                 locked_referential_to_aggregate_referential
                 current_referential
               ].map { |i| context.referential(i) }
@@ -129,7 +130,8 @@ RSpec.describe Workgroup, type: :model do
         it 'aggregates all current referentials' do
           expect { subject }.to change { workgroup.aggregates.count }.by(1).and change { Delayed::Job.count }.by(1)
           expect(workgroup.aggregates.last).to have_attributes(
-            referentials: match_array(%i[
+            referentials: match_array(
+              %i[
                 flag_as_urgent_referential
                 other_referential
               ].map { |i| context.referential(i) }
@@ -154,7 +156,7 @@ RSpec.describe Workgroup, type: :model do
         before { context.workbench.create_output!(current: context.referential) }
 
         it 'does not aggregate any referential' do
-          expect { subject }.not_to change { workgroup.aggregates.count }
+          expect { subject }.not_to(change { workgroup.aggregates.count })
         end
       end
 
@@ -172,7 +174,7 @@ RSpec.describe Workgroup, type: :model do
         before { context.workbench.create_output!(current: context.referential) }
 
         it 'does not aggregate any referential' do
-          expect { subject }.not_to change { workgroup.aggregates.count }
+          expect { subject }.not_to(change { workgroup.aggregates.count })
         end
       end
     end
@@ -304,7 +306,7 @@ RSpec.describe Workgroup, type: :model do
             end
 
             it 'does not publish aggregate' do
-              expect { subject }.not_to change { Publication.count }
+              expect { subject }.not_to(change { Publication.count })
             end
           end
         end
@@ -343,7 +345,8 @@ RSpec.describe Workgroup, type: :model do
         it 'aggregates all current referentials' do
           expect { subject }.to change { workgroup.aggregates.count }.by(1).and change { Delayed::Job.count }.by(1)
           expect(workgroup.aggregates.last).to have_attributes(
-            referentials: match_array(%i[
+            referentials: match_array(
+              %i[
                 locked_referential_to_aggregate_referential
                 current_referential
               ].map { |i| context.referential(i) }
@@ -371,7 +374,7 @@ RSpec.describe Workgroup, type: :model do
             end
 
             it 'does not publish last aggregate' do
-              expect { subject }.not_to change { Publication.count }
+              expect { subject }.not_to(change { Publication.count })
             end
           end
         end
@@ -409,7 +412,8 @@ RSpec.describe Workgroup, type: :model do
         it 'aggregates all current referentials' do
           expect { subject }.to change { workgroup.aggregates.count }.by(1).and change { Delayed::Job.count }.by(1)
           expect(workgroup.aggregates.last).to have_attributes(
-            referentials: match_array(%i[
+            referentials: match_array(
+              %i[
                 created_after_referential
                 other_referential
               ].map { |i| context.referential(i) }
@@ -440,7 +444,7 @@ RSpec.describe Workgroup, type: :model do
         end
 
         it 'does not aggregate any referential' do
-          expect { subject }.not_to change { workgroup.aggregates.count }
+          expect { subject }.not_to(change { workgroup.aggregates.count })
         end
 
         context 'with publications' do
@@ -450,7 +454,7 @@ RSpec.describe Workgroup, type: :model do
           end
 
           it 'publishes last aggregate' do
-            expect { subject }.to change { Publication.count }
+            expect { subject }.to(change { Publication.count })
           end
         end
       end

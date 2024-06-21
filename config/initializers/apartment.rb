@@ -47,8 +47,6 @@ Apartment.configure do |config|
     'DocumentMembership',
     'DocumentProvider',
     'DocumentType',
-    'Delayed::Heartbeat::Worker',
-    'Delayed::Job',
     'Destination',
     'DestinationReport',
     'DocumentType',
@@ -124,7 +122,9 @@ Apartment.configure do |config|
     'Waypoint',
     'Workbench::Sharing',
     'Workbench',
-    'Workgroup'
+    'Workgroup',
+    'Delayed::Heartbeat::Worker',
+    'Delayed::Job'
   ]
 
   # In order to migrate all of your Tenants you need to provide a list of Tenant names to Apartment.

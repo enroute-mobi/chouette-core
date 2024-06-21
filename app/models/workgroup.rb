@@ -1,5 +1,4 @@
 class Workgroup < ApplicationModel
-  NIGHTLY_AGGREGATE_CRON_TIME = 5.minutes
   DEFAULT_EXPORT_TYPES = %w[Export::Gtfs Export::NetexGeneric Export::Ara].freeze
 
   belongs_to :line_referential, dependent: :destroy, required: true
@@ -98,27 +97,15 @@ class Workgroup < ApplicationModel
 
   attribute :nightly_aggregate_time, TimeOfDay::Type::TimeWithoutZone.new
 
+  def aggregate!(**options)
+    Aggregator.new(self, **options).run
+  end
+
   def aggregate_urgent_data!
     UrgentAggregator.new(
       self,
       aggregate_attributes: { creator: 'webservice', automatic_operation: true }
     ).run
-  end
-
-  def nightly_aggregate! # rubocop:disable Metrics/MethodLength:
-    aggregator = Aggregator.new(
-      self,
-      aggregate_attributes: { creator: 'CRON', notification_target: nightly_aggregate_notification_target },
-      daily_publications: true,
-      log: true
-    )
-    aggregator.log('Test nightly aggregate time frame', debug: true)
-    return unless nightly_aggregate_timeframe?
-
-    aggregator.log("Check nightly Aggregate (at #{nightly_aggregate_time})")
-    update_column :nightly_aggregated_at, Time.current # rubocop:disable Rails/SkipsModelValidations
-
-    aggregator.run
   end
 
   class Aggregator
@@ -211,20 +198,81 @@ class Workgroup < ApplicationModel
     end
   end
 
-  def nightly_aggregate_timeframe?
-    return false unless nightly_aggregate_enabled?
+  concerning :AggregateScheduling do # rubocop:disable Metrics/BlockLength
+    included do
+      belongs_to :scheduled_aggregate_job, class_name: '::Delayed::Job', optional: true
 
-    Rails.logger.debug "Workgroup #{id}: nightly_aggregate_timeframe!"
-    Rails.logger.debug "Time.now: #{Time.now.inspect}"
-    Rails.logger.debug "TimeOfDay.now: #{TimeOfDay.now.inspect}"
-    Rails.logger.debug "nightly_aggregate_time: #{nightly_aggregate_time.inspect}"
-    Rails.logger.debug "diff: #{(TimeOfDay.now - nightly_aggregate_time)}"
+      after_commit :reschedule_aggregate, on: %i[create update], if: :reschedule_aggregate_needed?
+      after_commit :destroy_scheduled_aggregate_job, on: :destroy
+    end
 
-    within_timeframe = (TimeOfDay.now - nightly_aggregate_time).abs <= NIGHTLY_AGGREGATE_CRON_TIME && nightly_aggregate_days.match_date?(Time.zone.now)
-    Rails.logger.debug "within_timeframe: #{within_timeframe}"
+    def aggregate_schedule_enabled?
+      nightly_aggregate_enabled && !nightly_aggregate_days.none? # rubocop:disable Style/InverseMethods
+    end
 
-    cool_down_time = (NIGHTLY_AGGREGATE_CRON_TIME*3).ago
-    within_timeframe && (nightly_aggregated_at.blank? || nightly_aggregated_at < cool_down_time)
+    def next_aggregate_schedule
+      return unless aggregate_schedule_enabled?
+
+      scheduled_aggregate_job&.run_at
+    end
+
+    def reschedule_aggregate # rubocop:disable Metrics/MethodLength
+      if aggregate_schedule_enabled?
+        job = Workgroup::ScheduledAggregateJob.new(self)
+
+        if scheduled_aggregate_job
+          scheduled_aggregate_job.update(cron: job.cron)
+        else
+          delayed_job = Delayed::Job.enqueue(job, cron: job.cron)
+          update_column(:scheduled_aggregate_job_id, delayed_job.id) # rubocop:disable Rails/SkipsModelValidations
+        end
+      else
+        update_column(:scheduled_aggregate_job_id, nil) # rubocop:disable Rails/SkipsModelValidations
+        destroy_scheduled_aggregate_job
+      end
+    end
+
+    private
+
+    def reschedule_aggregate_needed?
+      saved_change_to_nightly_aggregate_enabled || \
+        saved_change_to_nightly_aggregate_time || \
+        saved_change_to_nightly_aggregate_days
+    end
+
+    def destroy_scheduled_aggregate_job
+      scheduled_aggregate_job&.destroy
+    end
+  end
+
+  class ScheduledAggregateJob
+    def initialize(workgroup)
+      @workgroup = workgroup
+    end
+    attr_reader :workgroup
+
+    def cron
+      [
+        workgroup.nightly_aggregate_time.minute,
+        workgroup.nightly_aggregate_time.hour,
+        '*',
+        '*',
+        workgroup.nightly_aggregate_days.to_cron
+      ].join(' ')
+    end
+
+    def perform
+      return unless workgroup.aggregate_schedule_enabled?
+
+      workgroup.aggregate!(
+        creator: 'CRON',
+        aggregate_attributes: { notification_target: workgroup.nightly_aggregate_notification_target },
+        daily_publications: true,
+        log: true
+      )
+    rescue StandardError => e
+      Chouette::Safe.capture "Can't start Workgroup##{workgroup.id}::ScheduledAggregateJob", e
+    end
   end
 
   def workbench_scopes workbench

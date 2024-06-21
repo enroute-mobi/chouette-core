@@ -1725,7 +1725,6 @@ ActiveRecord::Schema.define(version: 2024_07_29_152804) do
     t.bigint "output_id"
     t.time "nightly_aggregate_time", default: "2000-01-01 00:00:00"
     t.boolean "nightly_aggregate_enabled", default: false
-    t.datetime "nightly_aggregated_at"
     t.datetime "aggregated_at"
     t.string "nightly_aggregate_notification_target", default: "none"
     t.datetime "deleted_at"
@@ -1736,7 +1735,9 @@ ActiveRecord::Schema.define(version: 2024_07_29_152804) do
     t.bit "nightly_aggregate_days", limit: 7, default: "1111111"
     t.string "description"
     t.bigint "fare_referential_id", null: false
+    t.bigint "scheduled_aggregate_job_id"
     t.index ["fare_referential_id"], name: "index_workgroups_on_fare_referential_id"
+    t.index ["scheduled_aggregate_job_id"], name: "index_workgroups_on_scheduled_aggregate_job_id"
     t.index ["shape_referential_id"], name: "index_workgroups_on_shape_referential_id"
   end
 
@@ -1768,4 +1769,5 @@ ActiveRecord::Schema.define(version: 2024_07_29_152804) do
   add_foreign_key "vehicle_journeys", "journey_patterns", name: "vj_jp_fkey", on_delete: :cascade
   add_foreign_key "vehicle_journeys", "routes", name: "vj_route_fkey", on_delete: :cascade
   add_foreign_key "workbench_sharings", "workbenches"
+  add_foreign_key "workgroups", "delayed_jobs", column: "scheduled_aggregate_job_id"
 end

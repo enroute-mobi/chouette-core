@@ -83,7 +83,6 @@ RSpec.describe Cron::BaseJob do
       # rubocop:disable Layout/FirstArrayElementIndentation
       expect(Delayed::Job.where(['handler NOT LIKE ?', '%RSpec::ExampleGroups::%'])).to match_array([
         have_attributes(handler: "--- !ruby/object:Cron::CheckDeadOperationsJob {}\n", cron: '*/5 * * * *'),
-        have_attributes(handler: "--- !ruby/object:Cron::CheckNightlyAggregatesJob {}\n", cron: '*/5 * * * *'),
         have_attributes(handler: "--- !ruby/object:Cron::HandleDeadWorkersJob {}\n", cron: '*/5 * * * *'),
         have_attributes(handler: "--- !ruby/object:Cron::PurgeReferentialJob {}\n", cron: '0 3 * * *'),
         have_attributes(handler: "--- !ruby/object:Cron::PurgeWorkgroupsJob {}\n", cron: '0 3 * * *')
@@ -105,7 +104,6 @@ RSpec.describe Cron::BaseJob do
         # rubocop:disable Layout/FirstArrayElementIndentation
         expect(Delayed::Job.where(['handler NOT LIKE ?', '%RSpec::ExampleGroups::%'])).to match_array([
           have_attributes(handler: "--- !ruby/object:Cron::CheckDeadOperationsJob {}\n", cron: '*/5 * * * *'),
-          have_attributes(handler: "--- !ruby/object:Cron::CheckNightlyAggregatesJob {}\n", cron: '*/5 * * * *'),
           have_attributes(handler: "--- !ruby/object:Cron::HandleDeadWorkersJob {}\n", cron: '*/5 * * * *'),
           have_attributes(handler: "--- !ruby/object:Cron::PurgeReferentialJob {}\n", cron: '0 3 * * *'),
           have_attributes(handler: "--- !ruby/object:Cron::PurgeWorkgroupsJob {}\n", cron: '0 3 * * *')
@@ -115,14 +113,13 @@ RSpec.describe Cron::BaseJob do
     end
 
     context 'when disabling some jobs' do
-      before { allow(Cron::CheckNightlyAggregatesJob).to receive(:enabled).and_return(false) }
+      before { allow(Cron::HandleDeadWorkersJob).to receive(:enabled).and_return(false) }
 
       it 'should not schedule disabled cron jobs' do
         subject
         # rubocop:disable Layout/FirstArrayElementIndentation
         expect(Delayed::Job.where(['handler NOT LIKE ?', '%RSpec::ExampleGroups::%'])).to match_array([
           have_attributes(handler: "--- !ruby/object:Cron::CheckDeadOperationsJob {}\n", cron: '*/5 * * * *'),
-          have_attributes(handler: "--- !ruby/object:Cron::HandleDeadWorkersJob {}\n", cron: '*/5 * * * *'),
           have_attributes(handler: "--- !ruby/object:Cron::PurgeReferentialJob {}\n", cron: '0 3 * * *'),
           have_attributes(handler: "--- !ruby/object:Cron::PurgeWorkgroupsJob {}\n", cron: '0 3 * * *')
         ])
@@ -132,7 +129,7 @@ RSpec.describe Cron::BaseJob do
       context 'when jobs are enqueued' do
         before do
           Delayed::Job.create!(
-            handler: "--- !ruby/object:Cron::CheckNightlyAggregatesJob {}\n",
+            handler: "--- !ruby/object:Cron::HandleDeadWorkersJob {}\n",
             run_at: DateTime.now,
             cron: '*/5 * * * *'
           )
@@ -143,7 +140,6 @@ RSpec.describe Cron::BaseJob do
           # rubocop:disable Layout/FirstArrayElementIndentation
           expect(Delayed::Job.where(['handler NOT LIKE ?', '%RSpec::ExampleGroups::%'])).to match_array([
             have_attributes(handler: "--- !ruby/object:Cron::CheckDeadOperationsJob {}\n", cron: '*/5 * * * *'),
-            have_attributes(handler: "--- !ruby/object:Cron::HandleDeadWorkersJob {}\n", cron: '*/5 * * * *'),
             have_attributes(handler: "--- !ruby/object:Cron::PurgeReferentialJob {}\n", cron: '0 3 * * *'),
             have_attributes(handler: "--- !ruby/object:Cron::PurgeWorkgroupsJob {}\n", cron: '0 3 * * *')
           ])

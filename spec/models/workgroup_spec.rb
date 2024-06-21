@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 RSpec.describe Workgroup, type: :model do
 
   let(:context) { Chouette.create { workgroup } }
@@ -180,71 +182,11 @@ RSpec.describe Workgroup, type: :model do
     end
   end
 
-  describe "#nightly_aggregate_timeframe?" do
-    let(:nightly_aggregation_time) { "15:15:00" }
-    let(:nightly_aggregate_enabled) { false }
-    let(:current_symbolic_day) { Cuckoo::Timetable::DaysOfWeek::SYMBOLIC_DAYS[Time.zone.now.wday - 1] }
-
-    before do
-      workgroup.update nightly_aggregate_time: nightly_aggregation_time,
-                       nightly_aggregate_enabled: nightly_aggregate_enabled
-    end
-
-    let(:time_at_1515) { Time.zone.now.beginning_of_day + 15.hours + 15.minutes }
-
-    context "when nightly_aggregate_enabled is true" do
-      let(:nightly_aggregate_enabled) { true }
-
-      it "returns true when inside timeframe && dayframe" do
-        Timecop.freeze(time_at_1515) do
-          workgroup.nightly_aggregate_days.enable(current_symbolic_day)
-          expect(workgroup.nightly_aggregate_timeframe?).to be_truthy
-        end
-      end
-  
-      it "returns false when inside timeframe && not in dayframe" do
-        Timecop.freeze(time_at_1515) do
-          workgroup.nightly_aggregate_days.disable(current_symbolic_day)
-          expect(workgroup.nightly_aggregate_timeframe?).to be_falsy
-        end
-      end
-
-      it "returns false when outside timeframe && in dayframe" do
-        Timecop.freeze(time_at_1515 - 20.minutes) do
-          workgroup.nightly_aggregate_days.enable(current_symbolic_day)
-          expect(workgroup.nightly_aggregate_timeframe?).to be_falsy
-        end
-      end
-
-      it "returns false when outside timeframe && in not dayframe" do
-        Timecop.freeze(time_at_1515 - 20.minutes) do
-          workgroup.nightly_aggregate_days.disable(current_symbolic_day)
-          expect(workgroup.nightly_aggregate_timeframe?).to be_falsy
-        end
-      end
-
-      it "returns false when inside timeframe but already done" do
-        workgroup.nightly_aggregated_at = time_at_1515
-        Timecop.freeze(time_at_1515) do
-          expect(workgroup.nightly_aggregate_timeframe?).to be_falsy
-        end
-      end
-    end
-
-    context "when nightly_aggregate_enabled is false" do
-      it "is false even within timeframe" do
-        Timecop.freeze(time_at_1515) do
-          expect(workgroup.nightly_aggregate_timeframe?).to be_falsy
-        end
-      end
-    end
-  end
-
-  describe 'nightly_aggregate!' do
-    subject { workgroup.nightly_aggregate! }
+  describe 'aggregate!' do
+    let(:aggregate_options) { {} }
+    subject { workgroup.aggregate!(**aggregate_options) }
 
     let(:aggregated_at) { nil }
-    let(:nightly_aggregate_timeframe) { true }
     let(:daily_publication) do
       workgroup.publication_setups.create!(
         name: 'Daily',
@@ -263,7 +205,6 @@ RSpec.describe Workgroup, type: :model do
     before do
       Timecop.freeze
       workgroup.update_column(:aggregated_at, aggregated_at) if aggregated_at
-      expect(workgroup).to receive(:nightly_aggregate_timeframe?).and_return(nightly_aggregate_timeframe)
     end
     after { Timecop.return }
 
@@ -271,14 +212,10 @@ RSpec.describe Workgroup, type: :model do
       context 'without referential' do
         let(:context) do
           Chouette.create do
-            workgroup(nightly_aggregate_notification_target: 'user') do
+            workgroup do
               referential(:some_referential)
             end
           end
-        end
-
-        it 'sets nightly_aggregated_at' do
-          expect { subject }.to(change { workgroup.nightly_aggregated_at })
         end
 
         it 'does not aggregate' do
@@ -292,21 +229,29 @@ RSpec.describe Workgroup, type: :model do
             aggregate
           end
 
-          it 'publishes last successful aggregate' do
-            expect { subject }.to(
-              change { daily_publication.publications.count }.and(not_change { other_publication.publications.count })
-            )
+          it 'does not publish last successful aggregate' do
+            expect { subject }.not_to(change { Publication.count })
           end
 
-          context 'when no aggregate is successful' do
-            let(:aggregate) do
-              workgroup.aggregates.create!(referentials: [some_referential], creator: 'none').tap do |aggregate|
-                aggregate.update_column(:status, :failed)
-              end
+          context 'with daily_publications option' do
+            let(:aggregate_options) { { daily_publications: true } }
+
+            it 'publishes last successful aggregate' do
+              expect { subject }.to(
+                change { daily_publication.publications.count }.and(not_change { other_publication.publications.count })
+              )
             end
 
-            it 'does not publish aggregate' do
-              expect { subject }.not_to(change { Publication.count })
+            context 'when no aggregate is successful' do
+              let(:aggregate) do
+                workgroup.aggregates.create!(referentials: [some_referential], creator: 'none').tap do |aggregate|
+                  aggregate.update_column(:status, :failed)
+                end
+              end
+
+              it 'does not publish aggregate' do
+                expect { subject }.not_to(change { Publication.count })
+              end
             end
           end
         end
@@ -315,7 +260,7 @@ RSpec.describe Workgroup, type: :model do
       context 'with referentials' do
         let(:context) do
           Chouette.create do
-            workgroup(nightly_aggregate_notification_target: 'user') do
+            workgroup do
               workbench(:locked_referential_to_aggregate_workbench) do
                 referential(:some_referential)
                 referential(:locked_referential_to_aggregate_referential)
@@ -338,10 +283,6 @@ RSpec.describe Workgroup, type: :model do
           context.workbench(:current_workbench).create_output!(current: context.referential(:current_referential))
         end
 
-        it 'sets nightly_aggregated_at' do
-          expect { subject }.to(change { workgroup.nightly_aggregated_at })
-        end
-
         it 'aggregates all current referentials' do
           expect { subject }.to change { workgroup.aggregates.count }.by(1).and change { Delayed::Job.count }.by(1)
           expect(workgroup.aggregates.last).to have_attributes(
@@ -351,31 +292,19 @@ RSpec.describe Workgroup, type: :model do
                 current_referential
               ].map { |i| context.referential(i) }
             ),
-            creator: 'CRON',
-            notification_target: 'user'
+            creator: 'creator'
           )
         end
 
-        context 'when nightly_aggregate_timeframe? is false' do
-          let(:nightly_aggregate_timeframe) { false }
+        context 'with aggregate_attributes option' do
+          let(:aggregate_options) { { aggregate_attributes: { creator: 'CRON', notification_target: 'user' } } }
 
-          it 'does not set nightly_aggregated_at' do
-            expect { subject }.not_to(change { workgroup.nightly_aggregated_at })
-          end
-
-          it 'does not aggregate' do
-            expect { subject }.not_to(change { workgroup.aggregates.count })
-          end
-
-          context 'with publications' do
-            before do
-              daily_publication
-              aggregate
-            end
-
-            it 'does not publish last aggregate' do
-              expect { subject }.not_to(change { Publication.count })
-            end
+          it 'creates aggregate with specified aggregate attributes' do
+            subject
+            expect(workgroup.aggregates.last).to have_attributes(
+              creator: 'CRON',
+              notification_target: 'user'
+            )
           end
         end
       end
@@ -387,7 +316,7 @@ RSpec.describe Workgroup, type: :model do
       context 'when 1 referential is created after last aggregate' do
         let(:context) do
           Chouette.create do
-            workgroup(nightly_aggregate_notification_target: 'user') do
+            workgroup do
               workbench(:created_after_workbench) do
                 referential(:some_referential)
                 referential(:created_after_referential)
@@ -405,10 +334,6 @@ RSpec.describe Workgroup, type: :model do
           end
         end
 
-        it 'sets nightly_aggregated_at' do
-          expect { subject }.to(change { workgroup.nightly_aggregated_at })
-        end
-
         it 'aggregates all current referentials' do
           expect { subject }.to change { workgroup.aggregates.count }.by(1).and change { Delayed::Job.count }.by(1)
           expect(workgroup.aggregates.last).to have_attributes(
@@ -417,9 +342,7 @@ RSpec.describe Workgroup, type: :model do
                 created_after_referential
                 other_referential
               ].map { |i| context.referential(i) }
-            ),
-            creator: 'CRON',
-            notification_target: 'user'
+            )
           )
         end
       end
@@ -429,7 +352,7 @@ RSpec.describe Workgroup, type: :model do
 
         let(:context) do
           Chouette.create do
-            workgroup(nightly_aggregate_notification_target: 'user') do
+            workgroup do
               workbench do
                 referential(:some_referential)
               end
@@ -439,15 +362,13 @@ RSpec.describe Workgroup, type: :model do
 
         before { context.workbench.create_output!(current: context.referential(:some_referential)) }
 
-        it 'sets nightly_aggregated_at' do
-          expect { subject }.to(change { workgroup.nightly_aggregated_at })
-        end
-
         it 'does not aggregate any referential' do
           expect { subject }.not_to(change { workgroup.aggregates.count })
         end
 
         context 'with publications' do
+          let(:aggregate_options) { { daily_publications: true } }
+
           before do
             daily_publication
             aggregate
@@ -474,12 +395,261 @@ RSpec.describe Workgroup, type: :model do
 
       workgroup.nightly_aggregate_days = '1111111'
       expect(workgroup.nightly_aggregate_days.days).to eq(Cuckoo::Timetable::DaysOfWeek::SYMBOLIC_DAYS)
-    
+
       workgroup.nightly_aggregate_days = '1110100'
       expect(workgroup.nightly_aggregate_days.days).to eq(%i[monday tuesday wednesday friday])
 
       workgroup.nightly_aggregate_days = '1110000'
       expect(workgroup.nightly_aggregate_days.days).to eq(%i[monday tuesday wednesday])
+    end
+  end
+
+  describe '#scheduled_aggregate_job' do
+    context 'when aggregate job is not scheduled' do
+      context 'when #nightly_aggregate_enabled becomes true' do
+        subject(:enable_nightly_aggregate) { workgroup.update(nightly_aggregate_enabled: true) }
+
+        it do
+          expect { subject }.to change { workgroup.scheduled_aggregate_job }.from(nil).to(
+            have_attributes(
+              handler: match(/Workgroup::ScheduledAggregateJob/),
+              cron: '0 0 * * *'
+            )
+          )
+        end
+
+        context '#next_aggregate_schedule' do
+          subject { workgroup.next_aggregate_schedule }
+
+          before { enable_nightly_aggregate }
+
+          it { is_expected.to be_present }
+        end
+
+        context '#reschedule_aggregate' do
+          subject { workgroup.reschedule_aggregate }
+
+          before { enable_nightly_aggregate }
+
+          it { expect { subject }.not_to(change { workgroup.scheduled_aggregate_job.reload.attributes }) }
+
+          context 'when aggregate job has wrong attributes' do
+            before { workgroup.scheduled_aggregate_job.update(cron: '1 2 3 4 5') }
+
+            it do
+              expect { subject }.to(
+                change { workgroup.scheduled_aggregate_job.reload.cron }.and(
+                  change { workgroup.scheduled_aggregate_job.reload.run_at }
+                )
+              )
+            end
+          end
+        end
+
+        context 'when #nightly_aggregate_enabled becomes false' do
+          subject { workgroup.update(nightly_aggregate_enabled: false) }
+
+          before { enable_nightly_aggregate }
+
+          it { expect { subject }.to change { workgroup.reload.scheduled_aggregate_job }.from(be_present).to(nil) }
+        end
+
+        context 'when #nightly_aggregate_time changes' do
+          subject { workgroup.update(nightly_aggregate_time: TimeOfDay.new('12', '20')) }
+
+          before { enable_nightly_aggregate }
+
+          it do
+            expect { subject }.to(
+              change { workgroup.scheduled_aggregate_job.reload.cron }.to('20 12 * * *').and(
+                change { workgroup.scheduled_aggregate_job.reload.run_at }
+              )
+            )
+          end
+        end
+
+        context 'when #nightly_aggregate_days changes' do
+          subject do
+            workgroup.update(nightly_aggregate_days: Cuckoo::Timetable::DaysOfWeek.new(monday: true, tuesday: true))
+          end
+
+          before { enable_nightly_aggregate }
+
+          it do
+            expect { subject }.to change { workgroup.scheduled_aggregate_job.reload.cron }.to('0 0 * * 1,2')
+          end
+
+          context 'becomes empty' do
+            subject { workgroup.update(nightly_aggregate_days: Cuckoo::Timetable::DaysOfWeek.none) }
+
+            it { expect { subject }.to change { workgroup.reload.scheduled_aggregate_job }.from(be_present).to(nil) }
+          end
+        end
+
+        context 'when workgroup is destroyed' do
+          subject { workgroup.destroy }
+
+          before { enable_nightly_aggregate }
+
+          it do
+            job = workgroup.scheduled_aggregate_job
+            subject
+            expect { job.reload }.to raise_error(ActiveRecord::RecordNotFound)
+          end
+        end
+
+        context 'if scheduled job is destroyed' do
+          before do
+            enable_nightly_aggregate
+            job = workgroup.scheduled_aggregate_job
+            workgroup.update_column(:scheduled_aggregate_job_id, nil)
+            job.destroy
+          end
+
+          context '#next_aggregate_schedule' do
+            subject { workgroup.next_aggregate_schedule }
+
+            it { is_expected.to eq(nil) }
+          end
+
+          context '#reschedule_aggregate' do
+            subject { workgroup.reschedule_aggregate }
+
+            it do
+              expect { subject }.to change { workgroup.scheduled_aggregate_job }.from(nil).to(
+                have_attributes(handler: match(/Workgroup::ScheduledAggregateJob/))
+              )
+            end
+          end
+
+          context 'when #nightly_aggregate_time changes' do
+            subject { workgroup.update(nightly_aggregate_time: TimeOfDay.new('12', '20')) }
+
+            it do
+              expect { subject }.to change { workgroup.scheduled_aggregate_job }.from(nil).to(
+                have_attributes(
+                  handler: match(/Workgroup::ScheduledAggregateJob/),
+                  cron: '20 12 * * *'
+                )
+              )
+            end
+          end
+
+          context 'when #nightly_aggregate_days changes' do
+            subject do
+              workgroup.update(nightly_aggregate_days: Cuckoo::Timetable::DaysOfWeek.new(monday: true, tuesday: true))
+            end
+
+            it do
+              expect { subject }.to change { workgroup.scheduled_aggregate_job }.from(nil).to(
+                have_attributes(
+                  handler: match(/Workgroup::ScheduledAggregateJob/),
+                  cron: '0 0 * * 1,2'
+                )
+              )
+            end
+
+            context 'becomes empty' do
+              subject { workgroup.update(nightly_aggregate_days: Cuckoo::Timetable::DaysOfWeek.none) }
+
+              it { expect { subject }.not_to change { workgroup.scheduled_aggregate_job }.from(nil) }
+            end
+          end
+        end
+      end
+
+      context '#reschedule_aggregate' do
+        subject { workgroup.reschedule_aggregate }
+
+        it { expect { subject }.not_to change { workgroup.scheduled_aggregate_job }.from(nil) }
+      end
+
+      context 'when #nightly_aggregate_time changes' do
+        subject { workgroup.update(nightly_aggregate_time: TimeOfDay.new('12', '20')) }
+
+        it { expect { subject }.not_to change { workgroup.scheduled_aggregate_job }.from(nil) }
+      end
+
+      context 'when #nightly_aggregate_days changes' do
+        subject do
+          workgroup.update(nightly_aggregate_days: Cuckoo::Timetable::DaysOfWeek.new(monday: true, tuesday: true))
+        end
+
+        it { expect { subject }.not_to change { workgroup.scheduled_aggregate_job }.from(nil) }
+      end
+    end
+
+    context 'when aggregate job is scheduled' do
+      before do
+        workgroup.update(
+          scheduled_aggregate_job: Delayed::Job.enqueue(
+            Workgroup::ScheduledAggregateJob.new(workgroup),
+            cron: '1 2 3 4 5'
+          )
+        )
+      end
+
+      context '#next_aggregate_schedule' do
+        subject { workgroup.next_aggregate_schedule }
+
+        it { is_expected.to eq(nil) }
+      end
+
+      context '#reschedule_aggregate' do
+        subject { workgroup.reschedule_aggregate }
+
+        it { expect { subject }.to change { workgroup.reload.scheduled_aggregate_job }.from(be_present).to(nil) }
+      end
+
+      context 'when #nightly_aggregate_time changes' do
+        subject { workgroup.update(nightly_aggregate_time: TimeOfDay.new('12', '20')) }
+
+        it { expect { subject }.to change { workgroup.reload.scheduled_aggregate_job }.from(be_present).to(nil) }
+      end
+
+      context 'when #nightly_aggregate_days changes' do
+        subject do
+          workgroup.update(nightly_aggregate_days: Cuckoo::Timetable::DaysOfWeek.new(monday: true, tuesday: true))
+        end
+
+        it { expect { subject }.to change { workgroup.reload.scheduled_aggregate_job }.from(be_present).to(nil) }
+      end
+    end
+  end
+
+  describe Workgroup::ScheduledAggregateJob do
+    subject(:job) { Workgroup::ScheduledAggregateJob.new(workgroup) }
+
+    describe '#perform' do
+      subject { job.perform }
+
+      before do
+        workgroup.update(nightly_aggregate_notification_target: 'user')
+        expect(workgroup).to receive(:aggregate_schedule_enabled?).and_return(aggregate_schedule_enabled)
+      end
+
+      context 'when aggregate_schedule_enabled? is true' do
+        let(:aggregate_schedule_enabled) { true }
+
+        it 'calls #aggregate! with the correct arguments' do
+          expect(workgroup).to receive(:aggregate!).with(
+            creator: 'CRON',
+            aggregate_attributes: { notification_target: 'user' },
+            daily_publications: true,
+            log: true
+          )
+          subject
+        end
+      end
+
+      context 'when aggregate_schedule_enabled? is false' do
+        let(:aggregate_schedule_enabled) { false }
+
+        it 'does not call aggregate!' do
+          expect(workgroup).not_to receive(:aggregate!)
+          subject
+        end
+      end
     end
   end
 

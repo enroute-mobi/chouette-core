@@ -180,7 +180,17 @@ module Export::Scope
     end
 
     def companies
-      current_scope.companies.where(id: lines.where.not(company_id: nil).select(:company_id))
+      current_scope.companies.where(id: company_ids).or(
+        current_scope.companies.where(id: secondary_company_ids)
+      )
+    end
+
+    def company_ids
+      lines.where.not(company_id: nil).select(:company_id).distinct
+    end
+
+    def secondary_company_ids
+      lines.where.not(secondary_company_ids: nil).select('unnest(secondary_company_ids)').distinct
     end
 
     def networks

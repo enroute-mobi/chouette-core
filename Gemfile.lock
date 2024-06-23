@@ -237,7 +237,7 @@ GEM
       msgpack
     date (3.3.4)
     dbf (4.2.4)
-    ddtrace (1.23.0)
+    ddtrace (1.23.2)
       datadog-ci (~> 0.8.1)
       debase-ruby_core_source (= 3.3.1)
       libdatadog (~> 7.0.0.1.0)
@@ -331,7 +331,7 @@ GEM
     faraday_middleware (0.14.0)
       faraday (>= 0.7.4, < 1.0)
     ffaker (2.1.0)
-    ffi (1.16.3)
+    ffi (1.17.0)
     font_awesome5_rails (1.5.0)
       nokogiri (>= 1.11.3)
       railties (>= 4.2)

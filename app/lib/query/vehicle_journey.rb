@@ -24,6 +24,12 @@ module Query
 
     def time_table(value)
       change_scope(if: value.present?) do |scope|
+        scope.with_time_tables([value])
+      end
+    end
+
+    def time_table_period(value)
+      change_scope(if: value.present?) do |scope|
         scope.with_matching_timetable(value)
       end
     end
@@ -38,6 +44,6 @@ module Query
         scope.with_stop_area_id(stop_area_id)
       end
     end
-    
+
   end
 end

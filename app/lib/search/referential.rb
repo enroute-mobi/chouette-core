@@ -35,6 +35,10 @@ module Search
       workbench.lines.order(:name)
     end
 
+    def candidate_time_tables
+      workbench.time_tables.order(:name)
+    end
+
     def candidate_workbenches
       workgroup.workbenches.order(:name)
     end

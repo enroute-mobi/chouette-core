@@ -28,6 +28,7 @@ fr:
         timetable: "Calendrier"
         stop_area_id: "Arrêt"
         stop_area_provider_id: "Indiquez un nom de Fournisseur d'arrêts"
+        stop_area: "Arrêt"
         area_type: "Type d'arrêt"
         is_referent: "Référent"
         zip_code: "Code Postal"
@@ -45,6 +46,7 @@ fr:
         valid_before_date: Valide depuis
         valid_after_date: Valide jusqu'au
         referential_name: Cible
+        time_table_id: Calendrier
   activerecord:
     models:
       search/save:

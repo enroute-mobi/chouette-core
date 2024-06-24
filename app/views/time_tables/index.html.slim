@@ -36,7 +36,10 @@
                 key: :vehicle_journeys_count, \
                 name: Chouette::TimeTable.tmf('associated_vehicle_journeys'), \
                 attribute: Proc.new{ |tt| tt.vehicle_journeys.count }, \
-                sortable: false \
+                sortable: false, \
+                link_to: lambda do |time_table| \
+                  workbench_referential_vehicle_journeys_path(@workbench, @referential, :'search[time_table_id]' => time_table.id) \
+                end \
               ), \
               TableBuilderHelper::Column.new( \
                 name: Chouette::TimeTable.tmf('day_types'), \

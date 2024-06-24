@@ -182,6 +182,8 @@ module Chouette
               transient :documents
 
               after do
+                new_instance.line_referential = parent.line_referential
+
                 (transient(:codes) || {}).each do |code_space_short_name, value|
                   code_space = new_instance.workgroup.code_spaces.find_by!(short_name: code_space_short_name)
                   new_instance.codes.build(code_space: code_space, value: value)
@@ -195,6 +197,17 @@ module Chouette
 
             model :company do
               attribute(:name) { |n| "Company #{n}" }
+
+              transient :codes
+
+              after do
+                new_instance.line_referential = parent.line_referential
+
+                (transient(:codes) || {}).each do |code_space_short_name, value|
+                  code_space = new_instance.workgroup.code_spaces.find_by!(short_name: code_space_short_name)
+                  new_instance.codes.build(code_space: code_space, value: value)
+                end
+              end
             end
 
             model :network do

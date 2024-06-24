@@ -27,7 +27,7 @@ module Macro
 
       def run
         models_without_code.find_each do |model|
-          code = model.codes.create(code_space: code_space, value: format_code_space(uuid))
+          code = model.codes.create(code_space: code_space, value: format_code_space(model))
           create_message(model, code)
         end
       end
@@ -62,9 +62,19 @@ module Macro
         SecureRandom.uuid
       end
 
-      def format_code_space(uuid)
-        format.gsub('%{value}', uuid) # rubocop:disable Style/FormatStringToken
+      def format_code_space(model)
+        format.gsub('%{value}', uuid).gsub(CODE_SPACE_REGEXP) do # rubocop:disable Style/FormatStringToken
+          next nil unless model.respond_to?(:line)
+
+          if ::Regexp.last_match(1)
+            model.line.codes.find { |c| c.code_space.short_name == ::Regexp.last_match(1) }&.value
+          else
+            model.line.registration_number
+          end
+        end
       end
+
+      CODE_SPACE_REGEXP = /%{line.code(?::([^}]*))?}/.freeze
     end
   end
 end

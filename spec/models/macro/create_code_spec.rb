@@ -395,8 +395,25 @@ RSpec.describe Macro::CreateCode do
   describe Macro::CreateCode::Target do
     subject(:target) { Macro::CreateCode::Target.new }
 
+    # rubocop:disable Style/FormatStringToken
     describe '#apply_pattern' do
-      subject { target.apply_pattern(value) }
+      subject { target.apply_pattern(model, value) }
+
+      let(:model) { nil }
+      let(:context) do
+        Chouette.create do
+          code_space short_name: 'public'
+
+          line :line, registration_number: 'LINE42', codes: { 'public' => 'PUBLIC_LINE42' }
+          stop_area
+
+          referential lines: %i[line] do
+            route line: :line do
+              vehicle_journey
+            end
+          end
+        end
+      end
 
       context "when the given value is 'dummy'" do
         let(:value) { 'dummy' }
@@ -424,7 +441,55 @@ RSpec.describe Macro::CreateCode do
           before { target.pattern = '%{value//(.*)(.)/\1_\2}' }
           it { is_expected.to eq('dumm_y') }
         end
+
+        context "when pattern is '%{line.code}'" do
+          before { target.pattern = '%{line.code}' }
+
+          context 'with Line' do
+            let(:model) { context.line(:line) }
+            it { is_expected.to eq('') }
+          end
+
+          context 'with StopArea' do
+            let(:model) { context.stop_area }
+            it { is_expected.to eq('') }
+          end
+
+          context 'with VehicleJourney' do
+            let(:model) { context.vehicle_journey }
+            it { is_expected.to eq('LINE42') }
+          end
+        end
+
+        context "when pattern is '%{line.code:public}'" do
+          before { target.pattern = '%{line.code:public}' }
+
+          context 'with Line' do
+            let(:model) { context.line(:line) }
+            it { is_expected.to eq('') }
+          end
+
+          context 'with StopArea' do
+            let(:model) { context.stop_area }
+            it { is_expected.to eq('') }
+          end
+
+          context 'with VehicleJourney' do
+            let(:model) { context.vehicle_journey }
+            it { is_expected.to eq('PUBLIC_LINE42') }
+          end
+        end
+
+        context "when pattern is '%{line.code:does_not_exist}'" do
+          before { target.pattern = '%{line.code:does_not_exist}' }
+
+          context 'with VehicleJourney' do
+            let(:model) { context.vehicle_journey }
+            it { is_expected.to eq('') }
+          end
+        end
       end
     end
+    # rubocop:enable Style/FormatStringToken
   end
 end

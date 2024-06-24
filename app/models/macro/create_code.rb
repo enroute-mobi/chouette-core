@@ -32,7 +32,7 @@ module Macro
           model_class.transaction do
             batch.each do |model|
               if source_value = source.value(model)
-                code_value = target.value(source_value)
+                code_value = target.value(model, source_value)
                 code = model.codes.create(code_space: code_space, value: code_value)
                 create_message(model, code, source_value)
               end
@@ -155,31 +155,41 @@ module Macro
         attributes.each { |k,v| send "#{k}=", v }
       end
 
-      def value(value)
-        apply_pattern value
+      def value(model, value)
+        apply_pattern(model, value)
       end
 
       def has_pattern?
         pattern.present?
       end
 
-      def apply_pattern(value)
+      # rubocop:disable Metrics/AbcSize,Metrics/CyclomaticComplexity,Metrics/MethodLength,Metrics/PerceivedComplexity
+      def apply_pattern(model, value)
         return value unless has_pattern?
 
-        value = value_substitution.call(value)
-        pattern.gsub(/%{value[^}]*}/, value)
-      end
+        result = pattern.gsub(VALUE_REGEXP) do
+          if ::Regexp.last_match(1) && ::Regexp.last_match(2)
+            from = ::Regexp.new(::Regexp.last_match(1))
+            to = ::Regexp.last_match(2)
+            value.gsub(from, to)
+          else
+            value
+          end
+        end
+        result.gsub(CODE_SPACE_REGEXP) do
+          next nil unless model.respond_to?(:line)
 
-      def value_substitution
-        if has_pattern? && %r@%{value//([^/]+)/([^}]*)}@ =~ pattern
-          from = Regexp.new $1
-          to = $2
-          Proc.new { |value| value.gsub(from, to) }
-        else
-          Proc.new { |value| value }
+          if ::Regexp.last_match(1)
+            model.line.codes.find { |c| c.code_space.short_name == ::Regexp.last_match(1) }&.value
+          else
+            model.line.registration_number
+          end
         end
       end
-    end
+      # rubocop:enable Metrics/AbcSize,Metrics/CyclomaticComplexity,Metrics/MethodLength,Metrics/PerceivedComplexity
 
+      VALUE_REGEXP = %r@%{value(?://([^/]+)/([^}]*))?}@.freeze
+      CODE_SPACE_REGEXP = /%{line.code(?::([^}]*))?}/.freeze
+    end
   end
 end

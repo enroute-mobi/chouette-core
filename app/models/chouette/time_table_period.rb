@@ -98,5 +98,12 @@ module Chouette
       single_day_periods.delete_all
     end
 
+    def to_timetable_period
+      Cuckoo::Timetable::Period.new(period_start, period_end, time_table.days_of_week)
+    end
+
+    def to_days_bit
+      to_timetable_period.to_days_bit
+    end
   end
 end

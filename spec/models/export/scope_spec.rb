@@ -303,6 +303,61 @@ RSpec.describe Export::Scope, use_chouette_factory: true do
         it { is_expected.to be_empty }
       end
     end
+
+    describe '#companies' do
+      subject { scope.companies }
+
+      context 'when a Line with a Company is scoped' do
+        let(:context) do
+          Chouette.create do
+            referential # useless .. but required by context ^ :(
+            company :company
+            line company: :company
+          end
+        end
+        before { allow(scope).to receive(:lines).and_return(Chouette::Line.where(id: context.lines)) }
+
+        let(:company) { context.company(:company) }
+
+        it "includes this Company" do
+          is_expected.to include(company)
+        end
+      end
+
+      context 'when a Line with a secondary Company is scoped' do
+        let(:context) do
+          Chouette.create do
+            referential # useless .. but required by context ^ :(
+            company :secondary
+            line secondary_companies: [ :secondary ]
+          end
+        end
+        before { allow(scope).to receive(:lines).and_return(Chouette::Line.where(id: context.lines)) }
+
+        let(:company) { context.company(:secondary) }
+
+        it "includes this Company" do
+          is_expected.to include(company)
+        end
+      end
+
+      context "when a Line with a Company and a secondary Company isn't scoped" do
+        let(:context) do
+          Chouette.create do
+            referential # useless .. but required by context ^ :(
+            company :main
+            company :secondary
+            line company: :main, secondary_companies: [ :secondary ]
+          end
+        end
+        before { allow(scope).to receive(:lines).and_return(Chouette::Line.none) }
+
+        let(:main_company) { context.company(:main) }
+        let(:secondary_company) { context.company(:secondary) }
+
+        it { is_expected.to be_empty }
+      end
+    end
   end
 
   describe Export::Scope::DateRange do

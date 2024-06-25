@@ -51,10 +51,10 @@ RSpec.describe Merge do
     let(:referentials) { [context.referential(:referential1), context.referential(:referential2)] }
 
     let(:merge) do
-      workbench.merges.create!(referentials: referentials).tap(&:merge!)
+      workbench.merges.create!(referentials: referentials, creator: 'test').tap(&:merge!)
     end
     let(:aggregate) do
-      workgroup.aggregates.create!(referentials: [context.referential(:other_referential), merge.new]).tap(&:aggregate!)
+      workgroup.aggregates.create!(referentials: [context.referential(:other_referential), merge.new], creator: 'test').tap(&:aggregate!)
     end
 
     subject { merge.last_aggregate }
@@ -74,14 +74,14 @@ RSpec.describe Merge do
     end
 
     it 'is nil when there is no aggregate on the output referential' do
-      workgroup.aggregates.create!(referentials: referentials).tap(&:aggregate!)
+      workgroup.aggregates.create!(referentials: referentials, creator: 'test').tap(&:aggregate!)
       is_expected.to be_nil
     end
 
     it 'is the last aggregate' do
       aggregate
       Timecop.travel(1.second.from_now)
-      new_aggregate = workgroup.aggregates.create!(referentials: [context.referential(:other_referential), merge.new])
+      new_aggregate = workgroup.aggregates.create!(referentials: [context.referential(:other_referential), merge.new], creator: 'test')
       new_aggregate.aggregate!
       is_expected.to eq(new_aggregate)
     ensure
@@ -89,7 +89,7 @@ RSpec.describe Merge do
     end
 
     context 'when merge has not yet run' do
-      let(:merge) { workbench.merges.create!(referentials: referentials) }
+      let(:merge) { workbench.merges.create!(referentials: referentials, creator: 'test') }
       it { is_expected.to be_nil }
     end
   end

@@ -9,10 +9,6 @@ fr:
       edit: "Editer cette Note de ligne"
       destroy: "Supprimer cette Note de ligne"
       destroy_confirm: "Etes vous sûr de supprimer cette Note de ligne ?"
-      attach: "Associer une Note de ligne"
-      detach: "Dissocier"
-    confirm:
-      detach: "Êtes-vous sur de vouloir dissocier cette note de cette ligne ?"
     new:
       title: "Ajouter une note de ligne"
     edit:

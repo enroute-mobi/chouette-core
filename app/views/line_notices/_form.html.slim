@@ -1,4 +1,4 @@
-= simple_form_for [@workbench, :line_referential, @line, @line_notice].compact, html: {class: 'form-horizontal', id: 'line_notice_form'}, wrapper: :horizontal_form do |f|
+= simple_form_for line_notice, url: url, html: { class: 'form-horizontal', id: 'line_notice_form' }, wrapper: :horizontal_form do |f|
   .row
     .col-lg-12
       = f.input :title

@@ -3,4 +3,4 @@
   .container-fluid
     .row
       .col-lg-8.col-lg-offset-2.col-md-8.col-md-offset-2.col-sm-10.col-sm-offset-1
-        = render 'form'
+        = render 'form', line_notice: @line_notice, url: [@workbench, :line_referential, @line_notice]

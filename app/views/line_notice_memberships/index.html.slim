@@ -1,0 +1,33 @@
+- breadcrumb :line_notices, @workbench, @line
+
+.page_content
+  .container-fluid
+    - if params[:q].present? or @line_notice_memberships.any?
+      .row
+        .col-lg-12
+          = render 'line_notices/filters', search_url: [@workbench, :line_referential, @line, :line_notice_memberships]
+    - if @line_notice_memberships.any?
+      .row
+        .col-lg-12
+          = table_builder_2 @line_notice_memberships,
+            [ \
+              TableBuilderHelper::Column.new( \
+                key: :title, \
+                attribute: ->(l) { l.line_notice.title }, \
+                link_to: lambda do |line_notice_membership| \
+                  [@workbench, :line_referential, line_notice_membership.line_notice] \
+                end \
+              ),
+              TableBuilderHelper::Column.new( \
+                key: :content, \
+                attribute: ->(l){ truncate(l.line_notice.content, length: 100) }, \
+              ),
+            ],
+            cls: 'table has-filter'
+
+          = new_pagination @line_notice_memberships, 'pull-right'
+
+    - else
+      .row.mt-xs
+        .col-lg-12
+          = replacement_msg t('line_notices.search_no_results')

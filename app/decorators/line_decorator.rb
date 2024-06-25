@@ -28,7 +28,7 @@ class LineDecorator < AF83::Decorator
 
     instance_decorator.action_link secondary: :show do |l|
       l.content  { Chouette::LineNotice.t.capitalize }
-      l.href     { [scope, object, :line_notices] }
+      l.href     { [scope, object, :line_notice_memberships] }
     end
   end
 

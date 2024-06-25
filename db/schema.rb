@@ -774,10 +774,11 @@ ActiveRecord::Schema.define(version: 2024_06_04_133209) do
     t.index ["line_provider_id"], name: "index_line_notices_on_line_provider_id"
   end
 
-  create_table "line_notices_lines", id: false, force: :cascade do |t|
+  create_table "line_notices_lines", force: :cascade do |t|
     t.bigint "line_notice_id", null: false
     t.bigint "line_id", null: false
-    t.index ["line_notice_id", "line_id"], name: "index_line_notices_lines_on_line_notice_id_and_line_id"
+    t.index ["line_id"], name: "index_line_notices_lines_on_line_id"
+    t.index ["line_notice_id", "line_id"], name: "index_line_notices_lines_on_line_notice_id_and_line_id", unique: true
   end
 
   create_table "line_providers", force: :cascade do |t|

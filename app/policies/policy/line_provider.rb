@@ -6,6 +6,8 @@ module Policy
     authorize_by Strategy::Permission
     authorize_by Strategy::NotUsed, only: %i[destroy]
 
+    protected
+
     def _create?(resource_class)
       [
         ::Chouette::Company,
@@ -15,8 +17,6 @@ module Policy
         ::Chouette::Network
       ].include?(resource_class)
     end
-
-    protected
 
     def _update?
       true

@@ -9,10 +9,6 @@ en:
       edit: "Edit this line notice"
       destroy: "Remove this line notice"
       destroy_confirm: "Are you sure you want to destroy this line notice ?"
-      attach: 'Append a new line notice'
-      detach: 'Remove'
-    confirm:
-      detach: "Are you sure you want to dissociate this notice from this line ?"
     new:
       title: "Add a new line notice"
     edit:

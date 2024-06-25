@@ -196,15 +196,10 @@ ChouetteIhm::Application.routes.draw do # rubocop:disable Metrics/BlockLength
 
       resources :lines do
         get :autocomplete, on: :collection
-        resources :line_notices do
-          collection do
-            get :attach
-          end
 
-          member do
-            post :detach
-          end
-        end
+        resources :line_notice_memberships, only: %i[index new create destroy]
+        get 'line_notice_memberships/edit', to: 'line_notice_memberships_collections#edit'
+        patch 'line_notice_memberships', to: 'line_notice_memberships_collections#update'
 
         resources :document_memberships, only: %i[index create destroy], controller: :line_document_memberships
       end

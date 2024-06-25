@@ -61,16 +61,6 @@ class LinesController < Chouette::LineReferentialController
     super
   end
 
-  def update
-    update! do
-      if line_params[:line_notice_ids]
-        workbench_line_referential_line_line_notices_path workbench, @line
-      else
-        workbench_line_referential_line_path workbench, @line
-      end
-    end
-  end
-
   # overwrite inherited resources to use delete instead of destroy
   # foreign keys will propagate deletion)
   def destroy_resource(object)
@@ -147,7 +137,6 @@ class LinesController < Chouette::LineReferentialController
       footnotes_attributes: [:code, :label, :_destroy, :id],
       codes_attributes: [:id, :code_space_id, :value, :_destroy],
     )
-    out[:line_notice_ids] = out[:line_notice_ids].split(',') if out[:line_notice_ids]
     out[:secondary_company_ids] = (out[:secondary_company_ids] || []).select(&:present?)
     out
     @line_params = out

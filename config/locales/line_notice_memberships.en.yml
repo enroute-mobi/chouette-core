@@ -1,0 +1,16 @@
+en:
+  line_notice_memberships:
+    actions:
+      new: "Add a new line notice"
+      edit: "Attach and detach line notices"
+      destroy: "Detach this line notice"
+      destroy_confirm: "Are you sure you want to dissociate this notice from this line ?"
+    new:
+      title: "Add a new line notice"
+    index:
+      title: "Line notices"
+  activerecord:
+    attributes:
+      line_notice_membership:
+        title: "Title"
+        content: "Text"

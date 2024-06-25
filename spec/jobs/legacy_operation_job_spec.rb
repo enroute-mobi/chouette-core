@@ -12,8 +12,11 @@ RSpec.describe LegacyOperationJob do
 
     context 'when the Operations is an Import' do
       let(:operation) { Import::Gtfs.new organisation: organisation }
+      let(:workbench_id) { 44 }
+      let(:workbench) { Workbench.new id: workbench_id }
+      before { allow(operation).to receive(:workbench).and_return(workbench) }
 
-      it { is_expected.to eq(organisation_id) }
+      it { is_expected.to eq(workbench_id) }
     end
 
     context 'when the Operations is an Export' do

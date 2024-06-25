@@ -28,7 +28,8 @@ module Macro
         # - compute all target value
         # - create all required codes with inserter ?
 
-        models_without_code.find_in_batches do |batch|
+        request = CreateCodeFromUuid::Run::RequestBuilder.new(workgroup, models, code_space, target_pattern).run
+        request.find_in_batches do |batch|
           model_class.transaction do
             batch.each do |model|
               if source_value = source.value(model)
@@ -84,26 +85,6 @@ module Macro
 
       def models
         @models ||= scope.send(model_collection)
-      end
-
-      def code_model
-        # FIXME
-        model_class == Chouette::VehicleJourney ?
-          :referential_codes : :codes
-      end
-
-      def models_without_code
-        # FIXME
-        #
-        # models.left_joins(:codes).where(codes: { id: nil }))
-        # works
-        #
-        # models.left_joins(:codes).where(codes: { code_space: code_space }))
-        # works
-        #
-        # models.left_joins(:codes).where(codes: { code_space: code_space, id: nil }))
-        # doesn't work
-        models.where.not(id: models.joins(:codes).where(code_model => { code_space_id: code_space }))
       end
     end
 
@@ -163,8 +144,7 @@ module Macro
         pattern.present?
       end
 
-      # rubocop:disable Metrics/AbcSize,Metrics/CyclomaticComplexity,Metrics/MethodLength,Metrics/PerceivedComplexity
-      def apply_pattern(model, value)
+      def apply_pattern(model, value) # rubocop:disable Metrics/MethodLength
         return value unless has_pattern?
 
         result = pattern.gsub(VALUE_REGEXP) do
@@ -177,19 +157,16 @@ module Macro
           end
         end
         result.gsub(CODE_SPACE_REGEXP) do
-          next nil unless model.respond_to?(:line)
-
           if ::Regexp.last_match(1)
-            model.line.codes.find { |c| c.code_space.short_name == ::Regexp.last_match(1) }&.value
+            model.send("line_code_#{::Regexp.last_match(1)}")
           else
-            model.line.registration_number
+            model.line_registration_number
           end
         end
       end
-      # rubocop:enable Metrics/AbcSize,Metrics/CyclomaticComplexity,Metrics/MethodLength,Metrics/PerceivedComplexity
-
-      VALUE_REGEXP = %r@%{value(?://([^/]+)/([^}]*))?}@.freeze
-      CODE_SPACE_REGEXP = /%{line.code(?::([^}]*))?}/.freeze
     end
+
+    VALUE_REGEXP = %r@%{value(?://([^/]+)/([^}]*))?}@.freeze
+    CODE_SPACE_REGEXP = /%{line.code(?::([^}]*))?}/.freeze
   end
 end

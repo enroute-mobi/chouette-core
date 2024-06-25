@@ -284,6 +284,16 @@ RSpec.describe Macro::CreateCodeFromUuid do
             expect { subject }.to change { model.codes.count }.from(0).to(1)
             expect(macro_run.macro_messages).to include(expected_message)
           end
+
+          context 'with twice the same code in pattern' do
+            let(:format) { '%{line.code}:%{line.code}:%{value}' }
+            let(:code_value) { /\ALINE42:LINE42:#{uuid_regexp}\z/ }
+
+            it 'should create code' do
+              expect { subject }.to change { model.codes.count }.from(0).to(1)
+              expect(macro_run.macro_messages).to include(expected_message)
+            end
+          end
         end
 
         context "when format is '%{line.code:public}:%{value}'" do
@@ -293,6 +303,16 @@ RSpec.describe Macro::CreateCodeFromUuid do
           it 'should create code' do
             expect { subject }.to change { model.codes.count }.from(0).to(1)
             expect(macro_run.macro_messages).to include(expected_message)
+          end
+
+          context 'with twice the same code space in pattern' do
+            let(:format) { '%{line.code:public}:%{line.code:public}:%{value}' }
+            let(:code_value) { /\APUBLIC_LINE42:PUBLIC_LINE42:#{uuid_regexp}\z/ }
+
+            it 'should create code' do
+              expect { subject }.to change { model.codes.count }.from(0).to(1)
+              expect(macro_run.macro_messages).to include(expected_message)
+            end
           end
         end
 

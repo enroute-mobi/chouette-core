@@ -855,8 +855,8 @@ class Import::Gtfs < Import::Base # rubocop:disable Metrics/ClassLength
           end
         end
       end
+      resource.update_status_from_messages
     end
-    resource.update_status_from_messages
   end
 
   def consistent_stop_times(stop_times)

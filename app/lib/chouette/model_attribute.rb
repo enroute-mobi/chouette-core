@@ -108,6 +108,7 @@ module Chouette
       define Chouette::Line, :transport_submode
       define Chouette::Line, :url
       define Chouette::Line, :routes
+      define Chouette::Line, :referent_id
 
       # Chouette::Network
       define Chouette::Network, :name

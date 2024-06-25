@@ -28,16 +28,21 @@ RSpec.describe Policy::Line, type: :policy do
       let(:resource_class) { ::Chouette::LineNotice }
 
       let(:policy_line_notice_create) { true }
+      let(:policy_line_notice_membership_create) { true }
 
       it { applies_strategy(::Policy::Strategy::Permission, :create, ::Chouette::LineNotice) }
-      it { applies_strategy(Policy::Strategy::LineProvider) }
-      it { applies_strategy(::Policy::Strategy::Permission, :update) }
+      it { does_not_apply_strategy(Policy::Strategy::LineProvider) }
 
       before do
         fk_policy = double
-        expect(fk_policy).to receive(:create?).with(Chouette::LineNotice).and_return(policy_line_notice_create)
-        expect(Policy::LineProvider).to(
+        allow(fk_policy).to receive(:create?).with(Chouette::LineNotice).and_return(policy_line_notice_create)
+        allow(Policy::LineProvider).to(
           receive(:new).with(resource.line_provider, context: policy_context).and_return(fk_policy)
+        )
+
+        allow(policy).to receive(:create?).with(anything).and_call_original
+        allow(policy).to(
+          receive(:create?).with(Chouette::LineNoticeMembership).and_return(policy_line_notice_membership_create)
         )
       end
 
@@ -45,6 +50,11 @@ RSpec.describe Policy::Line, type: :policy do
 
       context 'when the user cannot create a line notice from a line provider' do
         let(:policy_line_notice_create) { false }
+        it { is_expected.to be_falsy }
+      end
+
+      context 'when the user cannot create a line notice membership from a line' do
+        let(:policy_line_notice_membership_create) { false }
         it { is_expected.to be_falsy }
       end
     end

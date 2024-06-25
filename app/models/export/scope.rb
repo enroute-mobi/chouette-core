@@ -100,7 +100,7 @@ module Export::Scope
     delegate :workgroup, :workbench, :line_referential, :stop_area_referential, :metadatas, to: :referential
     delegate :shape_referential, :fare_referential, to: :workgroup
 
-    delegate :companies, :networks, to: :line_referential
+    delegate :companies, :networks, :line_notices, to: :line_referential
     delegate :entrances, to: :stop_area_referential
 
     delegate :shapes, :point_of_interests, to: :shape_referential
@@ -264,6 +264,10 @@ module Export::Scope
     def contracts
       current_scope.contracts.with_lines(lines)
     end
+
+    def line_notices
+      current_scope.line_notices.joins(:lines).where('lines.id' => lines).distinct
+    end
   end
 
   # Selects VehicleJourneys in a Date range
@@ -307,6 +311,10 @@ module Export::Scope
 
     def contracts
       current_scope.contracts.with_lines(lines)
+    end
+
+    def line_notices
+      current_scope.line_notices.joins(:lines).where('lines.id' => selected_line_ids).distinct
     end
   end
 

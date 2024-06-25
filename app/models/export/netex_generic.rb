@@ -163,6 +163,7 @@ class Export::NetexGeneric < Export::Base
       StopPlaces,
       Companies,
       Networks,
+      LineNotices,
       Lines,
       # Export StopPoints before Routes to detect local references
       StopPoints,
@@ -946,6 +947,32 @@ class Export::NetexGeneric < Export::Base
         Netex::Reference.new(network_code, type: 'NetworkRef') if network_code
       end
 
+    end
+  end
+
+  class LineNotices < Part
+    delegate :line_notices, to: :export_scope
+
+    def export_part
+      line_notices.includes(:codes).find_each do |line_notice|
+        target << decorate(line_notice).netex_resource
+      end
+    end
+
+    class Decorator < ModelDecorator
+      def netex_attributes
+        super.merge(
+          name: title,
+          text: content,
+          type_of_notice_ref: Netex::Reference.new('LineNotice', type: String),
+          raw_xml: import_xml,
+          key_list: netex_alternate_identifiers
+        )
+      end
+
+      def netex_resource
+        Netex::Notice.new netex_attributes
+      end
     end
   end
 

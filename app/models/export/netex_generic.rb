@@ -964,7 +964,7 @@ class Export::NetexGeneric < Export::Base
         super.merge(
           name: title,
           text: content,
-          #type_of_notice_ref: "LineNotice",
+          type_of_notice_ref: Netex::Reference.new('LineNotice', type: String),
           raw_xml: import_xml,
           key_list: netex_alternate_identifiers
         )

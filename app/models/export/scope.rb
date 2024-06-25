@@ -266,7 +266,7 @@ module Export::Scope
     end
 
     def line_notices
-      current_scope.line_notices.joins(:lines).where("lines.id IN (#{lines.select(:id).to_sql})").distinct
+      current_scope.line_notices.joins(:lines).where('lines.id' => lines).distinct
     end
   end
 

@@ -42,9 +42,8 @@ class PublicationSetup < ApplicationModel
     }
   end
 
-  def publish(operation, options = {})
-    attributes = options.merge(parent: operation)
-    publications.create!(attributes)
+  def publish(referential, attributes = {})
+    publications.create!(attributes.merge(referential: referential))
   end
 
   def export_type

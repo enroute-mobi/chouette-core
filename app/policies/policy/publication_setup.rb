@@ -6,6 +6,10 @@ module Policy
 
     protected
 
+    def _create?(resource_class)
+      resource_class == ::Publication
+    end
+
     def _update?
       true
     end

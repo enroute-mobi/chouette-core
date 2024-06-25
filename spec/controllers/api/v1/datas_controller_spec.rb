@@ -23,7 +23,7 @@ RSpec.describe Api::V1::DatasController, type: :controller do
       let(:key) { "gtfs.zip" }
       let(:get_request) { get :download, params: { slug: slug, key: key }}
       let(:publication_api) { create(:publication_api, public: true) }
-      let(:publication_gtfs) { create(:publication, publication_setup: create(:publication_setup)) }
+      let(:publication_gtfs) { create(:publication, publication_setup: create(:publication_setup), creator: 'test') }
 
       it 'should not be successful without a publication_api_source' do
         expect{ get_request }.to raise_error ActiveRecord::RecordNotFound
@@ -62,7 +62,7 @@ RSpec.describe Api::V1::DatasController, type: :controller do
       let(:key) { "gtfs.zip" }
       let(:get_request) { get :download, params: { slug: slug, key: key }}
       let(:publication_api) { create(:publication_api, public: false) }
-      let(:publication_gtfs) { create(:publication, publication_setup: create(:publication_setup)) }
+      let(:publication_gtfs) { create(:publication, publication_setup: create(:publication_setup), creator: 'test') }
 
       before do
         request.env['HTTP_AUTHORIZATION'] = ActionController::HttpAuthentication::Token.encode_credentials(auth_token)

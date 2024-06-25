@@ -1,6 +1,7 @@
 FactoryBot.define do
   factory :merge do
     workbench
+    creator { 'test' }
 
     transient do
       new {nil}

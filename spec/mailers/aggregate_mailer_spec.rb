@@ -4,7 +4,7 @@ RSpec.describe AggregateMailer, type: :mailer do
   end
 
   let(:recipient) { 'user@test.com' }
-  let(:aggregate) { context.workgroup.aggregates.create!(referentials: [context.referential]) }
+  let(:aggregate) { context.workgroup.aggregates.create!(referentials: [context.referential], creator: 'test') }
   subject(:email) { AggregateMailer.finished aggregate.id, recipient }
 
   it 'should deliver email to given email' do

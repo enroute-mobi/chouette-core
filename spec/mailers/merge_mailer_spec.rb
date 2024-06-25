@@ -4,7 +4,7 @@ RSpec.describe MergeMailer, type: :mailer do
   end
 
   let(:recipient) { 'user@test.com' }
-  let(:merge) { context.workbench.merges.create!(referentials: [context.referential]) }
+  let(:merge) { context.workbench.merges.create!(referentials: [context.referential], creator: 'test') }
   subject(:email) { MergeMailer.finished(merge.id, recipient) }
 
   it 'should deliver email to given email' do

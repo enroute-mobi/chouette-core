@@ -2,6 +2,8 @@ FactoryBot.define do
   factory :publication do
     association :publication_setup
     association :parent, factory: :aggregate
+    association :referential
+    creator { 'test' }
 
     ended_at {Time.now}
 
@@ -16,6 +18,5 @@ FactoryBot.define do
     trait :with_netex_generic do
       association :publication_setup, factory: :publication_setup_netex_generic
     end
-    
   end
 end

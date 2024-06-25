@@ -56,7 +56,9 @@ RSpec.describe User, :type => :model do
       let(:ref1) {create :referential, workbench: workbench, organisation: user.organisation}
       let(:ref2) {create :referential, workbench: workbench, organisation: user.organisation}
       let!(:merge) { create :merge, user: user, referential_ids: [ref1.id] }
-      let!(:aggregate) { Aggregate.create(workgroup: workbench.workgroup, referentials: [ref1, ref2], user: user) }
+      let!(:aggregate) do
+        Aggregate.create(workgroup: workbench.workgroup, referentials: [ref1, ref2], creator: 'test', user: user)
+      end
 
       it "should nullify their #user_id" do
         user.destroy

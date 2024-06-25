@@ -1150,9 +1150,13 @@ ActiveRecord::Schema.define(version: 2024_06_04_133209) do
     t.string "status"
     t.datetime "started_at"
     t.datetime "ended_at"
-    t.boolean "rollback"
+    t.string "creator"
+    t.string "user_status", null: false
+    t.string "error_uuid"
+    t.bigint "referential_id"
     t.index ["parent_type", "parent_id"], name: "index_publications_on_parent_type_and_parent_id"
     t.index ["publication_setup_id"], name: "index_publications_on_publication_setup_id"
+    t.index ["referential_id"], name: "index_publications_on_referential_id"
   end
 
   create_table "raw_imports", force: :cascade do |t|
@@ -1736,6 +1740,7 @@ ActiveRecord::Schema.define(version: 2024_06_04_133209) do
   add_foreign_key "macro_runs", "macro_context_runs"
   add_foreign_key "macros", "macro_contexts"
   add_foreign_key "point_of_interest_categories", "point_of_interest_categories", column: "parent_id"
+  add_foreign_key "publications", "referentials"
   add_foreign_key "referentials", "referential_suites"
   add_foreign_key "routes", "routes", column: "opposite_route_id", name: "route_opposite_route_fkey"
   add_foreign_key "stop_areas", "stop_areas", column: "parent_id", name: "area_parent_fkey", on_delete: :nullify

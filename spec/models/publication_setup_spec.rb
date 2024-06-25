@@ -55,10 +55,11 @@ RSpec.describe PublicationSetup, type: :model, use_chouette_factory: true do
   describe '#publish' do
     let(:publication_setup) { create :publication_setup }
     let(:referential) { create :referential }
-    let(:operation) { create :aggregate, new: referential }
 
     it 'should create a Publication' do
-      expect{ publication_setup.publish(operation) }.to change{ publication_setup.publications.count }.by 1
+      expect do
+        publication_setup.publish(referential, creator: 'test')
+      end.to change { publication_setup.publications.count }.by 1
     end
   end
 end

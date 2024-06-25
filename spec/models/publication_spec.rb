@@ -1,9 +1,10 @@
+# frozen_string_literal: true
+
 RSpec.describe Publication, type: :model do
-  it { should belong_to :publication_setup }
-  it { should belong_to :parent }
+  it { is_expected.to belong_to(:publication_setup).required(true) }
+  it { is_expected.to belong_to(:referential).required(true) }
+  it { is_expected.to belong_to(:parent).required(false) }
   it { should have_one :export }
-  it { should validate_presence_of :publication_setup }
-  it { should validate_presence_of :parent }
 
   it { is_expected.to have_one(:workgroup) }
   it { is_expected.to have_one(:organisation) }
@@ -13,8 +14,16 @@ RSpec.describe Publication, type: :model do
     { type: export_type, duration: 90, prefer_referent_stop_area: false, ignore_single_stop_station: false }
   end
   let(:publication_setup) { create :publication_setup, export_options: export_options }
-  let(:publication) { create :publication, parent: operation, publication_setup: publication_setup }
   let(:referential) { first_referential }
+  let(:publication) do
+    create(
+      :publication,
+      referential: first_referential,
+      parent: operation,
+      publication_setup: publication_setup,
+      creator: 'test'
+    )
+  end
   let(:operation) { create :aggregate, referentials: [first_referential] }
 
   before(:each) do
@@ -32,39 +41,12 @@ RSpec.describe Publication, type: :model do
     publication_setup.destinations.create! type: 'Destination::Dummy', name: 'I will succeed', result: :successful
   end
 
-  describe '#publish' do
-    it 'should create a Delayed::Job' do
-      expect { publication }.to change { Delayed::Job.count }.by 1
-      expect(publication).to be_pending
-    end
-  end
+  describe '#perform' do
+    subject { publication.perform }
 
-  describe '#run' do
-    it 'should call run_export' do
-      expect(publication).to receive(:run_export)
-      publication.run
-      expect(publication).to be_running
-    end
-
-    context 'when the Publication has been already ran' do
-      before { publication.running! }
-
-      it "doesn't start any export" do
-        expect(publication).to_not receive(:run_export)
-        publication.run
-      end
-
-      it 'changes status to failed' do
-        expect { publication.run }.to change(publication, :status).from('running').to('failed')
-      end
-    end
-  end
-
-  describe '#run_export' do
     it 'should create an export' do
-      expect { publication.run_export }.to change { Export::Gtfs.count }.by 1
       expect_any_instance_of(Export::Gtfs).to receive(:run)
-      publication.run_export
+      subject
       expect(publication.export).to be_present
     end
 
@@ -77,12 +59,21 @@ RSpec.describe Publication, type: :model do
 
       it 'should call send_to_destinations' do
         expect(publication).to receive(:send_to_destinations)
-        publication.run_export
+        subject
       end
 
-      it 'should call infer_status' do
-        expect(publication).to receive(:infer_status)
-        publication.run_export
+      it 'should send notifications' do
+        create(:workbench, workgroup: publication.workgroup, organisation: publication.workgroup.owner)
+        publication.workgroup.owner_workbench.notification_rules.create!(
+          notification_type: 'publication',
+          rule_type: 'notify',
+          target_type: 'external_email',
+          external_email: 'user@test.ex'
+        )
+
+        expect { subject }.to change { Delayed::Job.count }.by(1)
+        expect(Delayed::Job.last.payload_object.job_data['job_class']).to eq('ActionMailer::DeliveryJob')
+        expect(Delayed::Job.last.payload_object.job_data['arguments']).to include('user@test.ex')
       end
     end
 
@@ -95,8 +86,8 @@ RSpec.describe Publication, type: :model do
 
       it 'should fail' do
         expect(publication).to_not receive(:send_to_destinations)
-        publication.run_export
-        expect(publication).to be_failed
+        subject
+        expect(publication.user_status).to be_failed
         expect(publication.export).to be_present
         expect(publication.export).to be_persisted
       end
@@ -111,8 +102,8 @@ RSpec.describe Publication, type: :model do
 
       it 'should fail' do
         expect(publication).to_not receive(:send_to_destinations)
-        publication.run_export
-        expect(publication).to be_failed
+        subject
+        expect(publication.user_status).to be_failed
         expect(publication.export).to be_present
       end
     end
@@ -130,7 +121,9 @@ RSpec.describe Publication, type: :model do
     end
   end
 
-  describe '#infer_status' do
+  describe '#change_status' do
+    subject { publication.change_status(Operation.status.done) }
+
     let(:export) { create(:gtfs_export) }
 
     before do
@@ -140,8 +133,8 @@ RSpec.describe Publication, type: :model do
     end
 
     context 'with a failed destination_report' do
-      it 'should set status to successful_with_warnings' do
-        expect { publication.infer_status }.to change { publication.status }.to 'successful_with_warnings'
+      it 'should set status to warning' do
+        expect { subject }.to change { publication.user_status }.to 'warning'
       end
     end
 
@@ -151,7 +144,7 @@ RSpec.describe Publication, type: :model do
       end
 
       it 'should set status to successful' do
-        expect { publication.infer_status }.to change { publication.status }.to 'successful'
+        expect { subject }.to change { publication.user_status }.to 'successful'
       end
     end
   end

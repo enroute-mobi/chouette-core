@@ -6,6 +6,15 @@ class PublicationsController < Chouette::WorkgroupController
 
   respond_to :html
 
+  def create
+    referential = @workgroup.output.current
+
+    @publication = publication_setup.publish(referential, creator: current_user.name)
+    @publication.enqueue
+
+    redirect_to workgroup_publication_setup_path(@workgroup, publication_setup)
+  end
+
   def show
     @export = ExportDecorator.decorate(
       publication.export,
@@ -17,5 +26,5 @@ class PublicationsController < Chouette::WorkgroupController
   end
 
   alias publication resource
-
+  alias publication_setup parent
 end

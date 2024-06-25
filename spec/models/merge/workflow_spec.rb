@@ -16,12 +16,14 @@ describe Merge do
   end
 
   it "should be valid" do
-    merge = Merge.new(workbench: referential.workbench, referentials: [referential, referential])
+    merge = Merge.new(workbench: referential.workbench, referentials: [referential, referential], creator: 'test')
     expect(merge).to be_valid
   end
 
   describe '#worker_died' do
-    let(:merge) { Merge.create(workbench: referential.workbench, referentials: [referential, referential]) }
+    let(:merge) do
+      Merge.create(workbench: referential.workbench, referentials: [referential, referential], creator: 'test')
+    end
 
     it 'should set merge status to failed' do
       expect(merge.status).to eq("running")
@@ -32,9 +34,17 @@ describe Merge do
 
   context '#operation_scheduled?' do
     it 'should look for delayed jobs' do
-      merge = Merge.create(workbench: referential.workbench, referentials: [referential, referential])
+      merge = Merge.create(
+        workbench: referential.workbench,
+        referentials: [referential, referential],
+        creator: 'test'
+      )
       other_referential = create(:workbench_referential)
-      other_merge = Merge.create(workbench: other_referential.workbench, referentials: [other_referential])
+      other_merge = Merge.create(
+        workbench: other_referential.workbench,
+        referentials: [other_referential],
+        creator: 'test'
+      )
 
       Delayed::Job.delete_all
       expect(merge.operation_scheduled?).to be_falsy
@@ -70,7 +80,15 @@ describe Merge do
 
   context 'an automatic merge' do
     context "without concurent merge" do
-      let(:merge){ Merge.new(workbench: referential.workbench, referentials: [referential, referential], automatic_operation: true) }
+      let(:merge) do
+        Merge.new(
+          workbench: referential.workbench,
+          referentials: [referential, referential],
+          creator: 'test',
+          automatic_operation: true
+        )
+      end
+
       it 'should launch the merge' do
         expect(merge).to receive(:run).and_call_original
         merge.save
@@ -80,8 +98,22 @@ describe Merge do
 
     context "with another concurent merge" do
       let(:existing_merge_status){ :running }
-      let(:existing_merge){ Merge.create(workbench: referential.workbench, referentials: [referential, referential], status: existing_merge_status) }
-      let(:merge){ Merge.new(workbench: referential.workbench, referentials: [referential, referential], automatic_operation: true) }
+      let(:existing_merge) do
+        Merge.create(
+          workbench: referential.workbench,
+          referentials: [referential, referential],
+          creator: 'test',
+          status: existing_merge_status
+        )
+      end
+      let(:merge) do
+        Merge.new(
+          workbench: referential.workbench,
+          referentials: [referential, referential],
+          creator: 'test',
+          automatic_operation: true
+        )
+      end
 
       it "should be valid" do
         existing_merge
@@ -96,7 +128,15 @@ describe Merge do
       end
 
       context "with an already pending merge" do
-        let(:pending_merge){ Merge.create(workbench: referential.workbench, referentials: [referential, referential], status: :pending, automatic_operation: true) }
+        let(:pending_merge) do
+          Merge.create(
+            workbench: referential.workbench,
+            referentials: [referential, referential],
+            status: :pending,
+            creator: 'test',
+            automatic_operation: true
+          )
+        end
 
         it 'should not cancel it' do
           existing_merge
@@ -111,7 +151,10 @@ describe Merge do
 
   context 'a manual merge' do
     context "without concurent merge" do
-      let(:merge){ Merge.new(workbench: referential.workbench, referentials: [referential, referential]) }
+      let(:merge) do
+        Merge.new(workbench: referential.workbench, referentials: [referential, referential], creator: 'test')
+      end
+
       it 'should launch the merge' do
         expect(merge).to receive(:run).and_call_original
         expect(merge).to be_valid
@@ -122,8 +165,21 @@ describe Merge do
 
     context "with another concurent merge" do
       let(:existing_merge_status){ :running }
-      let(:existing_merge){ Merge.create(workbench: referential.workbench, referentials: [referential, referential], status: existing_merge_status) }
-      let(:merge){ Merge.new(workbench: referential.workbench, referentials: [referential, referential]) }
+      let(:existing_merge) do
+        Merge.create(
+          workbench: referential.workbench,
+          referentials: [referential, referential],
+          creator: 'test',
+          status: existing_merge_status
+        )
+      end
+      let(:merge) do
+        Merge.new(
+          workbench: referential.workbench,
+          referentials: [referential, referential],
+          creator: 'test'
+        )
+      end
 
       it "should not be valid" do
         existing_merge
@@ -134,8 +190,17 @@ describe Merge do
   end
 
   it "should run next pending merge once it's done" do
-    pending_merge = Merge.create(workbench: referential.workbench, referentials: [referential, referential], status: :pending)
-    merge = Merge.create(workbench: referential.workbench, referentials: [referential, referential])
+    pending_merge = Merge.create(
+      workbench: referential.workbench,
+      referentials: [referential, referential],
+      creator: 'test',
+      status: :pending
+    )
+    merge = Merge.create(
+      workbench: referential.workbench,
+      referentials: [referential, referential],
+      creator: 'test'
+    )
 
     allow_any_instance_of(Merge).to receive(:run) do |m|
       expect(m).to eq pending_merge
@@ -145,8 +210,17 @@ describe Merge do
   end
 
   it "should run next pending merge if it fails" do
-    pending_merge = Merge.create(workbench: referential.workbench, referentials: [referential, referential], status: :pending)
-    merge = Merge.create(workbench: referential.workbench, referentials: [referential, referential])
+    pending_merge = Merge.create(
+      workbench: referential.workbench,
+      referentials: [referential, referential],
+      creator: 'test',
+      status: :pending
+    )
+    merge = Merge.create(
+      workbench: referential.workbench,
+      referentials: [referential, referential],
+      creator: 'test'
+    )
     expect(merge).to receive(:prepare_new){ raise "oops" }
     allow_any_instance_of(Merge).to receive(:run) do |m|
       expect(m).to eq pending_merge
@@ -162,11 +236,11 @@ describe Merge do
     3.times do
       other_workbench = create(:workbench)
       other_referential = create(:referential, workbench: other_workbench, organisation: other_workbench.organisation)
-      m = Merge.create!(workbench: other_workbench, referentials: [other_referential])
+      m = Merge.create!(workbench: other_workbench, referentials: [other_referential], creator: 'test')
       m.update status: :successful
-      m = Merge.create!(workbench: referential.workbench, referentials: [referential, referential])
+      m = Merge.create!(workbench: referential.workbench, referentials: [referential, referential], creator: 'test')
       m.update status: :successful
-      m = Merge.create!(workbench: referential.workbench, referentials: [referential, referential])
+      m = Merge.create!(workbench: referential.workbench, referentials: [referential, referential], creator: 'test')
       m.update status: :failed
     end
     expect(Merge.count).to eq 9
@@ -177,14 +251,14 @@ describe Merge do
 
   it "should not remove referentials locked for aggregation" do
     workbench = referential.workbench
-    locked_merge = Merge.create!(workbench: workbench, referentials: [referential, referential])
+    locked_merge = Merge.create!(workbench: workbench, referentials: [referential, referential], creator: 'test')
     locked_merge.update status: :successful
     locked = create(:referential, referential_suite: workbench.output)
     locked_merge.update new: locked
     workbench.update locked_referential_to_aggregate: locked
     m = nil
     3.times do
-      m = Merge.create!(workbench: workbench, referentials: [referential, referential])
+      m = Merge.create!(workbench: workbench, referentials: [referential, referential], creator: 'test')
       m.update status: :successful
     end
     expect(Merge.count).to eq 4
@@ -198,14 +272,33 @@ describe Merge do
 
   it "should not remove referentials used in previous aggregations" do
     workbench = referential.workbench
-    aggregate = Aggregate.create(workgroup: workbench.workgroup, referentials: [referential, referential])
+    aggregate = Aggregate.create(
+      workgroup: workbench.workgroup,
+      referentials: [referential, referential],
+      creator: 'test'
+    )
     other_referential = create(:referential, workbench: referential.workbench, organisation: referential.organisation)
-    should_disappear = Merge.create!(workbench: workbench, referentials: [referential], new: other_referential)
+    should_disappear = Merge.create!(
+      workbench: workbench,
+      referentials: [referential],
+      creator: 'test',
+      new: other_referential
+    )
     should_disappear.update status: :successful
-    m = Merge.create!(workbench: workbench, referentials: [referential], new: other_referential)
+    m = Merge.create!(
+      workbench: workbench,
+      referentials: [referential],
+      creator: 'test',
+      new: other_referential
+    )
     m.update status: :successful
     3.times do
-      m = Merge.create!(workbench: workbench, referentials: [referential, referential], new: referential)
+      m = Merge.create!(
+        workbench: workbench,
+        referentials: [referential, referential],
+        creator: 'test',
+        new: referential
+      )
       m.update status: :successful
     end
     Merge.keep_operations = 1
@@ -216,7 +309,7 @@ describe Merge do
 
   context "#prepare_new" do
     context "when some lines are no longer available", truncation: true do
-      let(:merge){Merge.create(workbench: workbench, referentials: [referential, referential]) }
+      let(:merge) { Merge.create(workbench: workbench, referentials: [referential, referential], creator: 'test') }
 
       before do
         ref = create(:workbench_referential, workbench: workbench)
@@ -248,7 +341,7 @@ describe Merge do
     end
 
     context 'with previously urgent output', truncation: true do
-      let(:merge) { Merge.create(workbench: workbench, referentials: [referential]) }
+      let(:merge) { Merge.create(workbench: workbench, referentials: [referential], creator: 'test') }
       let(:output) do
         output = create :workbench_referential, workbench: workbench
         metadata = create(:referential_metadata, lines: [line_referential.lines.first], referential: output)
@@ -281,7 +374,7 @@ describe Merge do
     end
 
     context "with no current output" do
-      let(:merge){Merge.create(workbench: workbench, referentials: [referential, referential]) }
+      let(:merge) { Merge.create(workbench: workbench, referentials: [referential, referential], creator: 'test') }
 
       before(:each) do
         workbench.output.update current_id: nil
@@ -289,13 +382,13 @@ describe Merge do
       end
 
       it "should not allow the creation of a referential from scratch if the workbench has previous merges" do
-        m = Merge.create(workbench: workbench, referentials: [referential, referential])
+        m = Merge.create(workbench: workbench, referentials: [referential, referential], creator: 'test')
         m.update status: :successful
         expect{ merge.prepare_new }.to raise_error RuntimeError
       end
 
       it "should allow the creation of a referential from scratch if the workbench has no previous merges" do
-        m = Merge.create(workbench: workbench, referentials: [referential, referential])
+        m = Merge.create(workbench: workbench, referentials: [referential, referential], creator: 'test')
         m.update status: :failed
         expect{ merge.prepare_new }.to_not raise_error
       end
@@ -333,7 +426,7 @@ describe Merge do
       it 'should keep the information' do
         expect(referential_urgent.contains_urgent_offer?).to be_truthy
 
-        merge = Merge.create(workbench: workbench, referentials: [referential, referential_urgent])
+        merge = Merge.create(workbench: workbench, referentials: [referential, referential_urgent], creator: 'test')
         expect{ merge.prepare_new }.to_not raise_error
         merge.referentials.each do |referential|
           Merge::Referential::Legacy.new(merge, referential).merge_metadata
@@ -349,13 +442,15 @@ describe Merge do
   end
 
   it "should set source refererentials state to pending" do
-    merge = Merge.create!(workbench: referential.workbench, referentials: [referential, referential])
+    merge = Merge.create!(workbench: referential.workbench, referentials: [referential, referential], creator: 'test')
     merge.merge
     expect(referential.reload.state).to eq :pending
   end
 
   context "when it fails" do
-    let(:merge) { Merge.create!(workbench: referential.workbench, referentials: [referential, referential]) }
+    let(:merge) do
+      Merge.create!(workbench: referential.workbench, referentials: [referential, referential], creator: 'test')
+    end
 
     it "should reset source refererentials state to active" do
       merge.failed!

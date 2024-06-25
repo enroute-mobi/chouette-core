@@ -41,6 +41,7 @@ class Permission
         publication_api_keys
         publication_apis
         publication_setups
+        publications
         referentials
         routes
         routing_constraint_zones

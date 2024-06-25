@@ -27,12 +27,12 @@
               TableBuilderHelper::Column.new( \
                 key: :parent, \
                 attribute: Proc.new do |publication| \
-                  link_to "#{publication.parent.class.ts} #{publication.parent.name}", [@workgroup, @publication_setup, publication] \
+                  publication.parent ? link_to("#{publication.parent.class.ts} #{publication.parent.name}", [@workgroup, @publication_setup, publication]) : '-' \
                 end, \
                 ), \
               TableBuilderHelper::Column.new( \
                 key: :status, \
-                attribute: Proc.new { |n| operation_status(n.status, verbose: true) }, \
+                attribute: Proc.new { |n| operation_user_status(n) }, \
               ), \
               TableBuilderHelper::Column.new( \
                 key: :created_at, \

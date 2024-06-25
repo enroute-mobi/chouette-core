@@ -82,6 +82,8 @@ class Referential < ApplicationModel
 
   belongs_to :referential_suite
 
+  has_many :publications
+
   scope :pending, -> { where(ready: false, failed_at: nil, archived_at: nil) }
   scope :active, -> { where(ready: true, failed_at: nil, archived_at: nil) }
   scope :failed, -> { where.not(failed_at: nil) }

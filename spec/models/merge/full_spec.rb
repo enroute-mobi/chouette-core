@@ -115,7 +115,11 @@ RSpec.describe Merge do
       let(:factor){ 1 }
 
       it "should clean empty time_tables and create dates with single-day periods" do
-        merge = Merge.create!(workbench: referential.workbench, referentials: [referential, referential])
+        merge = Merge.create!(
+          workbench: referential.workbench,
+          referentials: [referential, referential],
+          creator: 'test'
+        )
         merge.merge!
         output = merge.output.current
         output.switch
@@ -132,7 +136,7 @@ RSpec.describe Merge do
     end
 
     it "should work" do
-      merge = Merge.create!(workbench: referential.workbench, referentials: [referential])
+      merge = Merge.create!(workbench: referential.workbench, referentials: [referential], creator: 'test')
       expect(merge).to receive(:clean_previous_operations)
       expect{ merge.merge }.to change { Delayed::Job.count}.by 1
       merge.merge!

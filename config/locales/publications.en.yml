@@ -3,14 +3,6 @@ en:
     search_no_results: 'No publication'
     show:
       title: "%{name}"
-    statuses:
-      new: New
-      pending: Pending
-      successful: Successful
-      failed: Failed
-      running: Running
-      successful_with_warnings: Successful (with warnings)
-      canceled: Canceled
   activerecord:
     models:
       publication:

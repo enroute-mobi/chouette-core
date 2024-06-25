@@ -25,7 +25,7 @@ class Aggregate < ApplicationModel
 
     workgroup.output.update current: new
     following_aggregates.each(&:cancel!)
-    publish rollback: true
+    publish
     workgroup.aggregated!
   end
 
@@ -194,6 +194,9 @@ class Aggregate < ApplicationModel
     belongs_to :aggregate
     acts_as_list scope: :aggregate
   end
+
+  alias referential_for_publication new
+  protected :referential_for_publication
 
   private
 

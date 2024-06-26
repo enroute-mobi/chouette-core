@@ -180,6 +180,7 @@ class Import::Gtfs < Import::Base # rubocop:disable Metrics/ClassLength
     resource.save!
 
     Agencies.new(WithResource.new(self, resource)).import!
+    resource.update_status_from_messages
   end
 
   # Try to hide the resource management for modern code
@@ -854,6 +855,7 @@ class Import::Gtfs < Import::Base # rubocop:disable Metrics/ClassLength
           end
         end
       end
+      resource.update_status_from_messages
     end
   end
 

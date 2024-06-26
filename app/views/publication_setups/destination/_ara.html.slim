@@ -1,0 +1,5 @@
+= simple_block_for destination, title: Destination.ts do |d|
+	= d.attribute :type, value: destination.human_type
+	= d.attribute :name
+	= d.attribute :ara_url
+	= d.attribute :force_import, as: :boolean

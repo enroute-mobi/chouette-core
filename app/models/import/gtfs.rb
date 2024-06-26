@@ -694,7 +694,6 @@ class Import::Gtfs < Import::Base # rubocop:disable Metrics/ClassLength
         end
       end
 
-      save_model journey_pattern, resource: resource
     rescue Import::Gtfs::InvalidTripTimesError, Import::Gtfs::InvalidTripSingleStopTime, Import::Gtfs::InvalidStopAreaError => e
       message_key = case e
         when Import::Gtfs::InvalidTripTimesError
@@ -790,7 +789,7 @@ class Import::Gtfs < Import::Base # rubocop:disable Metrics/ClassLength
 
     raise InvalidTripTimesError unless consistent_stop_times(stop_times)
     stop_points_with_times = stop_times.each_with_index.map do |stop_time, i|
-      [stop_time, import_stop_time(stop_time, journey_pattern.route, resource, i)]
+      [stop_time, import_stop_time(stop_time, resource, i)]
     end
     ApplicationModel.skipping_objectid_uniqueness do
       save_model route, resource: resource
@@ -875,7 +874,7 @@ class Import::Gtfs < Import::Base # rubocop:disable Metrics/ClassLength
     true
   end
 
-  def import_stop_time(stop_time, route, resource, position)
+  def import_stop_time(stop_time, resource, position)
     unless_parent_model_in_error(Chouette::StopArea, stop_time.stop_id, resource) do
 
       if position == 0

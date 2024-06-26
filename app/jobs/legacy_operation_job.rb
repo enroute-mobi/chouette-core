@@ -80,7 +80,7 @@ class LegacyOperationJob
   end
 
   def organisation_id
-    @organisation_id ||= operation.try(:organisation)&.id if restricted_by_organisation?
+    @organisation_id ||= operation.try(:workbench)&.id if restricted_by_organisation?
   end
 
   def operation_class

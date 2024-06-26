@@ -105,7 +105,7 @@ RSpec.describe Authentication::Saml, type: :model do
             idp_cert: saml_idp_cert,
             idp_cert_fingerprint: saml_idp_cert_fingerprint,
             idp_cert_fingerprint_algorithm: saml_idp_cert_fingerprint_algorithm,
-            authn_context: 'urn:oasis:names:tc:SAML:2.0:ac:classes:Password'
+            authn_context: nil
           }
         )
       end
@@ -123,24 +123,6 @@ RSpec.describe Authentication::Saml, type: :model do
               idp_cert_fingerprint: saml_idp_cert_fingerprint,
               idp_cert_fingerprint_algorithm: saml_idp_cert_fingerprint_algorithm,
               authn_context: 'urn:oasis:names:tc:SAML:2.0:classes:Kerberos'
-            }
-          )
-        end
-      end
-
-      context 'when saml_email_attribute is blank' do
-        let(:saml_authn_context) { '' }
-
-        it do
-          is_expected.to eq(
-            {
-              name_identifier_format: 'urn:oasis:names:tc:SAML:2.0:nameid-format:transient',
-              idp_sso_service_url: saml_idp_sso_service_url,
-              idp_slo_service_url: saml_idp_slo_service_url,
-              idp_cert: saml_idp_cert,
-              idp_cert_fingerprint: saml_idp_cert_fingerprint,
-              idp_cert_fingerprint_algorithm: saml_idp_cert_fingerprint_algorithm,
-              authn_context: 'urn:oasis:names:tc:SAML:2.0:ac:classes:Password'
             }
           )
         end

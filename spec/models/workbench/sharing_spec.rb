@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 RSpec.describe Workbench::Sharing, type: :model do
-  subject(:workbench_sharing) { described_class.new }
+  subject(:workbench_sharing) { workbench.sharings.new }
 
   let(:context) do
     Chouette.create do
@@ -20,26 +20,24 @@ RSpec.describe Workbench::Sharing, type: :model do
 
   it { is_expected.to validate_presence_of(:name) }
 
-  describe 'validation of #workbench' do
+  describe 'validation of #recipient_id' do
     before { workbench_sharing.recipient_type = 'User' }
 
-    it { is_expected.to allow_value(workbench.id).for(:workbench_id) }
+    it { is_expected.to allow_value(nil).for(:recipient_id) }
 
     context 'when another workbench sharing already exists without recipient' do
       before { workbench.sharings.create!(name: 'Sharing 1', recipient_type: 'User') }
 
-      it { is_expected.to allow_value(workbench.id).for(:workbench_id) }
+      it { is_expected.to allow_value(nil).for(:recipient_id) }
     end
 
     context 'when workbench sharing has a recipient' do
-      before { workbench_sharing.recipient = user }
-
-      it { is_expected.to allow_value(workbench.id).for(:workbench_id) }
+      it { is_expected.to allow_value(user.id).for(:recipient_id) }
 
       context 'when another workbench sharing already exists with the same recipient' do
         before { workbench.sharings.create!(name: 'Sharing 1', recipient: user) }
 
-        it { is_expected.not_to allow_value(workbench.id).for(:workbench_id) }
+        it { is_expected.not_to allow_value(user.id).for(:recipient_id) }
       end
     end
   end

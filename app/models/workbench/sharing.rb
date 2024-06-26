@@ -8,7 +8,7 @@ class Workbench
     belongs_to :recipient, polymorphic: true, inverse_of: :workbench_sharings
 
     validates :name, presence: true
-    validates :workbench_id, uniqueness: { scope: %i[recipient_type recipient_id] }, if: :recipient_id?
+    validates :recipient_id, uniqueness: { scope: %i[workbench_id recipient_type] }, if: :recipient_id?
     validates :recipient_type, inclusion: { in: %w[User Organisation] }
     validates :invitation_code, presence: true, uniqueness: true, if: :pending?
 

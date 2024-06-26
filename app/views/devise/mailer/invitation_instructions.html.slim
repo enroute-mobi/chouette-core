@@ -1,6 +1,0 @@
-h2.mail-title
-  == t("mailers.invitation_mailer.title", email: @user.email)
-
-p== t("mailers.invitation_mailer.body")
-p= mailer_button(t("mailers.invitation_mailer.button"), accept_invitation_url(@user, :invitation_token => @token))
-p== t("mailers.invitation_mailer.ignore")

@@ -324,7 +324,8 @@ ChouetteIhm::Application.routes.draw do # rubocop:disable Metrics/BlockLength
     passwords: 'users/passwords',
     registrations: 'users/registrations',
     saml_sessions: 'users/saml_sessions',
-    sessions: 'users/sessions'
+    sessions: 'users/sessions',
+    unlocks: 'users/unlocks'
   }
   devise_scope :user do
     get '/users/saml/sign_in/:organisation_code',

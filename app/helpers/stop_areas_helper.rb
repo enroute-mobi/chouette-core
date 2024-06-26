@@ -9,11 +9,6 @@ module StopAreasHelper
     "#{txt} <span title='#{ISO3166::Country[country]&.translation(I18n.locale)}' class='flag-icon flag-icon-#{country.downcase} mr-xs'></span>".html_safe
   end
 
-  def genealogical_title
-    return t("stop_areas.genealogical.genealogical_routing") if @stop_area.stop_area_type == 'itl'
-    t("stop_areas.genealogical.genealogical")
-  end
-
   def show_map?
     manage_itl || @stop_area.long_lat_type != nil
   end

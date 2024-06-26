@@ -245,7 +245,7 @@ class Workgroup < ApplicationModel
     end
   end
 
-  class ScheduledAggregateJob
+  class ScheduledAggregateJob < ::ScheduledJob
     def initialize(workgroup)
       @workgroup = workgroup
     end
@@ -278,8 +278,12 @@ class Workgroup < ApplicationModel
         daily_publications: true,
         log: true
       )
-    rescue StandardError => e
-      Chouette::Safe.capture "Can't start Workgroup##{workgroup.id}::ScheduledAggregateJob", e
+    end
+
+    protected
+
+    def perform_error_capture_message
+      "Can't start Workgroup##{workgroup.id}::ScheduledAggregateJob"
     end
   end
 

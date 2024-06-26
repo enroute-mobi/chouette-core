@@ -105,7 +105,7 @@ class Source < ApplicationModel
   after_commit :schedule, on: :create, if: :enabled?
 
   # Uses to start the Source retrieval at the expected time
-  class ScheduledJob
+  class ScheduledJob < ::ScheduledJob
     def initialize(source)
       @source = source
       @source_id = source.id
@@ -147,8 +147,12 @@ class Source < ApplicationModel
 
     def perform
       source.retrieve if source.enabled?
-    rescue StandardError => e
-      Chouette::Safe.capture "Can't start Source##{source_id} retrieval", e
+    end
+
+    protected
+
+    def perform_error_capture_message
+      "Can't start Source##{source_id} retrieval"
     end
   end
 

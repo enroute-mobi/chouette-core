@@ -774,9 +774,10 @@ class Import::Gtfs < Import::Base # rubocop:disable Metrics/ClassLength
 
   def find_or_create_journey_pattern(resource, trip, stop_times)
     journey_pattern_id = journey_pattern_ids[trip_signature(trip, stop_times)]
-    return Chouette::JourneyPattern.find(journey_pattern_id) if journey_pattern_id
-    stop_points = []
 
+    return referential.journey_patterns.includes(:route).find(journey_pattern_id) if journey_pattern_id
+
+    stop_points = []
     line = lines.find_by registration_number: trip.route_id
 
     route = referential.routes.build line: line
@@ -788,6 +789,7 @@ class Import::Gtfs < Import::Base # rubocop:disable Metrics/ClassLength
     journey_pattern.published_name = trip.headsign
 
     raise InvalidTripTimesError unless consistent_stop_times(stop_times)
+
     stop_points_with_times = stop_times.each_with_index.map do |stop_time, i|
       [stop_time, import_stop_time(stop_time, resource, i)]
     end

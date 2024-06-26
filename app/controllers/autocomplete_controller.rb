@@ -101,6 +101,6 @@ class AutocompleteController < Chouette::UserController
   end
 
   def referential
-    @referential ||= current_user.find_referential(params[:referential_id]) if params[:referential_id]
+    @referential ||= workbench.find_referential!(params[:referential_id]) if params[:referential_id]
   end
 end

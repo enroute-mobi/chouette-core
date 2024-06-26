@@ -122,6 +122,17 @@ class Workbench < ApplicationModel
     end
   end
 
+  def find_referential(referential_id)
+    referential = all_referentials.find_by(id: referential_id)
+    return referential if referential
+
+    workgroup.output.referentials.find_by(id: referential_id)
+  end
+
+  def find_referential!(referential_id)
+    find_referential(referential_id) || (raise ActiveRecord::RecordNotFound)
+  end
+
   def notifications_channel
     "/workbenches/#{id}"
   end

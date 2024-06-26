@@ -1,12 +1,24 @@
+# frozen_string_literal: true
+
 RSpec.describe TimeTablesController, :type => :controller do
   include Support::TimeTableHelper
 
   login_user
 
+  let(:context) do
+    Chouette.create do
+      workbench organisation: Organisation.find_by(code: 'first') do
+        referential
+      end
+    end
+  end
+  let(:workbench) { context.workbench }
+  let(:referential) { context.referential }
+
   describe 'POST create' do
     let(:request) do
       post :create, params: {
-        workbench_id: referential.workbench.id,
+        workbench_id: workbench.id,
         referential_id: referential.id,
         time_table: time_table_params
       }

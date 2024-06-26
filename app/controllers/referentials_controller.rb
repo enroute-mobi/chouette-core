@@ -119,11 +119,7 @@ class ReferentialsController < Chouette::WorkbenchController
   alias_method :referential, :resource
 
   def resource
-    @referential ||= current_organisation.find_referential(params[:id]).decorate
-  end
-
-  def collection
-    @referentials ||= current_organisation.referentials.order(:name)
+    @referential ||= workbench.find_referential!(params[:id]).decorate
   end
 
   def lines_collection

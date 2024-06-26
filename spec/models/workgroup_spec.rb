@@ -46,6 +46,19 @@ RSpec.describe Workgroup, type: :model do
     subject { workgroup.aggregate_urgent_data! }
 
     let(:aggregated_at) { nil }
+    let(:daily_publication) do
+      workgroup.publication_setups.create!(
+        name: 'Daily',
+        force_daily_publishing: true,
+        export_options: { 'type' => 'Export::Gtfs' }
+      )
+    end
+    let(:some_referential) { context.referential(:some_referential) }
+    let(:aggregate) do
+      workgroup.aggregates.create!(referentials: [some_referential], creator: 'none').tap do |aggregate|
+        aggregate.update_column(:status, :successful)
+      end
+    end
 
     before do
       Timecop.freeze
@@ -72,7 +85,7 @@ RSpec.describe Workgroup, type: :model do
                 referential(:locked_referential_to_aggregate_referential)
               end
               workbench(:current_workbench) do
-                referential
+                referential(:some_referential)
                 referential(:current_referential)
               end
               workbench do
@@ -101,6 +114,17 @@ RSpec.describe Workgroup, type: :model do
             creator: 'webservice',
             notification_target: 'none'
           )
+        end
+
+        context 'with publications' do
+          before do
+            daily_publication
+            aggregate
+          end
+
+          it 'does not publish last successful aggregate' do
+            expect { subject }.not_to(change { Publication.count })
+          end
         end
       end
     end
@@ -229,29 +253,29 @@ RSpec.describe Workgroup, type: :model do
             aggregate
           end
 
-          it 'does not publish last successful aggregate' do
-            expect { subject }.not_to(change { Publication.count })
+          it 'publishes last successful aggregate' do
+            expect { subject }.to(
+              change { daily_publication.publications.count }.and(not_change { other_publication.publications.count })
+            )
           end
 
-          context 'with daily_publications option' do
-            let(:aggregate_options) { { daily_publications: true } }
-
-            it 'publishes last successful aggregate' do
-              expect { subject }.to(
-                change { daily_publication.publications.count }.and(not_change { other_publication.publications.count })
-              )
+          context 'when no aggregate is successful' do
+            let(:aggregate) do
+              workgroup.aggregates.create!(referentials: [some_referential], creator: 'none').tap do |aggregate|
+                aggregate.update_column(:status, :failed)
+              end
             end
 
-            context 'when no aggregate is successful' do
-              let(:aggregate) do
-                workgroup.aggregates.create!(referentials: [some_referential], creator: 'none').tap do |aggregate|
-                  aggregate.update_column(:status, :failed)
-                end
-              end
+            it 'does not publish aggregate' do
+              expect { subject }.not_to(change { Publication.count })
+            end
+          end
 
-              it 'does not publish aggregate' do
-                expect { subject }.not_to(change { Publication.count })
-              end
+          context 'when daily_publications option is false' do
+            let(:aggregate_options) { { daily_publications: false } }
+
+            it 'does not publish last successful aggregate' do
+              expect { subject }.not_to(change { Publication.count })
             end
           end
         end
@@ -292,17 +316,17 @@ RSpec.describe Workgroup, type: :model do
                 current_referential
               ].map { |i| context.referential(i) }
             ),
-            creator: 'creator'
+            creator: 'CRON'
           )
         end
 
         context 'with aggregate_attributes option' do
-          let(:aggregate_options) { { aggregate_attributes: { creator: 'CRON', notification_target: 'user' } } }
+          let(:aggregate_options) { { aggregate_attributes: { creator: 'creator', notification_target: 'user' } } }
 
           it 'creates aggregate with specified aggregate attributes' do
             subject
             expect(workgroup.aggregates.last).to have_attributes(
-              creator: 'CRON',
+              creator: 'creator',
               notification_target: 'user'
             )
           end
@@ -367,8 +391,6 @@ RSpec.describe Workgroup, type: :model do
         end
 
         context 'with publications' do
-          let(:aggregate_options) { { daily_publications: true } }
-
           before do
             daily_publication
             aggregate
@@ -638,12 +660,7 @@ RSpec.describe Workgroup, type: :model do
         let(:aggregate_schedule_enabled) { true }
 
         it 'calls #aggregate! with the correct arguments' do
-          expect(workgroup).to receive(:aggregate!).with(
-            creator: 'CRON',
-            aggregate_attributes: { notification_target: 'user' },
-            daily_publications: true,
-            log: true
-          )
+          expect(workgroup).to receive(:aggregate!).with(no_args)
           subject
         end
       end

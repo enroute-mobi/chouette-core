@@ -102,10 +102,7 @@ class Workgroup < ApplicationModel
   end
 
   def aggregate_urgent_data!
-    UrgentAggregator.new(
-      self,
-      aggregate_attributes: { creator: 'webservice', automatic_operation: true }
-    ).run
+    UrgentAggregator.new(self).run
   end
 
   class Aggregator
@@ -140,7 +137,7 @@ class Workgroup < ApplicationModel
     end
 
     def daily_publications?
-      options[:daily_publications]
+      options[:daily_publications] != false
     end
 
     def last_successful_aggregate
@@ -148,7 +145,7 @@ class Workgroup < ApplicationModel
     end
 
     def log?
-      options[:log]
+      options[:log] != false
     end
 
     def log(msg, debug: false)
@@ -168,14 +165,19 @@ class Workgroup < ApplicationModel
       referential.created_at > workgroup.aggregated_at
     end
 
+    def aggregate_attributes
+      options[:aggregate_attributes] || {}
+    end
+
     private
 
     def aggregate!
       log('Start Aggregate')
       workgroup.aggregates.create!(
         referentials: aggregatable_referentials,
-        creator: 'creator',
-        **(options[:aggregate_attributes] || {})
+        creator: 'CRON',
+        notification_target: workgroup.nightly_aggregate_notification_target,
+        **aggregate_attributes
       )
     end
 
@@ -191,10 +193,22 @@ class Workgroup < ApplicationModel
   end
 
   class UrgentAggregator < Aggregator
+    def daily_publications?
+      false
+    end
+
+    def log?
+      false
+    end
+
     protected
 
     def select_target_referential?(referential)
       referential.flagged_urgent_at && referential.flagged_urgent_at > workgroup.aggregated_at
+    end
+
+    def aggregate_attributes
+      { creator: 'webservice', notification_target: 'none', automatic_operation: true }
     end
   end
 
@@ -272,12 +286,7 @@ class Workgroup < ApplicationModel
     def perform
       return unless workgroup.aggregate_schedule_enabled?
 
-      workgroup.aggregate!(
-        creator: 'CRON',
-        aggregate_attributes: { notification_target: workgroup.nightly_aggregate_notification_target },
-        daily_publications: true,
-        log: true
-      )
+      workgroup.aggregate!
     end
 
     protected

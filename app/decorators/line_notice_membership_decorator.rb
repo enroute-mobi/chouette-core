@@ -7,7 +7,7 @@ class LineNoticeMembershipDecorator < AF83::Decorator
 
   create_action_link(policy: nil, if: -> { check_policy(:create, Chouette::LineNotice, object: context[:line]) })
 
-  action_link(secondary: true) do |l|
+  action_link(secondary: true, if: -> { h.policy(context[:line].line_notice_memberships).update? }) do |l|
     l.content t('line_notice_memberships.actions.edit')
     l.href { [*scope, :line_notice_memberships, :edit] }
     l.icon 'link'

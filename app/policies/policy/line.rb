@@ -16,7 +16,7 @@ module Policy
     def _create?(resource_class)
       if resource_class == ::Chouette::LineNotice
         ::Policy::LineProvider.new(resource.line_provider, context: context).create?(::Chouette::LineNotice) && \
-          apply_strategies(:update)
+          create?(::Chouette::LineNoticeMembership)
       elsif resource_class == ::Chouette::LineNoticeMembership
         apply_strategies(:update)
       else

@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class LineReferential < ApplicationModel
   include ObjectidFormatterSupport
   extend NetexTransportModeEnumerations
@@ -10,7 +12,7 @@ class LineReferential < ApplicationModel
   has_many :networks, class_name: 'Chouette::Network', dependent: :destroy
   has_many :workbenches, dependent: :nullify
   has_many :line_notices, class_name: 'Chouette::LineNotice', inverse_of: :line_referential, dependent: :destroy
-  has_many :line_routing_constraint_zones
+  has_many :line_routing_constraint_zones, dependent: :destroy
   has_one  :workgroup, dependent: :nullify
 
   has_many :line_providers

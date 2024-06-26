@@ -15,6 +15,12 @@ class Workbench
       destroy! { workbench_path }
     end
 
+    protected
+
+    def resource
+      get_resource_ivar || set_resource_ivar(super.decorate(context: { workgroup: workgroup, workbench: @workbench }))
+    end
+
     private
 
     def workbench_path

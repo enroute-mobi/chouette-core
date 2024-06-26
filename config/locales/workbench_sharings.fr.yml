@@ -2,12 +2,16 @@ fr:
   workbench/sharings:
     form:
       sections:
+        identification: "Identification"
         recipient: "Destinataire"
     new:
       title: "Ajouter un partage d'un espace de travail"
     actions:
       new: "Ajouter un partage"
       destroy_confirm: "Etes vous sûr de vouloir supprimer ce partage ?"
+    status:
+      pending:   En attente
+      confirmed: Confirmé
 
   activerecord:
     models:
@@ -17,6 +21,8 @@ fr:
         other: "Partages d'un espace de travail"
     attributes:
       workbench/sharing:
+        status: "État"
+        type: "Type"
         name: "Nom"
         invitation_code: "Code de confirmation"
         recipient_type: "Type de Destinataire"

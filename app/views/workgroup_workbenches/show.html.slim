@@ -39,13 +39,21 @@
         = table_builder_2 @workbench_sharings,
           [ \
             TableBuilderHelper::Column.new( \
-              key: :name, \
-              attribute: 'name' \
+              key: :status, \
+              attribute: :human_status \
             ), \
             TableBuilderHelper::Column.new( \
-              key: :invitation_code, \
-              attribute: 'invitation_code' \
-            ) \
+              key: :recipient_type, \
+              attribute: :human_recipient_type \
+            ), \
+            TableBuilderHelper::Column.new( \
+              key: :name, \
+              attribute: -> (workbench_sharing) { link_to(workbench_sharing.name, workgroup_workbench_sharing_path(@workgroup, @workbench, workbench_sharing)) },
+            ), \
+            TableBuilderHelper::Column.new( \
+              key: :created_at, \
+              attribute: 'created_at' \
+            ), \
           ],
           cls: 'table workbench_sharings',
           action: :index

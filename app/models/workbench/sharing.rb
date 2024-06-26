@@ -24,6 +24,14 @@ class Workbench
       recipient_id.blank?
     end
 
+    def status
+      if pending?
+        :pending
+      else
+        :confirmed
+      end
+    end
+
     private
 
     def create_invitation_code

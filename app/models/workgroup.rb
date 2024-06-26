@@ -251,6 +251,14 @@ class Workgroup < ApplicationModel
     end
     attr_reader :workgroup
 
+    def encode_with(coder)
+      coder['workgroup_id'] = workgroup.id
+    end
+
+    def init_with(coder)
+      @workgroup = Workgroup.find(coder['workgroup_id'])
+    end
+
     def cron
       [
         workgroup.nightly_aggregate_time.minute,

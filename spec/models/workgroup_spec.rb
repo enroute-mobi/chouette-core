@@ -418,6 +418,12 @@ RSpec.describe Workgroup, type: :model do
           )
         end
 
+        it 'does not serialize the whole workgroup' do
+          subject
+          expect(workgroup.scheduled_aggregate_job.handler).not_to include("workgroup: !ruby/object:Workgroup\n")
+          expect(workgroup.scheduled_aggregate_job.payload_object.workgroup).to eq(workgroup)
+        end
+
         context '#next_aggregate_schedule' do
           subject { workgroup.next_aggregate_schedule }
 

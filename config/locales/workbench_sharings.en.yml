@@ -3,6 +3,8 @@ en:
     form:
       sections:
         recipient: "Recipient"
+      recipient_id:
+        none: None (Use a confirmation code)
     new:
       title: "Add a workbench sharing"
     actions:

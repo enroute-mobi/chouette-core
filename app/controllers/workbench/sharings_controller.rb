@@ -8,7 +8,7 @@ class Workbench
     defaults collection_name: 'sharings', instance_name: 'workbench_sharing'
 
     def create
-      create! { workbench_path }
+      create! { workgroup_workbench_sharing_path(workgroup, @workbench, @workbench_sharing) }
     end
 
     def destroy

@@ -4,6 +4,8 @@ fr:
       sections:
         identification: "Identification"
         recipient: "Destinataire"
+      recipient_id:
+        none: Aucun (Un code de confirmation sera fourni)
     new:
       title: "Ajouter un partage d'un espace de travail"
     actions:

@@ -90,6 +90,8 @@ module Chouette
 
             transient(:recipient) { build_root_model(:organisation) }
 
+            save_options({ context: :test })
+
             after do
               new_instance.recipient = transient(:recipient) if new_instance.recipient_type.nil?
             end

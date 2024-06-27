@@ -36,6 +36,7 @@ class Workgroup < ApplicationModel
   has_many :processing_rules, class_name: "ProcessingRule::Workgroup"
   has_many :workbench_processing_rules, through: :workbenches, source: :processing_rules
   has_many :contracts, through: :workbenches
+  has_many :aggregate_schedulings, dependent: :destroy
   has_many :saved_searches, class_name: 'Search::Save', as: :parent, dependent: :destroy
 
   validates :name, presence: true, uniqueness: true
@@ -65,8 +66,6 @@ class Workgroup < ApplicationModel
   @@workbench_scopes_class = WorkbenchScopes::All
   mattr_accessor :workbench_scopes_class
 
-  attribute :nightly_aggregate_days, WeekDays.new
-
   def reverse_geocode
     @reverse_geocode ||= ReverseGeocode::Config.new do |config|
       if owner.has_feature?("reverse_geocode")
@@ -94,8 +93,6 @@ class Workgroup < ApplicationModel
   def aggregated!
     update aggregated_at: Time.now
   end
-
-  attribute :nightly_aggregate_time, TimeOfDay::Type::TimeWithoutZone.new
 
   def aggregate!(**options)
     Aggregator.new(self, **options).run
@@ -209,90 +206,6 @@ class Workgroup < ApplicationModel
 
     def aggregate_attributes
       { notification_target: 'none', automatic_operation: true }
-    end
-  end
-
-  concerning :AggregateScheduling do # rubocop:disable Metrics/BlockLength
-    included do
-      belongs_to :scheduled_aggregate_job, class_name: '::Delayed::Job', optional: true
-
-      after_commit :reschedule_aggregate, on: %i[create update], if: :reschedule_aggregate_needed?
-      after_commit :destroy_scheduled_aggregate_job, on: :destroy
-    end
-
-    def aggregate_schedule_enabled?
-      nightly_aggregate_enabled && !nightly_aggregate_days.none? # rubocop:disable Style/InverseMethods
-    end
-
-    def next_aggregate_schedule
-      return unless aggregate_schedule_enabled?
-
-      scheduled_aggregate_job&.run_at
-    end
-
-    def reschedule_aggregate # rubocop:disable Metrics/MethodLength
-      if aggregate_schedule_enabled?
-        job = Workgroup::ScheduledAggregateJob.new(self)
-
-        if scheduled_aggregate_job
-          scheduled_aggregate_job.update(cron: job.cron)
-        else
-          delayed_job = Delayed::Job.enqueue(job, cron: job.cron)
-          update_column(:scheduled_aggregate_job_id, delayed_job.id) # rubocop:disable Rails/SkipsModelValidations
-        end
-      else
-        update_column(:scheduled_aggregate_job_id, nil) # rubocop:disable Rails/SkipsModelValidations
-        destroy_scheduled_aggregate_job
-      end
-    end
-
-    private
-
-    def reschedule_aggregate_needed?
-      saved_change_to_nightly_aggregate_enabled || \
-        saved_change_to_nightly_aggregate_time || \
-        saved_change_to_nightly_aggregate_days
-    end
-
-    def destroy_scheduled_aggregate_job
-      scheduled_aggregate_job&.destroy
-    end
-  end
-
-  class ScheduledAggregateJob < ::ScheduledJob
-    def initialize(workgroup)
-      @workgroup = workgroup
-    end
-    attr_reader :workgroup
-
-    def encode_with(coder)
-      coder['workgroup_id'] = workgroup.id
-    end
-
-    def init_with(coder)
-      @workgroup = Workgroup.find(coder['workgroup_id'])
-    end
-
-    def cron
-      [
-        workgroup.nightly_aggregate_time.minute,
-        workgroup.nightly_aggregate_time.hour,
-        '*',
-        '*',
-        workgroup.nightly_aggregate_days.to_cron
-      ].join(' ')
-    end
-
-    def perform
-      return unless workgroup.aggregate_schedule_enabled?
-
-      workgroup.aggregate!
-    end
-
-    protected
-
-    def perform_error_capture_message
-      "Can't start Workgroup##{workgroup.id}::ScheduledAggregateJob"
     end
   end
 

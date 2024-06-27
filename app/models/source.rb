@@ -107,6 +107,7 @@ class Source < ApplicationModel
   # Uses to start the Source retrieval at the expected time
   class ScheduledJob < ::ScheduledJob
     def initialize(source)
+      super()
       @source = source
       @source_id = source.id
     end

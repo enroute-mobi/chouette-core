@@ -134,7 +134,7 @@ module Chouette
 
     scope :without_any_time_table, -> { joins('LEFT JOIN time_tables_vehicle_journeys ON time_tables_vehicle_journeys.vehicle_journey_id = vehicle_journeys.id LEFT JOIN time_tables ON time_tables.id = time_tables_vehicle_journeys.time_table_id').where(:time_tables => { :id => nil}) }
     scope :without_any_passing_time, -> { joins('LEFT JOIN vehicle_journey_at_stops ON vehicle_journey_at_stops.vehicle_journey_id = vehicle_journeys.id').where(vehicle_journey_at_stops: { id: nil }) }
-    scope :scheduled, -> { joins(:time_tables).merge(Chouette::TimeTable.non_empty) }
+    scope :scheduled, ->(time_tables) { joins(:time_tables).merge(time_tables) }
     scope :with_lines, -> (lines) { joins(:route).where(routes: { line_id: lines }) }
 
     scope :by_text, ->(text) { text.blank? ? all : where('lower(vehicle_journeys.published_journey_name) LIKE :t or lower(vehicle_journeys.objectid) LIKE :t', t: "%#{text.downcase}%") }

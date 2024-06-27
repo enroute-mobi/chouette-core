@@ -95,4 +95,20 @@ RSpec.describe Workbench::Sharing, type: :model do
       it { is_expected.to eq(false) }
     end
   end
+
+  describe '#status' do
+    subject { workbench_sharing.status }
+
+    context 'without recipient' do
+      let(:workbench_sharing) { described_class.new(recipient: nil) }
+
+      it { is_expected.to eq(:pending) }
+    end
+
+    context 'with recipient' do
+      let(:workbench_sharing) { described_class.new(recipient: Chouette.create { user }.user) }
+
+      it { is_expected.to eq(:confirmed) }
+    end
+  end
 end

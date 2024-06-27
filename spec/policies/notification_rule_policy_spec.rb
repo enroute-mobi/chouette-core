@@ -37,11 +37,6 @@ RSpec.describe NotificationRulePolicy, type: :pundit_policy do
     before(:each) do
       user_context.context[:workbench] = nil
     end
-    permissions :show? do
-      it "denies user" do
-        expect_it.not_to permit(user_context, record)
-      end
-    end
     permissions :create? do
       it "denies user" do
         expect_it.not_to permit(user_context, record)

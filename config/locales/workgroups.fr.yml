@@ -31,6 +31,8 @@ fr:
       disclaimer: Ces paramètres sont utilisés par tous les Espaces de travail de ce Groupe de travail.
     edit_transport_modes:
       title: Paramétrages des modes de transport
+    aggregator:
+      creator: "Automatic start up"
   activerecord:
     models:
       workgroup:

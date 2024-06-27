@@ -175,7 +175,7 @@ class Workgroup < ApplicationModel
       log('Start Aggregate')
       workgroup.aggregates.create!(
         referentials: aggregatable_referentials,
-        creator: 'CRON',
+        creator: I18n.t('workgroups.aggregator.creator'),
         notification_target: workgroup.nightly_aggregate_notification_target,
         **aggregate_attributes
       )
@@ -208,7 +208,7 @@ class Workgroup < ApplicationModel
     end
 
     def aggregate_attributes
-      { creator: 'webservice', notification_target: 'none', automatic_operation: true }
+      { notification_target: 'none', automatic_operation: true }
     end
   end
 

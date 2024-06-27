@@ -111,7 +111,7 @@ RSpec.describe Workgroup, type: :model do
                 current_referential
               ].map { |i| context.referential(i) }
             ),
-            creator: 'webservice',
+            creator: I18n.t('workgroups.aggregator.creator'),
             notification_target: 'none'
           )
         end
@@ -162,7 +162,7 @@ RSpec.describe Workgroup, type: :model do
                 other_referential
               ].map { |i| context.referential(i) }
             ),
-            creator: 'webservice',
+            creator: I18n.t('workgroups.aggregator.creator'),
             notification_target: 'none'
           )
         end
@@ -316,19 +316,16 @@ RSpec.describe Workgroup, type: :model do
                 current_referential
               ].map { |i| context.referential(i) }
             ),
-            creator: 'CRON'
+            creator: I18n.t('workgroups.aggregator.creator')
           )
         end
 
         context 'with aggregate_attributes option' do
-          let(:aggregate_options) { { aggregate_attributes: { creator: 'creator', notification_target: 'user' } } }
+          let(:aggregate_options) { { aggregate_attributes: { notification_target: 'user' } } }
 
           it 'creates aggregate with specified aggregate attributes' do
             subject
-            expect(workgroup.aggregates.last).to have_attributes(
-              creator: 'creator',
-              notification_target: 'user'
-            )
+            expect(workgroup.aggregates.last.notification_target).to eq('user')
           end
         end
       end

@@ -31,6 +31,8 @@ en:
       disclaimer: These settings are used by all Workbenches of this Workgroup.
       edit_transport_modes:
         title: Edit transport modes
+    aggregator:
+      creator: "Automatic start up"
   activerecord:
     models:
       workgroup:

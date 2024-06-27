@@ -167,7 +167,7 @@ module Export::Scope
     end
 
     def vehicle_journeys
-      current_scope.vehicle_journeys.scheduled
+      current_scope.vehicle_journeys.scheduled(final_scope.time_tables)
     end
 
     def final_scope_vehicle_journeys
@@ -195,11 +195,6 @@ module Export::Scope
 
     def networks
       current_scope.networks.where(id: lines.where.not(network_id: nil).select(:network_id))
-    end
-
-    def time_tables
-      current_scope.time_tables.joins(:vehicle_journeys)
-                   .where('vehicle_journeys.id' => final_scope_vehicle_journeys).distinct
     end
 
     def vehicle_journey_at_stops
@@ -277,6 +272,10 @@ module Export::Scope
     def initialize(current_scope, date_range)
       super current_scope
       @date_range = date_range
+    end
+
+    def time_tables
+      current_scope.time_tables.applied_at_least_once_in(date_range)
     end
 
     def vehicle_journeys

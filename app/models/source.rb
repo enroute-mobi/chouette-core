@@ -504,7 +504,7 @@ class Source < ApplicationModel
     end
 
     class ZIP < File
-      MAX_SIZE = 1024.megabytes
+      MAX_SIZE = 3.gigabytes
 
       # Digest entries name and content
       # Don't use a Zip::InputStream to avoid difference with entry order change

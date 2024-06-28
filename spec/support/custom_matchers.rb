@@ -10,6 +10,12 @@ RSpec::Matchers.define :exist_in_database do
   end
 end
 
+class ActiveRecord::Base
+  def exists_in_database?
+    self.class.exists? id
+  end
+end
+
 #
 # Usage:
 #   expect(key: something).to include(key: a_string_eq_to("test"))

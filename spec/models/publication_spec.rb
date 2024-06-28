@@ -148,4 +148,9 @@ RSpec.describe Publication, type: :model do
       end
     end
   end
+
+  describe 'when associated Referential is destroyed' do
+    it { expect { referential.destroy }.to change(publication, :exists_in_database?).from(true).to(false) }
+  end
+
 end

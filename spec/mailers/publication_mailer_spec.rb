@@ -75,11 +75,11 @@ RSpec.describe PublicationMailer, type: :mailer do
         end
       end
 
-      context 'with attached filename specified with date patterns (publication created at 20300201 1205)' do
+      context 'with attached filename specified with date patterns (publication created at 20300201 1205)', timezone: :random do
         subject { email.attachments[0].filename }
 
         before do
-          publication.created_at = Time.parse('2030-02-01 12:05')
+          publication.created_at = Time.zone.parse('2030-02-01 12:05')
           destination_mail.update attached_export_filename: "test-%{date:%Y%m%d}T%{date:%H%M}.zip"
         end
 

@@ -9,6 +9,7 @@ en:
         pending_invitation:
           title: Pending Invitation
           text: You can share this code with another organisation to allow them to join our workgroup.
+        sharings: "Sharings"
     new:
       title: Add a workbench
       text: The new Workbench will provide you an invitation code

@@ -13,6 +13,11 @@ RSpec.describe Policy::Workbench, type: :policy do
 
     it { is_expected.to be_falsy }
 
+    context 'Workbench::Sharing' do
+      let(:resource_class) { Workbench::Sharing }
+      it { is_expected.to be_truthy }
+    end
+
     context 'Referential' do
       let(:resource_class) { Referential }
       it { is_expected.to be_truthy }

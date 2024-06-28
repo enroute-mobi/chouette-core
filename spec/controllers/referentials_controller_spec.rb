@@ -67,8 +67,8 @@ describe ReferentialsController, type: :controller do
       context "when the referential is not accessible by the user" do
         let(:referential) { context.referential(:other_referential) }
 
-        it 'returns http forbidden' do
-          expect(response).to have_http_status(:forbidden)
+        it 'returns not found' do
+          expect(response).to have_http_status(:not_found)
         end
       end
     end

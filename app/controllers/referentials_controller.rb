@@ -10,7 +10,6 @@ class ReferentialsController < Chouette::WorkbenchController
   # rubocop:disable Rails/LexicallyScopedActionFilter
   before_action :authorize_resource, except: %i[new create index show journey_patterns]
   # rubocop:enable Rails/LexicallyScopedActionFilter
-  before_action :check_cloning_source_is_accessible, only: %i(new create)
   before_action :resource, only: :show
   before_action :check_lines_outside_of_functional_scope, only: :show
 
@@ -157,7 +156,7 @@ class ReferentialsController < Chouette::WorkbenchController
 
   def build_referential
     if params[:from]
-      source_referential = Referential.find(params[:from])
+      source_referential = workbench.all_referentials.find(params[:from])
       @referential = Referential.new_from(source_referential, current_workbench)
     end
 
@@ -220,12 +219,6 @@ class ReferentialsController < Chouette::WorkbenchController
                                     )
                                   ).flag_urgent?
     referential_params
-  end
-
-  def check_cloning_source_is_accessible
-    return unless params[:from]
-    source = Referential.find params[:from]
-    return user_not_authorized unless current_user.organisation.workgroups.include?(source.workbench.workgroup)
   end
 
   def check_lines_outside_of_functional_scope

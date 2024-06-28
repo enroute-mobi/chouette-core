@@ -8,6 +8,7 @@ module Policy
 
     def _create?(resource_class) # rubocop:disable Metrics/MethodLength
       [
+        ::Workbench::Sharing,
         ::Referential,
         ::DocumentProvider,
         ::Calendar,

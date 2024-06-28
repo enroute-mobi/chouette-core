@@ -6,6 +6,17 @@ class WorkgroupWorkbenchesController < Chouette::WorkgroupController
   defaults resource_class: Workbench
   defaults collection_name: 'workbenches', instance_name: 'workbench'
 
+  def show
+    show! do |format|
+      format.html do
+        @workbench_sharings = Workbench::SharingDecorator.decorate(
+          @workbench.sharings,
+          context: { workgroup: @workgroup, workbench: @workbench }
+        )
+      end
+    end
+  end
+
   def create
     create! { workbench_path }
   end

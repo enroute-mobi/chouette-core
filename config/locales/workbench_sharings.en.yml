@@ -1,0 +1,30 @@
+en:
+  workbench/sharings:
+    form:
+      sections:
+        recipient: "Recipient"
+      recipient_id:
+        none: None (Use a confirmation code)
+    new:
+      title: "Add a workbench sharing"
+    actions:
+      new: "Add new sharing"
+      destroy_confirm: "Are you sure you want to delete this sharing?"
+    status:
+      pending:   Pending
+      confirmed: Confirmed
+
+  activerecord:
+    models:
+      workbench/sharing:
+        zero: "Workbench Sharing"
+        one: "Workbench Sharing"
+        other: "Workbench Sharings"
+    attributes:
+      workbench/sharing:
+        status: "Status"
+        type: "Type"
+        name: "Name"
+        invitation_code: "Confirmation code"
+        recipient_type: "Recipient type"
+        recipient_id: "Recipient"

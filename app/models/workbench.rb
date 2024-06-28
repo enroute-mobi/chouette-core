@@ -23,6 +23,8 @@ class Workbench < ApplicationModel
   belongs_to :locked_referential_to_aggregate, class_name: 'Referential'
 
   has_many :users, through: :organisation
+  has_many :sharings, class_name: 'Workbench::Sharing', dependent: :destroy
+
   has_many :lines, -> (workbench) { workbench.workbench_scopes.lines_scope(self) }, through: :line_referential
   has_many :stop_areas, -> (workbench) { workbench.workbench_scopes.stop_areas_scope(self) }, through: :stop_area_referential
   has_many :networks, through: :line_referential
@@ -222,7 +224,7 @@ class Workbench < ApplicationModel
   end
 
   def create_invitation_code
-    self.invitation_code	||= 3.times.map { "%03d" % SecureRandom.random_number(1000) }.join('-')
+    self.invitation_code ||= "W-#{3.times.map { format('%03d', SecureRandom.random_number(1000)) }.join('-')}"
   end
 
   class Confirmation
@@ -232,9 +234,9 @@ class Workbench < ApplicationModel
       WorkbenchConfirmationPolicy
     end
 
-    attr_accessor :organisation, :invitation_code
+    attr_accessor :organisation, :user, :invitation_code
 
-    CODE_FORMAT = /\A\d{3}-\d{3}-\d{3}\z/
+    CODE_FORMAT = /\A(?:(?:S|W)-)?\d{3}-\d{3}-\d{3}\z/.freeze
 
     validates :organisation, :invitation_code, presence: true
     validates :invitation_code, format: { with: CODE_FORMAT }
@@ -242,16 +244,34 @@ class Workbench < ApplicationModel
     validate :workbench_exists
 
     def workbench
-      @workbench ||= Workbench.where(invitation_code: invitation_code).where.not(workgroup: existing_workgroups).first
-    end
-
-    def existing_workgroups
-      if organisation
-        organisation.workgroups
+      if workbench_sharing?
+        workbench_sharing&.workbench
       else
-        Workgroup.none
+        @workbench ||= ::Workbench.where(organisation_id: nil, invitation_code: invitation_code).first
       end
     end
+
+    def workbench_sharing
+      return nil unless workbench_sharing?
+
+      @workbench_sharing ||= ::Workbench::Sharing.where(recipient_id: nil, invitation_code: invitation_code).first
+    end
+
+    def save
+      return false unless valid?
+
+      if workbench_sharing?
+        workbench_sharing.update(recipient: workbench_sharing_recipient)
+      else
+        workbench.update(organisation: organisation, invitation_code: nil)
+      end
+    end
+
+    def save!
+      save || raise(ActiveRecord::RecordNotSaved.new("Failed to save the record", self))
+    end
+
+    private
 
     def workbench_exists
       unless workbench
@@ -259,13 +279,16 @@ class Workbench < ApplicationModel
       end
     end
 
-    def save
-      return false unless valid?
-      workbench.update organisation: organisation, invitation_code: nil
+    def workbench_sharing?
+      invitation_code.start_with?('S-')
     end
 
-    def save!
-      save || raise(ActiveRecord::RecordNotSaved.new("Failed to save the record", self))
+    def workbench_sharing_recipient
+      if workbench_sharing.recipient_type == 'User'
+        user
+      else
+        organisation
+      end
     end
   end
 

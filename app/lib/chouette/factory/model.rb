@@ -4,13 +4,19 @@ module Chouette
       include Log
 
       attr_reader :name
-      attr_accessor :required, :singleton
+      attr_writer :association_name
+      attr_accessor :required, :singleton, :save_options, :around_models
+
       def initialize(name, options = {})
         @name = name
 
-        {required: false, singleton: false}.merge(options).each do |k,v|
+        { required: false, singleton: false, save_options: {} }.merge(options).each do |k, v|
           send "#{k}=", v
         end
+      end
+
+      def association_name
+        @association_name ||= name.to_s.pluralize
       end
 
       alias required? required
@@ -39,8 +45,6 @@ module Chouette
       def after_callbacks
         @after_callbacks ||= []
       end
-
-      attr_accessor :around_models
 
       def root?
         @name == :root
@@ -105,7 +109,7 @@ module Chouette
                 parent.send("build_#{name}", attributes_values)
               else
                 # Then Parent#models
-                parent.send(name.to_s.pluralize).build attributes_values
+                parent.send(association_name).build attributes_values
               end
             else
               klass.new attributes_values
@@ -131,7 +135,7 @@ module Chouette
             log "Invalid instance: #{new_instance.inspect} #{new_instance.errors.inspect}"
           end
 
-          new_instance.save! if save
+          new_instance.save!(**save_options) if save
 
           log "#{save ? 'Created' : 'Built'} #{new_instance.inspect}"
         end
@@ -160,6 +164,10 @@ module Chouette
 
         def after(&block)
           @model.after_callbacks << block
+        end
+
+        def save_options(save_options)
+          @model.save_options = save_options
         end
 
         def around_models(&block)

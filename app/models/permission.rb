@@ -102,6 +102,8 @@ class Permission
       permissions << "document_memberships.destroy"
       permissions << 'line_notice_memberships.create'
       permissions << 'line_notice_memberships.destroy'
+      permissions << 'workbench_sharings.create'
+      permissions << 'workbench_sharings.destroy'
     end
 
     def referentials

@@ -24,9 +24,9 @@ RSpec.describe Workbench, type: :model do
       it { is_expected.to_not validate_presence_of(:organisation) }
       it { is_expected.to_not validate_presence_of(:prefix) }
 
-      context "when another Workbench has the invitation code '123456" do
-        let!(:context) { Chouette.create { workbench invitation_code: '123-456-789' } }
-        it { is_expected.to_not allow_value('123-456-789').for(:invitation_code) }
+      context 'when another Workbench has the invitation code "W-123-456-789"' do
+        let!(:context) { Chouette.create { workbench invitation_code: 'W-123-456-789' } }
+        it { is_expected.to_not allow_value('W-123-456-789').for(:invitation_code) }
       end
     end
 
@@ -223,10 +223,10 @@ RSpec.describe Workbench, type: :model do
     subject { workbench.create_invitation_code }
 
     it "defines Workbench invitation_code" do
-      expect { subject }.to change(workbench, :invitation_code).from(nil).to(matching(/\d{3}-\d{3}-\d{3}/))
+      expect { subject }.to change(workbench, :invitation_code).from(nil).to(matching(/\AW-\d{3}-\d{3}-\d{3}\z/))
     end
 
-    it { is_expected.to match(/\d{3}-\d{3}-\d{3}/) }
+    it { is_expected.to match(/\AW-\d{3}-\d{3}-\d{3}\z/) }
   end
 
   describe "on creation" do
@@ -309,7 +309,7 @@ RSpec.describe Workbench, type: :model do
       let(:context) { Chouette.create { workbench organisation: nil } }
 
       it { is_expected.to have_attributes(organisation: a_nil_value, prefix: a_nil_value) }
-      it { is_expected.to have_attributes(invitation_code: matching(/\d{3}-\d{3}-\d{3}/)) }
+      it { is_expected.to have_attributes(invitation_code: match(/\AW-\d{3}-\d{3}-\d{3}\z/)) }
     end
   end
 
@@ -348,16 +348,6 @@ RSpec.describe Workbench, type: :model do
       )
     end
   end
-end
-
-RSpec.describe Workbench::Confirmation do
-  it { is_expected.to_not allow_value('dummy', '123456789').for(:invitation_code) }
-
-  context "when a Workbench exists with invitation code '123-456-789'" do
-    let!(:context) { Chouette.create { workbench invitation_code: '123-456-789' } }
-
-    it { is_expected.to allow_value('123-456-789').for(:invitation_code) }
-  end
 
   describe "#control_lists_shared_with_workgroup" do
     let(:context) do
@@ -379,5 +369,115 @@ RSpec.describe Workbench::Confirmation do
 
     it { is_expected.to match_array([first_control_list, second_control_list]) }
     it { is_expected.not_to include(third_control_list)}
+  end
+end
+
+RSpec.describe Workbench::Confirmation do
+  describe 'validation' do
+    describe 'of invitation_code' do
+      it { is_expected.to_not allow_value('dummy', '123-456-789').for(:invitation_code) }
+
+      context 'when a Workbench exists with invitation code "W-123-456-789"' do
+        before { Chouette.create { workbench invitation_code: 'W-123-456-789', organisation: nil } }
+        it { is_expected.to allow_value('W-123-456-789').for(:invitation_code) }
+      end
+
+      context 'when a Workbench exists with invitation code "123-456-789"' do
+        before { Chouette.create { workbench invitation_code: '123-456-789', organisation: nil } }
+        it { is_expected.to allow_value('123-456-789').for(:invitation_code) }
+      end
+
+      context 'when a Workbench with an organisation exists with invitation code "W-123-456-789"' do
+        before { Chouette.create { workbench invitation_code: 'W-123-456-789' } }
+        it { is_expected.not_to allow_value('W-123-456-789').for(:invitation_code) }
+      end
+
+      context 'when a Workbench::Sharing exists with invitation code "S-123-456-789"' do
+        before do
+          Chouette.create do
+            workbench_sharing invitation_code: 'S-123-456-789', recipient_type: 'Organisation', recipient_id: nil
+          end
+        end
+        it { is_expected.to allow_value('S-123-456-789').for(:invitation_code) }
+      end
+
+      context 'when a Workbench::Sharing with a recipient exists with invitation code "S-123-456-789"' do
+        before { Chouette.create { workbench_sharing invitation_code: 'S-123-456-789' } }
+        it { is_expected.not_to allow_value('S-123-456-789').for(:invitation_code) }
+      end
+
+      context 'when a Workbench exists with invitation code "Z-123-456-789"' do
+        before { Chouette.create { workbench invitation_code: 'Z-123-456-789' } }
+        it { is_expected.not_to allow_value('123-456-789').for(:invitation_code) }
+      end
+    end
+  end
+
+  let(:context) do
+    Chouette.create do
+      workbench invitation_code: 'W-123-456-789', organisation: nil
+    end
+  end
+  let(:organisation) { Chouette.create { organisation }.organisation }
+  let(:workbench) { context.workbench }
+  let(:user) { nil }
+  let(:invitation_code) { 'W-123-456-789' }
+
+  subject(:workbench_confirmation) do
+    Workbench::Confirmation.new(invitation_code: invitation_code, organisation: organisation, user: user)
+  end
+
+  context '#save' do
+    subject { workbench_confirmation.save }
+
+    it 'workbench is associated to the new Organisation' do
+      expect { subject }.to change { workbench.reload.organisation }.from(nil).to(organisation)
+    end
+
+    it 'workbench loses its invitation code' do
+      expect { subject }.to change { workbench.reload.invitation_code }.from(invitation_code).to(nil)
+    end
+
+    context 'when a workbench sharing invitation code is provided' do
+      let(:invitation_code) { 'S-123-456-789' }
+      let(:workbench_sharing) { context.workbench_sharing }
+
+      context 'with a user recipient' do
+        let(:context) do
+          Chouette.create do
+            workbench do
+              workbench_sharing recipient_type: 'User', invitation_code: 'S-123-456-789'
+            end
+          end
+        end
+        let(:user) { Chouette.create { user }.user }
+
+        it 'workbench does not change its Organisation' do
+          expect { subject }.not_to change { workbench.reload.organisation }.from(be_present)
+        end
+
+        it 'assigns user to workbench sharing' do
+          expect { subject }.to change { workbench_sharing.reload.recipient }.from(nil).to(user)
+        end
+      end
+
+      context 'with a organisation recipient' do
+        let(:context) do
+          Chouette.create do
+            workbench do
+              workbench_sharing recipient_type: 'Organisation', invitation_code: 'S-123-456-789'
+            end
+          end
+        end
+
+        it 'workbench does not change its Organisation' do
+          expect { subject }.not_to change { workbench.reload.organisation }.from(be_present)
+        end
+
+        it 'assigns organisation to workbench sharing' do
+          expect { subject }.to change { workbench_sharing.reload.recipient }.from(nil).to(organisation)
+        end
+      end
+    end
   end
 end

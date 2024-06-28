@@ -122,6 +122,7 @@ Apartment.configure do |config|
     'Search::Save',
     'User',
     'Waypoint',
+    'Workbench::Sharing',
     'Workbench',
     'Workgroup'
   ]

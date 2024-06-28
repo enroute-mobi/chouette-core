@@ -14,6 +14,8 @@ class Organisation < ApplicationModel
   has_many :line_referentials, through: :line_referential_memberships
 
   has_many :workbenches, dependent: :destroy
+  has_many :workbench_sharings,
+           class_name: 'Workbench::Sharing', dependent: :destroy, as: :recipient, inverse_of: :recipient
   has_many :line_providers, through: :workbenches
   has_many :workgroups, -> { distinct }, through: :workbenches do
     def owned
@@ -51,9 +53,5 @@ class Organisation < ApplicationModel
   def lines_scope
     functional_scope = sso_attributes.try(:[], "functional_scope")
     JSON.parse(functional_scope) if functional_scope
-  end
-
-  def build_workbench_confirmation(attributes = {})
-    Workbench::Confirmation.new(attributes.merge(organisation: self))
   end
 end

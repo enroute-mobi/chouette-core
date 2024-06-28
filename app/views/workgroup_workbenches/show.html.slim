@@ -15,7 +15,6 @@
             = d.attribute :invitation_code
             p[style='font-style:italic;'] = t('workbenches.show.sections.pending_invitation.text')
 
-    .row
       .col-lg-6.col-md-6.col-sm-12.col-xs-12
         .definition-list
           .dl-head
@@ -32,3 +31,34 @@
                   - feature_restriction.each do |restriction|
                     li
                       = t("permissions.actions.#{restriction.split('.').last}")
+    .row
+      .col-lg-12
+        .definition-list
+          .dl-head
+            = t('workbenches.show.sections.sharings')
+        = table_builder_2 @workbench_sharings,
+          [ \
+            TableBuilderHelper::Column.new( \
+              key: :status, \
+              attribute: :human_status \
+            ), \
+            TableBuilderHelper::Column.new( \
+              key: :recipient_type, \
+              attribute: :human_recipient_type \
+            ), \
+            TableBuilderHelper::Column.new( \
+              key: :name, \
+              attribute: -> (workbench_sharing) { link_to(workbench_sharing.name, workgroup_workbench_sharing_path(@workgroup, @workbench, workbench_sharing)) },
+            ), \
+            TableBuilderHelper::Column.new( \
+              key: :created_at, \
+              attribute: 'created_at' \
+            ), \
+          ],
+          cls: 'table workbench_sharings',
+          action: :index
+        - if @workbench_sharings.action_links.any?
+          .flex
+            - @workbench_sharings.action_links.each do |link|
+              = link.to_html do |l|
+                - l.class 'btn btn-primary ml-auto'

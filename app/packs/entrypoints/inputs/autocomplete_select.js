@@ -1,13 +1,13 @@
 import TomSelect from 'tom-select'
 
 document.addEventListener("DOMContentLoaded", () => {
-  document.querySelectorAll('select.autocomplete_select').forEach((el)=>{
+  document.querySelectorAll('select.autocomplete_select').forEach((el) => {
     // test if el is a multiple select input
     let plugin_list = []
-    if(el.hasAttribute("multiple")) {
+    if (el.hasAttribute("multiple")) {
       plugin_list = ['clear_button', 'remove_button']
     }
-    else{
+    else {
       plugin_list = ['clear_button']
     }
 
@@ -15,6 +15,11 @@ document.addEventListener("DOMContentLoaded", () => {
       plugins: plugin_list,
       openOnFocus: true
     }
+
+    if (Array.prototype.some.call(el.options, o => o.value === "")) {
+      settings.allowEmptyOption = true
+    }
+
     new TomSelect(el, settings)
   })
 })

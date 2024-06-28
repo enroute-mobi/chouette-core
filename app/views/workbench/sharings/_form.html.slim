@@ -1,0 +1,15 @@
+= simple_form_for @workbench_sharing, url: workgroup_workbench_sharings_path(@workgroup, @workbench), html: { class: 'form-horizontal', id: 'workbench_sharing_form' }, wrapper: :horizontal_form do |f|
+  .row
+    .col-lg-12
+      = f.input :name
+
+  .separator.section_separator
+
+  .row
+    .col-lg-12 x-data="{ recipient_type: #{@workbench_sharing.recipient_type.to_json} }"
+      h2.mb-lg= t('workbench/sharings.form.sections.recipient')
+      = f.input :recipient_type, as: :radio_buttons, collection: [[User.model_name.human.capitalize, 'User'], [Organisation.model_name.human.capitalize, 'Organisation']], include_blank: false, wrapper: :horizontal_form, input_html: { 'x-on:change': 'recipient_type = $event.target.value' }
+      = f.input :recipient_id, as: :autocomplete_select, collection: @workbench_sharing.candidate_user_recipients, input_html: { 'x-bind:disabled' => 'r = recipient_type !== "User"; if ($el.tomselect) { if (r) { $el.tomselect.disable() } else { $el.tomselect.enable() } }; r' }, include_blank: t('workbench/sharings.form.recipient_id.none')
+
+  = cancel_button
+  = f.button :submit, t('actions.submit'), class: 'btn btn-default formSubmitr', form: 'workbench_sharing_form'

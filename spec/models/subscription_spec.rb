@@ -98,13 +98,14 @@ RSpec.describe Subscription do
   end
 
   describe 'save' do
+    subject(:save) { subscription.save }
+
     before do
       subscription.attributes = { organisation_name: 'Test', user_name: 'Test', email: 'example@chouette.test' }
       subscription.password = subscription.password_confirmation = 'Dummy but Strong$42'
     end
 
     context "when Subscription isn't valid" do
-      subject { subscription.save }
 
       before { allow(subscription).to receive(:valid?).and_return(false) }
 
@@ -114,21 +115,21 @@ RSpec.describe Subscription do
     describe 'organisation' do
       subject { subscription.organisation }
       it 'is created' do
-        expect { subscription.save }.to change(subject, :new_record?).from(true).to(false)
+        expect { save }.to change(subject, :new_record?).from(true).to(false)
       end
     end
 
     describe 'user' do
       subject { subscription.user }
       it 'is created' do
-        expect { subscription.save }.to change(subject, :new_record?).from(true).to(false)
+        expect { save }.to change(subject, :new_record?).from(true).to(false)
       end
     end
 
     describe 'mailer' do
       it 'is invoked with created user' do
         expect(SubscriptionMailer).to receive(:new_subscription).with(subscription.user)
-        subscription.save
+        save
       end
     end
 
@@ -141,7 +142,7 @@ RSpec.describe Subscription do
 
       describe 'workgroup' do
         it 'is created' do
-          subscription.save
+          save
           is_expected.to be_persisted
         end
       end
@@ -149,26 +150,80 @@ RSpec.describe Subscription do
 
     context 'when a workbench invitation code is provided' do
       let(:context) do
-        Chouette.create { workbench invitation_code: '123-456-789', organisation: nil }
+        Chouette.create { workbench invitation_code: 'W-123-456-789', organisation: nil }
       end
       let(:workbench) { context.workbench }
+      let(:invitation_code) { 'W-123-456-789' }
 
       before do
-        subscription.workbench_invitation_code = '123-456-789'
+        subscription.workbench_invitation_code = invitation_code
       end
 
       it "doesn't create a Workgroup" do
-        expect { subscription.save }.to_not change { Workgroup.count }
+        expect { subject }.not_to(change { Workgroup.count })
       end
 
       describe 'workbench' do
         it 'is associated to the new Organisation' do
-          expect { subscription.save }.to change {
-                                            workbench.reload.organisation
-                                          }.from(nil).to(subscription.organisation)
+          expect { subject }.to change { workbench.reload.organisation }.from(nil).to(subscription.organisation)
         end
+
         it 'loses its invitation code' do
-          expect { subscription.save }.to change { workbench.reload.invitation_code }.from('123-456-789').to(nil)
+          expect { subject }.to change { workbench.reload.invitation_code }.from('W-123-456-789').to(nil)
+        end
+      end
+    end
+
+    context 'when a workbench sharing invitation code is provided' do
+      let(:workbench) { context.workbench }
+      let(:workbench_sharing) { context.workbench_sharing }
+      let(:invitation_code) { 'S-123-456-789' }
+
+      before do
+        subscription.workbench_invitation_code = invitation_code
+      end
+
+      context 'with a user recipient' do
+        let(:context) do
+          Chouette.create do
+            workbench do
+              workbench_sharing recipient_type: 'User', invitation_code: 'S-123-456-789'
+            end
+          end
+        end
+
+        it "doesn't create a Workgroup" do
+          expect { subject }.not_to(change { Workgroup.count })
+        end
+
+        it 'workbench does not change its Organisation' do
+          expect { subject }.not_to change { workbench.reload.organisation }.from(be_present)
+        end
+
+        it 'assigns user to workbench sharing' do
+          expect { subject }.to change { workbench_sharing.reload.recipient }.from(nil).to(subscription.user)
+        end
+      end
+
+      context 'with a organisation recipient' do
+        let(:context) do
+          Chouette.create do
+            workbench do
+              workbench_sharing recipient_type: 'Organisation', invitation_code: 'S-123-456-789'
+            end
+          end
+        end
+
+        it "doesn't create a Workgroup" do
+          expect { subject }.not_to(change { Workgroup.count })
+        end
+
+        it 'workbench does not change its Organisation' do
+          expect { subject }.not_to change { workbench.reload.organisation }.from(be_present)
+        end
+
+        it 'assigns organisation to workbench sharing' do
+          expect { subject }.to change { workbench_sharing.reload.recipient }.from(nil).to(subscription.organisation)
         end
       end
     end

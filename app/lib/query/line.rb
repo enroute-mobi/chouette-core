@@ -46,7 +46,7 @@ module Query
     end
 
     def is_referent(value)
-      change_scope(if: value.present?) do |scope|
+      change_scope(if: !value.nil?) do |scope|
         scope.where(is_referent: value)
       end
     end

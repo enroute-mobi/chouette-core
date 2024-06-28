@@ -1,6 +1,11 @@
 # frozen_string_literal: true
 
 RSpec.describe Macro::CreateCodeFromSequence do
+  it {
+    is_expected.to validate_inclusion_of(:target_model)
+      .in_array(%w[StopArea Line Company])
+  }
+
   it 'should be one of the available Macro' do
     expect(Macro.available).to include(described_class)
   end
@@ -27,17 +32,19 @@ RSpec.describe Macro::CreateCodeFromSequence do
       Chouette.create do
         code_space short_name: 'test'
 
-        stop_area :first
-        stop_area :second, codes: { test: 'dummy:1' }
-        stop_area :last, codes: { test: 'dummy:2' }
+        company :company
+        company :other_company, codes: { test: 'dummy:1' }
+        line :line, company: :company
+        line :other_line, company: :other_company, codes: { test: 'dummy:1' }
+        stop_area :stop_area
+        stop_area :other_stop_area, codes: { test: 'dummy:1' }
 
-        referential do
-          route stop_areas: %i[first second last]
+        referential lines: %i[line other_line] do
+          route line: :line, stop_areas: %i[stop_area other_stop_area]
         end
       end
     end
 
-    let(:format) { 'dummy:%{value}' }
     let(:sequence) do
       Sequence.create(
         name: 'Regional identifiers',
@@ -51,32 +58,58 @@ RSpec.describe Macro::CreateCodeFromSequence do
     let(:code_space) { context.code_space }
     let(:referential) { context.referential }
     let(:workbench) { context.workbench }
+
     let(:model_name) { model.name }
+    let(:expected_message) do
+      an_object_having_attributes(
+        message_attributes: {
+          'model_name' => model_name,
+          'code_value' => code_value
+        }
+      )
+    end
 
     describe '#run' do
       subject { macro_run.run }
 
       before { referential.switch }
 
-      let(:expected_message) do
-        an_object_having_attributes(
-          message_attributes: {
-            'model_name' => model_name,
-            'code_value' => 'dummy:3'
-          }
-        )
-      end
-
-      describe 'StopArea' do
-        let(:target_model) { 'StopArea' }
-        let(:model) { context.stop_area(:first) }
+      # rubocop:disable Style/FormatStringToken
+      context "when format is 'dummy:%{value}'" do
+        let(:format) { 'dummy:%{value}' }
         let(:code_value) { 'dummy:2' }
 
-        it 'should create code' do
-          expect { subject }.to change { model.codes.count }.from(0).to(1)
-          expect(macro_run.macro_messages).to include(expected_message)
+        context 'with StopArea' do
+          let(:target_model) { 'StopArea' }
+          let(:model) { context.stop_area(:stop_area) }
+
+          it 'should create code' do
+            expect { subject }.to change { model.codes.count }.from(0).to(1)
+            expect(macro_run.macro_messages).to include(expected_message)
+          end
+        end
+
+        context 'with Line' do
+          let(:target_model) { 'Line' }
+          let(:model) { context.line(:line) }
+
+          it 'should create code' do
+            expect { subject }.to change { model.codes.count }.from(0).to(1)
+            expect(macro_run.macro_messages).to include(expected_message)
+          end
+        end
+
+        context 'with Company' do
+          let(:target_model) { 'Company' }
+          let(:model) { context.company(:company) }
+
+          it 'should create code' do
+            expect { subject }.to change { model.codes.count }.from(0).to(1)
+            expect(macro_run.macro_messages).to include(expected_message)
+          end
         end
       end
+      # rubocop:enable Style/FormatStringToken
     end
   end
 end

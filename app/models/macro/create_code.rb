@@ -28,11 +28,12 @@ module Macro
         # - compute all target value
         # - create all required codes with inserter ?
 
-        models_without_code.find_in_batches do |batch|
+        request = CreateCodeFromUuid::Run::RequestBuilder.new(workgroup, models, code_space, target_pattern).run
+        request.find_in_batches do |batch|
           model_class.transaction do
             batch.each do |model|
               if source_value = source.value(model)
-                code_value = target.value(source_value)
+                code_value = target.value(model, source_value)
                 code = model.codes.create(code_space: code_space, value: code_value)
                 create_message(model, code, source_value)
               end
@@ -85,26 +86,6 @@ module Macro
       def models
         @models ||= scope.send(model_collection)
       end
-
-      def code_model
-        # FIXME
-        model_class == Chouette::VehicleJourney ?
-          :referential_codes : :codes
-      end
-
-      def models_without_code
-        # FIXME
-        #
-        # models.left_joins(:codes).where(codes: { id: nil }))
-        # works
-        #
-        # models.left_joins(:codes).where(codes: { code_space: code_space }))
-        # works
-        #
-        # models.left_joins(:codes).where(codes: { code_space: code_space, id: nil }))
-        # doesn't work
-        models.where.not(id: models.joins(:codes).where(code_model => { code_space_id: code_space }))
-      end
     end
 
     class Source
@@ -155,31 +136,37 @@ module Macro
         attributes.each { |k,v| send "#{k}=", v }
       end
 
-      def value(value)
-        apply_pattern value
+      def value(model, value)
+        apply_pattern(model, value)
       end
 
       def has_pattern?
         pattern.present?
       end
 
-      def apply_pattern(value)
+      def apply_pattern(model, value) # rubocop:disable Metrics/MethodLength
         return value unless has_pattern?
 
-        value = value_substitution.call(value)
-        pattern.gsub(/%{value[^}]*}/, value)
-      end
-
-      def value_substitution
-        if has_pattern? && %r@%{value//([^/]+)/([^}]*)}@ =~ pattern
-          from = Regexp.new $1
-          to = $2
-          Proc.new { |value| value.gsub(from, to) }
-        else
-          Proc.new { |value| value }
+        result = pattern.gsub(VALUE_REGEXP) do
+          if ::Regexp.last_match(1) && ::Regexp.last_match(2)
+            from = ::Regexp.new(::Regexp.last_match(1))
+            to = ::Regexp.last_match(2)
+            value.gsub(from, to)
+          else
+            value
+          end
+        end
+        result.gsub(CODE_SPACE_REGEXP) do
+          if ::Regexp.last_match(1)
+            model.send("line_code_#{::Regexp.last_match(1)}")
+          else
+            model.line_registration_number
+          end
         end
       end
     end
 
+    VALUE_REGEXP = %r@%{value(?://([^/]+)/([^}]*))?}@.freeze
+    CODE_SPACE_REGEXP = /%{line.code(?::([^}]*))?}/.freeze
   end
 end

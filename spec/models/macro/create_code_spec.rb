@@ -17,71 +17,6 @@ RSpec.describe Macro::CreateCode do
   end
 
   describe Macro::CreateCode::Run do
-    describe '#models_without_code' do
-      subject { macro_run.models_without_code }
-
-      context "when the macro has target_model 'StopArea' and target_code_space 'test'" do
-        let!(:macro_list_run) do
-          Macro::List::Run.create workbench: context.workbench
-        end
-
-        let(:macro_run) do
-          Macro::CreateCode::Run.new(
-            macro_list_run: macro_list_run,
-            target_model: 'StopArea',
-            target_code_space: 'test'
-          ).tap do |run|
-            allow(run).to receive(:workbench).and_return(context.workbench)
-          end
-        end
-
-        context 'when a StopArea exists without code' do
-          let(:context) do
-            Chouette.create do
-              code_space short_name: 'test'
-              stop_area
-              referential
-            end
-          end
-          let(:stop_area) { context.stop_area }
-
-          it 'includes the Stop Area' do
-            is_expected.to include(stop_area)
-          end
-        end
-
-        context 'when a StopArea exists with another code' do
-          let(:context) do
-            Chouette.create do
-              code_space short_name: 'other'
-              stop_area codes: { other: 'dummy' }
-              referential
-            end
-          end
-          let(:stop_area) { context.stop_area }
-
-          it 'includes the Stop Area' do
-            is_expected.to include(stop_area)
-          end
-        end
-
-        context "when a StopArea exists a code 'test'" do
-          let(:context) do
-            Chouette.create do
-              code_space short_name: 'test'
-              stop_area codes: { test: 'dummy' }
-              referential
-            end
-          end
-          let(:stop_area) { context.stop_area }
-
-          it "doesn't include the Stop Area" do
-            is_expected.to_not include(stop_area)
-          end
-        end
-      end
-    end
-
     describe '#run' do
       subject { macro_run.run }
 
@@ -395,8 +330,31 @@ RSpec.describe Macro::CreateCode do
   describe Macro::CreateCode::Target do
     subject(:target) { Macro::CreateCode::Target.new }
 
+    # rubocop:disable Style/FormatStringToken
     describe '#apply_pattern' do
-      subject { target.apply_pattern(value) }
+      subject { target.apply_pattern(model, value) }
+
+      let(:context) do
+        Chouette.create do
+          code_space :public, short_name: 'public'
+          code_space :test
+
+          line :line, registration_number: 'LINE42', codes: { 'public' => 'PUBLIC_LINE42' }
+          stop_area
+
+          referential lines: %i[line] do
+            route line: :line do
+              vehicle_journey
+            end
+          end
+        end
+      end
+      let(:referential) { context.referential }
+      let(:code_space) { context.code_space(:test) }
+      let(:context_model) { nil }
+      let(:model) { context_model ? Macro::CreateCodeFromUuid::Run::RequestBuilder.new(context.workgroup, context_model.class.all, code_space, target.pattern).run.where(context_model.class.table_name => { id: context_model.id }).first : nil }
+
+      before { referential.switch }
 
       context "when the given value is 'dummy'" do
         let(:value) { 'dummy' }
@@ -424,7 +382,55 @@ RSpec.describe Macro::CreateCode do
           before { target.pattern = '%{value//(.*)(.)/\1_\2}' }
           it { is_expected.to eq('dumm_y') }
         end
+
+        context "when pattern is '%{line.code}'" do
+          before { target.pattern = '%{line.code}' }
+
+          context 'with Line' do
+            let(:context_model) { context.line(:line) }
+            it { is_expected.to eq('') }
+          end
+
+          context 'with StopArea' do
+            let(:context_model) { context.stop_area }
+            it { is_expected.to eq('') }
+          end
+
+          context 'with VehicleJourney' do
+            let(:context_model) { context.vehicle_journey }
+            it { is_expected.to eq('LINE42') }
+          end
+        end
+
+        context "when pattern is '%{line.code:public}'" do
+          before { target.pattern = '%{line.code:public}' }
+
+          context 'with Line' do
+            let(:context_model) { context.line(:line) }
+            it { is_expected.to eq('') }
+          end
+
+          context 'with StopArea' do
+            let(:context_model) { context.stop_area }
+            it { is_expected.to eq('') }
+          end
+
+          context 'with VehicleJourney' do
+            let(:context_model) { context.vehicle_journey }
+            it { is_expected.to eq('PUBLIC_LINE42') }
+          end
+        end
+
+        context "when pattern is '%{line.code:does_not_exist}'" do
+          before { target.pattern = '%{line.code:does_not_exist}' }
+
+          context 'with VehicleJourney' do
+            let(:context_model) { context.vehicle_journey }
+            it { is_expected.to eq('') }
+          end
+        end
       end
     end
+    # rubocop:enable Style/FormatStringToken
   end
 end

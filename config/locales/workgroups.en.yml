@@ -33,6 +33,10 @@ en:
         title: Edit transport modes
     aggregator:
       creator: "Automatic start up"
+    form:
+      sections:
+        aggregate_schedulings: "Daily Schedulings"
+      add_aggregate_scheduling: "Add Daily Schedulings"
   activerecord:
     models:
       workgroup:
@@ -43,9 +47,6 @@ en:
         description: Description
         enable_purge_merged_data: Enable purge of past merged data
         maximum_data_age: Maximum age of merged data
-        nightly_aggregate_days:  Aggregate days
-        nightly_aggregate_enabled: Daily aggregation enabled
-        nightly_aggregate_time: Aggregation time
         nightly_aggregate_notification_target: Notification target(s)
         aggregated_at: Aggregated at
         owner: Owner

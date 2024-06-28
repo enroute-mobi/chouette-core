@@ -10,6 +10,18 @@
             Workgroup.tmf(:workbenches) => @workgroup.workbenches.count,
             Workgroup.tmf(:created_at) => l(@workgroup.created_at, format: :short_with_time),
             Workgroup.tmf(:updated_at) => l(@workgroup.updated_at, format: :short_with_time)}
+
+      .col-lg-6.col-md-6.col-sm-12.col-xs-12
+        = simple_block_for @workgroup, title: t('workgroups.form.sections.aggregate_schedulings') do |d|
+          - if @workgroup.aggregate_schedulings.empty?
+            .mb-xs
+              = replacement_msg t('aggregate_schedulings.empty')
+          - else
+            - @workgroup.aggregate_schedulings.each do |c|
+              = d.attribute :aggregate_time, as: :time_of_day, object: c
+              = d.attribute :aggregate_days, value: %w(monday tuesday wednesday thursday friday saturday sunday).collect{ |d| content_tag(:span, t("calendars.days.#{d}"), class: "label label-default #{c.aggregate_days.send(d + '?') ? '' : 'disabled'}") }.join.html_safe, object: c
+              = d.attribute :force_daily_publishing, as: :boolean, object: c
+
     .row
       .col-lg-12
         - if @workbenches.empty?

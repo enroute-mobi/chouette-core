@@ -62,6 +62,7 @@ class Workgroup < ApplicationModel
   has_many :codes, through: :code_spaces
 
   accepts_nested_attributes_for :workbenches
+  accepts_nested_attributes_for :aggregate_schedulings, allow_destroy: true, reject_if: :all_blank
 
   @@workbench_scopes_class = WorkbenchScopes::All
   mattr_accessor :workbench_scopes_class

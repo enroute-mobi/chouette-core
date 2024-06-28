@@ -1,0 +1,14 @@
+en:
+  aggregate_schedulings:
+    form:
+      add_aggregate_scheduling: "Add Daily Schedulings"
+  activerecord:
+    models:
+      aggregate_scheduling:
+        one: Aggregate scheduling
+        other: Aggregates schedulings
+    attributes:
+      aggregate_scheduling:
+        aggregate_days:  Aggregate days
+        aggregate_time: Aggregate time
+        force_daily_publishing: Force daily publishing

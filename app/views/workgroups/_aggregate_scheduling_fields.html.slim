@@ -1,0 +1,8 @@
+.nested-fields.flex.items-center.mb-10.aggregate-schedulings
+  .flex.flex-col.w-full.mr-6
+    = f.input :aggregate_time, as: :time_picker
+    = f.input :aggregate_days, as: :day_type
+    = f.input :force_daily_publishing, as: :switchable_checkbox
+
+  .flex.mb-28
+    = link_to_remove_association '', f, class: 'fa fa-trash text-red-600'

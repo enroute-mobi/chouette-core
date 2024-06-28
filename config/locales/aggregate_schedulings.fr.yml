@@ -1,0 +1,14 @@
+fr:
+  aggregate_schedulings:
+    form:
+      add_aggregate_scheduling: "Ajouter une Agrégation quotidienne"
+  activerecord:
+    models:
+      aggregate_scheduling:
+        one: Agrégation quotidienne
+        other: Agrégations quotidiennes
+    attributes:
+      aggregate_scheduling:
+        aggregate_days:  Jours d’agrégation
+        aggregate_time: Heure du lancement
+        force_daily_publishing: Forcer la Publication Quotidiennement

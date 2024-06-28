@@ -33,6 +33,10 @@ fr:
       title: Paramétrages des modes de transport
     aggregator:
       creator: "Automatic start up"
+    form:
+      sections:
+        aggregate_schedulings: "Agrégations quotidiennes"
+      add_aggregate_scheduling: "Ajouter une Agrégation quotidienne"
   activerecord:
     models:
       workgroup:
@@ -43,9 +47,6 @@ fr:
         description: Description
         enable_purge_merged_data: Activer la purge des données après finalisation
         maximum_data_age: Age maximum des données finalisées
-        nightly_aggregate_days:  Jours d’agrégation
-        nightly_aggregate_enabled: Lancement quotidien activé
-        nightly_aggregate_time: Heure du lancement
         nightly_aggregate_notification_target: Destinataire(s) des notifications
         aggregated_at: Agrégé le
         owner: Propriétaire

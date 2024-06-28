@@ -83,13 +83,14 @@ class WorkgroupsController < Chouette::ResourceController
       :description,
       :enable_purge_merged_data,
       :maximum_data_age,
-      :nightly_aggregate_enabled, :nightly_aggregate_time, :nightly_aggregate_days, :nightly_aggregate_notification_target,
+      :nightly_aggregate_notification_target,
       :transport_modes_as_json,
       workbenches_attributes: [
         :id,
         :locked_referential_to_aggregate_id,
         :priority,
-      ]
+      ],
+      aggregate_schedulings_attributes: [:id, :aggregate_time, :aggregate_days, :force_daily_publishing, :value, :_destroy]
     )
   end
 

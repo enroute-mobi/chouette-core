@@ -8,9 +8,18 @@ class PublicationMailer < ApplicationMailer
     @publication_api = PublicationApi.find(@destination_mail.link_to_api) if @destination_mail.link_to_api.present?
 
     file = publication.export.try(:file)
+    if @destination_mail.attached_export_file && file && file.size < 10.megabytes
+      filename = File.basename(file.path)
 
-    if @destination_mail.attached_export_file && file && (file.size.to_f / 1_024_000 < 10)
-      filename = @destination_mail.attached_export_filename.presence || File.basename(file.path)
+      if @destination_mail.attached_export_filename.presence
+        filename = @destination_mail.attached_export_filename
+
+        filename.scan(/(%{date:([^}]+)})/).each do |(date_pattern, format)|
+          filename = filename.gsub(date_pattern, publication.created_at.strftime(format))
+        end
+      end
+
+      file.cache!
       attachments[filename] = file.read
     end
 

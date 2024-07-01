@@ -1704,6 +1704,7 @@ ActiveRecord::Schema.define(version: 2024_06_04_133209) do
     t.string "restrictions", default: [], array: true
     t.integer "priority", default: 1
     t.string "invitation_code"
+    t.boolean "hidden", default: false, null: false
     t.index ["line_referential_id"], name: "index_workbenches_on_line_referential_id"
     t.index ["locked_referential_to_aggregate_id"], name: "index_workbenches_on_locked_referential_to_aggregate_id"
     t.index ["organisation_id"], name: "index_workbenches_on_organisation_id"

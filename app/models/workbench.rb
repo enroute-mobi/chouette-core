@@ -85,6 +85,7 @@ class Workbench < ApplicationModel
   before_validation :create_default_prefix
 
   validates :priority, presence: true, numericality: { greater_than_or_equal_to: 1 }
+  validates :hidden, inclusion: { in: [true, false] }
 
   scope :with_active_workgroup, -> { joins(:workgroup).where('workgroups.deleted_at': nil) }
 

@@ -4,6 +4,7 @@
       h2.mb-lg= t("metadatas")
       = f.input :name
       = f.association :organisation, disabled: true, collection: [@workbench.organisation]
+      = f.input :hidden, as: :switchable_checkbox
 
   .separator.section_separator
   .row

@@ -35,10 +35,16 @@ class WorkgroupWorkbenchesController < Chouette::WorkgroupController
     WorkgroupWorkbenchDecorator.decorate(super, context: { workgroup: workgroup })
   end
 
-  def workbench_params
+  def workbench_params # rubocop:disable Metrics/MethodLength
     return @workbench_params if @workbench_params
 
-    workbench_params = params.require(:workbench).permit(:name, restrictions: []).with_defaults(restrictions: [])
+    workbench_params = params.require(:workbench).permit(
+      :name,
+      :hidden,
+      restrictions: []
+    ).with_defaults(
+      restrictions: []
+    )
     if params[:action] == 'create' && params[:workbench][:current_organisation] == '1'
       workbench_params[:organisation] = current_organisation
     end

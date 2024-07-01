@@ -485,7 +485,7 @@ end
 RSpec.describe Workbench::Confirmation do
   describe 'validation' do
     describe 'of invitation_code' do
-      it { is_expected.to_not allow_value('dummy', '123-456-789').for(:invitation_code) }
+      it { is_expected.to_not allow_value('123-456-789').for(:invitation_code) }
 
       context 'when a Workbench exists with invitation code "W-123-456-789"' do
         before { Chouette.create { workbench invitation_code: 'W-123-456-789', organisation: nil } }
@@ -502,7 +502,16 @@ RSpec.describe Workbench::Confirmation do
         it { is_expected.not_to allow_value('W-123-456-789').for(:invitation_code) }
       end
 
-      context 'when a Workbench::Sharing exists with invitation code "S-123-456-789"' do
+      context 'when a Workbench::Sharing exists with invitation code "S-123-456-789" for user' do
+        before do
+          Chouette.create do
+            workbench_sharing invitation_code: 'S-123-456-789', recipient_type: 'Organisation', recipient_id: nil
+          end
+        end
+        it { is_expected.to allow_value('S-123-456-789').for(:invitation_code) }
+      end
+
+      context 'when a Workbench::Sharing exists with invitation code "S-123-456-789" for organisation' do
         before do
           Chouette.create do
             workbench_sharing invitation_code: 'S-123-456-789', recipient_type: 'Organisation', recipient_id: nil
@@ -513,6 +522,36 @@ RSpec.describe Workbench::Confirmation do
 
       context 'when a Workbench::Sharing with a recipient exists with invitation code "S-123-456-789"' do
         before { Chouette.create { workbench_sharing invitation_code: 'S-123-456-789' } }
+        it { is_expected.not_to allow_value('S-123-456-789').for(:invitation_code) }
+      end
+
+      context 'when a Workbench::Sharing with the same recipient as current user exists' do
+        let(:context) do
+          Chouette.create do
+            user :user
+            workbench_sharing recipient: :user
+            workbench_sharing invitation_code: 'S-123-456-789', recipient_type: 'User', recipient_id: nil
+          end
+        end
+        let(:user) { context.user(:user) }
+
+        before { subject.user = user }
+
+        it { is_expected.not_to allow_value('S-123-456-789').for(:invitation_code) }
+      end
+
+      context 'when a Workbench::Sharing with the same recipient as current organisation exists' do
+        let(:context) do
+          Chouette.create do
+            organisation :organisation
+            workbench_sharing recipient: :organisation
+            workbench_sharing invitation_code: 'S-123-456-789', recipient_type: 'Organisation', recipient_id: nil
+          end
+        end
+        let(:organisation) { context.organisation(:organisation) }
+
+        before { subject.organisation = organisation }
+
         it { is_expected.not_to allow_value('S-123-456-789').for(:invitation_code) }
       end
 

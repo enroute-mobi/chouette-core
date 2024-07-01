@@ -8,6 +8,7 @@
         = simple_block_for @workbench, title: t('metadatas') do |d|
           = d.attribute :name
           = d.attribute :organisation, as: :association
+          = d.attribute :hidden, as: :boolean
 
       - if @workbench.invitation_code
         .col-lg-6.col-md-6.col-sm-12.col-xs-12

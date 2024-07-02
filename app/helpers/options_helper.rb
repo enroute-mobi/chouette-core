@@ -9,7 +9,8 @@ module OptionsHelper
     opts = {
       input_html: { value: value },
       as: option_def[:type],
-      selected: value
+      selected: value,
+      placeholder: I18n.t("#{form.object.model_name.i18n_key.to_s.pluralize}.form.placeholders.#{attr}", default: nil)
     }
 
     if option_def[:hidden]
@@ -28,8 +29,7 @@ module OptionsHelper
       )
       opts[:as] = :tom_select
       opts[:config] = {
-        type: 'create',
-        placeholder: I18n.t('simple_form.custom_inputs.tags.placeholder')
+        type: 'create'
       }
 
     end

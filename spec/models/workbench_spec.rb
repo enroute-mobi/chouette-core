@@ -170,6 +170,23 @@ RSpec.describe Workbench, type: :model do
       end
     end
 
+    context "when referential is in workbench's output referentials" do
+      let(:context) do
+        Chouette.create do
+          workgroup do
+            workbench :workbench
+            referential :referential
+          end
+        end.tap do |c|
+          c.workbench(:workbench).output.referentials << c.referential(:referential)
+        end
+      end
+
+      it 'should return referential' do
+        is_expected.to eq(referential)
+      end
+    end
+
     context "when referential is in workgroup's output referentials" do
       let(:context) do
         Chouette.create do

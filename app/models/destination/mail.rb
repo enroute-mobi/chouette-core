@@ -20,7 +20,7 @@ class Destination::Mail < ::Destination
   option :attached_export_file, type: :boolean, default_value: false
 
   option :attached_export_filename
-  validates :attached_export_filename, format: { with: /\A[a-z0-9%{:}-]+\.(xml|zip)\z/i, message: :filename, allow_blank: true }
+  validates :attached_export_filename, format: { with: /\A[A-Za-z0-9%{:}_-]+\.(xml|zip)\z/i, message: :filename, allow_blank: true }
 
   def do_transmit(publication, _report)
     PublicationMailer.publish(publication, self).deliver_later

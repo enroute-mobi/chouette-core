@@ -101,4 +101,4 @@ fr:
             recipients:
               mail_format: Adresse mail invalide
             attached_export_filename:
-              filename: "Format invalide, seuls les lettres, les chiffres et le caractère '-' sont autorisés"
+              filename: "Format invalide, seuls les lettres, les chiffres et les caractères '-', '{', '}', '%', '_' sont autorisés"

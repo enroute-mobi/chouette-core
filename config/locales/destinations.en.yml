@@ -101,4 +101,4 @@ en:
             recipients:
               mail_format: Invalid email address
             attached_export_filename:
-              filename: "Invalid format, only letters, numbers and the '-' symbol are allowed"
+              filename: "Invalid format, only letters, numbers and '-', '{', '}', '%', '_' symbols are allowed"

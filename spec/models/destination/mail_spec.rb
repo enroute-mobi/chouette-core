@@ -10,10 +10,11 @@ RSpec.describe Destination::Mail, type: :model do
     end
 
     describe '#attached_export_filename' do
-      it { is_expected.not_to allow_value("file_name99.zip").for(:attached_export_filename) }
+      it { is_expected.not_to allow_value("file*name99.zip").for(:attached_export_filename) }
       it { is_expected.to allow_value("new-file-name666.zip").for(:attached_export_filename) }
       it { is_expected.to allow_value("file.xml").for(:attached_export_filename) }
       it { is_expected.to allow_value("file-%{date:%F}.zip").for(:attached_export_filename) }
+      it { is_expected.to allow_value("ARRET_SITE_ID_SITE_NAME_T_%{date:%AAAA%mm%jj}.xml").for(:attached_export_filename) }
     end
 
     describe '#email_text' do

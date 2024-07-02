@@ -2099,7 +2099,8 @@ class Export::NetexGeneric < Export::Base
         scope = vehicle_journeys.joins(:route).select(selected)
 
         scope = scope.left_joins(:codes).select(vehicle_journey_codes).group(group_by)
-        scope.joins(:vehicle_journey_time_table_relationships).select(time_table_ids)
+        scope = scope.joins(:vehicle_journey_time_table_relationships).select(time_table_ids)
+        scope.left_joins(:footnotes).select(notice_assignments_attributes)
       end
 
       private
@@ -2131,6 +2132,22 @@ class Export::NetexGeneric < Export::Base
         SQL
       end
 
+      def notice_assignments_attributes
+        <<~SQL
+          array_agg(
+            DISTINCT
+            jsonb_build_object(
+              'id', footnotes.id,
+              'label', footnotes.label,
+              'data_source_ref', footnotes.data_source_ref,
+              'line_id', footnotes.line_id,
+              'updated_at', footnotes.updated_at,
+              'created_at', footnotes.created_at
+            )
+          ) AS notice_assignments_attributes
+        SQL
+      end
+
       def group_by
         <<~SQL
           vehicle_journeys.id,
@@ -2150,7 +2167,8 @@ class Export::NetexGeneric < Export::Base
           journey_pattern_ref: journey_pattern_ref,
           public_code: published_journey_identifier,
           day_types: day_types,
-          key_list: netex_alternate_identifiers
+          key_list: netex_alternate_identifiers,
+          notice_assignments: notice_assignments
         )
       end
 
@@ -2194,6 +2212,31 @@ class Export::NetexGeneric < Export::Base
         timetable_codes.map do |code|
           Netex::Reference.new(code, type: 'DayTypeRef')
         end
+      end
+
+      def notice_assignments
+        [].tap do |notice_assignments|
+          notice_assignments_attributes.each_with_index do |notice_assignment_attributes, order|
+            footnote = Chouette::Footnote.new(notice_assignment_attributes)
+            notice_assignments << FootnoteDecorator.new(footnote, code_provider: code_provider).netex_resource
+          end
+        end
+      end
+
+      def notice_assignments_attributes
+        __getobj__.try(:notice_assignments_attributes) || []
+      end
+    end
+
+    class FootnoteDecorator < ModelDecorator
+      def netex_attributes
+        super.merge(
+          notice_ref: Netex::Reference.new(data_source_ref, type: 'Notice')
+        )
+      end
+
+      def netex_resource
+        Netex::NoticeAssignment.new netex_attributes
       end
     end
   end

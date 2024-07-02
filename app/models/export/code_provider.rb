@@ -13,7 +13,7 @@ module Export
     COLLECTIONS = %w[
       stop_areas flexible_stop_areas point_of_interests vehicle_journeys lines companies entrances contracts
       vehicle_journey_at_stops journey_patterns routes time_tables fare_validities booking_arrangements
-      routing_constraint_zones networks fare_zones fare_products stop_points shapes line_notices
+      contracts footnotes routing_constraint_zones networks fare_zones fare_products stop_points shapes line_notices
     ].freeze
 
     # Returns unique code for the given model (StopArea, etc)
@@ -67,6 +67,8 @@ module Export
         def create(collection, code_provider:, code_space: nil)
           if code_space && collection.model == Chouette::StopPoint
             StopPoints.new(collection, code_provider: code_provider)
+          elsif collection.model == Chouette::Footnote
+            Footnotes.new(collection, code_provider: code_provider)
           elsif code_space && collection.model.in?(older_models)
             Older.new(collection, code_space: code_space)
           else
@@ -199,6 +201,23 @@ module Export
             route_code = code_provider.routes.code(attributes["route_id"])
             stop_point_code = Code::Value.merge(route_code, attributes["position"], type: 'StopPoint')
             [ attributes["id"], stop_point_code ]
+          end.to_h
+        end
+      end
+
+      class Footnotes
+        def initialize(footnotes, code_provider:)
+          @footnotes = footnotes
+          @code_provider = code_provider
+        end
+
+        attr_reader :footnotes, :code_provider
+
+        def index
+          footnotes.select(:id, :line_id, :data_source_ref).each_row.map do |attributes|
+            line_code = code_provider.lines.code(attributes['line_id'])
+            footnote_code = Code::Value.merge(line_code, attributes['id'], type: 'Notice', provider: attributes['data_source_ref'])
+            [ attributes['id'], footnote_code ]
           end.to_h
         end
       end

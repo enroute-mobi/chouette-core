@@ -1604,6 +1604,7 @@ RSpec.describe Export::NetexGeneric do
     let(:vehicle_journey_at_stops) { vehicle_journeys.flat_map(&:vehicle_journey_at_stops) }
 
     let(:referential) { context.referential }
+
     let(:first_time_table) { context.time_table(:first) }
     let(:second_time_table) { context.time_table(:second) }
 
@@ -1611,7 +1612,9 @@ RSpec.describe Export::NetexGeneric do
     let(:second_vehicle_journey) { referential.vehicle_journeys.second }
     let(:third_vehicle_journey) { referential.vehicle_journeys.third }
 
-    it 'create Netex resources with line_id tag' do
+    before { referential.switch }
+
+    it "create Netex resources with line_id tag" do
       context.routes.each { |route| export.resource_tagger.register_tags_for(route.line) }
       part.perform
       expect(target.resources).to all(have_tag(:line_id))
@@ -1631,8 +1634,6 @@ RSpec.describe Export::NetexGeneric do
           .where(id: [first_vehicle_journey.id, second_vehicle_journey.id, third_vehicle_journey.id])
       end
       let(:expected_time_table_ids) { selected_time_tables.map(&:id) }
-
-      before { referential.switch }
 
       context 'when there are 2 selected time tables (first, second) in export scope' do
         let(:selected_time_tables) do
@@ -1683,6 +1684,49 @@ RSpec.describe Export::NetexGeneric do
             expect(vj.timetable_ids.count).to eq 3
             expect(vj.timetable_ids).to match_array(expected_time_table_ids)
           end
+        end
+      end
+
+      context 'When a Vehicle Journey has footnotes' do
+        let(:vehicle_journey_with_footnotes) { vehicle_journeys.first }
+        let(:line) { referential.lines.first }
+        let(:first_footnote) do
+          referential.footnotes.create(label: 'First footnote', line: line, data_source_ref: 'test')
+        end
+        let(:second_footnote)  do
+          referential.footnotes.create(label: 'Second footnote', line: line, data_source_ref: 'test')
+        end
+
+        let(:selected_time_tables) do
+          referential.time_tables.where(id: [first_time_table.id, second_time_table.id])
+        end
+
+        before do
+          referential.vehicle_journey_footnote_relationships.create(
+            [
+              {
+                vehicle_journey: vehicle_journey_with_footnotes,
+                footnote: first_footnote
+              },
+              {
+                vehicle_journey: vehicle_journey_with_footnotes,
+                footnote: second_footnote
+              }
+            ]
+          )
+        end
+
+        let(:vehicle_journey) { part.vehicle_journeys.find_by(id: vehicle_journey_with_footnotes.id) }
+
+        it do
+          notice_assignments_attributes =
+            vehicle_journey.notice_assignments_attributes.map{ |attr| attr.except('created_at', 'updated_at') }
+          expected_attributes = [
+            {"id" => first_footnote.id, "label" => "First footnote", "line_id" => line.id, "data_source_ref" => "test"},
+            {"id" => second_footnote.id, "label" => "Second footnote", "line_id" => line.id, "data_source_ref" => "test"}
+          ]
+
+          expect(notice_assignments_attributes).to match_array(expected_attributes)
         end
       end
     end

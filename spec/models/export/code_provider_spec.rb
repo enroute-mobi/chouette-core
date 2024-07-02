@@ -334,6 +334,35 @@ RSpec.describe Export::CodeProvider do
     end
   end
 
+  describe Export::CodeProvider::Indexer::Footnotes do
+    describe '#index' do
+      subject { described_class.new(context.referential.footnotes, code_provider: code_provider).index }
+
+      let(:code_provider) { Export::CodeProvider.new(double(footnotes: context.referential.footnotes, lines: referential.lines )) }
+      let(:context) do
+        Chouette.create do
+          footnote :footnote, data_source_ref: "dummy"
+        end
+      end
+      let(:referential) { context.referential }
+      let(:line_technical) { Netex::ObjectId.parse(footnote.line.objectid).technical }
+      let(:footnote) { context.footnote(:footnote) }
+
+      before do
+        referential.switch
+      end
+
+      it do
+        expected_codes = {
+          footnote.id =>
+            Netex::ObjectId.parse("chouette:Notice:#{line_technical}-#{footnote.id}:dummy")
+        }
+
+        is_expected.to include(expected_codes)
+      end
+    end
+  end
+
   describe Export::CodeProvider::Null do
     subject(:code_provider) { Export::CodeProvider.null }
 

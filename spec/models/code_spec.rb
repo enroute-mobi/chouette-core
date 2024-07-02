@@ -65,21 +65,33 @@ RSpec.describe Code do
     end
 
     describe '#change' do
-      subject { value.change(type: type) }
+      subject { value.change(type: type, provider: provider) }
 
-      context 'when value is "1"' do
-        let(:value) { Code::Value.new('1') }
+      let(:value) { Code::Value.new('1') }
 
-        context 'with type "Example"' do
-          let(:type) { 'Example' }
+      context 'when there is no provider' do
+        let(:provider) { nil }
 
-          it { is_expected.to eq('Example:1') }
+        context 'with type "Type"' do
+          let(:type) { 'Type' }
+
+          it { is_expected.to eq('Type:1') }
+        end
+      end
+
+      context 'when provider is "Provider"' do
+        let(:provider) { 'Provider' }
+
+        context 'with type "Type"' do
+          let(:type) { 'Type' }
+
+          it { is_expected.to eq('Type:1:Provider') }
         end
       end
     end
 
     describe '#merge' do
-      subject { value.merge(other, type: type) }
+      subject { value.merge(other, type: type, provider: provider) }
 
       context 'when value is "1"' do
         let(:value) { Code::Value.new('1') }
@@ -87,8 +99,17 @@ RSpec.describe Code do
         context 'with other "dummy" and type "Example"' do
           let(:other) { 'dummy' }
           let(:type) { 'Example' }
+          let(:provider) { nil }
 
           it { is_expected.to eq('Example:1-dummy') }
+        end
+
+        context 'with other "dummy", provider "Provider" and type "Example"' do
+          let(:other) { 'dummy' }
+          let(:type) { 'Example' }
+          let(:provider) { 'Provider' }
+
+          it { is_expected.to eq('Example:1-dummy:Provider') }
         end
       end
     end

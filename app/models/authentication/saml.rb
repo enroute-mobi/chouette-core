@@ -55,8 +55,7 @@ module Authentication
 
       module Azure
         DEVISE_SAML_SETTINGS = {
-          name_identifier_format: 'urn:oasis:names:tc:SAML:2.0:nameid-format:transient',
-          authn_context: 'urn:oasis:names:tc:SAML:2.0:ac:classes:Password'
+          name_identifier_format: 'urn:oasis:names:tc:SAML:2.0:nameid-format:transient'
         }.freeze
         EMAIL_ATTRIBUTE = 'http://schemas.xmlsoap.org/ws/2005/05/identity/claims/emailaddress'
       end

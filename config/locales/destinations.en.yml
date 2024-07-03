@@ -14,6 +14,10 @@ en:
         empty: There is no related publication
       mail:
         recipients_mail_syntax: "Invalid adress(es) : %{emails}"
+    simple_form:
+      placeholders:
+        destinations:
+          attached_export_filename: Filename with .zip or .xml extension
   activerecord:
     models:
       destination:

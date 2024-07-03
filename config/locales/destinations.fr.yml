@@ -14,6 +14,10 @@ fr:
         empty: Il n'y pas de publication associée
       mail:
         recipients_mail_syntax: "Adresse(s) invalide(s) : %{emails}"
+  simple_form:
+    placeholders:
+      destinations:
+        attached_export_filename: Nom du fichier avec l’extension .zip ou .xml
   activerecord:
     models:
       destination:

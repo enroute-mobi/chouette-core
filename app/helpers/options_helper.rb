@@ -28,8 +28,7 @@ module OptionsHelper
       )
       opts[:as] = :tom_select
       opts[:config] = {
-        type: 'create',
-        placeholder: I18n.t('simple_form.custom_inputs.tags.placeholder')
+        type: 'create'
       }
 
     end

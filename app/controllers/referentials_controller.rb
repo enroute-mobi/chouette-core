@@ -158,18 +158,6 @@ class ReferentialsController < Chouette::WorkbenchController
     end
   end
 
-  def current_workgroup
-    current_workbench&.workgroup
-  end
-
-  def current_workbench
-    workbench
-  rescue ActiveRecord::RecordNotFound
-    nil
-  end
-
-  alias parent_for_parent_policy workbench
-
   def current_referential
     return nil unless params[:id]
 

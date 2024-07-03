@@ -9,8 +9,7 @@ module OptionsHelper
     opts = {
       input_html: { value: value },
       as: option_def[:type],
-      selected: value,
-      placeholder: I18n.t("#{form.object.model_name.i18n_key.to_s.pluralize}.form.placeholders.#{attr}", default: nil)
+      selected: value
     }
 
     if option_def[:hidden]

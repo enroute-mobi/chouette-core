@@ -10,6 +10,8 @@ class ReferentialsController < Chouette::WorkbenchController
   # rubocop:disable Rails/LexicallyScopedActionFilter
   before_action :authorize_resource, except: %i[new create index show journey_patterns]
   # rubocop:enable Rails/LexicallyScopedActionFilter
+  before_action :authorize_clone_resource_on_new, only: :new
+  before_action :authorize_clone_resource_on_create, only: :create
   before_action :resource, only: :show
   before_action :check_lines_outside_of_functional_scope, only: :show
 
@@ -133,9 +135,21 @@ class ReferentialsController < Chouette::WorkbenchController
   end
 
   def build_resource
-    super.tap do |referential|
-      referential.user_id = current_user.id
-      referential.user_name = current_user.name
+    if @source_referential
+      @referential = Referential.new_from(@source_referential, current_workbench)
+    else
+      super.tap do |referential|
+        referential.user_id = current_user.id
+        referential.user_name = current_user.name
+      end
+    end
+  end
+
+  def build_referential
+    @referential.data_format = current_organisation.data_format
+    @referential.workbench_id ||= params[:workbench_id]
+    if @referential.in_workbench?
+      @referential.init_metadatas default_date_range: Range.new(Date.today, Date.today.advance(months: 1))
     end
   end
 
@@ -143,19 +157,6 @@ class ReferentialsController < Chouette::WorkbenchController
     referential.organisation = current_organisation
     referential.ready = true unless ( referential.created_from || referential.from_current_offer)
     super
-  end
-
-  def build_referential
-    if params[:from]
-      source_referential = workbench.all_referentials.find(params[:from])
-      @referential = Referential.new_from(source_referential, current_workbench)
-    end
-
-    @referential.data_format = current_organisation.data_format
-    @referential.workbench_id ||= params[:workbench_id]
-    if @referential.in_workbench?
-      @referential.init_metadatas default_date_range: Range.new(Date.today, Date.today.advance(months: 1))
-    end
   end
 
   def current_referential
@@ -169,14 +170,35 @@ class ReferentialsController < Chouette::WorkbenchController
 
   private
 
+  def authorize_clone_resource_on_new
+    return unless params[:from].present? # rubocop:disable Rails/Blank
+
+    @source_referential = authorize_clone_resource(params[:from])
+  end
+
+  def authorize_clone_resource_on_create
+    return unless params[:referential] && params[:referential][:created_from_id].present?
+
+    source_referential = authorize_clone_resource(params[:referential][:created_from_id])
+
+    referential_params[:created_from] = source_referential
+  end
+
+  def authorize_clone_resource(from_id)
+    source_referential = workbench.all_referentials.find(from_id)
+    authorize(source_referential, :clone?)
+    source_referential
+  end
+
   def referential_params
+    return @referential_params if @referential_params
+
     referential_params = params.require(:referential).permit(
       :id,
       :name,
       :organisation_id,
       :data_format,
       :archived_at,
-      :created_from_id,
       :workbench_id,
       :from_current_offer,
       :urgent,
@@ -189,7 +211,7 @@ class ReferentialsController < Chouette::WorkbenchController
                                       organisation: current_organisation
                                     )
                                   ).flag_urgent?
-    referential_params
+    @referential_params = referential_params
   end
 
   def check_lines_outside_of_functional_scope

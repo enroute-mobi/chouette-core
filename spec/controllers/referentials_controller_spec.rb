@@ -21,23 +21,6 @@ describe ReferentialsController, type: :controller do
     end
 
     context "when cloning another referential" do
-      let(:context) do
-        Chouette.create do
-          workgroup do
-            workbench(:workbench, organisation: Organisation.find_by(code: 'first')) do
-              referential :referential
-            end
-            workbench do
-              referential :through_workgroup_referential
-            end
-          end
-          workgroup do
-            workbench do
-              referential :other_referential
-            end
-          end
-        end
-      end
       let(:request) { get :new, params: { workbench_id: workbench.id, from: referential.id } }
 
       before { request }
@@ -57,15 +40,43 @@ describe ReferentialsController, type: :controller do
       end
 
       context "when the referential is in another organisation but accessible by the user" do
-        let(:referential) { context.referential(:through_workgroup_referential) }
+        let(:context) do
+          Chouette.create do
+            workgroup do
+              workbench(:workbench, organisation: Organisation.find_by(code: 'first'))
+              workbench do
+                referential :referential
+              end
+            end
+          end
+        end
 
         it 'returns http success' do
           expect(response).to have_http_status(:ok)
         end
       end
 
+      context 'when the referential is not ready' do
+        let(:referential) { super().tap { |r| r.update(ready: false) } }
+
+        it 'returns forbidden' do
+          expect(response).to have_http_status(:forbidden)
+        end
+      end
+
       context "when the referential is not accessible by the user" do
-        let(:referential) { context.referential(:other_referential) }
+        let(:context) do
+          Chouette.create do
+            workgroup do
+              workbench(:workbench, organisation: Organisation.find_by(code: 'first'))
+            end
+            workgroup do
+              workbench do
+                referential :referential
+              end
+            end
+          end
+        end
 
         it 'returns not found' do
           expect(response).to have_http_status(:not_found)
@@ -207,6 +218,54 @@ describe ReferentialsController, type: :controller do
           end
         end
       end
+
+      context 'created_from_id' do
+        before { request }
+
+        context 'when the created_from referential is in another organisation but accessible by the user' do
+          let(:context) do
+            Chouette.create do
+              workgroup do
+                workbench(:workbench, organisation: Organisation.find_by(code: 'first'))
+                workbench do
+                  referential :referential
+                end
+              end
+            end
+          end
+
+          it 'succeeds' do
+            expect(assigns(:referential).created_from).to eq(referential)
+          end
+        end
+
+        context 'when the created_from referential is not ready' do
+          let(:referential) { super().tap { |r| r.update(ready: false) } }
+
+          it 'returns forbidden' do
+            expect(response).to have_http_status(:forbidden)
+          end
+        end
+
+        context 'when the created_from referential is not accessible by the user' do
+          let(:context) do
+            Chouette.create do
+              workgroup do
+                workbench(:workbench, organisation: Organisation.find_by(code: 'first'))
+              end
+              workgroup do
+                workbench do
+                  referential :referential
+                end
+              end
+            end
+          end
+
+          it 'returns not found' do
+            expect(response).to have_http_status(:not_found)
+          end
+        end
+      end
     end
   end
 
@@ -281,12 +340,17 @@ describe ReferentialsController, type: :controller do
   end
 
   describe 'PUT #update' do
+    let(:referential_params) { { name: 'changed' } }
     let(:request) do
-      put :update, params: { workbench_id: workbench.id, id: referential.id, referential: { name: 'changed' } }
+      put :update, params: { workbench_id: workbench.id, id: referential.id, referential: referential_params }
     end
 
     it 'redirects' do
       expect(request).to have_http_status(:redirect)
+    end
+
+    it 'changes referential name' do
+      expect { request }.to change { referential.reload.name }.to('changed')
     end
 
     context 'when the referential workbench has a different organisation from user' do
@@ -313,6 +377,26 @@ describe ReferentialsController, type: :controller do
         it 'should respond with NOT FOUND' do
           expect(request).to have_http_status(:not_found)
         end
+      end
+    end
+
+    context 'with created_from' do
+      let(:context) do
+        Chouette.create do
+          workbench :workbench, organisation: Organisation.find_by(code: 'first') do
+            referential :referential
+            referential :other_referential
+          end
+        end
+      end
+      let(:referential_params) { { created_from_id: context.referential(:other_referential).id.to_s } }
+
+      it 'redirects' do
+        expect(request).to have_http_status(:redirect)
+      end
+
+      it 'does not change referential created_from' do
+        expect { request }.not_to(change { referential.reload.created_from_id })
       end
     end
   end

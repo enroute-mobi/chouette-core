@@ -722,7 +722,7 @@ ActiveRecord::Schema.define(version: 2024_06_04_133209) do
     t.datetime "notified_recipients_at"
     t.bigint "user_id"
     t.bigint "overlapping_referential_ids", default: [], array: true
-    t.bigint "code_space_id", null: false
+    t.bigint "code_space_id"
     t.index ["referential_id"], name: "index_imports_on_referential_id"
     t.index ["workbench_id"], name: "index_imports_on_workbench_id"
   end

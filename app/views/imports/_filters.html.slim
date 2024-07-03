@@ -1,3 +1,8 @@
+- if @workbench
+  - imports_path = workbench_imports_path(@workbench)
+- else
+  - imports_path = workgroup_imports_path(@workgroup)
+
 = simple_search_for @search, imports_path do |f|
   = f.row
     = f.name

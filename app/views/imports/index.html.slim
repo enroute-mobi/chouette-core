@@ -1,15 +1,13 @@
 - breadcrumb :imports, @parent
-- imports_path = workbench_imports_path(@parent)
 
 - if @parent.is_a? Workgroup
   - content_for(:page_header_title) { 'imports.workgroup_index.title'.t }
-  - imports_path = workgroup_imports_path(@parent)
 
 .page_content x-data="{ saveSearchPanel: false }"
   .container-fluid
     .row
       .col-lg-12
-        = render 'filters', imports_path: imports_path
+        = render 'filters'
     - if @imports.any?
       .row
         .col-lg-12

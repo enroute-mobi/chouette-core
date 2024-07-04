@@ -16,7 +16,7 @@ class SearchesController < Chouette::UserController
   # List Saved Search of given type
   # /workbenches/<workbench_id>/<parent_resources>/searches
   def index
-    @search = search_class.new(workbench: workbench, workgroup: workgroup)
+    @search = search_class.new(workbench: workbench || workgroup.owner_workbench)
   end
 
   def show
@@ -25,7 +25,7 @@ class SearchesController < Chouette::UserController
   end
 
   def create
-    @search = search_class.from_params(params, workbench: workbench, workgroup: workgroup)
+    @search = search_class.from_params(params, workbench: workbench || workgroup.owner_workbench)
 
     saved_search = saved_searches.create(
       name: params[:search][:saved_name],
@@ -39,7 +39,7 @@ class SearchesController < Chouette::UserController
   end
 
   def update
-    @search = search_class.from_params(params, workbench: workbench, workgroup: workgroup)
+    @search = search_class.from_params(params, workbench: workbench || workgroup.owner_workbench)
 
     if @search.valid?
       saved_search = saved_searches.find(params[:id])
@@ -56,8 +56,15 @@ class SearchesController < Chouette::UserController
   end
 
   def destroy
-    saved_searches.find(params[:id]).destroy
-    redirect_to workbench_stop_area_referential_searches_path(workbench || workgroup, parent_resources: parent_resources)
+    saved_search = saved_searches.find(params[:id])
+
+    saved_search.destroy
+
+    if workbench
+      redirect_to workbench_searches_path(workbench, parent_resources: saved_search.search_type['Search::'.length..].underscore.pluralize)
+    else
+      redirect_to workgroup_searches_path(workgroup, parent_resources: saved_search.search_type['Search::'.length..].underscore.pluralize)
+    end
   end
 
   private
@@ -80,7 +87,7 @@ class SearchesController < Chouette::UserController
   end
 
   def saved_searches
-    @saved_searches ||= (workbench || workgroup).saved_searches.for(search_class).order(:name)
+    @saved_searches ||= (workbench || workgroup.owner_workbench).saved_searches.for(search_class).order(:name)
   end
   helper_method :saved_searches
 

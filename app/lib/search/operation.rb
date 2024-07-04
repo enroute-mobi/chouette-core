@@ -45,10 +45,4 @@ module Search
       attribute :creator
     end
   end
-
-  class Import < Operation
-    def query_class
-      Query::Operation
-    end
-  end
 end

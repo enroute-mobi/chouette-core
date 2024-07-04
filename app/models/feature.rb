@@ -21,6 +21,7 @@ class Feature
       stop_area_routing_constraints
       stop_area_connection_links
       import_netex_store_xml
+      legacy_routing_constraint_zone
     ]
   end
 

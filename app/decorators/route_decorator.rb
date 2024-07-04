@@ -58,7 +58,7 @@ class RouteDecorator < AF83::Decorator
     instance_decorator.action_link(
       secondary: :show,
       policy: :create_opposite,
-      if: ->{h.has_feature?(:create_opposite_routes)}
+      feature: :create_opposite_routes
     ) do |l|
       l.content t('routes.create_opposite.title')
       l.method :post

@@ -1728,6 +1728,29 @@ RSpec.describe Export::NetexGeneric do
 
           expect(notice_assignments_attributes).to match_array(expected_attributes)
         end
+
+        describe Export::NetexGeneric::VehicleJourneys::Decorator do
+          let(:notice_assignments) { described_class.new(vehicle_journey, code_provider: code_provider).notice_assignments }
+          let(:vehicle_journey) { part.vehicle_journeys.find_by(id: vehicle_journey_with_footnotes.id) }
+          let(:vehicle_journey_technical) { Netex::ObjectId.parse(vehicle_journey.objectid).technical }
+
+          let(:code_provider) { Export::CodeProvider.new referential }
+
+          it 'should create notice assignments' do
+            notice_assignment_ids = notice_assignments.map(&:id)
+            expected_notice_assignment_ids = vehicle_journey.footnotes.map do |footnote|
+              "chouette:NoticeAssignment:#{vehicle_journey_technical}-#{footnote.id}:LOC"
+            end
+
+            notice_refs = notice_assignments.map { |n| n.notice_ref.ref.to_s }
+            expected_notice_refs = vehicle_journey.footnotes.map do |footnote|
+              code_provider.footnotes.code(footnote.id).to_s
+            end
+
+            expect(notice_assignment_ids).to match_array expected_notice_assignment_ids
+            expect(notice_refs).to match_array expected_notice_refs
+          end
+        end
       end
     end
 

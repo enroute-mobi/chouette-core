@@ -1042,6 +1042,31 @@ class Export::NetexGeneric < Export::Base
     end
   end
 
+  class NoticeAssignments < Part
+    delegate :footnotes, to: :export_scope
+
+    def export_part
+      footnotes.find_each do |footnote|
+        target << decorate(footnote).netex_resource
+      end
+    end
+
+    class Decorator < ModelDecorator
+      def netex_attributes
+        super.merge(
+          name: label,
+          public_code: code,
+          type_of_notice_ref: Netex::Reference.new('ServiceJourneyNotice', type: String),
+          key_list: netex_alternate_identifiers
+        )
+      end
+
+      def netex_resource
+        Netex::Notice.new netex_attributes
+      end
+    end
+  end
+
   class LineNotices < Part
     delegate :line_notices, to: :export_scope
 
@@ -2215,28 +2240,18 @@ class Export::NetexGeneric < Export::Base
       end
 
       def notice_assignments
-        [].tap do |notice_assignments|
-          notice_assignments_attributes.each_with_index do |notice_assignment_attributes, order|
-            footnote = Chouette::Footnote.new(notice_assignment_attributes)
-            notice_assignments << FootnoteDecorator.new(footnote, code_provider: code_provider).netex_resource
-          end
+        notice_assignments_attributes.map.with_index do |notice_assignment_attributes, order|
+          notice_code = code_provider.footnotes.code(notice_assignment_attributes['id'])
+          reference = Netex::Reference.new(notice_code, type: 'Notice')
+
+          notice_assignment_id =
+            Netex::ObjectId.merge(netex_identifier.to_s, notice_assignment_attributes['id'], type: 'NoticeAssignment').to_s
+          Netex::NoticeAssignment.new(id: notice_assignment_id, notice_ref: reference, order: order)
         end
       end
 
       def notice_assignments_attributes
         __getobj__.try(:notice_assignments_attributes) || []
-      end
-    end
-
-    class FootnoteDecorator < ModelDecorator
-      def netex_attributes
-        super.merge(
-          notice_ref: Netex::Reference.new(data_source_ref, type: 'Notice')
-        )
-      end
-
-      def netex_resource
-        Netex::NoticeAssignment.new netex_attributes
       end
     end
   end

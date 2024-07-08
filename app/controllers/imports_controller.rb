@@ -46,12 +46,13 @@ class ImportsController < Chouette::WorkbenchController
 
     index! do |format|
       format.html do
-        # if collection.out_of_bounds?
-        #   redirect_to params.merge(:page => 1)
-        # end
-        @contextual_cols = []
-        @contextual_cols << TableBuilderHelper::Column.new(key: :creator, attribute: 'creator')
-        @imports = decorate_collection(collection)
+        if @search.graphical?
+          @chart = @search.chart(scope)
+        else
+          @contextual_cols = []
+          @contextual_cols << TableBuilderHelper::Column.new(key: :creator, attribute: 'creator')
+          @imports = decorate_collection(collection)
+        end
       end
     end
   end

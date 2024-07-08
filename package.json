@@ -21,6 +21,8 @@
     "babel-loader": "^8.2.4",
     "bootstrap": "3.4.1",
     "bootstrap-sass": "^3.4.1",
+    "chart.js": "^4.4.3",
+    "chartkick": "^5.0.1",
     "clean-webpack-plugin": "^0.1.18",
     "codacy-coverage": "^3.4.0",
     "coffee-loader": "^1.0.0",

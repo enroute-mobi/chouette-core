@@ -39,6 +39,7 @@ document.addEventListener("DOMContentLoaded", function(event) {
 import 'entrypoints/inputs/ajax_select'
 import "src/flash_messages"
 import "src/date_filters"
+import "chartkick/chart.js"
 
 // React Apps
 import './calendars/edit'

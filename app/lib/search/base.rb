@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Search
   class Base
     extend ActiveModel::Naming
@@ -8,7 +10,7 @@ module Search
     include ActiveAttr::TypecastedAttributes
     include ActiveAttr::AttributeDefaults
 
-    attr_accessor :saved_name, :saved_description
+    attr_accessor :saved_name, :saved_description, :chart_type, :type, :group_by_attribute, :top_count
 
     SAVED_SEARCH_ATTRIBUTE_MAPPING = {
       name: :saved_name,
@@ -26,6 +28,10 @@ module Search
 
       new(attributes).tap do |search|
         search.attributes = FromParamsBuilder.new(params).attributes
+        # TODO remove
+        search.chart_type = 'area'
+        search.group_by_attribute = 'day_of_week'
+        search.top_count = 200
         Rails.logger.debug "[Search] #{search.inspect}"
       end
     end
@@ -157,6 +163,10 @@ module Search
       raise 'Not yet implemented'
     end
 
+    def graphical?
+      chart_type.present?
+    end
+
     def search(scope)
       if valid?
         result = query(scope).scope
@@ -169,6 +179,18 @@ module Search
       end
     end
 
+    def chart(scope)
+      return nil unless valid? && graphical?
+
+      models = without_order.without_pagination.search(scope)
+      self.class.const_get('Chart').new(
+        models,
+        type: chart_type,
+        group_by_attribute: group_by_attribute,
+        top_count: top_count
+      )
+    end
+
     def order
       # Use the local/specific Order class
       @order ||= self.class.const_get('Order').new
@@ -179,6 +201,53 @@ module Search
 
     def paginate_attributes
       { per_page: per_page, page: page }
+    end
+
+    class Chart
+      def initialize(models, type:, group_by_attribute:, top_count:)
+        @models = models
+        @type = type
+        @group_by_attribute = group_by_attribute
+        @top_count = top_count
+      end
+      attr_reader :models, :type, :group_by_attribute, :top_count
+
+      def data
+        if date_group_by_attribute?
+          models.send(group_by_attribute_method, :created_at, **group_by_attribute_method_options).count(:id)
+        else
+          models.group(group_by_attribute).order(count_id: :desc).limit(top_count).count(:id)
+        end
+      end
+
+      def to_chartkick(h)
+        h.send("#{type}_chart", data)
+      end
+
+      private
+
+      DATE_GROUP_BY_ATTRIBUTES = {
+        'date' => :group_by_day,
+        'hour_of_day' => :group_by_hour_of_day,
+        'day_of_week' => :group_by_day_of_week
+      }.freeze
+      NO_LIMIT_DATE_GROUP_BY_ATTRIBUTES = %w[hour_of_day day_of_week].to_set.freeze
+
+      def date_group_by_attribute?
+        DATE_GROUP_BY_ATTRIBUTES.key?(group_by_attribute)
+      end
+
+      def group_by_attribute_method
+        DATE_GROUP_BY_ATTRIBUTES[group_by_attribute]
+      end
+
+      def group_by_attribute_method_options
+        if NO_LIMIT_DATE_GROUP_BY_ATTRIBUTES.include?(group_by_attribute)
+          {}
+        else
+          { last: top_count }
+        end
+      end
     end
   end
 

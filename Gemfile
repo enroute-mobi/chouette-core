@@ -232,3 +232,6 @@ gem 'bitset', en_route: 'bitset'
 gem 'cuckoo', en_route: 'cuckoo'
 
 gem 'curb'
+
+gem 'chartkick'
+gem 'groupdate'

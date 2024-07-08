@@ -15,6 +15,7 @@ RSpec.describe Authentication::Saml, type: :model do
           saml_idp_slo_service_url
           saml_idp_cert_fingerprint
           saml_idp_cert_fingerprint_algorithm
+          saml_authn_context
           saml_email_attribute
         ]
       )

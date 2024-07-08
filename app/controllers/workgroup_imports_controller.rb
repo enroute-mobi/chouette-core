@@ -42,16 +42,20 @@ class WorkgroupImportsController < Chouette::WorkgroupController
 
     index! do |format|
       format.html do
-        @contextual_cols = []
-        @contextual_cols << TableBuilderHelper::Column.new(
-          key: :workbench,
-          name: Workbench.ts.capitalize,
-          attribute: proc { |n| n.workbench.name },
-          link_to: lambda do |import|
-            import.workbench
-          end
-        )
-        @imports = decorate_collection(collection)
+        if @search.graphical?
+          @chart = @search.chart(scope)
+        else
+          @contextual_cols = []
+          @contextual_cols << TableBuilderHelper::Column.new(
+            key: :workbench,
+            name: Workbench.ts.capitalize,
+            attribute: proc { |n| n.workbench.name },
+            link_to: lambda do |import|
+              import.workbench
+            end
+          )
+          @imports = decorate_collection(collection)
+        end
       end
     end
   end

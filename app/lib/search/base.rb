@@ -40,7 +40,7 @@ module Search
         search.attributes = FromParamsBuilder.new(params).attributes
         # TODO remove
         search.chart_type = 'line'
-        search.group_by_attribute = 'hour_of_day'
+        search.group_by_attribute = 'status'
         search.top_count = 20
         Rails.logger.debug "[Search] #{search.inspect}"
       end

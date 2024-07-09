@@ -127,4 +127,63 @@ RSpec.describe Search::WorkgroupImport do
       end
     end
   end
+
+  describe '#chart' do
+    subject(:chart) { search.chart(scope) }
+
+    let(:context) do
+      context = Chouette::Factory.create do
+        workgroup do
+          workbench :workbench1, name: 'Workbench 1'
+          workbench :workbench2, name: 'Workbench 2'
+        end
+      end
+      workbench1 = context.workbench(:workbench1)
+      workbench2 = context.workbench(:workbench2)
+      import_attributes = { type: 'Import::Workbench', creator: 'test', file: open_fixture('google-sample-feed.zip') }
+      workbench1.imports.create!(import_attributes.merge(name: 'Import 1')).update_column(:status, 'successful')
+      workbench1.imports.create!(import_attributes.merge(name: 'Import 2')).update_column(:status, 'failed')
+      workbench2.imports.create!(import_attributes.merge(name: 'Import 3')).update_column(:status, 'successful')
+      context
+    end
+    let(:search) do
+      described_class.new(
+        chart_type: 'line',
+        group_by_attribute: group_by_attribute,
+        top_count: 10
+      )
+    end
+    let(:scope) { context.workgroup.imports.where(type: 'Import::Workbench') }
+
+    describe '#data' do
+      subject { chart.data }
+
+      context 'with "status"' do
+        let(:group_by_attribute) { 'status' }
+
+        it 'returns correct data' do
+          is_expected.to eq(
+            {
+              I18n.t('imports.status.new') => 0,
+              I18n.t('imports.status.pending') => 0,
+              I18n.t('imports.status.successful') => 2,
+              I18n.t('imports.status.warning') => 0,
+              I18n.t('imports.status.failed') => 1,
+              I18n.t('imports.status.running') => 0,
+              I18n.t('imports.status.aborted') => 0,
+              I18n.t('imports.status.canceled') => 0
+            }
+          )
+        end
+      end
+
+      context 'with "workbench_id"' do
+        let(:group_by_attribute) { 'workbench_id' }
+
+        it 'returns correct data' do
+          is_expected.to eq({ 'Workbench 1' => 2, 'Workbench 2' => 1 })
+        end
+      end
+    end
+  end
 end

@@ -97,4 +97,51 @@ RSpec.describe Search::Import do
       end
     end
   end
+
+  describe '#chart' do
+    subject(:chart) { search.chart(scope) }
+
+    let(:context) do
+      context = Chouette::Factory.create do
+        workbench
+      end
+      workbench = context.workbench
+      import_attributes = { type: 'Import::Gtfs', creator: 'test', file: open_fixture('google-sample-feed.zip') }
+      workbench.imports.create!(import_attributes.merge(name: 'Import 1')).update_column(:status, 'successful')
+      workbench.imports.create!(import_attributes.merge(name: 'Import 2')).update_column(:status, 'failed')
+      workbench.imports.create!(import_attributes.merge(name: 'Import 3')).update_column(:status, 'successful')
+      context
+    end
+    let(:search) do
+      described_class.new(
+        chart_type: 'line',
+        group_by_attribute: group_by_attribute,
+        top_count: 10
+      )
+    end
+    let(:scope) { context.workbench.imports }
+
+    describe '#data' do
+      subject { chart.data }
+
+      context 'with "status"' do
+        let(:group_by_attribute) { 'status' }
+
+        it 'returns correct data' do
+          is_expected.to eq(
+            {
+              I18n.t('imports.status.new') => 0,
+              I18n.t('imports.status.pending') => 0,
+              I18n.t('imports.status.successful') => 2,
+              I18n.t('imports.status.warning') => 0,
+              I18n.t('imports.status.failed') => 1,
+              I18n.t('imports.status.running') => 0,
+              I18n.t('imports.status.aborted') => 0,
+              I18n.t('imports.status.canceled') => 0
+            }
+          )
+        end
+      end
+    end
+  end
 end

@@ -7,7 +7,8 @@ module.exports = {
       "./config/initializers/simple_form_bootstrap.rb",
       "./app/facades/*/*.rb",
       "./app/packs/**/*.js",
-      "./app/packs/**/*.jsx"
+      "./app/packs/**/*.jsx",
+      "./app/inputs/**/*.rb"
     ],
     options: {
       // Whitelisting some classes to avoid purge

@@ -16,7 +16,7 @@ document.addEventListener("DOMContentLoaded", () => {
       openOnFocus: true
     }
 
-    if (Array.prototype.some.call(el.options, o => o.value === "")) {
+    if (Array.prototype.some.call(el.options, o => o.value === "" && o.text != "")) {
       settings.allowEmptyOption = true
     }
 

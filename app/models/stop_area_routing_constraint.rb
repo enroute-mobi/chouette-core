@@ -5,8 +5,6 @@ class StopAreaRoutingConstraint < ApplicationModel
   belongs_to :from, class_name: 'Chouette::StopArea'
   belongs_to :to, class_name: 'Chouette::StopArea'
 
-  has_many_scattered :vehicle_journeys
-
   add_light_belongs_to :from
   add_light_belongs_to :to
 
@@ -15,12 +13,6 @@ class StopAreaRoutingConstraint < ApplicationModel
 
   validate :both_stops_in_the_same_referential
   validate :different_stops
-
-  def update_vehicle_journey_checksums
-    vehicle_journeys.each &:update_checksum!
-  end
-
-  after_save :update_vehicle_journey_checksums
 
   scope :with_stop, ->(stop_id){
     stop_id = stop_id.id if stop_id.respond_to?(:id)

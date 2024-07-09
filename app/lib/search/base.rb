@@ -10,12 +10,22 @@ module Search
     include ActiveAttr::TypecastedAttributes
     include ActiveAttr::AttributeDefaults
 
-    attr_accessor :saved_name, :saved_description, :chart_type, :type, :group_by_attribute, :top_count
+    attr_accessor :saved_name, :saved_description, :chart_type, :group_by_attribute, :top_count
+
+    validates :chart_type, inclusion: { in: %w[line pie column], allow_blank: true }
+    validates :group_by_attribute, inclusion: { in: ->(r) { r.authorized_group_by_attributes } }, if: :graphical?
+    validates :top_count, presence: true, numericality: { only_integer: true, greater_than: 1 }, if: :graphical?
 
     SAVED_SEARCH_ATTRIBUTE_MAPPING = {
       name: :saved_name,
       description: :saved_description
     }.freeze
+
+    AUTHORIZED_GROUP_BY_ATTRIBUTES = %w[
+      date
+      hour_of_day
+      day_of_week
+    ].freeze
 
     def initialize(attributes = {})
       apply_defaults
@@ -29,9 +39,9 @@ module Search
       new(attributes).tap do |search|
         search.attributes = FromParamsBuilder.new(params).attributes
         # TODO remove
-        search.chart_type = 'area'
-        search.group_by_attribute = 'day_of_week'
-        search.top_count = 200
+        search.chart_type = 'line'
+        search.group_by_attribute = 'hour_of_day'
+        search.top_count = 20
         Rails.logger.debug "[Search] #{search.inspect}"
       end
     end
@@ -86,6 +96,10 @@ module Search
 
     def attributes
       super.delete_if { |_k, v| v.blank? }
+    end
+
+    def authorized_group_by_attributes
+      self.class::AUTHORIZED_GROUP_BY_ATTRIBUTES
     end
 
     # Create Search attributes from our legacy Controller params (:sort, :direction, :page, etc)
@@ -212,19 +226,61 @@ module Search
       end
       attr_reader :models, :type, :group_by_attribute, :top_count
 
-      def data
-        if date_group_by_attribute?
-          models.send(group_by_attribute_method, :created_at, **group_by_attribute_method_options).count(:id)
-        else
-          models.group(group_by_attribute).order(count_id: :desc).limit(top_count).count(:id)
-        end
+      def raw_data
+        request = models
+        request = includes(request)
+        request = select(request)
+        request = group_order_limit(request)
+        aggregate(request)
       end
 
-      def to_chartkick(h)
-        h.send("#{type}_chart", data)
+      def data
+        data = raw_data
+        data = add_missing_keys(data)
+        label_keys(data)
+      end
+
+      def to_chartkick(view_context)
+        view_context.send("#{type}_chart", data)
       end
 
       private
+
+      def includes(request)
+        return request unless respond_to?(includes_for_label_of_method_name, true)
+
+        request.includes(send(includes_for_label_of_method_name))
+      end
+
+      def includes_for_label_of_method_name
+        @includes_for_label_of_method_name ||= :"includes_for_label_of_#{group_by_attribute}"
+      end
+
+      def select(request)
+        return request unless selects.any?
+
+        request.select(*selects)
+      end
+
+      def selects
+        @selects ||= if respond_to?(select_for_label_of_method_name, true)
+                       send(select_for_label_of_method_name)
+                     else
+                       []
+                     end
+      end
+
+      def select_for_label_of_method_name
+        @select_for_label_of_method_name ||= :"select_for_label_of_#{group_by_attribute}"
+      end
+
+      def group_order_limit(request)
+        if date_group_by_attribute?
+          request.send(group_by_attribute_method, :created_at, **group_by_attribute_method_options)
+        else
+          request.group(group_by_attribute, *selects).order(count_id: :desc).limit(top_count)
+        end
+      end
 
       DATE_GROUP_BY_ATTRIBUTES = {
         'date' => :group_by_day,
@@ -247,6 +303,46 @@ module Search
         else
           { last: top_count }
         end
+      end
+
+      def aggregate(request)
+        request.count(:id)
+      end
+
+      def add_missing_keys(data)
+        if respond_to?(all_keys_method_name, true)
+          send(all_keys_method_name).map { |k| [k, 0] }.to_h.merge(data)
+        else
+          data
+        end
+      end
+
+      def all_keys_method_name
+        @all_keys_method_name ||= :"all_#{group_by_attribute}_keys"
+      end
+
+      def all_hour_of_day_keys
+        0...24
+      end
+
+      def all_day_of_week_keys
+        0...7
+      end
+
+      def label_keys(data)
+        if respond_to?(label_key_method_name, true)
+          data.transform_keys { |k| send(label_key_method_name, k) }
+        else
+          data
+        end
+      end
+
+      def label_key_method_name
+        @label_key_method_name ||= :"label_#{group_by_attribute}_key"
+      end
+
+      def label_day_of_week_key(key)
+        I18n.t('date.day_names')[key]
       end
     end
   end

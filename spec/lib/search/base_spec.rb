@@ -1,16 +1,54 @@
-RSpec.describe Search::Base do
-  class self::Search < Search::Base
+# frozen_string_literal: true
+
+RSpec.describe Search::Base, type: :model do
+  class self::Search < Search::Base # rubocop:disable Lint/ConstantDefinitionInBlock,Style/ClassAndModuleChildren
     attribute :name
     attr_accessor :context
+
+    AUTHORIZED_GROUP_BY_ATTRIBUTES = (Search::Base::AUTHORIZED_GROUP_BY_ATTRIBUTES + %w[some_attribute]).freeze
 
     class Order < ::Search::Order
       attribute :name, column: 'column'
       attr_accessor :context
     end
+
+    class Chart < ::Search::Base::Chart
+    end
   end
 
   let(:scope) { double }
   subject(:search) { self.class::Search.new }
+
+  describe 'validations' do
+    it { is_expected.to allow_value(nil).for(:chart_type) }
+    it { is_expected.to allow_value('').for(:chart_type) }
+    it { is_expected.to validate_inclusion_of(:chart_type).in_array(%w[line pie column]) }
+
+    it { is_expected.to allow_value(nil).for(:group_by_attribute) }
+    it { is_expected.to allow_value('').for(:group_by_attribute) }
+
+    it { is_expected.to allow_value(nil).for(:top_count) }
+    it { is_expected.to allow_value('').for(:top_count) }
+
+    context 'when chart_type is present' do
+      before { search.chart_type = 'line' }
+
+      it { is_expected.to allow_value('some_attribute').for(:group_by_attribute) }
+      it { is_expected.to allow_value('date').for(:group_by_attribute) }
+      it { is_expected.to allow_value('hour_of_day').for(:group_by_attribute) }
+      it { is_expected.to allow_value('day_of_week').for(:group_by_attribute) }
+      it { is_expected.not_to allow_value(nil).for(:group_by_attribute) }
+      it { is_expected.not_to allow_value('').for(:group_by_attribute) }
+      it { is_expected.not_to allow_value('some_other_attribute').for(:group_by_attribute) }
+
+      it { is_expected.to allow_value(10).for(:top_count) }
+      it { is_expected.to allow_value('10').for(:top_count) }
+      it { is_expected.not_to allow_value(nil).for(:top_count) }
+      it { is_expected.not_to allow_value('').for(:top_count) }
+      it { is_expected.not_to allow_value(-1).for(:top_count) }
+      it { is_expected.not_to allow_value(0).for(:top_count) }
+    end
+  end
 
   describe '.from_params' do
     context "when params define a Search attribute (like search: { name: 'dummy' })" do
@@ -75,6 +113,46 @@ RSpec.describe Search::Base do
 
         subject
       end
+    end
+  end
+
+  describe '#graphical?' do
+    subject { search.graphical? }
+
+    it { is_expected.to eq(false) }
+
+    context 'when a chart type is defined' do
+      before { search.chart_type = 'line' }
+      it { is_expected.to eq(true) }
+    end
+  end
+
+  describe '#chart' do
+    subject { search.chart(scope) }
+
+    before { search.chart_type = 'line' }
+
+    context "when the Search isn't valid" do
+      let(:scope) { double none: double('None relation from scope') }
+
+      before { allow(search).to receive(:valid?).and_return(false) }
+
+      it { is_expected.to be_nil }
+    end
+
+    context 'when chart_type is nil' do
+      before { search.chart_type = nil }
+
+      it { is_expected.to be_nil }
+    end
+
+    context 'when the Search is valid' do
+      before do
+        allow(search).to receive(:valid?).and_return(true)
+        allow(search).to receive(:search).and_return(scope)
+      end
+
+      it { is_expected.to be_an_instance_of(self.class::Search::Chart) }
     end
   end
 
@@ -340,6 +418,212 @@ RSpec.describe Search::Base::FromParamsBuilder do
     context 'when search[text] param is defined' do
       let(:params) { { search: { text: 'dummy' } } }
       it { is_expected.to eq({ text: 'dummy' }) }
+    end
+  end
+end
+
+RSpec.describe Search::Base::Chart do
+  class self::Chart < Search::Base::Chart # rubocop:disable Lint/ConstantDefinitionInBlock,Style/ClassAndModuleChildren
+    private
+
+    def all_more_keys_attribute_keys
+      %w[key1 key2 key3]
+    end
+
+    def label_label_key_attribute_key(key)
+      key.reverse
+    end
+
+    def includes_for_label_of_custom_label_attribute
+      { relation: { other_relation: {} }, another_relation: {} }
+    end
+
+    def select_for_label_of_custom_label_attribute
+      %w[other_relations.name another_relations.label]
+    end
+  end
+
+  subject(:chart) do
+    self.class::Chart.new(models, type: chart_type, group_by_attribute: group_by_attribute, top_count: top_count)
+  end
+  let(:models) { double }
+  let(:chart_type) { 'line' }
+  let(:group_by_attribute) { 'some_attribute' }
+  let(:top_count) { 10 }
+
+  describe '#raw_data' do
+    subject { chart.raw_data }
+
+    context 'when #group_by_attribute is "some_attribute"' do
+      it do
+        expect(models).to receive(:group).with('some_attribute').and_return(models)
+        expect(models).to receive(:order).with(count_id: :desc).and_return(models)
+        expect(models).to receive(:limit).with(10).and_return(models)
+        expect(models).to receive(:count).with(:id)
+        subject
+      end
+
+      context 'when top_count is 100' do
+        let(:top_count) { 100 }
+
+        it do
+          expect(models).to receive(:group).with('some_attribute').and_return(models)
+          expect(models).to receive(:order).with(count_id: :desc).and_return(models)
+          expect(models).to receive(:limit).with(100).and_return(models)
+          expect(models).to receive(:count).with(:id)
+          subject
+        end
+      end
+    end
+
+    context 'when #group_by_attribute is "date"' do
+      let(:group_by_attribute) { 'date' }
+
+      it do
+        expect(models).to receive(:group_by_day).with(:created_at, last: 10).and_return(models)
+        expect(models).to receive(:count).with(:id)
+        subject
+      end
+
+      context 'when top_count is 100' do
+        let(:top_count) { 100 }
+
+        it do
+          expect(models).to receive(:group_by_day).with(:created_at, last: 100).and_return(models)
+          expect(models).to receive(:count).with(:id)
+          subject
+        end
+      end
+    end
+
+    context 'when #group_by_attribute is "hour_of_day"' do
+      let(:group_by_attribute) { 'hour_of_day' }
+
+      it do
+        expect(models).to receive(:group_by_hour_of_day).with(:created_at, {}).and_return(models)
+        expect(models).to receive(:count).with(:id)
+        subject
+      end
+    end
+
+    context 'when #group_by_attribute is "day_of_week"' do
+      let(:group_by_attribute) { 'day_of_week' }
+
+      it do
+        expect(models).to receive(:group_by_day_of_week).with(:created_at, {}).and_return(models)
+        expect(models).to receive(:count).with(:id)
+        subject
+      end
+    end
+
+    context 'when #group_by_attribute needs inclusions and select' do
+      let(:group_by_attribute) { 'custom_label_attribute' }
+
+      it do
+        expect(models).to(
+          receive(:includes).with({ relation: { other_relation: {} }, another_relation: {} }).and_return(models)
+        )
+        expect(models).to(
+          receive(:select).with('other_relations.name', 'another_relations.label').and_return(models)
+        )
+        expect(models).to(
+          receive(:group).with('custom_label_attribute', 'other_relations.name', 'another_relations.label') \
+                         .and_return(models)
+        )
+        expect(models).to receive(:order).with(count_id: :desc).and_return(models)
+        expect(models).to receive(:limit).with(10).and_return(models)
+        expect(models).to receive(:count).with(:id)
+        subject
+      end
+    end
+  end
+
+  describe '#data' do
+    subject { chart.data }
+
+    let(:raw_data) { {} }
+
+    before { expect(chart).to receive(:raw_data).and_return(raw_data) }
+
+    context 'when #group_by_attribute is "some_attribute"' do
+      let(:raw_data) { { 'A' => 1, 'C' => 2 } }
+
+      it 'returns data as is' do
+        is_expected.to eq(raw_data)
+      end
+    end
+
+    context 'when #group_by_attribute is "hour_of_day"' do
+      let(:group_by_attribute) { 'hour_of_day' }
+      let(:raw_data) { { 5 => 4, 13 => 42 } }
+
+      it 'adds all missing hours' do # rubocop:disable Metrics/BlockLength
+        is_expected.to eq(
+          {
+            0 => 0,
+            1 => 0,
+            2 => 0,
+            3 => 0,
+            4 => 0,
+            5 => 4,
+            6 => 0,
+            7 => 0,
+            8 => 0,
+            9 => 0,
+            10 => 0,
+            11 => 0,
+            12 => 0,
+            13 => 42,
+            14 => 0,
+            15 => 0,
+            16 => 0,
+            17 => 0,
+            18 => 0,
+            19 => 0,
+            20 => 0,
+            21 => 0,
+            22 => 0,
+            23 => 0
+          }
+        )
+      end
+    end
+
+    context 'when #group_by_attribute is "days_of_week"' do
+      let(:group_by_attribute) { 'day_of_week' }
+      let(:raw_data) { { 2 => 4, 5 => 42 } }
+
+      it 'adds all missing days and labels keys' do
+        is_expected.to eq(
+          {
+            I18n.t('date.day_names')[0] => 0,
+            I18n.t('date.day_names')[1] => 0,
+            I18n.t('date.day_names')[2] => 4,
+            I18n.t('date.day_names')[3] => 0,
+            I18n.t('date.day_names')[4] => 0,
+            I18n.t('date.day_names')[5] => 42,
+            I18n.t('date.day_names')[6] => 0
+          }
+        )
+      end
+    end
+
+    context 'when #group_by_attribute needs more keys' do
+      let(:group_by_attribute) { 'more_keys_attribute' }
+      let(:raw_data) { { 'key2' => 42 } }
+
+      it 'adds missing keys' do
+        is_expected.to eq({ 'key1' => 0, 'key2' => 42, 'key3' => 0 })
+      end
+    end
+
+    context 'when #group_by_attribute labels keys' do
+      let(:group_by_attribute) { 'label_key_attribute' }
+      let(:raw_data) { { 'key_to_label' => 42 } }
+
+      it 'labels keys' do
+        is_expected.to eq({ 'lebal_ot_yek' => 42 })
+      end
     end
   end
 end

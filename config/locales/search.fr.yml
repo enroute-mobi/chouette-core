@@ -65,6 +65,7 @@ fr:
         line_id: "Indiquez un nom de ligne"
         company_id: "Indiquez un nom de transporteur"
         stop_area_id: "Indiquez un nom d'arrêt"
+        time_table_id: "Indiquez un nom de calendrier"
         document_id: "Indiquez un nom de document"
         document_type_id: "Sélectionnez un Type de document"
         workbench_id: "Indiquez un nom d'espace de travail"

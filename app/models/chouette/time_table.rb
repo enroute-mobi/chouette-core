@@ -428,6 +428,14 @@ module Chouette
       dates
     end
 
+    def full_display_name
+      [comment].compact.join(' - ')
+    end
+
+    def display_name
+      full_display_name.truncate(50)
+    end
+
     # produce a copy of periods without anyone overlapping or including another
     def optimize_overlapping_periods
       periods = self.clone_periods

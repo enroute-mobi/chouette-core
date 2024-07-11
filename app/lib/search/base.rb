@@ -3,6 +3,7 @@
 module Search
   class Base
     extend ActiveModel::Naming
+    extend Enumerize
 
     include ActiveModel::Validations
 
@@ -15,6 +16,9 @@ module Search
     validates :chart_type, inclusion: { in: %w[line pie column], allow_blank: true }
     validates :group_by_attribute, inclusion: { in: ->(r) { r.authorized_group_by_attributes } }, if: :graphical?
     validates :top_count, presence: true, numericality: { only_integer: true, greater_than: 1 }, if: :graphical?
+
+    enumerize :chart_type, in: %w[line pie column], i18n_scope: 'enumerize.search.chart_type'
+    enumerize :group_by_attribute, in: %w[date hour_of_day day_of_week], i18n_scope: 'enumerize.search.group_by_attribute'
 
     SAVED_SEARCH_ATTRIBUTE_MAPPING = {
       name: :saved_name,
@@ -38,10 +42,9 @@ module Search
 
       new(attributes).tap do |search|
         search.attributes = FromParamsBuilder.new(params).attributes
-        # TODO remove
-        search.chart_type = 'line'
-        search.group_by_attribute = 'status'
-        search.top_count = 20
+        search.chart_type = params.dig(:search, :chart_type)
+        search.group_by_attribute = params.dig(:search, :group_by_attribute)
+        search.top_count = params.dig(:search, :top_count)
         Rails.logger.debug "[Search] #{search.inspect}"
       end
     end

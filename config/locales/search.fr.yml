@@ -47,6 +47,9 @@ fr:
         valid_after_date: Valide jusqu'au
         referential_name: Cible
         time_table_id: Calendrier
+        chart_type: Type de graphique
+        group_by_attribute: Grouper par
+        top_count: Comptage
   activerecord:
     models:
       search/save:

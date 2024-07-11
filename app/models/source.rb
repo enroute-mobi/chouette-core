@@ -284,28 +284,24 @@ class Source < ApplicationModel
   module Downloader
 
     class Base
+      mattr_accessor :timeout, default: 120.seconds
+
       attr_reader :url
+      attr_accessor :username, :password
 
       def initialize(url, options = {})
         @url = url
         options.each { |k,v| send "#{k}=", v }
       end
-    end
-    class URL < Base
-      mattr_accessor :timeout, default: 120.seconds
 
       def download(path, headers = {})
-        Fetcher.new(url, headers, read_timeout: timeout).fetch(path)
+        Fetcher.new(url, headers, read_timeout: timeout, username: username, password: password).fetch(path)
       end
     end
 
-    # Downlaod a given URL. Manages redirection
+    class URL < Base; end
+
     class Fetcher
-
-      attr_reader :url, :headers
-      attr_accessor :read_timeout
-      attr_writer :redirection_count
-
       def initialize(url, headers = {}, options = {})
         @url = url
         @headers = headers
@@ -313,38 +309,31 @@ class Source < ApplicationModel
         options.each { |k, v| send "#{k}=", v }
       end
 
+      attr_reader :url, :headers
+      attr_accessor :read_timeout, :username, :password
+
       def request
-        @request ||= Net::HTTP::Get.new(uri).tap do |request|
-          headers.each { |name, value| request[name] = value }
+        Curl::Easy.new(url) do |request|
+          headers.each { |name, value| request.headers[name] = value }
+          request.timeout = read_timeout
+          request.max_redirects = redirection_count
+          request.follow_location = true
+          if username && password
+            request.username = username
+            request.password = password
+          end
         end
       end
 
       def response
-        http.start do |http|
-          http.request request
-        end
-      end
-
-      def uri
-        @uri ||= URI(url)
-      end
-
-      def use_ssl?
-        uri.instance_of?(URI::HTTPS)
-      end
-
-      def http
-        Net::HTTP.new(uri.hostname, uri.port).tap do |http|
-          http.use_ssl = use_ssl?
-          http.read_timeout = read_timeout if read_timeout
-        end
+        @response ||= request.tap(&:perform)
       end
 
       def error_for(response) # rubocop:disable Metrics/MethodLength
         Rails.logger.debug { "HTTP response: #{response.code} #{response.body}" }
+
         message_key =
-          # TODO: we should/could test the response class
-          case response.code
+          case response.status
           when '404'
             :url_not_found
           when '401', '403'
@@ -354,6 +343,7 @@ class Source < ApplicationModel
           else
             :download_failed
           end
+
         Source::Retrieval::Error.new message_key
       end
 
@@ -361,26 +351,11 @@ class Source < ApplicationModel
         @redirection_count ||= 10
       end
 
-      def allow_redirect?
-        redirection_count > 1
-      end
-
-      def redirect
-        raise Source::Retrieval::Error, :url_not_available unless allow_redirect?
-
-        Fetcher.new(response['location'], headers, redirection_count: redirection_count - 1)
-      end
-
       def fetch(path)
-        http.start do |http|
-          http.request request do |response|
-            return redirect.fetch(path) if response.is_a?(Net::HTTPRedirection)
-            raise error_for(response) unless response.is_a?(Net::HTTPSuccess)
+        raise error_for(response) unless response.code == 200
 
-            File.open(path, 'wb') do |file|
-              response.read_body file
-            end
-          end
+        File.open(path, 'wb') do |file|
+          file.write response.body
         end
       end
     end
@@ -420,49 +395,7 @@ class Source < ApplicationModel
       end
     end
 
-    class Ftp < Base
-
-      def download(path)
-        ftp.getbinaryfile(remote_filename, path)
-      end
-
-      def uri
-        @uri ||= URI(url)
-      end
-
-      def host
-        @host ||= uri.host
-      end
-
-      def port
-        @port ||= uri.port
-      end
-
-      def username
-        @username ||= (uri.user || 'anonymous')
-      end
-
-      def password
-        @password ||= (uri.password || 'chouette@enroute.mobi')
-      end
-
-      def remote_dir
-        @remote_dir ||= File.dirname uri.path
-      end
-
-      def remote_filename
-        @remote_filename ||= File.basename uri.path
-      end
-
-      def ftp
-        @ftp ||= Net::FTP.new.tap do |ftp|
-          ftp.connect host, port
-          ftp.login username, password
-          ftp.chdir remote_dir
-          ftp.passive = true
-        end
-      end
-    end
+    class Ftp < Base; end
   end
 
   module Checksumer

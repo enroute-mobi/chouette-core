@@ -232,3 +232,5 @@ gem 'bcrypt_pbkdf'
 
 gem 'bitset', en_route: 'bitset'
 gem 'cuckoo', en_route: 'cuckoo'
+
+gem 'curb'

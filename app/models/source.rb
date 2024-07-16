@@ -396,6 +396,8 @@ class Source < ApplicationModel
     end
 
     class Ftp < Base; end
+
+    class Sftp < Base; end
   end
 
   module Checksumer

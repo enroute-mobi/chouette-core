@@ -64,11 +64,11 @@ module Chouette
       def models
         Models.new scope, updater: self
       end
-
+=begin
       def provider
         @provider ||= Provider.new target, default_provider
       end
-
+=end
       def find_model(resource_id)
         find_models([resource_id]).first
       end
@@ -80,7 +80,7 @@ module Chouette
           scope.where(model_id_attribute => resource_ids)
         end
       end
-
+=begin
       class Provider
         def initialize(target, default_provider)
           @target = target
@@ -112,7 +112,7 @@ module Chouette
           @singular ||= target.model_name.singular
         end
       end
-
+=end
       class Models
         attr_accessor :scope, :updater
 
@@ -121,9 +121,8 @@ module Chouette
           @updater = updater
         end
 
-        delegate :model_id_attribute, :event_handler, :workgroup, :code_space, :target,
-                 :provider, :strict_mode?, :ignore_particulars?, :use_code?, :find_model,
-                 :find_models, to: :updater
+        delegate :model_id_attribute, :event_handler, :workgroup, :code_space, :target, :strict_mode?,
+                 :ignore_particulars?, :use_code?, :find_model, :find_models, to: :updater
 
         def with_resource_ids(resource_ids)
           find_models(resource_ids).find_each do |model|
@@ -180,7 +179,7 @@ module Chouette
 
           event = Event.new :create, model: model, resource: ResourceDecorator.undecorate(resource)
 
-          update_providers model, resource, event
+          #update_providers model, resource, event
           update_codes model, resource, event
           update_custom_fields model, resource, event
 
@@ -197,7 +196,7 @@ module Chouette
 
           event = Event.new :update, model: model, resource: ResourceDecorator.undecorate(resource)
 
-          update_providers model, resource, event
+          #update_providers model, resource, event
           update_codes model, resource, event
           update_custom_fields model, resource, event
 
@@ -230,7 +229,7 @@ module Chouette
             end
           end
         end
-
+=begin
         def update_providers(model, resource, event)
           return if provider.target_is_provider?
 
@@ -287,7 +286,7 @@ module Chouette
             nil
           end
         end
-
+=end
         def custom_field(code)
           workgroup.custom_fields.find_by code: code
         end

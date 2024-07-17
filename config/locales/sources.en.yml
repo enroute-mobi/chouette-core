@@ -51,7 +51,6 @@ en:
         import_options: "Import options"
         import_option_automatic_merge: Automatic merge
         import_option_archive_on_fail: Archive on fail
-        import_option_update_workgroup_providers: Allow changes on Workbenches resources
         import_option_process_gtfs_route_ids: Filter by lines (only for GTFS)
         import_option_store_xml: Store original XML resources
         import_option_disable_missing_resources: Disable missing Stop Areas and Lines

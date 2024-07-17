@@ -235,7 +235,6 @@ module Import
     # with associated NeTEx resources
     class StopAreaReferential < SynchronizedPart
       delegate :stop_area_provider, to: :import
-      delegate :stop_area_referential, to: :import
 
       def synchronization
         Chouette::Sync::Referential.new(target).tap do |sync|
@@ -245,11 +244,7 @@ module Import
       end
 
       def target
-        if import.update_workgroup_providers?
-          stop_area_referential
-        else
-          stop_area_provider
-        end
+        stop_area_provider
       end
 
       def default_provider
@@ -261,7 +256,7 @@ module Import
     # with associated NeTEx resources
     class LineReferential < SynchronizedPart
       delegate :line_provider, to: :import
-      delegate :line_referential, to: :import
+      #delegate :line_referential, to: :import
 
       def synchronization
         @synchronization ||= Chouette::Sync::Referential.new(target).tap do |sync|
@@ -273,11 +268,7 @@ module Import
       end
 
       def target
-        if import.update_workgroup_providers?
-          line_referential
-        else
-          line_provider
-        end
+        line_provider
       end
 
       def default_provider

@@ -210,7 +210,6 @@ class Source < ApplicationModel
     end
   end
 
-  def update_workgroup_providers?; import_option_update_workgroup_providers?; end
   def store_xml?; import_option_store_xml?; end
   def disable_missing_resources?; import_option_disable_missing_resources; end
 

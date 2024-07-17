@@ -315,6 +315,16 @@ module Export::Scope
     def line_notices
       current_scope.line_notices.joins(:lines).where('lines.id' => selected_line_ids).distinct
     end
+
+    def time_tables
+      current_scope.time_tables.where(id: time_table_ids)
+    end
+
+    private
+
+    def time_table_ids
+      current_scope.time_tables.joins(:lines).where('lines.id' => selected_line_ids).distinct.select(:id)
+    end
   end
 
   class Stateful < Base

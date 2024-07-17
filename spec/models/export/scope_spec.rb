@@ -144,6 +144,14 @@ RSpec.describe Export::Scope, use_chouette_factory: true do
 
         it { is_expected.to be_empty }
       end
+
+      context 'when no line is selected' do
+        let(:selected_line_ids) { nil }
+
+        it "the scope should contain the TimeTable 'default' and not contain the TimeTable 'orphan'" do
+          is_expected.to match_array([context.time_table(:default), context.time_table(:orphan)])
+        end
+      end
     end
   end
 

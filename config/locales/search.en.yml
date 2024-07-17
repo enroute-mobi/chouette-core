@@ -89,6 +89,7 @@ en:
         text: "Specify a name or id"
         line_id: "Specify a line name"
         company_id: "Specify a company name"
+        network_id: "Specify a network name"
         stop_area_id: "Specify a stop area name"
         time_table_id: "Specify a timetable name"
         document_id: "Specify a document name"

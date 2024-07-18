@@ -37,7 +37,12 @@ module Export
         end
 
         scope_collection = export_scope.send(collection)
-        model = Model.new.index(Indexer.create(scope_collection, code_space: code_space, code_provider: self))
+        model = Model.new.index(
+          Indexer.create(
+            scope_collection, code_space: code_space,
+            code_provider: self, take_default_code: take_default_code
+          )
+        )
         instance_variable_set("@#{collection}", model)
       end
     end

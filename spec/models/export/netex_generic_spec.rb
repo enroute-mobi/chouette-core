@@ -1626,6 +1626,40 @@ RSpec.describe Export::NetexGeneric do
           end
         end
       end
+
+      describe '#take_default_code' do
+        subject {decorated_tt.day_type_attributes[:id]}
+
+        let(:code_provider) do
+          Export::CodeProvider.new export_scope, code_space: code_space, take_default_code: take_default_code
+        end
+        let(:code_space) { context.code_space }
+        let(:export_scope) { Export::Scope.build referential }
+        let(:time_table) { context.time_table }
+        let(:referential) { context.referential }
+
+        let(:context) do
+          Chouette.create do
+            code_space short_name: 'test'
+
+            time_table objectid: 'objectid::LOC', codes: { test: %w[first_code second_code] }
+          end
+        end
+
+        before { referential.switch }
+
+        context 'when take_default_code is true' do
+          let(:take_default_code) { true }
+
+          it { is_expected.to eq 'first_code' }
+        end
+
+        context 'when take_default_code is false' do
+          let(:take_default_code) { false }
+
+          it { is_expected.to eq 'objectid::LOC' }
+        end
+      end
     end
 
     describe Export::NetexGeneric::PeriodDecorator do

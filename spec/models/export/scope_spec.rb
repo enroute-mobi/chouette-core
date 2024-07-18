@@ -36,6 +36,7 @@ RSpec.describe Export::Scope, use_chouette_factory: true do
 
         referential lines: [:first, :second, :third] do
           time_table :default
+          time_table :orphan
 
           route :in_scope1, line: :first do
             journey_pattern :in_scope1, shape: :shape_in_scope1 do
@@ -121,6 +122,34 @@ RSpec.describe Export::Scope, use_chouette_factory: true do
 
         it "returns related organisations" do
           is_expected.to contain_exactly(referential.organisation)
+        end
+      end
+    end
+
+    describe '#time_tables' do
+      subject { scope.time_tables }
+
+      let(:scope) { Export::Scope.build(referential, line_ids: selected_line_ids) }
+
+      context 'when the lines associated to time tables are selected' do
+        let(:selected_line_ids) { [ context.line(:first).id, context.line(:second).id] }
+
+        it "the scope should contain the TimeTable 'default' and not contain the TimeTable 'orphan'" do
+         is_expected.to match_array([context.time_table(:default)])
+        end
+      end
+
+      context "when the line 'third' are selected" do
+        let(:selected_line_ids) { [ context.line(:third).id] }
+
+        it { is_expected.to be_empty }
+      end
+
+      context 'when no line is selected' do
+        let(:selected_line_ids) { nil }
+
+        it "the scope should contain the TimeTable 'default' and not contain the TimeTable 'orphan'" do
+          is_expected.to match_array([context.time_table(:default), context.time_table(:orphan)])
         end
       end
     end

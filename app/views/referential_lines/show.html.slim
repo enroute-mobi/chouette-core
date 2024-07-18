@@ -21,10 +21,9 @@
     .row
       .col-lg-12
         .h3 = t('lines.show.routes.title')
-        - if params[:q].present? or @routes.any?
-          .row
-            .col-lg-12
-              = render 'filters'
+        .row
+          .col-lg-12
+            = render 'filters'
 
         - if @routes.any?
           .row

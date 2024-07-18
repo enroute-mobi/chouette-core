@@ -238,9 +238,6 @@ RSpec.describe Export::CodeProvider do
       end
     end
 
-
-
-
     context 'when model class is PointOfInterest' do
       subject(:model_code_provider) { described_class.new PointOfInterest::Base.none }
 
@@ -280,6 +277,84 @@ RSpec.describe Export::CodeProvider do
           }
 
           is_expected.to eq(expected_codes)
+        end
+      end
+    end
+  end
+
+  describe Export::CodeProvider::Indexer::TimeTables do
+    subject(:model_code_provider) { described_class.new Chouette::TimeTable.none }
+
+    describe '#default_attribute' do
+      subject { model_code_provider.default_attribute }
+
+      it { is_expected.to eq('objectid') }
+    end
+
+    describe '#index' do
+      describe 'with a dedicated CodeSpace' do
+        subject do
+          described_class.new(
+            context.referential.time_tables,
+            code_space: code_space,
+            take_default_code: take_default_code
+          ).index
+        end
+
+        let(:context) do
+          Chouette.create do
+            code_space short_name: 'test'
+            code_space :other, short_name: 'other'
+
+            time_table :first, codes: { test: 'first' }
+            time_table :second, codes: { test: 'second', other: 'second' }
+            time_table :third, objectid: 'third_objectid::LOC', codes: { other: 'value' }
+            time_table :fourth, objectid: 'fourth_objectid::LOC', codes: { test: %w[fourth1 fourth2] }
+            time_table :last, objectid: 'last_objectid::LOC', codes: { test: 'first' }
+          end
+        end
+
+        let(:code_space) { context.code_space }
+        let(:first) { context.time_table(:first) }
+        let(:second) { context.time_table(:second) }
+        let(:third) { context.time_table(:third) }
+        let(:fourth) { context.time_table(:fourth) }
+        let(:last) { context.time_table(:last) }
+
+        before do
+          context.referential.switch
+        end
+
+        context 'when take_default_code option is false' do
+          let(:take_default_code) { false}
+
+          it do
+            expected_codes = {
+              first.id => 'first',
+              second.id => 'second',
+              third.id => 'third_objectid::LOC',
+              fourth.id => 'fourth_objectid::LOC',
+              last.id => 'last_objectid::LOC'
+            }
+
+            is_expected.to eq expected_codes
+          end
+        end
+
+        context 'when take_default_code option is true' do
+          let(:take_default_code) { true}
+
+          it do
+            expected_codes = {
+              first.id => 'first',
+              second.id => 'second',
+              third.id => 'third_objectid::LOC',
+              fourth.id => 'fourth1',
+              last.id => 'last_objectid::LOC'
+            }
+
+            is_expected.to eq expected_codes
+          end
         end
       end
     end

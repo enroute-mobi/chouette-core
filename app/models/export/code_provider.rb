@@ -3,12 +3,13 @@
 module Export
   # Manage all unique codes for a given Export::Scope
   class CodeProvider
-    def initialize(export_scope, code_space: nil)
+    def initialize(export_scope, code_space: nil, take_default_code: false)
       @export_scope = export_scope
       @code_space = code_space
+      @take_default_code = take_default_code
     end
 
-    attr_reader :export_scope, :code_space
+    attr_reader :export_scope, :code_space, :take_default_code
 
     COLLECTIONS = %w[
       stop_areas point_of_interests vehicle_journeys lines companies entrances contracts
@@ -51,21 +52,27 @@ module Export
     end
 
     module Indexer
-      def self.create(collection, code_provider:, code_space: nil)
+      def self.create(collection, code_provider:, code_space: nil, take_default_code: false)
         if code_space && collection.model == Chouette::StopPoint
           StopPoints.new(collection, code_provider: code_provider)
+        elsif code_space && collection.model == Chouette::TimeTable
+          TimeTables.new(collection, code_space: code_space, take_default_code: take_default_code)
         else
           Default.new(collection, code_space: code_space)
         end
       end
 
       class Default
-        def initialize(collection, code_space: nil)
+        def initialize(collection, options = {})
           @collection = collection
-          @code_space = code_space
+
+          options.each do |k, v |
+            send("#{k}=", v) if respond_to?("#{k}=")
+          end
         end
 
-        attr_reader :collection, :code_space
+        attr_reader :collection
+        attr_accessor :code_space
 
         def unique_collection
           @unique_collection ||= model_class.where(id: collection.select(:id))
@@ -161,6 +168,28 @@ module Export
             stop_point_code = Code::Value.merge(route_code, attributes["position"], type: 'StopPoint')
             [ attributes["id"], stop_point_code ]
           end.to_h
+        end
+      end
+
+      class TimeTables < Default
+        attr_accessor :take_default_code
+
+        def with_code_query
+          return super unless take_default_code
+
+          # take first code value if take_default_code is true
+          unique_collection.left_joins(:codes)
+            .where(code_table[:code_space_id].eq(code_space.id))
+            .select(:id, code_value)
+            .group(:id).having('count(*) > 0')
+        end
+
+        private
+
+        def code_value
+          <<-SQL
+            (min(#{code_table.name}.value)) AS code
+          SQL
         end
       end
     end

@@ -1,21 +1,19 @@
-= search_form_for @q, url: workbench_referential_time_tables_path(@workbench, @referential), html: { method: :get, class: 'form form-filter' } do |f|
-  .ffg-row
-    .input-group.search_bar class=filter_item_class(params[:q], :comment_cont)
-      = f.text_field :comment_cont, :placeholder => "#{t('time_tables.index.comment')}", class: 'form-control'
-      span.input-group-btn
-        button.btn.btn-default type='submit'
-          span.fa.fa-search
+= simple_form_for @search, url: request.path, method: "GET", html: { class: 'flex items-center tailwind-filters bg-grey relative pr-6' }, wrapper: :filters_form_tailwind  do |f|
+  = f.simple_fields_for :order, @search.order, defaults: { wrapper: false } do |form_order|
+    - form_order.object.attributes.keys.each do |attribute|
+      = form_order.input attribute, as: :hidden
 
-  .ffg-row
+  .flex.flex-col.w-full
+    .flex.items-center.border-r.border-white
+      = f.input :comment, label: false, wrapper_html: {class: "w-2/5"}, placeholder: I18n.t('simple_form.placeholders.search.text')
+    .flex.items-center.border-t.border-r.border-white
+      = f.label Chouette::TimeTable.human_attribute_name(:bounding_dates), required: false, class: 'control-label pl-6'
+      = f.input :start_date, as: :date_picker
+      = f.input :end_date, as: :date_picker
 
-    .form-group.togglable class=filter_item_class(params[:q], :bounding_dates)
-      = f.label Chouette::TimeTable.human_attribute_name(:bounding_dates), required: false, class: 'control-label'
-      .filter_menu
-        = f.simple_fields_for :bounding_dates do |p|
-          = p.input :start_date, as: :date, label: t('simple_form.from'), wrapper_html: { class: 'date smart_date filter_menu-item' }, default: @begin_range, include_blank: @begin_range ? false : true
-          = p.input :end_date, as: :date, label: t('simple_form.to'), wrapper_html: { class: 'date smart_date filter_menu-item' }, default: @end_range, include_blank: @end_range ? false : true
-
-
-  .actions
-    = link_to t('actions.erase'), @workbench, class: 'btn btn-link'
-    = f.submit t('actions.filter'), class: 'btn btn-default', id: 'time_table_filter_btn'
+  .flex.flex-col.justify-center.items-center.actions.ml-auto.py-3.w-80
+    .flex.items-center.mb-3
+      = render partial: 'shared/per_page', locals: {f:f}
+    .flex.items-center
+      = link_to t('actions.erase'), workbench_referential_time_tables_path(@workbench, @referential), class: 'btn btn-link'
+      = f.submit t('actions.filter'), class: 'btn btn-default'

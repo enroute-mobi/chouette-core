@@ -39,8 +39,10 @@ module Export
         scope_collection = export_scope.send(collection)
         model = Model.new.index(
           Indexer.create(
-            scope_collection, code_space: code_space,
-            code_provider: self, take_default_code: take_default_code
+            scope_collection,
+            code_space: code_space,
+            code_provider: self,
+            take_default_code: take_default_code
           )
         )
         instance_variable_set("@#{collection}", model)
@@ -71,7 +73,7 @@ module Export
         def initialize(collection, options = {})
           @collection = collection
 
-          options.each do |k, v |
+          options.each do |k, v|
             send("#{k}=", v) if respond_to?("#{k}=")
           end
         end
@@ -122,16 +124,24 @@ module Export
         end
 
         def with_code_query
-          code_value = Arel::Nodes::NamedFunction.new(
+          unique_collection
+            .left_joins(:codes)
+            .where(code_table[:code_space_id].eq(code_space.id))
+            .select(:id, code_value)
+            .group(:id)
+            .having(having)
+        end
+
+        def having
+          'count(*) = 1'
+        end
+
+        def code_value
+          Arel::Nodes::NamedFunction.new(
             'unnest', [
               Arel::Nodes::NamedFunction.new('array_agg', [code_table[:value]])
             ]
           ).as('code')
-
-          unique_collection.left_joins(:codes)
-            .where(code_table[:code_space_id].eq(code_space.id))
-            .select(:id, code_value)
-            .group(:id).having('count(*) = 1')
         end
 
         def with_registration_number_query
@@ -176,27 +186,18 @@ module Export
         end
       end
 
-      class TimeTables < Default
+      # This condition accept several codes in the same Code Space to take one in the method query_with_code
+      class TakeDefaultCode < Default
         attr_accessor :take_default_code
 
-        def with_code_query
-          return super unless take_default_code
+        def having
+          return 'count(*) > 0' if take_default_code
 
-          # take first code value if take_default_code is true
-          unique_collection.left_joins(:codes)
-            .where(code_table[:code_space_id].eq(code_space.id))
-            .select(:id, code_value)
-            .group(:id).having('count(*) > 0')
-        end
-
-        private
-
-        def code_value
-          <<-SQL
-            (min(#{code_table.name}.value)) AS code
-          SQL
+          super
         end
       end
+
+      class TimeTables < TakeDefaultCode; end
     end
 
     class Model

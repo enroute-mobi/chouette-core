@@ -1633,14 +1633,14 @@ RSpec.describe Export::NetexGeneric do
         let(:code_provider) do
           Export::CodeProvider.new export_scope, code_space: code_space, take_default_code: take_default_code
         end
-        let(:code_space) { context.code_space }
+        let(:code_space) { context.code_space(:test) }
         let(:export_scope) { Export::Scope.build referential }
         let(:time_table) { context.time_table }
         let(:referential) { context.referential }
 
         let(:context) do
           Chouette.create do
-            code_space short_name: 'test'
+            code_space :test, short_name: 'test'
 
             time_table objectid: 'objectid::LOC', codes: { test: %w[first_code second_code] }
           end

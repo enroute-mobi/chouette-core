@@ -32,7 +32,7 @@ fr:
         duration: Durée (en jours)
         prefer_referent_stop_area: Préférer les arrêts Référents
         prefer_referent_line: Préférer les lignes Référents
-        take_default_code: Sélection d'un code par défaut pour un espace de code pour les calendriers
+        take_default_code: Sélection d'un code par défaut pour un espace de code
         ignore_single_stop_station: Ignorer les stations avec un arrêt unique
         ignore_parent_stop_places: "Ignorer les arrêts Parents"
     errors:

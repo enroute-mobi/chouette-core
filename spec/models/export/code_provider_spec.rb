@@ -303,7 +303,7 @@ RSpec.describe Export::CodeProvider do
 
         let(:context) do
           Chouette.create do
-            code_space short_name: 'test'
+            code_space :test, short_name: 'test'
             code_space :other, short_name: 'other'
 
             time_table :first, codes: { test: 'first' }
@@ -314,7 +314,7 @@ RSpec.describe Export::CodeProvider do
           end
         end
 
-        let(:code_space) { context.code_space }
+        let(:code_space) { context.code_space(:test) }
         let(:first) { context.time_table(:first) }
         let(:second) { context.time_table(:second) }
         let(:third) { context.time_table(:third) }
@@ -326,7 +326,7 @@ RSpec.describe Export::CodeProvider do
         end
 
         context 'when take_default_code option is false' do
-          let(:take_default_code) { false}
+          let(:take_default_code) { false }
 
           it do
             expected_codes = {
@@ -342,7 +342,7 @@ RSpec.describe Export::CodeProvider do
         end
 
         context 'when take_default_code option is true' do
-          let(:take_default_code) { true}
+          let(:take_default_code) { true }
 
           it do
             expected_codes = {

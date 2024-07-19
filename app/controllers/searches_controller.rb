@@ -33,7 +33,7 @@ class SearchesController < Chouette::UserController
       name: params[:search][:saved_name],
       description: params[:search][:saved_description],
       creator: current_user.name,
-      search_attributes: @search.attributes
+      search_attributes: search_attributes
     )
     @search = @saved_search.search
 
@@ -47,7 +47,7 @@ class SearchesController < Chouette::UserController
       @saved_search.update(
         name: params[:search][:saved_name],
         description: params[:search][:saved_description],
-        search_attributes: @search.attributes
+        search_attributes: search_attributes
       )
 
       @search = @saved_search.search
@@ -112,5 +112,13 @@ class SearchesController < Chouette::UserController
 
   def search_context
     { saved_search_parent.class.name.underscore.to_sym => saved_search_parent }
+  end
+
+  def search_attributes
+    @search.attributes.merge(
+      chart_type: @search.chart_type,
+      group_by_attribute: @search.group_by_attribute,
+      top_count: @search.top_count
+    )
   end
 end

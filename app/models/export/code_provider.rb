@@ -3,13 +3,12 @@
 module Export
   # Manage all unique codes for a given Export::Scope
   class CodeProvider
-    def initialize(export_scope, code_space: nil, take_default_code: false)
+    def initialize(export_scope, code_space: nil)
       @export_scope = export_scope
       @code_space = code_space
-      @take_default_code = take_default_code
     end
 
-    attr_reader :export_scope, :code_space, :take_default_code
+    attr_reader :export_scope, :code_space
 
     COLLECTIONS = %w[
       stop_areas point_of_interests vehicle_journeys lines companies entrances contracts
@@ -41,8 +40,7 @@ module Export
           Indexer.create(
             scope_collection,
             code_space: code_space,
-            code_provider: self,
-            take_default_code: take_default_code
+            code_provider: self
           )
         )
         instance_variable_set("@#{collection}", model)
@@ -59,11 +57,11 @@ module Export
     end
 
     module Indexer
-      def self.create(collection, code_provider:, code_space: nil, take_default_code: false)
+      def self.create(collection, code_provider:, code_space: nil)
         if code_space && collection.model == Chouette::StopPoint
           StopPoints.new(collection, code_provider: code_provider)
         elsif code_space && collection.model == Chouette::TimeTable
-          TimeTables.new(collection, code_space: code_space, take_default_code: take_default_code)
+          TimeTables.new(collection, code_space: code_space)
         else
           Default.new(collection, code_space: code_space)
         end
@@ -186,18 +184,17 @@ module Export
         end
       end
 
-      # This condition accept several codes in the same Code Space to take one in the method query_with_code
-      class TakeDefaultCode < Default
-        attr_accessor :take_default_code
-
-        def having
-          return 'count(*) > 0' if take_default_code
-
-          super
+      # This condition accept several codes in the same Code Space to take one in the method with_code_query
+      class TimeTables < Default
+        def with_code_query
+          code_query = ReferentialCode.order(created_at: :desc).limit(1)
+                                      .where("referential_codes.resource_id = time_tables.id")
+                                      .where(resource_type: 'Chouette::TimeTable', code_space: code_space)
+                                      .select(:value)
+          unique_collection.joins("JOIN LATERAL (#{code_query.to_sql}) subquery ON true")
+                           .select("time_tables.id", "subquery.value as code")
         end
       end
-
-      class TimeTables < TakeDefaultCode; end
     end
 
     class Model

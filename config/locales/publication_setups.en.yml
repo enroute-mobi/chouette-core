@@ -32,7 +32,6 @@ en:
         duration: Duration (in days)
         prefer_referent_stop_area: Prefer Referent Stop Areas
         prefer_referent_line: Prefer Referent Lines
-        take_default_code: Select one default code for a code space
         ignore_single_stop_station: Ignore stations with a single stop
         ignore_parent_stop_places: "Ignore parent Stop Places"
     errors:

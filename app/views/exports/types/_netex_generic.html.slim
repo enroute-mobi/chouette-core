@@ -5,7 +5,6 @@
   = sub_form.input :profile, as: :select, include_blank: false
   = render 'exports/options/exported_lines', form: sub_form
   = sub_form.input :prefer_referent_line, as: :switchable_checkbox
-  = sub_form.input :take_default_code, as: :switchable_checkbox
   - if has_feature?("export_with_code_space")
     = render 'exports/options/exported_code_space', form: sub_form
   = sub_form.input :participant_ref

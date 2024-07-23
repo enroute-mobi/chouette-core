@@ -133,8 +133,7 @@ class Export::Base < ApplicationModel
   def code_provider
     @code_provider ||= Export::CodeProvider.new(
       export_scope,
-      code_space: code_space,
-      take_default_code: take_default_code
+      code_space: code_space
     )
   end
 

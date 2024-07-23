@@ -14,7 +14,6 @@ class Export::NetexGeneric < Export::Base
   option :profile_options, default_value: '{}', serialize: ActiveRecord::Type::Json
   option :prefer_referent_line, default_value: false, enumerize: [true, false], serialize: ActiveModel::Type::Boolean
   option :exported_code_space
-  option :take_default_code, default_value: false, enumerize: [true, false], serialize: ActiveModel::Type::Boolean
 
   validate :ensure_is_valid_period
 

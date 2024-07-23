@@ -1440,19 +1440,47 @@ RSpec.describe Export::NetexGeneric do
   describe 'TimeTables export' do
 
     describe Export::NetexGeneric::TimeTableDecorator do
-      let(:time_table) { create(:time_table) }
       let(:decorated_tt) { Export::NetexGeneric::TimeTables::Decorator.new time_table, code_provider: code_provider }
       let(:netex_resources) { decorated_tt.netex_resources }
       let(:operating_periods) { netex_resources.select { |r| r.is_a? Netex::OperatingPeriod }}
       let(:day_type_assignments) { netex_resources.select { |r| r.is_a? Netex::DayTypeAssignment }}
       let(:code_provider) { Export::CodeProvider.new export_scope }
-      let(:export_scope) { double("Export::Scope", time_tables: Chouette::TimeTable.all) }
+      let(:export_scope) { double("Export::Scope", time_tables: referential.time_tables) }
+      let(:context) do
+        Chouette.create do
+          code_space :many_codes, short_name: 'many_codes'
+          code_space :one_code, short_name: 'one_code'
+
+          time_table objectid: 'objectid::LOC', codes: { many_codes: %w[first_code second_code], one_code: %w[uniq_code] }
+        end
+      end
+      let(:time_table) { context.time_table }
+      let(:many_codes) { context.code_space(:many_codes) }
+      let(:one_code) { context.code_space(:one_code) }
+
+      before do
+        context.referential.switch
+      end
 
       describe '#day_type_attributes' do
         let(:day_type_attributes) { decorated_tt.day_type_attributes }
 
-        it 'uses TimeTable objectid as Netex id' do
-          expect(day_type_attributes[:id]).to eq(time_table.objectid)
+        it 'uses TimeTable objectid as Netex id by default' do
+          expect(day_type_attributes[:id]).to eq('objectid::LOC')
+        end
+
+        context 'when Export::CodeProvider uses a code space with one value by model' do
+          let!(:code_provider) { Export::CodeProvider.new export_scope, code_space: one_code }
+          it 'uses TimeTable code for a dedicated code_space as Netex id' do
+            expect(day_type_attributes[:id]).to eq('uniq_code')
+          end
+        end
+
+        context 'when Export::CodeProvider uses a code space with many values by model' do
+          let!(:code_provider) { Export::CodeProvider.new export_scope, code_space: many_codes }
+          it 'uses TimeTable last created code if many codes for a selected code_space as Netex id' do
+            expect(day_type_attributes[:id]).to eq('second_code')
+          end
         end
 
         it 'uses TimeTable data_source_ref as Netex data_source_ref' do
@@ -1624,40 +1652,6 @@ RSpec.describe Export::NetexGeneric do
               is_expected.to be_empty
             end
           end
-        end
-      end
-
-      describe '#take_default_code' do
-        subject {decorated_tt.day_type_attributes[:id]}
-
-        let(:code_provider) do
-          Export::CodeProvider.new export_scope, code_space: code_space, take_default_code: take_default_code
-        end
-        let(:code_space) { context.code_space(:test) }
-        let(:export_scope) { Export::Scope.build referential }
-        let(:time_table) { context.time_table }
-        let(:referential) { context.referential }
-
-        let(:context) do
-          Chouette.create do
-            code_space :test, short_name: 'test'
-
-            time_table objectid: 'objectid::LOC', codes: { test: %w[first_code second_code] }
-          end
-        end
-
-        before { referential.switch }
-
-        context 'when take_default_code is true' do
-          let(:take_default_code) { true }
-
-          it { is_expected.to eq 'first_code' }
-        end
-
-        context 'when take_default_code is false' do
-          let(:take_default_code) { false }
-
-          it { is_expected.to eq 'objectid::LOC' }
         end
       end
     end

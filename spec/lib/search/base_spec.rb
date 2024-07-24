@@ -444,11 +444,18 @@ RSpec.describe Search::Base::Chart do
   end
 
   subject(:chart) do
-    self.class::Chart.new(models, type: chart_type, group_by_attribute: group_by_attribute, top_count: top_count)
+    self.class::Chart.new(
+      models,
+      type: chart_type,
+      group_by_attribute: group_by_attribute,
+      first: first,
+      top_count: top_count
+    )
   end
   let(:models) { double }
   let(:chart_type) { 'line' }
   let(:group_by_attribute) { 'some_attribute' }
+  let(:first) { false }
   let(:top_count) { 10 }
 
   describe '#raw_data' do
@@ -463,7 +470,19 @@ RSpec.describe Search::Base::Chart do
         subject
       end
 
-      context 'when top_count is 100' do
+      context 'when #first is true' do
+        let(:first) { true }
+
+        it do
+          expect(models).to receive(:group).with('some_attribute').and_return(models)
+          expect(models).to receive(:order).with(count_id: :asc).and_return(models)
+          expect(models).to receive(:limit).with(10).and_return(models)
+          expect(models).to receive(:count).with(:id)
+          subject
+        end
+      end
+
+      context 'when #top_count is 100' do
         let(:top_count) { 100 }
 
         it do
@@ -485,7 +504,17 @@ RSpec.describe Search::Base::Chart do
         subject
       end
 
-      context 'when top_count is 100' do
+      context 'when #first is true' do
+        let(:first) { true }
+
+        it do
+          expect(models).to receive(:group_by_day).with(:created_at, last: 10).and_return(models)
+          expect(models).to receive(:count).with(:id)
+          subject
+        end
+      end
+
+      context 'when #top_count is 100' do
         let(:top_count) { 100 }
 
         it do

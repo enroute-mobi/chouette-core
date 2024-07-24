@@ -49,7 +49,6 @@ en:
         time_table_id: Timetable
         chart_type: Chart Form
         group_by_attribute: Group by
-        top_count: Count
   activerecord:
     models:
       search/save:

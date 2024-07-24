@@ -460,6 +460,9 @@ fr:
         date: Date
         hour_of_day: Heure de la journée
         day_of_week: Jours de la semaine
+      first:
+        first: "Premiers"
+        last: "Derniers"
     control/base:
       criticity:
         warning: Avertissement

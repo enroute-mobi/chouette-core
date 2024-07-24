@@ -329,7 +329,7 @@ RSpec.describe Export::CodeProvider do
             first.id => 'first',
             second.id => 'second',
             third.id => 'third_objectid::LOC',
-            fourth.id => 'fourth1',
+            fourth.id => 'fourth2',
             last.id => 'last_objectid::LOC'
           }
 

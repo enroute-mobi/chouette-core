@@ -15,7 +15,8 @@ module Search
     attribute :per_page, type: Integer, default: 30
     attribute :chart_type, type: String
     attribute :group_by_attribute, type: String
-    attribute :top_count, type: Integer, default: 30
+    attribute :first, type: Boolean, default: false # meaningless if attribute is in DATE_GROUP_BY_ATTRIBUTES
+    attribute :top_count, type: Integer, default: 30 # meaningless if attribute is in NO_LIMIT_DATE_GROUP_BY_ATTRIBUTES
 
     attr_accessor :saved_name, :saved_description
 
@@ -205,6 +206,7 @@ module Search
         models,
         type: chart_type,
         group_by_attribute: group_by_attribute,
+        first: first,
         top_count: top_count
       )
     end
@@ -219,13 +221,14 @@ module Search
     end
 
     class Chart
-      def initialize(models, type:, group_by_attribute:, top_count:)
+      def initialize(models, type:, group_by_attribute:, first:, top_count:)
         @models = models
         @type = type
         @group_by_attribute = group_by_attribute
+        @first = first
         @top_count = top_count
       end
-      attr_reader :models, :type, :group_by_attribute, :top_count
+      attr_reader :models, :type, :group_by_attribute, :first, :top_count
 
       def raw_data
         request = models
@@ -279,7 +282,7 @@ module Search
         if date_group_by_attribute?
           request.send(group_by_attribute_method, :created_at, **group_by_attribute_method_options)
         else
-          request.group(group_by_attribute, *selects).order(count_id: :desc).limit(top_count)
+          request.group(group_by_attribute, *selects).order(count_id: first ? :asc : :desc).limit(top_count)
         end
       end
 

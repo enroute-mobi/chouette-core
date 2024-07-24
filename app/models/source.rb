@@ -262,11 +262,13 @@ class Source < ApplicationModel
   end
 
   def downloader_class
-    if downloader_type.present? && downloader_type != :direct
-      Downloader.const_get(downloader_type.camelcase)
-    else
-      Downloader::URL
+    begin
+      return Downloader.const_get(downloader_type.camelcase) if downloader_type.present?
+    rescue NameError
+      # Will use default class
     end
+
+    Downloader::URL
   end
 
   def downloader
@@ -282,92 +284,90 @@ class Source < ApplicationModel
   delegate :line_providers, :stop_area_providers, to: :workbench, prefix: :candidate
 
   module Downloader
-
-    class Base
+    class URL
       mattr_accessor :timeout, default: 120.seconds
 
       attr_reader :url
-      attr_accessor :username, :password
+      attr_accessor :username, :password, :error
+
+      def redirection_count
+        @redirection_count ||= 10
+      end
 
       def initialize(url, options = {})
         @url = url
         options.each { |k,v| send "#{k}=", v }
       end
 
+      def create_error(message_key)
+        self.error = Source::Retrieval::Error.new(message_key)
+      end
+
       def download(path, headers = {})
-        Fetcher.new(url, headers, read_timeout: timeout, username: username, password: password).fetch(path)
+        self.error = nil
+
+        client.on_success do |c|
+          File.open(path, 'wb') do |file|
+            file.write c.body
+          end
+        end
+
+        begin
+          client.perform
+        rescue Curl::Err::CurlError
+          create_error :download_failed
+        end
+
+        raise error if error
       end
-    end
 
-    class URL < Base; end
-
-    class Fetcher
-      def initialize(url, headers = {}, options = {})
-        @url = url
-        @headers = headers
-
-        options.each { |k, v| send "#{k}=", v }
+      def headers
+        {}
       end
 
-      attr_reader :url, :headers
-      attr_accessor :read_timeout, :username, :password
+      def client
+        @client ||= Curl::Easy.new(url) do |client|
+          headers.each { |name, value| client.headers[name] = value }
 
-      def request
-        Curl::Easy.new(url) do |request|
-          headers.each { |name, value| request.headers[name] = value }
-          request.timeout = read_timeout
-          request.max_redirects = redirection_count
-          request.follow_location = true
+          client.timeout = timeout
+          client.max_redirects = redirection_count
+          client.follow_location = true
+
           if username && password
-            request.username = username
-            request.password = password
-          end
-        end
-      end
-
-      def response
-        @response ||= request.tap(&:perform)
-      end
-
-      def error_for(response) # rubocop:disable Metrics/MethodLength
-        Rails.logger.debug { "HTTP response: #{response.code} #{response.body}" }
-
-        message_key =
-          case response.status
-          when '404'
-            :url_not_found
-          when '401', '403'
-            :authentication_failed
-          when /^50\d$/
-            :url_not_available
-          else
-            :download_failed
+            client.username = username
+            client.password = password
           end
 
-        Source::Retrieval::Error.new message_key
-      end
+          # Workaround for https://github.com/taf2/curb/issues/452
+          client.cacert = ENV["CURL_CA_BUNDLE"]
 
-      def redirection_count
-        @redirection_count ||= 10
-      end
+          client.on_missing do |c, code|
+            message_key = case c.response_code
+            when 404
+              :url_not_found
+            when 401, 403
+              :authentication_failed
+            end
 
-      def fetch(path)
-        raise error_for(response) unless response.code == 200
+            create_error message_key if message_key
+          end
 
-        File.open(path, 'wb') do |file|
-          file.write response.body
+          client.on_failure do |c, code|
+            create_error :url_not_available
+          end
         end
       end
     end
 
-    class FrenchNap < Base
+    class FrenchNap < URL
       def download(path)
         URL.new(link).download(path)
+      rescue Curl::Err::CurlError
+        raise Source::Retrieval::Error.new(:download_failed)
       end
 
       def page
-        # FIXME: this download should be protected
-        Nokogiri::HTML(URI.open(url))
+        Nokogiri::HTML(Curl.get(url) { |client| client.cacert = ENV["CURL_CA_BUNDLE"] }.body)
       end
 
       def link
@@ -378,12 +378,12 @@ class Source < ApplicationModel
       end
     end
 
-    class Authorization < Base
+    class Authorization < URL
       attr_accessor :raw_authorization
       #validates_presence_of :raw_authorization
 
       def download(path)
-        URL.new(url).download(path, headers)
+        super path, headers
       end
 
       private
@@ -394,10 +394,6 @@ class Source < ApplicationModel
         { 'Authorization' => raw_authorization }
       end
     end
-
-    class Ftp < Base; end
-
-    class Sftp < Base; end
   end
 
   module Checksumer

@@ -30,6 +30,10 @@ RSpec.describe Search::Base, type: :model do
     it { is_expected.to allow_value(nil).for(:top_count) }
     it { is_expected.to allow_value('').for(:top_count) }
 
+    it { is_expected.to allow_value(nil).for(:sort_by) }
+    it { is_expected.to allow_value('').for(:sort_by) }
+    it { is_expected.to enumerize(:sort_by).in(%w[value label]) }
+
     context 'when chart_type is present' do
       before { search.chart_type = 'line' }
 
@@ -47,6 +51,11 @@ RSpec.describe Search::Base, type: :model do
       it { is_expected.not_to allow_value('').for(:top_count) }
       it { is_expected.not_to allow_value(-1).for(:top_count) }
       it { is_expected.not_to allow_value(0).for(:top_count) }
+
+      it { is_expected.to allow_value('value').for(:sort_by) }
+      it { is_expected.to allow_value('label').for(:sort_by) }
+      it { is_expected.not_to allow_value(nil).for(:sort_by) }
+      it { is_expected.not_to allow_value('').for(:sort_by) }
     end
   end
 
@@ -434,7 +443,7 @@ RSpec.describe Search::Base::Chart do
       key.reverse
     end
 
-    def includes_for_label_of_custom_label_attribute
+    def joins_for_label_of_custom_label_attribute
       { relation: { other_relation: {} }, another_relation: {} }
     end
 
@@ -449,7 +458,8 @@ RSpec.describe Search::Base::Chart do
       type: chart_type,
       group_by_attribute: group_by_attribute,
       first: first,
-      top_count: top_count
+      top_count: top_count,
+      sort_by: sort_by
     )
   end
   let(:models) { double }
@@ -457,6 +467,7 @@ RSpec.describe Search::Base::Chart do
   let(:group_by_attribute) { 'some_attribute' }
   let(:first) { false }
   let(:top_count) { 10 }
+  let(:sort_by) { 'value' }
 
   describe '#raw_data' do
     subject { chart.raw_data }
@@ -489,6 +500,18 @@ RSpec.describe Search::Base::Chart do
           expect(models).to receive(:group).with('some_attribute').and_return(models)
           expect(models).to receive(:order).with(count_id: :desc).and_return(models)
           expect(models).to receive(:limit).with(100).and_return(models)
+          expect(models).to receive(:count).with(:id)
+          subject
+        end
+      end
+
+      context 'when #sort_by is "label"' do
+        let(:sort_by) { 'label' }
+
+        it do
+          expect(models).to receive(:group).with('some_attribute').and_return(models)
+          expect(models).to receive(:order).with('some_attribute' => :desc).and_return(models)
+          expect(models).to receive(:limit).with(10).and_return(models)
           expect(models).to receive(:count).with(:id)
           subject
         end
@@ -550,7 +573,7 @@ RSpec.describe Search::Base::Chart do
 
       it do
         expect(models).to(
-          receive(:includes).with({ relation: { other_relation: {} }, another_relation: {} }).and_return(models)
+          receive(:joins).with({ relation: { other_relation: {} }, another_relation: {} }).and_return(models)
         )
         expect(models).to(
           receive(:select).with('other_relations.name', 'another_relations.label').and_return(models)
@@ -563,6 +586,29 @@ RSpec.describe Search::Base::Chart do
         expect(models).to receive(:limit).with(10).and_return(models)
         expect(models).to receive(:count).with(:id)
         subject
+      end
+
+      context 'when #sort_by is "label"' do
+        let(:sort_by) { 'label' }
+
+        it do
+          expect(models).to(
+            receive(:joins).with({ relation: { other_relation: {} }, another_relation: {} }).and_return(models)
+          )
+          expect(models).to(
+            receive(:select).with('other_relations.name', 'another_relations.label').and_return(models)
+          )
+          expect(models).to(
+            receive(:group).with('custom_label_attribute', 'other_relations.name', 'another_relations.label')\
+                           .and_return(models)
+          )
+          expect(models).to(
+            receive(:order).with('other_relations.name' => :desc, 'another_relations.label' => :desc).and_return(models)
+          )
+          expect(models).to receive(:limit).with(10).and_return(models)
+          expect(models).to receive(:count).with(:id)
+          subject
+        end
       end
     end
   end

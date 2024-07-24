@@ -7,7 +7,7 @@ module Search
     class Chart < superclass::Chart
       private
 
-      def includes_for_label_of_workbench_id
+      def joins_for_label_of_workbench_id
         { workbench: {} }
       end
 

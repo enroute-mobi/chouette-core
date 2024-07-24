@@ -1,26 +1,21 @@
-= search_form_for @q, url: workbench_referential_path(@workbench, @referential.id), class: 'form form-filter' do |f|
-  .ffg-row
-    .input-group.search_bar class=filter_item_class(params[:q], :name_or_number_or_short_id_cont)
-      = f.search_field :name_or_number_or_short_id_cont, class: 'form-control', placeholder: t('.name_or_number_or_short_id')
-      span.input-group-btn
-        button.btn.btn-default type='submit'
-          span.fa.fa-search
+= simple_form_for @search, url: request.path, method: "GET", html: { class: 'flex items-center tailwind-filters bg-grey relative pr-6' }, wrapper: :filters_form_tailwind  do |f|
+  = f.simple_fields_for :order, @search.order, defaults: { wrapper: false } do |form_order|
+    - form_order.object.attributes.keys.each do |attribute|
+      = form_order.input attribute, as: :hidden
 
-  .ffg-row
-    .form-group.togglable class=filter_item_class(params[:q], :transport_mode_eq_any)
-      = f.label Chouette::Line.human_attribute_name(:transport_mode), required: false, class: 'control-label'
-      = f.input :transport_mode_eq_any, collection: @referential.lines.pluck(:transport_mode).uniq.compact, as: :check_boxes, label: false, label_method: lambda{|l| ("<span>" + t("enumerize.transport_mode.#{l}") + "</span>").html_safe}, required: false, wrapper_html: { class: 'checkbox_list' }
+  .flex.flex-col.w-full
+    .flex.items-center.border-r.border-white
+      = f.input :text, label: false, wrapper_html: {class: "w-2/5"}, placeholder: I18n.t('simple_form.placeholders.search.text')
+    .flex.items-center.border-t.border-r.border-white
+      = f.input :transport_mode, as: :autocomplete_select, input_html: { multiple: true, style: 'width: 100%' }
+      - if (network_ids = @referential.lines.pluck(:network_id).uniq.compact).size > 1
+        = f.input :network_id, as: :autocomplete_select, collection: @search.candidate_networks
+      - if (company_ids = @referential.lines.pluck(:company_id).uniq.compact).size > 1
+        = f.input :company_id, as: :autocomplete_select, collection: @search.candidate_companies
 
-    - if (network_ids = @referential.lines.pluck(:network_id).uniq.compact).size > 1
-      .form-group.togglable class=filter_item_class(params[:q], :network_id_eq_any)
-        = f.label  t('activerecord.attributes.referential.networks'), required: false, class: 'control-label'
-        = f.input :network_id_eq_any, collection: network_ids, as: :check_boxes, label: false, label_method: lambda{|l| ("<span>#{Chouette::Network.find(l).name}</span>").html_safe}, required: false, wrapper_html: { class: 'checkbox_list' }
-
-    - if (company_ids = @referential.lines.pluck(:company_id).uniq.compact).size > 1
-      .form-group.togglable class=filter_item_class(params[:q], :company_id_eq_any)
-        = f.label t('activerecord.attributes.referential.companies'), required: false, class: 'control-label'
-        = f.input :company_id_eq_any, collection: company_ids, as: :check_boxes, label: false, label_method: lambda{|l| ("<span>#{Chouette::Company.find(l).name}</span>").html_safe}, required: false, wrapper_html: { class: 'checkbox_list' }
-
-  .actions
-    = link_to t('actions.erase'), workbench_referential_path(@workbench, @referential), class: 'btn btn-link'
-    = f.submit t('actions.filter'), class: 'btn btn-default'
+  .flex.flex-col.justify-center.items-center.actions.ml-auto.py-3.w-80
+    .flex.items-center.mb-3
+      = render partial: 'shared/per_page', locals: {f:f}
+    .flex.items-center
+      = link_to t('actions.erase'), workbench_referential_path(@workbench, @referential), class: 'btn btn-link'
+      = f.submit t('actions.filter'), class: 'btn btn-default'

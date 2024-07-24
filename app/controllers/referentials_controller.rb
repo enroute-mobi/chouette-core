@@ -44,9 +44,8 @@ class ReferentialsController < Chouette::WorkbenchController
     resource.switch if resource.ready?
     show! do |format|
       @referential = @referential.decorate(context: { workbench: @workbench })
-      @reflines = lines_collection.paginate(page: params[:page], per_page: 10)
       @reflines = ReferentialLineDecorator.decorate(
-        @reflines,
+        collection,
         context: {
           referential: referential,
           workbench: @workbench,
@@ -121,24 +120,16 @@ class ReferentialsController < Chouette::WorkbenchController
     @referential ||= workbench.find_referential!(params[:id]).decorate
   end
 
-  def lines_collection
-    @q = resource.lines.includes(:company, :network).ransack(params[:q])
+  def scope
+    @referential.lines
+  end
 
-    if sort_column && sort_direction
-      @reflines ||=
-        begin
-          reflines = @q.result(distinct: true).order(sort_column + ' ' + sort_direction)
-          reflines = reflines.paginate(page: params[:page], per_page: 10)
-          reflines
-        end
-    else
-      @reflines ||=
-        begin
-          reflines = @q.result(distinct: true).order(:name)
-          reflines = reflines.paginate(page: params[:page], per_page: 10)
-          reflines
-        end
-    end
+  def search
+    @search ||= Search::Line.from_params(params, workbench: workbench)
+  end
+
+  def collection
+    @collection ||= search.search scope
   end
 
   def build_resource
@@ -189,14 +180,6 @@ class ReferentialsController < Chouette::WorkbenchController
   helper_method :current_referential
 
   private
-  def sort_column
-    sortable_columns = Chouette::Line.column_names + ['networks.name', 'companies.name']
-    params[:sort] if sortable_columns.include?(params[:sort])
-  end
-
-  def sort_direction
-    %w[asc desc].include?(params[:direction]) ?  params[:direction] : 'asc'
-  end
 
   def referential_params
     referential_params = params.require(:referential).permit(

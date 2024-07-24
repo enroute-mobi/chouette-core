@@ -25,10 +25,9 @@
             span= (operation.try(:name) || operation.created_at.l(format: :short))
 
     - else
-      - if params[:q].present? or @reflines.any?
-        .row
-          .col-lg-12
-            = render 'filters'
+      .row
+        .col-lg-12
+          = render 'filters'
       - if @reflines.any?
         .row
           .col-lg-12

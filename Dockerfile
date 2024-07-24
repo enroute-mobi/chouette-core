@@ -11,7 +11,7 @@
 # docker build -t chouette-core .
 # docker run --add-host "db:172.17.0.1" -e RAILS_DB_PASSWORD=chouette -p 3000:3000 -it chouette-core
 
-FROM eu.gcr.io/enroute-interne/enroute-ruby:2.7 as base
+FROM eu.gcr.io/enroute-interne/enroute-ruby:2.7 AS base
 
 WORKDIR /app
 
@@ -19,7 +19,7 @@ WORKDIR /app
 COPY build.rc Gemfile Gemfile.lock ./
 RUN build.sh docker::bundler::install
 
-FROM base as assets-builder
+FROM base AS assets-builder
 
 RUN build.sh apt::install::yarn
 
@@ -40,7 +40,7 @@ ARG SENTRY_AUTH_TOKEN
 ARG VERSION
 RUN build.sh docker::assets::precompile
 
-FROM base as final
+FROM base AS final
 
 # Install application file
 COPY . ./

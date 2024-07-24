@@ -49,6 +49,7 @@ en:
         time_table_id: Timetable
         chart_type: Chart Form
         group_by_attribute: Group by
+        sort_by: "Sort by"
   activerecord:
     models:
       search/save:

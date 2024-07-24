@@ -49,6 +49,7 @@ fr:
         time_table_id: Calendrier
         chart_type: Type de graphique
         group_by_attribute: Grouper par
+        sort_by: "Trier par"
   activerecord:
     models:
       search/save:

@@ -463,6 +463,9 @@ fr:
       first:
         first: "Premiers"
         last: "Derniers"
+      sort_by:
+        value: "Valeur"
+        label: "Label"
     control/base:
       criticity:
         warning: Avertissement

@@ -463,6 +463,9 @@ en:
       first:
         first: "First"
         last: "Last"
+      sort_by:
+        value: "Value"
+        label: "Label"
     control/base:
       criticity:
         warning: Warning

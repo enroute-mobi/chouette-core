@@ -17,13 +17,18 @@ module Search
     attribute :group_by_attribute, type: String
     attribute :first, type: Boolean, default: false # meaningless if attribute is in DATE_GROUP_BY_ATTRIBUTES
     attribute :top_count, type: Integer, default: 30 # meaningless if attribute is in NO_LIMIT_DATE_GROUP_BY_ATTRIBUTES
+    # "value" meaningless if attribute is in DATE_GROUP_BY_ATTRIBUTES
+    # "label" meaningless if attribute is in DATE_GROUP_BY_ATTRIBUTES or all_group_by_attribute_keys is defined
+    attribute :sort_by, type: String, default: 'value'
 
     attr_accessor :saved_name, :saved_description
 
     enumerize :chart_type, in: %w[line pie column], i18n_scope: 'enumerize.search.chart_type'
+    enumerize :sort_by, in: %w[value label], i18n_scope: 'enumerize.search.sort_by'
 
     validates :group_by_attribute, inclusion: { in: ->(r) { r.authorized_group_by_attributes } }, if: :graphical?
     validates :top_count, presence: true, numericality: { only_integer: true, greater_than: 1 }, if: :graphical?
+    validates :sort_by, presence: true, if: :graphical?
 
     SAVED_SEARCH_ATTRIBUTE_MAPPING = {
       name: :saved_name,
@@ -207,7 +212,8 @@ module Search
         type: chart_type,
         group_by_attribute: group_by_attribute,
         first: first,
-        top_count: top_count
+        top_count: top_count,
+        sort_by: sort_by
       )
     end
 
@@ -221,18 +227,19 @@ module Search
     end
 
     class Chart
-      def initialize(models, type:, group_by_attribute:, first:, top_count:)
+      def initialize(models, type:, group_by_attribute:, first:, top_count:, sort_by:)
         @models = models
         @type = type
         @group_by_attribute = group_by_attribute
         @first = first
         @top_count = top_count
+        @sort_by = sort_by
       end
-      attr_reader :models, :type, :group_by_attribute, :first, :top_count
+      attr_reader :models, :type, :group_by_attribute, :first, :top_count, :sort_by
 
       def raw_data
         request = models
-        request = includes(request)
+        request = joins(request)
         request = select(request)
         request = group_order_limit(request)
         aggregate(request)
@@ -250,14 +257,14 @@ module Search
 
       private
 
-      def includes(request)
-        return request unless respond_to?(includes_for_label_of_method_name, true)
+      def joins(request)
+        return request unless respond_to?(joins_for_label_of_method_name, true)
 
-        request.includes(send(includes_for_label_of_method_name))
+        request.joins(send(joins_for_label_of_method_name))
       end
 
-      def includes_for_label_of_method_name
-        @includes_for_label_of_method_name ||= :"includes_for_label_of_#{group_by_attribute}"
+      def joins_for_label_of_method_name
+        @joins_for_label_of_method_name ||= :"joins_for_label_of_#{group_by_attribute}"
       end
 
       def select(request)
@@ -282,7 +289,7 @@ module Search
         if date_group_by_attribute?
           request.send(group_by_attribute_method, :created_at, **group_by_attribute_method_options)
         else
-          request.group(group_by_attribute, *selects).order(count_id: first ? :asc : :desc).limit(top_count)
+          request.group(group_by_attribute, *selects).order(order_arg).limit(top_count)
         end
       end
 
@@ -306,6 +313,20 @@ module Search
           {}
         else
           { last: top_count }
+        end
+      end
+
+      def order_arg
+        asc_desc = first ? :asc : :desc
+
+        if sort_by == 'label'
+          if selects.any?
+            selects.map { |s| [s, asc_desc] }.to_h
+          else
+            { group_by_attribute => asc_desc }
+          end
+        else
+          { count_id: asc_desc }
         end
       end
 

@@ -118,6 +118,7 @@ fr:
         filename: Nom de l'archive
         overlapping_referentials: Jeux de données
         code_space: Espace de code
+        workbench_id: "Espace de travail"
       import:
         <<: *attrs
         base:

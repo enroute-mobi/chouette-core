@@ -262,11 +262,13 @@ class Source < ApplicationModel
   end
 
   def downloader_class
-    if downloader_type.present? && downloader_type != :direct
-      Downloader.const_get(downloader_type.camelcase)
-    else
-      Downloader::URL
+    begin
+      return Downloader.const_get(downloader_type.camelcase) if downloader_type.present?
+    rescue NameError
+      # Will use default class
     end
+
+    Downloader::URL
   end
 
   def downloader
@@ -282,117 +284,90 @@ class Source < ApplicationModel
   delegate :line_providers, :stop_area_providers, to: :workbench, prefix: :candidate
 
   module Downloader
-
-    class Base
-      attr_reader :url
-
-      def initialize(url, options = {})
-        @url = url
-        options.each { |k,v| send "#{k}=", v }
-      end
-    end
-    class URL < Base
+    class URL
       mattr_accessor :timeout, default: 120.seconds
 
-      def download(path, headers = {})
-        Fetcher.new(url, headers, read_timeout: timeout).fetch(path)
-      end
-    end
-
-    # Downlaod a given URL. Manages redirection
-    class Fetcher
-
-      attr_reader :url, :headers
-      attr_accessor :read_timeout
-      attr_writer :redirection_count
-
-      def initialize(url, headers = {}, options = {})
-        @url = url
-        @headers = headers
-
-        options.each { |k, v| send "#{k}=", v }
-      end
-
-      def request
-        @request ||= Net::HTTP::Get.new(uri).tap do |request|
-          headers.each { |name, value| request[name] = value }
-        end
-      end
-
-      def response
-        http.start do |http|
-          http.request request
-        end
-      end
-
-      def uri
-        @uri ||= URI(url)
-      end
-
-      def use_ssl?
-        uri.instance_of?(URI::HTTPS)
-      end
-
-      def http
-        Net::HTTP.new(uri.hostname, uri.port).tap do |http|
-          http.use_ssl = use_ssl?
-          http.read_timeout = read_timeout if read_timeout
-        end
-      end
-
-      def error_for(response) # rubocop:disable Metrics/MethodLength
-        Rails.logger.debug { "HTTP response: #{response.code} #{response.body}" }
-        message_key =
-          # TODO: we should/could test the response class
-          case response.code
-          when '404'
-            :url_not_found
-          when '401', '403'
-            :authentication_failed
-          when /^50\d$/
-            :url_not_available
-          else
-            :download_failed
-          end
-        Source::Retrieval::Error.new message_key
-      end
+      attr_reader :url
+      attr_accessor :username, :password, :error
 
       def redirection_count
         @redirection_count ||= 10
       end
 
-      def allow_redirect?
-        redirection_count > 1
+      def initialize(url, options = {})
+        @url = url
+        options.each { |k,v| send "#{k}=", v }
       end
 
-      def redirect
-        raise Source::Retrieval::Error, :url_not_available unless allow_redirect?
-
-        Fetcher.new(response['location'], headers, redirection_count: redirection_count - 1)
+      def create_error(message_key)
+        self.error = Source::Retrieval::Error.new(message_key)
       end
 
-      def fetch(path)
-        http.start do |http|
-          http.request request do |response|
-            return redirect.fetch(path) if response.is_a?(Net::HTTPRedirection)
-            raise error_for(response) unless response.is_a?(Net::HTTPSuccess)
+      def download(path, headers = {})
+        self.error = nil
 
-            File.open(path, 'wb') do |file|
-              response.read_body file
+        client.on_success do |c|
+          File.open(path, 'wb') do |file|
+            file.write c.body
+          end
+        end
+
+        begin
+          client.perform
+        rescue Curl::Err::CurlError
+          create_error :download_failed
+        end
+
+        raise error if error
+      end
+
+      def headers
+        {}
+      end
+
+      def client
+        @client ||= Curl::Easy.new(url) do |client|
+          headers.each { |name, value| client.headers[name] = value }
+
+          client.timeout = timeout
+          client.max_redirects = redirection_count
+          client.follow_location = true
+
+          if username && password
+            client.username = username
+            client.password = password
+          end
+
+          # Workaround for https://github.com/taf2/curb/issues/452
+          client.cacert = ENV["CURL_CA_BUNDLE"]
+
+          client.on_missing do |c, code|
+            message_key = case c.response_code
+            when 404
+              :url_not_found
+            when 401, 403
+              :authentication_failed
             end
+
+            create_error message_key if message_key
+          end
+
+          client.on_failure do |c, code|
+            create_error :url_not_available
           end
         end
       end
     end
 
-    class FrenchNap < Base
+    class FrenchNap < URL
       def download(path)
         URL.new(link).download(path)
+      rescue Curl::Err::CurlError
+        raise Source::Retrieval::Error.new(:download_failed)
       end
 
       def page
-        # FIXME: this download should be protected
-        Nokogiri::HTML(URI.open(url))
+        Nokogiri::HTML(Curl.get(url) { |client| client.cacert = ENV["CURL_CA_BUNDLE"] }.body)
       end
 
       def link
@@ -403,12 +378,12 @@ class Source < ApplicationModel
       end
     end
 
-    class Authorization < Base
+    class Authorization < URL
       attr_accessor :raw_authorization
       #validates_presence_of :raw_authorization
 
       def download(path)
-        URL.new(url).download(path, headers)
+        super path, headers
       end
 
       private
@@ -417,50 +392,6 @@ class Source < ApplicationModel
         return {} unless raw_authorization
 
         { 'Authorization' => raw_authorization }
-      end
-    end
-
-    class Ftp < Base
-
-      def download(path)
-        ftp.getbinaryfile(remote_filename, path)
-      end
-
-      def uri
-        @uri ||= URI(url)
-      end
-
-      def host
-        @host ||= uri.host
-      end
-
-      def port
-        @port ||= uri.port
-      end
-
-      def username
-        @username ||= (uri.user || 'anonymous')
-      end
-
-      def password
-        @password ||= (uri.password || 'chouette@enroute.mobi')
-      end
-
-      def remote_dir
-        @remote_dir ||= File.dirname uri.path
-      end
-
-      def remote_filename
-        @remote_filename ||= File.basename uri.path
-      end
-
-      def ftp
-        @ftp ||= Net::FTP.new.tap do |ftp|
-          ftp.connect host, port
-          ftp.login username, password
-          ftp.chdir remote_dir
-          ftp.passive = true
-        end
       end
     end
   end

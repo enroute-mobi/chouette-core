@@ -228,12 +228,12 @@ RSpec.describe Source::Downloader::URL do
   describe '#download' do
     let(:path) { Tempfile.new.path }
 
-    it 'uses a (read) timeout of 120 seconds' do
-      expect(Source::Downloader::Fetcher)
-        .to receive(:new).with(downloader.url, {}, read_timeout: 120).and_return(double(fetch: true))
+  end
 
-      downloader.download(path)
-    end
+  describe '#client' do
+    subject { downloader.client }
+
+    it { is_expected.to have_attributes(timeout: 120.seconds) }
   end
 end
 

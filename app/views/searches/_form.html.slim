@@ -38,7 +38,7 @@
           = link_to t('searchs.actions.destroy'), saved_search_path(search.saved_search), method: :delete, data: { :confirm => t('searchs.actions.destroy_confirm') }, class: 'btn btn-danger ml-5'
 
     .flex.items-center.border-t.border-white x-show="graphPanel"
-      = f.input :group_by_attribute, wrapper_html: {class: "border-l"}
+      = f.input :group_by_attribute, as: :select, collection: f.object.authorized_group_by_attributes.map { |attr| [I18n.t(attr, scope: 'enumerize.search.group_by_attribute', default: collection.klass.human_attribute_name(attr)), attr] }, include_blank: false, wrapper_html: {class: "border-l"}
       = f.input :top_count, wrapper_html: {class: "border-l"}
       = f.input :chart_type, wrapper_html: {class: "border-l"}
 

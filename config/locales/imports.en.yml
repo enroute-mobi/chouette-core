@@ -104,9 +104,9 @@ en:
         ignore_last_word: "ignore last word"
         ignore_end_chars: "ignore last chars"
         referential: Referential
-        workbench: Workbench
         filename: Filename
         overlapping_referentials: Datasets
+        workbench_id: Workbench
       import:
         <<: *attrs
         base:

@@ -117,6 +117,7 @@ fr:
         referential: Jeu de données
         filename: Nom de l'archive
         overlapping_referentials: Jeux de données
+        workbench_id: "Espace de travail"
       import:
         <<: *attrs
         base:

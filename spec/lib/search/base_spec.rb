@@ -22,7 +22,7 @@ RSpec.describe Search::Base, type: :model do
   describe 'validations' do
     it { is_expected.to allow_value(nil).for(:chart_type) }
     it { is_expected.to allow_value('').for(:chart_type) }
-    it { is_expected.to validate_inclusion_of(:chart_type).in_array(%w[line pie column]) }
+    it { is_expected.to enumerize(:chart_type).in(%w[line pie column]) }
 
     it { is_expected.to allow_value(nil).for(:group_by_attribute) }
     it { is_expected.to allow_value('').for(:group_by_attribute) }

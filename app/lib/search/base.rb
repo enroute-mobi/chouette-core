@@ -20,15 +20,22 @@ module Search
     # "value" meaningless if attribute is in DATE_GROUP_BY_ATTRIBUTES
     # "label" meaningless if attribute is in DATE_GROUP_BY_ATTRIBUTES or all_group_by_attribute_keys is defined
     attribute :sort_by, type: String, default: 'value'
+    attribute :aggregate_operation, type: String, default: 'count'
+    attribute :aggregate_attribute, type: String
 
     attr_accessor :saved_name, :saved_description
 
     enumerize :chart_type, in: %w[line pie column], i18n_scope: 'enumerize.search.chart_type'
     enumerize :sort_by, in: %w[value label], i18n_scope: 'enumerize.search.sort_by'
+    enumerize :aggregate_operation, in: %w[count sum average], i18n_scope: 'enumerize.search.aggregate_operation'
 
-    validates :group_by_attribute, inclusion: { in: ->(r) { r.authorized_group_by_attributes } }, if: :graphical?
-    validates :top_count, presence: true, numericality: { only_integer: true, greater_than: 1 }, if: :graphical?
-    validates :sort_by, presence: true, if: :graphical?
+    with_options if: :graphical? do
+      validates :group_by_attribute, inclusion: { in: ->(r) { r.authorized_group_by_attributes } }
+      validates :top_count, presence: true, numericality: { only_integer: true, greater_than: 1 }
+      validates :sort_by, presence: true
+      validates :aggregate_operation, presence: true
+      validates :aggregate_attribute, inclusion: { in: ->(r) { r.numeric_attributes.keys } }, if: :aggregate_attribute?
+    end
 
     SAVED_SEARCH_ATTRIBUTE_MAPPING = {
       name: :saved_name,
@@ -40,6 +47,8 @@ module Search
       hour_of_day
       day_of_week
     ].freeze
+
+    NUMERIC_ATTRIBUTES = {}.freeze
 
     def initialize(attributes = {})
       apply_defaults
@@ -110,6 +119,10 @@ module Search
 
     def authorized_group_by_attributes
       self.class::AUTHORIZED_GROUP_BY_ATTRIBUTES
+    end
+
+    def numeric_attributes
+      self.class::NUMERIC_ATTRIBUTES
     end
 
     # Create Search attributes from our legacy Controller params (:sort, :direction, :page, etc)
@@ -203,7 +216,7 @@ module Search
       end
     end
 
-    def chart(scope)
+    def chart(scope) # rubocop:disable Metrics/AbcSize,Metrics/MethodLength
       return nil unless valid? && graphical?
 
       models = without_order.without_pagination.search(scope)
@@ -213,7 +226,9 @@ module Search
         group_by_attribute: group_by_attribute,
         first: first,
         top_count: top_count,
-        sort_by: sort_by
+        sort_by: sort_by,
+        aggregate_operation: aggregate_operation,
+        aggregate_attribute: aggregate_attribute ? numeric_attributes[aggregate_attribute] : nil
       )
     end
 
@@ -227,15 +242,33 @@ module Search
     end
 
     class Chart
-      def initialize(models, type:, group_by_attribute:, first:, top_count:, sort_by:)
+      def initialize(
+        models,
+        type:,
+        group_by_attribute:,
+        first:,
+        top_count:,
+        sort_by:,
+        aggregate_operation:,
+        aggregate_attribute:
+      )
         @models = models
         @type = type
         @group_by_attribute = group_by_attribute
         @first = first
         @top_count = top_count
         @sort_by = sort_by
+        @aggregate_operation = aggregate_operation
+        @aggregate_attribute = aggregate_attribute
       end
-      attr_reader :models, :type, :group_by_attribute, :first, :top_count, :sort_by
+      attr_reader :models,
+                  :type,
+                  :group_by_attribute,
+                  :first,
+                  :top_count,
+                  :sort_by,
+                  :aggregate_operation,
+                  :aggregate_attribute
 
       def raw_data
         request = models
@@ -326,12 +359,24 @@ module Search
             { group_by_attribute => asc_desc }
           end
         else
-          { count_id: asc_desc }
+          { order_aggregate_alias => asc_desc }
+        end
+      end
+
+      def order_aggregate_alias
+        if aggregate_operation == 'count'
+          :count_id
+        else
+          models.send(:column_alias_for, "#{aggregate_operation} #{aggregate_attribute}")
         end
       end
 
       def aggregate(request)
-        request.count(:id)
+        if aggregate_operation == 'count'
+          request.count(:id)
+        else
+          request.send(aggregate_operation, aggregate_attribute)
+        end
       end
 
       def add_missing_keys(data)
@@ -369,6 +414,12 @@ module Search
       def label_day_of_week_key(key)
         I18n.t('date.day_names')[key]
       end
+    end
+
+    private
+
+    def aggregate_attribute?
+      aggregate_operation.in?(%w[sum average])
     end
   end
 

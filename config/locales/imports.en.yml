@@ -107,6 +107,7 @@ en:
         filename: Filename
         overlapping_referentials: Datasets
         workbench_id: Workbench
+        duration: "Duration"
       import:
         <<: *attrs
         base:

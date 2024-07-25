@@ -137,6 +137,7 @@ en:
         french_nap: French NAP
         authorization: Authorization Header
         ftp: FTP
+        sftp: SFTP
       retrieval_frequency:
         none: None
         daily: Daily

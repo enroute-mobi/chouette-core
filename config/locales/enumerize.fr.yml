@@ -136,6 +136,7 @@ fr:
         french_nap: Point d'Accès National (France)
         authorization: Entête d'authentification
         ftp: FTP
+        sftp: SFTP
       retrieval_frequency:
         none: Jamais
         daily: Quotidiennement

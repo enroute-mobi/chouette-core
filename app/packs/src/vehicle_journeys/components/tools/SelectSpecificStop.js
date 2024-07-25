@@ -146,7 +146,7 @@ export default class SelectSpecificStop extends Component {
                               <div className='t2e-head w50'>
                                 <div className='th hidden'>
                                 </div>
-                                { this.props.modal.modalProps.vehicleJourney.journey_pattern.stop_points.map((sp, i) => {
+                                { this.props.modal.modalProps.vehicleJourney.journey_pattern.stop_points && this.props.modal.modalProps.vehicleJourney.journey_pattern.stop_points.map((sp, i) => {
                                   return (
                                     <div key={i} className='td'>
                                       {this.headerManager.stopPointHeader(sp.objectid, false)}

@@ -59,11 +59,11 @@
                   attribute: Proc.new { |n| n.transport_mode ? t("enumerize.transport_mode.#{n.transport_mode}") : '' }, \
                 ), \
                 TableBuilderHelper::Column.new( \
-                  key: 'networks.name', \
+                  key: 'network', \
                   attribute: Proc.new { |n| n.try(:network).try(:name) } \
                 ), \
                 TableBuilderHelper::Column.new( \
-                  key: 'companies.name', \
+                  key: 'company', \
                   attribute: Proc.new { |n| n&.company&.name || "-" } \
                 ) \
               ],

@@ -36,18 +36,27 @@ class UrlValidator < ActiveModel::EachValidator
     def valid_host?(value)
       case value
       when String
-        host.end_with? value
+        host == value
       else
         host =~ value
       end
     end
 
+    def cached_resolved_host
+      @cached_resolved_host ||=
+        begin
+          Resolv.getaddress(host)
+        rescue Resolv::ResolvError
+          :none
+        end
+    end
+
     def resolved_host
-      @resolved_host ||= Resolv.getaddress(host)
+      [ :none, '0.0.0.0' ].include?(cached_resolved_host) ? nil : cached_resolved_host
     end
 
     def resolved_host?
-      resolved_host != '0.0.0.0'
+      resolved_host.present?
     end
 
     def ip_address

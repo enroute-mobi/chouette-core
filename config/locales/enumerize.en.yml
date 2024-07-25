@@ -466,6 +466,10 @@ en:
       sort_by:
         value: "Value"
         label: "Label"
+      aggregate_operation:
+        count: "Count"
+        sum: "Sum"
+        average: "Average"
     control/base:
       criticity:
         warning: Warning

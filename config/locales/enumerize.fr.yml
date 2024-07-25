@@ -466,6 +466,10 @@ fr:
       sort_by:
         value: "Valeur"
         label: "Label"
+      aggregate_operation:
+        count: "Comptage"
+        sum: "Somme"
+        average: "Moyenne"
     control/base:
       criticity:
         warning: Avertissement

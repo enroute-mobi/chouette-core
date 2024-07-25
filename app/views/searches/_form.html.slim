@@ -42,6 +42,8 @@
       = f.input :first, as: :select, collection: [[I18n.t('enumerize.search.first.first'), '1'], [I18n.t('enumerize.search.first.last'), '']], include_blank: false, selected: f.object.first ? '1' : '', label: false, wrapper_html: {class: "border-l"}
       = f.input :top_count, as: :integer, label: false, wrapper_html: {class: "border-l"}
       = f.input :sort_by, include_blank: false, wrapper_html: {class: "border-l"}
+      = f.input :aggregate_operation, include_blank: false, label: false, wrapper_html: {class: "border-l"}
+      = f.input :aggregate_attribute, collection: f.object.numeric_attributes.keys.map { |attr| [collection.klass.human_attribute_name(attr), attr] }, include_blank: '-', label: false, wrapper_html: {class: "border-l"}
       = f.input :chart_type, wrapper_html: {class: "border-l"}
 
   .flex.flex-col.justify-center.items-center.actions.ml-auto.py-3.w-80.border-white.border-t.border-l.h-max

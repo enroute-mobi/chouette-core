@@ -6,6 +6,7 @@ RSpec.describe Search::Base, type: :model do
     attr_accessor :context
 
     AUTHORIZED_GROUP_BY_ATTRIBUTES = (Search::Base::AUTHORIZED_GROUP_BY_ATTRIBUTES + %w[some_attribute]).freeze
+    NUMERIC_ATTRIBUTES = { 'some_numeric_attribute' => 'EXTRACT(EPOCH FROM updated_at - created_at)' }.freeze
 
     class Order < ::Search::Order
       attribute :name, column: 'column'
@@ -34,6 +35,13 @@ RSpec.describe Search::Base, type: :model do
     it { is_expected.to allow_value('').for(:sort_by) }
     it { is_expected.to enumerize(:sort_by).in(%w[value label]) }
 
+    it { is_expected.to allow_value(nil).for(:aggregate_operation) }
+    it { is_expected.to allow_value('').for(:aggregate_operation) }
+    it { is_expected.to enumerize(:aggregate_operation).in(%w[count sum average]) }
+
+    it { is_expected.to allow_value(nil).for(:aggregate_attribute) }
+    it { is_expected.to allow_value('').for(:aggregate_attribute) }
+
     context 'when chart_type is present' do
       before { search.chart_type = 'line' }
 
@@ -56,6 +64,27 @@ RSpec.describe Search::Base, type: :model do
       it { is_expected.to allow_value('label').for(:sort_by) }
       it { is_expected.not_to allow_value(nil).for(:sort_by) }
       it { is_expected.not_to allow_value('').for(:sort_by) }
+
+      it { is_expected.to allow_value(nil).for(:aggregate_attribute) }
+      it { is_expected.to allow_value('').for(:aggregate_attribute) }
+
+      context 'when aggregate_attribute is "sum"' do
+        before { search.aggregate_operation = 'sum' }
+
+        it { is_expected.to allow_value('some_numeric_attribute').for(:aggregate_attribute) }
+        it { is_expected.not_to allow_value(nil).for(:aggregate_attribute) }
+        it { is_expected.not_to allow_value('').for(:aggregate_attribute) }
+        it { is_expected.not_to allow_value('some_other_attribute').for(:aggregate_attribute) }
+      end
+
+      context 'when aggregate_attribute is "average"' do
+        before { search.aggregate_operation = 'average' }
+
+        it { is_expected.to allow_value('some_numeric_attribute').for(:aggregate_attribute) }
+        it { is_expected.not_to allow_value(nil).for(:aggregate_attribute) }
+        it { is_expected.not_to allow_value('').for(:aggregate_attribute) }
+        it { is_expected.not_to allow_value('some_other_attribute').for(:aggregate_attribute) }
+      end
     end
   end
 
@@ -162,6 +191,15 @@ RSpec.describe Search::Base, type: :model do
       end
 
       it { is_expected.to be_an_instance_of(self.class::Search::Chart) }
+
+      context 'with aggregate_attribute' do
+        before do
+          search.aggregate_operation = 'sum'
+          search.aggregate_attribute = 'some_numeric_attribute'
+        end
+
+        it { is_expected.to have_attributes(aggregate_attribute: 'EXTRACT(EPOCH FROM updated_at - created_at)') }
+      end
     end
   end
 
@@ -459,7 +497,9 @@ RSpec.describe Search::Base::Chart do
       group_by_attribute: group_by_attribute,
       first: first,
       top_count: top_count,
-      sort_by: sort_by
+      sort_by: sort_by,
+      aggregate_operation: aggregate_operation,
+      aggregate_attribute: aggregate_attribute
     )
   end
   let(:models) { double }
@@ -468,6 +508,10 @@ RSpec.describe Search::Base::Chart do
   let(:first) { false }
   let(:top_count) { 10 }
   let(:sort_by) { 'value' }
+  let(:aggregate_operation) { 'count' }
+  let(:aggregate_attribute) { nil }
+
+  before { allow(models).to receive(:column_alias_for) { |arg| Search::Save.all.send(:column_alias_for, arg) } }
 
   describe '#raw_data' do
     subject { chart.raw_data }
@@ -609,6 +653,21 @@ RSpec.describe Search::Base::Chart do
           expect(models).to receive(:count).with(:id)
           subject
         end
+      end
+    end
+
+    context 'when #aggregate_operation is "sum"' do
+      let(:aggregate_operation) { 'sum' }
+      let(:aggregate_attribute) { 'EXTRACT(EPOCH FROM updated_at - created_at)' }
+
+      it do
+        expect(models).to receive(:group).with('some_attribute').and_return(models)
+        expect(models).to(
+          receive(:order).with('sum_extract_epoch_from_updated_at_created_at' => :desc).and_return(models)
+        )
+        expect(models).to receive(:limit).with(10).and_return(models)
+        expect(models).to receive(:sum).with('EXTRACT(EPOCH FROM updated_at - created_at)')
+        subject
       end
     end
   end

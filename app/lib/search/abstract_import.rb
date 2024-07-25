@@ -4,6 +4,10 @@ module Search
   class AbstractImport < ::Search::Operation
     AUTHORIZED_GROUP_BY_ATTRIBUTES = (superclass::AUTHORIZED_GROUP_BY_ATTRIBUTES + %w[status]).freeze
 
+    NUMERIC_ATTRIBUTES = {
+      'duration' => 'EXTRACT(EPOCH FROM ended_at - started_at)'
+    }.freeze
+
     def query_class
       Query::Import
     end

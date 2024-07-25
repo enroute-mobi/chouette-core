@@ -10,11 +10,33 @@ class Source < ApplicationModel
   validates :name, presence: true
   validates :url, presence: true
   validates :downloader_type, presence: true
-  validates :downloader_option_raw_authorization, presence: true, if: :authorization_downloader_type?
 
-  #validates_associated :downloader
+  with_options if: :downloader_type_direct? do |direct|
+    direct.validates :url, url: { private_host: false, scheme: %w{http https} }
+  end
 
-  enumerize :downloader_type, in: %i(direct french_nap authorization ftp), default: :direct
+  with_options if: :downloader_type_ftp? do |ftp|
+    ftp.validates :url, url: { private_host: false, scheme: %w{ftp ftps} }
+  end
+
+  with_options if: :downloader_type_sftp? do |sftp|
+    sftp.validates :url, url: { private_host: false, scheme: %w{sftp} }
+  end
+
+  with_options if: :downloader_type_authorization? do |authorization|
+    authorization.validates :url, url: { private_host: false, scheme: %w{http https} }
+
+    authorization.validates :downloader_option_raw_authorization, presence: true
+    authorization.validates :downloader_option_username, :downloader_option_password, absence: true
+  end
+
+  with_options if: :downloader_type_french_nap? do |french_nap|
+    french_nap.validates :url, url: { host: 'transport.data.gouv.fr', scheme: 'https' }
+    french_nap.validates :downloader_option_raw_authorization, :downloader_option_username,
+                            :downloader_option_password, absence: true
+  end
+
+  enumerize :downloader_type, in: %i(direct french_nap authorization ftp sftp), default: :direct, predicates: { prefix: true }
 
   scope :enabled, -> { where.not(retrieval_frequency: 'none') }
 
@@ -130,10 +152,6 @@ class Source < ApplicationModel
     end
   end
 
-  def authorization_downloader_type?
-    downloader_type == 'authorization'
-  end
-
   def clean
     unless downloader_type == "authorization"
       self.downloader_options = self.downloader_options.except("raw_authorization")
@@ -152,114 +170,44 @@ class Source < ApplicationModel
     workbench.workgroup.code_spaces.find_by(id: import_option_code_space_id)
   end
 
-  def import_option_automatic_merge
-    import_options["automatic_merge"]
-  end
-
-  def import_option_archive_on_fail
-    import_options["archive_on_fail"]
-  end
-
-  def import_option_update_workgroup_providers
-    import_options["update_workgroup_providers"]
-  end
-
   def import_option_process_gtfs_route_ids
-    (import_options["process_gtfs_route_ids"] || [])
+    import_options.fetch "process_gtfs_route_ids", []
   end
 
-  def import_option_store_xml
-    import_options["store_xml"]
-  end
-
-  def import_option_disable_missing_resources
-    import_options["disable_missing_resources"]
-  end
-
-  def import_option_strict_mode
-    import_options["strict_mode"]
-  end
-
-  def import_option_ignore_particulars
-    import_options["ignore_particulars"]
-  end
-
-  def import_option_line_provider_id
-    import_options["line_provider_id"]
-  end
-
-  def import_option_stop_area_provider_id
-    import_options["stop_area_provider_id"]
-  end
-
-  def import_option_automatic_merge=(value)
-    import_options["automatic_merge"] = value
-  end
-
-  def import_option_code_space_id
-    import_options['code_space_id']
-  end
-
-  def import_option_archive_on_fail=(value)
-    import_options["archive_on_fail"] = value
-  end
-
-  def import_option_update_workgroup_providers=(value)
-    import_options["update_workgroup_providers"] = value
-  end
-
-  # Use compact to delete empty value
+  # Use compact to delete empty value
   def import_option_process_gtfs_route_ids=(value)
     import_options["process_gtfs_route_ids"] = value.reject(&:blank?)
   end
 
-  def import_option_store_xml=(value)
-    import_options["store_xml"] = value
+  def method_missing(name, *args)
+    case name
+    when /^import_option_(.*)=/
+      import_options[$1] = args.first
+    when /^import_option_(.*)\?/
+      import_options[$1] == 'true'
+    when /^import_option_(.*)$/
+      import_options[$1]
+    when /^downloader_option_(.*)=/
+      downloader_options[$1] = args.first
+    when /^downloader_option_(.*)$/
+      downloader_options[$1]
+    else
+      super
+    end
   end
 
-  def import_option_disable_missing_resources=(value)
-    import_options["disable_missing_resources"] = value
+  def respond_to?(name)
+    case name
+    when /^import_option_/, /^downloader_option_/
+      true
+    else
+      super
+    end
   end
 
-  def import_option_strict_mode=(value)
-    import_options["strict_mode"] = value
-  end
-
-  def import_option_ignore_particulars=(value)
-    import_options["ignore_particulars"] = value
-  end
-
-  def import_option_line_provider_id=(value)
-    import_options["line_provider_id"] = value
-  end
-
-  def import_option_stop_area_provider_id=(value)
-    import_options["stop_area_provider_id"] = value
-  end
-
-  def import_option_code_space_id=(value)
-    import_options['code_space_id'] = value
-  end
-
-  def update_workgroup_providers?
-    import_options["update_workgroup_providers"] == "true"
-  end
-
-  def store_xml?
-    import_options["store_xml"] == "true"
-  end
-
-  def disable_missing_resources?
-    import_options["disable_missing_resources"] == "true"
-  end
-
-  def downloader_option_raw_authorization
-    downloader_options["raw_authorization"]
-  end
-
-  def downloader_option_raw_authorization=(value)
-    downloader_options["raw_authorization"] = value
-  end
+  def update_workgroup_providers?; import_option_update_workgroup_providers?; end
+  def store_xml?; import_option_store_xml?; end
+  def disable_missing_resources?; import_option_disable_missing_resources; end
 
   def downloader_class
     begin

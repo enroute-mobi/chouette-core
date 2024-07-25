@@ -8,6 +8,86 @@ RSpec.describe Source do
   it { is_expected.to belong_to(:scheduled_job).class_name('::Delayed::Job').dependent(:destroy) }
   it { is_expected.to enumerize(:retrieval_frequency).in(:none, :hourly, :daily).with_default(:none) }
 
+  describe 'with direct downloader' do
+    subject { Source.new downloader_type: 'direct' }
+
+    it { is_expected.to allow_value('http://example.com').for(:url) }
+    it { is_expected.to allow_value('https://example.com').for(:url) }
+
+    it { is_expected.to_not allow_value('ftp://example.com').for(:url) }
+    it { is_expected.to_not allow_value('sftp://example.com').for(:url) }
+    it { is_expected.to_not allow_value('wrong://example.com').for(:url) }
+
+    it { is_expected.to_not allow_value('http://localhost').for(:url) }
+    it { is_expected.to_not allow_value('http://wrong').for(:url) }
+  end
+
+  describe 'with ftp downloader' do
+    subject { Source.new downloader_type: 'ftp' }
+
+    it { is_expected.to allow_value('ftp://example.com').for(:url) }
+    it { is_expected.to allow_value('ftps://example.com').for(:url) }
+
+    it { is_expected.to_not allow_value('http://example.com').for(:url) }
+    it { is_expected.to_not allow_value('https://example.com').for(:url) }
+    it { is_expected.to_not allow_value('sftp://example.com').for(:url) }
+    it { is_expected.to_not allow_value('wrong://example.com').for(:url) }
+
+    it { is_expected.to_not allow_value('ftp://localhost').for(:url) }
+    it { is_expected.to_not allow_value('ftp://wrong').for(:url) }
+  end
+
+  describe 'with sftp downloader' do
+    subject { Source.new downloader_type: 'sftp' }
+
+    it { is_expected.to allow_value('sftp://example.com').for(:url) }
+
+    it { is_expected.to_not allow_value('http://example.com').for(:url) }
+    it { is_expected.to_not allow_value('https://example.com').for(:url) }
+    it { is_expected.to_not allow_value('ftp://example.com').for(:url) }
+    it { is_expected.to_not allow_value('wrong://example.com').for(:url) }
+
+    it { is_expected.to_not allow_value('sftp://localhost').for(:url) }
+    it { is_expected.to_not allow_value('sftp://wrong').for(:url) }
+  end
+
+  describe 'with authorization downloader' do
+    subject { Source.new downloader_type: 'authorization' }
+
+    it { is_expected.to allow_value('http://example.com').for(:url) }
+    it { is_expected.to allow_value('https://example.com').for(:url) }
+
+    it { is_expected.to validate_presence_of(:downloader_option_raw_authorization) }
+
+    it { is_expected.to validate_absence_of(:downloader_option_username) }
+    it { is_expected.to validate_absence_of(:downloader_option_password) }
+
+    it { is_expected.to_not allow_value('sftp://example.com').for(:url) }
+    it { is_expected.to_not allow_value('ftp://example.com').for(:url) }
+    it { is_expected.to_not allow_value('wrong://example.com').for(:url) }
+
+    it { is_expected.to_not allow_value('http://localhost').for(:url) }
+    it { is_expected.to_not allow_value('http://wrong').for(:url) }
+  end
+
+  describe 'with french_nap downloader' do
+    subject { Source.new downloader_type: 'french_nap' }
+
+    it { is_expected.to allow_value('https://transport.data.gouv.fr/datasets/something').for(:url) }
+
+    it { is_expected.to validate_absence_of(:downloader_option_raw_authorization) }
+    it { is_expected.to validate_absence_of(:downloader_option_username) }
+    it { is_expected.to validate_absence_of(:downloader_option_password) }
+
+    it { is_expected.to_not allow_value('sftp://example.com').for(:url) }
+    it { is_expected.to_not allow_value('ftp://example.com').for(:url) }
+    it { is_expected.to_not allow_value('wrong://example.com').for(:url) }
+
+    it { is_expected.to_not allow_value('http://example.com').for(:url) }
+    it { is_expected.to_not allow_value('http://localhost').for(:url) }
+    it { is_expected.to_not allow_value('http://wrong').for(:url) }
+  end
+
   describe '.next_retrieval' do
     subject { source.next_retrieval }
     let(:source) { Source.new }
@@ -368,7 +448,7 @@ RSpec.describe Source::ScheduledJob do
     subject { source.import_option_code_space }
 
     context 'when no import_option_code_space_id option is defined' do
-      before { source.import_options['import_option_code_space_id'] = nil }
+      before { source.import_options['code_space_id'] = nil }
 
       it 'does not use any code space' do
         is_expected.to be_nil

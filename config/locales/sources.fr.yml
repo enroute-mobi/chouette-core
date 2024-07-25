@@ -45,6 +45,8 @@ fr:
         downloader_type: "Type de téléchargement"
         downloader_options: "Options de téléchargement"
         downloader_option_raw_authorization: Autorisation brute
+        downloader_option_username: Nom d'utilisateur
+        downloader_option_password: Mot de passe
         checksum: "Signature métier"
         import_options: "Options d'importation"
         import_option_automatic_merge: Finalisation automatique des jeux de données importés

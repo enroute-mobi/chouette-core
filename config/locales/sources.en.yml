@@ -44,7 +44,9 @@ en:
         url: "URL"
         downloader_type: "Downloader type"
         downloader_options: "Downloader options"
-        downloader_option_raw_authorization: Downloader option raw authorization
+        downloader_option_username: Username
+        downloader_option_password: Password
+        downloader_option_raw_authorization: Authorization header
         checksum: "Checksum"
         import_options: "Import options"
         import_option_automatic_merge: Automatic merge

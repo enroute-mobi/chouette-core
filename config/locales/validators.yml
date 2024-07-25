@@ -1,0 +1,17 @@
+fr:
+  errors:
+    messages:
+      # Used by UrlValidator
+      invalid_scheme: 'Le protocole devrait être parmi %{expected_schemes}'
+      host_not_found: "Le nom de serveur indiqué n'est pas trouvable"
+      host_not_allowed: 'Le serveur devrait être %{expected_host}'
+      private_host_not_allowed: 'Seuls les serveurs publics sont acceptés'
+
+en:
+  errors:
+    messages:
+      # Used by UrlValidator
+      invalid_scheme: 'URL schema should be among %{expected_schemes}'
+      host_not_found: "URL host not found"
+      host_not_allowed: 'URL host should be %{expected_host}'
+      private_host_not_allowed: 'Only public hosts are allowed'

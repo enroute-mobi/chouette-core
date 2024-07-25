@@ -30,11 +30,13 @@
               TableBuilderHelper::Column.new( \
                 key: :bounding_dates, \
                 attribute: Proc.new { |tt| tt.object.bounding_dates.empty? ? '-' : t('bounding_dates', debut: l(tt.object.bounding_dates.min), end: l(tt.object.bounding_dates.max)) }, \
+                sortable: false \
               ), \
               TableBuilderHelper::Column.new( \
                 key: :vehicle_journeys_count, \
                 name: Chouette::TimeTable.tmf('associated_vehicle_journeys'), \
                 attribute: Proc.new{ |tt| tt.vehicle_journeys.count }, \
+                sortable: false \
               ), \
               TableBuilderHelper::Column.new( \
                 name: Chouette::TimeTable.tmf('day_types'), \

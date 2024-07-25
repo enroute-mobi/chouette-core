@@ -10,11 +10,33 @@ class Source < ApplicationModel
   validates :name, presence: true
   validates :url, presence: true
   validates :downloader_type, presence: true
-  validates :downloader_option_raw_authorization, presence: true, if: :authorization_downloader_type?
 
-  #validates_associated :downloader
+  with_options if: :downloader_type_direct? do |direct|
+    direct.validates :url, url: { private_host: false, scheme: %w{http https} }
+  end
 
-  enumerize :downloader_type, in: %i(direct french_nap authorization ftp), default: :direct
+  with_options if: :downloader_type_ftp? do |ftp|
+    ftp.validates :url, url: { private_host: false, scheme: %w{ftp ftps} }
+  end
+
+  with_options if: :downloader_type_sftp? do |sftp|
+    sftp.validates :url, url: { private_host: false, scheme: %w{sftp} }
+  end
+
+  with_options if: :downloader_type_authorization? do |authorization|
+    authorization.validates :url, url: { private_host: false, scheme: %w{http https} }
+
+    authorization.validates :downloader_option_raw_authorization, presence: true
+    authorization.validates :downloader_option_username, :downloader_option_password, absence: true
+  end
+
+  with_options if: :downloader_type_french_nap? do |french_nap|
+    french_nap.validates :url, url: { host: 'transport.data.gouv.fr', scheme: 'https' }
+    french_nap.validates :downloader_option_raw_authorization, :downloader_option_username,
+                            :downloader_option_password, absence: true
+  end
+
+  enumerize :downloader_type, in: %i(direct french_nap authorization ftp sftp), default: :direct, predicates: { prefix: true }
 
   scope :enabled, -> { where.not(retrieval_frequency: 'none') }
 
@@ -128,10 +150,6 @@ class Source < ApplicationModel
     rescue StandardError => e
       Chouette::Safe.capture "Can't start Source##{source_id} retrieval", e
     end
-  end
-
-  def authorization_downloader_type?
-    downloader_type == 'authorization'
   end
 
   def clean

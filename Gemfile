@@ -194,6 +194,7 @@ group :test, :development do
 
   gem 'webmock'
   gem 'shoulda-matchers'
+  gem 'with_model'
 
   gem 'parallel_tests'
 

@@ -368,7 +368,7 @@ RSpec.describe Source::ScheduledJob do
     subject { source.import_option_code_space }
 
     context 'when no import_option_code_space_id option is defined' do
-      before { source.import_options['import_option_code_space_id'] = nil }
+      before { source.import_options['code_space_id'] = nil }
 
       it 'does not use any code space' do
         is_expected.to be_nil

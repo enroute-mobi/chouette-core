@@ -227,14 +227,18 @@ class TimeOfDay
       \z
     /x.freeze
 
-  def self.parse(definition, attributes = nil)
+  def self.parse(definition, attributes = {})
     return unless PARSE_REGEX =~ definition
 
     hour = Regexp.last_match(1)
     minute = Regexp.last_match(2)
     second = Regexp.last_match(3)
 
-    new hour, minute, second, attributes || {}
+    time_zone = attributes.delete(:time_zone)
+
+    time_of_day = new(hour, minute, second, attributes)
+    time_of_day = time_of_day.with_zone(time_zone) if time_zone
+    time_of_day
   end
 
   def self.unserialize(value, attributes = nil)

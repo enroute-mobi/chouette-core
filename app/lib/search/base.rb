@@ -290,10 +290,10 @@ module Search
         label_keys(data)
       end
 
-      def to_chartkick(view_context)
+      def to_chartkick(view_context, **options)
         chart_data = data
 
-        options = {}
+        options = options.dup
         options[:suffix] = '%' if display_percent
         if add_missing_keys?
           keys = send(all_keys_method_name)

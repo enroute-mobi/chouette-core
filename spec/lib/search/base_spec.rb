@@ -794,6 +794,24 @@ RSpec.describe Search::Base::Chart do
         subject
       end
 
+      context 'when #group_by_attribute is "hour_of_day"' do
+        let(:group_by_attribute) { 'hour_of_day' }
+
+        it do
+          expect(view_context).to receive(:line_chart).with(data, xmin: 0, xmax: 23)
+          subject
+        end
+      end
+
+      context 'when #group_by_attribute is "day_of_week"' do
+        let(:group_by_attribute) { 'day_of_week' }
+
+        it do
+          expect(view_context).to receive(:line_chart).with(data, xmin: 0, xmax: 6)
+          subject
+        end
+      end
+
       context 'with #display_percent is true' do
         let(:display_percent) { true }
 

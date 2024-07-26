@@ -291,10 +291,17 @@ module Search
       end
 
       def to_chartkick(view_context)
+        chart_data = data
+
         options = {}
         options[:suffix] = '%' if display_percent
+        if add_missing_keys?
+          keys = send(all_keys_method_name)
+          options[:xmin] = keys.first
+          options[:xmax] = keys.last
+        end
 
-        view_context.send("#{type}_chart", data, options)
+        view_context.send("#{type}_chart", chart_data, options)
       end
 
       private
@@ -399,8 +406,12 @@ module Search
         end
       end
 
+      def add_missing_keys?
+        respond_to?(all_keys_method_name, true)
+      end
+
       def add_missing_keys(data)
-        if respond_to?(all_keys_method_name, true)
+        if add_missing_keys?
           send(all_keys_method_name).map { |k| [k, 0] }.to_h.merge(data)
         else
           data
@@ -412,11 +423,11 @@ module Search
       end
 
       def all_hour_of_day_keys
-        0...24
+        0..23
       end
 
       def all_day_of_week_keys
-        0...7
+        0..6
       end
 
       def label_keys(data)

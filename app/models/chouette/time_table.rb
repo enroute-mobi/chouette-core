@@ -433,7 +433,7 @@ module Chouette
     end
 
     def display_name
-      full_display_name.truncate(50)
+      full_display_name.truncate(40)
     end
 
     # produce a copy of periods without anyone overlapping or including another

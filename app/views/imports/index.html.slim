@@ -10,7 +10,7 @@
         = render 'filters'
 
     - if @chart
-      = @chart.to_chartkick(self)
+      = @chart.to_chartkick(self, download: true)
     - elsif @imports.any?
       .row
         .col-lg-12

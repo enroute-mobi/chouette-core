@@ -50,6 +50,7 @@ en:
         chart_type: Chart Form
         group_by_attribute: Group by
         sort_by: "Sort by"
+        display_percent: "Display %"
   activerecord:
     models:
       search/save:

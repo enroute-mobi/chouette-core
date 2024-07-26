@@ -22,6 +22,7 @@ module Search
     attribute :sort_by, type: String, default: 'value'
     attribute :aggregate_operation, type: String, default: 'count'
     attribute :aggregate_attribute, type: String
+    attribute :display_percent, type: Boolean
 
     attr_accessor :saved_name, :saved_description
 
@@ -228,7 +229,8 @@ module Search
         top_count: top_count,
         sort_by: sort_by,
         aggregate_operation: aggregate_operation,
-        aggregate_attribute: aggregate_attribute ? numeric_attributes[aggregate_attribute] : nil
+        aggregate_attribute: aggregate_attribute ? numeric_attributes[aggregate_attribute] : nil,
+        display_percent: display_percent
       )
     end
 
@@ -250,7 +252,8 @@ module Search
         top_count:,
         sort_by:,
         aggregate_operation:,
-        aggregate_attribute:
+        aggregate_attribute:,
+        display_percent:
       )
         @models = models
         @type = type
@@ -260,6 +263,7 @@ module Search
         @sort_by = sort_by
         @aggregate_operation = aggregate_operation
         @aggregate_attribute = aggregate_attribute
+        @display_percent = display_percent
       end
       attr_reader :models,
                   :type,
@@ -268,7 +272,8 @@ module Search
                   :top_count,
                   :sort_by,
                   :aggregate_operation,
-                  :aggregate_attribute
+                  :aggregate_attribute,
+                  :display_percent
 
       def raw_data
         request = models
@@ -280,12 +285,16 @@ module Search
 
       def data
         data = raw_data
+        data = compute_percent(data)
         data = add_missing_keys(data)
         label_keys(data)
       end
 
       def to_chartkick(view_context)
-        view_context.send("#{type}_chart", data)
+        options = {}
+        options[:suffix] = '%' if display_percent
+
+        view_context.send("#{type}_chart", data, options)
       end
 
       private
@@ -376,6 +385,17 @@ module Search
           request.count(:id)
         else
           request.send(aggregate_operation, aggregate_attribute)
+        end
+      end
+
+      def compute_percent(result)
+        return result unless display_percent
+
+        sum = result.values.sum
+        if sum.zero?
+          result
+        else
+          result.transform_values { |v| v * 100.0 / sum }
         end
       end
 

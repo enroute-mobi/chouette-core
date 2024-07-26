@@ -499,7 +499,8 @@ RSpec.describe Search::Base::Chart do
       top_count: top_count,
       sort_by: sort_by,
       aggregate_operation: aggregate_operation,
-      aggregate_attribute: aggregate_attribute
+      aggregate_attribute: aggregate_attribute,
+      display_percent: display_percent
     )
   end
   let(:models) { double }
@@ -510,6 +511,7 @@ RSpec.describe Search::Base::Chart do
   let(:sort_by) { 'value' }
   let(:aggregate_operation) { 'count' }
   let(:aggregate_attribute) { nil }
+  let(:display_percent) { false }
 
   before { allow(models).to receive(:column_alias_for) { |arg| Search::Save.all.send(:column_alias_for, arg) } }
 
@@ -757,6 +759,66 @@ RSpec.describe Search::Base::Chart do
 
       it 'labels keys' do
         is_expected.to eq({ 'lebal_ot_yek' => 42 })
+      end
+    end
+
+    context 'when #display_percent is true' do
+      let(:display_percent) { true }
+      let(:raw_data) { { '1' => 1, '2' => 3, '3' => 0 } }
+
+      it 'computes percents' do
+        is_expected.to eq({ '1' => 25, '2' => 75, '3' => 0 })
+      end
+
+      context 'when data is all 0' do
+        let(:raw_data) { { '1' => 0, '2' => 0, '3' => 0 } }
+
+        it 'computes percents' do
+          is_expected.to eq({ '1' => 0, '2' => 0, '3' => 0 })
+        end
+      end
+    end
+  end
+
+  describe '#to_chartkick' do
+    subject { chart.to_chartkick(view_context) }
+
+    let(:view_context) { double }
+    let(:data) { double }
+
+    before { allow(chart).to receive(:data).and_return(data) }
+
+    context 'when #type is line' do
+      it do
+        expect(view_context).to receive(:line_chart).with(data, {})
+        subject
+      end
+
+      context 'with #display_percent is true' do
+        let(:display_percent) { true }
+
+        it do
+          expect(view_context).to receive(:line_chart).with(data, suffix: '%')
+          subject
+        end
+      end
+    end
+
+    context 'when #type is pie' do
+      let(:chart_type) { 'pie' }
+
+      it do
+        expect(view_context).to receive(:pie_chart).with(data, {})
+        subject
+      end
+    end
+
+    context 'when #type is column' do
+      let(:chart_type) { 'column' }
+
+      it do
+        expect(view_context).to receive(:column_chart).with(data, {})
+        subject
       end
     end
   end

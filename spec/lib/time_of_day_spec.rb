@@ -35,6 +35,15 @@ RSpec.describe TimeOfDay do
         expect(TimeOfDay.parse(definition)).to eq(expected)
       end
     end
+
+    [
+      [ '14:00:00', 'America/Los_Angeles', TimeOfDay.new(6,0,utc_offset: -28800) ],
+      [ '14:00:00', 'Europe/Paris', TimeOfDay.new(15,0,utc_offset: 3600) ]
+    ].each do |definition, time_zone, expected|
+      it "creates #{expected.inspect} from '#{definition}' with time zone #{time_zone}" do
+        expect(TimeOfDay.parse(definition, time_zone: time_zone)).to eq(expected)
+      end
+    end
   end
 
   describe '.create' do

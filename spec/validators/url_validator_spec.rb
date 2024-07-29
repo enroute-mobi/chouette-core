@@ -16,6 +16,7 @@ RSpec.describe UrlValidator do
 
     it { is_expected.to allow_value('dummy://example.com').for(:url) }
     it { is_expected.to_not allow_value('http://example.com').for(:url).with_message(:invalid_scheme, values: { expected_schemes: 'dummy' }) }
+    it { is_expected.to_not allow_value('wrong').for(:url).with_message(:invalid_scheme, values: { expected_schemes: 'dummy' }) }
   end
 
   describe 'validates host is example.com' do

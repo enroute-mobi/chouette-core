@@ -43,6 +43,8 @@ class UrlValidator < ActiveModel::EachValidator
     end
 
     def cached_resolved_host
+      return :none unless host.present?
+
       @cached_resolved_host ||=
         begin
           Resolv.getaddress(host)

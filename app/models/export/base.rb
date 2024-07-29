@@ -131,7 +131,10 @@ class Export::Base < ApplicationModel
   attr_writer :export_scope
 
   def code_provider
-    @code_provider ||= Export::CodeProvider.new export_scope, code_space: code_space
+    @code_provider ||= Export::CodeProvider.new(
+      export_scope,
+      code_space: code_space
+    )
   end
 
   def human_name

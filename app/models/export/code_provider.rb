@@ -36,7 +36,13 @@ module Export
         end
 
         scope_collection = export_scope.send(collection)
-        model = Model.new.index(Indexer.create(scope_collection, code_space: code_space, code_provider: self))
+        model = Model.new.index(
+          Indexer.create(
+            scope_collection,
+            code_space: code_space,
+            code_provider: self
+          )
+        )
         instance_variable_set("@#{collection}", model)
       end
     end
@@ -54,18 +60,24 @@ module Export
       def self.create(collection, code_provider:, code_space: nil)
         if code_space && collection.model == Chouette::StopPoint
           StopPoints.new(collection, code_provider: code_provider)
+        elsif code_space && collection.model == Chouette::TimeTable
+          TimeTables.new(collection, code_space: code_space)
         else
           Default.new(collection, code_space: code_space)
         end
       end
 
       class Default
-        def initialize(collection, code_space: nil)
+        def initialize(collection, options = {})
           @collection = collection
-          @code_space = code_space
+
+          options.each do |k, v|
+            send("#{k}=", v) if respond_to?("#{k}=")
+          end
         end
 
-        attr_reader :collection, :code_space
+        attr_reader :collection
+        attr_accessor :code_space
 
         def unique_collection
           @unique_collection ||= model_class.where(id: collection.select(:id))
@@ -110,16 +122,24 @@ module Export
         end
 
         def with_code_query
-          code_value = Arel::Nodes::NamedFunction.new(
+          unique_collection
+            .left_joins(:codes)
+            .where(code_table[:code_space_id].eq(code_space.id))
+            .select(:id, code_value)
+            .group(:id)
+            .having(having)
+        end
+
+        def having
+          'count(*) = 1'
+        end
+
+        def code_value
+          Arel::Nodes::NamedFunction.new(
             'unnest', [
               Arel::Nodes::NamedFunction.new('array_agg', [code_table[:value]])
             ]
           ).as('code')
-
-          unique_collection.left_joins(:codes)
-            .where(code_table[:code_space_id].eq(code_space.id))
-            .select(:id, code_value)
-            .group(:id).having('count(*) = 1')
         end
 
         def with_registration_number_query
@@ -161,6 +181,18 @@ module Export
             stop_point_code = Code::Value.merge(route_code, attributes["position"], type: 'StopPoint')
             [ attributes["id"], stop_point_code ]
           end.to_h
+        end
+      end
+
+      # This condition accept several codes in the same Code Space to take one in the method with_code_query
+      class TimeTables < Default
+        def with_code_query
+          code_query = ReferentialCode.order(created_at: :desc).limit(1)
+                                      .where("referential_codes.resource_id = time_tables.id")
+                                      .where(resource_type: 'Chouette::TimeTable', code_space: code_space)
+                                      .select(:value)
+          unique_collection.joins("JOIN LATERAL (#{code_query.to_sql}) subquery ON true")
+                           .select("time_tables.id", "subquery.value as code")
         end
       end
     end

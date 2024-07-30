@@ -50,6 +50,7 @@ fr:
       rail_replacement_bus: Bus de remplacement ferré
       demand_and_response_bus: Bus à la demande
       airport_link_bus: "Bus d'aéroport"
+      nekobasu: Nekobasu
     coach:
       international_coach: Car international
       national_coach: Car interregional
@@ -107,7 +108,7 @@ fr:
       lift: Ascenseur
       chair_lift: Télésiège
       drag_lift: Téléski
-      telecabin_link: Téléphérique
+      telecabin_link: Lien en Télécabine
     tram:
       city_tram: Tram urbain
       local_tram: Tram régional
@@ -209,6 +210,7 @@ en:
       rail_replacement_bus: Rail replacement bus
       demand_and_response_bus: Demand and response bus
       airport_link_bus: Airport link bus
+      nekobasu: Nekobasu
     coach:
       international_coach: International coach
       national_coach: National coach

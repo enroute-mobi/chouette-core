@@ -1636,10 +1636,26 @@ class Export::NetexGeneric < Export::Base
         {
           departure_time: stop_time_departure_time,
           arrival_time: stop_time_arrival_time,
-          departure_day_offset: departure_day_offset,
-          arrival_day_offset: arrival_day_offset,
+          departure_day_offset: stop_departure_day_offset,
+          arrival_day_offset: stop_arrival_day_offset,
           stop_point_in_journey_pattern_ref: stop_point_in_journey_pattern_ref,
         }
+      end
+
+      def stop_arrival_day_offset
+        arrival_local_time_of_day ? arrival_local_time_of_day.arrival_day_offset : arrival_day_offset
+      end
+
+      def stop_departure_day_offset
+        departure_local_time_of_day ? departure_local_time_of_day.departure_day_offset : departure_day_offset
+      end
+
+      def stop_time_arrival_time
+        netex_time arrival_local_time_of_day if arrival_local_time_of_day
+      end
+
+      def stop_time_departure_time
+        netex_time departure_local_time_of_day if departure_local_time_of_day
       end
 
       def netex_resource
@@ -1675,13 +1691,6 @@ class Export::NetexGeneric < Export::Base
         Netex::Time.new time_of_day.hour, time_of_day.minute, time_of_day.second
       end
 
-      def stop_time_arrival_time
-        netex_time arrival_local_time_of_day if arrival_local_time_of_day
-      end
-
-      def stop_time_departure_time
-        netex_time departure_local_time_of_day if departure_local_time_of_day
-      end
     end
   end
 

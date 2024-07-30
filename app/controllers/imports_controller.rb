@@ -84,7 +84,7 @@ class ImportsController < Chouette::WorkbenchController
   end
 
   def search
-    @search ||= Search.from_params(params)
+    @search ||= ::Search::Import.from_params(params, workbench: workbench)
   end
 
   def collection
@@ -106,11 +106,5 @@ class ImportsController < Chouette::WorkbenchController
         parent: parent
       }
     )
-  end
-
-  class Search < Search::Operation
-    def query_class
-      Query::Import
-    end
   end
 end

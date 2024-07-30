@@ -58,7 +58,7 @@ class WorkgroupImportsController < Chouette::WorkgroupController
   # rubocop:enable Metrics/MethodLength
 
   def saved_searches
-    @saved_searches ||= owner_workbench.saved_searches.for(::Search::Import)
+    @saved_searches ||= workgroup.saved_searches.for(::Search::WorkgroupImport)
   end
 
   protected
@@ -74,7 +74,7 @@ class WorkgroupImportsController < Chouette::WorkgroupController
   end
 
   def search
-    @search ||= Search.from_params(params, workgroup: workgroup)
+    @search ||= ::Search::WorkgroupImport.from_params(params, workgroup: workgroup)
   end
 
   def collection
@@ -88,11 +88,5 @@ class WorkgroupImportsController < Chouette::WorkgroupController
         parent: parent
       }
     )
-  end
-
-  class Search < Search::Operation
-    def query_class
-      Query::Import
-    end
   end
 end

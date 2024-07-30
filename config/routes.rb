@@ -313,6 +313,8 @@ ChouetteIhm::Application.routes.draw do # rubocop:disable Metrics/BlockLength
 
     resources :imports, only: %i[index show], controller: :workgroup_imports do
       get :download, on: :member
+
+      resources :searches, only: %i[index show create update destroy], path: ':parent_resources/searches'
     end
     get 'imports/:id/import_resources/:import_resource_id/messages',
         to: 'workgroup_imports#messages',

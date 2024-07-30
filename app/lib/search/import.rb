@@ -1,7 +1,7 @@
+# frozen_string_literal: true
+
 module Search
-  class Import < Operation
-    def query_class
-      Query::Operation
-    end
+  class Import < AbstractImport
+    attr_accessor :workbench
   end
 end

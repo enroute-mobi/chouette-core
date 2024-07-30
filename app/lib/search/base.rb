@@ -18,7 +18,7 @@ module Search
     def initialize(attributes = {})
       apply_defaults
       order.attributes = attributes.delete :order if attributes[:order]
-      attributes.each { |k, v| send "#{k}=", v if self.respond_to?("#{k}=") }
+      attributes.each { |k, v| send "#{k}=", v }
     end
 
     def self.from_params(params, attributes = {})

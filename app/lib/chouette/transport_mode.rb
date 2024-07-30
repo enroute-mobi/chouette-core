@@ -159,6 +159,7 @@ module Chouette
         sightseeing_bus
         special_needs_bus
         dedicated_lane_bus
+        nekobasu
       ],
       water: %i[
         international_car_ferry

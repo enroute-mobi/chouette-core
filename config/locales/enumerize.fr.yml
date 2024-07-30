@@ -290,6 +290,7 @@ fr:
       nationalCarFerry: "Ferry national"
       nationalCoach: "Car interregional"
       nationalPassengerFerry: "Ferry public national"
+      nekobasu: Nekobasu
       nightBus: 'Bus de nuit'
       nightRail: 'Train de nuit'
       nightTrain: "Train de nuit"
@@ -332,8 +333,8 @@ fr:
       specialTrain: "Train spécial"
       streetCableCar: 'Tramway (2)'
       suburbanRailway: "Train périurbain"
-      telecabin: "télécabine"
-      telecabinLink: "Téléphérique"
+      telecabin: "Télécabine"
+      telecabinLink: "Lien en Télécabine"
       touristCoach: "Car touristique"
       touristRailway: "Train touristique"
       trainFerry: "Traversier-rail"

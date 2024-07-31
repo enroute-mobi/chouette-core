@@ -732,13 +732,13 @@ RSpec.describe Search::Base::Chart do
       it 'adds all missing days and labels keys' do
         is_expected.to eq(
           {
-            I18n.t('date.day_names')[0] => 0,
             I18n.t('date.day_names')[1] => 0,
             I18n.t('date.day_names')[2] => 4,
             I18n.t('date.day_names')[3] => 0,
             I18n.t('date.day_names')[4] => 0,
             I18n.t('date.day_names')[5] => 42,
-            I18n.t('date.day_names')[6] => 0
+            I18n.t('date.day_names')[6] => 0,
+            I18n.t('date.day_names')[0] => 0
           }
         )
       end
@@ -851,7 +851,7 @@ RSpec.describe Search::Base::Chart do
         let(:group_by_attribute) { 'hour_of_day' }
 
         it do
-          expect(view_context).to receive(:pie_chart).with(data, xmin: 0, xmax: 23)
+          expect(view_context).to receive(:pie_chart).with(data, discrete: true)
           subject
         end
       end
@@ -860,7 +860,7 @@ RSpec.describe Search::Base::Chart do
         let(:group_by_attribute) { 'day_of_week' }
 
         it do
-          expect(view_context).to receive(:pie_chart).with(data, xmin: 0, xmax: 6)
+          expect(view_context).to receive(:pie_chart).with(data, discrete: true)
           subject
         end
       end

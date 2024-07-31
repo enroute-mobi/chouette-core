@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Search
   class Document < Base
     attr_accessor :workgroup
@@ -7,6 +9,10 @@ module Search
     attribute :document_provider_id
     attribute :valid_after_date, type: Date
     attribute :valid_before_date, type: Date
+
+    def searched_class
+      ::Document
+    end
 
     def candidate_document_types
       workgroup.document_types

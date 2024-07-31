@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Search
   class PointOfInterest < Base
     attr_accessor :shape_referential
@@ -7,6 +9,10 @@ module Search
     attribute :city_name
     attribute :category
     attribute :shape_provider_id
+
+    def searched_class
+      ::PointOfInterest::Base
+    end
 
     def candidate_categories
       shape_referential.point_of_interest_categories

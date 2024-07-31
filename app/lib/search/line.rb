@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Search
   class Line < Base
 		extend Enumerize
@@ -18,6 +20,10 @@ module Search
 
     attr_accessor :workbench
     delegate :line_referential, to: :workbench
+
+    def searched_class
+      ::Chouette::Line
+    end
 
 		def period
       Period.new(from: valid_before_date, to: valid_after_date).presence

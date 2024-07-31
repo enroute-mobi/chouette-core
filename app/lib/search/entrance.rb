@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Search
   class Entrance < Base
     extend Enumerize
@@ -15,6 +17,10 @@ module Search
     enumerize :entrance_type, in: ::Entrance.entrance_type.values
 
     attr_accessor :workbench
+
+    def searched_class
+      ::Entrance
+    end
 
     def query(scope)
       Query::Entrance.new(scope)

@@ -118,6 +118,11 @@ module Search
       super.delete_if { |_k, v| v.blank? }
     end
 
+    def searched_class
+      raise NotImplementedError
+    end
+    delegate :human_attribute_name, to: :searched_class
+
     def authorized_group_by_attributes
       self.class::AUTHORIZED_GROUP_BY_ATTRIBUTES
     end

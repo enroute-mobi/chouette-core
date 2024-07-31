@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Search
   class Company < Base
     # All search attributes
@@ -5,6 +7,10 @@ module Search
     attribute :is_referent
 
     attr_accessor :line_referential
+
+    def searched_class
+      ::Chouette::Company
+    end
 
     def query(scope)
       Query::Company.new(scope)

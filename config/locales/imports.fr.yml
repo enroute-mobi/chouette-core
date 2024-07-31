@@ -65,7 +65,7 @@ fr:
       failed:     Échec
       error:      Échec
       running:    En cours
-      aborted:    Annulé
+      aborted:    Interrompu
       canceled:   Annulé
   import:
     workgroup: Groupe de travail

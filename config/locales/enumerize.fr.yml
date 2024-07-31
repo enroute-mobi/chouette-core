@@ -459,7 +459,7 @@ fr:
       group_by_attribute:
         date: Date
         hour_of_day: Heure de la journée
-        day_of_week: Jours de la semaine
+        day_of_week: Jour de la semaine
       first:
         first: "Premiers"
         last: "Derniers"

@@ -794,20 +794,28 @@ RSpec.describe Search::Base::Chart do
         subject
       end
 
-      context 'when #group_by_attribute is "hour_of_day"' do
-        let(:group_by_attribute) { 'hour_of_day' }
+      context 'when #group_by_attribute is "date"' do
+        let(:group_by_attribute) { 'date' }
 
         it do
-          expect(view_context).to receive(:line_chart).with(data, xmin: 0, xmax: 23)
-          subject
-        end
-      end
-
-      context 'when #group_by_attribute is "day_of_week"' do
-        let(:group_by_attribute) { 'day_of_week' }
-
-        it do
-          expect(view_context).to receive(:line_chart).with(data, xmin: 0, xmax: 6)
+          expect(view_context).to(
+            receive(:line_chart).with(
+              data,
+              {
+                library: {
+                  scales: {
+                    x: {
+                      time: {
+                        displayFormats: {
+                          day: 'dd/MM/yyyy'
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            )
+          )
           subject
         end
       end
@@ -829,6 +837,33 @@ RSpec.describe Search::Base::Chart do
         expect(view_context).to receive(:pie_chart).with(data, {})
         subject
       end
+
+      context 'when #group_by_attribute is "date"' do
+        let(:group_by_attribute) { 'date' }
+
+        it do
+          expect(view_context).to receive(:pie_chart).with(data, {})
+          subject
+        end
+      end
+
+      context 'when #group_by_attribute is "hour_of_day"' do
+        let(:group_by_attribute) { 'hour_of_day' }
+
+        it do
+          expect(view_context).to receive(:pie_chart).with(data, xmin: 0, xmax: 23)
+          subject
+        end
+      end
+
+      context 'when #group_by_attribute is "day_of_week"' do
+        let(:group_by_attribute) { 'day_of_week' }
+
+        it do
+          expect(view_context).to receive(:pie_chart).with(data, xmin: 0, xmax: 6)
+          subject
+        end
+      end
     end
 
     context 'when #type is column' do
@@ -837,6 +872,32 @@ RSpec.describe Search::Base::Chart do
       it do
         expect(view_context).to receive(:column_chart).with(data, {})
         subject
+      end
+
+      context 'when #group_by_attribute is "date"' do
+        let(:group_by_attribute) { 'date' }
+
+        it do
+          expect(view_context).to(
+            receive(:column_chart).with(
+              data,
+              {
+                library: {
+                  scales: {
+                    x: {
+                      time: {
+                        displayFormats: {
+                          day: 'dd/MM/yyyy'
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            )
+          )
+          subject
+        end
       end
     end
   end

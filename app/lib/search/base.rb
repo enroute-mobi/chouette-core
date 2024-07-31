@@ -295,18 +295,31 @@ module Search
         label_keys(data)
       end
 
-      def to_chartkick(view_context, **options)
+      def to_chartkick(view_context, **options) # rubocop:disable Metrics/MethodLength
         chart_data = data
 
-        options = options.dup
-        options[:suffix] = '%' if display_percent
+        new_options = {}
+        new_options[:suffix] = '%' if display_percent
         if add_missing_keys?
           keys = send(all_keys_method_name)
-          options[:xmin] = keys.first
-          options[:xmax] = keys.last
+          new_options[:xmin] = keys.first
+          new_options[:xmax] = keys.last
+        end
+        if date_group_by_attribute? && type != 'pie'
+          new_options[:library] = {
+            scales: {
+              x: {
+                time: {
+                  displayFormats: {
+                    day: 'dd/MM/yyyy'
+                  }
+                }
+              }
+            }
+          }
         end
 
-        view_context.send("#{type}_chart", chart_data, options)
+        view_context.send("#{type}_chart", chart_data, new_options.deep_merge(options))
       end
 
       private

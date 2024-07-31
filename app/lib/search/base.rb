@@ -296,14 +296,10 @@ module Search
       end
 
       def to_chartkick(view_context, **options) # rubocop:disable Metrics/MethodLength
-        chart_data = data
-
         new_options = {}
         new_options[:suffix] = '%' if display_percent
         if add_missing_keys?
-          keys = send(all_keys_method_name)
-          new_options[:xmin] = keys.first
-          new_options[:xmax] = keys.last
+          new_options[:discrete] = true
         end
         if date_group_by_attribute? && type != 'pie'
           new_options[:library] = {
@@ -319,7 +315,7 @@ module Search
           }
         end
 
-        view_context.send("#{type}_chart", chart_data, new_options.deep_merge(options))
+        view_context.send("#{type}_chart", data, new_options.deep_merge(options))
       end
 
       private
@@ -445,7 +441,7 @@ module Search
       end
 
       def all_day_of_week_keys
-        0..6
+        (0..6).map { |d| (d + Date::DAYS_INTO_WEEK[Date.beginning_of_week] + 1) % 7 }
       end
 
       def label_keys(data)

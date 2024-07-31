@@ -4,7 +4,7 @@ fr:
     footer: 'est conçu et développé par'
     hello: 'Bonjour,'
     statuses:
-      aborted:    🔴 Annulé
+      aborted:    🔴 Interrompu
       canceled:   🔴 Annulé
       error:      🔴 Échec
       failed:     🔴 Échec

@@ -1,7 +1,7 @@
 fr:
   operation_support:
     statuses:
-      aborted:    Annulé
+      aborted:    Interrompu
       canceled:   Annulé
       error:      Échec
       failed:     Échec

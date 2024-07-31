@@ -14,6 +14,12 @@ RSpec.describe Search::Import do
     end
   end
 
+  describe '#searched_class' do
+    subject { search.searched_class }
+
+    it { is_expected.to eq(Import::Base) }
+  end
+
   describe '#period' do
     subject { search.period }
 

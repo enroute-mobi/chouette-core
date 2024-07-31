@@ -3,6 +3,10 @@ module Search
     # All search attributes
     attribute :status
 
+    def searched_class
+      ::Export::Base
+    end
+
     def candidate_statuses
       ::Operation::UserStatus.all
     end

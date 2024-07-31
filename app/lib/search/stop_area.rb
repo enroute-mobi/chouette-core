@@ -25,6 +25,10 @@ module Search
 
     delegate :stop_area_referential, to: :workbench
 
+    def searched_class
+      ::Chouette::StopArea
+    end
+
     def query(scope)
       Query::StopArea.new(scope)
                      .text(text)

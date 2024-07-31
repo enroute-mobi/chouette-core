@@ -8,6 +8,10 @@ module Search
       'duration' => 'EXTRACT(EPOCH FROM ended_at - started_at)'
     }.freeze
 
+    def searched_class
+      ::Import::Base
+    end
+
     def query_class
       Query::Import
     end

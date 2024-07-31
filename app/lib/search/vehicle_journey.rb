@@ -30,6 +30,10 @@ module Search
                                                 search.candidate_stop_areas
                                               } }, allow_blank: true, allow_nil: true
 
+    def searched_class
+      ::Chouette::VehicleJourney
+    end
+
     def company
       referential.companies.find(company_id) if company_id.present?
     end

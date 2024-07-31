@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Search
   class Referential < Base
     attr_accessor :workbench
@@ -15,6 +17,10 @@ module Search
     attribute :valid_before_date, type: Date
 
     enumerize :statuses, in: ::Referential::STATES, multiple: true, i18n_scope: 'referentials.states'
+
+    def searched_class
+      ::Referential
+    end
 
     def period
       Period.new(from: valid_before_date, to: valid_after_date).presence

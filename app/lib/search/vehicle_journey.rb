@@ -58,6 +58,10 @@ module Search
       [to_stop_area].compact
     end
 
+    def selected_time_table_collection
+      [time_table].compact
+    end
+
     def candidate_lines
       referential.lines.order(:name)
     end

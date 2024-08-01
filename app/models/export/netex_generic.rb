@@ -1643,11 +1643,11 @@ class Export::NetexGeneric < Export::Base
       end
 
       def stop_arrival_day_offset
-        arrival_local_time_of_day ? arrival_local_time_of_day.day_offset : arrival_day_offset
+        arrival_local_time_of_day&.day_offset
       end
 
       def stop_departure_day_offset
-        departure_local_time_of_day ? departure_local_time_of_day.day_offset : departure_day_offset
+        departure_local_time_of_day&.day_offset
       end
 
       def stop_time_arrival_time

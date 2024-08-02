@@ -31,25 +31,19 @@ module Search
     enumerize :aggregate_operation, in: %w[count sum average], i18n_scope: 'enumerize.search.aggregate_operation'
 
     with_options if: :graphical? do
-      validates :group_by_attribute, inclusion: { in: ->(r) { r.authorized_group_by_attributes } }
+      validates :group_by_attribute, inclusion: { in: ->(r) { r.candidate_group_by_attributes } }
       validates :top_count, presence: true, numericality: { only_integer: true, greater_than: 1 }
       validates :sort_by, presence: true
       validates :aggregate_operation, presence: true
-      validates :aggregate_attribute, inclusion: { in: ->(r) { r.numeric_attributes.keys } }, if: :aggregate_attribute?
+      validates :aggregate_attribute,
+                inclusion: { in: ->(r) { r.candidate_aggregate_attributes } },
+                if: :aggregate_attribute?
     end
 
     SAVED_SEARCH_ATTRIBUTE_MAPPING = {
       name: :saved_name,
       description: :saved_description
     }.freeze
-
-    AUTHORIZED_GROUP_BY_ATTRIBUTES = %w[
-      date
-      hour_of_day
-      day_of_week
-    ].freeze
-
-    NUMERIC_ATTRIBUTES = {}.freeze
 
     def initialize(attributes = {})
       apply_defaults
@@ -123,12 +117,12 @@ module Search
     end
     delegate :human_attribute_name, to: :searched_class
 
-    def authorized_group_by_attributes
-      self.class::AUTHORIZED_GROUP_BY_ATTRIBUTES
+    def candidate_group_by_attributes
+      chart_klass.group_by_attributes.each_value.map(&:name)
     end
 
-    def numeric_attributes
-      self.class::NUMERIC_ATTRIBUTES
+    def candidate_aggregate_attributes
+      chart_klass.aggregate_attributes.each_value.map(&:name)
     end
 
     # Create Search attributes from our legacy Controller params (:sort, :direction, :page, etc)
@@ -222,11 +216,11 @@ module Search
       end
     end
 
-    def chart(scope) # rubocop:disable Metrics/AbcSize,Metrics/MethodLength
+    def chart(scope) # rubocop:disable Metrics/MethodLength
       return nil unless valid? && graphical?
 
       models = without_order.without_pagination.search(scope)
-      self.class.const_get('Chart').new(
+      chart_klass.new(
         models,
         type: chart_type,
         group_by_attribute: group_by_attribute,
@@ -234,9 +228,13 @@ module Search
         top_count: top_count,
         sort_by: sort_by,
         aggregate_operation: aggregate_operation,
-        aggregate_attribute: aggregate_attribute ? numeric_attributes[aggregate_attribute] : nil,
+        aggregate_attribute: aggregate_attribute,
         display_percent: display_percent
       )
+    end
+
+    def chart_klass
+      self.class.const_get(:Chart)
     end
 
     def order
@@ -249,6 +247,113 @@ module Search
     end
 
     class Chart
+      class GroupByAttribute
+        class << self
+          private
+
+          def method_added(name)
+            if name == :label
+              define_method(:label?) do
+                true
+              end
+            end
+
+            super
+          end
+        end
+
+        def initialize(name, type, keys: nil, joins: nil, selects: nil)
+          @name = name
+          @type = type
+          @keys = keys
+          @joins = joins
+          @selects = selects
+        end
+        attr_reader :name, :type, :keys, :joins, :selects
+
+        def label?
+          false
+        end
+
+        def discrete?
+          keys || type == :string
+        end
+
+        def groups
+          @groups ||= selects || [name]
+        end
+
+        def group_order_limit(request, order_arg, top_count)
+          request.group(*groups).order(order_arg).limit(top_count)
+        end
+
+        def order_arg(asc_desc)
+          groups.map { |s| [s, asc_desc] }.to_h
+        end
+      end
+
+      class AggregateAttribute
+        def initialize(name, definition)
+          @name = name
+          @definition = definition || name
+        end
+        attr_reader :name, :definition
+      end
+
+      class << self
+        def group_by_attribute(name, type, **options, &block)
+          if block_given?
+            klass_name = :"#{name.classify}GroupByAttribute"
+            klass = Class.new(GroupByAttribute, &block)
+            const_set(klass_name, klass)
+          else
+            klass = GroupByAttribute
+          end
+
+          group_by_attributes[name] = klass.new(name, type, **options)
+        end
+
+        def aggregate_attribute(name, definition = nil)
+          aggregate_attributes[name] = AggregateAttribute.new(name, definition)
+        end
+
+        def group_by_attributes
+          @group_by_attributes ||= {}
+        end
+
+        def aggregate_attributes
+          @aggregate_attributes ||= {}
+        end
+
+        def inherited(base)
+          base.instance_variable_set(:@group_by_attributes, group_by_attributes.dup)
+          base.instance_variable_set(:@aggregate_attributes, aggregate_attributes.dup)
+          super
+        end
+      end
+
+      group_by_attribute 'date', :datetime do
+        def group_order_limit(request, _order_arg, top_count)
+          request.group_by_day(:created_at, last: top_count)
+        end
+      end
+      group_by_attribute 'hour_of_day', :numeric, keys: 0..23 do
+        def group_order_limit(request, _order_arg, _top_count)
+          request.group_by_hour_of_day(:created_at)
+        end
+      end
+      group_by_attribute 'day_of_week',
+                         :string,
+                         keys: (0..6).map { |d| (d + Date::DAYS_INTO_WEEK[Date.beginning_of_week] + 1) % 7 } do
+        def group_order_limit(request, _order_arg, _top_count)
+          request.group_by_day_of_week(:created_at)
+        end
+
+        def label(key)
+          I18n.t('date.day_names')[key]
+        end
+      end
+
       def initialize(
         models,
         type:,
@@ -262,12 +367,12 @@ module Search
       )
         @models = models
         @type = type
-        @group_by_attribute = group_by_attribute
+        @group_by_attribute = self.class.group_by_attributes[group_by_attribute]
         @first = first
         @top_count = top_count
         @sort_by = sort_by
         @aggregate_operation = aggregate_operation
-        @aggregate_attribute = aggregate_attribute
+        @aggregate_attribute = self.class.aggregate_attributes[aggregate_attribute] if aggregate_attribute
         @display_percent = display_percent
       end
       attr_reader :models,
@@ -297,11 +402,8 @@ module Search
 
       def to_chartkick(view_context, **options) # rubocop:disable Metrics/MethodLength
         new_options = {}
-        new_options[:suffix] = '%' if display_percent
-        if add_missing_keys?
-          new_options[:discrete] = true
-        end
-        if date_group_by_attribute? && type != 'pie'
+        new_options[:discrete] = true if group_by_attribute.discrete?
+        if group_by_attribute.type == :datetime && type != 'pie'
           new_options[:library] = {
             scales: {
               x: {
@@ -314,6 +416,7 @@ module Search
             }
           }
         end
+        new_options[:suffix] = '%' if display_percent
 
         view_context.send("#{type}_chart", data, new_options.deep_merge(options))
       end
@@ -321,73 +424,26 @@ module Search
       private
 
       def joins(request)
-        return request unless respond_to?(joins_for_label_of_method_name, true)
+        return request unless group_by_attribute.joins
 
-        request.joins(send(joins_for_label_of_method_name))
-      end
-
-      def joins_for_label_of_method_name
-        @joins_for_label_of_method_name ||= :"joins_for_label_of_#{group_by_attribute}"
+        request.joins(group_by_attribute.joins)
       end
 
       def select(request)
-        return request unless selects.any?
+        return request unless group_by_attribute.selects
 
-        request.select(*selects)
-      end
-
-      def selects
-        @selects ||= if respond_to?(select_for_label_of_method_name, true)
-                       send(select_for_label_of_method_name)
-                     else
-                       []
-                     end
-      end
-
-      def select_for_label_of_method_name
-        @select_for_label_of_method_name ||= :"select_for_label_of_#{group_by_attribute}"
+        request.select(*group_by_attribute.selects)
       end
 
       def group_order_limit(request)
-        if date_group_by_attribute?
-          request.send(group_by_attribute_method, :created_at, **group_by_attribute_method_options)
-        else
-          request.group(group_by_attribute, *selects).order(order_arg).limit(top_count)
-        end
-      end
-
-      DATE_GROUP_BY_ATTRIBUTES = {
-        'date' => :group_by_day,
-        'hour_of_day' => :group_by_hour_of_day,
-        'day_of_week' => :group_by_day_of_week
-      }.freeze
-      NO_LIMIT_DATE_GROUP_BY_ATTRIBUTES = %w[hour_of_day day_of_week].to_set.freeze
-
-      def date_group_by_attribute?
-        DATE_GROUP_BY_ATTRIBUTES.key?(group_by_attribute)
-      end
-
-      def group_by_attribute_method
-        DATE_GROUP_BY_ATTRIBUTES[group_by_attribute]
-      end
-
-      def group_by_attribute_method_options
-        if NO_LIMIT_DATE_GROUP_BY_ATTRIBUTES.include?(group_by_attribute)
-          {}
-        else
-          { last: top_count }
-        end
+        group_by_attribute.group_order_limit(request, order_arg, top_count)
       end
 
       def order_arg
         asc_desc = first ? :asc : :desc
 
         if sort_by == 'label'
-          if selects.any?
-            selects.map { |s| [s, asc_desc] }.to_h
-          else
-            { group_by_attribute => asc_desc }
-          end
+          group_by_attribute.order_arg(asc_desc)
         else
           { order_aggregate_alias => asc_desc }
         end
@@ -397,7 +453,7 @@ module Search
         if aggregate_operation == 'count'
           :count_id
         else
-          models.send(:column_alias_for, "#{aggregate_operation} #{aggregate_attribute}")
+          models.send(:column_alias_for, "#{aggregate_operation} #{aggregate_attribute.definition}")
         end
       end
 
@@ -405,7 +461,7 @@ module Search
         if aggregate_operation == 'count'
           request.count(:id)
         else
-          request.send(aggregate_operation, aggregate_attribute)
+          request.send(aggregate_operation, aggregate_attribute.definition)
         end
       end
 
@@ -420,44 +476,20 @@ module Search
         end
       end
 
-      def add_missing_keys?
-        respond_to?(all_keys_method_name, true)
-      end
-
       def add_missing_keys(data)
-        if add_missing_keys?
-          send(all_keys_method_name).map { |k| [k, 0] }.to_h.merge(data)
+        if group_by_attribute.keys
+          group_by_attribute.keys.map { |k| [k, 0] }.to_h.merge(data)
         else
           data
         end
-      end
-
-      def all_keys_method_name
-        @all_keys_method_name ||= :"all_#{group_by_attribute}_keys"
-      end
-
-      def all_hour_of_day_keys
-        0..23
-      end
-
-      def all_day_of_week_keys
-        (0..6).map { |d| (d + Date::DAYS_INTO_WEEK[Date.beginning_of_week] + 1) % 7 }
       end
 
       def label_keys(data)
-        if respond_to?(label_key_method_name, true)
-          data.transform_keys { |k| send(label_key_method_name, k) }
+        if group_by_attribute.label?
+          data.transform_keys { |k| group_by_attribute.label(k) }
         else
           data
         end
-      end
-
-      def label_key_method_name
-        @label_key_method_name ||= :"label_#{group_by_attribute}_key"
-      end
-
-      def label_day_of_week_key(key)
-        I18n.t('date.day_names')[key]
       end
     end
 

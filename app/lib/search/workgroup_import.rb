@@ -2,22 +2,8 @@
 
 module Search
   class WorkgroupImport < AbstractImport
-    AUTHORIZED_GROUP_BY_ATTRIBUTES = (superclass::AUTHORIZED_GROUP_BY_ATTRIBUTES + %w[workbench_id]).freeze
-
     class Chart < superclass::Chart
-      private
-
-      def joins_for_label_of_workbench_id
-        { workbench: {} }
-      end
-
-      def select_for_label_of_workbench_id
-        %w[workbenches.name]
-      end
-
-      def label_workbench_id_key(key)
-        key[1]
-      end
+      group_by_attribute 'workbench_id', :string, joins: { workbench: {} }, selects: %w[workbenches.name]
     end
   end
 end

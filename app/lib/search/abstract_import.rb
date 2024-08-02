@@ -2,12 +2,6 @@
 
 module Search
   class AbstractImport < ::Search::Operation
-    AUTHORIZED_GROUP_BY_ATTRIBUTES = (superclass::AUTHORIZED_GROUP_BY_ATTRIBUTES + %w[status]).freeze
-
-    NUMERIC_ATTRIBUTES = {
-      'duration' => 'EXTRACT(EPOCH FROM ended_at - started_at)'
-    }.freeze
-
     def searched_class
       ::Import::Base
     end
@@ -27,15 +21,17 @@ module Search
     end
 
     class Chart < ::Search::Base::Chart
-      private
+      group_by_attribute 'status', :string do
+        def keys
+          ::Import::Base.status.values
+        end
 
-      def all_status_keys
-        ::Import::Base.status.values
+        def label(key)
+          I18n.t(key, scope: 'imports.status')
+        end
       end
 
-      def label_status_key(key)
-        I18n.t(key, scope: 'imports.status')
-      end
+      aggregate_attribute 'duration', 'EXTRACT(EPOCH FROM ended_at - started_at)'
     end
   end
 end

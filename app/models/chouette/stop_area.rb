@@ -536,6 +536,16 @@ module Chouette
       where "stop_areas.id IN (#{union_query})"
     end
 
+    # Find parents associated to the current Stop Areas
+    #
+    #   stop_areas.where(...).parent_stop_areas
+    #
+    # NB: Can be used with by_text scope
+    def self.parent_stop_areas(scope: Chouette::StopArea)
+      scope.where(id: select(:parent_id).distinct)
+    end
+
+    # NB: Can't be used with by_text scope because of distinct usage
     def self.all_parents(relation, ignore_mono_parent: false)
       stop_area_parents = joins('JOIN "public"."stop_areas" children on "public"."stop_areas"."id" = children.parent_id').where("children.id" => relation)
 

@@ -5,15 +5,14 @@ RSpec.describe Search::Base, type: :model do
     attribute :name
     attr_accessor :context
 
-    AUTHORIZED_GROUP_BY_ATTRIBUTES = (Search::Base::AUTHORIZED_GROUP_BY_ATTRIBUTES + %w[some_attribute]).freeze
-    NUMERIC_ATTRIBUTES = { 'some_numeric_attribute' => 'EXTRACT(EPOCH FROM updated_at - created_at)' }.freeze
-
     class Order < ::Search::Order
       attribute :name, column: 'column'
       attr_accessor :context
     end
 
     class Chart < ::Search::Base::Chart
+      group_by_attribute 'some_attribute', :string
+      aggregate_attribute 'some_numeric_attribute'
     end
   end
 
@@ -191,15 +190,6 @@ RSpec.describe Search::Base, type: :model do
       end
 
       it { is_expected.to be_an_instance_of(self.class::Search::Chart) }
-
-      context 'with aggregate_attribute' do
-        before do
-          search.aggregate_operation = 'sum'
-          search.aggregate_attribute = 'some_numeric_attribute'
-        end
-
-        it { is_expected.to have_attributes(aggregate_attribute: 'EXTRACT(EPOCH FROM updated_at - created_at)') }
-      end
     end
   end
 
@@ -471,23 +461,22 @@ end
 
 RSpec.describe Search::Base::Chart do
   class self::Chart < Search::Base::Chart # rubocop:disable Lint/ConstantDefinitionInBlock,Style/ClassAndModuleChildren
-    private
-
-    def all_more_keys_attribute_keys
-      %w[key1 key2 key3]
+    group_by_attribute 'some_attribute', :string
+    group_by_attribute 'some_numeric_attribute', :numeric
+    group_by_attribute 'some_datetime_attribute', :datetime
+    group_by_attribute 'custom_label_attribute',
+                       :string,
+                       joins: { relation: { other_relation: {} }, another_relation: {} },
+                       selects: %w[other_relations.name another_relations.label]
+    group_by_attribute 'more_keys_attribute', :numeric, keys: [1, 2, 3]
+    group_by_attribute 'label_key_attribute', :string do
+      def label(key)
+        key.reverse
+      end
     end
 
-    def label_label_key_attribute_key(key)
-      key.reverse
-    end
-
-    def joins_for_label_of_custom_label_attribute
-      { relation: { other_relation: {} }, another_relation: {} }
-    end
-
-    def select_for_label_of_custom_label_attribute
-      %w[other_relations.name another_relations.label]
-    end
+    aggregate_attribute 'some_numeric_attribute'
+    aggregate_attribute 'custom_aggregate_attribute', 'EXTRACT(EPOCH FROM updated_at - created_at)'
   end
 
   subject(:chart) do
@@ -598,7 +587,7 @@ RSpec.describe Search::Base::Chart do
       let(:group_by_attribute) { 'hour_of_day' }
 
       it do
-        expect(models).to receive(:group_by_hour_of_day).with(:created_at, {}).and_return(models)
+        expect(models).to receive(:group_by_hour_of_day).with(:created_at).and_return(models)
         expect(models).to receive(:count).with(:id)
         subject
       end
@@ -608,7 +597,7 @@ RSpec.describe Search::Base::Chart do
       let(:group_by_attribute) { 'day_of_week' }
 
       it do
-        expect(models).to receive(:group_by_day_of_week).with(:created_at, {}).and_return(models)
+        expect(models).to receive(:group_by_day_of_week).with(:created_at).and_return(models)
         expect(models).to receive(:count).with(:id)
         subject
       end
@@ -625,8 +614,7 @@ RSpec.describe Search::Base::Chart do
           receive(:select).with('other_relations.name', 'another_relations.label').and_return(models)
         )
         expect(models).to(
-          receive(:group).with('custom_label_attribute', 'other_relations.name', 'another_relations.label') \
-                         .and_return(models)
+          receive(:group).with('other_relations.name', 'another_relations.label').and_return(models)
         )
         expect(models).to receive(:order).with(count_id: :desc).and_return(models)
         expect(models).to receive(:limit).with(10).and_return(models)
@@ -645,8 +633,7 @@ RSpec.describe Search::Base::Chart do
             receive(:select).with('other_relations.name', 'another_relations.label').and_return(models)
           )
           expect(models).to(
-            receive(:group).with('custom_label_attribute', 'other_relations.name', 'another_relations.label')\
-                           .and_return(models)
+            receive(:group).with('other_relations.name', 'another_relations.label').and_return(models)
           )
           expect(models).to(
             receive(:order).with('other_relations.name' => :desc, 'another_relations.label' => :desc).and_return(models)
@@ -660,15 +647,46 @@ RSpec.describe Search::Base::Chart do
 
     context 'when #aggregate_operation is "sum"' do
       let(:aggregate_operation) { 'sum' }
-      let(:aggregate_attribute) { 'EXTRACT(EPOCH FROM updated_at - created_at)' }
+      let(:aggregate_attribute) { 'some_numeric_attribute' }
+
+      context 'when #aggregate_attribute is "some_numeric_attribute"' do
+        it do
+          expect(models).to receive(:group).with('some_attribute').and_return(models)
+          expect(models).to(
+            receive(:order).with('sum_some_numeric_attribute' => :desc).and_return(models)
+          )
+          expect(models).to receive(:limit).with(10).and_return(models)
+          expect(models).to receive(:sum).with('some_numeric_attribute')
+          subject
+        end
+      end
+
+      context 'when #aggregate_attribute is "custom_aggregate_attribute"' do
+        let(:aggregate_attribute) { 'custom_aggregate_attribute' }
+
+        it do
+          expect(models).to receive(:group).with('some_attribute').and_return(models)
+          expect(models).to(
+            receive(:order).with('sum_extract_epoch_from_updated_at_created_at' => :desc).and_return(models)
+          )
+          expect(models).to receive(:limit).with(10).and_return(models)
+          expect(models).to receive(:sum).with('EXTRACT(EPOCH FROM updated_at - created_at)')
+          subject
+        end
+      end
+    end
+
+    context 'when #aggregate_operation is "average"' do
+      let(:aggregate_operation) { 'average' }
+      let(:aggregate_attribute) { 'some_numeric_attribute' }
 
       it do
         expect(models).to receive(:group).with('some_attribute').and_return(models)
         expect(models).to(
-          receive(:order).with('sum_extract_epoch_from_updated_at_created_at' => :desc).and_return(models)
+          receive(:order).with('average_some_numeric_attribute' => :desc).and_return(models)
         )
         expect(models).to receive(:limit).with(10).and_return(models)
-        expect(models).to receive(:sum).with('EXTRACT(EPOCH FROM updated_at - created_at)')
+        expect(models).to receive(:average).with('some_numeric_attribute')
         subject
       end
     end
@@ -746,10 +764,10 @@ RSpec.describe Search::Base::Chart do
 
     context 'when #group_by_attribute needs more keys' do
       let(:group_by_attribute) { 'more_keys_attribute' }
-      let(:raw_data) { { 'key2' => 42 } }
+      let(:raw_data) { { 2 => 42 } }
 
       it 'adds missing keys' do
-        is_expected.to eq({ 'key1' => 0, 'key2' => 42, 'key3' => 0 })
+        is_expected.to eq({ 1 => 0, 2 => 42, 3 => 0 })
       end
     end
 
@@ -789,9 +807,55 @@ RSpec.describe Search::Base::Chart do
     before { allow(chart).to receive(:data).and_return(data) }
 
     context 'when #type is line' do
-      it do
-        expect(view_context).to receive(:line_chart).with(data, {})
-        subject
+      context 'when #group_by_attribute is "some_attribute"' do
+        it do
+          expect(view_context).to receive(:line_chart).with(data, discrete: true)
+          subject
+        end
+
+        context 'with #display_percent is true' do
+          let(:display_percent) { true }
+
+          it do
+            expect(view_context).to receive(:line_chart).with(data, discrete: true, suffix: '%')
+            subject
+          end
+        end
+      end
+
+      context 'when #group_by_attribute is "some_numeric_attribute"' do
+        let(:group_by_attribute) { 'some_numeric_attribute' }
+
+        it do
+          expect(view_context).to receive(:line_chart).with(data, {})
+          subject
+        end
+      end
+
+      context 'when #group_by_attribute is "some_datetime_attribute"' do
+        let(:group_by_attribute) { 'some_datetime_attribute' }
+
+        it do
+          expect(view_context).to(
+            receive(:line_chart).with(
+              data,
+              {
+                library: {
+                  scales: {
+                    x: {
+                      time: {
+                        displayFormats: {
+                          day: 'dd/MM/yyyy'
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            )
+          )
+          subject
+        end
       end
 
       context 'when #group_by_attribute is "date"' do
@@ -820,11 +884,29 @@ RSpec.describe Search::Base::Chart do
         end
       end
 
-      context 'with #display_percent is true' do
-        let(:display_percent) { true }
+      context 'when #group_by_attribute is "hour_of_day"' do
+        let(:group_by_attribute) { 'hour_of_day' }
 
         it do
-          expect(view_context).to receive(:line_chart).with(data, suffix: '%')
+          expect(view_context).to receive(:line_chart).with(data, discrete: true)
+          subject
+        end
+      end
+
+      context 'when #group_by_attribute is "day_of_week"' do
+        let(:group_by_attribute) { 'day_of_week' }
+
+        it do
+          expect(view_context).to receive(:line_chart).with(data, discrete: true)
+          subject
+        end
+      end
+
+      context 'when #group_by_attribute is "more_keys_attribute"' do
+        let(:group_by_attribute) { 'more_keys_attribute' }
+
+        it do
+          expect(view_context).to receive(:line_chart).with(data, discrete: true)
           subject
         end
       end
@@ -832,11 +914,6 @@ RSpec.describe Search::Base::Chart do
 
     context 'when #type is pie' do
       let(:chart_type) { 'pie' }
-
-      it do
-        expect(view_context).to receive(:pie_chart).with(data, {})
-        subject
-      end
 
       context 'when #group_by_attribute is "date"' do
         let(:group_by_attribute) { 'date' }
@@ -846,33 +923,10 @@ RSpec.describe Search::Base::Chart do
           subject
         end
       end
-
-      context 'when #group_by_attribute is "hour_of_day"' do
-        let(:group_by_attribute) { 'hour_of_day' }
-
-        it do
-          expect(view_context).to receive(:pie_chart).with(data, discrete: true)
-          subject
-        end
-      end
-
-      context 'when #group_by_attribute is "day_of_week"' do
-        let(:group_by_attribute) { 'day_of_week' }
-
-        it do
-          expect(view_context).to receive(:pie_chart).with(data, discrete: true)
-          subject
-        end
-      end
     end
 
     context 'when #type is column' do
       let(:chart_type) { 'column' }
-
-      it do
-        expect(view_context).to receive(:column_chart).with(data, {})
-        subject
-      end
 
       context 'when #group_by_attribute is "date"' do
         let(:group_by_attribute) { 'date' }

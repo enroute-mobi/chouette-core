@@ -2,8 +2,10 @@
 
 module Search
   class Import < AbstractImport
-    AUTHORIZED_GROUP_BY_ATTRIBUTES = (superclass::AUTHORIZED_GROUP_BY_ATTRIBUTES + %w[creator]).freeze
-
     attr_accessor :workbench
+
+    class Chart < superclass::Chart
+      group_by_attribute 'creator', :string
+    end
   end
 end

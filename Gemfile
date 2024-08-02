@@ -49,6 +49,7 @@ gem 'pg'
 
 gem 'activerecord-postgis-adapter', '~> 5.2.3'
 gem 'postgres-copy', '>= 1.5.0'
+gem 'pg_search'
 
 gem 'polylines'
 gem 'bulk_insert'

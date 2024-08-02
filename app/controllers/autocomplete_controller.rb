@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 class AutocompleteController < Chouette::UserController
+  include WithinWorkgroup
 
   ##############
   # Line scope #
@@ -74,15 +75,20 @@ class AutocompleteController < Chouette::UserController
   end
 
   def stop_area_referential
-    @stop_area_referential ||= current_user.workgroups.find(params[:workgroup_id]).stop_area_referential if params[:workgroup_id]
+    @stop_area_referential ||= current_workgroup&.stop_area_referential
   end
 
   def line_referential
-    @line_referential ||= current_user.workgroups.find(params[:workgroup_id]).line_referential if params[:workgroup_id]
+    @line_referential ||= current_workgroup&.line_referential
   end
 
   def shape_referential
-    @shape_referential ||= current_user.workgroups.find(params[:workgroup_id]).shape_referential if params[:workgroup_id]
+    @shape_referential ||= current_workgroup&.shape_referential
+  end
+
+  def current_workgroup
+    current_user.workgroups.find(params[:workgroup_id]) if params[:workgroup_id]
+    @current_workgroup ||= workbench&.workgroup
   end
 
   def workbench

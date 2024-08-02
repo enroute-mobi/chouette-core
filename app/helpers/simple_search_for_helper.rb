@@ -42,6 +42,7 @@ module SimpleSearchForHelper
     def input attribute, **options
       width = options.delete(:width) || 1
       options[:wrapper_html] ||= { class: "w-#{width}/5 border-l" }
+      options[:input_html] ||= { "@keydown.enter.prevent": "document.getElementById('filter').click();" }
 
       super attribute, **options
     end

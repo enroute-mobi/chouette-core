@@ -47,13 +47,21 @@ class AutocompleteController < Chouette::UserController
   ##################
 
   def stop_areas
-    return Chouette::StopArea.none if text.blank?
-    @stop_areas = stop_area_scope.stop_areas.by_text(text).limit(50)
+    @stop_areas =
+      if text.present?
+        stop_area_scope.stop_areas.by_text(text).limit(50)
+      else
+        Chouette::StopArea.none
+      end
   end
 
   def parent_stop_areas
-    return Chouette::StopArea.none if text.blank?
-    @stop_areas = stop_area_scope.stop_areas.parent_stop_areas.by_text(text).limit(50)
+    @stop_areas =
+      if text.present?
+        stop_area_scope.stop_areas.parent_stop_areas.by_text(text).limit(50)
+      else
+        Chouette::StopArea.none
+      end
   end
 
   def stop_area_providers

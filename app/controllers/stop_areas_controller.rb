@@ -17,7 +17,7 @@ class StopAreasController < Chouette::StopAreaReferentialController
     scope = scope.referent_only if params[:referent_only]
 
     text = params[:q]&.strip
-    @stop_areas = text.present? ? scope.by(text).limit(50) : Chouette::StopArea.none
+    @stop_areas = text.present? ? scope.by_text(text).limit(50) : Chouette::StopArea.none
   end
 
   def index # rubocop:disable Metrics/MethodLength

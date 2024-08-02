@@ -9,7 +9,7 @@ module WithinWorkgroup
 
   def set_current_workgroup(&block)
     # Ensure that InheritedResources has defined parents (workbench, etc)
-    association_chain if respond_to?(:association_chain)
+    association_chain if respond_to?(:association_chain, true)
 
     CustomFieldsSupport.within_workgroup current_workgroup, &block
   end

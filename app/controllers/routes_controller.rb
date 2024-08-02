@@ -59,11 +59,13 @@ class RoutesController < Chouette::ReferentialController
   # Retrieve stop areas for autocomplete in route editor
   def autocomplete_stop_areas
     scope = referential.workbench.stop_areas.where(deleted_at: nil)
+
     unless current_user.organisation.has_feature?('route_stop_areas_all_types')
       scope = scope.where(kind: :non_commercial).or(scope.where(area_type: referential.stop_area_referential.available_stops))
     end
 
-    @stop_areas = text.present? ? scope.by(text).limit(50) : Chouette::StopArea.none
+    text = params[:q]&.strip
+    @stop_areas = text.present? ? scope.by_text(text).limit(50) : Chouette::StopArea.none
   end
 
   def show

@@ -18,11 +18,19 @@ class WorkgroupWorkbenchesController < Chouette::WorkgroupController
   end
 
   def create
-    create! { workbench_path }
+    create! do |success, _failure|
+      success.html do
+        redirect_to workbench_path
+      end
+    end
   end
 
   def update
-    update! { workbench_path }
+    update! do |success, _failure|
+      success.html do
+        redirect_to workbench_path
+      end
+    end
   end
 
   private

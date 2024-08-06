@@ -51,57 +51,35 @@ class Import::Base < ApplicationModel
   end
 
   def update_workgroup_providers?
-    if options['update_workgroup_providers']
-      true
-    elsif parent_options.present?
-      parent_options['update_workgroup_providers'] == 'true'
-    else
-      false
-    end
+    options['update_workgroup_providers'] || parent_option('update_workgroup_providers') == 'true'
   end
 
   def store_xml?
-    if options['store_xml']
-      true
-    elsif parent_options.present?
-      parent_options['store_xml'] == 'true'
-    else
-      false
-    end
+    options['store_xml'] || parent_option('store_xml') == 'true'
   end
 
   def disable_missing_resources?
-    if options['disable_missing_resources']
-      true
-    elsif parent_options.present?
-      parent_options['disable_missing_resources'] == 'true'
-    else
-      false
-    end
+    options['disable_missing_resources'] || parent_option('disable_missing_resources') == 'true'
   end
 
   def strict_mode?
-    if options['strict_mode'] == 'true'
-      true
-    elsif parent_options.present?
-      parent_options['strict_mode'] == 'true'
-    else
-      false
-    end
+    options['strict_mode'] == 'true' || parent_option('strict_mode') == 'true'
   end
 
   def ignore_particulars?
-    if options['ignore_particulars'] == 'true'
-      true
-    elsif parent_options.present?
-      parent_options['ignore_particulars'] == 'true'
-    else
-      false
-    end
+    options['ignore_particulars'] == 'true' || parent_option('ignore_particulars') == 'true'
+  end
+
+  def ignore_parent_stop_areas?
+    options['ignore_parent_stop_areas'] == 'true' || parent_option('ignore_parent_stop_areas') == 'true'
   end
 
   def parent_options
     parent&.options
+  end
+
+  def parent_option(key)
+    parent_options.present? && parent_options[key]
   end
 
   PERIOD_EXTREME_VALUE = 25.years

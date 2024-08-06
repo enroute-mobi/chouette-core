@@ -116,6 +116,7 @@ en:
         ignore_single_stop_station: Ignore Monomodal Stop Places with a single Quay
         include_stop_visits: "Include Stop Visits"
         ignore_parent_stop_places: "Ignore parent Stop Places"
+        ignore_extended_gtfs_route_types: "Ignorer extended route types"
         period: Exported periods
         participant_ref: Netex Participant Ref
         profile_options: Netex Profile Settings

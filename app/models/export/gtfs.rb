@@ -17,6 +17,7 @@ class Export::Gtfs < Export::Base
   option :ignore_single_stop_station, required: true, default_value: false, enumerize: [true, false], serialize: ActiveModel::Type::Boolean
   option :prefer_referent_company, required: true, default_value: false, enumerize: [true, false], serialize: ActiveModel::Type::Boolean
   option :ignore_parent_stop_places, required: true, default_value: false, enumerize: [true, false], serialize: ActiveModel::Type::Boolean
+  option :ignore_extended_gtfs_route_types, required: true, default_value: false, enumerize: [true, false], serialize: ActiveModel::Type::Boolean
 
   validate :ensure_is_valid_period
 
@@ -667,7 +668,12 @@ class Export::Gtfs < Export::Base
     def export!
       lines.includes(:referent).find_each do |line|
         exported_line = (prefer_referent_line ? line.referent : line) || line
-        decorated_line = Decorator.new(exported_line, index, duplicated_registration_numbers)
+        decorated_line = Decorator.new(
+          exported_line,
+          index: index,
+          duplicated_registration_numbers: duplicated_registration_numbers,
+          ignore_extended_gtfs_route_types: export.ignore_extended_gtfs_route_types
+        )
 
         unless line_referent_exported?(exported_line)
           create_messages decorated_line
@@ -695,13 +701,14 @@ class Export::Gtfs < Export::Base
     class Decorator < SimpleDelegator
 
       # index is optional to make tests easier
-      def initialize(line, index = nil, duplicated_registration_numbers = [])
+      def initialize(line, index: nil, duplicated_registration_numbers: [], ignore_extended_gtfs_route_types: false)
         super line
         @index = index
         @duplicated_registration_numbers = duplicated_registration_numbers
+        @ignore_extended_gtfs_route_types = ignore_extended_gtfs_route_types
       end
 
-      attr_reader :index, :duplicated_registration_numbers
+      attr_reader :index, :duplicated_registration_numbers, :ignore_extended_gtfs_route_types
 
       def route_id
         if registration_number.present? &&
@@ -721,7 +728,7 @@ class Export::Gtfs < Export::Base
         number
       end
 
-      def self.route_types
+      def self.route_types # rubocop:disable Metrics/MethodLength
         @route_types ||= {
           tram: 0,
           metro: 1,
@@ -734,20 +741,34 @@ class Export::Gtfs < Export::Base
           air: 1100,
           taxi: 1500,
           hireCar: 1506
-        }.with_indifferent_access
+        }.with_indifferent_access.freeze
+      end
+
+      def self.extended_route_types # rubocop:disable Metrics/MethodLength
+        @extended_route_types ||= {
+          rail: {
+            interregionalRail: 103
+          }.with_indifferent_access.freeze,
+          coach: {
+            regionalCoach: 204,
+            specialCoach: 205,
+            commuterCoach: 208
+          }.with_indifferent_access.freeze,
+          bus: {
+            schoolAndPublicServiceBus: 713
+          }.with_indifferent_access.freeze
+        }.with_indifferent_access.freeze
       end
 
       def route_type
-        unless flexible_service
-          return 103 if transport_mode == 'rail' && transport_submode == 'interregionalRail'
-          return 204 if transport_mode == 'coach' && transport_submode == 'regionalCoach'
-          return 205 if transport_mode == 'coach' && transport_submode == 'specialCoach'
-          return 208 if transport_mode == 'coach' && transport_submode == 'commuterCoach'
-          return 713 if transport_mode == 'bus' && transport_submode == 'schoolAndPublicServiceBus'
-          self.class.route_types[transport_mode]
-        else
-          715
+        unless ignore_extended_gtfs_route_types
+          return 715 if flexible_service
+
+          extended_route_type = self.class.extended_route_types.dig(transport_mode, transport_submode)
+          return extended_route_type if extended_route_type
         end
+
+        self.class.route_types[transport_mode]
       end
 
       def default_agency?

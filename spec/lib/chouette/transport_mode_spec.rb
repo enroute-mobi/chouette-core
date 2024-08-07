@@ -256,4 +256,93 @@ RSpec.describe Chouette::TransportMode do
 
     it { is_expected.to match_array(expected_transport_modes) }
   end
+
+  describe Chouette::TransportMode::Mapper do
+    let(:mapper) { described_class.new }
+
+    describe '#register' do
+      context 'when a TransportMode is given with a value' do
+        let(:transport_mode) { Chouette::TransportMode.from(:bus) }
+
+        it { expect { mapper.register(transport_mode, 'dummy') }.to change(mapper, :mappings).from({}).to({transport_mode => 'dummy'}) }
+      end
+
+      context 'when a TransportMode code is given with a value' do
+        let(:transport_mode) { Chouette::TransportMode.from('rail/night_train') }
+
+        it { expect { mapper.register(transport_mode.code, 'dummy') }.to change(mapper, :mappings).from({}).to({transport_mode => 'dummy'}) }
+      end
+    end
+
+    describe '#for' do
+      subject { mapper.for(transport_mode) }
+
+      context 'when the same transport mode is registered with :dummy' do
+        let(:mapper) do
+          Chouette::TransportMode.mapper do
+            register 'rail/night_train', :dummy
+          end
+        end
+
+        let(:transport_mode) { 'rail/night_train' }
+
+        it { is_expected.to eq(:dummy) }
+      end
+
+      context 'when a transport mode with the same mode is registered  with :dummy' do
+        let(:mapper) do
+          Chouette::TransportMode.mapper do
+            register 'rail', :dummy
+          end
+        end
+
+        let(:transport_mode) { 'rail/night_train' }
+
+        it { is_expected.to eq(:dummy) }
+      end
+    end
+
+    describe '#append' do
+      context 'when a transport mode is added' do
+        subject(:mapper) { original.append { register 'bus', :dummy } }
+
+        let(:original) do
+          Chouette::TransportMode.mapper do
+            register 'rail/night_train', :original
+          end
+        end
+
+        it { expect { subject }.to_not change(original, :mappings) }
+
+        it do
+          expected = {
+            Chouette::TransportMode.from('rail/night_train') => :original,
+            Chouette::TransportMode.from(:bus) => :dummy
+          }
+
+          is_expected.to have_attributes(mappings: expected)
+        end
+      end
+
+      context 'when a transport mode is replaced' do
+        subject(:mapper) { original.append { register 'bus', :dummy } }
+
+        let(:original) do
+          Chouette::TransportMode.mapper do
+            register 'bus', :original
+          end
+        end
+
+        it { expect { subject }.to_not change(original, :mappings) }
+
+        it do
+          expected = {
+            Chouette::TransportMode.from(:bus) => :dummy
+          }
+
+          is_expected.to have_attributes(mappings: expected)
+        end
+      end
+    end
+  end
 end

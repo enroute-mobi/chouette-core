@@ -9,6 +9,10 @@ module Chouette
       @sub_mode = sub_mode&.to_sym
     end
 
+    def without_sub_mode
+      TransportMode.new(mode)
+    end
+
     def mode_human_name(locale: I18n.locale)
       I18n.translate mode, scope: 'transport_modes.modes', locale: locale
     end
@@ -34,7 +38,7 @@ module Chouette
     def self.from(code)
       return if code.blank?
 
-      new(*code.split('/'))
+      new(*code.to_s.split('/'))
     end
 
     def inspect
@@ -71,6 +75,14 @@ module Chouette
       return unless sub_mode
 
       String(sub_mode).camelize(:lower)
+    end
+
+    def eql?(other)
+      other && mode == other.mode && sub_mode == other.sub_mode
+    end
+
+    def hash
+      @hash ||= [ mode, sub_mode ].hash
     end
 
     private
@@ -245,6 +257,71 @@ module Chouette
       ],
       trolley_bus: []
     }.tap { |d| d.each { |mode, sub_modes| [mode, sub_modes.freeze] } }.freeze
+
+    def self.mapper(&block)
+      Chouette::TransportMode::Mapper.new(&block)
+    end
+
+    # Simplifying mapping between a transport mode and a value
+    #
+    #   mapper = Chouette::TransportMode.mapper do
+    #     register 'bus', 'Bus'
+    #     register 'bus/school_bus', 'School Bus'
+    #   end
+    #
+    #   mapper.for('bus/school_bus') => 'School Bus'
+    #   mapper.for('bus') => 'Bus'
+    #   mapper.for('bus/night_bus') => 'Bus'
+    #
+    # A mapper can be forked:
+    #
+    #   extended = mapper.append do
+    #     register 'bus', 'New'
+    #     register 'bus/night_bus', 'Night Bus'
+    #   end
+    #
+    #   extended.for('bus') => 'New'
+    #   extended.for('bus/night_bus') => 'Night Bus'
+    #
+    class Mapper
+      def initialize(&block)
+        setup(&block) if block_given?
+      end
+
+      def setup(&block)
+        instance_exec(&block)
+      end
+
+      def append(&block)
+        clone.tap { |cloned| cloned.setup(&block) }
+      end
+
+      def initialize_clone(other)
+        @mappings = other.mappings.dup
+      end
+
+      def mappings
+        @mappings ||= {}
+      end
+
+      def register(transport_mode, value)
+        transport_mode = from(transport_mode)
+        mappings[transport_mode] = value
+      end
+
+      def for(transport_mode)
+        transport_mode = from(transport_mode)
+        mappings[transport_mode] || mappings[transport_mode.without_sub_mode]
+      end
+
+      private
+
+      def from(transport_mode)
+        return transport_mode if transport_mode.is_a?(Chouette::TransportMode)
+
+        Chouette::TransportMode.from(transport_mode)
+      end
+    end
 
     class Type < ::ActiveRecord::Type::Value
       def cast(value)

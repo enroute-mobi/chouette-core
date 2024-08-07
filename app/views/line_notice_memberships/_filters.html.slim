@@ -6,12 +6,10 @@
   .flex.flex-col.w-full
     .flex.items-center.border-r.border-white
       = f.input :text, label: false, wrapper_html: {class: "w-2/5"}
-    .flex.items-center.border-t.border-r.border-white
-      = f.input :line_id, as: :autocomplete_select, collection: @search.candidate_lines, label_method: :display_name, wrapper_html: {class: "w-2/5"}
 
   .flex.flex-col.justify-center.items-center.actions.ml-auto.py-3.w-80
     .flex.items-center.mb-3
       = render partial: 'shared/per_page', locals: {f:f}
     .flex.items-center
-      = link_to t('actions.erase'), [@workbench, :line_referential, :line_notices], class: 'btn btn-link'
+      = link_to t('actions.erase'), [@workbench, :line_referential, parent, :line_notice_memberships], class: 'btn btn-link'
       = f.submit t('actions.filter'), class: 'btn btn-default'

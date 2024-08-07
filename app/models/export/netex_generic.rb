@@ -182,9 +182,9 @@ class Export::NetexGeneric < Export::Base
       part_class.new(self).export_part
     end
 
-    target.close
-    export_file.close
+    Finalizer.new(self).export_part
 
+    export_file.close
     export_file
   end
 
@@ -255,6 +255,12 @@ class Export::NetexGeneric < Export::Base
 
     def default_decorator_class
       @decorator_class ||= self.class.const_get('Decorator')
+    end
+  end
+
+  class Finalizer < Part
+    def export_part
+      target.close
     end
   end
 

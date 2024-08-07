@@ -1696,12 +1696,15 @@ class Export::NetexGeneric < Export::Base
 
   class VehicleJourneys < Part
     def export_part
-      vehicle_journeys.each_instance do |vehicle_journey|
-        tags = resource_tagger.tags_for(vehicle_journey.line_id)
-        tagged_target = TaggedTarget.new(target, tags)
+      # For the moment, no CustomField is used in VehicleJourney. See CHOUETTE-3939
+      Chouette::VehicleJourney.without_custom_fields do
+        vehicle_journeys.each_instance do |vehicle_journey|
+          tags = resource_tagger.tags_for(vehicle_journey.line_id)
+          tagged_target = TaggedTarget.new(target, tags)
 
-        decorated_vehicle_journey = decorate(vehicle_journey, code_space_keys: code_space_keys)
-        tagged_target << decorated_vehicle_journey.netex_resource
+          decorated_vehicle_journey = decorate(vehicle_journey, code_space_keys: code_space_keys)
+          tagged_target << decorated_vehicle_journey.netex_resource
+        end
       end
     end
 

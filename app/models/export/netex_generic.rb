@@ -1615,11 +1615,13 @@ class Export::NetexGeneric < Export::Base
   class VehicleJourneyAtStops < Part
     def export_part
       stop_point_in_journey_pattern_ref_cache = {}
+      passing_time_cache = {}
 
       vehicle_journey_at_stops.find_each_light do |light_vehicle_journey_at_stop|
         decorated_vehicle_journey_at_stop = decorate(
           light_vehicle_journey_at_stop,
-          stop_point_in_journey_pattern_ref_cache: stop_point_in_journey_pattern_ref_cache
+          stop_point_in_journey_pattern_ref_cache: stop_point_in_journey_pattern_ref_cache,
+          passing_time_cache: passing_time_cache
         )
         target << decorated_vehicle_journey_at_stop.netex_resource
       end
@@ -1640,28 +1642,26 @@ class Export::NetexGeneric < Export::Base
     class Decorator < ModelDecorator
       def netex_attributes
         {
-          departure_time: stop_time_departure_time,
-          arrival_time: stop_time_arrival_time,
-          departure_day_offset: stop_departure_day_offset,
-          arrival_day_offset: stop_arrival_day_offset,
-          stop_point_in_journey_pattern_ref: stop_point_in_journey_pattern_ref,
-        }
+          stop_point_in_journey_pattern_ref: stop_point_in_journey_pattern_ref
+        }.tap do |attributes|
+          if departure_passing_time
+            attributes[:departure_time] = departure_passing_time.netex_time
+            attributes[:departure_day_offset] = departure_passing_time.netex_day_offset
+          end
+
+          if arrival_passing_time
+            attributes[:arrival_time] = arrival_passing_time.netex_time
+            attributes[:arrival_day_offset] = arrival_passing_time.netex_day_offset
+          end
+        end
       end
 
-      def stop_arrival_day_offset
-        arrival_local_time_of_day&.day_offset
+      def arrival_passing_time
+        @arrival_passing_time ||= passing_time(time: arrival_time, day_offset: arrival_day_offset, time_zone: time_zone)
       end
 
-      def stop_departure_day_offset
-        departure_local_time_of_day&.day_offset
-      end
-
-      def stop_time_arrival_time
-        netex_time arrival_local_time_of_day if arrival_local_time_of_day
-      end
-
-      def stop_time_departure_time
-        netex_time departure_local_time_of_day if departure_local_time_of_day
+      def departure_passing_time
+        @departure_passing_time ||= passing_time(time: departure_time, day_offset: departure_day_offset, time_zone: time_zone)
       end
 
       def netex_resource
@@ -1693,10 +1693,32 @@ class Export::NetexGeneric < Export::Base
         @stop_point_in_journey_pattern_ref_cache ||= {}
       end
 
-      def netex_time time_of_day
-        Netex::Time.new time_of_day.hour, time_of_day.minute, time_of_day.second
+      attr_writer :passing_time_cache
+      def passing_time_cache
+        @passing_time_cache ||= {}
       end
 
+      def passing_time(time:, day_offset:, time_zone:)
+        return nil if time.blank?
+
+        passing_time_cache[[time, day_offset, time_zone]] ||= PassingTime.new(time: time, day_offset: day_offset, time_zone: time_zone)
+      end
+    end
+
+    class PassingTime
+      def initialize(time:, day_offset:, time_zone:)
+        @time, @day_offset, @time_zone = time, day_offset, time_zone
+
+        # For performance purpose, everything is computed once
+        @local_time_of_day = TimeOfDay.parse(@time, day_offset: @day_offset, time_zone: @time_zone)
+        @local_day_offset = @local_time_of_day.day_offset
+        @netex_time = Netex::Time.new local_time_of_day.hour, local_time_of_day.minute, local_time_of_day.second
+
+        freeze
+      end
+
+      attr_reader :time, :day_offset, :time_zone, :local_time_of_day, :local_day_offset, :netex_time
+      alias netex_day_offset local_day_offset
     end
   end
 

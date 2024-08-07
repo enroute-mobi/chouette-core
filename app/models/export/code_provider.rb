@@ -20,7 +20,7 @@ module Export
     def code(model)
       return unless model&.id
 
-      if collection = send(collection_name(model))
+      if collection = send(self.class.collection_name(model))
         collection.code(model.id)
       end
     end
@@ -47,13 +47,18 @@ module Export
       end
     end
 
-    def collection_name(model)
-      begin
-        model.model_name.collection
-      rescue
-        # When the model class is Chouette::StopPoint::Light::StopPoint...
-        model.class.name.demodulize.underscore.pluralize
-      end
+    mattr_reader :collection_names, default: {}
+
+    def self.collection_name(model)
+      return nil unless model
+
+      collection_names[model.class] ||=
+        begin
+          model.model_name.collection
+        rescue
+          # When the model class is Chouette::StopPoint::Light::StopPoint...
+          model.class.name.demodulize.underscore.pluralize
+        end
     end
 
     module Indexer

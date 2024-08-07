@@ -243,7 +243,7 @@ class Operation < ApplicationModel
     def around(&block)
       if self.class.enabled?
         logger.debug "Profiling available into #{target_file}"
-        ::StackProf.run(mode: :cpu, raw: true, out: target_file, &block)
+        ::StackProf.run(mode: :wall, raw: true, out: target_file, &block)
       else
         block.call
       end

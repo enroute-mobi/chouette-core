@@ -211,7 +211,7 @@ class Import::Gtfs < Import::Base # rubocop:disable Metrics/ClassLength
   end
 
   def specific_default_company
-    return nil unless parent_options.present? && parent_options['specific_default_company_id'].present?
+    return nil unless parent_option('specific_default_company_id').present?
     @specific_default_company ||= workbench.companies.find_by(id: parent_options['specific_default_company_id'])
   end
 
@@ -363,6 +363,8 @@ class Import::Gtfs < Import::Base # rubocop:disable Metrics/ClassLength
 
     CustomFieldsSupport.within_workgroup(workbench.workgroup) do
       create_resource(:stops).each(sorted_stops, slice: 100, transaction: true) do |stop, resource|
+        next if ignore_parent_stop_areas? && stop.location_type.present?
+
         stop_area = stop_areas.find_or_initialize_by(registration_number: stop.id)
 
         stop_area.name = stop.name
@@ -393,7 +395,7 @@ class Import::Gtfs < Import::Base # rubocop:disable Metrics/ClassLength
           code.save unless stop_area.new_record?
         end if stop.code.present?
 
-        if stop.parent_station.present?
+        if stop.parent_station.present? && !ignore_parent_stop_areas?
           if check_parent_is_valid_or_create_message(Chouette::StopArea, stop.parent_station, resource)
             parent = find_stop_parent_or_create_message(stop.name, stop.parent_station, resource)
             if parent

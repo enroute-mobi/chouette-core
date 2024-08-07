@@ -132,6 +132,7 @@ fr:
           disable_missing_resources: Désactiver les arrêts et lignes manquantes
           strict_mode: Mode strict (tout attribut non défini est réinitialisé)
           ignore_particulars: Ignorer les ressources Particulières
+          ignore_parent_stop_areas: "Ignorer les arrêts parents"
           line_provider_id: Fournisseur de lignes
           stop_area_provider_id: Fournisseur d'arrêts
           specific_default_company_id: Transporteur par défaut spécifique

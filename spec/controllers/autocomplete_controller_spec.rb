@@ -1,12 +1,14 @@
+# frozen_string_literal: true
+
 RSpec.describe AutocompleteController, type: :controller do
   login_user
 
-  describe "GET #lines" do
+  describe 'GET #lines' do
     let(:context) do
       Chouette.create do
-        workbench organisation: Organisation.find_by_code('first') do
-          line :first_line, name: "Line one", published_name: "First Line", number: "L1"
-          line :second_line, name: "Line two", published_name: "Second Line", number: "L2"
+        workbench organisation: Organisation.find_by(code: 'first') do
+          line :first_line, name: 'Line one', published_name: 'First Line', number: 'L1'
+          line :second_line, name: 'Line two', published_name: 'Second Line', number: 'L2'
 
           referential lines: [:first_line]
         end
@@ -18,8 +20,8 @@ RSpec.describe AutocompleteController, type: :controller do
     let(:first_line) { context.line(:first_line) }
     let(:second_line) { context.line(:second_line) }
 
-    context "for a workbench" do
-      it "returns the complete list when the search parameter is not found" do
+    context 'for a workbench' do
+      it 'returns the complete list when the search parameter is not found' do
         get :lines, params: {
           workbench_id: workbench.id
         }
@@ -27,7 +29,7 @@ RSpec.describe AutocompleteController, type: :controller do
         expect(response).to be_successful
       end
 
-      it "returns a line when the name contains the search parameter" do
+      it 'returns a line when the name contains the search parameter' do
         get :lines, params: {
           workbench_id: workbench.id,
           q: 'Line one'
@@ -36,7 +38,7 @@ RSpec.describe AutocompleteController, type: :controller do
         expect(response).to be_successful
       end
 
-      it "returns a line when the number contains the search parameter" do
+      it 'returns a line when the number contains the search parameter' do
         get :lines, params: {
           workbench_id: workbench.id,
           q: 'L1'
@@ -45,7 +47,7 @@ RSpec.describe AutocompleteController, type: :controller do
         expect(response).to be_successful
       end
 
-      it "returns a line when the published name contains the search parameter" do
+      it 'returns a line when the published name contains the search parameter' do
         get :lines, params: {
           workbench_id: workbench.id,
           q: 'First Line'
@@ -53,16 +55,14 @@ RSpec.describe AutocompleteController, type: :controller do
         expect(assigns(:lines).to_a).to eq [first_line]
         expect(response).to be_successful
       end
-
     end
   end
 
-  describe "GET #companies" do
-
+  describe 'GET #companies' do
     let(:context) do
       Chouette.create do
-        workbench organisation: Organisation.find_by_code('first') do
-          company :c1, name: "Company one", short_name: "C1"
+        workbench organisation: Organisation.find_by(code: 'first') do
+          company :c1, name: 'Company one', short_name: 'C1'
 
           referential
         end
@@ -73,8 +73,8 @@ RSpec.describe AutocompleteController, type: :controller do
     let(:referential) { context.referential }
     let(:company) { context.company(:c1) }
 
-    context "for a workbench" do
-      it "returns the complete list when the search parameter is not found" do
+    context 'for a workbench' do
+      it 'returns the complete list when the search parameter is not found' do
         get :companies, params: {
           workbench_id: workbench.id
         }
@@ -82,7 +82,7 @@ RSpec.describe AutocompleteController, type: :controller do
         expect(response).to be_successful
       end
 
-      it "returns a company when the name contains the search parameter" do
+      it 'returns a company when the name contains the search parameter' do
         get :companies, params: {
           workbench_id: workbench.id,
           q: 'Company one'
@@ -91,7 +91,7 @@ RSpec.describe AutocompleteController, type: :controller do
         expect(response).to be_successful
       end
 
-      it "returns a company when the short name contains the search parameter" do
+      it 'returns a company when the short name contains the search parameter' do
         get :companies, params: {
           workbench_id: workbench.id,
           q: 'C1'
@@ -99,16 +99,14 @@ RSpec.describe AutocompleteController, type: :controller do
         expect(assigns(:companies).to_a).to eq [company]
         expect(response).to be_successful
       end
-
     end
   end
 
-  describe "GET #line_providers" do
-
+  describe 'GET #line_providers' do
     let(:context) do
       Chouette.create do
-        workbench organisation: Organisation.find_by_code('first') do
-          line_provider :lp1, short_name: "LP1"
+        workbench organisation: Organisation.find_by(code: 'first') do
+          line_provider :lp1, short_name: 'LP1'
 
           referential
         end
@@ -119,9 +117,8 @@ RSpec.describe AutocompleteController, type: :controller do
     let(:referential) { context.referential }
     let(:line_provider) { context.line_provider(:lp1) }
 
-
-    context "for a workbench" do
-      it "returns the complete list when the search parameter is not found" do
+    context 'for a workbench' do
+      it 'returns the complete list when the search parameter is not found' do
         get :line_providers, params: {
           workbench_id: workbench.id
         }
@@ -129,7 +126,7 @@ RSpec.describe AutocompleteController, type: :controller do
         expect(response).to be_successful
       end
 
-      it "returns a line_provider when the short name contains the search parameter" do
+      it 'returns a line_provider when the short name contains the search parameter' do
         get :line_providers, params: {
           workbench_id: workbench.id,
           q: 'LP1'
@@ -137,12 +134,10 @@ RSpec.describe AutocompleteController, type: :controller do
         expect(assigns(:line_providers).to_a).to eq [line_provider]
         expect(response).to be_successful
       end
-
     end
 
-    context "for a referential" do
-
-      it "returns the complete list when the search parameter is not found" do
+    context 'for a referential' do
+      it 'returns the complete list when the search parameter is not found' do
         get :line_providers, params: {
           workbench_id: workbench.id,
           referential_id: referential.id
@@ -151,7 +146,7 @@ RSpec.describe AutocompleteController, type: :controller do
         expect(response).to be_successful
       end
 
-      it "returns a line_provider when the short name contains the search parameter" do
+      it 'returns a line_provider when the short name contains the search parameter' do
         get :line_providers, params: {
           workbench_id: workbench.id,
           referential_id: referential.id,
@@ -160,16 +155,14 @@ RSpec.describe AutocompleteController, type: :controller do
         expect(assigns(:line_providers).to_a).to eq [line_provider]
         expect(response).to be_successful
       end
-
     end
   end
 
-  describe "GET #line_notices" do
-
+  describe 'GET #line_notices' do
     let(:context) do
       Chouette.create do
-        workbench organisation: Organisation.find_by_code('first') do
-          line_notice :ln1, title: "LN1"
+        workbench organisation: Organisation.find_by(code: 'first') do
+          line_notice :ln1, title: 'LN1'
         end
       end
     end
@@ -177,9 +170,8 @@ RSpec.describe AutocompleteController, type: :controller do
     let(:workbench) { context.workbench }
     let(:line_notice) { context.line_notice(:ln1) }
 
-
-    context "for a workbench" do
-      it "returns the complete list when the search parameter is not found" do
+    context 'for a workbench' do
+      it 'returns the complete list when the search parameter is not found' do
         get :line_notices, params: {
           workbench_id: workbench.id
         }
@@ -187,7 +179,7 @@ RSpec.describe AutocompleteController, type: :controller do
         expect(response).to be_successful
       end
 
-      it "returns a line_notice when the title contains the search parameter" do
+      it 'returns a line_notice when the title contains the search parameter' do
         get :line_notices, params: {
           workbench_id: workbench.id,
           q: 'LN1'
@@ -195,17 +187,14 @@ RSpec.describe AutocompleteController, type: :controller do
         expect(assigns(:line_notices).to_a).to eq [line_notice]
         expect(response).to be_successful
       end
-
     end
-
   end
 
-  describe "GET #stop_areas" do
-
+  describe 'GET #stop_areas' do
     let(:context) do
       Chouette.create do
-        workbench organisation: Organisation.find_by_code('first') do
-          stop_area :sa1, name: "Stop Area 1"
+        workbench organisation: Organisation.find_by(code: 'first') do
+          stop_area :sa1, name: 'Stop Area 1'
 
           referential
         end
@@ -216,17 +205,16 @@ RSpec.describe AutocompleteController, type: :controller do
     let(:referential) { context.referential }
     let(:stop_area) { context.stop_area(:sa1) }
 
-
-    context "for a workbench" do
-      it "returns the complete list when the search parameter is not found" do
+    context 'for a workbench' do
+      it 'returns an empty list when the search parameter is not found' do
         get :stop_areas, params: {
           workbench_id: workbench.id
         }
-        expect(assigns(:stop_areas)).to match_array [stop_area]
+        expect(assigns(:stop_areas)).to be_empty
         expect(response).to be_successful
       end
 
-      it "returns a stop_area when the name contains the search parameter" do
+      it 'returns a stop_area when the name contains the search parameter' do
         get :stop_areas, params: {
           workbench_id: workbench.id,
           q: 'Stop Area 1'
@@ -235,7 +223,7 @@ RSpec.describe AutocompleteController, type: :controller do
         expect(response).to be_successful
       end
 
-      it "returns a stop_area when the objectid contains the search parameter" do
+      it 'returns a stop_area when the objectid contains the search parameter' do
         get :stop_areas, params: {
           workbench_id: workbench.id,
           q: stop_area.get_objectid.short_id
@@ -243,21 +231,19 @@ RSpec.describe AutocompleteController, type: :controller do
         expect(assigns(:stop_areas).to_a).to eq [stop_area]
         expect(response).to be_successful
       end
-
     end
 
-    context "for a referential" do
-
-      it "returns the complete list when the search parameter is not found" do
+    context 'for a referential' do
+      it 'returns an empty list when the search parameter is not found' do
         get :stop_areas, params: {
           workbench_id: workbench.id,
           referential_id: referential.id
         }
-        expect(assigns(:stop_areas)).to match_array [stop_area]
+        expect(assigns(:stop_areas)).to be_empty
         expect(response).to be_successful
       end
 
-      it "returns a stop_area when the name contains the search parameter" do
+      it 'returns a stop_area when the name contains the search parameter' do
         get :stop_areas, params: {
           workbench_id: workbench.id,
           referential_id: referential.id,
@@ -267,7 +253,7 @@ RSpec.describe AutocompleteController, type: :controller do
         expect(response).to be_successful
       end
 
-      it "returns a stop_area when the objectid contains the search parameter" do
+      it 'returns a stop_area when the objectid contains the search parameter' do
         get :stop_areas, params: {
           workbench_id: workbench.id,
           referential_id: referential.id,
@@ -276,15 +262,14 @@ RSpec.describe AutocompleteController, type: :controller do
         expect(assigns(:stop_areas).to_a).to eq [stop_area]
         expect(response).to be_successful
       end
-
     end
   end
 
-  describe "GET #stop_area_providers" do
+  describe 'GET #stop_area_providers' do
     let(:context) do
       Chouette.create do
-        workbench organisation: Organisation.find_by_code('first') do
-          stop_area_provider :sap1, name: "Stop Area Provider 1"
+        workbench organisation: Organisation.find_by(code: 'first') do
+          stop_area_provider :sap1, name: 'Stop Area Provider 1'
 
           referential
         end
@@ -295,19 +280,17 @@ RSpec.describe AutocompleteController, type: :controller do
     let(:referential) { context.referential }
     let(:stop_area_provider) { context.stop_area_provider(:sap1) }
 
-    context "for a workbench" do
-      it "returns the complete list when the search parameter is not found" do
+    context 'for a workbench' do
+      it 'returns the complete list when the search parameter is not found' do
         get :stop_area_providers, params: {
-          workbench_id: workbench.id,
           workbench_id: workbench.id
         }
         expect(assigns(:stop_area_providers)).to match_array workbench.stop_area_providers
         expect(response).to be_successful
       end
 
-      it "returns a stop_area_provider when the name contains the search parameter" do
+      it 'returns a stop_area_provider when the name contains the search parameter' do
         get :stop_area_providers, params: {
-          workbench_id: workbench.id,
           workbench_id: workbench.id,
           q: 'Stop Area Provider 1'
         }
@@ -315,21 +298,18 @@ RSpec.describe AutocompleteController, type: :controller do
         expect(response).to be_successful
       end
 
-      it "returns a stop_area_provider when the objectid contains the search parameter" do
+      it 'returns a stop_area_provider when the objectid contains the search parameter' do
         get :stop_area_providers, params: {
-          workbench_id: workbench.id,
           workbench_id: workbench.id,
           q: stop_area_provider.get_objectid.short_id
         }
         expect(assigns(:stop_area_providers).to_a).to eq [stop_area_provider]
         expect(response).to be_successful
       end
-
     end
 
-    context "for a referential" do
-
-      it "returns the complete list when the search parameter is not found" do
+    context 'for a referential' do
+      it 'returns the complete list when the search parameter is not found' do
         get :stop_area_providers, params: {
           workbench_id: workbench.id,
           referential_id: referential.id
@@ -338,7 +318,7 @@ RSpec.describe AutocompleteController, type: :controller do
         expect(response).to be_successful
       end
 
-      it "returns a stop_area_provider when the name contains the search parameter" do
+      it 'returns a stop_area_provider when the name contains the search parameter' do
         get :stop_area_providers, params: {
           workbench_id: workbench.id,
           referential_id: referential.id,
@@ -348,7 +328,7 @@ RSpec.describe AutocompleteController, type: :controller do
         expect(response).to be_successful
       end
 
-      it "returns a stop_area_provider when the objectid contains the search parameter" do
+      it 'returns a stop_area_provider when the objectid contains the search parameter' do
         get :stop_area_providers, params: {
           workbench_id: workbench.id,
           referential_id: referential.id,
@@ -357,8 +337,6 @@ RSpec.describe AutocompleteController, type: :controller do
         expect(assigns(:stop_area_providers).to_a).to eq [stop_area_provider]
         expect(response).to be_successful
       end
-
     end
   end
-
 end

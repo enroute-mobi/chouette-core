@@ -80,10 +80,7 @@ module Query
 
     def text(value)
       change_scope(if: value.present?) do |scope|
-        name = scope.arel_table[:name]
-        objectid = scope.arel_table[:objectid]
-        registration_number = scope.arel_table[:registration_number]
-        scope.where(name.matches("%#{value}%")).or(scope.where(objectid.matches("%#{value}%"))).or(scope.where(registration_number.matches("%#{value}%")))
+        scope.by_text(value)
       end
     end
 

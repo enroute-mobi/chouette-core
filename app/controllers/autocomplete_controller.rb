@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 class AutocompleteController < Chouette::UserController
+  include WithinWorkgroup
 
   ##############
   # Line scope #
@@ -45,27 +46,24 @@ class AutocompleteController < Chouette::UserController
   # StopArea scope #
   ##################
 
-  # def autocomplete
-  #   scope = stop_area_referential.stop_areas.where(deleted_at: nil)
-  #   scope = scope.referent_only if params[:referent_only]
-  #   args  = [].tap{|arg| 4.times{arg << "%#{params[:q]}%"}}
-  #   @stop_areas = scope.where("unaccent(name) ILIKE unaccent(?) OR unaccent(city_name) ILIKE unaccent(?) OR registration_number ILIKE ? OR objectid ILIKE ?", *args).limit(50)
-  #   @stop_areas
-  # end
   def stop_areas
-    @stop_areas = stop_area_scope.stop_areas.order(:name).by_text(text).limit(50)
+    @stop_areas =
+      if text.present?
+        stop_area_scope.stop_areas.by_text(text).limit(50)
+      else
+        Chouette::StopArea.none
+      end
   end
 
   def parent_stop_areas
-    @stop_areas = Chouette::StopArea.all_parents(stop_area_scope.stop_areas).order(:name).by_text(text).limit(50)
+    @stop_areas =
+      if text.present?
+        stop_area_scope.stop_areas.parent_stop_areas.by_text(text).limit(50)
+      else
+        Chouette::StopArea.none
+      end
   end
 
-  # def autocomplete
-  # -    scope = policy_scope(parent.stop_area_providers)
-  # -    args  = [].tap{|arg| 2.times{arg << "%#{params[:q]}%"}}
-  # -    @stop_area_providers = scope.where("unaccent(name) ILIKE unaccent(?) OR objectid ILIKE ?", *args).limit(50)
-  # -    @stop_area_providers
-  # -  end
   def stop_area_providers
     @stop_area_providers = stop_area_scope.stop_area_providers.order(:name).by_text(text).limit(50)
   end
@@ -73,7 +71,7 @@ class AutocompleteController < Chouette::UserController
   protected
 
   def text
-    @text = params[:q]
+    @text = params[:q]&.strip
   end
 
   def stop_area_scope
@@ -85,15 +83,20 @@ class AutocompleteController < Chouette::UserController
   end
 
   def stop_area_referential
-    @stop_area_referential ||= current_user.workgroups.find(params[:workgroup_id]).stop_area_referential if params[:workgroup_id]
+    @stop_area_referential ||= current_workgroup&.stop_area_referential
   end
 
   def line_referential
-    @line_referential ||= current_user.workgroups.find(params[:workgroup_id]).line_referential if params[:workgroup_id]
+    @line_referential ||= current_workgroup&.line_referential
   end
 
   def shape_referential
-    @shape_referential ||= current_user.workgroups.find(params[:workgroup_id]).shape_referential if params[:workgroup_id]
+    @shape_referential ||= current_workgroup&.shape_referential
+  end
+
+  def current_workgroup
+    current_user.workgroups.find(params[:workgroup_id]) if params[:workgroup_id]
+    @current_workgroup ||= workbench&.workgroup
   end
 
   def workbench

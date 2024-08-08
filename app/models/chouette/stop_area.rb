@@ -12,6 +12,8 @@ module Chouette
     include ReferentSupport
     include Documentable
 
+    include PgSearch::Model
+
     extend Enumerize
     enumerize :area_type, in: Chouette::AreaType::ALL, default: Chouette::AreaType::COMMERCIAL.first, scope: true
     enumerize :status, in: %i[in_creation confirmed deactivated], default: :in_creation, scope: true
@@ -41,7 +43,11 @@ module Chouette
     scope :light, ->{ select(:id, :name, :city_name, :zip_code, :time_zone, :registration_number, :kind, :area_type, :time_zone, :stop_area_referential_id, :objectid) }
     scope :with_time_zone, -> { where.not time_zone: nil }
 
-    scope :by_text, ->(text) { text.blank? ? all : where('lower(stop_areas.name) LIKE :t or lower(stop_areas.objectid) LIKE :t', t: "%#{text.downcase}%") }
+    pg_search_scope :by_text,
+                    against: { name: 'A', registration_number: 'B', objectid: 'B', city_name: 'C', zip_code: 'C', street_name: 'C' },
+                    using: { tsearch: { normalization: 2, prefix: true } },
+                    ignoring: :accents
+
     scope :without_compass_bearing, -> { where compass_bearing: nil }
     scope :with_compass_bearing, -> { where.not compass_bearing: nil }
     scope :without_address, -> { where country_code: nil,  street_name: nil, zip_code: nil, city_name: nil }
@@ -530,6 +536,16 @@ module Chouette
       where "stop_areas.id IN (#{union_query})"
     end
 
+    # Find parents associated to the current Stop Areas
+    #
+    #   stop_areas.where(...).parent_stop_areas
+    #
+    # NB: Can be used with by_text scope
+    def self.parent_stop_areas(scope: Chouette::StopArea)
+      scope.where(id: select(:parent_id).distinct)
+    end
+
+    # NB: Can't be used with by_text scope because of distinct usage
     def self.all_parents(relation, ignore_mono_parent: false)
       stop_area_parents = joins('JOIN "public"."stop_areas" children on "public"."stop_areas"."id" = children.parent_id').where("children.id" => relation)
 

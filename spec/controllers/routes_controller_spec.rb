@@ -10,8 +10,8 @@ RSpec.describe RoutesController, type: :controller do
           route
         end
 
-        stop_area :zdep, name: 'ecola', area_type: 'zdep'
-        stop_area :lda, area_type: 'lda'
+        stop_area :zdep, name: 'test 1', area_type: 'zdep'
+        stop_area :lda, name: 'test 2', area_type: 'lda'
       end
     end
   end
@@ -168,7 +168,7 @@ RSpec.describe RoutesController, type: :controller do
           referential_id: referential.id,
           line_id: line.id,
           id: route.id,
-          q: 'écolà'
+          q: 'test'
         }
         expect(response).to be_successful
         expect(assigns(:stop_areas)).to eq([zdep])
@@ -180,7 +180,7 @@ RSpec.describe RoutesController, type: :controller do
           referential_id: referential.id,
           line_id: line.id,
           id: route.id,
-          q: 'ecola'
+          q: 'tést'
         }
         expect(response).to be_successful
         expect(assigns(:stop_areas)).to eq([zdep])
@@ -195,7 +195,8 @@ RSpec.describe RoutesController, type: :controller do
           referential_id: referential.id,
           line_id: line.id,
           id: route.id,
-          scope: scope
+          scope: scope,
+          q: 'test'
         }
       end
 
@@ -222,7 +223,8 @@ RSpec.describe RoutesController, type: :controller do
           referential_id: referential.id,
           line_id: line.id,
           id: route.id,
-          scope: scope
+          scope: scope,
+          q: 'test'
         }
       end
 

@@ -95,8 +95,11 @@ class AutocompleteController < Chouette::UserController
   end
 
   def current_workgroup
-    current_user.workgroups.find(params[:workgroup_id]) if params[:workgroup_id]
-    @current_workgroup ||= workbench&.workgroup
+    @current_workgroup ||= if params[:workgroup_id]
+                             current_user.workgroups.find(params[:workgroup_id])
+                           else
+                             workbench&.workgroup
+                           end
   end
 
   def workbench

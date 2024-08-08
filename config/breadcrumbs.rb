@@ -2,11 +2,6 @@ crumb :root do
   link image_pack_tag('static/logo-chouette-2020-vertical-white.png', class: "chouette-little-logo").html_safe, root_path
 end
 
-crumb :workbench do |workbench|
-  link workbench.name.capitalize, workbench_path(workbench)
-  parent :workgroup, workbench.workgroup
-end
-
 crumb :workgroups do |workgroup|
   link Workgroup.t, workgroups_path()
 end
@@ -21,14 +16,19 @@ crumb :add_workbench do |workgroup|
   parent :workgroup, workgroup
 end
 
+crumb :workgroup_workbench do |workbench|
+  link workbench.name.capitalize, workgroup_workbench_path(workgroup, workbench)
+  parent :workgroup, workbench.workgroup
+end
+
 crumb :add_workbench_sharing do |workbench|
   link I18n.t('workbench/sharings.new.title'), '#'
-  parent :workbench, workbench
+  parent :workgroup_workbench, workbench
 end
 
 crumb :workbench_sharing do |workbench, workbench_sharing|
   link breadcrumb_name(workbench_sharing), workgroup_workbench_sharing_path(workbench, workbench_sharing)
-  parent :workbench, workbench
+  parent :workgroup_workbench, workbench
 end
 
 crumb :workbench_confirmation do
@@ -38,16 +38,20 @@ end
 
 crumb :workbench_configure do |workbench|
   link I18n.t('workbenches.edit.title'), edit_workbench_path(workbench)
-  parent :workbench, workbench
+  parent :workgroup_workbench, workbench
+end
+
+crumb :workgroup_output do |workgroup|
+  link 'layouts.navbar.workbench_outputs.workgroup'.t, workgroup_output_path(workgroup)
+end
+
+crumb :workbench do |workbench|
+  link workbench.name.capitalize, workbench_path(workbench)
 end
 
 crumb :workbench_output do |workbench|
   link I18n.t('workbench_outputs.show.title'), workbench_output_path(workbench)
   parent :workbench, workbench
-end
-
-crumb :workgroup_output do |workgroup|
-  link 'layouts.navbar.workbench_outputs.workgroup'.t, workgroup_output_path(workgroup)
 end
 
 crumb :merges do |workbench|

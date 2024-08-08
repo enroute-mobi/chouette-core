@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module CustomFieldsSupport
   extend ActiveSupport::Concern
 
@@ -30,10 +32,27 @@ module CustomFieldsSupport
     Thread.current.thread_variable_get(THREAD_VARIABLE_NAME)
   end
 
+  class_methods do
+    def without_custom_fields(&block)
+      old_skip_custom_fields_initialization = skip_custom_fields_initialization
+      self.skip_custom_fields_initialization = true
+      block.call
+    ensure
+      self.skip_custom_fields_initialization = old_skip_custom_fields_initialization
+    end
+  end
+
   included do
     validate :custom_fields_values_are_valid
     after_initialize :initialize_custom_fields
-    attr_accessor :skip_custom_fields_initialization
+
+    mattr_accessor :skip_custom_fields_initialization, instance_accessor: false, default: false
+    attr_writer :skip_custom_fields_initialization
+
+    # Support both class and instance option
+    def skip_custom_fields_initialization
+      @skip_custom_fields_initialization || self.class.skip_custom_fields_initialization
+    end
 
     def self.reset_custom_fields
       @_custom_fields = nil
@@ -111,6 +130,8 @@ module CustomFieldsSupport
       return if skip_custom_fields_initialization
       return if custom_fields_initialized?
       return unless self.attributes.has_key?("custom_field_values")
+
+      Rails.logger.debug 'Initialize custom fields'
       return unless self.workgroup.present?
 
       self.custom_field_values ||= {}

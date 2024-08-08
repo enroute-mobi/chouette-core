@@ -8,14 +8,8 @@ RSpec.describe CustomFieldsSupport do
   end
 
   describe 'within_workgroup' do
-    let(:context) do
-      Chouette.create do
-        workgroup :workgroup1
-        workgroup :workgroup2
-      end
-    end
-    let(:workgroup1) { context.workgroup(:workgroup1) }
-    let(:workgroup2) { context.workgroup(:workgroup2) }
+    let(:workgroup1) { Workgroup.new }
+    let(:workgroup2) { Workgroup.new }
 
     let(:current_workgroups) { [] }
 
@@ -50,6 +44,31 @@ RSpec.describe CustomFieldsSupport do
         current_workgroups << described_class.current_workgroup
       end
       expect(current_workgroups).to eq([nil])
+    end
+  end
+
+  describe '#skip_custom_fields_initialization' do
+    # with_model doesn't work with #around :(
+    let(:model_class) { Chouette::StopArea }
+    let(:model) { model_class.new }
+
+    subject { model.skip_custom_fields_initialization }
+
+    context 'when instance skip_custom_fields_initialization is set' do
+      let(:model) { model_class.new(skip_custom_fields_initialization: true) }
+
+      it { is_expected.to be_truthy }
+    end
+
+    context 'when Class skip_custom_fields_initialization is set' do
+      # with_model doesn't work with #around :(
+      around(:example) do |example|
+        model_class.without_custom_fields do
+          example.run
+        end
+      end
+
+      it { is_expected.to be_truthy }
     end
   end
 end

@@ -118,6 +118,7 @@ fr:
         ignore_single_stop_station: "Ignorer les Zones de Lieux avec une Zone d’Embarquement unique"
         include_stop_visits: "Inclure les Passages aux Arrêts"
         ignore_parent_stop_places: "Ignorer les arrêts Parents"
+        ignore_extended_gtfs_route_types: "Ignorer les types de route étendus"
         period: Période exportée
         participant_ref: Netex Participant Ref
         profile_options: Paramètres du profil Netex

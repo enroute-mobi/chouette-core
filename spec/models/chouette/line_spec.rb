@@ -37,7 +37,7 @@ describe Chouette::Line, type: :model do
   describe '#chouette_transport_mode' do
     subject { line.chouette_transport_mode.inspect }
 
-    context 'with transport_mode and transport_submode' do
+    context 'with transport_mode "bus" and transport_submode "nightBus"' do
       before do
         line.transport_mode = 'bus'
         line.transport_submode = 'nightBus'
@@ -46,10 +46,19 @@ describe Chouette::Line, type: :model do
       it { is_expected.to eq '#bus/night_bus' }
     end
 
-    context 'with transport_mode and without transport_submode' do
+    context 'with transport_mode "bus" and without transport_submode' do
       before do
         line.transport_mode = 'bus'
         line.transport_submode = nil
+      end
+
+      it { is_expected.to eq '#bus' }
+    end
+
+    context 'with transport_mode "bus" and transport_submode "undefined"' do
+      before do
+        line.transport_mode = 'bus'
+        line.transport_submode = 'undefined'
       end
 
       it { is_expected.to eq '#bus' }

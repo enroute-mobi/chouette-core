@@ -7,8 +7,8 @@
       = f.input :name
       = f.input :published_name
       = f.input :number
-      = f.input :transport_mode, as: :select, collection: referential.workgroup.sorted_transport_modes, label: Chouette::Line.tmf('transport_mode'), label_method: lambda {|t| ("<span>" + t("enumerize.transport_mode.#{t}") + "</span>").html_safe}, required: true, prompt: '', input_html: { 'x-on:change': 'transport_mode = $event.target.value' }
-      - referential.workgroup.formatted_submodes_for_transports.each do |mode, submodes|
+      = f.input :transport_mode, as: :select, collection: Chouette::Line.sorted_transport_modes, label: Chouette::Line.tmf('transport_mode'), label_method: lambda {|t| ("<span>" + t("enumerize.transport_mode.#{t}") + "</span>").html_safe}, required: true, prompt: '', input_html: { 'x-on:change': 'transport_mode = $event.target.value' }
+      - Chouette::Line.formatted_submodes_for_transports.each do |mode, submodes|
         .transport_mode x-show="transport_mode === '#{mode}'"
           = f.input :transport_submode, as: :select, collection: submodes, include_blank: false, input_html: { 'x-bind:disabled': "transport_mode != '#{mode}'" }
       = f.input :flexible_service, as: :switchable_checkbox

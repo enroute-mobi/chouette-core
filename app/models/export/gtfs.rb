@@ -17,6 +17,7 @@ class Export::Gtfs < Export::Base
   option :ignore_single_stop_station, required: true, default_value: false, enumerize: [true, false], serialize: ActiveModel::Type::Boolean
   option :prefer_referent_company, required: true, default_value: false, enumerize: [true, false], serialize: ActiveModel::Type::Boolean
   option :ignore_parent_stop_places, required: true, default_value: false, enumerize: [true, false], serialize: ActiveModel::Type::Boolean
+  option :ignore_extended_gtfs_route_types, required: true, default_value: false, enumerize: [true, false], serialize: ActiveModel::Type::Boolean
 
   validate :ensure_is_valid_period
 
@@ -667,7 +668,12 @@ class Export::Gtfs < Export::Base
     def export!
       lines.includes(:referent).find_each do |line|
         exported_line = (prefer_referent_line ? line.referent : line) || line
-        decorated_line = Decorator.new(exported_line, index, duplicated_registration_numbers)
+        decorated_line = Decorator.new(
+          exported_line,
+          index: index,
+          duplicated_registration_numbers: duplicated_registration_numbers,
+          ignore_extended_gtfs_route_types: export.ignore_extended_gtfs_route_types
+        )
 
         unless line_referent_exported?(exported_line)
           create_messages decorated_line
@@ -695,13 +701,14 @@ class Export::Gtfs < Export::Base
     class Decorator < SimpleDelegator
 
       # index is optional to make tests easier
-      def initialize(line, index = nil, duplicated_registration_numbers = [])
+      def initialize(line, index: nil, duplicated_registration_numbers: [], ignore_extended_gtfs_route_types: false)
         super line
         @index = index
         @duplicated_registration_numbers = duplicated_registration_numbers
+        @ignore_extended_gtfs_route_types = ignore_extended_gtfs_route_types
       end
 
-      attr_reader :index, :duplicated_registration_numbers
+      attr_reader :index, :duplicated_registration_numbers, :ignore_extended_gtfs_route_types
 
       def route_id
         if registration_number.present? &&
@@ -721,33 +728,43 @@ class Export::Gtfs < Export::Base
         number
       end
 
-      def self.route_types
-        @route_types ||= {
-          tram: 0,
-          metro: 1,
-          rail: 2,
-          bus: 3,
-          water: 4,
-          telecabin: 6,
-          funicular: 7,
-          coach: 200,
-          air: 1100,
-          taxi: 1500,
-          hireCar: 1506
-        }.with_indifferent_access
+      def self.base_route_type_mapper # rubocop:disable Metrics/MethodLength
+        @route_types ||= Chouette::TransportMode.mapper do
+          register :tram, 0
+          register :metro, 1
+          register :rail, 2
+          register :bus, 3
+          register :water, 4
+          register 'funicular/street_cable_car', 5
+          register :telecabin, 6
+          register :funicular, 7
+          register :trolley_bus, 11
+          register 'rail/monorail', 12
+          register :coach, 200
+          register :air, 1100
+          register :taxi, 1500
+          register :hire_car, 1506
+        end
+      end
+
+      def self.extended_route_type_mapper
+        @extended_route_types ||= base_route_type_mapper.append do
+          register 'rail/interregional_rail', 103
+          register 'coach/regional_coach', 204
+          register 'coach/special_coach', 205
+          register 'coach/commuter_coach', 208
+          register 'bus/school_and_public_service_bus', 713
+        end
+      end
+
+      def route_type_mapper
+        ignore_extended_gtfs_route_types ? self.class.base_route_type_mapper : self.class.extended_route_type_mapper
       end
 
       def route_type
-        unless flexible_service
-          return 103 if transport_mode == 'rail' && transport_submode == 'interregionalRail'
-          return 204 if transport_mode == 'coach' && transport_submode == 'regionalCoach'
-          return 205 if transport_mode == 'coach' && transport_submode == 'specialCoach'
-          return 208 if transport_mode == 'coach' && transport_submode == 'commuterCoach'
-          return 713 if transport_mode == 'bus' && transport_submode == 'schoolAndPublicServiceBus'
-          self.class.route_types[transport_mode]
-        else
-          715
-        end
+        return 715 if flexible_service && !ignore_extended_gtfs_route_types
+
+        route_type_mapper.for chouette_transport_mode
       end
 
       def default_agency?

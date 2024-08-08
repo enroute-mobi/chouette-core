@@ -110,7 +110,8 @@ module Chouette
     end
 
     def chouette_transport_mode
-      Chouette::TransportMode.new(transport_mode&.underscore, transport_submode&.underscore)
+      submode = transport_submode == 'undefined' ? nil : transport_submode&.underscore
+      Chouette::TransportMode.new(transport_mode&.underscore, submode)
     end
 
     def chouette_transport_mode=(transport_mode)

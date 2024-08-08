@@ -573,43 +573,102 @@ RSpec.describe Export::Gtfs, type: [:model, :with_exportable_referential] do
       end
     end
 
-    describe "route_type" do
+    describe '#route_type' do
+      subject { decorator.route_type }
 
-      expected_route_types = {
-        tram: 0,
-        metro: 1,
-        rail: 2,
-        bus: 3,
-        water: 4,
-        telecabin: 6,
-        funicular: 7,
-        coach: 200,
-        air: 1100,
-        taxi: 1500,
-        hireCar: 1506
-      }
+      context "when extended gtfs route types aren't ignored" do
+        before { allow(decorator).to receive(:ignore_extended_gtfs_route_types).and_return(false) }
 
-      TransportModeEnumerations.transport_modes.each do |transport_mode|
-        expected_route_type = expected_route_types[transport_mode]
-        if expected_route_type
-          it "uses value #{expected_route_type.inspect} for transport mode #{transport_mode}" do
-            line.transport_mode = transport_mode
-            expect(decorator.route_type).to eq(expected_route_type)
-          end
-        else
-          it "doesn't support unexpected transport mode #{transport_mode}" do
-            fail "No GTFS Route type expected for transport mode #{transport_mode}"
+        {
+          tram: 0,
+          metro: 1,
+          rail: 2,
+          bus: 3,
+          water: 4,
+          'funicular/street_cable_car': 5,
+          telecabin: 6,
+          funicular: 7,
+          trolley_bus: 11,
+          'rail/monorail': 12,
+          coach: 200,
+          air: 1100,
+          taxi: 1500,
+          hireCar: 1506,
+          'rail/interregional_rail': 103,
+          'coach/regional_coach': 204,
+          'coach/special_coach': 205,
+          'coach/commuter_coach': 208,
+          'bus/school_and_public_service_bus': 713
+        }.each do |transport_mode, expected_route|
+          transport_mode = Chouette::TransportMode.from(transport_mode)
+
+          context "when Line transport mode is #{transport_mode}" do
+            before { line.chouette_transport_mode = transport_mode }
+
+            it { is_expected.to eq(expected_route) }
           end
         end
-      end
 
-      context "when line is flexible" do
-        it "uses value 715 (Demand and Response Bus Service)" do
-          line.flexible_service = true
-          expect(decorator.route_type).to eq(715)
+        context 'when Line is flexible' do
+          before { line.flexible_service = true }
+
+          it { is_expected.to eq(715)  }
         end
+
+        context "when Line transport mode isn't supported (like 'dummy')" do
+          before { line.transport_mode = :dummy }
+
+          it { is_expected.to be_nil }
+        end
+
       end
 
+      context 'when extended gtfs route types are ignored' do
+        before { allow(decorator).to receive(:ignore_extended_gtfs_route_types).and_return(true) }
+
+        {
+          tram: 0,
+          metro: 1,
+          rail: 2,
+          bus: 3,
+          water: 4,
+          'funicular/street_cable_car': 5,
+          telecabin: 6,
+          funicular: 7,
+          trolley_bus: 11,
+          'rail/monorail': 12,
+          coach: 200,
+          air: 1100,
+          taxi: 1500,
+          hireCar: 1506,
+          'rail/interregional_rail': 2,
+          'coach/regional_coach': 200,
+          'coach/special_coach': 200,
+          'coach/commuter_coach': 200,
+          'bus/school_and_public_service_bus': 3
+        }.each do |transport_mode, expected_route|
+          transport_mode = Chouette::TransportMode.from(transport_mode)
+
+          context "when Line transport mode is #{transport_mode}" do
+            before { line.chouette_transport_mode = transport_mode }
+
+            it { is_expected.to eq(expected_route) }
+
+            context 'when Line is flexible' do
+              before { line.flexible_service = true }
+
+              it { is_expected.to eq(expected_route)  }
+            end
+          end
+        end
+
+        context "when Line transport mode isn't supported (like 'dummy')" do
+          before { line.transport_mode = :dummy }
+
+          it { is_expected.to be_nil }
+        end
+
+      end
     end
 
     describe "route_long_name" do

@@ -2,10 +2,6 @@ module Control
   class Message < ApplicationModel
     self.table_name = 'control_messages'
 
-    def self.policy_class
-      ControlListRunPolicy
-    end
-
     belongs_to :source, polymorphic: true, optional: false
     belongs_to :control_run, class_name: 'Control::Base::Run', optional: false
 

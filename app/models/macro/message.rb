@@ -6,10 +6,6 @@ module Macro
 
     extend Enumerize
 
-    def self.policy_class
-      MacroListRunPolicy
-    end
-
     belongs_to :source, polymorphic: true, optional: true
     belongs_to :macro_run, class_name: 'Macro::Base::Run', optional: false
 

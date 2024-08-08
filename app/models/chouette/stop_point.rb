@@ -6,10 +6,6 @@ module Chouette
 
     has_metadata
 
-    def self.policy_class
-      RoutePolicy
-    end
-
     include ForBoardingEnumerations
     include ForAlightingEnumerations
 

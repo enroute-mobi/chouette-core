@@ -88,10 +88,6 @@ module ProcessingRule
     def candidate_control_lists
       workbench&.control_lists_shared_with_workgroup || Control::List.none
     end
-
-    def self.policy_class
-      ProcessingRuleWorkbenchPolicy
-    end
   end
 
   # Workgroup ProcessingRule managed as Workgroup#processing_rules
@@ -101,10 +97,6 @@ module ProcessingRule
 
     enumerize :processable_type, in: %w[Control::List]
     enumerize :operation_step, in: %w[after_import before_merge after_merge after_aggregate], scope: :shallow
-
-    def self.policy_class
-      ProcessingRuleWorkgroupPolicy
-    end
 
     def candidate_control_lists
       workgroup ? workgroup.control_lists.shared : Control::List.none

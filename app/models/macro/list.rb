@@ -20,10 +20,6 @@ module Macro
 
     scope :by_text, ->(text) { text.blank? ? all : where('lower(name) LIKE :t', t: "%#{text.downcase}%") }
 
-    def self.policy_class
-      MacroListPolicy
-    end
-
     def used?
       processing_rules.exists?
     end
@@ -87,10 +83,6 @@ module Macro
         original_macro_list.macro_contexts.each do |macro_context|
           macro_context_runs << macro_context.build_run
         end
-      end
-
-      def self.policy_class
-        MacroListRunPolicy
       end
 
       def perform

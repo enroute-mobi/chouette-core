@@ -60,53 +60,6 @@ module Policy
       end
     end
 
-    # Manage Policies (in a Controller) by using legacy Pundit policies
-    class Legacy
-      def initialize(controller)
-        @controller = controller
-      end
-
-      attr_reader :controller
-
-      def pundit_user_context
-        @pundit_user_context ||=
-          UserContext.new(current_user,
-                          referential: current_referential,
-                          workbench: current_workbench,
-                          workgroup: current_workgroup)
-      end
-
-      def current(name)
-        controller.send "current_#{name}"
-      rescue NoMethodError, RSpec::Mocks::MockExpectationError
-        nil
-      end
-
-      def current_user
-        current :user
-      end
-
-      def current_referential
-        current :referential
-      end
-
-      def current_workgroup
-        current :workgroup
-      end
-
-      def current_workbench
-        current :workbench
-      end
-
-      def policy(resource)
-        policy_class.new(pundit_user_context, resource)
-      end
-
-      def policy_class
-        Policy::Legacy
-      end
-    end
-
     # Use Policy::PermitAll
     class PermitAll
       def initialize(*arguments); end

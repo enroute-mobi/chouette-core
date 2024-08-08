@@ -26,9 +26,5 @@ module Fare
     def used?
       fare_zones.exists? || fare_products.exists? || fare_validities.exists?
     end
-
-    def self.policy_class
-      FareProviderPolicy
-    end
   end
 end

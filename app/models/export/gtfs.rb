@@ -728,47 +728,43 @@ class Export::Gtfs < Export::Base
         number
       end
 
-      def self.route_types # rubocop:disable Metrics/MethodLength
-        @route_types ||= {
-          tram: 0,
-          metro: 1,
-          rail: 2,
-          bus: 3,
-          water: 4,
-          telecabin: 6,
-          funicular: 7,
-          coach: 200,
-          air: 1100,
-          taxi: 1500,
-          hireCar: 1506
-        }.with_indifferent_access.freeze
+      def self.base_route_type_mapper # rubocop:disable Metrics/MethodLength
+        @route_types ||= Chouette::TransportMode.mapper do
+          register :tram, 0
+          register :metro, 1
+          register :rail, 2
+          register :bus, 3
+          register :water, 4
+          register 'funicular/street_cable_car', 5
+          register :telecabin, 6
+          register :funicular, 7
+          register :trolley_bus, 11
+          register 'rail/monorail', 12
+          register :coach, 200
+          register :air, 1100
+          register :taxi, 1500
+          register :hire_car, 1506
+        end
       end
 
-      def self.extended_route_types # rubocop:disable Metrics/MethodLength
-        @extended_route_types ||= {
-          rail: {
-            interregionalRail: 103
-          }.with_indifferent_access.freeze,
-          coach: {
-            regionalCoach: 204,
-            specialCoach: 205,
-            commuterCoach: 208
-          }.with_indifferent_access.freeze,
-          bus: {
-            schoolAndPublicServiceBus: 713
-          }.with_indifferent_access.freeze
-        }.with_indifferent_access.freeze
+      def self.extended_route_type_mapper
+        @extended_route_types ||= base_route_type_mapper.append do
+          register 'rail/interregional_rail', 103
+          register 'coach/regional_coach', 204
+          register 'coach/special_coach', 205
+          register 'coach/commuter_coach', 208
+          register 'bus/school_and_public_service_bus', 713
+        end
+      end
+
+      def route_type_mapper
+        ignore_extended_gtfs_route_types ? self.class.base_route_type_mapper : self.class.extended_route_type_mapper
       end
 
       def route_type
-        unless ignore_extended_gtfs_route_types
-          return 715 if flexible_service
+        return 715 if flexible_service && !ignore_extended_gtfs_route_types
 
-          extended_route_type = self.class.extended_route_types.dig(transport_mode, transport_submode)
-          return extended_route_type if extended_route_type
-        end
-
-        self.class.route_types[transport_mode]
+        route_type_mapper.for chouette_transport_mode
       end
 
       def default_agency?

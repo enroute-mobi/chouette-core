@@ -113,7 +113,7 @@ fr:
         waterborne: Bac
         private_vehicle: Voiture particulière
         walk: Marche à pied
-        trolleybus: Trolleybus
+        trolleyBus: Trolleybus
         bicycle: Vélo
         shuttle: Navette
         taxi: Taxi
@@ -287,6 +287,7 @@ fr:
       miniCab: "Véhicule avec chauffeur privé"
       mobilityBus: "Bus Mobilité"
       mobilityBusForRegisteredDisabled: "Bus adapté aux personnes à mobilité reduite"
+      monorail: "Monorail"
       nationalCarFerry: "Ferry national"
       nationalCoach: "Car interregional"
       nationalPassengerFerry: "Ferry public national"
@@ -331,7 +332,7 @@ fr:
       specialCoach: "Car spécial"
       specialNeedsBus: "Bus pour besoins particuliers"
       specialTrain: "Train spécial"
-      streetCableCar: 'Tramway (2)'
+      streetCableCar: "Tramway par câble"
       suburbanRailway: "Train périurbain"
       telecabin: "Télécabine"
       telecabinLink: "Lien en Télécabine"

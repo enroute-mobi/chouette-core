@@ -61,7 +61,11 @@ module TransportModeEnumerations
         funicular: [
           :undefined,
           :allFunicularServices,
+          :streetCableCar,
           :funicular,
+        ],
+        trolleyBus: [
+          :undefined
         ],
         tram: [
           :undefined,
@@ -81,6 +85,7 @@ module TransportModeEnumerations
           :interregionalRail,
           :local,
           :longDistance,
+          :monorail,
           :nightTrain,
           :rackAndPinionRailway,
           :railShuttle,

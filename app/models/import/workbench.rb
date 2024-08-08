@@ -21,10 +21,10 @@ module Import
     option :disable_missing_resources, default_value: false, type: :boolean
     option :strict_mode, default_value: false, type: :boolean
     option :ignore_particulars, default_value: false, type: :boolean
+    option :ignore_parent_stop_areas, required: true, default_value: false, type: :boolean
     option :stop_area_provider_id, collection: -> { candidate_stop_area_providers.order(:name) }
     option :line_provider_id, collection: -> { candidate_line_providers.order(:name) }
     option :specific_default_company_id, collection: -> { candidate_companies.order(:name) }, allow_blank: true
-    option :ignore_parent_stop_areas, required: true, default_value: false, type: :boolean
 
     has_many :children_processings, through: :children, source: :processings
     has_many :control_list_runs, through: :children_processings, source: :processed, source_type: 'Control::List::Run'

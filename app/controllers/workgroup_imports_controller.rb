@@ -36,7 +36,7 @@ class WorkgroupImportsController < Chouette::WorkgroupController
 
   # rubocop:disable Metrics/MethodLength
   def index
-    if saved_search = saved_searches.find_by(id: params[:search_id])
+    if (saved_search = saved_searches.find_by(id: params[:search_id]))
       @search = saved_search.search
     end
 

@@ -40,7 +40,7 @@ class ImportsController < Chouette::WorkbenchController
   end
 
   def index
-    if saved_search = saved_searches.find_by(id: params[:search_id])
+    if (saved_search = saved_searches.find_by(id: params[:search_id]))
       @search = saved_search.search
     end
 
@@ -92,7 +92,7 @@ class ImportsController < Chouette::WorkbenchController
   end
 
   def import_params
-    permitted_keys = %i(name file type referential_id code_space_id notification_target)
+    permitted_keys = %i[name file type referential_id code_space_id notification_target]
     permitted_keys += Import::Workbench.options.keys
     import_params = params.require(:import).permit(permitted_keys)
     import_params[:user_id] ||= current_user.id

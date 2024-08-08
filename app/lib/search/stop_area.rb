@@ -37,7 +37,7 @@ module Search
                      .stop_area_provider_id(stop_area_provider_id)
     end
 
-    def is_referent
+    def is_referent # rubocop:disable Naming/PredicateName
       flag(super)
     end
 

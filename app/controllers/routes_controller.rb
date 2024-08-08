@@ -61,7 +61,8 @@ class RoutesController < Chouette::ReferentialController
     scope = referential.workbench.stop_areas.where(deleted_at: nil)
 
     unless current_user.organisation.has_feature?('route_stop_areas_all_types')
-      scope = scope.where(kind: :non_commercial).or(scope.where(area_type: referential.stop_area_referential.available_stops))
+      scope = scope.where(kind: :non_commercial)
+                   .or(scope.where(area_type: referential.stop_area_referential.available_stops))
     end
 
     text = params[:q]&.strip

@@ -1870,6 +1870,66 @@ RSpec.describe Export::NetexGeneric do
     end
   end
 
+  describe 'VehicleJourneyAtStops export' do
+    describe Export::NetexGeneric::VehicleJourneyAtStops::Decorator do
+      subject(:decorator) { described_class.new(model) }
+
+      let(:model) { Chouette::VehicleJourneyAtStop::Light::VehicleJourneyAtStop.new }
+
+      describe '#stop_time_arrival_time' do
+        subject { decorator.stop_time_arrival_time }
+
+        context 'when arrival_local_time_of_day is "01:02:03' do
+          before { allow(model).to receive(:arrival_local_time_of_day).and_return(TimeOfDay.new(1, 2, 3)) }
+
+          it { is_expected.to eq(Netex::Time.new(1,2,3)) }
+        end
+      end
+
+      describe '#stop_time_departure_time' do
+        subject { decorator.stop_time_departure_time }
+
+        context 'when departure_local_time_of_day is "01:02:03' do
+          before { allow(model).to receive(:departure_local_time_of_day).and_return(TimeOfDay.new(1, 2, 3)) }
+
+          it { is_expected.to eq(Netex::Time.new(1,2,3)) }
+        end
+      end
+
+      describe '#stop_arrival_day_offset' do
+        subject { decorator.stop_arrival_day_offset }
+
+        context 'when arrival_local_time_of_day is "01:00:00 day:1"' do
+          before { allow(model).to receive(:arrival_local_time_of_day).and_return(TimeOfDay.new(1, day_offset: 1)) }
+
+          it { is_expected.to eq(1) }
+        end
+
+        context 'when arrival_local_time_of_day is not defined' do
+          before { allow(model).to receive(:arrival_local_time_of_day).and_return(nil) }
+
+          it { is_expected.to be_nil }
+        end
+      end
+
+      describe '#stop_departure_day_offset' do
+        subject { decorator.stop_departure_day_offset }
+
+        context 'when departure_local_time_of_day is "01:00:00 day:1"' do
+          before { allow(model).to receive(:departure_local_time_of_day).and_return(TimeOfDay.new(1, day_offset: 1)) }
+
+          it { is_expected.to eq(1) }
+        end
+
+        context 'when departure_local_time_of_day is not defined' do
+          before { allow(model).to receive(:departure_local_time_of_day).and_return(nil) }
+
+          it { is_expected.to be_nil }
+        end
+      end
+    end
+  end
+
   class MockNetexTarget
 
     def add(resource)

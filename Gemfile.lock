@@ -76,12 +76,12 @@ GIT
 
 GIT
   remote: https://github.com/metaware/carrierwave-google-storage.git
-  revision: d8092cb70096ae599ffb99ab99ee13c9fc4deafd
+  revision: 2b55cb40a602177242d09e5a65744982d568d2d8
   specs:
     carrierwave-google-storage (1.0.0)
       activemodel (>= 3.2.0)
-      carrierwave (>= 1.3.2, < 3)
-      google-cloud-storage (~> 1.18.2)
+      carrierwave (>= 1.3.2, < 4)
+      google-cloud-storage (~> 1.18)
 
 GEM
   remote: https://rubygems.org/
@@ -350,36 +350,39 @@ GEM
       ffi (~> 1.0)
     globalid (1.1.0)
       activesupport (>= 5.0)
-    google-api-client (0.52.0)
+    google-apis-core (0.11.3)
       addressable (~> 2.5, >= 2.5.1)
-      googleauth (~> 0.9)
-      httpclient (>= 2.8.1, < 3.0)
+      googleauth (>= 0.16.2, < 2.a)
+      httpclient (>= 2.8.1, < 3.a)
       mini_mime (~> 1.0)
       representable (~> 3.0)
-      retriable (>= 2.0, < 4.0)
+      retriable (>= 2.0, < 4.a)
       rexml
-      signet (~> 0.12)
-    google-cloud-core (1.7.0)
+    google-apis-iamcredentials_v1 (0.17.0)
+      google-apis-core (>= 0.11.0, < 2.a)
+    google-apis-storage_v1 (0.31.0)
+      google-apis-core (>= 0.11.0, < 2.a)
+    google-cloud-core (1.7.1)
       google-cloud-env (>= 1.0, < 3.a)
       google-cloud-errors (~> 1.0)
     google-cloud-env (1.6.0)
       faraday (>= 0.17.3, < 3.0)
     google-cloud-errors (1.4.0)
-    google-cloud-storage (1.18.2)
-      addressable (~> 2.5)
+    google-cloud-storage (1.47.0)
+      addressable (~> 2.8)
       digest-crc (~> 0.4)
-      google-api-client (~> 0.26)
-      google-cloud-core (~> 1.2)
-      googleauth (>= 0.6.2, < 0.10.0)
-      mime-types (~> 3.0)
+      google-apis-iamcredentials_v1 (~> 0.1)
+      google-apis-storage_v1 (~> 0.31.0)
+      google-cloud-core (~> 1.6)
+      googleauth (>= 0.16.2, < 2.a)
+      mini_mime (~> 1.0)
     google-protobuf (3.25.4)
-    googleauth (0.9.0)
-      faraday (~> 0.12)
+    googleauth (1.8.1)
+      faraday (>= 0.17.3, < 3.a)
       jwt (>= 1.4, < 3.0)
-      memoist (~> 0.16)
       multi_json (~> 1.11)
       os (>= 0.9, < 2.0)
-      signet (~> 0.7)
+      signet (>= 0.16, < 2.a)
     graphiql-rails (1.10.0)
       railties
     graphql (2.2.5)
@@ -495,12 +498,11 @@ GEM
       net-pop
       net-smtp
     marcel (1.0.2)
-    memoist (0.16.2)
     memory_profiler (1.0.0)
     method_source (1.1.0)
     mime-types (3.5.2)
       mime-types-data (~> 3.2015)
-    mime-types-data (3.2024.0702)
+    mime-types-data (3.2024.0806)
     mimemagic (0.4.3)
       nokogiri (~> 1)
       rake
@@ -515,7 +517,7 @@ GEM
     multi_xml (0.6.0)
     multipart-post (2.4.1)
     nenv (0.3.0)
-    net-imap (0.4.14)
+    net-imap (0.3.7)
       date
       net-protocol
     net-pop (0.1.2)
@@ -678,7 +680,7 @@ GEM
       actionpack (>= 5.2)
       railties (>= 5.2)
     retriable (3.1.2)
-    rexml (3.3.2)
+    rexml (3.3.4)
       strscan
     rgeo (3.0.0)
     rgeo-activerecord (6.2.2)
@@ -940,7 +942,7 @@ DEPENDENCIES
   fuubar
   geokit
   georuby (= 2.3.0)
-  google-cloud-storage (> 1.4.0)
+  google-cloud-storage (>= 1.19.0)
   google-protobuf (~> 3.0)
   graphiql-rails
   graphql (= 2.2.5)

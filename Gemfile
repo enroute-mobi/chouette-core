@@ -221,7 +221,7 @@ gem 'i18n-tasks', '>= 0.9.37'
 
 gem 'activerecord-nulldb-adapter', require: (ENV['RAILS_DB_ADAPTER'] == 'nulldb')
 
-gem 'google-cloud-storage', '> 1.4.0'
+gem 'google-cloud-storage', '>= 1.19.0'
 gem 'net-sftp'
 # Required by net-ssh to support various key types
 gem 'ed25519'

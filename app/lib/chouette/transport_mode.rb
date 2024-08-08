@@ -82,7 +82,11 @@ module Chouette
     end
 
     def hash
-      @hash ||= [ mode, sub_mode ].hash
+      @hash ||= [mode, sub_mode].hash
+    end
+
+    def self.mapper(&block)
+      Chouette::TransportMode::Mapper.new(&block)
     end
 
     private
@@ -257,10 +261,6 @@ module Chouette
       ],
       trolley_bus: []
     }.tap { |d| d.each { |mode, sub_modes| [mode, sub_modes.freeze] } }.freeze
-
-    def self.mapper(&block)
-      Chouette::TransportMode::Mapper.new(&block)
-    end
 
     # Simplifying mapping between a transport mode and a value
     #

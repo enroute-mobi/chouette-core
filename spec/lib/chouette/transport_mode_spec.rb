@@ -264,13 +264,22 @@ RSpec.describe Chouette::TransportMode do
       context 'when a TransportMode is given with a value' do
         let(:transport_mode) { Chouette::TransportMode.from(:bus) }
 
-        it { expect { mapper.register(transport_mode, 'dummy') }.to change(mapper, :mappings).from({}).to({transport_mode => 'dummy'}) }
+        it {
+          expect do
+            mapper.register(transport_mode, 'dummy')
+          end.to change(mapper, :mappings).from({}).to({ transport_mode => 'dummy' })
+        }
       end
 
       context 'when a TransportMode code is given with a value' do
         let(:transport_mode) { Chouette::TransportMode.from('rail/night_train') }
 
-        it { expect { mapper.register(transport_mode.code, 'dummy') }.to change(mapper, :mappings).from({}).to({transport_mode => 'dummy'}) }
+        it {
+          expect do
+            mapper.register(transport_mode.code,
+                            'dummy')
+          end.to change(mapper, :mappings).from({}).to({ transport_mode => 'dummy' })
+        }
       end
     end
 

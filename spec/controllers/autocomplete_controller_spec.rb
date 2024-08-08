@@ -339,4 +339,33 @@ RSpec.describe AutocompleteController, type: :controller do
       end
     end
   end
+
+  describe 'GET #shapes' do
+    let(:context) do
+      Chouette.create do
+        workbench organisation: Organisation.find_by(code: 'first') do
+          shape :first, name: 'Shape one'
+          shape :second, name: 'Shape two'
+        end
+      end
+    end
+
+    let(:workgroup) { context.workgroup }
+    let(:first_shape) { context.shape(:first) }
+    let(:second_shape) { context.shape(:second) }
+
+    it 'returns the complete list when the search parameter is not found' do
+      get :shapes, params: { workgroup_id: workgroup }
+
+      expect(assigns(:shapes)).to contain_exactly(first_shape, second_shape)
+      expect(response).to be_successful
+    end
+
+    it 'returns a Shape when the name contains the search parameter' do
+      get :shapes, params: { workgroup_id: workgroup, q: 'Shape one' }
+
+      expect(assigns(:shapes)).to contain_exactly(first_shape)
+      expect(response).to be_successful
+    end
+  end
 end

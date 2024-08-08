@@ -4,18 +4,29 @@ module Search
   class Save < ApplicationModel
     self.table_name = 'saved_searches'
 
-    belongs_to :workbench, class_name: '::Workbench', optional: false
+    belongs_to :parent, polymorphic: true, optional: false
     validates :name, :search_type, presence: true
 
-    def self.for(search_type)
-      where(search_type: search_type.to_s)
+    class << self
+      # rubocop:disable Naming/MemoizedInstanceVariableName
+      def model_name
+        @_model_name ||= ActiveModel::Name.new(self, nil).tap do |name|
+          name.instance_variable_set(:@singular_route_key, 'search')
+          name.instance_variable_set(:@route_key, 'searches')
+        end
+      end
+      # rubocop:enable Naming/MemoizedInstanceVariableName
+
+      def for(search_type)
+        where(search_type: search_type.to_s)
+      end
     end
 
     def search(context = {})
-      all_attributes = search_attributes.merge(context).merge(
-        saved_search: self,
-        workbench: workbench
-      )
+      all_attributes = search_attributes.merge(context)
+      all_attributes[:saved_search] = self
+      all_attributes[parent_type.underscore.to_sym] = parent
+
       search_class.new(all_attributes).tap do
         used
       end

@@ -1,20 +1,21 @@
-module SearchHelper
+# frozen_string_literal: true
 
+module SearchHelper
   # Provides a simpler path helper for Stop Areas saved searches
   # TODO: See if it's usefull with other resources
-  def workbench_stop_areas_search_path(workbench, saved_search)
-    workbench_stop_area_referential_search_path workbench, saved_search.id, parent_resources: :stop_areas
+  def stop_areas_saved_search_path(saved_search)
+    url_for([saved_search.parent, :stop_area_referential, saved_search, { parent_resources: :stop_areas }])
   end
 
-  def workbench_lines_search_path(workbench, saved_search)
-    workbench_line_referential_search_path workbench, saved_search.id, parent_resources: :lines
+  def lines_saved_search_path(saved_search)
+    url_for([saved_search.parent, :line_referential, saved_search, { parent_resources: :lines }])
   end
 
   def saved_search_path(saved_search)
     parent_resources = saved_search.search_type.demodulize.underscore.pluralize.to_sym
 
-    path_method = "workbench_#{parent_resources}_search_path"
-    send path_method, saved_search.workbench, saved_search # , parent_resources: :stop_areas
+    path_method = "#{parent_resources}_saved_search_path"
+    send path_method, saved_search
   end
 
   def filter_item_class q, key
@@ -33,5 +34,4 @@ module SearchHelper
     end
     active ? 'active' : 'inactive'
   end
-
 end

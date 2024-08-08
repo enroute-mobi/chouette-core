@@ -40,7 +40,7 @@ class Workbench < ApplicationModel
   has_many :source_retrievals, class_name: "Source::Retrieval"
   has_many :processing_rules, class_name: "ProcessingRule::Workbench"
   has_many :point_of_interests, through: :shape_referential
-  has_many :saved_searches, class_name: 'Search::Save', dependent: :destroy
+  has_many :saved_searches, class_name: 'Search::Save', as: :parent, dependent: :destroy
   has_many :calendars, dependent: :destroy
 
   validates :name, presence: true

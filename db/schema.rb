@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2024_06_04_133209) do
+ActiveRecord::Schema.define(version: 2024_07_29_152804) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "btree_gin"
@@ -1284,7 +1284,7 @@ ActiveRecord::Schema.define(version: 2024_06_04_133209) do
   end
 
   create_table "saved_searches", force: :cascade do |t|
-    t.bigint "workbench_id", null: false
+    t.bigint "parent_id", null: false
     t.string "search_type", null: false
     t.string "name", null: false
     t.string "creator"
@@ -1293,7 +1293,8 @@ ActiveRecord::Schema.define(version: 2024_06_04_133209) do
     t.text "description"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.index ["workbench_id"], name: "index_saved_searches_on_workbench_id"
+    t.string "parent_type", null: false
+    t.index ["parent_type", "parent_id"], name: "index_saved_searches_on_parent_type_and_parent_id"
   end
 
   create_table "sequences", force: :cascade do |t|

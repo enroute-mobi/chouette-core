@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 class AggregateScheduling < ApplicationModel
-  belongs_to :workgroup, required: true
+  belongs_to :workgroup, optional: false
   belongs_to :scheduled_job, class_name: '::Delayed::Job', optional: true
 
   attribute :aggregate_time, TimeOfDay::Type::TimeWithoutZone.new

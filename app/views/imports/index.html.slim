@@ -3,7 +3,7 @@
 - if @parent.is_a? Workgroup
   - content_for(:page_header_title) { 'imports.workgroup_index.title'.t }
 
-.page_content
+.page_content x-data="{ saveSearchPanel: false }"
   .container-fluid
     .row
       .col-lg-12

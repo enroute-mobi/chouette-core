@@ -11,11 +11,19 @@ module SearchHelper
     url_for([saved_search.parent, :line_referential, saved_search, { parent_resources: :lines }])
   end
 
+  def imports_saved_search_path(saved_search)
+    url_for([saved_search.parent, saved_search, { parent_resources: :imports }])
+  end
+
   def saved_search_path(saved_search)
-    parent_resources = saved_search.search_type.demodulize.underscore.pluralize.to_sym
+    parent_resources = saved_search.resource_name
 
     path_method = "#{parent_resources}_saved_search_path"
-    send path_method, saved_search
+    if respond_to?(path_method)
+      send path_method, saved_search
+    else
+      url_for([saved_search.parent, saved_search, { parent_resources: parent_resources }])
+    end
   end
 
   def filter_item_class q, key

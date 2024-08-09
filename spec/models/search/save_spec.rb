@@ -103,4 +103,44 @@ RSpec.describe Search::Save, type: :model do
       end
     end
   end
+
+  describe '.search_class_name' do
+    subject { described_class.search_class_name(parent, resource_name) }
+
+    let(:resource_name) { 'users' }
+
+    context 'in workbench' do
+      let(:parent) { workbench }
+
+      it { is_expected.to eq('Search::User') }
+    end
+
+    context 'in workgroup' do
+      let(:parent) { workgroup }
+
+      it { is_expected.to eq('Search::WorkgroupUser') }
+    end
+  end
+
+  describe '#resource_name' do
+    subject { saved_search.resource_name }
+
+    context 'in workbench' do
+      before do
+        saved_search.parent = workbench
+        saved_search.search_type = 'Search::User'
+      end
+
+      it { is_expected.to eq('users') }
+    end
+
+    context 'in workgroup' do
+      before do
+        saved_search.parent = workgroup
+        saved_search.search_type = 'Search::WorkgroupUser'
+      end
+
+      it { is_expected.to eq('users') }
+    end
+  end
 end

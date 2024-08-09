@@ -1,4 +1,4 @@
-- breadcrumb "#{parent_resources}_searches".to_sym, @workbench
+- breadcrumb "#{parent_resources}_searches".to_sym, @workbench || @workgroup
 - content_for :page_header_title, Search::Save.model_name.human(count: 2)
 
 .page_content x-data="{ saveSearchPanel: true }"

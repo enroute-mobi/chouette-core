@@ -17,6 +17,10 @@ module Search
       end
       # rubocop:enable Naming/MemoizedInstanceVariableName
 
+      def search_class_name(parent, resource_name)
+        "Search::#{'Workgroup' if parent.is_a?(::Workgroup)}#{resource_name.classify}"
+      end
+
       def for(search_type)
         where(search_type: search_type.to_s)
       end
@@ -34,6 +38,12 @@ module Search
 
     def search_class
       search_type.constantize
+    end
+
+    def resource_name
+      result = search_type.demodulize.underscore.pluralize
+      result = result['workgroup_'.length..] if parent.is_a?(Workgroup)
+      result
     end
 
     def used(now = Time.zone.now)

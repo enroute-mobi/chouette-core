@@ -36,6 +36,10 @@ class WorkgroupImportsController < Chouette::WorkgroupController
 
   # rubocop:disable Metrics/MethodLength
   def index
+    if (saved_search = saved_searches.find_by(id: params[:search_id]))
+      @search = saved_search.search
+    end
+
     index! do |format|
       format.html do
         @contextual_cols = []
@@ -53,6 +57,10 @@ class WorkgroupImportsController < Chouette::WorkgroupController
   end
   # rubocop:enable Metrics/MethodLength
 
+  def saved_searches
+    @saved_searches ||= workgroup.saved_searches.for(::Search::WorkgroupImport)
+  end
+
   protected
 
   # rubocop:disable Naming/MemoizedInstanceVariableName
@@ -66,7 +74,7 @@ class WorkgroupImportsController < Chouette::WorkgroupController
   end
 
   def search
-    @search ||= Search.from_params(params, workgroup: workgroup)
+    @search ||= ::Search::WorkgroupImport.from_params(params, workgroup: workgroup)
   end
 
   def collection
@@ -80,11 +88,5 @@ class WorkgroupImportsController < Chouette::WorkgroupController
         parent: parent
       }
     )
-  end
-
-  class Search < Search::Operation
-    def query_class
-      Query::Import
-    end
   end
 end

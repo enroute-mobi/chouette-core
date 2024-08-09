@@ -356,6 +356,11 @@ crumb :import do |imports_parent, import|
   parent :imports, imports_parent
 end
 
+crumb :imports_searches do |workbench|
+  link Search::Save.model_name.human(count: 2)
+  parent :imports, workbench
+end
+
 crumb :exports do |export_parent|
   link I18n.t('exports.index.title'),[export_parent, :exports]
   parent export_parent

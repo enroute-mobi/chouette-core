@@ -1673,10 +1673,11 @@ class Export::NetexGeneric < Export::Base
       end
 
       def journey_pattern_id
-        __getobj__.try(:journey_pattern_id) || journey_pattern&.id
+        __getobj__.try(:journey_pattern_id) || try(:journey_pattern)&.id
       end
 
       def stop_point_in_journey_pattern_ref
+        return nil unless journey_pattern_id
         stop_point_in_journey_pattern_ref_cache[[stop_point_id, journey_pattern_id]] ||= decorated_stop_point.stop_point_in_journey_pattern_ref
       end
 

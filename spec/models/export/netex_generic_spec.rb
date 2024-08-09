@@ -1876,57 +1876,118 @@ RSpec.describe Export::NetexGeneric do
 
       let(:model) { Chouette::VehicleJourneyAtStop::Light::VehicleJourneyAtStop.new }
 
-      describe '#stop_time_arrival_time' do
-        subject { decorator.stop_time_arrival_time }
+      describe '#arrival_passing_time' do
+        subject { decorator.arrival_passing_time }
 
-        context 'when arrival_local_time_of_day is "01:02:03' do
-          before { allow(model).to receive(:arrival_local_time_of_day).and_return(TimeOfDay.new(1, 2, 3)) }
-
-          it { is_expected.to eq(Netex::Time.new(1,2,3)) }
-        end
-      end
-
-      describe '#stop_time_departure_time' do
-        subject { decorator.stop_time_departure_time }
-
-        context 'when departure_local_time_of_day is "01:02:03' do
-          before { allow(model).to receive(:departure_local_time_of_day).and_return(TimeOfDay.new(1, 2, 3)) }
-
-          it { is_expected.to eq(Netex::Time.new(1,2,3)) }
-        end
-      end
-
-      describe '#stop_arrival_day_offset' do
-        subject { decorator.stop_arrival_day_offset }
-
-        context 'when arrival_local_time_of_day is "01:00:00 day:1"' do
-          before { allow(model).to receive(:arrival_local_time_of_day).and_return(TimeOfDay.new(1, day_offset: 1)) }
-
-          it { is_expected.to eq(1) }
-        end
-
-        context 'when arrival_local_time_of_day is not defined' do
-          before { allow(model).to receive(:arrival_local_time_of_day).and_return(nil) }
-
+        context 'when arrival_time is not defined' do
           it { is_expected.to be_nil }
         end
+
+        context 'when arrival_time is "12:30:00"' do
+          before { model.arrival_time = '12:30:00' }
+          it { is_expected.to have_attributes(time: model.arrival_time) }
+
+          context 'when arrival_day_offset is 1' do
+            before { model.arrival_day_offset = 1 }
+            it { is_expected.to have_attributes(day_offset: model.arrival_day_offset) }
+          end
+
+          context 'when time_zone is "Europe/Berlin"' do
+            before { model.time_zone = 'Europe/Berlin' }
+            it { is_expected.to have_attributes(time_zone: model.time_zone) }
+          end
+        end
       end
 
-      describe '#stop_departure_day_offset' do
-        subject { decorator.stop_departure_day_offset }
+      describe '#departure_passing_time' do
+        subject { decorator.departure_passing_time }
 
-        context 'when departure_local_time_of_day is "01:00:00 day:1"' do
-          before { allow(model).to receive(:departure_local_time_of_day).and_return(TimeOfDay.new(1, day_offset: 1)) }
-
-          it { is_expected.to eq(1) }
-        end
-
-        context 'when departure_local_time_of_day is not defined' do
-          before { allow(model).to receive(:departure_local_time_of_day).and_return(nil) }
-
+        context 'when departure_time is not defined' do
           it { is_expected.to be_nil }
         end
+
+        context 'when departure_time is "12:30:00"' do
+          before { model.departure_time = '12:30:00' }
+          it { is_expected.to have_attributes(time: model.departure_time) }
+
+          context 'when departure_day_offset is 1' do
+            before { model.departure_day_offset = 1 }
+            it { is_expected.to have_attributes(day_offset: model.departure_day_offset) }
+          end
+
+          context 'when time_zone is "Europe/Berlin"' do
+            before { model.time_zone = 'Europe/Berlin' }
+            it { is_expected.to have_attributes(time_zone: model.time_zone) }
+          end
+        end
       end
+
+      describe '#netex_attributes' do
+        subject { decorator.netex_attributes }
+
+        context 'when departure_passing_time is not defined' do
+          it { is_expected.to_not have_key(departure_time: nil) }
+          it { is_expected.to_not have_key(departure_day_offset: nil) }
+        end
+
+        context 'when departure_passing_time netex_time is 16:01:02' do
+          let(:passing_time) { double(netex_time: Netex::Time.new(16,1,2), netex_day_offset: nil) }
+          before { allow(decorator).to receive(:departure_passing_time).and_return(passing_time) }
+
+          it { is_expected.to include(departure_time: passing_time.netex_time) }
+        end
+
+        context 'when departure_passing_time netex_day_offset is 1' do
+          let(:passing_time) { double(netex_time: nil, netex_day_offset: 1) }
+          before { allow(decorator).to receive(:departure_passing_time).and_return(passing_time) }
+
+          it { is_expected.to include(departure_day_offset: passing_time.netex_day_offset) }
+        end
+
+        context 'when arrival_passing_time is not defined' do
+          it { is_expected.to_not have_key(arrival_time: nil) }
+          it { is_expected.to_not have_key(arrival_day_offset: nil) }
+        end
+
+        context 'when arrival_passing_time netex_time is 16:01:02' do
+          let(:passing_time) { double(netex_time: Netex::Time.new(16,1,2), netex_day_offset: 0) }
+          before { allow(decorator).to receive(:arrival_passing_time).and_return(passing_time) }
+
+          it { is_expected.to include(arrival_time: passing_time.netex_time) }
+        end
+
+        context 'when departure_passing_time netex_day_offset is 1' do
+          let(:passing_time) { double(netex_time: nil, netex_day_offset: 1) }
+          before { allow(decorator).to receive(:departure_passing_time).and_return(passing_time) }
+
+          it { is_expected.to include(departure_day_offset: passing_time.netex_day_offset) }
+        end
+      end
+    end
+
+    describe Export::NetexGeneric::VehicleJourneyAtStops::PassingTime do
+      subject(:passing_time) { described_class.new(time: '00:01:02', day_offset: 1, time_zone: 'America/Los_Angeles') }
+
+      context 'when time is 00:00, day_offset 1 and time "America/Los_Angeles"' do
+        describe '#local_time_of_day' do
+          subject { passing_time.local_time_of_day }
+
+          it { is_expected.to eq(TimeOfDay.new(16, 1, 2, time_zone: 'America/Los_Angeles')) }
+        end
+
+        describe '#local_day_offset' do
+          subject { passing_time.local_day_offset }
+
+          it { is_expected.to eq(0) }
+        end
+
+        describe '#netex_time' do
+          subject { passing_time.netex_time }
+
+          it { is_expected.to eq(Netex::Time.new(16,1,2)) }
+        end
+      end
+
     end
   end
 

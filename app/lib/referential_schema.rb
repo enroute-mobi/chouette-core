@@ -152,7 +152,7 @@ class ReferentialSchema
     end
 
     def drop
-      connection.drop_table(full_name, if_exists: true, force: :cascade)
+      connection.drop_table(full_name, if_exists: true)
     end
 
     def reset_pk_sequence

@@ -290,6 +290,8 @@ module Chouette
 
     def update_has_array_of_from_state item
       ['line_notices'].each do |assos|
+        next unless item.key?(assos)
+
         state_ids = item[assos].map{|t| t['id']}
 
         self.send("#{assos.singularize}_ids=", state_ids)

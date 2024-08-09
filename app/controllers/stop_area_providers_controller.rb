@@ -15,7 +15,7 @@ class StopAreaProvidersController < Chouette::StopAreaReferentialController
         end
 
         @stop_area_providers = StopAreaProviderDecorator.decorate(
-          @stop_area_providers,
+          collection,
           context: {
             workbench: workbench
           }
@@ -36,6 +36,10 @@ class StopAreaProvidersController < Chouette::StopAreaReferentialController
 
   protected
 
+  def scope
+    @scope ||= workbench.stop_area_providers
+  end
+
   def build_resource
     get_resource_ivar || set_resource_ivar(
       end_of_association_chain.send(method_for_build, *resource_params)
@@ -48,12 +52,12 @@ class StopAreaProvidersController < Chouette::StopAreaReferentialController
     object.update(*attributes)
   end
 
+  def search
+    @search ||= Search::StopAreaProvider.from_params(params)
+  end
+
   def collection
-    @stop_area_providers ||= begin
-      stop_area_providers = end_of_association_chain.order(:name)
-      stop_area_providers = stop_area_providers.paginate(:page => params[:page])
-      stop_area_providers
-    end
+    @collection ||= search.search scope
   end
 
   def stop_area_provider_params

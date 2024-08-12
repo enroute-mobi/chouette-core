@@ -29,7 +29,8 @@ function addAjaxSelectToForm(dom_part) {
           .catch(() => {
             callback();
           })
-      }
+      },
+      score: () => () => 1
     }
     new TomSelect(el, settings)
   })

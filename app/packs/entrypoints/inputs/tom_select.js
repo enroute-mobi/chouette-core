@@ -62,7 +62,8 @@ class ConfigBuilder {
           fetch(`${select.dataset.url || url}?q=${encodeURIComponent(query)}`)
             .then(res => res.json().then(callback))
             .catch(() => callback())
-        }
+        },
+        score: () => () => 1
       })
     }
   }

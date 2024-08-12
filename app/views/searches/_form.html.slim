@@ -38,4 +38,4 @@
       = f.input :per_page, as: :select, collection: [ 30, 50, 100 ], include_blank: false, label: false, width: 2, wrapper_html: {class: "border-none"}
     .flex.items-center
       = link_to t('actions.erase'), index_path, class: 'btn btn-link'
-      = f.submit t('actions.filter'), class: 'btn btn-default'
+      = f.submit t('actions.filter'), class: 'btn btn-default', id: 'filter'

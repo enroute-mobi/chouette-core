@@ -225,7 +225,6 @@ module Chouette
       define Entrance, :zip_code
       define Entrance, :city_name
       define Entrance, :country
-      define Entrance, :is_referent
 
       # PointOfInterest::Base
       define PointOfInterest::Base, :name
@@ -237,11 +236,9 @@ module Chouette
       define PointOfInterest::Base, :email
       define PointOfInterest::Base, :phone
       define PointOfInterest::Base, :postal_region
-      define PointOfInterest::Base, :is_referent
 
       # Shape
       define Shape, :name
-
     end
   end
 end

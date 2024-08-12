@@ -3,6 +3,7 @@
 module Chouette
   class TimeTable < Referential::Model
     include ApplicationDaysSupport
+    include ObjectidSupport
     include TimetableSupport
     has_metadata
 
@@ -426,6 +427,14 @@ module Chouette
 
     def all_dates
       dates
+    end
+
+    def full_display_name
+      [get_objectid.short_id, comment].join(' - ')
+    end
+
+    def display_name
+      full_display_name.truncate(40)
     end
 
     # produce a copy of periods without anyone overlapping or including another

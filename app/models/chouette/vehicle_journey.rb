@@ -137,6 +137,8 @@ module Chouette
     scope :scheduled, ->(time_tables) { joins(:time_tables).merge(time_tables) }
     scope :with_lines, -> (lines) { joins(:route).where(routes: { line_id: lines }) }
 
+    scope :with_time_tables, -> (time_tables) { joins(:time_tables).where(time_tables: { id: time_tables }) }
+
     scope :by_text, ->(text) { text.blank? ? all : where('lower(vehicle_journeys.published_journey_name) LIKE :t or lower(vehicle_journeys.objectid) LIKE :t', t: "%#{text.downcase}%") }
 
     # We need this for the ransack object in the filters

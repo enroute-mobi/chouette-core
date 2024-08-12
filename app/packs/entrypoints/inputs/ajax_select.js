@@ -31,6 +31,18 @@ function addAjaxSelectToForm(dom_part) {
           })
       }
     }
+
+    if (el.hasAttribute("data-ajax-html")) {
+      settings.render = {
+        option: function(data) {
+          return '<div>' + data.text + '</div>';
+        },
+        item: function(data) {
+          return data.text
+        }
+      }
+    }
+
     new TomSelect(el, settings)
   })
 }

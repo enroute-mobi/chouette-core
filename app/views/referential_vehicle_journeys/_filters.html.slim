@@ -9,10 +9,6 @@
     .flex.items-center.border-t.border-r.border-white
       = f.input :company_id, placeholder: I18n.t('simple_form.placeholders.search.company_id'), as: :tom_select, collection: @search.candidate_companies.map { |l| {id: l.id, text: l.display_name } }, wrapper_html: {class: "w-2/6"}
       = f.input :line_id, placeholder: I18n.t('simple_form.placeholders.search.line_id'), as: :tom_select, collection: @search.candidate_lines.map { |l| {id: l.id, text: l.display_name } }, wrapper_html: {class: "w-2/6"}
-    .flex.items-center.border-t.border-white
-      = f.label :timetable, class: 'pl-6 whitespace-nowrap'
-      = f.input :start_date, as: :date_picker, wrapper_html: {class: "w-1/3"}
-      = f.input :end_date, as: :date_picker, wrapper_html: {class: "w-1/3"}
       = f.label :stop_area, class: 'pl-6 whitespace-nowrap'
       = f.input :from_stop_area_id, placeholder: I18n.t('simple_form.placeholders.search.stop_area_id'),
         as: :ajax_select,
@@ -26,6 +22,15 @@
         label_method: :display_name,
         input_html: { 'data-url': stop_areas_workbench_referential_autocomplete_index_url(@workbench, current_referential) },
         wrapper_html: {class: "w-1/3"}
+    .flex.items-center.border-t.border-white
+      = f.input :time_table_id, placeholder: I18n.t('simple_form.placeholders.search.time_table_id'),
+        as: :ajax_select,
+        collection: @search.candidate_time_tables,
+        label_method: :display_name,
+        input_html: { 'data-url': time_tables_workbench_referential_autocomplete_index_url(@workbench, current_referential) },
+        wrapper_html: {class: "w-2/6"}
+      = f.input :start_date, as: :date_picker
+      = f.input :end_date, as: :date_picker
 
   .flex.flex-col.justify-center.items-center.actions.ml-auto.py-3.w-80
     .flex.items-center.mb-3

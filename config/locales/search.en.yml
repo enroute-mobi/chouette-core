@@ -28,6 +28,7 @@ en:
         timetable: "Timetable"
         stop_area_id: "Stop area"
         stop_area_provider_id: "Specify a stop area provider name"
+        stop_area: "Stop area"
         area_type: "Area type"
         is_referent: "Referent"
         zip_code: "Zip code"
@@ -45,6 +46,7 @@ en:
         valid_before_date: Valide before
         valid_after_date: Valide after
         referential_name: Target
+        time_table_id: Timetable
   activerecord:
     models:
       search/save:
@@ -63,6 +65,7 @@ en:
         line_id: "Specify a line name"
         company_id: "Specify a company name"
         stop_area_id: "Specify a stop area name"
+        time_table_id: "Specify a timetable name"
         document_id: "Specify a document name"
         document_type_id: "Select a document type"
         workbench_id: "Specify a Workbench name"

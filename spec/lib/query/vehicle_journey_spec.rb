@@ -114,6 +114,41 @@ RSpec.describe Query::VehicleJourney do
     let(:context) do
       Chouette.create do
         time_table :time_table
+        time_table :other_time_table
+
+        vehicle_journey time_tables: [:time_table]
+      end
+    end
+
+    let(:vehicle_journey) { context.vehicle_journey }
+    let(:time_table) { context.time_table(:time_table) }
+    let(:other_time_table) { context.time_table(:other_time_table) }
+
+    before(:each) do
+      context.referential.switch
+    end
+
+    context "when vehicle journey include timetable" do
+      subject { query.time_table(time_table).scope }
+
+      it 'includes vehicle journey' do
+        is_expected.to include(vehicle_journey)
+      end
+    end
+
+    context "when vehicle journey not include timetable" do
+      subject { query.time_table(other_time_table).scope }
+
+      it 'not includes vehicle journey ' do
+        is_expected.not_to include(vehicle_journey)
+      end
+    end
+  end
+
+  describe '#time_table_period' do
+    let(:context) do
+      Chouette.create do
+        time_table :time_table
 
         vehicle_journey time_tables: [:time_table]
       end
@@ -129,7 +164,7 @@ RSpec.describe Query::VehicleJourney do
     end
 
     context "when range intersects one vehicle journey's timetable" do
-      subject { query.time_table(included_range).scope }
+      subject { query.time_table_period(included_range).scope }
 
       it 'includes vehicle journey' do
         is_expected.to include(vehicle_journey)
@@ -137,7 +172,7 @@ RSpec.describe Query::VehicleJourney do
     end
 
     context "when range doesn't intersect one vehicle journey's timetable" do
-      subject { query.time_table(excluded_range).scope }
+      subject { query.time_table_period(excluded_range).scope }
 
       it 'not includes vehicle journey ' do
         is_expected.not_to include(vehicle_journey)

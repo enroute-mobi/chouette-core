@@ -435,6 +435,7 @@ module Chouette
               [ line ]
             end
             transient :periods, [ Period.from(:today).during(30.days) ]
+            transient :flagged_urgent_at
 
             transient :with_metadatas, true
 
@@ -449,7 +450,8 @@ module Chouette
               if transient(:with_metadatas)
                 metadata_attributes = {
                   line_ids: transient(:lines, resolve_instances: true).map(&:id),
-                  periodes: transient(:periods)
+                  periodes: transient(:periods),
+                  flagged_urgent_at: transient(:flagged_urgent_at)
                 }
                 new_instance.metadatas.build metadata_attributes
               end

@@ -13,14 +13,14 @@ class WorkgroupsController < Chouette::ResourceController
 
   def show
     show! do |format|
-      format.html {
+      format.html do
         @workbenches = WorkgroupWorkbenchDecorator.decorate(
           @workgroup.workbenches.order('created_at DESC').paginate(page: params[:page]),
           context: {
             workgroup: @workgroup
           }
         )
-      }
+      end
     end
   end
 
@@ -35,11 +35,11 @@ class WorkgroupsController < Chouette::ResourceController
   end
 
   def update
-    unless resource.update workgroup_params
-      render :edit
-    else
+    if resource.update workgroup_params
       flash[:success] = t('workgroups.edit.success')
       redirect_to resource
+    else
+      render :edit
     end
   end
 
@@ -83,13 +83,15 @@ class WorkgroupsController < Chouette::ResourceController
       :description,
       :enable_purge_merged_data,
       :maximum_data_age,
-      :nightly_aggregate_enabled, :nightly_aggregate_time, :nightly_aggregate_days, :nightly_aggregate_notification_target,
+      :nightly_aggregate_notification_target,
       :transport_modes_as_json,
-      workbenches_attributes: [
-        :id,
-        :locked_referential_to_aggregate_id,
-        :priority,
-      ]
+      workbenches_attributes: %i[
+        id
+        locked_referential_to_aggregate_id
+        priority
+      ],
+      aggregate_schedulings_attributes: %i[id aggregate_time aggregate_days force_daily_publishing value
+                                           _destroy]
     )
   end
 

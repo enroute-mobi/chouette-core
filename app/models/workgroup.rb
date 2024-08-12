@@ -1,5 +1,4 @@
 class Workgroup < ApplicationModel
-  NIGHTLY_AGGREGATE_CRON_TIME = 5.minutes
   DEFAULT_EXPORT_TYPES = %w[Export::Gtfs Export::NetexGeneric Export::Ara].freeze
 
   belongs_to :line_referential, dependent: :destroy, required: true
@@ -37,6 +36,7 @@ class Workgroup < ApplicationModel
   has_many :processing_rules, class_name: "ProcessingRule::Workgroup"
   has_many :workbench_processing_rules, through: :workbenches, source: :processing_rules
   has_many :contracts, through: :workbenches
+  has_many :aggregate_schedulings, dependent: :destroy
   has_many :saved_searches, class_name: 'Search::Save', as: :parent, dependent: :destroy
 
   validates :name, presence: true, uniqueness: true
@@ -62,11 +62,10 @@ class Workgroup < ApplicationModel
   has_many :codes, through: :code_spaces
 
   accepts_nested_attributes_for :workbenches
+  accepts_nested_attributes_for :aggregate_schedulings, allow_destroy: true, reject_if: :all_blank
 
   @@workbench_scopes_class = WorkbenchScopes::All
   mattr_accessor :workbench_scopes_class
-
-  attribute :nightly_aggregate_days, WeekDays.new
 
   def reverse_geocode
     @reverse_geocode ||= ReverseGeocode::Config.new do |config|
@@ -96,65 +95,119 @@ class Workgroup < ApplicationModel
     update aggregated_at: Time.now
   end
 
-  attribute :nightly_aggregate_time, TimeOfDay::Type::TimeWithoutZone.new
+  def aggregate!(**options)
+    Aggregator.new(self, **options).run
+  end
 
   def aggregate_urgent_data!
-    target_referentials = aggregatable_referentials.select do |r|
-      aggregated_at.blank? || (r.flagged_urgent_at.present? && r.flagged_urgent_at > aggregated_at)
-    end
-
-    return if target_referentials.empty?
-
-    aggregates.create!(referentials: aggregatable_referentials, creator: 'webservice', notification_target: nil, automatic_operation: true)
+    UrgentAggregator.new(self).run
   end
 
-  def nightly_aggregate!
-    Rails.logger.debug "[Workgroup ##{id}]: Test nightly aggregate time frame"
-    return unless nightly_aggregate_timeframe?
-
-    Rails.logger.info "[Workgroup ##{id}] Check nightly Aggregate (at #{nightly_aggregate_time})"
-
-    update_column :nightly_aggregated_at, Time.current
-
-    target_referentials = aggregatable_referentials.select do |r|
-      aggregated_at.blank? || (r.created_at > aggregated_at)
+  class Aggregator
+    def initialize(workgroup, **options)
+      @workgroup = workgroup
+      @options = options
     end
+    attr_reader :workgroup, :options
 
-    if target_referentials.empty?
-      Rails.logger.info "[Workgroup ##{id}] No Aggregate is required"
-
-      aggregate = aggregates.where(status: 'successful').last
-
-      if aggregate
-        publication_setups.where(force_daily_publishing: true).each do |ps|
-          Rails.logger.info "[Workgroup ##{id}] Start daily publication #{name}"
-          aggregate.publish_with_setup(ps)
-        end
+    def run
+      if aggregate?
+        aggregate!
+      elsif daily_publications?
+        daily_publish!
       end
-
-      return
     end
 
-    Rails.logger.info "[Workgroup ##{id}] Start nightly Aggregate"
+    def aggregatable_referentials
+      @aggregatable_referentials ||= workgroup.aggregatable_referentials
+    end
 
-    aggregates.create!(referentials: aggregatable_referentials, creator: 'CRON', notification_target: nightly_aggregate_notification_target)
+    def target_referentials
+      @target_referentials ||= if workgroup.aggregated_at
+                                 aggregatable_referentials.select { |r| select_target_referential?(r) }
+                               else
+                                 aggregatable_referentials
+                               end
+    end
 
+    def aggregate?
+      target_referentials.any?
+    end
+
+    def daily_publications?
+      options[:daily_publications] != false
+    end
+
+    def last_successful_aggregate
+      @last_successful_aggregate ||= workgroup.aggregates.successful.last
+    end
+
+    def log?
+      options[:log] != false
+    end
+
+    def log(msg, debug: false)
+      return unless log?
+
+      full_msg = "[Workgroup ##{workgroup.id}] #{msg}"
+      if debug
+        Rails.logger.debug(full_msg)
+      else
+        Rails.logger.info(full_msg)
+      end
+    end
+
+    protected
+
+    def select_target_referential?(referential)
+      referential.created_at > workgroup.aggregated_at
+    end
+
+    def aggregate_attributes
+      options[:aggregate_attributes] || {}
+    end
+
+    private
+
+    def aggregate!
+      log('Start Aggregate')
+      workgroup.aggregates.create!(
+        referentials: aggregatable_referentials,
+        creator: I18n.t('workgroups.aggregator.creator'),
+        notification_target: workgroup.nightly_aggregate_notification_target,
+        **aggregate_attributes
+      )
+    end
+
+    def daily_publish!
+      log('No Aggregate is required')
+      return unless last_successful_aggregate
+
+      workgroup.publication_setups.where(force_daily_publishing: true).find_each do |publication_setup|
+        log("Start daily publication #{publication_setup.name}")
+        last_successful_aggregate.publish_with_setup(publication_setup)
+      end
+    end
   end
 
-  def nightly_aggregate_timeframe?
-    return false unless nightly_aggregate_enabled?
+  class UrgentAggregator < Aggregator
+    def daily_publications?
+      false
+    end
 
-    Rails.logger.debug "Workgroup #{id}: nightly_aggregate_timeframe!"
-    Rails.logger.debug "Time.now: #{Time.now.inspect}"
-    Rails.logger.debug "TimeOfDay.now: #{TimeOfDay.now.inspect}"
-    Rails.logger.debug "nightly_aggregate_time: #{nightly_aggregate_time.inspect}"
-    Rails.logger.debug "diff: #{(TimeOfDay.now - nightly_aggregate_time)}"
+    def log?
+      false
+    end
 
-    within_timeframe = (TimeOfDay.now - nightly_aggregate_time).abs <= NIGHTLY_AGGREGATE_CRON_TIME && nightly_aggregate_days.match_date?(Time.zone.now)
-    Rails.logger.debug "within_timeframe: #{within_timeframe}"
+    protected
 
-    cool_down_time = (NIGHTLY_AGGREGATE_CRON_TIME*3).ago
-    within_timeframe && (nightly_aggregated_at.blank? || nightly_aggregated_at < cool_down_time)
+    def select_target_referential?(referential)
+      referential.flagged_urgent_at && referential.flagged_urgent_at > workgroup.aggregated_at
+    end
+
+    def aggregate_attributes
+      { notification_target: 'none', automatic_operation: true }
+    end
   end
 
   def workbench_scopes workbench

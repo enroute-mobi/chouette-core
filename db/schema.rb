@@ -50,6 +50,18 @@ ActiveRecord::Schema.define(version: 2024_07_29_152804) do
     t.index ["aggregate_id"], name: "index_aggregate_resources_on_aggregate_id"
   end
 
+  create_table "aggregate_schedulings", force: :cascade do |t|
+    t.bigint "workgroup_id", null: false
+    t.time "aggregate_time", default: "2000-01-01 00:00:00", null: false
+    t.bit "aggregate_days", limit: 7, default: "1111111", null: false
+    t.boolean "force_daily_publishing", default: true, null: false
+    t.bigint "scheduled_job_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["scheduled_job_id"], name: "index_aggregate_schedulings_on_scheduled_job_id"
+    t.index ["workgroup_id"], name: "index_aggregate_schedulings_on_workgroup_id"
+  end
+
   create_table "aggregates", force: :cascade do |t|
     t.bigint "workgroup_id"
     t.string "status"
@@ -1723,9 +1735,6 @@ ActiveRecord::Schema.define(version: 2024_07_29_152804) do
     t.string "export_types", default: [], array: true
     t.bigint "owner_id"
     t.bigint "output_id"
-    t.time "nightly_aggregate_time", default: "2000-01-01 00:00:00"
-    t.boolean "nightly_aggregate_enabled", default: false
-    t.datetime "nightly_aggregated_at"
     t.datetime "aggregated_at"
     t.string "nightly_aggregate_notification_target", default: "none"
     t.datetime "deleted_at"
@@ -1733,13 +1742,14 @@ ActiveRecord::Schema.define(version: 2024_07_29_152804) do
     t.integer "maximum_data_age", default: 0
     t.boolean "enable_purge_merged_data", default: false
     t.bigint "shape_referential_id", null: false
-    t.bit "nightly_aggregate_days", limit: 7, default: "1111111"
     t.string "description"
     t.bigint "fare_referential_id", null: false
     t.index ["fare_referential_id"], name: "index_workgroups_on_fare_referential_id"
     t.index ["shape_referential_id"], name: "index_workgroups_on_shape_referential_id"
   end
 
+  add_foreign_key "aggregate_schedulings", "delayed_jobs", column: "scheduled_job_id"
+  add_foreign_key "aggregate_schedulings", "workgroups"
   add_foreign_key "authentications", "organisations"
   add_foreign_key "calendars", "workbenches"
   add_foreign_key "control_runs", "control_context_runs"

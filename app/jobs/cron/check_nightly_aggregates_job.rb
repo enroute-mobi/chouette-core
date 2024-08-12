@@ -2,8 +2,10 @@
 
 module Cron
   class CheckNightlyAggregatesJob < MinutesJob
-    def perform_once
-      ::Workgroup.where(nightly_aggregate_enabled: true).find_each(&:nightly_aggregate!)
+    class << self
+      def enabled
+        false
+      end
     end
   end
 end

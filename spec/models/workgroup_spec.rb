@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 RSpec.describe Workgroup, type: :model do
 
   let(:context) { Chouette.create { workgroup } }
@@ -40,156 +42,362 @@ RSpec.describe Workgroup, type: :model do
     end
   end
 
-  describe "#nightly_aggregate_timeframe?" do
-    let(:nightly_aggregation_time) { "15:15:00" }
-    let(:nightly_aggregate_enabled) { false }
-    let(:current_symbolic_day) { Cuckoo::Timetable::DaysOfWeek::SYMBOLIC_DAYS[Time.zone.now.wday - 1] }
+  describe 'aggregate_urgent_data!' do
+    subject { workgroup.aggregate_urgent_data! }
+
+    let(:aggregated_at) { nil }
+    let(:daily_publication) do
+      workgroup.publication_setups.create!(
+        name: 'Daily',
+        force_daily_publishing: true,
+        export_options: { 'type' => 'Export::Gtfs' }
+      )
+    end
+    let(:some_referential) { context.referential(:some_referential) }
+    let(:aggregate) do
+      workgroup.aggregates.create!(referentials: [some_referential], creator: 'none').tap do |aggregate|
+        aggregate.update_column(:status, :successful)
+      end
+    end
 
     before do
-      workgroup.update nightly_aggregate_time: nightly_aggregation_time,
-                       nightly_aggregate_enabled: nightly_aggregate_enabled
+      Timecop.freeze
+      workgroup.update_column(:aggregated_at, aggregated_at) if aggregated_at
     end
 
-    let(:time_at_1515) { Time.zone.now.beginning_of_day + 15.hours + 15.minutes }
+    after do
+      Timecop.return
+    end
 
-    context "when nightly_aggregate_enabled is true" do
-      let(:nightly_aggregate_enabled) { true }
-
-      it "returns true when inside timeframe && dayframe" do
-        Timecop.freeze(time_at_1515) do
-          workgroup.nightly_aggregate_days.enable(current_symbolic_day)
-          expect(workgroup.nightly_aggregate_timeframe?).to be_truthy
-        end
-      end
-  
-      it "returns false when inside timeframe && not in dayframe" do
-        Timecop.freeze(time_at_1515) do
-          workgroup.nightly_aggregate_days.disable(current_symbolic_day)
-          expect(workgroup.nightly_aggregate_timeframe?).to be_falsy
+    context 'when workgroup has never been aggregated' do
+      context 'without referential' do
+        it 'does not aggregate' do
+          expect { subject }.not_to(change { workgroup.aggregates.count })
         end
       end
 
-      it "returns false when outside timeframe && in dayframe" do
-        Timecop.freeze(time_at_1515 - 20.minutes) do
-          workgroup.nightly_aggregate_days.enable(current_symbolic_day)
-          expect(workgroup.nightly_aggregate_timeframe?).to be_falsy
+      context 'with referentials' do
+        let(:context) do
+          Chouette.create do
+            workgroup do
+              workbench(:locked_referential_to_aggregate_workbench) do
+                referential
+                referential(:locked_referential_to_aggregate_referential)
+              end
+              workbench(:current_workbench) do
+                referential(:some_referential)
+                referential(:current_referential)
+              end
+              workbench do
+                referential(:non_current_referential)
+              end
+            end
+          end
         end
-      end
 
-      it "returns false when outside timeframe && in not dayframe" do
-        Timecop.freeze(time_at_1515 - 20.minutes) do
-          workgroup.nightly_aggregate_days.disable(current_symbolic_day)
-          expect(workgroup.nightly_aggregate_timeframe?).to be_falsy
+        before do
+          context.workbench(:locked_referential_to_aggregate_workbench).update(
+            locked_referential_to_aggregate: context.referential(:locked_referential_to_aggregate_referential)
+          )
+          context.workbench(:current_workbench).create_output!(current: context.referential(:current_referential))
         end
-      end
 
-      it "returns false when inside timeframe but already done" do
-        workgroup.nightly_aggregated_at = time_at_1515
-        Timecop.freeze(time_at_1515) do
-          expect(workgroup.nightly_aggregate_timeframe?).to be_falsy
+        it 'aggregates all current referentials' do
+          expect { subject }.to change { workgroup.aggregates.count }.by(1).and change { Delayed::Job.count }.by(1)
+          expect(workgroup.aggregates.last).to have_attributes(
+            referentials: match_array(
+              %i[
+                locked_referential_to_aggregate_referential
+                current_referential
+              ].map { |i| context.referential(i) }
+            ),
+            creator: I18n.t('workgroups.aggregator.creator'),
+            notification_target: 'none'
+          )
+        end
+
+        context 'with publications' do
+          before do
+            daily_publication
+            aggregate
+          end
+
+          it 'does not publish last successful aggregate' do
+            expect { subject }.not_to(change { Publication.count })
+          end
         end
       end
     end
 
-    context "when nightly_aggregate_enabled is false" do
-      it "is false even within timeframe" do
-        Timecop.freeze(time_at_1515) do
-          expect(workgroup.nightly_aggregate_timeframe?).to be_falsy
+    context 'when workgroup has already been aggregated' do
+      let(:aggregated_at) { 10.minutes.ago }
+
+      context 'when 1 referential is created after last aggregate' do
+        let(:context) do
+          Chouette.create do
+            workgroup do
+              workbench(:flag_as_urgent_workbench) do
+                referential(flagged_urgent_at: 5.minutes.ago, with_metadatas: true)
+                referential(:flag_as_urgent_referential, flagged_urgent_at: 5.minutes.ago, with_metadatas: true)
+              end
+              workbench(:other_workbench) do
+                referential(:other_referential)
+              end
+            end
+          end
+        end
+
+        before do
+          %w[flag_as_urgent other].each do |i|
+            context.workbench(:"#{i}_workbench").create_output!(current: context.referential(:"#{i}_referential"))
+          end
+        end
+
+        it 'aggregates all current referentials' do
+          expect { subject }.to change { workgroup.aggregates.count }.by(1).and change { Delayed::Job.count }.by(1)
+          expect(workgroup.aggregates.last).to have_attributes(
+            referentials: match_array(
+              %i[
+                flag_as_urgent_referential
+                other_referential
+              ].map { |i| context.referential(i) }
+            ),
+            creator: I18n.t('workgroups.aggregator.creator'),
+            notification_target: 'none'
+          )
+        end
+      end
+
+      context 'when workbench is flagged as urgent before last aggregate' do
+        let(:context) do
+          Chouette.create do
+            workgroup do
+              workbench do
+                referential(flagged_urgent_at: 15.minutes.ago, with_metadatas: true)
+              end
+            end
+          end
+        end
+
+        before { context.workbench.create_output!(current: context.referential) }
+
+        it 'does not aggregate any referential' do
+          expect { subject }.not_to(change { workgroup.aggregates.count })
+        end
+      end
+
+      context 'when workbench is not flagged as urgent' do
+        let(:context) do
+          Chouette.create do
+            workgroup do
+              workbench do
+                referential
+              end
+            end
+          end
+        end
+
+        before { context.workbench.create_output!(current: context.referential) }
+
+        it 'does not aggregate any referential' do
+          expect { subject }.not_to(change { workgroup.aggregates.count })
         end
       end
     end
   end
 
-  describe "#nightly_aggregate!" do
+  describe 'aggregate!' do
+    let(:aggregate_options) { {} }
+    subject { workgroup.aggregate!(**aggregate_options) }
+
+    let(:aggregated_at) { nil }
+    let(:daily_publication) do
+      workgroup.publication_setups.create!(
+        name: 'Daily',
+        force_daily_publishing: true,
+        export_options: { 'type' => 'Export::Gtfs' }
+      )
+    end
+    let(:other_publication) do
+      workgroup.publication_setups.create!(name: 'Other', export_options: { 'type' => 'Export::Gtfs' })
+    end
+    let(:some_referential) { context.referential(:some_referential) }
+    let(:aggregate) do
+      workgroup.aggregates.create!(referentials: [some_referential], creator: 'none').tap(&:aggregate!)
+    end
+
     before do
-      workgroup.update nightly_aggregate_enabled: true,
-                       nightly_aggregate_time: '15:15:00'
+      Timecop.freeze
+      workgroup.update_column(:aggregated_at, aggregated_at) if aggregated_at
     end
+    after { Timecop.return }
 
-    let(:time_at_1515) { Time.now.beginning_of_day + 15.hours + 15.minutes }
+    context 'when workgroup has never been aggregated' do
+      context 'without referential' do
+        let(:context) do
+          Chouette.create do
+            workgroup do
+              referential(:some_referential)
+            end
+          end
+        end
 
-    context "when no aggregatable referential is found" do
-      it "returns with a log message" do
-        Timecop.freeze(time_at_1515) do
-          expect { workgroup.nightly_aggregate! }.not_to change {
-            workgroup.aggregates.count
-          }
+        it 'does not aggregate' do
+          expect { subject }.not_to(change { workgroup.aggregates.count })
+        end
+
+        context 'with publications' do
+          before do
+            daily_publication
+            other_publication
+            aggregate
+          end
+
+          it 'publishes last successful aggregate' do
+            expect { subject }.to(
+              change { daily_publication.publications.count }.and(not_change { other_publication.publications.count })
+            )
+          end
+
+          context 'when no aggregate is successful' do
+            let(:aggregate) do
+              workgroup.aggregates.create!(referentials: [some_referential], creator: 'none').tap do |aggregate|
+                aggregate.update_column(:status, :failed)
+              end
+            end
+
+            it 'does not publish aggregate' do
+              expect { subject }.not_to(change { Publication.count })
+            end
+          end
+
+          context 'when daily_publications option is false' do
+            let(:aggregate_options) { { daily_publications: false } }
+
+            it 'does not publish last successful aggregate' do
+              expect { subject }.not_to(change { Publication.count })
+            end
+          end
+        end
+      end
+
+      context 'with referentials' do
+        let(:context) do
+          Chouette.create do
+            workgroup do
+              workbench(:locked_referential_to_aggregate_workbench) do
+                referential(:some_referential)
+                referential(:locked_referential_to_aggregate_referential)
+              end
+              workbench(:current_workbench) do
+                referential
+                referential(:current_referential)
+              end
+              workbench do
+                referential(:non_current_referential)
+              end
+            end
+          end
+        end
+
+        before do
+          context.workbench(:locked_referential_to_aggregate_workbench).update(
+            locked_referential_to_aggregate: context.referential(:locked_referential_to_aggregate_referential)
+          )
+          context.workbench(:current_workbench).create_output!(current: context.referential(:current_referential))
+        end
+
+        it 'aggregates all current referentials' do
+          expect { subject }.to change { workgroup.aggregates.count }.by(1).and change { Delayed::Job.count }.by(1)
+          expect(workgroup.aggregates.last).to have_attributes(
+            referentials: match_array(
+              %i[
+                locked_referential_to_aggregate_referential
+                current_referential
+              ].map { |i| context.referential(i) }
+            ),
+            creator: I18n.t('workgroups.aggregator.creator')
+          )
+        end
+
+        context 'with aggregate_attributes option' do
+          let(:aggregate_options) { { aggregate_attributes: { notification_target: 'user' } } }
+
+          it 'creates aggregate with specified aggregate attributes' do
+            subject
+            expect(workgroup.aggregates.last.notification_target).to eq('user')
+          end
         end
       end
     end
 
-    context "when we have rollbacked to a previous aggregate" do
-      let(:workbench) { create(:workbench, workgroup: workgroup) }
-      let(:referential) { create(:referential, organisation: workbench.organisation) }
-      let(:aggregatable) { create(:workbench_referential, workbench: workbench) }
-      let(:referential_2) { create(:referential, organisation: workbench.organisation) }
-      let(:aggregate) { create(:aggregate, workgroup: workgroup)}
-      let(:aggregate_2) { create(:aggregate, workgroup: workgroup)}
-      let(:referential_suite) { create(:referential_suite, current: aggregatable) }
-      let(:workgroup_referential_suite) { create(:referential_suite, current: referential_2, referentials: [referential, referential_2]) }
+    context 'when workgroup has already been aggregated' do
+      let(:aggregated_at) { 10.minutes.ago }
 
-      before do
-        aggregate.update new: referential, status: :successful
-        aggregatable
-        aggregate_2.update new: referential_2
+      context 'when 1 referential is created after last aggregate' do
+        let(:context) do
+          Chouette.create do
+            workgroup do
+              workbench(:created_after_workbench) do
+                referential(:some_referential)
+                referential(:created_after_referential)
+              end
+              workbench(:other_workbench) do
+                referential(:other_referential)
+              end
+            end
+          end
+        end
 
-        workbench.update(output: referential_suite)
-        workgroup.update(output: workgroup_referential_suite)
-        aggregate.rollback!
-        expect(workgroup.output.current).to eq referential
-      end
+        before do
+          %w[created_after other].each do |i|
+            context.workbench(:"#{i}_workbench").create_output!(current: context.referential(:"#{i}_referential"))
+          end
+        end
 
-      it "returns with a log message" do
-        Timecop.freeze(Time.now.beginning_of_day + 6.months + 15.hours + 15.minutes) do
-          # expect(Rails.logger).to receive(:info).with(/\ANo aggregatable referential found/)
-
-          expect { workgroup.nightly_aggregate! }.not_to change {
-            workgroup.aggregates.count
-          }
+        it 'aggregates all current referentials' do
+          expect { subject }.to change { workgroup.aggregates.count }.by(1).and change { Delayed::Job.count }.by(1)
+          expect(workgroup.aggregates.last).to have_attributes(
+            referentials: match_array(
+              %i[
+                created_after_referential
+                other_referential
+              ].map { |i| context.referential(i) }
+            )
+          )
         end
       end
-    end
 
-    context "when aggregatable referentials are found" do
-      let(:workbench) { create(:workbench, workgroup: workgroup) }
-      let(:referential) { create(:referential, organisation: workbench.organisation, workbench: workbench) }
-      let(:referential_suite) { create(:referential_suite, current: referential) }
+      context 'when 1 referential is created before last aggregate' do
+        let(:aggregated_at) { 10.minutes.from_now }
 
-      before do
-        workbench.update(output: referential_suite)
-      end
+        let(:context) do
+          Chouette.create do
+            workgroup do
+              workbench do
+                referential(:some_referential)
+              end
+            end
+          end
+        end
 
-      it "creates a new aggregate" do
-        # FIXME: Don't support daylight saving time change :-/
-        Timecop.freeze(Time.zone.now.beginning_of_day + 3.months + 15.hours + 15.minutes) do
-          expect { referential.workgroup.nightly_aggregate! }.to change {
-            referential.workgroup.aggregates.count
-          }.by(1)
-          expect(referential.workgroup.aggregates.where(creator: 'CRON')).to exist
+        before { context.workbench.create_output!(current: context.referential(:some_referential)) }
+
+        it 'does not aggregate any referential' do
+          expect { subject }.not_to(change { workgroup.aggregates.count })
+        end
+
+        context 'with publications' do
+          before do
+            daily_publication
+            aggregate
+          end
+
+          it 'publishes last aggregate' do
+            expect { subject }.to(change { Publication.count })
+          end
         end
       end
-    end
-  end
-
-  describe "#nightly_aggregate_days" do
-    it 'should be a instance of Cuckoo::Timetable::DaysOfWeek' do
-      expect(
-        workgroup.nightly_aggregate_days.is_a?(Cuckoo::Timetable::DaysOfWeek)
-      ).to be_truthy
-    end
-
-    it 'should have at most 7 values' do
-      workgroup.nightly_aggregate_days = '0000000'
-      expect(workgroup.nightly_aggregate_days.days).to eq([])
-
-      workgroup.nightly_aggregate_days = '1111111'
-      expect(workgroup.nightly_aggregate_days.days).to eq(Cuckoo::Timetable::DaysOfWeek::SYMBOLIC_DAYS)
-    
-      workgroup.nightly_aggregate_days = '1110100'
-      expect(workgroup.nightly_aggregate_days.days).to eq(%i[monday tuesday wednesday friday])
-
-      workgroup.nightly_aggregate_days = '1110000'
-      expect(workgroup.nightly_aggregate_days.days).to eq(%i[monday tuesday wednesday])
     end
   end
 

@@ -5,15 +5,21 @@ fr:
         zero:  "Contexte d'instructions"
         one:   "Contexte d'instructions"
         other: "Contexte d'instructions"
-      macro/context/transport_mode:
-        one: Mode de transport
+      macro/context/transport_mode: Mode de transport
+      macro/context/saved_search: Recherche enregistrée
+      macro/context/transport_mode/run: Mode de transport
+      macro/context/saved_search/run: Recherche enregistrée
     attributes:
       macro/context: &macro_context
         name: Nom
         comments: Commentaire
       macro/context/transport_mode: &transport_mode
         transport_mode: Mode de transport
+      macro/context/saved_search: &saved_search
+        saved_search_id: Recherche enregistrée
       macro/context/run:
         <<: *macro_context
       macro/context/transport_mode/run:
         <<: *transport_mode
+      macro/context/saved_search/run:
+        <<: *saved_search

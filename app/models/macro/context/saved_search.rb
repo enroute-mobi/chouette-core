@@ -65,7 +65,7 @@ module Macro
             when :lines
               search.without_pagination.search(initial_scope.lines)
             when :stop_areas
-              initial_scope.lines.joins(:routes).where("routes.id IN (#{routes.select(:id).to_sql})").distinct
+              initial_scope.lines.joins(:routes).where(routes: routes).distinct
             else
               initial_scope.lines
             end
@@ -73,7 +73,7 @@ module Macro
 
           def routes
             if collection_name == :stop_areas
-              initial_scope.routes.joins(:stop_points).where("stop_points.id IN (#{stop_points.select(:id).to_sql})").distinct
+              initial_scope.routes.joins(:stop_points).where(stop_points: stop_points).distinct
             else
               initial_scope.routes.where(line: lines)
             end
@@ -81,7 +81,7 @@ module Macro
 
           def stop_points
             if collection_name == :stop_areas
-              return initial_scope.stop_points.where(stop_area_id: stop_areas.select(:id))
+              return initial_scope.stop_points.where(stop_area: stop_areas)
             end
 
             initial_scope.stop_points.where(route: routes)
@@ -119,10 +119,6 @@ module Macro
 
           def service_counts
             initial_scope.service_counts.where(line: lines)
-          end
-
-          def networks
-            initial_scope.networks.where(id: lines.where.not(network_id: nil).select(:network_id))
           end
 
           def point_of_interests

@@ -1,6 +1,6 @@
 // Use by SimpleSearchForHelper#simple_search_for helper
 
-- unless @saved_searches.nil?
+- if save_search && @saved_searches
   .flex.justify-end.mb-5
     .flex.items-center.w-1/6
       = button_tag t("searchs.actions.open_save_search_panel"),
@@ -22,15 +22,15 @@
 
   .flex.flex-col.w-full
     = yield f
-
-    .flex.items-center.border-t.border-white x-show="saveSearchPanel"
-      = f.input :saved_name, wrapper_html: {class: "border-l w-2/5"}
-      = f.input :saved_description, wrapper_html: {class: "border-l w-2/5"}
-      = hidden_field_tag :_method, "post", "x-ref": "method"
-      = hidden_field_tag :authenticity_token, form_authenticity_token, "x-ref": "authenticity_token"
-      = f.submit t('searchs.actions.save'), class: 'btn btn-default ml-5', "@click": "$root.action = save_path ; $root.method = 'post' ; $refs.method.value = save_method; $refs.method.disabled = false; ; $refs.authenticity_token.disabled = false"
-      - if search.saved_search&.persisted?
-        = link_to t('searchs.actions.destroy'), saved_search_path(search.saved_search), method: :delete, data: { :confirm => t('searchs.actions.destroy_confirm') }, class: 'btn btn-danger ml-5'
+    - if save_search
+      .flex.items-center.border-t.border-white x-show="saveSearchPanel"
+        = f.input :saved_name, wrapper_html: {class: "border-l w-2/5"}
+        = f.input :saved_description, wrapper_html: {class: "border-l w-2/5"}
+        = hidden_field_tag :_method, "post", "x-ref": "method"
+        = hidden_field_tag :authenticity_token, form_authenticity_token, "x-ref": "authenticity_token"
+        = f.submit t('searchs.actions.save'), class: 'btn btn-default ml-5', "@click": "$root.action = save_path ; $root.method = 'post' ; $refs.method.value = save_method; $refs.method.disabled = false; ; $refs.authenticity_token.disabled = false"
+        - if search.saved_search&.persisted?
+          = link_to t('searchs.actions.destroy'), saved_search_path(search.saved_search), method: :delete, data: { :confirm => t('searchs.actions.destroy_confirm') }, class: 'btn btn-danger ml-5'
 
   .flex.flex-col.justify-center.items-center.actions.ml-auto.py-3.w-80.border-white.border-l.h-max
     .flex.items-center.mb-3.ml-8

@@ -2,6 +2,9 @@
 
 .page_content
   .container-fluid
+    .row
+      .col-lg-12
+        = render 'filters'
     - if @stop_area_providers.any?
       .row
         .col-lg-12

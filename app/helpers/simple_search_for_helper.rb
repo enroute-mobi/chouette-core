@@ -1,17 +1,23 @@
 module SimpleSearchForHelper
-  def simple_search_for(search, index_path, &block)
-    if search.saved_search&.persisted?
-      save_path = saved_search_path(search.saved_search)
-      save_method = :patch
-    else
-      save_path = "#{index_path}/searches"
-      save_method = :post
+  def simple_search_for(search, index_path, save_search: true, &block)
+    if save_search
+      if search.saved_search&.persisted?
+        save_path = saved_search_path(search.saved_search)
+        save_method = :patch
+      else
+        save_path = "#{index_path}/searches"
+        save_method = :post
+      end
     end
 
     html = {
-      class: 'flex items-stretch tailwind-filters bg-grey relative pr-6',
-      "x-data": "{ save_path: '#{save_path}', save_method: '#{save_method}'}"
+      class: "flex items-stretch tailwind-filters bg-grey relative pr-6"
     }
+
+    if save_search
+      html[:'x-data'] = "{ save_path: '#{save_path}', save_method: '#{save_method}'}"
+    end
+
     options = {
       url: index_path,
       method: "GET",
@@ -24,6 +30,7 @@ module SimpleSearchForHelper
       index_path: index_path,
       search: search,
       options: options,
+      save_search: save_search
     }
 
     render layout: 'searches/form', locals: locals, &block

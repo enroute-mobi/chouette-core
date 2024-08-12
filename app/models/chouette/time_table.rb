@@ -3,6 +3,7 @@
 module Chouette
   class TimeTable < Referential::Model
     include ApplicationDaysSupport
+    include ObjectidSupport
     include TimetableSupport
     has_metadata
 
@@ -429,7 +430,7 @@ module Chouette
     end
 
     def full_display_name
-      [comment].compact.join(' - ')
+      [get_objectid.short_id, comment].join(' - ')
     end
 
     def display_name

@@ -35,13 +35,9 @@ function addAjaxSelectToForm(dom_part) {
     if (el.hasAttribute("data-ajax-html")) {
       settings.render = {
         option: function(data) {
-          console.log(data)
-          return '<div>' +
-					data.text
-				'</div>';
+          return '<div>' + data.text + '</div>';
         },
         item: function(data) {
-          console.log('item', data)
           return data.text
         }
       }

@@ -1,14 +1,14 @@
 # frozen_string_literal: true
 
 RSpec.describe Macro::Context::SavedSearch::Run do
-  let!(:organisation){create(:organisation)}
-  let!(:user){create(:user, :organisation => organisation)}
+  let!(:organisation) { create(:organisation) }
+  let!(:user) { create(:user, organisation: organisation) }
 
   let(:context) do
     Chouette.create do
-      stop_area :first, zip_code: 44300
-      stop_area :middle, zip_code: 44300
-      stop_area :last, zip_code: 00000
+      stop_area :first, zip_code: 44_300
+      stop_area :middle, zip_code: 44_300
+      stop_area :last, zip_code: 0o0000
 
       referential do
         route stop_areas: %i[first middle last]
@@ -23,7 +23,7 @@ RSpec.describe Macro::Context::SavedSearch::Run do
   let(:middle_stop_area) { context.stop_area(:middle) }
   let(:last_stop_area) { context.stop_area(:last) }
 
-  let(:saved_search_id) do 
+  let(:saved_search_id) do
     workbench.saved_searches.create(
       name: 'zip code 44300',
       search_attributes: { zip_code: '44300' },
@@ -32,12 +32,12 @@ RSpec.describe Macro::Context::SavedSearch::Run do
   end
 
   let!(:macro_list) do
-    Macro::List.create! name: "Macro List", workbench: workbench
+    Macro::List.create! name: 'Macro List', workbench: workbench
   end
 
   let!(:macro_context) do
     Macro::Context::SavedSearch.create!(
-      name: "Macro Context Saved Search",
+      name: 'Macro Context Saved Search',
       macro_list: macro_list,
       saved_search_id: saved_search_id
     )
@@ -45,7 +45,7 @@ RSpec.describe Macro::Context::SavedSearch::Run do
 
   let!(:macro_dummy) do
     Macro::Dummy.create(
-      name: "Macro dummy",
+      name: 'Macro dummy',
       macro_context: macro_context,
       target_model: 'StopArea',
       position: 0

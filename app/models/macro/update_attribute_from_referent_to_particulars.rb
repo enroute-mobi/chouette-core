@@ -103,8 +103,8 @@ module Macro
 
         attributes = {
           message_attributes: {
-            name: name, attribute_name:
-            particular.class.human_attribute_name(attribute_name),
+            name: name,
+            target_attribute: attribute_name,
             attribute_value: attribute_value
           },
           source: particular

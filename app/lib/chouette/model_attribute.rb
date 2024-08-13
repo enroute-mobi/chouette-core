@@ -109,6 +109,7 @@ module Chouette
       define Chouette::Line, :url
       define Chouette::Line, :routes
       define Chouette::Line, :referent_id
+      define Chouette::Line, :is_referent
 
       # Chouette::Network
       define Chouette::Network, :name
@@ -146,6 +147,7 @@ module Chouette
       define Chouette::Company, :street
       define Chouette::Company, :time_zone
       define Chouette::Company, :town
+      define Chouette::Company, :is_referent
 
       # Chouette::StopArea
       define Chouette::StopArea, :name
@@ -173,6 +175,7 @@ module Chouette
       define Chouette::StopArea, :visual_signs_availability
       define Chouette::StopArea, :lines
       define Chouette::StopArea, :routes
+      define Chouette::StopArea, :is_referent
 
       # Chouette::Route
       define Chouette::Route, :name
@@ -234,10 +237,8 @@ module Chouette
       define PointOfInterest::Base, :phone
       define PointOfInterest::Base, :postal_region
 
-
       # Shape
       define Shape, :name
-
     end
   end
 end

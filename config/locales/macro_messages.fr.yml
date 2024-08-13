@@ -28,8 +28,8 @@ fr:
       error:  "Le référent %{name} n'a pas pu être créé"
   macro/define_attribute_from_particulars/run:
     messages:
-      default: "L'attribut %{attribute_name} du référent %{name} a été mis à jour avec la valeur %{attribute_value}"
-      error: "L'attribut %{attribute_name} du référent %{name} n'a pas pu être mise à jour avec la valeur %{attribute_value}"
+      default: "L'attribut %{target_attribute} du référent %{name} a été mis à jour avec la valeur %{attribute_value}"
+      error: "L'attribut %{target_attribute} du référent %{name} n'a pas pu être mise à jour avec la valeur %{attribute_value}"
   macro/define_postal_address/run:
     messages:
       default: "L'adresse '%{address}' a été mise à jour sur un(e) %{target_model} %{name}"
@@ -48,8 +48,8 @@ fr:
       error: "Le tracé '%{shape}' n'a pas pu être associé à la Mission '%{name}'"
   macro/update_attribute_from_referent_to_particulars/run:
     messages:
-      default: "L'attribut %{attribute_name} de %{name} a été mis à jour avec la valeur %{attribute_value}"
-      error: "L'attribut %{attribute_name} de %{name} n'a pas pu être mise à jour avec la valeur %{attribute_value}"
+      default: "L'attribut %{target_attribute} de %{name} a été mis à jour avec la valeur %{attribute_value}"
+      error: "L'attribut %{target_attribute} de %{name} n'a pas pu être mise à jour avec la valeur %{attribute_value}"
   macro/delete_vehicle_journeys/run:
     messages:
       default: "%{count} course(s) ont été supprimée(s)"
@@ -73,6 +73,10 @@ fr:
     messages:
       default: "Le mode de transport %{transport_mode} a été défini sur l'arrêt %{name}"
       error: "Le mode de transport %{transport_mode} ne peut pas être défini sur l'arrêt %{name}"
+  macro/force_attribute_value/run:
+    messages:
+      default: "L'attribut %{target_attribute} du/de la %{target_model} %{name} a été mis à jour"
+      error: "L'attribut %{target_attribute} du/de la %{target_model} %{name} n'a pas pu être modifié"
   macro_messages:
     search_no_results_for_filter: "Aucun messages"
     no_address: "Aucune adresse"

@@ -28,8 +28,8 @@ en:
       error: "Referent %{name} can't be created"
   macro/define_attribute_from_particulars/run:
     messages:
-      default: "Attribute %{attribute_name} for referent %{name} has been updated with value %{attribute_value}"
-      error: "Attribute %{attribute_name} for referent %{name} can't be updated with value %{attribute_value}"
+      default: "Attribute %{target_attribute} for referent %{name} has been updated with value %{attribute_value}"
+      error: "Attribute %{target_attribute} for referent %{name} can't be updated with value %{attribute_value}"
   macro/define_postal_address/run:
     messages:
       default: "Address '%{address}' has been updated on the %{target_model} %{name}"
@@ -48,8 +48,8 @@ en:
       error: "Shape '%{shape}' can't be associated to Journey pattern '%{name}'"
   macro/update_attribute_from_referent_to_particulars/run:
     messages:
-      default: "Attribute %{attribute_name} for %{name} has been updated with value %{attribute_value}"
-      error: "Attribute %{attribute_name} for %{name} can't be updated with value %{attribute_value}"
+      default: "Attribute %{target_attribute} for %{name} has been updated with value %{attribute_value}"
+      error: "Attribute %{target_attribute} for %{name} can't be updated with value %{attribute_value}"
   macro/delete_vehicle_journeys/run:
     messages:
       default: "%{count} Vehicle Journeys have been deleted"
@@ -70,6 +70,10 @@ en:
     messages:
       default: "The transport mode %{transport_mode} has been defined on the Stop Area %{name}"
       error: "The transport mode %{transport_mode} can't be defined on the Stop Area %{name}"
+  macro/force_attribute_value/run:
+    messages:
+      default: "The attribute %{target_attribute} of %{target_model} %{name} has been updated"
+      error: "The attribute %{target_attribute} of %{target_model} %{name} can't be modified"
   macro_messages:
   macro/create_code_from_uuid/run:
     messages:

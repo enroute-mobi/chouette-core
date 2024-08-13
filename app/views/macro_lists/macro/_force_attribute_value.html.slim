@@ -1,0 +1,12 @@
+div[x-data = "{target_model: '#{form.object.target_model}', target_attribute: '#{form.object.target_attribute}'}"]
+  = form.input :target_model, input_html: { 'x-model': 'target_model' }
+  - form.object.candidate_target_attributes.group_by(&:model_name).each do |model_name, target_attributes|
+    // If the input is already disabled (read only mode), no javascript handler
+    - disabled = (form.options[:defaults] || {})[:disabled]
+    - input_html_options = disabled ? {} : { 'x-bind:disabled': "target_model != '#{model_name}'" }
+    = form.input :target_attribute, collection: target_attributes.map { |attribute| [ attribute.human_name, attribute.name ] },
+      wrapper_html: { 'x-show': "target_model == '#{model_name}'" },
+      input_html: input_html_options.merge({ 'x-model': 'target_attribute' })
+    - target_attributes.each do|attribute|
+      template[x-if = "target_attribute == '#{attribute.name.to_s}' && target_model =='#{model_name}'"]
+        = form.input :expected_value, as: attribute.name.to_s == 'is_referent' ? :switchable_checkbox : :string

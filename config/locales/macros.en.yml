@@ -54,6 +54,8 @@ en:
         one: Define French INSEE Code
       macro/define_stop_area_transport_mode:
         one: Define Stop Area transport mode
+      macro/force_attribute_value:
+        one: Force attribute value
     attributes:
       macro/base:
         name: Name
@@ -74,7 +76,7 @@ en:
       macro/define_attribute_from_particulars:
         target_attribute: Attribute
       macro/update_attribute_from_referent_to_particulars:
-        target_attribute: Attribut
+        target_attribute: Attribute
         override_existing_value: Override existing value
       macro/associate_documents:
         model_code_space: Model code space
@@ -84,6 +86,10 @@ en:
         code_space_id: Code space
       macro/create_code_from_uuid:
         code_space_id: Code Space
+      macro/force_attribute_value:
+        target_model: Target Model
+        target_attribute: Attribute
+        expected_value: Expected value
   simple_form:
     placeholders:
       macro_base:

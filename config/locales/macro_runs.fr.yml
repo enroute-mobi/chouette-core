@@ -45,6 +45,8 @@ fr:
         one: Définir le code INSEE
       macro/define_stop_area_transport_mode/run:
         one: Définir le mode de tranport des arrêts
+      macro/force_attribute_value/run:
+        one: Forcer la valeur de l'attribut
     attributes:
       macro/base/run:
         name: Nom
@@ -68,3 +70,7 @@ fr:
         sequence_id: Séquence
       macro/create_code_from_uuid/run:
         code_space_id: Espace de code
+      macro/force_attribute_value/run:
+        target_model: Modèle cible
+        target_attribute: Attribut
+        expected_value: Valeur attendue

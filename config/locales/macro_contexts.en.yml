@@ -5,10 +5,10 @@ en:
         zero:  "Macro Contexts"
         one:   "Macro Context"
         other: "Macro Contexts"
-      macro/context/transport_mode: Transport Mode
+      macro/context/saved_search/run: Saved Search
       macro/context/saved_search: Saved Search
       macro/context/transport_mode/run: Transport Mode
-      macro/context/saved_search/run: Saved Search
+      macro/context/transport_mode: Transport Mode
     attributes:
       macro/context: &macro_context
         name: Name

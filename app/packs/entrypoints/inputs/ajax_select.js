@@ -29,7 +29,8 @@ function addAjaxSelectToForm(dom_part) {
           .catch(() => {
             callback();
           })
-      }
+      },
+      score: () => () => 1
     }
 
     if (el.hasAttribute("data-ajax-html")) {

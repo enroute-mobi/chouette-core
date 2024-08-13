@@ -363,7 +363,7 @@ class Import::Gtfs < Import::Base # rubocop:disable Metrics/ClassLength
 
     CustomFieldsSupport.within_workgroup(workbench.workgroup) do
       create_resource(:stops).each(sorted_stops, slice: 100, transaction: true) do |stop, resource|
-        next if ignore_parent_stop_areas? && stop.location_type.present?
+        next if ignore_parent_stop_areas? && stop.location_type == '1'
 
         stop_area = stop_areas.find_or_initialize_by(registration_number: stop.id)
 

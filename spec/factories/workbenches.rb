@@ -1,6 +1,8 @@
+# frozen_string_literal: true
+
 FactoryBot.define do
   factory :workbench do
-    name {"Gestion de l'offre"}
+    sequence(:name) { |n| "Gestion de l'offre #{n}" }
     objectid_format {'netex'}
     prefix {'local'}
     restrictions {[]}

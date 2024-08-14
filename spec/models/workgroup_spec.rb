@@ -12,13 +12,35 @@ RSpec.describe Workgroup, type: :model do
     it { is_expected.to belong_to(:stop_area_referential).required }
     it { is_expected.to belong_to(:line_referential).required }
 
-    it{ should validate_uniqueness_of(:name) }
     it{ should validate_uniqueness_of(:stop_area_referential_id) }
     it{ should validate_uniqueness_of(:line_referential_id) }
     it{ should validate_uniqueness_of(:shape_referential_id) }
 
     it 'is valid with both associations' do
       expect(workgroup).to be_valid
+    end
+  end
+
+  describe 'validations' do
+    describe 'name uniqueness' do
+      it 'can have a name already used in another organisation' do
+        context = Chouette.create do
+          organisation :organisation1
+          organisation :organisation2, name: 'Organisation2'
+        end
+        Chouette.create { workgroup owner: Organisation.where(name: 'Organisation2').last, name: 'Unique' }
+        subject.owner = context.organisation(:organisation1)
+        is_expected.to allow_value('Unique').for(:name)
+      end
+
+      it 'cannot have a name already used in the same organisation' do
+        context = Chouette.create do
+          organisation :organisation, name: 'Organisation'
+        end
+        Chouette.create { workgroup owner: Organisation.where(name: 'Organisation').last, name: 'Unique' }
+        subject.owner = context.organisation(:organisation)
+        is_expected.not_to allow_value('Unique').for(:name)
+      end
     end
   end
 

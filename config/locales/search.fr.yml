@@ -87,6 +87,7 @@ fr:
     placeholders:
       search:
         text: "Indiquez un nom ou un identifiant"
+        name: "Indiquez un nom ou un identifiant"
         line_id: "Indiquez un nom de ligne"
         company_id: "Indiquez un nom de transporteur"
         network_id: "Indiquez un nom de réseau"

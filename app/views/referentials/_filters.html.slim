@@ -1,21 +1,9 @@
-= simple_form_for @search, url: request.path, method: "GET", html: { class: 'flex items-center tailwind-filters bg-grey relative pr-6' }, wrapper: :filters_form_tailwind  do |f|
-  = f.simple_fields_for :order, @search.order, defaults: { wrapper: false } do |form_order|
-    - form_order.object.attributes.keys.each do |attribute|
-      = form_order.input attribute, as: :hidden
-
-  .flex.flex-col.w-full
-    .flex.items-center.border-r.border-white
-      = f.input :text, label: false, wrapper_html: {class: "w-2/5"}, placeholder: I18n.t('simple_form.placeholders.search.text')
-    .flex.items-center.border-t.border-r.border-white
-      = f.input :transport_mode, as: :autocomplete_select, input_html: { multiple: true, style: 'width: 100%' }
-      - if (network_ids = @referential.lines.pluck(:network_id).uniq.compact).size > 1
-        = f.input :network_id, as: :autocomplete_select, collection: @search.candidate_networks
-      - if (company_ids = @referential.lines.pluck(:company_id).uniq.compact).size > 1
-        = f.input :company_id, as: :autocomplete_select, collection: @search.candidate_companies
-
-  .flex.flex-col.justify-center.items-center.actions.ml-auto.py-3.w-80
-    .flex.items-center.mb-3
-      = render partial: 'shared/per_page', locals: {f:f}
-    .flex.items-center
-      = link_to t('actions.erase'), workbench_referential_path(@workbench, @referential), class: 'btn btn-link'
-      = f.submit t('actions.filter'), class: 'btn btn-default'
+= simple_search_for @search, workbench_referential_path(@workbench, @referential) do |f|
+  = f.row
+    = f.text
+  = f.row
+    = f.input :transport_mode, as: :autocomplete_select, input_html: { multiple: true, style: 'width: 100%' }
+    - if (network_ids = @referential.lines.pluck(:network_id).uniq.compact).size > 1
+      = f.input :network_id, as: :autocomplete_select, collection: @search.candidate_networks
+    - if (company_ids = @referential.lines.pluck(:company_id).uniq.compact).size > 1
+      = f.input :company_id, as: :autocomplete_select, collection: @search.candidate_companies

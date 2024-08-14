@@ -425,7 +425,7 @@ RSpec.describe Source::ScheduledJob do
     end
 
     context "when line_provider_id option doesn't match one of the candidate providers" do
-      before { source.import_options['line_provider_id'] = 42 }
+      before { source.import_options['line_provider_id'] = LineProvider.maximum(:id) + 1 }
 
       it 'uses Workbench default line provider' do
         is_expected.to eq(source.workbench.default_line_provider)
@@ -464,7 +464,7 @@ RSpec.describe Source::ScheduledJob do
     end
 
     context "when code_space_id option doesn't match one of the code spaces" do
-      before { source.import_options['code_space_id'] = 42 }
+      before { source.import_options['code_space_id'] = CodeSpace.maximum(:id) + 1 }
 
       it 'does not use any code space' do
         is_expected.to be_nil

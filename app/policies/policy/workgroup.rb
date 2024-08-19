@@ -6,7 +6,6 @@ module Policy
 
     alias edit_aggregate? update?
     alias edit_merge? update?
-    alias edit_transport_modes? update?
 
     alias setup_deletion? destroy?
     alias remove_deletion? destroy?

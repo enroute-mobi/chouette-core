@@ -19,12 +19,6 @@ class WorkgroupDecorator < AF83::Decorator
       l.href { h.new_workgroup_workbench_path(object.id) }
     end
 
-    instance_decorator.action_link policy: :edit, secondary: :show do |l|
-      l.content t('workgroups.actions.edit_transport_modes')
-      l.href { h.edit_transport_modes_workgroup_path(object.id) }
-      l.icon :"pencil-alt"
-    end
-
     instance_decorator.action_link policy: :setup_deletion, secondary: :show, if: ->{ object.deleted_at.nil? } do |l|
       l.content t('workgroups.actions.setup_workgroup_deletion')
       l.href { h.setup_deletion_workgroup_path(object.id) }

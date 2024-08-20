@@ -51,6 +51,11 @@ en:
         group_by_attribute: Group by
         sort_by: "Sort by"
         display_percent: "Display %"
+        chart:
+          group_by_attribute:
+            sub_type:
+              hour_of_day: "Hour of day"
+              day_of_week: "Day of week"
   activerecord:
     models:
       search/save:

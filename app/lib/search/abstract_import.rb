@@ -21,6 +21,7 @@ module Search
     end
 
     class Chart < ::Search::Base::Chart
+      group_by_attribute 'started_at', :datetime, sub_types: %i[hour_of_day day_of_week]
       group_by_attribute 'status', :string do
         def keys
           ::Import::Base.status.values

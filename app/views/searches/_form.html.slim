@@ -40,13 +40,13 @@
 
     - if graph_panel != :never
       .flex.items-center.border-t.border-white x-show="graphPanel"
-        = f.input :group_by_attribute, as: :select, collection: f.object.candidate_group_by_attributes.map { |attr| [I18n.t(attr, scope: 'enumerize.search.group_by_attribute', default: @search.searched_class.human_attribute_name(attr)), attr] }, include_blank: false, wrapper_html: {class: "border-l"}
+        = f.input :group_by_attribute, as: :select, collection: f.object.candidate_group_by_attributes.map { |attr_name, attr| [attr.human_name(f.object.searched_class), attr_name] }, include_blank: false, wrapper_html: {class: "border-l"}
         = f.input :first, as: :select, collection: [[I18n.t('enumerize.search.first.first'), '1'], [I18n.t('enumerize.search.first.last'), '']], include_blank: false, selected: f.object.first ? '1' : '', label: false, wrapper_html: {class: "border-l"}
         = f.input :top_count, as: :integer, label: false, wrapper_html: {class: "border-l"}
         = f.input :sort_by, include_blank: false, wrapper_html: {class: "border-l"}
-        = f.input :aggregate_operation, collection: !@search.can_aggregate_attribute? && [[@search.class.aggregate_operation.find_value('count').text, 'count']], include_blank: false, label: false, wrapper_html: {class: "border-l"}
-        - if @search.can_aggregate_attribute?
-          = f.input :aggregate_attribute, collection: f.object.candidate_aggregate_attributes.map { |attr| [@search.searched_class.human_attribute_name(attr), attr] }, include_blank: '-', label: false, wrapper_html: {class: "border-l"}
+        = f.input :aggregate_operation, collection: !f.object.candidate_aggregate_attributes.any? && [[f.object.class.aggregate_operation.find_value('count').text, 'count']], include_blank: false, label: false, wrapper_html: {class: "border-l"}
+        - if f.object.candidate_aggregate_attributes.any?
+          = f.input :aggregate_attribute, collection: f.object.candidate_aggregate_attributes.map { |attr_name, attr| [attr.human_name(f.object.searched_class), attr_name] }, include_blank: '-', label: false, wrapper_html: {class: "border-l"}
         = f.input :display_percent, as: :boolean, wrapper_html: {class: "border-l"}
         = f.input :chart_type, wrapper_html: {class: "border-l"}
 

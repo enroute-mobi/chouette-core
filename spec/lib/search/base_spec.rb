@@ -12,6 +12,7 @@ RSpec.describe Search::Base, type: :model do
 
     class Chart < ::Search::Base::Chart
       group_by_attribute 'some_attribute', :string
+      group_by_attribute 'created_at', :datetime, sub_types: %i[hour_of_day day_of_week]
       aggregate_attribute 'some_numeric_attribute'
     end
   end
@@ -45,9 +46,9 @@ RSpec.describe Search::Base, type: :model do
       before { search.chart_type = 'line' }
 
       it { is_expected.to allow_value('some_attribute').for(:group_by_attribute) }
-      it { is_expected.to allow_value('date').for(:group_by_attribute) }
-      it { is_expected.to allow_value('hour_of_day').for(:group_by_attribute) }
-      it { is_expected.to allow_value('day_of_week').for(:group_by_attribute) }
+      it { is_expected.to allow_value('created_at').for(:group_by_attribute) }
+      it { is_expected.to allow_value('created_at_hour_of_day').for(:group_by_attribute) }
+      it { is_expected.to allow_value('created_at_day_of_week').for(:group_by_attribute) }
       it { is_expected.not_to allow_value(nil).for(:group_by_attribute) }
       it { is_expected.not_to allow_value('').for(:group_by_attribute) }
       it { is_expected.not_to allow_value('some_other_attribute').for(:group_by_attribute) }
@@ -463,7 +464,7 @@ RSpec.describe Search::Base::Chart do
   class self::Chart < Search::Base::Chart # rubocop:disable Lint/ConstantDefinitionInBlock,Style/ClassAndModuleChildren
     group_by_attribute 'some_attribute', :string
     group_by_attribute 'some_numeric_attribute', :numeric
-    group_by_attribute 'some_datetime_attribute', :datetime
+    group_by_attribute 'created_at', :datetime, sub_types: %i[hour_of_day day_of_week]
     group_by_attribute 'custom_label_attribute',
                        :string,
                        joins: { relation: { other_relation: {} }, another_relation: {} },
@@ -512,7 +513,7 @@ RSpec.describe Search::Base::Chart do
   describe '#raw_data' do
     subject { chart.raw_data }
 
-    context 'when #group_by_attribute is "some_attribute"' do
+    context 'with a simple attribute' do
       it do
         expect(models).to receive(:group).with('some_attribute').and_return(models)
         expect(models).to receive(:order).with(count_id: :desc).and_return(models)
@@ -570,11 +571,11 @@ RSpec.describe Search::Base::Chart do
       end
     end
 
-    context 'when #group_by_attribute is "date"' do
-      let(:group_by_attribute) { 'date' }
+    context 'with a datetime attribute' do
+      let(:group_by_attribute) { 'created_at' }
 
       it do
-        expect(models).to receive(:group_by_day).with(:created_at, last: 10).and_return(models)
+        expect(models).to receive(:group_by_day).with('created_at', last: 10).and_return(models)
         expect(models).to receive(:count).with(:id)
         subject
       end
@@ -583,7 +584,7 @@ RSpec.describe Search::Base::Chart do
         let(:first) { true }
 
         it do
-          expect(models).to receive(:group_by_day).with(:created_at, last: 10).and_return(models)
+          expect(models).to receive(:group_by_day).with('created_at', last: 10).and_return(models)
           expect(models).to receive(:count).with(:id)
           subject
         end
@@ -593,34 +594,34 @@ RSpec.describe Search::Base::Chart do
         let(:top_count) { 100 }
 
         it do
-          expect(models).to receive(:group_by_day).with(:created_at, last: 100).and_return(models)
+          expect(models).to receive(:group_by_day).with('created_at', last: 100).and_return(models)
           expect(models).to receive(:count).with(:id)
           subject
         end
       end
     end
 
-    context 'when #group_by_attribute is "hour_of_day"' do
-      let(:group_by_attribute) { 'hour_of_day' }
+    context 'with a datetime attribute by hour of day' do
+      let(:group_by_attribute) { 'created_at_hour_of_day' }
 
       it do
-        expect(models).to receive(:group_by_hour_of_day).with(:created_at).and_return(models)
+        expect(models).to receive(:group_by_hour_of_day).with('created_at').and_return(models)
         expect(models).to receive(:count).with(:id)
         subject
       end
     end
 
-    context 'when #group_by_attribute is "day_of_week"' do
-      let(:group_by_attribute) { 'day_of_week' }
+    context 'with a datetime attribute by day of week' do
+      let(:group_by_attribute) { 'created_at_day_of_week' }
 
       it do
-        expect(models).to receive(:group_by_day_of_week).with(:created_at).and_return(models)
+        expect(models).to receive(:group_by_day_of_week).with('created_at').and_return(models)
         expect(models).to receive(:count).with(:id)
         subject
       end
     end
 
-    context 'when #group_by_attribute needs inclusions and select' do
+    context 'with an attribute needing inclusions and select' do
       let(:group_by_attribute) { 'custom_label_attribute' }
 
       it do
@@ -691,7 +692,7 @@ RSpec.describe Search::Base::Chart do
       let(:aggregate_operation) { 'sum' }
       let(:aggregate_attribute) { 'some_numeric_attribute' }
 
-      context 'when #aggregate_attribute is "some_numeric_attribute"' do
+      context 'when #aggregate_attribute is numeric' do
         it do
           expect(models).to receive(:group).with('some_attribute').and_return(models)
           expect(models).to(
@@ -703,7 +704,7 @@ RSpec.describe Search::Base::Chart do
         end
       end
 
-      context 'when #aggregate_attribute is "custom_aggregate_attribute"' do
+      context 'when #aggregate_attribute has a custom definition' do
         let(:aggregate_attribute) { 'custom_aggregate_attribute' }
 
         it do
@@ -741,7 +742,7 @@ RSpec.describe Search::Base::Chart do
 
     before { expect(chart).to receive(:raw_data).and_return(raw_data) }
 
-    context 'when #group_by_attribute is "some_attribute"' do
+    context 'with a simple attribute' do
       let(:raw_data) { { 'A' => 1, 'C' => 2, 'B' => 3 } }
 
       it 'returns data sorted by value' do
@@ -766,8 +767,8 @@ RSpec.describe Search::Base::Chart do
       end
     end
 
-    context 'when #group_by_attribute is "hour_of_day"' do
-      let(:group_by_attribute) { 'hour_of_day' }
+    context 'with a datetime attribute by hour of day' do
+      let(:group_by_attribute) { 'created_at_hour_of_day' }
       let(:raw_data) { { 5 => 4, 13 => 42 } }
 
       it 'adds all missing hours' do # rubocop:disable Metrics/BlockLength
@@ -802,8 +803,8 @@ RSpec.describe Search::Base::Chart do
       end
     end
 
-    context 'when #group_by_attribute is "days_of_week"' do
-      let(:group_by_attribute) { 'day_of_week' }
+    context 'with a datetime attribute by day of week' do
+      let(:group_by_attribute) { 'created_at_day_of_week' }
       let(:raw_data) { { 2 => 4, 5 => 42 } }
 
       it 'adds all missing days and labels keys' do
@@ -839,7 +840,7 @@ RSpec.describe Search::Base::Chart do
       end
     end
 
-    context 'when #group_by_attribute needs more keys' do
+    context 'with an attribute needing more keys' do
       let(:group_by_attribute) { 'more_keys_attribute' }
       let(:raw_data) { { 2 => 42 } }
 
@@ -856,7 +857,7 @@ RSpec.describe Search::Base::Chart do
       end
     end
 
-    context 'when #group_by_attribute labels keys' do
+    context 'with an attribute labelling keys' do
       let(:group_by_attribute) { 'sortable_label_key_attribute' }
       let(:raw_data) { { 'key_to_label' => 42, 'key_to_label_a' => 84 } }
 
@@ -942,7 +943,7 @@ RSpec.describe Search::Base::Chart do
     before { allow(chart).to receive(:data).and_return(data) }
 
     context 'when #type is line' do
-      context 'when #group_by_attribute is "some_attribute"' do
+      context 'when #group_by_attribute is simple' do
         it do
           expect(view_context).to receive(:line_chart).with(data, discrete: true)
           subject
@@ -958,7 +959,7 @@ RSpec.describe Search::Base::Chart do
         end
       end
 
-      context 'when #group_by_attribute is "some_numeric_attribute"' do
+      context 'when #group_by_attribute is numeric' do
         let(:group_by_attribute) { 'some_numeric_attribute' }
 
         it do
@@ -967,8 +968,8 @@ RSpec.describe Search::Base::Chart do
         end
       end
 
-      context 'when #group_by_attribute is "some_datetime_attribute"' do
-        let(:group_by_attribute) { 'some_datetime_attribute' }
+      context 'when #group_by_attribute is a datetime' do
+        let(:group_by_attribute) { 'created_at' }
 
         it do
           expect(view_context).to(
@@ -993,34 +994,8 @@ RSpec.describe Search::Base::Chart do
         end
       end
 
-      context 'when #group_by_attribute is "date"' do
-        let(:group_by_attribute) { 'date' }
-
-        it do
-          expect(view_context).to(
-            receive(:line_chart).with(
-              data,
-              {
-                library: {
-                  scales: {
-                    x: {
-                      time: {
-                        displayFormats: {
-                          day: 'dd/MM/yyyy'
-                        }
-                      }
-                    }
-                  }
-                }
-              }
-            )
-          )
-          subject
-        end
-      end
-
-      context 'when #group_by_attribute is "hour_of_day"' do
-        let(:group_by_attribute) { 'hour_of_day' }
+      context 'when #group_by_attribute is a datetime by hour of day' do
+        let(:group_by_attribute) { 'created_at_hour_of_day' }
 
         it do
           expect(view_context).to receive(:line_chart).with(data, discrete: true)
@@ -1028,8 +1003,8 @@ RSpec.describe Search::Base::Chart do
         end
       end
 
-      context 'when #group_by_attribute is "day_of_week"' do
-        let(:group_by_attribute) { 'day_of_week' }
+      context 'when #group_by_attribute is a datetime by day of week' do
+        let(:group_by_attribute) { 'created_at_day_of_week' }
 
         it do
           expect(view_context).to receive(:line_chart).with(data, discrete: true)
@@ -1037,7 +1012,7 @@ RSpec.describe Search::Base::Chart do
         end
       end
 
-      context 'when #group_by_attribute is "more_keys_attribute"' do
+      context 'when #group_by_attribute needs more keys' do
         let(:group_by_attribute) { 'more_keys_attribute' }
 
         it do
@@ -1050,8 +1025,8 @@ RSpec.describe Search::Base::Chart do
     context 'when #type is pie' do
       let(:chart_type) { 'pie' }
 
-      context 'when #group_by_attribute is "date"' do
-        let(:group_by_attribute) { 'date' }
+      context 'when #group_by_attribute is a datetime' do
+        let(:group_by_attribute) { 'created_at' }
 
         it do
           expect(view_context).to receive(:pie_chart).with(data, {})
@@ -1063,8 +1038,8 @@ RSpec.describe Search::Base::Chart do
     context 'when #type is column' do
       let(:chart_type) { 'column' }
 
-      context 'when #group_by_attribute is "date"' do
-        let(:group_by_attribute) { 'date' }
+      context 'when #group_by_attribute is a datetime' do
+        let(:group_by_attribute) { 'created_at' }
 
         it do
           expect(view_context).to(

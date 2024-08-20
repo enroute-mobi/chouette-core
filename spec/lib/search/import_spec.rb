@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-RSpec.describe Search::Import do
+RSpec.describe Search::Import, type: :model do
   subject(:search) { described_class.new }
 
   describe 'validation' do
@@ -11,6 +11,14 @@ RSpec.describe Search::Import do
     context 'when period is valid' do
       before { allow(search).to receive(:period).and_return(double('valid?' => true)) }
       it { is_expected.to be_valid }
+    end
+
+    context 'when chart_type is present' do
+      before { search.chart_type = 'line' }
+
+      it { is_expected.to allow_value('started_at').for(:group_by_attribute) }
+      it { is_expected.to allow_value('started_at_hour_of_day').for(:group_by_attribute) }
+      it { is_expected.to allow_value('started_at_day_of_week').for(:group_by_attribute) }
     end
   end
 

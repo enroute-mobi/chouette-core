@@ -31,12 +31,12 @@ module Search
     enumerize :aggregate_operation, in: %w[count sum average], i18n_scope: 'enumerize.search.aggregate_operation'
 
     with_options if: :graphical? do
-      validates :group_by_attribute, inclusion: { in: ->(r) { r.candidate_group_by_attributes } }
+      validates :group_by_attribute, inclusion: { in: ->(r) { r.candidate_group_by_attributes.keys } }
       validates :top_count, presence: true, numericality: { only_integer: true, greater_than: 1 }
       validates :sort_by, presence: true
       validates :aggregate_operation, presence: true
       validates :aggregate_attribute,
-                inclusion: { in: ->(r) { r.candidate_aggregate_attributes } },
+                inclusion: { in: ->(r) { r.candidate_aggregate_attributes.keys } },
                 if: :aggregate_attribute?
     end
 
@@ -118,15 +118,11 @@ module Search
     delegate :human_attribute_name, to: :searched_class
 
     def candidate_group_by_attributes
-      chart_klass.group_by_attributes.each_value.map(&:name)
-    end
-
-    def can_aggregate_attribute?
-      chart_klass.aggregate_attributes.any?
+      chart_klass.group_by_attributes
     end
 
     def candidate_aggregate_attributes
-      chart_klass.aggregate_attributes.each_value.map(&:name)
+      chart_klass.aggregate_attributes
     end
 
     # Create Search attributes from our legacy Controller params (:sort, :direction, :page, etc)
@@ -266,22 +262,28 @@ module Search
           end
         end
 
-        def initialize(name, type, keys: nil, joins: nil, selects: nil, sortable: true)
+        def initialize(name, sub_type: false, keys: nil, joins: nil, selects: nil, sortable: true)
           @name = name
-          @type = type
+          @sub_type = sub_type
           @keys = keys
           @joins = joins
           @selects = selects
           @sortable = sortable
         end
-        attr_reader :name, :type, :keys, :joins, :selects, :sortable
+        attr_reader :name, :sub_type, :keys, :joins, :selects, :sortable
+
+        def human_name(klass)
+          human_name = klass.human_attribute_name(name)
+          human_name = "#{human_name} (#{subtype_human_name})" if sub_type
+          human_name
+        end
 
         def label?
           false
         end
 
         def discrete?
-          keys || type == :string
+          keys
         end
 
         def groups
@@ -295,6 +297,71 @@ module Search
         def order_arg(asc_desc)
           groups.map { |s| [s, asc_desc] }.to_h
         end
+
+        protected
+
+        def subtype_human_name
+          nil
+        end
+      end
+
+      class StringGroupByAttribute < GroupByAttribute
+        def discrete?
+          true
+        end
+      end
+
+      class NumericGroupByAttribute < GroupByAttribute
+      end
+
+      class DatetimeGroupByAttribute < GroupByAttribute
+        def group_order_limit(request, _order_arg, top_count)
+          request.group_by_day(groups[0], last: top_count)
+        end
+
+        class HourOfDay < NumericGroupByAttribute
+          def keys
+            @keys ||= 0..23
+          end
+
+          def sortable
+            false
+          end
+
+          def group_order_limit(request, _order_arg, _top_count)
+            request.group_by_hour_of_day(groups[0])
+          end
+
+          protected
+
+          def subtype_human_name
+            I18n.t('activemodel.attributes.search.chart.group_by_attribute.sub_type.hour_of_day')
+          end
+        end
+
+        class DayOfWeek < StringGroupByAttribute
+          def keys
+            @keys ||= (0..6).map { |d| (d + Date::DAYS_INTO_WEEK[Date.beginning_of_week] + 1) % 7 }
+          end
+
+          def sortable
+            false
+          end
+
+          def group_order_limit(request, _order_arg, _top_count)
+            request.group_by_day_of_week(groups[0])
+          end
+
+          def label(key)
+            I18n.t('date.day_names')[key]
+          end
+
+          protected
+
+          def subtype_human_name
+            I18n.t('activemodel.attributes.search.chart.group_by_attribute.sub_type.day_of_week')
+          end
+        end
       end
 
       class AggregateAttribute
@@ -303,19 +370,45 @@ module Search
           @definition = definition || name
         end
         attr_reader :name, :definition
+
+        def human_name(klass)
+          klass.human_attribute_name(name)
+        end
       end
 
       class << self
-        def group_by_attribute(name, type, **options, &block)
+        def group_by_attribute(name, type, **options, &block) # rubocop:disable Metrics/MethodLength,Metrics/AbcSize
+          sub_types = options.delete(:sub_types)
+
+          name_classify = name.classify
+          base_klass = const_get(:"#{type.to_s.classify}GroupByAttribute")
           if block_given?
-            klass_name = :"#{name.classify}GroupByAttribute"
-            klass = Class.new(GroupByAttribute, &block)
+            klass_name = :"Custom#{name_classify}GroupByAttribute"
+            klass = Class.new(base_klass, &block)
             const_set(klass_name, klass)
           else
-            klass = GroupByAttribute
+            klass = base_klass
           end
+          group_by_attributes[name] = klass.new(name, **options)
 
-          group_by_attributes[name] = klass.new(name, type, **options)
+          if sub_types # rubocop:disable Style/GuardClause
+            sub_attribute_options = options.merge(sub_type: true)
+
+            sub_types.each do |t|
+              t_classify = t.to_s.classify
+
+              sub_base_klass = base_klass.const_get(t_classify)
+              if block_given?
+                sub_klass_name = :"Custom#{name_classify}#{t_classify}GroupByAttribute"
+                sub_klass = Class.new(sub_base_klass, &block)
+                const_set(sub_klass_name, sub_klass)
+              else
+                sub_klass = sub_base_klass
+              end
+
+              group_by_attributes["#{name}_#{t}"] = sub_klass.new(name, **sub_attribute_options)
+            end
+          end
         end
 
         def aggregate_attribute(name, definition = nil)
@@ -334,29 +427,6 @@ module Search
           base.instance_variable_set(:@group_by_attributes, group_by_attributes.dup)
           base.instance_variable_set(:@aggregate_attributes, aggregate_attributes.dup)
           super
-        end
-      end
-
-      group_by_attribute 'date', :datetime do
-        def group_order_limit(request, _order_arg, top_count)
-          request.group_by_day(:created_at, last: top_count)
-        end
-      end
-      group_by_attribute 'hour_of_day', :numeric, keys: 0..23, sortable: false do
-        def group_order_limit(request, _order_arg, _top_count)
-          request.group_by_hour_of_day(:created_at)
-        end
-      end
-      group_by_attribute 'day_of_week',
-                         :string,
-                         keys: (0..6).map { |d| (d + Date::DAYS_INTO_WEEK[Date.beginning_of_week] + 1) % 7 },
-                         sortable: false do
-        def group_order_limit(request, _order_arg, _top_count)
-          request.group_by_day_of_week(:created_at)
-        end
-
-        def label(key)
-          I18n.t('date.day_names')[key]
         end
       end
 
@@ -409,7 +479,7 @@ module Search
       def to_chartkick(view_context, **options) # rubocop:disable Metrics/MethodLength
         new_options = {}
         new_options[:discrete] = true if group_by_attribute.discrete?
-        if group_by_attribute.type == :datetime && type != 'pie'
+        if group_by_attribute.is_a?(DatetimeGroupByAttribute) && type != 'pie'
           new_options[:library] = {
             scales: {
               x: {

@@ -1313,6 +1313,7 @@ class Import::Gtfs < Import::Base
 
     class Decorator < SimpleDelegator
       mattr_accessor :maximum_point_count, default: 10_000
+
       mattr_reader :factory, default: RGeo::Geos.factory(srid: 4326)
 
       def initialize(shape, code_space: nil)
@@ -1338,7 +1339,7 @@ class Import::Gtfs < Import::Base
       def valid?
         errors.clear
 
-        if points.count > maximum_point_count
+        if points.count > maximum_point_count || points.count < 2
           errors << {
             criticity: :error,
             message_key: :unreasonable_shape,

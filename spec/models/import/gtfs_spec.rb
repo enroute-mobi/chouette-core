@@ -1177,8 +1177,15 @@ RSpec.describe Import::Gtfs do
         end
 
         context 'when an error is detected' do
-          before { allow(decorator).to receive(:points).and_return(double(count: 1_000_000)) }
-          it { is_expected.to be_falsy }
+          context 'with maximum point count' do
+            before { allow(decorator).to receive(:points).and_return(double(count: 1_000_000)) }
+            it { is_expected.to be_falsy }
+          end
+
+          context 'with minimum point count' do
+            before { allow(decorator).to receive(:points).and_return(double(count: 1)) }
+            it { is_expected.to be_falsy }
+          end
         end
       end
 

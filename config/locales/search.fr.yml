@@ -51,6 +51,11 @@ fr:
         group_by_attribute: Grouper par
         sort_by: "Trier par"
         display_percent: "Afficher %"
+        chart:
+          group_by_attribute:
+            sub_type:
+              hour_of_day: "Heure de la journée"
+              day_of_week: "Jour de la semaine"
   activerecord:
     models:
       search/save:

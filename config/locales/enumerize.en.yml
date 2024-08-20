@@ -456,10 +456,6 @@ en:
         line: Line
         pie: Pie
         column: Column
-      group_by_attribute:
-        date: Date
-        hour_of_day: Hour of day
-        day_of_week: Day of week
       first:
         first: "First"
         last: "Last"

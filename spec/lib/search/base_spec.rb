@@ -608,7 +608,8 @@ RSpec.describe Search::Base::Chart do
 
       it do
         expect(models).to(
-          receive(:joins).with({ relation: { other_relation: {} }, another_relation: {} }).and_return(models)
+          receive(:left_outer_joins).with({ relation: { other_relation: {} }, another_relation: {} })
+                                    .and_return(models)
         )
         expect(models).to(
           receive(:select).with('other_relations.name', 'another_relations.label').and_return(models)
@@ -627,7 +628,8 @@ RSpec.describe Search::Base::Chart do
 
         it do
           expect(models).to(
-            receive(:joins).with({ relation: { other_relation: {} }, another_relation: {} }).and_return(models)
+            receive(:left_outer_joins).with({ relation: { other_relation: {} }, another_relation: {} })
+                                      .and_return(models)
           )
           expect(models).to(
             receive(:select).with('other_relations.name', 'another_relations.label').and_return(models)
@@ -704,6 +706,14 @@ RSpec.describe Search::Base::Chart do
 
       it 'returns data as is' do
         is_expected.to eq(raw_data)
+      end
+
+      context 'when there is nil key' do
+        let(:raw_data) { { 'A' => 1, 'C' => 2, nil => 3 } }
+
+        it 'replaces nil by "None"' do
+          is_expected.to eq({ 'A' => 1, 'C' => 2, I18n.t('none') => 3 })
+        end
       end
     end
 

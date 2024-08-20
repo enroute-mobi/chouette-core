@@ -426,7 +426,7 @@ module Search
       def joins(request)
         return request unless group_by_attribute.joins
 
-        request.joins(group_by_attribute.joins)
+        request.left_outer_joins(group_by_attribute.joins)
       end
 
       def select(request)
@@ -485,11 +485,10 @@ module Search
       end
 
       def label_keys(data)
-        if group_by_attribute.label?
-          data.transform_keys { |k| group_by_attribute.label(k) }
-        else
-          data
-        end
+        labelled_data = data
+        labelled_data = data.transform_keys { |k| group_by_attribute.label(k) } if group_by_attribute.label?
+        labelled_data[I18n.t('none')] = labelled_data.delete(nil) if labelled_data.key?(nil)
+        labelled_data
       end
     end
 

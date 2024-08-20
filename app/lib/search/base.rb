@@ -246,7 +246,7 @@ module Search
       { per_page: per_page, page: page }
     end
 
-    class Chart
+    class Chart # rubocop:disable Metrics/ClassLength
       class GroupByAttribute
         class << self
           private
@@ -262,14 +262,15 @@ module Search
           end
         end
 
-        def initialize(name, type, keys: nil, joins: nil, selects: nil)
+        def initialize(name, type, keys: nil, joins: nil, selects: nil, sortable: true)
           @name = name
           @type = type
           @keys = keys
           @joins = joins
           @selects = selects
+          @sortable = sortable
         end
-        attr_reader :name, :type, :keys, :joins, :selects
+        attr_reader :name, :type, :keys, :joins, :selects, :sortable
 
         def label?
           false
@@ -337,14 +338,15 @@ module Search
           request.group_by_day(:created_at, last: top_count)
         end
       end
-      group_by_attribute 'hour_of_day', :numeric, keys: 0..23 do
+      group_by_attribute 'hour_of_day', :numeric, keys: 0..23, sortable: false do
         def group_order_limit(request, _order_arg, _top_count)
           request.group_by_hour_of_day(:created_at)
         end
       end
       group_by_attribute 'day_of_week',
                          :string,
-                         keys: (0..6).map { |d| (d + Date::DAYS_INTO_WEEK[Date.beginning_of_week] + 1) % 7 } do
+                         keys: (0..6).map { |d| (d + Date::DAYS_INTO_WEEK[Date.beginning_of_week] + 1) % 7 },
+                         sortable: false do
         def group_order_limit(request, _order_arg, _top_count)
           request.group_by_day_of_week(:created_at)
         end
@@ -478,17 +480,69 @@ module Search
 
       def add_missing_keys(data)
         if group_by_attribute.keys
-          group_by_attribute.keys.map { |k| [k, 0] }.to_h.merge(data)
+          new_data = group_by_attribute.keys.map { |k| [k, 0] }.to_h.merge(data)
+
+          if group_by_attribute.sortable && sort_by == 'value'
+            # we need to sort the newly added keys by their respective values
+            new_data = new_data.sort { |a, b| data_values_sorter(a, b) }.to_h
+          end
+
+          new_data
         else
           data
         end
       end
 
+      def data_values_sorter(kv1, kv2)
+        v1 = kv1[1]
+        v2 = kv2[1]
+
+        if v1 == v2
+          0
+        else
+          first ? v1 <=> v2 : v2 <=> v1
+        end
+      end
+
       def label_keys(data)
-        labelled_data = data
-        labelled_data = data.transform_keys { |k| group_by_attribute.label(k) } if group_by_attribute.label?
-        labelled_data[I18n.t('none')] = labelled_data.delete(nil) if labelled_data.key?(nil)
-        labelled_data
+        if group_by_attribute.label? && group_by_attribute.sortable && sort_by == 'label'
+          label_keys_with_sort(data)
+        else
+          label_keys_without_sort(data)
+        end
+      end
+
+      def label_keys_with_sort(data) # rubocop:disable Metrics/MethodLength
+        # The idea is to extract the nil key, label and sort the other keys and add the nil key afterwards.
+        # If first, we append nil key at the end (if present).
+        # If not first, we reverse the sorted keys and start with the nil key (if present).
+
+        nil_data = data.delete(nil)
+
+        new_data = data.transform_keys { |k| group_by_attribute.label(k) }
+        new_data = new_data.sort_by(&:first)
+
+        if first
+          new_data = new_data.to_h
+          new_data[I18n.t('none')] = nil_data if nil_data
+        else
+          new_data = new_data.reverse.to_h
+          new_data = { I18n.t('none') => nil_data }.merge(new_data) if nil_data
+        end
+
+        new_data
+      end
+
+      def label_keys_without_sort(data)
+        data.transform_keys do |k|
+          if k.nil?
+            I18n.t('none')
+          elsif group_by_attribute.label?
+            group_by_attribute.label(k)
+          else
+            k
+          end
+        end
       end
     end
 

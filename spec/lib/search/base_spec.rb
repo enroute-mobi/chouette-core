@@ -469,7 +469,12 @@ RSpec.describe Search::Base::Chart do
                        joins: { relation: { other_relation: {} }, another_relation: {} },
                        selects: %w[other_relations.name another_relations.label]
     group_by_attribute 'more_keys_attribute', :numeric, keys: [1, 2, 3]
-    group_by_attribute 'label_key_attribute', :string do
+    group_by_attribute 'sortable_label_key_attribute', :string do
+      def label(key)
+        key.reverse
+      end
+    end
+    group_by_attribute 'non_sortable_label_key_attribute', :string, sortable: false do
       def label(key)
         key.reverse
       end
@@ -549,6 +554,18 @@ RSpec.describe Search::Base::Chart do
           expect(models).to receive(:limit).with(10).and_return(models)
           expect(models).to receive(:count).with(:id)
           subject
+        end
+
+        context 'when #first is true' do
+          let(:first) { true }
+
+          it do
+            expect(models).to receive(:group).with('some_attribute').and_return(models)
+            expect(models).to receive(:order).with('some_attribute' => :asc).and_return(models)
+            expect(models).to receive(:limit).with(10).and_return(models)
+            expect(models).to receive(:count).with(:id)
+            subject
+          end
         end
       end
     end
@@ -644,6 +661,29 @@ RSpec.describe Search::Base::Chart do
           expect(models).to receive(:count).with(:id)
           subject
         end
+
+        context 'when #first is true' do
+          let(:first) { true }
+
+          it do
+            expect(models).to(
+              receive(:left_outer_joins).with({ relation: { other_relation: {} }, another_relation: {} })
+                                        .and_return(models)
+            )
+            expect(models).to(
+              receive(:select).with('other_relations.name', 'another_relations.label').and_return(models)
+            )
+            expect(models).to(
+              receive(:group).with('other_relations.name', 'another_relations.label').and_return(models)
+            )
+            expect(models).to(
+              receive(:order).with('other_relations.name' => :asc, 'another_relations.label' => :asc).and_return(models)
+            )
+            expect(models).to receive(:limit).with(10).and_return(models)
+            expect(models).to receive(:count).with(:id)
+            subject
+          end
+        end
       end
     end
 
@@ -702,17 +742,26 @@ RSpec.describe Search::Base::Chart do
     before { expect(chart).to receive(:raw_data).and_return(raw_data) }
 
     context 'when #group_by_attribute is "some_attribute"' do
-      let(:raw_data) { { 'A' => 1, 'C' => 2 } }
+      let(:raw_data) { { 'A' => 1, 'C' => 2, 'B' => 3 } }
 
-      it 'returns data as is' do
-        is_expected.to eq(raw_data)
+      it 'returns data sorted by value' do
+        is_expected.to eq_with_keys_order({ 'A' => 1, 'C' => 2, 'B' => 3 })
       end
 
       context 'when there is nil key' do
-        let(:raw_data) { { 'A' => 1, 'C' => 2, nil => 3 } }
+        let(:raw_data) { { 'A' => 1, 'C' => 2, 'B' => 3, nil => 4 } }
 
         it 'replaces nil by "None"' do
-          is_expected.to eq({ 'A' => 1, 'C' => 2, I18n.t('none') => 3 })
+          is_expected.to eq_with_keys_order({ 'A' => 1, 'C' => 2, 'B' => 3, I18n.t('none') => 4 })
+        end
+      end
+
+      context 'when #sort_by is "label"' do
+        let(:sort_by) { 'label' }
+        let(:raw_data) { { 'A' => 1, 'B' => 3, 'C' => 2, nil => 4 } }
+
+        it 'replaces nil by "None"' do
+          is_expected.to eq_with_keys_order({ 'A' => 1, 'B' => 3, 'C' => 2, I18n.t('none') => 4 })
         end
       end
     end
@@ -722,7 +771,7 @@ RSpec.describe Search::Base::Chart do
       let(:raw_data) { { 5 => 4, 13 => 42 } }
 
       it 'adds all missing hours' do # rubocop:disable Metrics/BlockLength
-        is_expected.to eq(
+        is_expected.to eq_with_keys_order(
           {
             0 => 0,
             1 => 0,
@@ -758,7 +807,7 @@ RSpec.describe Search::Base::Chart do
       let(:raw_data) { { 2 => 4, 5 => 42 } }
 
       it 'adds all missing days and labels keys' do
-        is_expected.to eq(
+        is_expected.to eq_with_keys_order(
           {
             I18n.t('date.day_names')[1] => 0,
             I18n.t('date.day_names')[2] => 4,
@@ -770,23 +819,99 @@ RSpec.describe Search::Base::Chart do
           }
         )
       end
+
+      context 'when #sort_by is "label"' do
+        let(:sort_by) { 'label' }
+
+        it 'does not sort labels keys' do
+          is_expected.to eq_with_keys_order(
+            {
+              I18n.t('date.day_names')[1] => 0,
+              I18n.t('date.day_names')[2] => 4,
+              I18n.t('date.day_names')[3] => 0,
+              I18n.t('date.day_names')[4] => 0,
+              I18n.t('date.day_names')[5] => 42,
+              I18n.t('date.day_names')[6] => 0,
+              I18n.t('date.day_names')[0] => 0
+            }
+          )
+        end
+      end
     end
 
     context 'when #group_by_attribute needs more keys' do
       let(:group_by_attribute) { 'more_keys_attribute' }
       let(:raw_data) { { 2 => 42 } }
 
-      it 'adds missing keys' do
-        is_expected.to eq({ 1 => 0, 2 => 42, 3 => 0 })
+      it 'adds missing keys, sorted by value' do
+        is_expected.to eq_with_keys_order({ 2 => 42, 1 => 0, 3 => 0 })
+      end
+
+      context 'when #first is true' do
+        let(:first) { true }
+
+        it 'sorts in reverse' do
+          is_expected.to eq_with_keys_order({ 1 => 0, 3 => 0, 2 => 42 })
+        end
       end
     end
 
     context 'when #group_by_attribute labels keys' do
-      let(:group_by_attribute) { 'label_key_attribute' }
-      let(:raw_data) { { 'key_to_label' => 42 } }
+      let(:group_by_attribute) { 'sortable_label_key_attribute' }
+      let(:raw_data) { { 'key_to_label' => 42, 'key_to_label_a' => 84 } }
 
       it 'labels keys' do
-        is_expected.to eq({ 'lebal_ot_yek' => 42 })
+        is_expected.to eq_with_keys_order({ 'lebal_ot_yek' => 42, 'a_lebal_ot_yek' => 84 })
+      end
+
+      context 'with nil' do
+        let(:raw_data) { { 'key_to_label' => 42, nil => 63, 'key_to_label_a' => 84 } }
+
+        it 'labels nil key as "None"' do
+          is_expected.to eq_with_keys_order({ 'lebal_ot_yek' => 42, I18n.t('none') => 63, 'a_lebal_ot_yek' => 84 })
+        end
+      end
+
+      context 'when #sort_by is "label"' do
+        let(:sort_by) { 'label' }
+        let(:raw_data) { { 'key_to_label' => 42, 'key_to_label_a' => 84 } }
+
+        it 'sorts labelled keys' do
+          is_expected.to eq_with_keys_order({ 'lebal_ot_yek' => 42, 'a_lebal_ot_yek' => 84 })
+        end
+
+        context 'with nil' do
+          let(:raw_data) { { 'key_to_label' => 42, nil => 63, 'key_to_label_a' => 84 } }
+
+          it 'puts "None" first' do
+            is_expected.to eq_with_keys_order({ I18n.t('none') => 63, 'lebal_ot_yek' => 42, 'a_lebal_ot_yek' => 84 })
+          end
+        end
+
+        context 'when #first is true' do
+          let(:first) { true }
+
+          it 'sorts labelled keys in reverse' do
+            is_expected.to eq_with_keys_order({ 'a_lebal_ot_yek' => 84, 'lebal_ot_yek' => 42 })
+          end
+
+          context 'with nil' do
+            let(:raw_data) { { 'key_to_label' => 42, nil => 63, 'key_to_label_a' => 84 } }
+
+            it 'puts "None" last' do
+              is_expected.to eq_with_keys_order({ 'a_lebal_ot_yek' => 84, 'lebal_ot_yek' => 42, I18n.t('none') => 63 })
+            end
+          end
+        end
+
+        context 'but #group_by_attribute is not sortable' do
+          let(:group_by_attribute) { 'non_sortable_label_key_attribute' }
+          let(:raw_data) { { 'key_to_label' => 84, nil => 63, 'key_to_label_a' => 42 } }
+
+          it 'does not sort labelled keys' do
+            is_expected.to eq_with_keys_order({ 'lebal_ot_yek' => 84, I18n.t('none') => 63, 'a_lebal_ot_yek' => 42 })
+          end
+        end
       end
     end
 
@@ -795,14 +920,14 @@ RSpec.describe Search::Base::Chart do
       let(:raw_data) { { '1' => 1, '2' => 3, '3' => 0 } }
 
       it 'computes percents' do
-        is_expected.to eq({ '1' => 25, '2' => 75, '3' => 0 })
+        is_expected.to eq_with_keys_order({ '1' => 25, '2' => 75, '3' => 0 })
       end
 
       context 'when data is all 0' do
         let(:raw_data) { { '1' => 0, '2' => 0, '3' => 0 } }
 
         it 'computes percents' do
-          is_expected.to eq({ '1' => 0, '2' => 0, '3' => 0 })
+          is_expected.to eq_with_keys_order({ '1' => 0, '2' => 0, '3' => 0 })
         end
       end
     end

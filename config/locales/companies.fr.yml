@@ -26,6 +26,7 @@ fr:
         contact: "Contact"
         general: "Général"
         address: "Adresse"
+        internals: Interne
       add_code: "Ajouter un code"
   activerecord:
     models:

@@ -49,6 +49,13 @@
 
   .row
     .col-lg-12
+      h2.mb-lg= t("companies.form.sections.internals")
+      = f.association :line_provider, as: :select, collection: candidate_line_providers, include_blank: false
+
+  .separator.section_separator
+
+  .row
+    .col-lg-12
       h2.mb-lg= Chouette::Company.tmf(:default_contact)
 
       - %w(name email phone fax url organizational_unit operating_department_name more).each do |attr|

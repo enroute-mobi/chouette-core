@@ -121,6 +121,10 @@ module Search
       chart_klass.group_by_attributes.each_value.map(&:name)
     end
 
+    def can_aggregate_attribute?
+      chart_klass.aggregate_attributes.any?
+    end
+
     def candidate_aggregate_attributes
       chart_klass.aggregate_attributes.each_value.map(&:name)
     end

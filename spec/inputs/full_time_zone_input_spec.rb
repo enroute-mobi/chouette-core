@@ -8,7 +8,7 @@ RSpec.describe FullTimeZoneInput do
     context "when locale is :fr" do
       around { |example| I18n.with_locale(:fr) { example.run } }
 
-      it { is_expected.to include(["Aucun", nil]) }
+      it { is_expected.to include(["Aucun(e)", nil]) }
     end
 
     context "when locale is :en" do

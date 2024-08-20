@@ -3,7 +3,7 @@
 - else
   - imports_path = workgroup_imports_path(@workgroup)
 
-= simple_search_for @search, imports_path do |f|
+= simple_search_for @search, imports_path, graph_panel: :button do |f|
   = f.row
     = f.name
   = f.row

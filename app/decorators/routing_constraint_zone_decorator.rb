@@ -21,13 +21,13 @@ class RoutingConstraintZoneDecorator < AF83::Decorator
     instance_decorator.edit_action_link
 
     instance_decorator.action_link secondary: :show, if: ->{ object.opposite_zone.nil? } do |l|
-      l.content  t('routing_constraint_zones.actions.create_opposite_zone')
+      l.content  { t('routing_constraint_zones.actions.create_opposite_zone') }
       l.href     { [:new, *scope, :routing_constraint_zone, opposite_zone_id: object.id] }
       l.disabled { !object.can_create_opposite_zone? }
     end
 
     instance_decorator.action_link secondary: :show, if: ->{ object.opposite_zone.present? } do |l|
-      l.content  t('routing_constraint_zones.actions.opposite_zone')
+      l.content  { t('routing_constraint_zones.actions.opposite_zone') }
       l.href     { [*scope, object.opposite_zone] }
     end
 

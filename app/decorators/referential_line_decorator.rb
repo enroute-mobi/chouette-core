@@ -14,7 +14,8 @@ class ReferentialLineDecorator < AF83::Decorator
     end
 
     instance_decorator.action_link secondary: true, feature: :legacy_routing_constraint_zone do |l|
-      l.content t('routing_constraint_zones.index.title')
+      l.content { t('routing_constraint_zones.index.title') }
+
       l.href do
         h.workbench_referential_line_routing_constraint_zones_path(context[:workbench], context[:referential], object)
       end
@@ -24,7 +25,7 @@ class ReferentialLineDecorator < AF83::Decorator
       if: ->() { check_policy(:create, Chouette::Route, object: context[:referential]) },
       secondary: true
     ) do |l|
-      l.content t('routes.actions.new')
+      l.content { t('routes.actions.new') }
       l.href { h.new_workbench_referential_line_route_path(context[:workbench], context[:referential], object) }
     end
   end

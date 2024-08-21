@@ -21,7 +21,7 @@ class ImportDecorator < AF83::Decorator
     instance_decorator.show_action_link
 
     instance_decorator.action_link primary: :show do |l|
-      l.content t('imports.actions.download')
+      l.content { t('imports.actions.download') }
       l.icon :download
       l.href   { [:download, scope, object] }
       l.disabled { !object.file.present? }

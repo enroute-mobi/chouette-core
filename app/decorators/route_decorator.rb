@@ -12,7 +12,7 @@ class RouteDecorator < AF83::Decorator
       if: ->() { object.stop_points.any? },
       secondary: :show
     ) do |l|
-      l.content t('journey_patterns.actions.index')
+      l.content { t('journey_patterns.actions.index') }
       l.href do
         [
           context[:workbench],
@@ -28,7 +28,7 @@ class RouteDecorator < AF83::Decorator
       if: ->() { object.journey_patterns.present? },
       secondary: :show
     ) do |l|
-      l.content t('vehicle_journeys.actions.index')
+      l.content { t('vehicle_journeys.actions.index') }
       l.href do
         [
           context[:workbench],
@@ -43,7 +43,7 @@ class RouteDecorator < AF83::Decorator
       secondary: :show,
       policy: :duplicate
     ) do |l|
-      l.content t('routes.duplicate.title')
+      l.content { t('routes.duplicate.title') }
       l.method :post
       l.href do
         h.duplicate_workbench_referential_line_route_path(
@@ -60,7 +60,7 @@ class RouteDecorator < AF83::Decorator
       policy: :create_opposite,
       feature: :create_opposite_routes
     ) do |l|
-      l.content t('routes.create_opposite.title')
+      l.content { t('routes.create_opposite.title') }
       l.method :post
       l.disabled { object.opposite_route.present? }
       l.href do

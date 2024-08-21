@@ -8,7 +8,7 @@ class StopAreaDecorator < AF83::Decorator
   set_scope { [ context[:workbench], :stop_area_referential ] }
 
   create_action_link do |l|
-    l.content t('stop_areas.actions.new')
+    l.content { t('stop_areas.actions.new') }
   end
 
   with_instance_decorator do |instance_decorator|

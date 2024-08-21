@@ -13,7 +13,7 @@ class AggregateDecorator < AF83::Decorator
       primary: :show,
       policy: :rollback
     ) do |l|
-      l.content t('aggregates.actions.rollback')
+      l.content { t('aggregates.actions.rollback') }
       l.method  :put
       l.href do
         h.rollback_workgroup_aggregate_path(object.workgroup, object)

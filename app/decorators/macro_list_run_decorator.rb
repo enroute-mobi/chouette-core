@@ -6,7 +6,7 @@ class MacroListRunDecorator < AF83::Decorator
   create_action_link
 
 	action_link(on: %i[index], secondary: :index) do |l|
-    l.content t('macro_list_run.actions.show')
+    l.content { t('macro_list_run.actions.show') }
     l.href { h.workbench_macro_lists_path }
   end
 

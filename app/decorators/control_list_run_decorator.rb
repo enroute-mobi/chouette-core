@@ -4,12 +4,12 @@ class ControlListRunDecorator < AF83::Decorator
   set_scope { context[:workbench] }
 
   action_link(on: %i[index], primary: :index, policy: :create) do |l|
-    l.content t('control_list_run.actions.new')
+    l.content { t('control_list_run.actions.new') }
     l.href { h.new_workbench_control_list_run_path }
   end
 
 	action_link(on: %i[index], secondary: :index) do |l|
-    l.content t('control_list_run.actions.show')
+    l.content { t('control_list_run.actions.show') }
     l.href { h.workbench_control_lists_path }
   end
 

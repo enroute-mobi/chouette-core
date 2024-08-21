@@ -6,7 +6,7 @@ class PointOfInterestDecorator < AF83::Decorator
   create_action_link
 
   action_link(on: %i[index], secondary: :index) do |l|
-    l.content t('point_of_interests.actions.show_categories')
+    l.content { t('point_of_interests.actions.show_categories') }
     l.href { h.workbench_shape_referential_point_of_interest_categories_path }
   end
 

@@ -6,7 +6,7 @@ class ProcessingRuleWorkgroupDecorator < AF83::Decorator
   set_scope { context[:workgroup] }
 
   create_action_link do |l|
-    l.content t('processing_rule/workgroups.actions.new')
+    l.content { t('processing_rule/workgroups.actions.new') }
   end
 
   with_instance_decorator(&:crud)

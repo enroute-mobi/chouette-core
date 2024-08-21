@@ -12,6 +12,7 @@
 class SearchesController < Chouette::UserController
   before_action :workgroup
   before_action :workbench
+  before_action :referential
 
   before_action :find_saved_search, only: %i[update destroy]
 
@@ -106,9 +107,21 @@ class SearchesController < Chouette::UserController
     nil
   end
 
+  def referential
+    @referential ||= workbench.find_referential!(params[:referential_id]) if params[:referential_id]
+  end
+
+  def current_referential
+    referential
+  rescue ActiveRecord::RecordNotFound
+    nil
+  end
+  helper_method :current_referential
+
   def saved_search_parent
     workbench || workgroup
   end
+  helper_method :saved_search_parent
 
   def search_context
     { saved_search_parent.class.name.underscore.to_sym => saved_search_parent }

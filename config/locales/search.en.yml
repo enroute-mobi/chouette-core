@@ -21,8 +21,10 @@ en:
         end_date: "Before : "
         per_page: "Display per"
         text: "Search by name or id"
+        company_ids: "Company"
         company_id: "Company"
         category: "Category"
+        line_ids: "Line"
         line_id: "Line"
         line: "Line"
         timetable: "Timetable"
@@ -33,7 +35,9 @@ en:
         is_referent: "Referent"
         zip_code: "Zip code"
         city_name: "City name"
+        network_ids: "Network"
         network_id: "Network"
+        transport_modes: "Transport mode"
         transport_mode: "Transport mode"
         parent_id: "Parent"
         stop_area_provider_id: Stop area provider
@@ -47,6 +51,7 @@ en:
         valid_after_date: Valide after
         referential_name: Target
         time_table_id: Timetable
+        days_of_week: "Days"
         chart_type: Chart Form
         group_by_attribute: Group by
         sort_by: "Sort by"

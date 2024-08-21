@@ -284,7 +284,7 @@ module Search
       { per_page: per_page, page: page }
     end
 
-    class Chart
+    class Chart # rubocop:disable Metrics/ClassLength
       class GroupByAttribute
         class << self
           private
@@ -625,18 +625,30 @@ module Search
 
       def order_aggregate_alias
         if aggregate_operation == 'count'
-          :count_id
+          count_column_name
         else
-          models.send(:column_alias_for, "#{aggregate_operation} #{aggregate_attribute.definition}")
+          column_alias(aggregate_operation, aggregate_attribute.definition)
         end
+      end
+
+      def count_column_name
+        :count_id
+      end
+
+      def column_alias(operation, sql_definition)
+        models.send(:column_alias_for, "#{operation} #{sql_definition}")
       end
 
       def aggregate(request)
         if aggregate_operation == 'count'
-          request.count(:id)
+          aggregate_count(request)
         else
           request.send(aggregate_operation, aggregate_attribute.definition)
         end
+      end
+
+      def aggregate_count(request)
+        request.count(:id)
       end
 
       def compute_percent(result)

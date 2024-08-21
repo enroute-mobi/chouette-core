@@ -4,7 +4,7 @@ RSpec.describe AggregateScheduling, type: :model do
   let(:context) { Chouette.create { workgroup } }
   let(:workgroup) { context.workgroup }
 
-  let(:aggregate_days) { Cuckoo::Timetable::DaysOfWeek.all }
+  let(:aggregate_days) { Cuckoo::DaysOfWeek.all }
   let(:force_daily_publishing) { true }
   let(:aggregate_scheduling) do
     workgroup.aggregate_schedulings.create!(
@@ -15,9 +15,9 @@ RSpec.describe AggregateScheduling, type: :model do
 
   it { is_expected.to belong_to(:workgroup).required }
 
-  it { is_expected.to allow_value(Cuckoo::Timetable::DaysOfWeek.all).for(:aggregate_days) }
-  it { is_expected.to allow_value(Cuckoo::Timetable::DaysOfWeek.new(monday: true, tuesday: true)).for(:aggregate_days) }
-  it { is_expected.not_to allow_value(Cuckoo::Timetable::DaysOfWeek.none).for(:aggregate_days) }
+  it { is_expected.to allow_value(Cuckoo::DaysOfWeek.all).for(:aggregate_days) }
+  it { is_expected.to allow_value(Cuckoo::DaysOfWeek.new(monday: true, tuesday: true)).for(:aggregate_days) }
+  it { is_expected.not_to allow_value(Cuckoo::DaysOfWeek.none).for(:aggregate_days) }
 
   it { is_expected.to allow_value(true).for(:force_daily_publishing) }
   it { is_expected.to allow_value(false).for(:force_daily_publishing) }
@@ -26,14 +26,14 @@ RSpec.describe AggregateScheduling, type: :model do
   describe 'aggregate_days' do
     subject { aggregate_scheduling.aggregate_days }
 
-    it { is_expected.to be_a(Cuckoo::Timetable::DaysOfWeek) }
+    it { is_expected.to be_a(Cuckoo::DaysOfWeek) }
 
     it 'has at most 7 values' do
       aggregate_scheduling.aggregate_days = '0000000'
       expect(aggregate_scheduling.aggregate_days.days).to eq([])
 
       aggregate_scheduling.aggregate_days = '1111111'
-      expect(aggregate_scheduling.aggregate_days.days).to eq(Cuckoo::Timetable::DaysOfWeek::SYMBOLIC_DAYS)
+      expect(aggregate_scheduling.aggregate_days.days).to eq(Cuckoo::DaysOfWeek::SYMBOLIC_DAYS)
 
       aggregate_scheduling.aggregate_days = '1110100'
       expect(aggregate_scheduling.aggregate_days.days).to eq(%i[monday tuesday wednesday friday])
@@ -92,7 +92,7 @@ RSpec.describe AggregateScheduling, type: :model do
 
     context 'when #nightly_aggregate_days changes' do
       subject do
-        aggregate_scheduling.update(aggregate_days: Cuckoo::Timetable::DaysOfWeek.new(monday: true, tuesday: true))
+        aggregate_scheduling.update(aggregate_days: Cuckoo::DaysOfWeek.new(monday: true, tuesday: true))
       end
 
       it { expect { subject }.to change { scheduled_job.reload.cron }.to('0 0 * * 1,2') }
@@ -142,7 +142,7 @@ RSpec.describe AggregateScheduling, type: :model do
 
       context 'when #aggregate_days changes' do
         subject do
-          aggregate_scheduling.update(aggregate_days: Cuckoo::Timetable::DaysOfWeek.new(monday: true, tuesday: true))
+          aggregate_scheduling.update(aggregate_days: Cuckoo::DaysOfWeek.new(monday: true, tuesday: true))
         end
 
         it do

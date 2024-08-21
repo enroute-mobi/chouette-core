@@ -768,3 +768,13 @@ crumb :stop_area_document_memberships do |workbench, stop_area|
        workbench_stop_area_referential_stop_area_document_memberships_path(workbench, stop_area)
   parent :stop_area, workbench, stop_area
 end
+
+crumb :service_counts do |workbench, referential|
+  link I18n.t('service_counts.index.title'), workbench_referential_service_counts_path(workbench, referential)
+  parent :referential, workbench, referential
+end
+
+crumb :service_counts_searches do |workbench, referential|
+  link Search::Save.model_name.human(count: 2)
+  parent :service_counts, workbench, referential
+end

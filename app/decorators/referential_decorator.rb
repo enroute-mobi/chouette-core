@@ -14,6 +14,11 @@ class ReferentialDecorator < AF83::Decorator
       l.href { h.workbench_referential_time_tables_path(context[:workbench], object) }
     end
 
+    instance_decorator.action_link secondary: :show do |l|
+      l.content t('service_counts.index.title')
+      l.href { h.workbench_referential_service_counts_path(context[:workbench], object) }
+    end
+
     instance_decorator.action_link policy: :clone, secondary: :show do |l|
       l.content t('actions.clone')
       l.href { h.new_workbench_referential_path(context[:workbench], from: object.id) }

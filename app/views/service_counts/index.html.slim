@@ -1,0 +1,10 @@
+- breadcrumb :service_counts, @workbench, @referential
+
+.page_content x-data="{ saveSearchPanel: false, graphPanel: true }"
+  .container-fluid
+    .row
+      .col-lg-12
+        = render 'filters'
+
+    - if @chart
+      = @chart.to_chartkick(self, download: true)

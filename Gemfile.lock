@@ -14,7 +14,8 @@ GIT
 
 GIT
   remote: https://bitbucket.org/enroute-mobi/cuckoo.git
-  revision: d1d5a9e1628a9b1f7ced9cf30f9c5bf42db41565
+  revision: 86bea6288a567b61a4c5bea7b5f0256b1776e76b
+  branch: CUCKOO-23-CUCKOO-22
   specs:
     cuckoo (0.1.0)
       activesupport

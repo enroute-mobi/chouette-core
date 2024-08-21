@@ -51,12 +51,50 @@ module Search
       attributes.each { |k, v| send "#{k}=", v }
     end
 
-    def self.from_params(params, attributes = {})
-      Rails.logger.debug "[Search] Raw params: #{params.inspect}"
+    class << self
+      def chart_periods
+        @chart_periods ||= {}
+      end
 
-      new(attributes).tap do |search|
-        search.attributes = FromParamsBuilder.new(params).attributes
-        Rails.logger.debug "[Search] #{search.inspect}"
+      def inherited(base)
+        base.instance_variable_set(:@chart_periods, chart_periods.dup)
+        super
+      end
+
+      def period(name, from, to, **options)
+        period = Period.new(name, from, to, **options)
+
+        define_method name do
+          ::Period.new(from: send(from), to: send(to)).presence
+        end
+        validates name, valid: true
+
+        period.chart_attributes.each do |attr|
+          chart_periods[attr.to_s] = period
+        end
+      end
+
+      def from_params(params, attributes = {})
+        Rails.logger.debug "[Search] Raw params: #{params.inspect}"
+
+        new(attributes).tap do |search|
+          search.attributes = FromParamsBuilder.new(params).attributes
+          Rails.logger.debug "[Search] #{search.inspect}"
+        end
+      end
+
+      class Period
+        def initialize(name, from, to, **options)
+          @name = name
+          @from = from
+          @to = to
+          @chart_attributes = (options[:chart_attributes] || [from, to]).freeze
+        end
+        attr_reader :name, :from, :to, :chart_attributes
+
+        def chart_period(search)
+          search.send(name)
+        end
       end
     end
 
@@ -216,12 +254,11 @@ module Search
       end
     end
 
-    def chart(scope) # rubocop:disable Metrics/MethodLength
+    def chart(scope) # rubocop:disable Metrics/MethodLength,Metrics/AbcSize
       return nil unless valid? && graphical?
 
-      models = without_order.without_pagination.search(scope)
       chart_klass.new(
-        models,
+        without_order.without_pagination.search(scope),
         type: chart_type,
         group_by_attribute: group_by_attribute,
         first: first,
@@ -229,7 +266,8 @@ module Search
         sort_by: sort_by,
         aggregate_operation: aggregate_operation,
         aggregate_attribute: aggregate_attribute,
-        display_percent: display_percent
+        display_percent: display_percent,
+        period: self.class.chart_periods[group_by_attribute]&.chart_period(self)
       )
     end
 
@@ -290,7 +328,7 @@ module Search
           @groups ||= selects || [name]
         end
 
-        def group_order_limit(request, order_arg, top_count)
+        def group_order_limit(request, order_arg, top_count, _period)
           request.group(*groups).order(order_arg).limit(top_count)
         end
 
@@ -315,8 +353,8 @@ module Search
       end
 
       class DatetimeGroupByAttribute < GroupByAttribute
-        def group_order_limit(request, _order_arg, top_count)
-          request.group_by_day(groups[0], last: top_count)
+        def group_order_limit(request, _order_arg, top_count, period)
+          request.group_by_day(groups[0], last: top_count, range: period)
         end
 
         class HourOfDay < NumericGroupByAttribute
@@ -328,7 +366,7 @@ module Search
             false
           end
 
-          def group_order_limit(request, _order_arg, _top_count)
+          def group_order_limit(request, _order_arg, _top_count, _period)
             request.group_by_hour_of_day(groups[0])
           end
 
@@ -348,7 +386,7 @@ module Search
             false
           end
 
-          def group_order_limit(request, _order_arg, _top_count)
+          def group_order_limit(request, _order_arg, _top_count, _period)
             request.group_by_day_of_week(groups[0])
           end
 
@@ -439,7 +477,8 @@ module Search
         sort_by:,
         aggregate_operation:,
         aggregate_attribute:,
-        display_percent:
+        display_percent:,
+        period:
       )
         @models = models
         @type = type
@@ -450,6 +489,7 @@ module Search
         @aggregate_operation = aggregate_operation
         @aggregate_attribute = self.class.aggregate_attributes[aggregate_attribute] if aggregate_attribute
         @display_percent = display_percent
+        @period = period
       end
       attr_reader :models,
                   :type,
@@ -459,7 +499,8 @@ module Search
                   :sort_by,
                   :aggregate_operation,
                   :aggregate_attribute,
-                  :display_percent
+                  :display_percent,
+                  :period
 
       def raw_data
         request = models
@@ -512,7 +553,7 @@ module Search
       end
 
       def group_order_limit(request)
-        group_by_attribute.group_order_limit(request, order_arg, top_count)
+        group_by_attribute.group_order_limit(request, order_arg, top_count, period)
       end
 
       def order_arg

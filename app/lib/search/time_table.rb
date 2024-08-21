@@ -6,11 +6,7 @@ module Search
     attribute :start_date, type: Date
     attribute :end_date, type: Date
 
-    def period
-      Period.new(from: start_date, to: end_date).presence
-    end
-
-    validates :period, valid: true
+    period :period, :start_date, :end_date
 
     def query(scope)
       Query::TimeTable.new(scope).comment(comment).in_period(period)

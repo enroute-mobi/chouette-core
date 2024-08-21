@@ -18,15 +18,11 @@ module Search
 
     enumerize :statuses, in: ::Referential::STATES, multiple: true, i18n_scope: 'referentials.states'
 
+    period :period, :valid_before_date, :valid_after_date
+
     def searched_class
       ::Referential
     end
-
-    def period
-      Period.new(from: valid_before_date, to: valid_after_date).presence
-    end
-
-    validates :period, valid: true
 
     def query(scope)
       Query::Referential.new(scope)

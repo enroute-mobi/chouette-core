@@ -3,6 +3,11 @@
 RSpec.describe Search::Base, type: :model do
   class self::Search < Search::Base # rubocop:disable Lint/ConstantDefinitionInBlock,Style/ClassAndModuleChildren
     attribute :name
+    attribute :start_at
+    attribute :end_at
+
+    period :period, :start_at, :end_at, chart_attributes: %i[created_at]
+
     attr_accessor :context
 
     class Order < ::Search::Order
@@ -21,6 +26,18 @@ RSpec.describe Search::Base, type: :model do
   subject(:search) { self.class::Search.new }
 
   describe 'validations' do
+    describe 'period' do
+      context 'when period is not valid' do
+        before { allow(search).to receive(:period).and_return(double(valid?: false)) }
+        it { is_expected.to_not be_valid }
+      end
+
+      context 'when period is valid' do
+        before { allow(search).to receive(:period).and_return(double(valid?: true)) }
+        it { is_expected.to be_valid }
+      end
+    end
+
     it { is_expected.to allow_value(nil).for(:chart_type) }
     it { is_expected.to allow_value('').for(:chart_type) }
     it { is_expected.to enumerize(:chart_type).in(%w[line pie column]) }
@@ -85,6 +102,41 @@ RSpec.describe Search::Base, type: :model do
         it { is_expected.not_to allow_value('').for(:aggregate_attribute) }
         it { is_expected.not_to allow_value('some_other_attribute').for(:aggregate_attribute) }
       end
+    end
+  end
+
+  describe '.period' do
+    subject { search.period }
+
+    let(:start_at) { Time.zone.yesterday }
+    let(:end_at) { Time.zone.tomorrow }
+
+    before do
+      search.start_at = start_at
+      search.end_at = end_at
+    end
+
+    context 'when both start_at and end_at are not filled' do
+      let(:start_at) { nil }
+      let(:end_at) { nil }
+
+      it { is_expected.to be_nil }
+    end
+
+    context 'when only start_at is filled' do
+      let(:end_at) { nil }
+
+      it { is_expected.to eq(start_at..) }
+    end
+
+    context 'when both start_at and end_at are not filled' do
+      let(:start_at) { nil }
+
+      it { is_expected.to eq(..end_at) }
+    end
+
+    context 'when both start_at and end_at are filled' do
+      it { is_expected.to eq(start_at..end_at) }
     end
   end
 
@@ -168,7 +220,18 @@ RSpec.describe Search::Base, type: :model do
   describe '#chart' do
     subject { search.chart(scope) }
 
-    before { search.chart_type = 'line' }
+    before do
+      allow(search).to receive(:search).and_return(scope)
+
+      search.chart_type = 'line'
+      search.group_by_attribute = 'some_attribute'
+      search.first = true
+      search.top_count = 100
+      search.sort_by = 'label'
+      search.aggregate_operation = 'sum'
+      search.aggregate_attribute = 'some_numeric_attribute'
+      search.display_percent = true
+    end
 
     context "when the Search isn't valid" do
       let(:scope) { double none: double('None relation from scope') }
@@ -185,12 +248,70 @@ RSpec.describe Search::Base, type: :model do
     end
 
     context 'when the Search is valid' do
-      before do
-        allow(search).to receive(:valid?).and_return(true)
-        allow(search).to receive(:search).and_return(scope)
+      it do
+        chart = double
+        expect(self.class::Search::Chart).to receive(:new).with(
+          scope,
+          type: 'line',
+          group_by_attribute: 'some_attribute',
+          first: true,
+          top_count: 100,
+          sort_by: 'label',
+          aggregate_operation: 'sum',
+          aggregate_attribute: 'some_numeric_attribute',
+          display_percent: true,
+          period: nil
+        ).and_return(chart)
+        is_expected.to eq(chart)
       end
 
-      it { is_expected.to be_an_instance_of(self.class::Search::Chart) }
+      context 'when #group_by_attribute is a datetime' do
+        before { search.group_by_attribute = 'created_at' }
+
+        it do
+          chart = double
+          expect(self.class::Search::Chart).to receive(:new).with(
+            scope,
+            type: 'line',
+            group_by_attribute: 'created_at',
+            first: true,
+            top_count: 100,
+            sort_by: 'label',
+            aggregate_operation: 'sum',
+            aggregate_attribute: 'some_numeric_attribute',
+            display_percent: true,
+            period: nil
+          ).and_return(chart)
+          is_expected.to eq(chart)
+        end
+
+        context 'when search filters on that attribute' do
+          let(:start_at) { Time.zone.yesterday }
+          let(:end_at) { Time.zone.tomorrow }
+
+          before do
+            search.start_at = start_at
+            search.end_at = end_at
+          end
+
+          it do
+            chart = double
+            expect(self.class::Search::Chart).to receive(:new).with(
+              scope,
+              type: 'line',
+              group_by_attribute: 'created_at',
+              first: true,
+              top_count: 100,
+              sort_by: 'label',
+              aggregate_operation: 'sum',
+              aggregate_attribute: 'some_numeric_attribute',
+              display_percent: true,
+              period: Period.new(from: start_at, to: end_at)
+            ).and_return(chart)
+            is_expected.to eq(chart)
+          end
+        end
+      end
     end
   end
 
@@ -495,7 +616,8 @@ RSpec.describe Search::Base::Chart do
       sort_by: sort_by,
       aggregate_operation: aggregate_operation,
       aggregate_attribute: aggregate_attribute,
-      display_percent: display_percent
+      display_percent: display_percent,
+      period: period
     )
   end
   let(:models) { double }
@@ -507,6 +629,7 @@ RSpec.describe Search::Base::Chart do
   let(:aggregate_operation) { 'count' }
   let(:aggregate_attribute) { nil }
   let(:display_percent) { false }
+  let(:period) { nil }
 
   before { allow(models).to receive(:column_alias_for) { |arg| Search::Save.all.send(:column_alias_for, arg) } }
 
@@ -575,7 +698,7 @@ RSpec.describe Search::Base::Chart do
       let(:group_by_attribute) { 'created_at' }
 
       it do
-        expect(models).to receive(:group_by_day).with('created_at', last: 10).and_return(models)
+        expect(models).to receive(:group_by_day).with('created_at', last: 10, range: nil).and_return(models)
         expect(models).to receive(:count).with(:id)
         subject
       end
@@ -584,7 +707,7 @@ RSpec.describe Search::Base::Chart do
         let(:first) { true }
 
         it do
-          expect(models).to receive(:group_by_day).with('created_at', last: 10).and_return(models)
+          expect(models).to receive(:group_by_day).with('created_at', last: 10, range: nil).and_return(models)
           expect(models).to receive(:count).with(:id)
           subject
         end
@@ -594,7 +717,17 @@ RSpec.describe Search::Base::Chart do
         let(:top_count) { 100 }
 
         it do
-          expect(models).to receive(:group_by_day).with('created_at', last: 100).and_return(models)
+          expect(models).to receive(:group_by_day).with('created_at', last: 100, range: nil).and_return(models)
+          expect(models).to receive(:count).with(:id)
+          subject
+        end
+      end
+
+      context 'with period' do
+        let(:period) { Period.new(from: Time.zone.yesterday, to: Time.zone.tomorrow) }
+
+        it do
+          expect(models).to receive(:group_by_day).with('created_at', last: 10, range: period).and_return(models)
           expect(models).to receive(:count).with(:id)
           subject
         end

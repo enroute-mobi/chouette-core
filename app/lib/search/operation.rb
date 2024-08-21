@@ -7,15 +7,11 @@ module Search
     attribute :start_date, type: Date
     attribute :end_date, type: Date
 
+    period :period, :start_date, :end_date, chart_attributes: %i[started_at ended_at]
+
     def candidate_statuses
       ::Operation::UserStatus.all
     end
-
-    def period
-      Period.new(from: start_date, to: end_date).presence
-    end
-
-    validates :period, valid: true
 
     attr_accessor :workgroup
 

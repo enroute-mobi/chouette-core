@@ -235,8 +235,8 @@ class Period < Range
   end
 
   def time_range
-    range_begin = from&.to_datetime
-    range_end = to ? (to + 1).to_datetime : nil
+    range_begin = from&.in_time_zone&.to_datetime
+    range_end = to ? (to + 1).in_time_zone.to_datetime : nil
 
     range_begin..range_end
   end

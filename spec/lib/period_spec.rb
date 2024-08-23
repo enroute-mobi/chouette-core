@@ -150,34 +150,8 @@ RSpec.describe Period do
     end
   end
 
-  describe '#time_range' do
-    subject { period.time_range }
-
-    context 'when only the beginning date is defined (with) 2030-01-01)' do
-      let(:period) { Period.from '2030-01-01' }
-      it { is_expected.to have_attributes begin: DateTime.parse('2030-01-01 00:00'), end: nil }
-    end
-
-    context 'when only the end date is defined (with) 2030-01-01)' do
-      let(:period) { Period.until '2030-01-01' }
-      it { is_expected.to have_attributes begin: nil, end: DateTime.parse('2030-01-02 00:00') }
-    end
-
-    context 'when the beginning date is is 2030-01-01 and the end date is 2030-12-31' do
-      let(:period) { Period.new from: '2030-01-01', to: '2030-12-31' }
-      it {
- is_expected.to have_attributes begin: DateTime.parse('2030-01-01 00:00'),
-                                end: DateTime.parse('2031-01-01 00:00') }
-    end
-
-    context 'when from and to are not defined' do
-      let(:period) { Period.new }
-      it { is_expected.to have_attributes begin: nil, end: nil }
-    end
-  end
-
-  describe 'infinite_date_range' do
-    subject { period.infinite_time_range }
+  describe 'infinity_date_range', timezone: :random do
+    subject { period.infinity_date_range }
 
     context 'when only the beginning date is defined (with) 2030-01-01)' do
       let(:period) { Period.from '2030-01-01' }
@@ -186,14 +160,12 @@ RSpec.describe Period do
 
     context 'when only the end date is defined (with) 2030-01-01)' do
       let(:period) { Period.until '2030-01-01' }
-      it { is_expected.to have_attributes begin: -Float::INFINITY, end: Date.parse('2030-01-02') }
+      it { is_expected.to have_attributes begin: -Float::INFINITY, end: Date.parse('2030-01-01') }
     end
 
     context 'when the beginning date is is 2030-01-01 and the end date is 2030-12-31' do
       let(:period) { Period.new from: '2030-01-01', to: '2030-12-31' }
-      it {
- is_expected.to have_attributes begin: Date.parse('2030-01-01'),
-                                end: DateTime.parse('2031-01-01') }
+      it { is_expected.to have_attributes begin: Date.parse('2030-01-01'), end: Date.parse('2030-12-31') }
     end
 
     context 'when from and to are not defined' do
@@ -202,26 +174,52 @@ RSpec.describe Period do
     end
   end
 
-  describe 'infinite_time_range' do
-    subject { period.infinite_time_range }
+  describe '#time_range', timezone: :random do
+    subject { period.time_range }
 
     context 'when only the beginning date is defined (with) 2030-01-01)' do
       let(:period) { Period.from '2030-01-01' }
-      it {
- is_expected.to have_attributes begin: DateTime.parse('2030-01-01 00:00'), end: Float::INFINITY }
+      it { is_expected.to have_attributes begin: Time.zone.parse('2030-01-01 00:00'), end: nil }
     end
 
     context 'when only the end date is defined (with) 2030-01-01)' do
       let(:period) { Period.until '2030-01-01' }
-      it {
- is_expected.to have_attributes begin: -Float::INFINITY, end: DateTime.parse('2030-01-02 00:00') }
+      it { is_expected.to have_attributes begin: nil, end: Time.zone.parse('2030-01-02 00:00') }
     end
 
     context 'when the beginning date is is 2030-01-01 and the end date is 2030-12-31' do
       let(:period) { Period.new from: '2030-01-01', to: '2030-12-31' }
       it {
- is_expected.to have_attributes begin: DateTime.parse('2030-01-01 00:00'),
-                                end: DateTime.parse('2031-01-01 00:00') }
+        is_expected.to have_attributes begin: Time.zone.parse('2030-01-01 00:00'),
+                                       end: Time.zone.parse('2031-01-01 00:00')
+      }
+    end
+
+    context 'when from and to are not defined' do
+      let(:period) { Period.new }
+      it { is_expected.to have_attributes begin: nil, end: nil }
+    end
+  end
+
+  describe 'infinite_time_range', timezone: :random do
+    subject { period.infinite_time_range }
+
+    context 'when only the beginning date is defined (with) 2030-01-01)' do
+      let(:period) { Period.from '2030-01-01' }
+      it { is_expected.to have_attributes begin: Time.zone.parse('2030-01-01 00:00'), end: Float::INFINITY }
+    end
+
+    context 'when only the end date is defined (with) 2030-01-01)' do
+      let(:period) { Period.until '2030-01-01' }
+      it { is_expected.to have_attributes begin: -Float::INFINITY, end: Time.zone.parse('2030-01-02 00:00') }
+    end
+
+    context 'when the beginning date is is 2030-01-01 and the end date is 2030-12-31' do
+      let(:period) { Period.new from: '2030-01-01', to: '2030-12-31' }
+      it {
+        is_expected.to have_attributes begin: Time.zone.parse('2030-01-01 00:00'),
+                                       end: Time.zone.parse('2031-01-01 00:00')
+      }
     end
 
     context 'when from and to are not defined' do

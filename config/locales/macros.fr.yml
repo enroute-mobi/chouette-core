@@ -56,6 +56,8 @@ fr:
         one: Définir le mode de tranport des arrêts
       macro/force_attribute_value:
         one: Forcer la valeur de l'attribut
+      macro/define_route_name:
+        one: Définir le nom de l'itinéraire
     attributes:
       macro/base:
         name: Nom
@@ -90,6 +92,9 @@ fr:
         target_model: Modèle cible
         target_attribute: Attribut
         expected_value: Valeur attendue
+      macro/define_route_name:
+        target_attribute: Attribut
+        target_format: Format
   simple_form:
     placeholders:
       macro_base:

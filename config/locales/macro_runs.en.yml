@@ -47,6 +47,8 @@ en:
         one: Define Stop Area transport mode
       macro/force_attribute_value/run:
         one: Force attribute value
+      macro/define_route_name/run:
+        one: Define Route name
     attributes:
       macro/base/run:
         name: Name
@@ -72,3 +74,6 @@ en:
         target_model: Target Model
         target_attribute: Attribute
         expected_value: Expected value
+      macro/define_route_name/run:
+        target_attribute: Attribute
+        target_format: Format

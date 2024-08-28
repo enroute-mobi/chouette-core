@@ -17,7 +17,7 @@ RSpec.describe Search::Base, type: :model do
 
     class Chart < ::Search::Base::Chart
       group_by_attribute 'some_attribute', :string
-      group_by_attribute 'created_at', :datetime, sub_types: %i[hour_of_day day_of_week]
+      group_by_attribute 'created_at', :datetime, sub_types: %i[by_week by_month hour_of_day day_of_week]
       aggregate_attribute 'some_numeric_attribute'
     end
   end
@@ -64,6 +64,8 @@ RSpec.describe Search::Base, type: :model do
 
       it { is_expected.to allow_value('some_attribute').for(:group_by_attribute) }
       it { is_expected.to allow_value('created_at').for(:group_by_attribute) }
+      it { is_expected.to allow_value('created_at_by_week').for(:group_by_attribute) }
+      it { is_expected.to allow_value('created_at_by_month').for(:group_by_attribute) }
       it { is_expected.to allow_value('created_at_hour_of_day').for(:group_by_attribute) }
       it { is_expected.to allow_value('created_at_day_of_week').for(:group_by_attribute) }
       it { is_expected.not_to allow_value(nil).for(:group_by_attribute) }
@@ -300,6 +302,68 @@ RSpec.describe Search::Base, type: :model do
               scope,
               type: 'line',
               group_by_attribute: 'created_at',
+              first: true,
+              top_count: 100,
+              sort_by: 'label',
+              aggregate_operation: 'sum',
+              aggregate_attribute: 'some_numeric_attribute',
+              display_percent: true,
+              period: Period.new(from: start_at, to: end_at)
+            ).and_return(chart)
+            is_expected.to eq(chart)
+          end
+        end
+      end
+
+      context 'when #group_by_attribute is a datetime grouped by week' do
+        before { search.group_by_attribute = 'created_at_by_week' }
+
+        context 'when search filters on that attribute' do
+          let(:start_at) { Time.zone.yesterday }
+          let(:end_at) { Time.zone.tomorrow }
+
+          before do
+            search.start_at = start_at
+            search.end_at = end_at
+          end
+
+          it do
+            chart = double
+            expect(self.class::Search::Chart).to receive(:new).with(
+              scope,
+              type: 'line',
+              group_by_attribute: 'created_at_by_week',
+              first: true,
+              top_count: 100,
+              sort_by: 'label',
+              aggregate_operation: 'sum',
+              aggregate_attribute: 'some_numeric_attribute',
+              display_percent: true,
+              period: Period.new(from: start_at, to: end_at)
+            ).and_return(chart)
+            is_expected.to eq(chart)
+          end
+        end
+      end
+
+      context 'when #group_by_attribute is a datetime grouped by month' do
+        before { search.group_by_attribute = 'created_at_by_month' }
+
+        context 'when search filters on that attribute' do
+          let(:start_at) { Time.zone.yesterday }
+          let(:end_at) { Time.zone.tomorrow }
+
+          before do
+            search.start_at = start_at
+            search.end_at = end_at
+          end
+
+          it do
+            chart = double
+            expect(self.class::Search::Chart).to receive(:new).with(
+              scope,
+              type: 'line',
+              group_by_attribute: 'created_at_by_month',
               first: true,
               top_count: 100,
               sort_by: 'label',
@@ -585,7 +649,8 @@ RSpec.describe Search::Base::Chart do
   class self::Chart < Search::Base::Chart # rubocop:disable Lint/ConstantDefinitionInBlock,Style/ClassAndModuleChildren
     group_by_attribute 'some_attribute', :string
     group_by_attribute 'some_numeric_attribute', :numeric
-    group_by_attribute 'created_at', :datetime, sub_types: %i[hour_of_day day_of_week]
+    group_by_attribute 'created_at', :datetime, sub_types: %i[by_week by_month hour_of_day day_of_week]
+    group_by_attribute 'date', :date, sub_types: %i[by_week by_month day_of_week]
     group_by_attribute 'custom_label_attribute',
                        :string,
                        joins: { relation: { other_relation: {} }, another_relation: {} },
@@ -698,7 +763,9 @@ RSpec.describe Search::Base::Chart do
       let(:group_by_attribute) { 'created_at' }
 
       it do
-        expect(models).to receive(:group_by_day).with('created_at', last: 10, range: nil).and_return(models)
+        expect(models).to(
+          receive(:group_by_day).with('created_at', last: 10, range: nil, time_zone: nil).and_return(models)
+        )
         expect(models).to receive(:count).with(:id)
         subject
       end
@@ -707,7 +774,9 @@ RSpec.describe Search::Base::Chart do
         let(:first) { true }
 
         it do
-          expect(models).to receive(:group_by_day).with('created_at', last: 10, range: nil).and_return(models)
+          expect(models).to(
+            receive(:group_by_day).with('created_at', last: 10, range: nil, time_zone: nil).and_return(models)
+          )
           expect(models).to receive(:count).with(:id)
           subject
         end
@@ -717,7 +786,9 @@ RSpec.describe Search::Base::Chart do
         let(:top_count) { 100 }
 
         it do
-          expect(models).to receive(:group_by_day).with('created_at', last: 100, range: nil).and_return(models)
+          expect(models).to(
+            receive(:group_by_day).with('created_at', last: 100, range: nil, time_zone: nil).and_return(models)
+          )
           expect(models).to receive(:count).with(:id)
           subject
         end
@@ -727,7 +798,105 @@ RSpec.describe Search::Base::Chart do
         let(:period) { Period.new(from: Time.zone.yesterday, to: Time.zone.tomorrow) }
 
         it do
-          expect(models).to receive(:group_by_day).with('created_at', last: 10, range: period).and_return(models)
+          expect(models).to(
+            receive(:group_by_day).with('created_at', last: 10, range: period, time_zone: nil).and_return(models)
+          )
+          expect(models).to receive(:count).with(:id)
+          subject
+        end
+      end
+    end
+
+    context 'with a datetime attribute grouped by week' do
+      let(:group_by_attribute) { 'created_at_by_week' }
+
+      it do
+        expect(models).to(
+          receive(:group_by_week).with('created_at', last: 10, range: nil, time_zone: nil).and_return(models)
+        )
+        expect(models).to receive(:count).with(:id)
+        subject
+      end
+
+      context 'when #first is true' do
+        let(:first) { true }
+
+        it do
+          expect(models).to(
+            receive(:group_by_week).with('created_at', last: 10, range: nil, time_zone: nil).and_return(models)
+          )
+          expect(models).to receive(:count).with(:id)
+          subject
+        end
+      end
+
+      context 'when #top_count is 100' do
+        let(:top_count) { 100 }
+
+        it do
+          expect(models).to(
+            receive(:group_by_week).with('created_at', last: 100, range: nil, time_zone: nil).and_return(models)
+          )
+          expect(models).to receive(:count).with(:id)
+          subject
+        end
+      end
+
+      context 'with period' do
+        let(:period) { Period.new(from: Time.zone.yesterday, to: Time.zone.tomorrow) }
+
+        it do
+          expect(models).to(
+            receive(:group_by_week).with('created_at', last: 10, range: period, time_zone: nil).and_return(models)
+          )
+          expect(models).to receive(:count).with(:id)
+          subject
+        end
+      end
+    end
+
+    context 'with a datetime attribute grouped by month' do
+      let(:group_by_attribute) { 'created_at_by_month' }
+
+      it do
+        expect(models).to(
+          receive(:group_by_month).with('created_at', last: 10, range: nil, time_zone: nil).and_return(models)
+        )
+        expect(models).to receive(:count).with(:id)
+        subject
+      end
+
+      context 'when #first is true' do
+        let(:first) { true }
+
+        it do
+          expect(models).to(
+            receive(:group_by_month).with('created_at', last: 10, range: nil, time_zone: nil).and_return(models)
+          )
+          expect(models).to receive(:count).with(:id)
+          subject
+        end
+      end
+
+      context 'when #top_count is 100' do
+        let(:top_count) { 100 }
+
+        it do
+          expect(models).to(
+            receive(:group_by_month).with('created_at', last: 100, range: nil, time_zone: nil).and_return(models)
+          )
+          expect(models).to receive(:count).with(:id)
+          subject
+        end
+      end
+
+      context 'with period' do
+        let(:period) { Period.new(from: Time.zone.yesterday, to: Time.zone.tomorrow) }
+
+        it do
+          expect(models).to(
+            receive(:group_by_month).with('created_at', last: 10, range: period, time_zone: nil).and_return(models)
+          )
           expect(models).to receive(:count).with(:id)
           subject
         end
@@ -738,7 +907,7 @@ RSpec.describe Search::Base::Chart do
       let(:group_by_attribute) { 'created_at_hour_of_day' }
 
       it do
-        expect(models).to receive(:group_by_hour_of_day).with('created_at').and_return(models)
+        expect(models).to receive(:group_by_hour_of_day).with('created_at', time_zone: nil).and_return(models)
         expect(models).to receive(:count).with(:id)
         subject
       end
@@ -748,7 +917,53 @@ RSpec.describe Search::Base::Chart do
       let(:group_by_attribute) { 'created_at_day_of_week' }
 
       it do
-        expect(models).to receive(:group_by_day_of_week).with('created_at').and_return(models)
+        expect(models).to receive(:group_by_day_of_week).with('created_at', time_zone: nil).and_return(models)
+        expect(models).to receive(:count).with(:id)
+        subject
+      end
+    end
+
+    context 'with a date attribute' do
+      let(:group_by_attribute) { 'date' }
+
+      it do
+        expect(models).to(
+          receive(:group_by_day).with('date', last: 10, range: nil, time_zone: false).and_return(models)
+        )
+        expect(models).to receive(:count).with(:id)
+        subject
+      end
+    end
+
+    context 'with a date attribute grouped by week' do
+      let(:group_by_attribute) { 'date_by_week' }
+
+      it do
+        expect(models).to(
+          receive(:group_by_week).with('date', last: 10, range: nil, time_zone: false).and_return(models)
+        )
+        expect(models).to receive(:count).with(:id)
+        subject
+      end
+    end
+
+    context 'with a date attribute grouped by month' do
+      let(:group_by_attribute) { 'date_by_month' }
+
+      it do
+        expect(models).to(
+          receive(:group_by_month).with('date', last: 10, range: nil, time_zone: false).and_return(models)
+        )
+        expect(models).to receive(:count).with(:id)
+        subject
+      end
+    end
+
+    context 'with a date attribute by day of week' do
+      let(:group_by_attribute) { 'date_day_of_week' }
+
+      it do
+        expect(models).to receive(:group_by_day_of_week).with('date', time_zone: false).and_return(models)
         expect(models).to receive(:count).with(:id)
         subject
       end
@@ -1110,6 +1325,24 @@ RSpec.describe Search::Base::Chart do
         end
       end
 
+      context 'when #group_by_attribute is a datetime grouped by week' do
+        let(:group_by_attribute) { 'created_at_by_week' }
+
+        it do
+          expect(view_context).to receive(:line_chart).with(data, {})
+          subject
+        end
+      end
+
+      context 'when #group_by_attribute is a datetime grouped by month' do
+        let(:group_by_attribute) { 'created_at_by_month' }
+
+        it do
+          expect(view_context).to receive(:line_chart).with(data, {})
+          subject
+        end
+      end
+
       context 'when #group_by_attribute is a datetime by hour of day' do
         let(:group_by_attribute) { 'created_at_hour_of_day' }
 
@@ -1121,6 +1354,42 @@ RSpec.describe Search::Base::Chart do
 
       context 'when #group_by_attribute is a datetime by day of week' do
         let(:group_by_attribute) { 'created_at_day_of_week' }
+
+        it do
+          expect(view_context).to receive(:line_chart).with(data, discrete: true)
+          subject
+        end
+      end
+
+      context 'when #group_by_attribute is a date' do
+        let(:group_by_attribute) { 'date' }
+
+        it do
+          expect(view_context).to receive(:line_chart).with(data, {})
+          subject
+        end
+      end
+
+      context 'when #group_by_attribute is a date grouped by week' do
+        let(:group_by_attribute) { 'date_by_week' }
+
+        it do
+          expect(view_context).to receive(:line_chart).with(data, {})
+          subject
+        end
+      end
+
+      context 'when #group_by_attribute is a date grouped by month' do
+        let(:group_by_attribute) { 'date_by_month' }
+
+        it do
+          expect(view_context).to receive(:line_chart).with(data, {})
+          subject
+        end
+      end
+
+      context 'when #group_by_attribute is a date grouped by day of week' do
+        let(:group_by_attribute) { 'date_day_of_week' }
 
         it do
           expect(view_context).to receive(:line_chart).with(data, discrete: true)

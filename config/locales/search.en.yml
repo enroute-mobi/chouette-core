@@ -54,6 +54,8 @@ en:
         chart:
           group_by_attribute:
             sub_type:
+              by_week: "By week"
+              by_month: "By month"
               hour_of_day: "Hour of day"
               day_of_week: "Day of week"
   activerecord:

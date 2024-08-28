@@ -54,6 +54,8 @@ fr:
         chart:
           group_by_attribute:
             sub_type:
+              by_week: "Par semaine"
+              by_month: "Par mois"
               hour_of_day: "Heure de la journée"
               day_of_week: "Jour de la semaine"
   activerecord:

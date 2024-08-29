@@ -1105,24 +1105,7 @@ RSpec.describe Search::Base::Chart do
         let(:group_by_attribute) { 'created_at' }
 
         it do
-          expect(view_context).to(
-            receive(:line_chart).with(
-              data,
-              {
-                library: {
-                  scales: {
-                    x: {
-                      time: {
-                        displayFormats: {
-                          day: 'dd/MM/yyyy'
-                        }
-                      }
-                    }
-                  }
-                }
-              }
-            )
-          )
+          expect(view_context).to receive(:line_chart).with(data, {})
           subject
         end
       end
@@ -1158,11 +1141,11 @@ RSpec.describe Search::Base::Chart do
     context 'when #type is pie' do
       let(:chart_type) { 'pie' }
 
-      context 'when #group_by_attribute is a datetime' do
-        let(:group_by_attribute) { 'created_at' }
+      context 'when #group_by_attribute is simple' do
+        let(:group_by_attribute) { 'some_attribute' }
 
         it do
-          expect(view_context).to receive(:pie_chart).with(data, {})
+          expect(view_context).to receive(:pie_chart).with(data, discrete: true)
           subject
         end
       end
@@ -1171,28 +1154,11 @@ RSpec.describe Search::Base::Chart do
     context 'when #type is column' do
       let(:chart_type) { 'column' }
 
-      context 'when #group_by_attribute is a datetime' do
-        let(:group_by_attribute) { 'created_at' }
+      context 'when #group_by_attribute is simple' do
+        let(:group_by_attribute) { 'some_attribute' }
 
         it do
-          expect(view_context).to(
-            receive(:column_chart).with(
-              data,
-              {
-                library: {
-                  scales: {
-                    x: {
-                      time: {
-                        displayFormats: {
-                          day: 'dd/MM/yyyy'
-                        }
-                      }
-                    }
-                  }
-                }
-              }
-            )
-          )
+          expect(view_context).to receive(:column_chart).with(data, discrete: true)
           subject
         end
       end

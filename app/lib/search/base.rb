@@ -284,7 +284,7 @@ module Search
       { per_page: per_page, page: page }
     end
 
-    class Chart # rubocop:disable Metrics/ClassLength
+    class Chart
       class GroupByAttribute
         class << self
           private
@@ -517,22 +517,9 @@ module Search
         label_keys(data)
       end
 
-      def to_chartkick(view_context, **options) # rubocop:disable Metrics/MethodLength
+      def to_chartkick(view_context, **options)
         new_options = {}
         new_options[:discrete] = true if group_by_attribute.discrete?
-        if group_by_attribute.is_a?(DatetimeGroupByAttribute) && type != 'pie'
-          new_options[:library] = {
-            scales: {
-              x: {
-                time: {
-                  displayFormats: {
-                    day: 'dd/MM/yyyy'
-                  }
-                }
-              }
-            }
-          }
-        end
         new_options[:suffix] = '%' if display_percent
 
         view_context.send("#{type}_chart", data, new_options.deep_merge(options))

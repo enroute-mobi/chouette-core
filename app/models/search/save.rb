@@ -5,7 +5,8 @@ module Search
     self.table_name = 'saved_searches'
 
     belongs_to :parent, polymorphic: true # CHOUETTE-3247 optional: false
-    validates :name, :search_type, presence: true
+    validates :name, presence: true, uniqueness: { scope: %i[parent_type parent_id search_type] }
+    validates :search_type, presence: true
 
     class << self
       # rubocop:disable Naming/MemoizedInstanceVariableName

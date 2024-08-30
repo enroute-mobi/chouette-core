@@ -13,6 +13,9 @@ en:
       selector:
         all: All
         none: None
+    show:
+      no_permissions: No permission
+      no_restrictions: No restriction
     features:
       aggregates: Aggregated offers
       api_keys: Api keys

@@ -46,8 +46,8 @@ en:
       point_of_interest:
         name: "Name"
         url: "Url"
-        point_of_interest_category_id: "Catégories"
-        point_of_interest_category: "Catégories"
+        point_of_interest_category_id: "Category"
+        point_of_interest_category: "Category"
         position_input: "Position"
         address_line_1: "Address"
         zip_code: "Zip Code"

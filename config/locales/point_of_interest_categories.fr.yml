@@ -42,8 +42,8 @@ fr:
     attributes:
       point_of_interest/category:
         name: "Nom"
-        parent: "Categorie parente"
-        parent_id: "Categorie parente"
+        parent: "Catégorie parente"
+        parent_id: "Catégorie parente"
         updated_at: "Edité le"
         creator_id: "Créé par"
         shape_provider: "Fournisseur Topologique"

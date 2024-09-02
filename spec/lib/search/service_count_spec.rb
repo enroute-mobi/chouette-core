@@ -152,15 +152,49 @@ RSpec.describe Search::ServiceCount, type: :model do
       context
     end
 
+    let(:subgroup_by_attribute) { nil }
     let(:search) do
       described_class.new(
         workbench: context.workbench,
         chart_type: 'line',
         group_by_attribute: group_by_attribute,
+        subgroup_by_attribute: subgroup_by_attribute,
         top_count: 10
       )
     end
     let(:scope) { context.referential.service_counts }
+
+    describe '#xaxis' do
+      subject { chart.xaxis }
+
+      let(:group_by_attribute) { 'route_wayback' }
+      let(:subgroup_by_attribute) { 'date' }
+
+      it 'orders the xaxis by max value by series' do
+        is_expected.to eq(['outbound', 'inbound']) # rubocop:disable Style/WordArray
+      end
+
+      # there was a bug with one implementation of #xaxis so this needs to be checked
+      context 'when the sum of the values of all series on one tick is greather than the tick of the max value' do
+        # We have data:
+        # W \ Date | 2024-08-18 | 2024-08-19 | 2024-08-20
+        # outbound | 16         | 0          | 0
+        # inbound  | 15         | 12         | 3
+        #
+        # Since since 15+12+3 > 16, the xaxis should be [inbound, outbound].
+        # However since 16 is the max value, we must ensure that the xaxis is not [outbound, inbound]
+
+        before do
+          # rubocop:disable Layout/LineLength
+          ServiceCount.create!(line: context.line(:line), route: context.route(:line_route), journey_pattern: context.journey_pattern(:wayback_journey_pattern), date: date - 1.day, count: 15)
+          # rubocop:enable Layout/LineLength
+        end
+
+        it 'orders the xaxis by max value by series' do
+          is_expected.to eq(['inbound', 'outbound']) # rubocop:disable Style/WordArray
+        end
+      end
+    end
 
     describe '#data' do
       subject { chart.data }

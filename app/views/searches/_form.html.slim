@@ -48,6 +48,9 @@
         - if f.object.candidate_aggregate_attributes.any?
           = f.input :aggregate_attribute, collection: f.object.candidate_aggregate_attributes.map { |attr_name, attr| [attr.human_name(f.object.searched_class), attr_name] }, include_blank: '-', label: false, wrapper_html: {class: "border-l"}
         = f.input :display_percent, as: :boolean, boolean_style: :inline, wrapper_html: {class: "flex items-center py-3 px-6 border-white border-l"}, input_html: {class: "cursor-pointer"}, wrapper: :horizontal_boolean_tailwind
+        = f.input :subgroup_by_attribute, as: :select, collection: f.object.candidate_group_by_attributes.map { |attr_name, attr| [attr.human_name(f.object.searched_class), attr_name] }, include_blank: true, wrapper_html: {class: "border-l"}
+        = f.input :subgroup_first, as: :select, collection: [[I18n.t('enumerize.search/base.first.first'), '1'], [I18n.t('enumerize.search/base.first.last'), '0']], selected: f.object.subgroup_first ? '1' : '0', label: false, wrapper_html: {class: "border-l"}
+        = f.input :subgroup_top_count, as: :integer, label: false, wrapper_html: {class: "border-l"}
         = f.input :chart_type, wrapper_html: {class: "border-l"}
 
   .flex.flex-col.justify-center.items-center.actions.ml-auto.w-56.border-white.border-t.border-l.h-max

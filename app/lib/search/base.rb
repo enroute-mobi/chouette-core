@@ -23,6 +23,9 @@ module Search
     attribute :aggregate_operation, type: String, default: 'count'
     attribute :aggregate_attribute, type: String
     attribute :display_percent, type: Boolean
+    attribute :subgroup_by_attribute, type: String
+    attribute :subgroup_first, type: Boolean, default: true
+    attribute :subgroup_top_count, type: Integer, default: 30
 
     attr_accessor :saved_name, :saved_description
 
@@ -31,13 +34,26 @@ module Search
     enumerize :aggregate_operation, in: %w[count sum average]
 
     with_options if: :graphical? do
-      validates :group_by_attribute, inclusion: { in: ->(r) { r.candidate_group_by_attributes.keys } }
+      validates :group_by_attribute, inclusion: { in: ->(r) { r.candidate_group_by_attributes } }
       validates :top_count, presence: true, numericality: { only_integer: true, greater_than: 1 }
       validates :sort_by, presence: true
       validates :aggregate_operation, presence: true
       validates :aggregate_attribute,
-                inclusion: { in: ->(r) { r.candidate_aggregate_attributes.keys } },
+                inclusion: { in: ->(r) { r.candidate_aggregate_attributes } },
                 if: :aggregate_attribute?
+      with_options if: :chart_one_dimensional? do
+        validates :subgroup_by_attribute, absence: true, if: :chart_one_dimensional?
+      end
+      with_options unless: :chart_one_dimensional? do
+        validates :subgroup_by_attribute, inclusion: {
+          in: ->(r) { r.candidate_group_by_attributes },
+          allow_blank: true
+        }
+        validates :subgroup_top_count,
+                  presence: true,
+                  numericality: { only_integer: true, greater_than: 1 },
+                  if: :subgroup_by_attribute
+      end
     end
 
     SAVED_SEARCH_ATTRIBUTE_MAPPING = {
@@ -242,6 +258,10 @@ module Search
       chart_type.present?
     end
 
+    def chart_one_dimensional?
+      chart_type == 'pie'
+    end
+
     def search(scope)
       if valid?
         result = query(scope).scope
@@ -267,12 +287,22 @@ module Search
         aggregate_operation: aggregate_operation,
         aggregate_attribute: aggregate_attribute,
         display_percent: display_percent,
-        period: self.class.chart_periods[chart_klass.group_by_attributes[group_by_attribute].name]&.chart_period(self)
+        subgroup_by_attribute: subgroup_by_attribute,
+        subgroup_first: subgroup_first,
+        subgroup_top_count: subgroup_top_count,
+        period: chart_period(group_by_attribute),
+        subgroup_period: chart_period(subgroup_by_attribute)
       )
     end
 
     def chart_klass
       self.class.const_get(:Chart)
+    end
+
+    def chart_period(attribute)
+      return nil unless attribute
+
+      self.class.chart_periods[chart_klass.group_by_attributes[attribute].name]&.chart_period(self)
     end
 
     def order
@@ -293,11 +323,17 @@ module Search
         class << self
           private
 
-          def method_added(name)
-            if name == :label
+          def method_added(name) # rubocop:disable Metrics/MethodLength
+            case name
+            when :label_series
+              define_method(:label_series?) do
+                true
+              end
+            when :label
               define_method(:label?) do
                 true
               end
+              alias_method :label_series, :label unless method_defined?(:label_series)
             end
 
             super
@@ -320,16 +356,36 @@ module Search
           human_name
         end
 
+        def label_series?
+          false
+        end
+
         def label?
           false
         end
 
         def discrete?
-          keys
+          true
+        end
+
+        def compute_xaxis_keys?
+          sortable && discrete?
+        end
+
+        def select_length
+          @select_length ||= selects ? selects.length : 1
+        end
+
+        def array?
+          @array ||= select_length > 1
         end
 
         def keys_zero_data
-          @keys_zero_data ||= keys.map { |k| [k, 0] }.to_h.freeze
+          @keys_zero_data ||= keys.index_with(0).freeze
+        end
+
+        def keys_empty_hash_data
+          @keys_empty_hash_data ||= keys.index_with({}.freeze).freeze
         end
 
         def nil_key?(key)
@@ -345,20 +401,28 @@ module Search
           end
         end
 
-        def array?
-          @array ||= selects && selects.length > 1
+        # SQL expressions used to compute the value of each value of a key
+        def sql_expressions(_models, _period)
+          selects_from_options
         end
 
-        def groups
-          @groups ||= selects || [name]
+        # only used by attributes where #compute_xaxis_keys? is false
+        def where_without_xaxis_keys(request, _top_count, _period)
+          request
         end
 
-        def group_order_limit(request, order_arg, top_count, _period)
-          request.group(*groups).order(order_arg).limit(top_count)
+        # simply group an attribute
+        def group(request, _period)
+          request.group(*selects_from_options)
         end
 
-        def order_arg(request, asc_desc)
-          groups.map { |s| [request.send(:column_alias_for, s.downcase), asc_desc] }.to_h
+        # group an attribute for a series, we want a discrete list of all possible values
+        def group_series(request, order_arg, top_count, period)
+          group(request, period).order(order_arg).limit(top_count)
+        end
+
+        def group_order_limit(request, order_arg, top_count, period)
+          group_series(request, order_arg, top_count, period)
         end
 
         protected
@@ -366,43 +430,132 @@ module Search
         def subtype_human_name
           nil
         end
-      end
 
-      class StringGroupByAttribute < GroupByAttribute
-        def discrete?
-          true
+        private
+
+        def selects_from_options
+          @selects_from_options ||= selects || [name]
         end
       end
 
-      class NumericGroupByAttribute < GroupByAttribute
+      class StringGroupByAttribute < GroupByAttribute
       end
 
-      class DatetimeGroupByAttribute < GroupByAttribute
+      class NumericGroupByAttribute < GroupByAttribute
+        def discrete?
+          keys
+        end
+      end
+
+      module Groupdate
+        def sql_expressions(models, period)
+          [groupdate_adapter(models, period: period).group_clause]
+        end
+
+        def where_without_xaxis_keys(request, top_count, period)
+          request.where(groupdate_adapter(request, top_count: top_count, period: period).send(:where_clause))
+        end
+
+        def group(request, period)
+          request.group_by_period(
+            groupdate_period,
+            groupdate_column,
+            **groupdate_magic_options(period: period, series: false)
+          )
+        end
+
         def group_order_limit(request, _order_arg, top_count, period)
-          request.group_by_day(groups[0], last: top_count, range: period, time_zone: time_zone)
+          request.group_by_period(
+            groupdate_period,
+            groupdate_column,
+            **groupdate_magic_options(top_count: top_count, period: period)
+          )
         end
 
         protected
 
         def time_zone
-          nil
+          Time.zone
+        end
+
+        def time_zone_name
+          time_zone == false ? 'Etc/UTC' : time_zone.tzinfo.name # see groupdate/magic
+        end
+
+        def groupdate_adapter(models, **options) # rubocop:disable Metrics/MethodLength,Metrics/AbcSize
+          # copied from Groupdate::Magic::Relation.generate_relation
+
+          magic = ::Groupdate::Magic::Relation.new(**groupdate_magic_options(options).merge(period: groupdate_period))
+          adapter_name = models.connection.adapter_name
+          adapter = ::Groupdate.adapters[adapter_name]
+
+          column = ::Groupdate::Magic::Relation.resolve_column(models.klass, groupdate_column)
+
+          adapter.new(
+            models,
+            column: column,
+            period: groupdate_period,
+            time_zone: magic.time_zone,
+            time_range: magic.time_range,
+            week_start: magic.week_start,
+            day_start: magic.day_start,
+            n_seconds: magic.n_seconds
+          )
+        end
+
+        def groupdate_column
+          selects_from_options[0]
+        end
+
+        def groupdate_period
+          raise NotImplementedError
+        end
+
+        def groupdate_magic_options(top_count: nil, period: nil, **options)
+          {
+            time_zone: time_zone,
+            last: top_count,
+            range: period
+          }.merge(options)
+        end
+      end
+
+      class DatetimeGroupByAttribute < GroupByAttribute
+        include Groupdate
+
+        def sortable
+          :before_label
+        end
+
+        def label_series(key)
+          I18n.l(key) # must match app/packs/src/charkick.js
+        end
+
+        def discrete?
+          keys
+        end
+
+        protected
+
+        def groupdate_period
+          :day
         end
 
         class ByWeek < DatetimeGroupByAttribute
-          def group_order_limit(request, _order_arg, top_count, period)
-            request.group_by_week(groups[0], last: top_count, range: period, time_zone: time_zone)
-          end
-
           protected
 
           def subtype_human_name
             I18n.t('activemodel.attributes.search.chart.group_by_attribute.sub_type.by_week')
           end
+
+          def groupdate_period
+            :week
+          end
         end
 
         class ByMonth < DatetimeGroupByAttribute
-          def group_order_limit(request, _order_arg, top_count, period)
-            request.group_by_month(groups[0], last: top_count, range: period, time_zone: time_zone)
+          def label_series(key)
+            "#{I18n.t('date.month_names')[key.month]} #{key.year}" # must match app/packs/src/charkick.js
           end
 
           protected
@@ -410,9 +563,15 @@ module Search
           def subtype_human_name
             I18n.t('activemodel.attributes.search.chart.group_by_attribute.sub_type.by_month')
           end
+
+          def groupdate_period
+            :month
+          end
         end
 
         class HourOfDay < NumericGroupByAttribute
+          include Groupdate
+
           def keys
             @keys ||= 0..23
           end
@@ -421,32 +580,30 @@ module Search
             false
           end
 
-          def group_order_limit(request, _order_arg, _top_count, _period)
-            request.group_by_hour_of_day(groups[0], time_zone: time_zone)
-          end
-
           protected
 
           def subtype_human_name
             I18n.t('activemodel.attributes.search.chart.group_by_attribute.sub_type.hour_of_day')
           end
 
-          def time_zone
-            nil
+          def groupdate_period
+            :hour_of_day
+          end
+
+          def groupdate_magic_options(top_count: nil, period: nil, **options) # rubocop:disable Lint/UnusedMethodArgument
+            super(**options)
           end
         end
 
         class DayOfWeek < StringGroupByAttribute
+          include Groupdate
+
           def keys
             @keys ||= (0..6).map { |d| (d + Date::DAYS_INTO_WEEK[Date.beginning_of_week]) % 7 }
           end
 
           def sortable
             false
-          end
-
-          def group_order_limit(request, _order_arg, _top_count, _period)
-            request.group_by_day_of_week(groups[0], time_zone: time_zone)
           end
 
           def label(key)
@@ -459,8 +616,12 @@ module Search
             I18n.t('activemodel.attributes.search.chart.group_by_attribute.sub_type.day_of_week')
           end
 
-          def time_zone
-            nil
+          def groupdate_period
+            :day_of_week
+          end
+
+          def groupdate_magic_options(top_count: nil, period: nil, **options) # rubocop:disable Lint/UnusedMethodArgument
+            super(**options)
           end
         end
       end
@@ -563,7 +724,7 @@ module Search
         end
       end
 
-      def initialize(
+      def initialize( # rubocop:disable Metrics/MethodLength
         models,
         type:,
         group_by_attribute:,
@@ -573,7 +734,11 @@ module Search
         aggregate_operation:,
         aggregate_attribute:,
         display_percent:,
-        period:
+        subgroup_by_attribute:,
+        subgroup_first:,
+        subgroup_top_count:,
+        period:,
+        subgroup_period:
       )
         @models = models
         @type = type
@@ -584,7 +749,11 @@ module Search
         @aggregate_operation = aggregate_operation
         @aggregate_attribute = self.class.aggregate_attributes[aggregate_attribute] if aggregate_attribute
         @display_percent = display_percent
+        @subgroup_by_attribute = self.class.group_by_attributes[subgroup_by_attribute] if subgroup_by_attribute
+        @subgroup_first = subgroup_first
+        @subgroup_top_count = subgroup_top_count
         @period = period
+        @subgroup_period = subgroup_period
       end
       attr_reader :models,
                   :type,
@@ -595,14 +764,38 @@ module Search
                   :aggregate_operation,
                   :aggregate_attribute,
                   :display_percent,
-                  :period
+                  :subgroup_by_attribute,
+                  :subgroup_first,
+                  :subgroup_top_count,
+                  :period,
+                  :subgroup_period
+
+      def xaxis_dimension
+        @xaxis_dimension ||= XaxisDimension.new(self)
+      end
+
+      def series_dimension
+        @series_dimension ||= SeriesDimension.new(self)
+      end
+
+      def xaxis
+        @xaxis ||= if sort_by == 'label'
+                     XaxisSortedByLabelRequestBuilder.new(self).execute
+                   else
+                     XaxisSortedByValueRequestBuilder.new(self).execute
+                   end
+      end
+
+      def series
+        @series ||= if sort_by == 'label'
+                      SeriesSortedByLabelRequestBuilder.new(self).execute
+                    else
+                      SeriesSortedByValueRequestBuilder.new(self).execute
+                    end
+      end
 
       def raw_data
-        request = models
-        request = joins(request)
-        request = select(request)
-        request = group_order_limit(request)
-        aggregate(request)
+        RawDataRequestBuilder.new(self).execute
       end
 
       def data
@@ -610,11 +803,22 @@ module Search
 
         data = raw_data
         data = compute_percent(data)
-        @data = DataTransformer.new(self).transform(data)
+
+        @data ||= if subgroup_by_attribute
+                    data = extract_series(data)
+                    data = transform_series(data)
+                    format_as_series(data)
+                  else
+                    transform_data(data)
+                  end
       end
 
       def empty?
-        data.all? { |_, v| v.zero? }
+        if subgroup_by_attribute
+          data.all? { |d| series_data_empty?(d[:data]) }
+        else
+          series_data_empty?(data)
+        end
       end
 
       def to_chartkick(view_context, **options)
@@ -625,43 +829,12 @@ module Search
           new_options[:round] = 2
         end
         new_options[:height] = '600px'
+        new_options[:stacked] = true if type == 'column'
 
         view_context.send("#{type}_chart", data, new_options.deep_merge(options))
       end
 
-      private
-
-      def joins(request)
-        return request unless group_by_attribute.joins
-
-        request.left_outer_joins(group_by_attribute.joins)
-      end
-
-      def select(request)
-        return request unless group_by_attribute.selects
-
-        request.select(*group_by_attribute.selects)
-      end
-
-      def group_order_limit(request)
-        group_by_attribute.group_order_limit(request, order_arg(request), top_count, period)
-      end
-
-      def order_arg(request)
-        asc_desc = first ? :asc : :desc
-
-        order_arg = group_by_attribute.order_arg(request, asc_desc)
-        order_arg = { order_aggregate_alias => asc_desc }.merge(order_arg) if sort_by == 'value'
-        order_arg
-      end
-
-      def order_aggregate_alias
-        if aggregate_operation == 'count'
-          count_column_name
-        else
-          column_alias(aggregate_operation, aggregate_attribute.definition)
-        end
-      end
+      # used by RequestBuilder
 
       def count_column_name
         :count_id
@@ -671,16 +844,14 @@ module Search
         models.send(:column_alias_for, "#{operation} #{sql_definition.downcase}")
       end
 
-      def aggregate(request)
-        if aggregate_operation == 'count'
-          aggregate_count(request)
-        else
-          request.send(aggregate_operation, aggregate_attribute.definition)
-        end
-      end
-
       def aggregate_count(request)
         request.count(:id)
+      end
+
+      private
+
+      def series_data_empty?(series_data)
+        series_data.all? { |_, v| v.zero? }
       end
 
       def compute_percent(result)
@@ -694,14 +865,126 @@ module Search
         end
       end
 
-      class DataTransformer
-        delegate :group_by_attribute, :sort_by, :first, to: :chart
-        delegate :label?, :label, to: :group_by_attribute
+      def extract_series(data) # rubocop:disable Metrics/MethodLength,Metrics/AbcSize,Metrics/PerceivedComplexity,Metrics/CyclomaticComplexity
+        result = {}
+        xaxis_keys_without_value = xaxis.to_set if group_by_attribute.compute_xaxis_keys?
 
+        data.each do |d|
+          series_id = if subgroup_by_attribute.array?
+                        d[0].take(subgroup_by_attribute.select_length)
+                      else
+                        d[0][0]
+                      end
+          xaxis_id = if group_by_attribute.array?
+                       d[0].drop(subgroup_by_attribute.select_length)
+                     else
+                       d[0][-1]
+                     end
+
+          result[series_id] ||= {}
+          result[series_id][xaxis_id] = d[1]
+
+          xaxis_keys_without_value.delete(xaxis_id) if group_by_attribute.compute_xaxis_keys?
+        end
+
+        if group_by_attribute.compute_xaxis_keys?
+          xaxis_zero_data = xaxis.index_with(0)
+          xaxis_zero_data = xaxis_zero_data.except(*xaxis_keys_without_value) if xaxis_keys_without_value.any?
+
+          result.transform_values! do |series_data|
+            xaxis_zero_data.merge(series_data)
+          end
+        end
+
+        result
+      end
+
+      def transform_series(data)
+        data = data.transform_values do |series_data|
+          transform_data(series_data)
+        end
+        series_dimension.transform(data)
+      end
+
+      def format_as_series(data)
+        data.map do |series_id, series_data|
+          { name: series_id, data: series_data }
+        end
+      end
+
+      def transform_data(data)
+        xaxis_dimension.transform(data)
+      end
+
+      # An attribute within a chart with its dedicated parameters (top_count, first, period).
+      class Dimension
         def initialize(chart)
           @chart = chart
         end
         attr_reader :chart
+
+        # Context of the attribute within the chart.
+
+        def attribute
+          raise NotImplementedError
+        end
+
+        def top_count
+          raise NotImplementedError
+        end
+
+        def first
+          raise NotImplementedError
+        end
+
+        def period
+          raise NotImplementedError
+        end
+
+        # Methods to build the dimension request.
+
+        def sql_expressions
+          @sql_expressions ||= attribute.sql_expressions(chart.models, period).freeze
+        end
+
+        # the aliases of the group clauses to be used in ORDER
+        def sql_aliases
+          @sql_aliases ||= sql_expressions.map { |hc| chart.models.send(:column_alias_for, hc.downcase) }.freeze
+        end
+
+        def where(request) # rubocop:disable Metrics/MethodLength,Metrics/AbcSize
+          if keys.empty?
+            request.none
+          else
+            where = keys.map do |d|
+              if attribute.array?
+                sql_expressions.zip(d).map do |c, v|
+                  where_sql_expression_equals_key_part(c, v)
+                end.join(' AND ')
+              else
+                # NOTE: this could be written with a IN () if d is never NULL
+                sql_expressions.map { |c| where_sql_expression_equals_key_part(c, d) }
+              end
+            end.join(') OR (')
+            request.where("(#{where})")
+          end
+        end
+
+        def group(request)
+          attribute.group(request, period)
+        end
+
+        def group_series(request, order_arg)
+          attribute.group_series(request, order_arg, top_count, period)
+        end
+
+        def order_arg
+          @order_arg ||= sql_aliases.index_with(asc_desc).freeze
+        end
+
+        def asc_desc
+          first ? :asc : :desc
+        end
 
         # Adds missing keys, labels keys and sorts data.
         def transform(data)
@@ -709,46 +992,49 @@ module Search
           label_all(new_data)
         end
 
+        protected
+
+        def keys
+          raise NotImplementedError
+        end
+
+        def label?
+          raise NotImplementedError
+        end
+
+        def label(key)
+          raise NotImplementedError
+        end
+
+        def attribute_keys_empty_data
+          raise NotImplementedError
+        end
+
         private
 
-        def add_missing_keys_with_value_sort?
-          group_by_attribute.sortable && sort_by == 'value'
+        def where_sql_expression_equals_key_part(sql_expression, key_part)
+          if key_part.nil?
+            "#{sql_expression} IS NULL"
+          else
+            "#{sql_expression} = #{chart.models.connection.quote(key_part)}"
+          end
         end
 
-        # A sort is needed after labelling if the attribute is sortable, we sort by label and either we label all keys
-        # or we added non-sorted missing values.
         def label_keys_with_label_sort?
-          group_by_attribute.sortable && sort_by == 'label' && (label? || group_by_attribute.keys)
+          attribute.sortable
         end
 
-        # Adds missing keys specified by group_attribute.keys in data if any.
-        # The keys of data are already sorted by the SQL request except if we sort by label and label? is true, in which
-        # case a new sort will be necessary after labelling the keys.
+        # Adds missing keys specified by attribute.keys in data if any.
         def add_missing_keys(data)
-          if group_by_attribute.keys
-            if add_missing_keys_with_value_sort?
-              add_missing_keys_with_value_sort(data)
-            else
-              add_missing_keys_with_label_sort(data)
-            end
+          if attribute.keys
+            merge_attribute_keys_empty_data_with_data(data)
           else
             data
           end
         end
 
-        def add_missing_keys_with_value_sort(data)
-          # The keys are already in the right order, so we just add the missing ones.
-          missing_keys = group_by_attribute.keys_zero_data.except(*data.keys)
-          if first
-            missing_keys.merge(data)
-          else
-            data.merge(missing_keys)
-          end
-        end
-
-        def add_missing_keys_with_label_sort(data)
-          # For now, we just add the missing keys, #label_keys_with_label_sort will take care of sorting the keys.
-          group_by_attribute.keys_zero_data.merge(data)
+        def merge_attribute_keys_empty_data_with_data(data)
+          attribute_keys_empty_data.merge(data)
         end
 
         # Labels all keys of data and sort them again if necessary (if sort by "label").
@@ -765,9 +1051,9 @@ module Search
         def label_keys_with_label_sort(data)
           # The idea is to extract the nil key, label and sort the other keys and add the nil key afterwards.
 
-          nil_value = group_by_attribute.delete_and_return_nil_key!(data)
+          nil_value = attribute.delete_and_return_nil_key!(data)
 
-          new_data = if group_by_attribute.sortable == :before_label
+          new_data = if attribute.sortable == :before_label
                        sort_and_label_keys(data)
                      else # :after_label
                        label_and_sort_keys(data)
@@ -809,7 +1095,7 @@ module Search
 
         def label_keys_without_sort(data)
           data.transform_keys do |k|
-            if group_by_attribute.nil_key?(k)
+            if attribute.nil_key?(k)
               I18n.t('none')
             elsif label?
               label(k)
@@ -817,6 +1103,312 @@ module Search
               k
             end
           end
+        end
+      end
+
+      class XaxisDimension < Dimension
+        delegate :top_count, :first, :period, :sort_by, to: :chart
+        delegate :compute_xaxis_keys?, :label?, :label, to: :attribute
+
+        protected :label?, :label # rubocop:disable Style/AccessModifierDeclarations # TODO: rubocop bug
+        private :sort_by
+
+        def attribute
+          chart.group_by_attribute
+        end
+
+        def where(request)
+          if compute_xaxis_keys?
+            super
+          else
+            attribute.where_without_xaxis_keys(request, top_count, period)
+          end
+        end
+
+        def order_arg
+          @order_arg ||= compute_xaxis_keys? ? super : {}.freeze
+        end
+
+        protected
+
+        def keys
+          chart.xaxis
+        end
+
+        def attribute_keys_empty_data
+          attribute.keys_zero_data
+        end
+
+        private
+
+        # A sort is needed after labelling if the attribute is sortable, we sort by label and either we label all keys
+        # or we added non-sorted missing values.
+        def label_keys_with_label_sort?
+          super && sort_by == 'label' && (label? || attribute.keys)
+        end
+
+        def add_missing_keys_with_value_sort?
+          attribute.sortable && sort_by == 'value'
+        end
+
+        # The keys of data are already sorted by the SQL request except if we sort by label and label? is true, in which
+        # case a new sort will be necessary after labelling the keys.
+        def merge_attribute_keys_empty_data_with_data(data)
+          if add_missing_keys_with_value_sort?
+            add_missing_keys_with_value_sort(data)
+          else
+            # For now, we just add the missing keys, #label_keys_with_label_sort will take care of sorting the keys.
+            super
+          end
+        end
+
+        def add_missing_keys_with_value_sort(data)
+          # The keys are already in the right order, so we just add the missing ones.
+          missing_keys = attribute_keys_empty_data.except(*data.keys)
+          if first
+            missing_keys.merge(data)
+          else
+            data.merge(missing_keys)
+          end
+        end
+      end
+
+      class SeriesDimension < Dimension
+        def attribute
+          chart.subgroup_by_attribute
+        end
+
+        def top_count
+          chart.subgroup_top_count
+        end
+
+        def first
+          chart.subgroup_first
+        end
+
+        def period
+          chart.subgroup_period
+        end
+
+        protected
+
+        def keys
+          chart.series
+        end
+
+        def label?
+          attribute.label_series?
+        end
+
+        def label(key)
+          attribute.label_series(key)
+        end
+
+        def attribute_keys_empty_data
+          attribute.keys_empty_hash_data
+        end
+      end
+
+      class RequestBuilder
+        def initialize(chart)
+          @chart = chart
+          @request = models
+        end
+        attr_reader :chart
+
+        delegate :models,
+                 :xaxis_dimension,
+                 :series_dimension,
+                 :aggregate_operation,
+                 :aggregate_attribute,
+                 :count_column_name,
+                 :column_alias,
+                 :aggregate_count,
+                 to: :chart
+
+        def build!
+          raise NotImplementedError
+        end
+
+        def execute
+          build!
+        end
+
+        private
+
+        def joins(dimension)
+          return unless dimension.attribute.joins
+
+          @request = @request.left_outer_joins(dimension.attribute.joins)
+        end
+
+        def select(dimension)
+          return unless dimension.attribute.selects
+
+          @request = @request.select(*dimension.attribute.selects)
+        end
+
+        # Calling #aggregate automatically adds a "AS" to each column. We have to do it manually.
+        def select_with_alias(dimension)
+          @request = @request.select(
+            *dimension.sql_expressions.zip(dimension.sql_aliases).map { |s, a| "#{s} AS #{a}" }
+          )
+        end
+
+        def where(dimension)
+          @request = dimension.where(@request)
+        end
+
+        def group_series(dimension, order_arg)
+          @request = dimension.group_series(@request, order_arg)
+        end
+
+        def sort_by_value_order_arg(dimension)
+          { order_aggregate_alias => xaxis_dimension.asc_desc }.merge(dimension.order_arg)
+        end
+
+        def order_aggregate_alias
+          if aggregate_operation == 'count'
+            count_column_name
+          else
+            column_alias(aggregate_operation, aggregate_attribute.definition)
+          end
+        end
+
+        def aggregate
+          if aggregate_operation == 'count'
+            aggregate_count(@request)
+          else
+            @request.send(aggregate_operation, aggregate_attribute.definition)
+          end
+        end
+
+        def select_values(dimension)
+          if dimension.attribute.array?
+            models.connection.select_rows(@request)
+          else
+            models.connection.select_values(@request)
+          end
+        end
+      end
+
+      # Builds the request for x-xaxis when the chart is sorted by label.
+      # We need to get the top_count first/last ticks of each dimension sorted by alphabetical order.
+      class XaxisSortedByLabelRequestBuilder < RequestBuilder
+        def build!
+          joins(xaxis_dimension)
+          select_with_alias(xaxis_dimension)
+          group_series(xaxis_dimension, xaxis_dimension.order_arg)
+        end
+
+        def execute
+          super
+          select_values(xaxis_dimension)
+        end
+      end
+
+      # Builds the request for x-axis when the chart is sorted by value.
+      # The request is similar to the building of a chart without subgroup. We just only select discrete ticks.
+      class XaxisSortedByValueRequestBuilder < RequestBuilder
+        def build!
+          joins(xaxis_dimension)
+          select(xaxis_dimension)
+          group_series(xaxis_dimension, sort_by_value_order_arg(xaxis_dimension))
+        end
+
+        def execute
+          super
+          aggregate.keys
+        end
+      end
+
+      # Builds the request for series when the chart is sorted by label.
+      # The request is similar to x-axis except that we we filter on the previously computed x-axis ticks.
+      class SeriesSortedByLabelRequestBuilder < RequestBuilder
+        def build!
+          joins(series_dimension)
+          select_with_alias(series_dimension)
+          joins(xaxis_dimension)
+          where(xaxis_dimension)
+          group_series(series_dimension, series_dimension.order_arg)
+        end
+
+        def execute
+          super
+          select_values(series_dimension)
+        end
+      end
+
+      # Builds the request for series when the chart is sorted by value.
+      # The request is similar to x-axis except that we we filter on the previously computed x-axis ticks.
+      class SeriesSortedByValueRequestBuilder < RequestBuilder
+        def build!
+          joins(series_dimension)
+          select(series_dimension)
+          joins(xaxis_dimension)
+          where(xaxis_dimension)
+          group_series(series_dimension, sort_by_value_order_arg(series_dimension))
+        end
+
+        def execute
+          super
+          aggregate.keys
+        end
+      end
+
+      class RawDataRequestBuilder < RequestBuilder
+        delegate :sort_by,
+                 :subgroup_by_attribute,
+                 to: :chart
+
+        def build! # rubocop:disable Metrics/MethodLength,Metrics/AbcSize
+          if subgroup_by_attribute
+            joins(series_dimension)
+            select(series_dimension)
+          end
+          joins(xaxis_dimension)
+          select(xaxis_dimension)
+          if subgroup_by_attribute
+            where(series_dimension)
+            where(xaxis_dimension) if xaxis_dimension.compute_xaxis_keys? # already added by #group_order_limit
+          end
+          group(series_dimension) if subgroup_by_attribute
+          group_order_limit
+        end
+
+        def execute
+          super
+          aggregate
+        end
+
+        private
+
+        def group(dimension)
+          @request = dimension.group(@request)
+        end
+
+        def group_order_limit
+          @request = xaxis_dimension.attribute.group_order_limit(@request, order_arg, top_count, xaxis_dimension.period)
+        end
+
+        def order_arg
+          order_arg = xaxis_order_arg
+          order_arg = order_arg.merge(series_dimension.order_arg) if subgroup_by_attribute
+          order_arg
+        end
+
+        def xaxis_order_arg
+          if sort_by == 'label'
+            xaxis_dimension.order_arg
+          else
+            sort_by_value_order_arg(xaxis_dimension)
+          end
+        end
+
+        def top_count
+          top_count = xaxis_dimension.top_count
+          top_count *= series_dimension.top_count if subgroup_by_attribute
+          top_count
         end
       end
     end

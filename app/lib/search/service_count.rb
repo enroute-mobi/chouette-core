@@ -85,8 +85,6 @@ module Search
         end
       end
 
-      private
-
       def count_column_name
         column_alias(:sum, :count)
       end

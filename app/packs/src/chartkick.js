@@ -41,7 +41,7 @@ ChartjsAdapter.prototype.drawChart = function (chart, type, data, options) {
 
 const oldFormats = chartjsAdapters._date.prototype.formats()
 const newFormats = merge({}, oldFormats, {
-  day: 'P',
+  day: 'P', // must match app/lib/search/base.rb
   month: 'LLLL y'
 })
 chartjsAdapters._date.override({

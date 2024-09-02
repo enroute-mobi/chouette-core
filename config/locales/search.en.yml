@@ -22,7 +22,7 @@ en:
         per_page: "Display per"
         text: "Search by name or id"
         company_id: "Company"
-        category: "Catégories"
+        category: "Category"
         line_id: "Line"
         line: "Line"
         timetable: "Timetable"

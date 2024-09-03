@@ -320,7 +320,7 @@ module ReverseGeocode
               street_name: french_ban_address['street'],
               post_code: french_ban_address['postcode'],
               city_name: french_ban_address['city'],
-              country_code: french_ban_address['citycode'],
+              country_code: 'FR',
               house_number_and_street_name: [french_ban_address['housenumber'], french_ban_address['street']].join(' ')
             }
           end

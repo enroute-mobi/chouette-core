@@ -49,62 +49,133 @@ RSpec.describe Macro::DefinePostalAddress do
       end
 
       context 'when the stop area has no address' do
-        context "when reverse_geocoder_provider is 'Default'" do
-          let(:reverse_geocoder_provider) { 'default' }
+        context 'when status is 200' do
+          context "when reverse_geocoder_provider is 'Default'" do
+            let(:reverse_geocoder_provider) { 'default' }
 
-          before(:each) do
-            reverse_geocode_response = File.read('spec/fixtures/tomtom-reverse-geocode-response.json')
-            stub_request(:post, 'https://api.tomtom.com/search/2/batch/sync.json?key=mock_tomtom_api_key').to_return(
-              status: 200, body: reverse_geocode_response
-            )
-          end
+            before(:each) do
+              reverse_geocode_response = File.read('spec/fixtures/tomtom-reverse-geocode-response.json')
+              stub_request(:post, 'https://api.tomtom.com/search/2/batch/sync.json?key=mock_tomtom_api_key').to_return(
+                status: 200, body: reverse_geocode_response
+              )
+            end
 
-          it 'should update address into stop area' do
-            expect do
+            it 'should update address into stop area' do
+              expect do
+                subject
+                stop_area.reload
+              end.to change(stop_area, :street_name).to('100 Santa Cruz Street')
+                                                    .and(change(stop_area, :country_code).to('US'))
+                                                    .and(change(stop_area, :zip_code).to('95065'))
+                                                    .and(change(stop_area, :city_name).to('Santa Cruz'))
+            end
+
+            it 'creates a message for the stop area' do
               subject
-              stop_area.reload
-            end.to change(stop_area, :street_name).to('100 Santa Cruz Street')
-                                                  .and(change(stop_area, :country_code).to('US'))
-                                                  .and(change(stop_area, :zip_code).to('95065'))
-                                                  .and(change(stop_area, :city_name).to('Santa Cruz'))
+              # Address.new house_number: "100 Santa Cruz Street 95065 Santa Cruz"
+
+              expected_message = an_object_having_attributes(
+                criticity: 'info',
+                message_attributes: {
+                  'name' => stop_area.name,
+                  'address' => '100 Santa Cruz Street, 95065, Santa Cruz, États-Unis'
+                },
+                source: stop_area
+              )
+              expect(macro_run.macro_messages).to include(expected_message)
+            end
           end
 
-          it 'creates a message for each journey_pattern' do
-            subject
-            # Address.new house_number: "100 Santa Cruz Street 95065 Santa Cruz"
+          context "when reverse_geocoder_provider is 'French BAN'" do
+            let(:reverse_geocoder_provider) { :french_ban }
 
-            expected_message = an_object_having_attributes(
-              criticity: 'info',
-              message_attributes: {
-                'name' => stop_area.name,
-                'address' => '100 Santa Cruz Street, 95065, Santa Cruz, États-Unis'
-              },
-              source: stop_area
-            )
-            expect(macro_run.macro_messages).to include(expected_message)
+            before do
+              stop_area.update(latitude: 48.8462253, longitude: 2.3438389)
+
+              reverse_geocode_response = File.read('spec/fixtures/french-ban-reverse-geocode-response.json')
+              stub_request(:get, 'https://api-adresse.data.gouv.fr/reverse/?lat=48.8462253&lon=2.3438389').to_return(
+                status: 200, body: reverse_geocode_response
+              )
+            end
+
+            it 'should update address into stop area' do
+              expect do
+                subject
+                stop_area.reload
+              end.to change(stop_area, :street_name).to('5 Rue des Fossés Saint-Jacques')
+                                                    .and(change(stop_area, :country_code).to('FR'))
+                                                    .and(change(stop_area, :zip_code).to('75005'))
+                                                    .and(change(stop_area, :city_name).to('Paris'))
+            end
+
+            it 'creates a message for the stop area' do
+              subject
+
+              expected_message = an_object_having_attributes(
+                criticity: 'info',
+                message_attributes: {
+                  'name' => stop_area.name,
+                  'address' => '5 Rue des Fossés Saint-Jacques, 75005, Paris, France'
+                },
+                source: stop_area
+              )
+              expect(macro_run.macro_messages).to include(expected_message)
+            end
           end
         end
 
-        context "when reverse_geocoder_provider is 'French BAN'" do
-          let(:reverse_geocoder_provider) { :french_ban }
+        context 'when status is 400' do
+          context "when reverse_geocoder_provider is 'Default'" do
+            let(:reverse_geocoder_provider) { 'default' }
 
-          before do 
-            stop_area.update(latitude: 48.8462253, longitude: 2.3438389)
+            before(:each) do
+              stop_area.update(latitude: 48.822, longitude: 2.3222)
+              stub_request(:post, 'https://api.tomtom.com/search/2/batch/sync.json?key=mock_tomtom_api_key').to_return(
+                status: 400, body: '{}'
+              )
+            end
 
-            reverse_geocode_response = File.read('spec/fixtures/french-ban-reverse-geocode-response.json')
-            stub_request(:get, 'https://api-adresse.data.gouv.fr/reverse/?lat=48.8462253&lon=2.3438389').to_return(
-              status: 200, body: reverse_geocode_response
-            )
+            it 'creates a warning message for the stop area' do
+              subject
+
+              expected_message = an_object_having_attributes(
+                criticity: 'warning',
+                message_key: "no_address",
+                message_attributes: {
+                  'name' => stop_area.name,
+                  "address"=>""
+                },
+                source: stop_area
+              )
+              expect(macro_run.macro_messages).to include(expected_message)
+            end
           end
 
-          it 'should update address into stop area' do
-            expect do
+          context "when reverse_geocoder_provider is 'French BAN'" do
+            let(:reverse_geocoder_provider) { :french_ban }
+
+            before do
+              stop_area.update(latitude: 48.8, longitude: 2.3)
+
+              stub_request(:get, 'https://api-adresse.data.gouv.fr/reverse/?lat=48.8&lon=2.3').to_return(
+                status: 400, body: '{}'
+              )
+            end
+
+            it 'creates a warning message for the stop area' do
               subject
-              stop_area.reload
-            end.to change(stop_area, :street_name).to('5 Rue des Fossés Saint-Jacques')
-                                                  .and(change(stop_area, :country_code).to('FR'))
-                                                  .and(change(stop_area, :zip_code).to('75005'))
-                                                  .and(change(stop_area, :city_name).to('Paris'))
+
+              expected_message = an_object_having_attributes(
+                criticity: 'warning',
+                message_key: "no_address",
+                message_attributes: {
+                  'name' => stop_area.name,
+                  "address"=>""
+                },
+                source: stop_area
+              )
+              expect(macro_run.macro_messages).to include(expected_message)
+            end
           end
         end
       end

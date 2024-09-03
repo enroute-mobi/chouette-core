@@ -188,7 +188,7 @@ module ReverseGeocode
         end
 
         def response_batch_items
-          response['batchItems']
+          response['batchItems'] || []
         end
 
         def response
@@ -282,8 +282,9 @@ module ReverseGeocode
 
         def resolve
           items.each_with_index do |item, index|
+            sleep 1 if index > 0 && index % request_per_second == 0
+
             item.response = response(item.params)
-            sleep 1 if request_per_second == index
           end
         end
 

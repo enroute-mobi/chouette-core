@@ -311,6 +311,7 @@ pipelines:
           runs-on:
             - self.hosted
             - env.interne
+            - deploy
           script:
             - git clone git@bitbucket.org:enroute-mobi/chouette-env.git env
             - env/deploy-with-runner.sh

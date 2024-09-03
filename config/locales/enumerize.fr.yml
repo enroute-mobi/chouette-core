@@ -437,6 +437,9 @@ fr:
     expected_status:
       enabled: Activé
       disabled: Désactivé
+    reverse_geocoder_provider:
+      default: Défault
+      french_ban: Base Adresse Nationale française
     expected_provider:
       all_workbench_provider: Tous les fournisseurs de l’Espace de Travail
       stop_area_provider: Fournisseur d’arrêts

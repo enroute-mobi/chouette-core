@@ -79,3 +79,6 @@ fr:
       macro/define_route_name/run:
         target_attribute: Attribut
         target_format: Format
+      macro/define_postal_address/run:
+        target_model: Modèle cible
+        reverse_geocoder_provider: Fournisseur de géocodeur inversé

@@ -256,5 +256,80 @@ module ReverseGeocode
         end
       end
     end
+
+    class FrenchBAN
+      include Measurable
+
+      def resolve(items)
+        return if items.empty?
+
+        Request.new(items).resolve
+      end
+      measure :resolve
+
+      class Request
+        attr_reader :items
+
+        def initialize(items)
+          @items = items.reject(&:resolved?).map { |item| Item.new(item) }
+        end
+
+        mattr_accessor :request_per_second, default: 30
+
+        def self.url
+          @url ||= 'https://api-adresse.data.gouv.fr/reverse/'
+        end
+
+        def resolve
+          items.each_with_index do |item, index|
+            item.response = response(item.params)
+            sleep 1 if request_per_second == index
+          end
+        end
+
+        def response(params)
+          @response ||=
+            begin
+              Rails.logger.info { "Invoke BAN" }
+              Curl.get(self.class.url, params)
+            end
+        end
+
+        class Item < SimpleDelegator
+          attr_accessor :index
+
+          def initialize(item)
+            super item
+          end
+
+          def params
+            { lon: position.lon, lat: position.lat }
+          end
+
+          def response=(response)
+            return unless response.status == '200'
+
+            if feature = JSON.parse(response.body)['features'].first
+              self.french_ban_address = feature['properties']
+            end
+          end
+
+          def french_ban_address=(french_ban_address)
+            self.address_attributes = {
+              house_number: french_ban_address['housenumber'],
+              street_name: french_ban_address['street'],
+              post_code: french_ban_address['postcode'],
+              city_name: french_ban_address['city'],
+              country_code: french_ban_address['citycode'],
+              house_number_and_street_name: [french_ban_address['housenumber'], french_ban_address['street']].join(' ')
+            }
+          end
+
+          def address_attributes=(address_attributes)
+            self.address = Address.new(address_attributes)
+          end
+        end
+      end
+    end
   end
 end

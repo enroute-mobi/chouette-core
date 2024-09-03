@@ -28,7 +28,7 @@ module Macro
       include Options
 
       def run
-        routes.find_each do |route| 
+        routes.find_each do |route|
           Updater.new(route, target_attribute, target_format, macro_messages).update
         end
       end
@@ -57,16 +57,16 @@ module Macro
 
         def attribute_value
           @attribute_value ||= format
-            .gsub('%{direction}', route.wayback)
-            .gsub('%{departure.name}', route.departure_name)
-            .gsub('%{arrival.name}', route.arrival_name)
+                               .gsub('%{direction}', route.wayback)
+                               .gsub('%{departure.name}', route.departure_name)
+                               .gsub('%{arrival.name}', route.arrival_name)
         end
 
         def create_message(attributes = {})
           return unless messages
 
           attributes.merge!(
-            message_attributes: { 
+            message_attributes: {
               attribute_value_before_change: attribute_value_before_change.to_s,
               attribute_value_after_change: attribute_value
             },
@@ -84,16 +84,17 @@ module Macro
 
         def routes_with_departure_and_arrival_names
           sql = routes
-            .select(
-              route_column_names,
-              'stop_area_names[1] AS departure_name',
-              'stop_area_names[2] AS arrival_name')
-            .from("(#{routes_with_raw_departure_and_arrival_names.to_sql}) AS routes")
-            .to_sql
-  
+                .select(
+                  route_column_names,
+                  'stop_area_names[1] AS departure_name',
+                  'stop_area_names[2] AS arrival_name'
+                )
+                .from("(#{routes_with_raw_departure_and_arrival_names.to_sql}) AS routes")
+                .to_sql
+
           routes.select('*').from("(#{sql}) AS routes")
         end
-  
+
         def routes_with_raw_departure_and_arrival_names
           routes
             .select(route_column_names, stop_area_names)
@@ -101,19 +102,19 @@ module Macro
             .where('departure OR arrival')
             .group(route_column_names)
         end
-  
+
         def route_column_names
-          @route_columns ||= routes.columns.map(&:name).join(', ')
+          @route_column_names ||= routes.column_names.join(', ')
         end
-  
+
         def stop_area_names
-          @stop_area_names ||= 'ARRAY_AGG(routes.stop_area_name) AS stop_area_names'
+          'ARRAY_AGG(routes.stop_area_name) AS stop_area_names'
         end
-  
+
         def base_query
-          @base_query ||= "(#{routes.joins(stop_points: :stop_area).select(base_select).to_sql}) AS routes"
+          "(#{routes.joins(stop_points: :stop_area).select(base_select).to_sql}) AS routes"
         end
-  
+
         def base_select
           <<~SQL
             routes.*,

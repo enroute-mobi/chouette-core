@@ -11,7 +11,7 @@ RSpec.describe Macro::DefineRouteName do
         macro_list_run: macro_list_run,
         position: 0,
         target_attribute: target_attribute,
-        target_format: "Test %{direction} - %{departure.name} > %{arrival.name}"
+        target_format: 'Test %{direction} - %{departure.name} > %{arrival.name}'
       )
     end
 
@@ -39,7 +39,7 @@ RSpec.describe Macro::DefineRouteName do
       let(:first_stop_area) { context.stop_area(:first) }
       let(:last_stop_area) { context.stop_area(:last) }
       let(:route) { context.route(:first) }
-      let(:attribute_value) { "Test outbound - First > Last" }
+      let(:attribute_value) { 'Test outbound - First > Last' }
 
       let(:expected_message) do
         an_object_having_attributes(

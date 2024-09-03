@@ -117,4 +117,3 @@ require_dependency 'macro/create_code_from_uuid'
 require_dependency 'macro/define_french_code_insee'
 require_dependency 'macro/define_stop_area_transport_mode'
 require_dependency 'macro/define_route_name'
-

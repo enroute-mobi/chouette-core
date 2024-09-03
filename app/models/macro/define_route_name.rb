@@ -57,7 +57,7 @@ module Macro
 
         def attribute_value
           @attribute_value ||= format
-                               .gsub('%{direction}', route.wayback)
+                               .gsub('%{direction}', route.wayback.text)
                                .gsub('%{departure.name}', route.departure_name)
                                .gsub('%{arrival.name}', route.arrival_name)
         end

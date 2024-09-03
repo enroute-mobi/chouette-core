@@ -42,10 +42,10 @@ module Macro
           @route = route
           @attribute = attribute
           @messages = messages
-          @attribute_value_before_change = route.send(attribute)
+          @name_before_change = route.name
           @format = format
         end
-        attr_reader :route, :messages, :attribute, :attribute_value_before_change, :format
+        attr_reader :route, :messages, :attribute, :name_before_change, :format
 
         def update
           if route.update attribute => attribute_value
@@ -67,7 +67,7 @@ module Macro
 
           attributes.merge!(
             message_attributes: {
-              attribute_value_before_change: attribute_value_before_change.to_s,
+              name_before_change: name_before_change,
               attribute_value_after_change: attribute_value
             },
             source: route

@@ -39,12 +39,13 @@ RSpec.describe Macro::DefineRouteName do
       let(:first_stop_area) { context.stop_area(:first) }
       let(:last_stop_area) { context.stop_area(:last) }
       let(:route) { context.route(:first) }
-      let(:attribute_value) { 'Test outbound - First > Last' }
+      let(:attribute_value) { 'Test Aller - First > Last' }
+      let(:name_before_change) { 'Route' }
 
       let(:expected_message) do
         an_object_having_attributes(
           message_attributes: {
-            'attribute_value_before_change' => attribute_value_before_change,
+            'name_before_change' => name_before_change,
             'attribute_value_after_change' => attribute_value
           },
           source: route
@@ -55,7 +56,6 @@ RSpec.describe Macro::DefineRouteName do
 
       context "when target_attribute is 'name'" do
         let(:target_attribute) { :name }
-        let(:attribute_value_before_change) { 'Route' }
 
         it 'should update route name' do
           expect { subject }.to change { route.reload.name }.from('Route').to(attribute_value)
@@ -65,7 +65,6 @@ RSpec.describe Macro::DefineRouteName do
 
       context "when target_attribute is 'direction'" do
         let(:target_attribute) { :published_name }
-        let(:attribute_value_before_change) { '' }
 
         it 'should update route diretion name' do
           expect { subject }.to change { route.reload.published_name }.from(nil).to(attribute_value)

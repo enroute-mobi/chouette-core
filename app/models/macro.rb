@@ -23,6 +23,7 @@ module Macro
       Macro::DefineFrenchCodeInsee,
       Macro::DefineStopAreaTransportMode,
       Macro::ForceAttributeValue,
+      Macro::DefineRouteName,
       Macro::Dummy # Keep this dummy last
     ]
   end

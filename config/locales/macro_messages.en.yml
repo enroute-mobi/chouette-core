@@ -78,6 +78,10 @@ en:
   macro/create_code_from_uuid/run:
     messages:
       default: "A code %{code_value} has been added for the %{target_model} %{model_name}"
+  macro/define_route_name/run:
+    messages:
+      default: "The Route '%{name_before_change}' is renamed into '%{attribute_value_after_change}'"
+      error: "The Route '%{name_before_change}' is renamed can't be modified"
   macro_messages:
     search_no_results_for_filter: "No messages found"
     no_address: "No address"

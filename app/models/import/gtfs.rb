@@ -1,4 +1,6 @@
-class Import::Gtfs < Import::Base # rubocop:disable Metrics/ClassLength
+# frozen_string_literal: true
+
+class Import::Gtfs < Import::Base
   include LocalImportSupport
 
   after_commit :update_main_resource_status, on:  [:create, :update]
@@ -1261,7 +1263,7 @@ class Import::Gtfs < Import::Base # rubocop:disable Metrics/ClassLength
 
   class Index
     def initialize
-      @fare_ids ||= {}
+      @fare_ids = {}
     end
 
     def register_fare_id(fare_product, fare_id)

@@ -414,24 +414,22 @@ module Import
       end
 
       def on_save
-        ->(model) {
+        lamba do |model|
           cache_journey_pattern model if model.is_a?(Chouette::JourneyPattern)
-        }
+        end
       end
 
       def on_invalid
-        ->(model) {
+        lamba do |model|
           case model
           when Chouette::Route
-            Rails.logger.debug do
-              "Invalid Model: #{model.errors.inspect} #{model.journey_patterns.map(&:errors).inspect}"
-            end
+            Rails.logger.debug { "Invalid Model: #{model.errors.inspect} #{model.journey_patterns.map(&:errors).inspect}" }
             create_message :route_invalid
           when Chouette::JourneyPattern
             Rails.logger.debug { "Invalid JourneyPattern: #{model.errors.inspect}" }
             create_message :journey_pattern_invalid
           end
-        }
+        end
       end
 
       def import!
@@ -453,7 +451,7 @@ module Import
             next
           end
 
-          route_inserter.insert decorator.chouette_route
+          route_inserter << decorator.chouette_route
         end
 
         referential_inserter.flush

@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 # Transient information associated to the Model but not saved
 #
 # Used, for example, during import to associated identifier

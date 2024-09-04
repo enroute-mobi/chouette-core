@@ -23,8 +23,7 @@ GIT
 
 GIT
   remote: https://bitbucket.org/enroute-mobi/gtfs.git
-  revision: 478ade698b1563eaeff1623e24bcffdce0a97069
-  branch: GTFS-52-time-comparable
+  revision: 373863f46b66ab5d7f7027006897658a5f72d52b
   specs:
     gtfs (0.3.6)
       csv

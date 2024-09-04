@@ -1,4 +1,6 @@
-class Import::Gtfs < Import::Base # rubocop:disable Metrics/ClassLength
+# frozen_string_literal: true
+
+class Import::Gtfs < Import::Base
   include LocalImportSupport
 
   after_commit :update_main_resource_status, on:  [:create, :update]
@@ -54,11 +56,11 @@ class Import::Gtfs < Import::Base # rubocop:disable Metrics/ClassLength
 
     import_resources :transfers if source.entries.include?('transfers.txt')
 
+    RouteJourneyPatterns.new(self).import!
+
     import_resources :stop_times
 
     import_resources :attributions
-
-    calculate_route_costs
 
     # TODO: why the resource statuses are not checked automaticaly ??
     # See CHOUETTE-2747
@@ -71,8 +73,9 @@ class Import::Gtfs < Import::Base # rubocop:disable Metrics/ClassLength
     end
   end
 
-  def calculate_route_costs
-    RouteCalculateCostsService.new(referential, update_journey_patterns: true).update_all
+  # For (ugly) tests purpose
+  def import_route_and_journey_patterns
+    RouteJourneyPatterns.new(self).import!
   end
 
   def import_attributions
@@ -653,8 +656,9 @@ class Import::Gtfs < Import::Base # rubocop:disable Metrics/ClassLength
   def process_trip(resource, trip, stop_times)
     begin
       raise InvalidTripSingleStopTime unless stop_times.many?
+      raise InvalidTripTimesError unless consistent_stop_times(stop_times)
 
-      journey_pattern = find_or_create_journey_pattern(resource, trip, stop_times)
+      journey_pattern = find_or_create_journey_pattern(trip, stop_times)
       vehicle_journey = journey_pattern.vehicle_journeys.build route: journey_pattern.route, skip_custom_fields_initialization: true
       vehicle_journey.published_journey_name = trip.short_name.presence || trip.id
       vehicle_journey.codes.build code_space: code_space, value: trip.id
@@ -765,87 +769,355 @@ class Import::Gtfs < Import::Base # rubocop:disable Metrics/ClassLength
     @journey_pattern_ids ||= {}
   end
 
-  def trip_signature(trip, stop_times)
-    [
-      trip.route_id,
-      trip.direction_id,
-      trip.headsign,
-      trip.shape_id,
-    ] + stop_times.map(&:stop_id)
+  def stop_area_id_by_stop_id(stop_id)
+    @stop_areas_id_by_registration_number[stop_id]
   end
 
-  def find_or_create_journey_pattern(resource, trip, stop_times)
-    journey_pattern_id = journey_pattern_ids[trip_signature(trip, stop_times)]
+  def find_or_create_journey_pattern(trip, stop_times)
+    decorator = TripDecorator.new(trip, stop_times)
+    journey_pattern_id = journey_pattern_ids[decorator.journey_pattern_signature]
+    return nil unless journey_pattern_id
 
-    return referential.journey_patterns.includes(:route).find(journey_pattern_id) if journey_pattern_id
+    referential.journey_patterns.includes(:route, :stop_points).find(journey_pattern_id)
+  end
 
-    stop_points = []
-    line = lines.find_by registration_number: trip.route_id
-
-    route = referential.routes.build line: line
-    route.wayback = (trip.direction_id == '0' ? :outbound : :inbound)
-    route.name = trip.headsign.presence || route.wayback.to_s.capitalize
-
-    journey_pattern = route.journey_patterns.build skip_custom_fields_initialization: true
-    journey_pattern.name = route.name
-    journey_pattern.published_name = trip.headsign
-
-    raise InvalidTripTimesError unless consistent_stop_times(stop_times)
-
-    stop_points_with_times = stop_times.each_with_index.map do |stop_time, i|
-      [stop_time, import_stop_time(stop_time, resource, i)]
+  def referential_inserter
+    @referential_inserter ||= ReferentialInserter.new(referential) do |config|
+      config.add IdInserter
+      config.add TimestampsInserter
+      config.add CopyInserter
     end
-    ApplicationModel.skipping_objectid_uniqueness do
-      save_model route, resource: resource
+  end
+
+  # Add helper methods on GTFS Trip
+  class TripDecorator < SimpleDelegator
+    def initialize(trip, stop_times)
+      super trip
+      @stop_times = stop_times
     end
 
-    stop_points = stop_points_with_times.map do |s|
-      if stop_point = s.last
-        @objectid_formatter ||= Chouette::ObjectidFormatter.for_objectid_provider(StopAreaReferential, id: referential.stop_area_referential_id)
-        stop_point[:route_id] = journey_pattern.route.id
-        stop_point[:objectid] = @objectid_formatter.objectid(stop_point)
-        stop_point
+    attr_reader :stop_times
+
+    delegate :each, :length, to: :stop_ids
+
+    def route_signature
+      [ route_id, direction_id ]
+    end
+
+    def stop_ids
+      @stop_ids ||= stop_times.map(&:stop_id)
+    end
+
+    def journey_pattern_signature
+      [
+        route_id,
+        direction_id,
+        headsign,
+        shape_id,
+        *stop_ids
+      ]
+    end
+  end
+
+  # Import Routes and JourneyPatterns according to GTFS Trips
+  class RouteJourneyPatterns < Base
+    delegate :source, :referential_inserter, :shape_provider,
+             :code_space, :stop_area_id_by_stop_id, :journey_pattern_ids, to: :import
+
+    def route_inserter
+      @route_inserter ||= Import::RouteInserter.new(
+        referential_inserter, on_save: on_save # TODO: , on_invalid: on_invalid
+      )
+    end
+
+    def on_save
+      ->(model)  {
+        if model.is_a?(Chouette::JourneyPattern)
+          register_journey_pattern model
+          improve_shape model
+        end
+      }
+    end
+
+    def register_journey_pattern(journey_pattern)
+      journey_pattern_ids[journey_pattern.transient(:signature)] = journey_pattern.id
+    end
+
+    def improved_shape_ids
+      @improved_shape_ids ||= Set.new
+    end
+
+    def improve_shape(journey_pattern)
+      return unless journey_pattern.shape_id
+      return unless improved_shape_ids.add?(journey_pattern.shape_id)
+
+      shape = journey_pattern.shape
+      return unless shape
+
+      shape.name = journey_pattern.name if shape.name.blank?
+      shape.waypoints = journey_pattern.waypoints unless shape.waypoints.any?
+      shape.save
+    end
+
+    def import!
+      route_decorators.each do |route_decorator|
+        # TODO: retrieve RouteDecorator errors ?
+        # To replace code like that :-/
+        #
+        # unless_parent_model_in_error(Chouette::StopArea, stop_time.stop_id, resource) do
+        #   if position == 0
+        #     departure_time = GTFSTime.parse(stop_time.departure_time)
+        #     raise InvalidTimeError.new(stop_time.departure_time) unless departure_time.present?
+        #   end
+
+        #   stop_area_id = @stop_areas_id_by_registration_number[stop_time.stop_id]
+        #   raise InvalidStopAreaError unless stop_area_id.present?
+        # end
+
+        route_inserter.insert route_decorator.route
+      end
+
+      referential_inserter.flush
+    end
+
+    # Regroups GTFS Trips by Journey Pattern signature
+    # Each group will become a Journey Pattern
+    def journey_pattern_descriptions
+      decorators = {}
+
+      source.each_trip_with_stop_times do |trip, stop_times|
+        decorator = TripDecorator.new(trip, stop_times)
+        decorators[decorator.journey_pattern_signature] ||= decorator
+      end
+
+      decorators.values
+    end
+
+    # Cluster candidate Journey Patterns to find Route candidates
+    def route_clusters
+      journey_pattern_descriptions.group_by(&:route_signature).values.flat_map do |journey_pattern_descriptions|
+        RouteCluster.compute(journey_pattern_descriptions)
       end
     end
 
-    worker = nil
-    if stop_points.compact.present?
-      Chouette::StopPoint.bulk_insert(:route_id, :objectid, :stop_area_id, :position, return_primary_keys: true) do |w|
-        stop_points.compact.each { |s| w.add(s.attributes) }
-        worker = w
-      end
-      stop_points = Chouette::StopPoint.find worker.result_sets.last.rows
-    else
-      stop_points = []
-    end
-
-    Chouette::JourneyPatternStopPoint.bulk_insert do |w|
-      stop_points.each do |stop_point|
-        w.add journey_pattern_id: journey_pattern.id, stop_point_id: stop_point.id
+    # Regroups information to create Route and associated Journey Patterns
+    def route_decorators
+      route_clusters.map do |route_cluster|
+        RouteDecorator.new(
+          route_cluster.stop_sequence,
+          route_cluster.children,
+          stop_areas: stop_areas,
+          lines: lines,
+          shapes: shapes
+        )
       end
     end
 
-    journey_pattern.departure_stop_point_id = stop_points.first.id
-    journey_pattern.arrival_stop_point_id = stop_points.last.id
+    # TODO: share this pattern with other parts (without anonymous classes :D)
+    def stop_areas
+      @stop_areas ||= Class.new do
+        def initialize(part)
+          @part = part
+        end
 
-    if trip.shape_id
-      shape = shape_provider.shapes.by_code(code_space, trip.shape_id).first
-      journey_pattern.shape = shape
+        def find(stop_id)
+          @part.stop_area_id_by_stop_id(stop_id)
+        end
+      end.new(self)
+    end
 
-      # Define Shape name when empty (to make it more user friendly)
-      if shape
-        shape.name = journey_pattern.name if shape.name.blank?
-        shape.waypoints = journey_pattern.waypoints unless shape.waypoints.any?
-        shape.save
+    def lines
+      @lines ||= Class.new do
+        def initialize(part)
+          @part = part
+        end
+
+        def lines
+          @lines ||= {}
+        end
+
+        def find(route_id)
+          lines[route_id] ||= @part.import.lines.find_by(registration_number: route_id)&.id
+        end
+      end.new(self)
+    end
+
+    def shapes
+      @shapes ||= Class.new do
+        def initialize(part)
+          @part = part
+        end
+
+        def shapes
+          @shapes ||= {}
+        end
+
+        def find(shape_id)
+          shapes[shape_id] ||= @part.shape_provider.shapes.by_code(@part.code_space, shape_id).select(:id).first&.id
+        end
+      end.new(self)
+    end
+
+    class RouteCluster
+
+      def initialize(stop_sequence, children = [])
+        @stop_sequence = stop_sequence
+        @children = children
+      end
+
+      attr_reader :stop_sequence, :children
+
+      def include?(candidate_sequence)
+        candidate_enumerator = candidate_sequence.each
+        candidate_stop = candidate_enumerator.next
+
+        stop_sequence.each do |stop|
+          if stop == candidate_stop
+            candidate_stop = candidate_enumerator.next
+          end
+        end
+
+        false
+      rescue StopIteration
+        true
+      end
+
+      def ==(other)
+        stop_sequence == other.stop_sequence && children == other.children
+      end
+
+      def inspect
+        description = "#<RouteCluster #{stop_sequence.inspect}"
+        description += " children=#{children.inspect}" if children.present?
+        description += ">"
+      end
+
+      def add(stop_sequence)
+        children << stop_sequence
+        self
+      end
+      alias << add
+
+      def self.compute(stop_sequences)
+        stop_sequences = stop_sequences.sort_by { |s| -s.length }
+
+        clusters = []
+
+        stop_sequences.each do |stop_sequence|
+          candidate = clusters.find { |c| c.include?(stop_sequence) }
+
+          if candidate
+            candidate << stop_sequence
+          else
+            clusters << RouteCluster.new(stop_sequence).add(stop_sequence)
+          end
+        end
+
+        clusters
       end
     end
 
-    ApplicationModel.skipping_objectid_uniqueness do
-      save_model journey_pattern, resource: resource
+    class RouteDecorator < SimpleDelegator
+      def initialize(route_description, journey_pattern_descriptions, stop_areas: nil, lines: nil, shapes: nil)
+        super route_description
+        @journey_pattern_descriptions = journey_pattern_descriptions
+
+        # Used to retrieve model identifiers for associated resources
+        @stop_areas = stop_areas
+        @lines = lines
+        @shapes = shapes
+      end
+
+      attr_reader :journey_pattern_descriptions, :stop_areas, :lines, :shapes
+
+      def route
+        Chouette::Route.new(route_attributes)
+      end
+
+      def route_attributes
+        {
+          line_id: line_id,
+          name: name,
+          wayback: wayback,
+          stop_points: stop_points,
+          journey_patterns: journey_patterns
+        }
+      end
+
+      def line_id
+        lines.find route_id
+      end
+
+      def wayback
+        direction_id == '0' ? :outbound : :inbound
+      end
+
+      def name
+        headsign.presence || wayback.to_s.capitalize
+      end
+
+      def stop_points
+        @stop_points ||= stop_times.map.with_index do |stop_time, position|
+          stop_area_id = stop_areas.find stop_time.stop_id
+          Chouette::StopPoint.new(stop_area_id: stop_area_id, position: position).with_transient(stop_id: stop_time.stop_id)
+        end
+      end
+
+      def journey_patterns
+        journey_pattern_decorators.map(&:journey_pattern)
+      end
+
+      def journey_pattern_decorators
+        journey_pattern_descriptions.map do |journey_pattern_description|
+          JourneyPatternDecorator.new self, journey_pattern_description
+        end
+      end
     end
 
-    journey_pattern_ids[trip_signature(trip, stop_times)] = journey_pattern.id
-    journey_pattern
+    class JourneyPatternDecorator < SimpleDelegator
+      def initialize(route_decorator, journey_pattern_description)
+        super journey_pattern_description
+        @route_decorator = route_decorator
+      end
+
+      attr_reader :route_decorator
+      delegate :name, :shapes, to: :route_decorator
+
+      def journey_pattern
+        Chouette::JourneyPattern.new(journey_pattern_attributes).with_transient(signature: journey_pattern_signature)
+      end
+
+      def journey_pattern_attributes
+        {
+          name: name,
+          published_name: published_name,
+          journey_pattern_stop_points: journey_pattern_stop_points,
+          shape_id: chouette_shape_id
+        }
+      end
+
+      def published_name
+        headsign
+      end
+
+      def journey_pattern_stop_points
+        # WARNING
+        # looking for StopPoint using only stop_id would create bugs when a Loop is present
+        stop_point_enumerator = route_decorator.stop_points.each
+        next_route_stop_point = stop_point_enumerator.next
+
+        stop_ids.map do |stop_id|
+          until stop_id == next_route_stop_point.transient(:stop_id)
+            next_route_stop_point = stop_point_enumerator.next
+          end
+          Chouette::JourneyPatternStopPoint.new stop_point: next_route_stop_point
+        end
+      end
+
+      def chouette_shape_id
+        shapes.find shape_id
+      end
+    end
   end
 
   def import_stop_times
@@ -863,34 +1135,8 @@ class Import::Gtfs < Import::Base # rubocop:disable Metrics/ClassLength
   end
 
   def consistent_stop_times(stop_times)
-    times = stop_times.map{|s| [s.arrival_time, s.departure_time]}.flatten.compact
-    times.inject(nil) do |prev, current|
-      current = current.split(':').map &:to_i
-
-      if prev
-        return false if prev.first > current.first
-        return false if prev.first == current.first && prev[1] > current[1]
-        return false if prev.first == current.first && prev[1] == current[1] && prev[2] > current[2]
-      end
-
-      current
-    end
-    true
-  end
-
-  def import_stop_time(stop_time, resource, position)
-    unless_parent_model_in_error(Chouette::StopArea, stop_time.stop_id, resource) do
-
-      if position == 0
-        departure_time = GTFSTime.parse(stop_time.departure_time)
-        raise InvalidTimeError.new(stop_time.departure_time) unless departure_time.present?
-      end
-
-      stop_area_id = @stop_areas_id_by_registration_number[stop_time.stop_id]
-      raise InvalidStopAreaError unless stop_area_id.present?
-
-      Chouette::StopPoint.new(stop_area_id: stop_area_id, position: position )
-    end
+    times = stop_times.flat_map { |s| [ s.arrival_time, s.departure_time ] }.compact.map { |t| GTFS::Time.parse(t) }
+    times.sorted?
   end
 
   def add_stop_point(stop_time, position, starting_day_offset, stop_point, vehicle_journey, worker)
@@ -1017,7 +1263,7 @@ class Import::Gtfs < Import::Base # rubocop:disable Metrics/ClassLength
 
   class Index
     def initialize
-      @fare_ids ||= {}
+      @fare_ids = {}
     end
 
     def register_fare_id(fare_product, fare_id)

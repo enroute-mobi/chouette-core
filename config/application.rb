@@ -145,3 +145,4 @@ end
 
 require_relative '../app/lib/geo_ext'
 require_relative '../app/lib/http_ext'
+require_relative '../app/lib/enumerable_ext'

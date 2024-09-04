@@ -3,6 +3,7 @@
 module Chouette
   class StopPoint < Referential::ActiveRecord
     include ObjectidSupport
+    include TransientSupport
 
     has_metadata
 

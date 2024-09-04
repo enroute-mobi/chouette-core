@@ -5,6 +5,8 @@ module Chouette
     include CustomFieldsSupport
     has_metadata
 
+    include TransientSupport
+
     belongs_to :route
     has_many :vehicle_journeys, :dependent => :destroy
     has_many :vehicle_journey_at_stops, :through => :vehicle_journeys
@@ -30,8 +32,6 @@ module Chouette
 
     delegate :line, to: :route
     validates :stop_points, length: { minimum: 2, too_short: :minimum }, on: :update
-
-    attr_accessor  :control_checked
 
     def local_id
       "local-#{self.referential.id}-#{self.route.line.get_objectid.local_id}-#{self.id}"

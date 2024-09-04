@@ -23,7 +23,7 @@ GIT
 
 GIT
   remote: https://bitbucket.org/enroute-mobi/gtfs.git
-  revision: 0108ed8931c39ddb939d3543aaec66e96a80ed17
+  revision: 373863f46b66ab5d7f7027006897658a5f72d52b
   specs:
     gtfs (0.3.6)
       csv
@@ -227,7 +227,7 @@ GEM
     crass (1.0.6)
     css_parser (1.12.0)
       addressable
-    csv (3.2.8)
+    csv (3.3.0)
     curb (1.0.6)
     database_cleaner (2.0.2)
       database_cleaner-active_record (>= 2, < 3)

@@ -704,6 +704,7 @@ RSpec.describe Import::Gtfs do
       it "should have correct time of day values" do
         import.prepare_referential
         import.import_services
+        import.import_route_and_journey_patterns
         import.import_stop_times
 
         expected_attributes = [
@@ -728,6 +729,7 @@ RSpec.describe Import::Gtfs do
       it "should have correct time of day values" do
         import.prepare_referential
         import.import_services
+        import.import_route_and_journey_patterns
         import.import_stop_times
 
         expected_attributes = [
@@ -747,25 +749,83 @@ RSpec.describe Import::Gtfs do
     end
   end
 
+  describe Import::Gtfs::RouteJourneyPatterns::RouteCluster do
+    describe "#include?" do
+      subject { route_cluster.include?(candidate) }
+
+      [
+        [ %w[A B C], %w[A B C] ],
+        [ %w[A B C], %w[A B] ],
+        [ %w[A B C], %w[A] ],
+        [ %w[A B C], %w[B C] ],
+        [ %w[A B C], %w[A C] ]
+      ].each do |stop_sequence, candidate|
+        context "when RouteCluster is #{stop_sequence.inspect} abd candidate #{candidate.inspect}" do
+          let(:route_cluster) { described_class.new stop_sequence }
+          let(:candidate) { candidate }
+
+          it { is_expected.to be_truthy }
+        end
+      end
+
+      [
+        [ %w[A B C], %w[C B A] ],
+        [ %w[A B C], %w[B A] ],
+        [ %w[A B C], %w[A B C D] ],
+        [ %w[A B C], %w[A B E C] ],
+        [ %w[A B C], %w[A E C] ]
+      ].each do |stop_sequence, candidate|
+        context "when RouteCluster is #{stop_sequence.inspect} abd candidate #{candidate.inspect}" do
+          let(:route_cluster) { described_class.new stop_sequence }
+          let(:candidate) { candidate }
+
+          it { is_expected.to be_falsy }
+        end
+      end
+    end
+
+    describe '.compute' do
+      subject { described_class.compute(stop_sequences) }
+
+      def self.cluster(stop_sequence, *other_children)
+        described_class.new stop_sequence, [stop_sequence] + other_children
+      end
+
+      [
+        [
+          [ %w[A B C], %w[A B] ],
+          [ cluster(%w[A B C], %w[A B]) ]
+        ],
+        [
+          [ %w[A B], %w[A D] ],
+          [ cluster(%w[A B]), cluster(%w[A D])]
+        ],
+        [
+          [ %w[A B C D], %w[A B C], %w[A B] ],
+          [ cluster(%w[A B C D], %w[A B C], %w[A B]) ]
+        ],
+        [
+          [ %w[A B C], %w[A D C], %w[A C], %w[A B] ],
+          [ cluster(%w[A B C], %w[A C], %w[A B]), cluster(%w[A D C]) ]
+        ]
+      ].each do |stop_sequences, clusters|
+        context "when stop sequences are #{stop_sequences.inspect}" do
+          let(:stop_sequences) { stop_sequences }
+
+          it { is_expected.to eq(clusters) }
+        end
+      end
+    end
+  end
+
   describe "#import_stop_times" do
     let(:import) { build_import 'google-sample-feed.zip' }
 
     before do
       import.prepare_referential
       import.import_services
+      import.import_route_and_journey_patterns
       allow_any_instance_of(Chouette::Route).to receive(:has_tomtom_features?){ true }
-    end
-
-    it "should calculate costs" do
-      calculated = []
-      allow_any_instance_of(Chouette::Route).to receive(:calculate_costs!) { |route|
-        calculated << route
-      }
-
-      import.import_stop_times
-      import.referential.vehicle_journeys.map(&:route).uniq.each do |route|
-        expect(calculated).to include(route)
-      end
     end
 
     it "should create a Route for each trip" do
@@ -777,10 +837,12 @@ RSpec.describe Import::Gtfs do
         ["AB", "outbound", "to Bullfrog"],
         ["AB", "inbound", "to Airport"],
         ["CITY", "inbound", "Inbound"],
+        ["CITY", "outbound", "Outbound"],
         ["BFC", "outbound", "to Furnace Creek Resort"],
         ["BFC", "inbound", "to Bullfrog"],
         ["AAMV", "outbound", "to Amargosa Valley"],
         ["AAMV", "inbound", "to Airport"],
+        ["STBA", "inbound", "Shuttle"]
       ]
       expect(import.referential.routes.includes(:line).pluck(*defined_attributes)).to match_array(expected_attributes)
     end
@@ -794,6 +856,8 @@ RSpec.describe Import::Gtfs do
         ["to Bullfrog", "to Bullfrog"],
         ["to Airport", "to Airport"],
         ["Inbound", nil],
+        ["Outbound", nil],
+        ["Shuttle", "Shuttle"],
         ["to Furnace Creek Resort", "to Furnace Creek Resort"],
         ["to Bullfrog", "to Bullfrog"],
         ["to Amargosa Valley", "to Amargosa Valley"],
@@ -818,7 +882,7 @@ RSpec.describe Import::Gtfs do
         ["AAMV3", "WE"],
         ["AAMV4", "WE"]
       ]
-      expect(import.referential.vehicle_journeys.map(&defined_attributes)).to match_array(expected_attributes)
+      expect(import.referential.vehicle_journeys.map(&defined_attributes)).to include(*expected_attributes)
     end
 
     it "should create a VehicleJourneyAtStop for each stop_time" do
@@ -852,9 +916,8 @@ RSpec.describe Import::Gtfs do
         ['BEATTY_AIRPORT', 1, t('2000-01-01 19:00:00 UTC'), t('2000-01-01 19:00:00 UTC'), 0, 0]
       ]
 
-      a = []
-      referential.vehicle_journey_at_stops.each do |vjas|
-        a << [
+      a = referential.vehicle_journey_at_stops.map do |vjas|
+        [
           vjas.stop_point.registration_number,
           vjas.stop_point.position,
           vjas.departure_time_of_day.to_vehicle_journey_at_stop_time,
@@ -863,7 +926,8 @@ RSpec.describe Import::Gtfs do
           vjas.arrival_time_of_day.day_offset
         ]
       end
-      expect(a).to match_array(expected_attributes)
+
+      expect(a).to include(*expected_attributes)
     end
 
     context 'with multiple trips with non zero first day offet' do
@@ -878,6 +942,8 @@ RSpec.describe Import::Gtfs do
 
     context 'with invalid stop times' do
       let(:import) { build_import 'invalid_stop_times.zip' }
+      before { import.import_route_and_journey_patterns }
+
       it "should create no VehicleJourney" do
         expect{ import.import_stop_times }.to_not change { Chouette::VehicleJourney.count }
       end

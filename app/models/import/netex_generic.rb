@@ -407,6 +407,31 @@ module Import
       include ReferentialPart
       delegate :netex_source, :scheduled_stop_points, :line_provider, :index_route_journey_patterns, to: :import
 
+      def route_inserter
+        @route_inserter ||= RouteInserter.new(
+          referential_inserter, on_invalid: on_invalid, on_save: on_save
+        )
+      end
+
+      def on_save
+        lambda do |model|
+          cache_journey_pattern model if model.is_a?(Chouette::JourneyPattern)
+        end
+      end
+
+      def on_invalid
+        lambda do |model|
+          case model
+          when Chouette::Route
+            Rails.logger.debug { "Invalid Model: #{model.errors.inspect} #{model.journey_patterns.map(&:errors).inspect}" }
+            create_message :route_invalid
+          when Chouette::JourneyPattern
+            Rails.logger.debug { "Invalid JourneyPattern: #{model.errors.inspect}" }
+            create_message :journey_pattern_invalid
+          end
+        end
+      end
+
       def import!
         each_route_with_journey_patterns do |netex_route, netex_journey_patterns|
           decorator = Decorator.new(
@@ -426,63 +451,16 @@ module Import
             next
           end
 
-          save_route decorator.chouette_route
+          route_inserter << decorator.chouette_route
         end
 
         referential_inserter.flush
       end
 
-      def save_route(route)
-        if route.valid?
-          referential_inserter.routes << route
-          route.stop_points.each do |stop_point|
-            stop_point.route_id = route.id
-            referential_inserter.stop_points << stop_point
-          end
-
-          route.codes.each do |code|
-            code.resource = route
-            referential_inserter.codes << code
-          end
-
-          save_journey_patterns route
-        else
-          Rails.logger.debug do
-            "Invalid Route: #{route.errors.inspect} #{route.journey_patterns.map(&:errors).inspect}"
-          end
-          create_message :route_invalid
-        end
-      end
-
-      def save_journey_patterns(route)
-        route.journey_patterns.each do |journey_pattern|
-          journey_pattern.route_id = route.id
-          # TODO: For the moment, a Route isn't valid when one of the Journey Pattern is not valid
-          if journey_pattern.valid?
-            referential_inserter.journey_patterns << journey_pattern
-            journey_pattern.journey_pattern_stop_points.each do |journey_pattern_stop_point|
-              journey_pattern_stop_point.journey_pattern_id = journey_pattern.id
-              journey_pattern_stop_point.stop_point_id = journey_pattern_stop_point.stop_point.id
-              referential_inserter.journey_pattern_stop_points << journey_pattern_stop_point
-            end
-
-            journey_pattern.codes.each do |code|
-              code.resource = journey_pattern
-              referential_inserter.codes << code
-            end
-
-            cache_route_journey_patterns(route, journey_pattern)
-          else
-            Rails.logger.debug { "Invalid JourneyPattern: #{journey_pattern.errors.inspect}" }
-            create_message :journey_pattern_invalid
-          end
-        end
-      end
-
-      def cache_route_journey_patterns(route, journey_pattern)
+      def cache_journey_pattern(journey_pattern)
         index_route_journey_patterns[journey_pattern.registration_number] = {
           journey_pattern_id: journey_pattern.id,
-          route_id: route.id,
+          route_id: journey_pattern.route_id,
           stop_point_ids: journey_pattern.journey_pattern_stop_points.map(&:stop_point_id)
         }
       end
@@ -494,17 +472,7 @@ module Import
         end
       end
 
-      def route_points
-        @route_points ||= netex_source.route_points
-      end
-
-      def directions
-        @directions ||= netex_source.directions
-      end
-
-      def destination_displays
-        @destination_displays ||= netex_source.destination_displays
-      end
+      delegate :route_points, :directions, :destination_displays, to: :netex_source
 
       class Decorator < SimpleDelegator
         def initialize(route, journey_patterns, scheduled_stop_points: nil, route_points: nil, directions: nil,
@@ -683,6 +651,7 @@ module Import
 
         def journey_pattern_attributes
           {
+            # TODO: We should not use the JourneyPattern#registration_number
             registration_number: id,
             name: chouette_name,
             published_name: published_name,

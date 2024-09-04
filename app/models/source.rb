@@ -320,14 +320,20 @@ class Source < ApplicationModel
       end
 
       def page
-        Nokogiri::HTML(Curl.get(url) { |client| client.cacert = ENV["CURL_CA_BUNDLE"] }.body)
+        Nokogiri::HTML(
+          Curl.get(url) do |client|
+            client.timeout = timeout
+            client.max_redirects = redirection_count
+            client.follow_location = true
+            client.cacert = ENV["CURL_CA_BUNDLE"]
+          end.body
+        )
       end
 
       def link
         # New layout : some download links are in a "div.resource-actions" class element, others just in a table
         # We prefer to use table links because we have absolute url and never relative url
-        l = page.css('table')
-        l.css('a').first["href"]
+        page.css('a.download-button').first["href"]
       end
     end
 

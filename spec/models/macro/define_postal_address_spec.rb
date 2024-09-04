@@ -111,6 +111,7 @@ RSpec.describe Macro::DefinePostalAddress do
                                                     .and(change(stop_area, :country_code).to('FR'))
                                                     .and(change(stop_area, :zip_code).to('75005'))
                                                     .and(change(stop_area, :city_name).to('Paris'))
+                                                    .and(change(stop_area, :postal_region).to('75105'))
             end
 
             it 'creates a message for the stop area' do

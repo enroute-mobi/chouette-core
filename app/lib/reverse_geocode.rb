@@ -318,7 +318,8 @@ module ReverseGeocode
               post_code: french_ban_address['postcode'],
               city_name: french_ban_address['city'],
               country_code: 'FR',
-              house_number_and_street_name: [french_ban_address['housenumber'], french_ban_address['street']].join(' ')
+              house_number_and_street_name: [french_ban_address['housenumber'], french_ban_address['street']].join(' '),
+              postal_region: french_ban_address['citycode']
             }
           end
 

@@ -83,6 +83,7 @@ fr:
         country: Pays
         codes: Codes
         fare_url: Page Tarifaire
+        line_provider: Fournisseur de lignes
     errors:
       models:
         company:

@@ -83,6 +83,7 @@ en:
         country: Country
         codes: Codes
         fare_url: Fare url
+        line_provider: Line provider
     errors:
       models:
         company:

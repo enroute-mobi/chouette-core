@@ -282,7 +282,7 @@ module ReverseGeocode
 
         def resolve
           items.each_with_index do |item, index|
-            sleep 1 if index.positive? && index % request_per_second == 0
+            sleep 1 if index.positive? && (index % request_per_second).zero?
 
             item.response = response(item.params)
           end
@@ -306,9 +306,9 @@ module ReverseGeocode
           def response=(response)
             return unless response.status == '200'
 
-            if feature = JSON.parse(response.body)['features'].first
-              self.french_ban_address = feature['properties']
-            end
+            return unless feature = JSON.parse(response.body)['features'].first
+
+            self.french_ban_address = feature['properties']
           end
 
           def french_ban_address=(french_ban_address)

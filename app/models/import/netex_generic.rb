@@ -414,13 +414,13 @@ module Import
       end
 
       def on_save
-        lamba do |model|
+        lambda do |model|
           cache_journey_pattern model if model.is_a?(Chouette::JourneyPattern)
         end
       end
 
       def on_invalid
-        lamba do |model|
+        lambda do |model|
           case model
           when Chouette::Route
             Rails.logger.debug { "Invalid Model: #{model.errors.inspect} #{model.journey_patterns.map(&:errors).inspect}" }

@@ -282,7 +282,7 @@ module ReverseGeocode
 
         def resolve
           items.each_with_index do |item, index|
-            sleep 1 if index > 0 && index % request_per_second == 0
+            sleep 1 if index.positive? && index % request_per_second == 0
 
             item.response = response(item.params)
           end
@@ -291,17 +291,13 @@ module ReverseGeocode
         def response(params)
           @response ||=
             begin
-              Rails.logger.info { "Invoke BAN" }
+              Rails.logger.info { 'Invoke French BAN API' }
               Curl.get(self.class.url, params)
             end
         end
 
         class Item < SimpleDelegator
           attr_accessor :index
-
-          def initialize(item)
-            super item
-          end
 
           def params
             { lon: position.lon, lat: position.lat }

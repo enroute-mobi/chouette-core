@@ -15,7 +15,9 @@ RSpec.describe ReverseGeocode::Config do
 
     context 'when config has resolver class ReverseGeocode::Resolver::FrenchBAN' do
       before { config.resolver_classes << ReverseGeocode::Resolver::FrenchBAN }
-      it { is_expected.to have_attributes(resolver_classes: a_collection_including(ReverseGeocode::Resolver::FrenchBAN)) }
+      it do
+        is_expected.to have_attributes(resolver_classes: a_collection_including(ReverseGeocode::Resolver::FrenchBAN))
+      end
     end
   end
 end

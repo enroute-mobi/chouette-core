@@ -73,7 +73,6 @@ RSpec.describe Macro::DefinePostalAddress do
               )
 
               subject
-
             end
 
             it 'should update address into stop area' do
@@ -124,10 +123,10 @@ RSpec.describe Macro::DefinePostalAddress do
           let(:expected_message) do
             an_object_having_attributes(
               criticity: 'warning',
-              message_key: "no_address",
+              message_key: 'no_address',
               message_attributes: {
                 'name' => stop_area.name,
-                "address"=>""
+                'address' => ''
               },
               source: stop_area
             )

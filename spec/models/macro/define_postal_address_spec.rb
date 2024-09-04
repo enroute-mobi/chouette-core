@@ -28,6 +28,7 @@ RSpec.describe Macro::DefinePostalAddress do
     let(:macro_list_run) do
       Macro::List::Run.create workbench: workbench
     end
+
     subject(:macro_run) do
       Macro::DefinePostalAddress::Run.create(
         macro_list_run: macro_list_run,
@@ -50,19 +51,33 @@ RSpec.describe Macro::DefinePostalAddress do
 
       context 'when the stop area has no address' do
         context 'when status is 200' do
+          let(:expected_message) do
+            an_object_having_attributes(
+              criticity: 'info',
+              message_attributes: {
+                'name' => stop_area.name,
+                'address' => address
+              },
+              source: stop_area
+            )
+          end
+
           context "when reverse_geocoder_provider is 'Default'" do
             let(:reverse_geocoder_provider) { 'default' }
+            let(:address) { '100 Santa Cruz Street, 95065, Santa Cruz, États-Unis' }
 
             before(:each) do
               reverse_geocode_response = File.read('spec/fixtures/tomtom-reverse-geocode-response.json')
               stub_request(:post, 'https://api.tomtom.com/search/2/batch/sync.json?key=mock_tomtom_api_key').to_return(
                 status: 200, body: reverse_geocode_response
               )
+
+              subject
+
             end
 
             it 'should update address into stop area' do
               expect do
-                subject
                 stop_area.reload
               end.to change(stop_area, :street_name).to('100 Santa Cruz Street')
                                                     .and(change(stop_area, :country_code).to('US'))
@@ -71,23 +86,13 @@ RSpec.describe Macro::DefinePostalAddress do
             end
 
             it 'creates a message for the stop area' do
-              subject
-              # Address.new house_number: "100 Santa Cruz Street 95065 Santa Cruz"
-
-              expected_message = an_object_having_attributes(
-                criticity: 'info',
-                message_attributes: {
-                  'name' => stop_area.name,
-                  'address' => '100 Santa Cruz Street, 95065, Santa Cruz, États-Unis'
-                },
-                source: stop_area
-              )
               expect(macro_run.macro_messages).to include(expected_message)
             end
           end
 
           context "when reverse_geocoder_provider is 'French BAN'" do
             let(:reverse_geocoder_provider) { :french_ban }
+            let(:address) { '5 Rue des Fossés Saint-Jacques, 75005, Paris, France' }
 
             before do
               stop_area.update(latitude: 48.8462253, longitude: 2.3438389)
@@ -96,11 +101,12 @@ RSpec.describe Macro::DefinePostalAddress do
               stub_request(:get, 'https://api-adresse.data.gouv.fr/reverse/?lat=48.8462253&lon=2.3438389').to_return(
                 status: 200, body: reverse_geocode_response
               )
+
+              subject
             end
 
             it 'should update address into stop area' do
               expect do
-                subject
                 stop_area.reload
               end.to change(stop_area, :street_name).to('5 Rue des Fossés Saint-Jacques')
                                                     .and(change(stop_area, :country_code).to('FR'))
@@ -109,44 +115,38 @@ RSpec.describe Macro::DefinePostalAddress do
             end
 
             it 'creates a message for the stop area' do
-              subject
-
-              expected_message = an_object_having_attributes(
-                criticity: 'info',
-                message_attributes: {
-                  'name' => stop_area.name,
-                  'address' => '5 Rue des Fossés Saint-Jacques, 75005, Paris, France'
-                },
-                source: stop_area
-              )
               expect(macro_run.macro_messages).to include(expected_message)
             end
           end
         end
 
         context 'when status is 400' do
+          let(:expected_message) do
+            an_object_having_attributes(
+              criticity: 'warning',
+              message_key: "no_address",
+              message_attributes: {
+                'name' => stop_area.name,
+                "address"=>""
+              },
+              source: stop_area
+            )
+          end
+
           context "when reverse_geocoder_provider is 'Default'" do
             let(:reverse_geocoder_provider) { 'default' }
 
             before(:each) do
               stop_area.update(latitude: 48.822, longitude: 2.3222)
+
               stub_request(:post, 'https://api.tomtom.com/search/2/batch/sync.json?key=mock_tomtom_api_key').to_return(
                 status: 400, body: '{}'
               )
+
+              subject
             end
 
             it 'creates a warning message for the stop area' do
-              subject
-
-              expected_message = an_object_having_attributes(
-                criticity: 'warning',
-                message_key: "no_address",
-                message_attributes: {
-                  'name' => stop_area.name,
-                  "address"=>""
-                },
-                source: stop_area
-              )
               expect(macro_run.macro_messages).to include(expected_message)
             end
           end
@@ -160,20 +160,11 @@ RSpec.describe Macro::DefinePostalAddress do
               stub_request(:get, 'https://api-adresse.data.gouv.fr/reverse/?lat=48.8&lon=2.3').to_return(
                 status: 400, body: '{}'
               )
+
+              subject
             end
 
             it 'creates a warning message for the stop area' do
-              subject
-
-              expected_message = an_object_having_attributes(
-                criticity: 'warning',
-                message_key: "no_address",
-                message_attributes: {
-                  'name' => stop_area.name,
-                  "address"=>""
-                },
-                source: stop_area
-              )
               expect(macro_run.macro_messages).to include(expected_message)
             end
           end

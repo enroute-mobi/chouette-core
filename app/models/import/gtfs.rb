@@ -1057,7 +1057,7 @@ class Import::Gtfs < Import::Base
       end
 
       def stop_points
-        @stop_points ||= stop_times.each_with_index.map do |stop_time, position|
+        @stop_points ||= stop_times.map.with_index do |stop_time, position|
           stop_area_id = stop_areas.find stop_time.stop_id
           Chouette::StopPoint.new(stop_area_id: stop_area_id, position: position).with_transient(stop_id: stop_time.stop_id)
         end

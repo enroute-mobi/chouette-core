@@ -2,7 +2,7 @@
 
 # Generic model to manage address attributes
 class Address
-  attr_accessor :house_number, :street_name, :post_code, :city_name, :country_code
+  attr_accessor :house_number, :street_name, :post_code, :postal_region, :city_name, :country_code
 
   def initialize(attributes = {})
     attributes.each { |k,v| send "#{k}=", v }

@@ -7,7 +7,11 @@ module Macro
 
       included do
         option :target_model
+        option :reverse_geocoder_provider
+
         enumerize :target_model, in: %w[StopArea Entrance PointOfInterest]
+        enumerize :reverse_geocoder_provider, in: %i[default french_ban], default: :default
+
         validates :target_model, presence: true
       end
     end
@@ -19,7 +23,7 @@ module Macro
 
       def run
         models.find_in_batches(batch_size: 100) do |group|
-          batch = workgroup.reverse_geocode.batch
+          batch = reverse_geocode.batch
 
           group.each do |model|
             batch.address model.position, key: model.id
@@ -31,6 +35,18 @@ module Macro
             model = models_by_ids[key]
             Updater.new(model, address, macro_messages).update
           end
+        end
+      end
+
+      def reverse_geocode
+        case reverse_geocoder_provider
+        when 'french_ban'
+          ReverseGeocode::Config.new do |config|
+            config.resolver_classes << ReverseGeocode::Resolver::FrenchBAN
+            config.resolver_classes << ReverseGeocode::Resolver::Cache
+          end
+        else
+          workgroup.reverse_geocode
         end
       end
 

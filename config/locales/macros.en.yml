@@ -75,6 +75,7 @@ en:
         expected_result: Expected result
       macro/define_postal_address:
         target_model: Target Model
+        reverse_geocoder_provider: Provider
       macro/define_attribute_from_particulars:
         target_attribute: Attribute
       macro/update_attribute_from_referent_to_particulars:

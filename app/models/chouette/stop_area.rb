@@ -576,6 +576,7 @@ module Chouette
       self.street_name = address.house_number_and_street_name
       self.zip_code = address.post_code
       self.city_name = address.city_name
+      self.postal_region = address.postal_region
     end
 
     class << self

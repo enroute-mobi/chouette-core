@@ -1,0 +1,153 @@
+{
+  "type": "FeatureCollection",
+  "version": "draft",
+  "features": [
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          2.343613,
+          48.846017
+        ]
+      },
+      "properties": {
+        "label": "5 Rue des Fossés Saint-Jacques 75005 Paris",
+        "score": 0.9999996765160332,
+        "housenumber": "5",
+        "id": "75105_3749_00005",
+        "name": "5 Rue des Fossés Saint-Jacques",
+        "postcode": "75005",
+        "citycode": "75105",
+        "x": 651829.2,
+        "y": 6860863.73,
+        "city": "Paris",
+        "district": "Paris 5e Arrondissement",
+        "context": "75, Paris, Île-de-France",
+        "type": "housenumber",
+        "importance": 0.65726,
+        "street": "Rue des Fossés Saint-Jacques",
+        "distance": 28
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          2.34376,
+          48.846493
+        ]
+      },
+      "properties": {
+        "label": "5 Rue Soufflot 75005 Paris",
+        "score": 0.9999996327013819,
+        "housenumber": "5",
+        "id": "75105_9041_00005",
+        "name": "5 Rue Soufflot",
+        "postcode": "75005",
+        "citycode": "75105",
+        "x": 651840.43,
+        "y": 6860916.57,
+        "city": "Paris",
+        "district": "Paris 5e Arrondissement",
+        "context": "75, Paris, Île-de-France",
+        "type": "housenumber",
+        "importance": 0.65726,
+        "street": "Rue Soufflot",
+        "distance": 30
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          2.343244,
+          48.846363
+        ]
+      },
+      "properties": {
+        "label": "157 Rue Saint-Jacques 75005 Paris",
+        "score": 0.9999991492787199,
+        "housenumber": "157",
+        "id": "75105_8648_00157",
+        "name": "157 Rue Saint-Jacques",
+        "postcode": "75005",
+        "citycode": "75105",
+        "x": 651802.44,
+        "y": 6860902.43,
+        "city": "Paris",
+        "district": "Paris 5e Arrondissement",
+        "context": "75, Paris, Île-de-France",
+        "type": "housenumber",
+        "importance": 0.75509,
+        "street": "Rue Saint-Jacques",
+        "distance": 46
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          2.344581,
+          48.846192
+        ]
+      },
+      "properties": {
+        "label": "21 Place du Panthéon 75005 Paris",
+        "score": 0.9999988164566228,
+        "housenumber": "21",
+        "id": "75105_7034_00021",
+        "name": "21 Place du Panthéon",
+        "postcode": "75005",
+        "citycode": "75105",
+        "x": 651900.4,
+        "y": 6860882.6,
+        "city": "Paris",
+        "district": "Paris 5e Arrondissement",
+        "context": "75, Paris, Île-de-France",
+        "type": "housenumber",
+        "importance": 0.63699,
+        "street": "Place du Panthéon",
+        "distance": 54
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          2.342869,
+          48.846233
+        ]
+      },
+      "properties": {
+        "label": "2 Rue Malebranche 75005 Paris",
+        "score": 0.9999979873820467,
+        "housenumber": "2",
+        "id": "75105_5949_00002",
+        "name": "2 Rue Malebranche",
+        "postcode": "75005",
+        "citycode": "75105",
+        "x": 651774.8,
+        "y": 6860888.2,
+        "city": "Paris",
+        "district": "Paris 5e Arrondissement",
+        "context": "75, Paris, Île-de-France",
+        "type": "housenumber",
+        "importance": 0.63413,
+        "street": "Rue Malebranche",
+        "distance": 70
+      }
+    }
+  ],
+  "attribution": "BAN",
+  "licence": "ETALAB-2.0",
+  "center": [
+    2.3438389,
+    48.8462253
+  ],
+  "limit": 1
+}

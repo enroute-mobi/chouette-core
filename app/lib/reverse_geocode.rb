@@ -188,7 +188,7 @@ module ReverseGeocode
         end
 
         def response_batch_items
-          response['batchItems']
+          response['batchItems'] || []
         end
 
         def response
@@ -253,6 +253,79 @@ module ReverseGeocode
 
         def address_attributes=(address_attributes)
           self.address = Address.new(address_attributes)
+        end
+      end
+    end
+
+    class FrenchBAN
+      include Measurable
+
+      def resolve(items)
+        return if items.empty?
+
+        Request.new(items).resolve
+      end
+      measure :resolve
+
+      class Request
+        attr_reader :items
+
+        def initialize(items)
+          @items = items.reject(&:resolved?).map { |item| Item.new(item) }
+        end
+
+        mattr_accessor :request_per_second, default: 30
+
+        def self.url
+          @url ||= 'https://api-adresse.data.gouv.fr/reverse/'
+        end
+
+        def resolve
+          items.each_with_index do |item, index|
+            sleep 1 if index.positive? && (index % request_per_second).zero?
+
+            item.response = response(item.params)
+          end
+        end
+
+        def response(params)
+          @response ||=
+            begin
+              Rails.logger.info { 'Invoke French BAN API' }
+              Curl.get(self.class.url, params)
+            end
+        end
+
+        class Item < SimpleDelegator
+          attr_accessor :index
+
+          def params
+            { lon: position.lon, lat: position.lat }
+          end
+
+          def response=(response)
+            return unless response.status == '200'
+
+            return unless feature = JSON.parse(response.body)['features'].first
+
+            self.french_ban_address = feature['properties']
+          end
+
+          def french_ban_address=(french_ban_address)
+            self.address_attributes = {
+              house_number: french_ban_address['housenumber'],
+              street_name: french_ban_address['street'],
+              post_code: french_ban_address['postcode'],
+              city_name: french_ban_address['city'],
+              country_code: 'FR',
+              house_number_and_street_name: [french_ban_address['housenumber'], french_ban_address['street']].join(' '),
+              postal_region: french_ban_address['citycode']
+            }
+          end
+
+          def address_attributes=(address_attributes)
+            self.address = Address.new(address_attributes)
+          end
         end
       end
     end

@@ -22,7 +22,7 @@ export default function useRouteController(_isEdit) {
   }
 
   const { mutate: fetchRoute } = useSWR(
-    `/workbenches/workbenchId/referentials/${referentialId}/lines/${lineId}/routes/${routeId}.geojson`,
+    `/workbenches/${workbenchId}/referentials/${referentialId}/lines/${lineId}/routes/${routeId}.geojson`,
     url => fetch(url).then(res => res.text()),
     { onSuccess, revalidateOnMount: false })
 

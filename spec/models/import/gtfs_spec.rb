@@ -1132,7 +1132,7 @@ RSpec.describe Import::Gtfs do
         let(:gtfs_shape) do
           GTFS::Shape.new(id: 'test').tap do |shape|
             line.each do |position|
-              shape.points << GTFS::ShapePoint.new(latitude: position.latitude, longitude: position.longitude) 
+              shape.points << GTFS::ShapePoint.new(latitude: position.latitude, longitude: position.longitude)
             end
           end
         end
@@ -1151,7 +1151,7 @@ RSpec.describe Import::Gtfs do
               it { is_expected.to include(an_object_having_attributes(code_space: code_space, value: 'test')) }
             end
 
-            describe 'geometry' do 
+            describe 'geometry' do
               subject { Geo::Line.from_rgeos shape.geometry }
 
               it { is_expected.to be_within(0.0001).of(line) }
@@ -1173,6 +1173,11 @@ RSpec.describe Import::Gtfs do
         subject { decorator.valid? }
 
         context 'when an error exists before' do
+          before {
+            allow(decorator).to receive(:points).and_return(double(count: 2))
+            decorator.errors << "error"
+          }
+
           it { is_expected.to be_truthy }
         end
 

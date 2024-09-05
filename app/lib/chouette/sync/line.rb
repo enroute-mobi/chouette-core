@@ -76,6 +76,10 @@ module Chouette::Sync
           resolve :line_notice, line_notice_refs
         end
 
+        def line_transport_mode
+          transport_mode == 'cableway' ? 'telecabin' : transport_mode
+        end
+
         def line_transport_submode
           transport_submode
         end
@@ -83,7 +87,7 @@ module Chouette::Sync
         def model_attributes
           {
             name: name,
-            transport_mode: transport_mode,
+            transport_mode: line_transport_mode,
             transport_submode: line_transport_submode,
             number: line_number,
             desactivated: line_desactivated,

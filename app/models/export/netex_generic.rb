@@ -882,7 +882,7 @@ class Export::NetexGeneric < Export::Base
       def netex_attributes
         super.merge(
           name: netex_name,
-          transport_mode: transport_mode,
+          transport_mode: netex_transport_mode,
           transport_submode: netex_transport_submode,
           operator_ref: operator_ref,
           public_code: number,
@@ -929,6 +929,10 @@ class Export::NetexGeneric < Export::Base
 
       def status
         deactivated ? 'inactive' : ''
+      end
+
+      def netex_transport_mode
+        transport_mode == 'telecabin' ? 'cableway' : transport_mode
       end
 
       def netex_transport_submode

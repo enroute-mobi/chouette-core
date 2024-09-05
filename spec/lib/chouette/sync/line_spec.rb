@@ -203,5 +203,24 @@ RSpec.describe Chouette::Sync::Line do
       sync.synchronize
       expect(useless_line.reload).to be_deactivated
     end
+
+    describe Chouette::Sync::Line::Netex::Decorator do
+      subject(:decorator) { described_class.new(line) }
+      let(:line) { Netex::Line.new }
+
+      describe '#line_transport_mode' do
+        subject { decorator.line_transport_mode }
+
+        context 'when Line transport mode is "bus"' do
+          before { line.transport_mode = 'bus' }
+          it { is_expected.to eq('bus') }
+        end
+
+        context 'when Line transport mode is "cableway"' do
+          before { line.transport_mode = 'cableway' }
+          it { is_expected.to eq('telecabin') }
+        end
+      end
+    end
   end
 end

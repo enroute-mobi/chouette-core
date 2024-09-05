@@ -817,6 +817,10 @@ class Import::Gtfs < Import::Base
         *stop_ids
       ]
     end
+
+    def valid?
+      stop_times.many?
+    end
   end
 
   # Import Routes and JourneyPatterns according to GTFS Trips
@@ -887,6 +891,8 @@ class Import::Gtfs < Import::Base
 
       source.each_trip_with_stop_times do |trip, stop_times|
         decorator = TripDecorator.new(trip, stop_times)
+        next unless decorator.valid?
+
         decorators[decorator.journey_pattern_signature] ||= decorator
       end
 

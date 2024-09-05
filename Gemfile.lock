@@ -23,7 +23,8 @@ GIT
 
 GIT
   remote: https://bitbucket.org/enroute-mobi/gtfs.git
-  revision: 373863f46b66ab5d7f7027006897658a5f72d52b
+  revision: 27615e6f4dfc1915dd95626043deea34ed9f0e03
+  branch: GTFS-53-skip-stop-times-wihtout-trips
   specs:
     gtfs (0.3.6)
       csv

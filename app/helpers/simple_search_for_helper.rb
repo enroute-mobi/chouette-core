@@ -23,7 +23,8 @@ module SimpleSearchForHelper
       method: "GET",
       html: html,
       wrapper: :filters_form_tailwind,
-      builder: FormBuilder
+      builder: FormBuilder,
+      id: 'new_search'
     }
 
     locals = {

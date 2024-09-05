@@ -1,7 +1,7 @@
 - breadcrumb :lines, @workbench
 - javascript_additional_packs 'lines/index'
 
-.page_content x-data="{ saveSearchPanel: false, graphPanel: #{@chart.present?} }"
+.page_content x-data="{ saveSearchPanel: false, graphPanel: #{@search.graphical?} }"
   .container-fluid
     .row
       .col-lg-12

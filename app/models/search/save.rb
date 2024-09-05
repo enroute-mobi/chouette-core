@@ -42,7 +42,7 @@ module Search
 
     def resource_name
       result = search_type.demodulize.underscore.pluralize
-      result = result['workgroup_'.length..] if parent.is_a?(Workgroup)
+      result = result['workgroup_'.length..] if parent.is_a?(::Workgroup)
       result
     end
 

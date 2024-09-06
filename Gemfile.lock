@@ -23,8 +23,7 @@ GIT
 
 GIT
   remote: https://bitbucket.org/enroute-mobi/gtfs.git
-  revision: 27615e6f4dfc1915dd95626043deea34ed9f0e03
-  branch: GTFS-53-skip-stop-times-wihtout-trips
+  revision: fffc0f1136c50f140a61895c549986999a816f00
   specs:
     gtfs (0.3.6)
       csv
@@ -354,6 +353,8 @@ GEM
       faraday (~> 1.0)
     ffaker (2.1.0)
     ffi (1.17.0)
+    ffi (1.17.0-x86_64-darwin)
+    ffi (1.17.0-x86_64-linux-gnu)
     font_awesome5_rails (1.5.0)
       nokogiri (>= 1.11.3)
       railties (>= 4.2)

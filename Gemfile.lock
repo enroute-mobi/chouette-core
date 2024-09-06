@@ -66,8 +66,7 @@ GIT
 
 GIT
   remote: https://bitbucket.org/enroute-mobi/netex.git
-  revision: 48575d906c68bc74c8941b893347f95a6ad62d93
-  branch: NETEX-148-cableway-transport-mode
+  revision: 67a8c56ca06418ed8f39b20c7f1950484e26374e
   specs:
     netex (0.1.2)
       activesupport

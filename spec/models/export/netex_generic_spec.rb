@@ -403,6 +403,22 @@ RSpec.describe Export::NetexGeneric do
         end
       end
 
+      describe '#netex_transport_mode' do
+        subject { decorator.netex_transport_mode }
+
+        context 'when Line transport mode is "bus"' do
+          before { line.transport_mode = 'bus' }
+
+          it { is_expected.to eq('bus') }
+        end
+
+        context 'when Line transport mode is "telecabin"' do
+          before { line.transport_mode = 'telecabin' }
+
+          it { is_expected.to eq('cableway') }
+        end
+      end
+
       # lighter version
       describe "#netex_attributes" do
         subject { decorator.netex_attributes }

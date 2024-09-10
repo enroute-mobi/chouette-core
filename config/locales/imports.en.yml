@@ -107,6 +107,7 @@ en:
         workbench: Workbench
         filename: Filename
         overlapping_referentials: Datasets
+        code_space: Code Space
       import:
         <<: *attrs
         base:

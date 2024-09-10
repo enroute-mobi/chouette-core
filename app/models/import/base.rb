@@ -10,7 +10,7 @@ class Import::Base < ApplicationModel
 
   has_many :processings, as: :operation, dependent: :destroy
   has_array_of :overlapping_referentials, class_name: '::Referential'
-  belongs_to :code_space, optional: false, default: -> { default_code_space }
+  belongs_to :code_space, default: -> { default_code_space }
 
   scope :unfinished, -> { where 'notified_parent_at IS NULL' }
   scope :having_status, ->(statuses) { where(status: statuses ) }

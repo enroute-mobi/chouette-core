@@ -226,6 +226,7 @@ module Chouette
               attribute(:name) { |n| "Company #{n}" }
 
               transient :codes
+              transient :documents
 
               after do
                 new_instance.line_referential = parent.line_referential
@@ -233,6 +234,10 @@ module Chouette
                 (transient(:codes) || {}).each do |code_space_short_name, value|
                   code_space = new_instance.workgroup.code_spaces.find_by!(short_name: code_space_short_name)
                   new_instance.codes.build(code_space: code_space, value: value)
+                end
+
+                Array(transient(:documents, resolve_instances: true)).each do |document|
+                  new_instance.document_memberships.build document: document
                 end
               end
             end
@@ -282,6 +287,7 @@ module Chouette
               attribute(:longitude) { 2.2945 - 2 + 4 * rand }
 
               transient :codes, {}
+              transient :documents
 
               after do
                 new_instance.stop_area_referential = parent.stop_area_referential
@@ -291,6 +297,10 @@ module Chouette
                     code_space = new_instance.workgroup.code_spaces.find_by!(short_name: code_space_short_name)
                     new_instance.codes.build(code_space: code_space, value: value)
                   end
+                end
+
+                Array(transient(:documents, resolve_instances: true)).each do |document|
+                  new_instance.document_memberships.build document: document
                 end
               end
 
@@ -397,7 +407,11 @@ module Chouette
                 new_instance.file = File.new(file_path)
 
                 document_type = transient(:document_type, resolve_instances: true) ||
-                  parent.workbench.workgroup.document_types.create!(name: 'Default', short_name: 'default')
+                                parent.workbench.workgroup.document_types.first ||
+                                parent.workbench.workgroup.document_types.create!(
+                                  name: 'Default',
+                                  short_name: 'default'
+                                )
 
                 new_instance.document_type = document_type
               end

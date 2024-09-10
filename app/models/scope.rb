@@ -79,10 +79,6 @@ module Scope
       stop_area_referential.stop_areas.where(id: stop_points.select(:stop_area_id).distinct)
     end
 
-    def stop_areas_ids
-      referential.stop_points.select(:stop_area_id).distinct
-    end
-
     def entrances
       stop_area_referential.entrances.where(stop_area_id: stop_areas_ids)
     end
@@ -97,16 +93,17 @@ module Scope
 
     delegate :fare_zones, to: :fare_referential
 
-    def documents
-      workgroup.documents.where(id: line_document_memberships.select(:document_id).distinct)
-    end
-
-    def line_document_memberships
-      workgroup.document_memberships.where(documentable_type: 'Chouette::Line', documentable_id: lines.select(:id))
-    end
-
     def point_of_interests
       PointOfInterest::Base.none
+    end
+
+    def documents
+      workgroup.documents.where(
+        id: line_document_memberships.or(stop_area_document_memberships)
+                                     .or(company_document_memberships)
+                                     .select(:document_id)
+                                     .distinct
+      )
     end
 
     delegate :routes, :stop_points, :journey_patterns, :journey_pattern_stop_points, :vehicle_journey_at_stops,
@@ -114,6 +111,33 @@ module Scope
     delegate :line_referential, :stop_area_referential, :shape_referential, :fare_referential, :workgroup,
              to: :workbench
     attr_reader :referential, :workbench
+
+    private
+
+    def stop_areas_ids
+      referential.stop_points.select(:stop_area_id).distinct
+    end
+
+    def line_document_memberships
+      workgroup.document_memberships.where(
+        documentable_type: 'Chouette::Line',
+        documentable_id: lines.select(:id)
+      )
+    end
+
+    def stop_area_document_memberships
+      workgroup.document_memberships.where(
+        documentable_type: 'Chouette::StopArea',
+        documentable_id: stop_areas_ids
+      )
+    end
+
+    def company_document_memberships
+      workgroup.document_memberships.where(
+        documentable_type: 'Chouette::Company',
+        documentable_id: companies.select(:id)
+      )
+    end
   end
 
   class Owned

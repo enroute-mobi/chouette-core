@@ -61,21 +61,19 @@ module Macro
           end
 
           def lines
-            case collection_name
-            when :lines
-              search.without_pagination.search(initial_scope.lines)
-            when :stop_areas
-              initial_scope.lines.joins(:routes).where(routes: routes).distinct
-            else
-              initial_scope.lines
-            end
+            return search.without_pagination.search(initial_scope.lines) if collection_name == :lines
+
+            initial_scope.lines.joins(:routes).where(routes: routes).distinct
           end
 
           def routes
-            if collection_name == :stop_areas
+            case collection_name
+            when :lines
+              initial_scope.routes.where(line: lines)
+            when :stop_areas
               initial_scope.routes.joins(:stop_points).where(stop_points: stop_points).distinct
             else
-              initial_scope.routes.where(line: lines)
+              initial_scope.routes
             end
           end
 
@@ -105,6 +103,26 @@ module Macro
             initial_scope.entrances.where(stop_area: stop_areas)
           end
 
+          def connection_links
+            initial_scope.connection_links.where(
+              departure_id: stop_areas.select(:id),
+              arrival_id: stop_areas.select(:id)
+            )
+          end
+
+          def shapes
+            initial_scope.shapes.where(id: journey_patterns.select(:shape_id))
+          end
+
+          def documents
+            workgroup.documents.where(
+              id: line_document_memberships.or(stop_area_document_memberships)
+                                          .or(company_document_memberships)
+                                          .select(:document_id)
+                                          .distinct
+            )
+          end
+
           def journey_patterns
             initial_scope.journey_patterns.where(route: routes)
           end
@@ -113,22 +131,39 @@ module Macro
             initial_scope.vehicle_journeys.where(journey_pattern: journey_patterns)
           end
 
-          def shapes
-            initial_scope.shapes.where(id: journey_patterns.select(:shape_id))
+          def time_tables
+            initial_scope.time_tables.joins(:vehicle_journeys).where(
+              vehicle_journeys: { id: vehicle_journeys.select(:id) }
+            )
           end
 
           def service_counts
             initial_scope.service_counts.where(line: lines)
           end
 
-          def point_of_interests
-            initial_scope.point_of_interests.where(shape_provider_id: shapes.select(:shape_provider_id))
+          delegate :workgroup, :point_of_interests, to: :initial_scope
+
+          private
+
+          def line_document_memberships
+            workgroup.document_memberships.where(
+              documentable_type: 'Chouette::Line',
+              documentable_id: lines.select(:id)
+            )
           end
 
-          delegate :documents, to: :initial_scope
+          def stop_area_document_memberships
+            workgroup.document_memberships.where(
+              documentable_type: 'Chouette::StopArea',
+              documentable_id: stop_areas.select(:id)
+            )
+          end
 
-          def connection_links
-            initial_scope.connection_links.where(stop_area_provider_id: stop_areas.select(:stop_area_provider_id))
+          def company_document_memberships
+            workgroup.document_memberships.where(
+              documentable_type: 'Chouette::Company',
+              documentable_id: companies.select(:id)
+            )
           end
         end
       end

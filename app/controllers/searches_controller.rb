@@ -10,8 +10,8 @@
 #   end
 #
 class SearchesController < Chouette::UserController
-  before_action :workbench
   before_action :workgroup
+  before_action :workbench
 
   before_action :find_saved_search, only: %i[update destroy]
 
@@ -86,12 +86,24 @@ class SearchesController < Chouette::UserController
     @saved_search = saved_searches.find(params[:id])
   end
 
+  def workgroup
+    @workgroup ||= current_user.workgroups.find(params[:workgroup_id]) if params[:workgroup_id]
+  end
+
+  def current_workgroup
+    workgroup
+  rescue ActiveRecord::RecordNotFound
+    nil
+  end
+
   def workbench
     @workbench ||= current_user.workbenches.find(params[:workbench_id]) if params[:workbench_id]
   end
 
-  def workgroup
-    @workgroup ||= current_user.workgroups.find(params[:workgroup_id]) if params[:workgroup_id]
+  def current_workbench
+    workbench
+  rescue ActiveRecord::RecordNotFound
+    nil
   end
 
   def saved_search_parent

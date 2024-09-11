@@ -77,7 +77,7 @@ class ServiceCount < ActiveRecord::Base
 
     def inserter
       @inserter ||= ReferentialInserter.new(referential) do |config|
-        config.add(lines ? NextIdInserter : IdInserter)
+        config.add(IdInserter)
         config.add(CopyInserter)
       end
     end

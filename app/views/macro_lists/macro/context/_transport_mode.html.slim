@@ -1,5 +1,5 @@
 = form.label :transport_mode, class: 'flex mr-8 pt-0 control-label', required: true
 = form.input :transport_mode,
-  collection: form.object.candidate_transport_modes.map { |t| ["enumerize.transport_mode.#{t}".t, t] },
+  collection: Chouette::TransportMode.sorted_modes,
   label: false,
   wrapper_html: { class: 'mb-0 mx-0 ml-12 flex items-center w-4/6 ml-auto', style: 'padding:10px;'}

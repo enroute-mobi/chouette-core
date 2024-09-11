@@ -638,11 +638,6 @@ crumb :workgroup_edit_merge do |workgroup|
   parent workgroup
 end
 
-crumb :workgroup_transport_modes_settings do |workgroup|
-  link I18n.t('workgroups.edit_transport_modes.title')
-  parent workgroup
-end
-
 crumb :api_keys do |workbench|
   link I18n.t('api_keys.index.title'), workbench_api_keys_path(workbench)
   parent :workbench, workbench

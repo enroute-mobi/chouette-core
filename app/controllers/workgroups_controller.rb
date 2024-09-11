@@ -84,7 +84,6 @@ class WorkgroupsController < Chouette::ResourceController
       :enable_purge_merged_data,
       :maximum_data_age,
       :nightly_aggregate_notification_target,
-      :transport_modes_as_json,
       workbenches_attributes: %i[
         id
         locked_referential_to_aggregate_id

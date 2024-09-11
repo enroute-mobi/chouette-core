@@ -8,7 +8,6 @@ fr:
       setup_deletion_confirm: "Etes vous sûr de vouloir supprimer ce groupe de travail ?"
       setup_workgroup_deletion: Planifier la suppression du groupe de travail
       restore_workgroup: Restaurer
-      edit_transport_modes: Paramétrer les modes de transport
       add_workbench: Ajouter un espace de travail
     edit:
       success: "Le Groupe de Travail a bien éte modifié"
@@ -29,8 +28,6 @@ fr:
       title: "Finalisation"
       edit_purge_settings: "Paramétrage de la purge des données après finalisation"
       disclaimer: Ces paramètres sont utilisés par tous les Espaces de travail de ce Groupe de travail.
-    edit_transport_modes:
-      title: Paramétrages des modes de transport
     aggregator:
       creator: "Automatic start up"
     form:
@@ -54,10 +51,6 @@ fr:
         workbenches: Espaces
         created_at: Créé le
         updated_at: Modifié le
-        transport_mode: Mode de transport
-        transport_modes: Modes de transport
-        transport_submode: Sous-mode de transport
-        transport_submode_code: Code
 
   formtastic:
     hints:

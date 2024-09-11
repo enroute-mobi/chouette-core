@@ -65,6 +65,10 @@ module Chouette
       (mode_candidates - except).map { |candidate| new candidate }
     end
 
+    def self.sorted_modes(**options)
+      modes(**options).map { |m| [m.mode_human_name, m.code] }.sort_by(&:first)
+    end
+
     def camelize_mode
       return unless mode
 

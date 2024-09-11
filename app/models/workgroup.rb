@@ -230,49 +230,6 @@ class Workgroup < ApplicationModel
     update_attribute :deleted_at, nil
   end
 
-  def transport_modes_as_json
-    transport_modes.to_json
-  end
-
-  def transport_modes_as_json=(json)
-    self.transport_modes = JSON.parse(json)
-    clean_transport_modes
-  end
-
-  def sorted_transport_modes
-    transport_modes.keys.sort_by{|k| "enumerize.transport_mode.#{k}".t}
-  end
-
-  def sorted_transport_submodes
-    transport_modes.values.flatten.uniq.sort_by{|k| "enumerize.transport_submode.#{k}".t}
-  end
-
-  def formatted_submodes_for_transports
-    TransportModeEnumerations.formatted_submodes_for_transports(transport_modes)
-  end
-
-  DEFAULT_TRANSPORT_MODE = "bus"
-
-  # Returns [ "bus", "undefined" ] when the Workgroup accepts this transport mode.
-  # else returns first transport mode with its first submode
-  def default_transport_mode
-    transport_mode =
-      if transport_modes.keys.include?(DEFAULT_TRANSPORT_MODE)
-        DEFAULT_TRANSPORT_MODE
-      else
-        sorted_transport_modes.first
-      end
-
-    transport_submode =
-      if transport_modes[transport_mode].include?("undefined")
-        "undefined"
-      else
-        transport_modes[transport_mode].first
-      end
-
-    [ transport_mode, transport_submode ]
-  end
-
   def route_planner
     @route_planner ||= RoutePlanner::Config.new do |config|
       if owner.has_feature?('route_planner')
@@ -308,13 +265,6 @@ class Workgroup < ApplicationModel
   end
 
   private
-  def clean_transport_modes
-    clean = {}
-    transport_modes.each do |k, v|
-      clean[k] = v.sort.uniq if v.present?
-    end
-    self.transport_modes = clean
-  end
 
   def create_dependencies
     self.output ||= ReferentialSuite.create

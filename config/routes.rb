@@ -268,7 +268,6 @@ ChouetteIhm::Application.routes.draw do # rubocop:disable Metrics/BlockLength
     member do
       get :edit_aggregate
       get :edit_merge
-      get :edit_transport_modes
     end
 
     resources :code_spaces, except: :destroy

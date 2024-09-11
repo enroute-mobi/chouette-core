@@ -3,10 +3,6 @@ class Control::Context::TransportMode < Control::Context
 
   validates_presence_of :transport_mode
 
-  def candidate_transport_modes
-    workbench.workgroup.sorted_transport_modes
-  end
-
   class Run < Control::Context::Run
     def lines
       context.lines.where(transport_mode: options[:transport_mode])

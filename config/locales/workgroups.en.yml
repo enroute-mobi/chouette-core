@@ -8,7 +8,6 @@ en:
       setup_deletion_confirm: Are you sure you want to delete this workgroup ?
       setup_workgroup_deletion: Plan workgroup deletion
       restore_workgroup: Restore workgroup
-      edit_transport_modes: Edit transport modes
       add_workbench: Add Workbench
     edit:
       success: The Workgroup is modified
@@ -29,8 +28,6 @@ en:
       title: "Merge settings"
       edit_purge_settings: "Purge merged data settings"
       disclaimer: These settings are used by all Workbenches of this Workgroup.
-      edit_transport_modes:
-        title: Edit transport modes
     aggregator:
       creator: "Automatic start up"
     form:
@@ -54,10 +51,6 @@ en:
         workbenches: Workbenches
         created_at: Created at
         updated_at: Updated at
-        transport_mode: Transport mode
-        transport_modes: Transport modes
-        transport_submode: Transport submode
-        transport_submode_code: Code
 
   formtastic:
     hints:

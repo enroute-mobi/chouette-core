@@ -57,7 +57,6 @@ class LinesController < Chouette::LineReferentialController
 
   def new
     build_resource
-    @line.transport_mode, @line.transport_submode = workgroup.default_transport_mode
     super
   end
 

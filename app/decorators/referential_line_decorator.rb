@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class ReferentialLineDecorator < AF83::Decorator
   decorates Chouette::Line
 
@@ -11,7 +13,7 @@ class ReferentialLineDecorator < AF83::Decorator
       l.href { h.workbench_referential_line_footnotes_path(context[:workbench], context[:referential], object) }
     end
 
-    instance_decorator.action_link secondary: true do |l|
+    instance_decorator.action_link secondary: true, feature: :legacy_routing_constraint_zone do |l|
       l.content t('routing_constraint_zones.index.title')
       l.href do
         h.workbench_referential_line_routing_constraint_zones_path(context[:workbench], context[:referential], object)

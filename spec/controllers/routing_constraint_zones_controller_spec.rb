@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 RSpec.describe RoutingConstraintZonesController do
   login_user
 
@@ -28,18 +30,22 @@ RSpec.describe RoutingConstraintZonesController do
 
     before { referential.update objectid_format: :netex }
 
-    context 'without filter' do
-      it 'should include the rcz' do
-        expect(request).to be_successful
-        expect(assigns(:routing_constraint_zones)).to include(routing_constraint_zone)
-      end
-    end
+    it { expect { request }.to raise_error(FeatureChecker::NotAuthorizedError) }
 
-    context 'with a name filter' do
-      let(:q) { { name_or_short_id_cont: 'foo', route_id_eq: '' } }
-      it 'should not include the rcz' do
-        expect(request).to be_successful
-        expect(assigns(:routing_constraint_zones)).to_not include(routing_constraint_zone)
+    with_feature :legacy_routing_constraint_zone do
+      context 'without filter' do
+        it 'should include the rcz' do
+          expect(request).to be_successful
+          expect(assigns(:routing_constraint_zones)).to include(routing_constraint_zone)
+        end
+      end
+
+      context 'with a name filter' do
+        let(:q) { { name_or_short_id_cont: 'foo', route_id_eq: '' } }
+        it 'should not include the rcz' do
+          expect(request).to be_successful
+          expect(assigns(:routing_constraint_zones)).to_not include(routing_constraint_zone)
+        end
       end
     end
   end

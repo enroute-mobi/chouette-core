@@ -8,6 +8,8 @@ class RoutingConstraintZonesController < Chouette::ReferentialController
 
   belongs_to :line, parent_class: Chouette::Line
 
+  requires_feature :legacy_routing_constraint_zone
+
   def index
     index! do |format|
       format.html do

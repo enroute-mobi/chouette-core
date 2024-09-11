@@ -10,7 +10,7 @@ class ControlMessagesController < Chouette::WorkbenchController
   belongs_to :control_run
 
   def index
-    messages = collection.paginate(page: params[:page], per_page: 15)
+    messages = collection.order(:id).paginate(page: params[:page], per_page: 15)
 
     html = render_to_string(
       partial: 'control_list_runs/control_messages',

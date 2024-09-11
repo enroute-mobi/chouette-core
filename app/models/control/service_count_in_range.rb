@@ -72,6 +72,7 @@ module Control
             .group(:line_id, :date, 'lines.name')
             .select('SUM(count) AS sum_count', :line_id, :date, 'lines.name AS line_name')
             .having('SUM(count) < ? OR SUM(count) > ?', minimum, maximum)
+            .order(:date)
             .to_sql
         end
 

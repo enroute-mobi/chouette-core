@@ -89,7 +89,6 @@ module Chouette
 
     validates_presence_of :name
     validates :wayback, inclusion: { in: self.wayback.values }
-    after_commit :calculate_costs!, on: [:create, :update]
 
     scope :with_at_least_three_stop_points, -> { joins(:stop_points).group('routes.id').having("COUNT(stop_points.id) >= 3") }
     scope :without_any_journey_pattern, -> { joins('LEFT JOIN journey_patterns ON journey_patterns.route_id = routes.id').where(journey_patterns: { id: nil }) }

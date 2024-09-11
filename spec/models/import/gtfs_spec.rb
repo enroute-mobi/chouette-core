@@ -1,18 +1,20 @@
 # frozen_string_literal: true
 
 RSpec.describe Import::Gtfs do
-  let(:workbench) do
-    create :workbench do |workbench|
-      workbench.line_referential.update objectid_format: "netex"
-      workbench.stop_area_referential.update objectid_format: "netex"
-    end
-  end
 
   def create_import(file)
     i = build_import(file)
     i.save!
     i
   end
+
+  let(:context) do
+    Chouette.create do
+      workbench
+    end
+  end
+
+  let(:workbench) { context.workbench }
 
   def build_import(file)
     Import::Gtfs.new workbench: workbench, local_file: open_fixture(file), creator: "test", name: "test"
@@ -942,7 +944,6 @@ RSpec.describe Import::Gtfs do
 
     context 'with invalid stop times' do
       let(:import) { build_import 'invalid_stop_times.zip' }
-      before { import.import_route_and_journey_patterns }
 
       it "should create no VehicleJourney" do
         expect{ import.import_stop_times }.to_not change { Chouette::VehicleJourney.count }

@@ -70,7 +70,7 @@ class ServiceCount < ActiveRecord::Base
     private
 
     def delete_all
-      request = ::ServiceCount
+      request = referential.service_counts
       request = request.where(line_id: lines) if lines
       request.delete_all
     end

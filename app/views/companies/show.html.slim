@@ -57,4 +57,7 @@
           - else
             = d.attribute :referent, as: :association, link: ->(referent) { workbench_line_referential_company_path(@workbench, referent) }
 
+        = simple_block_for @company, title: t("companies.form.sections.internals") do |d|
+          = d.attribute :line_provider, as: :association, link: ->(line_provider) { workbench_line_referential_line_provider_path(@workbench, @company.line_provider_id) }
+
         = render 'shared/documentable/documents', documentable: @company, document_memberships_path: workbench_line_referential_company_document_memberships_path(@workbench, @company)

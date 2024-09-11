@@ -26,6 +26,7 @@ fr:
         contact: "Contact"
         general: "Général"
         address: "Adresse"
+        internals: Interne
       add_code: "Ajouter un code"
   activerecord:
     models:
@@ -82,6 +83,7 @@ fr:
         country: Pays
         codes: Codes
         fare_url: Page Tarifaire
+        line_provider: Fournisseur de lignes
     errors:
       models:
         company:

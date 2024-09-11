@@ -26,6 +26,7 @@ en:
         contact: "Contact"
         general: "General"
         address: Address
+        internals: Internals
       add_code: "Add code"
   activerecord:
     models:
@@ -82,6 +83,7 @@ en:
         country: Country
         codes: Codes
         fare_url: Fare url
+        line_provider: Line provider
     errors:
       models:
         company:

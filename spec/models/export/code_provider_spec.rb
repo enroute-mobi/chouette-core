@@ -21,6 +21,98 @@ RSpec.describe Export::CodeProvider do
     end
   end
 
+  describe Export::CodeProvider::Indexer do
+    describe '.create' do
+      subject { described_class.create(collection, code_provider: code_provider, code_space: code_space) }
+
+      let(:code_space) { Chouette.create { code_space }.code_space }
+
+      context 'with a stop area collection' do
+        let(:collection) { Chouette::StopArea.none }
+
+        context 'with code space' do
+          it { is_expected.to be_a(Export::CodeProvider::Indexer::Default) }
+        end
+
+        context 'without code space' do
+          let(:code_space) { nil }
+
+          it { is_expected.to be_a(Export::CodeProvider::Indexer::Default) }
+        end
+      end
+
+      context 'with a stop point collection' do
+        let(:collection) { Chouette::StopPoint.none }
+
+        context 'with code space' do
+          it { is_expected.to be_a(Export::CodeProvider::Indexer::StopPoints) }
+        end
+
+        context 'without code space' do
+          let(:code_space) { nil }
+
+          it { is_expected.to be_a(Export::CodeProvider::Indexer::Default) }
+        end
+      end
+
+      context 'with a route collection' do
+        let(:collection) { Chouette::Route.none }
+
+        context 'with code space' do
+          it { is_expected.to be_a(Export::CodeProvider::Indexer::Older) }
+        end
+
+        context 'without code space' do
+          let(:code_space) { nil }
+
+          it { is_expected.to be_a(Export::CodeProvider::Indexer::Default) }
+        end
+      end
+
+      context 'with a journey pattern collection' do
+        let(:collection) { Chouette::JourneyPattern.none }
+
+        context 'with code space' do
+          it { is_expected.to be_a(Export::CodeProvider::Indexer::Older) }
+        end
+
+        context 'without code space' do
+          let(:code_space) { nil }
+
+          it { is_expected.to be_a(Export::CodeProvider::Indexer::Default) }
+        end
+      end
+
+      context 'with a vehicle journey collection' do
+        let(:collection) { Chouette::VehicleJourney.none }
+
+        context 'with code space' do
+          it { is_expected.to be_a(Export::CodeProvider::Indexer::Older) }
+        end
+
+        context 'without code space' do
+          let(:code_space) { nil }
+
+          it { is_expected.to be_a(Export::CodeProvider::Indexer::Default) }
+        end
+      end
+
+      context 'with a time table collection' do
+        let(:collection) { Chouette::TimeTable.none }
+
+        context 'with code space' do
+          it { is_expected.to be_a(Export::CodeProvider::Indexer::Older) }
+        end
+
+        context 'without code space' do
+          let(:code_space) { nil }
+
+          it { is_expected.to be_a(Export::CodeProvider::Indexer::Default) }
+        end
+      end
+    end
+  end
+
   describe Export::CodeProvider::Indexer::StopPoints do
     describe '#index' do
       subject { described_class.new(context.referential.stop_points, code_provider: code_provider).index }
@@ -134,110 +226,6 @@ RSpec.describe Export::CodeProvider do
       end
     end
 
-    context 'when model class is Chouette::Route' do
-      subject(:model_code_provider) { described_class.new Chouette::Route.none }
-
-      describe '#default_attribute' do
-        subject { model_code_provider.default_attribute }
-
-        it { is_expected.to eq('objectid') }
-      end
-
-      describe '#index' do
-        describe 'with a dedicated CodeSpace' do
-          subject { described_class.new(context.referential.routes, code_space: code_space).index }
-
-          let(:context) do
-            Chouette.create do
-              code_space short_name: 'test'
-              code_space :other, short_name: 'other'
-
-              route :first, codes: { test: 'first' }
-              route :second, codes: { test: 'second', other: 'second' }
-              route :third, objectid: 'third_objectid::LOC', codes: { other: 'value' }
-              route :fourth, objectid: 'fourth_objectid::LOC', codes: { test: %w[fourth1 fourth2] }
-              route :last, objectid: 'last_objectid::LOC', codes: { test: 'first' }
-            end
-          end
-
-          let(:code_space) { context.code_space }
-          let(:first) { context.route(:first) }
-          let(:second) { context.route(:second) }
-          let(:third) { context.route(:third) }
-          let(:fourth) { context.route(:fourth) }
-          let(:last) { context.route(:last) }
-
-          before do
-            context.referential.switch
-          end
-
-          it do
-            expected_codes = {
-              first.id => 'first',
-              second.id => 'second',
-              third.id => 'third_objectid::LOC',
-              fourth.id => 'fourth_objectid::LOC',
-              last.id => 'last_objectid::LOC'
-            }
-
-            is_expected.to eq expected_codes
-          end
-        end
-      end
-    end
-
-    context 'when model class is Chouette::TimeTable' do
-      subject(:model_code_provider) { described_class.new Chouette::TimeTable.none }
-
-      describe '#default_attribute' do
-        subject { model_code_provider.default_attribute }
-
-        it { is_expected.to eq('objectid') }
-      end
-
-      describe '#index' do
-        describe 'with a dedicated CodeSpace' do
-          subject { described_class.new(context.referential.time_tables, code_space: code_space).index }
-
-          let(:context) do
-            Chouette.create do
-              code_space short_name: 'test'
-              code_space :other, short_name: 'other'
-
-              time_table :first, codes: { test: 'first' }
-              time_table :second, codes: { test: 'second', other: 'second' }
-              time_table :third, objectid: 'third_objectid::LOC', codes: { other: 'value' }
-              time_table :fourth, objectid: 'fourth_objectid::LOC', codes: { test: %w[fourth1 fourth2] }
-              time_table :last, objectid: 'last_objectid::LOC', codes: { test: 'first' }
-            end
-          end
-
-          let(:code_space) { context.code_space }
-          let(:first) { context.time_table(:first) }
-          let(:second) { context.time_table(:second) }
-          let(:third) { context.time_table(:third) }
-          let(:fourth) { context.time_table(:fourth) }
-          let(:last) { context.time_table(:last) }
-
-          before do
-            context.referential.switch
-          end
-
-          it do
-            expected_codes = {
-              first.id => 'first',
-              second.id => 'second',
-              third.id => 'third_objectid::LOC',
-              fourth.id => 'fourth_objectid::LOC',
-              last.id => 'last_objectid::LOC'
-            }
-
-            is_expected.to eq expected_codes
-          end
-        end
-      end
-    end
-
     context 'when model class is PointOfInterest' do
       subject(:model_code_provider) { described_class.new PointOfInterest::Base.none }
 
@@ -282,58 +270,65 @@ RSpec.describe Export::CodeProvider do
     end
   end
 
-  describe Export::CodeProvider::Indexer::TimeTables do
-    subject(:model_code_provider) { described_class.new Chouette::TimeTable.none }
+  describe Export::CodeProvider::Indexer::Older do
+    context 'when model class is Chouette::Route' do
+      subject(:model_code_provider) { described_class.new Chouette::Route.none }
 
-    describe '#default_attribute' do
-      subject { model_code_provider.default_attribute }
+      describe '#default_attribute' do
+        subject { model_code_provider.default_attribute }
 
-      it { is_expected.to eq('objectid') }
+        it { is_expected.to eq('objectid') }
+      end
     end
 
-    describe '#index' do
-      describe 'with a dedicated CodeSpace' do
-        subject do
-          described_class.new(
-            context.referential.time_tables,
-            code_space: code_space
-          ).index
-        end
+    context 'when model class is Chouette::TimeTable' do
+      subject(:model_code_provider) { described_class.new Chouette::TimeTable.none }
 
-        let(:context) do
-          Chouette.create do
-            code_space :test, short_name: 'test'
-            code_space :other, short_name: 'other'
+      describe '#default_attribute' do
+        subject { model_code_provider.default_attribute }
 
-            time_table :first, codes: { test: 'first' }
-            time_table :second, codes: { test: 'second', other: 'second' }
-            time_table :third, objectid: 'third_objectid::LOC', codes: { other: 'value' }
-            time_table :fourth, objectid: 'fourth_objectid::LOC', codes: { test: %w[fourth1 fourth2] }
-            time_table :last, objectid: 'last_objectid::LOC', codes: { test: 'first' }
+        it { is_expected.to eq('objectid') }
+      end
+
+      describe '#index' do
+        describe 'with a dedicated CodeSpace' do
+          subject { described_class.new(context.referential.time_tables, code_space: code_space).index }
+
+          let(:context) do
+            Chouette.create do
+              code_space :test, short_name: 'test'
+              code_space :other, short_name: 'other'
+
+              time_table :first, codes: { test: 'first' }
+              time_table :second, codes: { test: 'second', other: 'second' }
+              time_table :third, objectid: 'third_objectid::LOC', codes: { other: 'value' }
+              time_table :fourth, objectid: 'fourth_objectid::LOC', codes: { test: %w[fourth1 fourth2] }
+              time_table :last, objectid: 'last_objectid::LOC', codes: { test: 'first' }
+            end
           end
-        end
 
-        let(:code_space) { context.code_space(:test) }
-        let(:first) { context.time_table(:first) }
-        let(:second) { context.time_table(:second) }
-        let(:third) { context.time_table(:third) }
-        let(:fourth) { context.time_table(:fourth) }
-        let(:last) { context.time_table(:last) }
+          let(:code_space) { context.code_space(:test) }
+          let(:first) { context.time_table(:first) }
+          let(:second) { context.time_table(:second) }
+          let(:third) { context.time_table(:third) }
+          let(:fourth) { context.time_table(:fourth) }
+          let(:last) { context.time_table(:last) }
 
-        before do
-          context.referential.switch
-        end
+          before do
+            context.referential.switch
+          end
 
-        it do
-          expected_codes = {
-            first.id => 'first',
-            second.id => 'second',
-            third.id => 'third_objectid::LOC',
-            fourth.id => 'fourth2',
-            last.id => 'last_objectid::LOC'
-          }
+          it do
+            expected_codes = {
+              first.id => 'first',
+              second.id => 'second',
+              third.id => 'third_objectid::LOC',
+              fourth.id => 'fourth1',
+              last.id => 'last_objectid::LOC'
+            }
 
-          is_expected.to eq expected_codes
+            is_expected.to eq expected_codes
+          end
         end
       end
     end

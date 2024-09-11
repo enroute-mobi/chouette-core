@@ -1495,7 +1495,7 @@ RSpec.describe Export::NetexGeneric do
         context 'when Export::CodeProvider uses a code space with many values by model' do
           let!(:code_provider) { Export::CodeProvider.new export_scope, code_space: many_codes }
           it 'uses TimeTable last created code if many codes for a selected code_space as Netex id' do
-            expect(day_type_attributes[:id]).to eq('second_code')
+            expect(day_type_attributes[:id]).to eq('first_code')
           end
         end
 

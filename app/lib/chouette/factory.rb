@@ -81,6 +81,21 @@ module Chouette
           attribute(:short_name) { |n| "document_type_#{n}" }
         end
 
+        model :workgroup_processing_rule, association_name: :processing_rules do
+          attribute(:operation_step) { 'after_import' }
+
+          transient :control_list
+          transient :macro_list
+
+          after do
+            processable = transient(:macro_list, resolve_instances: true) ||
+              transient(:control_list, resolve_instances: true) ||
+              new_instance.workbench.control_lists.create!(name: 'Default')
+
+            new_instance.processable = processable
+          end
+        end
+
         model :workbench do
           attribute(:name) { |n| "Workbench #{n}" }
           attribute(:organisation) { build_root_model :organisation }
@@ -165,7 +180,7 @@ module Chouette
             attribute(:creator) { |n| "User #{n}" }
           end
 
-          model :processing_rule do
+          model :workbench_processing_rule, association_name: :processing_rules do
             attribute(:operation_step) { 'after_import' }
 
             transient :control_list

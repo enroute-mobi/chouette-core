@@ -56,7 +56,7 @@ RSpec.describe Macro::List do
           workbench do
             referential :target
             macro_list :macro_list
-            processing_rule macro_list: :macro_list
+            workbench_processing_rule macro_list: :macro_list
           end
         end
       end

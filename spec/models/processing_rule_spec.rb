@@ -26,8 +26,8 @@ RSpec.describe ProcessingRule::Workbench, type: :model do
   end
 
   context 'when another ProcessingRule exists' do
-    let(:context) { Chouette.create { processing_rule } }
-    let(:processing_rule) { context.processing_rule }
+    let(:context) { Chouette.create { workbench_processing_rule } }
+    let(:processing_rule) { context.workbench_processing_rule }
     let(:workbench) { context.workbench }
 
     describe 'a new ProcessingRule in the same Workbench with the same operation step and processable type' do

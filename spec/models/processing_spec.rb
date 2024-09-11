@@ -6,13 +6,13 @@ RSpec.describe Processing do
       workbench do
         referential
         control_list
-        processing_rule :control_processing_rule, operation_step: 'after_import', control_list: :control_list
+        workbench_processing_rule :control_processing_rule, operation_step: 'after_import', control_list: :control_list
       end
     end
   end
 
   let(:control_list) { context.control_list }
-  let(:control_processing_rule) { context.processing_rule(:control_processing_rule) }
+  let(:control_processing_rule) { context.workbench_processing_rule(:control_processing_rule) }
   let(:import) { create :gtfs_import, workbench: context.workbench }
   let(:control_list_run) { Control::List::Run.create referential: context.referential, workbench: context.workbench }
   let(:processing) do

@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class Import::Base < ApplicationModel
   self.table_name = "imports"
   include OptionsSupport
@@ -30,16 +32,28 @@ class Import::Base < ApplicationModel
     %w(zip)
   end
 
-  def worgroup_control_list_run
-    processings.where("workgroup_id IS NOT NULL AND processed_type = ?", 'Control::List::Run').take
+  def workgroup_control_list_run
+    @workgroup_control_list_run ||= \
+      processings.where.not(workgroup_id: nil)
+                 .where(processed_type: 'Control::List::Run')
+                 .joins('INNER JOIN control_list_runs ON control_list_runs.id = processings.processed_id') \
+                 .take
   end
 
   def workbench_macro_list_run
-    processings.where(processed_type: 'Macro::List::Run', workgroup_id: nil).take
+    @workbench_macro_list_run ||= \
+      processings.where(workgroup_id: nil)
+                 .where(processed_type: 'Macro::List::Run')
+                 .joins('INNER JOIN macro_list_runs ON macro_list_runs.id = processings.processed_id') \
+                 .take
   end
 
   def workbench_control_list_run
-    processings.where(processed_type: 'Control::List::Run', workgroup_id: nil).take
+    @workbench_control_list_run ||= \
+      processings.where(workgroup_id: nil)
+                 .where(processed_type: 'Control::List::Run')
+                 .joins('INNER JOIN control_list_runs ON control_list_runs.id = processings.processed_id') \
+                 .take
   end
 
   def workgroup

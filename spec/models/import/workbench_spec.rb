@@ -51,7 +51,7 @@ RSpec.describe Import::Workbench do
     let(:context) do
       Chouette.create do
         referential
-        processing_rule
+        workbench_processing_rule
       end
     end
     let(:netex_import) do
@@ -70,9 +70,9 @@ RSpec.describe Import::Workbench do
     end
 
     before(:each) do
-      netex_import.processings.create(processed: control_list_run, processing_rule: context.processing_rule,
+      netex_import.processings.create(processed: control_list_run, processing_rule: context.workbench_processing_rule,
                                       workbench: workbench)
-      netex_import.processings.create(processed: macro_list_run, processing_rule: context.processing_rule,
+      netex_import.processings.create(processed: macro_list_run, processing_rule: context.workbench_processing_rule,
                                       workbench: workbench)
     end
 
@@ -134,7 +134,7 @@ RSpec.describe Import::Workbench do
       let(:context) do
         Chouette.create do
           referential
-          processing_rule
+          workbench_processing_rule
         end
       end
       let(:netex_import) do
@@ -148,7 +148,8 @@ RSpec.describe Import::Workbench do
       end
 
       before(:each) do
-        netex_import.processings.create(processed: control_list_run, processing_rule: context.processing_rule,
+        netex_import.processings.create(processed: control_list_run,
+                                        processing_rule: context.workbench_processing_rule,
                                         workbench: workbench)
       end
 

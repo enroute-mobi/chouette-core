@@ -90,7 +90,7 @@ RSpec.describe Processor do
           workbench :without_processing_rules
 
           workbench do
-            processing_rule operation_step: 'after_import'
+            workbench_processing_rule operation_step: 'after_import'
           end
         end
       end
@@ -109,14 +109,14 @@ RSpec.describe Processor do
           workbench do
             control_list :control
             macro_list :macro
-            processing_rule :control_processing_rule, operation_step: 'after_import', control_list: :control
-            processing_rule :macro_processing_rule, operation_step: 'after_import', macro_list: :macro
+            workbench_processing_rule :control_processing_rule, operation_step: 'after_import', control_list: :control
+            workbench_processing_rule :macro_processing_rule, operation_step: 'after_import', macro_list: :macro
           end
         end
       end
 
-      let(:control_processing_rule) { context.processing_rule(:control_processing_rule) }
-      let(:macro_processing_rule) { context.processing_rule(:macro_processing_rule) }
+      let(:control_processing_rule) { context.workbench_processing_rule(:control_processing_rule) }
+      let(:macro_processing_rule) { context.workbench_processing_rule(:macro_processing_rule) }
       let(:import) { create :gtfs_import, workbench: context.workbench }
       let(:processor) { Processor.new import }
 
@@ -132,7 +132,8 @@ RSpec.describe Processor do
       let(:context) do
         Chouette.create do
           workgroup do
-            control_list shared: true
+            control_list :control_list, shared: true
+            workgroup_processing_rule operation_step: 'after_import', control_list: :control_list
           end
         end
       end
@@ -141,9 +142,7 @@ RSpec.describe Processor do
       let(:control_list) { context.control_list }
       let(:import) { create :gtfs_import, workbench: workgroup.workbenches.first }
       let(:processor) { Processor.new import }
-      let!(:processing_rule) do
-        workgroup.processing_rules.create operation_step: 'after_import', processable: control_list
-      end
+      let(:processing_rule) { context.workgroup_processing_rule }
       subject { processor.all_workgroup_processing_rules('after_import') }
 
       it { is_expected.to contain_exactly processing_rule }

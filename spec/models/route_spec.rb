@@ -204,14 +204,5 @@ RSpec.describe Chouette::Route, :type => :model do
       expect{route.run_callbacks(:commit)}.to change {Delayed::Job.count}.by(0)
     end
 
-    context "with route_calculate_costs and costs_in_journey_patterns features in the organisation" do
-      before do
-        route.referential.organisation.update_attribute(:features, [:route_calculate_costs, :costs_in_journey_patterns])
-      end
-
-      it "should calculate costs after commit" do
-        expect{route.run_callbacks(:commit)}.to change {Delayed::Job.count}.by(1)
-      end
-    end
   end
 end

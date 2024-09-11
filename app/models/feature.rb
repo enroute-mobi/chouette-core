@@ -6,7 +6,6 @@ class Feature
     %w[
       consolidated_offers
       core_control_blocks
-      costs_in_journey_patterns
       create_opposite_routes
       create_referential_from_merge
       detailed_calendars

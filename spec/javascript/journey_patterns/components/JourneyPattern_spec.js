@@ -34,8 +34,7 @@ describe('the edit button', () => {
         stop_points: []
       },
       index: 0,
-      editMode,
-      fetchRouteCosts: () => {}
+      editMode
     }
 
     const { default: JourneyPattern } = require('../../../../app/packs/src/journey_patterns/components/JourneyPattern')

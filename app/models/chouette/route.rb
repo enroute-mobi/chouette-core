@@ -253,18 +253,6 @@ module Chouette
       journey_pattern
     end
 
-    def calculate_costs!
-      RouteCalculateCostsService.new(referential).update(self)
-    end
-
-    def calculate_costs
-      way_costs = TomTom.evaluate WayCost.from(stop_areas)
-      if way_costs.present?
-        costs = way_costs.inject({}) { |h,cost| h[cost.id] = { distance: cost.distance, time: cost.time } ; h }
-        update_column :costs, costs
-      end
-    end
-
     protected
 
     def self.vehicle_journeys_timeless(stop_point_id)

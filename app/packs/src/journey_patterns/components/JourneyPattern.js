@@ -48,7 +48,6 @@ export default function JourneyPattern({
   editMode,
   enterEditMode,
   fetchingApi,
-  fetchRouteCosts,
   fetchJourneyPatterns,
   index,
   onCheckboxChange,
@@ -144,8 +143,6 @@ export default function JourneyPattern({
 
     if (cost) return cost
 
-    if (!journeyPattern.id) { fetchRouteCosts(costsKey) }
-
     return { distance: 0, time: 0 }
   }
 
@@ -222,18 +219,18 @@ export default function JourneyPattern({
   const { deletable, id, object_id, short_id, stop_points } = journeyPattern
 
   return (
-    <div className={'t2e-item' + (journeyPattern.deletable ? ' disabled' : '') + (object_id ? '' : ' to_record') + (journeyPattern.errors ? ' has-error' : '') + (hasFeature('costs_in_journey_patterns') ? ' with-costs' : '')}>
+    <div className={'t2e-item' + (journeyPattern.deletable ? ' disabled' : '') + (object_id ? '' : ' to_record') + (journeyPattern.errors ? ' has-error' : '') + (journeyPattern.costs ? ' with-costs' : '')}>
       <div className='th'>
         <div className='strong mb-xs'>{object_id ? short_id : '-'}</div>
         <div>{journeyPattern.registration_number}</div>
         <div>{I18n.t('journey_patterns.show.stop_points_count', { count: actions.getChecked(stop_points).length })}</div>
-        {hasFeature('costs_in_journey_patterns') &&
+        {journeyPattern.costs &&
           <div className="small row totals">
             <span className="col-md-5"><i className="fas fa-arrows-alt-h"></i>{totalDistance}</span>
             <span className="col-md-6"><i className="fa fa-clock"></i>{totalTime}</span>
           </div>
         }
-        {hasFeature('costs_in_journey_patterns') &&
+        {journeyPattern.costs &&
           <div className="small row totals commercial">
             <span className="col-md-5"><i className="fas fa-arrows-alt-h"></i>{commercialTotalDistance}</span>
             <span className="col-md-6"><i className="fa fa-clock"></i>{commercialTotalTime}</span>
@@ -308,7 +305,7 @@ export default function JourneyPattern({
             <div className={'td' + (headlined ? ' with-headline' : '')}>
               {spNode(stopPoint, headlined)}
             </div>
-            {hasFeature('costs_in_journey_patterns') && costs && <div className='costs' id={'costs-' + id + '-' + costsKey}>
+            { costs && <div className='costs' id={'costs-' + id + '-' + costsKey}>
               {editMode && <div>
                 <p>
                   <input type="number" value={costs['distance'] || 0} min='0' name="distance" step="1" onChange={updateCosts} data-costs-key={costsKey} />
@@ -338,7 +335,6 @@ JourneyPattern.propTypes = {
   onOpenEditModal: PropTypes.func.isRequired,
   onDeleteJourneyPattern: PropTypes.func.isRequired,
   showHeader: PropTypes.func.isRequired,
-  fetchRouteCosts: PropTypes.func.isRequired,
   onDuplicateJourneyPattern: PropTypes.func.isRequired,
   fetchJourneyPatterns: PropTypes.func.isRequired
 }

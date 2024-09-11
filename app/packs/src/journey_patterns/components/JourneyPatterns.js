@@ -115,15 +115,14 @@ export default class JourneyPatterns extends Component {
                   <div className='strong mb-xs'>{I18n.t('objectid')}</div>
                   <div>{I18n.attribute_name('journey_pattern', 'registration_number')}</div>
                   <div>{I18n.attribute_name('journey_pattern', 'stop_points')}</div>
-                  { this.hasFeature('costs_in_journey_patterns') &&
-                     <div>
-                       <div>{I18n.attribute_name('journey_pattern', 'full_journey_time')}</div>
-                       <div>{I18n.attribute_name('journey_pattern', 'commercial_journey_time')}</div>
-                     </div> }
+                  <div>
+                    <div>{I18n.attribute_name('journey_pattern', 'full_journey_time')}</div>
+                    <div>{I18n.attribute_name('journey_pattern', 'commercial_journey_time')}</div>
+                  </div>
                 </div>
                 {this.props.stopPointsList.map((sp, i) =>{
                   return (
-                    <div key={i} className={'td' + (this.hasFeature('costs_in_journey_patterns') ? ' with-costs' : '')}>
+                    <div key={i} className={'td with-costs'}>
                       {this.headerManager.stopPointHeader(sp.stop_area_object_id + "-" + i)}
                     </div>
                   )
@@ -147,7 +146,6 @@ export default class JourneyPatterns extends Component {
                       status= {this.props.status}
                       editMode= {this.props.editMode}
                       showHeader={this.showHeader.bind(this)}
-                      fetchRouteCosts={(costsKey) => this.props.fetchRouteCosts(costsKey, index)}
                       />
                   )}
                 </div>
@@ -169,6 +167,5 @@ JourneyPatterns.propTypes = {
   fetchingApi: PropTypes.func.isRequired,
   fetchJourneyPatterns: PropTypes.func.isRequired,
   onOpenEditModal: PropTypes.func.isRequired,
-  fetchRouteCosts: PropTypes.func.isRequired,
   enterEditMode: PropTypes.func.isRequired
 }

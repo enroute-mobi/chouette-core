@@ -234,46 +234,6 @@ const actions = {
         }
       })
   },
-  fetchRouteCosts: (dispatch, key, index) => {
-    if(actions.fetchingRouteCosts){
-        // A request is already sent, wait for it
-        if(!actions.waitingForRouteCosts){
-          actions.waitingForRouteCosts = []
-        }
-        actions.waitingForRouteCosts.push([key, index])
-        return
-    }
-
-    if(actions.routeCostsCache) {
-      // Dispatch asynchronously to prevent warning when
-      // this executes during `render()`
-      requestAnimationFrame(() => {
-        dispatch(actions.receiveRouteCosts(
-          actions.routeCostsCache,
-          key,
-          index
-        ))
-      })
-    } else {
-      actions.fetchingRouteCosts = true
-      fetch(window.routeCostsUrl, {
-        credentials: 'same-origin',
-      }).then(response => {
-        return response.json()
-      }).then(json => {
-        let costs = json.costs ? json.costs : {}
-        actions.routeCostsCache = costs
-
-        dispatch(actions.receiveRouteCosts(costs, key, index))
-        if(actions.waitingForRouteCosts){
-          actions.waitingForRouteCosts.map(function(item, i) {
-            dispatch(actions.receiveRouteCosts(costs, item[0], item[1]))
-          })
-        }
-        actions.fetchingRouteCosts = false
-      })
-    }
-  },
   getChecked : (jp) => {
     return jp.filter((obj) => {
       return obj.checked

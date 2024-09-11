@@ -3,7 +3,7 @@ en:
     actions:
       new: "Add a new line notice"
       edit: "Associate and dissociate line notices"
-      destroy: "dissociate this line notice"
+      destroy: "Dissociate this line notice"
       destroy_confirm: "Are you sure you want to dissociate this notice from this line ?"
     new:
       title: "Add a new line notice"

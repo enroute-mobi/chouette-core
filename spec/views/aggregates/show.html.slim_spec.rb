@@ -21,7 +21,7 @@ RSpec.describe '/aggregates/show', type: :view do
   let(:control_list) { context.control_list(:control_list) }
 
   let(:aggregate) do
-    Aggregate.create!(workgroup: workgroup, referentials: referentials).tap(&:aggregate!)
+    Aggregate.create!(workgroup: workgroup, referentials: referentials, creator: 'test').tap(&:aggregate!)
   end
   let(:processing) { aggregate.processings.first }
   let(:control_list_run) do

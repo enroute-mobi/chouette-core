@@ -27,8 +27,8 @@ en:
         notice: The Contract is successfully associated to the line
         error: The Contract could not be associated to the line
       unassociate:
-        notice: The Contract is successfully unassociated to the line
-        error: The Contract could not be unassociated to the line
+        notice: The Contract is successfully dissociated to the line
+        error: The Contract could not be dissociated to the line
   activemodel:
     attributes:
       period:

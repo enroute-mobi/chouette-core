@@ -14,7 +14,7 @@ en:
       destroy_confirm: A"re you sure you want destroy this journey pattern ?"
       create_shape: Create shape
       edit_shape: Edit shape
-      unassociate_shape: Unassociate shape
+      unassociate_shape: Dissociate shape
     new:
       title: "Add a new journey pattern"
     edit:

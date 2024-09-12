@@ -4,15 +4,15 @@ en:
       title: Associate documents
     actions:
       associate: Associate
-      unassociate: Unassociate
+      unassociate: Dissociated
     search_no_results: "No document found"
     flash:
       associate:
         notice: The document is associated to the line
         error: The document can't be associated to the line
       unassociate:
-        notice: The document is unassociated to the line
-        error: The document can't be unassociated to the line
+        notice: The document is dissociated to the line
+        error: The document can't be dissociated to the line
   activerecord:
     models:
       document_membership:

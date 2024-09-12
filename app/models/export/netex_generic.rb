@@ -2240,6 +2240,8 @@ class Export::NetexGeneric < Export::Base
       end
 
       def notice_assignments
+        return unless self.respond_to? :notice_assignments_attributes
+
         notice_assignments_attributes.map.with_index do |notice_assignment_attributes, order|
           notice_code = code_provider.footnotes.code(notice_assignment_attributes['id'])
           reference = Netex::Reference.new(notice_code, type: 'Notice')

@@ -88,7 +88,7 @@ RSpec.describe IdInserter do
         inserter.insert(route1)
         inserter.insert(route2)
         inserter.flush
-        expect { inserter.insert(route3) }.to change { route3.id }.from(nil).to(1)
+        expect { inserter.insert(route3) }.to change { route3.id }.from(nil).to(3)
       end
     end
 
@@ -99,7 +99,7 @@ RSpec.describe IdInserter do
         inserter.insert(route1)
         inserter.insert(route2)
         inserter.flush
-        expect { inserter.insert(route3) }.to change { route3.id }.from(nil).to(route.id + 1)
+        expect { inserter.insert(route3) }.to change { route3.id }.from(nil).to(4)
       end
     end
   end

@@ -62,13 +62,26 @@ module Export
     end
 
     module Indexer
-      def self.create(collection, code_provider:, code_space: nil)
-        if code_space && collection.model == Chouette::StopPoint
-          StopPoints.new(collection, code_provider: code_provider)
-        elsif code_space && collection.model == Chouette::TimeTable
-          TimeTables.new(collection, code_space: code_space)
-        else
-          Default.new(collection, code_space: code_space)
+      class << self
+        def create(collection, code_provider:, code_space: nil)
+          if code_space && collection.model == Chouette::StopPoint
+            StopPoints.new(collection, code_provider: code_provider)
+          elsif code_space && collection.model.in?(older_models)
+            Older.new(collection, code_space: code_space)
+          else
+            Default.new(collection, code_space: code_space)
+          end
+        end
+
+        private
+
+        def older_models
+          @older_models ||= [
+            Chouette::Route,
+            Chouette::JourneyPattern,
+            Chouette::VehicleJourney,
+            Chouette::TimeTable
+          ].to_set
         end
       end
 
@@ -190,14 +203,14 @@ module Export
       end
 
       # This condition accept several codes in the same Code Space to take one in the method with_code_query
-      class TimeTables < Default
+      class Older < Default
         def with_code_query
-          code_query = ReferentialCode.order(created_at: :desc).limit(1)
-                                      .where("referential_codes.resource_id = time_tables.id")
-                                      .where(resource_type: 'Chouette::TimeTable', code_space: code_space)
+          code_query = ReferentialCode.order(id: :asc).limit(1)
+                                      .where("referential_codes.resource_id = #{model_class.quoted_table_name}.id")
+                                      .where(resource_type: model_class.base_class.name, code_space: code_space)
                                       .select(:value)
           unique_collection.joins("JOIN LATERAL (#{code_query.to_sql}) subquery ON true")
-                           .select("time_tables.id", "subquery.value as code")
+                           .select("#{model_class.quoted_table_name}.id", "subquery.value as code")
         end
       end
     end

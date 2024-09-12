@@ -55,7 +55,7 @@ module Export
 
       collection_names[model.class] ||=
         begin
-          model.model_name.plural
+          model.model_name.collection
         rescue
           # When the model class is Chouette::StopPoint::Light::StopPoint...
           model.class.name.demodulize.underscore.pluralize
@@ -129,13 +129,13 @@ module Export
 
         def query_with_code
           <<~SQL
-          select id_with_default_attribute.id, COALESCE(code, default_attribute) as code
-          from (#{unique_collection.select(:id, "#{model_class.table_name}.#{default_attribute}::varchar as default_attribute").to_sql}) id_with_default_attribute
-          left join (
-            select distinct on (code) id, code from (#{code_query.to_sql}) id_with_code
-          ) id_with_uniq_code
-          on (id_with_uniq_code.id = id_with_default_attribute.id)
-        SQL
+            select id_with_default_attribute.id, COALESCE(code, default_attribute) as code
+            from (#{unique_collection.select(:id, "#{model_class.table_name}.#{default_attribute}::varchar as default_attribute").to_sql}) id_with_default_attribute
+            left join (
+              select distinct on (code) id, code from (#{code_query.to_sql}) id_with_code
+            ) id_with_uniq_code
+            on (id_with_uniq_code.id = id_with_default_attribute.id)
+          SQL
         end
 
         def index_with_codes
@@ -164,14 +164,14 @@ module Export
         end
 
         def with_registration_number_query
-          collection.select(:id, "registration_number as code")
+          collection.select(:id, 'registration_number as code')
         end
 
         def code_query
-          unless default_code_space? && model_with_registration_number?
-            with_code_query
-          else
+          if default_code_space? && model_with_registration_number?
             with_registration_number_query
+          else
+            with_code_query
           end
         end
 
@@ -180,7 +180,7 @@ module Export
         end
 
         def model_with_registration_number?
-          model_class.column_names.include?("registration_number")
+          model_class.column_names.include?('registration_number')
         end
 
         def default_code_space?
@@ -198,9 +198,9 @@ module Export
 
         def index
           stop_points.select(:id, :route_id, :position).each_row.map do |attributes|
-            route_code = code_provider.routes.code(attributes["route_id"])
-            stop_point_code = Code::Value.merge(route_code, attributes["position"], type: 'StopPoint')
-            [ attributes["id"], stop_point_code ]
+            route_code = code_provider.routes.code(attributes['route_id'])
+            stop_point_code = Code::Value.merge(route_code, attributes['position'], type: 'StopPoint')
+            [attributes['id'], stop_point_code]
           end.to_h
         end
       end
@@ -216,8 +216,9 @@ module Export
         def index
           footnotes.select(:id, :line_id, :data_source_ref).each_row.map do |attributes|
             line_code = code_provider.lines.code(attributes['line_id'])
-            footnote_code = Code::Value.merge(line_code, attributes['id'], type: 'Notice', provider: attributes['data_source_ref'])
-            [ attributes['id'], footnote_code ]
+            footnote_code = Code::Value.merge(line_code, attributes['id'], type: 'Notice',
+                                                                           provider: attributes['data_source_ref'])
+            [attributes['id'], footnote_code]
           end.to_h
         end
       end

@@ -117,7 +117,9 @@ RSpec.describe Export::CodeProvider do
     describe '#index' do
       subject { described_class.new(context.referential.stop_points, code_provider: code_provider).index }
 
-      let(:code_provider) { Export::CodeProvider.new(double(routes: context.referential.routes), code_space: code_space) }
+      let(:code_provider) do
+        Export::CodeProvider.new(double(routes: context.referential.routes), code_space: code_space)
+      end
 
       let(:context) do
         Chouette.create do
@@ -139,7 +141,7 @@ RSpec.describe Export::CodeProvider do
       it do
         expected_codes = {
           first_route.stop_points.first.id => eq('StopPoint:first-0'),
-          second_route.stop_points.last.id => Netex::ObjectId.parse('ACME:StopPoint:A-2:LOC'),
+          second_route.stop_points.last.id => Netex::ObjectId.parse('ACME:StopPoint:A-2:LOC')
         }
 
         is_expected.to include(expected_codes)
@@ -195,7 +197,10 @@ RSpec.describe Export::CodeProvider do
         end
 
         describe 'with registration number' do
-          subject { described_class.new(context.stop_area_referential.stop_areas, code_space: context.workgroup.code_spaces.default).index }
+          subject do
+            described_class.new(context.stop_area_referential.stop_areas,
+                                code_space: context.workgroup.code_spaces.default).index
+          end
 
           let(:context) do
             Chouette.create do
@@ -216,7 +221,7 @@ RSpec.describe Export::CodeProvider do
             expected_codes = {
               first.id => 'first',
               second.id => 'second',
-              third.id => 'third_objectid::LOC',
+              third.id => 'third_objectid::LOC'
               # last.id => 'last_objectid::LOC'
             }
 
@@ -338,10 +343,12 @@ RSpec.describe Export::CodeProvider do
     describe '#index' do
       subject { described_class.new(context.referential.footnotes, code_provider: code_provider).index }
 
-      let(:code_provider) { Export::CodeProvider.new(double(footnotes: context.referential.footnotes, lines: referential.lines )) }
+      let(:code_provider) do
+        Export::CodeProvider.new(double(footnotes: context.referential.footnotes, lines: referential.lines))
+      end
       let(:context) do
         Chouette.create do
-          footnote :footnote, data_source_ref: "dummy"
+          footnote :footnote, data_source_ref: 'dummy'
         end
       end
       let(:referential) { context.referential }

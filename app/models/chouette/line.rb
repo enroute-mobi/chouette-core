@@ -48,6 +48,8 @@ module Chouette
     has_and_belongs_to_many :group_of_lines, class_name: 'Chouette::GroupOfLine', order: 'group_of_lines.name'
     has_many :line_notice_memberships, inverse_of: :line, dependent: :destroy
     has_many :line_notices, through: :line_notice_memberships, inverse_of: :lines
+    has_many :group_members, class_name: 'LineGroup::Member', dependent: :destroy, inverse_of: :line
+    has_many :groups, through: :group_members, inverse_of: :lines
 
     has_many :footnotes, inverse_of: :line, validate: true
     accepts_nested_attributes_for :footnotes, reject_if: :all_blank, allow_destroy: true

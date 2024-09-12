@@ -26,11 +26,14 @@ en:
         category: "Category"
         line_ids: "Line"
         line_id: "Line"
+        line_provider: Line provider
         line: "Line"
+        lines: "Lines"
         timetable: "Timetable"
         stop_area_id: "Stop area"
-        stop_area_provider_id: "Specify a stop area provider name"
+        stop_area_provider: Stop area provider
         stop_area: "Stop area"
+        stop_areas: "Stop areas"
         area_type: "Area type"
         is_referent: "Referent"
         zip_code: "Zip code"

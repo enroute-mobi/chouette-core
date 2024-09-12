@@ -29,6 +29,11 @@ RSpec.describe Policy::LineProvider, type: :policy do
       it { is_expected.to be_truthy }
     end
 
+    context 'LineGroup' do
+      let(:resource_class) { LineGroup }
+      it { is_expected.to be_truthy }
+    end
+
     context 'LineRoutingConstraintZone' do
       let(:resource_class) { LineRoutingConstraintZone }
       it { is_expected.to be_truthy }

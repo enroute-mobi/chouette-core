@@ -1,0 +1,20 @@
+- breadcrumb :stop_area_group, @workbench, @stop_area_group
+- page_header_content_for @stop_area_group
+
+.page_content
+  .container-fluid
+    .row
+      .col-lg-6.col-md-6.col-sm-12.col-xs-12
+        = simple_block_for @stop_area_group, title: t('entrances.form.sections.identification') do |d|
+          = d.attribute :name
+          = d.attribute :description
+          = d.attribute :stop_area_ids, as: :associations, value: @stop_area_group.stop_areas.sort_by(&:name), link: ->(stop_area) { workbench_stop_area_referential_stop_area_path(@workbench, stop_area) }
+
+        = simple_block_for @stop_area_group, title: t('entrances.form.sections.internal') do |d|
+          = d.attribute :stop_area_provider, as: :association, link: workbench_stop_area_referential_stop_area_provider_path(@workbench, @stop_area_group.stop_area_provider)
+          = d.attribute :created_at, as: :datetime
+          = d.attribute :updated_at, as: :datetime
+
+    .row
+      .col-lg-6.col-md-6.col-sm-12.col-xs-12
+        = render 'codes/block', model: @stop_area_group

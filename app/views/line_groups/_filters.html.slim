@@ -1,0 +1,6 @@
+= simple_search_for @search, workbench_line_referential_line_groups_path(@workbench) do |f|
+  = f.row
+    = f.text
+  = f.row
+    = f.input :lines, as: :ajax_select, collection: @search.candidate_lines, width: 2
+    = f.input :line_provider, as: :autocomplete_select, collection: @search.candidate_line_providers, width: 2

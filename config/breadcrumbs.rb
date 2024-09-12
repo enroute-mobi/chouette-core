@@ -440,6 +440,21 @@ crumb :stop_areas do |workbench|
   parent :stop_area_referential, workbench
 end
 
+crumb :stop_area_groups do |workbench|
+  link I18n.t('stop_area_groups.index.title'), workbench_stop_area_referential_stop_area_groups_path(workbench)
+  parent :stop_area_referential, workbench
+end
+
+crumb :new_stop_area_group do |workbench, stop_area_group|
+  link I18n.t('stop_area_groups.new.title')
+  parent :stop_area_groups, workbench
+end
+
+crumb :stop_area_group do |workbench, stop_area_group|
+  link stop_area_group.name, workbench_stop_area_referential_stop_area_group_path(workbench, stop_area_group)
+  parent :stop_area_groups, workbench
+end
+
 crumb :stop_areas_searches do |workbench|
   link Search::Save.model_name.human(count: 2)
   parent :stop_areas, workbench
@@ -493,6 +508,21 @@ end
 crumb :line_referential do |workbench|
   link I18n.t('line_referentials.show.title'), workbench_line_referential_path(workbench)
   parent :workbench, workbench
+end
+
+crumb :line_groups do |workbench|
+  link I18n.t('line_groups.index.title'), workbench_line_referential_line_groups_path(workbench)
+  parent :line_referential, workbench
+end
+
+crumb :new_line_group do |workbench, line_group|
+  link I18n.t('line_groups.new.title')
+  parent :line_groups, workbench
+end
+
+crumb :line_group do |workbench, line_group|
+  link line_group.name, workbench_line_referential_line_group_path(workbench, line_group)
+  parent :line_groups, workbench
 end
 
 crumb :lines_searches do |workbench|

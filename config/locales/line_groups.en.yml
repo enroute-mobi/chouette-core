@@ -1,0 +1,40 @@
+en:
+  line_groups:
+    search_no_results: "No Line groups"
+    actions:
+      show: "Display this Line groups"
+      new: "Add a Line groups"
+      edit: "Edit this Line groups"
+      destroy: "Delete this Line groups"
+      destroy_confirm: "Are you sur to delete this Line groups ?"
+    errors:
+    new:
+      title: "Create a Line groups"
+    edit:
+      title: "Edit %{name}"
+    show:
+      title: "%{name}"
+    index:
+      title: "Line groups"
+    form:
+      sections:
+        identification: "Identification"
+        internal: "Internal"
+  activerecord:
+    models:
+      line_group:
+        zero:  "Line groups"
+        one:   "Line groups"
+        other: "Line groups"
+    attributes:
+      line_group:
+        name: "Name"
+        lines: "Lines"
+        line_ids: "Lines"
+        line_provider: "Line provider"
+        line_provider_id: "Line provider"
+        count: "Count"
+        description: "Description"
+        created_at: "Created at"
+        updated_at: "Updated at"
+        codes: "Codes"

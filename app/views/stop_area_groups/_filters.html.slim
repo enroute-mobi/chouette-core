@@ -1,0 +1,6 @@
+= simple_search_for @search, workbench_stop_area_referential_stop_area_groups_path(@workbench) do |f|
+  = f.row
+    = f.text
+  = f.row
+    = f.input :stop_areas, as: :ajax_select, collection: @search.candidate_stop_areas, width: 2
+    = f.input :stop_area_provider, as: :autocomplete_select, collection: @search.candidate_stop_area_providers, width: 2

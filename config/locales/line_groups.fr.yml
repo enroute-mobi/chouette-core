@@ -1,0 +1,40 @@
+fr:
+  line_groups:
+    search_no_results: "Aucun Groupe de lignes ne correspond à votre recherche"
+    actions:
+      show: "Afficher ce Groupe de lignes"
+      new: "Ajouter un Groupe de lignes"
+      edit: "Editer ce Groupe de lignes"
+      destroy: "Supprimer ce Groupe de lignes"
+      destroy_confirm: "Etes vous sûr de supprimer ce Groupe de lignes ?"
+    errors:
+    new:
+      title: "Créer un Groupe de lignes"
+    edit:
+      title: "Editer %{name}"
+    show:
+      title: "%{name}"
+    index:
+      title: "Groupe de lignes"
+    form:
+      sections:
+        identification: "Identification"
+        internal: "Interne"
+  activerecord:
+    models:
+      line_group:
+        zero:  "Groupe de lignes"
+        one:   "Groupe de lignes"
+        other: "Groupe de lignes"
+    attributes:
+      line_group:
+        name: "Nom"
+        line: "Lignes"
+        line_ids: "Lignes"
+        line_provider: "Fournisseur de lignes"
+        line_provider_id: "Fournisseur de lignes"
+        count: "Nombres"
+        description: "Description"
+        created_at: "Créé le"
+        updated_at: "Edité le"
+        codes: "Codes"

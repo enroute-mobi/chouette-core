@@ -1,0 +1,48 @@
+- breadcrumb :line_groups, @workbench
+
+.page_content x-data="{ saveSearchPanel: false }"
+  .container-fluid
+    .row
+      .col-lg-12
+          = render 'filters'
+
+    - if @line_groups.any?
+      .row
+        .col-lg-12
+          = table_builder_2 @line_groups,
+            [ \
+              TableBuilderHelper::Column.new( \
+                key: :name, \
+                attribute: :name, \
+                sortable: false, \
+                link_to: lambda do |line_group| \
+                workbench_line_referential_line_group_path( \
+                    @workbench, \
+                    line_group \
+                  ) \
+                end \
+              ), \
+              TableBuilderHelper::Column.new( \
+                key: :description, \
+                attribute: Proc.new { |line_group| line_group.description&.truncate(100) }, \
+                sortable: false, \
+              ), \
+              TableBuilderHelper::Column.new( \
+                key: :count, \
+                attribute: Proc.new { |line_group| line_group.line_ids.count }, \
+                sortable: false \
+              ), \
+              TableBuilderHelper::Column.new( \
+                key: :line, \
+                attribute: Proc.new { |line_group| line_group.lines.map(&:name).join(", ").truncate(100) }, \
+                sortable: false, \
+              ), \
+            ].compact,
+            cls: 'table has-filter has-search'
+
+          = new_pagination @line_groups, 'pull-right'
+
+    - unless @line_groups.any?
+      .row.mt-xs
+        .col-lg-12
+          = replacement_msg t('line_groups.search_no_results')

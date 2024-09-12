@@ -1,0 +1,13 @@
+= simple_form_for [@workbench, :stop_area_referential, @stop_area_group], html: {class: 'tailwind-form', id: 'stop_area_group_form'}, wrapper: :horizontal_form_tailwind do |f|
+  .row
+    .col-lg-12
+      h2.mb-lg= t("stop_area_groups.form.sections.identification")
+      = f.input :name
+      = f.input :description, as: :text
+      = f.input :stop_area_ids, as: :ajax_select, collection: f.object.stop_areas, label_method: :display_name, input_html: { 'data-url': stop_areas_workbench_autocomplete_index_path(@workbench, format: :json), multiple: true, class: "w-full" }, include_blank: true
+      = f.input :stop_area_provider_id, as: :autocomplete_select, collection: @workbench.stop_area_providers, include_blank: true, input_html: {class: "w-full"}
+  .separator.section_separator
+  = render 'codes/form', form: f
+
+  = cancel_button
+  = f.button :submit, t('actions.submit'), class: 'btn btn-default formSubmitr', form: 'stop_area_group_form'

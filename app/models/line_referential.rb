@@ -13,6 +13,7 @@ class LineReferential < ApplicationModel
   has_many :workbenches, dependent: :nullify
   has_many :line_notices, class_name: 'Chouette::LineNotice', inverse_of: :line_referential, dependent: :destroy
   has_many :line_routing_constraint_zones, dependent: :destroy
+  has_many :line_groups, dependent: :destroy, inverse_of: :line_referential
   has_one  :workgroup, dependent: :nullify
 
   has_many :line_providers

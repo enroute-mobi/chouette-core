@@ -14,8 +14,9 @@ RSpec.describe "referentials/show" do
     # Required by filters :-/
     controller.request.path_parameters[:id] = referential.id
 
-    # View fails without @reflines :-/
     assign :reflines, []
+    assign :workbench, current_workbench
+    assign :search, Search::Line.new(workbench: current_workbench)
   end
 
   describe "Workbench name" do
@@ -52,6 +53,8 @@ RSpec.describe "referentials/show", type: :view do
     allow(referential.object).to receive(:referential_read_only?){ readonly }
 
     assign :reflines, []
+    assign :workbench, current_workbench
+    assign :search, Search::Line.new(workbench: current_workbench)
     allow(view).to receive(:resource).and_return(referential)
     allow(view).to receive(:resource_class).and_return(referential.class)
     allow(view).to receive(:has_feature?).and_return(true)

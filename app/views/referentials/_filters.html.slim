@@ -1,26 +1,9 @@
-= search_form_for @q, url: workbench_referential_path(@workbench, @referential.id), class: 'form form-filter' do |f|
-  .ffg-row
-    .input-group.search_bar class=filter_item_class(params[:q], :name_or_number_or_short_id_cont)
-      = f.search_field :name_or_number_or_short_id_cont, class: 'form-control', placeholder: t('.name_or_number_or_short_id')
-      span.input-group-btn
-        button.btn.btn-default type='submit'
-          span.fa.fa-search
-
-  .ffg-row
-    .form-group.togglable class=filter_item_class(params[:q], :transport_mode_eq_any)
-      = f.label Chouette::Line.human_attribute_name(:transport_mode), required: false, class: 'control-label'
-      = f.input :transport_mode_eq_any, collection: @referential.lines.pluck(:transport_mode).uniq.compact, as: :check_boxes, label: false, label_method: lambda{|l| ("<span>" + t("enumerize.transport_mode.#{l}") + "</span>").html_safe}, required: false, wrapper_html: { class: 'checkbox_list' }
-
+= simple_search_for @search, workbench_referential_path(@workbench, @referential) do |f|
+  = f.row
+    = f.text
+  = f.row
+    = f.input :transport_mode, as: :autocomplete_select, input_html: { multiple: true, style: 'width: 100%' }
     - if (network_ids = @referential.lines.pluck(:network_id).uniq.compact).size > 1
-      .form-group.togglable class=filter_item_class(params[:q], :network_id_eq_any)
-        = f.label  t('activerecord.attributes.referential.networks'), required: false, class: 'control-label'
-        = f.input :network_id_eq_any, collection: network_ids, as: :check_boxes, label: false, label_method: lambda{|l| ("<span>#{Chouette::Network.find(l).name}</span>").html_safe}, required: false, wrapper_html: { class: 'checkbox_list' }
-
+      = f.input :network_id, as: :autocomplete_select, collection: @search.candidate_networks
     - if (company_ids = @referential.lines.pluck(:company_id).uniq.compact).size > 1
-      .form-group.togglable class=filter_item_class(params[:q], :company_id_eq_any)
-        = f.label t('activerecord.attributes.referential.companies'), required: false, class: 'control-label'
-        = f.input :company_id_eq_any, collection: company_ids, as: :check_boxes, label: false, label_method: lambda{|l| ("<span>#{Chouette::Company.find(l).name}</span>").html_safe}, required: false, wrapper_html: { class: 'checkbox_list' }
-
-  .actions
-    = link_to t('actions.erase'), workbench_referential_path(@workbench, @referential), class: 'btn btn-link'
-    = f.submit t('actions.filter'), class: 'btn btn-default'
+      = f.input :company_id, as: :autocomplete_select, collection: @search.candidate_companies

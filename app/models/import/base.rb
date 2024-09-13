@@ -36,7 +36,10 @@ class Import::Base < ApplicationModel
     @workgroup_control_list_run ||= \
       processings.where.not(workgroup_id: nil)
                  .where(processed_type: 'Control::List::Run')
-                 .joins('INNER JOIN control_list_runs ON control_list_runs.id = processings.processed_id') \
+                 .joins(
+                   "INNER JOIN #{::Control::List::Run.quoted_table_name} ON" \
+                     "#{::Control::List::Run.quoted_table_name}.id = #{::Processing.quoted_table_name}.processed_id"
+                 ) \
                  .take
   end
 
@@ -44,7 +47,10 @@ class Import::Base < ApplicationModel
     @workbench_macro_list_run ||= \
       processings.where(workgroup_id: nil)
                  .where(processed_type: 'Macro::List::Run')
-                 .joins('INNER JOIN macro_list_runs ON macro_list_runs.id = processings.processed_id') \
+                 .joins(
+                   "INNER JOIN #{::Macro::List::Run.quoted_table_name} ON" \
+                     "#{::Macro::List::Run.quoted_table_name}.id = #{::Processing.quoted_table_name}.processed_id"
+                 ) \
                  .take
   end
 
@@ -52,7 +58,10 @@ class Import::Base < ApplicationModel
     @workbench_control_list_run ||= \
       processings.where(workgroup_id: nil)
                  .where(processed_type: 'Control::List::Run')
-                 .joins('INNER JOIN control_list_runs ON control_list_runs.id = processings.processed_id') \
+                 .joins(
+                   "INNER JOIN #{::Control::List::Run.quoted_table_name} ON " \
+                     "#{::Control::List::Run.quoted_table_name}.id = #{::Processing.quoted_table_name}.processed_id"
+                 ) \
                  .take
   end
 

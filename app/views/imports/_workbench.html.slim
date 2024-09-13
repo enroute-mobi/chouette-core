@@ -50,7 +50,7 @@
         TableBuilderHelper::Column.new( \
           name: I18n.t('imports.index.workrgroup_control_list_run'),
           attribute: lambda do |n| \
-            n.workgroup_control_list_run ? link_to_if(@parent.is_a?(Workbench), operation_status(n.worgroup_control_list_run.processed.user_status, verbose: true), [@workbench, n.worgroup_control_list_run.processed]) : '-' \
+            n.workgroup_control_list_run ? link_to_if(@parent.is_a?(Workbench), operation_status(n.workgroup_control_list_run.processed.user_status, verbose: true), [@workbench, n.workgroup_control_list_run.processed]) : '-' \
           end,
           sortable: false,
         ),

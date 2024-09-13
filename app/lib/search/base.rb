@@ -284,6 +284,10 @@ module Search
       { per_page: per_page, page: page }
     end
 
+    def scope(initial_scope)
+      Scope.new(initial_scope, self)
+    end
+
     class Chart
       class GroupByAttribute
         class << self
@@ -860,6 +864,146 @@ module Search
           :desc
         end
       end
+    end
+  end
+
+  class Scope
+    class_attribute :links, instance_accessor: false, default: {}
+
+    class << self
+      def link(source, target, &block)
+        mod = Module.new
+        mod.define_method(target, &block)
+
+        links[source] ||= {}
+        links[source][target] = mod
+      end
+
+      def search_on(model) # rubocop:disable Metrics/MethodLength
+        included_models = Set.new
+        included_models << model
+
+        queue = [model]
+        while queue.any?
+          source = queue.pop
+          next unless links.key?(source)
+
+          links[source].each do |target, mod|
+            next if target.in?(included_models)
+
+            include mod
+            included_models << target
+            queue << target
+          end
+        end
+
+        class_eval <<-RUBY, __FILE__, __LINE__ + 1
+          def #{model}
+            search.without_pagination.search(initial_scope.#{model})
+          end
+        RUBY
+      end
+    end
+
+    link :routes, :lines do
+      initial_scope.lines.joins(:routes).where(routes: routes)
+    end
+    link :lines, :routes do
+      initial_scope.routes.where(line: lines)
+    end
+    link :lines, :companies do
+      initial_scope.companies.where(id: lines.where.not(company_id: nil).select(:company_id).distinct)
+    end
+    link :lines, :networks do
+      initial_scope.networks.where(id: lines.where.not(network_id: nil).select(:network_id).distinct)
+    end
+    link :routes, :shapes do
+      initial_scope.shapes.where(id: journey_patterns.select(:shape_id))
+    end
+    link :routes, :stop_points do
+      initial_scope.stop_points.where(route: routes)
+    end
+    link :stop_points, :routes do
+      initial_scope.routes.joins(:stop_points).where(stop_points: stop_points).distinct
+    end
+    link :stop_points, :stop_areas do
+      initial_scope.stop_areas.where(id: stop_points.select(:stop_area_id))
+    end
+    link :stop_areas, :stop_points do
+      initial_scope.stop_points.where(stop_area: stop_areas)
+    end
+    link :stop_areas, :entrances do
+      initial_scope.entrances.where(stop_area: stop_areas)
+    end
+    link :stop_areas, :connection_links do
+      initial_scope.connection_links.where(departure_id: stop_areas.select(:id), arrival_id: stop_areas.select(:id))
+    end
+    link :stop_areas, :fare_zones do
+      initial_scope.fare_zones.where(
+        id: ::Fare::StopAreaZone.where(stop_area_id: stop_areas.select(:id)).select(:fare_zone_id).distinct
+      )
+    end
+    link :routes, :journey_patterns do
+      initial_scope.journey_patterns.where(route: routes)
+    end
+    link :journey_patterns, :vehicle_journeys do
+      initial_scope.vehicle_journeys.where(journey_pattern: journey_patterns)
+    end
+    link :vehicle_journeys, :time_tables do
+      initial_scope.time_tables.joins(:vehicle_journeys).where(vehicle_journeys: { id: vehicle_journeys.select(:id) })
+    end
+    link :lines, :service_counts do
+      initial_scope.service_counts.where(line: lines)
+    end
+
+    def initialize(initial_scope, search)
+      @initial_scope = initial_scope
+      @search = search
+    end
+    attr_reader :initial_scope, :search
+
+    delegate :workgroup, :point_of_interests, to: :initial_scope
+
+    def documents
+      workgroup.documents.where(
+        id: line_document_memberships.or(stop_area_document_memberships)
+                                     .or(company_document_memberships)
+                                     .select(:document_id)
+                                     .distinct
+      )
+    end
+
+    private
+
+    def line_document_memberships
+      workgroup.document_memberships.where(
+        documentable_type: 'Chouette::Line',
+        documentable_id: lines.select(:id)
+      )
+    end
+
+    def stop_area_document_memberships
+      workgroup.document_memberships.where(
+        documentable_type: 'Chouette::StopArea',
+        documentable_id: stop_areas.select(:id)
+      )
+    end
+
+    def company_document_memberships
+      workgroup.document_memberships.where(
+        documentable_type: 'Chouette::Company',
+        documentable_id: companies.select(:id)
+      )
+    end
+  end
+
+  class Base
+    class Scope < ::Search::Scope
+      # routes is arbitrary defined as the central model but its method is redefined to not use search
+
+      search_on :routes
+
+      delegate :routes, to: :initial_scope
     end
   end
 end

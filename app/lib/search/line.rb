@@ -59,6 +59,10 @@ module Search
 			line_referential.lines
 		end
 
+    def scope(initial_scope)
+      Scope.new(initial_scope, self)
+    end
+
 		private
 
 		def flag(value)
@@ -74,6 +78,10 @@ module Search
       attribute :transport_submode
 			attribute :company, joins: :company, column: 'companies.name'
     	attribute :network, joins: :network, column: 'networks.name'
+    end
+
+    class Scope < ::Search::Scope
+      search_on :lines
     end
   end
 end

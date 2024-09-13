@@ -602,6 +602,340 @@ RSpec.describe Search::Base, type: :model do
       end
     end
   end
+
+  describe '#scope' do
+    subject(:scope) { search.scope(initial_scope) }
+
+    let(:context) do # rubocop:disable Metrics/BlockLength
+      Chouette.create do # rubocop:disable Metrics/BlockLength
+        document :document_company_match1
+        document :document_company_match2
+        document :document_company_without_line
+        document :document_line_match1
+        document :document_line_match2
+        document :document_stop_area_match1
+        document :document_stop_area_match2
+        document :document_outside
+
+        company :company_match1, documents: %i[document_company_match1]
+        company :company_match2, documents: %i[document_company_match2]
+        company :company_without_line, documents: %i[document_company_without_line]
+        company :company_outside, documents: %i[document_outside]
+
+        network :network_match1
+        network :network_match2
+        network :network_without_line
+        network :network_outside
+
+        line :line_match1, company: :company_match1, network: :network_match1, documents: %i[document_line_match1]
+        line :line_match2, company: :company_match2, network: :network_match2, documents: %i[document_line_match2]
+        line :line_without_route
+        line :line_outside, company: :company_outside, network: :network_outside, documents: %i[document_outside]
+
+        stop_area :stop_area_match1, documents: %i[document_stop_area_match1] do
+          entrance :entrance_match1
+        end
+        stop_area :stop_area_match2, documents: %i[document_stop_area_match2] do
+          entrance :entrance_match2
+        end
+        connection_link :connection_link_match, departure: :stop_area_match1, arrival: :stop_area_match2
+        stop_area :stop_area_outside, documents: %i[document_outside] do
+          entrance :entrance_outside
+        end
+        connection_link :connection_link_outside, departure: :stop_area_match1, arrival: :stop_area_outside
+
+        shape_provider do
+          shape :shape_match1
+          point_of_interest :point_of_interest_match1
+        end
+        shape_provider do
+          shape :shape_match2
+          point_of_interest :point_of_interest_match2
+        end
+        shape_provider do
+          shape :shape_outside
+          point_of_interest :point_of_interest_outside
+        end
+
+        fare_zone :fare_zone_match1, stop_areas: %i[stop_area_match1]
+        fare_zone :fare_zone_match2, stop_areas: %i[stop_area_match2]
+        fare_zone :fare_zone_outside, stop_areas: %i[stop_area_outside]
+
+        referential lines: %i[line_match1 line_match2 line_without_route] do
+          time_table :time_table_match1
+          time_table :time_table_match2
+
+          route :route_match1, with_stops: false, line: :line_match1 do
+            stop_point :stop_point_match1, stop_area: :stop_area_match1
+            stop_point :stop_point_match1b, stop_area: :stop_area_match1
+            journey_pattern :journey_pattern_match1, shape: :shape_match1 do
+              vehicle_journey :vehicle_journey_match1, time_tables: %i[time_table_match1]
+            end
+          end
+          route :route_match2, with_stops: false, line: :line_match2 do
+            stop_point :stop_point_match2, stop_area: :stop_area_match2
+            stop_point :stop_point_match2b, stop_area: :stop_area_match2
+            journey_pattern :journey_pattern_match2, shape: :shape_match2 do
+              vehicle_journey :vehicle_journey_match2, time_tables: %i[time_table_match2]
+            end
+          end
+        end
+      end
+    end
+
+    let(:service_count_match1) do
+      ServiceCount.create!(
+        line: context.line(:line_match1),
+        route: context.route(:route_match1),
+        journey_pattern: context.journey_pattern(:journey_pattern_match1),
+        date: Time.zone.today
+      )
+    end
+    let(:service_count_match2) do
+      ServiceCount.create!(
+        line: context.line(:line_match2),
+        route: context.route(:route_match1),
+        journey_pattern: context.journey_pattern(:journey_pattern_match1),
+        date: Time.zone.today
+      )
+    end
+    let(:service_counts) { [service_count_match1, service_count_match2] }
+
+    let(:search) { described_class.new }
+    let(:workbench_scope) { Scope::Workbench.new(context.workbench) }
+    let(:referential_scope) { Scope::Referential.new(context.workbench, context.referential) }
+    let(:initial_scope) { referential_scope }
+
+    before { context.referential.switch }
+
+    describe '#lines' do
+      subject { scope.lines }
+
+      context 'in workbench' do
+        let(:initial_scope) { workbench_scope }
+
+        it { is_expected.to be_empty }
+      end
+
+      context 'in referential' do
+        it do
+          is_expected.to match_array(
+            [
+              context.line(:line_match1),
+              context.line(:line_match2)
+            ]
+          )
+        end
+      end
+    end
+
+    describe '#companies' do
+      subject { scope.companies }
+
+      context 'in workbench' do
+        let(:initial_scope) { workbench_scope }
+
+        it { is_expected.to be_empty }
+      end
+
+      context 'in referential' do
+        it { is_expected.to match_array([context.company(:company_match1), context.company(:company_match2)]) }
+      end
+    end
+
+    describe '#networks' do
+      subject { scope.networks }
+
+      context 'in workbench' do
+        let(:initial_scope) { workbench_scope }
+
+        it { is_expected.to be_empty }
+      end
+
+      context 'in referential' do
+        it { is_expected.to match_array([context.network(:network_match1), context.network(:network_match2)]) }
+      end
+    end
+
+    describe '#stop_areas' do
+      subject { scope.stop_areas }
+
+      context 'in workbench' do
+        let(:initial_scope) { workbench_scope }
+
+        it { is_expected.to be_empty }
+      end
+
+      context 'in referential' do
+        it { is_expected.to match_array([context.stop_area(:stop_area_match1), context.stop_area(:stop_area_match2)]) }
+      end
+    end
+
+    describe '#entrances' do
+      subject { scope.entrances }
+
+      context 'in workbench' do
+        let(:initial_scope) { workbench_scope }
+
+        it { is_expected.to be_empty }
+      end
+
+      context 'in referential' do
+        it { is_expected.to match_array([context.entrance(:entrance_match1), context.entrance(:entrance_match2)]) }
+      end
+    end
+
+    describe '#connection_links' do
+      subject { scope.connection_links }
+
+      context 'in workbench' do
+        let(:initial_scope) { workbench_scope }
+
+        it { is_expected.to be_empty }
+      end
+
+      context 'in referential' do
+        it { is_expected.to match_array([context.connection_link(:connection_link_match)]) }
+      end
+    end
+
+    describe '#shapes' do
+      subject { scope.shapes }
+
+      context 'in workbench' do
+        let(:initial_scope) { workbench_scope }
+
+        it { is_expected.to be_empty }
+      end
+
+      context 'in referential' do
+        it { is_expected.to match_array([context.shape(:shape_match1), context.shape(:shape_match2)]) }
+      end
+    end
+
+    describe '#point_of_interests' do
+      subject { scope.point_of_interests }
+
+      context 'in workbench' do
+        let(:initial_scope) { workbench_scope }
+
+        it do
+          is_expected.to match_array(
+            [
+              context.point_of_interest(:point_of_interest_match1),
+              context.point_of_interest(:point_of_interest_match2),
+              context.point_of_interest(:point_of_interest_outside)
+            ]
+          )
+        end
+      end
+
+      context 'in referential' do
+        it { is_expected.to be_empty }
+      end
+    end
+
+    describe '#fare_zones' do
+      subject { scope.fare_zones }
+
+      context 'in workbench' do
+        let(:initial_scope) { workbench_scope }
+
+        it { is_expected.to be_empty }
+      end
+
+      context 'in referential' do
+        it { is_expected.to match_array([context.fare_zone(:fare_zone_match1), context.fare_zone(:fare_zone_match2)]) }
+      end
+    end
+
+    describe '#documents' do
+      subject { scope.documents }
+
+      context 'in workbench' do
+        let(:initial_scope) { workbench_scope }
+
+        it { is_expected.to be_empty }
+      end
+
+      context 'in referential' do
+        it do
+          is_expected.to match_array(
+            [
+              context.document(:document_company_match1),
+              context.document(:document_company_match2),
+              context.document(:document_line_match1),
+              context.document(:document_line_match2),
+              context.document(:document_stop_area_match1),
+              context.document(:document_stop_area_match2)
+            ]
+          )
+        end
+      end
+    end
+
+    describe '#routes' do
+      subject { scope.routes }
+
+      it { is_expected.to match_array([context.route(:route_match1), context.route(:route_match2)]) }
+    end
+
+    describe '#stop_points' do
+      subject { scope.stop_points }
+
+      it do
+        is_expected.to match_array(
+          [
+            context.stop_point(:stop_point_match1),
+            context.stop_point(:stop_point_match1b),
+            context.stop_point(:stop_point_match2),
+            context.stop_point(:stop_point_match2b)
+          ]
+        )
+      end
+    end
+
+    describe '#journey_patterns' do
+      subject { scope.journey_patterns }
+
+      it do
+        is_expected.to match_array(
+          [context.journey_pattern(:journey_pattern_match1), context.journey_pattern(:journey_pattern_match2)]
+        )
+      end
+    end
+
+    describe '#vehicle_journeys' do
+      subject { scope.vehicle_journeys }
+
+      it do
+        is_expected.to match_array(
+          [context.vehicle_journey(:vehicle_journey_match1), context.vehicle_journey(:vehicle_journey_match2)]
+        )
+      end
+    end
+
+    describe '#time_tables' do
+      subject { scope.time_tables }
+
+      it do
+        is_expected.to match_array(
+          [
+            context.time_table(:time_table_match1),
+            context.time_table(:time_table_match2)
+          ]
+        )
+      end
+    end
+
+    describe '#service_counts' do
+      subject { scope.service_counts }
+
+      before { service_counts }
+
+      it { is_expected.to match_array([service_count_match1, service_count_match2]) }
+    end
+  end
 end
 
 RSpec.describe Search::Base::FromParamsBuilder do

@@ -31,6 +31,8 @@ RSpec.describe Scope::Workbench do
           shape :shape
           point_of_interest :point_of_interest
 
+          fare_zone :fare_zone
+
           referential :referential, lines: %i[line] do
             time_table :time_table,
                        dates_included: Time.zone.today,
@@ -59,6 +61,7 @@ RSpec.describe Scope::Workbench do
           connection_link departure: :other_stop_area1, arrival: :other_stop_area2
           shape
           point_of_interest
+          fare_zone
         end
       end
     end
@@ -172,6 +175,18 @@ RSpec.describe Scope::Workbench do
     end
   end
 
+  describe '#fare_zones' do
+    subject { scope.fare_zones }
+
+    it { is_expected.to match_array([context.fare_zone(:fare_zone)]) }
+
+    context 'in workbench in the same workgroup' do
+      let(:workbench) { context.workbench(:same_workgroup_workbench) }
+
+      it { is_expected.to be_empty }
+    end
+  end
+
   describe '#documents' do
     subject { scope.documents }
 
@@ -261,6 +276,9 @@ RSpec.describe Scope::Referential do
           shape :shape
           shape :shape_outside
           point_of_interest :point_of_interest
+
+          fare_zone :fare_zone, stop_areas: %i[stop_area1]
+          fare_zone :fare_zone_outside, stop_areas: %i[stop_area_outside1]
 
           referential :referential, lines: %i[line line_without_route] do
             time_table :time_table,
@@ -495,6 +513,30 @@ RSpec.describe Scope::Referential do
       let(:workbench) { context.workbench(:same_workgroup_workbench) }
 
       it { is_expected.to be_empty }
+    end
+
+    context 'in workbench of another workgroup' do
+      let(:workbench) { context.workbench(:other_workbench) }
+
+      it { is_expected.to be_empty }
+    end
+  end
+
+  describe '#fare_zones' do
+    subject { scope.fare_zones }
+
+    it { is_expected.to match_array([context.fare_zone(:fare_zone)]) }
+
+    context 'in referential in the same workbench' do
+      let(:referential) { context.referential(:same_workbench_referential) }
+
+      it { is_expected.to be_empty }
+    end
+
+    context 'in workbench in the same workgroup' do
+      let(:workbench) { context.workbench(:same_workgroup_workbench) }
+
+      it { is_expected.to match_array([context.fare_zone(:fare_zone)]) }
     end
 
     context 'in workbench of another workgroup' do
@@ -860,6 +902,8 @@ RSpec.describe Scope::Owned do
             shape :shape
             point_of_interest :point_of_interest
 
+            fare_zone :fare_zone
+
             referential :referential, lines: %i[line] do
               time_table :time_table,
                          dates_included: Time.zone.today,
@@ -984,6 +1028,18 @@ RSpec.describe Scope::Owned do
       end
     end
 
+    describe '#fare_zones' do
+      subject { scope.fare_zones }
+
+      it { is_expected.to match_array([context.fare_zone(:fare_zone)]) }
+
+      context 'in workbench in the same workgroup' do
+        let(:workbench) { context.workbench(:same_workgroup_workbench) }
+
+        it { is_expected.to be_empty }
+      end
+    end
+
     describe '#documents' do
       subject { scope.documents }
 
@@ -1073,6 +1129,9 @@ RSpec.describe Scope::Owned do
             shape :shape
             shape :shape_outside
             point_of_interest :point_of_interest
+
+            fare_zone :fare_zone, stop_areas: %i[stop_area1]
+            fare_zone :fare_zone_outside, stop_areas: %i[stop_area_outside1]
 
             referential :referential, lines: %i[line line_without_route] do
               time_table :time_table,
@@ -1188,6 +1247,18 @@ RSpec.describe Scope::Owned do
       subject { scope.point_of_interests }
 
       it { is_expected.to be_empty }
+
+      context 'in workbench in the same workgroup' do
+        let(:workbench) { context.workbench(:same_workgroup_workbench) }
+
+        it { is_expected.to be_empty }
+      end
+    end
+
+    describe '#fare_zones' do
+      subject { scope.fare_zones }
+
+      it { is_expected.to match_array([context.fare_zone(:fare_zone)]) }
 
       context 'in workbench in the same workgroup' do
         let(:workbench) { context.workbench(:same_workgroup_workbench) }

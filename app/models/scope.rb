@@ -9,8 +9,19 @@ module Scope
       @workbench = workbench
     end
 
-    delegate :lines, :companies, :stop_areas, :entrances, :document_memberships, :fare_zones,
-             :networks, :point_of_interests, :shapes, :documents, :connection_links, to: :workbench
+    delegate :lines,
+             :companies,
+             :networks,
+             :stop_areas,
+             :entrances,
+             :connection_links,
+             :shapes,
+             :point_of_interests,
+             :fare_zones,
+             :document_memberships,
+             :documents,
+             :workgroup,
+             to: :workbench
 
     def routes
       Chouette::Route.none
@@ -91,10 +102,14 @@ module Scope
       shape_referential.shapes.where(id: journey_patterns.where.not(shape_id: nil).select(:shape_id).distinct)
     end
 
-    delegate :fare_zones, to: :fare_referential
-
     def point_of_interests
       PointOfInterest::Base.none
+    end
+
+    def fare_zones
+      fare_referential.fare_zones.where(
+        id: ::Fare::StopAreaZone.where(stop_area_id: stop_areas.select(:id)).select(:fare_zone_id).distinct
+      )
     end
 
     def documents
@@ -106,9 +121,22 @@ module Scope
       )
     end
 
-    delegate :routes, :stop_points, :journey_patterns, :journey_pattern_stop_points, :vehicle_journey_at_stops,
-             :time_tables, :time_table_periods, :time_table_dates, :service_counts, :vehicle_journeys, to: :referential
-    delegate :line_referential, :stop_area_referential, :shape_referential, :fare_referential, :workgroup,
+    delegate :routes,
+             :stop_points,
+             :journey_patterns,
+             :journey_pattern_stop_points,
+             :vehicle_journeys,
+             :vehicle_journey_at_stops,
+             :time_tables,
+             :time_table_periods,
+             :time_table_dates,
+             :service_counts,
+             to: :referential
+    delegate :line_referential,
+             :stop_area_referential,
+             :shape_referential,
+             :fare_referential,
+             :workgroup,
              to: :workbench
     attr_reader :referential, :workbench
 
@@ -146,8 +174,25 @@ module Scope
       @workbench = workbench
     end
 
-    delegate :stop_area_providers, :shape_providers, :line_providers,
-             :document_providers, :fare_providers, :workgroup, to: :workbench
+    delegate :line_providers,
+             :stop_area_providers,
+             :shape_providers,
+             :fare_providers,
+             :document_providers,
+             :workgroup,
+             to: :workbench
+
+    def lines
+      scope.lines.where(line_provider: line_providers)
+    end
+
+    def companies
+      scope.companies.where(line_provider: line_providers)
+    end
+
+    def networks
+      scope.networks.where(line_provider: line_providers)
+    end
 
     def stop_areas
       scope.stop_areas.where(stop_area_provider: stop_area_providers)
@@ -165,32 +210,29 @@ module Scope
       scope.shapes.where(shape_provider: shape_providers)
     end
 
-    def documents
-      scope.documents.where(document_provider: document_providers)
-    end
-
     def point_of_interests
       scope.point_of_interests.where(shape_provider: shape_providers)
-    end
-
-    def lines
-      scope.lines.where(line_provider: line_providers)
-    end
-
-    def networks
-      scope.networks.where(line_provider: line_providers)
-    end
-
-    def companies
-      scope.companies.where(line_provider: line_providers)
     end
 
     def fare_zones
       scope.fare_zones.where(fare_provider: fare_providers)
     end
 
-    delegate :routes, :stop_points, :journey_patterns, :journey_pattern_stop_points, :vehicle_journeys, :vehicle_journey_at_stops,
-             :time_tables, :time_table_periods, :time_table_dates, :service_counts, to: :scope
+    def documents
+      scope.documents.where(document_provider: document_providers)
+    end
+
+    delegate :routes,
+             :stop_points,
+             :journey_patterns,
+             :journey_pattern_stop_points,
+             :vehicle_journeys,
+             :vehicle_journey_at_stops,
+             :time_tables,
+             :time_table_periods,
+             :time_table_dates,
+             :service_counts,
+             to: :scope
 
     private
 

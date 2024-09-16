@@ -39,7 +39,7 @@ class Workgroup < ApplicationModel
   has_many :aggregate_schedulings, dependent: :destroy
   has_many :saved_searches, class_name: 'Search::Save', as: :parent, dependent: :destroy
 
-  validates :name, presence: true, uniqueness: { scope: :owner_id }
+  validates :name, presence: true, uniqueness: true
   validates_uniqueness_of :stop_area_referential_id
   validates_uniqueness_of :line_referential_id
   validates_uniqueness_of :shape_referential_id

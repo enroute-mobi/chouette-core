@@ -43,7 +43,7 @@ class Workbench < ApplicationModel
   has_many :saved_searches, class_name: 'Search::Save', as: :parent, dependent: :destroy
   has_many :calendars, dependent: :destroy
 
-  validates :name, presence: true, uniqueness: { scope: %i[workgroup_id] }
+  validates :name, presence: true
   validates :organisation, presence: true, unless: :pending?
   validates :prefix, presence: true, unless: :pending?
   validates_format_of :prefix, with: %r{\A[0-9a-zA-Z_]+\Z}, unless: :pending?

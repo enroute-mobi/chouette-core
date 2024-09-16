@@ -1,5 +1,3 @@
-# frozen_string_literal: true
-
 RSpec.describe Workbench, type: :model do
   describe "validations" do
     it { is_expected.to validate_presence_of(:name) }
@@ -36,29 +34,6 @@ RSpec.describe Workbench, type: :model do
       before { allow(subject).to receive(:pending?) { false } }
       it { is_expected.to validate_presence_of(:organisation) }
       it { is_expected.to validate_presence_of(:prefix) }
-    end
-
-    describe 'name uniqueness' do
-      it 'can have a name already used in another workgroup' do
-        context = Chouette.create do
-          workgroup :workgroup1
-          workgroup :workgroup2 do
-            workbench name: 'Unique'
-          end
-        end
-        subject.workgroup = context.workgroup(:workgroup1)
-        is_expected.to allow_value('Unique').for(:name)
-      end
-
-      it 'cannot have a name already used in the same workgroup' do
-        context = Chouette.create do
-          workgroup :workgroup do
-            workbench name: 'Unique'
-          end
-        end
-        subject.workgroup = context.workgroup(:workgroup)
-        is_expected.not_to allow_value('Unique').for(:name)
-      end
     end
   end
 

@@ -1722,7 +1722,7 @@ ActiveRecord::Schema.define(version: 2024_08_19_135253) do
     t.index ["locked_referential_to_aggregate_id"], name: "index_workbenches_on_locked_referential_to_aggregate_id"
     t.index ["organisation_id"], name: "index_workbenches_on_organisation_id"
     t.index ["stop_area_referential_id"], name: "index_workbenches_on_stop_area_referential_id"
-    t.index ["workgroup_id", "name"], name: "index_workbenches_on_workgroup_id_and_name", unique: true
+    t.index ["workgroup_id"], name: "index_workbenches_on_workgroup_id"
   end
 
   create_table "workgroups", force: :cascade do |t|
@@ -1744,7 +1744,6 @@ ActiveRecord::Schema.define(version: 2024_08_19_135253) do
     t.string "description"
     t.bigint "fare_referential_id", null: false
     t.index ["fare_referential_id"], name: "index_workgroups_on_fare_referential_id"
-    t.index ["owner_id", "name"], name: "index_workgroups_on_owner_id_and_name", unique: true
     t.index ["shape_referential_id"], name: "index_workgroups_on_shape_referential_id"
   end
 

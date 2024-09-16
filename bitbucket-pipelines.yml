@@ -3,7 +3,7 @@ definitions:
     docker:
       memory: 512
     docker-large:
-      memory: 7128
+      memory: 15360
       type: docker
     postgres:
       image:
@@ -210,7 +210,7 @@ definitions:
 
     - step: &build-docker
         name: Build Docker
-        size: 2x
+        size: 4x
         image:
           name: us.gcr.io/enroute-interne/enroute-cloud-sdk:latest
           username: _json_key

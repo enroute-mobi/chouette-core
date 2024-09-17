@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2024_09_10_103029) do
+ActiveRecord::Schema.define(version: 2024_09_17_152914) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "btree_gin"
@@ -658,28 +658,6 @@ ActiveRecord::Schema.define(version: 2024_09_10_103029) do
   create_table "footnotes_vehicle_journeys", id: false, force: :cascade do |t|
     t.bigint "vehicle_journey_id"
     t.bigint "footnote_id"
-  end
-
-  create_table "group_of_lines", force: :cascade do |t|
-    t.string "objectid", null: false
-    t.bigint "object_version"
-    t.string "name"
-    t.string "comment"
-    t.string "registration_number"
-    t.bigint "line_referential_id"
-    t.text "import_xml"
-    t.datetime "created_at"
-    t.datetime "updated_at"
-    t.jsonb "metadata", default: {}
-    t.bigint "line_provider_id"
-    t.index ["line_provider_id"], name: "index_group_of_lines_on_line_provider_id"
-    t.index ["line_referential_id"], name: "index_group_of_lines_on_line_referential_id"
-    t.index ["objectid"], name: "group_of_lines_objectid_key", unique: true
-  end
-
-  create_table "group_of_lines_lines", id: false, force: :cascade do |t|
-    t.bigint "group_of_line_id"
-    t.bigint "line_id"
   end
 
   create_table "import_messages", force: :cascade do |t|
@@ -1795,7 +1773,6 @@ ActiveRecord::Schema.define(version: 2024_09_10_103029) do
   add_foreign_key "controls", "control_contexts"
   add_foreign_key "custom_fields", "custom_field_groups"
   add_foreign_key "exports", "workgroups"
-  add_foreign_key "group_of_lines_lines", "group_of_lines", name: "groupofline_group_fkey", on_delete: :cascade
   add_foreign_key "journey_patterns", "routes", name: "jp_route_fkey", on_delete: :cascade
   add_foreign_key "journey_patterns", "stop_points", column: "arrival_stop_point_id", name: "arrival_point_fkey", on_delete: :nullify
   add_foreign_key "journey_patterns", "stop_points", column: "departure_stop_point_id", name: "departure_point_fkey", on_delete: :nullify

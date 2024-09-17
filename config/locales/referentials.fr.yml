@@ -99,7 +99,6 @@ fr:
         start_validity_period: "du"
         end_validity_period: "au"
         networks: "Réseaux"
-        group_of_lines: "Groupes de lignes"
         lines: "Lignes"
         vehicle_journeys: "Courses"
         companies: "Transporteurs"

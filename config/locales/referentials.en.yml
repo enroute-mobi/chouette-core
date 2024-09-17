@@ -99,7 +99,6 @@ en:
         start_validity_period: "from"
         end_validity_period: "to"
         networks: "Networks"
-        group_of_lines: "Group of lines"
         lines: "Lines"
         vehicle_journeys: "Vehicle journeys"
         companies: "Companies"

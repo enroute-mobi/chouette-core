@@ -32,7 +32,7 @@ RSpec.describe ReferentialSchema do
     end
   end
 
-  describe '#analyse' do 
+  describe '#analyse' do
     subject { referential_schema.analyse }
 
     it 'performs an ANALYSE for each table' do
@@ -67,7 +67,7 @@ RSpec.describe ReferentialSchema do
 
     self::APARTMENT_EXCLUDED_TABLE_SAMPLES =
       %w[aggregates api_keys calendars companies connection_links
-         group_of_lines lines line_notices networks stop_areas
+        lines line_notices networks stop_areas
          clean_ups clean_up_results codes].freeze
 
     it "returns table names like #{self::APARTMENT_EXCLUDED_TABLE_SAMPLES.to_sentence.truncate(80)}" do

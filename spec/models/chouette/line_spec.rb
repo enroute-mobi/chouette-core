@@ -135,17 +135,6 @@ describe Chouette::Line, type: :model do
     end
   end
 
-  context '#group_of_line_tokens=' do
-    let!(:group_of_line1) { create(:group_of_line) }
-    let!(:group_of_line2) { create(:group_of_line) }
-
-    it 'should return associated group_of_line ids' do
-      subject.update group_of_line_tokens: [group_of_line1.id, group_of_line2.id].join(',')
-      expect(subject.group_of_lines).to include(group_of_line1)
-      expect(subject.group_of_lines).to include(group_of_line2)
-    end
-  end
-
   describe '#update_attributes footnotes_attributes' do
     context 'instanciate 2 footnotes without line' do
       let!(:footnote_first) { build(:footnote, line_id: nil) }

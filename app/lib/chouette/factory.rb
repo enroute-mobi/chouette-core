@@ -241,10 +241,6 @@ module Chouette
               attribute(:name) { |n| "Network #{n}" }
             end
 
-            model :group_of_line do
-              attribute(:name) { |n| "Group of Line #{n}" }
-            end
-
             model :line_notice do
               transient :lines
 

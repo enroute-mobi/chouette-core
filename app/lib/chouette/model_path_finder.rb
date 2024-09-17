@@ -20,8 +20,6 @@ module Chouette
         workbench_line_referential_company_path(workbench, model_id)
       elsif model_class == Chouette::Network
         workbench_line_referential_network_path(workbench, model_id)
-      elsif model_class == Chouette::GroupOfLine
-        workbench_line_referential_group_of_line_path(workbench, model_id)
       elsif model_class == Chouette::LineNotice
         workbench_line_referential_line_notice_path(workbench, model_id)
       elsif model_class == LineRoutingConstraintZone

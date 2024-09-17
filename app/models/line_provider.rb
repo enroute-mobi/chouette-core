@@ -6,7 +6,6 @@ class LineProvider < ApplicationModel
   has_many :lines, class_name: "Chouette::Line"
   has_many :companies, class_name: "Chouette::Company"
   has_many :networks, class_name: "Chouette::Network"
-  has_many :group_of_lines, class_name: "Chouette::GroupOfLine"
   has_many :line_notices, class_name: "Chouette::LineNotice"
   has_many :line_routing_constraint_zones
   has_many :line_groups, inverse_of: :line_provider
@@ -23,7 +22,7 @@ class LineProvider < ApplicationModel
   end
 
   def used?
-    [ lines, companies, networks, group_of_lines, line_notices, line_routing_constraint_zones ].any?(&:exists?)
+    [ lines, companies, networks, line_notices, line_routing_constraint_zones ].any?(&:exists?)
   end
 
   private

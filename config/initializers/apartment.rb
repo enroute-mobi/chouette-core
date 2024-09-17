@@ -31,8 +31,6 @@ Apartment.configure do |config|
     'Chouette::Company',
     'Chouette::Network',
     'Chouette::ConnectionLink',
-    'Chouette::GroupOfLineMembership',
-    'Chouette::GroupOfLine',
     'LineGroup::Member',
     'Chouette::Line',
     'Chouette::LineNotice',

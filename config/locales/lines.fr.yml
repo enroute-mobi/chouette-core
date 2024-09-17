@@ -37,7 +37,6 @@ fr:
       routes:
         title: "Liste des Itinéraires"
       itineraries: "Liste des séquences d'arrêts de la ligne"
-      group_of_lines: "Groupes de lignes"
       search_no_results: "Aucune ligne ne correspond à votre recherche"
       map: "Carte"
       line_notices:
@@ -50,12 +49,10 @@ fr:
       no_networks: "Aucun réseaux"
       no_companies: "Aucun transporteurs"
       no_line_notices: "Aucune note de ligne"
-      no_group_of_lines: "Aucun groupes de ligne"
       no_transport_modes: Aucun mode de transport
       no_transport_submodes: Aucun sous mode de transport
       all_networks: "Tous les réseaux"
       all_companies: "Tous les transporteurs"
-      all_group_of_lines: "Tous les groupes de ligne"
       all_transport_modes: Tous les modes de transport
       all_transport_submodes: Tous les sous modes de transport
       multi_selection: "Sélection multiple"
@@ -80,9 +77,6 @@ fr:
         activation: "Activation"
         internals: "Interne"
         accessibility: "Accessibilité"
-      group_of_lines: "Groupes de lignes associés"
-      no_group_of_line: "Aucun groupe de lignes"
-      several_group_of_lines: "%{count} groupes of lignes"
   enumerize:
     line:
       mobility_impaired_accessibility:
@@ -191,7 +185,6 @@ fr:
         number_of_null_fs_vj: "Nombre de courses sans spécification de type de service"
         number_of_null_mrs_vj: "Nombre de courses sans spécification d'accessibilité"
         default_fs_msg: "Ces courses sont considérées régulières"
-        group_of_line: "Groupe de lignes"
         comment: "Description"
         objectid: "ID"
         object_version: "Version"

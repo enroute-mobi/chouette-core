@@ -36,7 +36,6 @@ en:
       title: "%{name}"
       routes:
         title: "Routes list"
-      group_of_lines: "Groups of lines"
       search_no_results: "No line matching your query"
       map: "Map"
       line_notices:
@@ -49,12 +48,10 @@ en:
       no_networks: "No networks"
       no_companies: "No companies"
       no_line_notices: "No line notes"
-      no_group_of_lines: "No group of lines"
       no_transport_modes: No transport mode
       no_transport_submodes: No transport sub mode
       all_networks: "All networks"
       all_companies: "All companies"
-      all_group_of_lines: "All group of lines"
       all_transport_modes: All transport modes
       all_transport_submodes: All transport sub modes
       multi_selection: "Multiple selection"
@@ -79,9 +76,6 @@ en:
         activation: 'Activation'
         internals: "Internals"
         accessibility: "Accessibility"
-      group_of_lines: "Associated groups of lines"
-      no_group_of_line: "No group of line"
-      several_group_of_lines: "%{count} groups of lines"
   enumerize:
     line:
       mobility_impaired_accessibility:
@@ -183,7 +177,6 @@ en:
         number_of_null_fs_vj: "Number of unspecified on demond vehicle journeys"
         number_of_null_mrs_vj: "Number of unspecified accessible vehicle journeys"
         default_fs_msg: "These vehicle journeys are considered as regular"
-        group_of_line: "Group of lines"
         comment: "Description"
         objectid: "ID"
         object_version: "Version"

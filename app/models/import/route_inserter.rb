@@ -60,7 +60,11 @@ module Import
 
       journey_pattern.journey_pattern_stop_points.each do |journey_pattern_stop_point|
         journey_pattern_stop_point.journey_pattern_id = journey_pattern.id
+
+        stop_point = journey_pattern_stop_point.stop_point
+
         journey_pattern_stop_point.stop_point_id = journey_pattern_stop_point.stop_point.id
+        journey_pattern_stop_point.stop_point = stop_point # Avoid reset ??!!
 
         referential_inserter.journey_pattern_stop_points << journey_pattern_stop_point
       end

@@ -313,7 +313,10 @@ module Chouette
     end
 
     def waypoints
-      stop_points.each_with_index.map do |stop_point, position|
+      # Because stop_points can be not loaded when journey_pattern_stop_points is loaded
+      loaded_stop_points = stop_points.presence || journey_pattern_stop_points.map(&:stop_point)
+
+      loaded_stop_points.map.with_index do |stop_point, position|
         stop_area = stop_point.stop_area
         longitude, latitude = stop_area.longitude, stop_area.latitude
 

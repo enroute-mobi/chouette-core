@@ -100,10 +100,6 @@ Rails.application.configure do
     Devise::Mailer.layout "mailer"
   end
 
-  config.chouette_authentication_settings = {
-    type: "database"
-  }
-
   config.i18n.available_locales = [:fr, :en]
 
   config.serve_static_files = true

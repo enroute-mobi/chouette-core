@@ -38,6 +38,7 @@ en:
         subtitle: Publications
       explore: "Explore"
       administrate: "Administrate"
+      external_links: "External links"
     history_tag:
       title: "Metadatas"
       created_at: "Created at"

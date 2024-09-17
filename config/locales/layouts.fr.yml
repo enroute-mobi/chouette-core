@@ -38,6 +38,7 @@ fr:
         subtitle: Publications
       explore: "Explorer"
       administrate: "Administrer"
+      external_links: "Liens externes"
     history_tag:
       title: "Métadonnées"
       created_at: "Créé le"

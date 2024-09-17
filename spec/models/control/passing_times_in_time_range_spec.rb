@@ -44,6 +44,21 @@ RSpec.describe Control::PassingTimesInTimeRange do
     let(:last_vehicle_journey_at_stop) { vehicle_journey.vehicle_journey_at_stops.last }
 
     before do
+      if TimeZone.count.zero?
+        values = TZInfo::Timezone.all_identifiers.map do |name| 
+          ['(', "'", name, "'", ',', ActiveSupport::TimeZone[name].utc_offset, ')'].join
+        end.join(',')
+
+        ActiveRecord::Base.connection.execute(
+          <<~SQL
+            INSERT INTO
+              public.time_zones (name, utc_offset)
+            VALUES
+              #{values}
+          SQL
+        )
+      end
+
       referential.switch
     end
 

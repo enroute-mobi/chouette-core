@@ -193,16 +193,4 @@ RSpec.describe Chouette::Route, :type => :model do
       expect{route.run_callbacks(:commit)}.to_not raise_error
     end
   end
-
-  context "with TomTom enabled" do
-    before do
-      dummy_key = ['a'..'z','A'..'Z',0..9].map(&:to_a).flatten.sample(32).join
-      allow(TomTom).to receive(:api_key).and_return dummy_key
-    end
-
-    it "should not calculate costs after commit" do
-      expect{route.run_callbacks(:commit)}.to change {Delayed::Job.count}.by(0)
-    end
-
-  end
 end

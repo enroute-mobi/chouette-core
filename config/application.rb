@@ -162,6 +162,10 @@ module Chouette
     config.logger_reopen_max = nil
 
     config.chouette_authentication_settings = SmartEnv.hash('AUTH_SETTINGS')
+    if config.chouette_authentication_settings[:type] == 'cas'
+      config.rack_cas.exclude_paths = ['/api/', '/healthz', '/subscriptions', %r{\A/\d{3}}]
+      config.rack_cas.server_url = config.chouette_authentication_settings[:cas_server]
+    end
 
     once = Rails.root.join('app/once')
     Rails.autoloaders.main.ignore(once)

@@ -1110,12 +1110,13 @@ class Import::Gtfs < Import::Base
         # WARNING
         # looking for StopPoint using only stop_id would create bugs when a Loop is present
         stop_point_enumerator = route_decorator.stop_points.each
-        next_route_stop_point = stop_point_enumerator.next
 
         stop_ids.map do |stop_id|
+          next_route_stop_point = stop_point_enumerator.next
           until stop_id == next_route_stop_point.transient(:stop_id)
             next_route_stop_point = stop_point_enumerator.next
           end
+
           Chouette::JourneyPatternStopPoint.new stop_point: next_route_stop_point
         end
       end

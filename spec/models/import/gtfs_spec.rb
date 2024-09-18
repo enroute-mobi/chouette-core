@@ -820,6 +820,36 @@ RSpec.describe Import::Gtfs do
     end
   end
 
+  describe '#import_route_and_journey_patterns' do
+    subject { import.import_route_and_journey_patterns }
+
+    let(:import_file) { 'google-sample-feed.zip' }
+    let(:import) { build_import(import_file) }
+
+    before do
+      import.prepare_referential
+      import.import_services
+    end
+
+    it 'should create 1 journey pattern stop point for each stop point' do
+      subject
+      expect(import.referential.journey_pattern_stop_points.map(&:stop_point_id)).to(
+        match_array(import.referential.stop_points.map(&:id))
+      )
+    end
+
+    context 'with a trip having the same stop twice' do
+      let(:import_file) { 'gtfs-twice-same-stop-in-trip.zip' }
+
+      it 'should create 1 journey pattern stop point for each stop point' do
+        subject
+        expect(import.referential.journey_pattern_stop_points.map(&:stop_point_id)).to(
+          match_array(import.referential.stop_points.map(&:id))
+        )
+      end
+    end
+  end
+
   describe "#import_stop_times" do
     let(:import) { build_import 'google-sample-feed.zip' }
 

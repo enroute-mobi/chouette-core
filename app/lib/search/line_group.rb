@@ -14,7 +14,7 @@ module Search
     def query(scope)
       Query::LineGroup.new(scope)
                      .text(text)
-                     .line_id(lines)
+                     .lines(lines)
                      .line_provider_id(line_provider)
     end
 

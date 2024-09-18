@@ -7,8 +7,10 @@ module Query
       end
     end
 
-    def stop_area_id(value)
-      where(value, :eq, :stop_area_id)
+    def stop_areas(value)
+      change_scope(if: value.present?) do |scope|
+        scope.where stop_areas: value
+      end
     end
 
     def stop_area_provider_id(value)

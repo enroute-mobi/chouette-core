@@ -14,7 +14,7 @@ module Search
     def query(scope)
       Query::StopAreaGroup.new(scope)
                      .text(text)
-                     .stop_area_id(stop_areas)
+                     .stop_areas(stop_areas)
                      .stop_area_provider_id(stop_area_provider)
     end
 

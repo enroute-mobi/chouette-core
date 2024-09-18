@@ -7,8 +7,10 @@ module Query
       end
     end
 
-    def line_id(value)
-      where(value, :eq, :line_id)
+    def lines(value)
+      change_scope(if: value.present?) do |scope|
+        scope.where(lines: value)
+      end
     end
 
     def line_provider_id(value)

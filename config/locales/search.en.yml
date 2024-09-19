@@ -67,6 +67,22 @@ en:
         description: Description
         last_used_at: Last used at
         creator: Creator
+  enumerize:
+    search:
+      chart_type:
+        line: Line
+        pie: Pie
+        column: Column
+      first:
+        first: "First"
+        last: "Last"
+      sort_by:
+        value: "Value"
+        label: "Label"
+      aggregate_operation:
+        count: "Count"
+        sum: "Sum"
+        average: "Average"
   simple_form:
     placeholders:
       search:

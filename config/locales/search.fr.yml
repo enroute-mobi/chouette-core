@@ -67,6 +67,22 @@ fr:
         description: Description
         last_used_at: Dernière utilisation
         creator: Créateur
+  enumerize:
+    search:
+      chart_type:
+        line: Ligne
+        pie: Camembert
+        column: Colonne
+      first:
+        first: "Premiers"
+        last: "Derniers"
+      sort_by:
+        value: "Valeur"
+        label: "Label"
+      aggregate_operation:
+        count: "Comptage"
+        sum: "Somme"
+        average: "Moyenne"
   simple_form:
     placeholders:
       search:

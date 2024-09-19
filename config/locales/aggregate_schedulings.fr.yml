@@ -2,7 +2,7 @@ fr:
   aggregate_schedulings:
     form:
       add_aggregate_scheduling: "Ajouter une Agrégation quotidienne"
-    empty: Il n'y pas d'Agrégation quotidienne associée
+    empty: "Il n'y a pas d'Agrégation quotidienne associée"
   activerecord:
     models:
       aggregate_scheduling:

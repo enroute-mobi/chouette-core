@@ -2,5 +2,5 @@
   = f.row
     = f.text
   = f.row
-    = f.input :stop_areas, as: :ajax_select, collection: @search.candidate_stop_areas, label_method: :display_name, input_html: { 'data-url': stop_areas_workgroup_autocomplete_index_path(@workbench.workgroup, format: :json), class: "w-full" },width: 2
+    = f.input :stop_areas, as: :ajax_select, collection: @search.candidate_stop_areas, label_method: :display_name, input_html: { 'data-url': stop_areas_workgroup_autocomplete_index_path(@workbench.workgroup, format: :json), class: "w-full", multiple: true }, width: 2
     = f.input :stop_area_provider, as: :autocomplete_select, collection: @search.candidate_stop_area_providers, width: 2

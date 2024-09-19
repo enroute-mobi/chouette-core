@@ -19,7 +19,7 @@ module Search
     end
 
     def candidate_stop_areas
-      workbench.stop_area_referential.stop_areas.limit(50)
+      workbench.stop_area_referential.stop_areas.where(id: stop_areas)
     end
 
     def candidate_stop_area_providers

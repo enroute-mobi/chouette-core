@@ -19,7 +19,7 @@ module Search
     end
 
     def candidate_lines
-      workbench.line_referential.lines.limit(50)
+      workbench.line_referential.lines.where(id: lines)
     end
 
     def candidate_line_providers

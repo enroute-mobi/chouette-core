@@ -9,7 +9,7 @@ module Query
 
     def stop_areas(value)
       change_scope(if: value.present?) do |scope|
-        scope.where stop_areas: value
+        scope.joins(:members).where(stop_area_group_members: {stop_area_id: value.reject(&:blank?)})
       end
     end
 

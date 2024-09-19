@@ -9,7 +9,7 @@ module Query
 
     def lines(value)
       change_scope(if: value.present?) do |scope|
-        scope.where(lines: value)
+        scope.joins(:members).where(line_group_members: {line_id: value.reject(&:blank?)})
       end
     end
 

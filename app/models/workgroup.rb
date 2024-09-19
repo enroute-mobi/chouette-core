@@ -219,7 +219,7 @@ class Workgroup < ApplicationModel
   end
 
   def owner_workbench
-    workbenches.find_by organisation_id: owner_id
+    workbenches.where(hidden: false).find_by(organisation_id: owner_id)
   end
 
   def setup_deletion!

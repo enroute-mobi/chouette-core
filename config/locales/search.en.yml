@@ -50,7 +50,7 @@ en:
         chart_type: Chart Form
         group_by_attribute: Group by
         sort_by: "Sort by"
-        display_percent: "Display %"
+        display_percent: "Display as %"
         chart:
           group_by_attribute:
             sub_type:
@@ -67,6 +67,22 @@ en:
         description: Description
         last_used_at: Last used at
         creator: Creator
+  enumerize:
+    search/base:
+      chart_type:
+        line: Line
+        pie: Pie
+        column: Column
+      first:
+        first: "First"
+        last: "Last"
+      sort_by:
+        value: "Value"
+        label: "Label"
+      aggregate_operation:
+        count: "Count"
+        sum: "Sum"
+        average: "Average"
   simple_form:
     placeholders:
       search:

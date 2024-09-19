@@ -50,7 +50,7 @@ fr:
         chart_type: Type de graphique
         group_by_attribute: Grouper par
         sort_by: "Trier par"
-        display_percent: "Afficher %"
+        display_percent: "Afficher en %"
         chart:
           group_by_attribute:
             sub_type:
@@ -67,6 +67,22 @@ fr:
         description: Description
         last_used_at: Dernière utilisation
         creator: Créateur
+  enumerize:
+    search/base:
+      chart_type:
+        line: Ligne
+        pie: Camembert
+        column: Colonne
+      first:
+        first: "Premiers"
+        last: "Derniers"
+      sort_by:
+        value: "Valeur"
+        label: "Label"
+      aggregate_operation:
+        count: "Comptage"
+        sum: "Somme"
+        average: "Moyenne"
   simple_form:
     placeholders:
       search:

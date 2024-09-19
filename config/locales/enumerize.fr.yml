@@ -452,20 +452,6 @@ fr:
       workgroup: Par Groupe de travail
     search:
       rule_type: *notification_rule_rule_type
-      chart_type:
-        line: Ligne
-        pie: Camembert
-        column: Colonne
-      first:
-        first: "Premiers"
-        last: "Derniers"
-      sort_by:
-        value: "Valeur"
-        label: "Label"
-      aggregate_operation:
-        count: "Comptage"
-        sum: "Somme"
-        average: "Moyenne"
     control/base:
       criticity:
         warning: Avertissement

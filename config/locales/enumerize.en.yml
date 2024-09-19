@@ -452,20 +452,6 @@ en:
       workgroup: By Workgroup
     search:
       rule_type: *notification_rule_rule_type
-      chart_type:
-        line: Line
-        pie: Pie
-        column: Column
-      first:
-        first: "First"
-        last: "Last"
-      sort_by:
-        value: "Value"
-        label: "Label"
-      aggregate_operation:
-        count: "Count"
-        sum: "Sum"
-        average: "Average"
     control/base:
       criticity:
         warning: Warning

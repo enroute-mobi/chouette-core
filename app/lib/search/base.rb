@@ -26,9 +26,9 @@ module Search
 
     attr_accessor :saved_name, :saved_description
 
-    enumerize :chart_type, in: %w[line pie column], i18n_scope: 'enumerize.search.chart_type'
-    enumerize :sort_by, in: %w[value label], i18n_scope: 'enumerize.search.sort_by'
-    enumerize :aggregate_operation, in: %w[count sum average], i18n_scope: 'enumerize.search.aggregate_operation'
+    enumerize :chart_type, in: %w[line pie column]
+    enumerize :sort_by, in: %w[value label]
+    enumerize :aggregate_operation, in: %w[count sum average]
 
     with_options if: :graphical? do
       validates :group_by_attribute, inclusion: { in: ->(r) { r.candidate_group_by_attributes.keys } }

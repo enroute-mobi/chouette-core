@@ -7,11 +7,11 @@ module Search
     delegate :line_referential, to: :workbench
 
     def query(scope)
-			Query::LineNoticeMembership.new(scope)
-				.text(text)
+      Query::LineNoticeMembership.new(scope)
+        .text(text)
     end
 
-		private
+    private
 
     class Order < ::Search::Order
       attribute :title, joins: :line_notice, column: 'line_notices.title', default: :asc

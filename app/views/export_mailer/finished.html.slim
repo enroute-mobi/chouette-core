@@ -2,4 +2,5 @@ h2.mail-title
   == 'mailers.hello'.t
 
 p== t('mailers.export_mailer.finished.body', export_name: @export.name, status: I18n.t("mailers.statuses.#{@status}"))
-p= mailer_button(t('mailers.export_mailer.button'), workbench_export_url(@export.workbench_for_notifications, @export))
+- if @export.workbench_for_notifications
+  p= mailer_button(t('mailers.export_mailer.button'), workbench_export_url(@export.workbench_for_notifications, @export))

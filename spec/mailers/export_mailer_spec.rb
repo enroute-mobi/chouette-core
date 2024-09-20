@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 RSpec.describe ExportMailer, type: :mailer do
   let(:context) do
     Chouette.create { referential }
@@ -29,5 +31,25 @@ RSpec.describe ExportMailer, type: :mailer do
     end
 
     it { is_expected.to include(expected_content) }
+
+    it 'includes a link to the export' do
+      is_expected.to include(ERB::Util.html_escape_once(I18n.t('mailers.export_mailer.button')))
+      is_expected.to include(Rails.application.routes.url_helpers.workbench_export_path(context.workbench, export))
+    end
+
+    context 'when workbench is hidden' do
+      before do
+        context.workbench.update!(hidden: true)
+        context.referential.update!(archived_at: Time.zone.now, workbench: nil)
+        export.update!(workbench: nil)
+      end
+
+      it 'does not include a link to the export' do
+        is_expected.not_to include(ERB::Util.html_escape_once(I18n.t('mailers.export_mailer.button')))
+        is_expected.not_to(
+          include(Rails.application.routes.url_helpers.workbench_export_path(context.workbench, export))
+        )
+      end
+    end
   end
 end

@@ -536,6 +536,12 @@ RSpec.describe Aggregate, type: :model do
       before { aggregate.notification_target = 'workbench' }
 
       it { is_expected.to contain_exactly('user1@chouette.test', 'user2@chouette.test') }
+
+      context 'when workbench is hidden' do
+        before { context.workbench.update!(hidden: true) }
+
+        it { is_expected.to be_empty }
+      end
     end
 
     context 'when notification_target is "user"' do

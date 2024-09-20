@@ -87,7 +87,6 @@ en:
     placeholders:
       search:
         text: "Specify a name or id"
-        name: "Specify a name or id"
         line_id: "Specify a line name"
         company_id: "Specify a company name"
         network_id: "Specify a network name"

@@ -2,10 +2,10 @@ module Search
   class Network < Base
     attr_accessor :line_referential
 
-    attribute :name
+    attribute :text
 
     def query(scope)
-      Query::Document.new(scope).name(name)
+      Query::Network.new(scope).text(text)
     end
 
     class Order < ::Search::Order

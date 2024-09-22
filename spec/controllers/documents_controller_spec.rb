@@ -10,7 +10,7 @@ RSpec.describe DocumentsController, type: :controller do
         document_type :document_type
         workbench(:workbench, organisation: organisation) do
           document_provider :document_provider
-          document :document, document_type: :document_type
+          document :document, document_type: :document_type, name: 'test-0'
         end
         workbench(organisation: organisation) do
           document_provider :other_document_provider
@@ -79,6 +79,11 @@ RSpec.describe DocumentsController, type: :controller do
       expect(workbench.documents.last.document_provider).to eq(workbench.default_document_provider)
     end
 
+    it 'uploads file' do
+      request
+      expect(workbench.documents.last.file).to be_present
+    end
+
     context 'with a document provider' do
       let(:document_attrs) { base_document_attrs.merge({ 'document_provider_id' => document_provider.id.to_s }) }
 
@@ -145,6 +150,21 @@ RSpec.describe DocumentsController, type: :controller do
     context 'with a document type of another workgroup' do
       let(:document_type) { context.document_type(:other_document_type) }
       it { is_expected.to render_template('documents/edit') }
+    end
+  end
+
+  describe 'GET #download' do
+    before { get :download, params: { workbench_id: workbench.id, id: document.id } }
+
+    it 'is successful' do
+      expect(response).to be_successful
+      expect(response.body).to eq(document.file.read)
+      expect(response.headers.to_h).to include(
+        {
+          'Content-Type' => 'application/pdf',
+          'Content-Disposition' => 'attachment; filename="test-0.pdf"'
+        }
+      )
     end
   end
 end

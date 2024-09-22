@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 RSpec.describe Api::V1::Internals::NetexImportsController, type: :controller do
   let(:import_1) { create :netex_import }
   let(:import_2) { create :netex_import, status: "successful" }
@@ -31,6 +33,12 @@ RSpec.describe Api::V1::Internals::NetexImportsController, type: :controller do
           post :create, params: { format: :json, netex_import: attributes }
         }.to change{Import::Netex.count}.by(1)
         expect(response).to be_successful
+        import = Import::Base.last
+        expect(import).to have_attributes({
+                                            'name' => 'Nom',
+                                            'parent_id' => import_1.id
+                                          })
+        expect(import.file).to be_present
       end
     end
   end
@@ -68,6 +76,18 @@ RSpec.describe Api::V1::Internals::NetexImportsController, type: :controller do
           get :notify_parent, params: { id: 47, format: :json }
           expect(response.body).to include("error")
         end
+      end
+    end
+  end
+
+  describe 'GET #download' do
+    context 'authenticated' do
+      include_context 'iboo authenticated internal api'
+
+      it 'should be successful' do
+        get :download, params: { id: import_2.id }
+        expect(response).to be_successful
+        expect(response.body).to eq(import_2.file.read)
       end
     end
   end

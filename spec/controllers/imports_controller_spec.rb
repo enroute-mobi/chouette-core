@@ -50,7 +50,7 @@ RSpec.describe ImportsController, type: :controller do
     end
 
     describe 'POST #create' do
-      it 'displays a flash message' do
+      it 'creates import and displays a flash message' do
         post :create, params: {
           workbench_id: workbench.id,
           import: {
@@ -58,6 +58,10 @@ RSpec.describe ImportsController, type: :controller do
             file: fixture_file_upload('nozip.zip')
           }
         }
+        new_import = Import::Base.last
+        expect(new_import.name).to eq('Offre')
+        expect(new_import.file).to be_present
+        expect(flash['notice']).to be_present
       end
     end
 

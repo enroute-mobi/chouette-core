@@ -71,8 +71,9 @@ RSpec.describe Destination::GoogleCloudStorage, type: :model do
         expect(destination.reports.first).to be_successful
       end
 
-      it 'should send file to GCS' do
+      it 'should not send file to GCS' do
         subject
+        expect(@gcss).to be_empty
       end
     end
 

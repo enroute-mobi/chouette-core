@@ -52,6 +52,7 @@ RSpec.describe Api::V1::ImportsController, type: :controller do
           expect(response).to be_successful
 
           import = Import::Workbench.last
+          expect(import.file).to be_present
           expect(import.automatic_merge).to be_truthy
           expect(import.flag_urgent).to be_truthy
           expect(import.notification_target).to eq('workbench')

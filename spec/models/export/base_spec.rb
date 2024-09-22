@@ -1,11 +1,18 @@
-RSpec.describe Export::Base, type: :model do
+# frozen_string_literal: true
 
+RSpec.describe Export::Base, type: :model do
   it { should belong_to(:referential) }
   it { should belong_to(:workbench) }
 
   it { should enumerize(:status).in("aborted", "canceled", "failed", "new", "pending", "running", "successful", "warning") }
 
   it { should validate_presence_of(:creator) }
+
+  it { should allow_value(fixture_file_upload('OFFRE_TRANSDEV_2017030112251.zip')).for(:file) }
+  it do
+    message = I18n.t('errors.messages.extension_whitelist_error', extension: '"png"', allowed_types: 'zip, csv, json')
+    should_not allow_value(fixture_file_upload('sample_png.png')).for(:file).with_message(message)
+  end
 
   describe ".purge_exports" do
     let(:workbench) { create(:workbench) }

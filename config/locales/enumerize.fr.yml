@@ -450,6 +450,7 @@ fr:
       provider: Par Fournisseur
       workbench: Par Espace de travail
       workgroup: Par Groupe de travail
+      referential: Jeu de donnée
     search:
       rule_type: *notification_rule_rule_type
     control/base:

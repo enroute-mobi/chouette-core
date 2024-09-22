@@ -450,6 +450,7 @@ en:
       provider: By Provider
       workbench: By Workbench
       workgroup: By Workgroup
+      referential: DataSet
     search:
       rule_type: *notification_rule_rule_type
     control/base:

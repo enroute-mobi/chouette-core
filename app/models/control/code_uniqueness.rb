@@ -10,10 +10,25 @@ module Control
         option :target_code_space_id
         option :uniqueness_scope
 
-        enumerize :target_model, in: %w[StopArea Company Line Document Entrance PointOfInterest Shape]
-        enumerize :uniqueness_scope, in: %w[workgroup workbench provider]
+        REFERENTIAL_MODELS = %w[Route JourneyPattern VehicleJourney TimeTable]
+        PROVIDER_MODELS = %w[StopArea Company Line Document Entrance PointOfInterest Shape]
+        MODELS = REFERENTIAL_MODELS + PROVIDER_MODELS
+
+        enumerize :target_model, in: MODELS
+        enumerize :uniqueness_scope, in: %w[workgroup workbench provider referential]
 
         validates :target_model, :target_code_space_id, presence: true
+
+        def provider_target_model?
+          target_model.in?(PROVIDER_MODELS)
+        end
+
+        def referential_target_model?
+          target_model.in?(REFERENTIAL_MODELS)
+        end
+
+        validates :uniqueness_scope, inclusion: { in: %w[workgroup workbench provider] } , if: :provider_target_model?
+        validates :uniqueness_scope, inclusion: { in: %w[referential] }, if: :referential_target_model?
 
         def target_code_space
           @target_code_space ||= code_space_scope.find_by(id: target_code_space_id)
@@ -79,6 +94,7 @@ module Control
 
           def duplicates
             PostgreSQLCursor::Cursor.new(query).map do |attributes|
+              Rails.logger.debug "Attributes: #{attributes.inspect}"
               Duplicate.new attributes.merge source_type: source_type
             end
           end
@@ -121,15 +137,32 @@ module Control
 
           def where
             <<~SQL
-              WHERE (codes.resource_type = '#{source_type}')
-                AND (codes.code_space_id = #{target_code_space.id})
+              WHERE (#{codes_table}.resource_type = '#{source_type}')
+                AND (#{codes_table}.code_space_id = #{target_code_space.id})
             SQL
+          end
+
+          def codes_table
+            'codes'
+          end
+
+          def name_attribute
+            # TODO: we should use Model#name method instead of an SQL approach
+            case source_type
+            when 'Chouette::VehicleJourney'
+              'published_journey_name'
+            when 'Chouette::TimeTable'
+              'comment'
+            else
+              'name'
+            end
           end
 
           def query
             <<~SQL
               SELECT * FROM (
-                SELECT #{model_table_name}.*, codes.value AS code_value, #{duplicates_count} AS duplicates_count
+                SELECT #{model_table_name}.id, #{model_table_name}.#{name_attribute} as name,
+                       #{codes_table}.value AS code_value, #{duplicates_count} AS duplicates_count
                 FROM #{model_table_name}
                 #{inner_join}
                 #{where}
@@ -201,6 +234,24 @@ module Control
                 AND (codes.code_space_id = #{target_code_space.id})
                 AND (workgroups.id = #{context.workgroup.id})
             SQL
+          end
+        end
+
+        class Referential < Base
+          def duplicates_count
+            <<~SQL
+              count(#{model_table_name}.id) OVER(PARTITION BY referential_codes.value)
+            SQL
+          end
+
+          def inner_join
+            <<~SQL
+              INNER JOIN referential_codes ON referential_codes.resource_id = #{model_table_name}.id
+            SQL
+          end
+
+          def codes_table
+            'referential_codes'
           end
         end
       end

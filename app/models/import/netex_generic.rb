@@ -604,7 +604,7 @@ module Import
                 stop_point = Chouette::StopPoint.new stop_area_id: stop_area_id, position: position
                 by_scheduled_stop_point_id[scheduled_stop_point_id] = stop_point
               else
-                add_error :stop_area_found_in_scheduled_stop_points
+                add_error :stop_area_not_found_in_scheduled_stop_points
               end
             end
           end

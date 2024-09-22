@@ -5,14 +5,14 @@ module Control
     module Options
       extend ActiveSupport::Concern
 
+      REFERENTIAL_MODELS = %w[Route JourneyPattern VehicleJourney TimeTable].freeze
+      PROVIDER_MODELS = %w[StopArea Company Line Document Entrance PointOfInterest Shape].freeze
+      MODELS = [] + REFERENTIAL_MODELS + PROVIDER_MODELS
+
       included do
         option :target_model
         option :target_code_space_id
         option :uniqueness_scope
-
-        REFERENTIAL_MODELS = %w[Route JourneyPattern VehicleJourney TimeTable]
-        PROVIDER_MODELS = %w[StopArea Company Line Document Entrance PointOfInterest Shape]
-        MODELS = REFERENTIAL_MODELS + PROVIDER_MODELS
 
         enumerize :target_model, in: MODELS
         enumerize :uniqueness_scope, in: %w[workgroup workbench provider referential]
@@ -27,7 +27,7 @@ module Control
           target_model.in?(REFERENTIAL_MODELS)
         end
 
-        validates :uniqueness_scope, inclusion: { in: %w[workgroup workbench provider] } , if: :provider_target_model?
+        validates :uniqueness_scope, inclusion: { in: %w[workgroup workbench provider] }, if: :provider_target_model?
         validates :uniqueness_scope, inclusion: { in: %w[referential] }, if: :referential_target_model?
 
         def target_code_space

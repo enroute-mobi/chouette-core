@@ -38,7 +38,7 @@ RSpec.describe ReferentialDecorator, type: %i[helper decorator] do
         let(:current_user) { build_stubbed :allmighty_user }
 
         it 'has only default actions' do
-          expect_action_link_elements.to match_array %w[Consulter Calendriers Services Dupliquer]
+          expect_action_link_elements.to match_array(["Consulter", "Calendriers", "Courses quotidiennes", "Dupliquer"])
           expect_action_link_hrefs.to match_array(
             [
               [current_workbench, object],
@@ -62,7 +62,7 @@ RSpec.describe ReferentialDecorator, type: %i[helper decorator] do
                 'Consulter',
                 'Editer ce jeu de données',
                 'Calendriers',
-                'Services',
+                'Courses quotidiennes',
                 'Dupliquer',
                 'Contrôler',
                 'Archiver',
@@ -92,7 +92,7 @@ RSpec.describe ReferentialDecorator, type: %i[helper decorator] do
                 'Courses',
                 'Editer ce jeu de données',
                 'Calendriers',
-                'Services',
+                'Courses quotidiennes',
                 'Dupliquer',
                 'Contrôler',
                 'Archiver',
@@ -127,7 +127,7 @@ RSpec.describe ReferentialDecorator, type: %i[helper decorator] do
               expect_action_link_elements(action).to match_array(
                 [
                   'Consulter',
-                  'Services',
+                  'Courses quotidiennes',
                   'Supprimer ce jeu de données'
                 ]
               )
@@ -147,7 +147,7 @@ RSpec.describe ReferentialDecorator, type: %i[helper decorator] do
             it 'has corresponding actions' do
               expect_action_link_elements(action).to match_array(
                 [
-                  'Services',
+                  'Courses quotidiennes',
                   'Supprimer ce jeu de données'
                 ]
               )
@@ -185,7 +185,7 @@ RSpec.describe ReferentialDecorator, type: %i[helper decorator] do
         let(:current_user) { build_stubbed :allmighty_user }
 
         it 'has only default actions' do
-          expect_action_link_elements.to match_array %w[Consulter Calendriers Services Dupliquer]
+          expect_action_link_elements.to match_array(["Consulter", "Calendriers", "Courses quotidiennes", "Dupliquer"])
           expect_action_link_hrefs.to match_array(
             [
               [current_workbench, object],
@@ -206,7 +206,7 @@ RSpec.describe ReferentialDecorator, type: %i[helper decorator] do
             [
               'Consulter',
               'Calendriers',
-              'Services',
+              'Courses quotidiennes',
               'Dupliquer',
               'Désarchiver',
               'Supprimer ce jeu de données'
@@ -249,7 +249,7 @@ RSpec.describe ReferentialDecorator, type: %i[helper decorator] do
         let(:current_user) { build_stubbed :allmighty_user }
 
         it 'has only default actions' do
-          expect_action_link_elements.to match_array %w[Consulter Calendriers Services]
+          expect_action_link_elements.to match_array(["Consulter", "Calendriers", "Courses quotidiennes"])
           expect_action_link_hrefs.to match_array(
             [
               [current_workbench, object],
@@ -265,7 +265,7 @@ RSpec.describe ReferentialDecorator, type: %i[helper decorator] do
         let(:current_workbench) { referential_workbench }
 
         it 'has only default actions' do
-          expect_action_link_elements.to match_array %w[Consulter Calendriers Services Contrôler]
+          expect_action_link_elements.to match_array(["Consulter", "Calendriers", "Courses quotidiennes", "Contrôler"])
           expect_action_link_hrefs.to match_array(
             [
               [current_workbench, object],

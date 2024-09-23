@@ -15,8 +15,8 @@ class UserDecorator < AF83::Decorator
     instance_decorator.crud
     
     instance_decorator.action_link policy: :block, secondary: true, on: %i[show index] do |l|
-      l.content { t('users.actions.block') }
-      l.confirm t('users.actions.block_confirm')
+      l.content { I18n.t('users.actions.block') }
+      l.confirm { I18n.t('users.actions.block_confirm') }
       l.href do
         h.block_organisation_user_path(
           object
@@ -26,8 +26,8 @@ class UserDecorator < AF83::Decorator
     end
 
     instance_decorator.action_link policy: :unblock, secondary: true, on: %i[show index] do |l|
-      l.content { t('users.actions.unblock') }
-      l.confirm t('users.actions.unblock_confirm')
+      l.content { I18n.t('users.actions.unblock') }
+      l.confirm { I18n.t('users.actions.unblock_confirm') }
       l.href do
         h.unblock_organisation_user_path(
           object
@@ -37,8 +37,8 @@ class UserDecorator < AF83::Decorator
     end
 
     instance_decorator.action_link policy: :reinvite, secondary: true, on: %i[show index] do |l|
-      l.content { t('users.actions.reinvite') }
-      l.confirm t('users.actions.reinvite_confirm')
+      l.content { I18n.t('users.actions.reinvite') }
+      l.confirm { I18n.t('users.actions.reinvite_confirm') }
       l.href do
         h.reinvite_organisation_user_path(
           object
@@ -48,8 +48,8 @@ class UserDecorator < AF83::Decorator
     end
 
     instance_decorator.action_link policy: :reset_password, secondary: true, on: %i[show index] do |l|
-      l.content { t('users.actions.reset_password') }
-      l.confirm t('users.actions.reset_password_confirm')
+      l.content { I18n.t('users.actions.reset_password') }
+      l.confirm { I18n.t('users.actions.reset_password_confirm') }
       l.href do
         h.reset_password_organisation_user_path(
           object

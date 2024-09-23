@@ -15,7 +15,7 @@ class ReferentialDecorator < AF83::Decorator
     end
 
     instance_decorator.action_link secondary: :show do |l|
-      l.content t('service_counts.index.title')
+      l.content { I18n.t('service_counts.index.title') }
       l.href { h.workbench_referential_service_counts_path(context[:workbench], object) }
     end
 

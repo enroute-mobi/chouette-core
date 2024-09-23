@@ -6,7 +6,7 @@ class LineNoticeDecorator < AF83::Decorator
   set_scope { [context[:workbench], :line_referential] }
 
   create_action_link do |l|
-    l.content { t('line_notices.actions.new') }
+    l.content { I18n.t('line_notices.actions.new') }
   end
 
   with_instance_decorator do |instance_decorator|

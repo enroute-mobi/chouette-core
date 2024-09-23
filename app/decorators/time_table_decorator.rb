@@ -11,13 +11,13 @@ class TimeTableDecorator < AF83::Decorator
     instance_decorator.crud
 
     instance_decorator.action_link policy: :actualize, if: ->{ object.calendar }, secondary: true do |l|
-      l.content { t('actions.actualize') }
+      l.content { I18n.t('actions.actualize') }
       l.href { h.actualize_workbench_referential_time_table_path(context[:workbench], context[:referential], object) }
       l.method :post
     end
 
     instance_decorator.action_link policy: :duplicate, secondary: true do |l|
-      l.content { t('actions.duplicate') }
+      l.content { I18n.t('actions.duplicate') }
       l.href { h.duplicate_workbench_referential_time_table_path(context[:workbench], context[:referential], object) }
       l.icon :clone
     end

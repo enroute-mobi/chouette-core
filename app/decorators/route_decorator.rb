@@ -75,7 +75,7 @@ class RouteDecorator < AF83::Decorator
     end
 
     instance_decorator.destroy_action_link do |l|
-      l.data {{ confirm: I18n.t('routes.actions.destroy_confirm') }}
+      l.confirm { I18n.t('routes.actions.destroy_confirm') }
     end
   end
 

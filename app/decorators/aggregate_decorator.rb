@@ -19,7 +19,7 @@ class AggregateDecorator < AF83::Decorator
         h.rollback_workgroup_aggregate_path(object.workgroup, object)
       end
       l.icon :undo
-      l.data {{ confirm: I18n.t('aggregates.actions.rollback_confirm') }}
+      l.confirm { I18n.t('aggregates.actions.rollback_confirm') }
     end
   end
 end

@@ -23,7 +23,7 @@ class WorkgroupDecorator < AF83::Decorator
       l.content { I18n.t('workgroups.actions.setup_workgroup_deletion') }
       l.href { h.setup_deletion_workgroup_path(object.id) }
       l.method :put
-      l.data {{ confirm: object.class.t_action(:destroy_confirm) }}
+      l.confirm { object.class.t_action(:destroy_confirm) }
       l.icon :trash
       l.icon_class :danger
     end

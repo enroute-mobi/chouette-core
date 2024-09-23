@@ -32,7 +32,7 @@ class RoutingConstraintZoneDecorator < AF83::Decorator
     end
 
     instance_decorator.destroy_action_link do |l|
-      l.data {{ confirm: I18n.t('routing_constraint_zones.actions.destroy_confirm') }}
+      l.confirm { I18n.t('routing_constraint_zones.actions.destroy_confirm') }
     end
   end
 

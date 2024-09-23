@@ -96,6 +96,7 @@ fr:
         text: "Indiquez un nom ou un identifiant"
         line_id: "Indiquez un nom de ligne"
         company_id: "Indiquez un nom de transporteur"
+        network_id: "Indiquez un nom de réseau"
         stop_area_id: "Indiquez un nom d'arrêt"
         time_table_id: "Indiquez un nom de calendrier"
         document_id: "Indiquez un nom de document"

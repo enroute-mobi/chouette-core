@@ -55,14 +55,14 @@ en:
         chart_type: Chart Form
         group_by_attribute: Group by
         sort_by: "Sort by"
-        display_percent: "Display %"
+        display_percent: "Display as %"
         chart:
           group_by_attribute:
             sub_type:
-              by_week: "By week"
-              by_month: "By month"
               hour_of_day: "Hour of day"
               day_of_week: "Day of week"
+              by_week: "By week"
+              by_month: "By month"
   activerecord:
     models:
       search/save:
@@ -75,7 +75,7 @@ en:
         last_used_at: Last used at
         creator: Creator
   enumerize:
-    search:
+    search/base:
       chart_type:
         line: Line
         pie: Pie

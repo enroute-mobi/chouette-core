@@ -51,6 +51,7 @@ RSpec.describe Import::Base, type: :model do
   context '#user_file' do
     before do
       subject.name = 'Dummy Import Example'
+      subject.file = fixture_file_upload('OFFRE_TRANSDEV_2017030112251.zip')
     end
 
     it 'uses a parameterized version of the Import name as base name' do
@@ -58,11 +59,11 @@ RSpec.describe Import::Base, type: :model do
     end
 
     it 'uses the Import content_type' do
-      expect(subject.user_file.content_type).to eq(subject.content_type)
+      expect(subject.user_file.content_type).to eq('application/zip')
     end
 
     it 'uses the Import file_extension' do
-      expect(subject.user_file.extension).to eq(subject.send(:file_extension))
+      expect(subject.user_file.extension).to eq('zip')
     end
   end
 

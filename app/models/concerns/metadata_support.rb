@@ -1,3 +1,5 @@
+require 'ostruct'
+
 module MetadataSupport
   extend ActiveSupport::Concern
 

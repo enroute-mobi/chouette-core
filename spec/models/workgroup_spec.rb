@@ -42,6 +42,81 @@ RSpec.describe Workgroup, type: :model do
     end
   end
 
+  describe '#owner_workbench' do
+    subject { workgroup.owner_workbench }
+
+    let(:context) do
+      Chouette.create do
+        organisation :organisation1
+        organisation :organisation2
+
+        workgroup owner: :organisation1 do
+          workbench :workbench1, organisation: :organisation1
+          workbench :workbench2, organisation: :organisation2
+        end
+      end
+    end
+
+    it 'returns the sole workbench whose organisation is the same as the workgroup owner' do
+      is_expected.to eq(context.workbench(:workbench1))
+    end
+
+    context 'when there are no workbench whose organisation is the same as the workgroup owner' do
+      let(:context) do
+        Chouette.create do
+          organisation :organisation1
+          organisation :organisation2
+
+          workgroup owner: :organisation1 do
+            workbench :workbench2, organisation: :organisation2
+          end
+        end
+      end
+
+      it 'returns nil' do
+        is_expected.to be_nil
+      end
+    end
+
+    context 'when there are 2 workbenches whose organisation is the same as the workgroup owner' do
+      let(:context) do
+        Chouette.create do
+          organisation :organisation1
+          organisation :organisation2
+
+          workgroup owner: :organisation1 do
+            workbench :workbench1, organisation: :organisation1
+            workbench :workbench2, organisation: :organisation2
+            workbench :workbench3, organisation: :organisation1
+          end
+        end
+      end
+
+      it 'returns the first workbench whose organisation is the same as the workgroup owner' do
+        is_expected.to eq(context.workbench(:workbench1))
+      end
+
+      context 'when one them is hidden' do
+        let(:context) do
+          Chouette.create do
+            organisation :organisation1
+            organisation :organisation2
+
+            workgroup owner: :organisation1 do
+              workbench :workbench1, hidden: true, organisation: :organisation1
+              workbench :workbench2, organisation: :organisation2
+              workbench :workbench3, organisation: :organisation1
+            end
+          end
+        end
+
+        it 'returns the sole non-hidden workbench whose organisation is the same as the workgroup owner' do
+          is_expected.to eq(context.workbench(:workbench3))
+        end
+      end
+    end
+  end
+
   describe 'aggregate_urgent_data!' do
     subject { workgroup.aggregate_urgent_data! }
 

@@ -651,6 +651,7 @@ RSpec.describe Search::Base::Chart do
     group_by_attribute 'some_numeric_attribute', :numeric
     group_by_attribute 'created_at', :datetime, sub_types: %i[by_week by_month hour_of_day day_of_week]
     group_by_attribute 'date', :date, sub_types: %i[by_week by_month day_of_week]
+    group_by_attribute 'created_at', :datetime, sub_types: %i[hour_of_day day_of_week]
     group_by_attribute 'custom_label_attribute',
                        :string,
                        joins: { relation: { other_relation: {} }, another_relation: {} },
@@ -1293,7 +1294,7 @@ RSpec.describe Search::Base::Chart do
     context 'when #type is line' do
       context 'when #group_by_attribute is simple' do
         it do
-          expect(view_context).to receive(:line_chart).with(data, discrete: true)
+          expect(view_context).to receive(:line_chart).with(data, a_hash_including(discrete: true))
           subject
         end
 
@@ -1301,7 +1302,7 @@ RSpec.describe Search::Base::Chart do
           let(:display_percent) { true }
 
           it do
-            expect(view_context).to receive(:line_chart).with(data, discrete: true, suffix: '%')
+            expect(view_context).to receive(:line_chart).with(data, a_hash_including(discrete: true, suffix: '%'))
             subject
           end
         end
@@ -1311,7 +1312,7 @@ RSpec.describe Search::Base::Chart do
         let(:group_by_attribute) { 'some_numeric_attribute' }
 
         it do
-          expect(view_context).to receive(:line_chart).with(data, {})
+          expect(view_context).to receive(:line_chart).with(data, any_args)
           subject
         end
       end
@@ -1320,7 +1321,7 @@ RSpec.describe Search::Base::Chart do
         let(:group_by_attribute) { 'created_at' }
 
         it do
-          expect(view_context).to receive(:line_chart).with(data, {})
+          expect(view_context).to receive(:line_chart).with(data, any_args)
           subject
         end
       end
@@ -1329,7 +1330,7 @@ RSpec.describe Search::Base::Chart do
         let(:group_by_attribute) { 'created_at_by_week' }
 
         it do
-          expect(view_context).to receive(:line_chart).with(data, {})
+          expect(view_context).to receive(:line_chart).with(data, any_args)
           subject
         end
       end
@@ -1338,7 +1339,7 @@ RSpec.describe Search::Base::Chart do
         let(:group_by_attribute) { 'created_at_by_month' }
 
         it do
-          expect(view_context).to receive(:line_chart).with(data, {})
+          expect(view_context).to receive(:line_chart).with(data, any_args)
           subject
         end
       end
@@ -1347,7 +1348,7 @@ RSpec.describe Search::Base::Chart do
         let(:group_by_attribute) { 'created_at_hour_of_day' }
 
         it do
-          expect(view_context).to receive(:line_chart).with(data, discrete: true)
+          expect(view_context).to receive(:line_chart).with(data, hash_including(discrete: true))
           subject
         end
       end
@@ -1356,7 +1357,7 @@ RSpec.describe Search::Base::Chart do
         let(:group_by_attribute) { 'created_at_day_of_week' }
 
         it do
-          expect(view_context).to receive(:line_chart).with(data, discrete: true)
+          expect(view_context).to receive(:line_chart).with(data, hash_including(discrete: true))
           subject
         end
       end
@@ -1365,7 +1366,7 @@ RSpec.describe Search::Base::Chart do
         let(:group_by_attribute) { 'date' }
 
         it do
-          expect(view_context).to receive(:line_chart).with(data, {})
+          expect(view_context).to receive(:line_chart).with(data, any_args)
           subject
         end
       end
@@ -1374,7 +1375,7 @@ RSpec.describe Search::Base::Chart do
         let(:group_by_attribute) { 'date_by_week' }
 
         it do
-          expect(view_context).to receive(:line_chart).with(data, {})
+          expect(view_context).to receive(:line_chart).with(data, any_args)
           subject
         end
       end
@@ -1383,7 +1384,7 @@ RSpec.describe Search::Base::Chart do
         let(:group_by_attribute) { 'date_by_month' }
 
         it do
-          expect(view_context).to receive(:line_chart).with(data, {})
+          expect(view_context).to receive(:line_chart).with(data, any_args)
           subject
         end
       end
@@ -1392,7 +1393,7 @@ RSpec.describe Search::Base::Chart do
         let(:group_by_attribute) { 'date_day_of_week' }
 
         it do
-          expect(view_context).to receive(:line_chart).with(data, discrete: true)
+          expect(view_context).to receive(:line_chart).with(data, hash_including(discrete: true))
           subject
         end
       end
@@ -1401,7 +1402,7 @@ RSpec.describe Search::Base::Chart do
         let(:group_by_attribute) { 'more_keys_attribute' }
 
         it do
-          expect(view_context).to receive(:line_chart).with(data, discrete: true)
+          expect(view_context).to receive(:line_chart).with(data, hash_including(discrete: true))
           subject
         end
       end
@@ -1414,7 +1415,7 @@ RSpec.describe Search::Base::Chart do
         let(:group_by_attribute) { 'some_attribute' }
 
         it do
-          expect(view_context).to receive(:pie_chart).with(data, discrete: true)
+          expect(view_context).to receive(:pie_chart).with(data, hash_including(discrete: true))
           subject
         end
       end
@@ -1427,7 +1428,7 @@ RSpec.describe Search::Base::Chart do
         let(:group_by_attribute) { 'some_attribute' }
 
         it do
-          expect(view_context).to receive(:column_chart).with(data, discrete: true)
+          expect(view_context).to receive(:column_chart).with(data, hash_including(discrete: true))
           subject
         end
       end

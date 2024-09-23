@@ -2,6 +2,7 @@ en:
   aggregate_schedulings:
     form:
       add_aggregate_scheduling: "Add Daily Schedulings"
+    empty: There is no related Daily Schedulings
   activerecord:
     models:
       aggregate_scheduling:

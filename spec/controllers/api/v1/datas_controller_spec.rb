@@ -35,12 +35,13 @@ RSpec.describe Api::V1::DatasController, type: :controller do
         it 'should be successful' do
           get_request
           expect(response).to be_successful
+          expect(response.body).to eq(gtfs_export.file.read)
         end
 
         context 'without export file' do
           let(:gtfs_export_file) { nil }
 
-          it 'should be successful' do
+          it 'should not be successful' do
             get_request
             expect(response).to have_http_status(:not_found)
             expect(response.content_type).to eq('text/html')
@@ -77,6 +78,7 @@ RSpec.describe Api::V1::DatasController, type: :controller do
         it 'should be successful' do
           get_request
           expect(response).to be_successful
+          expect(response.body).to eq(gtfs_export.file.read)
         end
       end
 

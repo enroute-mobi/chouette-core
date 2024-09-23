@@ -43,6 +43,9 @@ RSpec.describe Api::V1::PublicationApi::DocumentsController, type: :controller d
     context 'when the document is found' do
       before { subject }
       it { expect(response).to have_http_status(:ok) }
+      it 'returns the whole file' do
+        expect(response.body).to eq(document.file.read)
+      end
     end
 
     context 'when no line is associated to the registration number' do

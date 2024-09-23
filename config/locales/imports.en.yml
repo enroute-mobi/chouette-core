@@ -106,6 +106,7 @@ en:
         referential: Referential
         filename: Filename
         overlapping_referentials: Datasets
+        code_space: Code Space
         workbench_id: Workbench
         duration: "Duration"
       import:

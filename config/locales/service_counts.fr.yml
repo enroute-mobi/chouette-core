@@ -1,7 +1,7 @@
 fr:
   service_counts:
     index:
-      title: "Services"
+      title: "Courses quotidiennes"
   activerecord:
     attributes:
       service_count:

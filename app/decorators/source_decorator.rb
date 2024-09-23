@@ -9,7 +9,7 @@ class SourceDecorator < AF83::Decorator
     instance_decorator.crud
 
     instance_decorator.action_link(on: %i[show], policy: :retrieve, secondary: :show) do |l|
-      l.content t('sources.actions.retrieve')
+      l.content { I18n.t('sources.actions.retrieve') }
       l.href { h.retrieve_workbench_source_path(scope, object) }
       l.method :post
     end

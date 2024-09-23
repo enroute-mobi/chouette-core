@@ -7,7 +7,7 @@ class DocumentDocumentMembershipDecorator < AF83::Decorator
 
   with_instance_decorator do |instance_decorator|
     instance_decorator.action_link do |l|
-      l.content I18n.t('documents.actions.associate')
+      l.content { I18n.t('documents.actions.associate') }
       l.method :post
       l.href { h.send(context[:collection_path_method], *scope, document_id: object.id) }
     end

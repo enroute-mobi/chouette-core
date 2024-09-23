@@ -13,7 +13,7 @@ class PublicationSetupDecorator < AF83::Decorator
       secondary: :show,
       if: -> { context[:workgroup].output.current && check_policy(:create, Publication) }
     ) do |l|
-      l.content I18n.t('publication_setups.actions.publish')
+      l.content { I18n.t('publication_setups.actions.publish') }
       l.method :post
       l.href { h.workgroup_publication_setup_publications_path(scope, object) }
     end

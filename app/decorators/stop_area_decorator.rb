@@ -17,11 +17,11 @@ class StopAreaDecorator < AF83::Decorator
 
   define_instance_method :waiting_time_text do
     return '-' if [nil, 0].include? waiting_time
-    h.t('stop_areas.waiting_time_format', value: waiting_time)
+    I18n.t('stop_areas.waiting_time_format', value: waiting_time)
   end
 
   define_instance_method :human_status do
-    h.t(status, scope: 'activerecord.attributes.stop_area')
+    I18n.t(status, scope: 'activerecord.attributes.stop_area')
   end
 
   define_instance_method :codes do

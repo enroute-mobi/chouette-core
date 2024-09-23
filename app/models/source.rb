@@ -43,7 +43,7 @@ class Source < ApplicationModel
   before_validation :clean, on: :update
 
   attribute :retrieval_time_of_day, TimeOfDay::Type::TimeWithoutZone.new
-  attribute :retrieval_days_of_week, WeekDays.new
+  attribute :retrieval_days_of_week, Cuckoo::DaysOfWeek::Type.new
 
   belongs_to :scheduled_job, class_name: '::Delayed::Job', dependent: :destroy
   validates :retrieval_time_of_day, presence: true, if: :retrieval_frequency_daily?
@@ -96,7 +96,7 @@ class Source < ApplicationModel
   end
 
   def retrieval_days_of_week_attributes=(attributes)
-    self.retrieval_days_of_week = Cuckoo::Timetable::DaysOfWeek.new(attributes)
+    self.retrieval_days_of_week = Cuckoo::DaysOfWeek.new(attributes)
   end
 
   # REMOVEME after CHOUETTE-2007

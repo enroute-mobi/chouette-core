@@ -42,6 +42,8 @@ ChouetteIhm::Application.routes.draw do # rubocop:disable Metrics/BlockLength
 
     delete :referentials, on: :member, action: :delete_referentials
     resources :referentials do # rubocop:disable Metrics/BlockLength
+      resources :searches, only: %i[index show create update destroy], path: ':parent_resources/searches'
+
       resources :autocomplete, controller: 'referential_autocomplete', only: [] do
         defaults format: :json do
           collection do
@@ -129,6 +131,8 @@ ChouetteIhm::Application.routes.draw do # rubocop:disable Metrics/BlockLength
         resources :journey_patterns
         resources :vehicle_journeys
       end
+
+      resources :service_counts, only: %i[index]
     end
 
     resources :notification_rules

@@ -3,7 +3,7 @@ class DayTypeInput < SimpleForm::Inputs::CollectionCheckBoxesInput
   # the relevant input is a hidden field that will send a 7 char string
   # each time a checkbox is (un)checked we update the value of the hidden field 
   def input
-    raise "#{attribute_name} is not an instance of Cuckoo::Timetable::DaysOfWeek" unless days_of_week.is_a?(Cuckoo::Timetable::DaysOfWeek)
+    raise "#{attribute_name} is not an instance of Cuckoo::DaysOfWeek" unless days_of_week.is_a?(Cuckoo::DaysOfWeek)
 
     content = ''
 
@@ -48,7 +48,7 @@ class DayTypeInput < SimpleForm::Inputs::CollectionCheckBoxesInput
   end
 
   def string_value
-    @string_value ||= WeekDays.new.serialize(days_of_week)
+    @string_value ||= Cuckoo::DaysOfWeek::Type.new.serialize(days_of_week)
   end
 
   def days_of_week
@@ -71,7 +71,7 @@ class DayTypeInput < SimpleForm::Inputs::CollectionCheckBoxesInput
 =end
 
   def collection
-    Cuckoo::Timetable::DaysOfWeek::SYMBOLIC_DAYS.each_with_index.map do |d, i|
+    Cuckoo::DaysOfWeek::SYMBOLIC_DAYS.each_with_index.map do |d, i|
       value = Array.new(7) { |j| ActiveModel::Type::Integer.new.cast(j == i) }
       [value.join.to_i(2),  Chouette::TimeTable.tmf(d)[0...2]]
     end

@@ -11,10 +11,10 @@ module PointOfInterest
     validates :closing_time_of_day, presence: true
     validates :week_days, presence: true
 
-    attribute :week_days, WeekDays.new
+    attribute :week_days, Cuckoo::DaysOfWeek::Type.new
 
     def week_days_attributes=(attributes)
-      self.week_days = Cuckoo::Timetable::DaysOfWeek.new(attributes)
+      self.week_days = Cuckoo::DaysOfWeek.new(attributes)
     end
 
     attribute :opening_time_of_day, TimeOfDay::Type::TimeWithoutZone.new

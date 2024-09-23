@@ -21,8 +21,10 @@ fr:
         end_date: "Avant : "
         per_page: "Afficher par"
         text: "Recherche par nom ou identification"
+        company_ids: "Transporteur"
         company_id: "Transporteur"
         category: "Catégorie"
+        line_ids: "Ligne"
         line_id: "Ligne"
         line: "Ligne"
         timetable: "Calendrier"
@@ -33,7 +35,9 @@ fr:
         is_referent: "Référent"
         zip_code: "Code Postal"
         city_name: "Commune"
+        network_ids: "Réseau"
         network_id: "Réseau"
+        transport_modes: "Mode de transport"
         transport_mode: "Mode de transport"
         parent_id: "Parent"
         stop_area_provider_id: Fournisseur d'arrêts
@@ -47,6 +51,7 @@ fr:
         valid_after_date: Valide jusqu'au
         referential_name: Cible
         time_table_id: Calendrier
+        days_of_week: "Jours"
         chart_type: Type de graphique
         group_by_attribute: Grouper par
         sort_by: "Trier par"
@@ -56,6 +61,8 @@ fr:
             sub_type:
               hour_of_day: "Heure de la journée"
               day_of_week: "Jour de la semaine"
+              by_week: "Par semaine"
+              by_month: "Par mois"
   activerecord:
     models:
       search/save:

@@ -13,7 +13,7 @@ RSpec.describe ServiceCount, type: :model do
 
           referential do
             time_table :time_table_a,
-                       int_day_types: Cuckoo::Timetable::DaysOfWeek::SATURDAY | Cuckoo::Timetable::DaysOfWeek::SUNDAY,
+                       int_day_types: Cuckoo::DaysOfWeek::SATURDAY | Cuckoo::DaysOfWeek::SUNDAY,
                        periods: [Period.parse('2030-01-07..2030-01-20')]
 
             time_table :time_table_b,
@@ -106,7 +106,7 @@ RSpec.describe ServiceCount, type: :model do
 
             referential do
               time_table :time_table_a,
-                         int_day_types: Cuckoo::Timetable::DaysOfWeek::SATURDAY | Cuckoo::Timetable::DaysOfWeek::SUNDAY,
+                         int_day_types: Cuckoo::DaysOfWeek::SATURDAY | Cuckoo::DaysOfWeek::SUNDAY,
                          periods: [Period.parse('2030-01-07..2030-01-20')],
                          dates: [
                            Chouette::TimeTableDate.new(date: Date.parse('2030-01-12'), in_out: false),

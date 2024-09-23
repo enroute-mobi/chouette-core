@@ -1,0 +1,13 @@
+fr:
+  service_counts:
+    index:
+      title: "Courses quotidiennes"
+  activerecord:
+    attributes:
+      service_count:
+        line_id: "Ligne"
+        date: "Date"
+        company_id: "Transporteur"
+        network_id: "Réseau"
+        transport_mode: "Mode de transport"
+        route_wayback: "Direction"

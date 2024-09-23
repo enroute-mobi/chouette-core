@@ -5,7 +5,7 @@ class AggregateScheduling < ApplicationModel
   belongs_to :scheduled_job, class_name: '::Delayed::Job', optional: true
 
   attribute :aggregate_time, TimeOfDay::Type::TimeWithoutZone.new
-  attribute :aggregate_days, WeekDays.new
+  attribute :aggregate_days, Cuckoo::DaysOfWeek::Type.new
 
   validates :force_daily_publishing, inclusion: [true, false]
   validate :validate_presence_of_aggregate_days

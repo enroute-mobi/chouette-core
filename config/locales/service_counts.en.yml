@@ -1,0 +1,13 @@
+en:
+  service_counts:
+    index:
+      title: "Service Counts"
+  activerecord:
+    attributes:
+      service_count:
+        line_id: "Line"
+        date: "Date"
+        company_id: "Company"
+        network_id: "Network"
+        transport_mode: "Transport mode"
+        route_wayback: "Direction"

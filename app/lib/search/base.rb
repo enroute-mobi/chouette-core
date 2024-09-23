@@ -267,7 +267,7 @@ module Search
         aggregate_operation: aggregate_operation,
         aggregate_attribute: aggregate_attribute,
         display_percent: display_percent,
-        period: self.class.chart_periods[group_by_attribute]&.chart_period(self)
+        period: self.class.chart_periods[chart_klass.group_by_attributes[group_by_attribute].name]&.chart_period(self)
       )
     end
 
@@ -354,7 +354,37 @@ module Search
 
       class DatetimeGroupByAttribute < GroupByAttribute
         def group_order_limit(request, _order_arg, top_count, period)
-          request.group_by_day(groups[0], last: top_count, range: period)
+          request.group_by_day(groups[0], last: top_count, range: period, time_zone: time_zone)
+        end
+
+        protected
+
+        def time_zone
+          nil
+        end
+
+        class ByWeek < DatetimeGroupByAttribute
+          def group_order_limit(request, _order_arg, top_count, period)
+            request.group_by_week(groups[0], last: top_count, range: period, time_zone: time_zone)
+          end
+
+          protected
+
+          def subtype_human_name
+            I18n.t('activemodel.attributes.search.chart.group_by_attribute.sub_type.by_week')
+          end
+        end
+
+        class ByMonth < DatetimeGroupByAttribute
+          def group_order_limit(request, _order_arg, top_count, period)
+            request.group_by_month(groups[0], last: top_count, range: period, time_zone: time_zone)
+          end
+
+          protected
+
+          def subtype_human_name
+            I18n.t('activemodel.attributes.search.chart.group_by_attribute.sub_type.by_month')
+          end
         end
 
         class HourOfDay < NumericGroupByAttribute
@@ -367,13 +397,17 @@ module Search
           end
 
           def group_order_limit(request, _order_arg, _top_count, _period)
-            request.group_by_hour_of_day(groups[0])
+            request.group_by_hour_of_day(groups[0], time_zone: time_zone)
           end
 
           protected
 
           def subtype_human_name
             I18n.t('activemodel.attributes.search.chart.group_by_attribute.sub_type.hour_of_day')
+          end
+
+          def time_zone
+            nil
           end
         end
 
@@ -387,7 +421,7 @@ module Search
           end
 
           def group_order_limit(request, _order_arg, _top_count, _period)
-            request.group_by_day_of_week(groups[0])
+            request.group_by_day_of_week(groups[0], time_zone: time_zone)
           end
 
           def label(key)
@@ -398,6 +432,42 @@ module Search
 
           def subtype_human_name
             I18n.t('activemodel.attributes.search.chart.group_by_attribute.sub_type.day_of_week')
+          end
+
+          def time_zone
+            nil
+          end
+        end
+      end
+
+      class DateGroupByAttribute < DatetimeGroupByAttribute
+        protected
+
+        def time_zone
+          false
+        end
+
+        class ByWeek < DatetimeGroupByAttribute::ByWeek
+          protected
+
+          def time_zone
+            false
+          end
+        end
+
+        class ByMonth < DatetimeGroupByAttribute::ByMonth
+          protected
+
+          def time_zone
+            false
+          end
+        end
+
+        class DayOfWeek < DatetimeGroupByAttribute::DayOfWeek
+          protected
+
+          def time_zone
+            false
           end
         end
       end
@@ -556,18 +626,30 @@ module Search
 
       def order_aggregate_alias
         if aggregate_operation == 'count'
-          :count_id
+          count_column_name
         else
-          models.send(:column_alias_for, "#{aggregate_operation} #{aggregate_attribute.definition}")
+          column_alias(aggregate_operation, aggregate_attribute.definition)
         end
+      end
+
+      def count_column_name
+        :count_id
+      end
+
+      def column_alias(operation, sql_definition)
+        models.send(:column_alias_for, "#{operation} #{sql_definition}")
       end
 
       def aggregate(request)
         if aggregate_operation == 'count'
-          request.count(:id)
+          aggregate_count(request)
         else
           request.send(aggregate_operation, aggregate_attribute.definition)
         end
+      end
+
+      def aggregate_count(request)
+        request.count(:id)
       end
 
       def compute_percent(result)

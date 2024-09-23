@@ -21,8 +21,12 @@ class AF83::Decorator::Link
     link_method *args
   end
 
-  def confirm msg
-    _data({ confirm: msg })
+  def confirm(msg = nil, &block)
+    if block_given?
+      @options[:_data] = { confirm: block }
+    else
+      _data({ confirm: msg })
+    end
   end
 
   def class *args

@@ -521,6 +521,7 @@ module Search
         new_options = {}
         new_options[:discrete] = true if group_by_attribute.discrete?
         new_options[:suffix] = '%' if display_percent
+        new_options[:height] = '600px'
 
         view_context.send("#{type}_chart", data, new_options.deep_merge(options))
       end

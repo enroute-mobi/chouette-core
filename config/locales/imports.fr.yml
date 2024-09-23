@@ -65,7 +65,7 @@ fr:
       failed:     Échec
       error:      Échec
       running:    En cours
-      aborted:    Annulé
+      aborted:    Interrompu
       canceled:   Annulé
   import:
     workgroup: Groupe de travail
@@ -118,6 +118,8 @@ fr:
         filename: Nom de l'archive
         overlapping_referentials: Jeux de données
         code_space: Espace de code
+        workbench_id: "Espace de travail"
+        duration: "Durée"
       import:
         <<: *attrs
         base:

@@ -47,6 +47,15 @@ fr:
         valid_after_date: Valide jusqu'au
         referential_name: Cible
         time_table_id: Calendrier
+        chart_type: Type de graphique
+        group_by_attribute: Grouper par
+        sort_by: "Trier par"
+        display_percent: "Afficher en %"
+        chart:
+          group_by_attribute:
+            sub_type:
+              hour_of_day: "Heure de la journée"
+              day_of_week: "Jour de la semaine"
   activerecord:
     models:
       search/save:
@@ -58,6 +67,22 @@ fr:
         description: Description
         last_used_at: Dernière utilisation
         creator: Créateur
+  enumerize:
+    search/base:
+      chart_type:
+        line: Ligne
+        pie: Camembert
+        column: Colonne
+      first:
+        first: "Premiers"
+        last: "Derniers"
+      sort_by:
+        value: "Valeur"
+        label: "Label"
+      aggregate_operation:
+        count: "Comptage"
+        sum: "Somme"
+        average: "Moyenne"
   simple_form:
     placeholders:
       search:

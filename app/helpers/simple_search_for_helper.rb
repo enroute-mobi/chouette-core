@@ -1,5 +1,5 @@
 module SimpleSearchForHelper
-  def simple_search_for(search, index_path, save_search: true, &block)
+  def simple_search_for(search, index_path, save_search: true, graph_panel: :never, &block)
     if save_search
       if search.saved_search&.persisted?
         save_path = saved_search_path(search.saved_search)
@@ -23,14 +23,16 @@ module SimpleSearchForHelper
       method: "GET",
       html: html,
       wrapper: :filters_form_tailwind,
-      builder: FormBuilder
+      builder: FormBuilder,
+      id: 'new_search'
     }
 
     locals = {
       index_path: index_path,
       search: search,
       options: options,
-      save_search: save_search
+      save_search: save_search,
+      graph_panel: graph_panel
     }
 
     render layout: 'searches/form', locals: locals, &block

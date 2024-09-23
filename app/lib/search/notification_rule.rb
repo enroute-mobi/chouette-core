@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Search
   class NotificationRule < Base
     extend Enumerize
@@ -15,6 +17,10 @@ module Search
     enumerize :operation_statuses, in: ::NotificationRule.operation_statuses.values, multiple: true
 
     alias_method :line_ids, :lines
+
+    def searched_class
+      ::NotificationRule
+    end
 
     def query(scope)
       Query::NotificationRule.new(scope)

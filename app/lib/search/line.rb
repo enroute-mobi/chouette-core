@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Search
   class Line < Base
 		extend Enumerize
@@ -16,14 +18,14 @@ module Search
     enumerize :transport_mode, in: TransportModeEnumerations.transport_modes, multiple: true
 		enumerize :statuses, in: ::Chouette::Line.statuses, i18n_scope: 'lines.statuses'
 
+    period :period, :valid_before_date, :valid_after_date
+
     attr_accessor :workbench
     delegate :line_referential, to: :workbench
 
-		def period
-      Period.new(from: valid_before_date, to: valid_after_date).presence
+    def searched_class
+      ::Chouette::Line
     end
-
-    validates :period, valid: true
 
     def query(scope)
 			Query::Line.new(scope)

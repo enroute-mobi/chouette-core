@@ -72,7 +72,6 @@ en:
   brandname: Chouette
   error: "Error"
   undefined: 'undefined'
-  none: None
 
   activerecord:
     default:

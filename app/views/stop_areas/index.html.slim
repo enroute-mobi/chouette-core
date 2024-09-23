@@ -1,6 +1,6 @@
 - breadcrumb :stop_areas, @workbench
 
-.page_content x-data="{ saveSearchPanel: false }"
+.page_content x-data="{ saveSearchPanel: false, graphPanel: #{@search.graphical?} }"
   .container-fluid
     .row
       .col-lg-12

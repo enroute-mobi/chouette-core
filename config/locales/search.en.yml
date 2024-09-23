@@ -47,6 +47,15 @@ en:
         valid_after_date: Valide after
         referential_name: Target
         time_table_id: Timetable
+        chart_type: Chart Form
+        group_by_attribute: Group by
+        sort_by: "Sort by"
+        display_percent: "Display as %"
+        chart:
+          group_by_attribute:
+            sub_type:
+              hour_of_day: "Hour of day"
+              day_of_week: "Day of week"
   activerecord:
     models:
       search/save:
@@ -58,6 +67,22 @@ en:
         description: Description
         last_used_at: Last used at
         creator: Creator
+  enumerize:
+    search/base:
+      chart_type:
+        line: Line
+        pie: Pie
+        column: Column
+      first:
+        first: "First"
+        last: "Last"
+      sort_by:
+        value: "Value"
+        label: "Label"
+      aggregate_operation:
+        count: "Count"
+        sum: "Sum"
+        average: "Average"
   simple_form:
     placeholders:
       search:

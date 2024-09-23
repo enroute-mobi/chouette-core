@@ -96,6 +96,37 @@ module AttributesMatcher
   end
 end
 
+class EqWithKeysOrder < RSpec::Matchers::BuiltIn::Eq
+  def description
+    "eq_with_keys_order #{expected_formatted}"
+  end
+
+  def expected_formatted
+    @expected.inspect
+  end
+
+  def actual_formatted
+    @actual.inspect
+  end
+
+  private
+
+  def match(expected, actual)
+    super && expected.keys == actual.keys
+  end
+end
+
+module EqWithKeysOrderMatcher
+  # Checks that 2 hashes are exactly the same, including keys order.
+  #
+  # expect({ a: 2, b: 3 }).to eq_with_keys_order({ a: 2, b: 3 })
+  # expect({ a: 2, b: 3 }).not_to eq_with_keys_order({ b: 3, a: 2 })
+  def eq_with_keys_order(expected)
+    EqWithKeysOrder.new(expected)
+  end
+end
+
 RSpec.configure do |config|
   config.include(AttributesMatcher)
+  config.include(EqWithKeysOrderMatcher)
 end

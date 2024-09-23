@@ -34,28 +34,30 @@ class WorkgroupImportsController < Chouette::WorkgroupController
     end
   end
 
-  # rubocop:disable Metrics/MethodLength
-  def index
+  def index # rubocop:disable Metrics/AbcSize,Metrics/MethodLength
     if (saved_search = saved_searches.find_by(id: params[:search_id]))
       @search = saved_search.search
     end
 
     index! do |format|
       format.html do
-        @contextual_cols = []
-        @contextual_cols << TableBuilderHelper::Column.new(
-          key: :workbench,
-          name: Workbench.ts.capitalize,
-          attribute: proc { |n| n.workbench.name },
-          link_to: lambda do |import|
-            import.workbench
-          end
-        )
-        @imports = decorate_collection(collection)
+        @chart = @search.chart(scope) if @search.graphical?
+
+        unless @chart
+          @contextual_cols = []
+          @contextual_cols << TableBuilderHelper::Column.new(
+            key: :workbench,
+            name: Workbench.ts.capitalize,
+            attribute: proc { |n| n.workbench.name },
+            link_to: lambda do |import|
+              import.workbench
+            end
+          )
+          @imports = decorate_collection(collection)
+        end
       end
     end
   end
-  # rubocop:enable Metrics/MethodLength
 
   def saved_searches
     @saved_searches ||= workgroup.saved_searches.for(::Search::WorkgroupImport)

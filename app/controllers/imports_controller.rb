@@ -39,19 +39,20 @@ class ImportsController < Chouette::WorkbenchController
     end
   end
 
-  def index
+  def index # rubocop:disable Metrics/MethodLength
     if (saved_search = saved_searches.find_by(id: params[:search_id]))
       @search = saved_search.search
     end
 
     index! do |format|
       format.html do
-        # if collection.out_of_bounds?
-        #   redirect_to params.merge(:page => 1)
-        # end
-        @contextual_cols = []
-        @contextual_cols << TableBuilderHelper::Column.new(key: :creator, attribute: 'creator')
-        @imports = decorate_collection(collection)
+        @chart = @search.chart(scope) if @search.graphical?
+
+        unless @chart
+          @contextual_cols = []
+          @contextual_cols << TableBuilderHelper::Column.new(key: :creator, attribute: 'creator')
+          @imports = decorate_collection(collection)
+        end
       end
     end
   end

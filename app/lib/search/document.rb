@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Search
   class Document < Base
     attr_accessor :workgroup
@@ -8,12 +10,14 @@ module Search
     attribute :valid_after_date, type: Date
     attribute :valid_before_date, type: Date
 
-    def candidate_document_types
-      workgroup.document_types
+    period :period, :valid_before_date, :valid_after_date
+
+    def searched_class
+      ::Document
     end
 
-    def period
-      Period.new(from: valid_before_date, to: valid_after_date).presence
+    def candidate_document_types
+      workgroup.document_types
     end
 
     def candidate_document_providers
@@ -23,8 +27,6 @@ module Search
     def document_provider
       candidate_document_providers.find_by(id: document_provider_id)
     end
-
-    validates :period, valid: true
 
     def query(scope)
       Query::Document.new(scope).name(name).document_type(document_type)

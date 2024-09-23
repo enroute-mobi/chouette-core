@@ -1,7 +1,7 @@
 - breadcrumb :lines, @workbench
 - javascript_additional_packs 'lines/index'
 
-.page_content x-data="{ saveSearchPanel: false }"
+.page_content x-data="{ saveSearchPanel: false, graphPanel: #{@search.graphical?} }"
   .container-fluid
     .row
       .col-lg-12
@@ -63,4 +63,3 @@
       .row.mt-xs
         .col-lg-12
           = replacement_msg 'referential_lines.search_no_results'.t
-

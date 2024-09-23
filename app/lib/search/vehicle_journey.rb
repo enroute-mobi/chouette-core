@@ -13,13 +13,10 @@ module Search
     attribute :from_stop_area_id
     attribute :to_stop_area_id
 
-    def period
-      Period.new(from: start_date, to: end_date).presence
-    end
+    period :period, :start_date, :end_date
 
     validates :start_date, presence: true, if: proc { |search| search.end_date.present? }
     validates :end_date, presence: true, if: proc { |search| search.start_date.present? }
-    validates :period, valid: true
     validates :company, inclusion: { in: ->(search) { search.candidate_companies } }, allow_blank: true, allow_nil: true
     validates :line, inclusion: { in: ->(search) { search.candidate_lines } }, allow_blank: true, allow_nil: true
     validates :time_table, inclusion: { in: ->(search) { search.candidate_time_tables } }, allow_blank: true, allow_nil: true
@@ -29,6 +26,10 @@ module Search
     validates :to_stop_area, inclusion: { in: lambda { |search|
                                                 search.candidate_stop_areas
                                               } }, allow_blank: true, allow_nil: true
+
+    def searched_class
+      ::Chouette::VehicleJourney
+    end
 
     def company
       referential.companies.find(company_id) if company_id.present?

@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Search
   class Referential < Base
     attr_accessor :workbench
@@ -16,11 +18,11 @@ module Search
 
     enumerize :statuses, in: ::Referential::STATES, multiple: true, i18n_scope: 'referentials.states'
 
-    def period
-      Period.new(from: valid_before_date, to: valid_after_date).presence
-    end
+    period :period, :valid_before_date, :valid_after_date
 
-    validates :period, valid: true
+    def searched_class
+      ::Referential
+    end
 
     def query(scope)
       Query::Referential.new(scope)

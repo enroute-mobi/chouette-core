@@ -28,7 +28,12 @@ class ServiceCountsController < Chouette::ReferentialController
   end
 
   def search
-    @search ||= ::Search::ServiceCount.from_params(params, workbench: workbench)
+    @search ||= ::Search::ServiceCount.from_params(
+      params,
+      workbench: workbench,
+      group_by_attribute: :date,
+      chart_type: :column
+    )
   end
 
   def collection

@@ -14,8 +14,7 @@ GIT
 
 GIT
   remote: https://bitbucket.org/enroute-mobi/cuckoo.git
-  revision: 86bea6288a567b61a4c5bea7b5f0256b1776e76b
-  branch: CUCKOO-23-CUCKOO-22
+  revision: 0c29b43fe5a43f2db9b35d2c2d194765dec03066
   specs:
     cuckoo (0.1.0)
       activesupport
@@ -445,7 +444,7 @@ GEM
       mini_mime (>= 1.0.0)
       multi_xml (>= 0.5.2)
     httpclient (2.8.3)
-    i18n (1.14.5)
+    i18n (1.14.6)
       concurrent-ruby (~> 1.0)
     i18n-js (3.9.2)
       i18n (>= 0.6.6)

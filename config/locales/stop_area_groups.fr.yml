@@ -1,21 +1,21 @@
 fr:
   stop_area_groups:
-    search_no_results: "Aucun Groupe d'arrêts ne correspond à votre recherche"
+    search_no_results: "Aucun Groupe d'Arrêts ne correspond à votre recherche"
     actions:
-      show: "Afficher ce Groupe d'arrêts"
-      new: "Ajouter un Groupe d'arrêts"
-      edit: "Editer ce Groupe d'arrêts"
-      destroy: "Supprimer ce Groupe d'arrêts"
-      destroy_confirm: "Etes vous sûr de supprimer ce Groupe d'arrêts ?"
+      show: "Afficher ce Groupe d'Arrêts"
+      new: "Ajouter un Groupe d'Arrêts"
+      edit: "Editer ce Groupe d'Arrêts"
+      destroy: "Supprimer ce Groupe d'Arrêts"
+      destroy_confirm: "Etes vous sûr de supprimer ce Groupe d'Arrêts ?"
     errors:
     new:
-      title: "Créer un Groupe d'arrêts"
+      title: "Créer un Groupe d'Arrêts"
     edit:
       title: "Editer %{name}"
     show:
       title: "%{name}"
     index:
-      title: "Groupe d'arrêts"
+      title: "Groupes d'Arrêts"
     form:
       sections:
         identification: "Identification"
@@ -23,16 +23,16 @@ fr:
   activerecord:
     models:
       stop_area_group:
-        zero:  "Groupe d'arrêts"
-        one:   "Groupe d'arrêts"
-        other: "Groupe d'arrêts"
+        zero:  "Groupe d'Arrêts"
+        one:   "Groupe d'Arrêts"
+        other: "Groupes d'Arrêts"
     attributes:
       stop_area_group:
         name: "Nom"
         stop_areas: "Arrêts"
         stop_area_ids: "Arrêts"
-        stop_area_provider: "Fournisseur d'arrêts"
-        stop_area_provider_id: "Fournisseur d'arrêts"
+        stop_area_provider: "Fournisseur d'Arrêts"
+        stop_area_provider_id: "Fournisseur d'Arrêts"
         count: "Nombres"
         description: "Description"
         created_at: "Créé le"

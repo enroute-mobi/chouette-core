@@ -1,21 +1,21 @@
 fr:
   line_groups:
-    search_no_results: "Aucun Groupe de lignes ne correspond à votre recherche"
+    search_no_results: "Aucun Groupe de Lignes ne correspond à votre recherche"
     actions:
-      show: "Afficher ce Groupe de lignes"
-      new: "Ajouter un Groupe de lignes"
-      edit: "Editer ce Groupe de lignes"
-      destroy: "Supprimer ce Groupe de lignes"
-      destroy_confirm: "Etes vous sûr de supprimer ce Groupe de lignes ?"
+      show: "Afficher ce Groupe de Lignes"
+      new: "Ajouter un Groupe de Lignes"
+      edit: "Editer ce Groupe de Lignes"
+      destroy: "Supprimer ce Groupe de Lignes"
+      destroy_confirm: "Etes vous sûr de supprimer ce Groupe de Lignes ?"
     errors:
     new:
-      title: "Créer un Groupe de lignes"
+      title: "Créer un Groupe de Lignes"
     edit:
       title: "Editer %{name}"
     show:
       title: "%{name}"
     index:
-      title: "Groupe de lignes"
+      title: "Groupes de Lignes"
     form:
       sections:
         identification: "Identification"
@@ -23,9 +23,9 @@ fr:
   activerecord:
     models:
       line_group:
-        zero:  "Groupe de lignes"
-        one:   "Groupe de lignes"
-        other: "Groupe de lignes"
+        zero:  "Groupe de Lignes"
+        one:   "Groupe de Lignes"
+        other: "Groupes de Lignes"
     attributes:
       line_group:
         name: "Nom"

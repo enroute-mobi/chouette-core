@@ -1,21 +1,21 @@
 en:
   stop_area_groups:
-    search_no_results: "No Stop area groups"
+    search_no_results: "No Stop Area Group"
     actions:
-      show: "Display this Stop area groups"
-      new: "Add a Stop area groups"
-      edit: "Edit this Stop area groups"
-      destroy: "Delete this Stop area groups"
-      destroy_confirm: "Are you sur to delete this Stop area groups ?"
+      show: "Display this Stop Area Group"
+      new: "Add a Stop Area Group"
+      edit: "Edit this Stop Area Group"
+      destroy: "Delete this Stop Area Group"
+      destroy_confirm: "Are you sur to delete this Stop Area Group ?"
     errors:
     new:
-      title: "Create a Stop area groups"
+      title: "Create a Stop Area Group"
     edit:
       title: "Edit %{name}"
     show:
       title: "%{name}"
     index:
-      title: "Stop area groups"
+      title: "Stop Area Groups"
     form:
       sections:
         identification: "Identification"
@@ -23,16 +23,16 @@ en:
   activerecord:
     models:
       stop_area_group:
-        zero:  "Stop area groups"
-        one:   "Stop area groups"
-        other: "Stop area groups"
+        zero:  "Stop Area Group"
+        one:   "Stop Area Group"
+        other: "Stop Area Groups"
     attributes:
       stop_area_group:
         name: "Name"
-        stop_areas: "Stop areas"
-        stop_area_ids: "Stop areas"
-        stop_area_provider: "Stop area provider"
-        stop_area_provider_id: "Stop area provider"
+        stop_areas: "Stop Areas"
+        stop_area_ids: "Stop Areas"
+        stop_area_provider: "Stop Area Provider"
+        stop_area_provider_id: "Stop Area Provider"
         count: "Count"
         description: "Description"
         created_at: "Created at"

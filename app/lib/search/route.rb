@@ -4,6 +4,8 @@ module Search
     attribute :text
     attribute :wayback
 
+    enumerize :wayback, in: ::Chouette::Route.wayback.values, i18n_scope: 'enumerize.route.wayback'
+
     attr_accessor :workbench
 
     def query(scope)
@@ -11,8 +13,6 @@ module Search
                     .text(text)
                     .wayback(wayback)
     end
-
-    private
 
     class Order < ::Search::Order
       attribute :name, default: :asc

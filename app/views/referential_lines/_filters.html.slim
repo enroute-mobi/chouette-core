@@ -1,5 +1,5 @@
-= simple_search_for @search, workbench_referential_line_path(@workbench, @referential, @line) do |f|
+= simple_search_for(@search, workbench_referential_line_path(@workbench, @referential, @line), save_search: false) do |f|
   = f.row
     = f.text
   = f.row
-    = f.input :wayback, as: :autocomplete_select, collection: Chouette::Route.wayback.values, required: false, label_method: lambda{|l| ("<span>" + t("enumerize.route.wayback.#{l}") + "</span>").html_safe}, config: { allowClear: true }
+    = f.input :wayback, as: :autocomplete_select, required: false

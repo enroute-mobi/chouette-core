@@ -43,7 +43,6 @@ class LinesController < Chouette::LineReferentialController
   end
 
   def show
-    @group_of_lines = resource.group_of_lines
     show! do
       @line = @line.decorate(
         context: {
@@ -121,9 +120,6 @@ class LinesController < Chouette::LineReferentialController
       :visual_signs_availability,
       :accessibility_limitation_description,
       :flexible_service,
-      :group_of_lines,
-      :group_of_line_ids,
-      :group_of_line_tokens,
       :url,
       :color,
       :text_color,

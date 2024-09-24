@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2024_08_19_135253) do
+ActiveRecord::Schema.define(version: 2024_09_17_152914) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "btree_gin"
@@ -660,28 +660,6 @@ ActiveRecord::Schema.define(version: 2024_08_19_135253) do
     t.bigint "footnote_id"
   end
 
-  create_table "group_of_lines", force: :cascade do |t|
-    t.string "objectid", null: false
-    t.bigint "object_version"
-    t.string "name"
-    t.string "comment"
-    t.string "registration_number"
-    t.bigint "line_referential_id"
-    t.text "import_xml"
-    t.datetime "created_at"
-    t.datetime "updated_at"
-    t.jsonb "metadata", default: {}
-    t.bigint "line_provider_id"
-    t.index ["line_provider_id"], name: "index_group_of_lines_on_line_provider_id"
-    t.index ["line_referential_id"], name: "index_group_of_lines_on_line_referential_id"
-    t.index ["objectid"], name: "group_of_lines_objectid_key", unique: true
-  end
-
-  create_table "group_of_lines_lines", id: false, force: :cascade do |t|
-    t.bigint "group_of_line_id"
-    t.bigint "line_id"
-  end
-
   create_table "import_messages", force: :cascade do |t|
     t.string "criticity"
     t.string "message_key"
@@ -769,6 +747,26 @@ ActiveRecord::Schema.define(version: 2024_08_19_135253) do
     t.bigint "journey_pattern_id"
     t.bigint "stop_point_id"
     t.index ["journey_pattern_id"], name: "index_journey_pattern_id_on_journey_patterns_stop_points"
+  end
+
+  create_table "line_group_members", force: :cascade do |t|
+    t.bigint "group_id", null: false
+    t.bigint "line_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["group_id", "line_id"], name: "index_line_group_members_on_group_id_and_line_id", unique: true
+    t.index ["line_id"], name: "index_line_group_members_on_line_id"
+  end
+
+  create_table "line_groups", force: :cascade do |t|
+    t.string "name"
+    t.text "description"
+    t.bigint "line_referential_id"
+    t.bigint "line_provider_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["line_provider_id"], name: "index_line_groups_on_line_provider_id"
+    t.index ["line_referential_id"], name: "index_line_groups_on_line_referential_id"
   end
 
   create_table "line_notices", force: :cascade do |t|
@@ -1409,6 +1407,26 @@ ActiveRecord::Schema.define(version: 2024_08_19_135253) do
     t.index ["workbench_id"], name: "index_sources_on_workbench_id"
   end
 
+  create_table "stop_area_group_members", force: :cascade do |t|
+    t.bigint "group_id", null: false
+    t.bigint "stop_area_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["group_id", "stop_area_id"], name: "index_stop_area_group_members_on_group_id_and_stop_area_id", unique: true
+    t.index ["stop_area_id"], name: "index_stop_area_group_members_on_stop_area_id"
+  end
+
+  create_table "stop_area_groups", force: :cascade do |t|
+    t.string "name"
+    t.text "description"
+    t.bigint "stop_area_referential_id"
+    t.bigint "stop_area_provider_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["stop_area_provider_id"], name: "index_stop_area_groups_on_stop_area_provider_id"
+    t.index ["stop_area_referential_id"], name: "index_stop_area_groups_on_stop_area_referential_id"
+  end
+
   create_table "stop_area_providers", force: :cascade do |t|
     t.string "objectid"
     t.string "name"
@@ -1755,18 +1773,21 @@ ActiveRecord::Schema.define(version: 2024_08_19_135253) do
   add_foreign_key "controls", "control_contexts"
   add_foreign_key "custom_fields", "custom_field_groups"
   add_foreign_key "exports", "workgroups"
-  add_foreign_key "group_of_lines_lines", "group_of_lines", name: "groupofline_group_fkey", on_delete: :cascade
   add_foreign_key "journey_patterns", "routes", name: "jp_route_fkey", on_delete: :cascade
   add_foreign_key "journey_patterns", "stop_points", column: "arrival_stop_point_id", name: "arrival_point_fkey", on_delete: :nullify
   add_foreign_key "journey_patterns", "stop_points", column: "departure_stop_point_id", name: "departure_point_fkey", on_delete: :nullify
   add_foreign_key "journey_patterns_stop_points", "journey_patterns", name: "jpsp_jp_fkey", on_delete: :cascade
   add_foreign_key "journey_patterns_stop_points", "stop_points", name: "jpsp_stoppoint_fkey", on_delete: :cascade
+  add_foreign_key "line_group_members", "line_groups", column: "group_id"
+  add_foreign_key "line_group_members", "lines"
   add_foreign_key "macro_runs", "macro_context_runs"
   add_foreign_key "macros", "macro_contexts"
   add_foreign_key "point_of_interest_categories", "point_of_interest_categories", column: "parent_id"
   add_foreign_key "publications", "referentials"
   add_foreign_key "referentials", "referential_suites"
   add_foreign_key "routes", "routes", column: "opposite_route_id", name: "route_opposite_route_fkey"
+  add_foreign_key "stop_area_group_members", "stop_area_groups", column: "group_id"
+  add_foreign_key "stop_area_group_members", "stop_areas"
   add_foreign_key "stop_areas", "stop_areas", column: "parent_id", name: "area_parent_fkey", on_delete: :nullify
   add_foreign_key "time_table_dates", "time_tables", name: "tm_date_fkey", on_delete: :cascade
   add_foreign_key "time_table_periods", "time_tables", name: "tm_period_fkey", on_delete: :cascade

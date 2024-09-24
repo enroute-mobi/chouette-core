@@ -69,7 +69,6 @@ en:
       network: "Networks"
       line: "Lines"
       company: "Companies"
-      group_of_line: "Group of lines"
       stop_area: "Stops and connections (stops.txt and transfers.txt)"
     data_format:
       neptune: "Neptune profile"

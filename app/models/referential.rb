@@ -67,7 +67,6 @@ class Referential < ApplicationModel
   belongs_to :created_from, class_name: 'Referential'
   has_many :associated_lines, through: :line_referential, source: :lines
   has_many :companies, through: :line_referential
-  has_many :group_of_lines, through: :line_referential
   has_many :networks, through: :line_referential
   has_many :line_providers, through: :line_referential
   has_many :metadatas, class_name: "ReferentialMetadata", inverse_of: :referential, dependent: :delete_all

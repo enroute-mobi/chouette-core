@@ -102,8 +102,6 @@ module ApplicationHelper
       "networks"
     when path.include?("/companies")
       "companies"
-    when path.include?("/group_of_lines")
-      "group_of_lines"
     when path.include?("/vehicle_journeys")
       "vehicle_journeys"
     when path.include?("/vehicle_journey_frequencies")

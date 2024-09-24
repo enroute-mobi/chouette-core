@@ -13,7 +13,8 @@ module Policy
         ::Chouette::StopArea,
         ::Entrance,
         ::StopAreaRoutingConstraint,
-        ::Chouette::ConnectionLink
+        ::Chouette::ConnectionLink,
+        ::StopAreaGroup
       ].include?(resource_class)
     end
 

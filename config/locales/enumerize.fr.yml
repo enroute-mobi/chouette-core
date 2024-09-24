@@ -69,7 +69,6 @@ fr:
       network: "Réseaux"
       line: "Lignes"
       company: "Transporteurs"
-      group_of_line: "Groupe de lignes"
       stop_area: "Arrêts et correspondances (stops.txt et transfers.txt)"
     data_format:
       neptune: "Profil Neptune"

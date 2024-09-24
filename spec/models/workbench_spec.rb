@@ -12,7 +12,6 @@ RSpec.describe Workbench, type: :model do
     it { is_expected.to have_many(:lines).through(:line_referential) }
     it { is_expected.to have_many(:networks).through(:line_referential) }
     it { is_expected.to have_many(:companies).through(:line_referential) }
-    it { is_expected.to have_many(:group_of_lines).through(:line_referential) }
 
     it { is_expected.to have_many(:stop_areas).through(:stop_area_referential) }
     it { is_expected.to have_many(:notification_rules).dependent(:destroy) }

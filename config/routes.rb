@@ -173,6 +173,7 @@ ChouetteIhm::Application.routes.draw do # rubocop:disable Metrics/BlockLength
 
       resources :stop_area_routing_constraints
       resources :entrances
+      resources :stop_area_groups
 
       resources :stop_area_providers
 
@@ -196,6 +197,7 @@ ChouetteIhm::Application.routes.draw do # rubocop:disable Metrics/BlockLength
     resource :line_referential, only: %i[show] do
       resources :searches, only: %i[index show create update destroy], path: ':parent_resources/searches'
       resources :line_routing_constraint_zones
+      resources :line_groups
 
       resources :line_providers
 

@@ -1,0 +1,40 @@
+fr:
+  stop_area_groups:
+    search_no_results: "Aucun Groupe d'Arrêts ne correspond à votre recherche"
+    actions:
+      show: "Afficher ce Groupe d'Arrêts"
+      new: "Ajouter un Groupe d'Arrêts"
+      edit: "Editer ce Groupe d'Arrêts"
+      destroy: "Supprimer ce Groupe d'Arrêts"
+      destroy_confirm: "Etes vous sûr de supprimer ce Groupe d'Arrêts ?"
+    errors:
+    new:
+      title: "Créer un Groupe d'Arrêts"
+    edit:
+      title: "Editer %{name}"
+    show:
+      title: "%{name}"
+    index:
+      title: "Groupes d'Arrêts"
+    form:
+      sections:
+        identification: "Identification"
+        internal: "Interne"
+  activerecord:
+    models:
+      stop_area_group:
+        zero:  "Groupe d'Arrêts"
+        one:   "Groupe d'Arrêts"
+        other: "Groupes d'Arrêts"
+    attributes:
+      stop_area_group:
+        name: "Nom"
+        stop_areas: "Arrêts"
+        stop_area_ids: "Arrêts"
+        stop_area_provider: "Fournisseur d'Arrêts"
+        stop_area_provider_id: "Fournisseur d'Arrêts"
+        count: "Nombres"
+        description: "Description"
+        created_at: "Créé le"
+        updated_at: "Edité le"
+        codes: "Codes"

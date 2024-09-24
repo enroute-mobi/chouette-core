@@ -15,6 +15,7 @@ class StopAreaReferential < ApplicationModel
   has_many :stop_area_providers
   has_many :stop_area_routing_constraints, dependent: :destroy
   has_many :entrances, dependent: :destroy
+  has_many :stop_area_groups, dependent: :destroy, inverse_of: :stop_area_referential
   # has_many :fare_providers, dependent: :destroy, class_name: 'Fare::Provider'
   has_many :fare_zones, through: :workbenches
 

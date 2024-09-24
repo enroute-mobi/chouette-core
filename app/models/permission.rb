@@ -49,6 +49,8 @@ class Permission
         sources
         service_facility_sets
         stop_area_routing_constraints
+        stop_area_groups
+        line_groups
         line_routing_constraint_zones
         time_tables
         vehicle_journeys

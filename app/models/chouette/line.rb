@@ -45,14 +45,13 @@ module Chouette
     has_many :routing_constraint_zones, through: :routes
     has_many :time_tables, -> { distinct }, through: :vehicle_journeys
 
-    has_and_belongs_to_many :group_of_lines, class_name: 'Chouette::GroupOfLine', order: 'group_of_lines.name'
     has_many :line_notice_memberships, inverse_of: :line, dependent: :destroy
     has_many :line_notices, through: :line_notice_memberships, inverse_of: :lines
+    has_many :group_members, class_name: 'LineGroup::Member', dependent: :destroy, inverse_of: :line
+    has_many :groups, through: :group_members, inverse_of: :lines
 
     has_many :footnotes, inverse_of: :line, validate: true
     accepts_nested_attributes_for :footnotes, reject_if: :all_blank, allow_destroy: true
-
-    attr_reader :group_of_line_tokens
 
     validates :name, presence: true
     validate :transport_mode_and_submode_match
@@ -133,10 +132,6 @@ module Chouette
 
     def stop_areas_last_parents
       Chouette::StopArea.joins(stop_points: [route: :line]).where(lines: { id: id }).collect(&:root).flatten.uniq
-    end
-
-    def group_of_line_tokens=(ids)
-      self.group_of_line_ids = ids.split(',')
     end
 
     def vehicle_journey_frequencies?

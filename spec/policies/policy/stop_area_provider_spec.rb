@@ -29,6 +29,11 @@ RSpec.describe Policy::StopAreaProvider, type: :policy do
       it { is_expected.to be_truthy }
     end
 
+    context 'StopAreaGroup' do
+      let(:resource_class) { StopAreaGroup }
+      it { is_expected.to be_truthy }
+    end
+
     context 'Chouette::ConnectionLink' do
       let(:resource_class) { Chouette::ConnectionLink }
       it { is_expected.to be_truthy }

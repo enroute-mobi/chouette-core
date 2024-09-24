@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Query
   class LineGroup < Base
     def text(value)
@@ -10,7 +12,7 @@ module Query
     def lines(value)
       value = value.reject(&:blank?) if value.present?
       change_scope(if: value.present?) do |scope|
-        scope.joins(:members).where(line_group_members: {line_id: value})
+        scope.joins(:members).where(line_group_members: { line_id: value })
       end
     end
 

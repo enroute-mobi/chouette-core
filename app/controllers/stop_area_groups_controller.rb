@@ -3,9 +3,9 @@
 class StopAreaGroupsController < Chouette::StopAreaReferentialController
   include ApplicationHelper
 
-  defaults :resource_class => StopAreaGroup
+  defaults resource_class: StopAreaGroup
 
-  before_action :stop_area_group_params, only: [:create, :update]
+  before_action :stop_area_group_params, only: %i[create update]
 
   respond_to :html, :xml, :json, :geojson
 
@@ -24,7 +24,7 @@ class StopAreaGroupsController < Chouette::StopAreaReferentialController
 
   protected
 
-  alias_method :stop_area_group, :resource
+  alias stop_area_group resource
 
   def resource
     get_resource_ivar || set_resource_ivar(scope.find_by(id: params[:id]).decorate(context: { workbench: workbench }))
@@ -56,7 +56,7 @@ class StopAreaGroupsController < Chouette::StopAreaReferentialController
       :name,
       :description,
       stop_area_ids: [],
-      codes_attributes: [:id, :code_space_id, :value, :_destroy],
+      codes_attributes: %i[id code_space_id value _destroy]
     )
   end
 end

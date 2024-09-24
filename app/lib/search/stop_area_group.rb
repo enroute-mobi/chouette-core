@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Search
   class StopAreaGroup < Base
     extend Enumerize
@@ -13,9 +15,9 @@ module Search
 
     def query(scope)
       Query::StopAreaGroup.new(scope)
-                     .text(text)
-                     .stop_areas(stop_areas)
-                     .stop_area_provider_id(stop_area_provider)
+                          .text(text)
+                          .stop_areas(stop_areas)
+                          .stop_area_provider_id(stop_area_provider)
     end
 
     def candidate_stop_areas
@@ -25,8 +27,6 @@ module Search
     def candidate_stop_area_providers
       stop_area_referential.stop_area_providers
     end
-
-    private
 
     class Order < ::Search::Order
       attribute :name, default: :desc

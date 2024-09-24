@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class Group < ApplicationModel
   self.abstract_class = true
   include CodeSupport

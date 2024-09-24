@@ -3,9 +3,9 @@
 class LineGroupsController < Chouette::LineReferentialController
   include ApplicationHelper
 
-  defaults :resource_class => LineGroup
+  defaults resource_class: LineGroup
 
-  before_action :line_group_params, only: [:create, :update]
+  before_action :line_group_params, only: %i[create update]
 
   respond_to :html, :xml, :json, :geojson
 
@@ -24,7 +24,7 @@ class LineGroupsController < Chouette::LineReferentialController
 
   protected
 
-  alias_method :line_group, :resource
+  alias line_group resource
 
   def resource
     get_resource_ivar || set_resource_ivar(scope.find_by(id: params[:id]).decorate(context: { workbench: workbench }))
@@ -56,7 +56,7 @@ class LineGroupsController < Chouette::LineReferentialController
       :name,
       :description,
       line_ids: [],
-      codes_attributes: [:id, :code_space_id, :value, :_destroy],
+      codes_attributes: %i[id code_space_id value _destroy]
     )
   end
 end

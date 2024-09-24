@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Search
   class LineGroup < Base
     extend Enumerize
@@ -13,9 +15,9 @@ module Search
 
     def query(scope)
       Query::LineGroup.new(scope)
-                     .text(text)
-                     .lines(lines)
-                     .line_provider_id(line_provider)
+                      .text(text)
+                      .lines(lines)
+                      .line_provider_id(line_provider)
     end
 
     def candidate_lines
@@ -25,8 +27,6 @@ module Search
     def candidate_line_providers
       line_referential.line_providers
     end
-
-    private
 
     class Order < ::Search::Order
       attribute :name, default: :desc

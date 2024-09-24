@@ -1,7 +1,7 @@
 class StopAreaGroup < Group
   include StopAreaReferentialSupport
 
-  has_many :members, class_name: "StopAreaGroup::Member", foreign_key: :group_id, dependent: :destroy, inverse_of: :group
+  has_many :members, class_name: "StopAreaGroup::Member", foreign_key: :group_id, dependent: :delete_all, inverse_of: :group
   has_many :stop_areas, class_name: "Chouette::StopArea", through: :members, inverse_of: :groups
 
   validates :stop_area_ids, length: { minimum: 1 }

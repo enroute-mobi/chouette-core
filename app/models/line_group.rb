@@ -1,7 +1,7 @@
 class LineGroup < Group
   include LineReferentialSupport
 
-  has_many :members, class_name: "LineGroup::Member", foreign_key: :group_id, dependent: :destroy, inverse_of: :group
+  has_many :members, class_name: "LineGroup::Member", foreign_key: :group_id, dependent: :delete_all, inverse_of: :group
   has_many :lines, class_name: "Chouette::Line", through: :members, inverse_of: :groups
 
   validates :line_ids, length: { minimum: 1 }

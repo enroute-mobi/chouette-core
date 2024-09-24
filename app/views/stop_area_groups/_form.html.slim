@@ -5,7 +5,7 @@
       = f.input :name
       = f.input :description, as: :text
       = f.input :stop_area_ids, as: :ajax_select, collection: f.object.stop_areas, label_method: :display_name, input_html: { 'data-url': stop_areas_workbench_autocomplete_index_path(@workbench, format: :json), multiple: true, class: "w-full" }, include_blank: true
-      = f.input :stop_area_provider_id, as: :autocomplete_select, collection: @workbench.stop_area_providers, include_blank: true, input_html: {class: "w-full"}
+      = f.input :stop_area_provider_id, as: :autocomplete_select, collection: @workbench.stop_area_providers, include_blank: false, input_html: {class: "w-full"}
   .separator.section_separator
   = render 'codes/form', form: f
 

@@ -9,30 +9,16 @@ class ReferentialLinesController < Chouette::ReferentialController
   respond_to :js, :only => :index
 
   def show
-    @q = resource.routes.ransack(params[:q])
-    @routes = @q.result
-
-    case sort_route_column
-    when "stop_points", "journey_patterns"
-      left_join = %Q{LEFT JOIN "#{sort_route_column}" ON "#{sort_route_column}"."route_id" = "routes"."id"}
-
-      @routes = @routes.joins(left_join).group(:id).order(Arel.sql("count(#{sort_route_column}.route_id) #{sort_route_direction}"))
-    else
-      @routes = @routes.order(Arel.sql("lower(#{sort_route_column}) #{sort_route_direction}"))
-    end
-
-    @routes = @routes.paginate(page: params[:page], per_page: 10)
-
-    @routes = RouteDecorator.decorate(
-      @routes,
-      context: {
-        referential: referential,
-        workbench: current_workbench,
-        line: @line
-      }
-    )
-
     show! do |format|
+      @routes = RouteDecorator.decorate(
+        searched_routes,
+        context: {
+          referential: referential,
+          workbench: current_workbench,
+          line: @line
+        }
+      )
+
       @line = ReferentialLineDecorator.decorate(
         @line,
         context: {
@@ -44,12 +30,17 @@ class ReferentialLinesController < Chouette::ReferentialController
     end
   end
 
-  private
+  protected
 
-  def sort_route_column
-    (@line.routes.column_names + %w{stop_points journey_patterns}).include?(params[:sort]) ? params[:sort] : 'name'
+  def scope
+    @line.routes
   end
-  def sort_route_direction
-    %w[asc desc].include?(params[:direction]) ?  params[:direction] : 'asc'
+
+  def search
+    @search ||= Search::Route.from_params(params, workbench: current_workbench)
+  end
+
+  def searched_routes
+    @searched_routes ||= search.search scope
   end
 end

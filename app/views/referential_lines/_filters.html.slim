@@ -1,16 +1,5 @@
-= search_form_for @q, url: workbench_referential_line_path(@workbench, @referential, @line), class: 'form form-filter' do |f|
-  .ffg-row
-    .input-group.search_bar class=filter_item_class(params[:q], :name_or_short_id_cont)
-      = f.search_field :name_cont, class: 'form-control', placeholder: t('.name_or_short_id_cont')
-      span.input-group-btn
-        button.btn.btn-default#search-btn type='submit'
-          span.fa.fa-search
-
-  .ffg-row
-    .form-group.togglable class=filter_item_class(params[:q], :wayback_eq_any)
-      = f.label Chouette::Route.human_attribute_name(:wayback), required: false, class: 'control-label'
-      = f.input :wayback_eq_any, class: 'form-control', collection: Chouette::Route.wayback.values, as: :check_boxes, label: false, required: false, wrapper_html: { class: 'checkbox_list'}, label_method: lambda{|l| ("<span>" + t("enumerize.route.wayback.#{l}") + "</span>").html_safe}
-
-  .actions
-    = link_to t('actions.erase'), workbench_referential_line_path(@workbench, @referential, @line), class: 'btn btn-link'
-    = f.submit t('actions.filter'), class: 'btn btn-default'
+= simple_search_for(@search, workbench_referential_line_path(@workbench, @referential, @line), save_search: false) do |f|
+  = f.row
+    = f.text
+  = f.row
+    = f.input :wayback, as: :autocomplete_select, required: false

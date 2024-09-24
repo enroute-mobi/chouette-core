@@ -59,6 +59,7 @@ en:
         group_by_attribute: Group by
         sort_by: "Sort by"
         display_percent: "Display as %"
+        wayback: Direction
         chart:
           group_by_attribute:
             sub_type:

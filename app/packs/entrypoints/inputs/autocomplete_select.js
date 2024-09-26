@@ -13,7 +13,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
     let settings = {
       plugins: plugin_list,
-      openOnFocus: true
+      openOnFocus: true,
+      sortField: [{field:'$order'},{field:'$score'}]
     }
 
     if (Array.prototype.some.call(el.options, o => o.value === "" && o.text != "")) {

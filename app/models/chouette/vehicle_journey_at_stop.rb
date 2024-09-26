@@ -200,18 +200,42 @@ module Chouette
       end
     end
 
+    def self.find_each_assignment_light(&block)
+      vehicle_journey_at_stop_assignment = Light::VehicleJourneyAtStopAssignment.new
+      each_row(block_size: 10_000) do |row|
+        vehicle_journey_at_stop_assignment.attributes = row
+        block.call vehicle_journey_at_stop_assignment
+      end
+    end
+
     module Light
-      class VehicleJourneyAtStop
+      class Base
+        def initialize(attributes = {})
+          self.attributes = attributes
+        end
+        attr_accessor :attributes
+
+        def method_missing(name, *args)
+          stringified_name = name.to_s
+          if @attributes.has_key?(stringified_name)
+            return @attributes[stringified_name]
+          end
+
+          super
+        end
+
+        def respond_to?(name, *args)
+          return true if @attributes.has_key?(name.to_s)
+          super
+        end
+      end
+
+      class VehicleJourneyAtStop < Base
 
         attr_accessor :id, :vehicle_journey_id, :stop_point_id, :stop_area_id
         attr_accessor :arrival_time, :departure_time, :departure_day_offset, :arrival_day_offset
         attr_accessor :for_boarding, :for_alighting, :checksum, :checksum_source
         attr_accessor :time_zone
-
-        def initialize(attributes = {})
-          self.attributes = attributes
-        end
-        attr_accessor :attributes
 
         def attributes=(attributes)
           @id = attributes["id"]
@@ -231,20 +255,6 @@ module Chouette
           @attributes = attributes
         end
 
-        def method_missing(name, *args)
-          stringified_name = name.to_s
-          if @attributes.has_key?(stringified_name)
-            return @attributes[stringified_name]
-          end
-
-          super
-        end
-
-        def respond_to?(name, *args)
-          return true if @attributes.has_key?(name.to_s)
-          super
-        end
-
         def arrival_time_of_day
           TimeOfDay.parse(arrival_time, day_offset: arrival_day_offset) if arrival_time
         end
@@ -259,6 +269,23 @@ module Chouette
 
         def departure_local_time_of_day
           TimeOfDay.parse(departure_time, day_offset: departure_day_offset, time_zone: time_zone) if departure_time
+        end
+      end
+
+      class VehicleJourneyAtStopAssignment < Base
+
+        attr_accessor :vehicle_journey_objectid, :vehicle_journey_data_source_ref
+        attr_accessor :stop_point_objectid, :stop_area_objectid, :stop_point_position, :line_id
+
+        def attributes=(attributes)
+          @vehicle_journey_objectid = attributes["vehicle_journey_objectid"]
+          @vehicle_journey_data_source_ref = attributes["vehicle_journey_data_source_ref"]
+          @stop_point_objectid = attributes["stop_point_objectid"]
+          @stop_area_objectid = attributes["stop_area_objectid"]
+          @stop_point_position = attributes["stop_point_position"]
+          @line_id = attributes["line_id"]
+
+          @attributes = attributes
         end
       end
     end

@@ -2009,11 +2009,11 @@ class Export::NetexGeneric < Export::Base
 
   class VehicleJourneyStopAssignments < Part
     def export_part
-      vehicle_journey_at_stops.find_each do |vehicle_journey_at_stop|
-        tags = resource_tagger.tags_for(vehicle_journey_at_stop.line_id)
+      vehicle_journey_at_stops.find_each_assignment_light do |vehicle_journey_at_stop_assignment|
+        tags = resource_tagger.tags_for(vehicle_journey_at_stop_assignment.line_id)
         tagged_target = TaggedTarget.new(target, tags)
 
-        netex_resource = Decorator.new(vehicle_journey_at_stop).netex_resource
+        netex_resource = Decorator.new(vehicle_journey_at_stop_assignment).netex_resource
         tagged_target << netex_resource
       end
     end
@@ -2025,7 +2025,7 @@ class Export::NetexGeneric < Export::Base
     end
 
     def selected_columns
-      ['vehicle_journey_at_stops.*',
+      [
        'vehicle_journeys.objectid AS vehicle_journey_objectid',
        "COALESCE(vehicle_journeys.data_source_ref, 'none') AS vehicle_journey_data_source_ref",
        'stop_points.objectid AS stop_point_objectid',

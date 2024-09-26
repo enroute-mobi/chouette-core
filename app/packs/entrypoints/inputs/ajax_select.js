@@ -20,6 +20,7 @@ function addAjaxSelectToForm(dom_part) {
       preload: true,
       plugins: plugin_list,
       openOnFocus: true,
+      sortField: [{field:'$order'},{field:'$score'}],
       // fetch remote data
       load: function (query, callback) {
         var url = el.dataset.url + '?q=' + encodeURIComponent(query);
@@ -30,7 +31,6 @@ function addAjaxSelectToForm(dom_part) {
             callback();
           })
       },
-      score: () => () => 1
     }
 
     if (el.hasAttribute("data-ajax-html")) {

@@ -63,7 +63,7 @@ class ConfigBuilder {
             .then(res => res.json().then(callback))
             .catch(() => callback())
         },
-        score: () => () => 1
+        sortField: [{field:'$order'},{field:'$score'}]
       })
     }
   }

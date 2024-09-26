@@ -16,7 +16,7 @@ module Chouette::Sync
         super options
       end
 
-      class Decorator < Chouette::Sync::Updater::ResourceDecorator
+      class Decorator < Chouette::Sync::Netex::Decorator
         delegate :source, to: :updater
 
         def stop_area_id
@@ -47,6 +47,10 @@ module Chouette::Sync
           postal_address&.country_name
         end
 
+        def postal_region
+          postal_address&.postal_region
+        end
+
         def model_attributes # rubocop:disable Metrics/MethodLength
           {
             name: name,
@@ -56,6 +60,7 @@ module Chouette::Sync
             address_line_1: address_line_1, # rubocop:disable Naming/VariableNumber
             zip_code: zip_code,
             city_name: city_name,
+            postal_region: postal_region,
             country: country,
             entrance_type: entrance_type,
             entry_flag: is_entry,

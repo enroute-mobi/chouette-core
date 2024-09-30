@@ -17,6 +17,9 @@ class ReferentialSchema
 
   def create(skip_reduce_tables: false)
     Apartment::Tenant.create name
+
+    add_constraints
+
     reduce_tables unless skip_reduce_tables
   end
 
@@ -185,5 +188,45 @@ class ReferentialSchema
 
       target_table.reset_pk_sequence
     end
+  end
+
+  private
+
+  def add_constraints
+    return unless ENV['ENABLE_STOP_POINT_CONSTRAINTS']
+
+    add_constraints_route_stop_points
+    add_constraints_journey_patterns_stop_points
+    add_constraints_vehicle_journey_at_stops
+  end
+
+  def add_constraints_vehicle_journey_at_stops
+    table_name = table(:vehicle_journey_at_stops).full_name
+    index = 'index_vehicle_journey_at_stops_point_id'
+
+    connection.execute <<-SQL
+      CREATE UNIQUE INDEX #{index} ON #{table_name} (vehicle_journey_id, stop_point_id);
+      ALTER TABLE #{table_name} ADD CONSTRAINT #{index} UNIQUE USING INDEX #{index} DEFERRABLE INITIALLY DEFERRED;
+    SQL
+  end
+
+  def add_constraints_journey_patterns_stop_points
+    table_name = table(:journey_patterns_stop_points).full_name
+    index = 'index_unique_journey_patterns_stop_points'
+
+    connection.execute <<-SQL
+      CREATE UNIQUE INDEX #{index} ON #{table_name} (journey_pattern_id, stop_point_id);
+      ALTER TABLE #{table_name} ADD CONSTRAINT #{index} UNIQUE USING INDEX #{index} DEFERRABLE INITIALLY DEFERRED;
+    SQL
+  end
+
+  def add_constraints_route_stop_points
+    table_name = table(:stop_points).full_name
+    index = 'index_unique_route_stop_points'
+
+    connection.execute <<-SQL
+      CREATE UNIQUE INDEX #{index} ON #{table_name} (route_id, position);
+      ALTER TABLE #{table_name} ADD CONSTRAINT #{index} UNIQUE USING INDEX #{index} DEFERRABLE INITIALLY DEFERRED;
+    SQL
   end
 end

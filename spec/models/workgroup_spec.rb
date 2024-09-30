@@ -2,8 +2,8 @@
 
 RSpec.describe Workgroup, type: :model do
 
-  let(:context) { Chouette.create { workgroup } }
-  let(:workgroup) { context.workgroup }
+  let(:context) { Chouette.create { workgroup :workgroup } }
+  let(:workgroup) { context.workgroup(:workgroup) }
 
   context "associations" do
     it{ should have_many(:workbenches) }
@@ -25,7 +25,7 @@ RSpec.describe Workgroup, type: :model do
   describe "#organisations" do
     let(:context) do
       Chouette.create do
-        workgroup do
+        workgroup :workgroup do
           workbench :first
           workbench :second
         end
@@ -50,7 +50,7 @@ RSpec.describe Workgroup, type: :model do
         organisation :organisation1
         organisation :organisation2
 
-        workgroup owner: :organisation1 do
+        workgroup :workgroup, owner: :organisation1 do
           workbench :workbench1, organisation: :organisation1
           workbench :workbench2, organisation: :organisation2
         end
@@ -67,8 +67,27 @@ RSpec.describe Workgroup, type: :model do
           organisation :organisation1
           organisation :organisation2
 
-          workgroup owner: :organisation1 do
+          workgroup :workgroup, owner: :organisation1 do
             workbench :workbench2, organisation: :organisation2
+          end
+          workgroup :other_workgroup, owner: :organisation2 do
+            workbench :other_workbench1, organisation: :organisation1
+          end
+        end
+      end
+
+      it 'returns nil' do
+        is_expected.to be_nil
+      end
+    end
+
+    context 'when there are no non-hidden workbench whose organisation is the same as the workgroup owner' do
+      let(:context) do
+        Chouette.create do
+          organisation :organisation1
+
+          workgroup :workgroup, owner: :organisation1 do
+            workbench :workbench1, organisation: :organisation1, hidden: true
           end
         end
       end
@@ -84,7 +103,7 @@ RSpec.describe Workgroup, type: :model do
           organisation :organisation1
           organisation :organisation2
 
-          workgroup owner: :organisation1 do
+          workgroup :workgroup, owner: :organisation1 do
             workbench :workbench1, organisation: :organisation1
             workbench :workbench2, organisation: :organisation2
             workbench :workbench3, organisation: :organisation1
@@ -92,7 +111,7 @@ RSpec.describe Workgroup, type: :model do
         end
       end
 
-      it 'returns the first workbench whose organisation is the same as the workgroup owner' do
+      it 'returns the one of the workbenches whose organisation is the same as the workgroup owner' do
         is_expected.to eq(context.workbench(:workbench1))
       end
 
@@ -102,7 +121,7 @@ RSpec.describe Workgroup, type: :model do
             organisation :organisation1
             organisation :organisation2
 
-            workgroup owner: :organisation1 do
+            workgroup :workgroup, owner: :organisation1 do
               workbench :workbench1, hidden: true, organisation: :organisation1
               workbench :workbench2, organisation: :organisation2
               workbench :workbench3, organisation: :organisation1
@@ -112,6 +131,175 @@ RSpec.describe Workgroup, type: :model do
 
         it 'returns the sole non-hidden workbench whose organisation is the same as the workgroup owner' do
           is_expected.to eq(context.workbench(:workbench3))
+        end
+      end
+    end
+  end
+
+  describe '#default_workbench' do
+    subject { workgroup.default_workbench(user) }
+
+    let(:context) do
+      Chouette.create do
+        organisation :organisation1 do
+          user :user
+        end
+        organisation :organisation2
+
+        workgroup :workgroup, owner: :organisation1 do
+          workbench :workbench1, organisation: :organisation1
+          workbench :workbench2, organisation: :organisation2
+        end
+      end
+    end
+    let(:user) { context.user(:user) }
+
+    it 'returns the sole workbench accessible by user' do
+      is_expected.to eq(context.workbench(:workbench1))
+    end
+
+    context 'when there are no workbench whose organisation is the same as the user' do
+      let(:context) do
+        Chouette.create do
+          organisation :organisation1 do
+            user :user
+          end
+          organisation :organisation2
+
+          workgroup :workgroup, owner: :organisation1 do
+            workbench :workbench2, organisation: :organisation2
+          end
+          workgroup :other_workgroup, owner: :organisation2 do
+            workbench :other_workbench1, organisation: :organisation1
+          end
+        end
+      end
+
+      it 'returns nil' do
+        is_expected.to be_nil
+      end
+
+      context 'with sharing' do
+        let(:context) do
+          Chouette.create do
+            organisation :organisation1 do
+              user :user
+            end
+            organisation :organisation2
+
+            workgroup :workgroup, owner: :organisation1 do
+              workbench :workbench2, organisation: :organisation2 do
+                workbench_sharing recipient: :user
+              end
+            end
+          end
+        end
+
+        it 'returns shared workbench' do
+          is_expected.to eq(context.workbench(:workbench2))
+        end
+      end
+    end
+
+    context 'when there are no non-hidden workbench whose organisation is the same as user' do
+      let(:context) do
+        Chouette.create do
+          organisation :organisation1 do
+            user :user
+          end
+
+          workgroup :workgroup, owner: :organisation1 do
+            workbench :workbench1, organisation: :organisation1, hidden: true
+          end
+        end
+      end
+
+      it 'returns nil' do
+        is_expected.to be_nil
+      end
+
+      context 'with sharing' do
+        let(:context) do
+          Chouette.create do
+            organisation :organisation1 do
+              user :user
+            end
+
+            workgroup :workgroup, owner: :organisation1 do
+              workbench :workbench1, organisation: :organisation1, hidden: true do
+                workbench_sharing recipient: :user
+              end
+            end
+          end
+        end
+
+        it 'returns hidden workbench' do
+          is_expected.to eq(context.workbench(:workbench1))
+        end
+      end
+    end
+
+    context 'when there are 2 workbenches whose organisation is the same as user' do
+      let(:context) do
+        Chouette.create do
+          organisation :organisation1 do
+            user :user
+          end
+          organisation :organisation2
+
+          workgroup :workgroup, owner: :organisation1 do
+            workbench :workbench1, organisation: :organisation1
+            workbench :workbench2, organisation: :organisation2
+            workbench :workbench3, organisation: :organisation1
+          end
+        end
+      end
+
+      it 'returns the one of the workbenches accessible by user' do
+        is_expected.to eq(context.workbench(:workbench1))
+      end
+
+      context 'when one them is hidden' do
+        let(:context) do
+          Chouette.create do
+            organisation :organisation1 do
+              user :user
+            end
+            organisation :organisation2
+
+            workgroup :workgroup, owner: :organisation1 do
+              workbench :workbench1, hidden: true, organisation: :organisation1
+              workbench :workbench2, organisation: :organisation2
+              workbench :workbench3, organisation: :organisation1
+            end
+          end
+        end
+
+        it 'returns the sole non-hidden workbench whose organisation is the same as the user' do
+          is_expected.to eq(context.workbench(:workbench3))
+        end
+
+        context 'with sharing' do
+          let(:context) do
+            Chouette.create do
+              organisation :organisation1 do
+                user :user
+              end
+              organisation :organisation2
+
+              workgroup :workgroup, owner: :organisation1 do
+                workbench :workbench1, hidden: true, organisation: :organisation1 do
+                  workbench_sharing recipient: :user
+                end
+                workbench :workbench2, organisation: :organisation2
+                workbench :workbench3, organisation: :organisation1
+              end
+            end
+          end
+
+          it 'returns one of the workbenches accessible by user' do
+            is_expected.to eq(context.workbench(:workbench1))
+          end
         end
       end
     end
@@ -154,7 +342,7 @@ RSpec.describe Workgroup, type: :model do
       context 'with referentials' do
         let(:context) do
           Chouette.create do
-            workgroup do
+            workgroup :workgroup do
               workbench(:locked_referential_to_aggregate_workbench) do
                 referential
                 referential(:locked_referential_to_aggregate_referential)
@@ -210,7 +398,7 @@ RSpec.describe Workgroup, type: :model do
       context 'when 1 referential is created after last aggregate' do
         let(:context) do
           Chouette.create do
-            workgroup do
+            workgroup :workgroup do
               workbench(:flag_as_urgent_workbench) do
                 referential(flagged_urgent_at: 5.minutes.ago, with_metadatas: true)
                 referential(:flag_as_urgent_referential, flagged_urgent_at: 5.minutes.ago, with_metadatas: true)
@@ -246,7 +434,7 @@ RSpec.describe Workgroup, type: :model do
       context 'when workbench is flagged as urgent before last aggregate' do
         let(:context) do
           Chouette.create do
-            workgroup do
+            workgroup :workgroup do
               workbench do
                 referential(flagged_urgent_at: 15.minutes.ago, with_metadatas: true)
               end
@@ -264,7 +452,7 @@ RSpec.describe Workgroup, type: :model do
       context 'when workbench is not flagged as urgent' do
         let(:context) do
           Chouette.create do
-            workgroup do
+            workgroup :workgroup do
               workbench do
                 referential
               end
@@ -311,7 +499,7 @@ RSpec.describe Workgroup, type: :model do
       context 'without referential' do
         let(:context) do
           Chouette.create do
-            workgroup do
+            workgroup :workgroup do
               referential(:some_referential)
             end
           end
@@ -359,7 +547,7 @@ RSpec.describe Workgroup, type: :model do
       context 'with referentials' do
         let(:context) do
           Chouette.create do
-            workgroup do
+            workgroup :workgroup do
               workbench(:locked_referential_to_aggregate_workbench) do
                 referential(:some_referential)
                 referential(:locked_referential_to_aggregate_referential)
@@ -412,7 +600,7 @@ RSpec.describe Workgroup, type: :model do
       context 'when 1 referential is created after last aggregate' do
         let(:context) do
           Chouette.create do
-            workgroup do
+            workgroup :workgroup do
               workbench(:created_after_workbench) do
                 referential(:some_referential)
                 referential(:created_after_referential)
@@ -448,7 +636,7 @@ RSpec.describe Workgroup, type: :model do
 
         let(:context) do
           Chouette.create do
-            workgroup do
+            workgroup :workgroup do
               workbench do
                 referential(:some_referential)
               end

@@ -36,7 +36,7 @@ RSpec.describe '/aggregates/show', type: :view do
     # allow(view).to receive(:parent).and_return(workbench)
     # allow(view).to receive(:resource).and_return(workbench_import)
     allow(view).to receive(:resource_class).and_return(Aggregate)
-    allow(view).to receive(:owner_workbench).and_return(workbench)
+    allow(view).to receive(:default_workbench).and_return(workbench)
   end
 
   it 'displays control list status and link to control list' do

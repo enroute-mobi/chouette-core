@@ -17,7 +17,7 @@ class WorkgroupExportsController < Chouette::WorkgroupController
     @export = resource.decorate(context: { parent: parent })
     respond_to do |format|
       format.html do
-        @workbench = owner_workbench
+        @workbench = default_workbench
       end
       format.json do
         fragment = render_to_string(partial: 'exports/show', formats: :html)
@@ -30,7 +30,7 @@ class WorkgroupExportsController < Chouette::WorkgroupController
   def index
     index! do |format|
       format.html do
-        @workbench = owner_workbench
+        @workbench = default_workbench
         @contextual_cols = []
         @contextual_cols << TableBuilderHelper::Column.new(
           key: :workbench,

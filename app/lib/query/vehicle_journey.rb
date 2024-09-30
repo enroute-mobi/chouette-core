@@ -8,11 +8,13 @@ module Query
         scope = scope.select(*column_names).from(custom_from(scope, column_names))
 
         published_journey_name = scope.arel_table[:published_journey_name]
+        published_journey_identifier = scope.arel_table[:published_journey_identifier]
         objectid = scope.arel_table[:objectid]
         code = scope.arel_table[:code]
 
         scope.where(published_journey_name.matches("%#{value}%"))
              .or(scope.where(objectid.matches("%#{value}%")))
+             .or(scope.where(published_journey_identifier.matches("%#{value}%")))
              .or(scope.where(code.matches("%#{value}%")))
              .distinct
       end

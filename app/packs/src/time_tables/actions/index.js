@@ -99,6 +99,18 @@ const actions = {
     group,
     selectType
   }),
+  addCode: (code) => ({
+    type: 'ADD_CODE',
+    payload: code
+  }),
+  updateCode: (index, code) => ({
+    type: 'UPDATE_CODE',
+    payload: { index, code }
+  }),
+  deleteCode: (index) => ({
+    type: 'DELETE_CODE',
+    payload: index
+  }),
   validatePeriodForm: (modalProps, timeTablePeriods, metas, timetableInDates, error) => ({
     type: 'VALIDATE_PERIOD_FORM',
     modalProps,

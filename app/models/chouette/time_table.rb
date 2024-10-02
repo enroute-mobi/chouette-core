@@ -4,6 +4,7 @@ module Chouette
   class TimeTable < Referential::Model
     include ApplicationDaysSupport
     include ObjectidSupport
+    include CodeSupport
     include TimetableSupport
     has_metadata
 

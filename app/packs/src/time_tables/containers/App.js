@@ -7,6 +7,7 @@ import Timetable from './Timetable'
 import Navigate from './Navigate'
 import PeriodForm from './PeriodForm'
 import PeriodList from './PeriodList'
+import CodesList from './CodesList'
 import CancelTimetable from './CancelTimetable'
 import SaveTimetable from './SaveTimetable'
 import ConfirmModal from './ConfirmModal'
@@ -31,6 +32,7 @@ class App extends Component {
           <Timetable />
           <PeriodForm />
           <PeriodList />
+          <CodesList />
           <CancelTimetable />
           <SaveTimetable />
           <ConfirmModal />

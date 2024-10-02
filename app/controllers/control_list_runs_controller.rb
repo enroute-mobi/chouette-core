@@ -94,9 +94,7 @@ class ControlListRunsController < Chouette::WorkbenchController
     rescue StandardError
       Control::List::Run.new(workbench: workbench)
     end
-    display_referential_links = object.referential.present?
-
-    @facade ||= OperationRunFacade.new(object, current_workbench, display_referential_links: display_referential_links)
+    @facade ||= OperationRunFacade.new(object, current_workbench)
   end
 
   alias facade init_facade

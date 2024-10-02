@@ -56,7 +56,11 @@ export default class CodesList extends Component {
                   />
                 </div>
                 <div className="col-sm-2">
-                  <button className="btn btn-primary" onClick={handleAddCode}>
+                  <button
+                    className="btn btn-primary"
+                    onClick={handleAddCode}
+                    disabled={this.state.newCode.trim() === ''}
+                  >
                     Ajouter un code
                   </button>
                 </div>
@@ -68,6 +72,7 @@ export default class CodesList extends Component {
                       className="form-control"
                       value={codeData ? codeData.codeSpace : ''}
                       onChange={(e) => handleUpdateCode(index, { ...codeData, codeSpace: e.target.value })}
+                      disabled
                     >
                       <option value="external">Externe</option>
                       <option value="national">National</option>
@@ -78,8 +83,9 @@ export default class CodesList extends Component {
                     <input
                       type="text"
                       className="form-control"
-                      value={codeData.code}
+                      value={codeData ? codeData.code : ''}
                       onChange={(e) => handleUpdateCode(index, { ...codeData, code: e.target.value })}
+                      disabled
                     />
                   </div>
                   <div className="col-sm-2">

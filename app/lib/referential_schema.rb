@@ -193,7 +193,7 @@ class ReferentialSchema
   private
 
   def add_constraints
-    return unless ENV['ENABLE_STOP_POINT_CONSTRAINTS']
+    return unless Chouette::Config::Environment.new(ENV).boolean('ENABLE_STOP_POINT_CONSTRAINTS')
 
     add_constraints_route_stop_points
     add_constraints_journey_patterns_stop_points

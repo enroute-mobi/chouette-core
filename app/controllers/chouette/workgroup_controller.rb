@@ -26,9 +26,9 @@ module Chouette
       nil
     end
 
-    def owner_workbench
-      @owner_workbench ||= workgroup.owner_workbench
+    def default_workbench
+      @default_workbench ||= workgroup.default_workbench(current_user)
     end
-    helper_method :owner_workbench
+    helper_method :default_workbench
   end
 end

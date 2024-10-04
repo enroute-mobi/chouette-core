@@ -13,6 +13,7 @@ class Export::NetexGeneric < Export::Base
   option :participant_ref, default_value: 'enRoute'
   option :profile_options, default_value: '{}', serialize: ActiveRecord::Type::Json
   option :prefer_referent_line, default_value: false, enumerize: [true, false], serialize: ActiveModel::Type::Boolean
+  option :ignore_referent_stop_areas, default_value: false, enumerize: [true, false], serialize: ActiveModel::Type::Boolean
   option :exported_code_space
 
   validate :ensure_is_valid_period
@@ -71,7 +72,25 @@ class Export::NetexGeneric < Export::Base
     def stop_areas
       @stop_areas ||=
         ::Query::StopArea.new(stop_area_referential.stop_areas).
-          self_referents_and_ancestors(current_scope.stop_areas)
+          send(stop_area_query, current_scope.stop_areas)
+    end
+
+    def stop_area_query
+      return :self_and_ancestors if ignore_referent_stop_areas?
+
+      :self_referents_and_ancestors
+    end
+
+    def ignore_referent_stop_areas?
+      export.ignore_referent_stop_areas
+    end
+
+    def referenced_lines
+      if prefer_referent_lines?
+        current_scope.lines.particulars.with_referent
+      else
+        Chouette::Line.none
+      end
     end
 
     def entrances

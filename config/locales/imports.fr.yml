@@ -16,7 +16,7 @@ fr:
     index:
       title: "Imports"
       warning: ""
-      workrgroup_control_list_run: "Jeu de contrôles (Groupe de travail)"
+      workgroup_control_list_run: "Jeu de contrôles (Groupe de travail)"
       workbench_control_list_run: "Jeu de contrôles"
       workbench_macro_list_run: "Jeu d'instructions"
     workgroup_index:

@@ -5,7 +5,10 @@ class NotifiableOperationObserver < ActiveRecord::Observer
     return unless email_sendable_for?(operation)
 
     workbench = operation.try(:workbench) || operation.try(:workbench_for_notifications)
-    return unless workbench
+    unless workbench
+      Rails.logger.warn('Could not find a workbench to send notifications')
+      return
+    end
 
     workbench.notification_center.notify(operation)
   rescue StandardError => e

@@ -59,7 +59,11 @@
               name: t('.table_headers.workgroup_control_list_run'),
               attribute: lambda do |referential| \
                 workgroup_control_list_run = @processing&.processed; \
-                link_to_if_table(default_workbench && workgroup_control_list_run, operation_status(workgroup_control_list_run&.user_status, verbose: true), [default_workbench, workgroup_control_list_run]) \
+                if workgroup_control_list_run; \
+                  link_to_if(current_user.workbenches.include?(workgroup_control_list_run.workbench), operation_status(workgroup_control_list_run.user_status, verbose: true), [workgroup_control_list_run.workbench, workgroup_control_list_run]); \
+                else; \
+                  '-'; \
+                end \
               end,
               sortable: false,
             ),

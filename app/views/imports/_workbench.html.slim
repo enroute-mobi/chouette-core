@@ -8,7 +8,7 @@
   .row
     .col-lg-6.col-md-6.col-sm-12.col-xs-12
       = simple_block_for @import, title: t('imports.show.overlapping') do |d|
-        = d.attribute :overlapping_referentials, as: :associations, value: @import.overlapping_referentials.sort_by(&:name), link: ->(child) { workbench_referential_path(@workbench, child) }
+        = d.attribute :overlapping_referentials, as: :associations, value: @import.overlapping_referentials.sort_by(&:name), link: @workbench ? ->(child) { workbench_referential_path(@workbench, child) } : nil
         p.mt-6
           = t('imports.show.overlapping_tips')
 .col-lg-12
@@ -22,7 +22,7 @@
       [ \
         TableBuilderHelper::Column.new( \
           name: t('imports.show.referential_name'),
-          attribute: -> (import) { link_to(import.name, workbench_referential_path(@workbench, import.referential)) },
+          attribute: -> (import) { link_to_if(@workbench, import.name, [@workbench, import.referential]) },
           if: -> (import) { import.referential },
           sortable: false,
         ),
@@ -48,7 +48,7 @@
           sortable: false,
         ),
         TableBuilderHelper::Column.new( \
-          name: I18n.t('imports.index.workrgroup_control_list_run'),
+          name: I18n.t('imports.index.workgroup_control_list_run'),
           attribute: lambda do |n| \
             n.workgroup_control_list_run ? link_to_if(@parent.is_a?(Workbench), operation_status(n.workgroup_control_list_run.processed.user_status, verbose: true), [@workbench, n.workgroup_control_list_run.processed]) : '-' \
           end,

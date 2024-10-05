@@ -277,7 +277,12 @@ class Operation < ApplicationModel
     delegate :notification_center, to: :workbench, allow_nil: true
 
     def after
-      notification_center&.notify(operation)
+      unless notification_center
+        Rails.logger.warn('Could not find a workbench to send notifications')
+        return
+      end
+
+      notification_center.notify(operation)
     end
   end
 

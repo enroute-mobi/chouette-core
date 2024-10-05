@@ -171,7 +171,11 @@ module OperationSupport
     update_columns status: :failed, ended_at: Time.now
 
     workbench = try(:workbench) || try(:workbench_for_notifications)
-    workbench&.notification_center&.notify(self)
+    if workbench
+      workbench.notification_center.notify(self)
+    else
+      Rails.logger.warn('Could not find a workbench to send notifications')
+    end
 
     referentials.each(&:active!)
     run_pending_operations

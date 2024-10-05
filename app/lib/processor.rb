@@ -24,6 +24,11 @@ class Processor
     # Specific case when operation is "Aggregate" and there is no workbench defined
     operation_workbench = workbench.blank? && workgroup.present? ? workgroup.owner_workbench : workbench
 
+    unless operation_workbench
+      Rails.logger.warn('Could not find a workbench to run after processings')
+      return
+    end
+
     referentials.compact.each do |referential|
       after_processing_rules.each do |processing_rule|
         return false unless processing_rule.perform operation: operation, referential: referential,

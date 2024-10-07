@@ -20,11 +20,55 @@ class Export::Base < ApplicationModel
   has_one :organisation, through: :workbench
   has_many :publication_api_sources, foreign_key: :export_id
   has_many :messages, class_name: 'Export::Message', dependent: :delete_all, foreign_key: "export_id"
-  has_many :exportables, dependent: :delete_all, class_name: '::Exportable', foreign_key: 'export_id'
+  has_many :exportables, dependent: :delete_all, class_name: '::Exportable', foreign_key: 'export_id' do
+    def processed(model_type, model_ids)
+      return if model_ids.empty?
+      where(model_type: model_type.to_s, model_id: model_ids).update_all(processed: true)
+    end
+  end
 
   attr_accessor :synchronous
   enumerize :status, in: %w(new pending successful warning failed running aborted canceled), scope: true, default: :new
   mount_uploader :file, ImportUploader
+
+  attr_accessor :cache_prefix
+
+  class CacheKeyProvider
+    attr_accessor :cache_prefix, :code_provider
+
+    def initialize(cache_prefix:, code_provider:)
+      @cache_prefix = cache_prefix
+      @code_provider = code_provider
+    end
+
+    def cache_key(model)
+      cache_keys[[model.model_name.to_s, model.id]] ||= create_cache_key(model)
+    end
+
+    private
+
+    def cache_keys
+      @cache_keys ||= {}
+    end
+
+    def create_cache_key(model)
+      code = code_provider.code(model)
+
+      model_cache_key = model.cache_key
+      model_cache_key += "-#{code}" unless model_cache_key.include?(code)
+
+      "#{cache_prefix}/#{model_cache_key}"
+    end
+  end
+
+  def cache_key_provider
+    return nil if cache_prefix.blank?
+
+    @cache_key_provider ||= CacheKeyProvider.new(
+      cache_prefix: cache_prefix,
+      code_provider: code_provider
+    )
+  end
 
   validates :type, presence: true, inclusion: { in: proc { |e|
                                                       e.workgroup&.export_types || ::Workgroup::DEFAULT_EXPORT_TYPES

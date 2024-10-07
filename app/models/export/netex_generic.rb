@@ -32,9 +32,24 @@ class Export::NetexGeneric < Export::Base
                                     publication_timestamp: Time.zone.now,
                                     participant_ref: participant_ref,
                                     validity_periods: [export_scope.validity_period],
+                                    after_add: target_after_add,
                                     profile_options: profile_options)
   end
   attr_writer :target
+
+  def target_after_add
+    return nil unless cache_key_provider
+
+    # Cache resource if a cache_key has been provided (via a tag)
+    lambda do |resource|
+      cache_key = resource.tag(:cache_key)
+
+      if cache_key && resource.raw_xml
+        # logger.debug { "Cache #{resource.id} as #{cache_key}" }
+        Rails.cache.write cache_key, resource.raw_xml, expires_in: 30.days
+      end
+    end
+  end
 
   def profile?
     ! [nil, 'none'].include? profile
@@ -171,11 +186,13 @@ class Export::NetexGeneric < Export::Base
       RoutingConstraintZones,
       JourneyPatterns,
       TimeTables,
-      VehicleJourneyAtStops,
-      VehicleJourneys,
       VehicleJourneyStopAssignments,
       Organisations,
-      PointOfInterests
+      PointOfInterests,
+      # Because of Exportable#processed side-effects, these 3 parts are the last ones
+      VehicleJourneysCache,
+      VehicleJourneyAtStops,
+      VehicleJourneys
     ]
 
     part_classes.each_with_index do |part_class, index|
@@ -195,7 +212,7 @@ class Export::NetexGeneric < Export::Base
     end
 
     def add(resource)
-      resource.tags = @tags
+      resource.tags.merge!(@tags)
       @target << resource
     end
     alias << add
@@ -210,7 +227,7 @@ class Export::NetexGeneric < Export::Base
     end
 
     delegate :target, :resource_tagger, :export_scope, :workgroup,
-             :alternate_identifiers_extractor, :code_provider, to: :export
+             :alternate_identifiers_extractor, :code_provider, :cache_key_provider, to: :export
 
     def internal_description
       @internal_description ||= self.class.name.demodulize.underscore
@@ -1616,6 +1633,88 @@ class Export::NetexGeneric < Export::Base
     end
   end
 
+  class VehicleJourneysCache < Part
+
+    def export_part
+      return unless cache_key_provider
+
+      cache_hit = cache_miss = 0
+
+      Chouette::VehicleJourney.without_custom_fields do
+        vehicle_journeys.each_instance(block_size: 10_000).each_slice(1000) do |slice|
+          vehicle_journey_processed_ids = []
+
+          slice.each do |vehicle_journey|
+            decorated_vehicle_journey = Decorator.new(vehicle_journey)
+            cache_key = cache_key_provider.cache_key(decorated_vehicle_journey)
+
+            vehicle_journey_xml = Rails.cache.read(cache_key)
+
+            if vehicle_journey_xml.present?
+              code = code_provider.vehicle_journeys.code(vehicle_journey)
+
+              tags = resource_tagger.tags_for(vehicle_journey.line_id)
+              tagged_target = TaggedTarget.new(target, tags)
+
+              netex_service_journey = Netex::ServiceJourney.new
+              netex_service_journey.id = code
+              netex_service_journey.raw_xml = vehicle_journey_xml
+
+              tagged_target << netex_service_journey
+
+              vehicle_journey_processed_ids << vehicle_journey.id
+              cache_hit += 1
+            else
+              cache_miss += 1
+            end
+          end
+
+          export.exportables.processed(Chouette::VehicleJourney, vehicle_journey_processed_ids)
+        end
+      end
+
+      logger.info "Cache hit: #{cache_hit}, Cache miss: #{cache_miss}, Hit rate: #{(cache_hit / (cache_miss+cache_hit) * 100).to_i}%"
+    end
+
+    def vehicle_journeys
+      export_scope.vehicle_journeys.joins(:route, :time_tables).
+        select(:id, :objectid, :updated_at,
+               'routes.line_id AS line_id', 'array_agg(DISTINCT time_tables.objectid) AS timetable_cache_keys').
+        group(:id, :objectid, :updated_at, :line_id)
+    end
+
+    class Decorator < SimpleDelegator
+
+      def initialize(vehicle_journey, timetable_cache_keys: [])
+        super vehicle_journey
+        @timetable_cache_keys = timetable_cache_keys
+      end
+
+      attr_writer :timetable_cache_keys
+
+      def timetable_cache_keys
+        __getobj__.try(:timetable_cache_keys) || @timetable_cache_keys || []
+      end
+
+      def timestamp
+        updated_at.utc.to_s(:number)
+      end
+
+      def persistent_identifier
+        objectid
+      end
+
+      def associated_cache_keys
+        timetable_cache_keys.join(',')
+      end
+
+      def cache_key
+        "#{persistent_identifier}-#{timestamp}-[#{associated_cache_keys}]"
+      end
+    end
+
+  end
+
   class VehicleJourneyAtStops < Part
     def export_part
       stop_point_in_journey_pattern_ref_cache = {}
@@ -1736,7 +1835,11 @@ class Export::NetexGeneric < Export::Base
           tagged_target = TaggedTarget.new(target, tags)
 
           decorated_vehicle_journey = decorate(vehicle_journey, code_space_keys: code_space_keys)
-          tagged_target << decorated_vehicle_journey.netex_resource
+
+          netex_resource = decorated_vehicle_journey.netex_resource
+          netex_resource.with_tag cache_key: cache_key_provider&.cache_key(vehicle_journey)
+
+          tagged_target << netex_resource
         end
       end
     end

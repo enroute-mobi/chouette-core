@@ -72,6 +72,11 @@ class Publication < Operation
       "#{Publication.model_name.human} #{publication.name}"
     end
 
+    def cache_prefix
+      # TODO: should be optional
+      publication_setup.cache_key
+    end
+
     def export_attributes
       publication_export_options.merge(
         referential: referential,
@@ -79,7 +84,8 @@ class Publication < Operation
         creator: publication_name,
         synchronous: true,
         workgroup: workgroup,
-        publication: publication
+        publication: publication,
+        cache_prefix: cache_prefix
       )
     end
   end

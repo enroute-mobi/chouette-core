@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2024_10_06_192318) do
+ActiveRecord::Schema.define(version: 2024_10_08_065743) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "btree_gin"
@@ -552,7 +552,7 @@ ActiveRecord::Schema.define(version: 2024_10_06_192318) do
     t.string "model_type"
     t.bigint "model_id"
     t.boolean "processed", default: false
-    t.index ["export_id"], name: "index_exportables_on_export_id"
+    t.index ["export_id", "model_type", "model_id"], name: "index_exportables_on_export_id_and_model_type_and_model_id", unique: true
     t.index ["uuid", "model_type"], name: "index_exportables_on_uuid_and_model_type"
   end
 

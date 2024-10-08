@@ -11,7 +11,7 @@ module Control
         option :uniqueness_scope
 
         enumerize :target_model, in: %w[Line StopArea Company VehicleJourney]
-        enumerize :uniqueness_scope, in: %w[all workbench provider]
+        enumerize :uniqueness_scope, in: %w[all workbench provider referential]
 
         validates :target_model, :target_attribute, presence: true
 
@@ -210,11 +210,13 @@ module Control
           end
         end
 
-        class Nil < Base
+        class Referential < Base
           def duplicates_count
             "count(#{model_collection}.id) OVER(PARTITION BY #{lower_attribute})"
           end
         end
+
+        class Nil < Referential; end
       end
     end
   end

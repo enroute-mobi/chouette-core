@@ -73,8 +73,7 @@ class Publication < Operation
     end
 
     def cache_prefix
-      # TODO: should be optional
-      publication_setup.cache_key
+      publication_setup.cache_key if publication_setup.enable_cache
     end
 
     def export_attributes

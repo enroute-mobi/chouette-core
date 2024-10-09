@@ -70,6 +70,8 @@ module SimpleBlockForHelper
 
   class BlockBuilder < ActionView::Base
     include ActionView::Helpers::TagHelper
+    include IconHelper
+
     attr_reader :view, :object, :options
 
     def initialize(view, object, options = {})
@@ -116,7 +118,11 @@ module SimpleBlockForHelper
           when :enumerize
             raw_value.text
           when :boolean
-            t(raw_value)
+            if options[:with_icon]
+              boolean_icon(raw_value)
+            else
+              t(raw_value)
+            end
           when :objectid
             if raw_value.respond_to?(:short_id)
               raw_value.short_id

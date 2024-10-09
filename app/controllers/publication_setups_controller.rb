@@ -51,6 +51,7 @@ class PublicationSetupsController < Chouette::WorkgroupController
       :name,
       :enabled,
       :force_daily_publishing,
+      :enable_cache,
       :workgroup_id,
       destinations_attributes: destination_options,
       export_options: {},

@@ -8,7 +8,8 @@
       .col-lg-6.col-md-6.col-sm-12.col-xs-12
         = simple_block_for @publication_setup, title:t('metadatas') do |d|
           = d.attribute :name
-          = d.attribute :enabled, value: boolean_icon(@publication_setup.enabled)
+          = d.attribute :enabled, as: :boolean, with_icon: true
+          = d.attribute :enable_cache, as: :boolean
 
         = render "publication_setups/export/#{@publication_setup.export_type.demodulize.underscore}"
 

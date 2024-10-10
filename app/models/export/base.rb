@@ -1,4 +1,4 @@
-require 'net/http/post/multipart'
+# frozen_string_literal: true
 
 class Export::Base < ApplicationModel
   self.table_name = 'exports'
@@ -23,7 +23,8 @@ class Export::Base < ApplicationModel
   has_many :exportables, dependent: :delete_all, class_name: '::Exportable', foreign_key: 'export_id' do
     def processed(model_type, model_ids)
       return if model_ids.empty?
-      where(model_type: model_type.to_s, model_id: model_ids).update_all(processed: true)
+
+      where(model_type: model_type.to_s, model_id: model_ids).update_all(processed: true)  # rubocop:disable Rails/SkipsModelValidations
     end
   end
 

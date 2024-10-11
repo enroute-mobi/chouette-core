@@ -1693,11 +1693,24 @@ class Export::NetexGeneric < Export::Base
       attr_writer :timetable_cache_keys
 
       def timetable_cache_keys
-        __getobj__.try(:timetable_cache_keys) || @timetable_cache_keys || []
+        __getobj__.read_attribute(:timetable_cache_keys) || @timetable_cache_keys || []
+      end
+
+      # Skip ActiveRecord stack as much as possible
+      def read_attribute(name)
+        __getobj__.read_attribute(name)
+      end
+
+      def id
+        read_attribute(:id)
+      end
+
+      def objectid
+        read_attribute(:objectid)
       end
 
       def timestamp
-        updated_at.utc.to_s(:number)
+        read_attribute(:updated_at).utc.to_s(:number)
       end
 
       def persistent_identifier
@@ -1711,8 +1724,13 @@ class Export::NetexGeneric < Export::Base
       def cache_key
         "#{persistent_identifier}-#{timestamp}-[#{associated_cache_keys}]"
       end
-    end
 
+      mattr_accessor :model_name
+
+      def model_name
+        self.class.model_name ||= __getobj__.model_name
+      end
+    end
   end
 
   class VehicleJourneyAtStops < Part

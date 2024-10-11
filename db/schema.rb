@@ -551,7 +551,7 @@ ActiveRecord::Schema.define(version: 2024_10_09_075253) do
     t.string "uuid"
     t.string "model_type"
     t.bigint "model_id"
-    t.boolean "processed", default: false
+    t.boolean "processed", default: false, null: false
     t.index ["export_id", "model_type", "model_id"], name: "index_exportables_on_export_id_and_model_type_and_model_id", unique: true
     t.index ["uuid", "model_type"], name: "index_exportables_on_uuid_and_model_type"
   end
@@ -1149,7 +1149,7 @@ ActiveRecord::Schema.define(version: 2024_10_09_075253) do
     t.datetime "updated_at", null: false
     t.string "name"
     t.boolean "force_daily_publishing", default: false
-    t.boolean "enable_cache", default: false
+    t.boolean "enable_cache", default: false, null: false
     t.index ["workgroup_id"], name: "index_publication_setups_on_workgroup_id"
   end
 

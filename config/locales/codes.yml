@@ -5,7 +5,7 @@ fr:
     errors:
       duplicate_code_spaces_in_codes: "L'Espace de Codage \"%{code_space}\" n'autorise pas plusieurs valeurs pour un même modèle"
       duplicate_values_in_codes: La valeur de clé en double viole la contrainte unique
-      value_empty:  La valeur de code ne peut pas être vide
+      value_empty:  La valeur du code ne peut pas être vide
 en:
   codes:
     block:

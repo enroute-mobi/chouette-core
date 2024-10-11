@@ -84,12 +84,12 @@ export default class CodesList extends Component {
                     />
                     {codeData.value === '' &&
                       <div className='text-danger p2 small'>
-                        <i className='glyphicon glyphicon-warning-sign' /> {I18n.t('codes.errors.value_empty')}
+                        <i className='fas fa-exclamation-triangle' /> {I18n.t('codes.errors.value_empty')}
                       </div>
                     }
                     {(this.state.codeValues.find(c => c.value === codeData.value && c.code_space_id === codeData.code_space_id && c.id != codeData.id)) &&
                       <div className='text-danger p2 small'>
-                        <i className='glyphicon glyphicon-warning-sign' /> {I18n.t('codes.errors.duplicate_values_in_codes')}
+                        <i className='fas fa-exclamation-triangle' /> {I18n.t('codes.errors.duplicate_values_in_codes')}
                       </div>
                     }
                   </div>

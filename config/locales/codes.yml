@@ -2,7 +2,15 @@ fr:
   codes:
     block:
       no_code: Aucun code n'est défini
+    errors:
+      duplicate_code_spaces_in_codes: "L'Espace de Codage \"%{code_space}\" n'autorise pas plusieurs valeurs pour un même modèle"
+      duplicate_values_in_codes: La valeur de clé en double viole la contrainte unique
+      value_empty:  La valeur de code ne peut pas être vide
 en:
   codes:
     block:
       no_code: No defined code
+    errors:
+      duplicate_code_spaces_in_codes: "The Code Space \"%{code_space}\" doesn't allow several values in the same model"
+      duplicate_values_in_codes: Duplicate key value violates unique constraint
+      value_empty:  The code value can't be empty

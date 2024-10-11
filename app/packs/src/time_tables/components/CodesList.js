@@ -32,6 +32,20 @@ export default class CodesList extends Component {
     this.setState({codeValues: this.props.codeValues})
   }
 
+  handleDuplicateCodes(codeData) {
+    (this.state.codeValues.find(c => c.value === codeData.value && c.code_space_id === codeData.code_space_id && c.id != codeData.id)) &&
+    <div className='text-danger p2 small'>
+      <i className='glyphicon glyphicon-warning-sign' /> {I18n.t('codes.errors.value_empty')} 
+    </div>
+  }
+
+  handleEmptyCodes(codeData) {
+    codeData.value === '' &&
+    <div className='text-danger p2 small'>
+      <i className='glyphicon glyphicon-warning-sign' /> {I18n.t('codes.errors.value_empty')} 
+    </div>
+  }
+
   render() {
     this.state = {codeValues: this.props.codeValues}
 
@@ -64,8 +78,15 @@ export default class CodesList extends Component {
                       value={codeData.value}
                       onChange={(e) => {this.handleUpdateCodeValue(e, codeData, index)}}
                     />
-                    { codeData.value === '' &&
-                      <div><i className='fa fa-triangle-exclamation' /></div>
+                    {codeData.value === '' &&
+                      <div className='text-danger p2 small'>
+                        <i className='glyphicon glyphicon-warning-sign' /> {I18n.t('codes.errors.value_empty')} 
+                      </div>
+                    }
+                    {(this.state.codeValues.find(c => c.value === codeData.value && c.code_space_id === codeData.code_space_id && c.id != codeData.id)) &&
+                      <div className='text-danger p2 small'>
+                        <i className='glyphicon glyphicon-warning-sign' /> {I18n.t('codes.errors.duplicate_values_in_codes')} 
+                      </div>
                     }
                   </div>
 

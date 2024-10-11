@@ -152,8 +152,12 @@ module TimetableSupport
     end
 
     if state_codes = state['code_values'].presence
-      delete_state_codes(state_codes)
-      update_state_codes(state_codes)
+      begin
+        delete_state_codes(state_codes)
+        update_state_codes(state_codes)
+      rescue => e
+        Chouette::Safe.capture "Error update codes", e
+      end
     end
 
     self.save

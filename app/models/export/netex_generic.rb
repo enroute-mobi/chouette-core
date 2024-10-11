@@ -85,14 +85,6 @@ class Export::NetexGeneric < Export::Base
       export.ignore_referent_stop_areas
     end
 
-    def referenced_lines
-      if prefer_referent_lines?
-        current_scope.lines.particulars.with_referent
-      else
-        Chouette::Line.none
-      end
-    end
-
     def entrances
       # Must unscope the entrances to find entrances associated with all exported Stop Areas
       # (including parent Stop Areas)

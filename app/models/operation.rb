@@ -194,6 +194,12 @@ class Operation < ApplicationModel
     end
   end
 
+  class CustomFieldIgnored < Callback
+    def around(&block)
+      CustomFieldsSupport.without_custom_fields(&block)
+    end
+  end
+
   class CustomFieldLoader < Callback
     delegate :workgroup, to: :operation
     def around(&block)

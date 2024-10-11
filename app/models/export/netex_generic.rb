@@ -679,7 +679,6 @@ class Export::NetexGeneric < Export::Base
   end
 
   class Entrances < Part
-
     delegate :entrances, to: :export_scope
 
     def export_part
@@ -885,6 +884,7 @@ class Export::NetexGeneric < Export::Base
   end
 
   class Lines < Part
+    callback Operation::CustomFieldIgnored
 
     delegate :lines, to: :export_scope
 
@@ -1015,6 +1015,7 @@ class Export::NetexGeneric < Export::Base
   end
 
   class Companies < Part
+    callback Operation::CustomFieldIgnored
 
     delegate :companies, to: :export_scope
 
@@ -1587,6 +1588,7 @@ class Export::NetexGeneric < Export::Base
   end
 
   class JourneyPatterns < Part
+    callback Operation::CustomFieldIgnored
 
     delegate :journey_patterns, to: :export_scope
 
@@ -1652,6 +1654,7 @@ class Export::NetexGeneric < Export::Base
   end
 
   class VehicleJourneysCache < Part
+    callback Operation::CustomFieldIgnored
 
     delegate :cache, to: :export
 
@@ -1661,44 +1664,42 @@ class Export::NetexGeneric < Export::Base
       cache_hit = 0
       vehicle_journey_count = 0
 
-      Chouette::VehicleJourney.without_custom_fields do
-        vehicle_journeys.each_instance(block_size: 10_000).each_slice(1000) do |slice|
-          # Map VehicleJourneys by cache_key
-          vehicle_journeys_by_cache_key = slice.map do |vehicle_journey|
-            decorated_vehicle_journey = Decorator.new(vehicle_journey)
-            cache_key = cache_key_provider.cache_key(decorated_vehicle_journey)
+      vehicle_journeys.each_instance(block_size: 10_000).each_slice(1000) do |slice|
+        # Map VehicleJourneys by cache_key
+        vehicle_journeys_by_cache_key = slice.map do |vehicle_journey|
+          decorated_vehicle_journey = Decorator.new(vehicle_journey)
+          cache_key = cache_key_provider.cache_key(decorated_vehicle_journey)
 
-            [ cache_key, vehicle_journey ]
-          end.to_h
+          [ cache_key, vehicle_journey ]
+        end.to_h
 
-          # Read cache
-          vehicle_journeys_xml = cache.read_multi(*vehicle_journeys_by_cache_key.keys)
+        # Read cache
+        vehicle_journeys_xml = cache.read_multi(*vehicle_journeys_by_cache_key.keys)
 
-          vehicle_journey_count += slice.size
-          cache_hit += vehicle_journeys_xml.size
+        vehicle_journey_count += slice.size
+        cache_hit += vehicle_journeys_xml.size
 
-          vehicle_journey_processed_ids = []
+        vehicle_journey_processed_ids = []
 
-          # Process all cache entries
-          vehicle_journeys_xml.each do |cache_key, vehicle_journey_xml|
-            vehicle_journey = vehicle_journeys_by_cache_key[cache_key]
-            code = code_provider.vehicle_journeys.code(vehicle_journey)
+        # Process all cache entries
+        vehicle_journeys_xml.each do |cache_key, vehicle_journey_xml|
+          vehicle_journey = vehicle_journeys_by_cache_key[cache_key]
+          code = code_provider.vehicle_journeys.code(vehicle_journey)
 
-            tags = resource_tagger.tags_for(vehicle_journey.line_id)
-            tagged_target = TaggedTarget.new(target, tags)
+          tags = resource_tagger.tags_for(vehicle_journey.line_id)
+          tagged_target = TaggedTarget.new(target, tags)
 
-            netex_service_journey = Netex::ServiceJourney.new
-            netex_service_journey.id = code
-            netex_service_journey.raw_xml = vehicle_journey_xml
+          netex_service_journey = Netex::ServiceJourney.new
+          netex_service_journey.id = code
+          netex_service_journey.raw_xml = vehicle_journey_xml
 
-            tagged_target << netex_service_journey
+          tagged_target << netex_service_journey
 
-            vehicle_journey_processed_ids << vehicle_journey.id
-          end
-
-          export.exportables.processed(Chouette::VehicleJourney, vehicle_journey_processed_ids)
+          vehicle_journey_processed_ids << vehicle_journey.id
         end
       end
+
+      export.exportables.processed(Chouette::VehicleJourney, vehicle_journey_processed_ids)
 
       rate = (vehicle_journey_count > 0) ? (cache_hit.to_f / vehicle_journey_count * 100).to_i : 0
       logger.info "Cache hit: #{cache_hit}, Vehicle Journey Count: #{vehicle_journey_count}, Hit rate: #{rate}%"
@@ -1873,20 +1874,20 @@ class Export::NetexGeneric < Export::Base
   end
 
   class VehicleJourneys < Part
+    # For the moment, no CustomField is used in VehicleJourney. See CHOUETTE-3939
+    callback Operation::CustomFieldIgnored
+
     def export_part
-      # For the moment, no CustomField is used in VehicleJourney. See CHOUETTE-3939
-      Chouette::VehicleJourney.without_custom_fields do
-        vehicle_journeys.each_instance do |vehicle_journey|
-          tags = resource_tagger.tags_for(vehicle_journey.line_id)
-          tagged_target = TaggedTarget.new(target, tags)
+      vehicle_journeys.each_instance do |vehicle_journey|
+        tags = resource_tagger.tags_for(vehicle_journey.line_id)
+        tagged_target = TaggedTarget.new(target, tags)
 
-          decorated_vehicle_journey = decorate(vehicle_journey, code_space_keys: code_space_keys)
+        decorated_vehicle_journey = decorate(vehicle_journey, code_space_keys: code_space_keys)
 
-          netex_resource = decorated_vehicle_journey.netex_resource
-          netex_resource.with_tag cache_key: cache_key_provider&.cache_key(vehicle_journey)
+        netex_resource = decorated_vehicle_journey.netex_resource
+        netex_resource.with_tag cache_key: cache_key_provider&.cache_key(vehicle_journey)
 
-          tagged_target << netex_resource
-        end
+        tagged_target << netex_resource
       end
     end
 

@@ -1673,7 +1673,8 @@ class Export::NetexGeneric < Export::Base
         end
       end
 
-      logger.info "Cache hit: #{cache_hit}, Cache miss: #{cache_miss}, Hit rate: #{(cache_hit / (cache_miss+cache_hit) * 100).to_i}%"
+      rate = (cache_miss+cache_hit > 0) ? (cache_hit / (cache_miss+cache_hit) * 100).to_i : 0
+      logger.info "Cache hit: #{cache_hit}, Cache miss: #{cache_miss}, Hit rate: #{rate}%"
     end
 
     def vehicle_journeys

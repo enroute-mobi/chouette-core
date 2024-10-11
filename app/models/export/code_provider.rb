@@ -19,31 +19,32 @@ module Export
     # Returns unique code for the given model (StopArea, etc)
     def code(model)
       return unless model&.id
-
-      if collection = send(self.class.collection_name(model))
-        collection.code(model.id)
-      end
+      collection(self.class.collection_name(model))&.code(model.id)
     end
 
     def codes(models)
       models.map { |model| code(model) }.compact
     end
 
-    COLLECTIONS.each do |collection|
-      define_method collection do
-        if model = instance_variable_get("@#{collection}")
-          return model
-        end
+    def collection(name)
+      if model = instance_variable_get("@#{name}")
+        return model
+      end
 
-        scope_collection = export_scope.send(collection)
-        model = Model.new.index(
-          Indexer.create(
-            scope_collection,
-            code_space: code_space,
-            code_provider: self
-          )
+      scope_collection = export_scope.send(name)
+      model = Model.new.index(
+        Indexer.create(
+          scope_collection,
+          code_space: code_space,
+          code_provider: self
         )
-        instance_variable_set("@#{collection}", model)
+      )
+      instance_variable_set("@#{name}", model)
+    end
+
+    COLLECTIONS.each do |collection_name|
+      define_method(collection_name) do
+        collection collection_name
       end
     end
 

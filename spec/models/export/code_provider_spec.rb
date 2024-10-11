@@ -15,7 +15,7 @@ RSpec.describe Export::CodeProvider do
 
     context 'when the given StopArea 1 has been indexed with "dummy"' do
       let(:value) { Chouette::StopArea.new(id: 1) }
-      before { allow(code_provider).to receive(:stop_areas).and_return(double(code: 'dummy')) }
+      before { allow(code_provider).to receive(:collection).with('stop_areas').and_return(double(code: 'dummy')) }
 
       it { is_expected.to eq('dummy') }
     end

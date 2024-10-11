@@ -27,6 +27,7 @@ en:
         export_options: "Export Settings"
         enabled: "Enabled"
         force_daily_publishing: "Force daily publishing"
+        enable_cache: "Optimize with a cache (Experimental)"
         include_stop_visits: "Include stop visits"
         destinations: "Output"
         duration: Duration (in days)

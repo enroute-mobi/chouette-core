@@ -359,7 +359,7 @@ module Export::Scope
     def exportable_vehicle_journeys
       @exportable_vehicle_journeys ||=
         begin
-          exportables = Exportable.where(uuid: uuid, model_type: 'Chouette::VehicleJourney')
+          exportables = Exportable.where(uuid: uuid, model_type: 'Chouette::VehicleJourney', processed: false)
           Chouette::VehicleJourney.where(id: exportables.select(:model_id))
         end
     end

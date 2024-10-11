@@ -132,12 +132,14 @@ class Operation < ApplicationModel
     extend ActiveSupport::Concern
 
     included do
-      mattr_reader :callback_classes, default: []
+      class_attribute :callback_classes, default: []
     end
 
     module ClassMethods
       def callback(callback_class)
-        callback_classes << callback_class
+        # Rails.logger.debug "Add Callback #{callback_class} for #{name} (#{callback_classes.count} known callbacks)"
+        # Use += [] to create a new Array for each subclass
+        self.callback_classes += [callback_class]
       end
     end
 

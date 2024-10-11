@@ -35,14 +35,14 @@ export default class CodesList extends Component {
   handleDuplicateCodes(codeData) {
     (this.state.codeValues.find(c => c.value === codeData.value && c.code_space_id === codeData.code_space_id && c.id != codeData.id)) &&
     <div className='text-danger p2 small'>
-      <i className='glyphicon glyphicon-warning-sign' /> {I18n.t('codes.errors.value_empty')} 
+      <i className='glyphicon glyphicon-warning-sign' /> {I18n.t('codes.errors.value_empty')}
     </div>
   }
 
   handleEmptyCodes(codeData) {
     codeData.value === '' &&
     <div className='text-danger p2 small'>
-      <i className='glyphicon glyphicon-warning-sign' /> {I18n.t('codes.errors.value_empty')} 
+      <i className='glyphicon glyphicon-warning-sign' /> {I18n.t('codes.errors.value_empty')}
     </div>
   }
 
@@ -50,11 +50,15 @@ export default class CodesList extends Component {
     this.state = {codeValues: this.props.codeValues}
 
     return (
-      <div className="container-fluid">
+      <div className="container-fluid mt-12">
         <div className="row">
           <div className="col xs-9 col-xs-offset-3">
             <div className="definition-list">
-              <h2>Codes</h2>
+              <div className="dl-head" style={{display: "flex"}}>
+                <div>
+                  <span style={{ "verticalAlign": "middle"}}>{ I18n.t('time_tables.edit.metas.codes') }</span>
+                </div>
+              </div>
 
               {this.state.codeValues.map((codeData, index) => (
                 <div key={codeData.id || codeData.fallback_id} className="row mb-2">
@@ -80,18 +84,18 @@ export default class CodesList extends Component {
                     />
                     {codeData.value === '' &&
                       <div className='text-danger p2 small'>
-                        <i className='glyphicon glyphicon-warning-sign' /> {I18n.t('codes.errors.value_empty')} 
+                        <i className='glyphicon glyphicon-warning-sign' /> {I18n.t('codes.errors.value_empty')}
                       </div>
                     }
                     {(this.state.codeValues.find(c => c.value === codeData.value && c.code_space_id === codeData.code_space_id && c.id != codeData.id)) &&
                       <div className='text-danger p2 small'>
-                        <i className='glyphicon glyphicon-warning-sign' /> {I18n.t('codes.errors.duplicate_values_in_codes')} 
+                        <i className='glyphicon glyphicon-warning-sign' /> {I18n.t('codes.errors.duplicate_values_in_codes')}
                       </div>
                     }
                   </div>
 
                   <div className="col-sm-2">
-                    <button className="btn btn-danger" onClick={() => this.handleRemoveCode(index)}>
+                    <button className="btn btn-danger pull-right" onClick={() => this.handleRemoveCode(index)}>
                       <i className='fa fa-trash'></i> {I18n.t('actions.delete')}
                     </button>
                   </div>

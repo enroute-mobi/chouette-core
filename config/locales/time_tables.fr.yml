@@ -57,6 +57,7 @@ fr:
           5: Je
           6: Ve
           7: Sa
+        codes: Codes
       select2:
         tag:
           placeholder: Ajoutez ou cherchez une étiquette...

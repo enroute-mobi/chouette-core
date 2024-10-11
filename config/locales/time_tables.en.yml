@@ -57,6 +57,7 @@ en:
           5: Th
           6: Fr
           7: Sa
+        codes: Codes
       select2:
         tag:
           placeholder: Add or search a tag...

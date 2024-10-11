@@ -20,6 +20,7 @@ fr:
       add_period: "Ajouter une période"
       add_date: "Ajouter une date particulière"
       add_excluded_date: "Ajouter une date exclue"
+      add_code: 'Ajouter un code'
     actualize:
       success: "Actualisation terminée"
     new:

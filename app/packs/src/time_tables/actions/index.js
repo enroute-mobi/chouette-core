@@ -101,15 +101,15 @@ const actions = {
   }),
   addCode: (code) => ({
     type: 'ADD_CODE',
-    payload: code
+    code
   }),
-  updateCode: (index, code) => ({
+  updateCode: (attributes) => ({
     type: 'UPDATE_CODE',
-    payload: { index, code }
+    attributes
   }),
   deleteCode: (index) => ({
     type: 'DELETE_CODE',
-    payload: index
+    index
   }),
   validatePeriodForm: (modalProps, timeTablePeriods, metas, timetableInDates, error) => ({
     type: 'VALIDATE_PERIOD_FORM',

@@ -5,7 +5,7 @@ import reduce from 'lodash/reduce'
 import actions from '../actions'
 
 export default function timetable(state = {}, action) {
-  let newState, newPeriods, newDates, newCM
+  let newState, newPeriods, newDates, newCM, newCodeValues
   switch (action.type) {
     case 'RECEIVE_TIME_TABLES':
       let fetchedState = assign({}, state, {
@@ -13,7 +13,8 @@ export default function timetable(state = {}, action) {
         current_periode_range: action.json.current_periode_range,
         periode_range: action.json.periode_range,
         time_table_periods: action.json.time_table_periods,
-        time_table_dates: sortBy(action.json.time_table_dates, ['date'])
+        time_table_dates: sortBy(action.json.time_table_dates, ['date']),
+        code_values: action.json.code_values
       })
       return assign({}, fetchedState, {current_month: actions.updateSynthesis(fetchedState)})
     case 'RECEIVE_MONTH':
@@ -114,6 +115,19 @@ export default function timetable(state = {}, action) {
       newDates = newDates || state.time_table_dates
       newState =assign({}, state, {time_table_periods: newPeriods, time_table_dates: newDates})
       return assign({}, newState, {current_month: actions.updateSynthesis(newState)})
+    case 'ADD_CODE':
+      newCodeValues = state.code_values.concat(action.code)
+      return assign({}, state, {code_values: newCodeValues})
+    case 'UPDATE_CODE':
+      let updatedCode = state.code_values[action.attributes.index]
+      updatedCode.code_space_id = action.attributes.code_space_id
+      updatedCode.value = action.attributes.value
+      state.code_values[action.attributes.index] = updatedCode
+      return assign({}, state, {code_values: state.code_values})
+    case 'DELETE_CODE':
+      newCodeValues = state.code_values
+      newCodeValues.splice(action.index, 1)
+      return assign({}, state, {code_values: newCodeValues})
     default:
       return state
   }

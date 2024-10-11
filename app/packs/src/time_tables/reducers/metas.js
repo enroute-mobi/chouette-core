@@ -26,25 +26,6 @@ export default function metas(state = {}, action) {
     case 'ADD_EXCLUDED_DATE':
     case 'REMOVE_EXCLUDED_DATE':
     case 'DELETE_PERIOD':
-    case 'ADD_CODE':
-      return {
-        ...state,
-        codes: [...state.codes, action.payload],
-      };
-
-    case 'DELETE_CODE':
-      return {
-        ...state,
-        codes: state.codes.filter((_, index) => index !== action.payload),
-      };
-
-    case 'UPDATE_CODE':
-      return {
-        ...state,
-        codes: state.codes.map((code, index) =>
-          index === action.payload.index ? action.payload.newCode : code
-        ),
-      };
     case 'VALIDATE_PERIOD_FORM':
       return assign({}, state, {calendar: null})
     case 'UPDATE_DAY_TYPES':

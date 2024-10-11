@@ -4,21 +4,20 @@ import CodesListComponent from '../components/CodesList'
 
 const mapStateToProps = (state) => {
   return {
-    metas: state.metas,
-    codes: state.metas.codes
+    codeValues: state.timetable.code_values,
   }
 }
 
 const mapDispatchToProps = (dispatch) => {
   return {
-    onAddCode: (index) => {
-      dispatch(actions.addCode(index))
+    onAddCode: (code) => {
+      dispatch(actions.addCode(code))
     },
     onDeleteCode: (index) => {
       dispatch(actions.deleteCode(index))
     },
-    onUpdateCode: (index, newCode) => {
-      dispatch(actions.updateCode(index, newCode))
+    onUpdateCode: (attributes) => {
+      dispatch(actions.updateCode(attributes))
     }
   }
 }

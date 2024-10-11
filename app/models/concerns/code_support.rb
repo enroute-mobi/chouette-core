@@ -94,4 +94,33 @@ module CodeSupport
       end
     end
   end
+
+  def code_values
+    codes.joins(:code_space)
+         .select('code_spaces.short_name', :code_space_id, :value, :id)
+         .map(&:attributes)
+  end
+
+  def update_state_codes(state_codes)
+    state_codes.each do |code|
+      next unless value = code['value']
+      attributes = {
+        code_space_id: code['code_space_id'],
+        value: value
+      }
+      if id = code['id']
+        self.codes.find_by(id: id).update(attributes)
+      else
+        self.codes.create(attributes)
+      end
+    end
+  end
+
+  def delete_state_codes(state_codes)
+    exited_code_ids = self.codes.map(&:id)
+    state_code_ids = state_codes.map{ |state_code| state_code['id'] }
+    removeable_code_ids = exited_code_ids - state_code_ids
+
+    self.codes.where(id: removeable_code_ids).delete_all
+  end
 end

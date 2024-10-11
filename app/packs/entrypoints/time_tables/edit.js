@@ -21,7 +21,8 @@ let initialState = {
     current_periode_range: '',
     periode_range: [],
     time_table_periods: [],
-    time_table_dates: []
+    time_table_dates: [],
+    code_values: []
   },
   metas: {
     comment: '',

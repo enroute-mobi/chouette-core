@@ -151,7 +151,11 @@ module TimetableSupport
       period.period_end   = Date.parse(item['period_end'])
     end
 
+    if state_codes = state['code_values'].presence
+      delete_state_codes(state_codes)
+      update_state_codes(state_codes)
+    end
+
     self.save
   end
-
 end

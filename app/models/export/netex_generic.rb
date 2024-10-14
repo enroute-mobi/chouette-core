@@ -46,7 +46,7 @@ class Export::NetexGeneric < Export::Base
 
       if cache_key && resource.raw_xml
         # logger.debug { "Cache #{resource.id} as #{cache_key}" }
-        Rails.cache.write cache_key, resource.raw_xml, expires_in: 30.days
+        cache.write cache_key, resource.raw_xml, expires_in: 30.days
       end
     end
   end
@@ -1635,46 +1635,55 @@ class Export::NetexGeneric < Export::Base
 
   class VehicleJourneysCache < Part
 
+    delegate :cache, to: :export
+
     def export_part
       return unless cache_key_provider
 
-      cache_hit = cache_miss = 0
+      cache_hit = 0
+      vehicle_journey_count = 0
 
       Chouette::VehicleJourney.without_custom_fields do
         vehicle_journeys.each_instance(block_size: 10_000).each_slice(1000) do |slice|
-          vehicle_journey_processed_ids = []
-
-          slice.each do |vehicle_journey|
+          # Map VehicleJourneys by cache_key
+          vehicle_journeys_by_cache_key = slice.map do |vehicle_journey|
             decorated_vehicle_journey = Decorator.new(vehicle_journey)
             cache_key = cache_key_provider.cache_key(decorated_vehicle_journey)
 
-            vehicle_journey_xml = Rails.cache.read(cache_key)
+            [ cache_key, vehicle_journey ]
+          end.to_h
 
-            if vehicle_journey_xml.present?
-              code = code_provider.vehicle_journeys.code(vehicle_journey)
+          # Read cache
+          vehicle_journeys_xml = cache.read_multi(*vehicle_journeys_by_cache_key.keys)
 
-              tags = resource_tagger.tags_for(vehicle_journey.line_id)
-              tagged_target = TaggedTarget.new(target, tags)
+          vehicle_journey_count += slice.size
+          cache_hit += vehicle_journeys_xml.size
 
-              netex_service_journey = Netex::ServiceJourney.new
-              netex_service_journey.id = code
-              netex_service_journey.raw_xml = vehicle_journey_xml
+          vehicle_journey_processed_ids = []
 
-              tagged_target << netex_service_journey
+          # Process all cache entries
+          vehicle_journeys_xml.each do |cache_key, vehicle_journey_xml|
+            vehicle_journey = vehicle_journeys_by_cache_key[cache_key]
+            code = code_provider.vehicle_journeys.code(vehicle_journey)
 
-              vehicle_journey_processed_ids << vehicle_journey.id
-              cache_hit += 1
-            else
-              cache_miss += 1
-            end
+            tags = resource_tagger.tags_for(vehicle_journey.line_id)
+            tagged_target = TaggedTarget.new(target, tags)
+
+            netex_service_journey = Netex::ServiceJourney.new
+            netex_service_journey.id = code
+            netex_service_journey.raw_xml = vehicle_journey_xml
+
+            tagged_target << netex_service_journey
+
+            vehicle_journey_processed_ids << vehicle_journey.id
           end
 
           export.exportables.processed(Chouette::VehicleJourney, vehicle_journey_processed_ids)
         end
       end
 
-      rate = (cache_miss+cache_hit > 0) ? (cache_hit / (cache_miss+cache_hit) * 100).to_i : 0
-      logger.info "Cache hit: #{cache_hit}, Cache miss: #{cache_miss}, Hit rate: #{rate}%"
+      rate = (vehicle_journey_count > 0) ? (cache_hit.to_f / vehicle_journey_count * 100).to_i : 0
+      logger.info "Cache hit: #{cache_hit}, Vehicle Journey Count: #{vehicle_journey_count}, Hit rate: #{rate}%"
     end
 
     def vehicle_journeys

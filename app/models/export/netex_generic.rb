@@ -46,7 +46,7 @@ class Export::NetexGeneric < Export::Base
 
       if cache_key && resource.raw_xml
         # logger.debug { "Cache #{resource.id} as #{cache_key}" }
-        Rails.cache.write cache_key, resource.raw_xml, expires_in: 30.days
+        cache.write cache_key, resource.raw_xml, expires_in: 30.days
       end
     end
   end
@@ -1635,6 +1635,8 @@ class Export::NetexGeneric < Export::Base
 
   class VehicleJourneysCache < Part
 
+    delegate :cache, to: :export
+
     def export_part
       return unless cache_key_provider
 
@@ -1642,15 +1644,23 @@ class Export::NetexGeneric < Export::Base
 
       Chouette::VehicleJourney.without_custom_fields do
         vehicle_journeys.each_instance(block_size: 10_000).each_slice(1000) do |slice|
-          vehicle_journey_processed_ids = []
-
-          slice.each do |vehicle_journey|
+          # Map VehicleJourneys by cache_key
+          vehicle_journeys_by_cache_key = slice.map do |vehicle_journey|
             decorated_vehicle_journey = Decorator.new(vehicle_journey)
             cache_key = cache_key_provider.cache_key(decorated_vehicle_journey)
 
-            vehicle_journey_xml = Rails.cache.read(cache_key)
+            [ cache_key, vehicle_journey ]
+          end.to_h
 
+          # Read cache
+          vehicle_journeys_xml = cache.read_multi(*vehicle_journeys_by_cache_key.keys)
+
+          vehicle_journey_processed_ids = []
+
+          # Process all cache entries
+          vehicle_journeys_xml.each do |cache_key, vehicle_journey_xml|
             if vehicle_journey_xml.present?
+              vehicle_journey = vehicle_journeys_by_cache_key[cache_key]
               code = code_provider.vehicle_journeys.code(vehicle_journey)
 
               tags = resource_tagger.tags_for(vehicle_journey.line_id)

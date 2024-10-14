@@ -71,6 +71,10 @@ class Export::Base < ApplicationModel
     )
   end
 
+  def cache
+    Rails.cache
+  end
+
   validates :type, presence: true, inclusion: { in: proc { |e|
                                                       e.workgroup&.export_types || ::Workgroup::DEFAULT_EXPORT_TYPES
                                                     } }

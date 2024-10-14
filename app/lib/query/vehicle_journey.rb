@@ -59,7 +59,7 @@ module Query
 
     def custom_from(scope, column_names)
       select = column_names + ["code_spaces.short_name || ':' || referential_codes.value AS code"]
-      "(#{scope.joins(codes: :code_space).select(*select).to_sql}) AS #{scope.table_name}"
+      "(#{scope.left_joins(codes: :code_space).select(*select).to_sql}) AS #{scope.table_name}"
     end
 
     def column_names(scope)

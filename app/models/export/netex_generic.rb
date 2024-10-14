@@ -1640,7 +1640,8 @@ class Export::NetexGeneric < Export::Base
     def export_part
       return unless cache_key_provider
 
-      cache_hit = cache_miss = 0
+      cache_hit = 0
+      vehicle_journey_count = 0
 
       Chouette::VehicleJourney.without_custom_fields do
         vehicle_journeys.each_instance(block_size: 10_000).each_slice(1000) do |slice|
@@ -1655,36 +1656,34 @@ class Export::NetexGeneric < Export::Base
           # Read cache
           vehicle_journeys_xml = cache.read_multi(*vehicle_journeys_by_cache_key.keys)
 
+          vehicle_journey_count += slice.size
+          cache_hit += vehicle_journeys_xml.size
+
           vehicle_journey_processed_ids = []
 
           # Process all cache entries
           vehicle_journeys_xml.each do |cache_key, vehicle_journey_xml|
-            if vehicle_journey_xml.present?
-              vehicle_journey = vehicle_journeys_by_cache_key[cache_key]
-              code = code_provider.vehicle_journeys.code(vehicle_journey)
+            vehicle_journey = vehicle_journeys_by_cache_key[cache_key]
+            code = code_provider.vehicle_journeys.code(vehicle_journey)
 
-              tags = resource_tagger.tags_for(vehicle_journey.line_id)
-              tagged_target = TaggedTarget.new(target, tags)
+            tags = resource_tagger.tags_for(vehicle_journey.line_id)
+            tagged_target = TaggedTarget.new(target, tags)
 
-              netex_service_journey = Netex::ServiceJourney.new
-              netex_service_journey.id = code
-              netex_service_journey.raw_xml = vehicle_journey_xml
+            netex_service_journey = Netex::ServiceJourney.new
+            netex_service_journey.id = code
+            netex_service_journey.raw_xml = vehicle_journey_xml
 
-              tagged_target << netex_service_journey
+            tagged_target << netex_service_journey
 
-              vehicle_journey_processed_ids << vehicle_journey.id
-              cache_hit += 1
-            else
-              cache_miss += 1
-            end
+            vehicle_journey_processed_ids << vehicle_journey.id
           end
 
           export.exportables.processed(Chouette::VehicleJourney, vehicle_journey_processed_ids)
         end
       end
 
-      rate = (cache_miss+cache_hit > 0) ? (cache_hit / (cache_miss+cache_hit) * 100).to_i : 0
-      logger.info "Cache hit: #{cache_hit}, Cache miss: #{cache_miss}, Hit rate: #{rate}%"
+      rate = (vehicle_journey_count > 0) ? (cache_hit.to_f / vehicle_journey_count * 100).to_i : 0
+      logger.info "Cache hit: #{cache_hit}, Vehicle Journey Count: #{vehicle_journey_count}, Hit rate: #{rate}%"
     end
 
     def vehicle_journeys

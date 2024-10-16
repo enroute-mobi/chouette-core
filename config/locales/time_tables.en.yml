@@ -20,7 +20,6 @@ en:
       add_period: "Add a period"
       add_date: "Add a peculiar date"
       add_excluded_date: "Add an excluded date"
-      add_code: 'Add a code'
     actualize:
       success: "Actualize succeded"
     new:

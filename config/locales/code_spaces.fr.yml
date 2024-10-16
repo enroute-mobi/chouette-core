@@ -16,6 +16,7 @@ fr:
         code:
           duplicate_code_spaces_in_codes: "L'Espace de Codage \"%{code_space}\" n'autorise pas plusieurs valeurs pour un même modèle"
           duplicate_values_in_codes: La valeur de clé en double viole la contrainte unique
+          blank:  La valeur du code ne peut pas être vide
   code_spaces:
     actions:
       new: Ajouter un Espace de Code

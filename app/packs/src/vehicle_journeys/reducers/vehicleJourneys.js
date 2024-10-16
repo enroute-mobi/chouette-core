@@ -127,7 +127,6 @@ const vehicleJourney= (state = {}, action, keep) => {
         footnotes: [],
         time_tables: [],
         line_notices: [],
-        ignored_routing_contraint_zone_ids: [],
         vehicle_journey_at_stops: pristineVjasList,
         selected: false,
         deletable: false,
@@ -267,23 +266,6 @@ export default function vehicleJourneys(state = [], action) {
           action.vehicleJourneys.map((vjm, j) => {
             if(vj.objectid == vjm.objectid){
               updatedVJ.time_tables =  newTimetables
-            }
-          })
-          return updatedVJ
-        }else{
-          return vj
-        }
-      })
-    case 'EDIT_VEHICLEJOURNEYS_CONSTRAINT_ZONES':
-      let newExclusions = JSON.parse(JSON.stringify(action.zones))
-      let newStopAreasExclusions = JSON.parse(JSON.stringify(action.stop_area_constraints))
-      return state.map((vj,i) => {
-        if(vj.selected){
-          let updatedVJ = _.assign({}, vj)
-          action.vehicleJourneys.map((vjm, j) => {
-            if(vj.objectid == vjm.objectid){
-              updatedVJ.ignored_routing_contraint_zone_ids =  newExclusions
-              updatedVJ.ignored_stop_area_routing_constraint_ids =  newStopAreasExclusions
             }
           })
           return updatedVJ

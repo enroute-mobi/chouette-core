@@ -99,7 +99,6 @@ RSpec.describe Merge do
             vehicle_journey.time_tables << specific_time_table
             vehicle_journey.time_tables << distant_future_table
             vehicle_journey.time_tables << one_day_remanining_table
-            vehicle_journey.update ignored_routing_contraint_zone_ids: @routing_constraint_zones[vehicle_journey.route.id].values.map(&:id)
 
             if footnote = footnotes[vehicle_journey.route.line.id].sample
               vehicle_journey.footnotes << footnote
@@ -165,10 +164,6 @@ RSpec.describe Merge do
           new_constraint_zone = route.routing_constraint_zones.where(checksum: checksum).last
           expect(new_constraint_zone).to be_present
           expect(new_constraint_zone.stop_points.map(&:registration_number)).to eq stop_points[checksum]
-        end
-
-        route.vehicle_journeys.each do |vehicle_journey|
-          expect(vehicle_journey.ignored_routing_contraint_zones.size).to eq vehicle_journey.ignored_routing_contraint_zone_ids.size
         end
 
         expect(route.opposite_route&.checksum).to eq(old_opposite_route&.checksum)

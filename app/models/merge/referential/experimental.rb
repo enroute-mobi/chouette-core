@@ -75,8 +75,6 @@ module Merge::Referential
           vehicle_journey.journey_pattern_id = vehicle_journey_merge.existing_journey_pattern_id
           vehicle_journey.route_id = vehicle_journey_merge.existing_route_id
 
-          vehicle_journey.ignored_routing_contraint_zone_ids = vehicle_journey_merge.existing_ignored_routing_contraint_zone_ids
-
           referential_inserter.vehicle_journeys << vehicle_journey
         end
       end
@@ -96,7 +94,6 @@ module Merge::Referential
 
         attr_accessor :vehicle_journey, :existing_objectid, :existing_journey_pattern_id, :existing_route_id
         alias existing_objectid? existing_objectid
-        attr_accessor :existing_ignored_routing_contraint_zone_ids
 
       end
 
@@ -108,11 +105,6 @@ module Merge::Referential
           @route_and_journey_patterns ||= RouteAndJourneyPatterns.new(self)
         end
         delegate :existing_route_id, :existing_journey_pattern_id, to: :route_and_journey_patterns
-
-        def ignored_routing_contraint_zones
-          @ignored_routing_contraint_zones ||= IgnoredRoutingContraintZones.new(self)
-        end
-        delegate :existing_ignored_routing_contraint_zone_ids, to: :ignored_routing_contraint_zones
 
         def object_ids
           @duplicated_object_ids ||= ExistingObjectIDs.new(self)
@@ -126,9 +118,6 @@ module Merge::Referential
             merge.existing_objectid = existing_objectid?(vehicle_journey.id)
             merge.existing_route_id = existing_route_id(vehicle_journey.route_id)
             merge.existing_journey_pattern_id = existing_journey_pattern_id(vehicle_journey.journey_pattern_id)
-
-            merge.existing_ignored_routing_contraint_zone_ids =
-              existing_ignored_routing_contraint_zone_ids(vehicle_journey.ignored_routing_contraint_zone_ids)
 
             yield merge
           end
@@ -178,30 +167,6 @@ module Merge::Referential
 
         def existing_journey_pattern_id(vehicle_journey_id)
           existing_journey_pattern_ids.fetch vehicle_journey_id
-        end
-
-      end
-
-      class IgnoredRoutingContraintZones < BatchAssociation
-
-        include Sanitizer
-
-        def ignored_routing_contraint_zone_ids
-          @ignored_routing_contraint_zone_ids ||= vehicle_journeys.map(&:ignored_routing_contraint_zone_ids).flatten.uniq
-        end
-
-        def rows
-          source.routing_constraint_zones.
-            joins(sanitize_joins("LEFT OUTER JOIN \":new_slug\".routing_constraint_zones as existing_routing_constraint_zones ON routing_constraint_zones.checksum = existing_routing_constraint_zones.checksum")).
-            where(id: ignored_routing_contraint_zone_ids).pluck("routing_constraint_zones.id", "existing_routing_constraint_zones.id")
-        end
-
-        def all_existing_ignored_routing_contraint_zone_ids
-          @existing_ignored_routing_contraint_zone_ids ||= Hash[rows]
-        end
-
-        def existing_ignored_routing_contraint_zone_ids(ignored_routing_contraint_zone_ids)
-          all_existing_ignored_routing_contraint_zone_ids.values_at(*ignored_routing_contraint_zone_ids).compact
         end
 
       end

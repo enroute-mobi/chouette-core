@@ -151,7 +151,6 @@ describe('vehicleJourneys reducer', () => {
         selectedCompany: fakeSelectedCompany
       })
     ).toEqual([{
-      ignored_routing_contraint_zone_ids: [],
       journey_pattern: fakeSelectedJourneyPattern,
       company: fakeSelectedCompany,
       published_journey_name: 'test',
@@ -290,7 +289,6 @@ describe('vehicleJourneys reducer', () => {
         selectedCompany: fakeSelectedCompany
       })
     ).toEqual([{
-      ignored_routing_contraint_zone_ids: [],
       journey_pattern: fakeSelectedJourneyPattern,
       company: fakeSelectedCompany,
       published_journey_name: 'test',
@@ -419,7 +417,6 @@ describe('vehicleJourneys reducer', () => {
         selectedCompany: fakeSelectedCompany
       })
     ).toEqual([{
-      ignored_routing_contraint_zone_ids: [],
       journey_pattern: fakeSelectedJourneyPattern,
       company: fakeSelectedCompany,
       published_journey_name: 'test',
@@ -539,7 +536,6 @@ describe('vehicleJourneys reducer', () => {
         selectedCompany: fakeSelectedCompany
       })
     ).toEqual([{
-      ignored_routing_contraint_zone_ids: [],
       journey_pattern: fakeSelectedJourneyPattern,
       company: fakeSelectedCompany,
       published_journey_name: 'test',
@@ -665,7 +661,6 @@ describe('vehicleJourneys reducer', () => {
         selectedCompany: fakeSelectedCompany
       })
     ).toEqual([{
-      ignored_routing_contraint_zone_ids: [],
       journey_pattern: fakeSelectedJourneyPattern,
       company: fakeSelectedCompany,
       published_journey_name: 'test',
@@ -758,7 +753,6 @@ describe('vehicleJourneys reducer', () => {
       short_id: '',
       objectid: '',
       footnotes: [],
-      ignored_routing_contraint_zone_ids: [],
       time_tables: [],
       referential_codes: [],
       line_notices: [],
@@ -844,7 +838,6 @@ describe('vehicleJourneys reducer', () => {
       short_id: '',
       objectid: '',
       footnotes: [],
-      ignored_routing_contraint_zone_ids: [],
       time_tables: [],
       referential_codes: [],
       line_notices: [],

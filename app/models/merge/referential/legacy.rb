@@ -514,8 +514,7 @@ class Merge::Referential::Legacy < Merge::Referential::Base
 
               # all other primary must be changed
               route_id: existing_associated_journey_pattern.route_id,
-              journey_pattern_id: existing_associated_journey_pattern.id,
-              ignored_routing_contraint_zone_ids: []
+              journey_pattern_id: existing_associated_journey_pattern.id
             )
             new_vehicle_journey = new.vehicle_journeys.build attributes
 
@@ -538,8 +537,6 @@ class Merge::Referential::Legacy < Merge::Referential::Base
               new_vehicle_journey.footnotes << associated_footnote
             end
 
-            # Rewrite ignored_routing_contraint_zone_ids
-            new_vehicle_journey.ignored_routing_contraint_zone_ids = referential_routing_constraint_zones_new_ids.values_at(*vehicle_journey.ignored_routing_contraint_zone_ids).compact
             save_model! new_vehicle_journey
 
             if new_vehicle_journey.checksum != vehicle_journey.checksum

@@ -75,47 +75,6 @@ export default function modal(state = {}, action) {
         },
         confirmModal: {}
       }
-    case 'EDIT_CONSTRAINT_EXCLUSIONS_VEHICLEJOURNEY_MODAL':
-      var vehicleJourneys = JSON.parse(JSON.stringify(action.vehicleJourneys))
-      let uniqExclusions = []
-      let uniqStopAreasExclusions = []
-      vehicleJourneys.map((vj, i) => {
-        if(vj.ignored_routing_contraint_zone_ids){
-          vj.ignored_routing_contraint_zone_ids.map((exclusion, j) =>{
-            let found = false
-            uniqExclusions.map((id, i)=>{
-              if(id == parseInt(exclusion)){
-                found = true
-              }
-            })
-            if(!found){
-              uniqExclusions.push(parseInt(exclusion))
-            }
-          })
-        }
-        if(vj.ignored_stop_area_routing_constraint_ids){
-          vj.ignored_stop_area_routing_constraint_ids.map((exclusion, j) =>{
-            let found = false
-            uniqStopAreasExclusions.map((id, i)=>{
-              if(id == parseInt(exclusion)){
-                found = true
-              }
-            })
-            if(!found){
-              uniqStopAreasExclusions.push(parseInt(exclusion))
-            }
-          })
-        }
-      })
-      return {
-        type: 'constraint_exclusions_edit',
-        modalProps: {
-          vehicleJourneys: vehicleJourneys,
-          selectedConstraintZones: uniqExclusions,
-          selectedStopAreasConstraints: uniqStopAreasExclusions
-        },
-        confirmModal: {}
-      }
     case 'SELECT_CP_EDIT_MODAL':
       vehicleJourney =  _.assign({}, state.modalProps.vehicleJourney, {company: action.selectedItem})
       newModalProps = _.assign({}, state.modalProps, {vehicleJourney})

@@ -12,8 +12,6 @@ import DuplicateVehicleJourney from '../containers/tools/DuplicateVehicleJourney
 import EditVehicleJourney from '../containers/tools/EditVehicleJourney'
 import NotesEditVehicleJourney from '../containers/tools/NotesEditVehicleJourney'
 import TimetablesEditVehicleJourney from '../containers/tools/TimetablesEditVehicleJourney'
-import ConstraintExclusionEditVehicleJourney from '../containers/tools/ConstraintExclusionEditVehicleJourney'
-
 
 export default class Tools extends Component {
   constructor(props) {
@@ -49,9 +47,6 @@ export default class Tools extends Component {
           { !selectionMode && <EditVehicleJourney disabled={hasDeletedVJ()}/> }
 
           { !selectionMode && <TimetablesEditVehicleJourney disabled={hasDeletedVJ()}/> }
-          { !selectionMode && hasFeature('routing_constraint_zone_exclusion_in_vehicle_journey') &&
-            <ConstraintExclusionEditVehicleJourney disabled={hasDeletedVJ()} stopAreasConstraints={hasFeature('stop_area_routing_constraints')} />
-          }
           { !selectionMode && <NotesEditVehicleJourney disabled={hasDeletedVJ()}/> }
           { !selectionMode && <DeleteVehicleJourneys disabled={!hasPolicy("destroy") || !editMode || hasDeletedVJ()}/> }
           { selectionMode && <CopyButton disabled={!selection.locked} toggleArrivals={toggleArrivals} /> }

@@ -165,7 +165,7 @@ en:
       air: Air
       bus: Bus
       coach: Coach
-      funicular: funicular
+      funicular: Funicular
       metro: Metro
       other: Other
       self_drive: Self drive
@@ -223,7 +223,7 @@ en:
       commuter_coach: Commuter coach
       all_coach_services: All coach services
     funicular:
-      funicular: funicular
+      funicular: Funicular
       street_cable_car: Street cable car
       all_funicular_services: All funicular services
     metro:

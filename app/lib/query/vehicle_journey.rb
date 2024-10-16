@@ -5,18 +5,19 @@ module Query
     def text(value)
       change_scope(if: value.present?) do |scope|
         column_names = column_names(scope)
-        scope = scope.select(*column_names).from(custom_from(scope, column_names))
+        custom_scope = scope.select(*column_names).from(custom_from(scope, column_names)).distinct
 
-        published_journey_name = scope.arel_table[:published_journey_name]
-        published_journey_identifier = scope.arel_table[:published_journey_identifier]
-        objectid = scope.arel_table[:objectid]
-        code = scope.arel_table[:code]
+        published_journey_name = custom_scope.arel_table[:published_journey_name]
+        published_journey_identifier = custom_scope.arel_table[:published_journey_identifier]
+        objectid = custom_scope.arel_table[:objectid]
+        code = custom_scope.arel_table[:code]
+        ids = custom_scope.where(published_journey_name.matches("%#{value}%"))
+                          .or(custom_scope.where(objectid.matches("%#{value}%")))
+                          .or(custom_scope.where(published_journey_identifier.matches("%#{value}%")))
+                          .or(custom_scope.where(code.matches("%#{value}%")))
+                          .pluck(:id)
 
-        scope.where(published_journey_name.matches("%#{value}%"))
-             .or(scope.where(objectid.matches("%#{value}%")))
-             .or(scope.where(published_journey_identifier.matches("%#{value}%")))
-             .or(scope.where(code.matches("%#{value}%")))
-             .distinct
+        scope.where(id: ids)
       end
     end
 

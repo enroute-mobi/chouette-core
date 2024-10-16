@@ -458,6 +458,29 @@ class Import::Gtfs < Import::Base
     @lines_by_registration_number[registration_number] ||= line
   end
 
+  def transport_modes
+    @transport_modes ||= {
+      0 => 'tram',
+      1 => 'metro',
+      2 => 'rail',
+      3 => 'bus',
+      4 => 'water',
+      5 => 'funicular/streetCableCar',
+      6 => 'telecabin',
+      7 => 'funicular',
+      11 => 'trolleyBus',
+      12 => 'rail/monorail',
+      100 => 'rail',
+      103 => 'rail/interregionalRail',
+      200 => 'coach',
+      204 => 'coach/regionalCoach',
+      205 => 'coach/specialCoach',
+      208 => 'coach/commuterCoach',
+      700 => 'bus',
+      713 => 'bus/schoolAndPublicServiceBus'
+    }.transform_keys(&:to_s).transform_values { |definition| Chouette::TransportMode.from(definition) }
+  end
+
   def import_routes
     @lines_by_registration_number = {}
 
@@ -481,37 +504,9 @@ class Import::Gtfs < Import::Base
 
         line.comment = route.desc
 
-        transport_mode, transport_submode =
-          case route.type
-          when '0', '5'
-            'tram'
-          when '1'
-            'metro'
-          when '2', '100'
-            'rail'
-          when '3', '700'
-            'bus'
-          when '7'
-            'funicular'
-          when '103'
-            [ 'rail', 'interregionalRail' ]
-          when '204'
-            [ 'coach', 'regionalCoach' ]
-          when '205'
-            [ 'coach', 'specialCoach' ]
-          when '208'
-            [ 'coach', 'commuterCoach' ]
-          when '200'
-            'coach'
-          when '713'
-            [ 'bus', 'schoolAndPublicServiceBus' ]
-          end
-
-        transport_submode ||= 'undefined'
-
+        transport_mode = transport_modes[route.type]
         if transport_mode
-          line.transport_mode = transport_mode
-          line.transport_submode = transport_submode
+          line.chouette_transport_mode = transport_mode
         end
 
         # White is the default color in the gtfs spec

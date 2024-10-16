@@ -2,10 +2,9 @@
 
 .page_content
   .container-fluid
-    - if params[:q].present? or @line_notices.any?
-      .row
-        .col-lg-12
-          = render 'line_notices/filters', search_url: [@workbench, :line_referential, :line_notices]
+    .row
+      .col-lg-12
+        = render 'line_notices/filters'
     - if @line_notices.any?
       .row
         .col-lg-12

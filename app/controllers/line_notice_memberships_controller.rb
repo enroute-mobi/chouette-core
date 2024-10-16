@@ -9,7 +9,7 @@ class LineNoticeMembershipsController < Chouette::LineReferentialController
     index! do |format|
       format.html do
         @line_notice_memberships = LineNoticeMembershipDecorator.decorate(
-          @line_notice_memberships.includes(:line_notice),
+          collection.includes(:line_notice),
           context: {
             workbench: workbench,
             line_referential: line_referential,
@@ -56,19 +56,16 @@ class LineNoticeMembershipsController < Chouette::LineReferentialController
     super.decorate(context: { workbench: workbench, line_referential: line_referential, line: line })
   end
 
-  def sort_column
-    line.line_notices.column_names.include?(params[:sort]) ? params[:sort] : 'line_notices_lines.id'
+  def scope
+    parent.line_notice_memberships
   end
 
-  def sort_direction
-    %w[asc desc].include?(params[:direction]) ? params[:direction] : 'asc'
+  def search
+    @search ||= Search::LineNoticeMembership.from_params(params, workbench: workbench)
   end
 
   def collection
-    @line_notice_memberships ||= begin # rubocop:disable Naming/MemoizedInstanceVariableName
-      @q = line.line_notice_memberships.joins(:line_notice).ransack(params[:q])
-      @q.result(distinct: true).order(sort_column => sort_direction).paginate(page: params[:page])
-    end
+    @collection ||= search.search scope
   end
 
   def resource_params_method_name

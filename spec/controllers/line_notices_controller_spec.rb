@@ -65,27 +65,6 @@ RSpec.describe LineNoticesController, type: :controller do
       expect(response).to be_successful
       expect(assigns(:line_notices)).to match_array(line_notices)
     end
-
-    context 'with filters' do
-      context 'on title or content' do
-        let(:index_params) { base_params.merge({ q: { title_or_content_cont: line_notices.first.title } }) }
-
-        it 'filters' do
-          expect(response).to be_successful
-          expect(assigns(:line_notices)).to match_array([line_notices.first])
-        end
-      end
-
-      context 'by associated line id' do
-        let(:index_params) { base_params.merge({ q: { lines_id_eq: line_notices.last.lines.first.id } }) }
-
-        it 'filters' do
-          expect(response).to be_successful
-          expect(assigns(:line_notices)).to match_array([line_notices.last])
-          expect(assigns(:filtered_line)).to eq(line_notices.last.lines.first)
-        end
-      end
-    end
   end
 
   describe 'GET #new' do

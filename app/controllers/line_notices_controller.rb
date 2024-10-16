@@ -7,15 +7,12 @@ class LineNoticesController < Chouette::LineReferentialController
     index! do |format|
       format.html do
         @line_notices = LineNoticeDecorator.decorate(
-          @line_notices,
+          collection,
           context: {
             workbench: workbench,
             line_referential: line_referential
           }
         )
-        if params[:q] && params[:q][:lines_id_eq].present?
-          @filtered_line = Chouette::Line.find(params[:q][:lines_id_eq])
-        end
       end
     end
   end
@@ -26,25 +23,24 @@ class LineNoticesController < Chouette::LineReferentialController
     end
   end
 
+  protected
+
+  def scope
+    parent.line_notices
+  end
+
+  def search
+    @search ||= Search::LineNotice.from_params(params, workbench: workbench)
+  end
+
+  def collection
+    @collection ||= search.search scope
+  end
+
   private
 
   def resource
     super.decorate(context: { workbench: workbench, line_referential: line_referential })
-  end
-
-  def sort_column
-    line_referential.line_notices.column_names.include?(params[:sort]) ? params[:sort] : 'id'
-  end
-
-  def sort_direction
-    %w[asc desc].include?(params[:direction]) ? params[:direction] : 'asc'
-  end
-
-  def collection
-    @line_notices ||= begin
-      @q = line_referential.line_notices.ransack(params[:q])
-      @q.result(distinct: true).order(sort_column => sort_direction).paginate(page: params[:page])
-    end
   end
 
   def line_notice_params

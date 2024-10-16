@@ -76,17 +76,6 @@ RSpec.describe LineNoticeMembershipsController, type: :controller do
       expect(response).to be_successful
       expect(assigns(:line_notice_memberships).map(&:line_notice)).to match_array([*line_notices, other_line_notice])
     end
-
-    context 'with filters' do
-      context 'on title or content' do
-        let(:index_params) { base_params.merge({ q: { title_or_content_cont: line_notices.first.title } }) }
-
-        it 'filters' do
-          expect(response).to be_successful
-          expect(assigns(:line_notice_memberships).map(&:line_notice)).to match_array([line_notices.first])
-        end
-      end
-    end
   end
 
   describe 'GET #new' do

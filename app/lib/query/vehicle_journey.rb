@@ -11,11 +11,11 @@ module Query
         published_journey_identifier = custom_scope.arel_table[:published_journey_identifier]
         objectid = custom_scope.arel_table[:objectid]
         code = custom_scope.arel_table[:code]
-        ids = custom_scope.where(published_journey_name.matches("%#{value}%"))
-                          .or(custom_scope.where(objectid.matches("%#{value}%")))
-                          .or(custom_scope.where(published_journey_identifier.matches("%#{value}%")))
-                          .or(custom_scope.where(code.matches("%#{value}%")))
-                          .pluck(:id)
+        custom_scope = custom_scope.where(published_journey_name.matches("%#{value}%"))
+                                   .or(custom_scope.where(objectid.matches("%#{value}%")))
+                                   .or(custom_scope.where(published_journey_identifier.matches("%#{value}%")))
+                                   .or(custom_scope.where(code.matches("%#{value}%")))
+        ids = scope.select(:id).from("(#{custom_scope.to_sql}) AS vehicle_journeys")
 
         scope.where(id: ids)
       end

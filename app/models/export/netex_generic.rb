@@ -2013,29 +2013,28 @@ class Export::NetexGeneric < Export::Base
         tags = resource_tagger.tags_for(vehicle_journey_at_stop_assignment.line_id)
         tagged_target = TaggedTarget.new(target, tags)
 
-        netex_resource = Decorator.new(vehicle_journey_at_stop_assignment).netex_resource
-        tagged_target << netex_resource
+        tagged_target << decorate(vehicle_journey_at_stop_assignment).netex_resource
       end
     end
 
     def vehicle_journey_at_stops
       export_scope.vehicle_journey_at_stops.where.not(stop_area: nil)
-                  .joins(:stop_point, :stop_area, vehicle_journey: :route)
+                  .joins(:stop_point, vehicle_journey: :route)
                   .select(*selected_columns)
     end
 
     def selected_columns
       [
-       'vehicle_journeys.objectid AS vehicle_journey_objectid',
+       'vehicle_journey_at_stops.vehicle_journey_id AS vehicle_journey_id',
        "COALESCE(vehicle_journeys.data_source_ref, 'none') AS vehicle_journey_data_source_ref",
        'stop_points.objectid AS stop_point_objectid',
-       'stop_areas.objectid AS stop_area_objectid',
+       'vehicle_journey_at_stops.stop_area_id AS stop_area_id',
        'stop_points.position AS stop_point_position',
        'routes.line_id as line_id'
       ]
     end
 
-    class Decorator < SimpleDelegator
+    class Decorator < ModelDecorator
       def netex_attributes
         {
           id: objectid,
@@ -2056,23 +2055,23 @@ class Export::NetexGeneric < Export::Base
       end
 
       def stop_point_position
-        __getobj__.try(:stop_point_position) || stop_point&.position
+        model.try(:stop_point_position) || stop_point&.position
       end
 
       def stop_point_objectid
-        __getobj__.try(:stop_point_objectid) || stop_point&.objectid
+        model.try(:stop_point_objectid) || stop_point&.objectid
       end
 
       def stop_area_objectid
-        __getobj__.try(:stop_area_objectid) || stop_area&.objectid
+        code_provider.stop_areas.code(model.try(:stop_area_id)) || stop_area&.objectid
       end
 
       def vehicle_journey_objectid
-        __getobj__.try(:vehicle_journey_objectid) || vehicle_journey&.objectid
+        code_provider.vehicle_journeys.code(model.try(:vehicle_journey_id)) || vehicle_journey&.objectid
       end
 
       def vehicle_journey_data_source_ref
-        loaded_value = __getobj__.try(:vehicle_journey_data_source_ref)
+        loaded_value = model.try(:vehicle_journey_data_source_ref)
         return nil if loaded_value == 'none'
 
         loaded_value || vehicle_journey&.data_source_ref

@@ -274,14 +274,14 @@ module Chouette
 
       class VehicleJourneyAtStopAssignment < Base
 
-        attr_accessor :vehicle_journey_objectid, :vehicle_journey_data_source_ref
-        attr_accessor :stop_point_objectid, :stop_area_objectid, :stop_point_position, :line_id
+        attr_accessor :vehicle_journey_id, :vehicle_journey_data_source_ref
+        attr_accessor :stop_point_objectid, :stop_area_id, :stop_point_position, :line_id
 
         def attributes=(attributes)
-          @vehicle_journey_objectid = attributes["vehicle_journey_objectid"]
+          @vehicle_journey_id = attributes["vehicle_journey_id"]
           @vehicle_journey_data_source_ref = attributes["vehicle_journey_data_source_ref"]
           @stop_point_objectid = attributes["stop_point_objectid"]
-          @stop_area_objectid = attributes["stop_area_objectid"]
+          @stop_area_id = attributes["stop_area_id"]
           @stop_point_position = attributes["stop_point_position"]
           @line_id = attributes["line_id"]
 

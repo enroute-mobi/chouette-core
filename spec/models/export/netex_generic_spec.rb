@@ -1336,8 +1336,9 @@ RSpec.describe Export::NetexGeneric do
     let(:vehicle_journeys) { context.vehicle_journeys }
     let(:vehicle_journey_at_stops) { vehicle_journeys.flat_map { |vj| vj.vehicle_journey_at_stops } }
     let(:line) { vehicle_journeys.first.line }
+    let(:referential) { context.referential }
 
-    before { context.referential.switch }
+    before { referential.switch }
 
     context 'when stop_area is present' do
       before do
@@ -1364,6 +1365,10 @@ RSpec.describe Export::NetexGeneric do
           expect(vjas_assignment.tag(:line_id)).to eq(line.objectid)
           expect(vjas_assignment.tag(:line_name)).to eq(line.name)
           expect(vjas_assignment.tag(:operator_name)).to eq(line.company.name)
+          expect(referential.stop_areas.find_by(objectid: vjas_assignment.quay_ref.ref)).to be_present
+          expect(
+            referential.vehicle_journeys.find_by(objectid: vjas_assignment.vehicle_journey_refs.map(&:ref))
+          ).to be_present
         end
       end
     end

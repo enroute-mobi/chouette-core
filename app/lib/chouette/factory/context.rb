@@ -97,7 +97,7 @@ module Chouette
       def resolve_instances(values)
         return nil if values.nil?
 
-        if values.respond_to?(:map) && !values.is_a?(Range)
+        if values.is_a?(Array)
           values.map do |value|
             resolve_instance value
           end

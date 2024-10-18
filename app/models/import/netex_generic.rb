@@ -43,6 +43,10 @@ module Import
       @shape_provider ||= workbench.default_shape_provider
     end
 
+    def fare_provider
+      @fare_provider || workbench.default_fare_provider
+    end
+
     def import_without_status
       [
         StopAreaReferential,
@@ -319,6 +323,20 @@ module Import
 
       def default_provider
         shape_provider
+      end
+    end
+
+    class FareReferential < SynchronizedPart
+      delegate :fare_provider, to: :import
+
+      def synchronization
+        Chouette::Sync::Referential.new(fare_provider).tap do |sync|
+          sync.synchronize_with Chouette::Sync::FareZone::Netex
+        end
+      end
+
+      def default_provider
+        fare_provider
       end
     end
 

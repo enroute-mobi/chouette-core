@@ -9,7 +9,7 @@ module CustomFieldsSupport
       if current_workgroup != workgroup
         raise "Two different current workgroups: current:#{current_workgroup.id} wanted:#{workgroup.id}"
       end
-      Rails.logger.info "within_workgroup used twice"
+      Rails.logger.debug "within_workgroup used twice"
       return yield
     end
 

@@ -51,15 +51,10 @@ class Referential < ApplicationModel
 
   belongs_to :organisation
   validates_presence_of :organisation
-  validate def validate_consistent_organisation
-    return true if workbench_id.nil?
-    ids = [workbench.organisation_id, organisation_id]
-    return true if ids.first == ids.last
-    errors.add(:inconsistent_organisation,
-               I18n.t('referentials.errors.inconsistent_organisation',
-                      indirect_name: workbench.name,
-                      direct_name: organisation.name))
-  end, if: :organisation
+
+  before_validation do |referential|
+    referential.organisation ||= workbench&.organisation || workgroup&.owner
+  end
 
   belongs_to :line_referential
   validates_presence_of :line_referential

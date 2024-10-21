@@ -202,22 +202,19 @@ module Export::Scope
     end
 
     def routes
-      current_scope.routes.joins(:vehicle_journeys).distinct
-                   .where('vehicle_journeys.id' => final_scope_vehicle_journeys)
+      current_scope.routes.where(id: final_scope_vehicle_journeys.select(:route_id).distinct)
     end
 
     def journey_patterns
-      current_scope.journey_patterns.joins(:vehicle_journeys).distinct
-                   .where('vehicle_journeys.id' => final_scope_vehicle_journeys)
+      current_scope.journey_patterns.where(id: final_scope_vehicle_journeys.select(:journey_pattern_id).distinct)
     end
 
     def shapes
-      current_scope.shapes.where(id: journey_patterns.select(:shape_id))
+      current_scope.shapes.where(id: journey_patterns.select(:shape_id).distinct)
     end
 
     def stop_points
-      current_scope.stop_points.distinct.joins(route: :vehicle_journeys)
-                   .where('vehicle_journeys.id' => final_scope_vehicle_journeys)
+      current_scope.stop_points.distinct.where(route_id: routes)
     end
 
     def stop_areas

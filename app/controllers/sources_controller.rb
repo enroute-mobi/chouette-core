@@ -81,6 +81,8 @@ class SourcesController < Chouette::WorkbenchController
       :created_at,
       :updated_at,
       :downloader_type,
+      :downloader_option_username,
+      :downloader_option_password,
       :downloader_option_raw_authorization,
       :retrieval_time_of_day,
       :retrieval_frequency,

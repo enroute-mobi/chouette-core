@@ -5,3 +5,4 @@
   // | window.I18n = #{(I18n.backend.send(:translations)[I18n.locale].to_json).html_safe};
   | window.timetablesUrl = "#{workbench_calendar_path(@workbench, @calendar).html_safe}";
   | window.redirectUrl = "#{redirect_url}";
+  | window.available_code_spaces = #{(@workbench.workgroup&.code_spaces.to_json)&.html_safe};

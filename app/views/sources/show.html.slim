@@ -10,6 +10,13 @@
           = d.attribute :name
           = d.attribute :url, as: :url
           = d.attribute :downloader_type, as: :enumerize
+          - case @source.downloader_type
+          - when 'authorization'
+            = d.attribute :downloader_option_raw_authorization, value: @source.downloader_option_raw_authorization.present? ? '•••••' : ''
+          - when 'french_nap'
+          - else
+            = d.attribute :downloader_option_username
+            = d.attribute :downloader_option_password, value: @source.downloader_option_password.present? ? '•••••' : ''
 
       .col-lg-6.col-md-6.col-sm-12.col-xs-12
         = simple_block_for @source, title: t('sources.form.sections.import_options') do |d|

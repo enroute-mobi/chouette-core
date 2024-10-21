@@ -1506,6 +1506,8 @@ class Export::NetexGeneric < Export::Base
     delegate :stop_points, to: :export_scope
 
     def export_part
+      prefetch_codes
+
       stop_points.joins(:route, :stop_area).select(selected).find_each_light do |stop_point|
         tags = resource_tagger.tags_for(stop_point.line_id)
         tagged_target = TaggedTarget.new(target, tags)
@@ -1517,6 +1519,11 @@ class Export::NetexGeneric < Export::Base
         tagged_target <<
           decorate(stop_point, with: StopPointDecorator::RoutePoint).route_point
       end
+    end
+
+    def prefetch_codes
+      # Requires to avoid conflict in query contexts between find_each_light and
+      code_provider.collection("stop_points")
     end
 
     private

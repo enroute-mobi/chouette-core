@@ -220,8 +220,8 @@ module Chouette
               if code_space.allow_multiple_values
                 model.codes.find_or_initialize_by code_space: code_space, value: value
               elsif (code = model.codes.find_by(code_space: code_space))
-                code.value = value
-                model.codes = [code]
+                code.update value: value
+                model.codes = model.codes.where.not(code_space: code_space) + [code]
               else
                 model.codes.new code_space: code_space, value: value
               end

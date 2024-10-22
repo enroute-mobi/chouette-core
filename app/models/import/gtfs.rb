@@ -793,7 +793,7 @@ class Import::Gtfs < Import::Base
 
     attr_reader :stop_times
 
-    delegate :each, :length, to: :stop_ids
+    delegate :each, :length, :[], to: :stop_ids
 
     def route_signature
       [ route_id, direction_id ]
@@ -969,7 +969,7 @@ class Import::Gtfs < Import::Base
       attr_reader :stop_sequence, :children
 
       def include?(candidate_sequence)
-        candidate_enumerator = candidate_sequence.each
+        candidate_enumerator = Nest::NonFiberEnumerator.new(candidate_sequence)
         candidate_stop = candidate_enumerator.next
 
         stop_sequence.each do |stop|
@@ -1104,7 +1104,7 @@ class Import::Gtfs < Import::Base
       def journey_pattern_stop_points
         # WARNING
         # looking for StopPoint using only stop_id would create bugs when a Loop is present
-        stop_point_enumerator = route_decorator.stop_points.each
+        stop_point_enumerator = Nest::NonFiberEnumerator.new(route_decorator.stop_points)
 
         stop_ids.map do |stop_id|
           next_route_stop_point = stop_point_enumerator.next

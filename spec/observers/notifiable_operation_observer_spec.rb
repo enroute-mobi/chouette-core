@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 RSpec.describe NotifiableOperationObserver do
   let(:context) do
     Chouette.create { workbench }
@@ -5,6 +7,12 @@ RSpec.describe NotifiableOperationObserver do
   let(:workbench) { context.workbench }
 
   subject { NotifiableOperationObserver.instance }
+
+  describe '.observed_classes' do
+    subject { described_class.observed_classes }
+
+    it { is_expected.to match_array([Export::Gtfs, Export::NetexGeneric, Import::Workbench, Aggregate, Merge]) }
+  end
 
   describe "after_update" do
     [

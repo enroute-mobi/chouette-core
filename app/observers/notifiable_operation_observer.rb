@@ -1,5 +1,7 @@
+# frozen_string_literal: true
+
 class NotifiableOperationObserver < ActiveRecord::Observer
-  observe Export::Gtfs, Export::NetexGeneric, Import::Workbench, Aggregate, Merge
+  observe :'export/gtfs', :'export/netex_generic', :'import/workbench', :aggregate, :merge
 
   def after_update(operation)
     return unless email_sendable_for?(operation)

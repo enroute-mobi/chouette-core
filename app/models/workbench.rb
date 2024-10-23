@@ -118,9 +118,8 @@ class Workbench < ApplicationModel
         .referentials
         .joins(:metadatas)
         .where(['referential_metadata.line_ids && ARRAY[?]::bigint[]', line_ids])
-        .not_in_referential_suite.pluck(:id).uniq
+        .not_in_referential_suite.select(:id).distinct
       )
-
     end
   end
 

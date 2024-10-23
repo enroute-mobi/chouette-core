@@ -174,8 +174,21 @@ group :test do
   gem 'timecop'
   gem 'rspec-snapshot'
   gem 'rails-controller-testing', '>= 1.0.5'
+  gem 'rspec-rails', '>= 5.1.0'
+  gem 'capybara', '~> 3.15.1'
+  gem 'database_cleaner'
+  gem 'poltergeist', '>= 1.18.1'
   gem 'fuubar'
   gem 'rspec-benchmark'
+
+  gem 'webmock'
+  gem 'shoulda-matchers'
+  gem 'with_model'
+  gem 'factory_bot_rails', '~> 6.2.0' # Could not upgrade to another version without https://enroute.atlassian.net/browse/CHOUETTE-3190
+  gem 'faker'
+
+  gem 'teaspoon-jasmine', '>= 2.9.1'
+  gem 'phantomjs'
 
   gem 'rspec_junit_formatter'
   gem 'simplecov', require: false
@@ -183,32 +196,17 @@ group :test do
 end
 
 group :test, :development do
-  gem 'rspec-rails', '>= 5.1.0'
-  gem 'capybara', '~> 3.15.1'
-  gem 'database_cleaner'
-  gem 'poltergeist', '>= 1.18.1'
   gem 'stackprof'
-
-  gem 'webmock'
-  gem 'shoulda-matchers'
-  gem 'with_model'
 
   gem 'parallel_tests'
 
   gem 'letter_opener'
   gem 'letter_opener_web', '~> 1.4', '>= 1.4.1'
 
-  gem 'ffaker', '~> 2.1.0'
-  gem 'faker'
-
-  gem 'factory_bot_rails', '~> 6.2.0' # Could not upgrade to another version without https://enroute.atlassian.net/browse/CHOUETTE-3190
-
   gem 'awesome_print'
   gem 'pry-rails'
   gem 'pry-byebug'
 
-  gem 'teaspoon-jasmine', '>= 2.9.1'
-  gem 'phantomjs'
 
   gem 'dotenv-rails', '>= 2.7.6'
   gem 'bullet', '>= 7.1.6'

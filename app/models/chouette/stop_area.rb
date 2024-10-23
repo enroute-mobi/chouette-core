@@ -26,8 +26,6 @@ module Chouette
     enumerize :audible_signals_availability, in: %i(unknown yes no partial), default: :unknown
     enumerize :visual_signs_availability, in: %i(unknown yes no partial), default: :unknown
 
-    AVAILABLE_LOCALIZATIONS = %i(en_UK nl_NL de_DE fr_FR it_IT es_ES)
-
     # WARNING Only effective in the current Referential
     has_many :stop_points
     has_many :routes, through: :stop_points

@@ -140,6 +140,8 @@ module ChouetteIhm
       #     p.start_with?(Rails.root.join("spec/javascripts").to_s)
       # }
     end
+
+    config.stop_area_available_localizations = %i[en_UK nl_NL de_DE fr_FR it_IT es_ES]
   end
 end
 

@@ -41,7 +41,6 @@ fr:
       edit: "Editer ce jeu de données"
       clone: "Cloner ce jeu de données"
     errors:
-      inconsistent_organisation: "L'organisation asscociée par espace de travail est (%{indirect_name}), mais l'organisation associée directement est (%{direct_name}), elles doivent être identiques."
       validity_period: "Période de validité invalide"
       pg_excluded: "ne peut pas commencer par pg_ (valeurs réservées)"
       public_excluded: "public est une valeur réservée"

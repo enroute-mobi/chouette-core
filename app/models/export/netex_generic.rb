@@ -2019,7 +2019,7 @@ class Export::NetexGeneric < Export::Base
 
     def vehicle_journey_at_stops
       export_scope.vehicle_journey_at_stops.where.not(stop_area: nil)
-                  .joins(:stop_point, vehicle_journey: :route)
+                  .joins(:stop_point, :stop_area, vehicle_journey: :route)
                   .select(*selected_columns)
     end
 
@@ -2030,7 +2030,8 @@ class Export::NetexGeneric < Export::Base
        'stop_points.objectid AS stop_point_objectid',
        'vehicle_journey_at_stops.stop_area_id AS stop_area_id',
        'stop_points.position AS stop_point_position',
-       'routes.line_id as line_id'
+       'routes.line_id as line_id',
+       "(stop_areas.area_type = '#{Chouette::AreaType::QUAY}') AS is_quay"
       ]
     end
 
@@ -2040,10 +2041,8 @@ class Export::NetexGeneric < Export::Base
           id: objectid,
           data_source_ref: vehicle_journey_data_source_ref,
           scheduled_stop_point_ref: scheduled_stop_point_ref,
-          stop_place_ref: stop_place_ref,
-          quay_ref: quay_ref,
           vehicle_journey_refs: vehicle_journey_refs
-        }
+        }.merge(netex_stop_area_ref)
       end
 
       def netex_resource
@@ -2079,6 +2078,10 @@ class Export::NetexGeneric < Export::Base
 
       def scheduled_stop_point_ref
         Netex::Reference.new(stop_point_objectid, type: 'ScheduledStopPointRef')
+      end
+
+      def netex_stop_area_ref
+        model.is_quay ? { quay_ref: quay_ref } : { stop_place_ref: stop_place_ref }
       end
 
       def stop_place_ref

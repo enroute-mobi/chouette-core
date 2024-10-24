@@ -1341,34 +1341,75 @@ RSpec.describe Export::NetexGeneric do
     before { referential.switch }
 
     context 'when stop_area is present' do
-      before do
-        vehicle_journey_at_stops.each do |vjas|
-          vjas.update(stop_area: vjas.stop_point.stop_area)
-        end
-
-        export.resource_tagger.register_tags_for line
+      let(:vjas_assignments) do
+        target.resources.select { |r| r.is_a? Netex::VehicleJourneyStopAssignment }
       end
 
-      it 'should create a Netex::VehicleJourneyStopAssignment' do
-        part.export_part
+      describe Netex::VehicleJourneyStopAssignment do
+        before do
+          vehicle_journey_at_stops.each do |vjas|
+            vjas.update(stop_area: vjas.stop_point.stop_area)
+          end
 
-        vjas_assignments = target.resources.select { |r| r.is_a? Netex::VehicleJourneyStopAssignment }
+          export.resource_tagger.register_tags_for line
+          part.export_part
+        end
 
-        expect(vjas_assignments.count).to eq(vehicle_journey_at_stops.count)
+        it 'should create a Netex::VehicleJourneyStopAssignment' do
+          expect(vjas_assignments.count).to eq(vehicle_journey_at_stops.count)
 
-        vjas_assignments.each do |vjas_assignment|
-          expect(vjas_assignment.id).to include('VehicleJourneyStopAssignment')
-          expect(vjas_assignment.scheduled_stop_point_ref).to be_kind_of(Netex::Reference)
-          expect(vjas_assignment.quay_ref).to be_kind_of(Netex::Reference)
-          expect(vjas_assignment.vehicle_journey_refs).to be_kind_of(Array)
-          expect(vjas_assignment.vehicle_journey_refs.size).to eq(1)
-          expect(vjas_assignment.tag(:line_id)).to eq(line.objectid)
-          expect(vjas_assignment.tag(:line_name)).to eq(line.name)
-          expect(vjas_assignment.tag(:operator_name)).to eq(line.company.name)
-          expect(referential.stop_areas.find_by(objectid: vjas_assignment.quay_ref.ref)).to be_present
-          expect(
-            referential.vehicle_journeys.find_by(objectid: vjas_assignment.vehicle_journey_refs.map(&:ref))
-          ).to be_present
+          vjas_assignments.each do |vjas_assignment|
+            expect(vjas_assignment.id).to include('VehicleJourneyStopAssignment')
+            expect(vjas_assignment.scheduled_stop_point_ref).to be_kind_of(Netex::Reference)
+            expect(vjas_assignment.vehicle_journey_refs).to be_kind_of(Array)
+            expect(vjas_assignment.vehicle_journey_refs.size).to eq(1)
+            expect(vjas_assignment.tag(:line_id)).to eq(line.objectid)
+            expect(vjas_assignment.tag(:line_name)).to eq(line.name)
+            expect(vjas_assignment.tag(:operator_name)).to eq(line.company.name)
+            expect(
+              referential.vehicle_journeys.find_by(objectid: vjas_assignment.vehicle_journey_refs.map(&:ref))
+            ).to be_present
+          end
+        end
+      end
+
+      context 'when stop area is a quay' do
+        before do
+          vehicle_journey_at_stops.each do |vjas|
+            stop_area = vjas.stop_point.stop_area
+            stop_area.update area_type: Chouette::AreaType::QUAY
+            vjas.update(stop_area: vjas.stop_point.stop_area)
+          end
+  
+          export.resource_tagger.register_tags_for line
+          part.export_part
+        end
+        
+        it 'should create a Netex::VehicleJourneyStopAssignment with quay_ref' do
+          vjas_assignments.each do |vjas_assignment|
+            expect(vjas_assignment.quay_ref).to be_kind_of(Netex::Reference)
+            expect(vjas_assignment.stop_place_ref).not_to be_present
+          end
+        end
+      end
+
+      context 'when stop area is not a quay' do
+        before do
+          vehicle_journey_at_stops.each do |vjas|
+            stop_area = vjas.stop_point.stop_area
+            stop_area.update area_type: Chouette::AreaType::STOP_PLACE
+            vjas.update(stop_area: vjas.stop_point.stop_area)
+          end
+  
+          export.resource_tagger.register_tags_for line
+          part.export_part
+        end
+
+        it 'should create a Netex::VehicleJourneyStopAssignment with stop_place_ref' do
+          vjas_assignments.each do |vjas_assignment|
+            expect(vjas_assignment.stop_place_ref).to be_kind_of(Netex::Reference)
+            expect(vjas_assignment.quay_ref).not_to be_present
+          end
         end
       end
     end

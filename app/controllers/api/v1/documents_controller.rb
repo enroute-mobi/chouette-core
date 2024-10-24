@@ -21,12 +21,13 @@ class Api::V1::DocumentsController < Api::V1::WorkbenchController
       .except(:document_provider)
       .with_defaults(codes: [])
       .tap do |document_params|
-        document_params[:codes].each do |code|
-          code[:code_space_id] = current_workbench.workgroup.code_spaces.find_by(short_name: code.delete(:code_space))&.id
+        document_params[:codes].each do |(_,code)|
+          code["code_space_id"] = current_workbench.workgroup.code_spaces.find_by(short_name: code.delete(:code_space))&.id
         end
 
         document_params[:codes_attributes] = document_params.delete(:codes)
-        document_params[:document_type_id] = current_workbench.workgroup.document_types.find_by(short_name:  document_params.delete('document_type'))&.id
+        document_params[:validity_period_attributes] = document_params.delete(:validity_period)
+        document_params[:document_type_id] = current_workbench.workgroup.document_types.find_by(short_name: document_params.delete('document_type'))&.id
       end
   end
 
@@ -40,7 +41,7 @@ class Api::V1::DocumentsController < Api::V1::WorkbenchController
         :document_type,
         :document_provider,
         validity_period: [:from, :to],
-        codes: [:code_space, :value],
+        codes: [:code_space, :value]
       )
   end
 end

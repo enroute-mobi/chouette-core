@@ -22,8 +22,8 @@ class Api::V1::DocumentsController < Api::V1::WorkbenchController
         codes: ::ActionController::Parameters.new.permit!,
         validity_period: ::ActionController::Parameters.new.permit!
       ).tap do |document_params|
-        document_params[:codes].each do |(_,code)|
-          code["code_space_id"] = current_workbench.workgroup.code_spaces.find_by(short_name: code.delete(:code_space))&.id
+        document_params[:codes].each do |(_, code)|
+          code['code_space_id'] = current_workbench.workgroup.code_spaces.find_by(short_name: code.delete(:code_space))&.id
         end
         document_params[:document_provider] = document_provider
         document_params[:codes_attributes] = document_params.delete(:codes)

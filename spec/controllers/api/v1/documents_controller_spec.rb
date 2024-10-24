@@ -35,7 +35,7 @@ RSpec.describe Api::V1::DocumentsController, type: :controller do
                   from: '2022-06-17'
                 },
                 document_type: document_type.short_name,
-                codes: [{ code_space: code_space.short_name, value: 'test' }]
+                codes: { '0' => { code_space: code_space.short_name, value: 'test' } }
               },
               format: :json
             }

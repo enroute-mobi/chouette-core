@@ -18,13 +18,14 @@ class Api::V1::DocumentsController < Api::V1::WorkbenchController
 
   def document_attributes
     document_params
-      .except(:document_provider)
-      .with_defaults(codes: [])
-      .tap do |document_params|
+      .with_defaults(
+        codes: ::ActionController::Parameters.new.permit!,
+        validity_period: ::ActionController::Parameters.new.permit!
+      ).tap do |document_params|
         document_params[:codes].each do |(_,code)|
           code["code_space_id"] = current_workbench.workgroup.code_spaces.find_by(short_name: code.delete(:code_space))&.id
         end
-
+        document_params[:document_provider] = document_provider
         document_params[:codes_attributes] = document_params.delete(:codes)
         document_params[:validity_period_attributes] = document_params.delete(:validity_period)
         document_params[:document_type_id] = current_workbench.workgroup.document_types.find_by(short_name: document_params.delete('document_type'))&.id

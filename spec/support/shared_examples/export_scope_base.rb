@@ -43,11 +43,13 @@ RSpec.shared_examples_for 'Export::Scope::Base' do
 
   let(:scope) do
     case described_class.to_s
-    when 'Export::Scope::Lines' then Export::Scope::Scheduled.new(Export::Scope::Lines.new(default_scope,
-                                                                                           lines_in_scope))
-    when 'Export::Scope::DateRange' then Export::Scope::Scheduled.new(Export::Scope::DateRange.new(default_scope,
-                                                                                                   Time.zone.today..1.month.from_now.to_date))
-    when 'Export::Scope::Scheduled' then Export::Scope::Scheduled.new(default_scope)
+    when 'Export::Scope::Lines'
+      Export::Scope::Scheduled.new(Export::Scope::Lines.new(default_scope, lines_in_scope))
+    when 'Export::Scope::DateRange'
+      period = Time.zone.today..1.month.from_now.to_date
+      Export::Scope::Scheduled.new(Export::Scope::DateRange.new(default_scope, period))
+    when 'Export::Scope::Scheduled'
+      Export::Scope::Scheduled.new(default_scope)
     else
       raise 'Base sub class not supported'
     end

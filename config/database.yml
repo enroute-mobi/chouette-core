@@ -21,6 +21,7 @@ development:
 test: &test
   <<: *default
   database: <%= ENV.fetch('RAILS_DB_NAME','chouette2') + '-test' %><%= ENV['TEST_ENV_NUMBER'] %>
+  host: <%= ENV.fetch('RAILS_TEST_DB_HOST', ENV.fetch('RAILS_DB_HOST','localhost')) %>
 
 cucumber:
   <<: *test

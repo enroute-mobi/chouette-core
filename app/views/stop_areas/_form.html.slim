@@ -32,7 +32,7 @@
       - if has_feature?("route_stop_areas_all_types")
         = f.input :kind,
             as: :radio_buttons,
-            checked: @stop_area.new_record? ? :commercial : @stop_area.kind,
+            checked: @stop_area.kind,
             input_html: { disabled: !@stop_area.new_record?, 'x-on:change': 'kind = $event.target.value' },
             include_blank: false,
             item_wrapper_class: 'radio-inline',

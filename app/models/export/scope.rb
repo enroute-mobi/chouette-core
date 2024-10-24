@@ -217,7 +217,10 @@ module Export::Scope
     end
 
     def stop_areas
-      current_scope.stop_areas.where("id IN (#{stop_points_stop_area_ids.to_sql} UNION #{specific_vehicle_journey_at_stops_stop_area_ids.to_sql})")
+      stop_area_ids = Arel.sql(
+        [stop_points_stop_area_ids, specific_vehicle_journey_at_stops_stop_area_ids].map(&:to_sql).select(&:present?).join(' UNION ')
+      )
+      current_scope.stop_areas.where(Chouette::StopArea.arel_table[:id].in(stop_area_ids))
     end
 
     def stop_points_stop_area_ids

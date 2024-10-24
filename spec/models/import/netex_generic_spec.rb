@@ -1573,6 +1573,18 @@ RSpec.describe Import::NetexGeneric::RouteJourneyPatterns::Decorator do
   let(:netex_route) { Netex::Route.new }
   let(:netex_journey_patterns) { [] }
 
+  describe '#valid?' do
+    context 'when there is no line' do
+      it { expect(decorator.valid?).to be_falsy }
+    end
+
+    context 'when line is not empty' do
+      before { allow(decorator).to receive(:chouette_line).and_return(Chouette::Line.new) }
+
+      it { expect(decorator.valid?).to be_truthy }
+    end
+  end
+
   describe '#route_scheduled_point_ref' do
     subject { decorator.route_scheduled_point_ref(route_point_ref) }
 

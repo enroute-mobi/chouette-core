@@ -491,13 +491,15 @@ module Import
                       :destination_displays, :code_builder
 
         def chouette_line
-          line = line_provider.lines.find_by(registration_number: line_ref&.ref)
+          line = line_provider&.lines&.find_by(registration_number: line_ref&.ref)
           add_error :line_not_found unless line
 
           line
         end
 
         def chouette_route
+          return unless chouette_line
+
           @chouette_route ||= chouette_line.routes.build(route_attributes).tap do |chouette_route|
             chouette_route.journey_patterns = chouette_journey_patterns
           end

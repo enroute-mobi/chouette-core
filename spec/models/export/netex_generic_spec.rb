@@ -1164,7 +1164,7 @@ RSpec.describe Export::NetexGeneric do
       context "when StopArea has a parent" do
         let(:quay) { context.stop_area :quay }
         let(:parent_stop_place) { context.stop_area :parent_stop_place }
-        let(:quay_decorator) { Export::NetexGeneric::StopDecorator.new quay, code_provider: code_provider }
+        let(:quay_decorator) { described_class.new quay, code_provider: code_provider }
         let(:code_provider) { Export::CodeProvider.new export_scope }
         let(:export_scope) { double("Export::Scope", stop_areas: Chouette::StopArea.all) }
 

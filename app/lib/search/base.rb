@@ -587,11 +587,10 @@ module Search
         data = compute_percent(data)
         data = add_missing_keys(data)
         @data = label_keys(data)
-
       end
 
       def empty?
-        data.all? {|_, v| v.zero?}
+        data.all? { |_, v| v.zero? }
       end
 
       def to_chartkick(view_context, **options)

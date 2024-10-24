@@ -96,8 +96,8 @@ module Control
             end
           end
 
-          def model_singulier
-            @model_singulier ||= target_model.underscore
+          def singular_model
+            @singular_model ||= target_model.underscore
           end
 
           def source_type
@@ -105,7 +105,7 @@ module Control
           end
 
           def model_collection
-            @model_collection ||= model_singulier.pluralize
+            @model_collection ||= singular_model.pluralize
           end
 
           def table_name
@@ -121,11 +121,11 @@ module Control
           end
 
           def provider_id
-            "#{model_collection}.#{PREFIX_PROVIDERS[model_singulier]}_provider_id"
+            "#{model_collection}.#{PREFIX_PROVIDERS[singular_model]}_provider_id"
           end
 
           def providers
-            "#{PREFIX_PROVIDERS[model_singulier]}_providers"
+            "#{PREFIX_PROVIDERS[singular_model]}_providers"
           end
 
           def query

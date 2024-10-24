@@ -175,14 +175,13 @@ module Export::Scope
     end
 
     def lines
-      current_scope.lines.distinct.joins(routes: :vehicle_journeys)
-                   .where('vehicle_journeys.id' => final_scope_vehicle_journeys)
+      current_scope.lines.where(id: routes.select(:line_id).distinct)
     end
 
     def companies
       current_scope.companies.where(id: company_ids).or(
         current_scope.companies.where(id: secondary_company_ids)
-      )
+      ).distinct
     end
 
     def company_ids
@@ -194,7 +193,7 @@ module Export::Scope
     end
 
     def networks
-      current_scope.networks.where(id: lines.where.not(network_id: nil).select(:network_id))
+      current_scope.networks.where(id: lines.where.not(network_id: nil).select(:network_id).distinct)
     end
 
     def vehicle_journey_at_stops
@@ -214,7 +213,7 @@ module Export::Scope
     end
 
     def stop_points
-      current_scope.stop_points.distinct.where(route_id: routes)
+      current_scope.stop_points.distinct.where(route: routes)
     end
 
     def stop_areas
@@ -258,7 +257,7 @@ module Export::Scope
     end
 
     def line_notices
-      current_scope.line_notices.joins(:lines).where('lines.id' => lines).distinct
+      current_scope.line_notices.with_lines(lines)
     end
   end
 

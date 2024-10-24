@@ -449,6 +449,7 @@ fr:
       all: Tous
       provider: Par Fournisseur
       workbench: Par Espace de travail
+      workgroup: Par Group de travail
       referential: Jeu de donnée
     search:
       rule_type: *notification_rule_rule_type

@@ -1055,7 +1055,7 @@ RSpec.describe Export::NetexGeneric do
     end
   end
 
-  describe "Quays export" do
+  describe "StopAreas export" do
     let(:target) { MockNetexTarget.new }
     let(:export_scope) { Export::Scope::All.new context.referential }
     let(:export) do
@@ -1065,7 +1065,7 @@ RSpec.describe Export::NetexGeneric do
     end
 
     let(:part) do
-      Export::NetexGeneric::Quays.new export
+      Export::NetexGeneric::StopAreas.new export
     end
 
     let(:context) do
@@ -1085,9 +1085,9 @@ RSpec.describe Export::NetexGeneric do
       end
     end
 
-    describe Export::NetexGeneric::StopDecorator do
+    describe Export::NetexGeneric::StopAreas::Decorator do
       let(:stop_area) { Chouette::StopArea.new }
-      let(:decorator) { Export::NetexGeneric::StopDecorator.new stop_area }
+      let(:decorator) { described_class.new stop_area }
 
       describe "#netex_quay?" do
         subject { decorator.netex_quay? }
@@ -1121,7 +1121,7 @@ RSpec.describe Export::NetexGeneric do
 
         context 'when code provider is used to compute netex id' do
           let(:stop_area) { create(:stop_area) }
-          let(:decorator) { Export::NetexGeneric::StopDecorator.new stop_area, code_provider: code_provider }
+          let(:decorator) { described_class.new stop_area, code_provider: code_provider }
           let(:code_provider) { Export::CodeProvider.new export_scope}
           let(:export_scope) { double("Export::Scope", stop_areas: Chouette::StopArea.where(id: stop_area))}
 

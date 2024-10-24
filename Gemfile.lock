@@ -8,7 +8,7 @@ GIT
 
 GIT
   remote: https://bitbucket.org/enroute-mobi/bitset.git
-  revision: bf7b4a2de68364dc6c8eba8487f73889d0e32cda
+  revision: e37f433e7e5da0cd157cc086a3685e4312dcf018
   specs:
     bitset (1.2.0)
 

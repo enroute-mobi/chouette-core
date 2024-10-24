@@ -217,22 +217,15 @@ module Export::Scope
     end
 
     def stop_areas
-      @stop_areas ||=
-        begin
-          stop_areas_ids =
-            (stop_areas_in_routes.pluck(:id) + stop_areas_in_specific_vehicle_journey_at_stops.pluck(:id)).uniq
-          current_scope.stop_areas.where(id: stop_areas_ids)
-        end
+      current_scope.stop_areas.where("id IN (#{stop_points_stop_area_ids.to_sql} UNION #{specific_vehicle_journey_at_stops_stop_area_ids.to_sql})")
     end
 
-    def stop_areas_in_routes
-      current_scope.stop_areas.joins(routes: :vehicle_journeys).distinct
-                   .where('vehicle_journeys.id' => final_scope_vehicle_journeys)
+    def stop_points_stop_area_ids
+      stop_points.select(:stop_area_id).distinct
     end
 
-    def stop_areas_in_specific_vehicle_journey_at_stops
-      current_scope.stop_areas.joins(:specific_vehicle_journey_at_stops).distinct
-                   .where('vehicle_journey_at_stops.vehicle_journey_id' => final_scope_vehicle_journeys)
+    def specific_vehicle_journey_at_stops_stop_area_ids
+      vehicle_journey_at_stops.where.not(stop_area_id: nil).select(:stop_area_id).distinct
     end
 
     def entrances

@@ -1,4 +1,4 @@
-= simple_search_for @search, workbench_referential_path(@workbench, @referential) do |f|
+= simple_search_for @search, workbench_referential_path(@workbench, @referential), save_search: false do |f|
   = f.row
     = f.text
   = f.row

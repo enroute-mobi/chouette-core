@@ -29,6 +29,7 @@ fr:
     attributes:
       line_group:
         name: "Nom"
+        short_name: "Nom Court"
         line: "Lignes"
         line_ids: "Lignes"
         line_provider: "Fournisseur de lignes"

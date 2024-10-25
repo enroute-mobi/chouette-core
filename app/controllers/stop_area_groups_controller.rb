@@ -54,6 +54,7 @@ class StopAreaGroupsController < Chouette::StopAreaReferentialController
     @stop_area_group_params ||= params.require(:stop_area_group).permit(
       :stop_area_provider_id,
       :name,
+      :short_name,
       :description,
       stop_area_ids: [],
       codes_attributes: %i[id code_space_id value _destroy]

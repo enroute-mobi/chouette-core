@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2024_10_09_075253) do
+ActiveRecord::Schema.define(version: 2024_10_25_085128) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "btree_gin"
@@ -1425,6 +1425,7 @@ ActiveRecord::Schema.define(version: 2024_10_09_075253) do
     t.bigint "stop_area_provider_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.string "short_name"
     t.index ["stop_area_provider_id"], name: "index_stop_area_groups_on_stop_area_provider_id"
     t.index ["stop_area_referential_id"], name: "index_stop_area_groups_on_stop_area_referential_id"
   end

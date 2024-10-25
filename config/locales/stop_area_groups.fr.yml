@@ -29,6 +29,7 @@ fr:
     attributes:
       stop_area_group:
         name: "Nom"
+        short_name: "Nom Court"
         stop_areas: "Arrêts"
         stop_area_ids: "Arrêts"
         stop_area_provider: "Fournisseur d'Arrêts"

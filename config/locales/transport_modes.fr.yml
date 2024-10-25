@@ -4,7 +4,7 @@ fr:
     name: "Mode de transport"
     label:
       unknown: "Inconnu"
-      air: "Air"
+      air: "Avion"
       train: "Train"
       long_distance_train: "Train Grande Ligne"
       local_train: "TER"

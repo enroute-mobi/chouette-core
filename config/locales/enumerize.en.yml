@@ -99,7 +99,7 @@ en:
       transport_mode:
         interchange: Interchange
         unknown: "unknown"
-        air: "Air"
+        air: "Airplane"
         train: "Train"
         trolleyBus: "Trolleybus"
         long_distance_train: "Long distance train"
@@ -118,7 +118,7 @@ en:
         taxi: "Taxi"
         val: "VAL"
         other: "Other"
-        air: Air
+        air: Airplane
         bus: Bus
         coach: Coach
         ferry: Ferry
@@ -203,7 +203,7 @@ en:
         clean_unassociated_timetables: Purchase window without any vehicle journey
     transport_mode:
       all: All transport modes
-      air: Air
+      air: Airplane
       bicycle: "Bicycle"
       bus: Bus
       cableway: Cableway

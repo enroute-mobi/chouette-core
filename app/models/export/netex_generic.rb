@@ -2009,12 +2009,11 @@ class Export::NetexGeneric < Export::Base
 
   class VehicleJourneyStopAssignments < Part
     def export_part
-      vehicle_journey_at_stops.find_each do |vehicle_journey_at_stop|
+      vehicle_journey_at_stops.find_each_light do |vehicle_journey_at_stop|
         tags = resource_tagger.tags_for(vehicle_journey_at_stop.line_id)
         tagged_target = TaggedTarget.new(target, tags)
 
-        netex_resource = Decorator.new(vehicle_journey_at_stop).netex_resource
-        tagged_target << netex_resource
+        tagged_target << decorate(vehicle_journey_at_stop).netex_resource
       end
     end
 
@@ -2025,73 +2024,96 @@ class Export::NetexGeneric < Export::Base
     end
 
     def selected_columns
-      ['vehicle_journey_at_stops.*',
-       'vehicle_journeys.objectid AS vehicle_journey_objectid',
+      [
+       'vehicle_journey_at_stops.vehicle_journey_id AS vehicle_journey_id',
+       'vehicle_journey_at_stops.stop_area_id AS stop_area_id',
        "COALESCE(vehicle_journeys.data_source_ref, 'none') AS vehicle_journey_data_source_ref",
-       'stop_points.objectid AS stop_point_objectid',
-       'stop_areas.objectid AS stop_area_objectid',
+       'stop_points.id AS stop_point_id',
        'stop_points.position AS stop_point_position',
-       'routes.line_id as line_id'
+       'routes.line_id as line_id',
+       "(stop_areas.area_type = '#{Chouette::AreaType::QUAY}') AS is_quay"
       ]
     end
 
-    class Decorator < SimpleDelegator
+    class Decorator < ModelDecorator
       def netex_attributes
         {
-          id: objectid,
+          id: netex_identifier,
           data_source_ref: vehicle_journey_data_source_ref,
           scheduled_stop_point_ref: scheduled_stop_point_ref,
-          stop_place_ref: stop_place_ref,
-          quay_ref: quay_ref,
           vehicle_journey_refs: vehicle_journey_refs
-        }
+        }.merge(netex_stop_area_ref)
       end
 
       def netex_resource
         Netex::VehicleJourneyStopAssignment.new(netex_attributes)
       end
 
-      def objectid
-        Code::Value.merge(vehicle_journey_objectid, stop_point_position, type: 'VehicleJourneyStopAssignment').to_s
+      def netex_identifier
+        Code::Value.merge(vehicle_journey_code, stop_point_position, type: 'VehicleJourneyStopAssignment').to_s
       end
 
       def stop_point_position
-        __getobj__.try(:stop_point_position) || stop_point&.position
+        model.try(:stop_point_position) || stop_point&.position
       end
 
-      def stop_point_objectid
-        __getobj__.try(:stop_point_objectid) || stop_point&.objectid
+      def scheduled_stop_point_ref
+        decorate(pseudo_stop_point, with: StopPointDecorator::ScheduledStopPoint).scheduled_stop_point_ref
       end
 
-      def stop_area_objectid
-        __getobj__.try(:stop_area_objectid) || stop_area&.objectid
+      def pseudo_stop_point
+        if model.try(:stop_point_id)
+          StopPointDecorator.pseudo_stop_point(id: stop_point_id)
+        else
+          stop_point
+        end
       end
 
-      def vehicle_journey_objectid
-        __getobj__.try(:vehicle_journey_objectid) || vehicle_journey&.objectid
+      def specific_stop_area_id
+        model.try(:stop_area_id) || stop_area&.id
+      end
+
+      def specific_stop_area_code
+        code_provider.stop_areas.code(specific_stop_area_id)
+      end
+
+      def vehicle_journey_id
+        model.try(:vehicle_journey_id) || vehicle_journey&.id
+      end
+
+      def vehicle_journey_code
+        code_provider.vehicle_journeys.code(vehicle_journey_id)
       end
 
       def vehicle_journey_data_source_ref
-        loaded_value = __getobj__.try(:vehicle_journey_data_source_ref)
+        loaded_value = model.try(:vehicle_journey_data_source_ref)
         return nil if loaded_value == 'none'
 
         loaded_value || vehicle_journey&.data_source_ref
       end
 
-      def scheduled_stop_point_ref
-        Netex::Reference.new(stop_point_objectid, type: 'ScheduledStopPointRef')
+      def netex_stop_area_ref
+        netex_quay? ? { quay_ref: quay_ref } : { stop_place_ref: stop_place_ref }
+      end
+
+      def netex_quay?
+        if model.respond_to?(:is_quay)
+          return model.is_quay
+        end
+
+        stop_area&.quay?
       end
 
       def stop_place_ref
-        Netex::Reference.new(stop_area_objectid, type: 'StopPlaceRef')
+        Netex::Reference.new(specific_stop_area_code, type: 'StopPlaceRef')
       end
 
       def quay_ref
-        Netex::Reference.new(stop_area_objectid, type: 'QuayRef')
+        Netex::Reference.new(specific_stop_area_code, type: 'QuayRef')
       end
 
       def vehicle_journey_refs
-        [Netex::Reference.new(vehicle_journey_objectid, type: 'ServiceJourney')]
+        [Netex::Reference.new(vehicle_journey_code, type: 'ServiceJourney')]
       end
     end
   end

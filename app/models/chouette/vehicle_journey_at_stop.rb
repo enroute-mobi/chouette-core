@@ -202,7 +202,6 @@ module Chouette
 
     module Light
       class VehicleJourneyAtStop
-
         attr_accessor :id, :vehicle_journey_id, :stop_point_id, :stop_area_id
         attr_accessor :arrival_time, :departure_time, :departure_day_offset, :arrival_day_offset
         attr_accessor :for_boarding, :for_alighting, :checksum, :checksum_source
@@ -211,7 +210,6 @@ module Chouette
         def initialize(attributes = {})
           self.attributes = attributes
         end
-        attr_accessor :attributes
 
         def attributes=(attributes)
           @id = attributes["id"]
@@ -233,7 +231,7 @@ module Chouette
 
         def method_missing(name, *args)
           stringified_name = name.to_s
-          if @attributes.has_key?(stringified_name)
+          if @attributes.key?(stringified_name)
             return @attributes[stringified_name]
           end
 
@@ -241,8 +239,7 @@ module Chouette
         end
 
         def respond_to?(name, *args)
-          return true if @attributes.has_key?(name.to_s)
-          super
+          super || @attributes.key?(name.to_s)
         end
 
         def arrival_time_of_day

@@ -57,22 +57,24 @@ RSpec.describe Chouette::VehicleJourney do
     end
 
     def self.vehicle_journey(*values)
-      Chouette::VehicleJourney.new(skip_custom_fields_initialization: true).tap do |vehicle_journey|
-        values.each do |value|
-          # To support both "22:55" and ["22:50", "22:55"]
-          value = [value] * 2 unless value.is_a?(Array)
+      CustomFieldsSupport.without_custom_fields do
+        Chouette::VehicleJourney.new.tap do |vehicle_journey|
+          values.each do |value|
+            # To support both "22:55" and ["22:50", "22:55"]
+            value = [value] * 2 unless value.is_a?(Array)
 
-          # Create TimeOfDays
-          arrival_time_of_day, departure_time_of_day = value.map { |definition| time_of_day(definition) }
+            # Create TimeOfDays
+            arrival_time_of_day, departure_time_of_day = value.map { |definition| time_of_day(definition) }
 
-          # Transmit TimeOfDays to Vehicle Journey At Stop only if it's not nil
-          vehicle_journey_at_stops_attributes = {}
-          vehicle_journey_at_stops_attributes[:arrival_time_of_day] = arrival_time_of_day if arrival_time_of_day
-          vehicle_journey_at_stops_attributes[:departure_time_of_day] = departure_time_of_day if departure_time_of_day
+            # Transmit TimeOfDays to Vehicle Journey At Stop only if it's not nil
+            vehicle_journey_at_stops_attributes = {}
+            vehicle_journey_at_stops_attributes[:arrival_time_of_day] = arrival_time_of_day if arrival_time_of_day
+            vehicle_journey_at_stops_attributes[:departure_time_of_day] = departure_time_of_day if departure_time_of_day
 
-          vehicle_journey_at_stop = Chouette::VehicleJourneyAtStop.new(vehicle_journey_at_stops_attributes)
+            vehicle_journey_at_stop = Chouette::VehicleJourneyAtStop.new(vehicle_journey_at_stops_attributes)
 
-          vehicle_journey.vehicle_journey_at_stops << vehicle_journey_at_stop
+            vehicle_journey.vehicle_journey_at_stops << vehicle_journey_at_stop
+          end
         end
       end
     end

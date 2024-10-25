@@ -50,26 +50,28 @@ class Import::Gtfs < Import::Base
   end
 
   def import_without_status
-    prepare_referential
+    CustomFieldsSupport.without_custom_fields do
+      prepare_referential
 
-    check_calendar_files_missing_and_create_message || import_resources(:services)
+      check_calendar_files_missing_and_create_message || import_resources(:services)
 
-    import_resources :transfers if source.entries.include?('transfers.txt')
+      import_resources :transfers if source.entries.include?('transfers.txt')
 
-    RouteJourneyPatterns.new(self).import!
+      RouteJourneyPatterns.new(self).import!
 
-    import_resources :stop_times
+      import_resources :stop_times
 
-    import_resources :attributions
+      import_resources :attributions
 
-    # TODO: why the resource statuses are not checked automaticaly ??
-    # See CHOUETTE-2747
-    resource_status = resources.map(&:status).uniq
-    Rails.logger.debug "resource_status: #{resource_status.inspect}"
-    if resource_status.include?(:ERROR)
-      @status ||= 'failed'
-    elsif resource_status.include?(:WARNING)
-      @status ||= 'warning'
+      # TODO: why the resource statuses are not checked automaticaly ??
+      # See CHOUETTE-2747
+      resource_status = resources.map(&:status).uniq
+      Rails.logger.debug "resource_status: #{resource_status.inspect}"
+      if resource_status.include?(:ERROR)
+        @status ||= 'failed'
+      elsif resource_status.include?(:WARNING)
+        @status ||= 'warning'
+      end
     end
   end
 
@@ -654,7 +656,7 @@ class Import::Gtfs < Import::Base
       raise InvalidTripTimesError unless consistent_stop_times(stop_times)
 
       journey_pattern = find_or_create_journey_pattern(trip, stop_times)
-      vehicle_journey = journey_pattern.vehicle_journeys.build route: journey_pattern.route, skip_custom_fields_initialization: true
+      vehicle_journey = journey_pattern.vehicle_journeys.build route: journey_pattern.route
       vehicle_journey.published_journey_name = trip.short_name.presence || trip.id
       vehicle_journey.codes.build code_space: code_space, value: trip.id
       vehicle_journey.accessibility_assessment = accessibility_assessment(trip.wheelchair_accessible)

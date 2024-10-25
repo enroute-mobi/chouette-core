@@ -55,6 +55,7 @@ fr:
         content_type: Type de fichier
         preview: Aperçu
         document_type_id: "Type de Document"
+        document_type: "Type de Document"
         document_provider_id: "Fournisseur de Document"
     errors:
       models:

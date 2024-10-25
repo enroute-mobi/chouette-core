@@ -1,5 +1,7 @@
+# frozen_string_literal: true
+
 class RouteObserver < ActiveRecord::Observer
-  observe Chouette::Route
+  observe :'chouette/route'
 
   def after_commit(route)
     return if route.destroyed?

@@ -39,3 +39,8 @@ fr:
         created_at: "Créé le"
         updated_at: "Edité le"
         codes: "Codes"
+  simple_form:
+    hints:
+      stop_area_group:
+        short_name: "Caractères autorisés : alphanumérique, trait de soulignement et tiret"
+

@@ -39,3 +39,7 @@ en:
         created_at: "Created at"
         updated_at: "Updated at"
         codes: "Codes"
+  simple_form:
+    hints:
+      line_group:
+        short_name: "Allowed characters: alphanumeric, underscore and hyphen"

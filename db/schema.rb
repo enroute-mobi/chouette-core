@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2024_10_25_093636) do
+ActiveRecord::Schema.define(version: 2024_10_25_100315) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "btree_gin"
@@ -248,6 +248,9 @@ ActiveRecord::Schema.define(version: 2024_10_25_093636) do
     t.integer "mobility_restricted_traveller_duration"
     t.jsonb "custom_field_values", default: {}
     t.bigint "stop_area_provider_id"
+    t.index ["arrival_id"], name: "index_connection_links_on_arrival_id"
+    t.index ["both_ways"], name: "index_connection_links_on_both_ways"
+    t.index ["departure_id"], name: "index_connection_links_on_departure_id"
     t.index ["objectid"], name: "connection_links_objectid_key", unique: true
     t.index ["stop_area_provider_id"], name: "index_connection_links_on_stop_area_provider_id"
     t.index ["stop_area_referential_id"], name: "index_connection_links_on_stop_area_referential_id"
@@ -1686,6 +1689,8 @@ ActiveRecord::Schema.define(version: 2024_10_25_093636) do
     t.string "data_source_ref"
     t.jsonb "custom_field_values", default: {}
     t.jsonb "metadata", default: {}
+    t.bigint "ignored_routing_contraint_zone_ids", default: [], array: true
+    t.bigint "ignored_stop_area_routing_constraint_ids", default: [], array: true
     t.bigint "line_notice_ids", default: [], array: true
     t.bigint "accessibility_assessment_id"
     t.bigint "service_facility_set_ids", default: [], array: true

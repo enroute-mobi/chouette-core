@@ -286,7 +286,7 @@ class Source < ApplicationModel
           client.max_redirects = redirection_count
           client.follow_location = true
 
-          if username && password
+          if username.present? && password.present?
             client.username = username
             client.password = password
           end

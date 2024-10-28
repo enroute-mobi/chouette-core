@@ -29,6 +29,7 @@ en:
     attributes:
       stop_area_group:
         name: "Name"
+        short_name: "Short Name"
         stop_areas: "Stop Areas"
         stop_area_ids: "Stop Areas"
         stop_area_provider: "Stop Area Provider"

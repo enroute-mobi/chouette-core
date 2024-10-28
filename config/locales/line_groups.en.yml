@@ -29,6 +29,7 @@ en:
     attributes:
       line_group:
         name: "Name"
+        short_name: "Short Name"
         lines: "Lines"
         line_ids: "Lines"
         line_provider: "Line Provider"
@@ -38,3 +39,7 @@ en:
         created_at: "Created at"
         updated_at: "Updated at"
         codes: "Codes"
+  simple_form:
+    hints:
+      line_group:
+        short_name: "Allowed characters: alphanumeric, underscore and hyphen"

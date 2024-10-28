@@ -29,6 +29,7 @@ fr:
     attributes:
       line_group:
         name: "Nom"
+        short_name: "Nom Court"
         line: "Lignes"
         line_ids: "Lignes"
         line_provider: "Fournisseur de lignes"
@@ -38,3 +39,7 @@ fr:
         created_at: "Créé le"
         updated_at: "Edité le"
         codes: "Codes"
+  simple_form:
+    hints:
+      line_group:
+        short_name: "Caractères autorisés : alphanumérique, trait de soulignement et tiret"

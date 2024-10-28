@@ -54,6 +54,7 @@ class LineGroupsController < Chouette::LineReferentialController
     @line_group_params ||= params.require(:line_group).permit(
       :line_provider_id,
       :name,
+      :short_name,
       :description,
       line_ids: [],
       codes_attributes: %i[id code_space_id value _destroy]

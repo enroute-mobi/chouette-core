@@ -99,7 +99,7 @@ fr:
       transport_mode:
         interchange: Interconnection
         unknown: Inconnu
-        air: Air
+        air: Avion
         train: Train
         long_distance_train: Train Grande Ligne
         local_train: TER
@@ -201,7 +201,7 @@ fr:
         clean_routes_without_journey_pattern: Itinéraires sans aucune Mission
         clean_unassociated_timetables: Calendriers de circulation associés à aucune Course
     transport_mode:
-      air: Air
+      air: Avion
       all: Tous les modes de transport
       bicycle: Vélo
       bus: Bus

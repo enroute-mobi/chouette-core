@@ -3,7 +3,7 @@ en:
     name: "Transport mode"
     label:
       unknown: "unknown"
-      air: "Air"
+      air: "Airplane"
       train: "Train"
       long_distance_train: "Long distance train"
       local_train: "Local train"

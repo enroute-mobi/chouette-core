@@ -2,7 +2,7 @@ fr:
   transport_modes:
     modes:
       all: Tous les modes de transport
-      air: Air
+      air: Avion
       bus: Bus
       coach: Autocar
       funicular: Funiculaire
@@ -162,7 +162,7 @@ en:
   transport_modes:
     modes:
       all: All transport modes
-      air: Air
+      air: Airplane
       bus: Bus
       coach: Coach
       funicular: Funicular

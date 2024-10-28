@@ -491,7 +491,7 @@ module Import
                       :destination_displays, :code_builder
 
         def chouette_line
-          line = line_provider&.lines&.find_by(registration_number: line_ref&.ref)
+          line = line_provider.lines.find_by(registration_number: line_ref.ref) if line_ref
           add_error :line_not_found unless line
 
           line

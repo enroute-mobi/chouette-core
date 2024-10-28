@@ -6,5 +6,10 @@
       .col-lg-12
         = render 'filters'
 
-    - if @chart
+    - if @chart && !@chart.empty?
       = @chart.to_chartkick(self, download: true)
+
+    - else
+      .row.mt-xs
+        .col-lg-12
+          = replacement_msg 'service_counts.search_no_results'.t

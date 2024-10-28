@@ -581,10 +581,16 @@ module Search
       end
 
       def data
+        return @data if @data
+
         data = raw_data
         data = compute_percent(data)
         data = add_missing_keys(data)
-        label_keys(data)
+        @data = label_keys(data)
+      end
+
+      def empty?
+        data.all? { |_, v| v.zero? }
       end
 
       def to_chartkick(view_context, **options)

@@ -2,6 +2,7 @@ fr:
   service_counts:
     index:
       title: "Courses quotidiennes"
+    search_no_results: "Les courses quotidiennes n’ont pas été calculées dans ce jeu de donnée, reportez-vous à la documentation pour faire effectuer ce calcul"
   activerecord:
     attributes:
       service_count:

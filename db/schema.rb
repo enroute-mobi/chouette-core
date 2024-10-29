@@ -249,7 +249,7 @@ ActiveRecord::Schema.define(version: 2024_10_25_100315) do
     t.jsonb "custom_field_values", default: {}
     t.bigint "stop_area_provider_id"
     t.index ["arrival_id"], name: "index_connection_links_on_arrival_id"
-    t.index ["departure_id"], name: "index_connection_links_on_departure_id"
+    t.index ["departure_id", "arrival_id"], name: "index_connection_links_on_departure_id_and_arrival_id"
     t.index ["objectid"], name: "connection_links_objectid_key", unique: true
     t.index ["stop_area_provider_id"], name: "index_connection_links_on_stop_area_provider_id"
     t.index ["stop_area_referential_id"], name: "index_connection_links_on_stop_area_referential_id"
@@ -1688,8 +1688,6 @@ ActiveRecord::Schema.define(version: 2024_10_25_100315) do
     t.string "data_source_ref"
     t.jsonb "custom_field_values", default: {}
     t.jsonb "metadata", default: {}
-    t.bigint "ignored_routing_contraint_zone_ids", default: [], array: true
-    t.bigint "ignored_stop_area_routing_constraint_ids", default: [], array: true
     t.bigint "line_notice_ids", default: [], array: true
     t.bigint "accessibility_assessment_id"
     t.bigint "service_facility_set_ids", default: [], array: true

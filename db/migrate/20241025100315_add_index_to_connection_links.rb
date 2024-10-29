@@ -3,7 +3,6 @@ class AddIndexToConnectionLinks < ActiveRecord::Migration[5.2]
     on_public_schema_only do
       add_index :connection_links, :departure_id
       add_index :connection_links, :arrival_id
-      add_index :connection_links, :both_ways
     end
   end
 end

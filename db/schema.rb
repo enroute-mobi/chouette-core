@@ -249,7 +249,6 @@ ActiveRecord::Schema.define(version: 2024_10_25_100315) do
     t.jsonb "custom_field_values", default: {}
     t.bigint "stop_area_provider_id"
     t.index ["arrival_id"], name: "index_connection_links_on_arrival_id"
-    t.index ["both_ways"], name: "index_connection_links_on_both_ways"
     t.index ["departure_id"], name: "index_connection_links_on_departure_id"
     t.index ["objectid"], name: "connection_links_objectid_key", unique: true
     t.index ["stop_area_provider_id"], name: "index_connection_links_on_stop_area_provider_id"

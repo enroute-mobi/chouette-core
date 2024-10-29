@@ -630,6 +630,34 @@ RSpec.describe Import::Gtfs do
       expect(workbench.line_referential.lines.includes(:company).pluck(*defined_attributes)).to match_array(expected_attributes)
     end
 
+    describe '#attributes' do
+      subject { line.attributes }
+
+      context 'when gtfs route attributes are empty' do
+        let(:second_import) { build_import 'google-sample-feed-empty-city.zip' }
+        let(:line) { Chouette::Line.find_by(registration_number: 'CITY') }
+
+        context 'when chouette attributes is present' do
+          before do
+            import.import_routes
+            line.update comment: 'Test Desc', url: 'www.test.com'
+
+            second_import.import_routes
+          end
+
+          it 'should prevent GTFS import to reset Line attributes' do
+            is_expected.to include(
+              'comment' => 'Test Desc',
+              'url' => 'www.test.com',
+              'name' => 'City',
+              'number' => '40',
+              'published_name' => 'City'
+            )
+          end
+        end
+      end
+    end
+
     let(:agency_name){ 'name' }
     let(:agency_id) { 'agency_id' }
     let(:agency){

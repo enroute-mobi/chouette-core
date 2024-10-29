@@ -492,9 +492,18 @@ class Import::Gtfs < Import::Base
           next unless check_parent_is_valid_or_create_message(Chouette::Company, route.agency_id, resource)
         end
         line = lines_by_registration_number(route.id)
-        line.name = route.long_name.presence || route.short_name
-        line.number = route.short_name
-        line.published_name = route.long_name
+
+        if line_name = route.long_name.presence || route.short_name.presence
+          line.name = line_name
+        end
+
+        if line_number = route.short_name.presence
+          line.number = line_number
+        end
+
+        if line_published_name = route.long_name.presence
+          line.published_name = route.long_name
+        end
 
         if route.agency_id.blank? && default_company
           line.company = default_company
@@ -504,10 +513,11 @@ class Import::Gtfs < Import::Base
           end
         end
 
-        line.comment = route.desc
+        if line_comment = route.desc.presence
+          line.comment = line_comment
+        end
 
-        transport_mode = transport_modes[route.type]
-        if transport_mode
+        if transport_mode = transport_modes[route.type].presence
           line.chouette_transport_mode = transport_mode
         end
 
@@ -516,7 +526,7 @@ class Import::Gtfs < Import::Base
         # Black is the default text color in the gtfs spec
         line.text_color = parse_color(route.text_color) if route.text_color
 
-        line.url = route.url
+        line.url = route.url if route.url.presence
 
         save_model line, resource: resource
       end

@@ -1,5 +1,14 @@
 - workbenches = @dashboard.current_user.workbenches.with_active_workgroup.includes(:workgroup, :output)
 - many_workbenches = @dashboard.current_user.workbenches.many?
+- owned_workgroups = workbenches.map(&:workgroup).select { |workgroup| workgroup.owner_id == current_organisation.id }.uniq
+
+- workgroup_aggregate_counts = Aggregate.where(workgroup_id: owned_workgroups.map(&:id)).group(:workgroup_id).count
+- workgroup_aggregate_last_5s = owned_workgroups.map do |workgroup| \
+                           [ \
+                             workgroup.id, \
+                             workgroup.aggregates.order("created_at desc").limit(5) \
+                           ] \
+                         end.to_h
 
 - workbenches.each do |workbench|
   .row
@@ -80,20 +89,20 @@
             = link_to Chouette::Company.model_name.human.pluralize.capitalize, workbench_line_referential_companies_path(workbench), class: 'list-group-item'
             = link_to Chouette::Network.model_name.human.pluralize(I18n.locale).capitalize, workbench_line_referential_networks_path(workbench), class: 'list-group-item'
 
-      - if workbench.workgroup.owner_id == current_organisation.id
-        - aggregates_count = workbench.workgroup.aggregates.count
+      - workgroup_aggregate_count = workgroup_aggregate_counts[workbench.workgroup_id]
+      - if workgroup_aggregate_count
         .panel.panel-default
           .panel-heading
             h3.panel-title.with_actions
               div
-                = link_to I18n.t("dashboards.aggregates.title", count: aggregates_count), workgroup_output_path(workbench.workgroup)
-                span.badge.ml-xs = aggregates_count if aggregates_count.positive?
+                = link_to I18n.t("dashboards.aggregates.title", count: workgroup_aggregate_count), workgroup_output_path(workbench.workgroup)
+                span.badge.ml-xs = workgroup_aggregate_count if workgroup_aggregate_count.positive?
               div
                 = link_to '', workgroup_output_path(workbench.workgroup), class: ' fa fa-chevron-right pull-right'
 
-          - if aggregates_count.positive?
+          - if workgroup_aggregate_count.positive?
             .list-group
-              - workbench.workgroup.aggregates.order("created_at desc").limit(5).each do |aggregate|
+              - workgroup_aggregate_last_5s[workbench.workgroup_id].each do |aggregate|
                 = link_to t("aggregates.show.title", name: aggregate.name.capitalize).html_safe, workgroup_aggregate_path(aggregate.workgroup, aggregate), class: 'list-group-item'
           - else
             .panel-body

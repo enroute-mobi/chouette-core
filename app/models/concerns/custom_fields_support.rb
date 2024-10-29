@@ -32,26 +32,38 @@ module CustomFieldsSupport
     Thread.current.thread_variable_get(THREAD_VARIABLE_NAME)
   end
 
-  class_methods do
-    def without_custom_fields(&block)
-      old_skip_custom_fields_initialization = skip_custom_fields_initialization
-      self.skip_custom_fields_initialization = true
-      block.call
+  SKIP_INIT_THREAD_VARIABLE_NAME = 'skip_custom_fields_initialization'
+
+  def self.without_custom_fields(&block)
+    result = nil
+
+    Rails.logger.debug "Disable custom fields initialization"
+
+    current_value = skip_custom_fields_initialization?
+
+    begin
+      Thread.current.thread_variable_set(SKIP_INIT_THREAD_VARIABLE_NAME, true)
+      result = block.call
     ensure
-      self.skip_custom_fields_initialization = old_skip_custom_fields_initialization
+      Thread.current.thread_variable_set(SKIP_INIT_THREAD_VARIABLE_NAME, current_value)
     end
+
+    Rails.logger.debug "Restore custom fields initialization (#{current_value})"
+
+    result
+  end
+
+  def self.skip_custom_fields_initialization?
+    Thread.current.thread_variable_get(SKIP_INIT_THREAD_VARIABLE_NAME) || false
   end
 
   included do
     validate :custom_fields_values_are_valid
     after_initialize :initialize_custom_fields
 
-    mattr_accessor :skip_custom_fields_initialization, instance_accessor: false, default: false
-    attr_writer :skip_custom_fields_initialization
-
     # Support both class and instance option
     def skip_custom_fields_initialization
-      @skip_custom_fields_initialization || self.class.skip_custom_fields_initialization
+      CustomFieldsSupport.skip_custom_fields_initialization?
     end
 
     def self.reset_custom_fields

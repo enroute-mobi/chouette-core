@@ -54,16 +54,10 @@ RSpec.describe CustomFieldsSupport do
 
     subject { model.skip_custom_fields_initialization }
 
-    context 'when instance skip_custom_fields_initialization is set' do
-      let(:model) { model_class.new(skip_custom_fields_initialization: true) }
-
-      it { is_expected.to be_truthy }
-    end
-
-    context 'when Class skip_custom_fields_initialization is set' do
+    context 'when invoked into CustomFieldsSupport.skip_custom_fields_initialization' do
       # with_model doesn't work with #around :(
       around(:example) do |example|
-        model_class.without_custom_fields do
+        CustomFieldsSupport.without_custom_fields do
           example.run
         end
       end

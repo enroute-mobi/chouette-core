@@ -30,6 +30,7 @@ class StopAreasController < Chouette::StopAreaReferentialController
 
     index! do |format|
       format.html {
+        @chart = @search.chart(scope) if @search.graphical?
         @stop_areas = StopAreaDecorator.decorate(
           collection,
           context: {
@@ -83,7 +84,10 @@ class StopAreasController < Chouette::StopAreaReferentialController
   end
 
   def search
-    @search ||= Search::StopArea.from_params(params, workbench: workbench)
+    @search ||= Search::StopArea.from_params(
+      params,
+      workbench: workbench
+    )
   end
 
   def collection

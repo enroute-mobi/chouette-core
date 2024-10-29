@@ -223,6 +223,12 @@ fr:
             referent_id:
               an_object_used_as_referent_must_be_flagged_as_referent: un Arrêt utilisé en référent doit être référencé en tant que référent
               a_referent_cannot_have_a_referent: un référent ne peut pas référencer un référent
+  chart:
+    values:
+      stop_area:
+        is_referent:
+          referent: Référent
+          particular: Particulier
   formtastic:
     titles:
       stop_area:

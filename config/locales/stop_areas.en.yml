@@ -220,6 +220,12 @@ en:
             referent_id:
               an_object_used_as_referent_must_be_flagged_as_referent: a Stop Area used as referent must be flagged as referent
               a_referent_cannot_have_a_referent: a Stop Area referent can't have a referent
+  chart:
+    values:
+      stop_area:
+        is_referent:
+          referent: Referent
+          particular: Particular
   formtastic:
     titles:
       stop_area:

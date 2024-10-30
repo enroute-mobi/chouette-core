@@ -396,7 +396,10 @@ class Export::NetexGeneric < Export::Base
       def codes_values
         if has_codes?
           if model.respond_to?(:codes_values)
-            model.codes_values.map do |code_space_id, value|
+            model.codes_values.map do |code_space_value|
+              code_space_id = code_space_value["id"]
+              value = code_space_value["value"]
+
               code_space_short_name = code_spaces[code_space_id]
               [ code_space_short_name, value ] if code_space_short_name
             end.compact

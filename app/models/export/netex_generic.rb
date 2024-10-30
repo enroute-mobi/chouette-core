@@ -1697,9 +1697,9 @@ class Export::NetexGeneric < Export::Base
 
           vehicle_journey_processed_ids << vehicle_journey.id
         end
-      end
 
-      export.exportables.processed(Chouette::VehicleJourney, vehicle_journey_processed_ids)
+        export.exportables.processed(Chouette::VehicleJourney, vehicle_journey_processed_ids)
+      end
 
       rate = (vehicle_journey_count > 0) ? (cache_hit.to_f / vehicle_journey_count * 100).to_i : 0
       logger.info "Cache hit: #{cache_hit}, Vehicle Journey Count: #{vehicle_journey_count}, Hit rate: #{rate}%"

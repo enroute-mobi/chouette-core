@@ -31,12 +31,15 @@ class StopAreasController < Chouette::StopAreaReferentialController
     index! do |format|
       format.html {
         @chart = @search.chart(scope) if @search.graphical?
-        @stop_areas = StopAreaDecorator.decorate(
-          collection,
-          context: {
-            workbench: workbench
-          }
-        )
+
+        unless @chart
+          @stop_areas = StopAreaDecorator.decorate(
+            collection,
+            context: {
+              workbench: workbench
+            }
+          )
+        end
       }
     end
   end

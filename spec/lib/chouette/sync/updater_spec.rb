@@ -288,7 +288,7 @@ RSpec.describe Chouette::Sync::Updater do
       context 'when allow multiple values is false' do
         before { code_space.update allow_multiple_values: false }
 
-        context 'when model is first_stop_area' do
+        context 'when model contains codes' do
           let(:model) { first_stop_area }
           let(:other_code) { model.codes.find_by(code_space: other_code_space) }
 
@@ -317,7 +317,7 @@ RSpec.describe Chouette::Sync::Updater do
           end
         end
 
-        context 'when model is second_stop_area' do
+        context 'when model does not contain codes' do
           let(:model) { second_stop_area }
 
           it "should change code value from 'nil' to 'Second value'" do
@@ -327,7 +327,7 @@ RSpec.describe Chouette::Sync::Updater do
       end
 
       context 'when allow multiple values is true' do
-        context 'when model is first_stop_area' do
+        context 'when model contains codes' do
           let(:model) { first_stop_area }
           let(:from) do
             [
@@ -350,7 +350,7 @@ RSpec.describe Chouette::Sync::Updater do
           end
         end
 
-        context 'when model is second_stop_area' do
+        context 'when model does not contain codes' do
           let(:model) { second_stop_area }
 
           it "should change code values from 'nil' to 'Second value'" do

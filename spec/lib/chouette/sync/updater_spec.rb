@@ -259,22 +259,26 @@ RSpec.describe Chouette::Sync::Updater do
 
       let(:context) do
         Chouette.create do
-          code_space short_name: 'test'
+          code_space :test, short_name: 'test'
+          code_space :other, short_name: 'other'
 
-          stop_area :first, codes: { test: 'First value' }
+          stop_area :first, codes: { test: 'First value', other: 'Other value' }
           stop_area :second
 
           referential
         end
       end
 
-      let(:code_space) { context.code_space }
+      let(:code_space) { context.code_space(:test) }
+      let(:other_code_space) { context.code_space(:other) }
+
       let(:first_stop_area) { context.stop_area(:first) }
       let(:second_stop_area) { context.stop_area(:second) }
+
       let(:scope) { context.referential.stop_areas }
 
       let(:resource) { double id: 43, codes_attributes: codes_attributes }
-      let(:codes_attributes) { [{ short_name: 'test', value: 'Other Value' }] }
+      let(:codes_attributes) { [{ short_name: 'test', value: 'Second value' }] }
 
       before do
         allow(models).to receive(:model_id_attribute).and_return(:codes)
@@ -284,38 +288,73 @@ RSpec.describe Chouette::Sync::Updater do
       context 'when allow multiple values is false' do
         before { code_space.update allow_multiple_values: false }
 
-        context 'when model is first_stop_area' do
+        context 'when model contains codes' do
           let(:model) { first_stop_area }
+          let(:other_code) { model.codes.find_by(code_space: other_code_space) }
 
-          it "should change code value from 'First value' to 'Other Value'" do
-            expect { subject }.to change { model.codes.first.value }.from('First value').to('Other Value')
+          it "should not change code value of code space 'other'" do
+            expect { subject }.not_to(change { other_code })
+          end
+
+          it "should change code value from 'First value' to 'Second Value'" do
+            expect { subject }.to change { model.codes.first.value }.from('First value').to('Second value')
+          end
+
+          context 'when both code spaces do not allow multiple values and both codes are updated' do
+            let(:codes_attributes) do
+              [{ short_name: 'test', value: 'Second value' }, { short_name: 'other', value: 'Other second value' }]
+            end
+
+            before { other_code_space.update allow_multiple_values: false }
+
+            it "should not change code value of code space 'other'" do
+              expect { subject }.not_to(change { other_code })
+            end
+
+            it "should change code value from 'First value' to 'Second Value'" do
+              expect { subject }.to change { model.codes.first.value }.from('First value').to('Second value')
+            end
           end
         end
 
-        context 'when model is second_stop_area' do
+        context 'when model does not contain codes' do
           let(:model) { second_stop_area }
 
-          it "should change code value from 'nil' to 'Other Value'" do
-            expect { subject }.to change { model.codes&.first&.value }.from(nil).to('Other Value')
+          it "should change code value from 'nil' to 'Second value'" do
+            expect { subject }.to change { model.codes&.first&.value }.from(nil).to('Second value')
           end
         end
       end
 
       context 'when allow multiple values is true' do
-        context 'when model is first_stop_area' do
+        context 'when model contains codes' do
           let(:model) { first_stop_area }
-          let(:expected_code_values) { ['First value', 'Other Value'] }
+          let(:from) do
+            [
+              [code_space.id, 'First value'],
+              [other_code_space.id, 'Other value']
+            ]
+          end
+          let(:expected_code_values) do
+            [
+              [code_space.id, 'First value'],
+              [other_code_space.id, 'Other value'],
+              [code_space.id, 'Second value']
+            ]
+          end
 
-          it "should change code values from ['First value'] to ['First value', 'Other Value']" do
-            expect { subject }.to change { model.codes.map(&:value) }.from(['First value']).to(expected_code_values)
+          it "should change codes from ['First value', 'Other value'] to ['First value', 'Other Value', 'Second value']" do
+            expect { subject }.to(
+              change { model.codes.map { |c| [c.code_space_id, c.value] } }.from(from).to(expected_code_values)
+            )
           end
         end
 
-        context 'when model is second_stop_area' do
+        context 'when model does not contain codes' do
           let(:model) { second_stop_area }
 
-          it "should change code values from 'nil' to 'Other Value'" do
-            expect { subject }.to change { model.codes&.first&.value }.from(nil).to('Other Value')
+          it "should change code values from 'nil' to 'Second value'" do
+            expect { subject }.to change { model.codes&.first&.value }.from(nil).to('Second value')
           end
         end
       end

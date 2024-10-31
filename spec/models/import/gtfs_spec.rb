@@ -571,6 +571,67 @@ RSpec.describe Import::Gtfs do
         expect(zone.stop_areas).to match_array(expected_stop_areas)
       end
     end
+
+    describe '#wheelchair_accessibility' do
+      let(:first) do
+        GTFS::Stop.new(
+          id: 'first_id',
+          name: 'Second',
+          wheelchair_boarding: '0',
+        )
+      end
+
+      let(:second) do
+        GTFS::Stop.new(
+          id: 'second_id',
+          name: 'Second',
+          wheelchair_boarding: '1',
+        )
+      end
+
+      let(:third) do
+        GTFS::Stop.new(
+          id: 'third_id',
+          name: 'Third',
+          wheelchair_boarding: '2',
+        )
+      end
+
+      let(:first_stop_area) { Chouette::StopArea.find_by(registration_number: 'first_id') }
+      let(:second_stop_area) { Chouette::StopArea.find_by(registration_number: 'second_id') }
+      let(:third_stop_area) { Chouette::StopArea.find_by(registration_number: 'third_id') }
+
+      before do
+        allow(import.source).to receive(:stops) { [first, second, third] }
+        import.import_stops
+      end
+
+      it 'should import wheelchair_accessibility into stop_areas' do
+        expect(first_stop_area.wheelchair_accessibility).to eq 'unknown'
+        expect(second_stop_area.wheelchair_accessibility).to eq 'yes'
+        expect(third_stop_area.wheelchair_accessibility).to eq 'no'
+      end
+
+      context "when an existing stop area has wheelchair_accessibility value 'yes'" do
+        let(:other) do
+          GTFS::Stop.new(
+            id: 'second_id',
+            name: 'Second',
+            wheelchair_boarding: '0',
+          )
+        end
+
+        before do
+          allow(import.source).to receive(:stops) { [other] }
+        end
+
+        it "should update wheelchair_accessibility value from 'yes' to 'unknown'" do
+          expect { import.import_stops }.to(
+            change { second_stop_area.reload.wheelchair_accessibility}.from('yes').to('unknown')
+          )
+        end
+      end
+    end
   end
 
   describe '#import_transfers' do

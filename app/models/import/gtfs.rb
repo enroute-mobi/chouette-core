@@ -383,11 +383,10 @@ class Import::Gtfs < Import::Base
         stop_area.confirmed_at ||= Time.now
         stop_area.comment = stop.desc
 
-        if stop.wheelchair_boarding
+        if stop.wheelchair_boarding.present?
           case stop.wheelchair_boarding
           when '0'
-            # Keep unchange a current mobility_impaired_accessibility value
-            stop_area.wheelchair_accessibility ||= 'unknown'
+            stop_area.wheelchair_accessibility = 'unknown'
           when '1'
             stop_area.wheelchair_accessibility = 'yes'
           when '2'

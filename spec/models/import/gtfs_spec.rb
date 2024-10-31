@@ -611,6 +611,26 @@ RSpec.describe Import::Gtfs do
         expect(second_stop_area.wheelchair_accessibility).to eq 'yes'
         expect(third_stop_area.wheelchair_accessibility).to eq 'no'
       end
+
+      context "when an existing stop area has wheelchair_accessibility value 'yes'" do
+        let(:other) do
+          GTFS::Stop.new(
+            id: 'second_id',
+            name: 'Second',
+            wheelchair_boarding: '0',
+          )
+        end
+
+        before do
+          allow(import.source).to receive(:stops) { [other] }
+        end
+
+        it "should update wheelchair_accessibility value from 'yes' to 'unknown'" do
+          expect { import.import_stops }.to(
+            change { second_stop_area.reload.wheelchair_accessibility}.from('yes').to('unknown')
+          )
+        end
+      end
     end
   end
 

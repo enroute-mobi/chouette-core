@@ -632,20 +632,14 @@ RSpec.describe Import::Gtfs do
 
     describe '#attributes' do
       subject { line.attributes }
-
       context 'when gtfs route attributes are empty' do
-        let(:second_import) { build_import 'google-sample-feed-empty-city.zip' }
-        let(:line) { Chouette::Line.find_by(registration_number: 'CITY') }
+        let(:import_with_empty_attributes) { build_import 'google-sample-feed-empty-city.zip' }
+        let(:context) { Chouette.create { line name: 'City',number: '40', published_name: 'City', registration_number: 'CITY', comment: 'Test Desc', url: 'www.test.com' } }
+        let(:line) { context.line }
 
         context 'when chouette attributes is present' do
-          before do
-            import.import_routes
-            line.update comment: 'Test Desc', url: 'www.test.com'
-
-            second_import.import_routes
-          end
-
           it 'should prevent GTFS import to reset Line attributes' do
+            import_with_empty_attributes.import_routes
             is_expected.to include(
               'comment' => 'Test Desc',
               'url' => 'www.test.com',

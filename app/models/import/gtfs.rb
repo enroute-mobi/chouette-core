@@ -517,7 +517,7 @@ class Import::Gtfs < Import::Base
           line.comment = line_comment
         end
 
-        if transport_mode = transport_modes[route.type].presence
+        if transport_mode = transport_modes[route.type]
           line.chouette_transport_mode = transport_mode
         end
 

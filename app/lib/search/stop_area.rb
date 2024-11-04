@@ -75,5 +75,57 @@ module Search
       attribute :city_name
       attribute :area_type
     end
+
+    class Chart < ::Search::Base::Chart
+      group_by_attribute 'created_at', :date, sub_types: %i[by_month]
+      group_by_attribute 'updated_at', :date, sub_types: %i[by_month]
+      group_by_attribute 'zip_code', :string
+      group_by_attribute 'city_name', :string
+      group_by_attribute 'postal_region', :string
+      group_by_attribute 'country_code', :string do
+        def label(key)
+          ISO3166::Country[key]&.translation(I18n.locale) || key
+        end
+      end
+      group_by_attribute 'time_zone', :string
+
+      group_by_attribute 'area_type', :string do
+        def keys
+          ::Chouette::AreaType::ALL.map(&:to_s)
+        end
+
+        def label(key)
+          ::Chouette::AreaType.find(key).label
+        end
+      end
+
+      group_by_attribute 'status', :string do
+        def keys
+          ::Chouette::StopArea.status.values
+        end
+
+        def label(key)
+          I18n.t(key, scope: 'stop_areas.statuses')
+        end
+      end
+
+      group_by_attribute 'is_referent', :string do
+        def keys
+          [true, false]
+        end
+
+        def label(key)
+          I18n.t(key ? 'referent' : 'particular', scope: 'chart.values.stop_area.is_referent')
+        end
+      end
+
+      group_by_attribute 'stop_area_provider_id', :string, joins: { stop_area_provider: {} }, selects: %w[stop_area_providers.name]
+
+      group_by_attribute 'transport_mode', :string do
+        def label(key)
+          key.human_name
+        end
+      end
+    end
   end
 end

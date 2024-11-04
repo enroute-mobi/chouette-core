@@ -212,12 +212,7 @@ module Export
       end
 
       def stop_areas
-        stop_area_ids = Arel.sql(
-          [
-            stop_points_stop_area_ids,
-            specific_vehicle_journey_at_stops_stop_area_ids
-          ].map(&:to_sql).select(&:present?).join(' UNION ')
-        )
+        stop_area_ids = Arel::Nodes::Union.new(stop_points_stop_area_ids.arel.ast, specific_vehicle_journey_at_stops_stop_area_ids.arel.ast)
         current_scope.stop_areas.where(Chouette::StopArea.arel_table[:id].in(stop_area_ids))
       end
 

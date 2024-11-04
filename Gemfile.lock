@@ -58,7 +58,7 @@ GIT
 
 GIT
   remote: https://bitbucket.org/enroute-mobi/nest.git
-  revision: bdb2257ab4a92087d9766d354280214cfd665b0c
+  revision: e0be3af4b1ff399c93ea0db4f311ac172c397fb1
   specs:
     nest (0.1)
       activesupport

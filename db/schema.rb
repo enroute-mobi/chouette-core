@@ -1662,7 +1662,7 @@ ActiveRecord::Schema.define(version: 2024_10_25_100315) do
     t.bigint "stop_area_id"
     t.index ["stop_area_id"], name: "index_vehicle_journey_at_stops_on_stop_area_id"
     t.index ["stop_point_id"], name: "index_vehicle_journey_at_stops_on_stop_pointid"
-    t.index ["vehicle_journey_id"], name: "index_vehicle_journey_at_stops_on_vehicle_journey_id"
+    t.index ["vehicle_journey_id", "stop_area_id"], name: "index_vjas_on_vehicle_journey_id_and_stop_area_id"
   end
 
   create_table "vehicle_journeys", force: :cascade do |t|

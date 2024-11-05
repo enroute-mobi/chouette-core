@@ -31,11 +31,11 @@ class FareZonesController < Chouette::FareReferentialController
     get_resource_ivar || set_resource_ivar(super.decorate(context: { workbench: workbench }))
   end
 
-  def collection
-    @collection ||= workbench.fare_referential.fare_zones.order(sort_column => sort_direction)
-  end
-
   private
+
+  def end_of_association_chain
+    workbench.fare_referential.fare_zones.order(sort_column => sort_direction)
+  end
 
   def fare_zone_params
     @fare_zone_params ||= params.require(:fare_zone).permit(

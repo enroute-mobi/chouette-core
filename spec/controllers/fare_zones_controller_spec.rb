@@ -16,9 +16,6 @@ RSpec.describe FareZonesController, type: :controller do
           fare_zone :other_fare_zone
         end
       end
-      workgroup do
-        workbench(:other_workbench, organisation: organisation)
-      end
     end
   end
 
@@ -93,7 +90,7 @@ RSpec.describe FareZonesController, type: :controller do
 
     context 'when the fare provider workbench is not the same as the current workbench' do
       let(:fare_zone) { context.fare_zone(:other_fare_zone) }
-      it { expect(response).to have_http_status(:not_found) }
+      it { expect(response).to have_http_status(:forbidden) }
     end
   end
 
@@ -109,7 +106,7 @@ RSpec.describe FareZonesController, type: :controller do
 
     context 'when the fare provider workbench is not the same as the current workbench' do
       let(:fare_zone) { context.fare_zone(:other_fare_zone) }
-      it { expect(response).to have_http_status(:not_found) }
+      it { expect(response).to have_http_status(:forbidden) }
     end
 
     context 'when the params contain a fare provider' do

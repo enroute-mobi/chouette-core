@@ -15,6 +15,8 @@ module Control
 
         validates :target_model, :target_attribute, presence: true
 
+        before_update :reset_options
+
         def model_attribute
           candidate_target_attributes.find_by(model_name: target_model, name: target_attribute)
         end
@@ -38,6 +40,12 @@ module Control
 
         def dataset_models
           %w[VehicleJourney]
+        end
+
+        def reset_options
+          return unless target_model.in?(dataset_models)
+
+          self.options = self.options.except('uniqueness_scope')
         end
       end
     end

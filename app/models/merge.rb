@@ -73,13 +73,11 @@ class Merge < ApplicationModel
     CustomFieldsSupport.within_workgroup(workgroup) do
       Chouette::Benchmark.measure('merge', merge: id) do
         
-        if processing_rules_before_merge.present?
-          continue_after_processings = processor.before(referentials)
-          # Check processed status and stop merge if one failed
-          unless continue_after_processings
-            failed_on_processings
-            return
-          end
+        continue_after_processings = processor.before(referentials)
+        # Check processed status and stop merge if one failed
+        unless continue_after_processings
+          failed_on_processings
+          return
         end
         
         Chouette::Benchmark.measure('prepare_new') do
@@ -96,13 +94,11 @@ class Merge < ApplicationModel
           clean_new
         end
 
-        if processing_rules_after_merge.present?
-          continue_after_processings = processor.after([new])
-          # Check processed status and stop merge if one failed
-          unless continue_after_processings
-            failed_on_processings
-            return
-          end
+        continue_after_processings = processor.after([new])
+        # Check processed status and stop merge if one failed
+        unless continue_after_processings
+          failed_on_processings
+          return
         end
 
         save_current
@@ -233,35 +229,5 @@ class Merge < ApplicationModel
 
   def processor
     @processor ||= Processor.new(self)
-  end
-
-  def processing_rules_before_merge
-    workbench_processing_rules_before_merge + workgroup_processing_rules_before_merge
-  end
-
-  def workbench_processing_rules_before_merge
-    workbench.processing_rules.where(operation_step: 'before_merge').order(processable_type: :desc)
-  end
-
-  def workgroup_processing_rules_before_merge
-    dedicated_processing_rules = workbench.workgroup.processing_rules.where(operation_step: 'before_merge').with_target_workbenches_containing(workbench_id)
-    return dedicated_processing_rules if dedicated_processing_rules.present?
-
-    workbench.workgroup.processing_rules.where(operation_step: 'before_merge', target_workbench_ids: [])
-  end
-
-  def processing_rules_after_merge
-    workbench_processing_rules_after_merge + workgroup_processing_rules_after_merge
-  end
-
-  def workbench_processing_rules_after_merge
-    workbench.processing_rules.where(operation_step: 'after_merge').order(processable_type: :desc)
-  end
-
-  def workgroup_processing_rules_after_merge
-    dedicated_processing_rules = workbench.workgroup.processing_rules.where(operation_step: 'after_merge').with_target_workbenches_containing(workbench_id)
-    return dedicated_processing_rules if dedicated_processing_rules.present?
-
-    workbench.workgroup.processing_rules.where(operation_step: 'after_merge', target_workbench_ids: [])
   end
 end

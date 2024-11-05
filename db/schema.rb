@@ -1259,6 +1259,7 @@ ActiveRecord::Schema.define(version: 2024_10_25_100315) do
     t.index ["created_from_id"], name: "index_referentials_on_created_from_id"
     t.index ["referential_suite_id"], name: "index_referentials_on_referential_suite_id"
     t.index ["slug"], name: "index_referentials_on_slug", unique: true
+    t.index ["workbench_id"], name: "index_referentials_on_workbench_id"
   end
 
   create_table "routes", force: :cascade do |t|

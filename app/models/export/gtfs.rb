@@ -1145,7 +1145,7 @@ class Export::Gtfs < Export::Base
           wheelchair_accessible: gtfs_wheelchair_accessibility,
           bikes_allowed: gtfs_bikes_allowed
           # block_id: TO DO
-        }.tap { |a| Rails.logger.debug a.inspect }
+        }
       end
     end
 

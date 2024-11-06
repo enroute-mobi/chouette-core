@@ -76,9 +76,9 @@ module Control
 
       def candidate_referentials
         [].tap do |candidate_referentials|
-          candidate_referentials.concat workbench.referentials
+          candidate_referentials.concat workbench.referentials.select(&:browse?)
           if workbench.workgroup_owner?
-            candidate_referentials.concat workgroup.output.referentials
+            candidate_referentials.concat workgroup.output.referentials.select(&:browse?)
           end
         end
       end

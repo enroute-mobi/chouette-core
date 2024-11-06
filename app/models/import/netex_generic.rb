@@ -52,6 +52,7 @@ module Import
         StopAreaReferential,
         LineReferential,
         ShapeReferential,
+        FareReferential,
         ScheduledStopPoints,
         RoutingConstraintZones
       ].each do |part_class|

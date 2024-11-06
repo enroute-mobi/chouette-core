@@ -99,7 +99,7 @@ module Search
         end
       end
 
-      group_by_attribute 'status', :string do
+      group_by_attribute 'status', :string, selects: ["CASE WHEN stop_areas.deleted_at IS NOT NULL THEN 'deactivated' ELSE CASE WHEN stop_areas.confirmed_at IS NOT NULL THEN 'confirmed' ELSE 'in_creation' END END"] do
         def keys
           ::Chouette::StopArea.status.values
         end

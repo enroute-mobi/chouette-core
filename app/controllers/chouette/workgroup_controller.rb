@@ -30,5 +30,13 @@ module Chouette
       @default_workbench ||= workgroup.default_workbench(current_user)
     end
     helper_method :default_workbench
+
+    def workbench_for_resource(resource)
+      if current_user.workbenches.include?(resource.workbench)
+        resource.workbench
+      else
+        default_workbench
+      end
+    end
   end
 end

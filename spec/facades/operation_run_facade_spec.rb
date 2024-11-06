@@ -15,7 +15,7 @@ RSpec.describe OperationRunFacade do
   describe '#message_table_params' do
     context 'for Macro::List::Run' do
       let(:macro_list_run) { Macro::List::Run.create workbench: context.workbench }
-      let(:facade) { OperationRunFacade.new(macro_list_run, workbench, display_referential_links: true) }
+      let(:facade) { OperationRunFacade.new(macro_list_run, workbench) }
 
       it 'should display 3 columns' do
         columns, options = facade.message_table_params
@@ -25,7 +25,7 @@ RSpec.describe OperationRunFacade do
 
     context 'for Control::List::Run' do
       let(:control_list_run) { Control::List::Run.create workbench: context.workbench }
-      let(:facade) { OperationRunFacade.new(control_list_run, workbench, display_referential_links: true) }
+      let(:facade) { OperationRunFacade.new(control_list_run, workbench) }
 
       it 'should display 2 columns' do
         columns, options = facade.message_table_params
@@ -50,21 +50,14 @@ RSpec.describe OperationRunFacade do
 
     context 'when message has no source' do
       let(:message) { Macro::Message.new source: nil, macro_run: macro_run }
-      let(:facade) { OperationRunFacade.new(macro_list_run, workbench, display_referential_links: true) }
+      let(:facade) { OperationRunFacade.new(macro_list_run, workbench) }
 
       it { is_expected.to be_nil }
     end
 
-    context 'when facade should not display_referential_links' do
+    context 'when message has a source' do
       let(:message) { Macro::Message.new source: line, macro_run: macro_run }
-      let(:facade) { OperationRunFacade.new(macro_list_run, workbench, display_referential_links: false) }
-
-      it { is_expected.to be_nil }
-    end
-
-    context 'when message has a source and facade display_referential_links' do
-      let(:message) { Macro::Message.new source: line, macro_run: macro_run }
-      let(:facade) { OperationRunFacade.new(macro_list_run, workbench, display_referential_links: true) }
+      let(:facade) { OperationRunFacade.new(macro_list_run, workbench) }
 
       it { is_expected.to eq("/workbenches/#{workbench.id}/line_referential/lines/#{line.id}") }
     end

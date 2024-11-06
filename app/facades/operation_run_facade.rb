@@ -3,12 +3,11 @@ class OperationRunFacade
   include ActionView::Helpers::TagHelper
   include ActionView::Helpers::UrlHelper
 
-  attr_reader :resource, :current_workbench, :display_referential_links
+  attr_reader :resource, :current_workbench
 
-  def initialize(resource, current_workbench, display_referential_links: true)
+  def initialize(resource, current_workbench)
     @resource = resource
     @current_workbench = current_workbench
-    @display_referential_links = display_referential_links
   end
 
   def criticity_span(criticity)
@@ -55,10 +54,19 @@ class OperationRunFacade
   end
 
   def source_link(message)
-    return nil unless current_workbench && message.source_type && message.source_id && display_referential_links
+    return nil unless display_referential_links? && message.source_type && message.source_id
 
     source_class = message.source_type&.constantize
     Chouette::ModelPathFinder.new(source_class, message.source_id, current_workbench, resource.referential).path
+  end
+
+  private
+
+  def display_referential_links?
+    return @display_referential_links if defined?(@display_referential_links)
+
+    @display_referential_links = current_workbench && \
+                                 (!resource.referential || current_workbench.find_referential(resource.referential.id))
   end
 
   class	PaginateLinkRenderer < WillPaginate::ActionView::LinkRenderer

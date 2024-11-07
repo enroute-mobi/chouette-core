@@ -99,8 +99,8 @@ RSpec.describe Control::AttributeUniqueness do
           )
         end
 
-        context "When uniqueness scope is 'All'" do
-          let(:uniqueness_scope) { 'all' }
+        context "When uniqueness scope is 'Workgroup'" do
+          let(:uniqueness_scope) { 'workgroup' }
 
           let(:context) do
             Chouette.create do

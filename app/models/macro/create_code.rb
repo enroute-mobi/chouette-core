@@ -1,7 +1,27 @@
 module Macro
   class CreateCode < Base
     # Use enumerize directly
-    enumerize :target_model, in: %w{StopArea Line VehicleJourney}
+    enumerize :target_model, in: %w[
+      Line
+      LineGroup
+      LineNotice
+      Company
+      StopArea
+      StopAreaGroup
+      Entrance
+      Shape
+      PointOfInterest
+      ServiceFacilitySet
+      AccessibilityAssessment
+      Fare::Zone
+      LineRoutingConstraintZone
+      Document
+      Contract
+      Route
+      JourneyPattern
+      VehicleJourney
+      TimeTable
+    ]
 
     option :target_model
     option :source_attribute # TODO use ModelAttribute ?
@@ -30,7 +50,7 @@ module Macro
 
         request = CreateCodeFromUuid::Run::RequestBuilder.new(workgroup, models, code_space, target_pattern).run
         request.find_in_batches do |batch|
-          model_class.transaction do
+          models.transaction do
             batch.each do |model|
               if source_value = source.value(model)
                 code_value = target.value(model, source_value)
@@ -74,13 +94,8 @@ module Macro
         @code_space ||= workgroup.code_spaces.find_by(short_name: target_code_space)
       end
 
-      def model_class
-        @model_class ||=
-          "Chouette::#{target_model}".constantize rescue nil || target_model.constantize
-      end
-
       def model_collection
-        target_model.underscore.pluralize
+        target_model.underscore.gsub('/', '_').pluralize
       end
 
       def models

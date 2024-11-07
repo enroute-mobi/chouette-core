@@ -10,6 +10,9 @@
             @line_notice.human_attribute_name(:title) => @line_notice.title, \
             @line_notice.human_attribute_name(:lines) => (@line_notice.lines.nil? ? t('line_notices.show.no_lines') : array_to_html_list(@line_notice.lines.collect(&:name))),
            }
+      .col-lg-6.col-md-6.col-sm-12.col-xs-12
+        = render 'codes/block', model: @line_notice
+
 
       .col-lg-12.col-md-12.col-sm-12.col-xs-12.definition-list
         .dl-head= @line_notice.human_attribute_name(:content)

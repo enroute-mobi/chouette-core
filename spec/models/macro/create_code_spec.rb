@@ -17,25 +17,36 @@ RSpec.describe Macro::CreateCode do
   end
 
   describe Macro::CreateCode::Run do
+    let(:macro_list) { Macro::List.create!(name: 'Macro List', workbench: context.workbench) }
+    let(:macro_list_run_referential) { nil }
+    let(:macro_list_run) do
+      Macro::List::Run.create!(
+        name: 'Create code',
+        creator: 'user',
+        original_macro_list: macro_list,
+        workbench: context.workbench,
+        referential: macro_list_run_referential
+      )
+    end
+    let(:macro_run) do
+      Macro::CreateCode::Run.create(
+        target_model: target_model,
+        source_attribute: source_attribute,
+        target_code_space: 'test',
+        macro_list_run: macro_list_run,
+        position: 0
+      ).tap do |run|
+        allow(run).to receive(:workbench).and_return(context.workbench)
+      end
+    end
+
     describe '#run' do
       subject { macro_run.run }
 
-      context "when the macro has target_model 'StopArea'" do
-        let!(:macro_list_run) do
-          Macro::List::Run.create workbench: context.workbench
-        end
-        let(:macro_run) do
-          Macro::CreateCode::Run.create(
-            target_model: 'StopArea',
-            source_attribute: source_attribute,
-            target_code_space: 'test',
-            macro_list_run: macro_list_run,
-            position: 0
-          ).tap do |run|
-            allow(run).to receive(:workbench).and_return(context.workbench)
-          end
-        end
+      before { macro_list_run_referential&.switch }
 
+      context "when the macro has target_model 'StopArea'" do
+        let(:target_model) { 'StopArea' }
         let(:stop_area) { context.stop_area }
 
         context "source_attribute 'registration_number' and target_code_space 'test'" do
@@ -46,7 +57,6 @@ RSpec.describe Macro::CreateCode do
               Chouette.create do
                 code_space short_name: 'test'
                 stop_area registration_number: 'dummy'
-                referential
               end
             end
             let(:code_space) { context.code_space }
@@ -62,7 +72,6 @@ RSpec.describe Macro::CreateCode do
                 Chouette.create do
                   code_space short_name: 'test'
                   stop_area registration_number: 'dummy', codes: { test: 'unchanged' }
-                  referential
                 end
               end
 
@@ -78,7 +87,6 @@ RSpec.describe Macro::CreateCode do
                   code_space :code_test, short_name: 'test'
                   code_space :other_code_space, short_name: 'other_test'
                   stop_area registration_number: 'dummy', codes: { other_test: 'unchanged' }
-                  referential
                 end
               end
               let(:code_space) { context.code_space(:code_test) }
@@ -96,7 +104,6 @@ RSpec.describe Macro::CreateCode do
               Chouette.create do
                 code_space short_name: 'test'
                 stop_area registration_number: nil
-                referential
               end
             end
 
@@ -115,7 +122,6 @@ RSpec.describe Macro::CreateCode do
                 code_space :code_space_test, short_name: 'test'
                 code_space :code_space_other_test, short_name: 'other_test'
                 stop_area codes: { other_test: 'dummy' }
-                referential
               end
             end
             let(:code_space) { context.code_space(:code_space_test) }
@@ -133,7 +139,6 @@ RSpec.describe Macro::CreateCode do
                 code_space :code_space_test, short_name: 'test'
                 code_space :code_space_other_test, short_name: 'other_test'
                 stop_area
-                referential
               end
             end
 
@@ -145,20 +150,8 @@ RSpec.describe Macro::CreateCode do
       end
 
       context "when the macro has target_model 'Line', source_attribute 'number' and target_code_space 'test'" do
-        let!(:macro_list_run) do
-          Macro::List::Run.create workbench: context.workbench
-        end
-        let(:macro_run) do
-          Macro::CreateCode::Run.create(
-            target_model: 'Line',
-            source_attribute: 'number',
-            target_code_space: 'test',
-            macro_list_run: macro_list_run,
-            position: 0
-          ).tap do |run|
-            allow(run).to receive(:workbench).and_return(context.workbench)
-          end
-        end
+        let(:target_model) { 'Line' }
+        let(:source_attribute) { 'number' }
 
         let(:line) { context.line }
 
@@ -167,7 +160,6 @@ RSpec.describe Macro::CreateCode do
             Chouette.create do
               code_space short_name: 'test'
               line number: 'dummy'
-              referential
             end
           end
           let(:code_space) { context.code_space }
@@ -181,28 +173,19 @@ RSpec.describe Macro::CreateCode do
       end
 
       context "when the macro has target_model 'VehicleJourney' target_code_space 'test'" do
-        let(:macro_list_run) do
-          Macro::List::Run.create referential: context.referential, workbench: context.workbench
-        end
-        let(:macro_run) do
-          Macro::CreateCode::Run.create(
-            target_model: 'VehicleJourney',
-            source_attribute: 'published_journey_identifier',
-            target_code_space: 'test',
-            macro_list_run: macro_list_run,
-            position: 0
-          )
-        end
+        let(:target_model) { 'VehicleJourney' }
+        let(:source_attribute) { 'published_journey_identifier' }
+        let(:macro_list_run_referential) { context.referential }
 
         let(:vehicle_journey) { context.vehicle_journey }
-
-        before { context.referential.switch }
 
         context "when a VehicleJourney exists with a published_journey_identifier 'dummy'" do
           let(:context) do
             Chouette.create do
               code_space short_name: 'test'
-              vehicle_journey published_journey_identifier: 'dummy'
+              referential do
+                vehicle_journey published_journey_identifier: 'dummy'
+              end
             end
           end
           let(:code_space) { context.code_space }
@@ -217,7 +200,9 @@ RSpec.describe Macro::CreateCode do
             let(:context) do
               Chouette.create do
                 code_space short_name: 'test'
-                vehicle_journey published_journey_identifier: 'dummy', codes: { test: 'unchanged' }
+                referential do
+                  vehicle_journey published_journey_identifier: 'dummy', codes: { test: 'unchanged' }
+                end
               end
             end
 
@@ -232,7 +217,9 @@ RSpec.describe Macro::CreateCode do
               Chouette.create do
                 code_space :code_test, short_name: 'test'
                 code_space :other_code_space, short_name: 'other_test'
-                vehicle_journey published_journey_identifier: 'dummy', codes: { other_test: 'unchanged' }
+                referential do
+                  vehicle_journey published_journey_identifier: 'dummy', codes: { other_test: 'unchanged' }
+                end
               end
             end
             let(:code_space) { context.code_space(:code_test) }
@@ -249,7 +236,9 @@ RSpec.describe Macro::CreateCode do
           let(:context) do
             Chouette.create do
               code_space short_name: 'test'
-              vehicle_journey published_journey_identifier: nil
+              referential do
+                vehicle_journey published_journey_identifier: nil
+              end
             end
           end
 

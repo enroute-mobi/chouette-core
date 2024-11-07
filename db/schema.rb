@@ -1441,6 +1441,7 @@ ActiveRecord::Schema.define(version: 2024_10_25_100315) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.bigint "workbench_id"
+    t.string "short_name"
     t.index ["workbench_id"], name: "index_stop_area_providers_on_workbench_id"
   end
 

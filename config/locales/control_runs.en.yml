@@ -37,6 +37,8 @@ en:
         one: Code uniqueness
       control/service_count_in_range/run:
         one: Service count in a range
+      control/attribute_uniqueness/run:
+        one: Attribute uniqueness
     attributes:
       control/base/run:
         name: Name
@@ -89,3 +91,6 @@ en:
       control/service_count_in_range/run:
         minimum_service_counts: Minimum service counts
         maximum_service_counts: Maximum service counts
+      control/attribute_uniqueness/run:
+        target_attribute: Attribute
+        uniqueness_scope: Uniqueness scope

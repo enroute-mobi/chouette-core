@@ -82,6 +82,7 @@ RSpec.describe Control::AttributeUniqueness do
 
         let(:first_duplicate_stop) { context.stop_area(:first) }
         let(:second_duplicate_stop) { context.stop_area(:second) }
+        let(:referential) { nil }
         let(:workbench) { context.workbench(:first) }
 
         let(:first_expected_message) do
@@ -132,7 +133,7 @@ RSpec.describe Control::AttributeUniqueness do
               end
             end
 
-            it 'should create warning messages' do
+            it 'should create warning messages for duplicated stop areas' do
               is_expected.to include(first_expected_message)
               is_expected.to include(second_expected_message)
             end
@@ -172,7 +173,7 @@ RSpec.describe Control::AttributeUniqueness do
               end
             end
 
-            it 'should create warning messages' do
+            it 'should create warning messages for duplicated stop areas' do
               is_expected.to include(first_expected_message)
               is_expected.to include(second_expected_message)
             end

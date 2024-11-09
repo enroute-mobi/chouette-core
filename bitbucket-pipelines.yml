@@ -7,7 +7,7 @@ definitions:
       type: docker
     postgres:
       image:
-        name: us.gcr.io/enroute-interne/enroute-postgresql:14-dev
+        name: us.gcr.io/enroute-interne/enroute-postgresql:dev
         username: _json_key
         password: "$GCLOUD_API_KEYFILE"
       environment:

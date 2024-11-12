@@ -256,7 +256,6 @@ module Import
     # with associated NeTEx resources
     class LineReferential < SynchronizedPart
       delegate :line_provider, to: :import
-      #delegate :line_referential, to: :import
 
       def synchronization
         @synchronization ||= Chouette::Sync::Referential.new(target).tap do |sync|

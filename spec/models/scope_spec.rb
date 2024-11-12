@@ -22,10 +22,15 @@ RSpec.describe Scope::Workbench do
 
           line :line, documents: %i[document_line document_other_workbench]
 
+          line_group :line_group, lines: %i[line]
+
           stop_area :stop_area1, documents: %i[document_stop_area] do
             entrance :entrance
           end
           stop_area :stop_area2
+
+          stop_area_group :stop_area_group, stop_areas: %i[stop_area1]
+
           connection_link :connection_link, departure: :stop_area1, arrival: :stop_area2
 
           shape :shape
@@ -53,11 +58,13 @@ RSpec.describe Scope::Workbench do
         workbench :other_workbench do
           company
           network
-          line
+          line :other_line
+          line_group lines: %i[other_line]
           stop_area :other_stop_area1 do
             entrance
           end
           stop_area :other_stop_area2
+          stop_area_group stop_areas: %i[other_stop_area1]
           connection_link departure: :other_stop_area1, arrival: :other_stop_area2
           shape
           point_of_interest
@@ -88,6 +95,18 @@ RSpec.describe Scope::Workbench do
       let(:workbench) { context.workbench(:same_workgroup_workbench) }
 
       it { is_expected.to match_array([context.line(:line)]) }
+    end
+  end
+
+  describe '#line_groups' do
+    subject { scope.line_groups }
+
+    it { is_expected.to match_array([context.line_group(:line_group)]) }
+
+    context 'in workbench in the same workgroup' do
+      let(:workbench) { context.workbench(:same_workgroup_workbench) }
+
+      it { is_expected.to match_array([context.line_group(:line_group)]) }
     end
   end
 
@@ -124,6 +143,18 @@ RSpec.describe Scope::Workbench do
       let(:workbench) { context.workbench(:same_workgroup_workbench) }
 
       it { is_expected.to match_array([context.stop_area(:stop_area1), context.stop_area(:stop_area2)]) }
+    end
+  end
+
+  describe '#stop_area_groups' do
+    subject { scope.stop_area_groups }
+
+    it { is_expected.to match_array([context.stop_area_group(:stop_area_group)]) }
+
+    context 'in workbench in the same workgroup' do
+      let(:workbench) { context.workbench(:same_workgroup_workbench) }
+
+      it { is_expected.to be_empty }
     end
   end
 
@@ -262,6 +293,9 @@ RSpec.describe Scope::Referential do
           line :line_without_route
           line :line_outside, company: :company_outside, network: :network_outside, documents: %i[document_outside]
 
+          line_group :line_group, lines: %i[line]
+          line_group :line_group_outside, lines: %i[line_outside]
+
           stop_area :stop_area1, documents: %i[document_stop_area] do
             entrance :entrance
           end
@@ -272,6 +306,9 @@ RSpec.describe Scope::Referential do
           end
           stop_area :stop_area_outside2
           connection_link :connection_link_outside, departure: :stop_area_outside1, arrival: :stop_area_outside2
+
+          stop_area_group :stop_area_group, stop_areas: %i[stop_area1]
+          stop_area_group :stop_area_group_outside, stop_areas: %i[stop_area_outside1]
 
           shape :shape
           shape :shape_outside
@@ -354,6 +391,30 @@ RSpec.describe Scope::Referential do
     end
   end
 
+  describe '#line_groups' do
+    subject { scope.line_groups }
+
+    it { is_expected.to match_array([context.line_group(:line_group)]) }
+
+    context 'in referential in the same workbench' do
+      let(:referential) { context.referential(:same_workbench_referential) }
+
+      it { is_expected.to be_empty }
+    end
+
+    context 'in workbench in the same workgroup' do
+      let(:workbench) { context.workbench(:same_workgroup_workbench) }
+
+      it { is_expected.to match_array([context.line_group(:line_group)]) }
+    end
+
+    context 'in workbench of another workgroup' do
+      let(:workbench) { context.workbench(:other_workbench) }
+
+      it { is_expected.to be_empty }
+    end
+  end
+
   describe '#companies' do
     subject { scope.companies }
 
@@ -417,6 +478,30 @@ RSpec.describe Scope::Referential do
       let(:workbench) { context.workbench(:same_workgroup_workbench) }
 
       it { is_expected.to match_array([context.stop_area(:stop_area1), context.stop_area(:stop_area2)]) }
+    end
+
+    context 'in workbench of another workgroup' do
+      let(:workbench) { context.workbench(:other_workbench) }
+
+      it { is_expected.to be_empty }
+    end
+  end
+
+  describe '#stop_area_groups' do
+    subject { scope.stop_area_groups }
+
+    it { is_expected.to match_array([context.stop_area_group(:stop_area_group)]) }
+
+    context 'in referential in the same workbench' do
+      let(:referential) { context.referential(:same_workbench_referential) }
+
+      it { is_expected.to be_empty }
+    end
+
+    context 'in workbench in the same workgroup' do
+      let(:workbench) { context.workbench(:same_workgroup_workbench) }
+
+      it { is_expected.to match_array([context.stop_area_group(:stop_area_group)]) }
     end
 
     context 'in workbench of another workgroup' do
@@ -893,11 +978,15 @@ RSpec.describe Scope::Owned do
 
             line :line, documents: %i[document_line]
 
+            line_group :line_group, lines: %i[line]
+
             stop_area :stop_area1, documents: %i[document_stop_area] do
               entrance :entrance
             end
             stop_area :stop_area2
             connection_link :connection_link, departure: :stop_area1, arrival: :stop_area2
+
+            stop_area_group :stop_area_group, stop_areas: %i[stop_area1]
 
             shape :shape
             point_of_interest :point_of_interest
@@ -944,6 +1033,18 @@ RSpec.describe Scope::Owned do
       end
     end
 
+    describe '#line_groups' do
+      subject { scope.line_groups }
+
+      it { is_expected.to match_array([context.line_group(:line_group)]) }
+
+      context 'in workbench in the same workgroup' do
+        let(:workbench) { context.workbench(:same_workgroup_workbench) }
+
+        it { is_expected.to be_empty }
+      end
+    end
+
     describe '#companies' do
       subject { scope.companies }
 
@@ -972,6 +1073,18 @@ RSpec.describe Scope::Owned do
       subject { scope.stop_areas }
 
       it { is_expected.to match_array([context.stop_area(:stop_area1), context.stop_area(:stop_area2)]) }
+
+      context 'in workbench in the same workgroup' do
+        let(:workbench) { context.workbench(:same_workgroup_workbench) }
+
+        it { is_expected.to be_empty }
+      end
+    end
+
+    describe '#stop_area_groups' do
+      subject { scope.stop_area_groups }
+
+      it { is_expected.to match_array([context.stop_area_group(:stop_area_group)]) }
 
       context 'in workbench in the same workgroup' do
         let(:workbench) { context.workbench(:same_workgroup_workbench) }
@@ -1115,6 +1228,9 @@ RSpec.describe Scope::Owned do
             line :line_without_route
             line :line_outside, company: :company_outside, network: :network_outside, documents: %i[document_outside]
 
+            line_group :line_group, lines: %i[line]
+            line_group :line_group_outside, lines: %i[line_outside]
+
             stop_area :stop_area1, documents: %i[document_stop_area] do
               entrance :entrance
             end
@@ -1125,6 +1241,9 @@ RSpec.describe Scope::Owned do
             end
             stop_area :stop_area_outside2
             connection_link :connection_link_outside, departure: :stop_area_outside1, arrival: :stop_area_outside2
+
+            stop_area_group :stop_area_group, stop_areas: %i[stop_area1]
+            stop_area_group :stop_area_group_outside, stop_areas: %i[stop_area_outside1]
 
             shape :shape
             shape :shape_outside
@@ -1171,6 +1290,18 @@ RSpec.describe Scope::Owned do
       end
     end
 
+    describe '#line_groups' do
+      subject { scope.line_groups }
+
+      it { is_expected.to match_array([context.line_group(:line_group)]) }
+
+      context 'in workbench in the same workgroup' do
+        let(:workbench) { context.workbench(:same_workgroup_workbench) }
+
+        it { is_expected.to be_empty }
+      end
+    end
+
     describe '#companies' do
       subject { scope.companies }
 
@@ -1199,6 +1330,18 @@ RSpec.describe Scope::Owned do
       subject { scope.stop_areas }
 
       it { is_expected.to match_array([context.stop_area(:stop_area1), context.stop_area(:stop_area2)]) }
+
+      context 'in workbench in the same workgroup' do
+        let(:workbench) { context.workbench(:same_workgroup_workbench) }
+
+        it { is_expected.to be_empty }
+      end
+    end
+
+    describe '#stop_area_groups' do
+      subject { scope.stop_area_groups }
+
+      it { is_expected.to match_array([context.stop_area_group(:stop_area_group)]) }
 
       context 'in workbench in the same workgroup' do
         let(:workbench) { context.workbench(:same_workgroup_workbench) }

@@ -632,6 +632,10 @@ RSpec.describe Search::Base, type: :model do
         line :line_without_route
         line :line_outside, company: :company_outside, network: :network_outside, documents: %i[document_outside]
 
+        line_group :line_group_match1, lines: %i[line_match1]
+        line_group :line_group_match2, lines: %i[line_match2]
+        line_group :line_group_outside, lines: %i[line_outside]
+
         stop_area :stop_area_match1, documents: %i[document_stop_area_match1] do
           entrance :entrance_match1
         end
@@ -643,6 +647,10 @@ RSpec.describe Search::Base, type: :model do
           entrance :entrance_outside
         end
         connection_link :connection_link_outside, departure: :stop_area_match1, arrival: :stop_area_outside
+
+        stop_area_group :stop_area_group_match1, stop_areas: %i[stop_area_match1]
+        stop_area_group :stop_area_group_match2, stop_areas: %i[stop_area_match2]
+        stop_area_group :stop_area_group_outside, stop_areas: %i[stop_area_outside]
 
         shape_provider do
           shape :shape_match1
@@ -729,6 +737,26 @@ RSpec.describe Search::Base, type: :model do
       end
     end
 
+    describe '#line_groups' do
+      subject { scope.line_groups }
+
+      context 'in workbench' do
+        let(:initial_scope) { workbench_scope }
+
+        it { is_expected.to be_empty }
+      end
+
+      context 'in referential' do
+        it do
+          is_expected.to match_array(
+            [
+              context.line_group(:line_group_match1), context.line_group(:line_group_match2)
+            ]
+          )
+        end
+      end
+    end
+
     describe '#companies' do
       subject { scope.companies }
 
@@ -768,6 +796,26 @@ RSpec.describe Search::Base, type: :model do
 
       context 'in referential' do
         it { is_expected.to match_array([context.stop_area(:stop_area_match1), context.stop_area(:stop_area_match2)]) }
+      end
+    end
+
+    describe '#stop_area_groups' do
+      subject { scope.stop_area_groups }
+
+      context 'in workbench' do
+        let(:initial_scope) { workbench_scope }
+
+        it { is_expected.to be_empty }
+      end
+
+      context 'in referential' do
+        it do
+          is_expected.to match_array(
+            [
+              context.stop_area_group(:stop_area_group_match1), context.stop_area_group(:stop_area_group_match2)
+            ]
+          )
+        end
       end
     end
 

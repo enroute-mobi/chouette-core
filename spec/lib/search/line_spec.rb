@@ -50,6 +50,10 @@ RSpec.describe Search::Line do
         line :line_without_route, transport_mode: 'bus'
         line :line_outside, transport_mode: 'bus'
 
+        line_group :line_group_match1, lines: %i[line_match1]
+        line_group :line_group_match2, lines: %i[line_match2]
+        line_group :line_group_no_match, lines: %i[line_no_match]
+
         stop_area :stop_area_match1, documents: %i[document_stop_area_match1] do
           entrance :entrance_match1
         end
@@ -61,6 +65,10 @@ RSpec.describe Search::Line do
           entrance :entrance_no_match
         end
         connection_link :connection_link_no_match, departure: :stop_area_match1, arrival: :stop_area_no_match
+
+        stop_area_group :stop_area_group_match1, stop_areas: %i[stop_area_match1]
+        stop_area_group :stop_area_group_match2, stop_areas: %i[stop_area_match2]
+        stop_area_group :stop_area_group_no_match, stop_areas: %i[stop_area_no_match]
 
         shape_provider do
           shape :shape_match1
@@ -173,6 +181,34 @@ RSpec.describe Search::Line do
       end
     end
 
+    describe '#line_groups' do
+      subject { scope.line_groups }
+
+      context 'in workbench' do
+        let(:initial_scope) { workbench_scope }
+
+        it do
+          is_expected.to match_array(
+            [
+              context.line_group(:line_group_match1),
+              context.line_group(:line_group_match2)
+            ]
+          )
+        end
+      end
+
+      context 'in referential' do
+        it do
+          is_expected.to match_array(
+            [
+              context.line_group(:line_group_match1),
+              context.line_group(:line_group_match2)
+            ]
+          )
+        end
+      end
+    end
+
     describe '#companies' do
       subject { scope.companies }
 
@@ -212,6 +248,27 @@ RSpec.describe Search::Line do
 
       context 'in referential' do
         it { is_expected.to match_array([context.stop_area(:stop_area_match1), context.stop_area(:stop_area_match2)]) }
+      end
+    end
+
+    describe '#stop_area_groups' do
+      subject { scope.stop_area_groups }
+
+      context 'in workbench' do
+        let(:initial_scope) { workbench_scope }
+
+        it { is_expected.to be_empty }
+      end
+
+      context 'in referential' do
+        it do
+          is_expected.to match_array(
+            [
+              context.stop_area_group(:stop_area_group_match1),
+              context.stop_area_group(:stop_area_group_match2)
+            ]
+          )
+        end
       end
     end
 

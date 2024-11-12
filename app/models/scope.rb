@@ -10,9 +10,11 @@ module Scope
     end
 
     delegate :lines,
+             :line_groups,
              :companies,
              :networks,
              :stop_areas,
+             :stop_area_groups,
              :entrances,
              :connection_links,
              :shapes,
@@ -78,6 +80,12 @@ module Scope
       referential.metadatas_lines
     end
 
+    def line_groups
+      line_referential.line_groups.where(
+        id: ::LineGroup::Member.where(line_id: lines.select(:id)).select(:group_id).distinct
+      )
+    end
+
     def companies
       line_referential.companies.where(id: lines.where.not(company_id: nil).select(:company_id).distinct)
     end
@@ -88,6 +96,12 @@ module Scope
 
     def stop_areas
       stop_area_referential.stop_areas.where(id: stop_points.select(:stop_area_id).distinct)
+    end
+
+    def stop_area_groups
+      stop_area_referential.stop_area_groups.where(
+        id: ::StopAreaGroup::Member.where(stop_area_id: stop_areas.select(:id)).select(:group_id).distinct
+      )
     end
 
     def entrances
@@ -182,36 +196,41 @@ module Scope
              :workgroup,
              to: :workbench
 
-    def lines
-      scope.lines.where(line_provider: line_providers)
+    %w[
+      lines
+      line_groups
+      companies
+      networks
+    ].each do |method_name|
+      class_eval <<-RUBY, __FILE__, __LINE__ + 1
+        def #{method_name}
+          scope.#{method_name}.where(line_provider: line_providers)
+        end
+      RUBY
     end
 
-    def companies
-      scope.companies.where(line_provider: line_providers)
+    %w[
+      stop_areas
+      stop_area_groups
+      entrances
+      connection_links
+    ].each do |method_name|
+      class_eval <<-RUBY, __FILE__, __LINE__ + 1
+        def #{method_name}
+          scope.#{method_name}.where(stop_area_provider: stop_area_providers)
+        end
+      RUBY
     end
 
-    def networks
-      scope.networks.where(line_provider: line_providers)
-    end
-
-    def stop_areas
-      scope.stop_areas.where(stop_area_provider: stop_area_providers)
-    end
-
-    def entrances
-      scope.entrances.where(stop_area_provider: stop_area_providers)
-    end
-
-    def connection_links
-      scope.connection_links.where(stop_area_provider: stop_area_providers)
-    end
-
-    def shapes
-      scope.shapes.where(shape_provider: shape_providers)
-    end
-
-    def point_of_interests
-      scope.point_of_interests.where(shape_provider: shape_providers)
+    %w[
+      shapes
+      point_of_interests
+    ].each do |method_name|
+      class_eval <<-RUBY, __FILE__, __LINE__ + 1
+        def #{method_name}
+          scope.#{method_name}.where(shape_provider: shape_providers)
+        end
+      RUBY
     end
 
     def fare_zones

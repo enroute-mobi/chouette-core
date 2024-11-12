@@ -27,6 +27,7 @@ class Workbench < ApplicationModel
 
   has_many :lines, -> (workbench) { workbench.workbench_scopes.lines_scope(self) }, through: :line_referential
   has_many :stop_areas, -> (workbench) { workbench.workbench_scopes.stop_areas_scope(self) }, through: :stop_area_referential
+  has_many :line_groups, through: :line_referential
   has_many :networks, through: :line_referential
   has_many :companies, through: :line_referential
   has_many :line_notices, through: :line_referential
@@ -73,6 +74,7 @@ class Workbench < ApplicationModel
   has_many :documents, through: :document_providers
   has_many :document_memberships, through: :documents, source: :memberships
 
+  has_many :stop_area_groups, through: :stop_area_providers
   has_many :connection_links, through: :stop_area_providers
   has_many :entrances, through: :stop_area_providers
 

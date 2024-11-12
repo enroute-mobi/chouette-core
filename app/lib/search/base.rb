@@ -911,6 +911,11 @@ module Search
     link :lines, :routes do
       initial_scope.routes.where(line: lines)
     end
+    link :lines, :line_groups do
+      initial_scope.line_groups.where(
+        id: ::LineGroup::Member.where(line_id: lines.select(:id)).select(:group_id).distinct
+      )
+    end
     link :lines, :companies do
       initial_scope.companies.where(id: lines.where.not(company_id: nil).select(:company_id).distinct)
     end
@@ -931,6 +936,11 @@ module Search
     end
     link :stop_areas, :stop_points do
       initial_scope.stop_points.where(stop_area: stop_areas)
+    end
+    link :stop_areas, :stop_area_groups do
+      initial_scope.stop_area_groups.where(
+        id: ::StopAreaGroup::Member.where(stop_area_id: stop_areas.select(:id)).select(:group_id).distinct
+      )
     end
     link :stop_areas, :entrances do
       initial_scope.entrances.where(stop_area: stop_areas)

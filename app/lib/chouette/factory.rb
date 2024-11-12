@@ -222,6 +222,10 @@ module Chouette
               end
             end
 
+            model :line_group do
+              attribute(:name) { |n| "LineGroup #{n}" }
+            end
+
             model :company do
               attribute(:name) { |n| "Company #{n}" }
 
@@ -310,6 +314,10 @@ module Chouette
                   new_instance.stop_area_provider = parent.stop_area_provider
                 end
               end
+            end
+
+            model :stop_area_group do
+              attribute(:name) { |n| "StopAreaGroup #{n}" }
             end
 
             model :stop_area_routing_constraint do

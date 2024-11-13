@@ -682,7 +682,7 @@ module Search
 
           if group_by_attribute.sortable && sort_by == 'value'
             # we need to sort the newly added keys by their respective values
-            new_data = new_data.sort { |a, b| data_values_sorter(a, b) }.to_h
+            new_data = new_data.sort { |a, b| data_values_sorter(group_by_attribute.keys, a, b) }.to_h
           end
 
           new_data
@@ -691,12 +691,15 @@ module Search
         end
       end
 
-      def data_values_sorter(kv1, kv2)
+      def data_values_sorter(keys_order, kv1, kv2)
         v1 = kv1[1]
         v2 = kv2[1]
 
         if v1 == v2
-          0
+          k1_index = keys_order.index(kv1[0])
+          k2_index = keys_order.index(kv2[0])
+
+          k1_index <=> k2_index
         else
           first ? v1 <=> v2 : v2 <=> v1
         end

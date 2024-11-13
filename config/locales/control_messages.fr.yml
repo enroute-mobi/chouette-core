@@ -16,6 +16,7 @@ fr:
     service_count_in_range: "Une anomalie sur la ligne %{line} le %{date}"
     dummy: "L'/la/le %{target_model} %{name} a été controlé"
     attribute_uniqueness: "Le/la %{target_model} '%{name}' avec id '%{id}' n’a pas un/une unique '%{target_attribute}'"
+    absence_attribute: "L'attribut %{target_attribute} de l'/la/le %{target_model} %{name} est défini"
   activerecord:
     models:
       control/message:

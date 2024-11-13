@@ -58,6 +58,8 @@ fr:
         one: Nombre de services dans un intervalle
       control/attribute_uniqueness:
         one: Unicité de l'attribut
+      control/absence_attribute:
+        one: Absence d'un attribut
     attributes:
       control/base:
         name: Nom
@@ -114,3 +116,5 @@ fr:
       control/attribute_uniqueness:
         target_attribute: Attribut cible
         uniqueness_scope: Portée de l'unicité
+      control/absence_attribute:
+        target_attribute: Attribut cible

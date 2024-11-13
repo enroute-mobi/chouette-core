@@ -16,6 +16,7 @@ en:
     service_count_in_range: "An anomaly on the line %{line} at %{date}"
     dummy: "The %{target_model} %{name} has been updated"
     attribute_uniqueness: "The %{target_model} '%{name}' with id '%{id}' has not an unique '%{target_attribute}'"
+    absence_attribute: "The attribute %{target_attribute} of %{target_model} %{name} is defined"
   activerecord:
     models:
       control/message:

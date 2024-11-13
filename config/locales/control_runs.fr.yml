@@ -39,6 +39,8 @@ fr:
         one: Nombre de services dans un intervalle
       control/attribute_uniqueness/run:
         one: Unicité de l'attribut
+      control/absence_attribute/run:
+        one: Absence of attribute
     attributes:
       control/base/run:
         name: Nom
@@ -94,3 +96,7 @@ fr:
       control/attribute_uniqueness/run:
         target_attribute: Attribut cible
         uniqueness_scope: Portée de l'unicité
+      control/absence_attribute/run:
+        target_attribute: Attribut cible
+      control/absence_attribute/run:
+        target_attribute: Attribut cible

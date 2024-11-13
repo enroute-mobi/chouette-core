@@ -34,7 +34,7 @@ gem 'jbuilder'
 gem 'select2-rails', '~> 4.0', '>= 4.0.3'
 
 # ActiveRecord associations on top of PostgreSQL arrays
-gem 'has_array_of', en_route: 'has_array_of', branch: 'CHOUETTE-2937-upgrade-has_array_of-to-su'
+gem 'has_array_of', en_route: 'has_array_of'
 
 gem 'rails-observers'
 # gem 'wisper', '2.0.0'

@@ -33,8 +33,7 @@ GIT
 
 GIT
   remote: https://bitbucket.org/enroute-mobi/has_array_of.git
-  revision: 74141ec3590f50da739da90cea6a881bb156903e
-  branch: CHOUETTE-2937-upgrade-has_array_of-to-su
+  revision: 0f6235bc7adf93beec6a8f23bd274af7a97da305
   specs:
     has_array_of (0.0.8)
       activerecord (>= 4.2)
@@ -514,7 +513,7 @@ GEM
       activesupport (>= 4)
       railties (>= 4)
       request_store (~> 1.0)
-    loofah (2.22.0)
+    loofah (2.23.1)
       crass (~> 1.0.2)
       nokogiri (>= 1.12.0)
     lumberjack (1.2.8)
@@ -586,7 +585,7 @@ GEM
     parser (3.3.5.0)
       ast (~> 2.4.1)
       racc
-    pg (0.20.0)
+    pg (1.5.9)
     pg_search (2.3.6)
       activerecord (>= 5.2)
       activesupport (>= 5.2)
@@ -626,7 +625,7 @@ GEM
     rabl (0.16.1)
       activesupport (>= 2.3.14)
     racc (1.8.1)
-    rack (2.2.9)
+    rack (2.2.10)
     rack-proxy (0.7.2)
       rack
     rack-session (1.0.2)

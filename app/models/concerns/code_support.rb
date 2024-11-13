@@ -117,10 +117,6 @@ module CodeSupport
   end
 
   def delete_state_codes(state_codes)
-    exited_code_ids = self.codes.map(&:id)
-    state_code_ids = state_codes.map{ |state_code| state_code['id'] }
-    removeable_code_ids = exited_code_ids - state_code_ids
-
-    self.codes.where(id: removeable_code_ids).delete_all
+    self.codes.where.not(id: state_codes.map{ |state_code| state_code['id'] }).delete_all
   end
 end

@@ -65,10 +65,6 @@ module Chouette
         Models.new scope, updater: self
       end
 
-      def provider
-        @provider ||= Provider.new target, default_provider
-      end
-
       def find_model(resource_id)
         find_models([resource_id]).first
       end
@@ -81,38 +77,6 @@ module Chouette
         end
       end
 
-      class Provider
-        def initialize(target, default_provider)
-          @target = target
-          @default_provider = default_provider
-        end
-        attr_accessor :target, :default_provider
-
-        def scope
-          @scope ||= target.send(collection)
-        end
-
-        def collection
-          @collection ||= singular_provider.pluralize
-        end
-
-        def singular_provider_id
-          "#{singular_provider}_id"
-        end
-
-        def singular_provider
-          @singular_provider ||= singular.gsub('_referential', '_provider')
-        end
-
-        def target_is_provider?
-          singular.end_with? '_provider'
-        end
-
-        def singular
-          @singular ||= target.model_name.singular
-        end
-      end
-
       class Models
         attr_accessor :scope, :updater
 
@@ -121,9 +85,8 @@ module Chouette
           @updater = updater
         end
 
-        delegate :model_id_attribute, :event_handler, :workgroup, :code_space, :target,
-                 :provider, :strict_mode?, :ignore_particulars?, :use_code?, :find_model,
-                 :find_models, to: :updater
+        delegate :model_id_attribute, :event_handler, :workgroup, :code_space, :target, :strict_mode?,
+                 :ignore_particulars?, :use_code?, :find_model, :find_models, to: :updater
 
         def with_resource_ids(resource_ids)
           find_models(resource_ids).find_each do |model|
@@ -180,7 +143,6 @@ module Chouette
 
           event = Event.new :create, model: model, resource: ResourceDecorator.undecorate(resource)
 
-          update_providers model, resource, event
           update_codes model, resource, event
           update_custom_fields model, resource, event
 
@@ -197,7 +159,6 @@ module Chouette
 
           event = Event.new :update, model: model, resource: ResourceDecorator.undecorate(resource)
 
-          update_providers model, resource, event
           update_codes model, resource, event
           update_custom_fields model, resource, event
 
@@ -228,63 +189,6 @@ module Chouette
             else
               (event.errors[:codes] ||= []) << { error: :invalid_code_space, value: short_name }
             end
-          end
-        end
-
-        def update_providers(model, resource, event)
-          return if provider.target_is_provider?
-
-          update_provider = UpdateProvider.new(target, resource, code_space, provider)
-          if update_provider.not_found?
-            (event.errors[:provider] ||= []) << {
-              error: :provider_not_found,
-              value: resource.data_source_ref
-            }
-          else
-            model.send("#{update_provider.singular_provider_id}=", update_provider.id)
-          end
-        end
-
-        class UpdateProvider
-          def initialize(target, resource, code_space, provider)
-            @target = target
-            @resource = resource
-            @code_space = code_space
-            @provider = provider
-          end
-          attr_accessor :target, :resource, :code_space, :provider
-
-          delegate :singular_provider_id, :scope, :default_provider, to: :provider
-
-          def data_source_ref
-            @data_source_ref ||= resource.data_source_ref
-          end
-
-          def not_found?
-            find_provider.blank? && data_source_ref.present?
-          end
-
-          def id
-            @id ||= default_provider&.id if data_source_ref.blank?
-            @id ||= find_provider&.id
-          end
-
-          def find_provider
-            @find_provider ||= find_provider_by_codes || find_provider_by_columns
-          end
-
-          def find_provider_by_codes
-            return unless scope.respond_to? :by_code
-
-            scope.by_code(code_space, data_source_ref).first
-          end
-
-          def find_provider_by_columns
-            if scope.column_names.include?('objectid') && (p = scope.find_by(objectid: data_source_ref)).present?
-              return p
-            end
-
-            nil
           end
         end
 

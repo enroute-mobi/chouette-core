@@ -119,7 +119,6 @@ en:
           automatic_merge: Automatic Merge
           archive_on_fail: Automatic Archive on failure
           flag_urgent: Contains urgent data
-          update_workgroup_providers: Allow changes on Workbenches resources
           store_xml: Store original XML resources
           disable_missing_resources: Disable missing Stop Areas and Lines
           strict_mode: Strict Mode (reset any undefined attribute)

@@ -130,7 +130,6 @@ fr:
           automatic_merge: Finalisation automatique des jeux de données importés
           archive_on_fail: Archivage automatique en cas d'erreur
           flag_urgent: Contient de l'offre urgente
-          update_workgroup_providers: Autorisation des changements sur les ressources de l'Espace de travail
           store_xml: Conserver les definitions XML originelles
           disable_missing_resources: Désactiver les arrêts et lignes manquantes
           strict_mode: Mode strict (tout attribut non défini est réinitialisé)

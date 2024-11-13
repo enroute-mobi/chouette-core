@@ -16,7 +16,6 @@ module Import
     option :merge_method, collection: %w[legacy experimental], default_value: 'legacy',
                           depends: { option: :import_category, values: ['automatic'] }
     option :shape_attribute_as_id, type: :string, depends: { option: :import_category, values: ['shape_file'] }
-    option :update_workgroup_providers, default_value: false, type: :boolean
     option :store_xml, default_value: false, type: :boolean
     option :disable_missing_resources, default_value: false, type: :boolean
     option :strict_mode, default_value: false, type: :boolean

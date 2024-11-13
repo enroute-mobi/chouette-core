@@ -2,9 +2,8 @@
 
 module Policy
   class Import < Base
-    authorize_by Strategy::Permission, only: %i[update option_flag_urgent option_update_workgroup_providers]
+    authorize_by Strategy::Permission, only: %i[update option_flag_urgent]
     permission_exception :option_flag_urgent, 'referentials.flag_urgent'
-    permission_exception :option_update_workgroup_providers, 'imports.update_workgroup_providers'
 
     # CHOUETTE-3346 moved from CHOUETTE-407
     # Example for the future - Ignore me
@@ -27,10 +26,6 @@ module Policy
 
     def option_flag_urgent?
       around_can(:option_flag_urgent) { true }
-    end
-
-    def option_update_workgroup_providers?
-      around_can(:option_update_workgroup_providers) { true }
     end
 
     protected

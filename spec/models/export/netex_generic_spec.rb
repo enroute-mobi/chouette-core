@@ -977,8 +977,8 @@ RSpec.describe Export::NetexGeneric do
       let(:decorator) do
         Export::NetexGeneric::RoutingConstraintZones::Decorator.new routing_constraint_zone, code_provider: code_provider
       end
-      let(:first_stop_point) { routing_constraint_zone.stop_points.first }
-      let(:second_stop_point) { routing_constraint_zone.stop_points.second }
+      let(:first_stop_point) { routing_constraint_zone.stop_points[0] }
+      let(:second_stop_point) { routing_constraint_zone.stop_points[1] }
       let(:code_provider) { Export::CodeProvider.new export_scope}
       let(:export_scope) do
         double(

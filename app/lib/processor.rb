@@ -11,7 +11,7 @@ class Processor
   end
 
   def before(referentials)
-    referentials.compact.each do |referential|
+    referentials.each do |referential|
       before_processing_rules.each do |processing_rule|
         return false unless processing_rule.perform operation: operation, referential: referential,
                                                     operation_workbench: workbench
@@ -29,7 +29,7 @@ class Processor
       return
     end
 
-    referentials.compact.each do |referential|
+    referentials.each do |referential|
       after_processing_rules.each do |processing_rule|
         return false unless processing_rule.perform operation: operation, referential: referential,
                                                     operation_workbench: operation_workbench

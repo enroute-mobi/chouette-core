@@ -179,10 +179,6 @@ module Control
           end
         end
 
-        def default_value
-          @default_value ||= model_class.column_defaults[filed_name]
-        end
-
         def model_class
           @model_class ||= model_attribute.model_class
         end
@@ -194,7 +190,7 @@ module Control
 
       class SimpleAttribute < Finder
         def faulty_models
-          scope.where.not(filed_name => default_value)
+          scope.where.not(filed_name => nil)
         end
       end
 

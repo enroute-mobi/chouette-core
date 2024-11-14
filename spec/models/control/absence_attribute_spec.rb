@@ -90,7 +90,10 @@ RSpec.describe Control::AbsenceAttribute do
         an_object_having_attributes({
           source: source,
           criticity: 'warning',
-          message_attributes: {'name' => attribute_name}
+          message_attributes: {
+            'name' => attribute_name,
+            'target_attribute' => target_attribute
+          }
         })
       end
 

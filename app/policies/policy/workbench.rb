@@ -7,26 +7,29 @@ module Policy
     protected
 
     def _create?(resource_class) # rubocop:disable Metrics/MethodLength
-      [
-        ::Workbench::Sharing,
-        ::Referential,
-        ::DocumentProvider,
-        ::Calendar,
-        ::Control::List,
-        ::Control::List::Run,
-        ::Macro::List,
-        ::Macro::List::Run,
-        ::ProcessingRule::Workbench,
-        ::NotificationRule,
-        ::Fare::Provider,
-        ::Contract,
-        ::Import::Base,
-        ::Export::Base,
-        ::ApiKey,
-        ::Merge,
-        ::Source,
-        ::Sequence
-      ].include?(resource_class)
+      if resource_class == ::Workbench::Sharing
+        !resource.pending?
+      else
+        [
+          ::Referential,
+          ::DocumentProvider,
+          ::Calendar,
+          ::Control::List,
+          ::Control::List::Run,
+          ::Macro::List,
+          ::Macro::List::Run,
+          ::ProcessingRule::Workbench,
+          ::NotificationRule,
+          ::Fare::Provider,
+          ::Contract,
+          ::Import::Base,
+          ::Export::Base,
+          ::ApiKey,
+          ::Merge,
+          ::Source,
+          ::Sequence
+        ].include?(resource_class)
+      end
     end
 
     def _update?

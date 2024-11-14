@@ -23,6 +23,30 @@ RSpec.describe Workbench::Sharing, type: :model do
   it { is_expected.to validate_presence_of(:name) }
 
   describe 'validation' do
+    describe '#workbench_id' do
+      subject(:workbench_sharing) { described_class.new }
+
+      let(:context) do
+        Chouette.create do
+          organisation :organisation do
+            user :user
+          end
+          workgroup owner: :organisation do
+            workbench :workbench_with_organisation
+            workbench :workbench_without_organisation, organisation: nil
+          end
+        end
+      end
+
+      it 'is expected to allow non-pending workbench' do
+        is_expected.to allow_value(context.workbench(:workbench_with_organisation).id).for(:workbench_id)
+      end
+
+      it 'is expected to not allow pending workbench' do
+        is_expected.not_to allow_value(context.workbench(:workbench_without_organisation).id).for(:workbench_id)
+      end
+    end
+
     describe '#recipient_id' do
       describe 'unicity' do
         before { workbench_sharing.recipient_type = 'User' }

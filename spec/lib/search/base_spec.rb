@@ -606,109 +606,6 @@ RSpec.describe Search::Base, type: :model do
   describe '#scope' do
     subject(:scope) { search.scope(initial_scope) }
 
-    let(:context) do # rubocop:disable Metrics/BlockLength
-      Chouette.create do # rubocop:disable Metrics/BlockLength
-        document :document_company_match1
-        document :document_company_match2
-        document :document_company_without_line
-        document :document_line_match1
-        document :document_line_match2
-        document :document_stop_area_match1
-        document :document_stop_area_match2
-        document :document_outside
-
-        company :company_match1, documents: %i[document_company_match1]
-        company :company_match2, documents: %i[document_company_match2]
-        company :company_without_line, documents: %i[document_company_without_line]
-        company :company_outside, documents: %i[document_outside]
-
-        network :network_match1
-        network :network_match2
-        network :network_without_line
-        network :network_outside
-
-        line :line_match1, company: :company_match1, network: :network_match1, documents: %i[document_line_match1]
-        line :line_match2, company: :company_match2, network: :network_match2, documents: %i[document_line_match2]
-        line :line_without_route
-        line :line_outside, company: :company_outside, network: :network_outside, documents: %i[document_outside]
-
-        line_group :line_group_match1, lines: %i[line_match1]
-        line_group :line_group_match2, lines: %i[line_match2]
-        line_group :line_group_outside, lines: %i[line_outside]
-
-        stop_area :stop_area_match1, documents: %i[document_stop_area_match1] do
-          entrance :entrance_match1
-        end
-        stop_area :stop_area_match2, documents: %i[document_stop_area_match2] do
-          entrance :entrance_match2
-        end
-        connection_link :connection_link_match, departure: :stop_area_match1, arrival: :stop_area_match2
-        stop_area :stop_area_outside, documents: %i[document_outside] do
-          entrance :entrance_outside
-        end
-        connection_link :connection_link_outside, departure: :stop_area_match1, arrival: :stop_area_outside
-
-        stop_area_group :stop_area_group_match1, stop_areas: %i[stop_area_match1]
-        stop_area_group :stop_area_group_match2, stop_areas: %i[stop_area_match2]
-        stop_area_group :stop_area_group_outside, stop_areas: %i[stop_area_outside]
-
-        shape_provider do
-          shape :shape_match1
-          point_of_interest :point_of_interest_match1
-        end
-        shape_provider do
-          shape :shape_match2
-          point_of_interest :point_of_interest_match2
-        end
-        shape_provider do
-          shape :shape_outside
-          point_of_interest :point_of_interest_outside
-        end
-
-        fare_zone :fare_zone_match1, stop_areas: %i[stop_area_match1]
-        fare_zone :fare_zone_match2, stop_areas: %i[stop_area_match2]
-        fare_zone :fare_zone_outside, stop_areas: %i[stop_area_outside]
-
-        referential lines: %i[line_match1 line_match2 line_without_route] do
-          time_table :time_table_match1
-          time_table :time_table_match2
-
-          route :route_match1, with_stops: false, line: :line_match1 do
-            stop_point :stop_point_match1, stop_area: :stop_area_match1
-            stop_point :stop_point_match1b, stop_area: :stop_area_match1
-            journey_pattern :journey_pattern_match1, shape: :shape_match1 do
-              vehicle_journey :vehicle_journey_match1, time_tables: %i[time_table_match1]
-            end
-          end
-          route :route_match2, with_stops: false, line: :line_match2 do
-            stop_point :stop_point_match2, stop_area: :stop_area_match2
-            stop_point :stop_point_match2b, stop_area: :stop_area_match2
-            journey_pattern :journey_pattern_match2, shape: :shape_match2 do
-              vehicle_journey :vehicle_journey_match2, time_tables: %i[time_table_match2]
-            end
-          end
-        end
-      end
-    end
-
-    let(:service_count_match1) do
-      ServiceCount.create!(
-        line: context.line(:line_match1),
-        route: context.route(:route_match1),
-        journey_pattern: context.journey_pattern(:journey_pattern_match1),
-        date: Time.zone.today
-      )
-    end
-    let(:service_count_match2) do
-      ServiceCount.create!(
-        line: context.line(:line_match2),
-        route: context.route(:route_match1),
-        journey_pattern: context.journey_pattern(:journey_pattern_match1),
-        date: Time.zone.today
-      )
-    end
-    let(:service_counts) { [service_count_match1, service_count_match2] }
-
     let(:search) { described_class.new }
     let(:workbench_scope) { Scope::Workbench.new(context.workbench) }
     let(:referential_scope) { Scope::Referential.new(context.workbench, context.referential) }
@@ -719,6 +616,18 @@ RSpec.describe Search::Base, type: :model do
     describe '#lines' do
       subject { scope.lines }
 
+      let(:context) do
+        Chouette.create do
+          line :line_match
+          line :line_without_route
+          line :line_outside
+
+          referential lines: %i[line_match line_without_route] do
+            route line: :line_match
+          end
+        end
+      end
+
       context 'in workbench' do
         let(:initial_scope) { workbench_scope }
 
@@ -726,20 +635,29 @@ RSpec.describe Search::Base, type: :model do
       end
 
       context 'in referential' do
-        it do
-          is_expected.to match_array(
-            [
-              context.line(:line_match1),
-              context.line(:line_match2)
-            ]
-          )
-        end
+        it { is_expected.to match_array([context.line(:line_match)]) }
       end
     end
 
     describe '#line_groups' do
       subject { scope.line_groups }
 
+      let(:context) do
+        Chouette.create do
+          line :line_match
+          line :line_without_route
+          line :line_outside
+
+          line_group :line_group_match, lines: %i[line_match]
+          line_group :line_group_without_route, lines: %i[line_without_route]
+          line_group :line_group_outside, lines: %i[line_outside]
+
+          referential lines: %i[line_match line_without_route] do
+            route line: :line_match
+          end
+        end
+      end
+
       context 'in workbench' do
         let(:initial_scope) { workbench_scope }
 
@@ -747,19 +665,30 @@ RSpec.describe Search::Base, type: :model do
       end
 
       context 'in referential' do
-        it do
-          is_expected.to match_array(
-            [
-              context.line_group(:line_group_match1), context.line_group(:line_group_match2)
-            ]
-          )
-        end
+        it { is_expected.to match_array([context.line_group(:line_group_match)]) }
       end
     end
 
     describe '#companies' do
       subject { scope.companies }
 
+      let(:context) do
+        Chouette.create do
+          company :company_match
+          company :company_without_route
+          company :company_outside
+          company :company_without_line
+
+          line :line_match, company: :company_match
+          line :line_without_route, company: :company_without_route
+          line :line_outside, company: :company_outside
+
+          referential lines: %i[line_match line_without_route] do
+            route line: :line_match
+          end
+        end
+      end
+
       context 'in workbench' do
         let(:initial_scope) { workbench_scope }
 
@@ -767,13 +696,30 @@ RSpec.describe Search::Base, type: :model do
       end
 
       context 'in referential' do
-        it { is_expected.to match_array([context.company(:company_match1), context.company(:company_match2)]) }
+        it { is_expected.to match_array([context.company(:company_match)]) }
       end
     end
 
     describe '#networks' do
       subject { scope.networks }
 
+      let(:context) do
+        Chouette.create do
+          network :network_match
+          network :network_without_route
+          network :network_outside
+          network :network_without_line
+
+          line :line_match, network: :network_match
+          line :line_without_route, network: :network_without_route
+          line :line_outside, network: :network_outside
+
+          referential lines: %i[line_match line_without_route] do
+            route line: :line_match
+          end
+        end
+      end
+
       context 'in workbench' do
         let(:initial_scope) { workbench_scope }
 
@@ -781,13 +727,27 @@ RSpec.describe Search::Base, type: :model do
       end
 
       context 'in referential' do
-        it { is_expected.to match_array([context.network(:network_match1), context.network(:network_match2)]) }
+        it { is_expected.to match_array([context.network(:network_match)]) }
       end
     end
 
     describe '#stop_areas' do
       subject { scope.stop_areas }
 
+      let(:context) do
+        Chouette.create do
+          stop_area :stop_area_match
+          stop_area :stop_area_outside
+
+          referential do
+            route with_stops: false do
+              stop_point stop_area: :stop_area_match
+              stop_point stop_area: :stop_area_match
+            end
+          end
+        end
+      end
+
       context 'in workbench' do
         let(:initial_scope) { workbench_scope }
 
@@ -795,13 +755,30 @@ RSpec.describe Search::Base, type: :model do
       end
 
       context 'in referential' do
-        it { is_expected.to match_array([context.stop_area(:stop_area_match1), context.stop_area(:stop_area_match2)]) }
+        it { is_expected.to match_array([context.stop_area(:stop_area_match)]) }
       end
     end
 
     describe '#stop_area_groups' do
       subject { scope.stop_area_groups }
 
+      let(:context) do
+        Chouette.create do
+          stop_area :stop_area_match
+          stop_area :stop_area_outside
+
+          stop_area_group :stop_area_group_match, stop_areas: %i[stop_area_match]
+          stop_area_group :stop_area_group_outside, stop_areas: %i[stop_area_outside]
+
+          referential do
+            route with_stops: false do
+              stop_point stop_area: :stop_area_match
+              stop_point stop_area: :stop_area_match
+            end
+          end
+        end
+      end
+
       context 'in workbench' do
         let(:initial_scope) { workbench_scope }
 
@@ -809,19 +786,31 @@ RSpec.describe Search::Base, type: :model do
       end
 
       context 'in referential' do
-        it do
-          is_expected.to match_array(
-            [
-              context.stop_area_group(:stop_area_group_match1), context.stop_area_group(:stop_area_group_match2)
-            ]
-          )
-        end
+        it { is_expected.to match_array([context.stop_area_group(:stop_area_group_match)]) }
       end
     end
 
     describe '#entrances' do
       subject { scope.entrances }
 
+      let(:context) do
+        Chouette.create do
+          stop_area :stop_area_match do
+            entrance :entrance_match
+          end
+          stop_area :stop_area_outside do
+            entrance :entrance_outside
+          end
+
+          referential do
+            route with_stops: false do
+              stop_point stop_area: :stop_area_match
+              stop_point stop_area: :stop_area_match
+            end
+          end
+        end
+      end
+
       context 'in workbench' do
         let(:initial_scope) { workbench_scope }
 
@@ -829,12 +818,29 @@ RSpec.describe Search::Base, type: :model do
       end
 
       context 'in referential' do
-        it { is_expected.to match_array([context.entrance(:entrance_match1), context.entrance(:entrance_match2)]) }
+        it { is_expected.to match_array([context.entrance(:entrance_match)]) }
       end
     end
 
     describe '#connection_links' do
       subject { scope.connection_links }
+
+      let(:context) do
+        Chouette.create do
+          stop_area :stop_area_match1
+          stop_area :stop_area_match2
+          connection_link :connection_link_match, departure: :stop_area_match1, arrival: :stop_area_match2
+          stop_area :stop_area_outside
+          connection_link :connection_link_outside, departure: :stop_area_match1, arrival: :stop_area_outside
+
+          referential do
+            route with_stops: false do
+              stop_point stop_area: :stop_area_match1
+              stop_point stop_area: :stop_area_match2
+            end
+          end
+        end
+      end
 
       context 'in workbench' do
         let(:initial_scope) { workbench_scope }
@@ -850,6 +856,17 @@ RSpec.describe Search::Base, type: :model do
     describe '#shapes' do
       subject { scope.shapes }
 
+      let(:context) do
+        Chouette.create do
+          shape :shape_match
+          shape :shape_outside
+
+          referential do
+            journey_pattern shape: :shape_match
+          end
+        end
+      end
+
       context 'in workbench' do
         let(:initial_scope) { workbench_scope }
 
@@ -857,25 +874,25 @@ RSpec.describe Search::Base, type: :model do
       end
 
       context 'in referential' do
-        it { is_expected.to match_array([context.shape(:shape_match1), context.shape(:shape_match2)]) }
+        it { is_expected.to match_array([context.shape(:shape_match)]) }
       end
     end
 
     describe '#point_of_interests' do
       subject { scope.point_of_interests }
 
+      let(:context) do
+        Chouette.create do
+          point_of_interest :point_of_interest_match
+
+          referential
+        end
+      end
+
       context 'in workbench' do
         let(:initial_scope) { workbench_scope }
 
-        it do
-          is_expected.to match_array(
-            [
-              context.point_of_interest(:point_of_interest_match1),
-              context.point_of_interest(:point_of_interest_match2),
-              context.point_of_interest(:point_of_interest_outside)
-            ]
-          )
-        end
+        it { is_expected.to match_array([context.point_of_interest(:point_of_interest_match)]) }
       end
 
       context 'in referential' do
@@ -886,6 +903,23 @@ RSpec.describe Search::Base, type: :model do
     describe '#fare_zones' do
       subject { scope.fare_zones }
 
+      let(:context) do
+        Chouette.create do
+          stop_area :stop_area_match
+          stop_area :stop_area_outside
+
+          fare_zone :fare_zone_match, stop_areas: %i[stop_area_match]
+          fare_zone :fare_zone_outside, stop_areas: %i[stop_area_outside]
+
+          referential do
+            route with_stops: false do
+              stop_point stop_area: :stop_area_match
+              stop_point stop_area: :stop_area_match
+            end
+          end
+        end
+      end
+
       context 'in workbench' do
         let(:initial_scope) { workbench_scope }
 
@@ -893,12 +927,39 @@ RSpec.describe Search::Base, type: :model do
       end
 
       context 'in referential' do
-        it { is_expected.to match_array([context.fare_zone(:fare_zone_match1), context.fare_zone(:fare_zone_match2)]) }
+        it { is_expected.to match_array([context.fare_zone(:fare_zone_match)]) }
       end
     end
 
     describe '#documents' do
       subject { scope.documents }
+
+      let(:context) do
+        Chouette.create do
+          document :document_company_match
+          document :document_line_match
+          document :document_stop_area_match
+          document :document_outside
+
+          company :company_match, documents: %i[document_company_match]
+          company :company_without_line, documents: %i[document_outside]
+          company :company_outside, documents: %i[document_outside]
+
+          line :line_match, company: :company_match, documents: %i[document_line_match]
+          line :line_without_route, documents: %i[document_outside]
+          line :line_outside, company: :company_outside, documents: %i[document_outside]
+
+          stop_area :stop_area_match, documents: %i[document_stop_area_match]
+          stop_area :stop_area_outside, documents: %i[document_outside]
+
+          referential lines: %i[line_match line_without_route] do
+            route with_stops: false, line: :line_match do
+              stop_point stop_area: :stop_area_match
+              stop_point stop_area: :stop_area_match
+            end
+          end
+        end
+      end
 
       context 'in workbench' do
         let(:initial_scope) { workbench_scope }
@@ -910,12 +971,9 @@ RSpec.describe Search::Base, type: :model do
         it do
           is_expected.to match_array(
             [
-              context.document(:document_company_match1),
-              context.document(:document_company_match2),
-              context.document(:document_line_match1),
-              context.document(:document_line_match2),
-              context.document(:document_stop_area_match1),
-              context.document(:document_stop_area_match2)
+              context.document(:document_company_match),
+              context.document(:document_line_match),
+              context.document(:document_stop_area_match)
             ]
           )
         end
@@ -925,19 +983,36 @@ RSpec.describe Search::Base, type: :model do
     describe '#routes' do
       subject { scope.routes }
 
-      it { is_expected.to match_array([context.route(:route_match1), context.route(:route_match2)]) }
+      let(:context) do
+        Chouette.create do
+          referential do
+            route :route_match
+          end
+        end
+      end
+
+      it { is_expected.to match_array([context.route(:route_match)]) }
     end
 
     describe '#stop_points' do
       subject { scope.stop_points }
 
+      let(:context) do
+        Chouette.create do
+          referential do
+            route with_stops: false do
+              stop_point :stop_point_match1
+              stop_point :stop_point_match2
+            end
+          end
+        end
+      end
+
       it do
         is_expected.to match_array(
           [
             context.stop_point(:stop_point_match1),
-            context.stop_point(:stop_point_match1b),
-            context.stop_point(:stop_point_match2),
-            context.stop_point(:stop_point_match2b)
+            context.stop_point(:stop_point_match2)
           ]
         )
       end
@@ -946,42 +1021,78 @@ RSpec.describe Search::Base, type: :model do
     describe '#journey_patterns' do
       subject { scope.journey_patterns }
 
-      it do
-        is_expected.to match_array(
-          [context.journey_pattern(:journey_pattern_match1), context.journey_pattern(:journey_pattern_match2)]
-        )
+      let(:context) do
+        Chouette.create do
+          referential do
+            route do
+              journey_pattern :journey_pattern_match
+            end
+          end
+        end
       end
+
+      it { is_expected.to match_array([context.journey_pattern(:journey_pattern_match)]) }
     end
 
     describe '#vehicle_journeys' do
       subject { scope.vehicle_journeys }
 
-      it do
-        is_expected.to match_array(
-          [context.vehicle_journey(:vehicle_journey_match1), context.vehicle_journey(:vehicle_journey_match2)]
-        )
+      let(:context) do
+        Chouette.create do
+          referential do
+            route do
+              vehicle_journey :vehicle_journey_match
+            end
+          end
+        end
       end
+
+      it { is_expected.to match_array([context.vehicle_journey(:vehicle_journey_match)]) }
     end
 
     describe '#time_tables' do
       subject { scope.time_tables }
 
-      it do
-        is_expected.to match_array(
-          [
-            context.time_table(:time_table_match1),
-            context.time_table(:time_table_match2)
-          ]
-        )
+      let(:context) do
+        Chouette.create do
+          referential do
+            time_table :time_table_match
+            time_table :time_table_without_vehicle_journey
+
+            route do
+              vehicle_journey time_tables: %i[time_table_match]
+            end
+          end
+        end
       end
+
+      it { is_expected.to match_array([context.time_table(:time_table_match)]) }
     end
 
     describe '#service_counts' do
       subject { scope.service_counts }
 
-      before { service_counts }
+      let(:context) do
+        Chouette.create do
+          line :line_match
 
-      it { is_expected.to match_array([service_count_match1, service_count_match2]) }
+          referential lines: %i[line_match] do
+            route :route_match, line: :line_match do
+              journey_pattern :journey_pattern_match
+            end
+          end
+        end
+      end
+      let!(:service_count_match) do
+        ServiceCount.create!(
+          line: context.line(:line_match),
+          route: context.route(:route_match),
+          journey_pattern: context.journey_pattern(:journey_pattern_match),
+          date: Time.zone.today
+        )
+      end
+
+      it { is_expected.to match_array([service_count_match]) }
     end
   end
 end

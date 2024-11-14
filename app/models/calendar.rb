@@ -13,7 +13,7 @@ class Calendar < ApplicationModel
 
   validates :name, presence: true
 
-  has_many :time_tables, class_name: "Chouette::TimeTable" , dependent: :nullify
+  has_many :time_tables, class_name: 'Chouette::TimeTable' # rubocop:disable Rails/HasManyOrHasOneDependent
 
   scope :contains_date, ->(date) { where('(date ? = any (dates) OR date ? <@ any (date_ranges)) AND NOT date ? = any (excluded_dates)', date, date, date) }
 

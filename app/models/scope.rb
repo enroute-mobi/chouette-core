@@ -21,6 +21,7 @@ module Scope
              :shapes,
              :point_of_interests,
              :service_facility_sets,
+             :accessibility_assessments,
              :fare_zones,
              :line_routing_constraint_zones,
              :document_memberships,
@@ -131,6 +132,10 @@ module Scope
 
     def service_facility_sets
       shape_referential.service_facility_sets.where(id: vehicle_journeys.select('UNNEST(service_facility_set_ids)'))
+    end
+
+    def accessibility_assessments
+      ::AccessibilityAssessment.none
     end
 
     def fare_zones
@@ -249,6 +254,7 @@ module Scope
       shapes
       point_of_interests
       service_facility_sets
+      accessibility_assessments
     ].each do |method_name|
       class_eval <<-RUBY, __FILE__, __LINE__ + 1
         def #{method_name}

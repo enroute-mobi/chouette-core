@@ -956,6 +956,28 @@ RSpec.describe Search::Base, type: :model do
       end
     end
 
+    describe '#accessibility_assessments' do
+      subject { scope.accessibility_assessments }
+
+      let(:context) do
+        Chouette.create do
+          accessibility_assessment :accessibility_assessment
+
+          referential
+        end
+      end
+
+      context 'in workbench' do
+        let(:initial_scope) { workbench_scope }
+
+        it { is_expected.to match_array([context.accessibility_assessment(:accessibility_assessment)]) }
+      end
+
+      context 'in referential' do
+        it { is_expected.to be_empty }
+      end
+    end
+
     describe '#fare_zones' do
       subject { scope.fare_zones }
 

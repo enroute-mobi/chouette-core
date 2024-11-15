@@ -980,7 +980,10 @@ module Search
     end
     attr_reader :initial_scope, :search
 
-    delegate :workgroup, :point_of_interests, to: :initial_scope
+    delegate :point_of_interests,
+             :accessibility_assessments,
+             :workgroup,
+             to: :initial_scope
 
     def line_routing_constraint_zones
       initial_scope.line_routing_constraint_zones.where(

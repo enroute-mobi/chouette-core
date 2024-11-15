@@ -376,6 +376,36 @@ RSpec.describe Scope::Workbench do
     end
   end
 
+  describe '#accessibility_assessments' do
+    subject { scope.accessibility_assessments }
+
+    let(:context) do
+      Chouette.create do
+        workgroup do
+          workbench :same_workgroup_workbench
+
+          workbench :workbench do
+            accessibility_assessment :accessibility_assessment
+          end
+        end
+
+        workgroup do
+          workbench :other_workbench do
+            accessibility_assessment
+          end
+        end
+      end
+    end
+
+    it { is_expected.to match_array([context.accessibility_assessment(:accessibility_assessment)]) }
+
+    context 'in workbench in the same workgroup' do
+      let(:workbench) { context.workbench(:same_workgroup_workbench) }
+
+      it { is_expected.to match_array([context.accessibility_assessment(:accessibility_assessment)]) }
+    end
+  end
+
   describe '#fare_zones' do
     subject { scope.fare_zones }
 
@@ -1145,6 +1175,24 @@ RSpec.describe Scope::Referential do
 
       it { is_expected.to be_empty }
     end
+  end
+
+  describe '#accessibility_assessments' do
+    subject { scope.accessibility_assessments }
+
+    let(:context) do
+      Chouette.create do
+        workgroup do
+          workbench :workbench do
+            accessibility_assessment :accessibility_assessment
+
+            referential :referential
+          end
+        end
+      end
+    end
+
+    it { is_expected.to be_empty }
   end
 
   describe '#fare_zones' do
@@ -2240,6 +2288,30 @@ RSpec.describe Scope::Owned do
       end
     end
 
+    describe '#accessibility_assessments' do
+      subject { scope.accessibility_assessments }
+
+      let(:context) do
+        Chouette.create do
+          workgroup do
+            workbench :workbench do
+              accessibility_assessment :accessibility_assessment
+            end
+
+            workbench :same_workgroup_workbench
+          end
+        end
+      end
+
+      it { is_expected.to match_array([context.accessibility_assessment(:accessibility_assessment)]) }
+
+      context 'in workbench in the same workgroup' do
+        let(:workbench) { context.workbench(:same_workgroup_workbench) }
+
+        it { is_expected.to be_empty }
+      end
+    end
+
     describe '#fare_zones' do
       subject { scope.fare_zones }
 
@@ -2694,6 +2766,24 @@ RSpec.describe Scope::Owned do
       end
 
       it { is_expected.to match_array([context.service_facility_set(:service_facility_set)]) }
+    end
+
+    describe '#accessibility_assessments' do
+      subject { scope.accessibility_assessments }
+
+      let(:context) do
+        Chouette.create do
+          workgroup do
+            workbench :workbench do
+              accessibility_assessment :accessibility_assessment
+
+              referential :referential
+            end
+          end
+        end
+      end
+
+      it { is_expected.to be_empty }
     end
 
     describe '#fare_zones' do

@@ -42,6 +42,7 @@ class Workbench < ApplicationModel
   has_many :processing_rules, class_name: "ProcessingRule::Workbench"
   has_many :point_of_interests, through: :shape_referential
   has_many :service_facility_sets, through: :shape_referential
+  has_many :accessibility_assessments, through: :shape_referential
   has_many :saved_searches, class_name: 'Search::Save', as: :parent, dependent: :destroy
   has_many :calendars, dependent: :destroy
 

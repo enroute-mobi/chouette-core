@@ -411,6 +411,32 @@ RSpec.describe Search::Line do
       end
     end
 
+    describe '#accessibility_assessments' do
+      subject { scope.accessibility_assessments }
+
+      let(:context) do
+        Chouette.create do
+          line :line_match, transport_mode: 'bus'
+
+          accessibility_assessment :accessibility_assessment
+
+          referential lines: %i[line_match] do
+            route line: :line_match
+          end
+        end
+      end
+
+      context 'in workbench' do
+        let(:initial_scope) { workbench_scope }
+
+        it { is_expected.to match_array([context.accessibility_assessment(:accessibility_assessment)]) }
+      end
+
+      context 'in referential' do
+        it { is_expected.to be_empty }
+      end
+    end
+
     describe '#fare_zones' do
       subject { scope.fare_zones }
 

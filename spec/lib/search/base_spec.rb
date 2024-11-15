@@ -669,6 +669,37 @@ RSpec.describe Search::Base, type: :model do
       end
     end
 
+    describe '#line_notices' do
+      subject { scope.line_notices }
+
+      let(:context) do
+        Chouette.create do
+          line :line_match
+          line :line_without_route
+          line :line_outside
+
+          line_notice :line_notice_match, lines: %i[line_match]
+          line_notice :line_notice_without_route, lines: %i[line_without_route]
+          line_notice :line_notice_outside, lines: %i[line_outside]
+          line_notice :line_notice_without_line
+
+          referential lines: %i[line_match line_without_route] do
+            route line: :line_match
+          end
+        end
+      end
+
+      context 'in workbench' do
+        let(:initial_scope) { workbench_scope }
+
+        it { is_expected.to be_empty }
+      end
+
+      context 'in referential' do
+        it { is_expected.to match_array([context.line_notice(:line_notice_match)]) }
+      end
+    end
+
     describe '#companies' do
       subject { scope.companies }
 

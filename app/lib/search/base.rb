@@ -916,6 +916,11 @@ module Search
         id: ::LineGroup::Member.where(line_id: lines.select(:id)).select(:group_id).distinct
       )
     end
+    link :lines, :line_notices do
+      initial_scope.line_notices.where(
+        id: ::Chouette::LineNoticeMembership.where(line_id: lines.select(:id)).select(:line_notice_id).distinct
+      )
+    end
     link :lines, :companies do
       initial_scope.companies.where(id: lines.where.not(company_id: nil).select(:company_id).distinct)
     end

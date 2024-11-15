@@ -78,6 +78,41 @@ RSpec.describe Search::Line do
       end
     end
 
+    describe '#line_notices' do
+      subject { scope.line_notices }
+
+      let(:context) do
+        Chouette.create do
+          line :line_match, transport_mode: 'bus'
+          line :line_no_match, transport_mode: 'air'
+          line :line_outside, transport_mode: 'bus'
+
+          line_notice :line_notice_match, lines: %i[line_match]
+          line_notice :line_notice_no_match, lines: %i[line_no_match]
+          line_notice :line_notice_outside, lines: %i[line_outside]
+
+          referential lines: %i[line_match line_no_match]
+        end
+      end
+
+      context 'in workbench' do
+        let(:initial_scope) { workbench_scope }
+
+        it do
+          is_expected.to match_array(
+            [
+              context.line_notice(:line_notice_match),
+              context.line_notice(:line_notice_outside)
+            ]
+          )
+        end
+      end
+
+      context 'in referential' do
+        it { is_expected.to match_array([context.line_notice(:line_notice_match)]) }
+      end
+    end
+
     describe '#companies' do
       subject { scope.companies }
 

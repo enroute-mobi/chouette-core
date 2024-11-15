@@ -153,6 +153,44 @@ RSpec.describe Search::StopArea do
       end
     end
 
+    describe '#line_notices' do
+      subject { scope.line_notices }
+
+      let(:context) do
+        Chouette.create do
+          line :line_match
+          line :line_no_match
+
+          line_notice :line_notice_match, lines: %i[line_match]
+          line_notice :line_notice_no_match, lines: %i[line_no_match]
+
+          stop_area :stop_area_match, zip_code: 44_300
+          stop_area :stop_area_no_match, zip_code: 0o0000
+
+          referential lines: %i[line_match line_no_match] do
+            route with_stops: false, line: :line_match do
+              stop_point stop_area: :stop_area_match
+              stop_point stop_area: :stop_area_no_match
+            end
+            route with_stops: false, line: :line_no_match do
+              stop_point stop_area: :stop_area_no_match
+              stop_point stop_area: :stop_area_no_match
+            end
+          end
+        end
+      end
+
+      context 'in workbench' do
+        let(:initial_scope) { workbench_scope }
+
+        it { is_expected.to be_empty }
+      end
+
+      context 'in referential' do
+        it { is_expected.to match_array([context.line_notice(:line_notice_match)]) }
+      end
+    end
+
     describe '#companies' do
       subject { scope.companies }
 

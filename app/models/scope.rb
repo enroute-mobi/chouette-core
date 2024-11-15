@@ -11,6 +11,7 @@ module Scope
 
     delegate :lines,
              :line_groups,
+             :line_notices,
              :companies,
              :networks,
              :stop_areas,
@@ -83,6 +84,12 @@ module Scope
     def line_groups
       line_referential.line_groups.where(
         id: ::LineGroup::Member.where(line_id: lines.select(:id)).select(:group_id).distinct
+      )
+    end
+
+    def line_notices
+      line_referential.line_notices.where(
+        id: ::Chouette::LineNoticeMembership.where(line_id: lines.select(:id)).select(:line_notice_id).distinct
       )
     end
 
@@ -199,6 +206,7 @@ module Scope
     %w[
       lines
       line_groups
+      line_notices
       companies
       networks
     ].each do |method_name|

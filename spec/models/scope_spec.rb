@@ -70,6 +70,36 @@ RSpec.describe Scope::Workbench do
     end
   end
 
+  describe '#line_notices' do
+    subject { scope.line_notices }
+
+    let(:context) do
+      Chouette.create do
+        workgroup do
+          workbench :same_workgroup_workbench
+
+          workbench :workbench do
+            line_notice :line_notice
+          end
+        end
+
+        workgroup do
+          workbench :other_workbench do
+            line_notice
+          end
+        end
+      end
+    end
+
+    it { is_expected.to match_array([context.line_notice(:line_notice)]) }
+
+    context 'in workbench in the same workgroup' do
+      let(:workbench) { context.workbench(:same_workgroup_workbench) }
+
+      it { is_expected.to match_array([context.line_notice(:line_notice)]) }
+    end
+  end
+
   describe '#companies' do
     subject { scope.companies }
 
@@ -536,6 +566,56 @@ RSpec.describe Scope::Referential do
       let(:workbench) { context.workbench(:same_workgroup_workbench) }
 
       it { is_expected.to match_array([context.line_group(:line_group)]) }
+    end
+
+    context 'in workbench of another workgroup' do
+      let(:workbench) { context.workbench(:other_workbench) }
+
+      it { is_expected.to be_empty }
+    end
+  end
+
+  describe '#line_notices' do
+    subject { scope.line_notices }
+
+    let(:context) do
+      Chouette.create do
+        workgroup do
+          workbench :same_workgroup_workbench
+
+          workbench :workbench do
+            line :line
+            line :line_outside
+
+            line_notice :line_notice, lines: %i[line]
+            line_notice :line_notice_outside, lines: %i[line_outside]
+
+            referential :referential, lines: %i[line]
+
+            referential :same_workbench_referential
+
+            referential lines: %i[line_outside]
+          end
+        end
+
+        workgroup do
+          workbench :other_workbench
+        end
+      end
+    end
+
+    it { is_expected.to match_array([context.line_notice(:line_notice)]) }
+
+    context 'in referential in the same workbench' do
+      let(:referential) { context.referential(:same_workbench_referential) }
+
+      it { is_expected.to be_empty }
+    end
+
+    context 'in workbench in the same workgroup' do
+      let(:workbench) { context.workbench(:same_workgroup_workbench) }
+
+      it { is_expected.to match_array([context.line_notice(:line_notice)]) }
     end
 
     context 'in workbench of another workgroup' do
@@ -1718,6 +1798,30 @@ RSpec.describe Scope::Owned do
       end
     end
 
+    describe '#line_notices' do
+      subject { scope.line_notices }
+
+      let(:context) do
+        Chouette.create do
+          workgroup do
+            workbench :workbench do
+              line_notice :line_notice
+            end
+
+            workbench :same_workgroup_workbench
+          end
+        end
+      end
+
+      it { is_expected.to match_array([context.line_notice(:line_notice)]) }
+
+      context 'in workbench in the same workgroup' do
+        let(:workbench) { context.workbench(:same_workgroup_workbench) }
+
+        it { is_expected.to be_empty }
+      end
+    end
+
     describe '#companies' do
       subject { scope.companies }
 
@@ -2081,6 +2185,30 @@ RSpec.describe Scope::Owned do
       end
 
       it { is_expected.to match_array([context.line_group(:line_group)]) }
+    end
+
+    describe '#line_notices' do
+      subject { scope.line_notices }
+
+      let(:context) do
+        Chouette.create do
+          workgroup do
+            workbench :same_workgroup_workbench do
+              line :line_outside
+              line_notice lines: %i[line_outside]
+            end
+
+            workbench :workbench do
+              line :line
+              line_notice :line_notice, lines: %i[line]
+
+              referential :referential, lines: %i[line line_outside]
+            end
+          end
+        end
+      end
+
+      it { is_expected.to match_array([context.line_notice(:line_notice)]) }
     end
 
     describe '#companies' do

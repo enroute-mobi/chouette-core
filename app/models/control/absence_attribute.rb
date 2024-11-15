@@ -190,7 +190,7 @@ module Control
 
       class SimpleAttribute < Finder
         def faulty_models
-          scope.where.not(filed_name => nil)
+          scope.where.not(id: scope.where(filed_name => [nil, '']))
         end
       end
 

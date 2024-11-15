@@ -964,6 +964,9 @@ module Search
     link :journey_patterns, :vehicle_journeys do
       initial_scope.vehicle_journeys.where(journey_pattern: journey_patterns)
     end
+    link :vehicle_journeys, :service_facility_sets do
+      initial_scope.service_facility_sets.where(id: vehicle_journeys.select('UNNEST(service_facility_set_ids)'))
+    end
     link :vehicle_journeys, :time_tables do
       initial_scope.time_tables.joins(:vehicle_journeys).where(vehicle_journeys: { id: vehicle_journeys.select(:id) })
     end

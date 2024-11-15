@@ -931,6 +931,31 @@ RSpec.describe Search::Base, type: :model do
       end
     end
 
+    describe '#service_facility_sets' do
+      subject { scope.service_facility_sets }
+
+      let(:context) do
+        Chouette.create do
+          service_facility_set :service_facility_set
+          service_facility_set :service_facility_set_outside
+
+          referential do
+            vehicle_journey service_facility_sets: %i[service_facility_set]
+          end
+        end
+      end
+
+      context 'in workbench' do
+        let(:initial_scope) { workbench_scope }
+
+        it { is_expected.to be_empty }
+      end
+
+      context 'in referential' do
+        it { is_expected.to match_array([context.service_facility_set(:service_facility_set)]) }
+      end
+    end
+
     describe '#fare_zones' do
       subject { scope.fare_zones }
 

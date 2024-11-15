@@ -346,6 +346,36 @@ RSpec.describe Scope::Workbench do
     end
   end
 
+  describe '#service_facility_sets' do
+    subject { scope.service_facility_sets }
+
+    let(:context) do
+      Chouette.create do
+        workgroup do
+          workbench :same_workgroup_workbench
+
+          workbench :workbench do
+            service_facility_set :service_facility_set
+          end
+        end
+
+        workgroup do
+          workbench :other_workbench do
+            service_facility_set
+          end
+        end
+      end
+    end
+
+    it { is_expected.to match_array([context.service_facility_set(:service_facility_set)]) }
+
+    context 'in workbench in the same workgroup' do
+      let(:workbench) { context.workbench(:same_workgroup_workbench) }
+
+      it { is_expected.to match_array([context.service_facility_set(:service_facility_set)]) }
+    end
+  end
+
   describe '#fare_zones' do
     subject { scope.fare_zones }
 
@@ -1064,6 +1094,57 @@ RSpec.describe Scope::Referential do
     end
 
     it { is_expected.to be_empty }
+  end
+
+  describe '#service_facility_sets' do
+    subject { scope.service_facility_sets }
+
+    let(:context) do
+      Chouette.create do
+        workgroup do
+          workbench :same_workgroup_workbench
+
+          workbench :workbench do
+            service_facility_set :service_facility_set
+            service_facility_set :service_facility_set_outside
+
+            referential :referential do
+              vehicle_journey service_facility_sets: %i[service_facility_set]
+            end
+
+            referential :same_workbench_referential
+
+            referential do
+              vehicle_journey service_facility_sets: %i[service_facility_set_outside]
+            end
+          end
+        end
+
+        workgroup do
+          workbench :other_workbench
+        end
+      end
+    end
+
+    it { is_expected.to match_array([context.service_facility_set(:service_facility_set)]) }
+
+    context 'in referential in the same workbench' do
+      let(:referential) { context.referential(:same_workbench_referential) }
+
+      it { is_expected.to be_empty }
+    end
+
+    context 'in workbench in the same workgroup' do
+      let(:workbench) { context.workbench(:same_workgroup_workbench) }
+
+      it { is_expected.to match_array([context.service_facility_set(:service_facility_set)]) }
+    end
+
+    context 'in workbench of another workgroup' do
+      let(:workbench) { context.workbench(:other_workbench) }
+
+      it { is_expected.to be_empty }
+    end
   end
 
   describe '#fare_zones' do
@@ -2135,6 +2216,30 @@ RSpec.describe Scope::Owned do
       end
     end
 
+    describe '#service_facility_sets' do
+      subject { scope.service_facility_sets }
+
+      let(:context) do
+        Chouette.create do
+          workgroup do
+            workbench :workbench do
+              service_facility_set :service_facility_set
+            end
+
+            workbench :same_workgroup_workbench
+          end
+        end
+      end
+
+      it { is_expected.to match_array([context.service_facility_set(:service_facility_set)]) }
+
+      context 'in workbench in the same workgroup' do
+        let(:workbench) { context.workbench(:same_workgroup_workbench) }
+
+        it { is_expected.to be_empty }
+      end
+    end
+
     describe '#fare_zones' do
       subject { scope.fare_zones }
 
@@ -2564,6 +2669,31 @@ RSpec.describe Scope::Owned do
       end
 
       it { is_expected.to be_empty }
+    end
+
+    describe '#service_facility_sets' do
+      subject { scope.service_facility_sets }
+
+      let(:context) do
+        Chouette.create do
+          workgroup do
+            workbench :same_workgroup_workbench do
+              service_facility_set :service_facility_set_outside
+            end
+
+            workbench :workbench do
+              service_facility_set :service_facility_set
+
+              referential :referential do
+                vehicle_journey service_facility_sets: %i[service_facility_set]
+                vehicle_journey service_facility_sets: %i[service_facility_set_outside]
+              end
+            end
+          end
+        end
+      end
+
+      it { is_expected.to match_array([context.service_facility_set(:service_facility_set)]) }
     end
 
     describe '#fare_zones' do

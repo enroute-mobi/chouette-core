@@ -480,6 +480,43 @@ RSpec.describe Search::StopArea do
       end
     end
 
+    describe '#service_facility_sets' do
+      subject { scope.service_facility_sets }
+
+      let(:context) do
+        Chouette.create do
+          stop_area :stop_area_match, zip_code: 44_300
+          stop_area :stop_area_no_match, zip_code: 0o0000
+
+          service_facility_set :service_facility_set_match
+          service_facility_set :service_facility_set_no_match
+
+          referential do
+            route with_stops: false do
+              stop_point stop_area: :stop_area_match
+              stop_point stop_area: :stop_area_match
+              vehicle_journey service_facility_sets: %i[service_facility_set_match]
+            end
+            route with_stops: false do
+              stop_point stop_area: :stop_area_no_match
+              stop_point stop_area: :stop_area_no_match
+              vehicle_journey service_facility_sets: %i[service_facility_set_no_match]
+            end
+          end
+        end
+      end
+
+      context 'in workbench' do
+        let(:initial_scope) { workbench_scope }
+
+        it { is_expected.to be_empty }
+      end
+
+      context 'in referential' do
+        it { is_expected.to match_array([context.service_facility_set(:service_facility_set_match)]) }
+      end
+    end
+
     describe '#fare_zones' do
       subject { scope.fare_zones }
 

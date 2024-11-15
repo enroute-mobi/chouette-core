@@ -378,6 +378,39 @@ RSpec.describe Search::Line do
       end
     end
 
+    describe '#service_facility_sets' do
+      subject { scope.service_facility_sets }
+
+      let(:context) do
+        Chouette.create do
+          line :line_match, transport_mode: 'bus'
+          line :line_no_match, transport_mode: 'air'
+
+          service_facility_set :service_facility_set
+          service_facility_set :service_facility_set_no_match
+
+          referential lines: %i[line_match line_no_match] do
+            route line: :line_match do
+              vehicle_journey service_facility_sets: %i[service_facility_set]
+            end
+            route line: :line_no_match do
+              vehicle_journey service_facility_sets: %i[service_facility_set_no_match]
+            end
+          end
+        end
+      end
+
+      context 'in workbench' do
+        let(:initial_scope) { workbench_scope }
+
+        it { is_expected.to be_empty }
+      end
+
+      context 'in referential' do
+        it { is_expected.to match_array([context.service_facility_set(:service_facility_set)]) }
+      end
+    end
+
     describe '#fare_zones' do
       subject { scope.fare_zones }
 

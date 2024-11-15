@@ -21,6 +21,7 @@ module Scope
              :shapes,
              :point_of_interests,
              :fare_zones,
+             :line_routing_constraint_zones,
              :document_memberships,
              :documents,
              :workgroup,
@@ -133,6 +134,14 @@ module Scope
       )
     end
 
+    def line_routing_constraint_zones
+      line_referential.line_routing_constraint_zones.where(
+        'line_ids && (?) OR stop_area_ids && (?)',
+        lines.select('ARRAY_AGG(lines.id)'),
+        stop_areas.select('ARRAY_AGG(stop_areas.id)')
+      )
+    end
+
     def documents
       workgroup.documents.where(
         id: line_document_memberships.or(stop_area_document_memberships)
@@ -209,6 +218,7 @@ module Scope
       line_notices
       companies
       networks
+      line_routing_constraint_zones
     ].each do |method_name|
       class_eval <<-RUBY, __FILE__, __LINE__ + 1
         def #{method_name}

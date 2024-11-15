@@ -376,6 +376,40 @@ RSpec.describe Scope::Workbench do
     end
   end
 
+  describe '#line_routing_constraint_zones' do
+    subject { scope.line_routing_constraint_zones }
+
+    let(:context) do
+      Chouette.create do
+        workgroup do
+          workbench :same_workgroup_workbench
+
+          workbench :workbench do
+            stop_area :stop_area
+            line :line
+            line_routing_constraint_zone :line_routing_constraint_zone, lines: %i[line], stop_areas: %i[stop_area]
+          end
+        end
+
+        workgroup do
+          workbench :other_workbench do
+            stop_area :other_stop_area
+            line :other_line
+            line_routing_constraint_zone lines: %i[other_line], stop_areas: %i[other_stop_area]
+          end
+        end
+      end
+    end
+
+    it { is_expected.to match_array([context.line_routing_constraint_zone(:line_routing_constraint_zone)]) }
+
+    context 'in workbench in the same workgroup' do
+      let(:workbench) { context.workbench(:same_workgroup_workbench) }
+
+      it { is_expected.to match_array([context.line_routing_constraint_zone(:line_routing_constraint_zone)]) }
+    end
+  end
+
   describe '#documents' do
     subject { scope.documents }
 
@@ -1083,6 +1117,90 @@ RSpec.describe Scope::Referential do
       let(:workbench) { context.workbench(:same_workgroup_workbench) }
 
       it { is_expected.to match_array([context.fare_zone(:fare_zone)]) }
+    end
+
+    context 'in workbench of another workgroup' do
+      let(:workbench) { context.workbench(:other_workbench) }
+
+      it { is_expected.to be_empty }
+    end
+  end
+
+  describe '#line_routing_constraint_zones' do
+    subject { scope.line_routing_constraint_zones }
+
+    let(:context) do # rubocop:disable Metrics/BlockLength
+      Chouette.create do # rubocop:disable Metrics/BlockLength
+        workgroup do # rubocop:disable Metrics/BlockLength
+          workbench :same_workgroup_workbench
+
+          workbench :workbench do
+            stop_area :stop_area
+            stop_area :stop_area_outside
+
+            line :line
+            line :line_outside
+
+            line_routing_constraint_zone :line_routing_constraint_zone, lines: %i[line], stop_areas: %i[stop_area]
+            line_routing_constraint_zone :line_routing_constraint_zone_line_outside,
+                                         lines: %i[line_outside], stop_areas: %i[stop_area]
+            line_routing_constraint_zone :line_routing_constraint_zone_stop_area_outside,
+                                         lines: %i[line], stop_areas: %i[stop_area_outside]
+            line_routing_constraint_zone :line_routing_constraint_zone_both_outside,
+                                         lines: %i[line_outside], stop_areas: %i[stop_area_outside]
+
+            referential :referential, lines: %i[line] do
+              route with_stops: false, line: :line do
+                stop_point stop_area: :stop_area
+                stop_point stop_area: :stop_area
+              end
+            end
+
+            referential :same_workbench_referential
+
+            referential lines: %i[line_outside] do
+              route with_stops: false, line: :line_outside do
+                stop_point stop_area: :stop_area_outside
+                stop_point stop_area: :stop_area_outside
+              end
+            end
+          end
+        end
+
+        workgroup do
+          workbench :other_workbench
+        end
+      end
+    end
+
+    it do
+      is_expected.to match_array(
+        [
+          context.line_routing_constraint_zone(:line_routing_constraint_zone),
+          context.line_routing_constraint_zone(:line_routing_constraint_zone_line_outside),
+          context.line_routing_constraint_zone(:line_routing_constraint_zone_stop_area_outside)
+        ]
+      )
+    end
+
+    context 'in referential in the same workbench' do
+      let(:referential) { context.referential(:same_workbench_referential) }
+
+      it { is_expected.to be_empty }
+    end
+
+    context 'in workbench in the same workgroup' do
+      let(:workbench) { context.workbench(:same_workgroup_workbench) }
+
+      it do
+        is_expected.to match_array(
+          [
+            context.line_routing_constraint_zone(:line_routing_constraint_zone),
+            context.line_routing_constraint_zone(:line_routing_constraint_zone_line_outside),
+            context.line_routing_constraint_zone(:line_routing_constraint_zone_stop_area_outside)
+          ]
+        )
+      end
     end
 
     context 'in workbench of another workgroup' do
@@ -2041,6 +2159,32 @@ RSpec.describe Scope::Owned do
       end
     end
 
+    describe '#line_routing_constraint_zones' do
+      subject { scope.line_routing_constraint_zones }
+
+      let(:context) do
+        Chouette.create do
+          workgroup do
+            workbench :workbench do
+              stop_area :stop_area
+              line :line
+              line_routing_constraint_zone :line_routing_constraint_zone, lines: %i[line], stop_areas: %i[stop_area]
+            end
+
+            workbench :same_workgroup_workbench
+          end
+        end
+      end
+
+      it { is_expected.to match_array([context.line_routing_constraint_zone(:line_routing_constraint_zone)]) }
+
+      context 'in workbench in the same workgroup' do
+        let(:workbench) { context.workbench(:same_workgroup_workbench) }
+
+        it { is_expected.to be_empty }
+      end
+    end
+
     describe '#documents' do
       subject { scope.documents }
 
@@ -2449,6 +2593,58 @@ RSpec.describe Scope::Owned do
       end
 
       it { is_expected.to match_array([context.fare_zone(:fare_zone)]) }
+    end
+
+    describe '#line_routing_constraint_zones' do
+      subject { scope.line_routing_constraint_zones }
+
+      let(:context) do
+        Chouette.create do
+          workgroup do
+            workbench :same_workgroup_workbench do
+              stop_area :stop_area_outside
+              line :line_outside
+            end
+
+            workbench :workbench do
+              stop_area :stop_area
+              line :line
+
+              line_routing_constraint_zone :line_routing_constraint_zone, lines: %i[line], stop_areas: %i[stop_area]
+              line_routing_constraint_zone :line_routing_constraint_zone_line_outside,
+                                           lines: %i[line_outside], stop_areas: %i[stop_area]
+              line_routing_constraint_zone :line_routing_constraint_zone_stop_area_outside,
+                                           lines: %i[line], stop_areas: %i[stop_area_outside]
+              line_routing_constraint_zone :line_routing_constraint_zone_both_outside,
+                                           lines: %i[line_outside], stop_areas: %i[stop_area_outside]
+
+              referential :referential, lines: %i[line] do
+                route with_stops: false, line: :line do
+                  stop_point stop_area: :stop_area
+                  stop_point stop_area: :stop_area
+                end
+              end
+            end
+          end
+        end
+      end
+      let!(:line_routing_constraint_zone_outside) do
+        context.workbench(:same_workgroup_workbench).line_providers.last.line_routing_constraint_zones.create!(
+          name: 'Line routing constraint zone outside',
+          lines: [context.line(:line)],
+          stop_areas: [context.stop_area(:stop_area)]
+        )
+      end
+
+      it do
+        is_expected.to match_array(
+          [
+            context.line_routing_constraint_zone(:line_routing_constraint_zone),
+            context.line_routing_constraint_zone(:line_routing_constraint_zone_line_outside),
+            context.line_routing_constraint_zone(:line_routing_constraint_zone_stop_area_outside)
+          ]
+        )
+      end
     end
 
     describe '#documents' do

@@ -962,6 +962,57 @@ RSpec.describe Search::Base, type: :model do
       end
     end
 
+    describe '#line_routing_constraint_zones' do
+      subject { scope.line_routing_constraint_zones }
+
+      let(:context) do
+        Chouette.create do
+          stop_area :stop_area_match
+          stop_area :stop_area_outside
+
+          line :line_match
+          line :line_without_route
+          line :line_outside
+
+          line_routing_constraint_zone :line_routing_constraint_zone_match,
+                                       lines: %i[line_match], stop_areas: %i[stop_area_match]
+          line_routing_constraint_zone :line_routing_constraint_zone_line_without_route,
+                                       lines: %i[line_without_route], stop_areas: %i[stop_area_outside]
+          line_routing_constraint_zone :line_routing_constraint_zone_match_line_outside,
+                                       lines: %i[line_outside], stop_areas: %i[stop_area_match]
+          line_routing_constraint_zone :line_routing_constraint_zone_match_stop_area_outside,
+                                       lines: %i[line_match], stop_areas: %i[stop_area_outside]
+          line_routing_constraint_zone :line_routing_constraint_zone_both_outside,
+                                       lines: %i[line_outside], stop_areas: %i[stop_area_outside]
+
+          referential lines: %i[line_match line_without_route] do
+            route with_stops: false, line: :line_match do
+              stop_point stop_area: :stop_area_match
+              stop_point stop_area: :stop_area_match
+            end
+          end
+        end
+      end
+
+      context 'in workbench' do
+        let(:initial_scope) { workbench_scope }
+
+        it { is_expected.to be_empty }
+      end
+
+      context 'in referential' do
+        it do
+          is_expected.to match_array(
+            [
+              context.line_routing_constraint_zone(:line_routing_constraint_zone_match),
+              context.line_routing_constraint_zone(:line_routing_constraint_zone_match_line_outside),
+              context.line_routing_constraint_zone(:line_routing_constraint_zone_match_stop_area_outside)
+            ]
+          )
+        end
+      end
+    end
+
     describe '#documents' do
       subject { scope.documents }
 

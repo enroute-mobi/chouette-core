@@ -979,6 +979,14 @@ module Search
 
     delegate :workgroup, :point_of_interests, to: :initial_scope
 
+    def line_routing_constraint_zones
+      initial_scope.line_routing_constraint_zones.where(
+        'line_ids && (?) OR stop_area_ids && (?)',
+        lines.select('ARRAY_AGG(lines.id)'),
+        stop_areas.select('ARRAY_AGG(stop_areas.id)')
+      )
+    end
+
     def documents
       workgroup.documents.where(
         id: line_document_memberships.or(stop_area_document_memberships)

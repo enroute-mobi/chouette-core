@@ -667,7 +667,23 @@ RSpec.describe Search::Base::Chart do
     group_by_attribute 'custom_label_attribute',
                        :string,
                        joins: { relation: { other_relation: {} }, another_relation: {} },
-                       selects: %w[other_relations.name another_relations.label]
+                       selects: %w[other_relations.name another_relations.label] do
+      def label(key)
+        "#{key[0]} (#{key[1]})"
+      end
+    end
+    group_by_attribute 'custom_label_attribute_b',
+                       :string,
+                       joins: { relation_b: { other_relation_b: {} }, another_relation_b: {} },
+                       selects: %w[other_relation_bs.name another_relation_bs.label] do
+      def nil_key?(key)
+        key[0].nil?
+      end
+
+      def label(key)
+        "#{key[0]} [#{key[1]}]"
+      end
+    end
     group_by_attribute 'more_keys_attribute', :numeric, keys: [2, 3, 1]
     group_by_attribute 'sortable_label_key_attribute', :string do
       def label(key)
@@ -1311,6 +1327,81 @@ RSpec.describe Search::Base::Chart do
 
           it 'does not sort labelled keys' do
             is_expected.to eq_with_keys_order({ 'lebal_ot_yek' => 84, I18n.t('none') => 63, 'a_lebal_ot_yek' => 42 })
+          end
+        end
+      end
+
+      context 'having selects' do
+        context 'with nil' do
+          let(:group_by_attribute) { 'custom_label_attribute' }
+          let(:raw_data) do
+            {
+              ['Object 1', 'A'] => 126,
+              ['Object 2', nil] => 105,
+              [nil, 'B'] => 84,
+              [nil, nil] => 63
+            }
+          end
+
+          it 'labels nil keys as "None"' do
+            is_expected.to eq_with_keys_order(
+              {
+                'Object 1 (A)' => 126,
+                'Object 2 ()' => 105,
+                ' (B)' => 84,
+                I18n.t('none') => 63
+              }
+            )
+          end
+
+          context 'when #sort_by is "label"' do
+            let(:sort_by) { 'label' }
+
+            it 'labels nil keys as "None"' do
+              is_expected.to eq_with_keys_order(
+                {
+                  I18n.t('none') => 63,
+                  'Object 2 ()' => 105,
+                  'Object 1 (A)' => 126,
+                  ' (B)' => 84
+                }
+              )
+            end
+          end
+
+          context 'when custom #nil_key?' do
+            let(:group_by_attribute) { 'custom_label_attribute_b' }
+            let(:raw_data) do
+              {
+                ['Object 1', 'A'] => 126,
+                ['Object 2', nil] => 105,
+                [nil, 'B'] => 84
+              }
+            end
+
+            it 'labels nil keys as "None"' do
+              is_expected.to eq_with_keys_order(
+                {
+                  'Object 1 [A]' => 126,
+                  'Object 2 []' => 105,
+                  I18n.t('none') => 84
+                }
+              )
+            end
+
+            context 'when #sort_by is "label"' do
+              let(:sort_by) { 'label' }
+
+              it 'labels nil keys as "None"' do
+                is_expected.to eq_with_keys_order(
+                  {
+                    I18n.t('none') => 84,
+                    'Object 2 []' => 105,
+                    'Object 1 [A]' => 126
+                  }
+                )
+              end
+            end
           end
         end
       end

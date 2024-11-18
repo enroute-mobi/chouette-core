@@ -332,6 +332,23 @@ module Search
           @keys_zero_data ||= keys.map { |k| [k, 0] }.to_h.freeze
         end
 
+        def nil_key?(key)
+          array? ? key.all?(&:nil?) : key.nil?
+        end
+
+        def delete_and_return_nil_key!(data)
+          if array?
+            nil_key = data.keys.find { |k| nil_key?(k) }
+            data.delete(nil_key) if nil_key
+          else
+            data.delete(nil)
+          end
+        end
+
+        def array?
+          @array ||= selects && selects.length > 1
+        end
+
         def groups
           @groups ||= selects || [name]
         end
@@ -748,7 +765,7 @@ module Search
         def label_keys_with_label_sort(data)
           # The idea is to extract the nil key, label and sort the other keys and add the nil key afterwards.
 
-          nil_value = data.delete(nil)
+          nil_value = group_by_attribute.delete_and_return_nil_key!(data)
 
           new_data = label_and_sort_keys(data)
 
@@ -778,7 +795,7 @@ module Search
 
         def label_keys_without_sort(data)
           data.transform_keys do |k|
-            if k.nil?
+            if group_by_attribute.nil_key?(k)
               I18n.t('none')
             elsif label?
               label(k)

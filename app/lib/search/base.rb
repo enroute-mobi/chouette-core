@@ -1002,6 +1002,12 @@ module Search
       )
     end
 
+    def contracts
+      workgroup.contracts.where(company_id: companies.select(:id)).or(
+        workgroup.contracts.where('line_ids && (?)', lines.select('ARRAY_AGG(lines.id)'))
+      )
+    end
+
     private
 
     def line_document_memberships

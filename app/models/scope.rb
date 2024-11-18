@@ -26,6 +26,7 @@ module Scope
              :line_routing_constraint_zones,
              :document_memberships,
              :documents,
+             :contracts,
              :workgroup,
              to: :workbench
 
@@ -161,6 +162,12 @@ module Scope
       )
     end
 
+    def contracts
+      workgroup.contracts.where(company_id: companies.select(:id)).or(
+        workgroup.contracts.where('line_ids && (?)', lines.select('ARRAY_AGG(lines.id)'))
+      )
+    end
+
     delegate :routes,
              :stop_points,
              :journey_patterns,
@@ -271,7 +278,8 @@ module Scope
       scope.documents.where(document_provider: document_providers)
     end
 
-    delegate :routes,
+    delegate :contracts,
+             :routes,
              :stop_points,
              :journey_patterns,
              :journey_pattern_stop_points,

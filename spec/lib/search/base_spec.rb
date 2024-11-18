@@ -1109,6 +1109,51 @@ RSpec.describe Search::Base, type: :model do
       end
     end
 
+    describe '#contracts' do
+      subject { scope.contracts }
+
+      let(:context) do
+        Chouette.create do
+          company :company_match
+          company :company_outside
+          company :company_without_line
+
+          line :line_match, company: :company_match
+          line :line_without_route, company: :company_without_route
+          line :line_outside, company: :company_outside
+
+          contract :contract_match, company: :company_match, lines: %i[line_match]
+          contract :contract_company_outside, company: :company_outside, lines: %i[line_match]
+          contract :contract_company_without_line, company: :company_without_line, lines: %i[line_outside]
+          contract :contract_line_without_route, company: :company_outside, lines: %i[line_without_route]
+          contract :contract_line_outside, company: :company_match, lines: %i[line_outside]
+          contract :contract_outside, company: :company_outside, lines: %i[line_outside]
+
+          referential lines: %i[line_match line_without_route] do
+            route line: :line_match
+          end
+        end
+      end
+
+      context 'in workbench' do
+        let(:initial_scope) { workbench_scope }
+
+        it { is_expected.to be_empty }
+      end
+
+      context 'in referential' do
+        it do
+          is_expected.to match_array(
+            [
+              context.contract(:contract_match),
+              context.contract(:contract_company_outside),
+              context.contract(:contract_line_outside)
+            ]
+          )
+        end
+      end
+    end
+
     describe '#routes' do
       subject { scope.routes }
 

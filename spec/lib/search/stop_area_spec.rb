@@ -702,6 +702,58 @@ RSpec.describe Search::StopArea do
       end
     end
 
+    describe '#contracts' do
+      subject { scope.contracts }
+
+      let(:context) do
+        Chouette.create do
+          company :company_match
+          company :company_no_match
+
+          line :line_match, transport_mode: 'bus', company: :company_match
+          line :line_no_match, transport_mode: 'air', company: :company_no_match
+
+          stop_area :stop_area_match, zip_code: 44_300
+          stop_area :stop_area_no_match, zip_code: 0o0000
+          stop_area :stop_area_outside, zip_code: 44_300
+
+          contract :contract_match, company: :company_match, lines: %i[line_match]
+          contract :contract_company_no_match, company: :company_no_match, lines: %i[line_match]
+          contract :contract_line_no_match, company: :company_match, lines: %i[line_no_match]
+          contract :contract_no_match, company: :company_no_match, lines: %i[line_no_match]
+
+          referential lines: %i[line_match line_no_match] do
+            route with_stops: false, line: :line_match do
+              stop_point stop_area: :stop_area_match
+              stop_point stop_area: :stop_area_no_match
+            end
+            route with_stops: false, line: :line_no_match do
+              stop_point stop_area: :stop_area_no_match
+              stop_point stop_area: :stop_area_no_match
+            end
+          end
+        end
+      end
+
+      context 'in workbench' do
+        let(:initial_scope) { workbench_scope }
+
+        it { is_expected.to be_empty }
+      end
+
+      context 'in referential' do
+        it do
+          is_expected.to match_array(
+            [
+              context.contract(:contract_match),
+              context.contract(:contract_company_no_match),
+              context.contract(:contract_line_no_match)
+            ]
+          )
+        end
+      end
+    end
+
     describe '#routes' do
       subject { scope.routes }
 

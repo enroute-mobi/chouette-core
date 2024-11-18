@@ -496,6 +496,36 @@ RSpec.describe Scope::Workbench do
     end
   end
 
+  describe '#contracts' do
+    subject { scope.contracts }
+
+    let(:context) do
+      Chouette.create do
+        workgroup do
+          workbench :same_workgroup_workbench do
+            company :company_other_workbench
+            line :line_other_workbench
+            contract :contract_other_workbench, company: :company_other_workbench, lines: %i[line_other_workbench]
+          end
+
+          workbench :workbench do
+            company :company
+            line :line
+            contract :contract, company: :company, lines: %i[line]
+          end
+        end
+      end
+    end
+
+    it { is_expected.to match_array([context.contract(:contract)]) }
+
+    context 'in workbench in the same workgroup' do
+      let(:workbench) { context.workbench(:same_workgroup_workbench) }
+
+      it { is_expected.to match_array([context.contract(:contract_other_workbench)]) }
+    end
+  end
+
   %i[
     routes
     stop_points
@@ -1416,6 +1446,86 @@ RSpec.describe Scope::Referential do
             context.document(:document_line),
             context.document(:document_stop_area),
             context.document(:document_other_workbench)
+          ]
+        )
+      end
+    end
+
+    context 'in workbench of another workgroup' do
+      let(:workbench) { context.workbench(:other_workbench) }
+
+      it { is_expected.to be_empty }
+    end
+  end
+
+  describe '#contracts' do
+    subject { scope.contracts }
+
+    let(:context) do
+      Chouette.create do
+        workgroup do
+          workbench :same_workgroup_workbench
+
+          workbench :workbench do
+            company :company
+            company :company_outside
+
+            line :line, company: :company
+            line :line_outside, company: :company_outside
+
+            contract :contract, company: :company, lines: %i[line]
+            contract :contract_company_outside, company: :company_outside, lines: %i[line]
+            contract :contract_line_outside, company: :company, lines: %i[line_outside]
+            contract :contract_outside, company: :company_outside, lines: %i[line_outside]
+
+            referential :referential, lines: %i[line]
+
+            referential :same_workbench_referential
+
+            referential lines: %i[line_outside]
+          end
+        end
+
+        workgroup do
+          workbench :other_workbench
+        end
+      end
+    end
+    let!(:contract_same_workgroup_workbench) do
+      context.workbench(:same_workgroup_workbench).contracts.create!(
+        name: 'Contract same workgroup workbench',
+        company: context.company(:company),
+        lines: [context.line(:line)]
+      )
+    end
+
+    it do
+      is_expected.to match_array(
+        [
+          context.contract(:contract),
+          context.contract(:contract_company_outside),
+          context.contract(:contract_line_outside),
+          contract_same_workgroup_workbench
+        ]
+      )
+    end
+
+    context 'in referential in the same workbench' do
+      let(:referential) { context.referential(:same_workbench_referential) }
+
+      it { is_expected.to be_empty }
+    end
+
+    context 'in workbench in the same workgroup' do
+      let(:workbench) { context.workbench(:same_workgroup_workbench) }
+
+      it do
+        is_expected.to match_array(
+          [
+            context.contract(:contract),
+            context.contract(:contract_company_outside),
+            context.contract(:contract_line_outside),
+            contract_same_workgroup_workbench
           ]
         )
       end
@@ -2386,6 +2496,32 @@ RSpec.describe Scope::Owned do
       end
     end
 
+    describe '#contracts' do
+      subject { scope.contracts }
+
+      let(:context) do
+        Chouette.create do
+          workgroup do
+            workbench :workbench do
+              company :company
+              line :line
+              contract :contract, company: :company, lines: %i[line]
+            end
+
+            workbench :same_workgroup_workbench
+          end
+        end
+      end
+
+      it { is_expected.to match_array([context.contract(:contract)]) }
+
+      context 'in workbench in the same workgroup' do
+        let(:workbench) { context.workbench(:same_workgroup_workbench) }
+
+        it { is_expected.to match_array([context.contract(:contract)]) }
+      end
+    end
+
     %i[
       routes
       stop_points
@@ -2907,6 +3043,53 @@ RSpec.describe Scope::Owned do
             context.document(:document_company),
             context.document(:document_line),
             context.document(:document_stop_area)
+          ]
+        )
+      end
+    end
+
+    describe '#contracts' do
+      subject { scope.contracts }
+
+      let(:context) do
+        Chouette.create do
+          workgroup do
+            workbench :same_workgroup_workbench do
+              company :company_outside
+              line :line_outside
+            end
+
+            workbench :workbench do
+              company :company
+
+              line :line, company: :company
+
+              contract :contract, company: :company, lines: %i[line]
+              contract :contract_company_outside, company: :company_outside, lines: %i[line]
+              contract :contract_line_outside, company: :company, lines: %i[line_outside]
+              contract :contract_outside, company: :company_outside, lines: %i[line_outside]
+
+              referential :referential, lines: %i[line line_outside]
+            end
+          end
+        end
+      end
+      let!(:contract_same_workgroup_workbench) do
+        context.workbench(:same_workgroup_workbench).contracts.create!(
+          name: 'Contract same workgroup workbench',
+          company: context.company(:company),
+          lines: [context.line(:line)]
+        )
+      end
+
+      it do
+        is_expected.to match_array(
+          [
+            context.contract(:contract),
+            context.contract(:contract_company_outside),
+            context.contract(:contract_line_outside),
+            context.contract(:contract_outside),
+            contract_same_workgroup_workbench
           ]
         )
       end

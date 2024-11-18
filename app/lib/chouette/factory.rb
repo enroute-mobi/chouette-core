@@ -195,6 +195,16 @@ module Chouette
             end
           end
 
+          model :contract do
+            attribute(:name) { |n| "Contract #{n}" }
+
+            transient :lines
+
+            after do
+              new_instance.lines = Array(transient(:lines, resolve_instances: true))
+            end
+          end
+
           model :line_provider do
             attribute(:short_name) { |n| "line_provider_#{n}" }
             attribute(:name) { |n| "Line Provider #{n}" }

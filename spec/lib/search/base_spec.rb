@@ -684,6 +684,11 @@ RSpec.describe Search::Base::Chart do
         "#{key[0]} [#{key[1]}]"
       end
     end
+    group_by_attribute 'custom_label_numeric_attribute', :numeric, sortable: :before_label do
+      def label(key)
+        "Level #{key}"
+      end
+    end
     group_by_attribute 'more_keys_attribute', :numeric, keys: [2, 3, 1]
     group_by_attribute 'sortable_label_key_attribute', :string do
       def label(key)
@@ -1402,6 +1407,20 @@ RSpec.describe Search::Base::Chart do
                 )
               end
             end
+          end
+        end
+      end
+
+      context 'needing sort before labelling' do
+        let(:group_by_attribute) { 'custom_label_numeric_attribute' }
+
+        context 'when #sort_by is "label"' do
+          let(:sort_by) { 'label' }
+          let(:first) { true }
+          let(:raw_data) { { 1 => 2, 2 => 3, 10 => 42 } }
+
+          it 'labels keys and sort in numeric order' do
+            is_expected.to eq_with_keys_order({ 'Level 1' => 2, 'Level 2' => 3, 'Level 10' => 42 })
           end
         end
       end

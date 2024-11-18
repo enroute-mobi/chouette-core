@@ -304,7 +304,7 @@ module Search
           end
         end
 
-        def initialize(name, sub_type: false, keys: nil, joins: nil, selects: nil, sortable: true)
+        def initialize(name, sub_type: false, keys: nil, joins: nil, selects: nil, sortable: :after_label)
           @name = name
           @sub_type = sub_type
           @keys = keys
@@ -767,9 +767,23 @@ module Search
 
           nil_value = group_by_attribute.delete_and_return_nil_key!(data)
 
-          new_data = label_and_sort_keys(data)
+          new_data = if group_by_attribute.sortable == :before_label
+                       sort_and_label_keys(data)
+                     else # :after_label
+                       label_and_sort_keys(data)
+                     end
 
           sort_array_data_and_add_nil_value(new_data, nil_value)
+        end
+
+        def sort_and_label_keys(data)
+          new_data = data.sort_by(&:first)
+          if label?
+            new_data.each do |d|
+              d[0] = label(d[0])
+            end
+          end
+          new_data
         end
 
         def label_and_sort_keys(data)

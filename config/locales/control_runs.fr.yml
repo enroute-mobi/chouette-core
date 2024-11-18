@@ -98,5 +98,3 @@ fr:
         uniqueness_scope: Portée de l'unicité
       control/absence_attribute/run:
         target_attribute: Attribut cible
-      control/absence_attribute/run:
-        target_attribute: Attribut cible

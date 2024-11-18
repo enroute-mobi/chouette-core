@@ -89,6 +89,7 @@ RSpec.describe Control::AbsenceAttribute do
       let(:expected_message) do
         an_object_having_attributes({
           source: source,
+          message_key: 'absence_attribute',
           criticity: 'warning',
           message_attributes: {
             'name' => attribute_name

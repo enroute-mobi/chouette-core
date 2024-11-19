@@ -867,35 +867,10 @@ module Search
     end
   end
 
-  class Scope
-    class_attribute :links, instance_accessor: false, default: {}
-
+  class Scope < ::Scope::CenteredOnModel
     class << self
-      def link(source, target, &block)
-        mod = Module.new
-        mod.define_method(target, &block)
-
-        links[source] ||= {}
-        links[source][target] = mod
-      end
-
-      def search_on(model) # rubocop:disable Metrics/MethodLength
-        included_models = Set.new
-        included_models << model
-
-        queue = [model]
-        while queue.any?
-          source = queue.pop
-          next unless links.key?(source)
-
-          links[source].each do |target, mod|
-            next if target.in?(included_models)
-
-            include mod
-            included_models << target
-            queue << target
-          end
-        end
+      def search_on(model)
+        scope_centered_on(model)
 
         class_eval <<-RUBY, __FILE__, __LINE__ + 1
           def #{model}
@@ -905,76 +880,8 @@ module Search
       end
     end
 
-    link :routes, :lines do
-      initial_scope.lines.joins(:routes).where(routes: routes)
-    end
-    link :lines, :routes do
-      initial_scope.routes.where(line: lines)
-    end
-    link :lines, :line_groups do
-      initial_scope.line_groups.where(
-        id: ::LineGroup::Member.where(line_id: lines.select(:id)).select(:group_id).distinct
-      )
-    end
-    link :lines, :line_notices do
-      initial_scope.line_notices.where(
-        id: ::Chouette::LineNoticeMembership.where(line_id: lines.select(:id)).select(:line_notice_id).distinct
-      )
-    end
-    link :lines, :companies do
-      initial_scope.companies.where(id: lines.where.not(company_id: nil).select(:company_id).distinct)
-    end
-    link :lines, :networks do
-      initial_scope.networks.where(id: lines.where.not(network_id: nil).select(:network_id).distinct)
-    end
-    link :routes, :shapes do
-      initial_scope.shapes.where(id: journey_patterns.select(:shape_id))
-    end
-    link :routes, :stop_points do
-      initial_scope.stop_points.where(route: routes)
-    end
-    link :stop_points, :routes do
-      initial_scope.routes.joins(:stop_points).where(stop_points: stop_points).distinct
-    end
-    link :stop_points, :stop_areas do
-      initial_scope.stop_areas.where(id: stop_points.select(:stop_area_id))
-    end
-    link :stop_areas, :stop_points do
-      initial_scope.stop_points.where(stop_area: stop_areas)
-    end
-    link :stop_areas, :stop_area_groups do
-      initial_scope.stop_area_groups.where(
-        id: ::StopAreaGroup::Member.where(stop_area_id: stop_areas.select(:id)).select(:group_id).distinct
-      )
-    end
-    link :stop_areas, :entrances do
-      initial_scope.entrances.where(stop_area: stop_areas)
-    end
-    link :stop_areas, :connection_links do
-      initial_scope.connection_links.where(departure_id: stop_areas.select(:id), arrival_id: stop_areas.select(:id))
-    end
-    link :stop_areas, :fare_zones do
-      initial_scope.fare_zones.where(
-        id: ::Fare::StopAreaZone.where(stop_area_id: stop_areas.select(:id)).select(:fare_zone_id).distinct
-      )
-    end
-    link :routes, :journey_patterns do
-      initial_scope.journey_patterns.where(route: routes)
-    end
-    link :journey_patterns, :vehicle_journeys do
-      initial_scope.vehicle_journeys.where(journey_pattern: journey_patterns)
-    end
-    link :vehicle_journeys, :service_facility_sets do
-      initial_scope.service_facility_sets.where(id: vehicle_journeys.select('UNNEST(service_facility_set_ids)'))
-    end
-    link :vehicle_journeys, :time_tables do
-      initial_scope.time_tables.joins(:vehicle_journeys).where(vehicle_journeys: { id: vehicle_journeys.select(:id) })
-    end
-    link :lines, :service_counts do
-      initial_scope.service_counts.where(line: lines)
-    end
-
     def initialize(initial_scope, search)
+      super()
       @initial_scope = initial_scope
       @search = search
     end
@@ -982,54 +889,19 @@ module Search
 
     delegate :point_of_interests,
              :accessibility_assessments,
-             :workgroup,
              to: :initial_scope
 
-    def line_routing_constraint_zones
-      initial_scope.line_routing_constraint_zones.where(
-        'line_ids && (?) OR stop_area_ids && (?)',
-        lines.select('ARRAY_AGG(lines.id)'),
-        stop_areas.select('ARRAY_AGG(stop_areas.id)')
-      )
+    protected
+
+    def workgroup_scope
+      initial_scope.workgroup
     end
 
-    def documents
-      workgroup.documents.where(
-        id: line_document_memberships.or(stop_area_document_memberships)
-                                     .or(company_document_memberships)
-                                     .select(:document_id)
-                                     .distinct
-      )
-    end
-
-    def contracts
-      workgroup.contracts.where(company_id: companies.select(:id)).or(
-        workgroup.contracts.where('line_ids && (?)', lines.select('ARRAY_AGG(lines.id)'))
-      )
-    end
-
-    private
-
-    def line_document_memberships
-      workgroup.document_memberships.where(
-        documentable_type: 'Chouette::Line',
-        documentable_id: lines.select(:id)
-      )
-    end
-
-    def stop_area_document_memberships
-      workgroup.document_memberships.where(
-        documentable_type: 'Chouette::StopArea',
-        documentable_id: stop_areas.select(:id)
-      )
-    end
-
-    def company_document_memberships
-      workgroup.document_memberships.where(
-        documentable_type: 'Chouette::Company',
-        documentable_id: companies.select(:id)
-      )
-    end
+    alias line_referential_scope initial_scope
+    alias stop_area_referential_scope initial_scope
+    alias shape_referential_scope initial_scope
+    alias fare_referential_scope initial_scope
+    alias referential_scope initial_scope
   end
 
   class Base

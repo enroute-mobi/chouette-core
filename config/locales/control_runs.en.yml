@@ -39,6 +39,8 @@ en:
         one: Service count in a range
       control/attribute_uniqueness/run:
         one: Attribute uniqueness
+      control/absence_attribute/run:
+        one: Absence of attribute
     attributes:
       control/base/run:
         name: Name
@@ -94,3 +96,5 @@ en:
       control/attribute_uniqueness/run:
         target_attribute: Attribute
         uniqueness_scope: Uniqueness scope
+      control/absence_attribute/run:
+        target_attribute: Target Attribute

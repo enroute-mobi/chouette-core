@@ -21,6 +21,7 @@ module Control
       Control::ExpectedProvider,
       Control::ServicesOnlyInValidityPeriod,
       Control::ServiceCountInRange,
+      Control::AbsenceAttribute,
       Control::Dummy
     ]
   end

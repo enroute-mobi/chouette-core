@@ -78,6 +78,22 @@ module Query
       scope.where(country_code: nil)
     end
 
+    def with_referent
+      scope.where.not(referent: nil)
+    end
+
+    def with_parent
+      scope.where.not(parent: nil)
+    end
+
+    def with_coordinates
+      scope.where.not(latitude: nil, longitude: nil)
+    end
+
+    def with_country
+      scope.where.not(country_code: nil)
+    end
+
     def text(value)
       change_scope(if: value.present?) do |scope|
         scope.by_text(value)

@@ -416,22 +416,29 @@ en:
       other: Other
     target_model:
       Line: Line
+      LineGroup: Line Group
       LineNotice: Line Notices
+      Company: Company
+      Network: Network
       StopArea: Stop area
+      StopAreaGroup: Stop area group
+      Entrance: Entrance
+      ConnectionLink: Connection
       StopAreaRoutingConstraint: Stop Area Routing Constraint
+      Shape: Shape
+      PointOfInterest: Point of Interest
+      ServiceFacilitySet: Service Facility Sets
+      AccessibilityAssessment: Accessiblity Assessment
+      "Fare::Zone": Fare Zone
+      LineRoutingConstraintZone: Line Routing Constraint Zone
+      Document: Document
+      Contract: Contract
+      RoutingConstraint: Routing Constraint Zones
+      Referential: DataSet
+      Route: Route
       JourneyPattern: Journey pattern
       VehicleJourney: Vehicle journey
-      Company: Company
-      Document: Document
-      Entrance: Entrance
-      PointOfInterest: Point of Interest
-      Route: Route
-      RoutingConstraint: Routing Constraint Zones
       TimeTable: Timetable
-      Referential: DataSet
-      Shape: Shape
-      Network: Network
-      ConnectionLink: Connection
       ServiceCount: Service count
     expected_status:
       enabled: Enabled

@@ -10,8 +10,30 @@ module Macro
         enumerize :expected_result, in: %w[info warning error failed], default: 'info'
 
         option :target_model
-        enumerize :target_model,
-                  in: %w[StopArea Entrance ConnectionLink Line Company Network PointOfInterest Shape Document Route JourneyPattern VehicleJourney ServiceCount TimeTable], default: 'Line'
+        enumerize :target_model, in: %w[
+          Line
+          LineGroup
+          LineNotice
+          Company
+          Network
+          StopArea
+          StopAreaGroup
+          Entrance
+          ConnectionLink
+          Shape
+          PointOfInterest
+          ServiceFacilitySet
+          AccessibilityAssessment
+          Fare::Zone
+          LineRoutingConstraintZone
+          Document
+          Contract
+          Route
+          JourneyPattern
+          VehicleJourney
+          TimeTable
+          ServiceCount
+        ], default: 'Line'
 
         validates :target_model, presence: true
       end
@@ -35,7 +57,7 @@ module Macro
       end
 
       def model_collection
-        @model_collection ||= target_model.underscore.pluralize
+        @model_collection ||= target_model.underscore.gsub('/', '_').pluralize
       end
 
       def models

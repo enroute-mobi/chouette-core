@@ -12,6 +12,7 @@
             @route.human_attribute_name(:wayback) => (@route.wayback ? @route.wayback_text : '-' ),
             @route.human_attribute_name(:opposite_route) => (@route.opposite_route ? @route.opposite_route.name : '-'),
             @route.human_attribute_name(:checksum) => @route.checksum }
+        = render 'codes/block', model: @route
 
       - if @route_sp.any?
         .col-md-6.col-sm-12.col-xs-12

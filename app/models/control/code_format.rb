@@ -6,10 +6,31 @@ module Control
       extend ActiveSupport::Concern
 
       included do
-        enumerize :target_model, in: %w{Line StopArea VehicleJourney Shape}
         option :target_model
         option :target_code_space_id
         option :expected_format, serialize: ActiveModel::Type::String
+
+        enumerize :target_model, in: %w[
+          Line
+          LineGroup
+          LineNotice
+          Company
+          StopArea
+          StopAreaGroup
+          Entrance
+          Shape
+          PointOfInterest
+          ServiceFacilitySet
+          AccessibilityAssessment
+          Fare::Zone
+          LineRoutingConstraintZone
+          Document
+          Contract
+          Route
+          JourneyPattern
+          VehicleJourney
+          TimeTable
+        ]
 
         validates :target_model, :target_code_space_id, :expected_format, presence: true
 
@@ -27,7 +48,7 @@ module Control
         faulty_models.find_each do |model|
           control_messages.create({
             message_attributes: {
-              name: model.try(:name) || model.id,
+              name: model.try(:name) || model.try(:published_journey_name) || model.try(:comment),
               code_space_name: target_code_space.short_name,
               expected_format: expected_format
             },
@@ -38,23 +59,12 @@ module Control
         end
       end
 
-      def model_class
-        @model_class ||=
-          "Chouette::#{target_model}".constantize rescue nil || target_model.constantize
-      end
-
-      def code_model
-        model_class.reflections["codes"].class_name.underscore.pluralize.to_sym
-      end
-
       def faulty_models
-        models.distinct.joins(codes: :code_space)
-          .where.not("#{code_model}.value ~ ?", expected_format)
-          .where(code_spaces: { id: target_code_space_id })
+        models.with_code(target_code_space).where.not(models.code_table[:value].matches_regexp(expected_format))
       end
 
       def model_collection
-        @model_collection ||= target_model.underscore.pluralize.to_sym
+        @model_collection ||= target_model.underscore.gsub('/', '_').pluralize
       end
 
       def models

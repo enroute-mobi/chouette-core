@@ -12,6 +12,10 @@ module ReferentialCodeSupport
       joins(:codes).where('referential_codes.code_space_id': code_space.id, 'referential_codes.value': value)
     }
 
+    scope :with_code, lambda { |code_space|
+      joins(:codes).where('referential_codes.code_space_id': code_space.id).distinct
+    }
+
     scope :without_code, lambda { |code_space|
       where.not(id: joins(:codes).where('referential_codes.code_space_id': code_space.id))
     }

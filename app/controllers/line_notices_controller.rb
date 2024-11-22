@@ -49,7 +49,8 @@ class LineNoticesController < Chouette::LineReferentialController
       :content,
       :object_id,
       :object_version,
-      :line_provider_id
+      :line_provider_id,
+      codes_attributes: [:id, :code_space_id, :value, :_destroy]
     )
     # TODO check if metadata needs to be included as param  t.jsonb "metadata", default: {}
   end

@@ -10,12 +10,32 @@ RSpec.describe Control::PresenceCode do
     it { should validate_presence_of :target_code_space_id }
     it do
       should enumerize(:target_model).in(
-        %w[Line StopArea VehicleJourney Shape]
+        %w[
+          Line
+          LineGroup
+          LineNotice
+          Company
+          StopArea
+          StopAreaGroup
+          Entrance
+          Shape
+          PointOfInterest
+          ServiceFacilitySet
+          AccessibilityAssessment
+          Fare::Zone
+          LineRoutingConstraintZone
+          Document
+          Contract
+          Route
+          JourneyPattern
+          VehicleJourney
+          TimeTable
+        ]
       )
     end
 
     let(:control_list_run) do
-      Control::List::Run.create referential: context.referential, workbench: context.workbench
+      Control::List::Run.create referential: referential, workbench: context.workbench
     end
 
     let(:control_run) do
@@ -28,7 +48,7 @@ RSpec.describe Control::PresenceCode do
     end
 
     let(:target_code_space_id) { context.code_space&.id }
-    let(:referential) { context.referential }
+    let(:referential) { nil }
 
     describe '#run' do
       subject { control_run.run }
@@ -44,19 +64,17 @@ RSpec.describe Control::PresenceCode do
         })
       end
 
-      before { referential.switch }
+      before { referential&.switch }
 
       describe "#StopArea" do
         let(:target_model) { "StopArea" }
-        let(:source) { context.route.stop_areas.first }
+        let(:source) { context.stop_area }
 
         context "when a StopArea exists without code" do
           let(:context) do
             Chouette.create do
               code_space short_name: "test"
-              referential do
-                route
-              end
+              stop_area
             end
           end
 
@@ -71,11 +89,7 @@ RSpec.describe Control::PresenceCode do
           let(:context) do
             Chouette.create do
               code_space short_name: "test"
-              stop_area :departure, codes: { test: 'dummy'}
-              stop_area :arrival, codes: { test: 'dummy'}
-              referential do
-                route stop_areas: [:departure, :arrival]
-              end
+              stop_area codes: { test: 'dummy' }
             end
           end
 
@@ -89,14 +103,14 @@ RSpec.describe Control::PresenceCode do
 
       describe "#Line" do
         let(:target_model) { "Line" }
-        let(:source) { referential.lines.first }
+        let(:source) { context.line }
 
 
         context "when a Line exists without code" do
           let(:context) do
             Chouette.create do
               code_space short_name: "test"
-              referential
+              line
             end
           end
 
@@ -111,13 +125,47 @@ RSpec.describe Control::PresenceCode do
           let(:context) do
             Chouette.create do
               code_space short_name: "test"
-              referential
+              line codes: { test: 'dummy' }
             end
           end
 
-          before { context.referential.lines.first.codes.create(code_space: context.code_space, value: 'dummy') }
-
           it "should have no warning message created" do
+            subject
+
+            expect(control_run.control_messages).to be_empty
+          end
+        end
+      end
+
+      describe '#PointOfInterest' do
+        let(:target_model) { 'PointOfInterest' }
+        let(:source) { context.point_of_interest }
+
+
+        context 'when a PointOfInterest exists without code' do
+          let(:context) do
+            Chouette.create do
+              code_space short_name: 'test'
+              point_of_interest
+            end
+          end
+
+          it 'should create a warning message' do
+            subject
+
+            expect(control_run.control_messages).to include(expected_message)
+          end
+        end
+
+        context 'when a PointOfInterest exists a code "test"' do
+          let(:context) do
+            Chouette.create do
+              code_space short_name: 'test'
+              point_of_interest codes: { test: 'dummy' }
+            end
+          end
+
+          it 'should have no warning message created' do
             subject
 
             expect(control_run.control_messages).to be_empty

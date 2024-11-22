@@ -416,22 +416,29 @@ fr:
       other: Autre
     target_model:
       Line: Ligne
+      LineGroup: Groupe de lignes
       LineNotice: Notes de lignes
+      Company: Transporteur
+      Network: Réseau
       StopArea: Arrêt
+      StopAreaGroup: Groupe d'arrêts
+      Entrance: Point d'accès
+      ConnectionLink: Correspondance
       StopAreaRoutingConstraint: Interdiction de Trafic entre Arrêt
+      Shape: Tracé
+      PointOfInterest: Point d'intérêt
+      ServiceFacilitySet: Ensemble de Services
+      AccessibilityAssessment: Description d'Accessibilité
+      "Fare::Zone": Zone Tarifaire
+      LineRoutingConstraintZone: Interdiction de Trafic local
+      Document: Document
+      Contract: Contrat
+      RoutingConstraint: Interdictions de trafic local
+      Referential: Jeu de donnée
+      Route: Itinéraire
       JourneyPattern: Mission
       VehicleJourney: Course
-      Company: Transporteur
-      Document: Document
-      Entrance: Point d'accès
-      PointOfInterest: Point d'intérêt
-      Route: Itinéraire
-      RoutingConstraint: Interdictions de trafic local
       TimeTable: Calendrier
-      Referential: Jeu de donnée
-      Shape: Tracé
-      Network: Réseau
-      ConnectionLink: Correspondance
       ServiceCount: Nombre de Services
     expected_status:
       enabled: Activé

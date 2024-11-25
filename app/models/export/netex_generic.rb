@@ -284,6 +284,10 @@ class Export::NetexGeneric < Export::Base
     def default_decorator_class
       @decorator_class ||= self.class.const_get('Decorator')
     end
+
+    def scoped_time_table_ids
+      @scoped_time_table_ids ||= export_scope.time_tables.select(:id)
+    end
   end
 
   class Finalizer < Part
@@ -1706,9 +1710,14 @@ class Export::NetexGeneric < Export::Base
     end
 
     def vehicle_journeys
+      timetable_cache_keys = <<~SQL
+        array_agg(DISTINCT time_tables.objectid)
+          FILTER
+        (WHERE time_tables.id IN (#{scoped_time_table_ids.to_sql})) timetable_cache_keys
+      SQL
+
       export_scope.vehicle_journeys.joins(:route, :time_tables).
-        select(:id, :objectid, :updated_at,
-               'routes.line_id AS line_id', 'array_agg(DISTINCT time_tables.objectid) AS timetable_cache_keys').
+        select(:id, :objectid, :updated_at, 'routes.line_id AS line_id', timetable_cache_keys).
         group(:id, :objectid, :updated_at, :line_id)
     end
 
@@ -1892,7 +1901,7 @@ class Export::NetexGeneric < Export::Base
     end
 
     def vehicle_journeys
-      Query.new(export_scope.vehicle_journeys).scope
+      Query.new(export_scope.vehicle_journeys, scoped_time_table_ids).scope
     end
 
     # TODO: integrate this use case in AlternateIdentifiersExtractor
@@ -1901,11 +1910,11 @@ class Export::NetexGeneric < Export::Base
     end
 
     class Query
-
-      def initialize(vehicle_journeys)
+      def initialize(vehicle_journeys, scoped_time_table_ids)
         @vehicle_journeys = vehicle_journeys
+        @scoped_time_table_ids = scoped_time_table_ids
       end
-      attr_accessor :vehicle_journeys
+      attr_accessor :vehicle_journeys, :scoped_time_table_ids
 
       def scope
         scope = vehicle_journeys.joins(:route).select(selected)
@@ -1925,7 +1934,9 @@ class Export::NetexGeneric < Export::Base
 
       def time_table_ids
         <<~SQL
-          array_agg(DISTINCT time_tables_vehicle_journeys.time_table_id) AS timetable_ids
+          array_agg(DISTINCT time_tables_vehicle_journeys.time_table_id)
+            FILTER
+          (WHERE time_tables_vehicle_journeys.time_table_id IN (#{scoped_time_table_ids.to_sql})) timetable_ids
         SQL
       end
 

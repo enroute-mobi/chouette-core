@@ -1426,9 +1426,10 @@ RSpec.describe Export::NetexGeneric do
   end
 
   describe "VehicleJourneys export" do
-
     let(:target) { MockNetexTarget.new }
-    let(:export_scope) { Export::Scope::All.new context.referential }
+    let(:export_scope) do
+      Export::Scope.build referential
+    end
     let(:export) { Export::NetexGeneric.new export_scope: export_scope, target: target, workgroup: context.workgroup }
 
     let(:part) do
@@ -1440,15 +1441,21 @@ RSpec.describe Export::NetexGeneric do
         code_space
         time_table :first
         time_table :second
+        time_table :third
 
-        3.times { vehicle_journey time_tables: %i[first second] }
+        3.times { vehicle_journey time_tables: %i[first second third] }
       end
     end
 
     let(:vehicle_journeys) { context.vehicle_journeys }
     let(:vehicle_journey_at_stops) { vehicle_journeys.flat_map { |vj| vj.vehicle_journey_at_stops } }
+    let(:referential) { context.referential }
+    let(:first_time_table) { context.time_table(:first) }
+    let(:second_time_table) { context.time_table(:second) }
 
-    before { context.referential.switch }
+    let(:first_vehicle_journey) { referential.vehicle_journeys.first }
+    let(:second_vehicle_journey) { referential.vehicle_journeys.second }
+    let(:third_vehicle_journey) { referential.vehicle_journeys.third }
 
     it "create Netex resources with line_id tag" do
       context.routes.each { |route| export.resource_tagger.register_tags_for(route.line) }
@@ -1457,22 +1464,70 @@ RSpec.describe Export::NetexGeneric do
     end
 
     describe Export::NetexGeneric::VehicleJourneys do
-      let(:export_scope_vehicle_journeys) { export.export_scope.vehicle_journeys.distinct.to_a }
+      let(:export_scope) do
+        Export::Scope.build double(vehicle_journeys: referential.vehicle_journeys, time_tables: selected_time_tables)
+      end
+      subject(:scoped_vehicle_journeys) { described_class.new(export).vehicle_journeys }
 
-      subject { Export::NetexGeneric::VehicleJourneys.new(export).vehicle_journeys.to_a }
+      let(:expected_vehicle_journeys) do
+        referential
+          .vehicle_journeys
+          .where(id: [first_vehicle_journey.id, second_vehicle_journey.id, third_vehicle_journey.id])
+      end
+      let(:expected_time_table_ids) { selected_time_tables.map(&:id) }
 
-      context 'when a Vehicle Journey has an associated code' do
-        before do
-          vehicle_journeys.each do |vehicle_journey|
-            vehicle_journey.codes.create value: "dummy-#{vehicle_journey.id}", code_space: context.code_space
-          end
+      before { referential.switch }
+
+      context 'when there are 2 selected time tables (first, second) in export scope' do
+        let(:selected_time_tables) do
+          referential.time_tables.where(id: [first_time_table.id, second_time_table.id])
         end
 
-        it { is_expected.to match_array(export_scope_vehicle_journeys) }
+        context 'when a Vehicle Journey has an associated code' do
+          before do
+            vehicle_journeys.each do |vehicle_journey|
+              vehicle_journey.codes.create value: "dummy-#{vehicle_journey.id}", code_space: context.code_space
+            end
+          end
+
+          it { is_expected.to match_array(expected_vehicle_journeys) }
+        end
+
+        context 'when a Vehicle Journey has no associated code' do
+          it { is_expected.to match_array(expected_vehicle_journeys) }
+        end
+
+        it 'The exported vehicle journeys should only include in scoped time_tables'  do
+          scoped_vehicle_journeys.each do |vj|
+            expect(vj.timetable_ids.count).to eq 2
+            expect(vj.timetable_ids).to match_array(expected_time_table_ids)
+          end
+        end
       end
 
-      context 'when a Vehicle Journey has no associated code' do
-        it { is_expected.to match_array(export_scope_vehicle_journeys) }
+      context 'when there are all time tables (first, second, third) in export scope' do
+        let(:selected_time_tables) { referential.time_tables }
+
+        context 'when a Vehicle Journey has an associated code' do
+          before do
+            vehicle_journeys.each do |vehicle_journey|
+              vehicle_journey.codes.create value: "dummy-#{vehicle_journey.id}", code_space: context.code_space
+            end
+          end
+
+          it { is_expected.to match_array(expected_vehicle_journeys) }
+        end
+
+        context 'when a Vehicle Journey has no associated code' do
+          it { is_expected.to match_array(expected_vehicle_journeys) }
+        end
+
+        it 'The exported vehicle journeys should only include in scoped time_tables'  do
+          scoped_vehicle_journeys.each do |vj|
+            expect(vj.timetable_ids.count).to eq 3
+            expect(vj.timetable_ids).to match_array(expected_time_table_ids)
+          end
+        end
       end
     end
 

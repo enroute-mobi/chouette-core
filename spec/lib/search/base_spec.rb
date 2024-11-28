@@ -1302,7 +1302,9 @@ RSpec.describe Search::Base::Chart do
           let(:display_percent) { true }
 
           it do
-            expect(view_context).to receive(:line_chart).with(data, a_hash_including(discrete: true, suffix: '%'))
+            expect(view_context).to(
+              receive(:line_chart).with(data, a_hash_including(discrete: true, suffix: '%', round: 2))
+            )
             subject
           end
         end

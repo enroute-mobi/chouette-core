@@ -31,6 +31,10 @@ module Geo
       "POINT(#{x} #{y})"
     end
 
+    def to_sql
+      "ST_SetSRID(ST_Point(#{longitude}, #{latitude}), 4326)"
+    end
+
     def to_s
       "#{latitude},#{longitude}"
     end

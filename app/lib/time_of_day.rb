@@ -86,8 +86,16 @@ class TimeOfDay
     self.class.from_second_offset second_offset
   end
 
+  def utc
+    self.class.from_second_offset(second_offset - utc_offset)
+  end
+
   def add(seconds: 0, day_offset: 0)
     self.class.from_second_offset second_offset + seconds + day_offset.days, utc_offset: utc_offset
+  end
+
+  def +(duration)
+    add seconds: duration
   end
 
   def with_utc_offset(utc_offset)

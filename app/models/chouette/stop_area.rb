@@ -307,13 +307,11 @@ module Chouette
       scope.where("ST_DWithin(#{db}, #{from}, ?, false)", distance)
     end
 
-    def self.near(origin, distance = 0.3)
-      origin = origin.to_lat_lng
-
-      lat_degree_units = units_per_latitude_degree(:kms)
-      lng_degree_units = units_per_longitude_degree(origin.lat, :kms)
-
-      where "SQRT(POW(#{lat_degree_units}*(#{origin.lat}-latitude),2)+POW(#{lng_degree_units}*(#{origin.lng}-longitude),2)) <= #{distance}"
+    def self.near(origin, distance = 500)
+      origin = Geo::Position.from origin
+      db_position   = "ST_GeomFromEWKB(ST_MakePoint(longitude, latitude, 4326))"
+      use_spheriod = distance > 5000
+      where("ST_DWithin(#{db_position}, #{origin.to_sql}, ?, #{use_spheriod})", distance)
     end
 
     def self.bounds

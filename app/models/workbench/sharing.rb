@@ -10,6 +10,7 @@ class Workbench
     before_validation :create_invitation_code, on: :create, if: :pending?
 
     validates :name, presence: true
+    validate :validate_workbench_is_not_pending, on: :create
     validates :recipient_type, inclusion: { in: %w[User Organisation] }
     validates :recipient_id, uniqueness: { scope: %i[workbench_id recipient_type] }, if: :recipient_id?
     validate :validate_user_recipient_id, on: :create, if: :validate_user_recipient_id?
@@ -42,6 +43,13 @@ class Workbench
 
     def create_invitation_code
       self.invitation_code ||= "S-#{3.times.map { format('%03d', SecureRandom.random_number(1000)) }.join('-')}"
+    end
+
+    def validate_workbench_is_not_pending
+      return unless workbench
+      return unless workbench.pending?
+
+      errors.add(:workbench_id, :invalid)
     end
 
     def validate_recipient_id?

@@ -15,7 +15,16 @@ RSpec.describe Policy::Workbench, type: :policy do
 
     context 'Workbench::Sharing' do
       let(:resource_class) { Workbench::Sharing }
+      let(:workbench_pending) { false }
+
+      before { expect(resource).to receive(:pending?).and_return(workbench_pending) }
+
       it { is_expected.to be_truthy }
+
+      context 'when workbench is pending' do
+        let(:workbench_pending) { true }
+        it { is_expected.to be_falsy }
+      end
     end
 
     context 'Referential' do

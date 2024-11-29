@@ -313,48 +313,72 @@ module Export
     end
 
     class Stateful < Base
-      attr_reader :export_id
+      attr_reader :export_id, :loaders
+
+      LOADED_CLASSES = [Chouette::VehicleJourney, Chouette::TimeTable]
 
       def initialize(current_scope, export_id = nil)
         super current_scope
         @export_id = export_id
+        @loaders = {}
       end
 
-      def vehicle_journeys
-        unless @loaded
-          model_scope = current_scope.vehicle_journeys
+      LOADED_CLASSES.each do |loaded_class|
+        define_method loaded_class.model_name.collection do
+          @loaders[loaded_class] ||= Loader.new(current_scope, export_id, loaded_class).loaded_models
+        end
+      end
 
-          if model_scope.exists?
+      class Loader
+        def initialize(current_scope, export_id, loaded_class)
+          @current_scope = current_scope
+          @export_id = export_id
+          @loaded_class = loaded_class
+        end
+        attr_reader :export_id, :current_scope, :loaded_class
+
+        def loaded_models
+          unless @loaded
             columns = %w[uuid export_id model_type model_id].reject do |c|
               c == 'export_id' && export_id.nil?
             end.join(',')
-            constants = ["'#{uuid}'", export_id, "'Chouette::VehicleJourney'"].compact
+            constants = ["'#{uuid}'", export_id, "'#{loaded_class_name}'"].compact
             models = model_scope.select(constants, :id)
 
-            query = <<~SQL
-              INSERT INTO public.exportables (#{columns}) #{models.to_sql}
-            SQL
-            ActiveRecord::Base.connection.execute query
+            if sql = models.to_sql.presence
+              query = <<~SQL
+                INSERT INTO public.exportables (#{columns}) #{sql}
+              SQL
+              ActiveRecord::Base.connection.execute query
+            end
+
+            @loaded = true
           end
 
-          @loaded = true
+          exportable_models
         end
 
-        exportable_vehicle_journeys
-      end
+        def exportable_models
+          @exportable_models ||=
+            begin
+              exportables = Exportable.where(uuid: uuid, model_type: loaded_class_name, processed: false)
+              loaded_class.where(id: exportables.select(:model_id))
+            end
+        end
 
-      def exportable_vehicle_journeys
-        @exportable_vehicle_journeys ||=
-          begin
-            exportables = Exportable.where(uuid: uuid, model_type: 'Chouette::VehicleJourney', processed: false)
-            Chouette::VehicleJourney.where(id: exportables.select(:model_id))
-          end
-      end
+        private
 
-      private
+        def loaded_class_name
+          @loaded_class_name ||= loaded_class.name
+        end
 
-      def uuid
-        @uuid ||= SecureRandom.uuid
+        def model_scope
+          @model_scope ||= current_scope.send(loaded_class.model_name.collection)
+        end
+
+        def uuid
+          @uuid ||= SecureRandom.uuid
+        end
       end
     end
   end

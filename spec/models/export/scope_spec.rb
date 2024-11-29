@@ -460,19 +460,59 @@ RSpec.describe Export::Scope, use_chouette_factory: true do
   describe Export::Scope::Stateful do
 
     let(:scope) { Export::Scope::Stateful.new(default_scope) }
-    let(:vehicle_journey_count) { referential.vehicle_journeys.count }
-    let(:vehicle_journeys_from_exportables) { Exportable.all.map(&:model) }
+    let(:models) { referential.send(collection) }
+    let(:model_from_exportables) { Exportable.all.map(&:model) }
 
-    subject { scope.vehicle_journeys }
+    subject { scope.send collection }
 
     describe '#vehicle_journeys' do
+
+      let(:collection) { 'vehicle_journeys' }
+
       it 'should create exportables' do
-        expect { subject }.to change { Exportable.count }.from(0).to(vehicle_journey_count)
-        expect(vehicle_journeys_from_exportables).to match_array(referential.vehicle_journeys)
+        expect { subject }.to change { Exportable.count }.from(0).to(models.count)
+        expect(model_from_exportables).to match_array(models)
       end
 
       it 'should return vehicle_journeys from scope' do
-        expect(subject).to match_array(referential.vehicle_journeys)
+        expect(subject).to match_array(models)
+      end
+    end
+
+    describe '#time_tables' do
+      let(:collection) { 'time_tables' }
+
+      it 'should create exportables' do
+        expect { subject }.to change { Exportable.count }.from(0).to(models.count)
+        expect(model_from_exportables).to match_array(models)
+      end
+
+      it 'should return vehicle_journeys from scope' do
+        expect(subject).to match_array(models)
+      end
+    end
+
+    describe Export::Scope::Stateful::Loader do
+      subject { described_class.new(scope, nil, Chouette::VehicleJourney).loaded_models }
+
+      context 'when model scope is none' do
+        before do
+          allow(scope).to receive(:vehicle_journeys).and_return(Chouette::VehicleJourney.none)
+        end
+
+        it 'should return empty loaded models' do
+          is_expected.to be_empty
+        end
+      end
+
+      context 'when model scope contains vehicle journeys' do
+        before do
+          allow(scope).to receive(:vehicle_journeys).and_return(referential.vehicle_journeys)
+        end
+
+        it 'should contain loaded models' do
+          is_expected.to match_array referential.vehicle_journeys
+        end
       end
     end
   end

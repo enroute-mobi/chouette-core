@@ -1742,6 +1742,14 @@ class Import::Gtfs < Import::Base
         Cuckoo::Timetable::Period.from(period, days_of_week) if period
       end
 
+      def valid_dates?
+        calendar_dates.find{|c| c.ruby_date == nil }.present?
+      end
+
+      def valid_exception_type?
+        calendar_dates.find{|c| !c.exception_type.in? ['1', '2'] }.present?
+      end
+
       def memory_timetable
         @memory_timetable ||= Cuckoo::Timetable.new(
           period: memory_timetable_period,
@@ -1770,9 +1778,15 @@ class Import::Gtfs < Import::Base
         super
 
         errors << Import::Gtfs::Decorator::Error.new(:service_without_id) if service_id.blank?
-        errors << Import::Gtfs::Decorator::Error.new(:duplicated_service_id, message_attributes: { service_id: service_id }) if index&.service_id?(service_id)
-        errors << Import::Gtfs::Decorator::Error.new(:empty_service, message_attributes: { service_id: service_id }, criticity: :warning) if memory_timetable.empty?
-        errors << Import::Gtfs::Decorator::Error.new(:invalid_service, message_attributes: { service_id: service_id }) if !time_table&.valid?
+        if index&.service_id?(service_id)
+          errors << Import::Gtfs::Decorator::Error.new(:duplicated_service_id, { service_id: service_id })
+        end
+        if memory_timetable.empty?
+          errors << Import::Gtfs::Decorator::Error.new(:empty_service, { service_id: service_id }, :warning)
+        end
+        if !time_table&.valid? || !valid_exception_type? || valid_dates?
+          errors << Import::Gtfs::Decorator::Error.new(:invalid_service, { service_id: service_id })
+        end
       end
     end
 

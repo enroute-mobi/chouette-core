@@ -205,7 +205,19 @@ class Import::Gtfs < Import::Base
       import.save_model model, resource: resource
     end
 
-    def create_message(attributes)
+    def create_message(attributes_or_error)
+      attributes =
+        if attributes_or_error.is_a?(Import::Gtfs::Decorator::Error)
+          error = attributes_or_error
+          {
+            criticity: (error.criticity || :error),
+            message_key: "gtfs.services.#{error.message_key}",
+            message_attributes: error.message_attributes
+          }
+        else
+          attributes_or_error
+        end
+
       attributes[:resource_attributes] = {
         filename: "#{resource.name}.txt",
         line_number: resource.rows_count
@@ -1636,6 +1648,27 @@ class Import::Gtfs < Import::Base
     end
   end
 
+  class Decorator < SimpleDelegator
+    def validate
+      errors.clear
+    end
+
+    def valid?
+      validate
+      errors.empty?
+    end
+
+    class Error
+      attr_accessor :message_key, :message_attributes, :criticity
+
+      def initialize(message_key, message_attributes = {}, criticity = nil)
+        @message_key = message_key
+        @message_attributes = message_attributes
+        @criticity = criticity
+      end
+    end
+  end
+
   def import_services
     resource = create_resource(:services)
     # TODO: any performance impact ?
@@ -1658,7 +1691,7 @@ class Import::Gtfs < Import::Base
         decorator = Decorator.new(service)
 
         # Decorator can have errors but provides a TimeTable
-        decorator.errors.each { |error| create_message error } unless decorator.valid?
+        decorator.errors.each { |error| import.create_message error } unless decorator.valid?
 
         time_table = decorator.time_table
         next unless time_table&.valid?
@@ -1670,18 +1703,12 @@ class Import::Gtfs < Import::Base
       end
     end
 
-    def create_message(attributes)
-      attributes[:criticity] ||= :error
-      attributes[:message_key] = "gtfs.services.#{attributes[:message_key]}"
-      import.create_message attributes
-    end
-
     def index
       # TODO: replace by a real index
       @index ||= Index.new time_tables_by_service_id
     end
 
-    class Decorator < SimpleDelegator
+    class Decorator < Import::Gtfs::Decorator
       def initialize(service, index: nil)
         super service
         @index = index
@@ -1739,14 +1766,13 @@ class Import::Gtfs < Import::Base
         @errors ||= []
       end
 
-      def valid?
-        errors.clear
+      def validate
+        super
 
-        errors << { message_key: :service_without_id } if service_id.blank?
-        errors << { message_key: :duplicated_service_id, message_attributes: { service_id: service_id } } if index&.service_id?(service_id)
-        errors << { message_key: :invalid_service, message_attributes: { service_id: service_id } } if memory_timetable.empty? || !time_table&.valid?
-
-        errors.empty?
+        errors << Import::Gtfs::Decorator::Error.new(:service_without_id) if service_id.blank?
+        errors << Import::Gtfs::Decorator::Error.new(:duplicated_service_id, message_attributes: { service_id: service_id }) if index&.service_id?(service_id)
+        errors << Import::Gtfs::Decorator::Error.new(:empty_service, message_attributes: { service_id: service_id }, criticity: :warning) if memory_timetable.empty?
+        errors << Import::Gtfs::Decorator::Error.new(:invalid_service, message_attributes: { service_id: service_id }) if !time_table&.valid?
       end
     end
 

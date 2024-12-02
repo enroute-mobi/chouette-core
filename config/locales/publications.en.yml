@@ -19,3 +19,4 @@ en:
         parent: "Source"
         export: "Export"
         name: "%{setup_name} on %{date}"
+        creator: Creator

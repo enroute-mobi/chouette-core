@@ -3,12 +3,13 @@
 module Chouette
   module Planner
     class Journey
-      attr_accessor :score, :extended
+      attr_accessor :cost, :extended
 
       def initialize(step: nil, reverse: false)
         steps << step if step
         @reverse = reverse
         @extended = false
+        @cost = Float::INFINITY
       end
 
       def reverse?

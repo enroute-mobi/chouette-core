@@ -3,7 +3,7 @@
 module Chouette
   module Planner
     class Merger
-      def initialize(maximum_distance: 250, walk_speed: 4.8)
+      def initialize(maximum_distance: 250, walk_speed: 1.3)
         @maximum_distance = maximum_distance
         @walk_speed = walk_speed
       end

@@ -12,6 +12,8 @@ module Geo
     end
 
     def self.from(position)
+      return nil unless position
+
       if position.respond_to?(:latitude) && position.respond_to?(:longitude)
         return Geo::Position.new latitude: position.latitude.to_f, longitude: position.longitude.to_f
       end

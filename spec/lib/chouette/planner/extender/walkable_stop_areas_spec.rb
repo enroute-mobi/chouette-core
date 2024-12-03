@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 RSpec.describe Chouette::Planner::Extender::WalkableStopAreas do
   subject(:extender) { described_class.new stop_areas }
 
@@ -12,13 +14,11 @@ RSpec.describe Chouette::Planner::Extender::WalkableStopAreas do
   let(:stop_area) { context.stop_area }
   let(:stop_areas) { Chouette::StopArea.where(id: stop_area) }
 
-  let(:extender) { described_class.new(stop_areas) }
-
   describe '#extend' do
     let(:last_step) { Chouette::Planner::Step.for(position) }
     let(:journey) { Chouette::Planner::Journey.new(step: last_step) }
 
-    subject(:extended_journeys) { extender.extend [ journey  ] }
+    subject(:extended_journeys) { extender.extend [journey] }
 
     it { should have_attributes(size: 1) }
 

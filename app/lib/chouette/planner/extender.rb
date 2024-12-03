@@ -103,7 +103,7 @@ module Chouette
           end
 
           def extendable_journeys_by_last_id
-            extendable_journeys_by_last.transform_keys(&:id)
+            @extendable_journeys_by_last_id ||= extendable_journeys_by_last.transform_keys(&:id)
           end
 
           def extendable_steps
@@ -124,6 +124,229 @@ module Chouette
                 from ( values #{extendable_steps_sql} ) as t (id, position)
               ) steps
               on ST_DWithin(ST_SetSRID(ST_Point(scoped_stop_areas.longitude, scoped_stop_areas.latitude), 4326), steps.position, #{maximum_distance}, false)
+            SQL
+          end
+        end
+      end
+
+      class ByVehicleJourneyStopAreas
+        def initialize(vehicle_journeys, time_tables, maximun_time_of_day: nil)
+          @vehicle_journeys = vehicle_journeys
+          @time_tables = time_tables
+          @maximun_time_of_day = maximun_time_of_day
+        end
+
+        attr_accessor :vehicle_journeys, :time_tables, :maximun_time_of_day
+
+        def extend(journeys)
+          Extend.new(self, journeys).extend
+        end
+
+        delegate :connection, to: :vehicle_journeys
+        delegate :select_rows, to: :connection
+
+        def vehicle_journey_at_stops
+          @vehicle_journey_at_stops ||= Chouette::VehicleJourneyAtStop.where(vehicle_journey_id: vehicle_journeys)
+        end
+
+        class Extend < SimpleDelegator
+          def initialize(extender, journeys)
+            super extender
+            @journeys = journeys
+          end
+
+          attr_reader :journeys
+
+          def extend
+            return [] if extendable_journeys.empty?
+
+            next_steps.each do |journey_id, steps|
+              journey = extendable_journey(journey_id)
+              steps.each do |next_step|
+                extended_journeys << journey.extend(next_step)
+              end
+            end
+
+            extended_journeys
+          end
+
+          def next_steps
+            next_steps = Hash.new { |h,k| h[k] = [] }
+
+            select_rows(query).map do |journey_id, stop_area_id, duration, stop_area_latitude, stop_area_longitude, time_table_ids|
+              # TODO: manage TimeTables
+              step = Step::StopArea.new(
+                stop_area_id: stop_area_id,
+                position: Geo::Position.new(latitude: stop_area_latitude, longitude: stop_area_longitude),
+                duration: duration
+              )
+
+              next_steps[journey_id] << step
+            end
+
+            next_steps
+          end
+
+          def extended_journeys
+            @extended_journeys ||= []
+          end
+
+          def extendable_journeys
+            journeys.select do |journey|
+              journey.time_reference? &&
+                journey.last.respond_to?(:stop_area_id) &&
+                journey.last.created_by != self.class
+            end
+          end
+
+          def extendable_journeys_by_id
+            @extendable_journeys_by_id ||= extendable_journeys.index_by(&:id)
+          end
+
+          def extendable_journey(id)
+            extendable_journeys_by_id[id]
+          end
+
+          def extendable_steps_sql
+            extendable_journeys.map do |journey|
+              step = journey.last
+              "('#{journey.id}',#{step.stop_area_id},'#{journey.time_of_day.to_hms}'::time,#{journey.time_of_day.day_offset})"
+            end.join(',')
+          end
+
+          def maximun_time_of_day_sql
+            return nil unless maximun_time_of_day
+
+            "where arrival_time < '#{maximun_time_of_day.to_hms}' AND arrival_day_offset <= #{maximun_time_of_day.day_offset}"
+          end
+
+          def query
+            # TODO: Ensure that duration computation is correct
+            <<~SQL
+              select departure_stops.step_id, stop_points.stop_area_id,
+                     (EXTRACT(EPOCH FROM arrival_time) + arrival_day_offset * 86400) - (EXTRACT(EPOCH FROM departure_stops.departure_time) + departure_stops.departure_day_offset * 86400) as duration,
+                     public.stop_areas.latitude, public.stop_areas.longitude, time_table_ids
+              from (#{vehicle_journey_at_stops.to_sql}) as scoped_vehicle_journey_at_stops
+              inner join stop_points ON stop_points.id = scoped_vehicle_journey_at_stops.stop_point_id
+              inner join public.stop_areas ON stop_points.stop_area_id = public.stop_areas.id
+                AND public.stop_areas.latitude IS NOT NULL AND public.stop_areas.longitude IS NOT NULL
+
+              join (
+                select
+                  vehicle_journey_id, position, step_id, departure_time, departure_day_offset, array_agg(time_table_id) as time_table_ids
+                from (
+                  select
+                    vehicle_journey_at_stops.vehicle_journey_id as vehicle_journey_id,
+                    stop_points.position as position,
+                    steps.id as step_id, steps.departure_time, steps.departure_day_offset,
+                    time_tables_vehicle_journeys.time_table_id as time_table_id
+                  from vehicle_journey_at_stops
+                  inner join stop_points
+                    ON stop_points.id = vehicle_journey_at_stops.stop_point_id
+                  inner join time_tables_vehicle_journeys
+                    ON time_tables_vehicle_journeys.vehicle_journey_id = vehicle_journey_at_stops.vehicle_journey_id
+                  join (
+                    select *
+                    from ( values #{extendable_steps_sql} ) as t (id, stop_area_id, departure_time, departure_day_offset)
+                  ) steps
+                  ON stop_points.stop_area_id = steps.stop_area_id
+                    AND vehicle_journey_at_stops.departure_time > steps.departure_time
+                    AND vehicle_journey_at_stops.departure_day_offset >= steps.departure_day_offset
+                ) departure_stops_with_single_timetable
+                group by vehicle_journey_id, position, step_id, departure_time, departure_day_offset
+              ) departure_stops
+              on scoped_vehicle_journey_at_stops.vehicle_journey_id = departure_stops.vehicle_journey_id
+                  AND stop_points.position > departure_stops.position
+              #{maximun_time_of_day_sql}
+            SQL
+          end
+        end
+      end
+
+      # TODO: WIP, more complex than expected and not mandatory
+      class ConnectedStopAreas
+        attr_accessor :connection_links
+
+        def initialize(connection_links)
+          @connection_links = connection_links
+        end
+
+        attr_reader :connection_links
+
+        def extend(journeys)
+          Extend.new(self, journeys).extend
+        end
+
+        delegate :connection, to: :connection_links
+        delegate :select_rows, to: :connection
+
+        class Extend < SimpleDelegator
+          def initialize(extender, journeys)
+            super extender
+            @journeys = journeys
+          end
+
+          attr_reader :journeys
+
+          def extend
+            next_steps.each do |origin_step_id, next_step|
+              extendable_journeys_by_last_id[origin_step_id].each do |journey|
+                extended_journeys << journey.extend(next_step)
+              end
+            end
+
+            extended_journeys
+          end
+
+          def next_steps
+            select_rows(query).map do |step_id, stop_area_id, stop_area_latitude, stop_area_longitude, duration|
+              step = Step::StopArea.new(
+                stop_area_id: stop_area_id,
+                position: Geo::Position.new(latitude: stop_area_latitude, longitude: stop_area_longitude),
+                duration: duration
+              )
+              [step_id, step]
+            end.to_h
+          end
+
+          def extended_journeys
+            @extended_journeys ||= []
+          end
+
+          def extendable_journeys
+            journeys
+              .select { |journey| journey.last.respond_to?(:stop_area_id) }
+              .reject { |journey| journey.last.created_by == self.class }
+          end
+
+          def extendable_journeys_by_last
+            extendable_journeys.group_by(&:last)
+          end
+
+          def extendable_journeys_by_last_id
+            extendable_journeys_by_last.transform_keys(&:id)
+          end
+
+          def extendable_steps
+            extendable_journeys_by_last.keys
+          end
+
+          def extendable_steps_sql
+            extendable_steps.map { |s| "('#{s.id}',#{s.stop_area_id})" }.join(',')
+          end
+
+          def query
+            # TODO: make union of both_way and one_way ConnectionLinks
+            <<~SQL
+              select steps.id, scoped_connection_links.arrival_id,
+                     stop_areas.latitude, stop_areas.longitude, scoped_connection_links.default_duration
+              from (#{connection_links.to_sql}) as scoped_connection_links
+              join (
+                select *
+                from ( values #{extendable_steps_sql} ) as t (id, stop_area_id)
+              ) steps
+              on scoped_connection_links.departure_id == steps.stop_area_id
+              join public.stop_areas on scoped_connection_links.arrival_id == public.stop_areas.id
             SQL
           end
         end

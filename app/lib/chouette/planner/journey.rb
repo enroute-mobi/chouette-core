@@ -3,14 +3,20 @@
 module Chouette
   module Planner
     class Journey
-      attr_accessor :cost, :extended
+      attr_accessor :cost, :extended, :origin_time_of_day
 
-      def initialize(step: nil, reverse: false)
+      def initialize(step: nil, reverse: false, origin_time_of_day: nil)
         steps << step if step
         @reverse = reverse
         @extended = false
         @cost = Float::INFINITY
+        @origin_time_of_day = origin_time_of_day
       end
+
+      def id
+        @id ||= SecureRandom.uuid
+      end
+      attr_writer :id
 
       def reverse?
         @reverse
@@ -58,6 +64,24 @@ module Chouette
         extend(merged_steps, validity_period: reverse_journey.validity_period)
       end
 
+      def duration
+        @duration ||= steps.sum(&:duration)
+      end
+      attr_writer :duration
+
+      def delta_time
+        reverse? ? -duration : duration
+      end
+
+      def time_of_day
+        return nil unless time_reference?
+        origin_time_of_day + delta_time
+      end
+
+      def time_reference?
+        origin_time_of_day.present?
+      end
+
       def inspect
         "#<Chouette::Planner::Journey #{reverse? ? '◀️' : ''}#{extended? ? '✔️' : ''} #{steps.inspect}>"
       end
@@ -67,7 +91,9 @@ module Chouette
       def _extend(*steps, validity_period: ValidityPeriod.new)
         self.steps.concat steps
         self.validity_period = self.validity_period.intersect!(validity_period)
+        self.duration = nil
         self.extended = false
+        self.id = nil
 
         self
       end

@@ -62,6 +62,14 @@ module Chouette
         end
 
         attr_accessor :stop_area_id
+
+        def id
+          @id ||= "stop_area:#{stop_area_id}"
+        end
+
+        def inspect
+          "🚏#{stop_area_id} #{super}"
+        end
       end
     end
   end

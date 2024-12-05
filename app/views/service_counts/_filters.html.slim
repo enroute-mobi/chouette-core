@@ -1,8 +1,8 @@
 = simple_search_for @search, workbench_referential_service_counts_path(@workbench, @referential), graph_panel: :always do |f|
   = f.row
-    = f.input :lines, as: :ajax_select, collection: @search.candidate_lines, label_method: :display_name, input_html: { 'data-url': lines_workgroup_autocomplete_index_path(@workbench.workgroup, format: :json), class: "w-full", multiple: true }, width: 2
-    = f.input :company_ids, as: :autocomplete_select, collection: @search.candidate_companies.order(:name), input_html: { multiple: true }
-    = f.input :network_ids, as: :autocomplete_select, collection: @search.candidate_networks.order(:name), input_html: { multiple: true }
+    = f.input :line_ids, as: :ajax_select, collection: @search.lines, label_method: :display_name, input_html: { 'data-url': lines_workgroup_autocomplete_index_path(@workbench.workgroup, format: :json), class: "w-full", multiple: true }, width: 2
+    = f.input :company_ids, as: :autocomplete_select, collection: @search.candidate_companies, input_html: { multiple: true }
+    = f.input :network_ids, as: :autocomplete_select, collection: @search.candidate_networks, input_html: { multiple: true }
      // TODO see CHOUETTE-3943
     = f.input :transport_modes, as: :autocomplete_select, collection: Chouette::TransportMode.modes.map { |m| [m.mode_human_name, m.code] }.sort_by(&:first), input_html: { multiple: true }
   = f.row

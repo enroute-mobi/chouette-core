@@ -48,6 +48,18 @@ en:
         zero:  "Ara SaaS"
         one:   "Ara SaaS"
         other: "Ara SaaS"
+      destination/chouette:
+        zero:  "Chouette SaaS"
+        one:   "Chouette SaaS"
+        other: "Chouette SaaS"
+      destination/iboo:
+        zero:  "Iboo SaaS"
+        one:   "Iboo SaaS"
+        other: "Iboo SaaS"
+      destination/custom:
+        zero:  "Custom SaaS"
+        one:   "Custom SaaS"
+        other: "Custom SaaS"
     attributes:
       destination:
         name: "Name"
@@ -65,6 +77,19 @@ en:
           ara_url: Referential URL
           credentials: Import Token
           force_import: Replace existing data
+        chouette:
+          workbench_id: Workbench ID
+          workbench_api_key: Workbench api key
+          automatic_merge: Automatic merge
+        iboo:
+          workbench_id: Workbench ID
+          workbench_api_key: Workbench api key
+          automatic_merge: Automatic merge
+        custom:
+          url: Url
+          workbench_id: Workbench ID
+          workbench_api_key: Workbench api key
+          automatic_merge: Automatic merge
         google_cloud_storage:
           project: Project
           bucket:  Bucket
@@ -86,6 +111,19 @@ en:
         ara_url: Referential URL
         credentials: Import Token
         force_import: Replace existing data
+      destination/chouette:
+        workbench_id: Workbench ID
+        workbench_api_key: Workbench api key
+        automatic_merge: Automatic merge
+      destination/iboo:
+        workbench_id: Workbench ID
+        workbench_api_key: Workbench api key
+        automatic_merge: Automatic merge
+      destination/custom:
+        url: Url
+        workbench_id: Workbench ID
+        workbench_api_key: Workbench api key
+        automatic_merge: Automatic merge
       destination/google_cloud_storage:
         project: Project
         bucket:  Bucket

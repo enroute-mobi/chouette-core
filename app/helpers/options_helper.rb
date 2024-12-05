@@ -21,6 +21,8 @@ module OptionsHelper
     elsif option_def[:type].to_s == 'boolean'
       opts[:as] = :switchable_checkbox
       opts[:input_html][:checked] = value
+    elsif option_def[:type].to_s == 'password'
+      opts[:as] = :password
     elsif option_def[:type].to_s == 'array'
       opts[:collection] = value.map { |v| { id: v, text: v } }
       opts[:input_html].merge!(

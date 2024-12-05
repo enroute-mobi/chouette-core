@@ -5,7 +5,11 @@ div[x-data="{destinationType: '#{destination.type}' }"]
     = f.input :name
     .fields
       = f.hidden_field :id
-      = f.input :type, collection: Destination.descendants.map{|k| [k.human_type, k.name]}, selected: destination.type, include_blank: true, input_html: { disabled: !f.object.new_record?, 'x-model': 'destinationType' }
+      = f.input :type,
+        collection: Destination.descendants.reject { |child| !current_organisation.has_feature?('destination_chouette_custom') && child == Destination::Custom}.map{|k| [k.human_type, k.name]},
+        selected: destination.type,
+        include_blank: true,
+        input_html: { disabled: !f.object.new_record?, 'x-model': 'destinationType' }
       template[x-if="destinationType == 'Destination::PublicationApi'"]
         div
           = f.input :publication_api_id, collection: @workgroup.publication_apis, required: true, selected: destination.publication_api_id

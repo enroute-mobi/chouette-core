@@ -48,6 +48,18 @@ fr:
         zero:  "Ara SaaS"
         one:   "Ara SaaS"
         other: "Ara SaaS"
+      destination/chouette:
+        zero:  "Chouette SaaS"
+        one:   "Chouette SaaS"
+        other: "Chouette SaaS"
+      destination/iboo:
+        zero:  "Iboo SaaS"
+        one:   "Iboo SaaS"
+        other: "Iboo SaaS"
+      destination/custom:
+        zero:  "Personnalisé SaaS"
+        one:   "Personnalisé SaaS"
+        other: "Personnalisé SaaS"
     attributes:
       destination:
         name: "Nom"
@@ -65,6 +77,19 @@ fr:
           ara_url: URL du Réferential
           credentials: Token d'identification
           force_import: Remplacer les données existantes
+        chouette:
+          workbench_id: Identification d'espace de travail
+          workbench_api_key: Clé d'accès API
+          automatic_merge: Fusion automatique
+        iboo:
+          workbench_id: Identification d'espace de travail
+          workbench_api_key: Clé d'accès API
+          automatic_merge: Fusion automatique
+        custom:
+          url: URL du service
+          workbench_id: Identification d'espace de travail
+          workbench_api_key: Clé d'accès API
+          automatic_merge: Fusion automatique
         google_cloud_storage:
           project: Projet
           bucket:  Bucket
@@ -86,6 +111,19 @@ fr:
         ara_url: URL du Réferential
         credentials: Token d'identification
         force_import: Remplacer les données existantes
+      destination/chouette:
+        workbench_id: Identification d'espace de travail
+        workbench_api_key: api key
+        automatic_merge: Fusion automatique
+      destination/iboo:
+        workbench_id: Identification d'espace de travail
+        workbench_api_key: api key
+        automatic_merge: Fusion automatique
+      destination/custom:
+        url: URL du service
+        workbench_id: Identification d'espace de travail
+        workbench_api_key: api key
+        automatic_merge: Fusion automatique
       destination/google_cloud_storage:
         project: Projet
         bucket:  Bucket

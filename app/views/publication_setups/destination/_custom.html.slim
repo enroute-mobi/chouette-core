@@ -1,0 +1,7 @@
+= simple_block_for destination, title: Destination.ts do |d|
+	= d.attribute :type, value: destination.human_type
+	= d.attribute :name
+	= d.attribute :url
+	= d.attribute :workbench_id
+	= d.attribute :workbench_api_key
+	= d.attribute :automatic_merge, as: :boolean

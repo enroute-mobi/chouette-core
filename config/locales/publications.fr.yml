@@ -19,3 +19,4 @@ fr:
         parent: "Source"
         export: "Export"
         name: "%{setup_name} du %{date}"
+        creator: Créé par

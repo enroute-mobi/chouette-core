@@ -2574,6 +2574,66 @@ RSpec.describe Search::Base::Chart do
     end
   end
 
+  describe '#total_aggregate' do
+    subject { chart.total_aggregate }
+
+    let(:group_by_attribute) { 'some_attribute' }
+    let(:display_percent) { true }
+
+    context 'with a simple string attribute' do
+      it do
+        expect(models).to receive(:count).with(:id).and_return(42)
+        is_expected.to eq(42)
+      end
+
+      context 'with #subgroup_by_attribute' do
+        let(:subgroup_by_attribute) { 'some_other_attribute' }
+
+        it do
+          expect(models).to receive(:count)
+          subject
+        end
+      end
+    end
+
+    context 'with an attribute needing inclusions and select' do
+      let(:group_by_attribute) { 'custom_label_attribute' }
+
+      it do
+        expect(models).to receive(:count)
+        subject
+      end
+
+      context 'as #subgroup_by_attribute' do
+        let(:subgroup_by_attribute) { 'custom_label_attribute_b' }
+
+        it do
+          expect(models).to receive(:count)
+          subject
+        end
+      end
+    end
+
+    context 'when #aggregate_operation is "sum"' do
+      let(:aggregate_operation) { 'sum' }
+      let(:aggregate_attribute) { 'some_numeric_attribute' }
+
+      it do
+        expect(models).to receive(:sum).with('some_numeric_attribute')
+        subject
+      end
+
+      context 'when #aggregate_attribute has a custom definition' do
+        let(:aggregate_attribute) { 'custom_aggregate_attribute' }
+
+        it do
+          expect(models).to receive(:sum).with('EXTRACT(EPOCH FROM updated_at - created_at)')
+          subject
+        end
+      end
+    end
+  end
+
   describe '#raw_data' do
     subject { chart.raw_data }
 
@@ -4767,10 +4827,13 @@ RSpec.describe Search::Base::Chart do
 
     context 'when #display_percent is true' do
       let(:display_percent) { true }
-      let(:raw_data) { { '1' => 1, '2' => 3, '3' => 0 } }
+      let(:raw_data) { { '1' => 1, '2' => 2, '3' => 0 } }
+      let(:total_aggregate) { 4 }
+
+      before { expect(chart).to receive(:total_aggregate).at_least(1).and_return(total_aggregate) }
 
       it 'computes percents' do
-        is_expected.to eq_with_keys_order({ '1' => 25, '2' => 75, '3' => 0 })
+        is_expected.to eq_with_keys_order({ '1' => 25, '2' => 50, '3' => 0 })
       end
 
       context 'when data contains nil values' do
@@ -4781,7 +4844,8 @@ RSpec.describe Search::Base::Chart do
         end
       end
 
-      context 'when data is all 0 or nil' do
+      context 'when total aggregate is 0' do
+        let(:total_aggregate) { 0 }
         let(:raw_data) { { '1' => 0, '2' => nil, '3' => 0 } }
 
         it 'computes percents with all values being 0' do

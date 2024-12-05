@@ -817,6 +817,10 @@ module Search
                     end
       end
 
+      def total_aggregate
+        @total_aggregate ||= TotalAggregateRequestBuilder.new(self).execute
+      end
+
       def raw_data
         RawDataRequestBuilder.new(self).execute
       end
@@ -885,11 +889,10 @@ module Search
       def compute_percent(result)
         return result unless display_percent
 
-        sum = result.values.compact.sum
-        if sum.zero?
+        if total_aggregate.zero?
           result.transform_values { 0 }
         else
-          result.transform_values { |v| v.nil? ? 0 : v * 100.0 / sum }
+          result.transform_values { |v| v.nil? ? 0 : v * 100.0 / total_aggregate }
         end
       end
 
@@ -1385,6 +1388,15 @@ module Search
         def execute
           super
           aggregate.keys
+        end
+      end
+
+      class TotalAggregateRequestBuilder < RequestBuilder
+        def build!; end
+
+        def execute
+          super
+          aggregate
         end
       end
 

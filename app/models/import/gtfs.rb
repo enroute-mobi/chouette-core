@@ -545,7 +545,7 @@ class Import::Gtfs < Import::Base
     @trips = {}
     create_resource(:transfers).each(source.transfers, slice: 100, transaction: true) do |transfer, resource|
       next unless transfer.type == '2'
-      from_id = @stop_areas_id_by_registration_number[transfer.from_stop_id]
+      from_id = lookup.stop_areas.find(transfer.from_stop_id, resource)
       unless from_id
         create_message(
           {
@@ -563,7 +563,7 @@ class Import::Gtfs < Import::Base
         )
         next
       end
-      to_id = @stop_areas_id_by_registration_number[transfer.to_stop_id]
+      to_id = lookup.stop_areas.find(transfer.to_stop_id, resource)
       unless to_id
         create_message(
           {
@@ -621,6 +621,62 @@ class Import::Gtfs < Import::Base
         end
       end
       save_model connection, resource: resource
+    end
+  end
+
+  def lookup
+    @lookup ||= Lookup.new(self)
+  end
+
+  class Lookup
+    def initialize(import)
+      @import = import
+    end
+    attr_reader :import
+
+    delegate :stop_area_id_by_stop_id, :stop_area_provider, :create_message, to: :import
+    delegate :stop_area_referential, to: :stop_area_provider
+
+    def stop_areas
+      @stop_areas = Class.new do
+        def initialize(lookup)
+          @lookup = lookup
+          @stop_ids = {}
+        end
+
+        def find(stop_id, resource)
+          @stop_ids[stop_id] = load_id(stop_id, resource)
+        end
+
+        def load_id(stop_id, resource)
+          model_id = @lookup.stop_area_id_by_stop_id(stop_id)
+          return model_id if model_id
+
+          model_id = @lookup.stop_area_provider.stop_areas.where(registration_number: stop_id).limit(1).pluck(:id).first
+          return model_id if model_id
+
+          model_id = @lookup.stop_area_referential.stop_areas.where(registration_number: stop_id).limit(1).pluck(:id).first
+          if model_id
+            @lookup.create_message(
+              {
+                criticity: :warning,
+                message_key: 'gtfs.transfers.stop_id_from_stop_area_referential',
+                message_attributes: { stop_id: stop_id },
+                resource_attributes: {
+                  filename: "#{resource.name}.txt",
+                  line_number: resource.rows_count,
+                  column_number: 0
+                }
+              },
+              resource: resource,
+              commit: true
+            )
+            return model_id
+          end
+
+          nil
+        end
+      end.new(self)
     end
   end
 

@@ -3,7 +3,6 @@ require 'range_ext'
 class Calendar < ApplicationModel
   include DateSupport
   include PeriodSupport
-  include CodeSupport
   include ApplicationDaysSupport
   include TimetableSupport
 

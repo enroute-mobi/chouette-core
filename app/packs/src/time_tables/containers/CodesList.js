@@ -5,6 +5,7 @@ import CodesListComponent from '../components/CodesList'
 const mapStateToProps = (state) => {
   return {
     codeValues: state.timetable.code_values,
+    modelClass: state.metas.model_class
   }
 }
 

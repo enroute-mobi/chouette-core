@@ -47,6 +47,9 @@ export default class CodesList extends Component {
   }
 
   render() {
+    if (this.props.modelClass !== 'TimeTable')
+      return null
+
     this.state = {codeValues: this.props.codeValues}
 
     return (
@@ -123,7 +126,8 @@ export default class CodesList extends Component {
 }
 
 CodesList.propTypes = {
-  codeValues: PropTypes.array.isRequired,
+  codeValues: PropTypes.array,
+  modelClass: PropTypes.string.isRequired,
   onAddCode: PropTypes.func.isRequired,
   onUpdateCode: PropTypes.func.isRequired,
   onDeleteCode: PropTypes.func.isRequired

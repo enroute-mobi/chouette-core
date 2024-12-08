@@ -1658,13 +1658,27 @@ class Import::Gtfs < Import::Base
       errors.empty?
     end
 
+    def errors
+      @errors ||= Errors.new
+    end
+
+    class Errors < SimpleDelegator
+      def initialize
+        @errors = []
+        super @errors
+      end
+
+      def add(message_key, **attributes)
+        @errors << Import::Gtfs::Decorator::Error.new(message_key, **attributes)
+      end
+    end
+
     class Error
       attr_accessor :message_key, :message_attributes, :criticity
 
-      def initialize(message_key, message_attributes = {}, criticity = nil)
+      def initialize(message_key, **attributes)
         @message_key = message_key
-        @message_attributes = message_attributes
-        @criticity = criticity
+        attributes.each { |k,v| send "#{k}=", v }
       end
     end
   end
@@ -1770,22 +1784,18 @@ class Import::Gtfs < Import::Base
         @time_table ||= Chouette::TimeTable.new(comment: name).apply(memory_timetable)
       end
 
-      def errors
-        @errors ||= []
-      end
-
       def validate
         super
 
-        errors << Import::Gtfs::Decorator::Error.new(:service_without_id) if service_id.blank?
+        errors.add :service_without_id if service_id.blank?
         if index&.service_id?(service_id)
-          errors << Import::Gtfs::Decorator::Error.new(:duplicated_service_id, { service_id: service_id })
+          errors.add :duplicated_service_id, message_attributes: { service_id: service_id }
         end
         if memory_timetable.empty?
-          errors << Import::Gtfs::Decorator::Error.new(:empty_service, { service_id: service_id }, :warning)
+          errors.add :empty_service, message_attributes: { service_id: service_id }, criticity: :warning
         end
         if !time_table&.valid? || !valid_exception_type? || valid_dates?
-          errors << Import::Gtfs::Decorator::Error.new(:invalid_service, { service_id: service_id })
+          errors.add :invalid_service, message_attributes: { service_id: service_id }
         end
       end
     end

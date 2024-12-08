@@ -50,6 +50,7 @@ fr:
         service_without_id: Le service n'est pas d'identifiant
         duplicated_service_id: Un service %{service_id} existe déjà
         invalid_service: Le service %{service_id} contient des données invalides
+        empty_service: Le service %{service_id} est vide
       transfers:
         missing_stop_id: "L'arrêt %{stop_id} est introuvable"
         replacing_duration: "Une nouvelle valeur a été définie pour la durée de transit pour la correspondance %{from_id} => %{to_id}"

@@ -1756,14 +1756,6 @@ class Import::Gtfs < Import::Base
         Cuckoo::Timetable::Period.from(period, days_of_week) if period
       end
 
-      def valid_dates?
-        calendar_dates.find{|c| c.ruby_date == nil }.present?
-      end
-
-      def valid_exception_type?
-        calendar_dates.find{|c| !c.exception_type.in? ['1', '2'] }.present?
-      end
-
       def memory_timetable
         @memory_timetable ||= Cuckoo::Timetable.new(
           period: memory_timetable_period,
@@ -1794,7 +1786,7 @@ class Import::Gtfs < Import::Base
         if memory_timetable.empty?
           errors.add :empty_service, message_attributes: { service_id: service_id }, criticity: :warning
         end
-        if !time_table&.valid? || !valid_exception_type? || valid_dates?
+        if !time_table&.valid?
           errors.add :invalid_service, message_attributes: { service_id: service_id }
         end
       end

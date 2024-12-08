@@ -214,7 +214,7 @@ gem 'x25519'
 gem 'bcrypt_pbkdf'
 
 gem 'bitset', en_route: 'bitset'
-gem 'cuckoo', en_route: 'cuckoo'
+gem 'cuckoo', en_route: 'cuckoo', path: '../cuckoo'
 
 gem 'curb'
 

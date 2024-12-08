@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 RSpec.describe Chouette::Planner::Extender::ByVehicleJourneyStopAreas do
-  subject(:extender) { described_class.new vehicle_journeys, time_tables }
+  subject(:extender) { described_class.new vehicle_journeys: vehicle_journeys, time_tables: time_tables }
 
   let(:context) do
     Chouette.create do
@@ -13,9 +13,10 @@ RSpec.describe Chouette::Planner::Extender::ByVehicleJourneyStopAreas do
   let(:vehicle_journey) { context.vehicle_journey }
   let(:vehicle_journeys) { Chouette::VehicleJourney.where(id: vehicle_journey) }
 
-  before { context.referential.switch }
+  let(:time_table) { context.time_table(:first) }
+  let(:time_tables) { Chouette::TimeTable.where(id: time_table)  }
 
-  let(:time_tables) { Chouette::TimeTable.none }
+  before { context.referential.switch }
 
   describe '#extend' do
     let(:departure_vehicle_journey_at_stop) { vehicle_journey.vehicle_journey_at_stops.first }
@@ -30,6 +31,7 @@ RSpec.describe Chouette::Planner::Extender::ByVehicleJourneyStopAreas do
     it { should have_attributes(size: 2) }
 
     let(:last_stop_area) { vehicle_journey.vehicle_journey_at_stops.last.stop_point.stop_area }
+
     it {
       is_expected.to include(an_object_having_attributes(last: an_object_having_attributes(stop_area_id: last_stop_area.id)))
     }

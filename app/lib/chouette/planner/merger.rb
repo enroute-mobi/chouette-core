@@ -11,16 +11,26 @@ module Chouette
       attr_accessor :maximum_distance, :walk_speed
 
       def merge(journey, reverse_journey)
-        merge = Merge.new(
+        merge = create journey, reverse_journey
+        return nil unless merge.mergeable?
+
+        # TODO: we could remove duplicated steps (like A, B, B@0)
+        journey.merge(reverse_journey, merge_duration: merge.duration)
+      end
+
+      def create(journey, reverse_journey)
+        # puts [journey.id, reverse_journey.id].inspect
+
+        cache[[journey.id, reverse_journey.id]] ||= Merge.new(
           journey,
           reverse_journey,
           maximum_distance: maximum_distance,
           walk_speed: walk_speed
         )
-        return nil unless merge.mergeable?
+      end
 
-        # TODO: we could remove duplicated steps (like A, B, B@0)
-        journey.merge(reverse_journey, merge_duration: merge.duration)
+      def cache
+        @cache ||= {}
       end
 
       class Merge
@@ -46,7 +56,7 @@ module Chouette
         end
 
         def mergeable?
-          last == reverse_last || distance < maximum_distance
+          @mergeable ||= (last == reverse_last || distance < maximum_distance)
         end
 
         def duration

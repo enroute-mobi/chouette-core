@@ -70,6 +70,8 @@ module Chouette
           attr_reader :journeys
 
           def extend
+            return [] if extendable_journeys.empty?
+            
             next_steps.each do |origin_step_id, next_step|
               extendable_journeys_by_last_id[origin_step_id].each do |journey|
                 extended_journeys << journey.extend(next_step)
@@ -84,10 +86,11 @@ module Chouette
               step = Step::StopArea.new(
                 stop_area_id: stop_area_id,
                 position: Geo::Position.new(latitude: stop_area_latitude, longitude: stop_area_longitude),
-                duration: distance / walk_speed
+                duration: distance / walk_speed,
+                created_by: self.class
               )
               [step_id, step]
-            end.to_h
+            end
           end
 
           def extended_journeys
@@ -130,9 +133,15 @@ module Chouette
       end
 
       class ByVehicleJourneyStopAreas
-        def initialize(vehicle_journeys, time_tables, maximun_time_of_day: nil)
+        def initialize(vehicle_journeys: nil, vehicle_journeys_at_stops: nil, time_tables:, maximun_time_of_day: nil)
           @vehicle_journeys = vehicle_journeys
-          @time_tables = time_tables
+          @vehicle_journey_at_stops = vehicle_journey_at_stops
+
+          unless @vehicle_journey_at_stops || @vehicle_journeys
+            raise ArgumentError, 'Requires vehicle_journey_at_stops or vehicle_journeys'
+          end
+
+          @time_tables = TimeTables.new time_tables
           @maximun_time_of_day = maximun_time_of_day
         end
 
@@ -142,11 +151,42 @@ module Chouette
           Extend.new(self, journeys).extend
         end
 
-        delegate :connection, to: :vehicle_journeys
+        def connection
+          Chouette::VehicleJourneyAtStop.connection
+        end
         delegate :select_rows, to: :connection
 
         def vehicle_journey_at_stops
           @vehicle_journey_at_stops ||= Chouette::VehicleJourneyAtStop.where(vehicle_journey_id: vehicle_journeys)
+        end
+
+        class TimeTables
+          def initialize(time_tables)
+            @time_tables = time_tables
+          end
+
+          attr_accessor :time_tables
+
+          def time_table_days_bits
+            @time_table_days_bits ||= {}
+          end
+
+          def load(time_table_ids)
+            time_table_ids = Set.new(time_table_ids - time_table_days_bits.keys)
+
+            time_tables.where(id: time_table_ids).includes(:dates, :periods).find_each do |time_table|
+              days_bit = time_table.to_days_bit
+              time_table_days_bits[time_table.id] = days_bit if days_bit
+            end
+          end
+
+          def days_bit(time_table_ids)
+            Cuckoo::DaysBit.merge(*time_table_days_bits.values_at(*time_table_ids).compact)
+          end
+
+          def validity_period(time_table_ids)
+            ValidityPeriod.new days_bit(time_table_ids)
+          end
         end
 
         class Extend < SimpleDelegator
@@ -163,7 +203,11 @@ module Chouette
             next_steps.each do |journey_id, steps|
               journey = extendable_journey(journey_id)
               steps.each do |next_step|
-                extended_journeys << journey.extend(next_step)
+                extended_journey = journey.extend(next_step)
+
+                unless extended_journey.validity_period.empty?
+                  extended_journeys << extended_journey
+                end
               end
             end
 
@@ -173,18 +217,47 @@ module Chouette
           def next_steps
             next_steps = Hash.new { |h,k| h[k] = [] }
 
-            select_rows(query).map do |journey_id, stop_area_id, duration, stop_area_latitude, stop_area_longitude, time_table_ids|
-              # TODO: manage TimeTables
-              step = Step::StopArea.new(
-                stop_area_id: stop_area_id,
-                position: Geo::Position.new(latitude: stop_area_latitude, longitude: stop_area_longitude),
-                duration: duration
-              )
+            time_tables.load time_table_ids
 
-              next_steps[journey_id] << step
+            rows.each do |row|
+              step = row.create_step
+              step.validity_period = time_tables.validity_period(row.time_table_ids)
+
+              next_steps[row.journey_id] << step
             end
 
             next_steps
+          end
+
+          def time_table_ids
+            rows.flat_map(&:time_table_ids).uniq
+          end
+
+          def rows
+            @rows ||= select_rows(query).map do |journey_id, stop_area_id, duration, stop_area_latitude, stop_area_longitude, time_table_ids|
+              Row.new(journey_id, stop_area_id, duration, stop_area_latitude, stop_area_longitude, time_table_ids)
+            end
+          end
+
+          class Row
+            attr_accessor :journey_id, :stop_area_id, :duration, :stop_area_latitude, :stop_area_longitude, :time_table_ids
+
+            def initialize(journey_id, stop_area_id, duration, stop_area_latitude, stop_area_longitude, time_table_ids)
+              @journey_id, @stop_area_id, @duration, @stop_area_latitude, @stop_area_longitude = journey_id, stop_area_id, duration, stop_area_latitude, stop_area_longitude
+              @time_table_ids = time_table_ids.delete('{}').split(',').map(&:to_i)
+            end
+
+            def position
+              Geo::Position.new(latitude: stop_area_latitude, longitude: stop_area_longitude)
+            end
+
+            def create_step
+              Step::StopArea.new(
+                stop_area_id: stop_area_id,
+                position: position,
+                duration: duration.to_i
+              )
+            end
           end
 
           def extended_journeys
@@ -194,8 +267,8 @@ module Chouette
           def extendable_journeys
             journeys.select do |journey|
               journey.time_reference? &&
-                journey.last.respond_to?(:stop_area_id) &&
-                journey.last.created_by != self.class
+                journey.last.respond_to?(:stop_area_id)
+                # TODO: seems wrong: journey.last.created_by != self.class
             end
           end
 
@@ -303,7 +376,7 @@ module Chouette
               step = Step::StopArea.new(
                 stop_area_id: stop_area_id,
                 position: Geo::Position.new(latitude: stop_area_latitude, longitude: stop_area_longitude),
-                duration: duration
+                duration: duration.to_i
               )
               [step_id, step]
             end.to_h

@@ -61,7 +61,7 @@ module Chouette
           step.with_duration(duration)
         end
 
-        extend(merged_steps, validity_period: reverse_journey.validity_period)
+        extend(*merged_steps, validity_period: reverse_journey.validity_period)
       end
 
       def duration
@@ -83,14 +83,16 @@ module Chouette
       end
 
       def inspect
-        "#<Chouette::Planner::Journey #{reverse? ? '◀️' : ''}#{extended? ? '✔️' : ''} #{steps.inspect}>"
+        "#<Chouette::Planner::Journey #{reverse? ? '◀️' : ''}#{extended? ? '✔️' : ''} ⚖️#{cost}/#{duration}s #{steps.inspect} 📅#{validity_period}>"
       end
 
       protected
 
       def _extend(*steps, validity_period: ValidityPeriod.new)
         self.steps.concat steps
-        self.validity_period = self.validity_period.intersect!(validity_period)
+
+        extended_validity_periods = steps.map(&:validity_period) + [ validity_period ]
+        self.validity_period = self.validity_period.intersect(*extended_validity_periods)
         self.duration = nil
         self.extended = false
         self.id = nil

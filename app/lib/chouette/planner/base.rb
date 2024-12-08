@@ -3,28 +3,40 @@
 module Chouette
   module Planner
     class Base
-      def initialize(from: nil, to: nil, **attributes)
-        attributes.each { |k, v| send "#{k}=", v }
+      include Measurable
 
-        journeys << Journey.new(step: Step.for(from))
+      def initialize(from: nil, to: nil, **attributes)
+        journeys << Journey.new(step: Step.for(from), origin_time_of_day: attributes.delete(:origin_time_of_day))
         reverse_journeys << Journey.new(step: Step.for(to), reverse: true)
+
+        attributes.each { |k, v| send "#{k}=", v }
 
         @improve_runs = 0
       end
 
       def maximum_improve_runs
-        10
+        5
       end
 
-      attr_accessor :improve_runs
+      def logger
+        Rails.logger
+      end
+
+      attr_accessor :improve_runs, :evaluator
 
       def improve
         self.improve_runs += 1
         return false if improve_runs > maximum_improve_runs
 
-        merge
-        improvable = extend
-        evaluate
+        improvable = false
+
+        logger.tagged("improve(#{improve_runs})") do
+          merge
+          improvable = extend
+          evaluate
+
+          logger.debug { "#{solutions.count} solutions - #{journeys.count} journeys - #{reverse_journeys.count} reverse journeys" }
+        end
 
         improvable
       end
@@ -54,9 +66,10 @@ module Chouette
           merged_performed
         end
       end
+      measure :merge
 
       def extend_batch_size
-        @extend_batch_size ||= 1000
+        @extend_batch_size ||= 100
       end
 
       def extend
@@ -68,17 +81,31 @@ module Chouette
         extendable_journeys = journeys.reject(&:extended?).first(extend_batch_size)
         extendable_journeys.each(&:extended!)
 
+        logger.debug { "#{extendable_journeys.count} extendable journeys" }
+        extendable_journeys.first(10).each do |extendable_journey|
+          logger.debug { "* #{extendable_journey.inspect}" }
+        end
+
         extenders.each do |extender|
-          extended_journeys = extender.extend extendable_journeys
-          journeys.concat extended_journeys
+          logger.tagged extender.class do
+            Chouette::Benchmark.measure extender.class do
+              extended_journeys = extender.extend extendable_journeys
+              logger.debug { "#{extended_journeys.count} extended journeys" }
+              journeys.concat extended_journeys
+            end
+          end
         end
 
         extendable_reverse_journeys = reverse_journeys.reject(&:extended?).first(extend_batch_size)
         extendable_reverse_journeys.each(&:extended!)
 
         extenders.each do |extender|
-          extended_reverse_journeys = extender.extend extendable_reverse_journeys
-          reverse_journeys.concat extended_reverse_journeys
+          logger.tagged "reverse", extender.class do
+            extended_reverse_journeys = extender.extend extendable_reverse_journeys
+            logger.debug { "#{extended_reverse_journeys.count} extended reverse journeys by #{extender.class}" }
+
+            reverse_journeys.concat extended_reverse_journeys
+          end
         end
 
         extendable_journeys.present? || extendable_reverse_journeys.present?
@@ -86,20 +113,25 @@ module Chouette
 
       def evaluate
         journeys.each do |journey|
-          evaluator.call journey
+          journey.cost = evaluator.call journey
         end
 
+        journeys.sort_by! { |journey| journey.cost }
+
         reverse_journeys.each do |journey|
-          evaluator.call journey
+          journey.cost = evaluator.call journey
         end
+
+        reverse_journeys.sort_by! { |journey| journey.cost }
       end
+      measure :evaluate
 
       def extenders
         @extenders ||= []
       end
 
       def evaluator
-        @evaluator ||= proc { |journey| }
+        @evaluator ||= proc { |journey| 0 }
       end
 
       def merger

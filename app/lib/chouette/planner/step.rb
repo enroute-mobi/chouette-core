@@ -43,6 +43,7 @@ module Chouette
         def validity_period
           @validity_period ||= ValidityPeriod.new
         end
+        attr_writer :validity_period
 
         def inspect
           "#{@position} ⏱️#{duration}s"

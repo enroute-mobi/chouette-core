@@ -8,11 +8,11 @@ RSpec.describe Chouette::Planner::Extender::WalkableStopAreas do
   let(:context) do
     Chouette.create do
       stop_area position: Geo::Position.parse('48.858333,2.294444').around(distance: 499)
+      stop_area position: Geo::Position.parse('48.858333,2.294444').around(distance: 499)
     end
   end
 
-  let(:stop_area) { context.stop_area }
-  let(:stop_areas) { Chouette::StopArea.where(id: stop_area) }
+  let(:stop_areas) { Chouette::StopArea.where(id: context.stop_areas) }
 
   describe '#extend' do
     let(:last_step) { Chouette::Planner::Step.for(position) }
@@ -20,12 +20,18 @@ RSpec.describe Chouette::Planner::Extender::WalkableStopAreas do
 
     subject(:extended_journeys) { extender.extend [journey] }
 
-    it { should have_attributes(size: 1) }
+    it { should have_attributes(size: 2) }
 
     context 'extended journey' do
       subject(:extended_journey) { extended_journeys.first }
 
-      it { is_expected.to have_attributes(last: an_object_having_attributes(stop_area_id: stop_area.id)) }
+      it do
+        is_expected.to have_attributes(
+                         last: an_object_having_attributes(
+                           stop_area_id: a_value_in(stop_areas.map(&:id))
+                         )
+                       )
+      end
     end
   end
 end

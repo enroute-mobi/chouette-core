@@ -52,6 +52,7 @@ en:
         empty_service: The GTFS service %{service_id} is empty
       transfers:
         missing_stop_id: "The stop %{stop_id} cannot be found"
+        stop_id_from_stop_area_referential: "The stop %{stop_id} comes from the workgroup"
         replacing_duration: "Replacing the default duration for the connection %{from_id} => %{to_id}"
         same_arrival_and_departure: "The two stop areas must be distinct"
     1_netexstif_2: "Le fichier %{source_filename} ne respecte pas la syntaxe XML ou la XSD NeTEx : erreur '%{error_value}' rencontré"

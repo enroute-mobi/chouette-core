@@ -26,7 +26,7 @@ class App extends Component {
     return(
       <div className='row'>
         <div className="col-lg-8 col-lg-offset-2 col-md-8 col-md-offset-2 col-sm-10 col-sm-offset-1">
-          <Metas isCalendar={this.props.isCalendar} />
+          <Metas />
           <Navigate />
           <Timetable />
           <PeriodForm />
@@ -50,12 +50,7 @@ const mapDispatchToProps = (dispatch) => {
   }
 }
 
-App.defaultProps = {
-  isCalendar: false
-}
-
 App.propTypes = {
-  isCalendar: PropTypes.bool.isRequired,
   onLoadFirstPage: PropTypes.func.isRequired
 }
 

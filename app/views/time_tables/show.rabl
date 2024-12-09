@@ -9,7 +9,8 @@ node do |tt|
     periode_range: month_periode_enum(tt.bounding_dates, 5),
     current_periode_range: tt.bounding_dates.first&.beginning_of_month || Date.today.beginning_of_month,
     color: tt.color ? tt.color : '',
-    short_id: tt.get_objectid.short_id
+    short_id: tt.get_objectid.short_id,
+    model_class: 'TimeTable'
   }
 end
 

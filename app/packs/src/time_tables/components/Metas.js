@@ -9,8 +9,7 @@ const Metas = ({
   onUpdateDayTypes,
   onUpdateComment,
   onUpdateShared,
-  onUpdateColor,
-  isCalendar
+  onUpdateColor
 }) => (
   <div className='form-horizontal'>
     <div className="row">
@@ -34,7 +33,7 @@ const Metas = ({
         </div>
 
         {/* shared*/}
-        {isCalendar && (
+        {metas.model_class === 'Calendar' && (
           <div className="form-group">
             <label className="col-sm-4 col-xs-5 control-label switchable_checkbox optional" htmlFor="time_table_shared">
               {I18n.attribute_name('calendar', 'shared')}
@@ -59,7 +58,7 @@ const Metas = ({
         )}
 
         {/* color */}
-        {metas.color !== undefined && <div className="form-group">
+        {metas.model_class === 'TimeTable' && <div className="form-group">
           <label htmlFor="" className="control-label col-sm-4">{I18n.attribute_name('time_table', 'color')}</label>
           <div className="col-sm-8">
             <ColorSelect selectedColor={metas.color} onUpdateColor={onUpdateColor} />
@@ -67,7 +66,7 @@ const Metas = ({
         </div>}
 
         {/* calendar */}
-        {metas.calendar !== null && <div className="form-group">
+        {metas.model_class === 'TimeTable' && <div className="form-group">
           <label htmlFor="" className="control-label col-sm-4">{I18n.attribute_name('time_table', 'calendar')}</label>
           <div className="col-sm-8">
             <span>{metas.calendar ? metas.calendar.name : I18n.t('time_tables.edit.metas.no_calendar')}</span>
@@ -112,8 +111,7 @@ Metas.propTypes = {
   metas: PropTypes.object.isRequired,
   onUpdateDayTypes: PropTypes.func.isRequired,
   onUpdateShared: PropTypes.func.isRequired,
-  onUpdateColor: PropTypes.func.isRequired,
-  isCalendar: PropTypes.bool.isRequired
+  onUpdateColor: PropTypes.func.isRequired
 }
 
 export default Metas

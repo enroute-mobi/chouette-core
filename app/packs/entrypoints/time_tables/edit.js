@@ -27,7 +27,8 @@ let initialState = {
     comment: '',
     day_types: [],
     color: '',
-    calendar: null
+    calendar: null,
+    model_class: ''
   },
   pagination: {
     stateChanged: false,

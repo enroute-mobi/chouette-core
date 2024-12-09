@@ -10,7 +10,8 @@ node do |tt|
     current_month: tt.month_inspect(Date.today),
     periode_range: month_periode_enum(tt.bounding_dates, 5),
     current_periode_range: Date.today.beginning_of_month,
-    short_id: tt.object_id
+    short_id: tt.object_id,
+    model_class: 'Calendar'
   }
 end
 

@@ -42,7 +42,6 @@ import "src/date_filters"
 import "src/chartkick"
 
 // React Apps
-import './calendars/edit'
 import './journey_patterns'
 import './routes/form'
 import './time_tables/edit'

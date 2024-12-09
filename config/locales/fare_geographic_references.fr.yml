@@ -1,0 +1,16 @@
+fr:
+  activerecord:
+    models:
+      fare/geographic_reference:
+        zero: Référence géographique tarifaire
+        one: Référence géographique tarifaire
+        other: Référence géographique tarifaire
+    attributes:
+      fare/geographic_reference:
+        short_name: Nom court
+        name: Nom
+        fare_zone_id: Zone tarifaire
+    errors:
+      models:
+        fare/geographic_reference:
+          attributes:

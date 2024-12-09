@@ -1,0 +1,8 @@
+.row
+  .col-lg-12
+    h2.mb-lg= Fare::GeographicReference.model_name.human.pluralize
+    = form.simple_fields_for(:fare_geographic_references) do |fare_geographic_references_form|
+      = render 'fare_geographic_references/fields', f: fare_geographic_references_form
+
+.links.nested-linker
+  = link_to_add_association t('actions.add_fare_geographic_reference'), form, :fare_geographic_references, class: 'btn btn-primary', partial: 'fare_geographic_references/fields'

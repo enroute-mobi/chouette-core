@@ -13,6 +13,11 @@
       .col-lg-6.col-md-6.col-sm-12.col-xs-12
         = simple_block_for @fare_zone, title: t('fare_zones.form.sections.internal') do |d|
           = d.attribute :fare_provider, value: @fare_zone.fare_provider.name
+
+    .row
+      .col-lg-6.col-md-6.col-sm-12.col-xs-12
+        = render 'fare_geographic_references/block', model: @fare_zone
+
     .row
       .col-lg-6.col-md-6.col-sm-12.col-xs-12
         = render 'codes/block', model: @fare_zone

@@ -1,0 +1,16 @@
+en:
+  activerecord:
+    models:
+      fare/geographic_reference:
+        zero: Fare geographic reference
+        one: Fare geographic reference
+        other: Fare geographic reference
+    attributes:
+      fare/geographic_reference:
+        short_name: Short name
+        name: Name
+        fare_zone_id: Fare zone
+    errors:
+      models:
+        fare/geographic_reference:
+          attributes:

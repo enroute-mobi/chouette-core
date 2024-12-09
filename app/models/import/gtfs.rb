@@ -383,7 +383,7 @@ class Import::Gtfs < Import::Base
         next if ignore_parent_stop_areas? && stop.location_type == '1'
 
         stop_area = stop_areas.find_or_initialize_by(registration_number: stop.id)
-        expected_area_type = stop.location_type == '1' ? :zdlp : :zdep
+        expected_area_type = stop.location_type == '1' ? 'zdlp' : 'zdep'
 
         if stop_area.new_record?
           stop_area.area_type = expected_area_type
@@ -407,9 +407,9 @@ class Import::Gtfs < Import::Base
               },
               resource: resource, commit: true
             )
-          end
 
-          next
+            next
+          end
         end
 
         stop_area.name = stop.name

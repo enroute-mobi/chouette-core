@@ -178,6 +178,9 @@ module SimpleBlockForHelper
             else
               uri.to_s
             end
+          when :color
+            hex_color = raw_value.start_with?('#') ? raw_value : "##{raw_value}"
+            "#{content_tag(:i, nil, class: 'fa fa-square fa-lg', style: "color:#{hex_color}")} #{hex_color}".html_safe # rubocop:disable Rails/OutputSafety
           else
             raw_value
           end

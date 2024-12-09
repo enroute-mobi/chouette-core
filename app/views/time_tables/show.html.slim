@@ -10,7 +10,7 @@
       .col-lg-6.col-md-6.col-sm-12.col-xs-12
         = simple_block_for @time_table, title: t("metadatas") do |d|
           = d.attribute :bounding_dates, value: (@time_table.bounding_dates.empty? ? '-' : t('bounding_dates', debut: l(@time_table.bounding_dates.min), end: l(@time_table.bounding_dates.max)))
-          = d.attribute :color, value: content_tag(:span, '', class: 'fa fa-circle', style: "color:#{@time_table.try(:color)}")
+          = d.attribute :color, as: :color
           = d.attribute :calendar, as: :association
           = d.attribute :day_types, value: %w(monday tuesday wednesday thursday friday saturday sunday).collect{ |d| content_tag(:span, t("calendars.days.#{d}"), class: "label label-default #{@time_table.send(d) ? '' : 'disabled'}") }.join.html_safe
           = d.attribute :checksum

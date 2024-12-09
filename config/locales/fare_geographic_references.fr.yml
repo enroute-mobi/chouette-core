@@ -2,9 +2,9 @@ fr:
   activerecord:
     models:
       fare/geographic_reference:
-        zero: Référence géographique tarifaire
-        one: Référence géographique tarifaire
-        other: Référence géographique tarifaire
+        zero: Référence géographique de tarif
+        one: Référence géographique de tarif
+        other: Référence géographique de tarif
     attributes:
       fare/geographic_reference:
         short_name: Nom court

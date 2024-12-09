@@ -5,7 +5,7 @@ fr:
     add_referential: Ajoutez un jeu de données
     add: 'Ajouter'
     add_code: 'Ajouter un code'
-    add_fare_geographic_reference: 'Ajouter une référence géographique tarifaire'
+    add_fare_geographic_reference: 'Ajouter une référence géographique de tarif'
     add_setting: 'Ajouter une option'
     archive: 'Archiver'
     cancel_destroy: Annuler suppresion

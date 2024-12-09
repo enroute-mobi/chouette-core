@@ -101,7 +101,9 @@ module CodeSupport
          .map(&:attributes)
   end
 
-  def update_state_codes(state_codes)
+  def assign_state_codes(state_codes) # rubocop:disable Metrics/MethodLength
+    codes_by_id = codes.index_by(&:id)
+
     state_codes.each do |code|
       next unless value = code['value']
       attributes = {
@@ -109,14 +111,12 @@ module CodeSupport
         value: value
       }
       if id = code['id']
-        self.codes.find_by(id: id).update(attributes)
+        codes_by_id.delete(id)&.attributes = attributes
       else
-        self.codes.create(attributes)
+        codes.new(attributes)
       end
     end
-  end
 
-  def delete_state_codes(state_codes)
-    self.codes.where.not(id: state_codes.map{ |state_code| state_code['id'] }).delete_all
+    codes_by_id.each_value(&:mark_for_destruction)
   end
 end

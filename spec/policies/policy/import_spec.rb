@@ -9,7 +9,8 @@ RSpec.describe Policy::Import, type: :policy do
     it do
       is_expected.to eq(
         {
-          option_flag_urgent: 'referentials.flag_urgent'
+          option_flag_urgent: 'referentials.flag_urgent',
+          option_update_workgroup_providers: 'imports.update_workgroup_providers'
         }
       )
     end
@@ -60,6 +61,17 @@ RSpec.describe Policy::Import, type: :policy do
 
     it do
       expect(policy).to receive(:around_can).with(:option_flag_urgent).and_call_original
+      is_expected.to be_truthy
+    end
+  end
+
+  describe '#option_update_workgroup_providers?' do
+    subject { policy.option_update_workgroup_providers? }
+
+    it { applies_strategy(Policy::Strategy::Permission, :option_update_workgroup_providers) }
+
+    it do
+      expect(policy).to receive(:around_can).with(:option_update_workgroup_providers).and_call_original
       is_expected.to be_truthy
     end
   end

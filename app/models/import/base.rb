@@ -73,6 +73,10 @@ class Import::Base < ApplicationModel
     @public_code_space ||= workgroup.code_spaces.public if workgroup
   end
 
+  def update_workgroup_providers?
+    options['update_workgroup_providers'] || parent_option('update_workgroup_providers') == 'true'
+  end
+
   def store_xml?
     options['store_xml'] || parent_option('store_xml') == 'true'
   end

@@ -740,7 +740,7 @@ class Export::Gtfs < Export::Base
           register :funicular, 7
           register :trolley_bus, 11
           register 'rail/monorail', 12
-          register :coach, 200
+          register :coach, 3
           register :air, 1100
           register :taxi, 1500
           register :hire_car, 1506
@@ -749,6 +749,7 @@ class Export::Gtfs < Export::Base
 
       def self.extended_route_type_mapper
         @extended_route_types ||= base_route_type_mapper.append do
+          register :coach, 200
           register 'rail/interregional_rail', 103
           register 'coach/regional_coach', 204
           register 'coach/special_coach', 205

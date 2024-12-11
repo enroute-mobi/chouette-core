@@ -218,19 +218,9 @@ export default function modal(state = {}, action) {
         confirmModal: {}
       }
     case 'SELECT_JP_CREATE_MODAL':
-      let jp = action.selectedItem
-      delete jp["element"]
-      newModalProps = _.assign({}, state.modalProps, {selectedJPModal : jp})
-      return _.assign({}, state, {modalProps: newModalProps})
-    case 'SELECT_COMPANY_CREATE_MODAL':
-      let company = action.selectedItem
-      delete company["element"]
-      newModalProps = _.assign({}, state.modalProps, {selectedJPModal : company})
-      return _.assign({}, state, {modalProps: newModalProps})
-    case 'SELECT_ACCESSIBILITY_ASSESSMENT_CREATE_MODAL':
-      let accessibility_assessment = action.selectedItem
-      delete accessibility_assessment["element"]
-      newModalProps = _.assign({}, state.modalProps, {selectedJPModal : accessibility_assessment})
+      let selected = action.selectedItem
+      delete selected["element"]
+      newModalProps = _.assign({}, state.modalProps, {selectedJPModal : selected})
       return _.assign({}, state, {modalProps: newModalProps})
     case 'SHIFT_VEHICLEJOURNEY_MODAL':
       return {

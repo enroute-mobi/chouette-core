@@ -26,7 +26,7 @@ export default class CreateModal extends Component {
       return
     }
     if (actions.validateFields(this.refs, $('.vjCreateSelectJP')[0])) {
-      this.props.onAddVehicleJourney(_.assign({}, this.refs, {custom_fields: this.custom_fields}), this.props.modal.modalProps.selectedJPModal, this.props.stopPointsList, this.props.modal.modalProps.vehicleJourney && this.props.modal.modalProps.vehicleJourney.company && this.props.modal.modalProps.vehicleJourney.accessibility_assessment)
+      this.props.onAddVehicleJourney(_.assign({}, this.refs, {custom_fields: this.custom_fields}), this.props.modal.modalProps.selectedJPModal, this.props.stopPointsList, this.props.modal.modalProps.vehicleJourney && this.props.modal.modalProps.vehicleJourney.company, this.props.modal.modalProps.vehicleJourney && this.props.modal.modalProps.vehicleJourney.accessibility_assessment)
       this.props.onModalClose()
       $('#NewVehicleJourneyModal').modal('hide')
     }

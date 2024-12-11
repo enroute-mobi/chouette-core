@@ -1,7 +1,7 @@
 import React, { Component } from 'react'
 import PropTypes from 'prop-types'
 import autoBind from 'react-autobind'
-import { last } from 'lodash'
+import { last, truncate } from 'lodash'
 import actions from '../actions'
 import EditVehicleJourney from '../containers/tools/EditVehicleJourney'
 import VehicleJourneyInfoButton from '../containers/tools/VehicleJourneyInfoButton'
@@ -116,7 +116,7 @@ export default class VehicleJourney extends Component {
           </div>
           <div>{this.props.value.journey_pattern.short_id || '-'}</div>
           <div>{this.props.value.company ? this.props.value.company.name : '-'}</div>
-          <div>{this.props.value.accessibility_assessment ? this.props.value.accessibility_assessment.name : '-'}</div>
+          <div>{this.props.value.accessibility_assessment ? truncate(this.props.value.accessibility_assessment.name, 20) : '-'}</div>
           {
             this.props.extraHeaders.map((header, i) =>
               <div key={i}>{this.extraHeaderValue(header)}</div>

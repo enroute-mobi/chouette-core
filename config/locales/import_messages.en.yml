@@ -38,6 +38,7 @@ en:
         missing_agency_id: Missing agency id
       stops:
         imported: "%{count} stop(s) imported"
+        invalid_location_type: "The Stop Area %{registration_number} %{stop_area_name} of type %{stop_area_type} is not compatible with the value of GTFS location type"
       routes:
         imported: "%{count} route(s) imported"
       trips:

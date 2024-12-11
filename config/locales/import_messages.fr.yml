@@ -38,6 +38,7 @@ fr:
         missing_agency_id: Identifiant d'agence non renseigné
       stops:
         imported: "%{count} arrêt(s) importé(s)"
+        invalid_location_type: "L'arrêt %{registration_number} %{stop_area_name} de type %{stop_area_type} n'est pas compatible avec la valeur de location_type GTFS"
       routes:
         imported: "%{count} itinéraire(s) importé(s)"
       trips:

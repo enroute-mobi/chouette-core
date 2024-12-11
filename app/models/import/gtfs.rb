@@ -383,11 +383,38 @@ class Import::Gtfs < Import::Base
         next if ignore_parent_stop_areas? && stop.location_type == '1'
 
         stop_area = stop_areas.find_or_initialize_by(registration_number: stop.id)
+        expected_area_type = stop.location_type == '1' ? 'zdlp' : 'zdep'
+
+        if stop_area.new_record?
+          stop_area.area_type = expected_area_type
+        else
+          if stop_area.area_type != expected_area_type
+            create_message(
+              {
+                criticity: :error,
+                message_key: 'gtfs.stops.invalid_location_type',
+                message_attributes: {
+                  location_type: stop.location_type,
+                  stop_area_name: stop_area.name,
+                  stop_area_type: Chouette::AreaType.find(stop_area.area_type).label,
+                  registration_number: stop_area.registration_number
+                },
+                resource_attributes: {
+                  filename: "#{resource.name}.txt",
+                  line_number: resource.rows_count,
+                  column_number: 0
+                }
+              },
+              resource: resource, commit: true
+            )
+
+            next
+          end
+        end
 
         stop_area.name = stop.name
         stop_area.public_code = stop.platform_code
         stop_area.stop_area_provider = stop_area_provider
-        stop_area.area_type = stop.location_type == '1' ? :zdlp : :zdep
         stop_area.latitude = stop.lat.presence && stop.lat.to_f
         stop_area.longitude = stop.lon.presence && stop.lon.to_f
         stop_area.kind = :commercial

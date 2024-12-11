@@ -8,7 +8,7 @@ RSpec.describe Chouette::Sync::StopArea do
       end
     end
 
-    let(:target) { stop_area_provider }
+    let(:target) { context.stop_area_referential }
     let(:stop_area_provider) { context.stop_area_provider }
 
     let(:xml) do # rubocop:disable Metrics/BlockLength

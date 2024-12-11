@@ -637,14 +637,14 @@ RSpec.describe Export::Gtfs, type: [:model, :with_exportable_referential] do
           funicular: 7,
           trolley_bus: 11,
           'rail/monorail': 12,
-          coach: 200,
+          coach: 3,
           air: 1100,
           taxi: 1500,
           hireCar: 1506,
           'rail/interregional_rail': 2,
-          'coach/regional_coach': 200,
-          'coach/special_coach': 200,
-          'coach/commuter_coach': 200,
+          'coach/regional_coach': 3,
+          'coach/special_coach': 3,
+          'coach/commuter_coach': 3,
           'bus/school_and_public_service_bus': 3
         }.each do |transport_mode, expected_route|
           transport_mode = Chouette::TransportMode.from(transport_mode)

@@ -3,6 +3,21 @@
 class AccessibilityAssessmentsController < Chouette::TopologicReferentialController
   defaults resource_class: AccessibilityAssessment
 
+  # rubocop:disable Rails/LexicallyScopedActionFilter
+  before_action :authorize_resource, except: %i[new create index show autocomplete]
+  # rubocop:enable Rails/LexicallyScopedActionFilter
+
+  respond_to :html
+  respond_to :json
+
+  def autocomplete
+    args  = [].tap { |arg| 1.times { arg << "%#{params[:q]}%" } }
+    @accessibility_assessments = scope.where(
+      'unaccent(name) ILIKE unaccent(?)', *args
+    ).limit(50)
+    @accessibility_assessments
+  end
+
   def index
     index! do |format|
       format.html do

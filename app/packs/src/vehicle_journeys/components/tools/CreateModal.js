@@ -3,6 +3,7 @@ import PropTypes from 'prop-types'
 import actions from '../../actions'
 import MissionSelect2 from './select2s/MissionSelect2'
 import CompanySelect2 from './select2s/CompanySelect2'
+import AccessibilityAssessmentSelect2 from './select2s/AccessibilityAssessmentSelect2'
 import CustomFieldsInputs from '../../../helpers/CustomFieldsInputs'
 
 export default class CreateModal extends Component {
@@ -25,7 +26,7 @@ export default class CreateModal extends Component {
       return
     }
     if (actions.validateFields(this.refs, $('.vjCreateSelectJP')[0])) {
-      this.props.onAddVehicleJourney(_.assign({}, this.refs, {custom_fields: this.custom_fields}), this.props.modal.modalProps.selectedJPModal, this.props.stopPointsList, this.props.modal.modalProps.vehicleJourney && this.props.modal.modalProps.vehicleJourney.company)
+      this.props.onAddVehicleJourney(_.assign({}, this.refs, {custom_fields: this.custom_fields}), this.props.modal.modalProps.selectedJPModal, this.props.stopPointsList, this.props.modal.modalProps.vehicleJourney && this.props.modal.modalProps.vehicleJourney.company && this.props.modal.modalProps.vehicleJourney.accessibility_assessment)
       this.props.onModalClose()
       $('#NewVehicleJourneyModal').modal('hide')
     }
@@ -103,6 +104,16 @@ export default class CreateModal extends Component {
                                 className='form-control'
                                 onKeyDown={(e) => actions.resetValidation(e.currentTarget)}
                                 />
+                            </div>
+                          </div>
+                          <div className='col-lg-6 col-md-6 col-sm-6 col-xs-12'>
+                            <div className='form-group'>
+                              <label className='control-label'>{I18n.attribute_name('vehicle_journey', 'accessibility_assessment_name')}</label>
+                              <AccessibilityAssessmentSelect2
+                                accessibility_assessment = {this.props.modal.modalProps.vehicleJourney && this.props.modal.modalProps.vehicleJourney.accessibility_assessment || undefined}
+                                onSelect2AccessibilityAssessment = {(e) => this.props.onSelect2AccessibilityAssessment(e)}
+                                onUnselect2AccessibilityAssessment = {() => this.props.onUnselect2AccessibilityAssessment()}
+                              />
                             </div>
                           </div>
                           <CustomFieldsInputs

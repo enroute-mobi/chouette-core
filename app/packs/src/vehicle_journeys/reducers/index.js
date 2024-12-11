@@ -45,6 +45,9 @@ const initialState = {
       company: {
         name: ''
       },
+      accessibility_assessment: {
+        name: ''
+      },
       timetable: {
         comment: ''
       },

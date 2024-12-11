@@ -185,12 +185,13 @@ const actions = {
   cancelSelection : () => ({
     type: 'CANCEL_SELECTION'
   }),
-  addVehicleJourney : (data, selectedJourneyPattern, stopPointsList, selectedCompany) => ({
+  addVehicleJourney : (data, selectedJourneyPattern, stopPointsList, selectedCompany, selectedAccessibilityAssessment) => ({
     type: 'ADD_VEHICLEJOURNEY',
     data,
     selectedJourneyPattern,
     stopPointsList,
-    selectedCompany
+    selectedCompany,
+    selectedAccessibilityAssessment
   }),
   select2Company: selectedItem => ({
     type: 'SELECT_CP_EDIT_MODAL',
@@ -198,6 +199,13 @@ const actions = {
   }),
   unselect2Company: () => ({
     type: 'UNSELECT_CP_EDIT_MODAL',
+  }),
+  select2AccessibilityAssessment: selectedItem => ({
+    type: 'SELECT_AA_EDIT_MODAL',
+    selectedItem
+  }),
+  unselect2AccessibilityAssessment: () => ({
+    type: 'UNSELECT_AA_EDIT_MODAL',
   }),
   addReferentialCode: (newCode) => ({
     type: 'ADD_REFERENTIAL_CODE_EDIT_MODAL',
@@ -212,10 +220,11 @@ const actions = {
     index,
     attributes
   }),
-  editVehicleJourney : (data, selectedCompany) => ({
+  editVehicleJourney : (data, selectedCompany, selectedAccessibilityAssessment) => ({
     type: 'EDIT_VEHICLEJOURNEY',
     data,
-    selectedCompany
+    selectedCompany,
+    selectedAccessibilityAssessment
   }),
   editVehicleJourneyNotes : (footnotes, line_notices) => ({
     type: 'EDIT_VEHICLEJOURNEY_NOTES',
@@ -429,6 +438,7 @@ const actions = {
                 published_journey_name: val.published_journey_name || '',
                 published_journey_identifier: val.published_journey_identifier || '',
                 company: val.company || {name: ''},
+                accessibility_assessment: val.accessibility_assessment || {name: ''},
                 transport_mode: val.route.line.transport_mode || 'undefined',
                 transport_submode: val.route.line.transport_submode || 'undefined',
                 line_notices: line_notices

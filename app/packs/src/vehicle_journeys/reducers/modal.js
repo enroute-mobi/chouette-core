@@ -83,6 +83,14 @@ export default function modal(state = {}, action) {
       vehicleJourney =  _.assign({}, state.modalProps.vehicleJourney, {company: undefined})
       newModalProps = _.assign({}, state.modalProps, {vehicleJourney})
       return _.assign({}, state, {modalProps: newModalProps})
+    case 'SELECT_AA_EDIT_MODAL':
+      vehicleJourney =  _.assign({}, state.modalProps.vehicleJourney, {accessibility_assessment: action.selectedItem})
+      newModalProps = _.assign({}, state.modalProps, {vehicleJourney})
+      return _.assign({}, state, {modalProps: newModalProps})
+    case 'UNSELECT_AA_EDIT_MODAL':
+      vehicleJourney =  _.assign({}, state.modalProps.vehicleJourney, {accessibility_assessment: undefined})
+      newModalProps = _.assign({}, state.modalProps, {vehicleJourney})
+      return _.assign({}, state, {modalProps: newModalProps})
     case 'ADD_REFERENTIAL_CODE_EDIT_MODAL':
       newReferentialCodesArray = state.modalProps.vehicleJourney.referential_codes
       newReferentialCodesArray.push(action.newCode)
@@ -210,9 +218,19 @@ export default function modal(state = {}, action) {
         confirmModal: {}
       }
     case 'SELECT_JP_CREATE_MODAL':
-      let selected = action.selectedItem
-      delete selected["element"]
-      newModalProps = _.assign({}, state.modalProps, {selectedJPModal : selected})
+      let jp = action.selectedItem
+      delete jp["element"]
+      newModalProps = _.assign({}, state.modalProps, {selectedJPModal : jp})
+      return _.assign({}, state, {modalProps: newModalProps})
+    case 'SELECT_COMPANY_CREATE_MODAL':
+      let company = action.selectedItem
+      delete company["element"]
+      newModalProps = _.assign({}, state.modalProps, {selectedJPModal : company})
+      return _.assign({}, state, {modalProps: newModalProps})
+    case 'SELECT_ACCESSIBILITY_ASSESSMENT_CREATE_MODAL':
+      let accessibility_assessment = action.selectedItem
+      delete accessibility_assessment["element"]
+      newModalProps = _.assign({}, state.modalProps, {selectedJPModal : accessibility_assessment})
       return _.assign({}, state, {modalProps: newModalProps})
     case 'SHIFT_VEHICLEJOURNEY_MODAL':
       return {

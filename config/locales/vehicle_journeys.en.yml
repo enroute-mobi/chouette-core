@@ -26,6 +26,7 @@ en:
         number: Number of vehicle journeys to create and clone
         delta: Delta from which vehicle journeys are created
       affect_company: Affect company
+      affect_accessibility_assessment: Affect accessibility assessment
       no_line_footnotes: The line doesn't have any footnotes
       select_footnotes: Select footnotes to associate with the vehicle journey
     vehicle_journey:
@@ -126,9 +127,11 @@ en:
         accessible: "Accessible"
         arrival_time: "Arrival"
         checksum: "Checksum"
+        accessibility_assessment: "Accessibility Assessments"
         comment: "Comments"
         company: "Company"
         company_name: "Company name"
+        accessibility_assessment_name: "Accessibility Assessment name"
         created_at: Created at
         creator_id: "Created by"
         departure_time: "Departure"

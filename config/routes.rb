@@ -226,7 +226,10 @@ ChouetteIhm::Application.routes.draw do # rubocop:disable Metrics/BlockLength
       resources :point_of_interests
       resources :point_of_interest_categories
       resources :service_facility_sets
-      resources :accessibility_assessments
+
+      resources :accessibility_assessments do
+        get :autocomplete, on: :collection
+      end
     end
 
     resources :contracts

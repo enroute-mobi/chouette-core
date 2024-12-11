@@ -5,7 +5,7 @@ import actions from '../actions'
 export default function metas(state = {}, action) {
   switch (action.type) {
     case 'RECEIVE_TIME_TABLES':
-      const { comment, day_types, color, calendar, shared, codes, model_class } = action.json
+      const { comment, day_types, color, calendar, shared, model_class } = action.json
 
       return {
         ...state,
@@ -14,7 +14,6 @@ export default function metas(state = {}, action) {
         color,
         calendar,
         shared,
-        codes: codes || [],
         model_class
       }
 

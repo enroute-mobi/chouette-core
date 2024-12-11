@@ -29,7 +29,6 @@ let initialState = {
     day_types: [],
     color: '',
     calendar: null,
-    codes: [],
     model_class: ''
   },
   pagination: {

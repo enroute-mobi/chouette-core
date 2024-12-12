@@ -12,6 +12,19 @@ const Metas = ({
   onUpdateColor
 }) => (
   <div className='form-horizontal'>
+    { metas?.errors && (
+      <div className="alert alert-danger mt-sm">
+        <strong> {I18n.t('error')} : </strong>
+        {metas.errors.map((error, i) => {
+          return (
+            <ul key={i}>
+              <li>{error}</li>
+              <br />
+            </ul>
+          )
+        })}
+      </div>
+    )}
     <div className="row">
       <div className="col-lg-10 col-lg-offset-1">
         {/* comment (name) */}

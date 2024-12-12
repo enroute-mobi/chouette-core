@@ -14,3 +14,6 @@ en:
       models:
         fare/geographic_reference:
           attributes:
+            short_name:
+              duplicate_values_in_fare_geographic_references: Duplicate value violates unique constraint
+

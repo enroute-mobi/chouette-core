@@ -2,7 +2,7 @@
   .wrapper
     div
       = f.input :id, as: :hidden, wrapper: false
-      = f.input :short_name, label: false, wrapper: false
+      = f.input :short_name, label: false, wrapper: :nested_fields
     div
       = f.input :name, label: false, wrapper: :nested_fields
     div

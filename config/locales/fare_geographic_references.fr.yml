@@ -2,9 +2,9 @@ fr:
   activerecord:
     models:
       fare/geographic_reference:
-        zero: Référence géographique de tarif
-        one: Référence géographique de tarif
-        other: Référence géographique de tarif
+        zero: Références géographique de tarif
+        one: Références géographique de tarif
+        other: Références géographique de tarif
     attributes:
       fare/geographic_reference:
         short_name: Nom court
@@ -14,3 +14,5 @@ fr:
       models:
         fare/geographic_reference:
           attributes:
+            short_name:
+              duplicate_values_in_fare_geographic_references: 'La valeur en double viole la contrainte unique'

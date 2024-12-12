@@ -153,8 +153,8 @@ module TimetableSupport
       period.period_end   = Date.parse(item['period_end'])
     end
 
-    if state_codes = state['code_values'].presence
-      assign_state_codes(state_codes)
+    if state.key?('code_values')
+      assign_state_codes(state['code_values'])
     end
 
     self.save

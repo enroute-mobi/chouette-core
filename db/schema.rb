@@ -590,9 +590,10 @@ ActiveRecord::Schema.define(version: 2024_12_06_144247) do
     t.string "short_name", null: false
     t.string "name"
     t.bigint "fare_zone_id"
+    t.bigint "fare_zone_id", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.index ["fare_zone_id"], name: "index_fare_geographic_references_on_fare_zone_id"
+    t.index ["fare_zone_id", "short_name"], name: "index_fare_geographic_references_on_fare_zone_id_and_short_name", unique: true
   end
 
   create_table "fare_products", force: :cascade do |t|

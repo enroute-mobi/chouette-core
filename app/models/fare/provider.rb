@@ -19,6 +19,8 @@ module Fare
 
     before_validation :define_fare_referential, on: :create
 
+    delegate :workgroup, to: :workbench
+
     def define_fare_referential
       self.fare_referential ||= workbench&.fare_referential
     end

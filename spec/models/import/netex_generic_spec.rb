@@ -924,6 +924,35 @@ RSpec.describe Import::NetexGeneric do
     end
   end
 
+  describe 'Fare Referential part' do
+
+    context "when XML contains FareZone" do
+      let(:xml) do
+        <<~XML
+          <FareZone id="sample">
+            <keyList>
+              <KeyValue typeOfKey="ALTERNATE_IDENTIFIER">
+                <Key>test</Key>
+                <Value>test-1</Value>
+              </KeyValue>
+              <KeyValue typeOfKey="ALTERNATE_IDENTIFIER">
+                <Key>test2</Key>
+                <Value>test-2</Value>
+              </KeyValue>
+            </keyList>
+            <Name>Fare Zone Sample</Name>
+          </FareZone>
+        XML
+      end
+      let(:fare_provider) { import.fare_provider }
+      let(:expected_fare_zone) { an_object_having_attributes(name: 'Fare Zone Sample') }
+
+      before { import.part(:fare_referential).import! }
+
+      it { expect(fare_provider.fare_zones).to include(expected_fare_zone) }
+    end
+  end
+
   describe 'Scheduled Stop Points part' do
     let(:part) { import.part(:scheduled_stop_points) }
 

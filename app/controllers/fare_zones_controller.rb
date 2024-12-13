@@ -42,7 +42,7 @@ class FareZonesController < Chouette::FareReferentialController
       :name,
       :fare_provider_id,
       codes_attributes: %i[id code_space_id value _destroy],
-      fare_geographic_references_attributes: %i[id short_name name _destroy],
+      fare_geographic_references_attributes: %i[id short_name name _destroy]
     )
   end
 

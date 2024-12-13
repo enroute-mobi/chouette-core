@@ -48,8 +48,8 @@ en:
       fare/zone:
         uuid: ID
         name: Name
-        fare_provider: Fare provider
-        fare_provider_id: Fare provider
+        fare_provider: Fare Provider
+        fare_provider_id: Fare Provider
     errors:
       models:
         fare_zone:

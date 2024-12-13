@@ -1,0 +1,9 @@
+.nested-fields.fare_geographic_reference
+  .wrapper
+    div
+      = f.input :id, as: :hidden, wrapper: false
+      = f.input :short_name, label: false, wrapper: :nested_fields
+    div
+      = f.input :name, label: false, wrapper: :nested_fields
+    div
+      = link_to_remove_association '', f, class: 'fa fa-trash'

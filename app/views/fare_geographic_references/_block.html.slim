@@ -1,0 +1,7 @@
+= simple_block_for model, title: Fare::GeographicReference.model_name.human(count: 2) do |d|
+  - if model.fare_geographic_references.empty?
+    .mb-xs
+      = replacement_msg t('.no_fare_geographic_reference')
+  - else
+    - model.fare_geographic_references.sort_by(&:short_name).each do |fare_geographic_reference|
+      = d.attribute :name, label: fare_geographic_reference.short_name, object: fare_geographic_reference

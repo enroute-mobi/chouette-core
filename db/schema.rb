@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2024_10_25_100315) do
+ActiveRecord::Schema.define(version: 2024_12_06_144247) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "btree_gin"
@@ -584,6 +584,16 @@ ActiveRecord::Schema.define(version: 2024_10_25_100315) do
     t.index ["referential_id"], name: "index_exports_on_referential_id"
     t.index ["workbench_id"], name: "index_exports_on_workbench_id"
     t.index ["workgroup_id"], name: "index_exports_on_workgroup_id"
+  end
+
+  create_table "fare_geographic_references", force: :cascade do |t|
+    t.string "short_name", null: false
+    t.string "name"
+    t.bigint "fare_zone_id"
+    t.bigint "fare_zone_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["fare_zone_id", "short_name"], name: "index_fare_geographic_references_on_fare_zone_id_and_short_name", unique: true
   end
 
   create_table "fare_products", force: :cascade do |t|

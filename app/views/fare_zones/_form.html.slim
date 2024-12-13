@@ -19,6 +19,9 @@
       = f.association :fare_provider, as: :select, collection: candidate_fare_providers, include_blank: false
 
   .separator.section_separator
+  = render 'fare_geographic_references/form', form: f
+
+  .separator.section_separator
 
   = render 'codes/form', form: f
 

@@ -13,10 +13,3 @@ en:
         short_name: Short name
         name: Name
         fare_zone_id: Fare Zone
-    errors:
-      models:
-        fare/geographic_reference:
-          attributes:
-            short_name:
-              duplicate_values_in_fare_geographic_references: Duplicate value violates unique constraint
-

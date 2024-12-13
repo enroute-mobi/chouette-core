@@ -6,6 +6,6 @@ module Fare
 
     belongs_to :fare_zone, class_name: 'Fare::Zone', foreign_key: 'fare_zone_id'
 
-    validates :short_name, presence: true
+    validates :short_name, presence: true, uniqueness: { scope: :fare_zone_id }
   end
 end

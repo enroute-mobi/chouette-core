@@ -13,9 +13,3 @@ fr:
         short_name: Nom court
         name: Nom
         fare_zone_id: Zone tarifaire
-    errors:
-      models:
-        fare/geographic_reference:
-          attributes:
-            short_name:
-              duplicate_values_in_fare_geographic_references: 'La valeur en double viole la contrainte unique'

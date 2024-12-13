@@ -66,8 +66,7 @@ GIT
 
 GIT
   remote: https://bitbucket.org/enroute-mobi/netex.git
-  revision: 03341b3874d2c7ad229fda0857c37fac0d965169
-  branch: CHOUETTE-4073-add-fare-zones-netex
+  revision: 9b8ec2f5216e6ae2c66915d18ef4b73957a66b96
   specs:
     netex (0.1.2)
       activesupport
@@ -354,8 +353,6 @@ GEM
     faraday_middleware (1.2.1)
       faraday (~> 1.0)
     ffi (1.17.0)
-    ffi (1.17.0-x86_64-darwin)
-    ffi (1.17.0-x86_64-linux-gnu)
     font_awesome5_rails (1.5.0)
       nokogiri (>= 1.11.3)
       railties (>= 4.2)
@@ -539,7 +536,7 @@ GEM
     mini_portile2 (2.8.8)
     mini_racer (0.6.4)
       libv8-node (~> 16.19.0.0)
-    minitest (5.25.1)
+    minitest (5.25.4)
     msgpack (1.7.2)
     multi_json (1.15.0)
     multi_xml (0.6.0)

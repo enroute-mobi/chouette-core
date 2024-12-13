@@ -77,7 +77,7 @@ module Chouette::Sync
         end
 
         def stop_area_parent_ref
-          (parent_site_ref || parent_zone_ref)&.ref
+          tag(:parent_id) || (parent_site_ref || parent_zone_ref)&.ref
         end
 
         delegate :pending_parent, :pending_referent, to: :updater, allow_nil: true

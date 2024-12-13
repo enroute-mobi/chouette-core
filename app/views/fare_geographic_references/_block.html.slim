@@ -1,4 +1,4 @@
-= simple_block_for model, title: Fare::GeographicReference.model_name.human do |d|
+= simple_block_for model, title: Fare::GeographicReference.model_name.human(count: 2) do |d|
   - if model.fare_geographic_references.empty?
     .mb-xs
       = replacement_msg t('.no_fare_geographic_reference')

@@ -1,10 +1,13 @@
 fr:
+  fare_geographic_references:
+    block:
+      no_fare_geographic_reference: Aucune Référence Géographique n'est définie
   activerecord:
     models:
       fare/geographic_reference:
-        zero: Références géographique de tarif
-        one: Références géographique de tarif
-        other: Références géographique de tarif
+        zero: Référence Géographique
+        one: Référence Géographique
+        other: Références Géographiques
     attributes:
       fare/geographic_reference:
         short_name: Nom court

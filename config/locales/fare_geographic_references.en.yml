@@ -1,15 +1,18 @@
 en:
+  fare_geographic_references:
+    block:
+      no_fare_geographic_reference: No Geographic Reference is defined
   activerecord:
     models:
       fare/geographic_reference:
-        zero: Fare geographic reference
-        one: Fare geographic reference
-        other: Fare geographic reference
+        zero: Geographic Reference
+        one: Geographic Reference
+        other: Geographic References
     attributes:
       fare/geographic_reference:
         short_name: Short name
         name: Name
-        fare_zone_id: Fare zone
+        fare_zone_id: Fare Zone
     errors:
       models:
         fare/geographic_reference:

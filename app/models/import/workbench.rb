@@ -22,8 +22,8 @@ module Import
     option :strict_mode, default_value: false, type: :boolean
     option :ignore_particulars, default_value: false, type: :boolean
     option :ignore_parent_stop_areas, required: true, default_value: false, type: :boolean
-    option :stop_area_provider_id, collection: -> { candidate_stop_area_providers.order(:name) }
-    option :line_provider_id, collection: -> { candidate_line_providers.order(:name) }
+    option :stop_area_provider_id, collection: -> { candidate_stop_area_providers.order(:name) }, allow_blank: true
+    option :line_provider_id, collection: -> { candidate_line_providers.order(:name) }, allow_blank: true
     option :specific_default_company_id, collection: -> { candidate_companies.order(:name) }, allow_blank: true
 
     has_many :children_processings, through: :children, source: :processings

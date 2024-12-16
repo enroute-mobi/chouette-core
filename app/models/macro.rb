@@ -24,6 +24,7 @@ module Macro
       Macro::DefineStopAreaTransportMode,
       Macro::ForceAttributeValue,
       Macro::DefineRouteName,
+      Macro::AssociateStopAreaWithFareZone,
       Macro::Dummy # Keep this dummy last
     ]
   end

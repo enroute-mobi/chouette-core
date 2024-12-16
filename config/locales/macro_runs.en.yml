@@ -49,6 +49,8 @@ en:
         one: Force attribute value
       macro/define_route_name/run:
         one: Define Route name
+      macro/associate_stop_area_with_fare_zone/run:
+        one: Associate Stop Areas with Fare Zones
     attributes:
       macro/base/run:
         name: Name
@@ -80,3 +82,5 @@ en:
       macro/define_postal_address/run:
         target_model: Target Model
         reverse_geocoder_provider: Provider
+      macro/associate_stop_area_with_fare_zone/run:
+        target_attribute: Attribute

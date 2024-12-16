@@ -78,6 +78,9 @@ en:
   macro/create_code_from_uuid/run:
     messages:
       default: "A code %{code_value} has been added for the %{target_model} %{model_name}"
+  macro/associate_stop_area_with_fare_zone/run:
+    messages:
+      default: "The Stop Area %{stop_area_name} has been associated with the Fare Zone %{fare_zone_name}"
   macro/define_route_name/run:
     messages:
       default: "The Route '%{name_before_change}' is renamed into '%{attribute_value_after_change}'"

@@ -589,7 +589,6 @@ ActiveRecord::Schema.define(version: 2024_12_06_144247) do
   create_table "fare_geographic_references", force: :cascade do |t|
     t.string "short_name", null: false
     t.string "name"
-    t.bigint "fare_zone_id"
     t.bigint "fare_zone_id", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false

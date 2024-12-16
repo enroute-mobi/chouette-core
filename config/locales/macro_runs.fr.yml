@@ -49,6 +49,8 @@ fr:
         one: Forcer la valeur de l'attribut
       macro/define_route_name/run:
         one: Définir le nom de l'itinéraire
+      macro/associate_stop_area_with_fare_zone/run:
+        one: Associer les arrêts avec les zones tarifaires 
     attributes:
       macro/base/run:
         name: Nom
@@ -82,3 +84,5 @@ fr:
       macro/define_postal_address/run:
         target_model: Modèle cible
         reverse_geocoder_provider: Fournisseur
+      macro/associate_stop_area_with_fare_zone/run:
+        target_attribute: Attribut

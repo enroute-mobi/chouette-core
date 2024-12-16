@@ -9,7 +9,7 @@ module Scope
       @workbench = workbench
     end
 
-    delegate :lines, :companies, :stop_areas, :entrances, :document_memberships,
+    delegate :lines, :companies, :stop_areas, :entrances, :document_memberships, :fare_zones,
              :networks, :point_of_interests, :shapes, :documents, :connection_links, to: :workbench
 
     def routes
@@ -95,6 +95,10 @@ module Scope
       shape_referential.shapes.where(id: journey_patterns.where.not(shape_id: nil).select(:shape_id).distinct)
     end
 
+    def fare_zones
+      fare_referential.fare_zones
+    end
+
     def documents
       workgroup.documents.where(id: line_document_memberships.select(:document_id).distinct)
     end
@@ -109,7 +113,7 @@ module Scope
 
     delegate :routes, :stop_points, :journey_patterns, :journey_pattern_stop_points, :vehicle_journey_at_stops,
              :time_tables, :time_table_periods, :time_table_dates, :service_counts, :vehicle_journeys, to: :referential
-    delegate :line_referential, :stop_area_referential, :shape_referential, :workgroup, to: :workbench
+    delegate :line_referential, :stop_area_referential, :shape_referential, :fare_referential, :workgroup, to: :workbench
     attr_reader :referential, :workbench
   end
 
@@ -119,7 +123,8 @@ module Scope
       @workbench = workbench
     end
 
-    delegate :stop_area_providers, :shape_providers, :line_providers, :document_providers, :workgroup, to: :workbench
+    delegate :stop_area_providers, :shape_providers, :line_providers,
+             :document_providers, :fare_providers, :workgroup, to: :workbench
 
     def stop_areas
       scope.stop_areas.where(stop_area_provider: stop_area_providers)
@@ -155,6 +160,10 @@ module Scope
 
     def companies
       scope.companies.where(line_provider: line_providers)
+    end
+
+    def fare_zones
+      scope.fare_zones.where(fare_provider: fare_providers)
     end
 
     delegate :routes, :stop_points, :journey_patterns, :journey_pattern_stop_points, :vehicle_journeys, :vehicle_journey_at_stops,

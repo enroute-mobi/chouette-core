@@ -81,6 +81,9 @@ fr:
     messages:
       default: "L'itinéraire '%{name_before_change}' est renommé en '%{attribute_value_after_change}'"
       error: "L'itinéraire '%{name_before_change}' ne peut pas être défini"
+  macro/associate_stop_area_with_fare_zone/run:
+    messages:
+      default: "L'arrêt %{stop_area_name} a été associé avec la Zone tarifaire %{fare_zone_name}"
   macro_messages:
     search_no_results_for_filter: "Aucun messages"
     no_address: "Aucune adresse"

@@ -1,7 +1,7 @@
 # Transform the position input into position when defined and valid
 class PositionInput
   def initialize(input, attribute: :position)
-    @input = input
+    @input = input&.to_s
     @attribute = attribute
   end
 

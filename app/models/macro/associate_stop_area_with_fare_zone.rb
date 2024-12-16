@@ -72,39 +72,27 @@ module Macro
               A.stop_area_id, A.stop_area_name,
               A.fare_zone_id, A.fare_zone_name
             FROM 
-              (#{stop_areas_geographic_references_with_code}) A
+              (#{stop_areas_fare_zone_geographic_references}) A
             LEFT JOIN 
-              (#{stop_areas_fare_zones_with_code}) B
-            ON A.code = B.code
-            WHERE B.code IS NULL
+              public.fare_stop_areas_zones B
+            ON A.stop_area_id = B.stop_area_id
+            AND A.fare_zone_id = B.fare_zone_id
+            WHERE B.id IS NULL
           SQL
         end
 
-        def stop_areas_geographic_references_with_code
+        def stop_areas_fare_zone_geographic_references
           <<-SQL
             SELECT
               s.id AS stop_area_id,
               s.name AS stop_area_name,
               f.id AS fare_zone_id,
-              f.name AS fare_zone_name, 
-              concat(s.id, '-', f.id) AS code
+              f.name AS fare_zone_name
             FROM
               (#{stop_areas.to_sql}) AS s
             INNER JOIN
               (#{fare_zone_geographic_references.to_sql}) AS f
             ON s.#{geographic_attribute} = f.short_name
-          SQL
-        end
-
-        def stop_areas_fare_zones_with_code
-          <<-SQL
-            SELECT
-              concat(
-                public.fare_stop_areas_zones.stop_area_id, 
-                '-',
-                public.fare_stop_areas_zones.fare_zone_id
-              ) AS code
-            FROM public.fare_stop_areas_zones 
           SQL
         end
 

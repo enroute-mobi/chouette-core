@@ -66,8 +66,7 @@ GIT
 
 GIT
   remote: https://bitbucket.org/enroute-mobi/netex.git
-  revision: 097b1c3678a6e4cd3d26691e7d7fa1740d4638f7
-  branch: CHOUETTE-4196-add-topographic-projection
+  revision: f60b95428af04e344cb7bf342de46460b5b7f617
   specs:
     netex (0.1.2)
       activesupport

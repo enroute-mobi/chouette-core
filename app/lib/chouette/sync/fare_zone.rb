@@ -18,7 +18,16 @@ module Chouette
 
         class Decorator < Chouette::Sync::Netex::Decorator
           def model_attributes
-            { name: name }
+            {
+              name: name,
+              fare_geographic_references_attributes: fare_geographic_references_attributes
+            }
+          end
+
+          def fare_geographic_references_attributes
+            projections.map do |topographic_projection|
+              { short_name: topographic_projection.ref }
+            end
           end
         end
       end

@@ -925,7 +925,6 @@ RSpec.describe Import::NetexGeneric do
   end
 
   describe 'Fare Referential part' do
-
     context "when XML contains FareZone" do
       let(:xml) do
         <<~XML
@@ -950,6 +949,33 @@ RSpec.describe Import::NetexGeneric do
       before { import.part(:fare_referential).import! }
 
       it { expect(fare_provider.fare_zones).to include(expected_fare_zone) }
+
+      context 'When xml contains Fare Zone Geographic References' do
+        let(:subject) do
+          fare_provider.fare_zones.find_by(name: 'Metrovoyager').fare_geographic_references
+        end
+
+        let(:xml) do
+          <<~XML
+            <FareZone version="1.0" id="mb:metrovoyager">
+              <Name>Metrovoyager</Name>
+              <Description>Combined Metrovoyager zone.</Description>
+                <projections>
+                  <TopographicProjectionRef ref="short_name1">Name1</TopographicProjectionRef>
+                  <TopographicProjectionRef ref="short_name2">Name2</TopographicProjectionRef>
+                </projections>
+            </FareZone>
+          XML
+        end
+
+        let(:expected_fare_geographic_references ) do
+          %w(short_name1 short_name2).map do |short_name|
+            an_object_having_attributes(short_name: short_name)
+          end
+        end
+
+        it { is_expected.to match_array(expected_fare_geographic_references) }
+      end
     end
   end
 

@@ -212,6 +212,7 @@ export default class VehicleJourneysList extends Component {
                   <div>{I18n.attribute_name("vehicle_journey", "name")}</div>
                   <div>{I18n.attribute_name("vehicle_journey", "journey_pattern_id")}</div>
                   <div>{I18n.model_name("company")}</div>
+                  <div>{I18n.model_name("accessibility_assessment")}</div>
                   {
                     this.props.extraHeaders.map((header, i) =>
                       <div key={i}>{this.extraHeaderLabel(header)}</div>

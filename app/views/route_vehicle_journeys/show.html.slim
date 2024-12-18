@@ -21,6 +21,7 @@
   | window.referential_id = #{@referential.id};
   | window.workbench_id = #{@workbench.id};
   | window.companiesPath = '#{workbench_line_referential_companies_path(@workbench)}';
+  | window.accessibilityAssessmentsPath = '#{workbench_shape_referential_accessibility_assessments_path(@workbench)}';
   | window.line_id = #{@route.line.id};
   | window.stopPoints = #{(@stop_points_list.to_json).html_safe};
   | window.returnStopPoints = #{(@return_stop_points_list.to_json).html_safe};

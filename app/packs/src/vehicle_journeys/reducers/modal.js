@@ -83,6 +83,14 @@ export default function modal(state = {}, action) {
       vehicleJourney =  _.assign({}, state.modalProps.vehicleJourney, {company: undefined})
       newModalProps = _.assign({}, state.modalProps, {vehicleJourney})
       return _.assign({}, state, {modalProps: newModalProps})
+    case 'SELECT_AA_EDIT_MODAL':
+      vehicleJourney =  _.assign({}, state.modalProps.vehicleJourney, {accessibility_assessment: action.selectedItem})
+      newModalProps = _.assign({}, state.modalProps, {vehicleJourney})
+      return _.assign({}, state, {modalProps: newModalProps})
+    case 'UNSELECT_AA_EDIT_MODAL':
+      vehicleJourney =  _.assign({}, state.modalProps.vehicleJourney, {accessibility_assessment: undefined})
+      newModalProps = _.assign({}, state.modalProps, {vehicleJourney})
+      return _.assign({}, state, {modalProps: newModalProps})
     case 'ADD_REFERENTIAL_CODE_EDIT_MODAL':
       newReferentialCodesArray = state.modalProps.vehicleJourney.referential_codes
       newReferentialCodesArray.push(action.newCode)

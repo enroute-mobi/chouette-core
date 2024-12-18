@@ -2,6 +2,7 @@ import React, { Component } from 'react'
 import PropTypes from 'prop-types'
 import actions from '../../actions'
 import CompanySelect2 from './select2s/CompanySelect2'
+import AccessibilityAssessmentSelect2 from './select2s/AccessibilityAssessmentSelect2'
 import CustomFieldsInputs from '../../../helpers/CustomFieldsInputs'
 import CodesInputs from './CodesInputs'
 import _ from 'lodash'
@@ -15,13 +16,21 @@ export default class EditVehicleJourney extends Component {
   handleSubmit() {
     if(actions.validateFields(this.refs) == true) {
       var company = undefined
+      var accessibility_assessment = undefined
+
       if(this.props.modal.modalProps.selectedCompany) {
         company = this.props.modal.modalProps.selectedCompany
       } else if (typeof this.props.modal.modalProps.vehicleJourney.company === "object") {
         company = this.props.modal.modalProps.vehicleJourney.company
       }
 
-      this.props.onEditVehicleJourney(_.assign({}, this.refs, {custom_fields: this.props.modal.modalProps.vehicleJourney.custom_fields, referential_codes: this.props.modal.modalProps.vehicleJourney.referential_codes}), company)
+      if(this.props.modal.modalProps.selectedAccessibilityAssessment) {
+        accessibility_assessment = this.props.modal.modalProps.selectedAccessibilityAssessment
+      } else if (typeof this.props.modal.modalProps.vehicleJourney.accessibility_assessment === "object") {
+        accessibility_assessment = this.props.modal.modalProps.vehicleJourney.accessibility_assessment
+      }
+
+      this.props.onEditVehicleJourney(_.assign({}, this.refs, {custom_fields: this.props.modal.modalProps.vehicleJourney.custom_fields, referential_codes: this.props.modal.modalProps.vehicleJourney.referential_codes}), company, accessibility_assessment)
       this.props.onModalClose()
       $('#EditVehicleJourneyModal').modal('hide')
     }
@@ -154,6 +163,16 @@ export default class EditVehicleJourney extends Component {
                               className='form-control'
                               readOnly={true}
                               value={this.props.modal.modalProps.vehicleJourney.checksum}
+                            />
+                        </div>
+                        <div className='form-group'>
+                          <label className='control-label'>{I18n.attribute_name('vehicle_journey', 'accessibility_assessment')}</label>
+                          <AccessibilityAssessmentSelect2
+                              editModal={this.props.modal.type == "edit"}
+                              editMode={this.editMode()}
+                              accessibility_assessment = {this.props.modal.modalProps.vehicleJourney.accessibility_assessment}
+                              onSelect2AccessibilityAssessment = {(e) => this.props.onSelect2AccessibilityAssessment(e)}
+                              onUnselect2AccessibilityAssessment = {() => this.props.onUnselect2AccessibilityAssessment()}
                             />
                         </div>
                         <div className='row'>

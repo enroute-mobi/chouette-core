@@ -26,6 +26,7 @@ fr:
         number: Nombre de courses à créer et dupliquer
         delta: Décalage à partir duquel on créé les courses
       affect_company: Indiquez un nom de transporteur...
+      affect_accessibility_assessment: Indiquez une Descriptions d'Accessibilité
       no_line_footnotes: La ligne ne possède pas de notes
       select_footnotes: Sélectionnez les notes à associer à cette course
     vehicle_journey:
@@ -128,9 +129,11 @@ fr:
         accessible: "Accessible"
         arrival_time: "Arrivée"
         checksum: "Signature métier"
+        accessibility_assessment: "Descriptions d'Accessibilité"
         comment: "Commentaires"
         company: "Transporteur"
         company_name: "Nom du transporteur"
+        accessibility_assessment_name: "Nom de la Descriptions d'Accessibilité"
         created_at: "Créé le"
         creator_id: "Créé par"
         departure_time: "Départ"

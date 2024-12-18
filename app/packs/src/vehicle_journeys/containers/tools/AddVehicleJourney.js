@@ -19,8 +19,8 @@ const mapDispatchToProps = (dispatch) => {
     onModalClose: () =>{
       dispatch(actions.closeModal())
     },
-    onAddVehicleJourney: (data, selectedJourneyPattern, stopPointsList, selectedCompany) =>{
-      dispatch(actions.addVehicleJourney(data, selectedJourneyPattern, stopPointsList, selectedCompany))
+    onAddVehicleJourney: (data, selectedJourneyPattern, stopPointsList, selectedCompany, selectedAccessibilityAssessment) =>{
+      dispatch(actions.addVehicleJourney(data, selectedJourneyPattern, stopPointsList, selectedCompany, selectedAccessibilityAssessment))
     },
     onOpenCreateModal: () =>{
       dispatch(actions.openCreateModal())
@@ -33,6 +33,12 @@ const mapDispatchToProps = (dispatch) => {
     },
     onUnselect2Company: () => {
       dispatch(actions.unselect2Company())
+    },
+    onSelect2AccessibilityAssessment: selectedItem => {
+      dispatch(actions.select2AccessibilityAssessment(selectedItem))
+    },
+    onUnselect2AccessibilityAssessment: () => {
+      dispatch(actions.unselect2AccessibilityAssessment())
     }
   }
 }

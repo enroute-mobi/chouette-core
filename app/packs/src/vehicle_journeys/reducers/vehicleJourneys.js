@@ -119,6 +119,7 @@ const vehicleJourney= (state = {}, action, keep) => {
 
       return {
         company: action.selectedCompany,
+        accessibility_assessment: action.selectedAccessibilityAssessment,
         journey_pattern: action.selectedJourneyPattern,
         published_journey_name: action.data.published_journey_name.value,
         published_journey_identifier: action.data.published_journey_identifier.value,
@@ -238,6 +239,7 @@ export default function vehicleJourneys(state = [], action) {
         if (vj.selected){
           return _.assign({}, vj, {
             company: action.selectedCompany,
+            accessibility_assessment: action.selectedAccessibilityAssessment,
             published_journey_name: action.data.published_journey_name.value,
             published_journey_identifier: action.data.published_journey_identifier.value,
             custom_fields: action.data.custom_fields,

@@ -11,11 +11,13 @@ class AccessibilityAssessmentsController < Chouette::TopologicReferentialControl
   respond_to :json
 
   def autocomplete
-    args  = [].tap { |arg| 1.times { arg << "%#{params[:q]}%" } }
-    @accessibility_assessments = scope.where(
-      'unaccent(name) ILIKE unaccent(?)', *args
-    ).limit(50)
-    @accessibility_assessments
+    accessibility_assessments = scope.order(:name).limit(50)
+
+    accessibility_assessments = accessibility_assessments.where(
+      'unaccent(name) ILIKE unaccent(?)', "%#{params[:q]}%"
+    ) if params[:q].present?
+
+    @accessibility_assessments = accessibility_assessments
   end
 
   def index

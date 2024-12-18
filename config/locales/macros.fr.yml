@@ -58,6 +58,8 @@ fr:
         one: Forcer la valeur de l'attribut
       macro/define_route_name:
         one: Définir le nom de l'itinéraire
+      macro/associate_stop_area_with_fare_zone:
+        one: Associer les arrêts avec les zones tarifaires 
     attributes:
       macro/base:
         name: Nom
@@ -96,6 +98,8 @@ fr:
       macro/define_route_name:
         target_attribute: Attribut
         target_format: Format
+      macro/associate_stop_area_with_fare_zone:
+        target_attribute: Attribut
   simple_form:
     placeholders:
       macro_base:

@@ -428,6 +428,11 @@ module Chouette
 
             model :fare_zone do
               attribute(:name) { |n| "Fare Zone #{n}" }
+
+              model :fare_geographic_reference do
+                attribute(:short_name) { |n| "geographic_zone_#{n}" }
+                attribute(:name) { |n| "Fare Geographic Reference #{n}" }
+              end
             end
           end
 

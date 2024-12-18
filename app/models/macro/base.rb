@@ -101,6 +101,7 @@ end
 # STI
 require_dependency 'macro/associate_shape'
 require_dependency 'macro/associate_stop_area_referent'
+require_dependency 'macro/associate_stop_area_with_fare_zone'
 require_dependency 'macro/compute_journey_pattern_distances'
 require_dependency 'macro/compute_journey_pattern_durations'
 require_dependency 'macro/create_code'

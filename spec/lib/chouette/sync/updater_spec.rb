@@ -227,6 +227,32 @@ RSpec.describe Chouette::Sync::Updater do
     subject(:models) { described_class.new(scope, updater: updater) }
     let(:scope) { double }
 
+    describe '#with_codes' do
+      context 'when the model has codes with several code spaces' do
+        before do
+          allow(models).to receive(:find_models).with(resource_ids).and_return([model])
+          allow(models).to receive(:code_space).and_return(targeted_code.code_space)
+        end
+
+        let(:resource_ids) { [1] }
+        let(:targeted_code) { Code.new(code_space: CodeSpace.new, value: 'dummy') }
+
+        let(:model) do
+          Chouette::StopArea.new(
+            id: 1,
+            codes: [
+              Code.new(code_space: CodeSpace.new, value: 'wrong'),
+              targeted_code
+            ]
+          )
+        end
+
+        it do
+          expect { |b| models.with_codes(resource_ids, &b) }.to yield_with_args(model, targeted_code.value)
+        end
+      end
+    end
+
     describe '#prepare_attributes' do
       subject { models.prepare_attributes(resource) }
 

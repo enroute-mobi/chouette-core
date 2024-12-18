@@ -259,5 +259,33 @@ RSpec.describe Chouette::Sync::StopArea do
         it { is_expected.to include(is_referent: false) }
       end
     end
+
+    describe '#stop_area_parent_ref' do
+      subject { decorator.stop_area_parent_ref }
+
+      context 'when resource parent_zone_ref is "dummy"' do
+        before { resource.parent_zone_ref = double(ref: 'dummy') }
+
+        it { is_expected.to eq('dummy') }
+      end
+
+      context 'when resource parent_site_ref is "dummy" (even if parent_zone_ref is defined)' do
+        before do
+          resource.parent_site_ref = double(ref: 'dummy')
+          resource.parent_zone_ref = double(ref: 'wrong')
+        end
+
+        it { is_expected.to eq('dummy') }
+      end
+
+      context 'when resource has a parent_id tag with "dummy" (even if parent_zone_ref is defined)' do
+        before do
+          resource.with_tag(parent_id: 'dummy')
+          resource.parent_zone_ref = double(ref: 'wrong')
+        end
+
+        it { is_expected.to eq('dummy') }
+      end
+    end
   end
 end

@@ -1,7 +1,6 @@
 # frozen_string_literal: true
 
 RSpec.describe Macro::AssociateStopAreaWithFareZone do
-
   it 'should be one of the available Macro' do
     expect(Macro.available).to include(described_class)
   end
@@ -11,7 +10,7 @@ RSpec.describe Macro::AssociateStopAreaWithFareZone do
       described_class.create(
         macro_list_run: macro_list_run,
         target_attribute: target_attribute,
-        position: 0,
+        position: 0
       )
     end
 
@@ -21,7 +20,7 @@ RSpec.describe Macro::AssociateStopAreaWithFareZone do
 
     let(:referential) { nil }
     let(:workbench) { context.workbench }
-    let(:stop_area) { context.stop_area(:stop_area)}
+    let(:stop_area) { context.stop_area(:stop_area) }
 
     let(:expected_message) do
       an_object_having_attributes(
@@ -36,15 +35,15 @@ RSpec.describe Macro::AssociateStopAreaWithFareZone do
     describe '#run' do
       subject { macro_run.run }
 
-      context "when target_attribute is zip_code" do
+      context 'when target_attribute is zip_code' do
         let(:target_attribute) { 'zip_code' }
 
         let(:context) do
           Chouette.create do
             stop_area :stop_area, name: 'Stop Area', zip_code: '44300'
             stop_area :other_stop_area, zip_code: nil
-    
-            fare_zone :fare_zone, name: 'Fare Zone' do 
+
+            fare_zone :fare_zone, name: 'Fare Zone' do
               fare_geographic_reference :fare_geographic_reference, short_name: '44300'
             end
           end
@@ -52,24 +51,24 @@ RSpec.describe Macro::AssociateStopAreaWithFareZone do
 
         it 'creates a message for the Stop Area' do
           subject
-  
+
           expect(macro_run.macro_messages).to include(expected_message)
         end
 
         it 'should associate the Stop Area with the Fare Zone' do
-          expect {subject}.to change {stop_area.fare_zones.count}.from(0).to(1)
+          expect { subject }.to change { stop_area.fare_zones.count }.from(0).to(1)
         end
       end
 
-      context "when target_attribute is city_name" do
+      context 'when target_attribute is city_name' do
         let(:target_attribute) { 'city_name' }
 
         let(:context) do
           Chouette.create do
             stop_area :stop_area, name: 'Stop Area', city_name: 'Nantes'
             stop_area :other_stop_area, zip_code: nil
-    
-            fare_zone :fare_zone, name: 'Fare Zone' do 
+
+            fare_zone :fare_zone, name: 'Fare Zone' do
               fare_geographic_reference :fare_geographic_reference, short_name: 'Nantes'
             end
           end
@@ -77,24 +76,24 @@ RSpec.describe Macro::AssociateStopAreaWithFareZone do
 
         it 'creates a message for the Stop Area' do
           subject
-  
+
           expect(macro_run.macro_messages).to include(expected_message)
         end
 
         it 'should associate the Stop Area with the Fare Zone' do
-          expect {subject}.to change {stop_area.fare_zones.count}.from(0).to(1)
+          expect { subject }.to change { stop_area.fare_zones.count }.from(0).to(1)
         end
       end
 
-      context "when target_attribute is postal_region" do
+      context 'when target_attribute is postal_region' do
         let(:target_attribute) { 'postal_region' }
 
         let(:context) do
           Chouette.create do
             stop_area :stop_area, name: 'Stop Area', postal_region: '44'
             stop_area :other_stop_area, zip_code: nil
-    
-            fare_zone :fare_zone, name: 'Fare Zone' do 
+
+            fare_zone :fare_zone, name: 'Fare Zone' do
               fare_geographic_reference :fare_geographic_reference, short_name: '44'
             end
           end
@@ -102,24 +101,24 @@ RSpec.describe Macro::AssociateStopAreaWithFareZone do
 
         it 'creates a message for the Stop Area' do
           subject
-  
+
           expect(macro_run.macro_messages).to include(expected_message)
         end
 
         it 'should associate the Stop Area with the Fare Zone' do
-          expect {subject}.to change {stop_area.fare_zones.count}.from(0).to(1)
+          expect { subject }.to change { stop_area.fare_zones.count }.from(0).to(1)
         end
       end
 
-      context "when target_attribute is country_code" do
+      context 'when target_attribute is country_code' do
         let(:target_attribute) { 'country_code' }
 
         let(:context) do
           Chouette.create do
             stop_area :stop_area, name: 'Stop Area', country_code: 'FR'
             stop_area :other_stop_area, zip_code: nil
-    
-            fare_zone :fare_zone, name: 'Fare Zone' do 
+
+            fare_zone :fare_zone, name: 'Fare Zone' do
               fare_geographic_reference :fare_geographic_reference, short_name: 'FR'
             end
           end
@@ -127,12 +126,12 @@ RSpec.describe Macro::AssociateStopAreaWithFareZone do
 
         it 'creates a message for the Stop Area' do
           subject
-  
+
           expect(macro_run.macro_messages).to include(expected_message)
         end
 
         it 'should associate the Stop Area with the Fare Zone' do
-          expect {subject}.to change {stop_area.fare_zones.count}.from(0).to(1)
+          expect { subject }.to change { stop_area.fare_zones.count }.from(0).to(1)
         end
       end
     end

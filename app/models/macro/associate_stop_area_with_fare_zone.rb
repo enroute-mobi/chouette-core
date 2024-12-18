@@ -71,9 +71,9 @@ module Macro
             SELECT
               A.stop_area_id, A.stop_area_name,
               A.fare_zone_id, A.fare_zone_name
-            FROM 
+            FROM
               (#{stop_areas_fare_zone_geographic_references}) A
-            LEFT JOIN 
+            LEFT JOIN
               public.fare_stop_areas_zones B
             ON A.stop_area_id = B.stop_area_id
             AND A.fare_zone_id = B.fare_zone_id

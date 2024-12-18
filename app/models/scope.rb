@@ -95,9 +95,7 @@ module Scope
       shape_referential.shapes.where(id: journey_patterns.where.not(shape_id: nil).select(:shape_id).distinct)
     end
 
-    def fare_zones
-      fare_referential.fare_zones
-    end
+    delegate :fare_zones, to: :fare_referential
 
     def documents
       workgroup.documents.where(id: line_document_memberships.select(:document_id).distinct)
@@ -113,7 +111,8 @@ module Scope
 
     delegate :routes, :stop_points, :journey_patterns, :journey_pattern_stop_points, :vehicle_journey_at_stops,
              :time_tables, :time_table_periods, :time_table_dates, :service_counts, :vehicle_journeys, to: :referential
-    delegate :line_referential, :stop_area_referential, :shape_referential, :fare_referential, :workgroup, to: :workbench
+    delegate :line_referential, :stop_area_referential, :shape_referential, :fare_referential, :workgroup,
+             to: :workbench
     attr_reader :referential, :workbench
   end
 

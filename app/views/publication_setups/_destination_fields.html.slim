@@ -1,12 +1,12 @@
 - destination = local_assigns.fetch(:destination, Destination.new)
 
-div[x-data="{destinationType: '#{destination.type}' }"]
+div[x-data="{ destinationType: '#{destination.type}', host_type: '#{f.object.options['host_type'] || 'chouette'}'}"]
   .destination
     = f.input :name
     .fields
       = f.hidden_field :id
       = f.input :type,
-        collection: Destination.descendants.reject { |child| !current_organisation.has_feature?('destination_chouette_custom') && child == Destination::Custom}.map{|k| [k.human_type, k.name]},
+        collection: Destination.descendants.map{|k| [k.human_type, k.name]},
         selected: destination.type,
         include_blank: true,
         input_html: { disabled: !f.object.new_record?, 'x-model': 'destinationType' }
@@ -17,7 +17,13 @@ div[x-data="{destinationType: '#{destination.type}' }"]
         template[x-if="destinationType == '#{child.name}'"]
           div
             - child.options.each do |attr, option_def|
-              = option_input f, f.object, attr, option_def, child
+              - if attr == :user_hostname
+                  template[x-if="host_type == 'custom'"]
+                    div
+                      = option_input f, f.object, attr, option_def, child
+              - else
+                = option_input f, f.object, attr, option_def, child
+
             = f.input :secret_file, wrapper: :inline_file_input, required: true if child.secret_file_required?
 
     = f.input :_destroy, as: :switchable_checkbox

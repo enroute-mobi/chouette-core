@@ -53,5 +53,4 @@ require_dependency './destination/mail'
 require_dependency './destination/publication_api'
 require_dependency './destination/ara'
 require_dependency './destination/chouette'
-require_dependency './destination/iboo'
-require_dependency './destination/custom'
+

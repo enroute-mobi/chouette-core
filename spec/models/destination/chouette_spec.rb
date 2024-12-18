@@ -6,7 +6,7 @@ RSpec.describe Destination::Chouette, type: :model do
       name: 'Chouette Saas',
       workbench_id: workbench.id,
       workbench_api_key: workbench_api_key,
-      automatic_merge: true      
+      automatic_merge: true
     )
   end
 

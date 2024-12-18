@@ -81,15 +81,12 @@ fr:
           workbench_id: Identification d'espace de travail
           workbench_api_key: Clé d'accès API
           automatic_merge: Fusion automatique
-        iboo:
-          workbench_id: Identification d'espace de travail
-          workbench_api_key: Clé d'accès API
-          automatic_merge: Fusion automatique
-        custom:
-          url: URL du service
-          workbench_id: Identification d'espace de travail
-          workbench_api_key: Clé d'accès API
-          automatic_merge: Fusion automatique
+          host_type: Type d'hôte
+          host_type_collection:
+            chouette: Chouette
+            iboo: Iboo
+            custom: Personnalisé
+          user_hostname: Url
         google_cloud_storage:
           project: Projet
           bucket:  Bucket

@@ -115,15 +115,12 @@ en:
         workbench_id: Workbench ID
         workbench_api_key: Workbench api key
         automatic_merge: Automatic merge
-      destination/iboo:
-        workbench_id: Workbench ID
-        workbench_api_key: Workbench api key
-        automatic_merge: Automatic merge
-      destination/custom:
-        url: Url
-        workbench_id: Workbench ID
-        workbench_api_key: Workbench api key
-        automatic_merge: Automatic merge
+        host_type: Host type
+        host_type_collection:
+          chouette: Chouette
+          iboo: Iboo
+          custom: Custom
+        user_hostname: Url
       destination/google_cloud_storage:
         project: Project
         bucket:  Bucket

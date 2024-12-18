@@ -5,8 +5,28 @@ class Destination
     option :workbench_id
     option :workbench_api_key, type: :password
     option :automatic_merge, type: :boolean, default_value: true
+    option :host_type, type: :select,
+                       collection: %w[chouette iboo],
+                       features: { destination_chouette_custom: %w[custom] },
+                       default_value: 'chouette'
+    option :user_hostname
 
     validates :workbench_id, :workbench_api_key, presence: true
+    validates :user_hostname, presence: true, url: true, if: proc { |d| d.host_type == 'custom' }
+
+    CHOUETTE_HOST = 'chouette.enroute.mobi'
+    IBOO_HOST = 'iboo.iledefrance-mobilites.fr'
+
+    def hostname
+      return CHOUETTE_HOST if host_type == 'chouette'
+      return IBOO_HOST if host_type == 'iboo'
+
+      user_hostname
+    end
+
+    def import_url
+      "https://#{hostname}/#{workbench_id}/imports"
+    end
 
     def do_transmit(publication, report)
       Rails.logger.tagged("Destination:: ##{id}") do
@@ -15,10 +35,6 @@ class Destination
           send_to_chouette export.file, report if export[:file]
         end
       end
-    end
-
-    def import_url
-      "https://chouette.enroute.mobi/workbenches/#{workbench_id}/imports"
     end
 
     def uri

@@ -21,8 +21,6 @@ module OptionsHelper
     elsif option_def[:type].to_s == 'boolean'
       opts[:as] = :switchable_checkbox
       opts[:input_html][:checked] = value
-    elsif option_def[:type].to_s == 'password'
-      opts[:as] = :password
     elsif option_def[:type].to_s == 'array'
       opts[:collection] = value.map { |v| { id: v, text: v } }
       opts[:input_html].merge!(
@@ -37,7 +35,13 @@ module OptionsHelper
 
     if option_def.key?(:collection)
       opts[:collection] = if option_def[:collection].is_a?(Array) && !option_def[:collection].first.is_a?(Array)
-                            option_def[:collection].map { |k| [translate_option_value(type, attr, k), k] }
+                            option_def_collection = option_def[:collection]
+                            if (features = option_def[:features]).is_a?(Hash)
+                              features.each do |feature, collection|
+                                option_def_collection += collection if current_organisation&.has_feature?(feature)
+                              end
+                            end
+                            option_def_collection.map { |k| [translate_option_value(type, attr, k), k] }
                           else
                             option_def[:collection]
                           end
@@ -52,9 +56,11 @@ module OptionsHelper
         end
       end
     end
+
     opts[:label] = translate_option_key(type, attr)
 
     opts[:input_html] = { 'x-on:change': 'import_category = $event.target.value' } if attr == :import_category
+    opts[:input_html] = { 'x-on:change': 'host_type = $event.target.value' } if attr == :host_type
 
     out = form.input attr, opts
 

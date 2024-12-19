@@ -20,6 +20,7 @@ module Control
         Chouette::ModelAttribute.collection do
           select Chouette::StopArea, :routes
           select Chouette::StopArea, :lines
+          select Chouette::StopArea, :fare_zones
           # select Chouette::StopArea, :entrances
           # select Chouette::StopArea, :connection_links
 
@@ -106,6 +107,8 @@ module Control
                 associatied_models.joins(:stop_areas).group(:stop_area_id)
               when %w[StopArea lines]
                 associatied_models.joins(routes: :stop_areas).group(:stop_area_id)
+              when %w[StopArea fare_zones]
+                associatied_models.joins(:stop_areas).group(:stop_area_id)
               else
                 associatied_models.group("#{collection_attribute.resource_name}_id")
               end

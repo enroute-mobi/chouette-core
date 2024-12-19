@@ -8,7 +8,7 @@ RSpec.describe Macro::List do
   end
 
   it { is_expected.to validate_presence_of(:name) }
-  it { is_expected.to belong_to(:workbench).required(true) }
+  it { is_expected.to belong_to(:workbench).required }
 
   describe ".macros"do
     before do
@@ -42,6 +42,6 @@ end
 RSpec.describe Macro::Base do
 
   subject { Macro::Dummy.new }
-  it { is_expected.to belong_to(:macro_list).required(false) }
+  it { is_expected.to belong_to(:macro_list).optional }
 
 end

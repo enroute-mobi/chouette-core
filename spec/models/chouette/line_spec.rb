@@ -3,7 +3,7 @@
 describe Chouette::Line, type: :model do
   subject(:line) { create(:line) }
 
-  it { should belong_to(:line_referential).required(true) }
+  it { should belong_to(:line_referential).required }
   # it { is_expected.to validate_presence_of :network }
   # it { is_expected.to validate_presence_of :company }
   it { should validate_presence_of :name }

@@ -5,7 +5,7 @@ RSpec.describe Source do
     expect(Source.table_name).to eq('public.sources')
   end
 
-  it { is_expected.to belong_to(:scheduled_job).class_name('::Delayed::Job').dependent(:destroy).required(false) }
+  it { is_expected.to belong_to(:scheduled_job).class_name('::Delayed::Job').dependent(:destroy).optional }
   it { is_expected.to enumerize(:retrieval_frequency).in(:none, :hourly, :daily).with_default(:none) }
 
   describe 'with direct downloader' do

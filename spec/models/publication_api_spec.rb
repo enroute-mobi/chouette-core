@@ -1,8 +1,11 @@
 
 RSpec.describe PublicationApi, type: :model do
-  subject { create(:publication_api) }
+  let(:context) do
+    Chouette.create { publication_api }
+  end
+  subject { context.publication_api }
 
-  it { is_expected.to belong_to(:workgroup).required(false) }
+  it { is_expected.to belong_to(:workgroup).required }
   it { should validate_presence_of :name }
   it { should validate_presence_of :slug }
   it { should validate_uniqueness_of :slug }

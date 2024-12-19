@@ -11,7 +11,7 @@ RSpec.describe Workbench, type: :model do
     it { is_expected.to belong_to(:workgroup) }
     it do
       allow_any_instance_of(described_class).to receive(:create_dependencies).and_return(nil)
-      is_expected.to belong_to(:output).class_name('ReferentialSuite').required(true)
+      is_expected.to belong_to(:output).class_name('ReferentialSuite').required
     end
 
     it { is_expected.to have_many(:lines).through(:line_referential) }

@@ -2,8 +2,8 @@ describe Referential, :type => :model do
   let(:ref) { create :workbench_referential, metadatas: [create(:referential_metadata)] }
 
   it { should have_many(:metadatas) }
-  it { is_expected.to belong_to(:workbench).required(false) }
-  it { is_expected.to belong_to(:referential_suite).required(false) }
+  it { is_expected.to belong_to(:workbench).optional }
+  it { is_expected.to belong_to(:referential_suite).optional }
 
   context '#clean_scope' do
     let(:cooldown){ 30 }

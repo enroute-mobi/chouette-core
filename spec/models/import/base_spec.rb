@@ -3,9 +3,9 @@
 RSpec.describe Import::Base, type: :model do
   subject(:import) { Import::Base.new }
 
-  it { is_expected.to belong_to(:referential).required(false) }
-  it { is_expected.to belong_to(:workbench).required(true) }
-  it { is_expected.to belong_to(:parent).required(false) }
+  it { is_expected.to belong_to(:referential).optional }
+  it { is_expected.to belong_to(:workbench).required }
+  it { is_expected.to belong_to(:parent).optional }
 
   it {
     should enumerize(:status).in('aborted', 'canceled', 'failed', 'new', 'pending', 'running', 'successful', 'warning')

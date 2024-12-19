@@ -1,9 +1,9 @@
 # frozen_string_literal: true
 
 RSpec.describe Publication, type: :model do
-  it { is_expected.to belong_to(:publication_setup).required(true) }
-  it { is_expected.to belong_to(:referential).required(true) }
-  it { is_expected.to belong_to(:parent).required(false) }
+  it { is_expected.to belong_to(:publication_setup).required }
+  it { is_expected.to belong_to(:referential).required }
+  it { is_expected.to belong_to(:parent).optional }
   it { should have_one :export }
 
   it { is_expected.to have_one(:workgroup) }

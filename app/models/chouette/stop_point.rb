@@ -10,8 +10,8 @@ module Chouette
     include ForBoardingEnumerations
     include ForAlightingEnumerations
 
-    belongs_to :stop_area, optional: true # CHOUETTE-3247 code analysis
-    add_light_belongs_to :stop_area, optional: true # CHOUETTE-3247 code analysis
+    belongs_to :stop_area # CHOUETTE-3247
+    add_light_belongs_to :stop_area # CHOUETTE-3247
 
     belongs_to :route, inverse_of: :stop_points # TODO: CHOUETTE-3247 optional: true?
 

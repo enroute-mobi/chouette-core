@@ -22,7 +22,6 @@ module Chouette
     belongs_to :company_light, -> {select(:id, :objectid, :line_referential_id)}, class_name: "Chouette::Company", foreign_key: :company_id, optional: true # CHOUETTE-3247 failing specs
     belongs_to :route # CHOUETTE-3247 failing specs
     belongs_to :journey_pattern # CHOUETTE-3247 failing specs
-    belongs_to :journey_pattern_only_objectid, -> {select("journey_patterns.id, journey_patterns.objectid")}, class_name: "Chouette::JourneyPattern", optional: true, foreign_key: :journey_pattern_id # CHOUETTE-3247 failing specs
     has_array_of :service_facility_sets, class_name: '::ServiceFacilitySet'
 
     has_many :stop_areas, through: :journey_pattern

@@ -4,7 +4,7 @@ describe Chouette::Footnote, type: :model do
 
   before { context.referential.switch }
 
-  it { is_expected.to belong_to(:line).required(true) }
+  it { is_expected.to belong_to(:line).required }
 
   describe '#data_source_ref' do
     subject { footnote.data_source_ref }

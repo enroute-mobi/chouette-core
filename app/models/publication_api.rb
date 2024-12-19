@@ -1,5 +1,5 @@
 class PublicationApi < ActiveRecord::Base
-  belongs_to :workgroup, optional: true # CHOUETTE-3247 failing specs
+  belongs_to :workgroup # CHOUETTE-3247
   has_many :api_keys, class_name: 'PublicationApiKey'
   has_many :destinations, dependent: :delete_all
   has_many :publication_setups, through: :destinations

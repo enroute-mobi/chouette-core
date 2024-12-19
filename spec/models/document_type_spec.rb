@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 RSpec.describe DocumentType, type: :model do
-  it { is_expected.to belong_to(:workgroup).required(true) }
+  it { is_expected.to belong_to(:workgroup).required }
   it { is_expected.to have_many(:documents) }
 
   it { is_expected.to validate_presence_of(:name) }

@@ -4,7 +4,7 @@ class Publication < Operation
   belongs_to :publication_setup # CHOUETTE-3247 required: true
   has_one :export, class_name: 'Export::Base', dependent: :destroy
   belongs_to :referential # CHOUETTE-3247 required: true
-  belongs_to :parent, polymorphic: true, optional: true # CHOUETTE-3247 code analysis
+  belongs_to :parent, polymorphic: true, optional: true # CHOUETTE-3247
   has_many :reports, class_name: 'DestinationReport', dependent: :destroy
   has_many :publication_api_sources, class_name: 'PublicationApiSource', dependent: :destroy
 

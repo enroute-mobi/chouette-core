@@ -3,7 +3,6 @@ class Destination < ApplicationModel
 
   belongs_to :publication_setup, inverse_of: :destinations, optional: true # CHOUETTE-3247 failing specs
   has_many :reports, class_name: 'DestinationReport', dependent: :destroy
-  belongs_to :publication_api, class_name: '::PublicationApi', optional: true # CHOUETTE-3247 failing specs
 
   validates :name, :type, presence: true
 

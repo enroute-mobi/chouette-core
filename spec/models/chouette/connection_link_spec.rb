@@ -9,9 +9,9 @@ describe Chouette::ConnectionLink, type: :model do
   end
 
   describe "validations" do
-    it { is_expected.to belong_to(:stop_area_referential).required(true) }
-    it { is_expected.to belong_to(:departure).required(true) }
-    it { is_expected.to belong_to(:arrival).required(true) }
+    it { is_expected.to belong_to(:stop_area_referential).required }
+    it { is_expected.to belong_to(:departure).required }
+    it { is_expected.to belong_to(:arrival).required }
     it { should validate_presence_of :default_duration }
 
     it "should have different departure and arrival" do

@@ -4,7 +4,7 @@ class Workgroup < ApplicationModel
   belongs_to :line_referential, dependent: :destroy # CHOUETTE-3247 required: true
   belongs_to :stop_area_referential, dependent: :destroy # CHOUETTE-3247 required: true
   belongs_to :shape_referential, dependent: :destroy # CHOUETTE-3247 required: true
-  belongs_to :fare_referential, dependent: :destroy, class_name: 'Fare::Referential' # CHOUETTE-3247 required: true
+  belongs_to :fare_referential, class_name: 'Fare::Referential', inverse_of: :workgroup, dependent: :destroy # CHOUETTE-3247 required: true
 
   # Ensure StopAreaReferential and LineReferential (and their contents)
   # are destroyed before other relations

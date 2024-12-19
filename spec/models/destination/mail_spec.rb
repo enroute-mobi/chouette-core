@@ -1,7 +1,6 @@
 RSpec.describe Destination::Mail, type: :model do
-  let(:publication_api) { create :publication_api }
   let(:publication_setup) { create :publication_setup }
-  let(:destination) { build :destination_mail, publication_setup: publication_setup, publication_api: publication_api }
+  let(:destination) { build :destination_mail, publication_setup: publication_setup }
 
   context "create / update mail destination" do
     describe '#email' do

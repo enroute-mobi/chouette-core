@@ -1,8 +1,8 @@
 RSpec.describe Import::Base, type: :model do
 
-  it { should belong_to(:referential).required(false) }
-  it { should belong_to(:workbench).required(true) }
-  it { should belong_to(:parent).required(false) }
+  it { should belong_to(:referential).optional }
+  it { should belong_to(:workbench).required }
+  it { should belong_to(:parent).optional }
 
   it { should enumerize(:status).in("aborted", "canceled", "failed", "new", "pending", "running", "successful", "warning") }
 

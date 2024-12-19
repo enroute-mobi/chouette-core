@@ -120,7 +120,7 @@ en:
           chouette: Chouette
           iboo: Iboo
           custom: Custom
-        user_hostname: Url
+        custom_url: Custom URL
       destination/google_cloud_storage:
         project: Project
         bucket:  Bucket

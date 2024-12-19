@@ -17,7 +17,7 @@ div[x-data="{ destinationType: '#{destination.type}', host_type: '#{f.object.opt
         template[x-if="destinationType == '#{child.name}'"]
           div
             - child.options.each do |attr, option_def|
-              - if attr == :user_hostname
+              - if attr == :custom_url
                   template[x-if="host_type == 'custom'"]
                     div
                       = option_input f, f.object, attr, option_def, child

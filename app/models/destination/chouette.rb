@@ -9,23 +9,23 @@ class Destination
                        collection: %w[chouette iboo],
                        features: { destination_chouette_custom: %w[custom] },
                        default_value: 'chouette'
-    option :user_hostname
+    option :custom_url
 
     validates :workbench_id, :workbench_api_key, presence: true
-    validates :user_hostname, presence: true, url: true, if: proc { |d| d.host_type == 'custom' }
+    validates :custom_url, presence: true, url: true, if: proc { |d| d.host_type == 'custom' }
 
-    CHOUETTE_HOST = 'chouette.enroute.mobi'
-    IBOO_HOST = 'iboo.iledefrance-mobilites.fr'
+    CHOUETTE_URL = 'https://chouette.enroute.mobi'
+    IBOO_URL = 'https://iboo.iledefrance-mobilites.fr'
 
-    def hostname
-      return CHOUETTE_HOST if host_type == 'chouette'
-      return IBOO_HOST if host_type == 'iboo'
+    def url
+      return CHOUETTE_URL if host_type == 'chouette'
+      return IBOO_URL if host_type == 'iboo'
 
-      user_hostname
+      custom_url
     end
 
     def import_url
-      "https://#{hostname}/#{workbench_id}/imports"
+      "#{url}/#{workbench_id}/imports"
     end
 
     def do_transmit(publication, report)

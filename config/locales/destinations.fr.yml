@@ -86,7 +86,7 @@ fr:
             chouette: Chouette
             iboo: Iboo
             custom: Personnalisé
-          user_hostname: Url
+          custom_url: URL personnalisé
         google_cloud_storage:
           project: Projet
           bucket:  Bucket

@@ -1892,7 +1892,6 @@ RSpec.describe Export::NetexGeneric do
       Export::NetexGeneric::PointOfInterests::Decorator.new point_of_interest, code_provider: code_provider
     end
     let(:code_provider) { Export::CodeProvider.new export_scope }
-    let(:export_scope) { Export::Scope::All.new context.workbench }
 
     describe Export::NetexGeneric::PointOfInterests::Decorator do
       subject { decorator.netex_attributes }
@@ -2105,6 +2104,60 @@ RSpec.describe Export::NetexGeneric do
         end
       end
 
+    end
+  end
+
+  describe 'FareZones export' do
+    let(:target) { MockNetexTarget.new }
+    let(:export_scope) { Export::Scope::All.new context }
+    let(:export) { Export::NetexGeneric.new export_scope: export_scope, target: target, workgroup: context.workgroup }
+
+    let(:part) do
+      Export::NetexGeneric::FareZone.new export
+    end
+
+    let!(:context) do
+      Chouette.create do
+        fare_zone :fare_zone, name: 'Fare Zone' do
+          fare_geographic_reference :first, short_name: 'first'
+          fare_geographic_reference :second, short_name: 'second'
+        end
+      end
+    end
+
+    let(:fare_zone) { context.fare_zone(:fare_zone).reload }
+    let(:code_provider) { Export::CodeProvider.new export_scope }
+
+    describe Export::NetexGeneric::FareZones::Decorator do
+      subject { decorator.netex_attributes }
+
+      let(:decorator) { described_class.new fare_zone, code_provider: code_provider }
+
+      describe "netex_resource" do
+        describe '#id' do
+          it "uses FareZone uuid" do
+            is_expected.to include(id: fare_zone.uuid)
+          end
+        end
+
+        describe '#name' do
+          it 'uses FareZone name' do
+            is_expected.to include(name: fare_zone.name)
+          end
+        end
+
+        describe '#fare_geographic_references' do
+          subject { decorator.projections }
+
+          let(:expected_result) do
+            %w[first second].map { |ref| Netex::Reference.new(ref, type: 'TopographicProjectionRef') }
+          end
+
+          it 'uses FareZone fare geographic references' do
+            is_expected.to match_array(expected_result)
+          end
+        end
+      end
     end
   end
 

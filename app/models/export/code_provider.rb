@@ -55,7 +55,7 @@ module Export
 
       collection_names[model.class] ||=
         begin
-          model.model_name.collection
+          model.model_name.plural
         rescue
           # When the model class is Chouette::StopPoint::Light::StopPoint...
           model.class.name.demodulize.underscore.pluralize

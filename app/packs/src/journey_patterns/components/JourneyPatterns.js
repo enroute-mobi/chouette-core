@@ -115,14 +115,10 @@ export default class JourneyPatterns extends Component {
                   <div className='strong mb-xs'>{I18n.t('objectid')}</div>
                   <div>{I18n.attribute_name('journey_pattern', 'registration_number')}</div>
                   <div>{I18n.attribute_name('journey_pattern', 'stop_points')}</div>
-                  <div>
-                    <div>{I18n.attribute_name('journey_pattern', 'full_journey_time')}</div>
-                    <div>{I18n.attribute_name('journey_pattern', 'commercial_journey_time')}</div>
-                  </div>
                 </div>
                 {this.props.stopPointsList.map((sp, i) =>{
                   return (
-                    <div key={i} className={'td with-costs'}>
+                    <div key={i} className={'td'}>
                       {this.headerManager.stopPointHeader(sp.stop_area_object_id + "-" + i)}
                     </div>
                   )

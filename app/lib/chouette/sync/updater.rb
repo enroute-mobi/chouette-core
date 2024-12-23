@@ -133,8 +133,8 @@ module Chouette
         end
 
         def with_codes(resource_ids)
-          find_models(resource_ids).find_each do |model|
-            value = model.codes&.first&.value
+          find_models(resource_ids).preload(:codes).find_each do |model|
+            value = model.codes.find { |code| code.code_space == code_space }.value
             yield model, value
           end
         end

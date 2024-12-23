@@ -126,15 +126,15 @@ module Chouette
                  :find_models, to: :updater
 
         def with_resource_ids(resource_ids)
-          find_models(resource_ids).each do |model|
+          find_models(resource_ids).find_each do |model|
             resource_id = model.send model_id_attribute
             yield model, resource_id
           end
         end
 
         def with_codes(resource_ids)
-          find_models(resource_ids).each do |model|
-            value = model.codes.select { |code| code.code_space == code_space }.first&.value
+          find_models(resource_ids).preload(:codes).find_each do |model|
+            value = model.codes.find { |code| code.code_space == code_space }.value
             yield model, value
           end
         end

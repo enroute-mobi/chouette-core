@@ -230,7 +230,11 @@ RSpec.describe Chouette::Sync::Updater do
     describe '#with_codes' do
       context 'when the model has codes with several code spaces' do
         before do
-          allow(models).to receive(:find_models).with(resource_ids).and_return([model])
+          found_models = [model]
+          allow(found_models).to receive(:find_each).and_yield(*found_models)
+          allow(found_models).to receive(:preload).and_return(found_models)
+
+          allow(models).to receive(:find_models).with(resource_ids).and_return(found_models)
           allow(models).to receive(:code_space).and_return(targeted_code.code_space)
         end
 

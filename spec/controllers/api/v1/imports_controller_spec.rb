@@ -41,8 +41,8 @@ RSpec.describe Api::V1::ImportsController, type: :controller do
                 creator: 'test',
                 options: {
                   'automatic_merge': true,
-                  'flag_urgent': true,
-                  'merge_method': 'experimental'
+                  'archive_on_fail': true,
+                  'flag_urgent': true
                 }
               },
               format: :json
@@ -53,8 +53,8 @@ RSpec.describe Api::V1::ImportsController, type: :controller do
           import = Import::Workbench.last
           expect(import.file).to be_present
           expect(import.automatic_merge).to be_truthy
+          expect(import.archive_on_fail).to be_truthy
           expect(import.flag_urgent).to be_truthy
-          expect(import.merge_method).to eq('experimental')
         end
       end
 
@@ -74,8 +74,8 @@ RSpec.describe Api::V1::ImportsController, type: :controller do
                 creator: 'test',
                 options: {
                   'automatic_merge': true,
-                  'flag_urgent': true,
-                  'merge_method': 'legacy'
+                  'archive_on_fail': true,
+                  'flag_urgent': true
                 }
               },
               format: :json

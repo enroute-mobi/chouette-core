@@ -14,7 +14,7 @@ class Api::V1::ImportsController < Api::V1::WorkbenchController
     end
 
     if @import.save
-      render json: @import, status: :created
+      render json: import_json(@import), status: :created
     else
       render json: { status: "error", messages: @import.errors.full_messages }
     end
@@ -26,14 +26,33 @@ class Api::V1::ImportsController < Api::V1::WorkbenchController
 
   def show
     import = current_workbench.workbench_imports.includes(:children).find(params[:id])
-    render json: {id: import.id, name: import.name, status: import.status, referential_ids: import.children.collect(&:referential_id).compact}
+    render json: import_json(import)
   end
 
   private
 
+  def import_json(import)
+    {
+      id: import.id,
+      status: import.status,
+      workbench_id: import.workbench_id,
+      name: import.name,
+      created_at: import.created_at,
+      updated_at: import.updated_at,
+      started_at: import.started_at,
+      ended_at: import.ended_at,
+      creator: import.creator,
+      options: {
+        automatic_merge: import.automatic_merge,
+        archive_on_fail: import.archive_on_fail,
+        flag_urgent: import.flag_urgent
+      }
+    }
+  end
+
   def imports_map
     current_workbench.workbench_imports.includes(:children).collect do |import|
-      {id: import.id, name: import.name, status: import.status, referential_ids: import.children.collect(&:referential_id).compact}
+      import_json(import)
     end
   end
 

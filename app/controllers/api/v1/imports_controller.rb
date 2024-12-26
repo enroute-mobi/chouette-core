@@ -38,7 +38,7 @@ class Api::V1::ImportsController < Api::V1::WorkbenchController
   end
 
   def workbench_import_params
-    permitted_keys = %i(name file notification_target)
+    permitted_keys = %i(name file)
     permitted_keys << {options: Import::Workbench.options.keys}
     params.require(:workbench_import).permit(permitted_keys)
   end

@@ -58,7 +58,7 @@ class Api::V1::ImportsController < Api::V1::WorkbenchController
 
   def workbench_import_params
     permitted_keys = %i(name file)
-    permitted_keys << {options: Import::Workbench.options.keys}
+    permitted_keys << {options: %w[automatic_merge archive_on_fail flag_urgent]}
     params.require(:workbench_import).permit(permitted_keys)
   end
 end

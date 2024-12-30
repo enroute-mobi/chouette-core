@@ -351,7 +351,7 @@ ChouetteIhm::Application.routes.draw do # rubocop:disable Metrics/BlockLength
 
   devise_scope :user do
     authenticated :user do
-      root to: 'dashboards#show'
+      root to: 'dashboards#show', as: 'authenticated_root'
     end
 
     unauthenticated :user do

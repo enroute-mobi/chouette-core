@@ -10,10 +10,6 @@ FactoryBot.define do
     started_at {nil}
     ended_at {nil}
     creator {'rspec'}
-
-    after(:build) do |import|
-      import.class.skip_callback(:create, :before, :initialize_fields, raise: false)
-    end
   end
 
   factory :bad_import, class: Import::Base do
@@ -27,9 +23,5 @@ FactoryBot.define do
     started_at {nil}
     ended_at {nil}
     creator {'rspec'}
-
-    after(:build) do |import|
-      import.class.skip_callback(:create, :before, :initialize_fields, raise: false)
-    end
   end
 end

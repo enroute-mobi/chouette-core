@@ -1,5 +1,5 @@
 
-describe "/layouts/application", :type => :view do
+describe 'layouts/application', type: :view do
 
   before(:each) do
     allow(view).to receive_messages :user_signed_in? => true

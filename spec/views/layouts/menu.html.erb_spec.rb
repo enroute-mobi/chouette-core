@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-describe '/layouts/application', type: :view do
+describe 'layouts/application', type: :view do
   before(:each) do
     allow(Rails.application.config).to receive_messages portal_url: 'portal_url'
     allow(Rails.application.config).to receive_messages codifligne_url: 'codifligne_url'

@@ -1,4 +1,4 @@
-describe "/companies/edit", :type => :view do
+describe 'companies/edit', type: :view do
 
   let(:context) do
     Chouette.create { company }

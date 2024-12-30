@@ -1,4 +1,4 @@
-describe "/lines/new", :type => :view do
+describe 'lines/new', type: :view do
   let(:context) { Chouette.create { line } }
 
   let!(:workbench) { assign :workbench, context.workbench }

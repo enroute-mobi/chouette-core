@@ -1,5 +1,5 @@
 
-describe "/time_tables/new", :type => :view do
+describe 'time_tables/new', type: :view do
   assign_referential
   let!(:time_table) {  assign(:time_table, build(:time_table)) }
 

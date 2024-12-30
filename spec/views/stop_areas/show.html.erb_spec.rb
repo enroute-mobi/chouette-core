@@ -1,5 +1,5 @@
 
-describe "/stop_areas/show", :type => :view do
+describe 'stop_areas/show', type: :view do
 
   let!(:stop_area_referential) { assign :stop_area_referential, stop_area.stop_area_referential }
   let!(:stop_area) { assign :stop_area, create(:stop_area).decorate }

@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-describe '/route_vehicle_journeys/show', type: :view do
+describe 'route_vehicle_journeys/show', type: :view do
   let(:context) do
     Chouette.create do
       line :first

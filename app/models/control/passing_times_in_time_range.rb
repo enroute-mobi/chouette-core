@@ -86,7 +86,7 @@ module Control
         def vehicle_journey_ids
           context
             .vehicle_journey_at_stops
-            .joins(time_zones, stop_point: :stop_area)
+            .joins({ stop_point: :stop_area }, time_zones)
             .where.not("#{second_offset_range} @> #{departure_second_offset} AND #{second_offset_range} @> #{arrival_second_offset}")
             .select(:vehicle_journey_id)
             .distinct
@@ -125,7 +125,7 @@ module Control
 
         def time_zones
           <<~SQL
-            INNER JOIN public.time_zones ON time_zones.name = COALESCE(stop_areas.time_zone, 'UTC')
+            INNER JOIN public.time_zones ON time_zones.name = COALESCE(public.stop_areas.time_zone, 'UTC')
           SQL
         end
       end

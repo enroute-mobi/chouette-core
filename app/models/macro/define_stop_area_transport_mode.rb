@@ -77,7 +77,7 @@ module Macro
         scope
           .stop_areas
           .where(transport_mode: nil)
-          .where.not(routes: { lines: { transport_mode: nil } })
+          .where.not(::Chouette::Line.quoted_table_name => { transport_mode: nil })
           .distinct
           .select(
             'public.stop_areas.id',

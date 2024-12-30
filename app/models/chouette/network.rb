@@ -34,11 +34,14 @@ module Chouette
     end
 
     def commercial_stop_areas
-      Chouette::StopArea.joins(:children => [:stop_points => [:route => [:line => :network] ] ]).where(:networks => {:id => self.id}).distinct
+      Chouette::StopArea.joins(children: { stop_points: { route: { line: :network } } })
+                        .where(Chouette::Network.quoted_table_name => { id: id })
+                        .distinct
     end
 
     def stop_areas
-      Chouette::StopArea.joins(:stop_points => [:route => [:line => :network] ]).where(:networks => {:id => self.id})
+      Chouette::StopArea.joins(stop_points: { route: { line: :network } })
+                        .where(Chouette::Network.quoted_table_name => { id: id })
     end
 
     def source_type_name

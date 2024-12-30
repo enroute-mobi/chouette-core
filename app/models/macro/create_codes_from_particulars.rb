@@ -47,17 +47,19 @@ module Macro
         macro_messages.create!(attributes)
       end
 
+      # rubocop:disable Layout/LineLength
       def referents
-        models.referents.left_joins(:codes, particulars: :codes).
-          select(
-            "public.#{model_collection}.*",
-            "ARRAY_AGG(codes_public_#{model_collection}.value) AS particular_code_values"
-          ).
-          where("codes.code_space_id = #{referent_code_space_id} OR codes.code_space_id IS NULL").
-          where("codes_public_#{model_collection}.code_space_id" => particular_code_space_id).
-          where("codes.value <> codes_public_#{model_collection}.value OR codes.value IS NULL").
-          group(:id)
+        models.referents.left_joins(:codes, particulars: :codes)
+              .select(
+                "public.#{model_collection}.*",
+                "ARRAY_AGG(codes_public_#{model_collection}.value) AS particular_code_values"
+              )
+              .where("#{::Code.quoted_table_name}.code_space_id = #{referent_code_space_id} OR #{::Code.quoted_table_name}.code_space_id IS NULL")
+              .where("codes_public_#{model_collection}.code_space_id" => particular_code_space_id)
+              .where("#{::Code.quoted_table_name}.value <> codes_public_#{model_collection}.value OR #{::Code.quoted_table_name}.value IS NULL")
+              .group(:id)
       end
+      # rubocop:enable Layout/LineLength
 
       def model_collection
         @model_collection ||= target_model.underscore.pluralize

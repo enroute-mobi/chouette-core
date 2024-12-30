@@ -24,11 +24,12 @@ module Queries
       not_companies: [])
       scope = context[:target_referential].lines
 
+      companies_table = ::Chouette::Company.quoted_table_name
       if company || companies.length > 0
-        scope = scope.joins(:company).where(companies: {objectid: (companies << company).compact})
+        scope = scope.joins(:company).where(companies_table => { objectid: (companies << company).compact })
       end
       if not_company || not_companies.length > 0
-        scope = scope.joins(:company).where.not(companies: {objectid: (not_companies << not_company).compact})
+        scope = scope.joins(:company).where.not(companies_table => { objectid: (not_companies << not_company).compact })
       end
 
       if transport_mode || transport_modes.length > 0

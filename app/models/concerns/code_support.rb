@@ -8,9 +8,15 @@ module CodeSupport
     accepts_nested_attributes_for :codes, allow_destroy: true, reject_if: :all_blank
     validates_associated :codes
 
-    scope :by_code, ->(code_space, value) { joins(:codes).where(codes: { code_space: code_space, value: value }) }
-    scope :with_code, ->(code_space) { joins(:codes).where(codes: { code_space_id: code_space }).distinct }
-    scope :without_code, ->(code_space) { where.not(id: joins(:codes).where(codes: { code_space_id: code_space })) }
+    scope :by_code, lambda { |code_space, value|
+      joins(:codes).where(::Code.quoted_table_name => { code_space_id: code_space, value: value })
+    }
+    scope :with_code, lambda { |code_space|
+      joins(:codes).where(::Code.quoted_table_name => { code_space_id: code_space }).distinct
+    }
+    scope :without_code, lambda { |code_space|
+      where.not(id: joins(:codes).where(::Code.quoted_table_name => { code_space_id: code_space }))
+    }
 
     validate :validate_codes
 

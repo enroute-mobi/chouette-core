@@ -298,7 +298,7 @@ module Import
         target
           .lines
           .left_joins(:network)
-          .where("networks.id": nil)
+          .where(::Chouette::Network.quoted_table_name => { id: nil })
           .where.not(network_id: nil)
           .in_batches
           .update_all(network_id: nil)
@@ -306,7 +306,7 @@ module Import
         target
           .lines
           .left_joins(:company)
-          .where("companies.id": nil)
+          .where(::Chouette::Company.quoted_table_name => { id: nil })
           .where.not(company_id: nil)
           .in_batches
           .update_all(company_id: nil)

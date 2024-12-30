@@ -113,7 +113,8 @@ class Referential < ApplicationModel
     kept.each do |kept_scope|
       scope = scope.where("referentials.id NOT IN (#{kept_scope})")
     end
-    scope.joins('LEFT JOIN public.referential_metadata ON referential_metadata.referential_source_id = referentials.id').where('referential_metadata.id' => nil)
+    scope.joins('LEFT JOIN public.referential_metadata ON referential_metadata.referential_source_id = referentials.id')
+         .where(ReferentialMetadata.quoted_table_name => { id: nil })
   }
 
   after_destroy :clean_cross_referential_index!

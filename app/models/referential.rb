@@ -542,13 +542,7 @@ class Referential < ApplicationModel
     delegate :lines, :metadatas, to: :referential
 
     def updated_at_by_lines
-      @updated_at_by_lines ||= ::ActiveRecord::Base.connection.select_rows(query).map do |line_id, time|
-        [ line_id, database_timezone.parse(time) ]
-      end.to_h
-    end
-
-    def database_timezone
-      @database_timezone ||= Time.find_zone("UTC")
+      @updated_at_by_lines ||= ::ActiveRecord::Base.connection.select_rows(query).to_h
     end
 
     def query

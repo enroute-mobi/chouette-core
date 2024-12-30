@@ -358,7 +358,7 @@ module Search
         end
 
         def order_arg(request, asc_desc)
-          groups.map { |s| [request.send(:column_alias_for, s), asc_desc] }.to_h
+          groups.map { |s| [request.send(:column_alias_for, s.downcase), asc_desc] }.to_h
         end
 
         protected
@@ -668,7 +668,7 @@ module Search
       end
 
       def column_alias(operation, sql_definition)
-        models.send(:column_alias_for, "#{operation} #{sql_definition}")
+        models.send(:column_alias_for, "#{operation} #{sql_definition.downcase}")
       end
 
       def aggregate(request)

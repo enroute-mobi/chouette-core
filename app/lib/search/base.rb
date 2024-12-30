@@ -438,7 +438,7 @@ module Search
 
         class DayOfWeek < StringGroupByAttribute
           def keys
-            @keys ||= (0..6).map { |d| (d + Date::DAYS_INTO_WEEK[Date.beginning_of_week] + 1) % 7 }
+            @keys ||= (0..6).map { |d| (d + Date::DAYS_INTO_WEEK[Date.beginning_of_week]) % 7 }
           end
 
           def sortable

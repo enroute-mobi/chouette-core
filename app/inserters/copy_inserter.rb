@@ -94,11 +94,11 @@ class CopyInserter < ByClassInserter
 
   class VehicleJourneyAtStop < Base
 
-    # id,vehicle_journey_id,stop_point_id,connecting_service_id,boarding_alighting_possibility,arrival_time,departure_time,for_boarding,for_alighting,departure_day_offset,arrival_day_offset,checksum,checksum_source,stop_area_id
+    # id,vehicle_journey_id,stop_point_id,arrival_time,departure_time,departure_day_offset,arrival_day_offset,checksum,checksum_source,stop_area_id
     # 1,1,1,,,12:00:00,12:01:00,normal,normal,0,0,b1c0ac4b48e0db6883d4cf8d89bfc0c9968284314445f95569204626db9c22e8,12:01|12:00|0|0,
 
     def csv_headers
-      %w{id vehicle_journey_id stop_point_id connecting_service_id boarding_alighting_possibility arrival_time departure_time for_boarding for_alighting departure_day_offset arrival_day_offset checksum checksum_source stop_area_id}
+      %w{id vehicle_journey_id stop_point_id arrival_time departure_time departure_day_offset arrival_day_offset checksum checksum_source stop_area_id}
     end
 
     def model_class
@@ -106,7 +106,7 @@ class CopyInserter < ByClassInserter
     end
 
     def csv_values(v)
-      "#{v.id},#{v.vehicle_journey_id},#{v.stop_point_id},,,#{type_cast_time(v.arrival_time)},#{type_cast_time(v.departure_time)},#{v.for_boarding},#{v.for_alighting},#{v.departure_day_offset},#{v.arrival_day_offset},#{v.checksum},#{v.checksum_source},#{v.stop_area_id}"
+      "#{v.id},#{v.vehicle_journey_id},#{v.stop_point_id},#{type_cast_time(v.arrival_time)},#{type_cast_time(v.departure_time)},#{v.departure_day_offset},#{v.arrival_day_offset},#{v.checksum},#{v.checksum_source},#{v.stop_area_id}"
     end
 
     TIME_FORMAT = "%H:%M:%S"

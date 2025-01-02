@@ -678,7 +678,7 @@ ActiveRecord::Schema.define(version: 2025_02_12_100249) do
   end
 
   create_table "footnotes", force: :cascade do |t|
-    t.bigint "line_id"
+    t.bigint "line_id", null: false
     t.string "code"
     t.string "label"
     t.datetime "created_at"
@@ -689,8 +689,8 @@ ActiveRecord::Schema.define(version: 2025_02_12_100249) do
   end
 
   create_table "footnotes_vehicle_journeys", id: false, force: :cascade do |t|
-    t.bigint "vehicle_journey_id"
-    t.bigint "footnote_id"
+    t.bigint "vehicle_journey_id", null: false
+    t.bigint "footnote_id", null: false
   end
 
   create_table "import_messages", force: :cascade do |t|
@@ -751,11 +751,10 @@ ActiveRecord::Schema.define(version: 2025_02_12_100249) do
   end
 
   create_table "journey_patterns", force: :cascade do |t|
-    t.bigint "route_id"
+    t.bigint "route_id", null: false
     t.string "objectid", null: false
     t.bigint "object_version"
     t.string "name"
-    t.string "comment"
     t.string "registration_number"
     t.string "published_name"
     t.bigint "departure_stop_point_id"
@@ -777,8 +776,8 @@ ActiveRecord::Schema.define(version: 2025_02_12_100249) do
   end
 
   create_table "journey_patterns_stop_points", id: false, force: :cascade do |t|
-    t.bigint "journey_pattern_id"
-    t.bigint "stop_point_id"
+    t.bigint "journey_pattern_id", null: false
+    t.bigint "stop_point_id", null: false
     t.index ["journey_pattern_id"], name: "index_journey_pattern_id_on_journey_patterns_stop_points"
   end
 
@@ -1295,15 +1294,12 @@ ActiveRecord::Schema.define(version: 2025_02_12_100249) do
   end
 
   create_table "routes", force: :cascade do |t|
-    t.bigint "line_id"
+    t.bigint "line_id", null: false
     t.string "objectid", null: false
     t.bigint "object_version"
     t.string "name"
-    t.string "comment"
     t.bigint "opposite_route_id"
     t.string "published_name"
-    t.string "number"
-    t.string "direction"
     t.string "wayback"
     t.datetime "created_at"
     t.datetime "updated_at"
@@ -1322,7 +1318,7 @@ ActiveRecord::Schema.define(version: 2025_02_12_100249) do
     t.datetime "updated_at"
     t.string "objectid", null: false
     t.bigint "object_version"
-    t.bigint "route_id"
+    t.bigint "route_id", null: false
     t.bigint "stop_point_ids", array: true
     t.string "checksum"
     t.text "checksum_source"
@@ -1358,11 +1354,11 @@ ActiveRecord::Schema.define(version: 2025_02_12_100249) do
   end
 
   create_table "service_counts", force: :cascade do |t|
-    t.bigint "journey_pattern_id"
-    t.bigint "route_id"
-    t.bigint "line_id"
-    t.date "date"
-    t.integer "count", default: 0
+    t.bigint "journey_pattern_id", null: false
+    t.bigint "route_id", null: false
+    t.bigint "line_id", null: false
+    t.date "date", null: false
+    t.integer "count", default: 0, null: false
     t.index ["journey_pattern_id"], name: "journey_pattern_id"
     t.index ["line_id"], name: "line_id"
     t.index ["route_id"], name: "route_id"
@@ -1563,11 +1559,11 @@ ActiveRecord::Schema.define(version: 2025_02_12_100249) do
   end
 
   create_table "stop_points", force: :cascade do |t|
-    t.bigint "route_id"
-    t.bigint "stop_area_id"
+    t.bigint "route_id", null: false
+    t.bigint "stop_area_id", null: false
     t.string "objectid", null: false
     t.bigint "object_version"
-    t.integer "position"
+    t.bigint "position", null: false
     t.string "for_boarding"
     t.string "for_alighting"
     t.datetime "created_at"
@@ -1601,7 +1597,6 @@ ActiveRecord::Schema.define(version: 2025_02_12_100249) do
   create_table "time_tables", force: :cascade do |t|
     t.string "objectid", null: false
     t.bigint "object_version", default: 1
-    t.string "version"
     t.string "comment"
     t.integer "int_day_types", default: 0
     t.date "start_date"
@@ -1621,8 +1616,8 @@ ActiveRecord::Schema.define(version: 2025_02_12_100249) do
   end
 
   create_table "time_tables_vehicle_journeys", id: false, force: :cascade do |t|
-    t.bigint "time_table_id"
-    t.bigint "vehicle_journey_id"
+    t.bigint "time_table_id", null: false
+    t.bigint "vehicle_journey_id", null: false
     t.index ["time_table_id"], name: "index_time_tables_vehicle_journeys_on_time_table_id"
     t.index ["vehicle_journey_id"], name: "index_time_tables_vehicle_journeys_on_vehicle_journey_id"
   end
@@ -1678,14 +1673,10 @@ ActiveRecord::Schema.define(version: 2025_02_12_100249) do
   end
 
   create_table "vehicle_journey_at_stops", force: :cascade do |t|
-    t.bigint "vehicle_journey_id"
-    t.bigint "stop_point_id"
-    t.string "connecting_service_id"
-    t.string "boarding_alighting_possibility"
+    t.bigint "vehicle_journey_id", null: false
+    t.bigint "stop_point_id", null: false
     t.time "arrival_time"
     t.time "departure_time"
-    t.string "for_boarding"
-    t.string "for_alighting"
     t.integer "departure_day_offset", default: 0
     t.integer "arrival_day_offset", default: 0
     t.string "checksum"
@@ -1697,21 +1688,14 @@ ActiveRecord::Schema.define(version: 2025_02_12_100249) do
   end
 
   create_table "vehicle_journeys", force: :cascade do |t|
-    t.bigint "route_id"
-    t.bigint "journey_pattern_id"
+    t.bigint "route_id", null: false
+    t.bigint "journey_pattern_id", null: false
     t.bigint "company_id"
     t.string "objectid", null: false
     t.bigint "object_version"
-    t.string "comment"
     t.string "transport_mode"
     t.string "published_journey_name"
     t.string "published_journey_identifier"
-    t.string "facility"
-    t.string "vehicle_type_identifier"
-    t.bigint "number"
-    t.boolean "mobility_restricted_suitability"
-    t.boolean "flexible_service"
-    t.integer "journey_category", default: 0, null: false
     t.datetime "created_at"
     t.datetime "updated_at"
     t.string "checksum"

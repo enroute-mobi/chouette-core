@@ -89,7 +89,7 @@ RSpec.describe CopyInserter do
 
         it "uses a static header definition" do
           allow(Chouette::VehicleJourneyAtStop).to receive(:columns).and_return(Chouette::VehicleJourneyAtStop.columns.reverse)
-          is_expected.to eq(%w{id vehicle_journey_id stop_point_id connecting_service_id boarding_alighting_possibility arrival_time departure_time for_boarding for_alighting departure_day_offset arrival_day_offset checksum checksum_source stop_area_id})
+          is_expected.to eq(%w{id vehicle_journey_id stop_point_id arrival_time departure_time departure_day_offset arrival_day_offset checksum checksum_source stop_area_id})
         end
 
       end

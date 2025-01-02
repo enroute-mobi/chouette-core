@@ -2,7 +2,6 @@ FactoryBot.define do
   factory :journey_pattern_common, :class => Chouette::JourneyPattern do
     sequence(:name) { |n| "jp name #{n}" }
     sequence(:published_name) { |n| "jp publishedname #{n}" }
-    sequence(:comment) { |n| "jp comment #{n}" }
     sequence(:registration_number) { |n| "jp registration_number #{n}" }
     sequence(:objectid) { |n| "organisation:JourneyPattern:lineId-#{n}:LOC" }
     association :route, :factory => :route

@@ -58,7 +58,7 @@ child :footnotes, :object_root => false do
 end
 
 child(:vehicle_journey_at_stops_matrix, :object_root => false) do |vehicle_stops|
-  attributes :id, :connecting_service_id, :boarding_alighting_possibility, :stop_point_id
+  attributes :id, :stop_point_id
   node do |vehicle_stop|
 
     node(:dummy) { vehicle_stop.dummy }

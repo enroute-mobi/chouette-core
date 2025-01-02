@@ -2,9 +2,7 @@ FactoryBot.define do
   factory :route_common, :class => Chouette::Route do
     sequence(:name) { |n| "Route #{n}" }
     sequence(:published_name) { |n| "Long route #{n}" }
-    sequence(:number) { |n| "#{n}" }
     sequence(:wayback) { |n| Chouette::Route.wayback.values[n % 2] }
-    sequence(:direction) { |n| Chouette::Route.direction.values[n % 12] }
     sequence(:objectid) { |n| "organisation:Route:lineId-routeId#{n}:LOC" }
 
     factory :route do

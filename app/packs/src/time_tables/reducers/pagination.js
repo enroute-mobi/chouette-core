@@ -6,6 +6,7 @@ export default function pagination(state = {}, action) {
       return assign({}, state, {
         currentPage: action.json.current_periode_range,
         periode_range: action.json.periode_range,
+        code_values: action.json.code_values,
         stateChanged: false
       })
     case 'RECEIVE_MONTH':

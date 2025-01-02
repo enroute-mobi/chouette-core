@@ -11,4 +11,5 @@
   // | window.I18n = #{(I18n.backend.send(:translations)[I18n.locale].to_json).html_safe};
   | window.timetablesUrl = "#{workbench_referential_time_table_path(@workbench, @referential, @time_table).html_safe}";
   | window.redirectUrl = window.timetablesUrl;
+  | window.available_code_spaces = #{(@referential.workgroup&.code_spaces.to_json)&.html_safe};
 

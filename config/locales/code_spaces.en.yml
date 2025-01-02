@@ -16,6 +16,7 @@ en:
         code:
           duplicate_code_spaces_in_codes: "The Code Space \"%{code_space}\" doesn't allow several values in the same model"
           duplicate_values_in_codes: Duplicate key value violates unique constraint
+          blank:  The code value can't be empty
   code_spaces:
     actions:
       new: Add Code Space

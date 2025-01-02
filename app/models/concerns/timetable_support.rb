@@ -99,6 +99,8 @@ module TimetableSupport
   end
 
   def state_update state
+    state.delete('errors')
+
     update_attributes(self.class.state_permited_attributes(state))
     self.calendar_id = nil if self.respond_to?(:calendar_id) && !state['calendar']
 
@@ -151,7 +153,14 @@ module TimetableSupport
       period.period_end   = Date.parse(item['period_end'])
     end
 
-    self.save
-  end
+    if state.key?('code_values')
+      assign_state_codes(state['code_values'])
+    end
 
+    self.save
+
+    if errors.any?
+      state['errors'] = errors.to_a
+    end
+  end
 end

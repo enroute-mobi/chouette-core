@@ -54,8 +54,8 @@
           = d.attribute :active_until, as: :date
 
         = simple_block_for @line, title: t("lines.form.sections.publication_data") do |d|
-          = d.attribute :color, value: color_icon(@line.color)
-          = d.attribute :text_color, value: color_icon(@line.text_color)
+          = d.attribute :color, as: :color
+          = d.attribute :text_color, as: :color
           = d.attribute :url, link: @line.url
 
         = simple_block_for @line, title: t("lines.form.sections.accessibility") do |d|

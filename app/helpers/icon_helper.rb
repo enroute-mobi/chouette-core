@@ -37,12 +37,6 @@ module IconHelper
       title: title
   end
 
-  def color_icon(color)
-    painted_color = color.presence || 'FFFFFF'
-    displayed_color = color.present? ? "##{color}" : '-'
-    content_tag(:i, nil, class: 'fa fa-square fa-lg', style:"color:##{painted_color}") + " #{displayed_color}"
-  end
-
   module Private
     extend ActionView::Helpers::OutputSafetyHelper
 

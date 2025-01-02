@@ -7,6 +7,7 @@ import Timetable from './Timetable'
 import Navigate from './Navigate'
 import PeriodForm from './PeriodForm'
 import PeriodList from './PeriodList'
+import CodesList from './CodesList'
 import CancelTimetable from './CancelTimetable'
 import SaveTimetable from './SaveTimetable'
 import ConfirmModal from './ConfirmModal'
@@ -26,11 +27,12 @@ class App extends Component {
     return(
       <div className='row'>
         <div className="col-lg-8 col-lg-offset-2 col-md-8 col-md-offset-2 col-sm-10 col-sm-offset-1">
-          <Metas isCalendar={this.props.isCalendar} />
+          <Metas />
           <Navigate />
           <Timetable />
           <PeriodForm />
           <PeriodList />
+          <CodesList />
           <CancelTimetable />
           <SaveTimetable />
           <ConfirmModal />
@@ -50,12 +52,7 @@ const mapDispatchToProps = (dispatch) => {
   }
 }
 
-App.defaultProps = {
-  isCalendar: false
-}
-
 App.propTypes = {
-  isCalendar: PropTypes.bool.isRequired,
   onLoadFirstPage: PropTypes.func.isRequired
 }
 

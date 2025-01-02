@@ -94,4 +94,29 @@ module CodeSupport
       end
     end
   end
+
+  def code_values
+    codes.joins(:code_space)
+         .select('code_spaces.short_name', :code_space_id, :value, :id)
+         .map(&:attributes)
+  end
+
+  def assign_state_codes(state_codes) # rubocop:disable Metrics/MethodLength
+    codes_by_id = codes.index_by(&:id)
+
+    state_codes.each do |code|
+      next unless value = code['value']
+      attributes = {
+        code_space_id: code['code_space_id'],
+        value: value
+      }
+      if id = code['id']
+        codes_by_id.delete(id)&.attributes = attributes
+      else
+        codes.new(attributes)
+      end
+    end
+
+    codes_by_id.each_value(&:mark_for_destruction)
+  end
 end

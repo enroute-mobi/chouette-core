@@ -1,4 +1,4 @@
-describe "/stop_areas/new", type: :view do
+describe 'stop_areas/new', type: :view do
 
   let(:context) { Chouette.create { stop_area_referential } }
 

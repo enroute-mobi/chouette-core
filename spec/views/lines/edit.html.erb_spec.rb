@@ -1,4 +1,4 @@
-describe "/lines/edit", :type => :view do
+describe 'lines/edit', type: :view do
   let!(:network) { create(:network) }
   let!(:company) { create(:company) }
   let(:line_provider) { build :line_provider, line_referential: line_referential, workbench: workbench }

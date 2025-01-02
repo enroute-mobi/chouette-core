@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-RSpec.describe '/publication_apis/show', type: :view do
+RSpec.describe 'publication_apis/show', type: :view do
   let(:context) do
     Chouette.create do
       organisation = Organisation.find_by(code: 'first')

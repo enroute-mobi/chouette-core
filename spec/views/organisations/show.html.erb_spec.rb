@@ -1,4 +1,4 @@
-RSpec.describe "/organisations/show", type: :view do
+RSpec.describe 'organisations/show', type: :view do
   assign_organisation
 
   let(:organisation) { first_organisation }

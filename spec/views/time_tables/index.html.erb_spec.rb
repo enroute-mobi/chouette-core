@@ -1,5 +1,5 @@
 
-describe "/time_tables/index", :type => :view do
+describe 'time_tables/index', type: :view do
 
   assign_referential
   let!(:time_tables) { assign :time_tables, Array.new(2){ create(:time_table) }.paginate }

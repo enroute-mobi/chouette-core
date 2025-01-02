@@ -13,17 +13,21 @@ const Metas = ({
 }) => (
   <div className='form-horizontal'>
     { metas?.errors && (
-      <div className="alert alert-danger mt-sm">
-        <strong> {I18n.t('error')} : </strong>
-        {metas.errors.map((error, i) => {
-          return (
-            <ul key={i}>
-              <li>{error}</li>
-              <br />
-            </ul>
-          )
-        })}
-      </div>
+       <div className='row'>
+          <div className='col-lg-12'>
+            <div className="alert alert-danger mt-sm mb-sm">
+              <strong> {I18n.t('error')} : </strong>
+              {metas.errors.map((error, i) => {
+                return (
+                  <ul key={i}>
+                    <li>{error}</li>
+                    <br />
+                  </ul>
+                )
+              })}
+            </div>
+          </div>
+        </div>
     )}
     <div className="row">
       <div className="col-lg-10 col-lg-offset-1">

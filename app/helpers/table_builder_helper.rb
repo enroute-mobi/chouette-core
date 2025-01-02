@@ -1,5 +1,4 @@
 require 'table_builder_helper/column'
-require 'table_builder_helper/url'
 
 # table_builder_2
 # A Rails helper that constructs an HTML table from a collection of objects. It

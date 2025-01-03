@@ -7,7 +7,7 @@ module Delayed
     # extend ActiveSupport::Concern
 
     def self.prepended(base) # rubocop:disable Metrics/AbcSize,Metrics/MethodLength
-      base.before_save :store_organisation, on: :create
+      base.before_create :store_organisation
 
       # Limit for locked/running jobs for each organisation
       base.mattr_accessor :max_workers_per_organisation, default: 1

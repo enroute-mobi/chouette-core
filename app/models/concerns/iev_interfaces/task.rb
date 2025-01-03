@@ -38,7 +38,7 @@ module IevInterfaces::Task
 
     scope :successful, -> { where(status: :successful) }
 
-    before_save :initialize_fields, on: :create
+    before_create :initialize_fields
 
     status.values.each do |s|
       define_method "#{s}!" do

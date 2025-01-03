@@ -61,6 +61,10 @@ module Search
       stop_area_referential.stop_areas.find(parent_id) if parent_id.present?
     end
 
+    def scope(initial_scope)
+      Scope.new(initial_scope, self)
+    end
+
     private
 
     def flag(value)
@@ -126,6 +130,10 @@ module Search
           key.human_name
         end
       end
+    end
+
+    class Scope < ::Scope::Search
+      search_on :stop_areas
     end
   end
 end

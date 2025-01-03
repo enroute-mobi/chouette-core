@@ -223,6 +223,16 @@ module Chouette
             end
           end
 
+          model :contract do
+            attribute(:name) { |n| "Contract #{n}" }
+
+            transient :lines
+
+            after do
+              new_instance.lines = Array(transient(:lines, resolve_instances: true))
+            end
+          end
+
           model :line_provider do
             attribute(:short_name) { |n| "line_provider_#{n}" }
             attribute(:name) { |n| "Line Provider #{n}" }
@@ -250,10 +260,15 @@ module Chouette
               end
             end
 
+            model :line_group do
+              attribute(:name) { |n| "LineGroup #{n}" }
+            end
+
             model :company do
               attribute(:name) { |n| "Company #{n}" }
 
               transient :codes
+              transient :documents
 
               after do
                 new_instance.line_referential = parent.line_referential
@@ -261,6 +276,10 @@ module Chouette
                 (transient(:codes) || {}).each do |code_space_short_name, value|
                   code_space = new_instance.workgroup.code_spaces.find_by!(short_name: code_space_short_name)
                   new_instance.codes.build(code_space: code_space, value: value)
+                end
+
+                Array(transient(:documents, resolve_instances: true)).each do |document|
+                  new_instance.document_memberships.build document: document
                 end
               end
             end
@@ -310,6 +329,7 @@ module Chouette
               attribute(:longitude) { 2.2945 - 2 + 4 * rand }
 
               transient :codes, {}
+              transient :documents
 
               after do
                 new_instance.stop_area_referential = parent.stop_area_referential
@@ -320,6 +340,10 @@ module Chouette
                     new_instance.codes.build(code_space: code_space, value: value)
                   end
                 end
+
+                Array(transient(:documents, resolve_instances: true)).each do |document|
+                  new_instance.document_memberships.build document: document
+                end
               end
 
               model :entrance do
@@ -328,6 +352,10 @@ module Chouette
                   new_instance.stop_area_provider = parent.stop_area_provider
                 end
               end
+            end
+
+            model :stop_area_group do
+              attribute(:name) { |n| "StopAreaGroup #{n}" }
             end
 
             model :stop_area_routing_constraint do
@@ -425,7 +453,11 @@ module Chouette
                 new_instance.file = File.new(file_path)
 
                 document_type = transient(:document_type, resolve_instances: true) ||
-                  parent.workbench.workgroup.document_types.create!(name: 'Default', short_name: 'default')
+                                parent.workbench.workgroup.document_types.first ||
+                                parent.workbench.workgroup.document_types.create!(
+                                  name: 'Default',
+                                  short_name: 'default'
+                                )
 
                 new_instance.document_type = document_type
               end

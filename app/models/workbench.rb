@@ -27,9 +27,11 @@ class Workbench < ApplicationModel
 
   has_many :lines, -> (workbench) { workbench.workbench_scopes.lines_scope(self) }, through: :line_referential
   has_many :stop_areas, -> (workbench) { workbench.workbench_scopes.stop_areas_scope(self) }, through: :stop_area_referential
+  has_many :line_groups, through: :line_referential
   has_many :networks, through: :line_referential
   has_many :companies, through: :line_referential
   has_many :line_notices, through: :line_referential
+  has_many :line_routing_constraint_zones, through: :line_referential
   has_many :imports, class_name: 'Import::Base', dependent: :destroy
   has_many :exports, class_name: 'Export::Base', dependent: :destroy
   has_many :sources, dependent: :destroy
@@ -39,6 +41,8 @@ class Workbench < ApplicationModel
   has_many :source_retrievals, class_name: "Source::Retrieval"
   has_many :processing_rules, class_name: "ProcessingRule::Workbench"
   has_many :point_of_interests, through: :shape_referential
+  has_many :service_facility_sets, through: :shape_referential
+  has_many :accessibility_assessments, through: :shape_referential
   has_many :saved_searches, class_name: 'Search::Save', as: :parent, dependent: :destroy
   has_many :calendars, dependent: :destroy
 
@@ -72,6 +76,7 @@ class Workbench < ApplicationModel
   has_many :documents, through: :document_providers
   has_many :document_memberships, through: :documents, source: :memberships
 
+  has_many :stop_area_groups, through: :stop_area_providers
   has_many :connection_links, through: :stop_area_providers
   has_many :entrances, through: :stop_area_providers
 

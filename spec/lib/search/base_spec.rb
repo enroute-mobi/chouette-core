@@ -602,6 +602,16 @@ RSpec.describe Search::Base, type: :model do
       end
     end
   end
+
+  describe '#scope' do
+    subject(:scope) { search.scope(initial_scope) }
+
+    let(:initial_scope) { double(:initial_scope) }
+
+    it 'returns initial scope unchanged' do
+      is_expected.to eq(initial_scope)
+    end
+  end
 end
 
 RSpec.describe Search::Base::FromParamsBuilder do

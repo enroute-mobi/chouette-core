@@ -284,6 +284,10 @@ module Search
       { per_page: per_page, page: page }
     end
 
+    def scope(initial_scope)
+      initial_scope
+    end
+
     class Chart
       class GroupByAttribute
         class << self

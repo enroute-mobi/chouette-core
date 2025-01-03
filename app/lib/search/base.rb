@@ -285,7 +285,7 @@ module Search
     end
 
     def scope(initial_scope)
-      Scope.new(initial_scope, self)
+      initial_scope
     end
 
     class Chart
@@ -864,16 +864,6 @@ module Search
           :desc
         end
       end
-    end
-  end
-
-  class Base
-    class Scope < ::Scope::Search
-      # routes is arbitrary defined as the central model but its method is redefined to not use search
-
-      search_on :routes
-
-      delegate :routes, to: :initial_scope
     end
   end
 end

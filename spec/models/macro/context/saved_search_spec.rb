@@ -47,7 +47,7 @@ RSpec.describe Macro::Context::SavedSearch::Run do
   describe '#scope' do
     subject { macro_context_run.scope(initial_scope) }
 
-    let(:initial_scope) { double }
+    let(:initial_scope) { double(:initial_scope) }
 
     context 'with Line search' do
       let(:saved_search_id) do
@@ -100,15 +100,8 @@ RSpec.describe Macro::Context::SavedSearch::Run do
         ).id
       end
 
-      it { is_expected.to be_a(Search::Base::Scope) }
-
       it do
-        is_expected.to have_attributes(
-          initial_scope: initial_scope,
-          search: have_attributes(
-            name: 'Plop'
-          )
-        )
+        is_expected.to eq(initial_scope)
       end
     end
   end

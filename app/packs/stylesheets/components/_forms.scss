@@ -1285,46 +1285,6 @@ $grp-cbx-size: 34px;
     }
   }
 }
-.custom_field_attachment_wrapper {
-  .btn {
-    padding: 0 0 0 12px;
-    float: left;
-    & > * {
-      cursor: pointer;
-    }
-    label {
-      padding: 6px 12px;
-      margin: 0;
-    }
-  }
-  & > div > .form-group .col-sm-8 {
-    padding: 0;
-    text-align: left;
-  }
-  .delete-wrapper {
-    input {
-      display: none;
-    }
-    label {
-      padding: 0;
-      &:before {
-        content: "\f00d";
-        font-family: "Font Awesome 5 Free";
-        font-weight: 600;
-        color: red;
-        padding-right: 10px;
-      }
-    }
-  }
-  .form-group,
-  .checkbox {
-    margin: 0;
-    &.col-sm-12 {
-      padding: 0;
-      text-align: center;
-    }
-  }
-}
 .js .formSubmitr {
   display: none;
   .page-action .formSubmitr {

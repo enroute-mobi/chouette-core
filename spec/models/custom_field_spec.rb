@@ -237,40 +237,4 @@ RSpec.describe CustomField, type: :model do
       expect(vj.custom_fields[:energy].value).to eq '99'
     end
   end
-
-  context "with a 'attachment' field_type" do
-    let!(:field){ [create(:custom_field, code: :energy, field_type: 'attachment', workgroup: workgroup)] }
-    let(:vj){ create :vehicle_journey, custom_field_values: { energy: File.open(Rails.root.join('spec', 'fixtures', 'invalid_version.json')) }}
-
-    after(:each) do
-      to_be_deleted = Chouette::VehicleJourney.__callbacks[:commit].select {|call| call.instance_variable_get('@key') =~ /custom_field/ }
-      to_be_deleted.each do |callback|
-        Chouette::VehicleJourney.__callbacks[:commit].delete callback
-      end
-    end
-    # This spec is actually valid, but will fail if the VehicleJourneys specs are run before
-    # xit "should cast the value" do
-    #   expect(vj.custom_fields[:energy].value.class).to be CustomFieldAttachmentUploader
-    #   path = vj.custom_fields[:energy].value.path
-    #   expect(File.exists?(path)).to be_truthy
-    #   expect(vj).to receive(:remove_custom_field_energy!).and_call_original
-    #   vj.destroy
-    #   expect(File.exists?(path)).to be_falsy
-    # end
-
-    it "should display a link" do
-      val = vj.custom_fields[:energy].value
-      out = vj.custom_fields[:energy].display_value
-      expect(out).to match(val.url)
-      expect(out).to match(/\<a.*\>/)
-    end
-
-    context "with a whitelist" do
-      let!(:field){ [create(:custom_field, code: :energy, field_type: 'attachment', options: {extension_whitelist: %w(zip)}, workgroup: workgroup)] }
-      it "should validate extension" do
-        expect(build(:vehicle_journey, custom_field_values: {energy: File.open(Rails.root.join('spec', 'fixtures', 'invalid_version.json'))})).to_not be_valid
-        expect(build(:vehicle_journey, custom_field_values: {energy: File.open(Rails.root.join('spec', 'fixtures', 'nozip.zip'))})).to be_valid
-      end
-    end
-  end
 end

@@ -4,7 +4,7 @@ class CustomField < ApplicationModel
   belongs_to :workgroup # CHOUETTE-3247 optional: false
   belongs_to :custom_field_group, optional: true # CHOUETTE-3247
 
-  enumerize :field_type, in: %i{list integer float string attachment}
+  enumerize :field_type, in: %i[list integer float string]
 
   validates :name, uniqueness: {scope: [:resource_type, :workgroup_id]}
   validates :code, uniqueness: {scope: [:resource_type, :workgroup_id], case_sensitive: false}, presence: true
@@ -151,13 +151,6 @@ class CustomField < ApplicationModel
         val || default_value
       end
 
-      def render_partial
-        ActionView::Base.new(Rails.configuration.paths["app/views"].first).render(
-          :partial => "shared/custom_fields/#{field_type}",
-          :locals => { field: self}
-        )
-      end
-
       class Input
         def initialize instance, form_helper
           @instance = instance
@@ -299,161 +292,6 @@ class CustomField < ApplicationModel
           super.update({
             selected: value,
             collection: collection
-          })
-        end
-      end
-    end
-
-    class Attachment < Base
-      def initialize_custom_field
-        custom_field_code = self.code
-        _attr_name = attr_name
-        _uploader_name = uploader_name
-        _digest_name = digest_name
-
-        read_uploaders = owner.instance_variable_get("@read_uploaders") || {}
-        write_uploaders = owner.instance_variable_get("@write_uploaders") || {}
-        read_uploaders[_attr_name] = ->(){
-          custom_field_values[custom_field_code] && custom_field_values[custom_field_code]["path"]
-        }
-
-        write_uploaders[_attr_name] = ->(val){
-          self.custom_field_values[custom_field_code] ||= {}
-          self.custom_field_values[custom_field_code]["path"] = val
-          self.custom_field_values[custom_field_code]["digest"] = self.send _digest_name
-        }
-
-        owner.instance_variable_set "@read_uploaders", read_uploaders
-        owner.instance_variable_set "@write_uploaders", write_uploaders
-
-        owner.send :define_singleton_method, "read_uploader" do |attr|
-          if @read_uploaders[attr.to_s]
-            instance_exec &@read_uploaders[attr.to_s]
-          else
-            read_attribute attr
-          end
-        end
-
-        owner.send :define_singleton_method, "write_uploader" do |attr, val|
-          if @write_uploaders[attr.to_s]
-            instance_exec val, &@write_uploaders[attr.to_s]
-          else
-            write_attribute attr, val
-          end
-        end
-
-        owner.send :define_singleton_method, "#{_attr_name}_will_change!" do
-          self.send "#{_digest_name}=", nil
-          custom_field_values_will_change!
-        end
-
-        owner.send :define_singleton_method, _digest_name do
-          val = instance_variable_get "@#{_digest_name}"
-          if val.nil? && (file = send(_uploader_name)).present?
-            val = CustomField::Instance::Attachment.digest(file)
-            instance_variable_set "@#{_digest_name}", val
-          end
-          val
-        end
-
-        owner.send :define_singleton_method, :reload do |*args|
-          instance_variable_set "@#{_digest_name}", nil
-          super *args
-        end
-
-        _extension_whitelist = options["extension_whitelist"]
-
-        owner.send :define_singleton_method, "#{_uploader_name}_extension_whitelist" do
-          _extension_whitelist
-        end
-
-        unless owner.class.uploaders.has_key? _uploader_name.to_sym
-          owner.class.mount_uploader _uploader_name, CustomFieldAttachmentUploader, mount_on: "custom_field_#{code}_raw_value"
-          owner.class.send :attr_accessor, _digest_name
-        end
-
-        digest = @raw_value && @raw_value["digest"]
-        owner.send "#{_digest_name}=", digest
-      end
-
-      def self.digest file
-        Digest::SHA256.file(file.path).hexdigest
-      end
-
-      def preprocess_value_for_assignment val
-        if val.present? && !val.is_a?(Hash)
-          owner.send "#{uploader_name}=", val
-        else
-          @raw_value
-        end
-      end
-
-      def checksum
-        owner.send digest_name
-      end
-
-      def value
-        owner.send "custom_field_#{code}"
-      end
-
-      def raw_value
-        @raw_value
-      end
-
-      def attr_name
-        "custom_field_#{code}_raw_value"
-      end
-
-      def uploader_name
-        "custom_field_#{code}"
-      end
-
-      def digest_name
-        "#{uploader_name}_digest"
-      end
-
-      def display_value
-        render_partial
-      end
-
-      class Input < Base::Input
-        def preview
-          preview = ""
-          if @instance.value.present?
-            preview = @form_helper.label form_input_id, @instance.value.file&.filename
-          else
-            preview = @form_helper.label form_input_id, "actions.select".t
-          end
-          preview
-        end
-
-        def form_input
-          out = "<div class = 'custom_field_attachment_wrapper form-group'>"
-          out += @form_helper.label form_input_id, name, class: "file optional col-sm-4 col-xs-5 control-label"
-          out += "<div class='col-sm-8 col-xs-7'>"
-          out += "<div class='btn btn-primary'>"
-          out += "<span class='fa fa-upload'></span>"
-          out += preview
-          out += "</div>"
-
-          out += "<div class='col-sm-4 delete-wrapper #{@instance.value.file&.present? ? '' : 'hidden'}'>"
-          out += @form_helper.input "remove_custom_field_#{code}".to_sym, as: :boolean, label: "actions.delete".t, checked: false
-          out += "</div>"
-
-          out += @form_helper.input form_input_id, form_input_options
-          out += "</div>"
-          out += "</div>"
-          out.html_safe
-        end
-
-        def form_input_options
-          super.update({
-            as: :file,
-            wrapper: :horizontal_file_input,
-            wrapper_html: {class: 'col-sm-12'},
-            label: false,
-            input_html: {value: value, name: form_input_name, style: "display: none", class: "file custom_field_attachment"},
-            hint: options["extension_whitelist"]&.to_sentence
           })
         end
       end

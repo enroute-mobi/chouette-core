@@ -18,7 +18,6 @@ describe('stopPointHeader', () => {
       onOpenEditModal: ()=>{},
       stopPointsList: [stop_point, same_city_stop_point, other_country_stop_point],
       journeyPatterns: [],
-      fetchRouteCosts: () => {}
     }
     let list = renderer.create(
       <JourneyPatterns
@@ -28,7 +27,6 @@ describe('stopPointHeader', () => {
         onCheckboxChange={props.onCheckboxChange}
         onLoadFirstPage={props.onLoadFirstPage}
         onOpenEditModal={props.onOpenEditModal}
-        fetchRouteCosts={props.fetchRouteCosts}
       />
     ).toJSON()
 

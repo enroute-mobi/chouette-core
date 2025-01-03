@@ -1287,7 +1287,6 @@ ActiveRecord::Schema.define(version: 2024_12_06_144247) do
     t.string "checksum"
     t.text "checksum_source"
     t.string "data_source_ref"
-    t.jsonb "costs", default: {}
     t.jsonb "metadata"
     t.index ["checksum"], name: "index_routes_on_checksum"
     t.index ["line_id"], name: "index_routes_on_line_id"

@@ -193,25 +193,4 @@ RSpec.describe Chouette::Route, :type => :model do
       expect{route.run_callbacks(:commit)}.to_not raise_error
     end
   end
-
-  context "with TomTom enabled" do
-    before do
-      dummy_key = ['a'..'z','A'..'Z',0..9].map(&:to_a).flatten.sample(32).join
-      allow(TomTom).to receive(:api_key).and_return dummy_key
-    end
-
-    it "should not calculate costs after commit" do
-      expect{route.run_callbacks(:commit)}.to change {Delayed::Job.count}.by(0)
-    end
-
-    context "with route_calculate_costs and costs_in_journey_patterns features in the organisation" do
-      before do
-        route.referential.organisation.update_attribute(:features, [:route_calculate_costs, :costs_in_journey_patterns])
-      end
-
-      it "should calculate costs after commit" do
-        expect{route.run_callbacks(:commit)}.to change {Delayed::Job.count}.by(1)
-      end
-    end
-  end
 end

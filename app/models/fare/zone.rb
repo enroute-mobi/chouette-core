@@ -17,7 +17,9 @@ module Fare
     has_many :stop_areas, through: :stop_area_zones
     has_many :fare_geographic_references, class_name: 'Fare::GeographicReference',
                                           foreign_key: 'fare_zone_id',
-                                          dependent: :delete_all
+                                          dependent: :delete_all,
+                                          inverse_of: 'fare_zone'
+
     accepts_nested_attributes_for :fare_geographic_references, allow_destroy: true, reject_if: :all_blank
 
     validates_associated :fare_geographic_references

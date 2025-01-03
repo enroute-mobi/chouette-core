@@ -132,7 +132,7 @@ module Search
       end
     end
 
-    class Scope < ::Search::Scope
+    class Scope < ::Scope::Search
       search_on :stop_areas
     end
   end

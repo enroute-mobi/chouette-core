@@ -421,4 +421,41 @@ module Scope
 
     attr_accessor :scope, :workbench
   end
+
+  class Search < ::Scope::CenteredOnModel
+    class << self
+      def search_on(model)
+        scope_centered_on(model)
+
+        class_eval <<-RUBY, __FILE__, __LINE__ + 1
+          def #{model}
+            search.without_pagination.search(initial_scope.#{model})
+          end
+        RUBY
+      end
+    end
+
+    def initialize(initial_scope, search)
+      super()
+      @initial_scope = initial_scope
+      @search = search
+    end
+    attr_reader :initial_scope, :search
+
+    delegate :point_of_interests,
+             :accessibility_assessments,
+             to: :initial_scope
+
+    protected
+
+    def workgroup_scope
+      initial_scope.workgroup
+    end
+
+    alias line_referential_scope initial_scope
+    alias stop_area_referential_scope initial_scope
+    alias shape_referential_scope initial_scope
+    alias fare_referential_scope initial_scope
+    alias referential_scope initial_scope
+  end
 end

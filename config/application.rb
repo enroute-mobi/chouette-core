@@ -18,6 +18,8 @@ Chouette::Config.load
 
 module ChouetteIhm
   class Application < Rails::Application
+    # Initialize configuration defaults for originally generated Rails version.
+    config.load_defaults 5.2
 
     # Settings in config/environments/* take precedence over those specified here.
     # Application configuration should go into files in config/initializers
@@ -151,13 +153,6 @@ module ChouetteIhm
     config.semantic_logger.environment = nil
     config.rails_semantic_logger.add_file_appender = false
     config.logger_reopen_max = nil
-
-    # Require `belongs_to` associations by default. Previous versions had false.
-    config.active_record.belongs_to_required_by_default = true
-
-    # Make Active Record use stable #cache_key alongside new #cache_version method.
-    # This is needed for recyclable cache keys.
-    config.active_record.cache_versioning = true
   end
 end
 

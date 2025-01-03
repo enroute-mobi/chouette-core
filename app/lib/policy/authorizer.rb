@@ -50,7 +50,7 @@ module Policy
       def policy(resource)
         return ::Policy::DenyAll.instance if resource.nil?
 
-        resource = resource.object if resource.is_a?(::AF83::Decorator::EnhancedDecorator) # meh...
+        resource = resource.object if resource.is_a?(::Af83::Decorator::EnhancedDecorator) # meh...
         self.class.policy_class(resource).new resource, context: context
       end
 

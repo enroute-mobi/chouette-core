@@ -11,7 +11,7 @@ module Support
     end
 
     def expect_action_link_hrefs(action = :index)
-      if decorator.action_links.is_a? AF83::Decorator::ActionLinks
+      if decorator.action_links.is_a? Af83::Decorator::ActionLinks
         expect(decorator.action_links(action).map(&:href))
       else
         expect(decorator.action_links.select(&Link.method(:===)).map(&:href))
@@ -19,12 +19,12 @@ module Support
     end
 
     def expect_action_link_elements(action = :index) # rubocop:disable Metrics/AbcSize
-      if decorator.action_links.is_a? AF83::Decorator::ActionLinks
+      if decorator.action_links.is_a? Af83::Decorator::ActionLinks
         expect(decorator.action_links(action).map do |l|
           l.content.gsub(%r{<span.*/span>}, '')
         end)
       else
-        expect(decorator.action_links.select(&HTMLElement.method(:===)).map do |l|
+        expect(decorator.action_links.select(&HtmlElement.method(:===)).map do |l|
           l.content.gsub(%r{<span.*/span>}, '')
         end)
       end

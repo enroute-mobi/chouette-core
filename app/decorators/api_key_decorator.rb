@@ -1,4 +1,4 @@
-class ApiKeyDecorator < AF83::Decorator
+class ApiKeyDecorator < Af83::Decorator
   decorates ApiKey
 
   set_scope { context[:workbench] }

@@ -21,7 +21,7 @@ module Chouette
           else
             if value.is_a?(Proc)
               if value.arity == 0
-                DSL.new(context).instance_eval(&value)
+                Dsl.new(context).instance_eval(&value)
               else
                 value.call sequence_number
               end
@@ -31,7 +31,7 @@ module Chouette
           end
       end
 
-      class DSL
+      class Dsl
 
         def initialize(context)
           @context = context

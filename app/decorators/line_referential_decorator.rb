@@ -1,4 +1,4 @@
-class LineReferentialDecorator < AF83::Decorator
+class LineReferentialDecorator < Af83::Decorator
   decorates LineReferential
   set_scope { [context[:workbench]] }
 end

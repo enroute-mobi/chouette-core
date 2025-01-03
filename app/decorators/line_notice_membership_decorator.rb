@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-class LineNoticeMembershipDecorator < AF83::Decorator
+class LineNoticeMembershipDecorator < Af83::Decorator
   decorates Chouette::LineNoticeMembership
 
   set_scope { [context[:workbench], :line_referential, context[:line]] }

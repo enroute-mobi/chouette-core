@@ -192,7 +192,7 @@ module Support
           allow(decorator.h).to receive(:policy) do |resource|
             policy_authorizer.policy(resource)
           end
-          allow_any_instance_of(AF83::Decorator::Link).to receive(:check_feature) { |f| features.include?(f) }
+          allow_any_instance_of(Af83::Decorator::Link).to receive(:check_feature) { |f| features.include?(f) }
         end
       end
     end

@@ -1,4 +1,4 @@
-class WorkgroupDecorator < AF83::Decorator
+class WorkgroupDecorator < Af83::Decorator
   decorates Workgroup
 
   create_action_link do |l|

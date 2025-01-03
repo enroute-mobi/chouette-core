@@ -24,7 +24,7 @@ module Types
     field :longitude, Float, null:true
     field :latitude, Float, null:true
 
-    field :localized_names, Types::PrettyJSON, null:true
+    field :localized_names, Types::PrettyJson, null:true
 
     field :created_at, GraphQL::Types::ISO8601DateTime, null:true
     field :updated_at, GraphQL::Types::ISO8601DateTime, null:true

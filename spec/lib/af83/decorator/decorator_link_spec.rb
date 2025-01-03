@@ -1,25 +1,25 @@
 # frozen_string_literal: true
 
-RSpec.describe AF83::Decorator::Link do
+RSpec.describe Af83::Decorator::Link do
   describe "#complete?" do
     context "on a imcomplete link" do
       it "should be false" do
-        expect(AF83::Decorator::Link.new.complete?).to be_falsy
-        expect(AF83::Decorator::Link.new(content: "foo").complete?).to be_falsy
-        expect(AF83::Decorator::Link.new(href: "foo").complete?).to be_falsy
+        expect(Af83::Decorator::Link.new.complete?).to be_falsy
+        expect(Af83::Decorator::Link.new(content: "foo").complete?).to be_falsy
+        expect(Af83::Decorator::Link.new(href: "foo").complete?).to be_falsy
       end
     end
 
     context "on a complete link" do
       it "should be true" do
-        expect(AF83::Decorator::Link.new(href: "foo", content: "foo").complete?).to be_truthy
+        expect(Af83::Decorator::Link.new(href: "foo", content: "foo").complete?).to be_truthy
       end
     end
   end
 
   describe "#class" do
     let(:link){
-      AF83::Decorator::Link.new(href: "foo", content: "foo", class: "initial_class")
+      Af83::Decorator::Link.new(href: "foo", content: "foo", class: "initial_class")
     }
 
     it "should override exisiting class" do
@@ -35,7 +35,7 @@ RSpec.describe AF83::Decorator::Link do
 
   describe "#add_class" do
     let(:link){
-      AF83::Decorator::Link.new(href: "foo", content: "foo", class: "initial_class")
+      Af83::Decorator::Link.new(href: "foo", content: "foo", class: "initial_class")
     }
 
     it "should add to exisiting class" do
@@ -52,7 +52,7 @@ RSpec.describe AF83::Decorator::Link do
   describe "#type" do
 
     let(:link){
-      AF83::Decorator::Link.new(href: "foo", content: "foo")
+      Af83::Decorator::Link.new(href: "foo", content: "foo")
     }
 
     let(:context){
@@ -60,7 +60,7 @@ RSpec.describe AF83::Decorator::Link do
         def h
           Class.new do
             def link_to *args
-              HTMLElement.new(:a, 'foo', {}).to_html
+              HtmlElement.new(:a, 'foo', {}).to_html
             end
           end.new
         end

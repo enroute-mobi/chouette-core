@@ -1,4 +1,4 @@
-class MergeDecorator < AF83::Decorator
+class MergeDecorator < Af83::Decorator
   decorates Merge
   set_scope { context[:workbench] }
 

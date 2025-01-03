@@ -2169,8 +2169,8 @@ RSpec.describe Export::Gtfs, type: [:model, :with_exportable_referential] do
         first_vehicle_journey_at_stop = vehicle_journey.vehicle_journey_at_stops.first
         first_stop_time = source.stop_times.sort_by{ |stop_time| stop_time.departure_time }.first
 
-        expect(first_stop_time.arrival_time).to eq(GTFSTime.format_datetime(first_vehicle_journey_at_stop.arrival_time, first_vehicle_journey_at_stop.departure_day_offset, 'Europe/Paris'))
-        expect(first_stop_time.departure_time).to eq(GTFSTime.format_datetime(first_vehicle_journey_at_stop.departure_time, first_vehicle_journey_at_stop.departure_day_offset, 'Europe/Paris'))
+        expect(first_stop_time.arrival_time).to eq(GtfsTime.format_datetime(first_vehicle_journey_at_stop.arrival_time, first_vehicle_journey_at_stop.departure_day_offset, 'Europe/Paris'))
+        expect(first_stop_time.departure_time).to eq(GtfsTime.format_datetime(first_vehicle_journey_at_stop.departure_time, first_vehicle_journey_at_stop.departure_day_offset, 'Europe/Paris'))
       end
     end
 
@@ -2438,9 +2438,9 @@ RSpec.describe Export::Gtfs, type: [:model, :with_exportable_referential] do
 
         # A random stop_time is picked
         random_vehicle_journey_at_stop = vehicle_journey_at_stops.sample
-        stop_time = stop_times.detect{|stop_time| stop_time.arrival_time == GTFSTime.format_datetime(random_vehicle_journey_at_stop.arrival_time, random_vehicle_journey_at_stop.arrival_day_offset) }
+        stop_time = stop_times.detect{|stop_time| stop_time.arrival_time == GtfsTime.format_datetime(random_vehicle_journey_at_stop.arrival_time, random_vehicle_journey_at_stop.arrival_day_offset) }
         expect(stop_time).not_to be_nil
-        expect(stop_time.departure_time).to eq(GTFSTime.format_datetime(random_vehicle_journey_at_stop.departure_time, random_vehicle_journey_at_stop.departure_day_offset))
+        expect(stop_time.departure_time).to eq(GtfsTime.format_datetime(random_vehicle_journey_at_stop.departure_time, random_vehicle_journey_at_stop.departure_day_offset))
       end
     end
   end

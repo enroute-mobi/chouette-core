@@ -1,4 +1,4 @@
-class LineProviderDecorator < AF83::Decorator
+class LineProviderDecorator < Af83::Decorator
   decorates LineProvider
 
   set_scope { [context[:workbench], :line_referential] }

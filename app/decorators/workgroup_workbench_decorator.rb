@@ -1,4 +1,4 @@
-class WorkgroupWorkbenchDecorator < AF83::Decorator
+class WorkgroupWorkbenchDecorator < Af83::Decorator
   decorates Workbench
 
   set_scope { context[:workgroup] }

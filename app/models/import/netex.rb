@@ -98,7 +98,7 @@ class Import::Netex < Import::Base
 
     if self.file && self.file.path
       file.cache_stored_file!
-      netex_file = STIF::NetexFile.new(self.file.path)
+      netex_file = Stif::NetexFile.new(self.file.path)
       frame = netex_file.frames.first
 
       if frame

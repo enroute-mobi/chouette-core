@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-class ServiceFacilitySetDecorator < AF83::Decorator
+class ServiceFacilitySetDecorator < Af83::Decorator
   decorates ServiceFacilitySet
 
   set_scope { [context[:workbench], :shape_referential] }

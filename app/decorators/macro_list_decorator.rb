@@ -1,4 +1,4 @@
-class MacroListDecorator < AF83::Decorator
+class MacroListDecorator < Af83::Decorator
   decorates Macro::List
 
   set_scope { context[:workbench] }

@@ -27,7 +27,7 @@ module Chouette
       end
 
       def dsl
-        @dsl ||= DSL.new(self)
+        @dsl ||= Dsl.new(self)
       end
 
       def attributes
@@ -128,7 +128,7 @@ module Chouette
           end
 
           after_callbacks.each do |after_callback|
-            after_dsl = AfterDSL.new(self, new_instance, context.with_instance(new_instance))
+            after_dsl = AfterDsl.new(self, new_instance, context.with_instance(new_instance))
             after_dsl.instance_exec(new_instance, &after_callback)
           end
           unless new_instance.valid?
@@ -143,7 +143,7 @@ module Chouette
         new_instance
       end
 
-      class DSL
+      class Dsl
 
         def initialize(model)
           @model = model
@@ -176,7 +176,7 @@ module Chouette
 
       end
 
-      class AfterDSL
+      class AfterDsl
 
         attr_reader :model, :new_instance, :context
 

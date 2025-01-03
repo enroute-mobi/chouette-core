@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-class AccessibilityAssessmentDecorator < AF83::Decorator
+class AccessibilityAssessmentDecorator < Af83::Decorator
   decorates AccessibilityAssessment
 
   set_scope { [context[:workbench], :shape_referential] }

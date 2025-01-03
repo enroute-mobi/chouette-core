@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-class CompanyDecorator < AF83::Decorator
+class CompanyDecorator < Af83::Decorator
   include DocumentableDecorator
 
   decorates Chouette::Company

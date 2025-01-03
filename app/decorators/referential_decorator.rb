@@ -1,4 +1,4 @@
-class ReferentialDecorator < AF83::Decorator
+class ReferentialDecorator < Af83::Decorator
   decorates Referential
 
   set_scope { context[:workbench] }

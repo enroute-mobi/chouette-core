@@ -1,4 +1,4 @@
-class StopAreaProviderDecorator < AF83::Decorator
+class StopAreaProviderDecorator < Af83::Decorator
   decorates StopAreaProvider
 
   set_scope { [context[:workbench], :stop_area_referential] }

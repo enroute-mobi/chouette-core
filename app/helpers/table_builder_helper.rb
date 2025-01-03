@@ -195,7 +195,7 @@ module TableBuilderHelper
 
         # Inserts a blank column for the gear menu
         last_item = collection.first
-        action_links = last_item && last_item.respond_to?(:action_links) && (last_item&.action_links&.is_a?(AF83::Decorator::ActionLinks) ? last_item.action_links(action) : last_item.action_links)
+        action_links = last_item && last_item.respond_to?(:action_links) && (last_item&.action_links&.is_a?(Af83::Decorator::ActionLinks) ? last_item.action_links(action) : last_item.action_links)
         if has_links || action_links.try(:any?)
           hcont << content_tag(:th, '')
         end
@@ -286,7 +286,7 @@ module TableBuilderHelper
         end
       end
 
-      action_links = item && item.respond_to?(:action_links) && (item.action_links.is_a?(AF83::Decorator::ActionLinks) ? item.action_links(action) : item.action_links)
+      action_links = item && item.respond_to?(:action_links) && (item.action_links.is_a?(Af83::Decorator::ActionLinks) ? item.action_links(action) : item.action_links)
 
       if links.any? || action_links.try(:any?)
         bcont << content_tag(
@@ -331,7 +331,7 @@ module TableBuilderHelper
     end
 
     action_links = item.action_links
-    if action_links.is_a?(AF83::Decorator::ActionLinks)
+    if action_links.is_a?(Af83::Decorator::ActionLinks)
       menu = content_tag :div, class: 'dropdown-menu' do
         item.action_links(action).grouped_by(:primary, :secondary, :footer).map do |group, _links|
           if _links.any?

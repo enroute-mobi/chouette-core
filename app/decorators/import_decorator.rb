@@ -1,4 +1,4 @@
-class ImportDecorator < AF83::Decorator
+class ImportDecorator < Af83::Decorator
   decorates Import::Base
 
   set_scope { context[:parent] }

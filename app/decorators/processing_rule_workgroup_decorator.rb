@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-class ProcessingRuleWorkgroupDecorator < AF83::Decorator
+class ProcessingRuleWorkgroupDecorator < Af83::Decorator
   decorates ProcessingRule::Workgroup
 
   set_scope { context[:workgroup] }

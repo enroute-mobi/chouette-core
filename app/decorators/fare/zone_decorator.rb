@@ -1,5 +1,6 @@
 # frozen_string_literal: true
-class Fare::ZoneDecorator < AF83::Decorator
+
+class Fare::ZoneDecorator < Af83::Decorator
   decorates Fare::Zone
 
   set_scope { context[:workbench] }

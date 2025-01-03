@@ -1,5 +1,5 @@
 module Types
-  class PrettyJSON < Types::BaseScalar
+  class PrettyJson < Types::BaseScalar
     description "An untyped JSON scalar that removes empty keys for a nicer display"
 
     def self.coerce_input(value, _context)

@@ -1,4 +1,4 @@
-class DocumentTypeDecorator < AF83::Decorator
+class DocumentTypeDecorator < Af83::Decorator
   decorates DocumentType
 
   set_scope { context[:workgroup] }

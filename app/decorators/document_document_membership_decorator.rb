@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-class DocumentDocumentMembershipDecorator < AF83::Decorator
+class DocumentDocumentMembershipDecorator < Af83::Decorator
   decorates Document
 
   set_scope { [context[:workbench], context[:documentable]] }

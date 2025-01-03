@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-class LineGroupDecorator < AF83::Decorator
+class LineGroupDecorator < Af83::Decorator
   decorates LineGroup
 
   set_scope { [context[:workbench], :line_referential] }

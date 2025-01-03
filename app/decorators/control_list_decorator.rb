@@ -1,4 +1,4 @@
-class ControlListDecorator < AF83::Decorator
+class ControlListDecorator < Af83::Decorator
   decorates Control::List
 
   set_scope { context[:workbench] }

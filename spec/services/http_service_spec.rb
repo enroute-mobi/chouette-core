@@ -1,4 +1,4 @@
-RSpec.describe HTTPService do
+RSpec.describe HttpService do
 
   subject{ described_class }
 

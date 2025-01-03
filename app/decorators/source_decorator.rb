@@ -1,4 +1,4 @@
-class SourceDecorator < AF83::Decorator
+class SourceDecorator < Af83::Decorator
   decorates Source
 
   set_scope { context[:workbench] }

@@ -50,7 +50,7 @@ module Chouette
       end
 
       def dsl
-        @dsl ||= DSL.new(self)
+        @dsl ||= Dsl.new(self)
       end
 
       def attributes

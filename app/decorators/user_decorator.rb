@@ -1,4 +1,4 @@
-class UserDecorator < AF83::Decorator
+class UserDecorator < Af83::Decorator
   decorates User
 
   set_scope { [:organisation] }

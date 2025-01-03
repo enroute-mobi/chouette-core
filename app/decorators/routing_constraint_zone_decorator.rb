@@ -1,4 +1,4 @@
-class RoutingConstraintZoneDecorator < AF83::Decorator
+class RoutingConstraintZoneDecorator < Af83::Decorator
   decorates Chouette::RoutingConstraintZone
 
   set_scope { [context[:workbench], context[:referential], context[:line]] }

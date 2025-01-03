@@ -1,4 +1,4 @@
-module STIF
+module Stif
   class NetexFile
 
     CALENDAR_FILE_NAME = 'calendriers.xml'
@@ -42,7 +42,7 @@ module STIF
       class << self
         def get_short_id file_name
           base_name = File.basename(file_name)
-          STIF::NetexFile::LINE_FILE_FORMAT.match(base_name).try(:[], 'line_object_id')
+          Stif::NetexFile::LINE_FILE_FORMAT.match(base_name).try(:[], 'line_object_id')
         end
 
         def detect_namespace doc

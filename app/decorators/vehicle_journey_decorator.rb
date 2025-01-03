@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-class VehicleJourneyDecorator < AF83::Decorator
+class VehicleJourneyDecorator < Af83::Decorator
   decorates Chouette::VehicleJourney
 
   with_instance_decorator do |instance_decorator|

@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-class CalendarDecorator < AF83::Decorator
+class CalendarDecorator < Af83::Decorator
   decorates Calendar
   set_scope { context[:workbench] }
   create_action_link

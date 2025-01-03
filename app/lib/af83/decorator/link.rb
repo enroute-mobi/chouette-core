@@ -1,4 +1,4 @@
-class AF83::Decorator::Link
+class Af83::Decorator::Link
   REQUIRED_ATTRIBUTES = %i(href content)
 
   attr_reader :context
@@ -192,12 +192,12 @@ class AF83::Decorator::Link
 
   def to_html
     if block_given?
-      link = AF83::Decorator::Link.new(@options).bind_to_context(context, @action)
+      link = Af83::Decorator::Link.new(@options).bind_to_context(context, @action)
       yield link
       return link.to_html
     end
     if type&.to_sym == :button
-      HTMLElement.new(
+      HtmlElement.new(
         :button,
         content,
         html_options

@@ -773,7 +773,7 @@ class Import::Gtfs < Import::Base
         save_model vehicle_journey, resource: resource
       end
 
-      starting_day_offset = GTFSTime.parse(stop_times.first.departure_time).day_offset
+      starting_day_offset = GtfsTime.parse(stop_times.first.departure_time).day_offset
       time_table_id = handle_timetable_with_offset(resource, trip, starting_day_offset)
 
       if time_table_id
@@ -971,7 +971,7 @@ class Import::Gtfs < Import::Base
         #
         # unless_parent_model_in_error(Chouette::StopArea, stop_time.stop_id, resource) do
         #   if position == 0
-        #     departure_time = GTFSTime.parse(stop_time.departure_time)
+        #     departure_time = GtfsTime.parse(stop_time.departure_time)
         #     raise InvalidTimeError.new(stop_time.departure_time) unless departure_time.present?
         #   end
 

@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-class LineDecorator < AF83::Decorator
+class LineDecorator < Af83::Decorator
   include DocumentableDecorator
 
   decorates Chouette::Line

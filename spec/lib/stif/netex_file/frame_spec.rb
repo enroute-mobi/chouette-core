@@ -1,5 +1,4 @@
-require 'stif/netex_file'
-RSpec.describe STIF::NetexFile::Frame do
+RSpec.describe Stif::NetexFile::Frame do
   
   context "line object id extraction" do
     it "gets the line object id if frame describes a line" do

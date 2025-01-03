@@ -8,7 +8,7 @@ module Authentication
     include NilIfBlank
 
     enumerize :type, in: %w[Authentication::Saml]
-    belongs_to :organisation, inverse_of: :authentication, required: true
+    belongs_to :organisation, inverse_of: :authentication # CHOUETTE-3247 required: true
 
     validates :type, :name, presence: true
     validates :name, uniqueness: { scope: :organisation_id }

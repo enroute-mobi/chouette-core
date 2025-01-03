@@ -1,12 +1,11 @@
 class Waypoint < ApplicationModel
-  belongs_to :shape, required: true
-  belongs_to :stop_area, class_name: 'Chouette::StopArea'
+  belongs_to :shape # CHOUETTE-3247 required: true
+  belongs_to :stop_area, class_name: 'Chouette::StopArea', optional: true # CHOUETTE-3247 code analysis
 
   validates_presence_of :coordinates, :position, :waypoint_type
   validates_uniqueness_of :position, scope: :shape_id
   validates_inclusion_of :waypoint_type, in: %w[waypoint constraint]
   validates_length_of :coordinates, is: 2
-  #validate :presence_of_stop_area
 
   def longitude
     coordinates&.first

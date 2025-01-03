@@ -1,10 +1,8 @@
 # frozen_string_literal: true
 
 RSpec.describe DestinationReport, type: :model do
-  it { should belong_to :publication }
-  it { should belong_to :destination }
-  it { should validate_presence_of :publication }
-  it { should validate_presence_of :destination }
+  it { is_expected.to belong_to(:publication).required }
+  it { is_expected.to belong_to(:destination).required }
 
   subject(:destination) { create(:destination_report) }
 

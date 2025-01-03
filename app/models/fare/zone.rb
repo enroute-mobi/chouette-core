@@ -5,7 +5,7 @@ module Fare
   class Zone < ApplicationModel
     self.table_name = :fare_zones
 
-    belongs_to :fare_provider, class_name: 'Fare::Provider', optional: false
+    belongs_to :fare_provider, class_name: 'Fare::Provider' # CHOUETTE-3247 optional: false
     has_one :fare_referential, through: :fare_provider
     has_one :workbench, through: :fare_provider
 

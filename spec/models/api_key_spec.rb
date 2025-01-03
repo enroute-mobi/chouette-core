@@ -2,7 +2,7 @@
 RSpec.describe ApiKey, type: :model do
   subject { create(:api_key) }
 
-  it { should validate_presence_of :workbench }
+  it { is_expected.to belong_to(:workbench).required }
   it { should validate_uniqueness_of :token }
 
 

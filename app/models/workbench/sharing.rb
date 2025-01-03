@@ -4,8 +4,8 @@ class Workbench
   class Sharing < ApplicationModel
     self.table_name = 'workbench_sharings'
 
-    belongs_to :workbench, inverse_of: :sharings, required: true
-    belongs_to :recipient, polymorphic: true, inverse_of: :workbench_sharings
+    belongs_to :workbench, inverse_of: :sharings # CHOUETTE-3247 required: true
+    belongs_to :recipient, polymorphic: true, optional: true, inverse_of: :workbench_sharings # CHOUETTE-3247 code analysis
 
     before_validation :create_invitation_code, on: :create, if: :pending?
 

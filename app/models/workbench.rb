@@ -13,14 +13,14 @@ class Workbench < ApplicationModel
 
   include ObjectidFormatterSupport
 
-  belongs_to :organisation, optional: true
-  belongs_to :workgroup
-  belongs_to :line_referential
-  belongs_to :stop_area_referential
+  belongs_to :organisation, optional: true # CHOUETTE-3247
+  belongs_to :workgroup # TODO: CHOUETTE-3247 optional: true?
+  belongs_to :line_referential # TODO: CHOUETTE-3247 optional: true?
+  belongs_to :stop_area_referential # TODO: CHOUETTE-3247 optional: true?
   has_one :shape_referential, through: :workgroup
   has_one :fare_referential, through: :workgroup
-  belongs_to :output, class_name: 'ReferentialSuite', dependent: :destroy
-  belongs_to :locked_referential_to_aggregate, class_name: 'Referential'
+  belongs_to :output, class_name: 'ReferentialSuite', dependent: :destroy # CHOUETTE-3247 validates presence
+  belongs_to :locked_referential_to_aggregate, class_name: 'Referential', optional: true # CHOUETTE-3247 failling specs
 
   has_many :users, through: :organisation
   has_many :sharings, class_name: 'Workbench::Sharing', dependent: :destroy
@@ -48,7 +48,6 @@ class Workbench < ApplicationModel
   validates_format_of :prefix, with: %r{\A[0-9a-zA-Z_]+\Z}, unless: :pending?
   validates :invitation_code, presence: true, uniqueness: true, if: :pending?
 
-  validates :output, presence: true
   validate  :locked_referential_to_aggregate_belongs_to_output
 
   has_many :referentials, dependent: :destroy

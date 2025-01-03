@@ -6,7 +6,7 @@ module Macro
 
     self.table_name = 'macro_contexts'
 
-    belongs_to :macro_list, class_name: 'Macro::List', optional: false, inverse_of: :macro_contexts
+    belongs_to :macro_list, class_name: 'Macro::List', inverse_of: :macro_contexts # CHOUETTE-3247 optional: false
 
     def workbench
       @workbench || macro_list&.workbench
@@ -53,8 +53,8 @@ module Macro
 
       self.table_name = 'macro_context_runs'
 
-      belongs_to :macro_list_run, class_name: 'Macro::List::Run', optional: false, inverse_of: :macro_context_runs
-      belongs_to :macro_context, class_name: 'Macro::Context', optional: true, inverse_of: :macro_context_runs
+      belongs_to :macro_list_run, class_name: 'Macro::List::Run', inverse_of: :macro_context_runs # CHOUETTE-3247 optional: false
+      belongs_to :macro_context, class_name: 'Macro::Context', optional: true, inverse_of: :macro_context_runs # CHOUETTE-3247
 
       has_many :macro_runs, -> { order(position: :asc) },
                class_name: 'Macro::Base::Run', foreign_key: 'macro_context_run_id',

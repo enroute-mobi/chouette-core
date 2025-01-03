@@ -1,9 +1,19 @@
 RSpec.describe PublicationMailer, type: :mailer do
   include ActionDispatch::TestProcess
 
-  let(:publication) {create :publication, :with_gtfs}
-  let(:publication_api) { create :publication_api }
-  let(:destination_mail) { create :destination_mail, publication_setup: publication.publication_setup, publication_api: publication_api }
+  let(:context) do
+    Chouette.create do
+      publication_api
+      referential :referential
+      publication_setup do
+        publication referential: :referential
+      end
+    end
+  end
+  let(:publication) { context.publication }
+  let(:publication_setup) { context.publication_setup }
+  let(:publication_api) { context.publication_api }
+  let(:destination_mail) { create :destination_mail, publication_setup: publication_setup }
 
   let(:email) { PublicationMailer.send('publish', publication, destination_mail) }
 

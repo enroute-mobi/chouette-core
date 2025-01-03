@@ -1,6 +1,6 @@
 class CrossReferentialIndexEntry < ActiveRecord::Base
-  belongs_to :parent, polymorphic: true
-  belongs_to :target, polymorphic: true
+  belongs_to :parent, polymorphic: true # TODO: CHOUETTE-3247 optional: true?
+  belongs_to :target, polymorphic: true # TODO: CHOUETTE-3247 optional: true?
 
   scope :for_target, ->(target){ where(target: target, target_referential_slug: target.referential.slug) }
 

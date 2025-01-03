@@ -2,14 +2,11 @@ class StopAreaRoutingConstraint < ApplicationModel
   include StopAreaReferentialSupport
   include ChecksumSupport
 
-  belongs_to :from, class_name: 'Chouette::StopArea'
-  belongs_to :to, class_name: 'Chouette::StopArea'
+  belongs_to :from, class_name: 'Chouette::StopArea' # CHOUETTE-3247 validates presence
+  belongs_to :to, class_name: 'Chouette::StopArea' # CHOUETTE-3247 validates presence
 
-  add_light_belongs_to :from
-  add_light_belongs_to :to
-
-  validates :from, presence: true
-  validates :to, presence: true
+  add_light_belongs_to :from # CHOUETTE-3247 validates presence
+  add_light_belongs_to :to # CHOUETTE-3247 validates presence
 
   validate :both_stops_in_the_same_referential
   validate :different_stops

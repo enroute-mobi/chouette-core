@@ -49,17 +49,15 @@ class Referential < ApplicationModel
   has_many :import_resources, class_name: 'Import::Resource', dependent: :destroy
   has_many :clean_ups, dependent: :destroy
 
-  belongs_to :organisation
-  validates_presence_of :organisation
+  belongs_to :organisation # CHOUETTE-3247 validates presence
 
   before_validation do |referential|
     referential.organisation ||= workbench&.organisation || workgroup&.owner
   end
 
-  belongs_to :line_referential
-  validates_presence_of :line_referential
+  belongs_to :line_referential # CHOUETTE-3247 validates presence
 
-  belongs_to :created_from, class_name: 'Referential'
+  belongs_to :created_from, class_name: 'Referential', optional: true  # CHOUETTE-3247 failing specs
   has_many :associated_lines, through: :line_referential, source: :lines
   has_many :companies, through: :line_referential
   has_many :networks, through: :line_referential
@@ -67,14 +65,13 @@ class Referential < ApplicationModel
   has_many :metadatas, class_name: "ReferentialMetadata", inverse_of: :referential, dependent: :delete_all
   accepts_nested_attributes_for :metadatas
 
-  belongs_to :stop_area_referential
-  validates_presence_of :stop_area_referential
+  belongs_to :stop_area_referential # CHOUETTE-3247 validates presence
   has_many :stop_areas, through: :stop_area_referential
   has_many :stop_area_providers, through: :stop_area_referential
 
-  belongs_to :workbench
+  belongs_to :workbench, optional: true # CHOUETTE-3247 code analysis + failing specs
 
-  belongs_to :referential_suite
+  belongs_to :referential_suite, optional: true # CHOUETTE-3247 code analysis + failing specs
 
   has_many :publications, dependent: :destroy
 

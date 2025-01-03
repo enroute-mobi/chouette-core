@@ -1,8 +1,8 @@
 # frozen_string_literal: true
 
 class AggregateScheduling < ApplicationModel
-  belongs_to :workgroup, optional: false
-  belongs_to :scheduled_job, class_name: '::Delayed::Job', optional: true
+  belongs_to :workgroup # CHOUETTE-3247 optional: false
+  belongs_to :scheduled_job, class_name: '::Delayed::Job', optional: true # CHOUETTE-3247
 
   attribute :aggregate_time, TimeOfDay::Type::TimeWithoutZone.new
   attribute :aggregate_days, Cuckoo::DaysOfWeek::Type.new

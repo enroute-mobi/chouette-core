@@ -10,11 +10,10 @@ module Chouette
     include ForBoardingEnumerations
     include ForAlightingEnumerations
 
-    belongs_to :stop_area
-    add_light_belongs_to :stop_area
+    belongs_to :stop_area # CHOUETTE-3247
+    add_light_belongs_to :stop_area # CHOUETTE-3247
 
-    belongs_to :route, inverse_of: :stop_points
-    validates :route, presence: true
+    belongs_to :route, inverse_of: :stop_points # TODO: CHOUETTE-3247 optional: true?
 
     has_many :journey_patterns, through: :route
     has_many :vehicle_journey_at_stops, dependent: :destroy

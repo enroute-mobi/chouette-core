@@ -3,10 +3,8 @@
 class DestinationReport < ActiveRecord::Base
   extend Enumerize
 
-  belongs_to :destination
-  belongs_to :publication
-
-  validates :destination, :publication, presence: true
+  belongs_to :destination # CHOUETTE-3247 validates presence
+  belongs_to :publication # CHOUETTE-3247 validates presence
 
   enumerize :status, in: %w[successful failed], empty: true
 

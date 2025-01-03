@@ -1,7 +1,7 @@
 class ReferentialCloning < ApplicationModel
   include AASM
-  belongs_to :source_referential, class_name: 'Referential'
-  belongs_to :target_referential, class_name: 'Referential'
+  belongs_to :source_referential, class_name: 'Referential' # TODO: CHOUETTE-3247 optional: true?
+  belongs_to :target_referential, class_name: 'Referential' # TODO: CHOUETTE-3247 optional: true?
   after_commit :clone, on: :create
 
   def clone

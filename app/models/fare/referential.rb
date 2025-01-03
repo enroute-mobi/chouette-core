@@ -5,7 +5,7 @@ module Fare
   class Referential < ApplicationModel
     self.table_name = :fare_referentials
 
-    belongs_to :workgroup
+    has_one :workgroup, foreign_key: 'fare_referential_id', inverse_of: :fare_referential, dependent: :nullify
 
     has_many :fare_providers, class_name: 'Fare::Provider', foreign_key: 'fare_referential_id', dependent: :destroy
     has_many :fare_zones, through: :fare_providers

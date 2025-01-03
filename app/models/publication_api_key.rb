@@ -2,7 +2,7 @@ class PublicationApiKey < ActiveRecord::Base
 
   validates :name, presence: true
 
-  belongs_to :publication_api
+  belongs_to :publication_api # TODO: CHOUETTE-3247 optional: true?
 
   before_save :generate_token
 

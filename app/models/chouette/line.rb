@@ -26,13 +26,13 @@ module Chouette
     open_color_attribute
     open_color_attribute :text_color
 
-    belongs_to :company
-    belongs_to :network
+    belongs_to :company, optional: true # CHOUETTE-3247 failing specs
+    belongs_to :network, optional: true # CHOUETTE-3247 failing specs
 
     # this 'light' relation prevents the custom fields loading
-    belongs_to :company_light, lambda {
+    belongs_to :company_light, lambda { # CHOUETTE-3247 failing specs
                                  select(:id, :name, :line_referential_id, :objectid)
-                               }, class_name: 'Chouette::Company', foreign_key: :company_id
+                               }, class_name: 'Chouette::Company', foreign_key: :company_id, optional: true
 
     belongs_to_array_in_many :line_routing_constraint_zones, class_name: 'LineRoutingConstraintZone', array_name: :lines
     belongs_to_array_in_many :contracts, class_name: '::Contract', array_name: :lines

@@ -5,13 +5,15 @@ module Fare
   class Validity < ApplicationModel
     self.table_name = :fare_validities
 
-    belongs_to :fare_provider, class_name: 'Fare::Provider', optional: false
+    belongs_to :fare_provider, class_name: 'Fare::Provider' # CHOUETTE-3247 optional: false
     has_one :fare_referential, through: :fare_provider
     has_one :workbench, through: :fare_provider
 
     include CodeSupport
 
-    has_many :product_validities, class_name: 'Fare::ProductValidity', foreign_key: 'fare_validity_id',
+    has_many :product_validities, class_name: 'Fare::ProductValidity',
+                                  foreign_key: 'fare_validity_id',
+                                  inverse_of: :validity,
                                   dependent: :delete_all
     has_many :products, through: :product_validities
 

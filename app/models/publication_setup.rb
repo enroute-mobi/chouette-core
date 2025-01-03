@@ -7,13 +7,12 @@ end
 class PublicationSetup < ApplicationModel
   prepend PublicationSetupWithDefaultExportOptions
 
-  belongs_to :workgroup
+  belongs_to :workgroup # CHOUETTE-3247 validates presence
   has_many :publications, dependent: :destroy
   has_many :exports, through: :publications
   has_many :destinations, dependent: :destroy, inverse_of: :publication_setup
 
   validates :name, presence: true
-  validates :workgroup, presence: true
   validates_associated :destinations
 
   store_accessor :export_options

@@ -9,10 +9,10 @@ describe Chouette::ConnectionLink, type: :model do
   end
 
   describe "validations" do
-    it { should belong_to(:stop_area_referential).required }
+    it { is_expected.to belong_to(:stop_area_referential).required }
+    it { is_expected.to belong_to(:departure).required }
+    it { is_expected.to belong_to(:arrival).required }
     it { should validate_presence_of :default_duration }
-    it { should validate_presence_of :departure_id }
-    it { should validate_presence_of :arrival_id }
 
     it "should have different departure and arrival" do
       expect{ create(:connection_link, departure: stop_area, arrival: stop_area) }.to raise_error ActiveRecord::RecordInvalid

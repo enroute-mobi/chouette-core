@@ -1,8 +1,13 @@
 # frozen_string_literal: true
 
 RSpec.describe Api::V1::DatasController, type: :controller do
+  let(:publication_api) { context.publication_api }
+  let(:publication) { context.publication }
   let(:gtfs_export_file) { fixture_file_upload('OFFRE_TRANSDEV_2017030112251.zip') }
   let(:gtfs_export) { create(:gtfs_export, file: gtfs_export_file) }
+  let(:publication_api_source_gtfs) do
+    publication_api.publication_api_sources.create!(publication: publication, export: gtfs_export, key: 'gtfs.zip')
+  end
 
   describe 'GET #info' do
     it 'should not be successful' do
@@ -10,8 +15,12 @@ RSpec.describe Api::V1::DatasController, type: :controller do
     end
 
     context 'with a publication_api' do
+      let(:context) do
+        Chouette.create { publication_api }
+      end
+
       it 'should be successful' do
-        get :infos, params: { slug: create(:publication_api).slug }
+        get :infos, params: { slug: publication_api.slug }
         expect(response).to be_successful
       end
     end
@@ -22,16 +31,23 @@ RSpec.describe Api::V1::DatasController, type: :controller do
       let(:slug) { :foo }
       let(:key) { "gtfs.zip" }
       let(:get_request) { get :download, params: { slug: slug, key: key }}
-      let(:publication_api) { create(:publication_api, public: true) }
-      let(:publication_gtfs) { create(:publication, publication_setup: create(:publication_setup), creator: 'test') }
 
       it 'should not be successful without a publication_api_source' do
         expect{ get_request }.to raise_error ActiveRecord::RecordNotFound
       end
 
       context 'with a publication_api_source' do
-        let!(:publication_api_source_gtfs) { create(:publication_api_source, publication_api: publication_api, publication: publication_gtfs, export: gtfs_export, key: "gtfs.zip") }
+        let(:context) do
+          Chouette.create do
+            publication_api public: true
+            referential :referential
+            publication referential: :referential
+          end
+        end
         let(:slug) { publication_api.slug }
+
+        before { publication_api_source_gtfs }
+
         it 'should be successful' do
           get_request
           expect(response).to be_successful
@@ -59,21 +75,24 @@ RSpec.describe Api::V1::DatasController, type: :controller do
   context 'with a secured API' do
 
     describe 'get #download' do
-      let(:slug) { :foo }
+      let(:context) do
+        Chouette.create do
+          publication_api public: false
+          referential :referential
+          publication referential: :referential
+        end
+      end
+      let(:slug) { publication_api.slug }
       let(:key) { "gtfs.zip" }
       let(:get_request) { get :download, params: { slug: slug, key: key }}
-      let(:publication_api) { create(:publication_api, public: false) }
-      let(:publication_gtfs) { create(:publication, publication_setup: create(:publication_setup), creator: 'test') }
 
       before do
+        publication_api_source_gtfs
         request.env['HTTP_AUTHORIZATION'] = ActionController::HttpAuthentication::Token.encode_credentials(auth_token)
       end
 
       context 'with good credentials' do
-        let!(:publication_api_source_gtfs) { create(:publication_api_source, publication_api: publication_api, publication: publication_gtfs, export: gtfs_export, key: "gtfs.zip") }
-        let!(:publication_api_key) { create :publication_api_key, publication_api: publication_api }
-        let(:auth_token) { publication_api_key.token }
-        let(:slug) { publication_api.slug }
+        let(:auth_token) { publication_api.api_keys.first.token }
 
         it 'should be successful' do
           get_request
@@ -83,9 +102,7 @@ RSpec.describe Api::V1::DatasController, type: :controller do
       end
 
       context 'whith bad credentials' do
-        let!(:publication_api_source_gtfs) { create(:publication_api_source, publication_api: publication_api, publication: publication_gtfs, export: gtfs_export, key: "gtfs.zip") }
         let(:auth_token) { 'token' }
-        let(:slug) { publication_api.slug }
 
         it 'should not be successful' do
           get_request
@@ -95,9 +112,7 @@ RSpec.describe Api::V1::DatasController, type: :controller do
       end
 
       context 'without credentials' do
-        let!(:publication_api_source_gtfs) { create(:publication_api_source, publication_api: publication_api, publication: publication_gtfs, export: gtfs_export, key: "gtfs.zip") }
         let(:auth_token) { nil }
-        let(:slug) { publication_api.slug }
 
         it 'should not be successful' do
           get_request
@@ -110,6 +125,8 @@ RSpec.describe Api::V1::DatasController, type: :controller do
     describe 'get #lines' do
       let(:context) do
         Chouette.create do
+          publication_api public: false
+
           line :first
           line :second
 
@@ -128,9 +145,6 @@ RSpec.describe Api::V1::DatasController, type: :controller do
       end
 
       context 'with a publication_api' do
-
-        let(:publication_api) { create(:publication_api, public: false, workgroup: context.workgroup) }
-
         context 'unauthenticated' do
           let(:auth_token) { "foo" }
 
@@ -141,8 +155,7 @@ RSpec.describe Api::V1::DatasController, type: :controller do
         end
 
         context 'authenticated' do
-          let(:publication_api_key) { create :publication_api_key, publication_api: publication_api  }
-          let(:auth_token) { publication_api_key.token }
+          let(:auth_token) { publication_api.api_keys.first.token }
 
           it 'should be successful' do
             get( :lines, params: { slug: publication_api.slug, :format => :json  })
@@ -169,18 +182,27 @@ RSpec.describe Api::V1::DatasController, type: :controller do
     context 'graphql requests' do
       let(:context) do
         Chouette.create do
+          publication_api public: true
+
           line :first
           line :second
 
           referential lines: [:first, :second] do
-            route :r_first, line: :first
-            route :r_second, line: :first
-            route :r_third, line: :second
-            route :r_fourth, line: :second
+            route :r_first, line: :first do
+              journey_pattern :jp_first
+            end
+            route :r_second, line: :first do
+              journey_pattern :jp_second
+            end
+            route :r_third, line: :second do
+              journey_pattern :jp_third
+            end
+            route :r_fourth, line: :second do
+              journey_pattern :jp_fourth
+            end
           end
         end
       end
-      let(:publication_api) { create(:publication_api, public: true, workgroup: context.workgroup) }
 
       before do
         context.referential.switch
@@ -199,11 +221,29 @@ RSpec.describe Api::V1::DatasController, type: :controller do
       context 'serviceCounts' do
         before do
           [:r_first, :r_second].each do |route_s|
-            %w[2020-01-01 2020-06-01 2020-12-01 2021-01-01 2021-06-01 2021-12-01].each { |d| create :service_count, date: d.to_date, line: context.line(:first), route: context.route(route_s), count: 5 }
+            %w[2020-01-01 2020-06-01 2020-12-01 2021-01-01 2021-06-01 2021-12-01].each do |d|
+              create(
+                :service_count,
+                date: d.to_date,
+                line: context.line(:first),
+                route: context.route(route_s),
+                journey_pattern: context.route(route_s).journey_patterns.first,
+                count: 5
+              )
+            end
           end
 
           [:r_third, :r_fourth].each do |route_s|
-            %w[2021-01-01 2021-06-01 2021-12-01 2022-01-01 2022-06-01 2022-12-01].each { |d| create :service_count, date: d.to_date, line: context.line(:second), route: context.route(route_s), count: 5 }
+            %w[2021-01-01 2021-06-01 2021-12-01 2022-01-01 2022-06-01 2022-12-01].each do |d|
+              create(
+                :service_count,
+                date: d.to_date,
+                line: context.line(:second),
+                route: context.route(route_s),
+                journey_pattern: context.route(route_s).journey_patterns.first,
+                count: 5
+              )
+            end
           end
         end
 
@@ -265,7 +305,14 @@ RSpec.describe Api::V1::DatasController, type: :controller do
           }
 
           before do
-            create :service_count, date: '2022-05-01'.to_date, line: context.line(:second), route: context.route(:r_third), count: 5
+            create(
+              :service_count,
+              date: '2022-05-01'.to_date,
+              line: context.line(:second),
+              route: context.route(:r_third),
+              journey_pattern: context.journey_pattern(:jp_third),
+              count: 5
+            )
           end
 
           it 'returns the right number of lines' do
@@ -290,11 +337,29 @@ RSpec.describe Api::V1::DatasController, type: :controller do
 
         before do
           [:r_first, :r_second].each do |route_s|
-            %w[2020-01-01 2020-06-01 2020-12-01 2021-01-01 2021-06-01 2021-12-01].each { |d| create :service_count, date: d.to_date, line: context.line(:first), route: context.route(route_s), count: 5 }
+            %w[2020-01-01 2020-06-01 2020-12-01 2021-01-01 2021-06-01 2021-12-01].each do |d|
+              create(
+                :service_count,
+                date: d.to_date,
+                line: context.line(:first),
+                route: context.route(route_s),
+                journey_pattern: context.route(route_s).journey_patterns.first,
+                count: 5
+              )
+            end
           end
 
           [:r_third, :r_fourth].each do |route_s|
-            %w[2021-01-01 2021-06-01 2021-12-01 2022-01-01 2022-06-01 2022-12-01].each { |d| create :service_count, date: d.to_date, line: context.line(:second), route: context.route(route_s), count: 5 }
+            %w[2021-01-01 2021-06-01 2021-12-01 2022-01-01 2022-06-01 2022-12-01].each do |d|
+              create(
+                :service_count,
+                date: d.to_date,
+                line: context.line(:second),
+                route: context.route(route_s),
+                journey_pattern: context.route(route_s).journey_patterns.first,
+                count: 5
+              )
+            end
           end
         end
 
@@ -313,7 +378,14 @@ RSpec.describe Api::V1::DatasController, type: :controller do
           }
 
           before do
-            create :service_count, date: '2022-05-01'.to_date, line: context.line(:second), route: context.route(:r_third), count: 5
+            create(
+              :service_count,
+              date: '2022-05-01'.to_date,
+              line: context.line(:second),
+              route: context.route(:r_third),
+              journey_pattern: context.journey_pattern(:jp_third),
+              count: 5
+            )
           end
 
           it 'returns the right total for serviceCount attribute' do

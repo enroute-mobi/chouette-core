@@ -2,7 +2,7 @@
 
 class Destination
   class PublicationApi < ::Destination
-    belongs_to :publication_api, optional: false, class_name: '::PublicationApi'
+    belongs_to :publication_api, class_name: '::PublicationApi' # CHOUETTE-3247
 
     validate :api_is_not_already_used
 

@@ -3,5 +3,5 @@ class Export::Message < ApplicationModel
 
   include IevInterfaces::Message
 
-  belongs_to :export, class_name: 'Export::Base'
+  belongs_to :export, class_name: 'Export::Base' # TODO: CHOUETTE-3247 optional: true?
 end

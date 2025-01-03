@@ -8,11 +8,9 @@ class Aggregate < ApplicationModel
 
   include Measurable
 
-  belongs_to :workgroup
+  belongs_to :workgroup # CHOUETTE-3247 validates presence
   has_many :resources, class_name: 'Aggregate::Resource'
   has_many :processings, as: :operation, dependent: :destroy
-
-  validates :workgroup, presence: true
 
   delegate :output, to: :workgroup
 
@@ -191,7 +189,7 @@ class Aggregate < ApplicationModel
   class Resource < ApplicationModel
     self.table_name = 'aggregate_resources'
 
-    belongs_to :aggregate
+    belongs_to :aggregate # TODO: CHOUETTE-3247 optional: true?
     acts_as_list scope: :aggregate
   end
 

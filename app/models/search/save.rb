@@ -4,7 +4,7 @@ module Search
   class Save < ApplicationModel
     self.table_name = 'saved_searches'
 
-    belongs_to :parent, polymorphic: true, optional: false
+    belongs_to :parent, polymorphic: true # CHOUETTE-3247 optional: false
     validates :name, :search_type, presence: true
 
     class << self

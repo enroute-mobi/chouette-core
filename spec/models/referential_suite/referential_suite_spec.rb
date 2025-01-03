@@ -1,6 +1,6 @@
 RSpec.describe ReferentialSuite, type: :model do
-  it { should belong_to(:new).class_name('Referential') }
-  it { should belong_to(:current).class_name('Referential') }
+  it { is_expected.to belong_to(:new).class_name('Referential').optional }
+  it { is_expected.to belong_to(:current).class_name('Referential').optional }
   it { should have_many(:referentials) }
   
   describe "#referentials_created_before_current" do

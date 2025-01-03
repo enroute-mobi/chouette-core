@@ -3,9 +3,8 @@
 RSpec.describe NotificationRule, type: :model do
   subject(:notification_rule) { NotificationRule.new }
 
-  it { is_expected.to belong_to(:workbench) }
+  it { is_expected.to belong_to(:workbench).required }
 
-  it { is_expected.to validate_presence_of(:workbench) }
   it { is_expected.to validate_presence_of(:notification_type) }
   it do
     is_expected.to validate_numericality_of(:priority)

@@ -1,10 +1,10 @@
 class Workgroup < ApplicationModel
   DEFAULT_EXPORT_TYPES = %w[Export::Gtfs Export::NetexGeneric Export::Ara].freeze
 
-  belongs_to :line_referential, dependent: :destroy, required: true
-  belongs_to :stop_area_referential, dependent: :destroy, required: true
-  belongs_to :shape_referential, dependent: :destroy, required: true
-  belongs_to :fare_referential, dependent: :destroy, required: true, class_name: 'Fare::Referential'
+  belongs_to :line_referential, dependent: :destroy # CHOUETTE-3247 required: true
+  belongs_to :stop_area_referential, dependent: :destroy # CHOUETTE-3247 required: true
+  belongs_to :shape_referential, dependent: :destroy # CHOUETTE-3247 required: true
+  belongs_to :fare_referential, class_name: 'Fare::Referential', inverse_of: :workgroup, dependent: :destroy # CHOUETTE-3247 required: true
 
   # Ensure StopAreaReferential and LineReferential (and their contents)
   # are destroyed before other relations
@@ -13,8 +13,8 @@ class Workgroup < ApplicationModel
     workgroup.line_referential&.destroy!
   end
 
-  belongs_to :owner, class_name: "Organisation", required: true
-  belongs_to :output, class_name: 'ReferentialSuite', dependent: :destroy, required: true
+  belongs_to :owner, class_name: 'Organisation' # CHOUETTE-3247 required: true
+  belongs_to :output, class_name: 'ReferentialSuite', dependent: :destroy # CHOUETTE-3247 required: true
 
   has_many :workbenches, dependent: :destroy
   has_many :document_types, dependent: :destroy
@@ -45,7 +45,6 @@ class Workgroup < ApplicationModel
   validates_uniqueness_of :shape_referential_id
   validates_uniqueness_of :fare_referential_id
 
-  validates :output, presence: true
   before_validation :create_dependencies, on: :create
 
   has_many :custom_fields, dependent: :delete_all, inverse_of: :workgroup

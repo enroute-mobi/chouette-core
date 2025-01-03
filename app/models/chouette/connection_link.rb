@@ -8,11 +8,11 @@ module Chouette
     include ObjectidSupport
     include CustomFieldsSupport
 
-    belongs_to :departure, :class_name => 'Chouette::StopArea'
-    belongs_to :arrival, :class_name => 'Chouette::StopArea'
+    belongs_to :departure, class_name: 'Chouette::StopArea' # CHOUETTE-3247 validates presence
+    belongs_to :arrival, class_name: 'Chouette::StopArea' # CHOUETTE-3247 validates presence
 
-    # validates_presence_of :link_distance, :default_duration, :departure_id, :arrival_id
-    validates_presence_of :default_duration, :departure_id, :arrival_id
+    # validates_presence_of :link_distance, :default_duration
+    validates_presence_of :default_duration
     validate :different_departure_and_arrival
 
     def self.nullable_attributes

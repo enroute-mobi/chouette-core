@@ -4,7 +4,7 @@ module NotifiableSupport
   included do
     extend Enumerize
     enumerize :notification_target, in: %w[none user workbench], default: :none
-    belongs_to :user
+    belongs_to :user, optional: true # CHOUETTE-3247 code analysis
   end
 
   class_methods do

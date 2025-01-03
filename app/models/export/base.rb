@@ -12,10 +12,10 @@ class Export::Base < ApplicationModel
   include OperationsHelper
   extend Enumerize
 
-  belongs_to :referential
-  belongs_to :publication
-  belongs_to :workgroup, class_name: '::Workgroup'
-  belongs_to :workbench, class_name: "::Workbench"
+  belongs_to :referential # CHOUETTE-3247 validates presence
+  belongs_to :publication, optional: true # CHOUETTE-3247 failing specs
+  belongs_to :workgroup, class_name: '::Workgroup' # CHOUETTE-3247 validates presence
+  belongs_to :workbench, class_name: '::Workbench', optional: true # CHOUETTE-3247 failing specs
 
   has_one :organisation, through: :workbench
   has_many :publication_api_sources, foreign_key: :export_id
@@ -78,7 +78,6 @@ class Export::Base < ApplicationModel
   validates :type, presence: true, inclusion: { in: proc { |e|
                                                       e.workgroup&.export_types || ::Workgroup::DEFAULT_EXPORT_TYPES
                                                     } }
-  validates_presence_of :workgroup, :referential_id
   validates :options, export_options: true
   validates :name, presence: true
   validates_presence_of :creator

@@ -4,7 +4,7 @@ module Macro
   class List < ApplicationModel
     self.table_name = 'macro_lists'
 
-    belongs_to :workbench, optional: false
+    belongs_to :workbench # CHOUETTE-3247 optional: false
     validates :name, presence: true
 
     has_many :macros, lambda {
@@ -36,16 +36,16 @@ module Macro
       # The Workbench where macros are executed
       self.table_name = 'macro_list_runs'
 
-      belongs_to :workbench, optional: false
+      belongs_to :workbench # CHOUETTE-3247 optional: false
       delegate :workgroup, to: :workbench
 
       # The Referential where macros are executed.
       # Optional, because the user can run macros on Stop Areas for example
-      belongs_to :referential, optional: true
+      belongs_to :referential, optional: true # CHOUETTE-3247
 
       # The original macro list definition. This macro list can have been modified or deleted since.
       # Should only used to provide a link in the UI
-      belongs_to :original_macro_list, optional: true, foreign_key: :original_macro_list_id, class_name: 'Macro::List'
+      belongs_to :original_macro_list, optional: true, foreign_key: :original_macro_list_id, class_name: 'Macro::List' # CHOUETTE-3247
 
       has_many :macro_runs, -> { order(position: :asc) }, class_name: 'Macro::Base::Run',
                                                           dependent: :destroy, foreign_key: 'macro_list_run_id'

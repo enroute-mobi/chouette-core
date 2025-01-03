@@ -12,9 +12,9 @@ module Chouette
     @@day_offset_max = DAY_OFFSET_MAX
     mattr_accessor :day_offset_max
 
-    belongs_to :stop_area, optional: true
-    belongs_to :stop_point
-    belongs_to :vehicle_journey
+    belongs_to :stop_area, optional: true # CHOUETTE-3247
+    belongs_to :stop_point # TODO: CHOUETTE-3247 optional: true?
+    belongs_to :vehicle_journey, inverse_of: :vehicle_journey_at_stops # TODO: CHOUETTE-3247 optional: true?
 
     attr_accessor :_destroy, :dummy
 

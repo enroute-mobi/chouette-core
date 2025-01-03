@@ -1,9 +1,9 @@
 # frozen_string_literal: true
 
 class ServiceCount < ActiveRecord::Base
-  belongs_to :journey_pattern, class_name: 'Chouette::JourneyPattern'
-  belongs_to :route, class_name: 'Chouette::Route'
-  belongs_to :line, class_name: 'Chouette::Line'
+  belongs_to :journey_pattern, class_name: 'Chouette::JourneyPattern' # CHOUETTE-3247 code analysis
+  belongs_to :route, class_name: 'Chouette::Route' # CHOUETTE-3247 code analysis
+  belongs_to :line, class_name: 'Chouette::Line' # CHOUETTE-3247 code analysis
 
   scope :for_journey_pattern, ->(journey_pattern) { where(journey_pattern_id: journey_pattern.id) }
   scope :for_line, ->(line) { where(line_id: line.id) }

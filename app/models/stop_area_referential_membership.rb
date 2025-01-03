@@ -1,6 +1,6 @@
 class StopAreaReferentialMembership < ApplicationModel
-  belongs_to :organisation
-  belongs_to :stop_area_referential
+  belongs_to :organisation # CHOUETTE-3247 validates presence
+  belongs_to :stop_area_referential # TODO: CHOUETTE-3247 optional: true?
 
-  validates :organisation, presence: true, uniqueness: { scope: :stop_area_referential }
+  validates :organisation, uniqueness: { scope: :stop_area_referential }
 end

@@ -8,7 +8,7 @@ RSpec.describe Control::List do
   end
 
   it { is_expected.to validate_presence_of(:name) }
-  it { is_expected.to belong_to(:workbench).required(true) }
+  it { is_expected.to belong_to(:workbench).required }
 
   describe ".controls"do
     before do
@@ -41,6 +41,6 @@ end
 
 RSpec.describe Control::Base do
   subject { Control::Dummy.new }
-  it { is_expected.to belong_to(:control_list).required(false) }
+  it { is_expected.to belong_to(:control_list).optional }
 
 end

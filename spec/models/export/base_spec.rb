@@ -2,7 +2,7 @@
 
 RSpec.describe Export::Base, type: :model do
   it { should belong_to(:referential) }
-  it { should belong_to(:workbench) }
+  it { is_expected.to belong_to(:workbench).optional }
 
   it { should enumerize(:status).in("aborted", "canceled", "failed", "new", "pending", "running", "successful", "warning") }
 
@@ -66,8 +66,17 @@ RSpec.describe Export::Base, type: :model do
         create(:gtfs_export, workbench: workbench)
       end
 
-      create :publication_api_source, export: old_export, key: 'foo'
-      create :publication_api_source, export: old_export, key: 'foo2'
+      context = Chouette.create do
+        publication_api
+        referential :referential
+        publication referential: :referential
+      end
+      context.publication_api.publication_api_sources.create!(
+        publication: context.publication, export: old_export, key: 'foo'
+      )
+      context.publication_api.publication_api_sources.create!(
+        publication: context.publication, export: old_export, key: 'foo2'
+      )
 
       expect { Export::Gtfs.new(workbench: workbench).purge_exports }.to change {
         workbench.exports.count
@@ -87,9 +96,12 @@ RSpec.describe Export::Base, type: :model do
   end
 
   describe "#clean_exportables" do
-
+    let(:context) do
+      Chouette.create { line }
+    end
+    let(:line) { context.line }
     let(:export) { create(:gtfs_export) }
-    before(:each) { export.exportables.create export: export }
+    before(:each) { export.exportables.create(export: export, model: line) }
 
     context 'when export is destroyed' do
       it 'must destroy all associated Exportables' do

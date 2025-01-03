@@ -16,8 +16,6 @@ RSpec.describe Document, type: :model do
     )
     should_not allow_value(fixture_file_upload('OFFRE_TRANSDEV_2017030112251.zip')).for(:file).with_message(message)
   end
-  it { should validate_presence_of :document_type_id }
-  it { should validate_presence_of :document_provider_id }
 
   describe '#document_type' do
     describe 'validations' do

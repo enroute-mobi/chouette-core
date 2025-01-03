@@ -3,8 +3,8 @@ class AbstractCode < ActiveRecord::Base
 
   acts_as_copy_target
 
-  belongs_to :code_space, required: true
-  belongs_to :resource, polymorphic: true, required: true
+  belongs_to :code_space # CHOUETTE-3247 required: true
+  belongs_to :resource, polymorphic: true # CHOUETTE-3247 required: true
 
   validates :value, presence: true
 

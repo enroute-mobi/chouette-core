@@ -3,7 +3,7 @@
 class Sequence < ApplicationModel
   extend Enumerize
 
-  belongs_to :workbench, optional: false, class_name: 'Workbench'
+  belongs_to :workbench, class_name: 'Workbench' # CHOUETTE-3247 optional: false
 
   enumerize :sequence_type, in: %i[range_sequence static_list], default: :range_sequence, scope: true
 

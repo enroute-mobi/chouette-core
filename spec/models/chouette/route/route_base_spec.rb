@@ -8,7 +8,7 @@ describe Chouette::Route, type: :model do
   it { is_expected.to enumerize(:direction).in(:straight_forward, :backward, :clockwise, :counter_clockwise, :north, :north_west, :west, :south_west, :south, :south_east, :east, :north_east) }
   it { is_expected.to enumerize(:wayback).in(:outbound, :inbound) }
 
-  it { is_expected.to validate_presence_of :line }
+  it { is_expected.to belong_to(:line).required }
   it { is_expected.to validate_uniqueness_of :objectid }
   it { is_expected.to validate_inclusion_of(:direction).in_array(%i(straight_forward backward clockwise counter_clockwise north north_west west south_west south south_east east north_east)) }
   it { is_expected.to validate_inclusion_of(:wayback).in_array(%i(outbound inbound)) }

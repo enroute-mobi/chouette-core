@@ -9,7 +9,7 @@ class NotificationRule < ApplicationModel
   enumerize :operation_statuses, in: %w[successful warning failed], multiple: true
 
   # Associations
-  belongs_to :workbench, class_name: '::Workbench'
+  belongs_to :workbench, class_name: '::Workbench' # CHOUETTE-3247 validates presence
   has_one :organisation, through: :workbench
   has_array_of :lines, class_name: 'Chouette::Line'
   has_array_of :users
@@ -42,7 +42,7 @@ class NotificationRule < ApplicationModel
   end
 
   # Validations
-  validates :workbench, :notification_type, :target_type, presence: true
+  validates :notification_type, :target_type, presence: true
 
   validates :priority, numericality: {
               only_integer: true,

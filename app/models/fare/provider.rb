@@ -6,8 +6,8 @@ module Fare
     include CodeSupport
     self.table_name = :fare_providers
 
-    belongs_to :workbench, optional: false
-    belongs_to :fare_referential, class_name: 'Fare::Referential', optional: false
+    belongs_to :workbench # CHOUETTE-3247 optional: false
+    belongs_to :fare_referential, class_name: 'Fare::Referential' # CHOUETTE-3247 optional: false
 
     validates :short_name, :name, presence: true
 

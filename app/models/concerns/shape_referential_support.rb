@@ -4,8 +4,8 @@ module ShapeReferentialSupport
   extend ActiveSupport::Concern
 
   included do
-    belongs_to :shape_referential, required: true
-    belongs_to :shape_provider, required: true
+    belongs_to :shape_referential # CHOUETTE-3247 required: true
+    belongs_to :shape_provider # CHOUETTE-3247 required: true
 
     alias_method :referential, :shape_referential
 

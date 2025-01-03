@@ -194,8 +194,26 @@ RSpec.describe ServiceCount, type: :model do
   end
 
   describe 'scopes' do
+    let(:context) do
+      Chouette.create do
+        referential do
+          route do
+            journey_pattern :journey_pattern
+          end
+        end
+      end
+    end
+
     before do
-      %w[2020-01-01 2020-06-01 2020-12-01 2021-01-01].each { |d| create :service_count, date: d.to_date }
+      %w[2020-01-01 2020-06-01 2020-12-01 2021-01-01].each do |d|
+        create(
+          :service_count,
+          line: context.journey_pattern(:journey_pattern).route.line,
+          route: context.journey_pattern(:journey_pattern).route,
+          journey_pattern: context.journey_pattern(:journey_pattern),
+          date: d.to_date
+        )
+      end
     end
 
     describe '#between' do

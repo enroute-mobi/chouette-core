@@ -3,9 +3,8 @@ class ApiKey < ApplicationModel
 
   before_validation :generate_access_token, on: :create
 
-  belongs_to :workbench
+  belongs_to :workbench # CHOUETTE-3247 validates presence
 
-  validates :workbench, presence: true
   validates :token, presence: true, uniqueness: true
 
   def eql?(other)

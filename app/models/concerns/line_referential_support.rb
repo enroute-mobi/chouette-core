@@ -4,8 +4,8 @@ module LineReferentialSupport
   extend ActiveSupport::Concern
 
   included do
-    belongs_to :line_referential, required: true
-    belongs_to :line_provider, required: true
+    belongs_to :line_referential # CHOUETTE-3247 required: true
+    belongs_to :line_provider # CHOUETTE-3247 required: true
 
     alias_method :referential, :line_referential
 

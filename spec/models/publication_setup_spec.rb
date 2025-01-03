@@ -1,9 +1,8 @@
 RSpec.describe PublicationSetup, type: :model, use_chouette_factory: true do
-  it { should belong_to :workgroup }
+  it { is_expected.to belong_to(:workgroup).required }
   it { should have_many :destinations }
   it { should have_many :publications }
   it { should validate_presence_of :name }
-  it { should validate_presence_of :workgroup }
 
   let!(:context) do
     Chouette.create do

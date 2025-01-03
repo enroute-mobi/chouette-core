@@ -3,7 +3,7 @@
 RSpec.describe Calendar, type: :model do
   include Support::TimeTableHelper
 
-  it { should belong_to(:workbench).required(true) }
+  it { should belong_to(:workbench).required }
   it { should have_one(:workgroup).through(:workbench) }
   it { should have_one(:organisation).through(:workbench) }
 

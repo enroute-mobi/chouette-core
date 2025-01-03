@@ -3,15 +3,14 @@
 RSpec.describe Import::Base, type: :model do
   subject(:import) { Import::Base.new }
 
-  it { should belong_to(:referential) }
-  it { should belong_to(:workbench) }
-  it { should belong_to(:parent) }
+  it { is_expected.to belong_to(:referential).optional }
+  it { is_expected.to belong_to(:workbench).required }
+  it { is_expected.to belong_to(:parent).optional }
 
   it {
     should enumerize(:status).in('aborted', 'canceled', 'failed', 'new', 'pending', 'running', 'successful', 'warning')
   }
 
-  it { should validate_presence_of(:workbench) }
   it { should validate_presence_of(:creator) }
 
   describe '.purge_imports' do

@@ -1,14 +1,14 @@
 class CustomField < ApplicationModel
 
   extend Enumerize
-  belongs_to :workgroup
-  belongs_to :custom_field_group, optional: true
+  belongs_to :workgroup # CHOUETTE-3247 optional: false
+  belongs_to :custom_field_group, optional: true # CHOUETTE-3247
 
   enumerize :field_type, in: %i{list integer float string attachment}
 
   validates :name, uniqueness: {scope: [:resource_type, :workgroup_id]}
   validates :code, uniqueness: {scope: [:resource_type, :workgroup_id], case_sensitive: false}, presence: true
-  validates :workgroup, :resource_type, :field_type, presence: true
+  validates :resource_type, :field_type, presence: true
 
   acts_as_list scope: 'custom_field_group_id #{custom_field_group_id ? "= #{custom_field_group_id}" : "IS NULL"} AND workgroup_id #{workgroup_id ? "= #{workgroup_id}" : "IS NULL"}'
 

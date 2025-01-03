@@ -4,7 +4,7 @@ module Chouette
   class TimeTablePeriod < Referential::ActiveRecord
     include ChecksumSupport
 
-    belongs_to :time_table, inverse_of: :periods
+    belongs_to :time_table, inverse_of: :periods # CHOUETTE-3247 null: false
 
     scope :overlaps, -> (period_range) do
       where("(time_table_periods.period_start <= :end AND time_table_periods.period_end >= :begin)", {begin: period_range.begin, end: period_range.end})

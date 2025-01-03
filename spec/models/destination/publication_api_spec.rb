@@ -1,6 +1,12 @@
 RSpec.describe Destination::PublicationApi, type: :model do
-  let(:publication_api) { create :publication_api }
-  let(:publication_setup) { create :publication_setup }
+  let(:context) do
+    Chouette.create do
+      publication_api
+      publication_setup
+    end
+  end
+  let(:publication_api) { context.publication_api }
+  let(:publication_setup) { context.publication_setup }
   let(:report) { create(:destination_report) }
   let(:error_publication_api_id) { 99_999_999 }
 

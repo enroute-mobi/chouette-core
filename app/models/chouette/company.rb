@@ -11,8 +11,6 @@ module Chouette
     include CodeSupport
     include Documentable
 
-    belongs_to :line_provider, required: true
-
     has_many :lines, dependent: :nullify
     has_many :contracts, dependent: :nullify
 

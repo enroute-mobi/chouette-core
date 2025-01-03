@@ -69,6 +69,34 @@ module Chouette
           end
         end
 
+        model :publication_setup do
+          attribute(:name) { |n| "Publication #{n}" }
+          attribute(:enabled) { false }
+          attribute(:export_options) { { duration: 200 } }
+
+          transient :export_type
+
+          after do
+            case transient(:export_type)
+            when 'Export::Netex'
+              new_instance.export_options[:type] ||= 'Export::NetexGeneric'
+              new_instance.export_options[:profile] ||= :none
+            else
+              new_instance.export_options[:type] ||= 'Export::Gtfs'
+              unless new_instance.export_options.key?(:prefer_referent_stop_area)
+                new_instance.export_options[:prefer_referent_stop_area] = false
+              end
+              unless new_instance.export_options.key?(:ignore_single_stop_station)
+                new_instance.export_options[:ignore_single_stop_station] = false
+              end
+            end
+          end
+
+          model :publication do
+            attribute(:creator) { 'Test' }
+          end
+        end
+
         model :custom_field do
           attribute(:name) { |n| "Custom Field #{n}"}
           attribute(:code) { |n| "field_#{n}" }

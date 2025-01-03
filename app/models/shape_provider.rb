@@ -1,8 +1,8 @@
 class ShapeProvider < ApplicationModel
   include CodeSupport
 
-  belongs_to :shape_referential, required: true
-  belongs_to :workbench, required: true
+  belongs_to :shape_referential # TODO: CHOUETTE-3247 optional: true?
+  belongs_to :workbench # TODO: CHOUETTE-3247 optional: true?
 
   has_many :shapes, dependent: :delete_all
   has_many :point_of_interests, class_name: 'PointOfInterest::Base', dependent: :delete_all

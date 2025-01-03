@@ -2,7 +2,7 @@ module ReferentSupport
   extend ActiveSupport::Concern
 
   included do
-    belongs_to :referent, class_name: name
+    belongs_to :referent, class_name: name, optional: true # CHOUETTE-3247 code analysis
     validate :valid_referent
 
     scope :referents, -> { where is_referent: true }

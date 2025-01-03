@@ -45,7 +45,7 @@ RSpec.describe Control::PassingTimesInTimeRange do
 
     before do
       if TimeZone.count.zero?
-        values = TZInfo::Timezone.all_identifiers.map do |name| 
+        values = TZInfo::Timezone.all_identifiers.map do |name|
           ['(', "'", name, "'", ',', ActiveSupport::TimeZone[name].utc_offset, ')'].join
         end.join(',')
 
@@ -63,29 +63,31 @@ RSpec.describe Control::PassingTimesInTimeRange do
     end
 
     describe '#run' do
-
       let(:expected_message) do
         an_object_having_attributes(
           source: vehicle_journey,
           criticity: 'warning',
           message_attributes: {
-            'name' => vehicle_journey.published_journey_name,
+            'name' => vehicle_journey.published_journey_name
           }
         )
       end
 
       context "when after is equal to '16:10' and before is equal to '20:10'" do
-        let(:after) { 58200 }
-        let(:before) { 72600 }
+        let(:after) { 58_200 }
+        let(:before) { 72_600 }
 
         context "when passing_time_scope is 'all'" do
           let(:passing_time_scope) { 'all' }
 
           context 'and exists at least one at_stop that is not in time range' do
             before do
-              first_vehicle_journey_at_stop.update arrival_time: '2000-01-01 17:00:00', departure_time: '2000-01-01 17:00:00'
-              second_vehicle_journey_at_stop.update arrival_time: '2000-01-01 11:00:00', departure_time: '2000-01-01 11:00:00'
-              last_vehicle_journey_at_stop.update arrival_time: '2000-01-01 17:00:00', departure_time: '2000-01-01 17:00:00'
+              first_vehicle_journey_at_stop.update arrival_time: '2000-01-01 17:00:00',
+                                                   departure_time: '2000-01-01 17:00:00'
+              second_vehicle_journey_at_stop.update arrival_time: '2000-01-01 11:00:00',
+                                                    departure_time: '2000-01-01 11:00:00'
+              last_vehicle_journey_at_stop.update arrival_time: '2000-01-01 17:00:00',
+                                                  departure_time: '2000-01-01 17:00:00'
 
               control_run.run
             end
@@ -95,9 +97,12 @@ RSpec.describe Control::PassingTimesInTimeRange do
 
           context 'and all at_stops are in time range' do
             before do
-              first_vehicle_journey_at_stop.update arrival_time: '2000-01-01 17:00:00', departure_time: '2000-01-01 17:00:00'
-              second_vehicle_journey_at_stop.update arrival_time: '2000-01-01 17:00:00', departure_time: '2000-01-01 17:00:00'
-              last_vehicle_journey_at_stop.update arrival_time: '2000-01-01 17:00:00', departure_time: '2000-01-01 17:00:00'
+              first_vehicle_journey_at_stop.update arrival_time: '2000-01-01 17:00:00',
+                                                   departure_time: '2000-01-01 17:00:00'
+              second_vehicle_journey_at_stop.update arrival_time: '2000-01-01 17:00:00',
+                                                    departure_time: '2000-01-01 17:00:00'
+              last_vehicle_journey_at_stop.update arrival_time: '2000-01-01 17:00:00',
+                                                  departure_time: '2000-01-01 17:00:00'
 
               control_run.run
             end
@@ -111,7 +116,8 @@ RSpec.describe Control::PassingTimesInTimeRange do
 
           context 'and exists at least one at_stop that is not in time range' do
             before do
-              first_vehicle_journey_at_stop.update arrival_time: '2000-01-01 11:00:00', departure_time: '2000-01-01 11:00:00'
+              first_vehicle_journey_at_stop.update arrival_time: '2000-01-01 11:00:00',
+                                                   departure_time: '2000-01-01 11:00:00'
               control_run.run
             end
 
@@ -120,9 +126,12 @@ RSpec.describe Control::PassingTimesInTimeRange do
 
           context 'and all at_stops are in time range' do
             before do
-              first_vehicle_journey_at_stop.update arrival_time: '2000-01-01 17:00:00', departure_time: '2000-01-01 17:00:00'
-              second_vehicle_journey_at_stop.update arrival_time: '2000-01-01 17:00:00', departure_time: '2000-01-01 17:00:00'
-              last_vehicle_journey_at_stop.update arrival_time: '2000-01-01 17:00:00', departure_time: '2000-01-01 17:00:00'
+              first_vehicle_journey_at_stop.update arrival_time: '2000-01-01 17:00:00',
+                                                   departure_time: '2000-01-01 17:00:00'
+              second_vehicle_journey_at_stop.update arrival_time: '2000-01-01 17:00:00',
+                                                    departure_time: '2000-01-01 17:00:00'
+              last_vehicle_journey_at_stop.update arrival_time: '2000-01-01 17:00:00',
+                                                  departure_time: '2000-01-01 17:00:00'
 
               control_run.run
             end
@@ -136,7 +145,8 @@ RSpec.describe Control::PassingTimesInTimeRange do
 
           context 'and exists at least one at_stop that is not in time range' do
             before do
-              last_vehicle_journey_at_stop.update arrival_time: '2000-01-01 11:00:00', departure_time: '2000-01-01 11:00:00'
+              last_vehicle_journey_at_stop.update arrival_time: '2000-01-01 11:00:00',
+                                                  departure_time: '2000-01-01 11:00:00'
 
               control_run.run
             end
@@ -146,9 +156,12 @@ RSpec.describe Control::PassingTimesInTimeRange do
 
           context 'and all at_stops are in time range' do
             before do
-              first_vehicle_journey_at_stop.update arrival_time: '2000-01-01 17:00:00', departure_time: '2000-01-01 17:00:00'
-              second_vehicle_journey_at_stop.update arrival_time: '2000-01-01 17:00:00', departure_time: '2000-01-01 17:00:00'
-              last_vehicle_journey_at_stop.update arrival_time: '2000-01-01 17:00:00', departure_time: '2000-01-01 17:00:00'
+              first_vehicle_journey_at_stop.update arrival_time: '2000-01-01 17:00:00',
+                                                   departure_time: '2000-01-01 17:00:00'
+              second_vehicle_journey_at_stop.update arrival_time: '2000-01-01 17:00:00',
+                                                    departure_time: '2000-01-01 17:00:00'
+              last_vehicle_journey_at_stop.update arrival_time: '2000-01-01 17:00:00',
+                                                  departure_time: '2000-01-01 17:00:00'
 
               control_run.run
             end
@@ -167,9 +180,12 @@ RSpec.describe Control::PassingTimesInTimeRange do
 
           context 'and exists at least one at_stop that is not in time range' do
             before do
-              first_vehicle_journey_at_stop.update arrival_time: '2000-01-01 17:00:00', departure_time: '2000-01-01 17:00:00'
-              second_vehicle_journey_at_stop.update arrival_time: '2000-01-01 11:00:00', departure_time: '2000-01-01 11:00:00'
-              last_vehicle_journey_at_stop.update arrival_time: '2000-01-01 17:00:00', departure_time: '2000-01-01 17:00:00'
+              first_vehicle_journey_at_stop.update arrival_time: '2000-01-01 17:00:00',
+                                                   departure_time: '2000-01-01 17:00:00'
+              second_vehicle_journey_at_stop.update arrival_time: '2000-01-01 11:00:00',
+                                                    departure_time: '2000-01-01 11:00:00'
+              last_vehicle_journey_at_stop.update arrival_time: '2000-01-01 17:00:00',
+                                                  departure_time: '2000-01-01 17:00:00'
 
               control_run.run
             end
@@ -179,9 +195,12 @@ RSpec.describe Control::PassingTimesInTimeRange do
 
           context 'and all at_stops are in time range' do
             before do
-              first_vehicle_journey_at_stop.update arrival_time: '2000-01-01 17:00:00', departure_time: '2000-01-01 17:00:00'
-              second_vehicle_journey_at_stop.update arrival_time: '2000-01-01 17:00:00', departure_time: '2000-01-01 17:00:00'
-              last_vehicle_journey_at_stop.update arrival_time: '2000-01-01 17:00:00', departure_time: '2000-01-01 17:00:00'
+              first_vehicle_journey_at_stop.update arrival_time: '2000-01-01 17:00:00',
+                                                   departure_time: '2000-01-01 17:00:00'
+              second_vehicle_journey_at_stop.update arrival_time: '2000-01-01 17:00:00',
+                                                    departure_time: '2000-01-01 17:00:00'
+              last_vehicle_journey_at_stop.update arrival_time: '2000-01-01 17:00:00',
+                                                  departure_time: '2000-01-01 17:00:00'
 
               control_run.run
             end
@@ -195,7 +214,8 @@ RSpec.describe Control::PassingTimesInTimeRange do
 
           context 'and exists at least one at_stop that is not in time range' do
             before do
-              first_vehicle_journey_at_stop.update arrival_time: '2000-01-01 11:00:00', departure_time: '2000-01-01 11:00:00'
+              first_vehicle_journey_at_stop.update arrival_time: '2000-01-01 11:00:00',
+                                                   departure_time: '2000-01-01 11:00:00'
               control_run.run
             end
 
@@ -204,9 +224,12 @@ RSpec.describe Control::PassingTimesInTimeRange do
 
           context 'and all at_stops are in time range' do
             before do
-              first_vehicle_journey_at_stop.update arrival_time: '2000-01-01 17:00:00', departure_time: '2000-01-01 17:00:00'
-              second_vehicle_journey_at_stop.update arrival_time: '2000-01-01 17:00:00', departure_time: '2000-01-01 17:00:00'
-              last_vehicle_journey_at_stop.update arrival_time: '2000-01-01 17:00:00', departure_time: '2000-01-01 17:00:00'
+              first_vehicle_journey_at_stop.update arrival_time: '2000-01-01 17:00:00',
+                                                   departure_time: '2000-01-01 17:00:00'
+              second_vehicle_journey_at_stop.update arrival_time: '2000-01-01 17:00:00',
+                                                    departure_time: '2000-01-01 17:00:00'
+              last_vehicle_journey_at_stop.update arrival_time: '2000-01-01 17:00:00',
+                                                  departure_time: '2000-01-01 17:00:00'
 
               control_run.run
             end
@@ -220,7 +243,8 @@ RSpec.describe Control::PassingTimesInTimeRange do
 
           context 'and exists at least one at_stop that is not in time range' do
             before do
-              last_vehicle_journey_at_stop.update arrival_time: '2000-01-01 11:00:00', departure_time: '2000-01-01 11:00:00'
+              last_vehicle_journey_at_stop.update arrival_time: '2000-01-01 11:00:00',
+                                                  departure_time: '2000-01-01 11:00:00'
 
               control_run.run
             end
@@ -230,9 +254,12 @@ RSpec.describe Control::PassingTimesInTimeRange do
 
           context 'and all at_stops are in time range' do
             before do
-              first_vehicle_journey_at_stop.update arrival_time: '2000-01-01 17:00:00', departure_time: '2000-01-01 17:00:00'
-              second_vehicle_journey_at_stop.update arrival_time: '2000-01-01 17:00:00', departure_time: '2000-01-01 17:00:00'
-              last_vehicle_journey_at_stop.update arrival_time: '2000-01-01 17:00:00', departure_time: '2000-01-01 17:00:00'
+              first_vehicle_journey_at_stop.update arrival_time: '2000-01-01 17:00:00',
+                                                   departure_time: '2000-01-01 17:00:00'
+              second_vehicle_journey_at_stop.update arrival_time: '2000-01-01 17:00:00',
+                                                    departure_time: '2000-01-01 17:00:00'
+              last_vehicle_journey_at_stop.update arrival_time: '2000-01-01 17:00:00',
+                                                  departure_time: '2000-01-01 17:00:00'
 
               control_run.run
             end

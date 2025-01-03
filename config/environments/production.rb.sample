@@ -1,16 +1,17 @@
 Rails.application.configure do
 
-  SmartEnv.add :MAIL_DELIVERY_METHOD, default: 'smtp'
-  SmartEnv.add :SMTP_HOST
-  SmartEnv.add_boolean :ACCEPT_USER_CREATION, default: false
-
   SmartEnv.set :PUBLIC_HOST, default: 'http://chouette-core.enroute.mobi'
+  SmartEnv.add_boolean :ACCEPT_USER_CREATION, default: false
   SmartEnv.set :IEV_URL, default: 'http://iev:8080'
+
   SmartEnv.set :RAILS_HOST, default: 'http://front:3000'
   SmartEnv.set :RAILS_DB_PASSWORD, required: true
   SmartEnv.add :AUTH_SETTINGS, default: { type: 'database' }
-  SmartEnv.add :SMTP_SETTINGS, default: {}
   SmartEnv.add_boolean :RAILS_SERVE_STATIC_FILES, default: true
+
+  SmartEnv.add :MAIL_DELIVERY_METHOD, default: 'smtp'
+  SmartEnv.add :SMTP_HOST
+  SmartEnv.add :SMTP_SETTINGS, default: {}
 
   # Settings specified here will take precedence over those in config/application.rb.
 
@@ -113,7 +114,7 @@ Rails.application.configure do
   # Do not dump schema after migrations.
   config.active_record.dump_schema_after_migration = false
 
-  config.action_mailer.default_url_options = { :host => SmartEnv['PUBLIC_HOST'] }
+  config.action_mailer.default_url_options = { host: SmartEnv['PUBLIC_HOST'] }
 
   # Configure the e-mail address which will be shown in Devise::Mailer
   config.mailer_sender = SmartEnv['MAIL_FROM']

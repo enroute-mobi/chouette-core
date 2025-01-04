@@ -13,7 +13,7 @@ module Fare
 
     validates :name, presence: true
 
-    has_many :stop_area_zones, class_name: 'Fare::StopAreaZone', foreign_key: 'fare_zone_id', dependent: :delete_all
+    has_many :stop_area_zones, class_name: 'Fare::StopAreaZone', foreign_key: 'fare_zone_id', inverse_of: :zone, dependent: :delete_all
     has_many :stop_areas, through: :stop_area_zones
     has_many :fare_geographic_references, class_name: 'Fare::GeographicReference',
                                           foreign_key: 'fare_zone_id',

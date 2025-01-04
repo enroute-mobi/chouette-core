@@ -35,7 +35,7 @@ module Chouette
     has_many :entrances, dependent: :delete_all
     has_many :macro_messages, as: :source, class_name: "::Macro::Message", foreign_key: :source_id
 
-    has_many :stop_area_zones, class_name: 'Fare::StopAreaZone', dependent: :delete_all
+    has_many :stop_area_zones, class_name: 'Fare::StopAreaZone', inverse_of: :stop_area, dependent: :delete_all
     has_many :fare_zones, through: :stop_area_zones, source: :zone
     has_many :group_members, class_name: 'StopAreaGroup::Member', dependent: :destroy, inverse_of: :stop_area
     has_many :groups, through: :group_members, inverse_of: :stop_areas

@@ -1,11 +1,13 @@
 # frozen_string_literal: true
 
-class Fare::ProviderDecorator < Af83::Decorator
-  decorates Fare::Provider
+module Fare
+  class ProviderDecorator < Af83::Decorator
+    decorates Fare::Provider
 
-  set_scope { context[:workbench] }
+    set_scope { context[:workbench] }
 
-  create_action_link
+    create_action_link
 
-  with_instance_decorator(&:crud)
+    with_instance_decorator(&:crud)
+  end
 end

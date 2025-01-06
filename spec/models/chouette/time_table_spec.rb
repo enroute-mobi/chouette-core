@@ -770,7 +770,6 @@ describe "update_attributes on periods and dates" do
     context "when an empty period is set," do
       it "should not save tm if period invalid" do
         subject = Chouette::TimeTable.new({"comment"=>"test",
-                                           "version"=>"",
                                            "monday"=>"0",
                                            "tuesday"=>"0",
                                            "wednesday"=>"0",
@@ -789,7 +788,6 @@ describe "update_attributes on periods and dates" do
     context "when a valid period is set," do
       it "it should save tm if period valid" do
         subject = Chouette::TimeTable.new({"comment"=>"test",
-                                           "version"=>"",
                                            "monday"=>"1",
                                            "tuesday"=>"1",
                                            "wednesday"=>"1",
@@ -863,7 +861,6 @@ describe "update_attributes on periods and dates" do
   describe "#dates.valid?" do
     it "should not save tm if date invalid" do
       subject = Chouette::TimeTable.new({"comment"=>"test",
-                                         "version"=>"",
                                          "monday"=>"0",
                                          "tuesday"=>"0",
                                          "wednesday"=>"0",
@@ -879,7 +876,6 @@ describe "update_attributes on periods and dates" do
     end
     it "it should save tm if date valid" do
       subject = Chouette::TimeTable.new({"comment"=>"test",
-                                         "version"=>"",
                                          "monday"=>"1",
                                          "tuesday"=>"1",
                                          "wednesday"=>"1",

@@ -242,7 +242,7 @@ module Chouette
 
     # DEPRECATED Only used by legacy specs
     def full_journey_pattern
-      journey_pattern = journey_patterns.find_or_create_by registration_number: self.number, name: self.name
+      journey_pattern = journey_patterns.find_or_create_by name: self.name
       journey_pattern.stop_points = self.stop_points
       journey_pattern
     end

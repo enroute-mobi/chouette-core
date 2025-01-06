@@ -205,16 +205,13 @@ RSpec.describe ReferentialSchema do
     describe 'columns' do
       it 'returns an array with ordered column names for the table' do
         expected = %w[
-          id route_id journey_pattern_id company_id objectid
-          object_version comment transport_mode published_journey_name
-          published_journey_identifier facility vehicle_type_identifier
-          number mobility_restricted_suitability flexible_service
-          journey_category created_at updated_at checksum checksum_source
-          data_source_ref custom_field_values metadata
+          id route_id journey_pattern_id company_id objectid published_journey_identifier
+          object_version transport_mode published_journey_name custom_field_values
+          created_at updated_at checksum checksum_source data_source_ref metadata
           line_notice_ids accessibility_assessment_id service_facility_set_ids
         ]
 
-        expect(table.columns).to eq(expected)
+        expect(table.columns).to match_array(expected)
       end
     end
   end

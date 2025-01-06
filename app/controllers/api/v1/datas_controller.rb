@@ -1,7 +1,10 @@
 # frozen_string_literal: true
 
-class Api::V1::DatasController < ActionController::Base
+class Api::V1::DatasController < Api::V1::BaseController
+  include ActionView::Layouts
   include Downloadable
+
+  layout 'api'
 
   before_action :load_publication_api
   before_action :check_auth_token, except: :infos
@@ -10,9 +13,7 @@ class Api::V1::DatasController < ActionController::Base
   rescue_from PublicationApi::InvalidAuthenticationError, with: :invalid_authentication_error
   rescue_from PublicationApi::MissingAuthenticationError, with: :missing_authentication_error
 
-  def infos
-    render layout: 'api'
-  end
+  def infos; end
 
   def download
     source = @publication_api.publication_api_sources.find_by! key: params[:key]
@@ -113,14 +114,14 @@ class Api::V1::DatasController < ActionController::Base
   end
 
   def invalid_authentication_error
-    render :invalid_authentication_error, layout: 'api', status: 401
+    render :invalid_authentication_error, status: :unauthorized
   end
 
   def missing_authentication_error
-    render :missing_authentication_error, layout: 'api', status: 401
+    render :missing_authentication_error, status: :unauthorized
   end
 
   def missing_file_error
-    render 'missing_file_error.html.slim', layout: 'api', status: :not_found
+    render 'missing_file_error.html.slim', status: :not_found
   end
 end

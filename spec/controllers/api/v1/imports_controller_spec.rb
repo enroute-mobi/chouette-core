@@ -32,42 +32,33 @@ RSpec.describe Api::V1::ImportsController, type: :controller do
         end
 
         it 'should be successful' do
-          expect {
+          expect do
             post :create, params: {
               workbench_id: workbench.id,
               workbench_import: {
                 name: 'test',
                 file: file,
                 creator: 'test',
-                notification_target: 'workbench',
                 options: {
-                  'automatic_merge': true,
-                  'flag_urgent': true,
-                  'merge_method': 'experimental'
+                  automatic_merge: true,
+                  archive_on_fail: true,
+                  flag_urgent: true
                 }
               },
               format: :json
             }
-          }.to change{Import::Workbench.count}.by(1)
+          end.to change { Import::Workbench.count }.by(1)
           expect(response).to be_successful
 
           import = Import::Workbench.last
           expect(import.file).to be_present
           expect(import.automatic_merge).to be_truthy
+          expect(import.archive_on_fail).to be_truthy
           expect(import.flag_urgent).to be_truthy
-          expect(import.notification_target).to eq('workbench')
-          expect(import.merge_method).to eq('experimental')
-        end
-      end
-
-      context 'in a worbench with flag_urgent restriction' do
-        before do
-          workbench.restrictions = ["referentials.flag_urgent"]
-          workbench.save
         end
 
-        it "should remove urgent option and allow import" do
-          expect {
+        it 'should ignore unsupported options' do
+          expect do
             post :create, params: {
               workbench_id: workbench.id,
               workbench_import: {
@@ -75,20 +66,48 @@ RSpec.describe Api::V1::ImportsController, type: :controller do
                 file: file,
                 creator: 'test',
                 options: {
-                  'automatic_merge': true,
-                  'flag_urgent': true,
-                  'merge_method': 'legacy'
+                  notification_target: 'workbench'
                 }
               },
               format: :json
             }
-          }.to change{Import::Workbench.count}.by(1)
+          end.to change { Import::Workbench.count }.by(1)
+          expect(response).to be_successful
+
+          import = Import::Workbench.last
+          expect(import.file).to be_present
+          expect(import.notification_target).not_to eq('workbench')
+        end
+      end
+
+      context 'in a worbench with flag_urgent restriction' do
+        before do
+          workbench.restrictions = ['referentials.flag_urgent']
+          workbench.save
+        end
+
+        it 'should remove urgent option and allow import' do
+          expect do
+            post :create, params: {
+              workbench_id: workbench.id,
+              workbench_import: {
+                name: 'test',
+                file: file,
+                creator: 'test',
+                options: {
+                  automatic_merge: true,
+                  archive_on_fail: true,
+                  flag_urgent: true
+                }
+              },
+              format: :json
+            }
+          end.to change { Import::Workbench.count }.by(1)
           expect(response).to be_successful
 
           import = Import::Workbench.last
           expect(import.flag_urgent).to be_falsy
         end
-
       end
     end
   end

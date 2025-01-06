@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 RSpec.describe Export::Ara do
   describe 'a whole export' do
     let(:context) do
@@ -152,20 +154,31 @@ RSpec.describe Export::Ara do
 
   describe 'Stops export' do
     describe Export::Ara::Stops::Decorator do
-      subject(:decorator) { described_class.new(stop_area) }
-      let(:stop_area) { Chouette::StopArea.new }
+      subject(:decorator) { described_class.new(stop_area, export_scope: export_scope) }
+
+      let(:context) do
+        Chouette.create do
+          stop_area :stop_area
+        end
+      end
+      let(:stop_area) { context.stop_area(:stop_area) }
+      let(:export_scope_lines) { Chouette::Line.none }
+      let(:export_scope) { double(lines: export_scope_lines) }
 
       describe '#parent_uuid' do
         subject { decorator.parent_uuid }
 
         context "when StopArea parent isn't defined" do
-          before { stop_area.parent = nil }
-
           it { is_expected.to be_nil }
         end
 
         context "when StopArea parent objectid is 'test:StopArea:uuid'" do
-          before { stop_area.parent = Chouette::StopArea.new(objectid: 'test:StopArea:uuid') }
+          let(:context) do
+            Chouette.create do
+              stop_area :parent, area_type: 'zdlp', objectid: 'test:StopArea:uuid'
+              stop_area :stop_area, parent: :parent
+            end
+          end
 
           it { is_expected.to eq('uuid') }
         end
@@ -175,13 +188,16 @@ RSpec.describe Export::Ara do
         subject { decorator.referent_uuid }
 
         context "when StopArea parent isn't defined" do
-          before { stop_area.referent = nil }
-
           it { is_expected.to be_nil }
         end
 
         context "when StopArea referent objectid is 'test:StopArea:uuid'" do
-          before { stop_area.referent = Chouette::StopArea.new(objectid: 'test:StopArea:uuid') }
+          let(:context) do
+            Chouette.create do
+              stop_area :referent, is_referent: true, objectid: 'test:StopArea:uuid'
+              stop_area :stop_area, referent: :referent
+            end
+          end
 
           it { is_expected.to eq('uuid') }
         end
@@ -195,8 +211,26 @@ RSpec.describe Export::Ara do
         end
 
         context "when StopArea is associated to a Line identified by 'chouette:Line:uuid:LOC'" do
-          before { allow(stop_area).to receive(:lines) { [Chouette::Line.new(objectid: 'chouette:Line:uuid:LOC')] } }
-          it { is_expected.to contain_exactly('uuid') }
+          let(:context) do
+            Chouette.create do
+              line :line1, objectid: 'export:Line:uuid1:LOC'
+              line :line2, objectid: 'export:Line:uuid2:LOC'
+              line :line3, objectid: 'non_export:Line:uuid3:LOC'
+
+              stop_area :stop_area
+              stop_area :other_stop_area
+
+              referential lines: %i[line1 line2 line3] do
+                route line: :line1, stop_areas: %i[stop_area other_stop_area]
+                route line: :line3, stop_areas: %i[stop_area other_stop_area]
+              end
+            end
+          end
+          let(:export_scope_lines) { context.workbench.lines.where('objectid ILIKE ?', 'export:%') }
+
+          before { context.referential.switch }
+
+          it { is_expected.to match_array(%w[uuid1]) }
         end
       end
 
@@ -237,7 +271,11 @@ RSpec.describe Export::Ara do
     end
 
     let(:scope) do
-      double stop_areas: context.stop_area_referential.stop_areas, codes: context.workgroup.codes
+      double(
+        stop_areas: context.stop_area_referential.stop_areas,
+        codes: context.workgroup.codes,
+        lines: Chouette::Line.none
+      )
     end
 
     context 'when two Stop Areas are exported' do

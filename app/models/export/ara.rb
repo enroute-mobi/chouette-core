@@ -325,7 +325,7 @@ class Export::Ara < Export::Base
 
     def export!
       stop_areas.includes(:parent, :referent, :lines, codes: :code_space).find_each do |stop_area|
-        target << Decorator.new(stop_area, code_provider: code_provider).ara_model
+        target << Decorator.new(stop_area, code_provider: code_provider, export_scope: export_scope).ara_model
       end
     end
 
@@ -335,10 +335,12 @@ class Export::Ara < Export::Base
 
     # Creates an Ara::StopArea from a StopArea
     class Decorator < SimpleDelegator
-      def initialize(stop_area, code_provider: nil)
+      def initialize(stop_area, code_provider: nil, export_scope: nil)
         super stop_area
         @code_provider = code_provider
+        @export_scope = export_scope
       end
+      attr_reader :export_scope
 
       # TODO: To be shared
       def code_provider
@@ -362,7 +364,7 @@ class Export::Ara < Export::Base
       end
 
       def line_uuids
-        lines.map { |line| line.get_objectid&.local_id }
+        export_scope.lines.where(id: line_ids).map { |line| line.get_objectid&.local_id }
       end
 
       def parent_uuid

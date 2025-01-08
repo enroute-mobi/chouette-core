@@ -344,12 +344,11 @@ RSpec.describe Import::Neptune do
 
       it 'should create new vehicle_journeys' do
         expect{ import.send(:import_lines_content) }.to change{ Chouette::VehicleJourney.count }.by 3
-        vehicle_journey = Chouette::VehicleJourney.find_by number: '1026'
+        vehicle_journey = Chouette::VehicleJourney.find_by published_journey_identifier: '1026'
         expect(vehicle_journey.codes.first.value).to eq "toutenbus:VehicleJourney:700"
         expect(vehicle_journey.vehicle_journey_at_stops.count).to eq 12
         expect(vehicle_journey.time_tables.count).to eq 2
         expect(vehicle_journey.published_journey_identifier).to eq('1026')
-        expect(vehicle_journey.number).to eq(1026)
       end
     end
   end

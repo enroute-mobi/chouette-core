@@ -138,7 +138,7 @@ RSpec.describe Chouette::VehicleJourneyAtStop, type: :model do
     end
 
     it "have the same attributes than the same 'classic' VehicleJourneyAtStop" do
-      attributes = [ :vehicle_journey_id, :stop_point_id, :stop_area_id, :for_boarding, :for_alighting,
+      attributes = [ :vehicle_journey_id, :stop_point_id, :stop_area_id,
                      :checksum, :checksum_source, :departure_day_offset, :arrival_day_offset ]
       same_vehicle_journey_at_stop = ->(light) { vehicle_journey_at_stops.find(light.id) }
       expect(light_vehicle_journey_at_stops).to all(have_same_attributes(attributes, than: same_vehicle_journey_at_stop))

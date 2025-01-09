@@ -12,12 +12,32 @@ RSpec.describe Control::CodeFormat do
     it { should validate_presence_of :expected_format }
     it do
       should enumerize(:target_model).in(
-        %w[Line StopArea VehicleJourney Shape]
+        %w[
+          Line
+          LineGroup
+          LineNotice
+          Company
+          StopArea
+          StopAreaGroup
+          Entrance
+          Shape
+          PointOfInterest
+          ServiceFacilitySet
+          AccessibilityAssessment
+          Fare::Zone
+          LineRoutingConstraintZone
+          Document
+          Contract
+          Route
+          JourneyPattern
+          VehicleJourney
+          TimeTable
+        ]
       )
     end
 
     let(:control_list_run) do
-      Control::List::Run.create referential: context.referential, workbench: context.workbench
+      Control::List::Run.create(referential: referential, workbench: context.workbench)
     end
 
     let(:control_run) do
@@ -34,7 +54,7 @@ RSpec.describe Control::CodeFormat do
     end
 
     let(:target_code_space_id) { context.code_space.id }
-    let(:referential) { context.referential }
+    let(:referential) { nil }
 
     describe '#run' do
       subject { control_run.run }
@@ -44,7 +64,7 @@ RSpec.describe Control::CodeFormat do
           source: source,
           criticity: 'warning',
           message_attributes: {
-            'name' => source.try(:name) || source.id,
+            'name' => source.try(:name) || source.try(:published_journey_name) || source.try(:comment),
             'code_space_name' => 'test',
             'expected_format' => expected_format
           },
@@ -52,40 +72,23 @@ RSpec.describe Control::CodeFormat do
         )
       end
 
-      before { referential.switch }
+      before { referential&.switch }
 
       describe '#StopArea' do
+        let(:target_model) { 'StopArea' }
         let(:context) do
           Chouette.create do
             code_space short_name: 'test'
+            stop_area :without_code
             stop_area :with_a_good_code, codes: { test: 'B9999-AAA' }
             stop_area :with_a_bad_code, codes: { test: 'BAD_CODE' }
-            referential do
-              route stop_areas: %i[with_a_good_code with_a_bad_code]
-            end
           end
         end
-
-        let(:target_model) { 'StopArea' }
         let(:source) { context.stop_area(:with_a_bad_code) }
-        let(:stop_area_with_a_good_code) { context.stop_area(:with_a_good_code) }
 
-        let(:message_for_good_code) do
-          control_run.control_messages.find { |msg| msg.source == stop_area_with_a_good_code }
-        end
-
-        context "when a StopArea exists a space code 'test'" do
-          it 'should create a warning message for the StopArea with a bad code' do
-            subject
-
-            expect(control_run.control_messages).to include(expected_message)
-          end
-
-          it 'should not create a warning message for the StopArea with a good code' do
-            subject
-
-            expect(message_for_good_code).to be_nil
-          end
+        it 'should create a warning message only for the StopArea with a bad code' do
+          subject
+          expect(control_run.control_messages).to match_array([expected_message])
         end
 
         context 'when expected_format is just numbers' do
@@ -97,42 +100,42 @@ RSpec.describe Control::CodeFormat do
         end
       end
 
+      describe '#PointOfInterest' do
+        let(:target_model) { 'PointOfInterest' }
+        let(:context) do
+          Chouette.create do
+            code_space short_name: 'test'
+            point_of_interest :without_code
+            point_of_interest :with_a_good_code, codes: { test: 'B9999-AAA' }
+            point_of_interest :with_a_bad_code, codes: { test: 'BAD_CODE' }
+          end
+        end
+        let(:source) { context.point_of_interest(:with_a_bad_code) }
+
+        it 'should create a warning message only for the StopArea with a bad code' do
+          subject
+          expect(control_run.control_messages).to match_array([expected_message])
+        end
+      end
+
       describe '#VehicleJourney' do
+        let(:target_model) { 'VehicleJourney' }
         let(:context) do
           Chouette.create do
             code_space short_name: 'test'
             referential do
-              vehicle_journey :with_a_good_code
-              vehicle_journey :with_a_bad_code
+              vehicle_journey :without_code
+              vehicle_journey :with_a_good_code, codes: { test: 'B9999-AAA' }
+              vehicle_journey :with_a_bad_code, codes: { test: 'BAD_CODE' }
             end
           end
         end
-
-        let(:target_model) { 'VehicleJourney' }
+        let(:referential) { context.referential }
         let(:source) { context.vehicle_journey(:with_a_bad_code) }
-        let(:vehicle_journey_with_a_good_code) { context.vehicle_journey(:with_a_good_code) }
-        let(:vehicle_journey_with_a_bad_code) { context.vehicle_journey(:with_a_bad_code) }
-        let(:message_for_good_code) do
-          control_run.control_messages.find { |msg| msg.source == vehicle_journey_with_a_good_code }
-        end
 
-        before do
-          vehicle_journey_with_a_good_code.codes.create(value: 'B9999-AAA', code_space: context.code_space)
-          vehicle_journey_with_a_bad_code.codes.create(value: 'BAD_CODE', code_space: context.code_space)
-        end
-
-        context "when a VehicleJourney exists a space code 'test'" do
-          it 'should create a warning message for the VehicleJourney with a bad code' do
-            subject
-
-            expect(control_run.control_messages).to include(expected_message)
-          end
-
-          it 'should not create a warning message for the VehicleJourney with a good code' do
-            subject
-
-            expect(message_for_good_code).to be_nil
-          end
+        it 'should create a warning message only for the VehicleJourney with a bad code' do
+          subject
+          expect(control_run.control_messages).to match_array([expected_message])
         end
       end
     end

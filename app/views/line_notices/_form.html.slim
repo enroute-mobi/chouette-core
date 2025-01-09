@@ -3,6 +3,10 @@
     .col-lg-12
       = f.input :title
       = f.input :content
+
+  .separator.section_separator
+  = render 'codes/form', form: f
+
   .separator
 
     = cancel_button

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2024_12_06_144247) do
+ActiveRecord::Schema.define(version: 2025_01_08_083243) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "btree_gin"
@@ -778,6 +778,7 @@ ActiveRecord::Schema.define(version: 2024_12_06_144247) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.string "short_name"
+    t.uuid "uuid", default: -> { "gen_random_uuid()" }, null: false
     t.index ["line_provider_id"], name: "index_line_groups_on_line_provider_id"
     t.index ["line_referential_id"], name: "index_line_groups_on_line_referential_id"
   end
@@ -1438,6 +1439,7 @@ ActiveRecord::Schema.define(version: 2024_12_06_144247) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.string "short_name"
+    t.uuid "uuid", default: -> { "gen_random_uuid()" }, null: false
     t.index ["stop_area_provider_id"], name: "index_stop_area_groups_on_stop_area_provider_id"
     t.index ["stop_area_referential_id"], name: "index_stop_area_groups_on_stop_area_referential_id"
   end

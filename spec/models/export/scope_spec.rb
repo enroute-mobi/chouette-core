@@ -160,6 +160,135 @@ RSpec.describe Export::Scope, use_chouette_factory: true do
 
     let(:scope) { Export::Scope::Scheduled.new(default_scope) }
 
+    describe '#stop_areas' do
+      subject { scope.stop_areas }
+
+      let(:context) do
+        Chouette.create do
+          stop_area :stop_area1
+          stop_area :stop_area2
+
+          route :route, stop_areas: %i[stop_area1 stop_area2] do
+            vehicle_journey :vehicle_journey
+          end
+        end
+      end
+      let(:stop_areas) { [context.stop_area(:stop_area1), context.stop_area(:stop_area2)] }
+      let(:expected_routes) { [] }
+      let(:expected_vehicle_journeys) { [] }
+
+      before do
+        expect(scope).to receive(:routes).and_return(expected_routes)
+        expect(scope).to receive(:final_scope_vehicle_journeys).and_return(expected_vehicle_journeys)
+      end
+
+      context 'when no route nor vehicle journey is exported' do
+        it { is_expected.to be_empty }
+      end
+
+      context 'when some routes are exported' do
+        let(:expected_routes) { [context.route(:route)] }
+
+        it { is_expected.to match_array(stop_areas) }
+      end
+
+      context 'when some vehicle journeys are exported' do
+        let(:expected_routes) { [context.vehicle_journey(:vehicle_journey)] }
+
+        it { is_expected.to match_array(stop_areas) }
+      end
+    end
+
+    describe '#stop_area_groups' do
+      subject { scope.stop_area_groups }
+
+      let(:context) do
+        Chouette.create do
+          stop_area :stop_area1
+          stop_area :stop_area2
+          stop_area :other_stop_area
+
+          stop_area_group :stop_area_group, stop_areas: %i[stop_area1]
+          stop_area_group :other_stop_area_group, stop_areas: %i[other_stop_area]
+
+          route :route, stop_areas: %i[stop_area1 stop_area2]
+        end
+      end
+      let(:expected_routes) { [] }
+      let(:stop_area_groups) { [context.stop_area_group(:stop_area_group)] }
+
+      before { expect(scope).to receive(:routes).and_return(expected_routes) }
+
+      context 'when no stop area are exported' do
+        it { is_expected.to be_empty }
+      end
+
+      context 'when some routes are exported' do
+        let(:expected_routes) { [context.route(:route)] }
+
+        it { is_expected.to match_array(stop_area_groups) }
+      end
+    end
+
+    describe '#lines' do
+      subject { scope.lines }
+
+      let(:context) do
+        Chouette.create do
+          line :line
+          line :other_line
+
+          referential lines: %i[line other_line] do
+            route line: :line
+          end
+        end
+      end
+      let(:expected_routes) { Chouette::Route.none }
+      let(:lines) { [context.line(:line)] }
+
+      before { expect(scope).to receive(:routes).and_return(expected_routes) }
+
+      context 'when no routes are exported' do
+        it { is_expected.to be_empty }
+      end
+
+      context 'when some routes are exported' do
+        let(:expected_routes) { Chouette::Route.all }
+
+        it { is_expected.to match_array(lines) }
+      end
+    end
+
+    describe '#line_groups' do
+      subject { scope.line_groups }
+
+      let(:context) do
+        Chouette.create do
+          line :line
+          line :other_line
+
+          line_group :line_group, lines: %i[line]
+          line_group :other_line_group, lines: %i[other_line]
+
+          referential lines: %i[line other_line]
+        end
+      end
+      let(:expected_lines) { Chouette::Line.none }
+      let(:line_groups) { [context.line_group(:line_group)] }
+
+      before { expect(scope).to receive(:lines).and_return(expected_lines) }
+
+      context 'when no lines are exported' do
+        it { is_expected.to be_empty }
+      end
+
+      context 'when some lines are exported' do
+        let(:expected_lines) { Chouette::Line.where(id: context.line(:line)) }
+
+        it { is_expected.to match_array(line_groups) }
+      end
+    end
+
     describe '#vehicle_journeys' do
       it 'should filter in the ones with not empty timetables' do
         in_scope_vjs = %i[in_scope1 in_scope2 in_scope3].map { |n| context.vehicle_journey(n) }

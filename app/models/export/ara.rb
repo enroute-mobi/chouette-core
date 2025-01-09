@@ -45,7 +45,7 @@ class Export::Ara < Export::Base
   alias include_stop_visits? include_stop_visits
 
   def parts
-    @parts ||= [Stops, Lines, Companies, VehicleJourneys].tap do |parts|
+    @parts ||= [Stops, StopAreaGroups, Lines, LineGroups, Companies, VehicleJourneys].tap do |parts|
       parts << StopVisits if include_stop_visits?
     end
   end
@@ -391,6 +391,41 @@ class Export::Ara < Export::Base
     end
   end
 
+  class StopAreaGroups < Part
+    def export!
+      export_scope.stop_area_groups.includes(:members).find_each do |stop_area_group|
+        target << Decorator.new(stop_area_group, export_scope: export_scope).ara_model
+      end
+    end
+
+    class Decorator < SimpleDelegator
+      def initialize(stop_area_group, export_scope: nil)
+        super(stop_area_group)
+        @export_scope = export_scope
+      end
+      attr_reader :export_scope
+
+      def ara_attributes
+        {
+          id: uuid,
+          name: name,
+          short_name: short_name,
+          stop_area_ids: stop_area_uuids
+        }
+      end
+
+      def ara_model
+        Ara::File::StopAreaGroup.new(ara_attributes)
+      end
+
+      def stop_area_uuids
+        export_scope.stop_areas.where(id: members.map(&:stop_area_id)).map do |stop_area|
+          stop_area.get_objectid&.local_id
+        end
+      end
+    end
+  end
+
   class StopVisits < Part
     def vehicle_journey_at_stops
       sql_query = export_scope.vehicle_journey_at_stops.departure_arrival_base_query
@@ -575,6 +610,41 @@ class Export::Ara < Export::Base
       # TODO: To be shared
       def ara_codes
         code_provider.unique_codes __getobj__
+      end
+    end
+  end
+
+  class LineGroups < Part
+    def export!
+      export_scope.line_groups.includes(:members).find_each do |line_group|
+        target << Decorator.new(line_group, export_scope: export_scope).ara_model
+      end
+    end
+
+    class Decorator < SimpleDelegator
+      def initialize(line_group, export_scope: nil)
+        super(line_group)
+        @export_scope = export_scope
+      end
+      attr_reader :export_scope
+
+      def ara_attributes
+        {
+          id: uuid,
+          name: name,
+          short_name: short_name,
+          line_ids: line_uuids
+        }
+      end
+
+      def ara_model
+        Ara::File::LineGroup.new(ara_attributes)
+      end
+
+      def line_uuids
+        export_scope.lines.where(id: members.map(&:line_id)).map do |line|
+          line.get_objectid&.local_id
+        end
       end
     end
   end

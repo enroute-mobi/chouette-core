@@ -330,6 +330,99 @@ RSpec.describe Export::Ara do
     end
   end
 
+  describe 'Stop Area Groups export' do
+    subject(:part) do
+      Export::Ara::StopAreaGroups.new(export_scope: scope, target: target, context: export_context)
+    end
+
+    let(:scope) do
+      double(stop_area_groups: context.stop_area_referential.stop_area_groups, stop_areas: Chouette::StopArea.none)
+    end
+    let(:target) { [] }
+    let(:export_context) { double }
+
+    context 'when two Stop Areas are exported' do
+      let(:context) do
+        Chouette.create do
+          stop_area :stop_area1
+          stop_area :stop_area2
+
+          stop_area_group :stop_area_group1, stop_areas: %i[stop_area1]
+          stop_area_group :stop_area_group2, stop_areas: %i[stop_area2]
+        end
+      end
+
+      let(:stop_area_group1) { context.stop_area_group(:stop_area_group1) }
+      let(:stop_area_group2) { context.stop_area_group(:stop_area_group2) }
+
+      describe 'the Ara File target' do
+        subject do
+          part.export!
+          target
+        end
+
+        it { is_expected.to match_array([an_instance_of(Ara::File::StopAreaGroup)] * 2) }
+
+        it do
+          is_expected.to match_array(
+            [
+              have_attributes(name: stop_area_group1.name),
+              have_attributes(name: stop_area_group2.name)
+            ]
+          )
+        end
+      end
+    end
+
+    describe Export::Ara::StopAreaGroups::Decorator do
+      subject(:decorator) { described_class.new(stop_area_group, export_scope: export_scope) }
+
+      let(:context) do
+        Chouette.create do
+          stop_area :stop_area, objectid: 'export:StopArea:uuid:LOC'
+          stop_area_group :stop_area_group, stop_areas: %i[stop_area]
+        end
+      end
+      let(:stop_area_group) { context.stop_area_group(:stop_area_group) }
+      let(:export_scope_stop_areas) { Chouette::StopArea.none }
+      let(:export_scope) { double(stop_areas: export_scope_stop_areas) }
+
+      describe '#stop_area_uuids' do
+        subject { decorator.stop_area_uuids }
+
+        it { is_expected.to be_empty }
+
+        context "when Stop Area Group has a member identified by 'chouette:StopArea:uuid:LOC'" do
+          let(:context) do
+            Chouette.create do
+              stop_area :stop_area1, objectid: 'export:StopArea:uuid1:LOC'
+              stop_area :stop_area2, objectid: 'export:StopArea:uuid2:LOC'
+              stop_area :stop_area3, objectid: 'non_export:StopArea:uuid3:LOC'
+
+              stop_area_group :stop_area_group, stop_areas: %i[stop_area1 stop_area3]
+
+              referential
+            end
+          end
+          let(:export_scope_stop_areas) { context.workbench.stop_areas.where('objectid ILIKE ?', 'export:%') }
+
+          before { context.referential.switch }
+
+          it { is_expected.to match_array(%w[uuid1]) }
+        end
+      end
+
+      describe '#ara_attributes' do
+        subject { decorator.ara_attributes }
+
+        context "when #stop_area_uuids is ['uuid']" do
+          before { allow(decorator).to receive(:stop_area_uuids).and_return(['uuid']) }
+          it { is_expected.to include(stop_area_ids: ['uuid']) }
+        end
+      end
+    end
+  end
+
   describe 'Lines export' do
     context 'when two Lines are exported' do
       let(:context) do
@@ -389,6 +482,99 @@ RSpec.describe Export::Ara do
             end
           end
           it { is_expected.to_not include(an_object_having_attributes(codes: { 'test' => 'dummy' })) }
+        end
+      end
+    end
+  end
+
+  describe 'Line Groups export' do
+    subject(:part) do
+      Export::Ara::LineGroups.new(export_scope: scope, target: target, context: export_context)
+    end
+
+    let(:scope) do
+      double(line_groups: context.line_referential.line_groups, lines: Chouette::Line.none)
+    end
+    let(:target) { [] }
+    let(:export_context) { double }
+
+    context 'when two Lines are exported' do
+      let(:context) do
+        Chouette.create do
+          line :line1
+          line :line2
+
+          line_group :line_group1, lines: %i[line1]
+          line_group :line_group2, lines: %i[line2]
+        end
+      end
+
+      let(:line_group1) { context.line_group(:line_group1) }
+      let(:line_group2) { context.line_group(:line_group2) }
+
+      describe 'the Ara File target' do
+        subject do
+          part.export!
+          target
+        end
+
+        it { is_expected.to match_array([an_instance_of(Ara::File::LineGroup)] * 2) }
+
+        it do
+          is_expected.to match_array(
+            [
+              have_attributes(name: line_group1.name),
+              have_attributes(name: line_group2.name)
+            ]
+          )
+        end
+      end
+    end
+
+    describe Export::Ara::LineGroups::Decorator do
+      subject(:decorator) { described_class.new(line_group, export_scope: export_scope) }
+
+      let(:context) do
+        Chouette.create do
+          line :line, objectid: 'export:Line:uuid:LOC'
+          line_group :line_group, lines: %i[line]
+        end
+      end
+      let(:line_group) { context.line_group(:line_group) }
+      let(:export_scope_lines) { Chouette::Line.none }
+      let(:export_scope) { double(lines: export_scope_lines) }
+
+      describe '#line_uuids' do
+        subject { decorator.line_uuids }
+
+        it { is_expected.to be_empty }
+
+        context "when Line Group has a member identified by 'chouette:Line:uuid:LOC'" do
+          let(:context) do
+            Chouette.create do
+              line :line1, objectid: 'export:Line:uuid1:LOC'
+              line :line2, objectid: 'export:Line:uuid2:LOC'
+              line :line3, objectid: 'non_export:Line:uuid3:LOC'
+
+              line_group :line_group, lines: %i[line1 line3]
+
+              referential
+            end
+          end
+          let(:export_scope_lines) { context.workbench.lines.where('objectid ILIKE ?', 'export:%') }
+
+          before { context.referential.switch }
+
+          it { is_expected.to match_array(%w[uuid1]) }
+        end
+      end
+
+      describe '#ara_attributes' do
+        subject { decorator.ara_attributes }
+
+        context "when #line_uuids is ['uuid']" do
+          before { allow(decorator).to receive(:line_uuids).and_return(['uuid']) }
+          it { is_expected.to include(line_ids: ['uuid']) }
         end
       end
     end

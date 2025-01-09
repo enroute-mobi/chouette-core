@@ -28,23 +28,6 @@ RSpec.describe Macro::CreateCodeFromSequence do
       Macro::List::Run.create(referential: referential, workbench: workbench)
     end
 
-    let(:context) do
-      Chouette.create do
-        code_space short_name: 'test'
-
-        company :company
-        company :other_company, codes: { test: 'dummy:1' }
-        line :line, company: :company
-        line :other_line, company: :other_company, codes: { test: 'dummy:1' }
-        stop_area :stop_area
-        stop_area :other_stop_area, codes: { test: 'dummy:1' }
-
-        referential lines: %i[line other_line] do
-          route line: :line, stop_areas: %i[stop_area other_stop_area]
-        end
-      end
-    end
-
     let(:sequence) do
       Sequence.create(
         name: 'Regional identifiers',
@@ -56,7 +39,7 @@ RSpec.describe Macro::CreateCodeFromSequence do
     end
 
     let(:code_space) { context.code_space }
-    let(:referential) { context.referential }
+    let(:referential) { nil }
     let(:workbench) { context.workbench }
 
     let(:model_name) { model.name }
@@ -72,7 +55,7 @@ RSpec.describe Macro::CreateCodeFromSequence do
     describe '#run' do
       subject { macro_run.run }
 
-      before { referential.switch }
+      before { referential&.switch }
 
       # rubocop:disable Style/FormatStringToken
       context "when format is 'dummy:%{value}'" do
@@ -81,6 +64,14 @@ RSpec.describe Macro::CreateCodeFromSequence do
 
         context 'with StopArea' do
           let(:target_model) { 'StopArea' }
+          let(:context) do
+            Chouette.create do
+              code_space short_name: 'test'
+
+              stop_area :stop_area
+              stop_area :other_stop_area, codes: { test: 'dummy:1' }
+            end
+          end
           let(:model) { context.stop_area(:stop_area) }
 
           it 'should create code' do
@@ -91,6 +82,14 @@ RSpec.describe Macro::CreateCodeFromSequence do
 
         context 'with Line' do
           let(:target_model) { 'Line' }
+          let(:context) do
+            Chouette.create do
+              code_space short_name: 'test'
+
+              line :line, company: :company
+              line :other_line, company: :other_company, codes: { test: 'dummy:1' }
+            end
+          end
           let(:model) { context.line(:line) }
 
           it 'should create code' do
@@ -101,7 +100,36 @@ RSpec.describe Macro::CreateCodeFromSequence do
 
         context 'with Company' do
           let(:target_model) { 'Company' }
+          let(:context) do
+            Chouette.create do
+              code_space short_name: 'test'
+
+              company :company
+              company :other_company, codes: { test: 'dummy:1' }
+            end
+          end
           let(:model) { context.company(:company) }
+
+          it 'should create code' do
+            expect { subject }.to change { model.codes.count }.from(0).to(1)
+            expect(macro_run.macro_messages).to include(expected_message)
+          end
+        end
+
+        context 'with Route' do
+          let(:target_model) { 'Route' }
+          let(:context) do
+            Chouette.create do
+              code_space short_name: 'test'
+
+              referential do
+                route :route
+                route :other_route, codes: { test: 'dummy:1' }
+              end
+            end
+          end
+          let(:referential) { context.referential }
+          let(:model) { context.route(:route) }
 
           it 'should create code' do
             expect { subject }.to change { model.codes.count }.from(0).to(1)

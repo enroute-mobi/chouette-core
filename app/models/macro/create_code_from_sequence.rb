@@ -11,7 +11,27 @@ module Macro
         option :format
         option :sequence_id
 
-        enumerize :target_model, in: %w[StopArea Line Company]
+        enumerize :target_model, in: %w[
+          Line
+          LineGroup
+          LineNotice
+          Company
+          StopArea
+          StopAreaGroup
+          Entrance
+          Shape
+          PointOfInterest
+          ServiceFacilitySet
+          AccessibilityAssessment
+          Fare::Zone
+          LineRoutingConstraintZone
+          Document
+          Contract
+          Route
+          JourneyPattern
+          VehicleJourney
+          TimeTable
+        ]
 
         validates :target_model, :code_space_id, :sequence_id, :format, presence: true
 
@@ -38,8 +58,11 @@ module Macro
       end
 
       def create_message(model, code)
+        model_name = model.try(:name) || model.try(:published_journey_name) ||
+              model.try(:comment) || model.try(:uuid) || model.try(:get_objectid)&.local_id
+
         attributes = {
-          message_attributes: { model_name: model.name, code_value: code.value },
+          message_attributes: { model_name: model_name, code_value: code.value },
           source: model
         }
 
@@ -53,15 +76,15 @@ module Macro
       end
 
       def existing_code_values
-        @existing_code_values ||= models_with_code.pluck(:value)
+        @existing_code_values ||= models_with_code.pluck(models.code_table[:value])
       end
 
       def models_with_code
-        @models_with_code || models.joins(:codes).where(codes: { code_space: code_space }).distinct
+        @models_with_code || models.with_code(code_space)
       end
 
       def model_collection
-        @model_collection ||= target_model.underscore.pluralize
+        @model_collection ||= target_model.underscore.gsub('/', '_').pluralize
       end
 
       def models

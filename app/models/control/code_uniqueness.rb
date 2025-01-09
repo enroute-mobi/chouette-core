@@ -5,9 +5,32 @@ module Control
     module Options
       extend ActiveSupport::Concern
 
-      REFERENTIAL_MODELS = %w[Route JourneyPattern VehicleJourney TimeTable].freeze
-      PROVIDER_MODELS = %w[StopArea Company Line Document Entrance PointOfInterest Shape].freeze
-      MODELS = [] + REFERENTIAL_MODELS + PROVIDER_MODELS
+      REFERENTIAL_MODELS = %w[
+        Route
+        JourneyPattern
+        VehicleJourney
+        TimeTable
+      ].freeze
+      WORKBENCH_MODELS = %w[
+        Contract
+      ].freeze
+      PROVIDER_MODELS = %w[
+        Line
+        LineGroup
+        LineNotice
+        Company
+        StopArea
+        StopAreaGroup
+        Entrance
+        Shape
+        PointOfInterest
+        ServiceFacilitySet
+        AccessibilityAssessment
+        Fare::Zone
+        LineRoutingConstraintZone
+        Document
+      ].freeze
+      MODELS = REFERENTIAL_MODELS + WORKBENCH_MODELS + PROVIDER_MODELS
 
       included do
         option :target_model
@@ -23,11 +46,16 @@ module Control
           target_model.in?(PROVIDER_MODELS)
         end
 
+        def workbench_target_model?
+          target_model.in?(WORKBENCH_MODELS)
+        end
+
         def referential_target_model?
           target_model.in?(REFERENTIAL_MODELS)
         end
 
         validates :uniqueness_scope, inclusion: { in: %w[workgroup workbench provider] }, if: :provider_target_model?
+        validates :uniqueness_scope, inclusion: { in: %w[workgroup workbench] }, if: :workbench_target_model?
         validates :uniqueness_scope, inclusion: { in: %w[referential] }, if: :referential_target_model?
 
         def target_code_space
@@ -65,7 +93,13 @@ module Control
       end
 
       def analysis
-        Analysis.for(uniqueness_scope).new(context, target_model, target_code_space)
+        Analysis.for(analysis_for).new(context, target_model, target_code_space)
+      end
+
+      private
+
+      def analysis_for
+        workbench_target_model? ? "#{uniqueness_scope}WithoutProvider" : uniqueness_scope
       end
 
       class Analysis
@@ -83,14 +117,21 @@ module Control
           attr_accessor :target_model, :context, :target_code_space
 
           PREFIX_PROVIDERS = {
-            stop_area: 'stop_area',
-            company: 'line',
             line: 'line',
-            document: 'document',
+            line_group: 'line',
+            line_notice: 'line',
+            company: 'line',
+            stop_area: 'stop_area',
+            stop_area_group: 'stop_area',
             entrance: 'stop_area',
+            shape: 'shape',
             point_of_interest: 'shape',
-            shape: 'shape'
-          }.with_indifferent_access
+            service_facility_set: 'shape',
+            accessibility_assessment: 'shape',
+            'fare/zone': 'fare',
+            line_routing_constraint_zone: 'line',
+            document: 'document'
+          }.with_indifferent_access.freeze
 
           def duplicates
             PostgreSQLCursor::Cursor.new(query).map do |attributes|
@@ -116,7 +157,7 @@ module Control
           end
 
           def model_collection
-            @model_collection ||= model_singular.pluralize
+            @model_collection ||= model_singular.gsub('/', '_').pluralize
           end
 
           def model_table_name
@@ -153,6 +194,8 @@ module Control
               'published_journey_name'
             when 'Chouette::TimeTable'
               'comment'
+            when 'Chouette::LineNotice'
+              'title'
             else
               'name'
             end
@@ -212,6 +255,15 @@ module Control
           end
         end
 
+        class WorkbenchWithoutProvider < Workbench
+          def inner_join
+            <<~SQL
+              INNER JOIN public.workbenches ON workbenches.id = #{model_collection}.workbench_id
+              INNER JOIN public.codes ON codes.resource_id = #{model_table_name}.id
+            SQL
+          end
+        end
+
         class Workgroup < Base
           def duplicates_count
             <<~SQL
@@ -233,6 +285,16 @@ module Control
               WHERE (codes.resource_type = '#{source_type}')
                 AND (codes.code_space_id = #{target_code_space.id})
                 AND (workgroups.id = #{context.workgroup.id})
+            SQL
+          end
+        end
+
+        class WorkgroupWithoutProvider < Workgroup
+          def inner_join
+            <<~SQL
+              INNER JOIN public.workbenches ON workbenches.id = #{model_collection}.workbench_id
+              INNER JOIN public.workgroups ON workgroups.id = workbenches.workgroup_id
+              INNER JOIN public.codes ON codes.resource_id = #{model_table_name}.id
             SQL
           end
         end

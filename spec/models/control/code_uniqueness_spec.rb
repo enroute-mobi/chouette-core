@@ -1,6 +1,68 @@
 # frozen_string_literal: true
 
 RSpec.describe Control::CodeUniqueness do
+  describe 'validations' do
+    describe 'on #uniqueness_scope' do
+      context 'when #target_model is a provider model' do
+        %w[
+          Line
+          LineGroup
+          LineNotice
+          Company
+          StopArea
+          StopAreaGroup
+          Entrance
+          Shape
+          PointOfInterest
+          ServiceFacilitySet
+          AccessibilityAssessment
+          Fare::Zone
+          LineRoutingConstraintZone
+          Document
+        ].each do |target_model|
+          context "when #target_model is \"#{target_model}\"" do
+            before { subject.target_model = target_model }
+            it { is_expected.to allow_value('workgroup').for(:uniqueness_scope) }
+            it { is_expected.to allow_value('workbench').for(:uniqueness_scope) }
+            it { is_expected.to allow_value('provider').for(:uniqueness_scope) }
+            it { is_expected.not_to allow_value('referential').for(:uniqueness_scope) }
+          end
+        end
+      end
+
+      context 'when #target_model is a workbench model' do
+        %w[
+          Contract
+        ].each do |target_model|
+          context "when #target_model is \"#{target_model}\"" do
+            before { subject.target_model = target_model }
+            it { is_expected.to allow_value('workgroup').for(:uniqueness_scope) }
+            it { is_expected.to allow_value('workbench').for(:uniqueness_scope) }
+            it { is_expected.not_to allow_value('provider').for(:uniqueness_scope) }
+            it { is_expected.not_to allow_value('referential').for(:uniqueness_scope) }
+          end
+        end
+      end
+
+      context 'when #target_model is a referential model' do
+        %w[
+          Route
+          JourneyPattern
+          VehicleJourney
+          TimeTable
+        ].each do |target_model|
+          context "when #target_model is \"#{target_model}\"" do
+            before { subject.target_model = target_model }
+            it { is_expected.not_to allow_value('workgroup').for(:uniqueness_scope) }
+            it { is_expected.not_to allow_value('workbench').for(:uniqueness_scope) }
+            it { is_expected.not_to allow_value('provider').for(:uniqueness_scope) }
+            it { is_expected.to allow_value('referential').for(:uniqueness_scope) }
+          end
+        end
+      end
+    end
+  end
+
   describe Control::CodeUniqueness::Run do
     let(:control_list_run) do
       Control::List::Run.create referential: referential, workbench: workbench

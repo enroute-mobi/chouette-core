@@ -60,6 +60,8 @@ RSpec.describe Control::PresenceAssociatedModel do
         let(:context) do
           Chouette.create do
             stop_area :stop_area
+            fare_zone :fare_zone
+
             referential do
               route :route, stop_areas: [:stop_area]
             end
@@ -69,10 +71,14 @@ RSpec.describe Control::PresenceAssociatedModel do
         let(:source) { context.stop_area(:stop_area) }
         let(:attribute_name) { source.name }
         let(:target_model) { 'StopArea' }
+        let(:fare_zone) { context.fare_zone(:fare_zone) }
+
+        before { source.stop_area_zones.create(fare_zone_id: fare_zone.id) }
 
         %w[
           routes
           lines
+          fare_zones
         ].each do |collection|
           describe "##{collection}" do
             let(:collection) { collection }

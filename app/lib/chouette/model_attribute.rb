@@ -176,6 +176,7 @@ module Chouette
       define Chouette::StopArea, :lines
       define Chouette::StopArea, :routes
       define Chouette::StopArea, :is_referent
+      define Chouette::StopArea, :fare_zones
 
       # Chouette::Route
       define Chouette::Route, :name

@@ -37,7 +37,7 @@ module Scope
     end
 
     link :routes, :lines do
-      line_referential_scope.lines.joins(:routes).where(routes: { id: route_ids })
+      line_referential_scope.lines.joins(:routes).where(routes: { id: route_ids }).distinct
     end
     link :lines, :routes do
       referential_scope.routes.where(line_id: line_ids)

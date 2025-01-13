@@ -10,7 +10,27 @@ module Macro
         option :code_space_id
         option :format
 
-        enumerize :target_model, in: %w[StopArea Line Company Route JourneyPattern TimeTable VehicleJourney]
+        enumerize :target_model, in: %w[
+          Line
+          LineGroup
+          LineNotice
+          Company
+          StopArea
+          StopAreaGroup
+          Entrance
+          Shape
+          PointOfInterest
+          ServiceFacilitySet
+          AccessibilityAssessment
+          Fare::Zone
+          LineRoutingConstraintZone
+          Document
+          Contract
+          Route
+          JourneyPattern
+          VehicleJourney
+          TimeTable
+        ]
 
         validates :target_model, :code_space_id, :format, presence: true
 
@@ -52,7 +72,7 @@ module Macro
       end
 
       def model_collection
-        @model_collection ||= target_model.underscore.pluralize
+        @model_collection ||= target_model.underscore.gsub('/', '_').pluralize
       end
 
       def models

@@ -350,6 +350,7 @@ module Export
                 INSERT INTO public.exportables (#{columns}) #{sql}
               SQL
               ActiveRecord::Base.connection.execute query
+              ActiveRecord::Base.connection.execute 'ANALYZE public.exportables'
             end
 
             @loaded = true

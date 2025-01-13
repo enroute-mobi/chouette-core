@@ -832,6 +832,34 @@ RSpec.describe Import::Gtfs do
         expect(a).to match_array(expected_attributes)
       end
     end
+
+    context 'without arrival nor departure' do
+      subject { resource.messages }
+
+      let(:import) { build_import 'time_of_day_feed_without_arrival_departure.zip' }
+      let(:resource) { import.resources.find_by(name: 'stop_times') }
+
+      let(:expected_message) {
+        an_object_having_attributes(
+          message_key: 'invalid_stop_time',
+          message_attributes: {
+            'time' => nil,
+            'trip_id' => 'T01'
+          }
+        )
+      }
+
+      before do
+        import.prepare_referential
+        import.import_services
+        import.import_route_and_journey_patterns
+        import.import_stop_times
+      end
+
+      it 'should create an error message for stop_times' do
+        is_expected.to include(expected_message)
+      end
+    end
   end
 
   describe Import::Gtfs::RouteJourneyPatterns::RouteCluster do

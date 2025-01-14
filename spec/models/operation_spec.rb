@@ -216,6 +216,26 @@ RSpec.describe Operation do
       end
     end
   end
+
+  describe '#interrupted' do
+    subject { operation.interrupted }
+
+    before do
+      callback = double(:callback)
+      expect(callback).not_to receive(:around)
+      expect(callback).not_to receive(:before)
+      expect(callback).to receive(:after)
+      expect(operation).to receive(:callbacks).and_return([callback])
+    end
+
+    it { expect { subject }.to change(operation, :error_uuid).from(nil).to(be_present) }
+
+    context 'when there is already an error_uuid' do
+      before { operation.error_uuid = SecureRandom.uuid }
+
+      it { expect { subject }.not_to change(operation, :error_uuid) }
+    end
+  end
 end
 
 RSpec.describe Operation::Callback do
@@ -495,6 +515,27 @@ RSpec.describe Operation::Job do
       it 'logs a warn message' do
         expect(job.logger).to receive(:warn)
         job.perform
+      end
+    end
+  end
+
+  describe '#dead_worker' do
+    subject { job.dead_worker }
+
+    let(:operation) { double(:operation) }
+
+    before { allow(job).to receive(:operation).and_return(operation) }
+
+    it 'calls #worker_died on operation' do
+      expect(operation).to receive(:interrupted)
+      subject
+    end
+
+    context 'when operation is nil' do
+      let(:operation) { nil }
+
+      it 'does not crash' do
+        expect { subject }.not_to raise_error
       end
     end
   end

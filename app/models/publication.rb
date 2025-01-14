@@ -47,6 +47,19 @@ class Publication < Operation
     end
   end
 
+  class ExportStatus < Operation::Callback
+    delegate :export, to: :operation
+
+    def after
+      return unless operation.error_uuid.present?
+      return unless export
+      return unless export.status.new? || export.status.pending? || export.status.running?
+
+      export.failed!
+    end
+  end
+  callback ExportStatus
+
   def export_builder
     ExportBuilder.new(self)
   end

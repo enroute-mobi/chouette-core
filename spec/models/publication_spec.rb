@@ -9,6 +9,12 @@ RSpec.describe Publication, type: :model do
   it { is_expected.to have_one(:workgroup) }
   it { is_expected.to have_one(:organisation) }
 
+  context '.callback_classes' do
+    subject { described_class.callback_classes }
+
+    it { is_expected.to include(Publication::ExportStatus) }
+  end
+
   let(:export_type) { 'Export::Gtfs' }
   let(:export_options) do
     { type: export_type, duration: 90, prefer_referent_stop_area: false, ignore_single_stop_station: false }
@@ -153,4 +159,65 @@ RSpec.describe Publication, type: :model do
     it { expect { referential.destroy }.to change(publication, :exists_in_database?).from(true).to(false) }
   end
 
+end
+
+RSpec.describe Publication::ExportStatus do
+  subject(:callback) { described_class.new(publication) }
+
+  let(:context) do
+    Chouette::Factory.create do
+      referential :referential
+      publication referential: :referential
+    end
+  end
+  let(:error_uuid) { SecureRandom.uuid }
+  let(:publication) { context.publication }
+  let(:export_status) { 'running' }
+  let(:export) { create(:gtfs_export, status: export_status) }
+
+  before do
+    publication.error_uuid = error_uuid
+    allow(publication).to receive(:export).and_return(export)
+  end
+
+  describe '#after' do
+    subject { callback.after }
+
+    context 'when publication has no error_uuid' do
+      let(:error_uuid) { nil }
+
+      it { expect { subject }.not_to change(export, :status) }
+    end
+
+    context 'when publication has error_uuid' do
+      let(:publication_user_status) { 'failed' }
+
+      %w[
+        new
+        pending
+        running
+      ].each do |export_status|
+        context "when export status is \"#{export_status}\"" do
+          let(:export_status) { export_status }
+
+          it do
+            expect { subject }.to change(export, :status).to('failed') \
+                              .and change(export, :ended_at).to(be_present)
+          end
+        end
+      end
+
+      context 'when export status is "successful"' do
+        let(:export_status) { 'successful' }
+
+        it { expect { subject }.not_to change(export, :status) }
+      end
+
+      context 'when there is no export' do
+        let(:export) { nil }
+
+        it { expect { subject }.not_to raise_error }
+      end
+    end
+  end
 end

@@ -22,6 +22,7 @@ module Control
       Control::ServicesOnlyInValidityPeriod,
       Control::ServiceCountInRange,
       Control::AbsenceAttribute,
+      Control::TransportModeCompatibility,
       Control::Dummy
     ]
   end

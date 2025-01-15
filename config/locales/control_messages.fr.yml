@@ -17,6 +17,8 @@ fr:
     dummy: "L'/la/le %{target_model} %{name} a été controlé"
     attribute_uniqueness: "Le/la %{target_model} '%{name}' avec id '%{id}' n’a pas un/une unique '%{target_attribute}'"
     absence_attribute: "L'attribut %{target_attribute} de l'/la/le %{target_model} %{name} est défini"
+    transport_mode_compatibility: "L'arrêt %{stop_area_name} n'a pas un mode de transport compatible avec la Ligne %{line_name}"
+
   activerecord:
     models:
       control/message:

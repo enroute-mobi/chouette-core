@@ -60,6 +60,9 @@ fr:
         one: Unicité de l'attribut
       control/absence_attribute:
         one: Absence d'un attribut
+      control/transport_mode_compatibility:
+        one: Compatibilité des modes de transport
+
     attributes:
       control/base:
         name: Nom

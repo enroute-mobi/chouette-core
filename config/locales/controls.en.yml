@@ -60,6 +60,9 @@ en:
         one: Attribute uniqueness
       control/absence_attribute:
         one: absence of attribute
+      control/transport_mode_compatibility:
+        one: Stop Area & Line transport mode compatibility
+
     attributes:
       control/base:
         name: Name

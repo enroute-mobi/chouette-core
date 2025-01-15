@@ -86,7 +86,7 @@ class Publication < Operation
     end
 
     def cache_prefix
-      publication_setup.cache_key if publication_setup.enable_cache
+      publication_setup.cache_key_with_version if publication_setup.enable_cache
     end
 
     def export_attributes

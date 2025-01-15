@@ -154,6 +154,10 @@ module ChouetteIhm
 
     # Require `belongs_to` associations by default. Previous versions had false.
     config.active_record.belongs_to_required_by_default = true
+
+    # Make Active Record use stable #cache_key alongside new #cache_version method.
+    # This is needed for recyclable cache keys.
+    config.active_record.cache_versioning = true
   end
 end
 

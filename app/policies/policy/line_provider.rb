@@ -15,7 +15,8 @@ module Policy
         ::Chouette::LineNotice,
         ::LineRoutingConstraintZone,
         ::Chouette::Network,
-        ::LineGroup
+        ::LineGroup,
+        ::BookingArrangement
       ].include?(resource_class)
     end
 

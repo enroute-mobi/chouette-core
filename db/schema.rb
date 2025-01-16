@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2025_01_08_083243) do
+ActiveRecord::Schema.define(version: 2025_01_14_150213) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "btree_gin"
@@ -106,6 +106,27 @@ ActiveRecord::Schema.define(version: 2025_01_08_083243) do
     t.index ["organisation_id", "name"], name: "index_authentications_on_organisation_id_and_name", unique: true
     t.index ["saml_idp_entity_id"], name: "index_authentications_on_saml_idp_entity_id"
     t.index ["type"], name: "index_authentications_on_type"
+  end
+
+  create_table "booking_arrangements", force: :cascade do |t|
+    t.uuid "uuid", default: -> { "gen_random_uuid()" }, null: false
+    t.string "name", null: false
+    t.string "phone"
+    t.string "url"
+    t.string "booking_methods", default: [], array: true
+    t.string "booking_access", default: "0"
+    t.integer "minimum_booking_period"
+    t.string "book_when", default: "0"
+    t.time "latest_booking_time"
+    t.string "buy_when", default: "0"
+    t.string "booking_url"
+    t.text "booking_notes"
+    t.bigint "line_referential_id"
+    t.bigint "line_provider_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["line_provider_id"], name: "index_booking_arrangements_on_line_provider_id"
+    t.index ["line_referential_id"], name: "index_booking_arrangements_on_line_referential_id"
   end
 
   create_table "calendars", force: :cascade do |t|
@@ -1784,6 +1805,7 @@ ActiveRecord::Schema.define(version: 2025_01_08_083243) do
   add_foreign_key "aggregate_schedulings", "delayed_jobs", column: "scheduled_job_id"
   add_foreign_key "aggregate_schedulings", "workgroups"
   add_foreign_key "authentications", "organisations"
+  add_foreign_key "booking_arrangements", "line_providers"
   add_foreign_key "calendars", "workbenches"
   add_foreign_key "control_runs", "control_context_runs"
   add_foreign_key "controls", "control_contexts"

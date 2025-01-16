@@ -1,0 +1,46 @@
+en:
+  booking_arrangements:
+    index:
+      title: Booking Arrangements
+    show:
+      title: "%{name}"
+    new:
+      title: "Create a Booking Arrangements"
+    edit:
+      title: "Edit %{name}"
+    actions:
+      show: "Display this Booking Arrangements"
+      new: "Create a Booking Arrangements"
+      edit: "Edit this Booking Arrangements"
+      destroy: "Delete this Booking Arrangements"
+      destroy_confirm: "Are you sure you want destroy this Booking Arrangements ?"
+    form:
+      placeholders:
+      sections:
+        identification: "Identification"
+        content: Content
+        internals: "Internals"
+        rules: "Rules"
+        codes: "Codes"
+    search_no_results: "No Booking Arrangements matching your query"
+  activerecord:
+    models:
+      booking_arrangement:
+        zero: "Booking Arrangements"
+        one: "Booking Arrangements"
+        other: "Booking Arrangements"
+    attributes:
+      booking_arrangement:
+        uuid: ID
+        name: "Name"
+        phone: "Phone"
+        url: "Url"
+        booking_methods: "Booking methods"
+        booking_access: "Booking access"
+        minimum_booking_period: "Minimum booking period"
+        book_when: "Book when"
+        latest_booking_time: "Latest booking time"
+        buy_when: "Buy when"
+        booking_url: "Booking url"
+        booking_notes: "Booking notes"
+        line_provider_id: "Line provider"

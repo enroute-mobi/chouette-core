@@ -43,6 +43,11 @@ RSpec.describe Policy::LineProvider, type: :policy do
       let(:resource_class) { Chouette::Network }
       it { is_expected.to be_truthy }
     end
+
+    context 'BookingArrangement' do
+      let(:resource_class) { BookingArrangement }
+      it { is_expected.to be_truthy }
+    end
   end
 
   describe '#update?' do

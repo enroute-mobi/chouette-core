@@ -142,6 +142,7 @@ gem 'neptune', en_route: 'neptune'
 gem 'ddtrace'
 gem 'google-protobuf', '~> 3.0'
 gem 'dogstatsd-ruby'
+gem 'prometheus-client'
 
 gem 'sentry-delayed_job'
 gem 'sentry-ruby'

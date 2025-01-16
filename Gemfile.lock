@@ -610,6 +610,8 @@ GEM
       actionmailer (>= 3)
       net-smtp
       premailer (~> 1.7, >= 1.7.9)
+    prometheus-client (4.2.3)
+      base64
     pry (0.14.2)
       coderay (~> 1.1)
       method_source (~> 1.0)
@@ -1005,6 +1007,7 @@ DEPENDENCIES
   postgres-copy (>= 1.7.2)
   postgresql_cursor (= 0.6.6)
   premailer-rails (>= 1.11.1)
+  prometheus-client
   pry-byebug
   pry-rails
   puma (>= 5.6.4)

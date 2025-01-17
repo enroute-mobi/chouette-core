@@ -19,6 +19,7 @@ class Import::Shapefile < Import::Base
       Shape.transaction do
         source.each do |record|
           raise WrongIdAttributeError unless record.attributes.has_key? shape_attribute_as_id
+          raise NoGeometryError if record.geometry.nil?
           raise EmptyLineStringError if record.geometry.num_geometries == 0
           raise MultiLineStringError if record.geometry.num_geometries > 1
 
@@ -40,18 +41,24 @@ class Import::Shapefile < Import::Base
           index+=1
         end
       end
-    rescue Import::Shapefile::UnprovidedIdAttributeError, Import::Shapefile::EmptyLineStringError, Import::Shapefile::MultiLineStringError, RGeo::Error::InvalidGeometry => e
+    rescue Import::Shapefile::UnprovidedIdAttributeError,
+           Import::Shapefile::NoGeometryError,
+           Import::Shapefile::EmptyLineStringError,
+           Import::Shapefile::MultiLineStringError,
+           RGeo::Error::InvalidGeometry => e
       message_key = case e
-      when Import::Shapefile::UnprovidedIdAttributeError
-        'shapefile_unprovided_id_attribute'
-      when Import::Shapefile::EmptyLineStringError
-        'shapefile_empty_linestring'
-      when Import::Shapefile::MultiLineStringError
-        'shapefile_more_than_one_linestring'
-      when RGeo::Error::InvalidGeometry
-        index+=1
-        'shapefile_geometry_parsing_error'
-      end
+                    when Import::Shapefile::UnprovidedIdAttributeError
+                      'shapefile_unprovided_id_attribute'
+                    when Import::Shapefile::NoGeometryError
+                      'shapefile_no_geometry'
+                    when Import::Shapefile::EmptyLineStringError
+                      'shapefile_empty_linestring'
+                    when Import::Shapefile::MultiLineStringError
+                      'shapefile_more_than_one_linestring'
+                    when RGeo::Error::InvalidGeometry
+                      index+=1
+                      'shapefile_geometry_parsing_error'
+                    end
 
       create_message(
         {
@@ -83,6 +90,7 @@ class Import::Shapefile < Import::Base
 
   class UnprovidedIdAttributeError < StandardError; end
   class WrongIdAttributeError < StandardError; end
+  class NoGeometryError < StandardError; end
   class EmptyLineStringError < StandardError; end
   class MultiLineStringError < StandardError; end
 

@@ -1780,12 +1780,12 @@ class Import::Gtfs < Import::Base
   end
 
   class Services < Base
-    delegate :source, :time_tables_by_service_id, to: :import
+    delegate :source, :time_tables_by_service_id, :code_space, to: :import
 
     def import!
       # Retrieve both calendar and associated calendar_dates into a single GTFS::Service model
       source.services.each do |service|
-        decorator = Decorator.new(service)
+        decorator = Decorator.new(service, code_space: code_space)
 
         # Decorator can have errors but provides a TimeTable
         decorator.errors.each { |error| import.create_message error } unless decorator.valid?
@@ -1806,12 +1806,14 @@ class Import::Gtfs < Import::Base
     end
 
     class Decorator < Import::Gtfs::Decorator
-      def initialize(service, index: nil)
+      def initialize(service, index: nil, code_space: nil)
         super service
+
         @index = index
+        @code_space = code_space
       end
 
-      attr_accessor :index
+      attr_accessor :index, :code_space
 
       # Returns a Cuckoo::Timetable::DaysOfWeek according to GTFS Service monday?/.../sunday?
       def days_of_week
@@ -1851,12 +1853,21 @@ class Import::Gtfs < Import::Base
         service_id
       end
 
+      def codes_attributes
+        [
+          {
+            code_space_id: code_space.id,
+            value: service_id
+          }
+        ]
+      end
+
       delegate :empty?, to: :memory_timetable
 
       def time_table
         return nil if name.blank?
 
-        @time_table ||= Chouette::TimeTable.new(comment: name).apply(memory_timetable)
+        @time_table ||= Chouette::TimeTable.new(comment: name, codes_attributes: codes_attributes).apply(memory_timetable)
       end
 
       def validate

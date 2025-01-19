@@ -787,7 +787,7 @@ GEM
     ruby2_keywords (0.0.5)
     rubycas-client (2.3.9)
       activesupport
-    rubyzip (2.3.2)
+    rubyzip (2.4.1)
     sassc (2.4.0)
       ffi (~> 1.9)
     saxerator (0.9.9)

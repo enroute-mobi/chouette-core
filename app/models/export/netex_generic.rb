@@ -203,7 +203,8 @@ class Export::NetexGeneric < Export::Base
       # Because of Exportable#processed side-effects, these 3 parts are the last ones
       VehicleJourneysCache,
       VehicleJourneyAtStops,
-      VehicleJourneys
+      VehicleJourneys,
+      FareZones
     ]
 
     part_classes.each_with_index do |part_class, index|
@@ -738,6 +739,36 @@ class Export::NetexGeneric < Export::Base
 
       def raw_xml
         raw_import&.content
+      end
+    end
+  end
+
+  class FareZones < Part
+    delegate :fare_zones, to: :export_scope
+
+    def export_part
+      fare_zones.find_each do |fare_zone|
+        decorated_fare_zone = decorate(fare_zone)
+        target << decorated_fare_zone.netex_resource
+      end
+    end
+
+    class Decorator < ModelDecorator
+      def netex_attributes
+        super.merge(
+          name: name,
+          projections: projections
+        )
+      end
+
+      def projections
+        fare_geographic_references.map do |fare_geographic_reference|
+          Netex::Reference.new(fare_geographic_reference.short_name, type: 'TopographicProjectionRef')
+        end
+      end
+
+      def netex_resource
+        Netex::FareZone.new(netex_attributes)
       end
     end
   end

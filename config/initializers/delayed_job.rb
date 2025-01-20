@@ -10,10 +10,19 @@ end
 
 # Add :dead_worker hook
 module Delayed::Heartbeat # rubocop:disable Style/ClassAndModuleChildren(RuboCop)
-  prepend Delayed::DeadWorkerHook
+  prepend Delayed::WorkerDeadHook
+end
+
+module Delayed
+  module Heartbeat
+    class WorkerHeartbeat
+      prepend Delayed::WorkerStop
+    end
+  end
 end
 
 # Restart worker when too much memory is used
+Delayed::AutoKillPlugin.maximum_idle_workers = ENV['DELAYED_JOB_MAXIMUM_IDLE_WORKERS'].to_i
 Delayed::Worker.plugins << Delayed::AutoKillPlugin
 
 # Enable metrics report

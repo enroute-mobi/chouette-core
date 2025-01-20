@@ -24,12 +24,16 @@ module Delayed
       base.scope :locked, -> { where.not(locked_at: nil) }
       base.scope :with_organisation, -> { where.not(organisation_id: nil) }
 
+      # Warining: ready_to_run is Delayed::Job existing method
+      base.scope :ready, -> { legacy_ready_to_run.in_organisation_bounds }
+      base.scope :legacy_ready_to_run, -> { where 'run_at <= now() AND locked_at IS NULL AND failed_at IS NULL' }
+
       class << base
         prepend ClassMethods
       end
     end
 
-    module ClassMethods # rubocop:disable Style/Documentation
+    module ClassMethods
       # Overrides Delayed::Backend::ActiveRecord::Job#reserve_with_scope to ignore pending jobs
       # whose the organisation has reached the job limit
       #
@@ -42,6 +46,10 @@ module Delayed
       def out_of_bounds_organizations
         locked.with_organisation.group(:organisation_id)
               .having('count(id) >= ?', max_workers_per_organisation).pluck(:organisation_id)
+      end
+
+      def pending_count
+        locked.count + ready.count
       end
     end
 

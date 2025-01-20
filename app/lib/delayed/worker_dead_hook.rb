@@ -4,14 +4,14 @@ module Delayed
   # Invokes a :dead_worker hook on jobs associated to workers ckeaned by Delayed::Heartbeat
   #
   # Use to override Delayed::Heartbeat
-  module DeadWorkerHook
+  module WorkerDeadHook
     def self.prepended(base)
       class << base
         prepend ClassMethods
       end
     end
 
-    module ClassMethods # rubocop:disable Style/Documentation
+    module ClassMethods
       def cleanup_workers(workers, mark_attempt_failed: true)
         Rails.logger.debug "Cleanup workers with dead_worker hook support #{workers.map(&:name).join(',')}"
 

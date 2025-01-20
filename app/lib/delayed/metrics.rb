@@ -7,11 +7,11 @@ module Delayed
   class Metrics < Plugin
     callbacks do |lifecycle|
       lifecycle.before(:perform) do
-        measure
+        measure ignore_cooldown: true
       end
 
       lifecycle.after(:perform) do
-        measure
+        measure ignore_cooldown: true
       end
 
       lifecycle.after(:enqueue) do
@@ -19,9 +19,18 @@ module Delayed
       end
     end
 
-    def self.measure
-      # TODO: could include a cool down to limit measure rate
+    def self.measure(ignore_cooldown: false)
+      return if !ignore_cooldown && cooldown?
+
       Measure.new.measure
+      self.measured_at = Time.zone.now
+    end
+
+    mattr_accessor :duration_between_measures, default: 1.minute
+    mattr_accessor :measured_at
+
+    def self.cooldown?
+      measured_at.present? && measured_at > duration_between_measures.ago
     end
 
     # Performs a Measure: create all Metrics and publish them with all Publishers
@@ -31,7 +40,8 @@ module Delayed
       end
 
       def metric_generators
-        [Metric::Count, Metric::Waiting, Metric::Ready, Metric::Locked, Metric::Planned, Metric::Latencies]
+        [Metric::Pending, Metric::Count, Metric::Waiting, Metric::Ready, Metric::Locked, Metric::Planned,
+         Metric::Latencies]
       end
 
       def metrics
@@ -39,7 +49,7 @@ module Delayed
       end
 
       def publisher_classes
-        [Publisher::Log, Publisher::Datadog]
+        [Publisher::Log, Publisher::Datadog, Publisher::Prometheus]
       end
 
       def publishers
@@ -166,25 +176,32 @@ module Delayed
                       .select('organisations.code as organisation_code', 'EXTRACT(SECOND FROM age(now(), run_at)) as age')
         end
       end
+
+      class Pending < Base
+        def value
+          ready.value + locked.value
+        end
+
+        def ready
+          Metric::Ready.new
+        end
+
+        def locked
+          Metric::Locked.new
+        end
+
+        def name
+          'jobs.pending_count'
+        end
+      end
     end
 
     module Publisher
-      # Publish metrics via Rails.logger (with a limit of a message per 30 seconds)
+      # Publish metrics via Rails.logger
       class Log
-        mattr_accessor :duration_between_messages, default: 1.minute
-        mattr_accessor :logged_at
-
-        def cool_down?
-          logged_at.present? && logged_at > duration_between_messages.ago
-        end
-
         def publish(metrics)
-          return if cool_down?
-
           message = metrics.join(',')
           Rails.logger.info "[Delayed::Job] Metrics: #{message}"
-
-          self.class.logged_at = Time.current
         end
       end
 
@@ -203,6 +220,28 @@ module Delayed
             Rails.logger.debug { "[statsd] chouette.#{metric.name}=#{metric.value} tags: #{tags.inspect}" }
             statsd.gauge("chouette.#{metric.name}", metric.value, tags: tags)
           end
+        end
+      end
+
+      class Prometheus
+        def publish(metrics)
+          pending_metric = metrics.find { |metric| metric.name == 'jobs.pending_count' }
+          return unless pending_metric
+
+          gauge('pending').set(pending_metric.value)
+        end
+
+        def gauge(name, **_attributes)
+          registry_name = "jobs_#{name}".to_sym
+          if registry.exist?(registry_name)
+            registry.get registry_name
+          else
+            registry.gauge registry_name, docstring: "#{name.capitalize} jobs"
+          end
+        end
+
+        def registry
+          ::Prometheus::Client.registry
         end
       end
     end

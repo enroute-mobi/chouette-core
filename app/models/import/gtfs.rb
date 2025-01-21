@@ -1264,6 +1264,8 @@ class Import::Gtfs < Import::Base
   end
 
   def time_of_day gtfs_time, offset
+    raise InvalidTimeError.new(gtfs_time) unless gtfs_time
+
     t = GTFS::Time.parse(gtfs_time).from_day_offset(offset)
     raise InvalidTimeError.new(gtfs_time) unless t.present?
 

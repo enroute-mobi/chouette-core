@@ -13,7 +13,12 @@ module Chouette
       association_chain
       get_parent_ivar(:stop_area_referential)
     end
-    alias current_referential stop_area_referential
+
+    def current_referential
+      stop_area_referential
+    rescue ::ActiveRecord::RecordNotFound
+      nil
+    end
     helper_method :current_referential
 
     protected

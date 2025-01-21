@@ -19,7 +19,7 @@ module ReferentialSupport
 
   def current_referential
     referential
-  rescue ActiveRecord::RecordNotFound
+  rescue NoMethodError, ActiveRecord::RecordNotFound
     nil
   end
 

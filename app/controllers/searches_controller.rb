@@ -103,7 +103,7 @@ class SearchesController < Chouette::UserController
 
   def current_workbench
     workbench
-  rescue ActiveRecord::RecordNotFound
+  rescue NoMethodError, ActiveRecord::RecordNotFound
     nil
   end
 
@@ -113,7 +113,7 @@ class SearchesController < Chouette::UserController
 
   def current_referential
     referential
-  rescue ActiveRecord::RecordNotFound
+  rescue NoMethodError, ActiveRecord::RecordNotFound
     nil
   end
   helper_method :current_referential

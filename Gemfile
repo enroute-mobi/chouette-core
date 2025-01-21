@@ -95,7 +95,7 @@ gem 'roo', '>= 2.8.3'
 gem 'inherited_resources', '>= 1.13.1'
 gem 'responders', '>= 3.1.1'
 
-gem "lograge", ">= 0.11.2"
+gem 'rails_semantic_logger'
 
 # Model
 gem 'will_paginate'
@@ -198,6 +198,7 @@ group :test do
 end
 
 group :test, :development do
+  gem 'amazing_print'
   gem 'stackprof'
 
   gem 'parallel_tests'

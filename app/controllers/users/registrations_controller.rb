@@ -28,7 +28,7 @@ class Users::RegistrationsController < Devise::RegistrationsController
   private
 
   def current_organisation
-    current_user.organisation
+    current_user&.organisation
   end
   helper_method :current_organisation
 end

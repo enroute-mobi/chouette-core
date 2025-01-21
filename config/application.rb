@@ -143,6 +143,13 @@ module ChouetteIhm
 
     config.stop_area_available_localizations = %i[en_UK nl_NL de_DE fr_FR it_IT es_ES]
 
+    # If you don't like colors
+    # config.colorize_logging = false
+
+    # disable SemanticLogger application & environment (already provided via Datadog)
+    config.semantic_logger.application = nil
+    config.semantic_logger.environment = nil
+
     # Require `belongs_to` associations by default. Previous versions had false.
     config.active_record.belongs_to_required_by_default = true
   end

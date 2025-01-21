@@ -67,8 +67,23 @@ Rails.application.configure do
   # config.log_tags = [ :subdomain, :uuid ]
 
   # Use a different logger for distributed setups.
-  STDOUT.sync = true
-  config.logger = Logger.new(STDOUT)
+  if ENV["RAILS_LOG_TO_STDOUT"].present?
+    config.rails_semantic_logger.format = :json
+    config.colorize_logging = false
+
+    $stdout.sync = true
+    config.rails_semantic_logger.add_file_appender = false
+
+    ignore_controllers = %w[
+      NotificationsController
+      HealthCheck::HealthCheckController
+    ].freeze
+    config.semantic_logger.add_appender(
+      io: $stdout,
+      formatter: SemanticLogger::Formatters::Json.new(log_host: false),
+      filter: ->(log) { !ignore_controllers.include?(log.name) }
+    )
+  end
 
   # Use a different cache store in production.
   # config.cache_store = :mem_cache_store

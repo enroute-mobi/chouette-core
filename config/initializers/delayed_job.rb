@@ -6,6 +6,7 @@ require 'delayed_job_active_record'
 class Delayed::Job # rubocop:disable Style/ClassAndModuleChildren(RuboCop)
   prepend Delayed::WithOrganisation
   prepend Delayed::UniqReservation
+  prepend Delayed::ReadyToRunWithoutLockedAt
 end
 
 # Add :dead_worker hook

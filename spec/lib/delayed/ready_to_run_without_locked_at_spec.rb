@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-RSpec.describe Delayed::Job do
+RSpec.describe Delayed::ReadyToRunWithoutLockedAt do
   describe '.reserve' do
     subject { Delayed::Job.reserve(worker) }
 
@@ -56,7 +56,7 @@ RSpec.describe Delayed::Job do
         context 'since more than exactly max_run_time seconds' do
           let(:delayed_job_locked_at) { (Delayed::Worker.max_run_time + 1).ago }
 
-          it { is_expected.to eq(job) }
+          it { is_expected.to be_nil }
         end
       end
     end

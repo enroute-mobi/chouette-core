@@ -22,7 +22,7 @@ fr:
     unsupported_file_format: "Le fichier ne correspond à aucun format autorisé"
     wrong_calendar_in_zip_file: "Le calendrier contenu dans %{source_filename} contient des données incorrectes ou incohérentes"
     missing_calendar_or_calendar_dates_in_zip_file: "Le dossier ne contient ni fichier calendar.txt ni fichier calendar_dates.txt"
-    missing_validity_period_in_zip_file: 'Les fichiers de calendar.txt et fichier calendar_dates.txt ne contient pas de date'
+    missing_validity_period: 'La période de validité est vide'
     shapefile_unprovided_id_attribute: "Aucun attribut n'a été indiqué pour servir d'identifiant aux tracés importés"
     shapefile_wrong_id_attribute: "L'attribut '%{shape_attribute}' indiqué pour servir d'identifiant aux tracés importés ne correspond à aucune colonne"
     shapefile_no_geometry: "L'objet situé à l'index #%{shape_index} n'a pas de géometrie"

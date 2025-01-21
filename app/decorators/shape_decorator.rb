@@ -1,4 +1,4 @@
-class ShapeDecorator < AF83::Decorator
+class ShapeDecorator < Af83::Decorator
   decorates Shape
 
   set_scope { [context[:workbench], [:shape_referential]] }

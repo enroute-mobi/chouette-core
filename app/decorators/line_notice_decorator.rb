@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-class LineNoticeDecorator < AF83::Decorator
+class LineNoticeDecorator < Af83::Decorator
   decorates Chouette::LineNotice
 
   set_scope { [context[:workbench], :line_referential] }

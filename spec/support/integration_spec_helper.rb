@@ -22,7 +22,7 @@ module IntegrationSpecHelper
   def paginate_collection(klass, decorator, page = 1, context = {})
     collection = klass.page(page)
     if decorator
-      collection = if decorator < AF83::Decorator
+      collection = if decorator < Af83::Decorator
                      decorator.decorate(collection, context: context)
                    else
                      ModelDecorator.decorate(collection, with: decorator, context: context)

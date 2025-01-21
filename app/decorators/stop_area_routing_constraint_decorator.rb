@@ -1,4 +1,4 @@
-class StopAreaRoutingConstraintDecorator < AF83::Decorator
+class StopAreaRoutingConstraintDecorator < Af83::Decorator
   decorates StopAreaRoutingConstraint
 
   set_scope { [ context[:workbench], :stop_area_referential ] }

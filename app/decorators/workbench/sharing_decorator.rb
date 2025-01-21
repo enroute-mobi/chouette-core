@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 class Workbench
-  class SharingDecorator < AF83::Decorator
+  class SharingDecorator < Af83::Decorator
     decorates Workbench::Sharing
 
     set_scope { [context[:workgroup], context[:workbench]] }

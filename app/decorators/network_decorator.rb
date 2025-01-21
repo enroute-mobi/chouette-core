@@ -1,4 +1,4 @@
-class NetworkDecorator < AF83::Decorator
+class NetworkDecorator < Af83::Decorator
   decorates Chouette::Network
 
   set_scope { [context[:workbench], :line_referential] }

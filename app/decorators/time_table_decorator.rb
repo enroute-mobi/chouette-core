@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-class TimeTableDecorator < AF83::Decorator
+class TimeTableDecorator < Af83::Decorator
   decorates Chouette::TimeTable
 
   set_scope { [context[:workbench], context[:referential]] }

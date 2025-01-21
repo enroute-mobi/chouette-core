@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-class PublicationSetupDecorator < AF83::Decorator
+class PublicationSetupDecorator < Af83::Decorator
   decorates PublicationSetup
 
   set_scope { context[:workgroup] }

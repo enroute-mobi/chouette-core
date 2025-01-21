@@ -1,4 +1,4 @@
-class EntranceDecorator < AF83::Decorator
+class EntranceDecorator < Af83::Decorator
   define_instance_method :name do
     object.name.presence || object.default_name
   end

@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-class StopAreaDecorator < AF83::Decorator
+class StopAreaDecorator < Af83::Decorator
   include DocumentableDecorator
 
   decorates Chouette::StopArea

@@ -1,4 +1,4 @@
-RSpec.describe AF83::Decorator do
+RSpec.describe Af83::Decorator do
   context "Chouette::ChecksumManager#current" do
     it "should return an Chouette::ChecksumManager::NoUpdates" do
       expect(Chouette::ChecksumManager.current).to be_a(Chouette::ChecksumManager::NoUpdates)

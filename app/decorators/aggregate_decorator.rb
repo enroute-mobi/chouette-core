@@ -1,4 +1,4 @@
-class AggregateDecorator < AF83::Decorator
+class AggregateDecorator < Af83::Decorator
   decorates Aggregate
   set_scope { context[:workgroup] }
 

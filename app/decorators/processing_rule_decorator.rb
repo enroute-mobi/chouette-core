@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-class ProcessingRuleDecorator < AF83::Decorator
+class ProcessingRuleDecorator < Af83::Decorator
   decorates ProcessingRule::Workbench
 
   set_scope { context[:workbench] }

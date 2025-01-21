@@ -5,9 +5,9 @@ module DecoratorWithScope
   end
 end
 
-class AF83::Decorator < ModelDecorator
-  include AF83::Decorator::EnhancedDecorator
-  extend AF83::Decorator::EnhancedDecorator::ClassMethods
+class Af83::Decorator < ModelDecorator
+  include Af83::Decorator::EnhancedDecorator
+  extend Af83::Decorator::EnhancedDecorator::ClassMethods
 
   class << self
     prepend DecoratorWithScope
@@ -18,7 +18,7 @@ class AF83::Decorator < ModelDecorator
 
     def instance_decorator
       @instance_decorator ||= begin
-        klass = Class.new(AF83::Decorator::InstanceDecorator)
+        klass = Class.new(Af83::Decorator::InstanceDecorator)
         klass.delegate_all
         klass
       end
@@ -127,8 +127,8 @@ class AF83::Decorator < ModelDecorator
   end
 
   class InstanceDecorator < Draper::Decorator
-    include AF83::Decorator::EnhancedDecorator
-    extend AF83::Decorator::EnhancedDecorator::ClassMethods
+    include Af83::Decorator::EnhancedDecorator
+    extend Af83::Decorator::EnhancedDecorator::ClassMethods
 
     def on_instance?
       true

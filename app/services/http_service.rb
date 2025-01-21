@@ -1,4 +1,4 @@
-module HTTPService extend self
+module HttpService extend self
 
   Timeout = Faraday::TimeoutError
 

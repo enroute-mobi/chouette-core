@@ -1,4 +1,4 @@
-class GTFSTime # Temp class name
+class GtfsTime # Temp class name
   attr_reader :hours, :minutes, :seconds
   def initialize(hours, minutes, seconds)
     @hours, @minutes, @seconds = hours, minutes, seconds

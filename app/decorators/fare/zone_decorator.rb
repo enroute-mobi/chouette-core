@@ -1,16 +1,17 @@
 # frozen_string_literal: true
-class Fare::ZoneDecorator < AF83::Decorator
-  decorates Fare::Zone
 
-  set_scope { context[:workbench] }
+module Fare
+  class ZoneDecorator < Af83::Decorator
+    decorates Fare::Zone
 
-  create_action_link
+    set_scope { context[:workbench] }
 
-  with_instance_decorator do |instance_decorator|
-    instance_decorator.crud
-  end
+    create_action_link
 
-  def policy_parent
-    context[:workbench].default_fare_provider
+    with_instance_decorator(&:crud)
+
+    def policy_parent
+      context[:workbench].default_fare_provider
+    end
   end
 end

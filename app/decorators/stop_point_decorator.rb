@@ -1,4 +1,4 @@
-class StopPointDecorator < AF83::Decorator
+class StopPointDecorator < Af83::Decorator
   decorates Chouette::StopPoint
 
   set_scope { context[:workbench] }

@@ -145,7 +145,7 @@ class NetexImportCreator
   def netex_file
     @netex_file ||=
       begin
-        STIF::NetexFile.new file.path
+        Stif::NetexFile.new file.path
       end
   end
   measure :netex_file

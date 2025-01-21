@@ -1,4 +1,4 @@
-class PublicationApiDecorator < AF83::Decorator
+class PublicationApiDecorator < Af83::Decorator
   decorates PublicationApi
 
   set_scope { context[:workgroup] }

@@ -1,4 +1,4 @@
-class WorkgroupControlListRunDecorator < AF83::Decorator
+class WorkgroupControlListRunDecorator < Af83::Decorator
   decorates Control::List::Run
 
   delegate :workbench

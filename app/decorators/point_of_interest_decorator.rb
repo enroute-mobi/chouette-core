@@ -1,4 +1,4 @@
-class PointOfInterestDecorator < AF83::Decorator
+class PointOfInterestDecorator < Af83::Decorator
   decorates PointOfInterest::Base
 
   set_scope { [context[:workbench], :shape_referential] }

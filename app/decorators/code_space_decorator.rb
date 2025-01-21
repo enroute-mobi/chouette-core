@@ -1,4 +1,4 @@
-class CodeSpaceDecorator < AF83::Decorator
+class CodeSpaceDecorator < Af83::Decorator
   decorates CodeSpace
 
   set_scope { context[:workgroup] }

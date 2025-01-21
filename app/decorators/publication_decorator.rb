@@ -1,4 +1,4 @@
-class PublicationDecorator < AF83::Decorator
+class PublicationDecorator < Af83::Decorator
   decorates Publication
 
   set_scope { [context[:workgroup], context[:publication_setup]] }

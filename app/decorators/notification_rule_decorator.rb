@@ -1,4 +1,4 @@
-class NotificationRuleDecorator < AF83::Decorator
+class NotificationRuleDecorator < Af83::Decorator
   decorates NotificationRule
   set_scope { context[:workbench] }
 

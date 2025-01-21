@@ -1,4 +1,4 @@
-module AF83::Decorator::EnhancedDecorator
+module Af83::Decorator::EnhancedDecorator
   module ClassMethods
     def action_link args={}
       raise "You are using `action_link` inside a with_instance_decorator block, but not on the instance decorator itself.\n Use `instance_decorator.action_link` or move outside of the block, as this may lead to an unforeseen behaviour." if @_with_instance_decorator
@@ -6,10 +6,10 @@ module AF83::Decorator::EnhancedDecorator
 
       options, link_options = parse_options args
 
-      link = AF83::Decorator::Link.new(link_options)
+      link = Af83::Decorator::Link.new(link_options)
       instance_exec(link, &options[:before_block]) if options[:before_block]
       yield link if block_given?
-      raise AF83::Decorator::IncompleteLinkDefinition.new(link.errors) unless link.complete?
+      raise Af83::Decorator::IncompleteLinkDefinition.new(link.errors) unless link.complete?
       weight = options[:weight] || 1
       @_action_links ||= []
       @_action_links[weight] ||= []
@@ -139,7 +139,7 @@ module AF83::Decorator::EnhancedDecorator
 
   def action_links action=:index, opts={}
     @action = action&.to_sym
-    links = AF83::Decorator::ActionLinks.new links: self.class.action_links(action), context: self, action: action
+    links = Af83::Decorator::ActionLinks.new links: self.class.action_links(action), context: self, action: action
     group = opts[:group]
     links = links.for_group opts[:group]
     links

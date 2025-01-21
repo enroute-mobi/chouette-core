@@ -1,5 +1,6 @@
 # frozen_string_literal: true
-class ContractDecorator < AF83::Decorator
+
+class ContractDecorator < Af83::Decorator
   decorates Contract
 
   set_scope { context[:workbench] }

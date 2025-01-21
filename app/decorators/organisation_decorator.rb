@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-class OrganisationDecorator < AF83::Decorator
+class OrganisationDecorator < Af83::Decorator
   decorates Organisation
 
   with_instance_decorator do |instance_decorator|

@@ -1,4 +1,4 @@
-class LineRoutingConstraintZoneDecorator < AF83::Decorator
+class LineRoutingConstraintZoneDecorator < Af83::Decorator
   decorates LineRoutingConstraintZone
 
   set_scope { [ context[:workbench], :line_referential ] }

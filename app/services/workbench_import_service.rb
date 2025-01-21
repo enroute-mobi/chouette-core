@@ -31,7 +31,7 @@ class WorkbenchImportService
 
   def execute_post eg_name, eg_file
     logger.info "HTTP POST #{export_url} (for #{complete_entry_group_name(eg_name)}, file #{eg_file} #{File.size(eg_file)})"
-    HTTPService.post_resource(
+    HttpService.post_resource(
       host: export_host,
       path: export_path,
       params: params(eg_file, eg_name),
@@ -125,7 +125,7 @@ class WorkbenchImportService
         parent_type: workbench_import.class.name,
         workbench_id: workbench_import.workbench_id,
         name: name,
-        file: HTTPService.upload(file, 'application/zip', "#{name}.zip") } }
+        file: HttpService.upload(file, 'application/zip', "#{name}.zip") } }
   end
 
   # Lazy Values
@@ -139,7 +139,7 @@ class WorkbenchImportService
     @__downloaded__ ||= download_response.body
   end
   def download_response
-    @__download_response__ ||= HTTPService.get_resource(
+    @__download_response__ ||= HttpService.get_resource(
       host: import_host,
       path: import_path,
       params: {token: workbench_import.token_download}).tap do

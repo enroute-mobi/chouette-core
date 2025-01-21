@@ -104,7 +104,7 @@ class ZipService
   end
 
   def is_foreign_line? entry_name
-    STIF::NetexFile::Frame.get_short_id(entry_name).tap do | line_object_id |
+    Stif::NetexFile::Frame.get_short_id(entry_name).tap do | line_object_id |
       return nil unless line_object_id
       return nil if line_object_id.in? allowed_lines
       foreign_lines << line_object_id
@@ -117,7 +117,7 @@ class ZipService
 
   def wrong_calendar_data? entry
     content = entry.get_input_stream.read
-    periods = STIF::NetexFile::Frame.parse_calendars content.to_s
+    periods = Stif::NetexFile::Frame.parse_calendars content.to_s
     periods.each do |period|
 
       return true unless period

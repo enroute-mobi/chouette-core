@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-class StopAreaReferentialDecorator < AF83::Decorator
+class StopAreaReferentialDecorator < Af83::Decorator
   decorates StopAreaReferential
 
   set_scope { [context[:workbench]] }

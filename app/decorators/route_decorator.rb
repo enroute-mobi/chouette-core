@@ -1,4 +1,4 @@
-class RouteDecorator < AF83::Decorator
+class RouteDecorator < Af83::Decorator
   decorates Chouette::Route
 
   set_scope { [context[:workbench], context[:referential], context[:line]] }

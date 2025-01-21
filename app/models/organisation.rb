@@ -39,7 +39,7 @@ class Organisation < ApplicationModel
   end
 
   def lines_set
-    STIF::CodifligneLineId.lines_set_from_functional_scope( functional_scope )
+    Stif::CodifligneLineId.lines_set_from_functional_scope( functional_scope )
   end
 
   def has_feature?(feature)

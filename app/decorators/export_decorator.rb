@@ -1,4 +1,4 @@
-class ExportDecorator < AF83::Decorator
+class ExportDecorator < Af83::Decorator
   decorates Export::Base
 
   set_scope { context[:parent] }

@@ -1,6 +1,6 @@
 module Chouette
   class Factory
-    class DSL
+    class Dsl
 
       def initialize(context)
         @context = context

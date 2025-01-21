@@ -1,4 +1,4 @@
-class DocumentProviderDecorator < AF83::Decorator
+class DocumentProviderDecorator < Af83::Decorator
   decorates DocumentProvider
 
   set_scope { context[:workbench] }

@@ -1,5 +1,4 @@
-require 'stif/netex_file'
-RSpec.describe STIF::NetexFile do
+RSpec.describe Stif::NetexFile do
 
   let( :zip_file ){ fixtures_path 'OFFRE_TRANSDEV_2017030112251.zip' }
 
@@ -54,7 +53,7 @@ RSpec.describe STIF::NetexFile do
 
     context "with single period calendar file" do
       let (:periods) do
-        STIF::NetexFile::Frame.parse_calendars(File.read(calendar_file_1))
+        Stif::NetexFile::Frame.parse_calendars(File.read(calendar_file_1))
       end
 
       it "should parse correctly the valid between periods collection" do
@@ -64,7 +63,7 @@ RSpec.describe STIF::NetexFile do
 
     context "with multiple periods calendar file" do
       let (:periods) do
-        STIF::NetexFile::Frame.parse_calendars(File.read(calendar_file_2))
+        Stif::NetexFile::Frame.parse_calendars(File.read(calendar_file_2))
       end
 
       it "should parse correctly the valid between periods collection" do

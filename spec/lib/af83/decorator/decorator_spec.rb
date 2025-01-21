@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-RSpec.describe AF83::Decorator do
+RSpec.describe Af83::Decorator do
   describe(:parse_options) do
     let(:options){
       {primary: true, secondary: %i(index show), policy: :blublu, weight: 12}
@@ -10,7 +10,7 @@ RSpec.describe AF83::Decorator do
     }
     let(:args){ options.dup.update(link_options.dup) }
     it "should separate options from link_options" do
-      _options, _link_options = AF83::Decorator.instance_decorator.send :parse_options, args
+      _options, _link_options = Af83::Decorator.instance_decorator.send :parse_options, args
       expect(_options).to eq({weight: 12})
       link_options.each do |k, v|
         expect(_link_options[k]).to eq v
@@ -36,7 +36,7 @@ RSpec.describe AF83::Decorator do
     end
 
     let(:decorator) do
-      klass = Class.new(AF83::Decorator)
+      klass = Class.new(Af83::Decorator)
       klass.action_link link_options
       klass
     end
@@ -82,7 +82,7 @@ RSpec.describe AF83::Decorator do
 
       context "without links" do
         let(:decorator) do
-          Class.new(AF83::Decorator)
+          Class.new(Af83::Decorator)
         end
 
         it "should return no link" do
@@ -101,7 +101,7 @@ RSpec.describe AF83::Decorator do
 
         context "incompletetly defined" do
           let(:decorator) do
-            klass = Class.new(AF83::Decorator)
+            klass = Class.new(Af83::Decorator)
             klass.with_instance_decorator do |instance_decorator|
               instance_decorator.action_link href: "bar"
             end
@@ -109,13 +109,13 @@ RSpec.describe AF83::Decorator do
           end
 
           it "should raise an error" do
-            expect{decorator}.to raise_error(AF83::Decorator::IncompleteLinkDefinition)
+            expect{decorator}.to raise_error(Af83::Decorator::IncompleteLinkDefinition)
           end
         end
 
         context "defined inline" do
           let(:decorator) do
-            klass = Class.new(AF83::Decorator)
+            klass = Class.new(Af83::Decorator)
             klass.with_instance_decorator do |instance_decorator|
               instance_decorator.action_link link_options
             end
@@ -131,7 +131,7 @@ RSpec.describe AF83::Decorator do
 
         context "defined in a block" do
           let(:decorator) do
-            klass = Class.new(AF83::Decorator)
+            klass = Class.new(Af83::Decorator)
             klass.with_instance_decorator do |instance_decorator|
               instance_decorator.action_link do |l|
                 l.href link_options[:href]
@@ -150,7 +150,7 @@ RSpec.describe AF83::Decorator do
 
         context "with proc attributes" do
           let(:decorator) do
-            klass = Class.new(AF83::Decorator)
+            klass = Class.new(Af83::Decorator)
             klass.with_instance_decorator do |instance_decorator|
               instance_decorator.action_link do |l|
                 l.href { context[:href] }
@@ -174,7 +174,7 @@ RSpec.describe AF83::Decorator do
 
         context "with a method attributes" do
           let(:decorator) do
-            klass = Class.new(AF83::Decorator)
+            klass = Class.new(Af83::Decorator)
             klass.with_instance_decorator do |instance_decorator|
               instance_decorator.action_link do |l|
                 l.href "/foo/bar"
@@ -215,7 +215,7 @@ RSpec.describe AF83::Decorator do
 
         context "without weight" do
           let(:decorator) do
-            klass = Class.new(AF83::Decorator)
+            klass = Class.new(Af83::Decorator)
             klass.with_instance_decorator do |instance_decorator|
               instance_decorator.action_link link_options_1
               instance_decorator.action_link link_options_2
@@ -233,7 +233,7 @@ RSpec.describe AF83::Decorator do
 
         context "with weight" do
           let(:decorator) do
-            klass = Class.new(AF83::Decorator)
+            klass = Class.new(Af83::Decorator)
             klass.with_instance_decorator do |instance_decorator|
               instance_decorator.action_link link_options_1.update(weight: 10)
               instance_decorator.action_link link_options_2
@@ -251,7 +251,7 @@ RSpec.describe AF83::Decorator do
 
         context "scoped by action" do
           let(:decorator) do
-            klass = Class.new(AF83::Decorator)
+            klass = Class.new(Af83::Decorator)
             klass.with_instance_decorator do |instance_decorator|
               instance_decorator.action_link link_options_1.update(action: :index)
               instance_decorator.action_link link_options_2
@@ -268,7 +268,7 @@ RSpec.describe AF83::Decorator do
 
         context "with a policy" do
           let(:decorator) do
-            klass = Class.new(AF83::Decorator)
+            klass = Class.new(Af83::Decorator)
             klass.with_instance_decorator do |instance_decorator|
               instance_decorator.action_link href: "foo", content: "foo", policy: :edit
             end
@@ -312,7 +312,7 @@ RSpec.describe AF83::Decorator do
 
         context "with a feature" do
           let(:decorator) do
-            klass = Class.new(AF83::Decorator)
+            klass = Class.new(Af83::Decorator)
             klass.with_instance_decorator do |instance_decorator|
               instance_decorator.action_link href: "foo", content: "foo", feature: :foo
             end
@@ -347,7 +347,7 @@ RSpec.describe AF83::Decorator do
             context "as a value" do
               context "when the condition is true" do
                 let(:decorator) do
-                  klass = Class.new(AF83::Decorator)
+                  klass = Class.new(Af83::Decorator)
                   klass.with_instance_decorator do |instance_decorator|
                     instance_decorator.with_condition true do
                       action_link href: "foo", content: "foo"
@@ -364,7 +364,7 @@ RSpec.describe AF83::Decorator do
 
               context "when the condition is false" do
                 let(:decorator) do
-                  klass = Class.new(AF83::Decorator)
+                  klass = Class.new(Af83::Decorator)
                   klass.with_instance_decorator do |instance_decorator|
                     instance_decorator.with_condition false do
                       action_link href: "foo", content: "foo"
@@ -382,7 +382,7 @@ RSpec.describe AF83::Decorator do
 
             context "as a Proc" do
               let(:decorator) do
-                klass = Class.new(AF83::Decorator)
+                klass = Class.new(Af83::Decorator)
                 klass.with_instance_decorator do |instance_decorator|
                   instance_decorator.with_condition ->{context[:show_link]} do
                     action_link href: "foo", content: "foo"
@@ -421,7 +421,7 @@ RSpec.describe AF83::Decorator do
             context "as a value" do
               context "when the condition is true" do
                 let(:decorator) do
-                  klass = Class.new(AF83::Decorator)
+                  klass = Class.new(Af83::Decorator)
                   klass.with_instance_decorator do |instance_decorator|
                     instance_decorator.action_link link_options_1.update(if: true)
                   end
@@ -436,7 +436,7 @@ RSpec.describe AF83::Decorator do
 
               context "when the condition is false" do
                 let(:decorator) do
-                  klass = Class.new(AF83::Decorator)
+                  klass = Class.new(Af83::Decorator)
                   klass.with_instance_decorator do |instance_decorator|
                     instance_decorator.action_link link_options_1.update(if: false)
                   end
@@ -452,7 +452,7 @@ RSpec.describe AF83::Decorator do
 
             context "as a Proc" do
               let(:decorator) do
-                klass = Class.new(AF83::Decorator)
+                klass = Class.new(Af83::Decorator)
                 klass.with_instance_decorator do |instance_decorator|
                   instance_decorator.action_link link_options_1.update(if: ->{context[:show_link]})
                 end
@@ -489,7 +489,7 @@ RSpec.describe AF83::Decorator do
         context "scoped by action" do
           context "with a single action" do
             let(:decorator) do
-              klass = Class.new(AF83::Decorator)
+              klass = Class.new(Af83::Decorator)
               klass.with_instance_decorator do |instance_decorator|
                 instance_decorator.action_link link_options_1.update(action: :index)
                 instance_decorator.action_link link_options_2
@@ -506,7 +506,7 @@ RSpec.describe AF83::Decorator do
 
           context "with several actions" do
             let(:decorator) do
-              klass = Class.new(AF83::Decorator)
+              klass = Class.new(Af83::Decorator)
               klass.with_instance_decorator do |instance_decorator|
                 instance_decorator.action_link link_options_1.update(actions: %i(index edit))
                 instance_decorator.action_link link_options_2.update(actions: %i(show edit))
@@ -523,7 +523,7 @@ RSpec.describe AF83::Decorator do
 
           context "with the keyword 'on'" do
             let(:decorator) do
-              klass = Class.new(AF83::Decorator)
+              klass = Class.new(Af83::Decorator)
               klass.with_instance_decorator do |instance_decorator|
                 instance_decorator.action_link link_options_1.update(on: %i(index edit))
                 instance_decorator.action_link link_options_2.update(on: :show)
@@ -543,7 +543,7 @@ RSpec.describe AF83::Decorator do
 
     describe '#primary' do
       let(:decorator) do
-        Class.new(AF83::Decorator)
+        Class.new(Af83::Decorator)
       end
 
       let(:decorated) do
@@ -567,7 +567,7 @@ RSpec.describe AF83::Decorator do
 
       context "without links" do
         let(:decorator) do
-          Class.new(AF83::Decorator)
+          Class.new(Af83::Decorator)
         end
 
         it "should return no link" do
@@ -586,7 +586,7 @@ RSpec.describe AF83::Decorator do
         end
 
         let(:decorator) do
-          klass = Class.new(AF83::Decorator)
+          klass = Class.new(Af83::Decorator)
           klass.with_instance_decorator do |instance_decorator|
             instance_decorator.action_link link_options
           end
@@ -657,7 +657,7 @@ RSpec.describe AF83::Decorator do
 
       context "without links" do
         let(:decorator) do
-          Class.new(AF83::Decorator)
+          Class.new(Af83::Decorator)
         end
 
         it "should return no link" do
@@ -677,7 +677,7 @@ RSpec.describe AF83::Decorator do
         end
 
         let(:decorator) do
-          klass = Class.new(AF83::Decorator)
+          klass = Class.new(Af83::Decorator)
           klass.with_instance_decorator do |instance_decorator|
             instance_decorator.action_link link_options
           end
@@ -702,7 +702,7 @@ RSpec.describe AF83::Decorator do
             end
 
             let(:decorator) do
-              klass = Class.new(AF83::Decorator)
+              klass = Class.new(Af83::Decorator)
               klass.with_instance_decorator do |instance_decorator|
                 instance_decorator.action_link link_options
               end
@@ -801,7 +801,7 @@ RSpec.describe AF83::Decorator do
         end
 
         let(:decorator) do
-          klass = Class.new(AF83::Decorator)
+          klass = Class.new(Af83::Decorator)
           klass.with_instance_decorator do |instance_decorator|
             instance_decorator.action_link link_options_1
             instance_decorator.action_link link_options_2

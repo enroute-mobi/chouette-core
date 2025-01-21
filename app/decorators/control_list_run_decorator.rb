@@ -1,4 +1,4 @@
-class ControlListRunDecorator < AF83::Decorator
+class ControlListRunDecorator < Af83::Decorator
   decorates Control::List::Run
 
   set_scope { context[:workbench] }

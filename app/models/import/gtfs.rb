@@ -1856,7 +1856,7 @@ class Import::Gtfs < Import::Base
       def codes_attributes
         [
           {
-            code_space_id: code_space.id,
+            code_space_id: code_space&.id,
             value: service_id
           }
         ]

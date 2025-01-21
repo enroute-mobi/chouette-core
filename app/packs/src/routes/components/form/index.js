@@ -1,7 +1,6 @@
 import React, { Component } from 'react'
 import PropTypes from 'prop-types'
 import TextInput from './TextInput'
-import SwitchInput from './SwitchInput'
 import SelectInput from './SelectInput'
 
 export default class RouteForm extends Component {
@@ -16,7 +15,6 @@ export default class RouteForm extends Component {
       errors,
       onUpdateName,
       onUpdatePublishedName,
-      onUpdateWayback,
       onUpdateOppositeRoute,
       oppositeRoutesOptions
     } = this.props
@@ -41,13 +39,6 @@ export default class RouteForm extends Component {
                 value={route.published_name}
                 onChange={onUpdatePublishedName}
                 hasError={errors.published_name}
-              />
-              <SwitchInput
-                inputId='route_wayback'
-                name='route[wayback]'
-                labelText={I18n.t('activerecord.attributes.route.direction')}
-                onChange={onUpdateWayback}
-                isChecked={route.wayback === 'outbound'}
               />
               <SelectInput
                 inputId='route_opposite_route_id'

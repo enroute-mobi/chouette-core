@@ -170,7 +170,6 @@ fr:
         updated_at: "Edité le"
         vehicle_journey_at_stops: "La liste des horaires"
         vehicle_journey_at_stop_ids: "La liste des horaires"
-        vehicle_type_identifier: "Type d'identifiant du véhicule"
         start_time: Heure de départ
         constraint_exclusions: Exclusions d'interdictions de trafic
     errors:

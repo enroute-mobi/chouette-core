@@ -191,11 +191,8 @@ class RoutesController < Chouette::ReferentialController
       :objectid,
       :object_version,
       :name,
-      :comment,
       :opposite_route_id,
       :published_name,
-      :number,
-      :direction,
       :wayback,
       stop_points_attributes: %i[id _destroy position stop_area_id for_boarding for_alighting]
     )

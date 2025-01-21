@@ -167,7 +167,6 @@ en:
         updated_at: Updated at
         vehicle_journey_at_stop_ids: "Time list"
         vehicle_journey_at_stops: "Time list"
-        vehicle_type_identifier: "Vehicle Type Identifier"
         start_time: Start time
         constraint_exclusions: Constraint Zones exclusions
     errors:

@@ -36,6 +36,8 @@ module LocalImportSupport
     update status: 'failed', ended_at: Time.now
     if overlapping_referential_ids.present?
       create_message criticity: :error, message_key: 'referential_creation_overlapping_existing_referential_block'
+    elsif referential_builder.validity_period_empty?
+      create_message criticity: :error, message_key: 'missing_validity_period_in_zip_file'
     end
   rescue StandardError => e
     update status: 'failed', ended_at: Time.now
@@ -106,6 +108,10 @@ module LocalImportSupport
 
     def overlapping_referential_ids
       @overlapping_referential_ids ||= referential.overlapped_referential_ids
+    end
+
+    def validity_period_empty?
+      @validity_period_empty ||= metadata.periodes.empty?
     end
   end
 

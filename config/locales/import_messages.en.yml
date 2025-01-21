@@ -22,6 +22,7 @@ en:
     unsupported_file_format: "The supplied file does not match any authorized format"
     wrong_calendar_in_zip_file: "The calendar file %{source_filename} cannot be parsed, or contains inconsistant data"
     missing_calendar_or_calendar_dates_in_zip_file: "Missing required source file calendar.txt or calendar_dates.txt"
+    missing_validity_period_in_zip_file: "Missing required dates in file calendar.txt and calendar_dates.txt"
     shapefile_unprovided_id_attribute: "No attribute indicated to be used as id for the shapes"
     shapefile_wrong_id_attribute: "The provided attribute '%{shape_attribute}' to be used as id doesn't match any column"
     shapefile_no_geometry: "Object at index #%{shape_index} has no geometry"

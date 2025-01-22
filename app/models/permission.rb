@@ -14,8 +14,8 @@ class Permission
       %w[
         aggregates
         accessibility_assessments
-        booking_arrangements
         api_keys
+        booking_arrangements
         calendars
         code_spaces
         connection_links

@@ -7,11 +7,11 @@ class CreateBookingArrangement < ActiveRecord::Migration[5.2]
         t.string :phone
         t.string :url
         t.string :booking_methods, default: [], array: true
-        t.string :booking_access, default: 0
+        t.string :booking_access
         t.integer :minimum_booking_period
-        t.string :book_when, default: 0
+        t.string :book_when
         t.time :latest_booking_time
-        t.string :buy_when, default: 0
+        t.string :buy_when
         t.string :booking_url
         t.text :booking_notes
 

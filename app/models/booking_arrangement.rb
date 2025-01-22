@@ -4,7 +4,6 @@ class BookingArrangement < ApplicationModel
   belongs_to :line_provider
 
   validates :name, presence: true
-  validates :line_provider, presence: true
 
   attribute :latest_booking_time, TimeOfDay::Type::TimeWithoutZone.new
 

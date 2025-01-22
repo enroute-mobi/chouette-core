@@ -15,7 +15,7 @@
           = d.attribute :book_when, as: :enumerize
           = d.attribute :latest_booking_time, as: :time_of_day
           = d.attribute :buy_when, as: :enumerize
-          = d.attribute :booking_url
+          = d.attribute :booking_url, link: @booking_arrangement.booking_url
           = d.attribute :booking_notes
 
       .row

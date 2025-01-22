@@ -1,13 +1,7 @@
 # frozen_string_literal: true
 
 class BookingArrangementsController < Chouette::LineReferentialController
-  include ApplicationHelper
-
   defaults resource_class: BookingArrangement
-
-  # rubocop:disable Rails/LexicallyScopedActionFilter
-  before_action :authorize_resource, except: %i[new create index show]
-  # rubocop:enable Rails/LexicallyScopedActionFilter
 
   def index
     index! do |format|
@@ -54,7 +48,6 @@ class BookingArrangementsController < Chouette::LineReferentialController
 
   def booking_arrangement_params
     @booking_arrangement_params ||= params.require(:booking_arrangement).permit(
-      :objectid,
       :line_provider_id,
       :name,
       :phone,

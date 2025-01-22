@@ -345,6 +345,13 @@ class Operation < ApplicationModel
     end
   end
 
+  def interrupted
+    self.error_uuid ||= SecureRandom.uuid
+
+    logger.error "Operation #{internal_description} interrupted (#{self.error_uuid})"
+    callbacks.each(&:after)
+  end
+
   protected
 
   include CallbackSupport
@@ -410,6 +417,10 @@ class Operation < ApplicationModel
 
     def max_attempts
       1
+    end
+
+    def dead_worker
+      operation&.interrupted
     end
   end
 

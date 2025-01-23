@@ -6,6 +6,7 @@ class BookingArrangement < ApplicationModel
   validates :name, presence: true
   validates :url, presence: true, url: { scheme: %w{http https} }
   validates :booking_url, presence: true, url: { scheme: %w{http https} }
+  validates :minimum_booking_period, numericality: { only_integer: true, greater_than: 0, allow_nil: true }
 
   attribute :latest_booking_time, TimeOfDay::Type::TimeWithoutZone.new
 

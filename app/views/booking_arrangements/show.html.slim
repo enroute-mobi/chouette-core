@@ -11,7 +11,7 @@
           = d.attribute :url, link: @booking_arrangement.url
           = d.attribute :booking_methods, as: :i18n_array, scope: [:enumerize, :booking_arrangement, :booking_methods]
           = d.attribute :booking_access, as: :enumerize
-          = d.attribute :minimum_booking_period, as: :duration
+          = d.attribute :minimum_booking_period, as: :duration_in_minutes
           = d.attribute :book_when, as: :enumerize
           = d.attribute :latest_booking_time, as: :time_of_day
           = d.attribute :buy_when, as: :enumerize

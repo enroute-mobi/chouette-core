@@ -115,6 +115,8 @@ module SimpleBlockForHelper
             raw_value.join(',')
           when :i18n_array
             raw_value.map { |r| I18n.t(r, scope: options[:scope]) }.join(', ')
+          when :duration_in_minutes
+            "#{raw_value} min"
           when :duration
             raw_value >= 60 ? "#{(raw_value /  1.minute).round} min" : "#{raw_value.round} sec"
           when :enumerize

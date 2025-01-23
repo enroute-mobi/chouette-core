@@ -8,12 +8,12 @@ module PostgreSQLCursor
     # https://github.com/afair/postgresql_cursor/issues/57
     alias each_instance_original each_instance
     def each_instance(klass = nil, &block)
-      each_instance_original(Instantiator.new(klass), &block)
+      each_instance_original(Instantiator.new(klass || @type), &block)
     end
 
     alias each_instance_batch_original each_instance_batch
     def each_instance_batch(klass = nil, &block)
-      each_instance_batch_original(Instantiator.new(klass), &block)
+      each_instance_batch_original(Instantiator.new(klass || @type), &block)
     end
   end
 

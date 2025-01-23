@@ -961,6 +961,32 @@ RSpec.describe Import::Gtfs do
     end
   end
 
+  describe '#import_import_services' do
+    subject do
+      [].tap do |codes|
+        referential.time_tables.map do |time_table|
+          time_table.codes.each do |code|
+            codes << [code.code_space, code.value]
+          end
+        end
+      end
+    end
+
+    let(:import) { build_import 'google-sample-feed.zip' }
+    let(:code_space) { import.code_space }
+    let(:referential) { import.referential }
+
+    before do
+      import.prepare_referential
+      import.import_services
+      referential.switch
+    end
+
+    it 'should import codes for all time tables' do
+      is_expected.to match_array([[code_space, 'WE'], [code_space, 'FULLW']])
+    end
+  end
+
   describe "#import_stop_times" do
     let(:import) { build_import 'google-sample-feed.zip' }
 

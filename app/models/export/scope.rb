@@ -101,8 +101,8 @@ module Export
       delegate :workgroup, :workbench, :line_referential, :stop_area_referential, :metadatas, to: :referential
       delegate :shape_referential, :fare_referential, to: :workgroup
 
-      delegate :companies, :networks, :line_notices, to: :line_referential
-      delegate :entrances, to: :stop_area_referential
+      delegate :line_groups, :companies, :networks, :line_notices, to: :line_referential
+      delegate :stop_area_groups, :entrances, to: :stop_area_referential
 
       delegate :shapes, :point_of_interests, to: :shape_referential
       delegate :fare_zones, :fare_products, :fare_validities, to: :fare_referential
@@ -173,6 +173,12 @@ module Export
         current_scope.lines.where(id: routes.select(:line_id).distinct)
       end
 
+      def line_groups
+        current_scope.line_groups.where(
+          id: ::LineGroup::Member.where(line_id: lines.select(:id).distinct).select(:group_id).distinct
+        )
+      end
+
       def companies
         current_scope.companies.where(id: company_ids).or(
           current_scope.companies.where(id: secondary_company_ids)
@@ -212,8 +218,14 @@ module Export
       end
 
       def stop_areas
-        stop_area_ids = Arel::Nodes::Union.new(stop_points_stop_area_ids.arel.ast, specific_vehicle_journey_at_stops_stop_area_ids.arel.ast)
         current_scope.stop_areas.where(Chouette::StopArea.arel_table[:id].in(stop_area_ids))
+      end
+
+      def stop_area_groups
+        current_scope.stop_area_groups.where(
+          id: ::StopAreaGroup::Member.where(::StopAreaGroup::Member.arel_table[:stop_area_id].in(stop_area_ids))
+                                     .select(:group_id).distinct
+        )
       end
 
       def stop_points_stop_area_ids
@@ -247,6 +259,15 @@ module Export
 
       def line_notices
         current_scope.line_notices.with_lines(lines)
+      end
+
+      private
+
+      def stop_area_ids
+        Arel::Nodes::Union.new(
+          stop_points_stop_area_ids.arel.ast,
+          specific_vehicle_journey_at_stops_stop_area_ids.arel.ast
+        )
       end
     end
 

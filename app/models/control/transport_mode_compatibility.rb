@@ -31,24 +31,17 @@ module Control
       end
 
       def query
-        <<~SQL
-          SELECT base_query.stop_area_id, base_query.stop_area_name, base_query.line_name
-          FROM (#{base_query}) base_query
-          WHERE NOT base_query.stop_transport_mode = base_query.line_transport_mode
-        SQL
-      end
-
-      def base_query
         routes
-          .joins(:stop_areas, :line)
-          .distinct
-          .select(
-            'stop_areas.id AS stop_area_id',
-            'stop_areas.name AS stop_area_name',
-            'stop_areas.transport_mode AS stop_transport_mode',
-            'lines.transport_mode AS line_transport_mode',
-            'lines.name AS line_name'
-          ).to_sql
+        .joins(:stop_areas, :line)
+        .where('stop_areas.transport_mode <> lines.transport_mode')
+        .where('stop_areas.transport_mode IS NOT NULL')
+        .where("lines.transport_mode <> 'undefined' AND lines.transport_mode IS NOT NULL")
+        .distinct
+        .select(
+          'stop_areas.id AS stop_area_id',
+          'stop_areas.name AS stop_area_name',
+          'lines.name AS line_name'
+        ).to_sql
       end
 
       def routes

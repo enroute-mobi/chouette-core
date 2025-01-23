@@ -1,5 +1,5 @@
 # frozen_string_literal: true
-class BookingArrangementDecorator < AF83::Decorator
+class BookingArrangementDecorator < Af83::Decorator
   decorates BookingArrangement
 
   set_scope { [context[:workbench], :line_referential] }

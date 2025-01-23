@@ -5,14 +5,14 @@ en:
     show:
       title: "%{name}"
     new:
-      title: "Create a Booking Arrangements"
+      title: "Create a Booking Arrangement"
     edit:
       title: "Edit %{name}"
     actions:
-      show: "Display this Booking Arrangements"
-      new: "Create a Booking Arrangements"
-      edit: "Edit this Booking Arrangements"
-      destroy: "Delete this Booking Arrangements"
+      show: "Display this Booking Arrangement"
+      new: "Create a Booking Arrangement"
+      edit: "Edit this Booking Arrangement"
+      destroy: "Delete this Booking Arrangement"
       destroy_confirm: "Are you sure you want destroy this Booking Arrangements ?"
     form:
       placeholders:
@@ -26,8 +26,8 @@ en:
   activerecord:
     models:
       booking_arrangement:
-        zero: "Booking Arrangements"
-        one: "Booking Arrangements"
+        zero: "Booking Arrangement"
+        one: "Booking Arrangement"
         other: "Booking Arrangements"
     attributes:
       booking_arrangement:

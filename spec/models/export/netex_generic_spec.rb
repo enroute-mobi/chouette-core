@@ -1443,6 +1443,10 @@ RSpec.describe Export::NetexGeneric do
     let(:vehicle_journeys) { context.vehicle_journeys }
     let(:vehicle_journey_at_stops) { vehicle_journeys.flat_map(&:vehicle_journey_at_stops) }
 
+    let(:referential) { context.referential }
+    let(:first_time_table) { context.time_table(:first) }
+    let(:second_time_table) { context.time_table(:second) }
+
     let(:first_vehicle_journey) { referential.vehicle_journeys.first }
     let(:second_vehicle_journey) { referential.vehicle_journeys.second }
     let(:third_vehicle_journey) { referential.vehicle_journeys.third }

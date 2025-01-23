@@ -1491,7 +1491,7 @@ RSpec.describe Export::NetexGeneric do
           it { is_expected.to match_array(expected_vehicle_journeys) }
         end
 
-        it 'The exported vehicle journeys should only include in scoped time_tables'  do
+        it 'The exported vehicle journeys should only include in scoped time_tables' do
           scoped_vehicle_journeys.each do |vj|
             expect(vj.timetable_ids.count).to eq 2
             expect(vj.timetable_ids).to match_array(expected_time_table_ids)
@@ -1516,7 +1516,7 @@ RSpec.describe Export::NetexGeneric do
           it { is_expected.to match_array(expected_vehicle_journeys) }
         end
 
-        it 'The exported vehicle journeys should only include in scoped time_tables'  do
+        it 'The exported vehicle journeys should only include in scoped time_tables' do
           scoped_vehicle_journeys.each do |vj|
             expect(vj.timetable_ids.count).to eq 3
             expect(vj.timetable_ids).to match_array(expected_time_table_ids)
@@ -1881,8 +1881,9 @@ RSpec.describe Export::NetexGeneric do
     let!(:context) do
       Chouette.create do
         point_of_interest_category do
-          point_of_interest url: 'http://www.test.fr', position_input: '2.292 48.858', address_line_1: '78 rue des chantiers',
-                            zip_code: '78000', city_name: 'Versailles', postal_region: 'Dummy', country: 'France', email: 'hello@yopmail.com', phone: '0129349878' do
+          point_of_interest(url: 'http://www.test.fr', position_input: '2.292 48.858',
+                            address_line_1: '78 rue des chantiers', zip_code: '78000', city_name: 'Versailles',
+                            postal_region: 'Dummy', country: 'France', email: 'hello@yopmail.com', phone: '0129349878') do
             point_of_interest_hours opening_time_of_day: TimeOfDay.new(14), closing_time_of_day: TimeOfDay.new(18)
           end
         end

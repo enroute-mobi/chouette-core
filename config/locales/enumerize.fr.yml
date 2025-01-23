@@ -12,32 +12,6 @@ fr:
       subtype:
         google: 'Google'
         azure: 'Azure AD'
-    booking_arrangement:
-      booking_methods:
-        call_driver: Appeler le conducteur
-        call_office: Appeler un centre d’appel
-        online: Via Internet
-        phone_at_stop: Par téléphone à l’arrêt
-        text_message: Envoyer un message SMS pour réserver
-        mobile_app: Depuis l'application mobile
-        at_office: Au Bureau
-        other: Autre
-      booking_access:
-        public: Tout le monde
-        authorised_public: Personnes autorisée
-        staff: Le personnel d’exploitation
-        other: Autre
-      book_when:
-        until_previous_day: Jusqu'au jour précédent le voyage (avant le jour du voyage)
-        day_of_travel_only: Le jour du voyage
-        advance_and_day_of_travel: Jusqu'au jour du voyage
-        time_of_travel_only: Au moment de voyage
-      buy_when:
-        on_reservation: Lors de la réservation
-        before_boarding: Avant l'embarquement
-        on_boarding: Au moment de l'embarquement
-        after_boarding: Près l'embarquement (pendant le voyage)
-        on_checkout: À la descente du véhicule
     operation:
       status:
         new: Nouveau

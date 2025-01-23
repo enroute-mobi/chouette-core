@@ -4,6 +4,8 @@ class BookingArrangement < ApplicationModel
   belongs_to :line_provider
 
   validates :name, presence: true
+  validates :url, presence: true, url: { scheme: %w{http https} }
+  validates :booking_url, presence: true, url: { scheme: %w{http https} }
 
   attribute :latest_booking_time, TimeOfDay::Type::TimeWithoutZone.new
 

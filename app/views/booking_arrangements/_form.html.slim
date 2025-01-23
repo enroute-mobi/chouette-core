@@ -26,7 +26,7 @@
       = f.input :booking_methods, as: :autocomplete_select, input_html: {class: "w-full"}
       = f.input :booking_access, as: :autocomplete_select, input_html: {class: "w-full"}
       = f.input :minimum_booking_period
-      = f.input :book_when
+      = f.input :book_when, as: :autocomplete_select, input_html: {class: "w-full"}
       = f.input :latest_booking_time, as: :time_of_day
       = f.input :buy_when, as: :autocomplete_select, input_html: {class: "w-full"}
       = f.input :booking_url

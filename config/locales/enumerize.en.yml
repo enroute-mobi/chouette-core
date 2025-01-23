@@ -12,32 +12,6 @@ en:
       subtype:
         google: 'Google'
         azure: 'Azure AD'
-    booking_arrangement:
-      booking_methods:
-        call_driver: Call driver
-        call_office: Call office
-        online: Online
-        phone_at_stop: Phone at stop
-        text_message: Text message
-        mobile_app: Mobile app
-        at_office: At office
-        other: Other
-      booking_access:
-        public: Public
-        authorised_public: Authorised public
-        staff: Staff
-        other: Other
-      book_when:
-        until_previous_day: Until previous day
-        day_of_travel_only: Day of travel only
-        advance_and_day_of_travel: Advance and day of travel
-        time_of_travel_only: Time of travel only
-      buy_when:
-        on_reservation: On reservation
-        before_boarding: Before boarding
-        on_boarding: On boarding
-        after_boarding: After boarding
-        on_checkout: On checkout
     operation:
         status:
           new: New

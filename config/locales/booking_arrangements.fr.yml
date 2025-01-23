@@ -1,19 +1,19 @@
 fr:
   booking_arrangements:
     index:
-      title: Modalités de réservation
+      title: Conditions de réservation
     show:
       title: "%{name}"
     new:
-      title: "Créer un Modalités de réservation"
+      title: "Créer une Conditions de réservation"
     edit:
       title: "Editer %{name}"
     actions:
-      show: "Afficher cette Modalités de réservation"
-      new: "Créer une Modalités de réservation"
-      edit: "Editer cette Modalités de réservation"
-      destroy: "Supprimer cette Modalités de réservation"
-      destroy_confirm: "Etes vous sûr de supprimer cette Modalités de réservation ?"
+      show: "Afficher cette Conditions de réservation"
+      new: "Créer une Conditions de réservation"
+      edit: "Editer cette Conditions de réservation"
+      destroy: "Supprimer cette Conditions de réservation"
+      destroy_confirm: "Etes vous sûr de supprimer cette Conditions de réservation ?"
     form:
       placeholders:
       sections:
@@ -22,13 +22,13 @@ fr:
         internals: "Interne"
         rules: "Règles"
         codes: "Codes"
-    search_no_results: "Aucun Modalités de réservation ne correspond à votre recherche"
+    search_no_results: "Aucun Conditions de réservation ne correspond à votre recherche"
   activerecord:
     models:
       booking_arrangement:
-        zero: "Modalités de réservation"
-        one: "Modalités de réservation"
-        other: "Modalités de réservation"
+        zero: "Conditions de réservation"
+        one: "Conditions de réservation"
+        other: "Conditions de réservation"
     attributes:
       booking_arrangement:
         uuid: ID
@@ -44,3 +44,30 @@ fr:
         booking_url: "Url de réservation"
         booking_notes: "Notes de réservation"
         line_provider_id: "Fournisseur de lignes"
+  enumerize:
+    booking_arrangement:
+      booking_methods:
+        call_driver: Appeler le conducteur
+        call_office: Appeler un centre d’appel
+        online: Via Internet
+        phone_at_stop: Par téléphone à l’arrêt
+        text_message: Envoyer un message SMS pour réserver
+        mobile_app: Depuis l'application mobile
+        at_office: Au Bureau
+        other: Autre
+      booking_access:
+        public: Tout le monde
+        authorised_public: Personnes autorisée
+        staff: Le personnel d’exploitation
+        other: Autre
+      book_when:
+        until_previous_day: Jusqu'au jour précédent le voyage (avant le jour du voyage)
+        day_of_travel_only: Le jour du voyage
+        advance_and_day_of_travel: Jusqu'au jour du voyage
+        time_of_travel_only: Au moment de voyage
+      buy_when:
+        on_reservation: Lors de la réservation
+        before_boarding: Avant l'embarquement
+        on_boarding: Au moment de l'embarquement
+        after_boarding: Près l'embarquement (pendant le voyage)
+        on_checkout: À la descente du véhicule

@@ -37,7 +37,7 @@ en:
         url: "Url"
         booking_methods: "Booking methods"
         booking_access: "Booking access"
-        minimum_booking_period: "Minimum booking period"
+        minimum_booking_period: "Minimum booking period (in minutes)"
         book_when: "Book when"
         latest_booking_time: "Latest booking time"
         buy_when: "Buy when"

@@ -43,6 +43,7 @@ en:
         buy_when: "Buy when"
         booking_url: "Booking url"
         booking_notes: "Booking notes"
+        line_provider: "Line provider"
         line_provider_id: "Line provider"
   enumerize:
     booking_arrangement:

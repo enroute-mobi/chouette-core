@@ -42,7 +42,7 @@ module Search
     end
 
     def candidate_companies
-      workbench.companies
+      workbench.companies.order(:name)
     end
 
     def companies
@@ -50,7 +50,7 @@ module Search
     end
 
     def candidate_networks
-      workbench.networks
+      workbench.networks.order(:name)
     end
 
     def networks

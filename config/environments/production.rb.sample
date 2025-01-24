@@ -72,7 +72,6 @@ Rails.application.configure do
     config.colorize_logging = false
 
     $stdout.sync = true
-    config.rails_semantic_logger.add_file_appender = false
 
     ignore_controllers = %w[
       NotificationsController

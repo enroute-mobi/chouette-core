@@ -87,6 +87,9 @@ Rails.application.configure do
     Bullet.enable = ENV['CHOUETTE_BULLET_ENABLED'] == 'true'
     Bullet.rails_logger = true
   end
+
+  config.logger_reopen_max = 2
+  config.logger_reopen_size = 250.megabytes
 end
 
 Dir[File.join(File.dirname(__FILE__), File.basename(__FILE__, ".rb"), "*.rb")].each do |f|

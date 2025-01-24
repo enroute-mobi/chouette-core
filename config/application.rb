@@ -149,6 +149,8 @@ module ChouetteIhm
     # disable SemanticLogger application & environment (already provided via Datadog)
     config.semantic_logger.application = nil
     config.semantic_logger.environment = nil
+    config.rails_semantic_logger.add_file_appender = false
+    config.logger_reopen_max = nil
 
     # Require `belongs_to` associations by default. Previous versions had false.
     config.active_record.belongs_to_required_by_default = true

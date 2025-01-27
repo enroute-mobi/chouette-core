@@ -2192,9 +2192,10 @@ class Export::NetexGeneric < Export::Base
           journey_pattern_ref: journey_pattern_ref,
           public_code: published_journey_identifier,
           day_types: day_types,
-          key_list: netex_alternate_identifiers,
-          notice_assignments: notice_assignments
-        )
+          key_list: netex_alternate_identifiers
+        ).tap do |netex_attributes|
+          netex_attributes[:notice_assignments] if notice_assignments
+        end
       end
 
       def netex_resource

@@ -289,16 +289,11 @@ module ReverseGeocode
         end
 
         def response(params)
-          @response ||=
-            begin
-              Rails.logger.info { 'Invoke French BAN API' }
-              Curl.get(self.class.url, params)
-            end
+          Rails.logger.info { 'Invoke French BAN API' }
+          Curl.get(self.class.url, params)
         end
 
         class Item < SimpleDelegator
-          attr_accessor :index
-
           def params
             { lon: position.lon, lat: position.lat }
           end

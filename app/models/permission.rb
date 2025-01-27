@@ -15,6 +15,7 @@ class Permission
         aggregates
         accessibility_assessments
         api_keys
+        booking_arrangements
         calendars
         code_spaces
         connection_links

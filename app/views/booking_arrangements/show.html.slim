@@ -1,0 +1,23 @@
+- breadcrumb :booking_arrangement, @workbench, @booking_arrangement
+- page_header_content_for @booking_arrangement
+
+.page_content
+  .container-fluid
+    .col-lg-6.col-md-6.col-sm-12.col-xs-12
+      .row
+        = simple_block_for @booking_arrangement, title: t('booking_arrangements.form.sections.identification') do |d|
+          = d.attribute :name
+          = d.attribute :phone
+          = d.attribute :url, link: @booking_arrangement.url
+          = d.attribute :booking_methods, as: :i18n_array, scope: [:enumerize, :booking_arrangement, :booking_methods]
+          = d.attribute :booking_access, as: :enumerize
+          = d.attribute :minimum_booking_period, as: :duration_in_minutes
+          = d.attribute :book_when, as: :enumerize
+          = d.attribute :latest_booking_time, as: :time_of_day
+          = d.attribute :buy_when, as: :enumerize
+          = d.attribute :booking_url, link: @booking_arrangement.booking_url
+          = d.attribute :booking_notes
+          = d.attribute :line_provider, as: :association, link: workbench_line_referential_line_provider_path(@workbench, @booking_arrangement.line_provider)
+
+      .row
+        = render 'codes/block', model: @booking_arrangement

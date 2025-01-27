@@ -614,6 +614,21 @@ crumb :new_line_routing_constraint_zone do |workbench|
   parent :line_routing_constraint_zones, workbench
 end
 
+crumb :booking_arrangements do |workbench|
+  link I18n.t('booking_arrangements.index.title'), workbench_line_referential_booking_arrangements_path(workbench)
+  parent :line_referential, workbench
+end
+
+crumb :booking_arrangement do |workbench, booking_arrangement|
+  link booking_arrangement.name, workbench_line_referential_booking_arrangement_path(workbench, booking_arrangement)
+  parent :booking_arrangements, workbench
+end
+
+crumb :new_booking_arrangement do |workbench|
+  link I18n.t('booking_arrangements.new.title')
+  parent :booking_arrangements, workbench
+end
+
 crumb :calendars do |workbrench|
   link I18n.t('calendars.index.title'), workbench_calendars_path(workbrench)
 end

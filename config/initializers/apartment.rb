@@ -26,6 +26,7 @@ Apartment.configure do |config|
     'ApiKey',
     'Authentication::Base',
     'Authentication::Saml',
+    'BookingArrangement',
     'Calendar',
     'Chouette::LineNoticeMembership',
     'Chouette::Company',

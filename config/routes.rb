@@ -219,6 +219,7 @@ ChouetteIhm::Application.routes.draw do # rubocop:disable Metrics/BlockLength
 
       resources :networks
       resources :line_notices
+      resources :booking_arrangements
     end
 
     resource :shape_referential, only: [] do

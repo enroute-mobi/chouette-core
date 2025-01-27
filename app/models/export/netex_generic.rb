@@ -185,8 +185,7 @@ class Export::NetexGeneric < Export::Base
   def generate_export_file
     part_classes = [
       Entrances,
-      Quays,
-      StopPlaces,
+      StopAreas,
       Companies,
       Networks,
       LineNotices,
@@ -391,15 +390,25 @@ class Export::NetexGeneric < Export::Base
       end
 
       def has_codes?
-        model.respond_to? :codes
+        model.respond_to?(:codes_values) || model.respond_to?(:codes)
       end
 
       def codes_values
         if has_codes?
-          codes.map do |code|
-            code_space_short_name = code_spaces[code.code_space_id]
-            [ code_space_short_name, code.value ] if code_space_short_name
-          end.compact
+          if model.respond_to?(:codes_values)
+            model.codes_values.map do |code_space_value|
+              code_space_id = code_space_value["id"]
+              value = code_space_value["value"]
+
+              code_space_short_name = code_spaces[code_space_id]
+              [ code_space_short_name, value ] if code_space_short_name
+            end.compact
+          else
+            codes.map do |code|
+              code_space_short_name = code_spaces[code.code_space_id]
+              [ code_space_short_name, code.value ] if code_space_short_name
+            end.compact
+          end
         else
           []
         end
@@ -545,142 +554,141 @@ class Export::NetexGeneric < Export::Base
     end
   end
 
-  class StopDecorator < ModelDecorator
-    include Accessibility
+  class StopAreas < Part
+    def export_part
+      stop_areas.each_instance do |stop_area|
+        resource = decorate(stop_area, with: Decorator).netex_resource
+        target << resource
+      end
+    end
 
-    def netex_attributes # rubocop:disable Metrics/MethodLength
-      super.merge(
-        {
-          derived_from_object_ref: derived_from_object_ref,
-          name: name,
-          public_code: public_code,
-          private_code: private_code,
-          centroid: centroid,
-          raw_xml: import_xml,
-          key_list: key_list,
-          accessibility_assessment: accessibility_assessment,
-          postal_address: postal_address,
-          url: url,
-          transport_mode: netex_transport_mode,
-          transport_submode: netex_transport_submode
-        }.tap do |attributes|
-          unless netex_quay?
-            attributes[:parent_site_ref] = parent_site_ref
-            attributes[:place_types] = place_types
+    def stop_areas
+      export_scope.stop_areas.left_joins(:codes).select('stop_areas.*', stop_areas_codes).group('stop_areas.id')
+    end
+
+    def stop_areas_codes
+      <<~SQL
+       array_agg(
+         DISTINCT
+         jsonb_build_object(
+           'id', codes.code_space_id,
+           'value', codes.value
+         )
+       ) AS codes_values
+     SQL
+    end
+
+    class Decorator < ModelDecorator
+      include Accessibility
+
+      def netex_attributes # rubocop:disable Metrics/MethodLength
+        super.merge(
+          {
+            derived_from_object_ref: derived_from_object_ref,
+            name: name,
+            public_code: public_code,
+            private_code: private_code,
+            centroid: centroid,
+            raw_xml: import_xml,
+            key_list: key_list,
+            accessibility_assessment: accessibility_assessment,
+            postal_address: postal_address,
+            url: url,
+            transport_mode: netex_transport_mode,
+            transport_submode: netex_transport_submode
+          }.tap do |attributes|
+            unless netex_quay?
+              attributes[:parent_site_ref] = parent_site_ref
+              attributes[:place_types] = place_types
+            end
+          end
+        )
+      end
+
+      def netex_transport_mode
+        transport_mode&.camelize_mode
+      end
+
+      def netex_transport_submode
+        transport_mode&.camelize_sub_mode
+      end
+
+      def parent_objectid
+        @parent_objectid ||= code_provider.stop_areas.code(parent_id)
+      end
+
+      def derived_from_object_ref
+        code_provider.stop_areas.code(referent_id)
+      end
+
+      def key_list
+        netex_alternate_identifiers + netex_custom_field_identifiers
+      end
+
+      def netex_custom_field_identifiers
+        CustomFieldExtractor.new(self).custom_field_identifiers
+      end
+
+      def centroid
+        Netex::Point.new(location: Netex::Location.new(longitude: longitude, latitude: latitude))
+      end
+
+      def parent_site_ref
+        Netex::Reference.new(parent_objectid, type: 'StopPlace') if parent_objectid
+      end
+
+      def place_types
+        [Netex::Reference.new(type_of_place, type: String)]
+      end
+
+      def type_of_place
+        case area_type
+        when Chouette::AreaType::QUAY
+          'quay'
+        when 'zdlp'
+          'monomodalStopPlace'
+        when 'lda'
+          'generalStopPlace'
+        when 'gdl'
+          'groupOfStopPlaces'
+        end
+      end
+
+      def postal_address_objectid
+        netex_identifier&.change(type: 'PostalAddress').to_s
+      end
+
+      def postal_address
+        Netex::PostalAddress.new(
+          id: postal_address_objectid,
+          address_line_1: street_name,
+          post_code: zip_code,
+          town: city_name,
+          postal_region: postal_region,
+          country_name: country_name
+        )
+      end
+
+      def netex_resource
+        netex_resource_class.new(netex_attributes).tap do |stop|
+          if netex_quay?
+            stop.with_tag parent_id: parent_objectid
           end
         end
-      )
-    end
+      end
 
-    def netex_transport_mode
-      transport_mode&.camelize_mode
-    end
+      def netex_quay?
+        area_type&.to_sym == Chouette::AreaType::QUAY
+      end
 
-    def netex_transport_submode
-      transport_mode&.camelize_sub_mode
-    end
+      def netex_resource_class
+        netex_quay? ? Netex::Quay : Netex::StopPlace
+      end
 
-    def parent_objectid
-      @parent_objectid ||= code_provider.stop_areas.code(parent_id)
-    end
-
-    def derived_from_object_ref
-      code_provider.stop_areas.code(referent_id)
-    end
-
-    def key_list
-      netex_alternate_identifiers + netex_custom_field_identifiers
-    end
-
-    def netex_custom_field_identifiers
-      CustomFieldExtractor.new(self).custom_field_identifiers
-    end
-
-    def centroid
-      Netex::Point.new(location: Netex::Location.new(longitude: longitude, latitude: latitude))
-    end
-
-    def parent_site_ref
-      Netex::Reference.new(parent_objectid, type: 'StopPlace') if parent_objectid
-    end
-
-    def place_types
-      [Netex::Reference.new(type_of_place, type: String)]
-    end
-
-    def type_of_place
-      case area_type
-      when Chouette::AreaType::QUAY
-        'quay'
-      when 'zdlp'
-        'monomodalStopPlace'
-      when 'lda'
-        'generalStopPlace'
-      when 'gdl'
-        'groupOfStopPlaces'
+      def private_code
+        registration_number
       end
     end
-
-    def postal_address_objectid
-      netex_identifier&.change(type: 'PostalAddress').to_s
-    end
-
-    def postal_address
-      Netex::PostalAddress.new(
-        id: postal_address_objectid,
-        address_line_1: street_name,
-        post_code: zip_code,
-        town: city_name,
-        postal_region: postal_region,
-        country_name: country_name
-      )
-    end
-
-    def netex_resource
-      netex_resource_class.new(netex_attributes).tap do |stop|
-        if netex_quay?
-          stop.with_tag parent_id: parent_objectid
-        end
-      end
-    end
-
-    def netex_quay?
-      area_type&.to_sym == Chouette::AreaType::QUAY
-    end
-
-    def netex_resource_class
-      netex_quay? ? Netex::Quay : Netex::StopPlace
-    end
-
-    def private_code
-      registration_number
-    end
-  end
-
-  class Quays < Part
-
-    delegate :stop_areas, to: :export_scope
-
-    def export_part
-      stop_areas.where(area_type: Chouette::AreaType::QUAY).includes(:codes).find_each do |stop_area|
-        netex_resource = decorate(stop_area, with: StopDecorator).netex_resource
-        target << netex_resource
-      end
-    end
-
-  end
-
-  class StopPlaces < Part
-
-    delegate :stop_areas, to: :export_scope
-
-    def export_part
-      stop_areas.where.not(area_type: Chouette::AreaType::QUAY).includes(:codes, :entrances).find_each do |stop_area|
-        stop_place = decorate(stop_area, with: StopDecorator).netex_resource
-        target << stop_place
-      end
-    end
-
   end
 
   class Entrances < Part

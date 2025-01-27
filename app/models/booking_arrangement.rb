@@ -11,9 +11,10 @@ class BookingArrangement < ApplicationModel
   attribute :latest_booking_time, TimeOfDay::Type::TimeWithoutZone.new
 
   def latest_booking_time=(time_of_day)
-    if time_of_day.is_a?(Hash) && time_of_day.keys == [1,2]
-      time_of_day = TimeOfDay.new(time_of_day[1], time_of_day[2])
+    if time_of_day.is_a?(Hash)
+      time_of_day = TimeOfDay.from_input_hash(time_of_day).without_utc_offset
     end
+
     super time_of_day
   end
 

@@ -40,6 +40,13 @@ export default class RouteForm extends Component {
                 onChange={onUpdatePublishedName}
                 hasError={errors.published_name}
               />
+              <SwitchInput
+                inputId='route_wayback'
+                name='route[wayback]'
+                labelText={I18n.t('activerecord.attributes.route.wayback')}
+                onChange={onUpdateWayback}
+                isChecked={route.wayback === 'outbound'}
+              />
               <SelectInput
                 inputId='route_opposite_route_id'
                 inputName='route[opposite_route_id]'

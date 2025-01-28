@@ -86,7 +86,6 @@ fr:
         published_name: "Nom de la direction"
         number: "Indice"
         comment: "Commentaire"
-        direction: "Direction"
         wayback: "Direction"
         stop_points: "Points d'arrêt"
         journey_patterns: "Missions"

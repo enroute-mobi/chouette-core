@@ -41,6 +41,9 @@ en:
         one: Attribute uniqueness
       control/absence_attribute/run:
         one: Absence of attribute
+      control/transport_mode_compatibility/run:
+        one: Stop Area & Line transport mode compatibility
+
     attributes:
       control/base/run:
         name: Name

@@ -41,6 +41,9 @@ fr:
         one: Unicité de l'attribut
       control/absence_attribute/run:
         one: Absence d'un attribut
+      control/transport_mode_compatibility/run:
+        one: Compatibilité des modes de transport
+
     attributes:
       control/base/run:
         name: Nom

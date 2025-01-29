@@ -12,4 +12,8 @@ class DocumentMembershipDecorator < Af83::Decorator
       l.href { h.send(context[:member_path_method], *scope, object) }
     end
   end
+
+  def pagination_param_name
+    context[:pagination_param_name]
+  end
 end

@@ -19,7 +19,8 @@ class DocumentMembershipsController < Chouette::ResourceController
     )
     @unassociated_documents_search = Search::Document.from_params(params, workgroup: workbench.workgroup)
     @unassociated_documents = DocumentDocumentMembershipDecorator.decorate(
-      @unassociated_documents_search.search(unassociated_documents),
+      @unassociated_documents_search.search(unassociated_documents)
+                                    .paginate(page: params[:unassociated_documents_page], per_page: 30),
       context: decorator_context.merge(pagination_param_name: :unassociated_documents_page)
     )
     index!
@@ -73,8 +74,7 @@ class DocumentMembershipsController < Chouette::ResourceController
 
   def unassociated_documents
     if parent_policy.update?
-      workbench.documents.where.not(id: documentable.document_ids).paginate(page: params[:unassociated_documents_page],
-                                                                            per_page: 30)
+      workbench.documents.where.not(id: documentable.document_ids)
     else
       workbench.documents.none
     end

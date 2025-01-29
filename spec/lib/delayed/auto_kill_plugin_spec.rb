@@ -7,6 +7,8 @@ RSpec.describe Delayed::AutoKillPlugin do
     describe 'must_stop?' do
       subject { status.must_stop? }
 
+      it { is_expected.to be_falsy }
+
       context 'when worker_idle?' do
         before { allow(status).to receive(:worker_idle?).and_return(true) }
 
@@ -100,18 +102,18 @@ RSpec.describe Delayed::AutoKillPlugin do
         it { is_expected.to eq(42) }
       end
 
-      context 'when #pending_jobas is 0 and #maximum_idle_workers is 1' do
+      context 'when #pending_jobs is 0 and #maximum_idle_workers is 1' do
         before do
-          allow(status).to receive(:pending_jobs).and_return(42)
+          allow(status).to receive(:pending_jobs).and_return(0)
           allow(status).to receive(:maximum_idle_workers).and_return(1)
         end
 
-        it { is_expected.to eq(42) }
+        it { is_expected.to eq(1) }
       end
 
-      context 'when #pending_jobas is 0 and #maximum_idle_workers is infinite' do
+      context 'when #pending_jobs is 0 and #maximum_idle_workers is infinite' do
         before do
-          allow(status).to receive(:pending_jobs).and_return(42)
+          allow(status).to receive(:pending_jobs).and_return(0)
           allow(status).to receive(:maximum_idle_workers).and_return(Float::INFINITY)
         end
 

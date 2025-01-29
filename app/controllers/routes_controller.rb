@@ -13,7 +13,6 @@ class RoutesController < Chouette::ReferentialController
   # rubocop:disable Rails/LexicallyScopedActionFilter
   before_action :authorize_resource, except: %i[
     new create index show
-    costs
     retrieve_nearby_stop_areas
     autocomplete_stop_areas
     fetch_opposite_routes
@@ -130,10 +129,6 @@ class RoutesController < Chouette::ReferentialController
     route = source.duplicate params[:opposite]
     flash[:notice] = t('routes.duplicate.success')
     redirect_to workbench_referential_line_path(current_workbench, @referential, route.line)
-  end
-
-  def costs
-    @route = resource
   end
 
   # React endpoints

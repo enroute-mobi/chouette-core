@@ -230,10 +230,6 @@ module Chouette
       end
     end
 
-    def geometry_presenter
-      Chouette::Geometry::StopAreaPresenter.new self
-    end
-
     def self.commercial
       where kind: "commercial"
     end

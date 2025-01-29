@@ -50,32 +50,17 @@ RSpec.describe Af83::Decorator::Link do
   end
 
   describe "#type" do
-
-    let(:link){
-      Af83::Decorator::Link.new(href: "foo", content: "foo")
-    }
-
-    let(:context){
-      Class.new do
-        def h
-          Class.new do
-            def link_to *args
-              HtmlElement.new(:a, 'foo', {}).to_html
-            end
-          end.new
-        end
-      end.new
-    }
-
-    it "should allow for buttons" do
-      link.type = :button
-      expect(link.to_html).to match /\<button.*\<\/button\>/
-    end
+    let(:link) { Af83::Decorator::Link.new(href: 'href', content: 'foo') }
+    let(:context) { double(:context, h: double(:h)) }
 
     it "should fallback to <a>" do
       link.type = :spaghetti
       link.bind_to_context context, :show
-      expect(link.to_html).to match /\<a.*\<\/a\>/
+      expect(context.h).to(
+        receive(:link_to).with('foo', 'href', class: '', data: {}, disabled: false, method: nil, type: :spaghetti)
+                         .and_return('<a></a>')
+      )
+      expect(link.to_html).to eq('<a></a>')
     end
   end
 end

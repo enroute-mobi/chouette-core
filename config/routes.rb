@@ -81,7 +81,6 @@ ChouetteIhm::Application.routes.draw do # rubocop:disable Metrics/BlockLength
           member do
             get 'edit_boarding_alighting'
             put 'save_boarding_alighting'
-            get 'costs'
             post 'duplicate', to: 'routes#duplicate'
             get 'retrieve_nearby_stop_areas'
             get 'autocomplete_stop_areas'

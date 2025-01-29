@@ -39,12 +39,6 @@ en:
       explore: "Explore"
       administrate: "Administrate"
       external_links: "External links"
-    history_tag:
-      title: "Metadatas"
-      created_at: "Created at"
-      updated_at: "Updated at"
-      user_name: "User"
-      no_save: "No backup"
     flash_messages:
       success: "Success"
       error: "Error"

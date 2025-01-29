@@ -160,10 +160,6 @@ module Chouette
       "local-#{self.referential.id}-#{self.line.get_objectid.local_id}-#{self.id}"
     end
 
-    def geometry_presenter
-      Chouette::Geometry::RoutePresenter.new self
-    end
-
     @@opposite_waybacks = { outbound: :inbound, inbound: :outbound}
     def opposite_wayback
       @@opposite_waybacks[wayback.to_sym]

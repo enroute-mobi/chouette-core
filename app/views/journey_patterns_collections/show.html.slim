@@ -22,7 +22,6 @@
   | window.journeyPatternsPerPage = #{@ppage};
   | window.perms = #{raw @perms};
   | window.features = #{raw @features};
-  | window.routeCostsUrl = "#{costs_workbench_referential_line_route_url(@workbench, @referential, @route.line, @route, format: :json).html_safe}";
   | window.custom_fields = #{(@custom_fields.to_json).html_safe};
   | window.route = "#{URI.escape(route_json_for_edit(@route, serialize: true))}";
   | window.lineColor = "#{@route.line.color_hex}";

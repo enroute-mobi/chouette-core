@@ -76,7 +76,6 @@ Rails.application.configure do
   config.serve_static_files = true
 
   config.middleware.insert_after(ActionDispatch::Static, Rack::LiveReload) if ENV['LIVERELOAD']
-  config.middleware.use I18n::JS::Middleware
 
   if ENV['REDIS_URL']
     config.cache_store = :redis_cache_store, { url: ENV['REDIS_URL'], expires_in: 90.minutes }

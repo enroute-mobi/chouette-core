@@ -7,8 +7,7 @@
 /.bundle/config
 /Jenkinsfile
 
-/public/javascripts/i18n.js
-/public/javascripts/translations.js
+/app/packs/src/i18n/translations.json
 
 /coverage/*
 /log/*

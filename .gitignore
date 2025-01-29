@@ -26,9 +26,8 @@
 /tmp
 
 # Javascript generated assets
+/app/packs/src/i18n/translations.json
 /public/assets/
-/public/javascripts/i18n.js
-/public/javascripts/translations.js
 
 # Ignore webpack public files
 /public/packs

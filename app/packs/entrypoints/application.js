@@ -47,4 +47,7 @@ import './routes/form'
 import './time_tables/edit'
 import './vehicle_journeys'
 
+import { i18n } from 'src/i18n'
+window.I18n = i18n
+
 console.log('Hello World from Webpacker 6')

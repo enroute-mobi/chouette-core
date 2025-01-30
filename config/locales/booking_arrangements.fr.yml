@@ -65,10 +65,10 @@ fr:
         until_previous_day: Jusqu'au jour précédent le voyage (avant le jour du voyage)
         day_of_travel_only: Le jour du voyage
         advance_and_day_of_travel: Jusqu'au jour du voyage
-        time_of_travel_only: Au moment de voyage
+        time_of_travel_only: Au moment du voyage
       buy_when:
         on_reservation: Lors de la réservation
         before_boarding: Avant l'embarquement
         on_boarding: Au moment de l'embarquement
-        after_boarding: Près l'embarquement (pendant le voyage)
+        after_boarding: Après l’embarquement  (pendant le voyage)
         on_checkout: À la descente du véhicule

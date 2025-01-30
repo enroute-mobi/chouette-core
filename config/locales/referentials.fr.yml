@@ -89,7 +89,6 @@ fr:
         status: "État"
         slug: "Code"
         prefix: "Préfixe des identifiants Neptune"
-        projection_type: "Système de référence spatiale (SRID) optionnel"
         time_zone: "Fuseau horaire"
         upper_corner: "Point haut/droite de l'emprise par défaut"
         lower_corner: "Point bas/gauche de l'emprise par défaut"

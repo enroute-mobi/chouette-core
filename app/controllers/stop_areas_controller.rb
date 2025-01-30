@@ -49,7 +49,7 @@ class StopAreasController < Chouette::StopAreaReferentialController
       format.geojson { render 'stop_areas/show.geo' }
 
       format.json do
-        attributes = stop_area.attributes.slice(:id, :name, :objectid, :comment, :area_type, :registration_number, :longitude, :latitude, :long_lat_type, :country_code, :time_zone, :street_name, :kind, :custom_field_values, :metadata)
+        attributes = stop_area.attributes.slice(:id, :name, :objectid, :comment, :area_type, :registration_number, :longitude, :latitude, :country_code, :time_zone, :street_name, :kind, :custom_field_values, :metadata)
         area_type_label = I18n.t("area_types.label.#{stop_area.area_type}")
         attributes[:text] = "<span class='small label label-info'>#{area_type_label}</span>#{stop_area.full_name}"
         render json: attributes
@@ -113,7 +113,6 @@ class StopAreasController < Chouette::StopAreaReferentialController
       :referent_only,
       :is_referent,
       :latitude,
-      :long_lat_type,
       :longitude,
       :mobility_impaired_accessibility,
       :wheelchair_accessibility,
@@ -125,7 +124,6 @@ class StopAreasController < Chouette::StopAreaReferentialController
       :accessibility_limitation_description,
       :name,
       :public_code,
-      :nearest_topic_name,
       :object_version,
       :objectid,
       :parent_id,

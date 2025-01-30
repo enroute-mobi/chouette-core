@@ -5,7 +5,6 @@ module Chouette
     include StopAreaReferentialSupport
 
     has_metadata
-    include ProjectionFields
     include ObjectidSupport
     include CustomFieldsSupport
     include CodeSupport
@@ -108,8 +107,6 @@ module Chouette
         city_name
         comment
         country_code
-        long_lat_type
-        nearest_topic_name
         postal_region
         public_code
         registration_number
@@ -282,7 +279,8 @@ module Chouette
 
     def geometry=(geometry)
       geometry = geometry.to_wgs84
-      self.latitude, self.longitude, self.long_lat_type = geometry.lat, geometry.lng, "WGS84"
+      self.latitude = geometry.lat
+      self.longitude = geometry.lng
     end
 
     def position

@@ -79,7 +79,7 @@
           #connection_link_map.medium_map.mb-lg
 
         = simple_block_for @stop_area, title: t("stop_areas.form.sections.location") do |d|
-          = d.attribute :coordinates, value: geo_data(@stop_area, @stop_area_referential)
+          = d.attribute :coordinates, value: @stop_area.latitude && @stop_area.longitude ? "#{@stop_area.latitude}, #{@stop_area.longitude}" : '-'
           = d.attribute :compass_bearing
           = d.attribute :street_name
           = d.attribute :zip_code

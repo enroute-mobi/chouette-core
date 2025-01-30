@@ -39,10 +39,8 @@ class JourneyPatternsCollectionsController < Chouette::ReferentialController
             :comment => sp.stop_area.try(:comment),
             :area_type => sp.stop_area.try(:area_type),
             :registration_number => sp.stop_area.try(:registration_number),
-            :nearest_topic_name => sp.stop_area.try(:nearest_topic_name),
             :longitude => sp.stop_area.try(:longitude),
             :latitude => sp.stop_area.try(:latitude),
-            :long_lat_type => sp.stop_area.try(:long_lat_type),
             :country_code => sp.stop_area.try(:country_code),
             :street_name => sp.stop_area.try(:street_name)
           }

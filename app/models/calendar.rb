@@ -28,7 +28,9 @@ class Calendar < ApplicationModel
   end
 
   def self.state_permited_attributes item
-    { name: item["comment"], shared: item['shared'] }
+    item.slice('shared').tap do |h|
+      h['name'] = item['comment'] if item.key?('comment')
+    end
   end
 
   def set_defaults

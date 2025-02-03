@@ -133,7 +133,7 @@ ActiveRecord::Schema.define(version: 2025_03_05_102006) do
     t.string "name"
     t.daterange "date_ranges", array: true
     t.date "dates", array: true
-    t.boolean "shared", default: false
+    t.boolean "shared", default: false, null: false
     t.datetime "created_at"
     t.datetime "updated_at"
     t.integer "int_day_types"

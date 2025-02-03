@@ -2,7 +2,8 @@ en:
   service_counts:
     index:
       title: "Service Counts"
-    search_no_results: "No Service Count have been computed in this Dataset, refer to the documentation to ensure they are computed"
+    not_computed: "No Service Count have been computed in this Dataset, refer to the documentation to ensure they are computed"
+    search_no_results: "No Service Count matching your query"
   activerecord:
     attributes:
       service_count:

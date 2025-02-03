@@ -309,6 +309,10 @@ class Referential < ApplicationModel
     ServiceCount.all
   end
 
+  def service_counts_computed?
+    ServiceCount.any?
+  end
+
   def workgroup
     @workgroup = begin
       workgroup = workbench&.workgroup

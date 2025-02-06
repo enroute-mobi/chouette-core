@@ -27,6 +27,8 @@ RSpec.describe Control::PresenceAssociatedModel do
       Control::List::Run.create referential: context.referential, workbench: context.workbench
     end
 
+    let(:min) { nil }
+    let(:max) { nil }
     let(:control_run) do
       Control::PresenceAssociatedModel::Run.create(
         control_list_run: control_list_run,
@@ -54,242 +56,719 @@ RSpec.describe Control::PresenceAssociatedModel do
 
       before do
         referential.switch
+        subject
       end
 
       describe 'StopArea' do
-        let(:context) do
-          Chouette.create do
-            stop_area :stop_area
-            fare_zone :fare_zone
-
-            referential do
-              route :route, stop_areas: [:stop_area]
-            end
-          end
-        end
-
         let(:source) { context.stop_area(:stop_area) }
         let(:attribute_name) { source.name }
         let(:target_model) { 'StopArea' }
-        let(:fare_zone) { context.fare_zone(:fare_zone) }
 
-        before { source.stop_area_zones.create(fare_zone_id: fare_zone.id) }
+        context 'lines' do
+          let(:collection) { 'lines' }
 
-        %w[
-          routes
-          lines
-          fare_zones
-        ].each do |collection|
-          describe "##{collection}" do
-            let(:collection) { collection }
+          context 'when number of model associated is lower than mininum' do
+            let(:context) do
+              Chouette.create do
+                stop_area :stop_area
+                line :line1
+                referential lines: %i[line1] do
+                  route line: :line1, stop_areas: %i[stop_area]
+                end
+              end
+            end
 
-            context 'when number of model associated is not in the range [min, max]' do
-              let(:min) { 9 }
-              let(:max) { 10 }
+            context 'with minimum only' do
+              let(:min) { 2 }
 
               it 'should create warning message' do
-                subject
-
                 expect(control_run.control_messages).to include(expected_message)
               end
             end
 
-            context 'when number of model associated is in the range [min, max]' do
+            context 'with both minimum and maximum' do
+              let(:min) { 2 }
+              let(:max) { 3 }
+
+              it 'should create warning message' do
+                expect(control_run.control_messages).to include(expected_message)
+              end
+            end
+          end
+
+          context 'when number of model associated is in bounds' do
+            let(:context) do
+              Chouette.create do
+                stop_area :stop_area
+                line :line1
+                referential lines: %i[line1] do
+                  route line: :line1, stop_areas: %i[stop_area]
+                end
+              end
+            end
+
+            context 'with minimum only' do
               let(:min) { 1 }
-              let(:max) { 10 }
 
               it 'should not create warning message' do
-                subject
-
-                expect(control_run.control_messages).to be_empty
+                expect(control_run.control_messages).not_to include(expected_message)
               end
+            end
+
+            context 'with both minimum and maximum' do
+              let(:min) { 1 }
+              let(:max) { 2 }
+
+              it 'should not create warning message' do
+                expect(control_run.control_messages).not_to include(expected_message)
+              end
+
+              context 'when associated several times to the exact same model' do
+                let(:context) do
+                  Chouette.create do
+                    stop_area :stop_area
+                    line :line1
+                    referential lines: %i[line1] do
+                      route line: :line1, stop_areas: %i[stop_area]
+                      route line: :line1, stop_areas: %i[stop_area]
+                      route line: :line1, stop_areas: %i[stop_area]
+                    end
+                  end
+                end
+
+                it 'should not create warning message' do
+                  expect(control_run.control_messages).not_to include(expected_message)
+                end
+              end
+            end
+
+            context 'with maximum only' do
+              let(:max) { 2 }
+
+              it 'should not create warning message' do
+                expect(control_run.control_messages).not_to include(expected_message)
+              end
+            end
+          end
+
+          context 'when number of model associated is higher than maxinum' do
+            let(:context) do
+              Chouette.create do
+                stop_area :stop_area
+                line :line1
+                line :line2
+                line :line3
+                referential lines: %i[line1 line2 line3] do
+                  route line: :line1, stop_areas: %i[stop_area]
+                  route line: :line2, stop_areas: %i[stop_area]
+                  route line: :line3, stop_areas: %i[stop_area]
+                end
+              end
+            end
+
+            context 'with maximum only' do
+              let(:max) { 2 }
+
+              it 'should create warning message' do
+                expect(control_run.control_messages).to include(expected_message)
+              end
+            end
+
+            context 'with both minimum and maximum' do
+              let(:min) { 1 }
+              let(:max) { 2 }
+
+              it 'should create warning message' do
+                expect(control_run.control_messages).to include(expected_message)
+              end
+            end
+          end
+        end
+
+        context 'routes' do
+          let(:collection) { 'routes' }
+
+          context 'when number of model associated is lower than mininum' do
+            let(:context) do
+              Chouette.create do
+                stop_area :stop_area
+                referential do
+                  route stop_areas: %i[stop_area]
+                end
+              end
+            end
+            let(:min) { 2 }
+            let(:max) { 3 }
+
+            it 'should create warning message' do
+              expect(control_run.control_messages).to include(expected_message)
+            end
+          end
+
+          context 'when number of model associated is in bounds' do
+            let(:context) do
+              Chouette.create do
+                stop_area :stop_area
+                referential do
+                  route stop_areas: %i[stop_area]
+                end
+              end
+            end
+            let(:min) { 1 }
+            let(:max) { 2 }
+
+            it 'should not create warning message' do
+              expect(control_run.control_messages).not_to include(expected_message)
+            end
+          end
+
+          context 'when number of model associated is higher than maxinum' do
+            let(:context) do
+              Chouette.create do
+                stop_area :stop_area
+                line :line1
+                line :line2
+                line :line3
+                referential lines: %i[line1 line2 line3] do
+                  route line: :line1, stop_areas: %i[stop_area]
+                  route line: :line2, stop_areas: %i[stop_area]
+                  route line: :line3, stop_areas: %i[stop_area]
+                end
+              end
+            end
+            let(:min) { 1 }
+            let(:max) { 2 }
+
+            it 'should create warning message' do
+              expect(control_run.control_messages).to include(expected_message)
+            end
+          end
+        end
+
+        context 'fare_zones' do
+          let(:collection) { 'fare_zones' }
+
+          context 'when number of model associated is lower than mininum' do
+            let(:context) do
+              Chouette.create do
+                fare_zone :fare_zone1
+                stop_area :stop_area do
+                  stop_area_zone zone: :fare_zone1
+                end
+                referential do
+                  route stop_areas: %i[stop_area]
+                end
+              end
+            end
+            let(:min) { 2 }
+            let(:max) { 3 }
+
+            it 'should create warning message' do
+              expect(control_run.control_messages).to include(expected_message)
+            end
+
+            context 'when minimum is 1' do
+              let(:context) do
+                Chouette.create do
+                  stop_area :stop_area
+                  referential do
+                    route stop_areas: %i[stop_area]
+                  end
+                end
+              end
+              let(:min) { 1 }
+
+              it 'should create warning message' do
+                expect(control_run.control_messages).to include(expected_message)
+              end
+            end
+          end
+
+          context 'when number of model associated is in bounds' do
+            let(:context) do
+              Chouette.create do
+                fare_zone :fare_zone1
+                stop_area :stop_area do
+                  stop_area_zone zone: :fare_zone1
+                end
+                referential do
+                  route stop_areas: %i[stop_area]
+                end
+              end
+            end
+            let(:min) { 1 }
+            let(:max) { 2 }
+
+            it 'should not create warning message' do
+              expect(control_run.control_messages).not_to include(expected_message)
+            end
+          end
+
+          context 'when number of model associated is higher than maxinum' do
+            let(:context) do
+              Chouette.create do
+                fare_zone :fare_zone1
+                fare_zone :fare_zone2
+                fare_zone :fare_zone3
+                stop_area :stop_area do
+                  stop_area_zone zone: :fare_zone1
+                  stop_area_zone zone: :fare_zone2
+                  stop_area_zone zone: :fare_zone3
+                end
+                referential do
+                  route stop_areas: %i[stop_area]
+                end
+              end
+            end
+            let(:min) { 1 }
+            let(:max) { 2 }
+
+            it 'should create warning message' do
+              expect(control_run.control_messages).to include(expected_message)
             end
           end
         end
       end
 
       describe 'Lines' do
-        let(:context) do
-          Chouette.create do
-            line :line
-            referential lines: [:line] do
-              route
-            end
-          end
-        end
-
         let(:source) { context.line(:line) }
         let(:attribute_name) { source.name }
         let(:target_model) { 'Line' }
 
-        %w[
-          routes
-        ].each do |collection|
-          describe "##{collection}" do
-            let(:collection) { collection }
+        context 'routes' do
+          let(:collection) { 'routes' }
 
-            context 'when number of model associated is not in the range [min, max]' do
-              let(:min) { 9 }
-              let(:max) { 10 }
-
-              it 'should create warning message' do
-                subject
-
-                expect(control_run.control_messages).to include(expected_message)
+          context 'when number of model associated is lower than mininum' do
+            let(:context) do
+              Chouette.create do
+                line :line
+                referential lines: %i[line] do
+                  route line: :line
+                end
               end
             end
+            let(:min) { 2 }
+            let(:max) { 3 }
 
-            context 'when number of model associated is in the range [min, max]' do
-              let(:min) { 1 }
-              let(:max) { 10 }
+            it 'should create warning message' do
+              expect(control_run.control_messages).to include(expected_message)
+            end
+          end
 
-              it 'should not create warning message' do
-                subject
-
-                expect(control_run.control_messages).to be_empty
+          context 'when number of model associated is in bounds' do
+            let(:context) do
+              Chouette.create do
+                line :line
+                referential lines: %i[line] do
+                  route line: :line
+                end
               end
+            end
+            let(:min) { 1 }
+            let(:max) { 2 }
+
+            it 'should not create warning message' do
+              expect(control_run.control_messages).not_to include(expected_message)
+            end
+          end
+
+          context 'when number of model associated is higher than maxinum' do
+            let(:context) do
+              Chouette.create do
+                stop_area :stop_area
+                line :line
+                referential lines: %i[line] do
+                  route line: :line
+                  route line: :line
+                  route line: :line
+                end
+              end
+            end
+            let(:min) { 1 }
+            let(:max) { 2 }
+
+            it 'should create warning message' do
+              expect(control_run.control_messages).to include(expected_message)
             end
           end
         end
       end
 
       describe 'Routes' do
-        let(:context) do
-          Chouette.create do
-            referential do
-              route :route do
-                journey_pattern do
-                  vehicle_journey
-                end
-              end
-            end
-          end
-        end
-
         let(:source) { context.route(:route) }
         let(:attribute_name) { source.name }
         let(:target_model) { 'Route' }
 
-        %w[
-          stop_points
-          journey_patterns
-          vehicle_journeys
-        ].each do |collection|
-          describe "##{collection}" do
-            let(:collection) { collection }
+        context 'stop_points' do
+          let(:collection) { 'stop_points' }
 
-            context 'when number of model associated is not in the range [min, max]' do
-              let(:min) { 9 }
-              let(:max) { 10 }
-
-              it 'should create warning message' do
-                subject
-
-                expect(control_run.control_messages).to include(expected_message)
+          context 'when number of model associated is lower than mininum' do
+            let(:context) do
+              Chouette.create do
+                referential do
+                  route :route, with_stops: false do
+                    stop_point
+                  end
+                end
               end
             end
+            let(:min) { 2 }
+            let(:max) { 3 }
 
-            context 'when number of model associated is in the range [min, max]' do
-              let(:min) { 1 }
-              let(:max) { 10 }
+            it 'should create warning message' do
+              expect(control_run.control_messages).to include(expected_message)
+            end
+          end
 
-              it 'should not create warning message' do
-                subject
-
-                expect(control_run.control_messages).to be_empty
+          context 'when number of model associated is in bounds' do
+            let(:context) do
+              Chouette.create do
+                referential do
+                  route :route, with_stops: false do
+                    stop_point
+                  end
+                end
               end
+            end
+            let(:min) { 1 }
+            let(:max) { 2 }
+
+            it 'should not create warning message' do
+              expect(control_run.control_messages).not_to include(expected_message)
+            end
+          end
+
+          context 'when number of model associated is higher than maxinum' do
+            let(:context) do
+              Chouette.create do
+                referential do
+                  route :route, with_stops: false do
+                    stop_point
+                    stop_point
+                    stop_point
+                  end
+                end
+              end
+            end
+            let(:min) { 1 }
+            let(:max) { 2 }
+
+            it 'should create warning message' do
+              expect(control_run.control_messages).to include(expected_message)
+            end
+          end
+        end
+
+        context 'journey_patterns' do
+          let(:collection) { 'journey_patterns' }
+
+          context 'when number of model associated is lower than mininum' do
+            let(:context) do
+              Chouette.create do
+                referential do
+                  route :route do
+                    journey_pattern
+                  end
+                end
+              end
+            end
+            let(:min) { 2 }
+            let(:max) { 3 }
+
+            it 'should create warning message' do
+              expect(control_run.control_messages).to include(expected_message)
+            end
+          end
+
+          context 'when number of model associated is in bounds' do
+            let(:context) do
+              Chouette.create do
+                referential do
+                  route :route do
+                    journey_pattern
+                  end
+                end
+              end
+            end
+            let(:min) { 1 }
+            let(:max) { 2 }
+
+            it 'should not create warning message' do
+              expect(control_run.control_messages).not_to include(expected_message)
+            end
+          end
+
+          context 'when number of model associated is higher than maxinum' do
+            let(:context) do
+              Chouette.create do
+                referential do
+                  route :route do
+                    journey_pattern
+                    journey_pattern
+                    journey_pattern
+                  end
+                end
+              end
+            end
+            let(:min) { 1 }
+            let(:max) { 2 }
+
+            it 'should create warning message' do
+              expect(control_run.control_messages).to include(expected_message)
+            end
+          end
+        end
+
+        context 'vehicle_journeys' do
+          let(:collection) { 'vehicle_journeys' }
+
+          context 'when number of model associated is lower than mininum' do
+            let(:context) do
+              Chouette.create do
+                referential do
+                  route :route do
+                    vehicle_journey
+                  end
+                end
+              end
+            end
+            let(:min) { 2 }
+            let(:max) { 3 }
+
+            it 'should create warning message' do
+              expect(control_run.control_messages).to include(expected_message)
+            end
+          end
+
+          context 'when number of model associated is in bounds' do
+            let(:context) do
+              Chouette.create do
+                referential do
+                  route :route do
+                    vehicle_journey
+                  end
+                end
+              end
+            end
+            let(:min) { 1 }
+            let(:max) { 2 }
+
+            it 'should not create warning message' do
+              expect(control_run.control_messages).not_to include(expected_message)
+            end
+          end
+
+          context 'when number of model associated is higher than maxinum' do
+            let(:context) do
+              Chouette.create do
+                referential do
+                  route :route do
+                    vehicle_journey
+                    vehicle_journey
+                    vehicle_journey
+                  end
+                end
+              end
+            end
+            let(:min) { 1 }
+            let(:max) { 2 }
+
+            it 'should create warning message' do
+              expect(control_run.control_messages).to include(expected_message)
             end
           end
         end
       end
 
       describe 'JourneyPattern' do
-        let(:context) do
-          Chouette.create do
-            referential do
-              journey_pattern :journey_pattern do
-                vehicle_journey
-              end
-            end
-          end
-        end
-
         let(:source) { context.journey_pattern(:journey_pattern) }
         let(:attribute_name) { source.name }
         let(:target_model) { 'JourneyPattern' }
 
-        %w[
-          stop_points
-          vehicle_journeys
-        ].each do |collection|
-          describe "##{collection}" do
-            let(:collection) { collection }
+        context 'stop_points' do
+          let(:collection) { 'stop_points' }
 
-            context 'when number of model associated is not in the range [min, max]' do
-              let(:min) { 9 }
-              let(:max) { 10 }
-
-              it 'should create warning message' do
-                subject
-
-                expect(control_run.control_messages).to include(expected_message)
+          context 'when number of model associated is lower than mininum' do
+            let(:context) do
+              Chouette.create do
+                referential do
+                  route with_stops: false do
+                    stop_point
+                    stop_point
+                    journey_pattern :journey_pattern
+                  end
+                end
               end
             end
+            let(:min) { 3 }
+            let(:max) { 4 }
 
-            context 'when number of model associated is in the range [min, max]' do
-              let(:min) { 1 }
-              let(:max) { 10 }
+            it 'should create warning message' do
+              expect(control_run.control_messages).to include(expected_message)
+            end
+          end
 
-              it 'should not create warning message' do
-                subject
-
-                expect(control_run.control_messages).to be_empty
+          context 'when number of model associated is in bounds' do
+            let(:context) do
+              Chouette.create do
+                referential do
+                  route with_stops: false do
+                    stop_point
+                    stop_point
+                    journey_pattern :journey_pattern
+                  end
+                end
               end
+            end
+            let(:min) { 2 }
+            let(:max) { 3 }
+
+            it 'should not create warning message' do
+              expect(control_run.control_messages).not_to include(expected_message)
+            end
+          end
+
+          context 'when number of model associated is higher than maxinum' do
+            let(:context) do
+              Chouette.create do
+                referential do
+                  route with_stops: false do
+                    stop_point
+                    stop_point
+                    stop_point
+                    journey_pattern :journey_pattern
+                  end
+                end
+              end
+            end
+            let(:min) { 1 }
+            let(:max) { 2 }
+
+            it 'should create warning message' do
+              expect(control_run.control_messages).to include(expected_message)
+            end
+          end
+        end
+
+        context 'vehicle_journeys' do
+          let(:collection) { 'vehicle_journeys' }
+
+          context 'when number of model associated is lower than mininum' do
+            let(:context) do
+              Chouette.create do
+                referential do
+                  journey_pattern :journey_pattern do
+                    vehicle_journey
+                  end
+                end
+              end
+            end
+            let(:min) { 2 }
+            let(:max) { 3 }
+
+            it 'should create warning message' do
+              expect(control_run.control_messages).to include(expected_message)
+            end
+          end
+
+          context 'when number of model associated is in bounds' do
+            let(:context) do
+              Chouette.create do
+                referential do
+                  journey_pattern :journey_pattern do
+                    vehicle_journey
+                  end
+                end
+              end
+            end
+            let(:min) { 1 }
+            let(:max) { 2 }
+
+            it 'should not create warning message' do
+              expect(control_run.control_messages).not_to include(expected_message)
+            end
+          end
+
+          context 'when number of model associated is higher than maxinum' do
+            let(:context) do
+              Chouette.create do
+                referential do
+                  journey_pattern :journey_pattern do
+                    vehicle_journey
+                    vehicle_journey
+                    vehicle_journey
+                  end
+                end
+              end
+            end
+            let(:min) { 1 }
+            let(:max) { 2 }
+
+            it 'should create warning message' do
+              expect(control_run.control_messages).to include(expected_message)
             end
           end
         end
       end
 
       describe 'VehicleJourney' do
-        let(:context) do
-          Chouette.create do
-            referential do
-              time_table :time_table
-              vehicle_journey :vehicle_journey, time_tables: [:time_table]
-            end
-          end
-        end
-
         let(:source) { context.vehicle_journey(:vehicle_journey) }
         let(:attribute_name) { nil } # FIXME: CHOUETTE-3397
         let(:target_model) { 'VehicleJourney' }
 
-        %w[
-          time_tables
-        ].each do |collection|
-          describe "##{collection}" do
-            let(:collection) { collection }
+        context 'time_tables' do
+          let(:collection) { 'time_tables' }
 
-            context 'when number of model associated is not in the range [min, max]' do
-              let(:min) { 9 }
-              let(:max) { 10 }
-
-              it 'should create warning message' do
-                subject
-
-                expect(control_run.control_messages).to include(expected_message)
+          context 'when number of model associated is lower than mininum' do
+            let(:context) do
+              Chouette.create do
+                referential do
+                  time_table :time_table1
+                  vehicle_journey :vehicle_journey, time_tables: %i[time_table1]
+                end
               end
             end
+            let(:min) { 2 }
+            let(:max) { 3 }
 
-            context 'when number of model associated is in the range [min, max]' do
-              let(:min) { 1 }
-              let(:max) { 10 }
+            it 'should create warning message' do
+              expect(control_run.control_messages).to include(expected_message)
+            end
+          end
 
-              it 'should not create warning message' do
-                subject
-
-                expect(control_run.control_messages).to be_empty
+          context 'when number of model associated is in bounds' do
+            let(:context) do
+              Chouette.create do
+                referential do
+                  time_table :time_table1
+                  vehicle_journey :vehicle_journey, time_tables: %i[time_table1]
+                end
               end
+            end
+            let(:min) { 1 }
+            let(:max) { 2 }
+
+            it 'should not create warning message' do
+              expect(control_run.control_messages).not_to include(expected_message)
+            end
+          end
+
+          context 'when number of model associated is higher than maxinum' do
+            let(:context) do
+              Chouette.create do
+                referential do
+                  time_table :time_table1
+                  time_table :time_table2
+                  time_table :time_table3
+                  vehicle_journey :vehicle_journey, time_tables: %i[time_table1 time_table2 time_table3]
+                end
+              end
+            end
+            let(:min) { 1 }
+            let(:max) { 2 }
+
+            it 'should create warning message' do
+              expect(control_run.control_messages).to include(expected_message)
             end
           end
         end
@@ -310,33 +789,120 @@ RSpec.describe Control::PresenceAssociatedModel do
         let(:attribute_name) { nil } # FIXME: CHOUETTE-3397
         let(:target_model) { 'TimeTable' }
 
-        %w[
-          periods
-          dates
-        ].each do |collection|
-          describe "##{collection}" do
-            let(:collection) { collection }
+        context 'periods' do
+          let(:collection) { 'periods' }
 
-            context 'when number of model associated is not in the range [min, max]' do
-              let(:min) { 9 }
-              let(:max) { 10 }
-
-              it 'should create warning message' do
-                subject
-
-                expect(control_run.control_messages).to include(expected_message)
+          context 'when number of model associated is lower than mininum' do
+            let(:context) do
+              Chouette.create do
+                referential do
+                  time_table :time_table,
+                             periods: [Date.parse('2024-01-18')..Date.parse('2024-01-20')]
+                end
               end
             end
+            let(:min) { 2 }
+            let(:max) { 3 }
 
-            context 'when number of model associated is in the range [min, max]' do
-              let(:min) { 1 }
-              let(:max) { 10 }
+            it 'should create warning message' do
+              expect(control_run.control_messages).to include(expected_message)
+            end
+          end
 
-              it 'should not create warning message' do
-                subject
-
-                expect(control_run.control_messages).to be_empty
+          context 'when number of model associated is in bounds' do
+            let(:context) do
+              Chouette.create do
+                referential do
+                  time_table :time_table,
+                             periods: [Date.parse('2024-01-18')..Date.parse('2024-01-20')]
+                end
               end
+            end
+            let(:min) { 1 }
+            let(:max) { 2 }
+
+            it 'should not create warning message' do
+              expect(control_run.control_messages).not_to include(expected_message)
+            end
+          end
+
+          context 'when number of model associated is higher than maxinum' do
+            let(:context) do
+              Chouette.create do
+                referential do
+                  time_table :time_table,
+                             periods: [
+                               Date.parse('2024-01-18')..Date.parse('2024-01-20'),
+                               Date.parse('2024-01-22')..Date.parse('2024-01-24'),
+                               Date.parse('2024-01-26')..Date.parse('2024-01-28')
+                             ]
+                end
+              end
+            end
+            let(:min) { 1 }
+            let(:max) { 2 }
+
+            it 'should create warning message' do
+              expect(control_run.control_messages).to include(expected_message)
+            end
+          end
+        end
+
+        context 'dates' do
+          let(:collection) { 'dates' }
+
+          context 'when number of model associated is lower than mininum' do
+            let(:context) do
+              Chouette.create do
+                referential do
+                  time_table :time_table,
+                             dates_included: [Date.parse('2024-01-19')]
+                end
+              end
+            end
+            let(:min) { 2 }
+            let(:max) { 3 }
+
+            it 'should create warning message' do
+              expect(control_run.control_messages).to include(expected_message)
+            end
+          end
+
+          context 'when number of model associated is in bounds' do
+            let(:context) do
+              Chouette.create do
+                referential do
+                  time_table :time_table,
+                             dates_included: [Date.parse('2024-01-19')]
+                end
+              end
+            end
+            let(:min) { 1 }
+            let(:max) { 2 }
+
+            it 'should not create warning message' do
+              expect(control_run.control_messages).not_to include(expected_message)
+            end
+          end
+
+          context 'when number of model associated is higher than maxinum' do
+            let(:context) do
+              Chouette.create do
+                referential do
+                  time_table :time_table,
+                             dates_included: [
+                               Date.parse('2024-01-19'),
+                               Date.parse('2024-01-23'),
+                               Date.parse('2024-01-27')
+                             ]
+                end
+              end
+            end
+            let(:min) { 1 }
+            let(:max) { 2 }
+
+            it 'should create warning message' do
+              expect(control_run.control_messages).to include(expected_message)
             end
           end
         end

@@ -352,6 +352,10 @@ module Chouette
                   new_instance.stop_area_provider = parent.stop_area_provider
                 end
               end
+
+              model :stop_area_zone do
+                attribute(:zone) { build_model(:fare_zone) }
+              end
             end
 
             model :stop_area_group do

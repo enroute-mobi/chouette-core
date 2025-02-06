@@ -8,8 +8,6 @@ class Export::Base < ApplicationModel
   include PurgeableResource
   include Rails.application.routes.url_helpers
   include ActionView::Helpers::TagHelper
-  include IconHelper
-  include OperationsHelper
   extend Enumerize
 
   belongs_to :referential # CHOUETTE-3247 validates presence

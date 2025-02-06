@@ -2,8 +2,6 @@ module IevInterfaces::Task
   extend ActiveSupport::Concern
   include Rails.application.routes.url_helpers
   include ActionView::Helpers::TagHelper
-  include IconHelper
-  include OperationsHelper
 
   included do
     belongs_to :parent, polymorphic: true, optional: true # CHOUETTE-3247 failing specs

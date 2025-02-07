@@ -115,6 +115,30 @@ class Export::NetexGeneric < Export::Base
       #  prefer_referent_lines? ? lines_or_referents : lines_and_referents
     end
 
+    concerning :Company do
+      def companies
+        line_referential.companies.where(id: company_ids).or(
+          line_referential.companies.where(id: secondary_company_ids).or(
+            line_referential.companies.where(id: vehicle_journey_company_ids)
+          )
+        ).distinct
+      end
+
+      private
+
+      def company_ids
+        lines.where.not(company_id: nil).select(:company_id).distinct
+      end
+
+      def secondary_company_ids
+        lines.where.not(secondary_company_ids: nil).select('unnest(secondary_company_ids)').distinct
+      end
+
+      def vehicle_journey_company_ids
+        vehicle_journeys.where.not(company_id: nil).select(:company_id).distinct
+      end
+    end
+
     module Lines
       class Base
         def initialize(export_scope)

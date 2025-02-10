@@ -196,9 +196,10 @@ module ActiveModel::Naming
   end
 end
 
-if Rails.env.development?
+if Rails.env.development? && ENV['CHOUETTE_DEV_I18N_LISTEN'] == "true"
   Rails.application.config.after_initialize do
     require 'i18n-js/listen'
+    puts "Start I18nJS.listenn"
     I18nJS.listen
   end
 end

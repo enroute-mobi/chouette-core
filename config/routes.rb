@@ -426,7 +426,6 @@ Rails.application.routes.draw do # rubocop:disable Metrics/BlockLength
   get '/snap' => 'snapshots#show' if Rails.env.development? || Rails.env.test?
 
   mount Coverband::Reporters::Web.new, at: '/coverband' if ENV['COVERBAND_REDIS_URL'].present?
-  mount GraphiQL::Rails::Engine, at: '/graphiql', graphql_path: '/graphql' if Rails.env.development?
 
   match '/404', to: 'errors#not_found', via: :all, as: 'not_found'
   match '/403', to: 'errors#forbidden', via: :all, as: 'forbidden'

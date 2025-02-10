@@ -33,6 +33,7 @@
     "flag-icon-css": "^4.0.0",
     "flatpickr": "^4.6.9",
     "hoek": "~> 4.2.1",
+    "i18n-js": "^4.5.1",
     "jquery": "3.5.0",
     "lodash": "~4.17.21",
     "mini-css-extract-plugin": "^1.5.0",

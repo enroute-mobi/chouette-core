@@ -17,9 +17,6 @@ html lang=I18n.locale
     // Sprockets bundle
     = javascript_include_tag 'application'
 
-    = javascript_tag do
-      | I18n.locale = '#{I18n.locale}'
-
   body.devise
     nav#main_nav
       // Top menu content

@@ -1,9 +1,4 @@
-import I18n from '../../../public/javascripts/i18n'
-import decorateI18n from '../../../app/assets/javascripts/i18n/extended.coffee'
-window.I18n = decorateI18n(I18n)
-I18n.locale = "fr"
+import { i18n } from '../../../app/packs/src/i18n'
 
-import fs from 'fs'
-eval(fs.readFileSync('./public/javascripts/translations.js')+'')
-
-module.exports = I18n
+export const I18n = i18n
+window.I18n = I18n

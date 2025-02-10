@@ -24,9 +24,6 @@ html lang=I18n.locale
     // Sprockets bundle
     = javascript_include_tag 'application'
 
-    = javascript_tag do
-      | I18n.locale = '#{I18n.locale}'
-
   body(x-data="{ mainNavLeftIsOpen: #{current_page?('/') ? "true" : "false"}, profileMenuIsOpen: false }" x-on:keydown.escape="mainNavLeftIsOpen = false; profileMenuIsOpen = false" x-on:scroll="profileMenuIsOpen = false")
     nav#main_nav
       // Left menu content

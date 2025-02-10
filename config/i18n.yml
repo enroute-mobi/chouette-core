@@ -1,0 +1,5 @@
+---
+translations:
+  - file: "app/packs/src/i18n/translations.json"
+    patterns:
+      - "*"

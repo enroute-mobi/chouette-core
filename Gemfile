@@ -83,7 +83,7 @@ gem 'simple_form', '~> 5.1.0'
 gem 'will_paginate-bootstrap'
 gem 'gretel', '>= 4.4.0'
 gem 'country_select'
-gem 'i18n-js', '~> 3.9'
+gem 'i18n-js'
 gem 'font_awesome5_rails', '>= 1.5.0'
 
 # Format Output
@@ -165,6 +165,7 @@ group :development do
   gem 'bummr'
   gem 'graphiql-rails'
 
+  gem 'listen' # dependency of i18n-js
   gem 'guard-rspec', require: false
   gem 'rubocop-rails', '>= 2.24.0', require: false
 end

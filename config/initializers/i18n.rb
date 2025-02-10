@@ -195,3 +195,10 @@ module ActiveModel::Naming
     prepend ActiveModelNamingExtendedWithI18n
   end
 end
+
+if Rails.env.development?
+  Rails.application.config.after_initialize do
+    require 'i18n-js/listen'
+    I18nJS.listen
+  end
+end

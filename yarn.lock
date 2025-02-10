@@ -3862,6 +3862,11 @@ big.js@^5.2.2:
   resolved "https://registry.yarnpkg.com/big.js/-/big.js-5.2.2.tgz#65f0af382f578bcdc742bd9c281e9cb2d7768328"
   integrity sha512-vyL2OymJxmarO8gxMr0mhChsO9QGwhynfuu4+MHTAW6czfq9humCB7rKpUjDd9YUiDPU4mzpyupFSvOClAwbmQ==
 
+bignumber.js@*:
+  version "9.1.2"
+  resolved "https://registry.yarnpkg.com/bignumber.js/-/bignumber.js-9.1.2.tgz#b7c4242259c008903b13707983b5f4bbd31eda0c"
+  integrity sha512-2/mKyZH9K85bzOEfhXDBFZTGd1CTs+5IHpeFQo9luiBG7hghdC851Pj2WAhb6E3R6b9tZj/XKhbg4fum+Kepug==
+
 binary-extensions@^2.0.0:
   version "2.2.0"
   resolved "https://registry.yarnpkg.com/binary-extensions/-/binary-extensions-2.2.0.tgz#75f502eeaf9ffde42fc98829645be4ea76bd9e2d"
@@ -6494,6 +6499,15 @@ humanize-ms@^1.2.1:
   dependencies:
     ms "^2.0.0"
 
+i18n-js@^4.5.1:
+  version "4.5.1"
+  resolved "https://registry.yarnpkg.com/i18n-js/-/i18n-js-4.5.1.tgz#12ea3d6333552ff75be0904ea50705f5a263d172"
+  integrity sha512-n7jojFj1WC0tztgr0I8jqTXuIlY1xNzXnC3mjKX/YjJhimdM+jXM8vOmn9d3xQFNC6qDHJ4ovhdrGXrRXLIGkA==
+  dependencies:
+    bignumber.js "*"
+    lodash "*"
+    make-plural "*"
+
 iconv-lite@0.4.24, iconv-lite@~0.4.13:
   version "0.4.24"
   resolved "https://registry.yarnpkg.com/iconv-lite/-/iconv-lite-0.4.24.tgz#2022b4b25fbddc21d2f524974a474aafe733908b"
@@ -7838,7 +7852,7 @@ lodash.topath@^4.5.2:
   resolved "https://registry.yarnpkg.com/lodash.topath/-/lodash.topath-4.5.2.tgz#3616351f3bba61994a0931989660bd03254fd009"
   integrity sha1-NhY1Hzu6YZlKCTGYlmC9AyVP0Ak=
 
-lodash@^4.17.10, lodash@^4.17.11, lodash@^4.17.14, lodash@^4.17.15, lodash@^4.17.19, lodash@^4.17.21, lodash@^4.17.4, lodash@^4.2.0, lodash@^4.2.1, lodash@^4.7.0, lodash@~4.17.10, lodash@~4.17.19, lodash@~4.17.21:
+lodash@*, lodash@^4.17.10, lodash@^4.17.11, lodash@^4.17.14, lodash@^4.17.15, lodash@^4.17.19, lodash@^4.17.21, lodash@^4.17.4, lodash@^4.2.0, lodash@^4.2.1, lodash@^4.7.0, lodash@~4.17.10, lodash@~4.17.19, lodash@~4.17.21:
   version "4.17.21"
   resolved "https://registry.yarnpkg.com/lodash/-/lodash-4.17.21.tgz#679591c564c3bffaae8454cf0b3df370c3d6911c"
   integrity sha512-v2kDEe57lecTulaDIuNTPy3Ry4gLGJ6Z1O3vE1krgXZNrsQ+LFTGHVxVjcXPs17LhbZVGedAJv8XZ1tvj5FvSg==
@@ -7955,6 +7969,11 @@ make-iterator@^1.0.0:
   integrity sha512-pxiuXh0iVEq7VM7KMIhs5gxsfxCux2URptUQaXo4iZZJxBAzTPOLE2BumO5dbfVYq/hBJFBR/a1mFDmOx5AGmw==
   dependencies:
     kind-of "^6.0.2"
+
+make-plural@*:
+  version "7.4.0"
+  resolved "https://registry.yarnpkg.com/make-plural/-/make-plural-7.4.0.tgz#fa6990dd550dea4de6b20163f74e5ed83d8a8d6d"
+  integrity sha512-4/gC9KVNTV6pvYg2gFeQYTW3mWaoJt7WZE5vrp1KnQDgW92JtYZnzmZT81oj/dUTqAIu0ufI2x3dkgu3bB1tYg==
 
 makeerror@1.0.x:
   version "1.0.11"

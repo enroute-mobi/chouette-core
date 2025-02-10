@@ -65,8 +65,7 @@ definitions:
         artifacts:
           - public/packs-test/**
           - public/assets/**
-          - public/javascripts/i18n.js
-          - public/javascripts/translations.js
+          - app/packs/src/i18n/translations.json
 
     - step: &rspec-tests
         name: Ruby Unit tests

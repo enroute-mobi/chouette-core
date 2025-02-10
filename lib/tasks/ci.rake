@@ -61,7 +61,8 @@ namespace :ci do
   end
 
   task :assets do
-    sh "RAILS_ENV=test NODE_OPTIONS=--openssl-legacy-provider bundle exec rake ci:fix_webpacker assets:precompile i18n:js:export"
+    sh "RAILS_ENV=test bundle exec i18n export"
+    sh "RAILS_ENV=test NODE_OPTIONS=--openssl-legacy-provider bundle exec rake ci:fix_webpacker assets:precompile"
   end
 
   task :jest do

@@ -15,7 +15,7 @@ module Chouette
       end
 
       def maximum_improve_runs
-        5
+        4
       end
 
       def logger
@@ -23,6 +23,20 @@ module Chouette
       end
 
       attr_accessor :improve_runs, :evaluator
+
+      def validity_period
+        @validity_period ||= ValidityPeriod.new
+      end
+
+      attr_writer :validity_period
+
+      def on_solution(&block)
+        @solution_callback = block
+      end
+
+      def solution_callback
+        @solution_callback ||= Proc.new { |journey| }
+      end
 
       def improve
         self.improve_runs += 1
@@ -53,14 +67,13 @@ module Chouette
         journeys.delete_if do |journey|
           merged_performed = false
 
-          reverse_journeys.delete_if do |reverse_journey|
+          reverse_journeys.each do |reverse_journey|
             merged_journey = merger.merge journey, reverse_journey
             if merged_journey
               solutions << merged_journey
+              solution_callback.call merged_journey
               merged_performed = true
             end
-
-            merged_journey.present?
           end
 
           merged_performed

@@ -10,33 +10,32 @@ module Chouette
 
         def register(departure, arrival, duration: 0, validity_period: nil)
           departure = Step.for(departure)
-          arrival = Step.for(arrival, duration: duration)
+          arrival = Step.for(arrival, duration: duration, validity_period: validity_period)
 
-          destinations << Destination.new(departure, arrival, validity_period: validity_period)
+          destinations << Destination.new(departure, arrival)
         end
 
         class Destination
           def initialize(departure, arrival, validity_period: ValidityPeriod.new)
             self.departure = departure
             self.arrival = arrival
-            self.validity_period = validity_period
           end
 
-          attr_accessor :departure, :arrival, :validity_period
+          attr_accessor :departure, :arrival
 
-          def extend(journey)
+          def extend(journey, validity_period: nil)
             return nil unless departure == journey.last
 
             journey.extend arrival, validity_period: validity_period
           end
         end
 
-        def extend(journeys)
+        def extend(journeys, validity_period: nil)
           extended_journeys = []
 
           journeys.each do |journey|
             destinations.each do |destination|
-              extended_journey = destination.extend journey
+              extended_journey = destination.extend journey, validity_period: validity_period
               extended_journeys << extended_journey if extended_journey
             end
           end
@@ -54,27 +53,28 @@ module Chouette
           self.walk_speed = walk_speed
         end
 
-        def extend(journeys)
-          Extend.new(self, journeys).extend
+        def extend(journeys, validity_period: nil)
+          Extend.new(self, journeys, validity_period: validity_period).extend
         end
 
         delegate :connection, to: :stop_areas
         delegate :select_rows, to: :connection
 
         class Extend < SimpleDelegator
-          def initialize(extender, journeys)
+          def initialize(extender, journeys, validity_period: nil)
             super extender
             @journeys = journeys
+            @validity_period = validity_period
           end
 
-          attr_reader :journeys
+          attr_reader :journeys, :validity_period
 
           def extend
             return [] if extendable_journeys.empty?
             
             next_steps.each do |origin_step_id, next_step|
               extendable_journeys_by_last_id[origin_step_id].each do |journey|
-                extended_journeys << journey.extend(next_step)
+                extended_journeys << journey.extend(next_step, validity_period: validity_period)
               end
             end
 
@@ -147,8 +147,8 @@ module Chouette
 
         attr_accessor :vehicle_journeys, :time_tables, :maximun_time_of_day
 
-        def extend(journeys)
-          Extend.new(self, journeys).extend
+        def extend(journeys, validity_period: nil)
+          Extend.new(self, journeys, validity_period: validity_period).extend
         end
 
         def connection
@@ -185,17 +185,18 @@ module Chouette
           end
 
           def validity_period(time_table_ids)
-            ValidityPeriod.new days_bit(time_table_ids)
+            ValidityPeriod.from_daysbit days_bit(time_table_ids)
           end
         end
 
         class Extend < SimpleDelegator
-          def initialize(extender, journeys)
+          def initialize(extender, journeys, validity_period:)
             super extender
             @journeys = journeys
+            @validity_period = validity_period
           end
 
-          attr_reader :journeys
+          attr_reader :journeys, :validity_period
 
           def extend
             return [] if extendable_journeys.empty?
@@ -203,7 +204,7 @@ module Chouette
             next_steps.each do |journey_id, steps|
               journey = extendable_journey(journey_id)
               steps.each do |next_step|
-                extended_journey = journey.extend(next_step)
+                extended_journey = journey.extend(next_step, validity_period: validity_period)
 
                 unless extended_journey.validity_period.empty?
                   extended_journeys << extended_journey
@@ -266,6 +267,7 @@ module Chouette
 
           def extendable_journeys
             journeys.select do |journey|
+              # TODO: we could support a mode without time reference
               journey.time_reference? &&
                 journey.last.respond_to?(:stop_area_id)
                 # TODO: seems wrong: journey.last.created_by != self.class
@@ -295,6 +297,7 @@ module Chouette
 
           def query
             # TODO: Ensure that duration computation is correct
+            # TODO: we could exclude the timetables which are not longer the Planner Validity Period
             <<~SQL
               select departure_stops.step_id, stop_points.stop_area_id,
                      (EXTRACT(EPOCH FROM arrival_time) + arrival_day_offset * 86400) - (EXTRACT(EPOCH FROM departure_stops.departure_time) + departure_stops.departure_day_offset * 86400) as duration,
@@ -346,25 +349,26 @@ module Chouette
 
         attr_reader :connection_links
 
-        def extend(journeys)
-          Extend.new(self, journeys).extend
+        def extend(journeys, validity_period: nil)
+          Extend.new(self, journeys, validity_period: validity_period).extend
         end
 
         delegate :connection, to: :connection_links
         delegate :select_rows, to: :connection
 
         class Extend < SimpleDelegator
-          def initialize(extender, journeys)
+          def initialize(extender, journeys, validity_period: nil)
             super extender
             @journeys = journeys
+            @validity_period = validity_period
           end
 
-          attr_reader :journeys
+          attr_reader :journeys, :validity_period
 
           def extend
             next_steps.each do |origin_step_id, next_step|
               extendable_journeys_by_last_id[origin_step_id].each do |journey|
-                extended_journeys << journey.extend(next_step)
+                extended_journeys << journey.extend(next_step, validity_period: validity_period)
               end
             end
 

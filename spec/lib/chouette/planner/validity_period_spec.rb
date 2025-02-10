@@ -7,7 +7,7 @@ RSpec.describe Chouette::Planner::ValidityPeriod do
       bitset = Bitset.from_s Regexp.last_match(2)
 
       daysbit = Cuckoo::DaysBit.new from: from, bitset: bitset
-      return described_class.new daysbit
+      return described_class.from_daysbit daysbit
     end
 
     raise "Invalid definition '#{definition}'"
@@ -24,6 +24,29 @@ RSpec.describe Chouette::Planner::ValidityPeriod do
       ['20300101:11111', '20300201:11111', '20300101:00000']
     ].each do |period, other, expected|
       context "with a ValidityPeriod '#{period}' is intersected with '#{other}'" do
+        let(:period) { parse period }
+        let(:other) { parse other }
+
+        it { is_expected.to eq(parse(expected)) }
+      end
+    end
+  end
+
+  describe '#-' do
+    subject { period - other }
+
+    [
+      ['∞', '∞', '∞'],
+      ['20300101:11111', '∞', '20300101:11111'],
+      ['∞', '20300101:11111', '∞'],
+      ['20300101:10001', '20300101:10000', '20300101:00001'],
+      ['20300101:10001', '20291231:100001', '20300101:10000'],
+      ['20300101:11111', '20300101:00100', '20300101:11011'],
+      ['20300101:11111', '20300103:1', '20300101:11011'],
+      ['20300101:11111', '20300101:11111', '20300101:00000'],
+      ['20300101:11111', '20300201:11111', '20300101:11111']
+    ].each do |period, other, expected|
+      context "a ValidityPeriod '#{period}' - '#{other}'" do
         let(:period) { parse period }
         let(:other) { parse other }
 

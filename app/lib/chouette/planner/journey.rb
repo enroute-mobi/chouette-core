@@ -36,7 +36,8 @@ module Chouette
 
       delegate :last, to: :steps
 
-      def extend(*steps, validity_period: ValidityPeriod.new)
+      def extend(*steps, validity_period: nil)
+        validity_period ||= ValidityPeriod.new
         dup._extend(*steps, validity_period: validity_period)
       end
 

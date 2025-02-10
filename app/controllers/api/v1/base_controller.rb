@@ -5,6 +5,7 @@ module Api
     class BaseController < ::ActionController::API
       include ::ActionController::HttpAuthentication::Basic::ControllerMethods
       include ::ActionController::HttpAuthentication::Token::ControllerMethods
+      prepend SemanticLoggerSupport
     end
   end
 end

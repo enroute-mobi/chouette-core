@@ -20,9 +20,11 @@ Rails.application.configure do
   # preloads Rails for running tests, you may have to set it to true.
   config.eager_load = false
 
-  # Configure static asset server for tests with Cache-Control for performance.
-  config.serve_static_files = true
-  config.static_cache_control = 'public, max-age=3600'
+  # Configure public file server for tests with Cache-Control for performance.
+  config.public_file_server.enabled = true
+  config.public_file_server.headers = {
+    'Cache-Control' => "public, max-age=#{1.hour.to_i}"
+  }
 
   # Show full error reports and disable caching.
   config.consider_all_requests_local       = true
@@ -33,6 +35,11 @@ Rails.application.configure do
 
   # Disable request forgery protection in test environment.
   config.action_controller.allow_forgery_protection = false
+
+  # Store uploaded files on the local file system in a temporary directory
+  config.active_storage.service = :test
+
+  config.action_mailer.perform_caching = false
 
   # Tell Action Mailer not to deliver emails to the real world.
   # The :test delivery method accumulates sent emails in the
@@ -51,9 +58,6 @@ Rails.application.configure do
     cas_server: 'http://cas-portal.example.com/sessions'
   }
 
-  # file to data for demo
-  config.demo_data = 'tmp/demo.zip'
-
   config.action_mailer.default_url_options = { host: 'localhost:3000' }
 
   # Configure the e-mail address which will be shown in Devise::Maile
@@ -65,10 +69,10 @@ Rails.application.configure do
 
   config.i18n.available_locales = %i[fr en]
 
-  config.logger = ActiveSupport::Logger.new("log/test.log", 3, 250.megabytes)
-  config.colorize_logging = false
-
   config.enable_transactional_checksums = true
+
+  config.logger_reopen_max = 2
+  config.logger_reopen_size = 250.megabytes
 end
 
 Dir[File.join(File.dirname(__FILE__), File.basename(__FILE__, ".rb"), "*.rb")].each do |f|

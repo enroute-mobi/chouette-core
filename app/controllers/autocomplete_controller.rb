@@ -100,6 +100,8 @@ class AutocompleteController < Chouette::UserController
                            else
                              workbench&.workgroup
                            end
+  rescue NoMethodError, ActiveRecord::RecordNotFound
+    nil
   end
 
   def workbench

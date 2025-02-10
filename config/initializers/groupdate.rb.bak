@@ -1,0 +1,5 @@
+# frozen_string_literal: true
+
+def Groupdate.week_start
+  Date.beginning_of_week
+end

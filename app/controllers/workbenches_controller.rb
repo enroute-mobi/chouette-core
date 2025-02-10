@@ -55,7 +55,7 @@ class WorkbenchesController < Chouette::ResourceController
     return nil unless params[:id]
 
     resource
-  rescue ActiveRecord::RecordNotFound
+  rescue NoMethodError, ActiveRecord::RecordNotFound
     nil
   end
 

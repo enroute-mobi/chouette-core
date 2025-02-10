@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-ChouetteIhm::Application.routes.draw do # rubocop:disable Metrics/BlockLength
+Rails.application.routes.draw do # rubocop:disable Metrics/BlockLength
   resource :dashboard, only: :show
   resource :subscriptions, only: :create
 

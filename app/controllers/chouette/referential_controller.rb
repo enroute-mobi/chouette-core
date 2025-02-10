@@ -29,7 +29,7 @@ module Chouette
 
     def current_workbench
       workbench
-    rescue ::ActiveRecord::RecordNotFound
+    rescue NoMethodError, ::ActiveRecord::RecordNotFound
       nil
     end
   end

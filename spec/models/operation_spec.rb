@@ -163,7 +163,12 @@ RSpec.describe Operation do
   describe '#logger' do
     subject { operation.logger }
 
-    it { is_expected.to be_a(Logger) }
+    it do
+      is_expected.to respond_to(:debug) \
+                 .and respond_to(:info) \
+                 .and respond_to(:warn) \
+                 .and respond_to(:error)
+    end
   end
 
   describe '#final_user_status' do

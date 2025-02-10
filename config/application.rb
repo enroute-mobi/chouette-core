@@ -1,4 +1,4 @@
-require File.expand_path('../boot', __FILE__)
+require_relative 'boot'
 
 ENV['RANSACK_FORM_BUILDER'] = '::SimpleForm::FormBuilder'
 
@@ -18,10 +18,13 @@ Chouette::Config.load
 
 module ChouetteIhm
   class Application < Rails::Application
+    # Initialize configuration defaults for originally generated Rails version.
+    config.load_defaults 5.2
 
     # Settings in config/environments/* take precedence over those specified here.
-    # Application configuration should go into files in config/initializers
-    # -- all .rb files in that directory are automatically loaded.
+    # Application configuration can go into files in config/initializers
+    # -- all .rb files in that directory are automatically loaded after loading
+    # the framework and any gems in your application.
     config.autoload_paths << config.root.join('app', 'jobs')
     config.autoload_paths << config.root.join('app', 'lib', 'validators')
     config.autoload_paths << config.root.join('app', 'inserters')
@@ -143,8 +146,14 @@ module ChouetteIhm
 
     config.stop_area_available_localizations = %i[en_UK nl_NL de_DE fr_FR it_IT es_ES]
 
-    # Require `belongs_to` associations by default. Previous versions had false.
-    config.active_record.belongs_to_required_by_default = true
+    # If you don't like colors
+    # config.colorize_logging = false
+
+    # disable SemanticLogger application & environment (already provided via Datadog)
+    config.semantic_logger.application = nil
+    config.semantic_logger.environment = nil
+    config.rails_semantic_logger.add_file_appender = false
+    config.logger_reopen_max = nil
   end
 end
 

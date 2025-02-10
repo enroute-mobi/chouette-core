@@ -3,9 +3,8 @@
 class ApplicationController < ActionController::Base
   include MetadataControllerSupport
   include FeatureChecker
+  prepend SemanticLoggerSupport
 
-  # TODO : Delete hack to authorize Cross Request for js and json get request from javascript
-  protect_from_forgery unless: -> { request.get? && (request.format.json? || request.format.js?) }
   before_action :set_locale
   before_action :set_time_zone
 

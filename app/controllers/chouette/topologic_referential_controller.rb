@@ -13,7 +13,12 @@ module Chouette
       association_chain
       get_parent_ivar(:shape_referential)
     end
-    alias current_referential shape_referential
+
+    def current_referential
+      shape_referential
+    rescue ::ActiveRecord::RecordNotFound
+      nil
+    end
     helper_method :current_referential
 
     protected

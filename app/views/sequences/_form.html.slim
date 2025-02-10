@@ -21,21 +21,29 @@
         = f.input :static_list, as: :text, input_html: { "x-on:paste" => "pasteFromClipboard", "x-on:input": "updateItems($event)", "x-on:blur": "finalizeItems", "x-bind:value"=> "static_list", rows: 5, class: "placeholder-gray-500" }, placeholder: I18n.t('sequences.form.placeholders.static_list')
         .flex.items-center.mb-10
           .flex.justify-end.text-right.w-2/6.mr-8.mb-0.control-label.pt-0.text.optional
-          .w-4/6.flex.items-center.relative
+          .w-4/6.flex.flex-col.items-center.relative
             table.w-full.border-collapse.mt-4
               thead
-                tr.bg-gray-200.text-left.text-lg.uppercase
+                tr.bg-gray-200.text-left.text-sm.uppercase
                   th.px-6.py-4.font-medium.text-gray-900 = t("activerecord.attributes.sequence.values")
                   th.px-6.py-4.font-medium.text-gray-900
               tbody
-                template x-for="(item, index) in static_list" :key="index"
+                template x-for="(item, index) in paginatedItems" :key="index"
                   tr :class="index % 2 === 0 ? 'bg-gray-50' : 'bg-white'"
                     td.px-6.py-4.text-gray-700
                       span.font-semibold x-text="item"
                     td.px-6.py-4.text-right
-                      div.inline-flex.items-center.justify-center.bg-red-500.text-white.px-4.py-2.rounded.hover:bg-red-600.focus:outline-none.focus:ring-2.focus:ring-offset-2.focus:ring-red-500 @click="removeItem(index)"
+                      span.inline-flex.items-center.justify-center.bg-red-500.text-white.px-4.py-2.rounded.hover:bg-red-600.focus:outline-none.focus:ring-2.focus:ring-offset-2.focus:ring-red-500 @click="removeItem(index + (currentPage - 1) * itemsPerPage)"
                         i.fas.fa-trash.mr-2
-                        span Supprimer
+                        span.cursor-pointer Supprimer
+
+            div.flex.items-center.ml-auto.mt-4
+              span.text-gray-700 x-text="'Page ' + currentPage + ' / ' + totalPages"
+              .pagination
+                .page_links
+                  span.previous_page.cursor-pointer @click="prevPage" :disabled="currentPage === 1"
+                  span.next_page.cursor-pointer @click="nextPage" :disabled="currentPage === totalPages"
+
 
   = cancel_button
   = f.button :submit, t('actions.submit'), class: 'btn btn-default formSubmitr', form: 'sequence_form'

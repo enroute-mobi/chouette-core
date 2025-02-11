@@ -25,11 +25,11 @@ namespace :ci do
     end
   end
 
-  task :fix_webpacker do
-    # Redefine webpacker:yarn_install to avoid --production
+  task :disable_yarn_install do
+    # Redefine yarn:install to avoid --production
     # in CI process
-    Rake::Task["webpacker:yarn_install"].clear
-    Rake::Task.define_task "webpacker:yarn_install" do
+    Rake::Task["yarn:install"].clear
+    Rake::Task.define_task "yarn:install" do
       puts "Don't run yarn"
     end
   end
@@ -62,7 +62,7 @@ namespace :ci do
 
   task :assets do
     sh "RAILS_ENV=test bundle exec i18n export"
-    sh "RAILS_ENV=test NODE_OPTIONS=--openssl-legacy-provider bundle exec rake ci:fix_webpacker assets:precompile"
+    sh "RAILS_ENV=test NODE_OPTIONS=--openssl-legacy-provider bundle exec rake ci:disable_yarn_install assets:precompile"
   end
 
   task :jest do

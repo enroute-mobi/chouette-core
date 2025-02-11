@@ -1,13 +1,13 @@
 import Alpine from 'alpinejs'
-import { bindAll, uniq } from 'lodash'
+import { bindAll } from 'lodash'
 
 class Store {
 	constructor({
 		sequence_type = '',
-		static_list = null,
+		static_list = [],
 	} = {}) {
 		this.sequence_type = sequence_type
-		this.static_list = static_list || []
+		this.static_list = static_list
 
 		bindAll(this, 'clipboardComponent')
 	}
@@ -16,13 +16,14 @@ class Store {
 		return {
 			items: this.static_list,
 			currentPage: 1,
-			itemsPerPage: 15,
+			itemsPerPage: 15, // Nombre d'éléments affichés par page
 
 			pasteFromClipboard(event) {
 				event.preventDefault();
 				const clipboardData = event.clipboardData || window.clipboardData;
 				const pastedData = clipboardData.getData('Text');
 				this.addItems(pastedData);
+				event.target.value = ''; // Vider la textarea après collage
 			},
 
 			addItems(data) {
@@ -32,45 +33,18 @@ class Store {
 				this.items = this.items.concat(newItems);
 				this.static_list = this.items;
 				this.currentPage = 1;
-				this.updateTextArea();
+				this.updateHiddenField();
 			},
 
 			removeItem(index) {
-				const realIndex = index;
+				const realIndex = index + (this.currentPage - 1) * this.itemsPerPage;
 				this.items.splice(realIndex, 1);
 				this.static_list = this.items;
-				this.updateTextArea();
-
-				if (this.paginatedItems.length === 0 && this.currentPage > 1) {
-						this.currentPage--;
-				}
+				this.updateHiddenField();
 			},
 
-			updateItems(event) {
-				const inputValue = event.target.value;
-				const newItems = inputValue.split(/\n+/)
-					.map(item => item.trim())
-					.filter(item => item);
-				this.items = Array.from(new Set(newItems));
-				this.static_list = this.items;
-				this.updateTextArea();
-			},
-
-			finalizeItems(event) {
-				const inputValue = event.target.value;
-				const newItems = inputValue.split(/[\s,]+/)
-					.map(item => item.trim())
-					.filter(item => item && !this.items.includes(item));
-				this.items = this.items.concat(newItems);
-				this.static_list = this.items;
-				this.updateTextArea();
-			},
-
-			updateTextArea() {
-				const textarea = document.querySelector('textarea[name="sequence[static_list]"]');
-				if (textarea) {
-					textarea.value = this.items.join('\n');
-				}
+			updateHiddenField() {
+				document.querySelector('input[name="sequence[static_list]"]').value = this.items.join(',');
 			},
 
 			// Pagination logic

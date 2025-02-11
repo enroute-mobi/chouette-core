@@ -4,8 +4,11 @@ export DEV_PACKAGES="libpq-dev libxml2-dev zlib1g-dev libmagic-dev libmagickwand
 export RUN_PACKAGES="libpq5 libxml2 zlib1g libmagic1 imagemagick libproj19 libgeos-c1v5 libjemalloc2 libcurl4"
 
 function docker_assets_precompile() {
-    bundle exec i18n export RAILS_DB_ADAPTER=nulldb RAILS_DB_PASSWORD=none RAILS_ENV=production
-    RUBYOPT="-W0" bundle exec rake ci:fix_webpacker assets:precompile RAILS_DB_ADAPTER=nulldb RAILS_DB_PASSWORD=none RAILS_ENV=production NODE_OPTIONS=--openssl-legacy-provider
+    (
+        export RAILS_DB_ADAPTER=nulldb RAILS_DB_PASSWORD=none RAILS_ENV=production RUBYOPT="-W0"
+        bundle exec i18n export
+        bundle exec rake ci:disable_yarn_install assets:precompile NODE_OPTIONS=--openssl-legacy-provider
+    )
 }
 
 function docker_env_production() {

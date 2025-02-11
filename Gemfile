@@ -153,7 +153,6 @@ gem 'coverband', '~> 5.2.5', require: false
 gem 'nest', en_route: 'nest'
 
 group :development do
-  gem 'rails-erd'
   gem 'license_finder'
   gem 'bundler-audit'
   gem 'spring'

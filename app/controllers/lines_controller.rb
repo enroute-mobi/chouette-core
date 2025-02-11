@@ -2,7 +2,6 @@
 
 class LinesController < Chouette::LineReferentialController
   include ApplicationHelper
-  include TransportModeFilter
 
   defaults :resource_class => Chouette::Line
 

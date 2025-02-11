@@ -65,10 +65,6 @@ module Chouette
       GeoRuby::SimpleFeatures::LineString.from_points( [ departure.geometry, arrival.geometry], 4326) if departure.geometry and arrival.geometry
     end
 
-    def geometry_presenter
-      Chouette::Geometry::ConnectionLinkPresenter.new self
-    end
-
     def associated_stop stop_area_id
       departure_id == stop_area_id ? arrival : departure
     end

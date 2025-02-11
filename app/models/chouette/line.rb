@@ -118,10 +118,6 @@ module Chouette
       self.transport_submode = transport_mode.camelize_sub_mode
     end
 
-    def geometry_presenter
-      Chouette::Geometry::LinePresenter.new self
-    end
-
     def commercial_stop_areas
       Chouette::StopArea.joins(children: [stop_points: [route: :line]]).where(lines: { id: id }).distinct
     end

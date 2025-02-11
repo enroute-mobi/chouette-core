@@ -196,14 +196,6 @@ class Af83::Decorator::Link
       yield link
       return link.to_html
     end
-    if type&.to_sym == :button
-      HtmlElement.new(
-        :button,
-        content,
-        html_options
-      ).to_html
-    else
-      context.h.link_to content, (disabled? ? "#" : href), html_options
-    end
+    context.h.link_to content, (disabled? ? "#" : href), html_options
   end
 end

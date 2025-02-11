@@ -39,12 +39,6 @@ fr:
       explore: "Explorer"
       administrate: "Administrer"
       external_links: "Liens externes"
-    history_tag:
-      title: "Métadonnées"
-      created_at: "Créé le"
-      updated_at: "Mise à jour le"
-      user_name: "Auteur"
-      no_save: "Pas de sauvergarde"
     flash_messages:
       success: "Succès"
       error: "Erreur"

@@ -12,7 +12,7 @@ module Delayed
       end
     end
 
-    module ClassMethods # rubocop:disable Style/Documentation
+    module ClassMethods
       def reserve_with_scope_using_optimized_postgres(ready_scope, worker, now)
         # Custom SQL required for PostgreSQL because postgres does not support UPDATE...LIMIT
         # This locks the single record 'FOR UPDATE' in the subquery

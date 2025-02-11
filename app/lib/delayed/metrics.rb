@@ -118,11 +118,7 @@ module Delayed
       # Measure jobs ready to be performed by a Worker (including organisation limit)
       class Ready < Base
         def value
-          ready_to_run.in_organisation_bounds.count
-        end
-
-        def ready_to_run
-          Delayed::Job.where 'run_at <= now() AND locked_at IS NULL AND failed_at IS NULL'
+          Delayed::Job.ready.count
         end
 
         def name
@@ -144,7 +140,7 @@ module Delayed
       # Measure jobs locked by a worker
       class Locked < Base
         def value
-          Delayed::Job.where.not(locked_at: nil).count
+          Delayed::Job.locked.count
         end
 
         def name
@@ -173,7 +169,8 @@ module Delayed
         def jobs_with_age_and_organiastion_code
           Delayed::Job.where('run_at < now()')
                       .joins('left join public.organisations on organisations.id = delayed_jobs.organisation_id')
-                      .select('organisations.code as organisation_code', 'EXTRACT(SECOND FROM age(now(), run_at)) as age')
+                      .select('organisations.code as organisation_code',
+                              'EXTRACT(SECOND FROM age(now(), run_at)) as age')
         end
       end
 

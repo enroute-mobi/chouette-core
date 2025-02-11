@@ -4,7 +4,7 @@ module Delayed
   # Invokes a :dead_worker hook on jobs associated to workers ckeaned by Delayed::Heartbeat
   #
   # Use to override Delayed::Heartbeat
-  module DeadWorkerHook
+  module WorkerDeadHook
     def self.prepended(base)
       class << base
         prepend ClassMethods

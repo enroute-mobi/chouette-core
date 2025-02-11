@@ -160,7 +160,6 @@ RSpec.describe Import::Neptune do
       stop_area = Chouette::StopArea.find_by registration_number: 'NAVSTEX:StopArea:gen6'
       expect(stop_area.latitude).to be_present
       expect(stop_area.longitude).to be_present
-      expect(stop_area.nearest_topic_name).to be_present
     end
 
     it 'creates Stop_Areas with time zone Europe/Paris' do
@@ -226,7 +225,6 @@ RSpec.describe Import::Neptune do
       existing_attributes = {
         comment: "Defined",
         street_name: "Defined",
-        nearest_topic_name: "Defined",
         area_type: "zdep",
         latitude: 0.42e2,
         longitude: 0.42e2,

@@ -9,10 +9,6 @@ module StopAreasHelper
     "#{txt} <span title='#{ISO3166::Country[country]&.translation(I18n.locale)}' class='flag-icon flag-icon-#{country.downcase} mr-xs'></span>".html_safe
   end
 
-  def show_map?
-    manage_itl || @stop_area.long_lat_type != nil
-  end
-
   def manage_itl
     @stop_area.stop_area_type == 'itl'
   end
@@ -21,19 +17,6 @@ module StopAreasHelper
   end
   def manage_children
     @stop_area.stop_area_type == 'stop_place' || @stop_area.stop_area_type == 'commercial_stop_point'
-  end
-
-  def geo_data(sa, sar)
-    if sa.long_lat_type.nil?
-      content_tag :span, '-'
-    else
-      if !sa.projection.nil?
-        content_tag :span, "#{sa.projection_x}, #{sa.projection_y}"
-
-      elsif !sa.long_lat_type.nil?
-        content_tag :span, "#{sa.long_lat_type} : #{sa.latitude}, #{sa.longitude}"
-      end
-    end
   end
 
   def stop_area_registration_number_title stop_area

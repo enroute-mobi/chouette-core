@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2025_01_14_150213) do
+ActiveRecord::Schema.define(version: 2025_01_30_164134) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "btree_gin"
@@ -1268,7 +1268,6 @@ ActiveRecord::Schema.define(version: 2025_01_14_150213) do
     t.datetime "created_at"
     t.datetime "updated_at"
     t.string "prefix"
-    t.string "projection_type"
     t.string "time_zone"
     t.string "bounds"
     t.bigint "organisation_id"
@@ -1517,10 +1516,8 @@ ActiveRecord::Schema.define(version: 2025_01_14_150213) do
     t.string "comment"
     t.string "area_type"
     t.string "registration_number"
-    t.string "nearest_topic_name"
     t.decimal "longitude", precision: 19, scale: 16
     t.decimal "latitude", precision: 19, scale: 16
-    t.string "long_lat_type"
     t.string "country_code"
     t.string "street_name"
     t.string "zip_code"
@@ -1533,7 +1530,6 @@ ActiveRecord::Schema.define(version: 2025_01_14_150213) do
     t.datetime "deleted_at"
     t.datetime "created_at"
     t.datetime "updated_at"
-    t.string "stif_type"
     t.integer "waiting_time"
     t.string "kind"
     t.jsonb "localized_names"

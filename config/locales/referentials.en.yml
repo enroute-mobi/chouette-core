@@ -89,7 +89,6 @@ en:
         status: "Status"
         slug: "Code"
         prefix: "Neptune Object Id prefix"
-        projection_type: "Optional spatial reference system code (SRID)"
         time_zone: "time zone"
         upper_corner: "Top,Right corner for default bounding box"
         lower_corner: "Bottom,Left corner for default bounding box"

@@ -14,6 +14,7 @@
   attributes attr, unless: ->(m) { m.send(attr).nil? }
 end
 
+attributes objectid: :object_id
 attribute :costs
 
 node do |model|

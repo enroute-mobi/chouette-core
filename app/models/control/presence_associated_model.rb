@@ -93,28 +93,10 @@ module Control
       # Retrieve model identifier (only) associated to a faulty county
       # Ex: { <route id 1> => <stop point count>, <route id 2> => <stop point count> }
       def faulty_counts
-        @faulty_counts ||=
-          begin
-            associatied_models = context.send(context_collection)
-
-            grouped_by_target_model =
-              case [target_model, collection]
-              when %w[VehicleJourney time_tables]
-                # Vehicle Journeys have many and belongs to Time Tables
-                associatied_models.joins(:vehicle_journeys).group(:vehicle_journey_id)
-              when %w[StopArea routes]
-                # Stop Areas have many and belongs to Routes
-                associatied_models.joins(:stop_areas).group(:stop_area_id)
-              when %w[StopArea lines]
-                associatied_models.joins(routes: :stop_areas).group(:stop_area_id)
-              when %w[StopArea fare_zones]
-                associatied_models.joins(:stop_areas).group(:stop_area_id)
-              else
-                associatied_models.group("#{collection_attribute.resource_name}_id")
-              end
-
-            grouped_by_target_model.having(condition, { minimum: minimum, maximum: maximum }).count
-          end
+        @faulty_counts ||= models.left_outer_joins(collection.to_sym) \
+                                 .group("#{models.klass.quoted_table_name}.id") \
+                                 .having(condition, { minimum: minimum, maximum: maximum }) \
+                                 .count(count_arg)
       end
 
       def model_collection
@@ -127,12 +109,16 @@ module Control
 
       def condition
         if minimum.present? && maximum.present?
-          'count(*) < :minimum or count(*) > :maximum'
+          "count(#{count_arg}) < :minimum or count(#{count_arg}) > :maximum"
         elsif minimum.present?
-          'count(*) < :minimum'
+          "count(#{count_arg}) < :minimum"
         else
-          'count(*) > :maximum'
+          "count(#{count_arg}) > :maximum"
         end
+      end
+
+      def count_arg
+        @count_arg ||= "DISTINCT #{models.klass.reflections[collection].klass.quoted_table_name}.id"
       end
     end
   end

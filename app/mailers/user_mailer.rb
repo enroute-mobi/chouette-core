@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 class UserMailer < ApplicationMailer
-  add_template_helper MailerHelper
+  helper MailerHelper
 
   def invitation_from_user(user, from_user)
     @from_user = from_user

@@ -902,7 +902,11 @@ class Import::Gtfs < Import::Base
     delegate :each, :length, :[], to: :stop_ids
 
     def route_signature
-      [route_id, direction_id, stop_times.map(&:pickup_type), stop_times.map(&:drop_off_type)]
+      @route_signature ||= [
+        route_id,
+        direction_id,
+        stop_times_signature
+      ].freeze
     end
 
     def stop_ids
@@ -910,16 +914,28 @@ class Import::Gtfs < Import::Base
     end
 
     def journey_pattern_signature
-      [
+      @journey_pattern_signature ||= [
         *route_signature,
         headsign,
         shape_id,
         *stop_ids
-      ]
+      ].freeze
     end
 
     def valid?
       stop_times.many?
+    end
+
+    private
+
+    def stop_times_signature
+      skip = true
+      stop_times.reverse_each.filter_map do |stop_time|
+        next if skip && stop_time.pickup_type.nil? && stop_time.drop_off_type.nil?
+
+        skip = false
+        [stop_time.stop_id, stop_time.pickup_type || '0', stop_time.drop_off_type || '0']
+      end.to_a
     end
   end
 

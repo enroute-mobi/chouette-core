@@ -232,7 +232,6 @@ module Chouette
 
       stop_points.each_with_index do |sp, index|
         if sp.stop_area_id.to_s != reordered_stop_area_ids[ index].to_s
-          #result = sp.update_attributes( :stop_area_id => reordered_stop_area_ids[ index])
           sp.stop_area_id = reordered_stop_area_ids[ index]
           result = sp.save!
         end

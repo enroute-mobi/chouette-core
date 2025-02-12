@@ -148,8 +148,10 @@ module Chouette
       ordered_stop_points = stop_points
       ordered_stop_points = ordered_stop_points.sort { |a,b| a.position <=> b.position} unless ordered_stop_points.empty?
 
-      self.update_attributes( :departure_stop_point_id => (ordered_stop_points.first && ordered_stop_points.first.id),
-                              :arrival_stop_point_id => (ordered_stop_points.last && ordered_stop_points.last.id))
+      self.update(
+        departure_stop_point_id: ordered_stop_points.first && ordered_stop_points.first.id,
+        arrival_stop_point_id: ordered_stop_points.last && ordered_stop_points.last.id
+      )
     end
 
     def shortcuts_update_for_remove( stop_point)
@@ -158,8 +160,10 @@ module Chouette
       ordered_stop_points = stop_points
       ordered_stop_points = ordered_stop_points.sort { |a,b| a.position <=> b.position} unless ordered_stop_points.empty?
 
-      self.update_attributes( :departure_stop_point_id => (ordered_stop_points.first && ordered_stop_points.first.id),
-                              :arrival_stop_point_id => (ordered_stop_points.last && ordered_stop_points.last.id))
+      self.update(
+        departure_stop_point_id: ordered_stop_points.first && ordered_stop_points.first.id,
+        arrival_stop_point_id: ordered_stop_points.last && ordered_stop_points.last.id
+      )
     end
 
     def vjas_add(stop_point)

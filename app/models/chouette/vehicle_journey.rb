@@ -264,7 +264,7 @@ module Chouette
         end
         params[:stop_area_id] = vjas['specific_stop_area_id']
         stop = create_or_find_vjas_from_state(vjas)
-        stop.update_attributes(params)
+        stop.update(params)
         vjas.delete('errors')
         vjas['errors'] = stop.errors if stop.errors.any?
       end
@@ -279,7 +279,7 @@ module Chouette
       # Update or create other codes
       referential_codes.each do |code_item|
         ref_code = code_item["id"].present? ? codes.find(code_item["id"]) : codes.build
-        ref_code.update_attributes({
+        ref_code.update({
           code_space_id: code_item["code_space_id"],
           value: code_item["value"]
         })
@@ -315,7 +315,7 @@ module Chouette
           objects << vj
 
           vj.update_vjas_from_state(item['vehicle_journey_at_stops'])
-          vj.update_attributes(state_permited_attributes(item))
+          vj.update(state_permited_attributes(item))
           vj.update_has_and_belongs_to_many_from_state(item)
           vj.manage_referential_codes_from_state(item)
           vj.update_checksum!
@@ -390,56 +390,6 @@ module Chouette
       end
 
       dates.empty? ? [] : [dates.min, dates.max]
-    end
-
-    def fill_passing_times!
-      encountered_empty_vjas = []
-      previous_stop = nil
-      vehicle_journey_at_stops.each do |vjas|
-        sp = vjas.stop_point
-        if vjas.arrival_time.nil? && vjas.departure_time.nil?
-          encountered_empty_vjas << vjas
-        else
-          if encountered_empty_vjas.any?
-            raise "Cannot extrapolate passing times without an initial time" if previous_stop.nil?
-            distance_between_known = 0
-            distance_from_last_known = 0
-            cost = journey_pattern.costs_between previous_stop.stop_point, encountered_empty_vjas.first.stop_point
-            raise "MISSING cost between #{previous_stop.stop_point.stop_area.registration_number} AND #{encountered_empty_vjas.first.stop_point.stop_area.registration_number}" unless cost.present?
-            distance_between_known += cost[:distance].to_f
-            cost = journey_pattern.costs_between encountered_empty_vjas.last.stop_point, sp
-            raise "MISSING cost between #{encountered_empty_vjas.last.stop_point.stop_area.registration_number} AND #{sp.stop_area.registration_number}" unless cost.present?
-            distance_between_known += cost[:distance].to_f
-            distance_between_known += encountered_empty_vjas.each_cons(2).inject(0) do |sum, slice|
-              cost = journey_pattern.costs_between slice.first.stop_point, slice.last.stop_point
-              raise "MISSING cost between #{slice.first.stop_point.stop_area.registration_number} AND #{slice.last.stop_point.stop_area.registration_number}" unless cost.present?
-              sum + cost[:distance].to_f
-            end
-
-            previous = previous_stop
-            encountered_empty_vjas.each do |empty_vjas|
-              cost = journey_pattern.costs_between previous.stop_point, empty_vjas.stop_point
-              raise "MISSING cost between #{previous.stop_point.stop_area.registration_number} AND #{empty_vjas.stop_point.stop_area.registration_number}" unless cost.present?
-              distance_from_last_known += cost[:distance]
-
-              arrival_time_of_day = vjas.arrival_time_of_day
-              previous_time_of_day = previous_stop.departure_time_of_day
-
-              ratio = distance_from_last_known.to_f / distance_between_known.to_f
-              delta = arrival_time_of_day-previous_time_of_day
-
-              time_of_day = previous_time_of_day.add(seconds: ratio * delta)
-
-              empty_vjas.update_attribute :arrival_time_of_day, time_of_day
-              empty_vjas.update_attribute :departure_time_of_day, time_of_day
-
-              previous = empty_vjas
-            end
-            encountered_empty_vjas = []
-          end
-          previous_stop = vjas
-        end
-      end
     end
 
     def self.matrix(vehicle_journeys)

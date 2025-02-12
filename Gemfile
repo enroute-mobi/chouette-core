@@ -27,8 +27,7 @@ gem 'webpacker', '6.0.0.beta.7'
 # Use jquery as the JavaScript library
 gem 'jquery-rails', '>= 4.6.0'
 gem 'jquery-ui-rails', '>= 6.0.1'
-# Build JSON APIs with ease. Read more: https://github.com/rails/jbuilder
-gem 'jbuilder'
+gem 'rabl' # must be before draper (https://enroute.atlassian.net/browse/CHOUETTE-4361?focusedCommentId=50586)
 
 # Select2 for pretty select boxes w. autocomplete
 gem 'select2-rails', '~> 4.0', '>= 4.0.3'
@@ -51,7 +50,6 @@ gem 'activerecord-postgis-adapter', '~> 5.2.3'
 gem 'pg_search'
 gem 'postgres-copy', '>= 1.7.2'
 
-gem 'polylines'
 gem 'bulk_insert'
 
 gem 'graphql', '2.2.5'
@@ -89,7 +87,6 @@ gem 'font_awesome5_rails', '>= 1.5.0'
 # Format Output
 gem 'json'
 gem 'rubyzip'
-gem 'roo', '>= 2.8.3'
 
 # Controller
 gem 'inherited_resources', '>= 1.13.1'
@@ -111,7 +108,6 @@ gem 'nokogiri', '>= 1.14.3'
 gem 'acts_as_list'
 gem 'acts_as_tree'
 
-gem 'rabl'
 gem 'carrierwave', '~> 1.3.2'
 gem 'carrierwave-google-storage', github: 'metaware/carrierwave-google-storage'
 gem 'rmagick'
@@ -155,17 +151,12 @@ gem 'nest', en_route: 'nest'
 group :development do
   gem 'license_finder'
   gem 'bundler-audit'
-  gem 'spring'
-  gem 'spring-commands-rspec'
   gem 'better_errors'
-  gem 'binding_of_caller'
+  gem 'binding_of_caller' # optional dependency of better_errors
   gem 'derailed_benchmarks'
 
-  gem 'bummr'
-  gem 'graphiql-rails'
-
+  gem 'i18n-tasks'
   gem 'listen' # dependency of i18n-js
-  gem 'guard-rspec', require: false
   gem 'rubocop-rails', '>= 2.24.0', require: false
 end
 
@@ -179,7 +170,6 @@ group :test do
   gem 'capybara', '~> 3.15.1'
   gem 'database_cleaner'
   gem 'poltergeist', '>= 1.18.1'
-  gem 'fuubar'
   gem 'rspec-benchmark'
 
   gem 'webmock'
@@ -197,7 +187,7 @@ group :test do
 end
 
 group :test, :development do
-  gem 'amazing_print'
+  gem 'awesome_print' # dependency of rails_semantic_logger until rspec-snapshot requires its fork 'amazing_print'
   gem 'stackprof'
 
   gem 'parallel_tests'
@@ -205,19 +195,14 @@ group :test, :development do
   gem 'letter_opener'
   gem 'letter_opener_web', '~> 1.4', '>= 1.4.1'
 
-  gem 'awesome_print'
-  gem 'pry-rails'
-  gem 'pry-byebug'
-
-
   gem 'dotenv-rails', '>= 2.7.6'
   gem 'bullet', '>= 7.1.6'
+  gem 'byebug'
 end
 
 # I18n
 gem 'rails-i18n', '>= 5.1.3'
 gem 'devise-i18n', '>= 1.10.2'
-gem 'i18n-tasks', '>= 0.9.37'
 
 gem 'activerecord-nulldb-adapter', require: (ENV['RAILS_DB_ADAPTER'] == 'nulldb')
 

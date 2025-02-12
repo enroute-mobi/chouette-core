@@ -233,7 +233,7 @@ GEM
     database_cleaner-core (2.0.1)
     datadog-ci (0.8.3)
       msgpack
-    date (3.3.4)
+    date (3.4.1)
     dbf (4.2.4)
     ddtrace (1.23.3)
       datadog-ci (~> 0.8.1)
@@ -510,7 +510,7 @@ GEM
     multi_xml (0.6.0)
     multipart-post (2.4.1)
     mutex_m (0.3.0)
-    net-imap (0.3.7)
+    net-imap (0.4.19)
       date
       net-protocol
     net-pop (0.1.2)
@@ -811,7 +811,7 @@ GEM
     thread_safe (0.3.6)
     tilt (2.6.0)
     timecop (0.9.10)
-    timeout (0.4.1)
+    timeout (0.4.3)
     tomlrb (2.0.3)
     trailblazer-option (0.1.2)
     tzinfo (1.2.11)

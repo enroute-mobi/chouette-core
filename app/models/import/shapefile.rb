@@ -101,7 +101,7 @@ class Import::Shapefile < Import::Base
   end
 
   def source
-    @source ||= Archive.new(local_file.path)
+    @source ||= Archive.new(File.expand_path(local_file.path))
   end
 
   # Uses a temporary directory to open the user zip file and

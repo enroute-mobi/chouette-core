@@ -38,7 +38,7 @@ RSpec.describe Macro::CreateShape do
       let(:geom) { journey_pattern.reload.shape&.geometry.to_s }
 
       before(:each) do
-        shape_response = File.read('spec/fixtures/tomtom-shape-response.json')
+        shape_response = file_fixture('tomtom-shape-response.json').read
         stub_request(:post, 'https://api.tomtom.com/routing/1/batch/sync/json?key=mock_tomtom_api_key').to_return(
           status: 200, body: shape_response
         )

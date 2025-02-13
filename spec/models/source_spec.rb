@@ -278,12 +278,12 @@ RSpec.describe Source::Retrieval do
   describe '#downloaded_file_type' do
     subject { retrieval.downloaded_file_type }
     context 'when downloaded file is an XML file' do
-      before { allow(retrieval).to receive(:downloaded_file).and_return(open_fixture('reflex.xml')) }
+      before { allow(retrieval).to receive(:downloaded_file).and_return(file_fixture('reflex.xml').open) }
       it { is_expected.to be_xml }
     end
 
     context 'when downloaded file is an ZIP file' do
-      before { allow(retrieval).to receive(:downloaded_file).and_return(open_fixture('reflex_updated.zip')) }
+      before { allow(retrieval).to receive(:downloaded_file).and_return(file_fixture('reflex_updated.zip').open) }
       it { is_expected.to be_zip }
     end
   end
@@ -291,12 +291,12 @@ RSpec.describe Source::Retrieval do
   describe '#checksum' do
     subject { retrieval.checksum }
     context 'when downloaded file is an XML file' do
-      before { allow(retrieval).to receive(:downloaded_file).and_return(open_fixture('reflex.xml')) }
+      before { allow(retrieval).to receive(:downloaded_file).and_return(file_fixture('reflex.xml').open) }
       it { is_expected.to match(/^[0-9a-f]{64}$/) }
     end
 
     context 'when downloaded file is an ZIP file' do
-      before { allow(retrieval).to receive(:downloaded_file).and_return(open_fixture('reflex_updated.zip')) }
+      before { allow(retrieval).to receive(:downloaded_file).and_return(file_fixture('reflex_updated.zip').open) }
       it { is_expected.to match(/^[0-9a-f]{64}$/) }
     end
   end

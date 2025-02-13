@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 RSpec.describe Destination::SFTP, type: :model do
-  let(:secret_file) { open_fixture('invalid_version.json') }
+  let(:secret_file) { file_fixture('invalid_version.json').open }
 
   let(:destination) do
     Destination::SFTP.create!(
@@ -93,7 +93,7 @@ RSpec.describe Destination::SFTP, type: :model do
         subject
         expect(@sftp_mock.keys).to include(secret_file.read)
         expect(@sftp_mock.uploads).to include(
-          [match(%r(\A/dest/[0-9a-f]{40}-#{export_file_fixture}\z)), read_fixture(export_file_fixture)]
+          [match(%r(\A/dest/[0-9a-f]{40}-#{export_file_fixture}\z)), file_fixture(export_file_fixture).read]
         )
       end
     end

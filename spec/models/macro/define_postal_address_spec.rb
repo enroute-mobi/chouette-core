@@ -67,7 +67,7 @@ RSpec.describe Macro::DefinePostalAddress do
             let(:address) { '100 Santa Cruz Street, 95065, Santa Cruz, États-Unis' }
 
             before(:each) do
-              reverse_geocode_response = File.read('spec/fixtures/tomtom-reverse-geocode-response.json')
+              reverse_geocode_response = file_fixture('tomtom-reverse-geocode-response.json').read
               stub_request(:post, 'https://api.tomtom.com/search/2/batch/sync.json?key=mock_tomtom_api_key').to_return(
                 status: 200, body: reverse_geocode_response
               )
@@ -96,7 +96,7 @@ RSpec.describe Macro::DefinePostalAddress do
             before do
               stop_area.update(latitude: 48.8462253, longitude: 2.3438389)
 
-              reverse_geocode_response = File.read('spec/fixtures/french-ban-reverse-geocode-response.json')
+              reverse_geocode_response = file_fixture('french-ban-reverse-geocode-response.json').read
               stub_request(:get, 'https://api-adresse.data.gouv.fr/reverse/?lat=48.8462253&lon=2.3438389').to_return(
                 status: 200, body: reverse_geocode_response
               )

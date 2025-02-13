@@ -184,7 +184,7 @@ RSpec.describe Import::Base, type: :model do
     let(:import) do
       Import::Gtfs.create!(
         workbench: workbench,
-        local_file: open_fixture('google-sample-feed.zip'),
+        local_file: file_fixture('google-sample-feed.zip').open,
         creator: 'test',
         name: 'test'
       ).tap(&:import)
@@ -218,7 +218,7 @@ RSpec.describe Import::Base, type: :model do
     let(:import) do
       Import::Gtfs.create!(
         workbench: workbench,
-        local_file: open_fixture('google-sample-feed.zip'),
+        local_file: file_fixture('google-sample-feed.zip').open,
         creator: 'test',
         name: 'test'
       ).tap(&:import)
@@ -252,7 +252,7 @@ RSpec.describe Import::Base, type: :model do
     let(:import) do
       Import::Gtfs.create!(
         workbench: workbench,
-        local_file: open_fixture('google-sample-feed.zip'),
+        local_file: file_fixture('google-sample-feed.zip').open,
         creator: 'test',
         name: 'test'
       ).tap(&:import)

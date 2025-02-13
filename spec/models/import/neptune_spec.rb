@@ -19,7 +19,13 @@ RSpec.describe Import::Neptune do
 
   def build_import(file=nil)
     file ||= 'sample_neptune'
-    Import::Neptune.new workbench: workbench, local_file: fixtures_path("#{file}.zip"), creator: "test", name: "test", parent: workbench_import
+    Import::Neptune.new(
+      workbench: workbench,
+      local_file: file_fixture("#{file}.zip"),
+      creator: 'test',
+      name: 'test',
+      parent: workbench_import
+    )
   end
 
   before(:each) do

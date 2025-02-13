@@ -1,5 +1,5 @@
 FactoryBot.define do
   factory :workbench_import, class: Import::Workbench, parent: :import do
-    file { File.open(Rails.root.join('spec', 'fixtures', 'OFFRE_TRANSDEV_2017030112251.zip')) }
+    file { file_fixture('OFFRE_TRANSDEV_2017030112251.zip').open }
   end
 end

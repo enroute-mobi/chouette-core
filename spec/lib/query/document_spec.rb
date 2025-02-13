@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-RSpec.describe Query::Document do
+RSpec.describe Query::Document, use_fixtures: true do
   describe '#query' do
     let(:query) { Query::Document.new(Document.all) }
 

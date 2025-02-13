@@ -77,7 +77,7 @@ RSpec.describe ZipService, type: :zip do
 
   # Regression treated in #5281
   context 'one_first_level_dir' do
-    let( :zip_data ){ File.read fixtures_path('regression-5281.zip') }
+    let(:zip_data){ file_fixture('regression-5281.zip').read }
     let( :zip_name ){ 'regression_5281' }
 
     let( :allowed_lines ){

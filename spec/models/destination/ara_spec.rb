@@ -117,7 +117,9 @@ RSpec.describe Destination::Ara, type: :model do
         subject
         expect(a_request(:post, 'https://test.com/import')).to have_been_made.once
         expect(@ara_request_body).to match_array([['request', { force: true }.to_json], ['data', be_present]])
-        expect(File.read(@ara_request_body.detect { |p| p[0] == 'data' }[1].path)).to eq(read_fixture(export_file_path))
+        expect(File.read(@ara_request_body.detect { |p| p[0] == 'data' }[1].path)).to(
+          eq(file_fixture(export_file_path).read)
+        )
       end
     end
   end

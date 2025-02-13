@@ -10,7 +10,7 @@ RSpec.describe Destination::PublicationApi, type: :model do
   let(:report) { create(:destination_report) }
   let(:error_publication_api_id) { 99_999_999 }
 
-  let(:file) { File.open(Rails.root.join('spec/fixtures/terminated_job.json').to_s) }
+  let(:file) { file_fixture('terminated_job.json').open }
 
   let(:line_1) { create :line }
   let(:line_2) { create :line }

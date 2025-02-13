@@ -126,7 +126,11 @@ RSpec.describe Search::WorkgroupImport, type: :model do
       end
       workbench1 = context.workbench(:workbench1)
       workbench2 = context.workbench(:workbench2)
-      import_attributes = { type: 'Import::Workbench', creator: 'test', file: open_fixture('google-sample-feed.zip') }
+      import_attributes = {
+        type: 'Import::Workbench',
+        creator: 'test',
+        file: file_fixture('google-sample-feed.zip').open
+      }
       workbench1.imports.create!(import_attributes.merge(name: 'Import 1')).update_columns(
         status: 'successful',
         started_at: DateTime.parse('2007-01-01T01:01:01'),

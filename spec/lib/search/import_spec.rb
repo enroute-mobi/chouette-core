@@ -92,7 +92,7 @@ RSpec.describe Search::Import, type: :model do
         workbench
       end
       workbench = context.workbench
-      import_attributes = { type: 'Import::Gtfs', creator: 'test', file: open_fixture('google-sample-feed.zip') }
+      import_attributes = { type: 'Import::Gtfs', creator: 'test', file: file_fixture('google-sample-feed.zip').open }
       workbench.imports.create!(
         import_attributes.merge(
           name: 'Import 1',

@@ -19,8 +19,7 @@ RSpec.describe Import::Netex do
       file = Tempfile.new(['import_netex', '.zip'])
       Zip::File.open(file.path, create: true) do |zip|
         zip.mkdir('OFFRE_20231227155226')
-        zip.add('OFFRE_20231227155226/calendriers.xml',
-                fixtures_path('netex-calendar-files/single_period_calendar.xml'))
+        zip.add('OFFRE_20231227155226/calendriers.xml', file_fixture('netex-calendar-files/single_period_calendar.xml'))
         zip.add('OFFRE_20231227155226/offre_1_1.xml', lines.path)
         zip.add('OFFRE_20231227155226/offre_2_2.xml', lines.path)
         zip.add('OFFRE_20231227155226/offre_4_4.xml', lines.path)

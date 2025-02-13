@@ -87,10 +87,10 @@ RSpec.describe Destination::GoogleCloudStorage, type: :model do
       it 'should send file to GCS' do
         subject
         expect(@gcss).to match([[{ project_id: 'some_project', credentials: be_present }]])
-        expect(File.read(@gcss[0][0][:credentials])).to eq(read_fixture('valid_version.json'))
+        expect(File.read(@gcss[0][0][:credentials])).to eq(file_fixture('valid_version.json').read)
         expect(@gcs_buckets).to eq([['some_bucket', { skip_lookup: true }]])
         expect(@gcs_bucket_create_files).to match([[be_present, match(/OFFRE_TRANSDEV_2017030112251\.zip\z/)]])
-        expect(File.read(@gcs_bucket_create_files[0][0])).to eq(read_fixture('OFFRE_TRANSDEV_2017030112251.zip'))
+        expect(File.read(@gcs_bucket_create_files[0][0])).to eq(file_fixture('OFFRE_TRANSDEV_2017030112251.zip').read)
       end
     end
   end

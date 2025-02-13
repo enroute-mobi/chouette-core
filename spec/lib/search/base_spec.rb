@@ -659,14 +659,37 @@ RSpec.describe Search::Base::Chart do
   class self::Chart < Search::Base::Chart # rubocop:disable Lint/ConstantDefinitionInBlock,Style/ClassAndModuleChildren
     group_by_attribute 'some_attribute', :string
     group_by_attribute 'some_numeric_attribute', :numeric
-    group_by_attribute 'created_at', :datetime, sub_types: %i[by_week by_month hour_of_day day_of_week]
+    group_by_attribute 'created_at',
+                       :datetime,
+                       sub_types: %i[by_week by_month hour_of_day day_of_week hour_of_day day_of_week]
     group_by_attribute 'date', :date, sub_types: %i[by_week by_month day_of_week]
-    group_by_attribute 'created_at', :datetime, sub_types: %i[hour_of_day day_of_week]
+    group_by_attribute 'complex_select_attribute', :string, selects: ['CASE WHEN 1 "true" ELSE "false" END']
     group_by_attribute 'custom_label_attribute',
                        :string,
                        joins: { relation: { other_relation: {} }, another_relation: {} },
-                       selects: %w[other_relations.name another_relations.label]
-    group_by_attribute 'more_keys_attribute', :numeric, keys: [1, 2, 3]
+                       selects: %w[other_relations.name another_relations.label] do
+      def label(key)
+        "#{key[0]} (#{key[1]})"
+      end
+    end
+    group_by_attribute 'custom_label_attribute_b',
+                       :string,
+                       joins: { relation_b: { other_relation_b: {} }, another_relation_b: {} },
+                       selects: %w[other_relation_bs.name another_relation_bs.label] do
+      def nil_key?(key)
+        key[0].nil?
+      end
+
+      def label(key)
+        "#{key[0]} [#{key[1]}]"
+      end
+    end
+    group_by_attribute 'custom_label_numeric_attribute', :numeric, sortable: :before_label do
+      def label(key)
+        "Level #{key}"
+      end
+    end
+    group_by_attribute 'more_keys_attribute', :numeric, keys: [2, 3, 1]
     group_by_attribute 'sortable_label_key_attribute', :string do
       def label(key)
         key.reverse
@@ -715,7 +738,7 @@ RSpec.describe Search::Base::Chart do
     context 'with a simple attribute' do
       it do
         expect(models).to receive(:group).with('some_attribute').and_return(models)
-        expect(models).to receive(:order).with(count_id: :desc).and_return(models)
+        expect(models).to receive(:order).with(count_id: :desc, 'some_attribute' => :desc).and_return(models)
         expect(models).to receive(:limit).with(10).and_return(models)
         expect(models).to receive(:count).with(:id)
         subject
@@ -726,7 +749,7 @@ RSpec.describe Search::Base::Chart do
 
         it do
           expect(models).to receive(:group).with('some_attribute').and_return(models)
-          expect(models).to receive(:order).with(count_id: :asc).and_return(models)
+          expect(models).to receive(:order).with(count_id: :asc, 'some_attribute' => :asc).and_return(models)
           expect(models).to receive(:limit).with(10).and_return(models)
           expect(models).to receive(:count).with(:id)
           subject
@@ -738,7 +761,7 @@ RSpec.describe Search::Base::Chart do
 
         it do
           expect(models).to receive(:group).with('some_attribute').and_return(models)
-          expect(models).to receive(:order).with(count_id: :desc).and_return(models)
+          expect(models).to receive(:order).with(count_id: :desc, 'some_attribute' => :desc).and_return(models)
           expect(models).to receive(:limit).with(100).and_return(models)
           expect(models).to receive(:count).with(:id)
           subject
@@ -980,6 +1003,25 @@ RSpec.describe Search::Base::Chart do
       end
     end
 
+    context 'with an attribute having a complex select' do
+      let(:group_by_attribute) { 'complex_select_attribute' }
+
+      it do
+        expect(models).to(
+          receive(:select).with('CASE WHEN 1 "true" ELSE "false" END').and_return(models)
+        )
+        expect(models).to(
+          receive(:group).with('CASE WHEN 1 "true" ELSE "false" END').and_return(models)
+        )
+        expect(models).to(
+          receive(:order).with(count_id: :desc, 'case_when_1_true_else_false_end' => :desc).and_return(models)
+        )
+        expect(models).to receive(:limit).with(10).and_return(models)
+        expect(models).to receive(:count).with(:id)
+        subject
+      end
+    end
+
     context 'with an attribute needing inclusions and select' do
       let(:group_by_attribute) { 'custom_label_attribute' }
 
@@ -994,7 +1036,10 @@ RSpec.describe Search::Base::Chart do
         expect(models).to(
           receive(:group).with('other_relations.name', 'another_relations.label').and_return(models)
         )
-        expect(models).to receive(:order).with(count_id: :desc).and_return(models)
+        expect(models).to(
+          receive(:order).with(count_id: :desc, 'other_relations_name' => :desc, 'another_relations_label' => :desc)
+                         .and_return(models)
+        )
         expect(models).to receive(:limit).with(10).and_return(models)
         expect(models).to receive(:count).with(:id)
         subject
@@ -1015,7 +1060,7 @@ RSpec.describe Search::Base::Chart do
             receive(:group).with('other_relations.name', 'another_relations.label').and_return(models)
           )
           expect(models).to(
-            receive(:order).with('other_relations.name' => :desc, 'another_relations.label' => :desc).and_return(models)
+            receive(:order).with('other_relations_name' => :desc, 'another_relations_label' => :desc).and_return(models)
           )
           expect(models).to receive(:limit).with(10).and_return(models)
           expect(models).to receive(:count).with(:id)
@@ -1037,7 +1082,7 @@ RSpec.describe Search::Base::Chart do
               receive(:group).with('other_relations.name', 'another_relations.label').and_return(models)
             )
             expect(models).to(
-              receive(:order).with('other_relations.name' => :asc, 'another_relations.label' => :asc).and_return(models)
+              receive(:order).with('other_relations_name' => :asc, 'another_relations_label' => :asc).and_return(models)
             )
             expect(models).to receive(:limit).with(10).and_return(models)
             expect(models).to receive(:count).with(:id)
@@ -1055,7 +1100,7 @@ RSpec.describe Search::Base::Chart do
         it do
           expect(models).to receive(:group).with('some_attribute').and_return(models)
           expect(models).to(
-            receive(:order).with('sum_some_numeric_attribute' => :desc).and_return(models)
+            receive(:order).with('sum_some_numeric_attribute' => :desc, 'some_attribute' => :desc).and_return(models)
           )
           expect(models).to receive(:limit).with(10).and_return(models)
           expect(models).to receive(:sum).with('some_numeric_attribute')
@@ -1069,7 +1114,8 @@ RSpec.describe Search::Base::Chart do
         it do
           expect(models).to receive(:group).with('some_attribute').and_return(models)
           expect(models).to(
-            receive(:order).with('sum_extract_epoch_from_updated_at_created_at' => :desc).and_return(models)
+            receive(:order).with('sum_extract_epoch_from_updated_at_created_at' => :desc, 'some_attribute' => :desc)
+                           .and_return(models)
           )
           expect(models).to receive(:limit).with(10).and_return(models)
           expect(models).to receive(:sum).with('EXTRACT(EPOCH FROM updated_at - created_at)')
@@ -1085,7 +1131,7 @@ RSpec.describe Search::Base::Chart do
       it do
         expect(models).to receive(:group).with('some_attribute').and_return(models)
         expect(models).to(
-          receive(:order).with('average_some_numeric_attribute' => :desc).and_return(models)
+          receive(:order).with('average_some_numeric_attribute' => :desc, 'some_attribute' => :desc).and_return(models)
         )
         expect(models).to receive(:limit).with(10).and_return(models)
         expect(models).to receive(:average).with('some_numeric_attribute')
@@ -1102,26 +1148,26 @@ RSpec.describe Search::Base::Chart do
     before { expect(chart).to receive(:raw_data).and_return(raw_data) }
 
     context 'with a simple attribute' do
-      let(:raw_data) { { 'A' => 1, 'C' => 2, 'B' => 3 } }
+      let(:raw_data) { { 'B' => 3, 'C' => 2, 'A' => 1 } }
 
       it 'returns data sorted by value' do
-        is_expected.to eq_with_keys_order({ 'A' => 1, 'C' => 2, 'B' => 3 })
+        is_expected.to eq_with_keys_order({ 'B' => 3, 'C' => 2, 'A' => 1 })
       end
 
       context 'when there is nil key' do
-        let(:raw_data) { { 'A' => 1, 'C' => 2, 'B' => 3, nil => 4 } }
+        let(:raw_data) { { nil => 4, 'B' => 3, 'C' => 2, 'A' => 1 } }
 
         it 'replaces nil by "None"' do
-          is_expected.to eq_with_keys_order({ 'A' => 1, 'C' => 2, 'B' => 3, I18n.t('none') => 4 })
+          is_expected.to eq_with_keys_order({ I18n.t('none') => 4, 'B' => 3, 'C' => 2, 'A' => 1 })
         end
       end
 
       context 'when #sort_by is "label"' do
         let(:sort_by) { 'label' }
-        let(:raw_data) { { 'A' => 1, 'B' => 3, 'C' => 2, nil => 4 } }
+        let(:raw_data) { { nil => 4, 'C' => 2, 'B' => 3, 'A' => 1 } }
 
         it 'replaces nil by "None"' do
-          is_expected.to eq_with_keys_order({ 'A' => 1, 'B' => 3, 'C' => 2, I18n.t('none') => 4 })
+          is_expected.to eq_with_keys_order({ I18n.t('none') => 4, 'C' => 2, 'B' => 3, 'A' => 1 })
         end
       end
     end
@@ -1203,15 +1249,31 @@ RSpec.describe Search::Base::Chart do
       let(:group_by_attribute) { 'more_keys_attribute' }
       let(:raw_data) { { 2 => 42 } }
 
-      it 'adds missing keys, sorted by value' do
-        is_expected.to eq_with_keys_order({ 2 => 42, 1 => 0, 3 => 0 })
+      it 'adds missing keys, sorted by value and keeping default order if value is 0' do
+        is_expected.to eq_with_keys_order({ 2 => 42, 3 => 0, 1 => 0 })
       end
 
       context 'when #first is true' do
         let(:first) { true }
 
         it 'sorts in reverse' do
-          is_expected.to eq_with_keys_order({ 1 => 0, 3 => 0, 2 => 42 })
+          is_expected.to eq_with_keys_order({ 3 => 0, 1 => 0, 2 => 42 })
+        end
+      end
+
+      context 'when sort_by is "label"' do
+        let(:sort_by) { 'label' }
+
+        it 'adds missing keys, sorted by label' do
+          is_expected.to eq_with_keys_order({ 3 => 0, 2 => 42, 1 => 0 })
+        end
+
+        context 'when #first is true' do
+          let(:first) { true }
+
+          it 'sorts in reverse' do
+            is_expected.to eq_with_keys_order({ 1 => 0, 2 => 42, 3 => 0 })
+          end
         end
       end
     end
@@ -1270,6 +1332,95 @@ RSpec.describe Search::Base::Chart do
 
           it 'does not sort labelled keys' do
             is_expected.to eq_with_keys_order({ 'lebal_ot_yek' => 84, I18n.t('none') => 63, 'a_lebal_ot_yek' => 42 })
+          end
+        end
+      end
+
+      context 'having selects' do
+        context 'with nil' do
+          let(:group_by_attribute) { 'custom_label_attribute' }
+          let(:raw_data) do
+            {
+              ['Object 1', 'A'] => 126,
+              ['Object 2', nil] => 105,
+              [nil, 'B'] => 84,
+              [nil, nil] => 63
+            }
+          end
+
+          it 'labels nil keys as "None"' do
+            is_expected.to eq_with_keys_order(
+              {
+                'Object 1 (A)' => 126,
+                'Object 2 ()' => 105,
+                ' (B)' => 84,
+                I18n.t('none') => 63
+              }
+            )
+          end
+
+          context 'when #sort_by is "label"' do
+            let(:sort_by) { 'label' }
+
+            it 'labels nil keys as "None"' do
+              is_expected.to eq_with_keys_order(
+                {
+                  I18n.t('none') => 63,
+                  'Object 2 ()' => 105,
+                  'Object 1 (A)' => 126,
+                  ' (B)' => 84
+                }
+              )
+            end
+          end
+
+          context 'when custom #nil_key?' do
+            let(:group_by_attribute) { 'custom_label_attribute_b' }
+            let(:raw_data) do
+              {
+                ['Object 1', 'A'] => 126,
+                ['Object 2', nil] => 105,
+                [nil, 'B'] => 84
+              }
+            end
+
+            it 'labels nil keys as "None"' do
+              is_expected.to eq_with_keys_order(
+                {
+                  'Object 1 [A]' => 126,
+                  'Object 2 []' => 105,
+                  I18n.t('none') => 84
+                }
+              )
+            end
+
+            context 'when #sort_by is "label"' do
+              let(:sort_by) { 'label' }
+
+              it 'labels nil keys as "None"' do
+                is_expected.to eq_with_keys_order(
+                  {
+                    I18n.t('none') => 84,
+                    'Object 2 []' => 105,
+                    'Object 1 [A]' => 126
+                  }
+                )
+              end
+            end
+          end
+        end
+      end
+
+      context 'needing sort before labelling' do
+        let(:group_by_attribute) { 'custom_label_numeric_attribute' }
+
+        context 'when #sort_by is "label"' do
+          let(:sort_by) { 'label' }
+          let(:first) { true }
+          let(:raw_data) { { 1 => 2, 2 => 3, 10 => 42 } }
+
+          it 'labels keys and sort in numeric order' do
+            is_expected.to eq_with_keys_order({ 'Level 1' => 2, 'Level 2' => 3, 'Level 10' => 42 })
           end
         end
       end

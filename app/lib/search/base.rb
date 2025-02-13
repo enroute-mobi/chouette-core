@@ -304,7 +304,7 @@ module Search
           end
         end
 
-        def initialize(name, sub_type: false, keys: nil, joins: nil, selects: nil, sortable: true)
+        def initialize(name, sub_type: false, keys: nil, joins: nil, selects: nil, sortable: :after_label)
           @name = name
           @sub_type = sub_type
           @keys = keys
@@ -328,6 +328,27 @@ module Search
           keys
         end
 
+        def keys_zero_data
+          @keys_zero_data ||= keys.map { |k| [k, 0] }.to_h.freeze
+        end
+
+        def nil_key?(key)
+          array? ? key.all?(&:nil?) : key.nil?
+        end
+
+        def delete_and_return_nil_key!(data)
+          if array?
+            nil_key = data.keys.find { |k| nil_key?(k) }
+            data.delete(nil_key) if nil_key
+          else
+            data.delete(nil)
+          end
+        end
+
+        def array?
+          @array ||= selects && selects.length > 1
+        end
+
         def groups
           @groups ||= selects || [name]
         end
@@ -336,8 +357,8 @@ module Search
           request.group(*groups).order(order_arg).limit(top_count)
         end
 
-        def order_arg(asc_desc)
-          groups.map { |s| [s, asc_desc] }.to_h
+        def order_arg(request, asc_desc)
+          groups.map { |s| [request.send(:column_alias_for, s), asc_desc] }.to_h
         end
 
         protected
@@ -589,8 +610,7 @@ module Search
 
         data = raw_data
         data = compute_percent(data)
-        data = add_missing_keys(data)
-        @data = label_keys(data)
+        @data = DataTransformer.new(self).transform(data)
       end
 
       def empty?
@@ -624,17 +644,15 @@ module Search
       end
 
       def group_order_limit(request)
-        group_by_attribute.group_order_limit(request, order_arg, top_count, period)
+        group_by_attribute.group_order_limit(request, order_arg(request), top_count, period)
       end
 
-      def order_arg
+      def order_arg(request)
         asc_desc = first ? :asc : :desc
 
-        if sort_by == 'label'
-          group_by_attribute.order_arg(asc_desc)
-        else
-          { order_aggregate_alias => asc_desc }
-        end
+        order_arg = group_by_attribute.order_arg(request, asc_desc)
+        order_arg = { order_aggregate_alias => asc_desc }.merge(order_arg) if sort_by == 'value'
+        order_arg
       end
 
       def order_aggregate_alias
@@ -676,69 +694,128 @@ module Search
         end
       end
 
-      def add_missing_keys(data)
-        if group_by_attribute.keys
-          new_data = group_by_attribute.keys.map { |k| [k, 0] }.to_h.merge(data)
+      class DataTransformer
+        delegate :group_by_attribute, :sort_by, :first, to: :chart
+        delegate :label?, :label, to: :group_by_attribute
 
-          if group_by_attribute.sortable && sort_by == 'value'
-            # we need to sort the newly added keys by their respective values
-            new_data = new_data.sort { |a, b| data_values_sorter(a, b) }.to_h
+        def initialize(chart)
+          @chart = chart
+        end
+        attr_reader :chart
+
+        # Adds missing keys, labels keys and sorts data.
+        def transform(data)
+          new_data = add_missing_keys(data)
+          label_all(new_data)
+        end
+
+        private
+
+        def add_missing_keys_with_value_sort?
+          group_by_attribute.sortable && sort_by == 'value'
+        end
+
+        # A sort is needed after labelling if the attribute is sortable, we sort by label and either we label all keys
+        # or we added non-sorted missing values.
+        def label_keys_with_label_sort?
+          group_by_attribute.sortable && sort_by == 'label' && (label? || group_by_attribute.keys)
+        end
+
+        # Adds missing keys specified by group_attribute.keys in data if any.
+        # The keys of data are already sorted by the SQL request except if we sort by label and label? is true, in which
+        # case a new sort will be necessary after labelling the keys.
+        def add_missing_keys(data)
+          if group_by_attribute.keys
+            if add_missing_keys_with_value_sort?
+              add_missing_keys_with_value_sort(data)
+            else
+              add_missing_keys_with_label_sort(data)
+            end
+          else
+            data
+          end
+        end
+
+        def add_missing_keys_with_value_sort(data)
+          # The keys are already in the right order, so we just add the missing ones.
+          missing_keys = group_by_attribute.keys_zero_data.except(*data.keys)
+          if first
+            missing_keys.merge(data)
+          else
+            data.merge(missing_keys)
+          end
+        end
+
+        def add_missing_keys_with_label_sort(data)
+          # For now, we just add the missing keys, #label_keys_with_label_sort will take care of sorting the keys.
+          group_by_attribute.keys_zero_data.merge(data)
+        end
+
+        # Labels all keys of data and sort them again if necessary (if sort by "label").
+        def label_all(data)
+          if label_keys_with_label_sort?
+            label_keys_with_label_sort(data)
+          else
+            label_keys_without_sort(data)
+          end
+        end
+
+        # Labels all keys (if necessary) and sorts data.
+        # The nil key "None" is placed last in ascending order and first in descending order.
+        def label_keys_with_label_sort(data)
+          # The idea is to extract the nil key, label and sort the other keys and add the nil key afterwards.
+
+          nil_value = group_by_attribute.delete_and_return_nil_key!(data)
+
+          new_data = if group_by_attribute.sortable == :before_label
+                       sort_and_label_keys(data)
+                     else # :after_label
+                       label_and_sort_keys(data)
+                     end
+
+          sort_array_data_and_add_nil_value(new_data, nil_value)
+        end
+
+        def sort_and_label_keys(data)
+          new_data = data.sort_by(&:first)
+          if label?
+            new_data.each do |d|
+              d[0] = label(d[0])
+            end
+          end
+          new_data
+        end
+
+        def label_and_sort_keys(data)
+          new_data = data
+          new_data = new_data.transform_keys { |k| label(k) } if label?
+          new_data.sort_by(&:first)
+        end
+
+        def sort_array_data_and_add_nil_value(array_data, nil_value)
+          # If first, we append nil key at the end (if present).
+          # If not first, we reverse the sorted keys and start with the nil key (if present).
+
+          if first
+            new_data = array_data.to_h
+            new_data[I18n.t('none')] = nil_value if nil_value
+          else
+            new_data = array_data.reverse.to_h
+            new_data = { I18n.t('none') => nil_value }.merge(new_data) if nil_value
           end
 
           new_data
-        else
-          data
-        end
-      end
-
-      def data_values_sorter(kv1, kv2)
-        v1 = kv1[1]
-        v2 = kv2[1]
-
-        if v1 == v2
-          0
-        else
-          first ? v1 <=> v2 : v2 <=> v1
-        end
-      end
-
-      def label_keys(data)
-        if group_by_attribute.label? && group_by_attribute.sortable && sort_by == 'label'
-          label_keys_with_sort(data)
-        else
-          label_keys_without_sort(data)
-        end
-      end
-
-      def label_keys_with_sort(data) # rubocop:disable Metrics/MethodLength
-        # The idea is to extract the nil key, label and sort the other keys and add the nil key afterwards.
-        # If first, we append nil key at the end (if present).
-        # If not first, we reverse the sorted keys and start with the nil key (if present).
-
-        nil_data = data.delete(nil)
-
-        new_data = data.transform_keys { |k| group_by_attribute.label(k) }
-        new_data = new_data.sort_by(&:first)
-
-        if first
-          new_data = new_data.to_h
-          new_data[I18n.t('none')] = nil_data if nil_data
-        else
-          new_data = new_data.reverse.to_h
-          new_data = { I18n.t('none') => nil_data }.merge(new_data) if nil_data
         end
 
-        new_data
-      end
-
-      def label_keys_without_sort(data)
-        data.transform_keys do |k|
-          if k.nil?
-            I18n.t('none')
-          elsif group_by_attribute.label?
-            group_by_attribute.label(k)
-          else
-            k
+        def label_keys_without_sort(data)
+          data.transform_keys do |k|
+            if group_by_attribute.nil_key?(k)
+              I18n.t('none')
+            elsif label?
+              label(k)
+            else
+              k
+            end
           end
         end
       end

@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-RSpec.describe 'aggregates/show', type: :view do
+RSpec.describe 'aggregates/show.html.slim', type: :view do
   let(:context) do
     Chouette.create do
       workgroup owner: Organisation.find_by(code: 'first') do

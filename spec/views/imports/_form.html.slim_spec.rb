@@ -1,4 +1,6 @@
-RSpec.describe 'imports/_form', type: :view do
+# frozen_string_literal: true
+
+RSpec.describe 'imports/_form.html.slim', type: :view do
   let(:policy_context_class) { Policy::Context::Workbench }
   let(:import){ create :workbench_import, workbench: current_workbench }
 

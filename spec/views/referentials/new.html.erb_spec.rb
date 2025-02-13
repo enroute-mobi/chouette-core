@@ -1,4 +1,6 @@
-describe "referentials/new", :type => :view do
+# frozen_string_literal: true
+
+describe 'referentials/new.html.slim', type: :view do
   let(:context) do
     Chouette.create { workbench }
   end

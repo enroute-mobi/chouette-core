@@ -1,4 +1,6 @@
-RSpec.describe "referentials/show" do
+# frozen_string_literal: true
+
+RSpec.describe 'referentials/show.html.slim' do
   subject { render template: "referentials/show" }
 
   let(:context) { Chouette.create { referential } }
@@ -34,7 +36,7 @@ RSpec.describe "referentials/show" do
 end
 
 # Legacy view specs
-RSpec.describe "referentials/show", type: :view do
+RSpec.describe 'referentials/show.html.slim', type: :view do
   let(:policy_context_class) { Policy::Context::Workbench }
   let(:referential) do
     referential = create(:workbench_referential, organisation: organisation, workbench: current_workbench)

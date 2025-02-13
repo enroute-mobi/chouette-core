@@ -986,7 +986,7 @@ class Export::Gtfs < Export::Base
           target.trips << trip_attributes
           index.register_trip_id vehicle_journey, trip_attributes[:id]
 
-          flexible_service = vehicle_journey.flexible_service || vehicle_journey.line.flexible_service || false
+          flexible_service = vehicle_journey.flexible_service || vehicle_journey.line.flexible_service? || false
           index.register_pickup_type vehicle_journey, flexible_service
         end
       end

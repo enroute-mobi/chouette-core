@@ -60,7 +60,7 @@ module Control
       end
 
       def control_class
-        self.class.parent
+        self.class.module_parent
       end
 
       delegate :referential, :workbench, to: :parent, allow_nil: true

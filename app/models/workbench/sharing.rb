@@ -19,7 +19,7 @@ class Workbench
 
     class << self
       def model_name
-        @_model_name ||= ActiveModel::Name.new(self, parent) # rubocop:disable Naming/MemoizedInstanceVariableName
+        @_model_name ||= ActiveModel::Name.new(self, module_parent) # rubocop:disable Naming/MemoizedInstanceVariableName
       end
     end
 

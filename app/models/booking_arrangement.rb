@@ -3,6 +3,8 @@ class BookingArrangement < ApplicationModel
 
   belongs_to :line_provider
 
+  has_many :lines
+
   validates :name, presence: true
   validates :url, presence: true, url: { scheme: %w{http https} }
   validates :booking_url, presence: true, url: { scheme: %w{http https} }

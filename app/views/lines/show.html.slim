@@ -12,7 +12,8 @@
           = d.attribute :number
           = d.attribute :transport_mode, as: :enumerize
           = d.attribute :transport_submode, as: :enumerize
-          = d.attribute :flexible_service, as: :boolean
+          = d.attribute :flexible_line_type, as: :enumerize
+          = d.attribute :booking_arrangement, as: :association, link: ->(booking_arrangement) { workbench_line_referential_booking_arrangement_path(@workbench, booking_arrangement) }
           = d.attribute :seasonal, as: :boolean
 
         = simple_block_for @line, title: t("lines.form.sections.hierarchy") do |d|

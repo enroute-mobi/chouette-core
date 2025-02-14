@@ -75,6 +75,7 @@ en:
         line_notices: "Line notices"
         activation: 'Activation'
         internals: "Internals"
+        flexible_service: "Flexible service"
         accessibility: "Accessibility"
   enumerize:
     line:
@@ -113,6 +114,17 @@ en:
         'yes': 'Yes'
         'no': 'No'
         partial: Partial
+      flexible_line_type:
+        corridor_service: "Corridor Service"
+        main_route_with_flexible_ends: "Main Route with Flexible Ends"
+        flexible_areas_only: "Flexible Areas Only"
+        hail_and_ride_sections: "Hail and Ride Sections"
+        fixed_stop_area_wide: "Fixed Stop Area Wide"
+        free_area_area_wide: "Free Area, Area Wide"
+        mixed_flexible: "Mixed Flexible"
+        mixed_flexible_and_fixed: "Mixed Flexible and Fixed"
+        fixed: "Fixed"
+        other: "Other"
   activerecord:
     errors:
       models:
@@ -162,7 +174,9 @@ en:
         audible_signals_availability: "Audible Signals Available"
         visual_signs_availability: "Visual Signs Available"
         accessibility_limitation_description: "Description"
-        flexible_service: "Flexible line"
+        booking_arrangement: "Booking Arrangements"
+        booking_arrangement_id: "Booking Arrangements"
+        flexible_line_type: "Flexible line type"
         unspecified_mrs: "Not specified"
         accessible: "Accessible"
         not_accessible: "Not accessible"

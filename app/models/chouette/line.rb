@@ -17,6 +17,18 @@ module Chouette
     enumerize :lift_free_accessibility, in: %i[unknown yes no partial], default: :unknown
     enumerize :audible_signals_availability, in: %i[unknown yes no partial], default: :unknown
     enumerize :visual_signs_availability, in: %i[unknown yes no partial], default: :unknown
+    enumerize :flexible_line_type, in: %i[
+    corridor_service
+    main_route_with_flexible_ends
+    flexible_areas_only
+    hail_and_ride_sections
+    fixed_stop_area_wide
+    free_area_area_wide
+    mixed_flexible
+    mixed_flexible_and_fixed
+    fixed
+    other
+  ], scope: true
 
     include ColorSupport
     include CodeSupport
@@ -28,6 +40,7 @@ module Chouette
 
     belongs_to :company, optional: true # CHOUETTE-3247 failing specs
     belongs_to :network, optional: true # CHOUETTE-3247 failing specs
+    belongs_to :booking_arrangement, optional: true
 
     # this 'light' relation prevents the custom fields loading
     belongs_to :company_light, lambda { # CHOUETTE-3247 failing specs
@@ -217,6 +230,10 @@ module Chouette
 
     def code
       get_objectid.try(:local_id)
+    end
+
+    def flexible_service?
+      flexible_line_type.present?
     end
 
     private

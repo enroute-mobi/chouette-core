@@ -76,6 +76,7 @@ fr:
         line_notices: "Notes de lignes"
         activation: "Activation"
         internals: "Interne"
+        flexible_service: "Service flexible"
         accessibility: "Accessibilité"
   enumerize:
     line:
@@ -114,6 +115,17 @@ fr:
         'yes': Oui
         'no': Non
         partial: Partiel
+      flexible_line_type:
+        corridor_service: "Service en corridor"
+        main_route_with_flexible_ends: "Route principale avec extrémités flexibles"
+        flexible_areas_only: "Zones flexibles uniquement"
+        hail_and_ride_sections: "Sections de ramassage à la demande"
+        fixed_stop_area_wide: "Zone à arrêts fixes"
+        free_area_area_wide: "Zone libre"
+        mixed_flexible: "Mixte flexible"
+        mixed_flexible_and_fixed: "Mixte flexible et fixe"
+        fixed: "Fixe"
+        other: "Autre"
   activerecord:
     errors:
       models:
@@ -170,7 +182,9 @@ fr:
         audible_signals_availability: "Signalétique auditive disponible"
         visual_signs_availability: "Signalétique visuelle disponible"
         accessibility_limitation_description: "Description"
-        flexible_service: "Transport à la demande"
+        booking_arrangement: "Conditions de réservation"
+        booking_arrangement_id: "Conditions de réservation"
+        flexible_line_type: "Type de ligne flexible"
         unspecified_mrs: "Non spécifié"
         accessible: "Accessible"
         not_accessible: "Non accessible"

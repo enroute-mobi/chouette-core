@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2025_01_30_164134) do
+ActiveRecord::Schema.define(version: 2025_02_12_100249) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "btree_gin"
@@ -873,7 +873,6 @@ ActiveRecord::Schema.define(version: 2025_01_30_164134) do
     t.string "transport_mode"
     t.string "registration_number"
     t.string "comment"
-    t.boolean "flexible_service"
     t.string "url"
     t.string "color", limit: 6
     t.string "text_color", limit: 6
@@ -899,6 +898,9 @@ ActiveRecord::Schema.define(version: 2025_01_30_164134) do
     t.string "audible_signals_availability"
     t.string "visual_signs_availability"
     t.text "accessibility_limitation_description"
+    t.string "flexible_line_type"
+    t.bigint "booking_arrangement_id"
+    t.index ["booking_arrangement_id"], name: "index_lines_on_booking_arrangement_id"
     t.index ["line_provider_id"], name: "index_lines_on_line_provider_id"
     t.index ["line_referential_id", "registration_number"], name: "index_lines_on_referential_id_and_registration_number"
     t.index ["line_referential_id"], name: "index_lines_on_line_referential_id"
@@ -1814,6 +1816,7 @@ ActiveRecord::Schema.define(version: 2025_01_30_164134) do
   add_foreign_key "journey_patterns_stop_points", "stop_points", name: "jpsp_stoppoint_fkey", on_delete: :cascade
   add_foreign_key "line_group_members", "line_groups", column: "group_id"
   add_foreign_key "line_group_members", "lines"
+  add_foreign_key "lines", "booking_arrangements"
   add_foreign_key "macro_runs", "macro_context_runs"
   add_foreign_key "macros", "macro_contexts"
   add_foreign_key "point_of_interest_categories", "point_of_interest_categories", column: "parent_id"

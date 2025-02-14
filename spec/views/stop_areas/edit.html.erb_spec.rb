@@ -1,4 +1,6 @@
-describe 'stop_areas/edit', type: :view do
+# frozen_string_literal: true
+
+describe 'stop_areas/edit.html.slim', type: :view do
   let(:context) do
     Chouette.create do
       stop_area

@@ -1,4 +1,6 @@
-describe 'companies/new', type: :view do
+# frozen_string_literal: true
+
+describe 'companies/new.html.slim', type: :view do
 
   let(:context) { Chouette.create { company } }
 

@@ -1,4 +1,6 @@
-describe 'lines/new', type: :view do
+# frozen_string_literal: true
+
+describe 'lines/new.html.slim', type: :view do
   let(:context) { Chouette.create { line } }
 
   let!(:workbench) { assign :workbench, context.workbench }

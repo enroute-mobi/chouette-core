@@ -1,4 +1,6 @@
-RSpec.describe 'organisations/show', type: :view do
+# frozen_string_literal: true
+
+RSpec.describe 'organisations/show.html.slim', type: :view do
   assign_organisation
 
   let(:organisation) { first_organisation }

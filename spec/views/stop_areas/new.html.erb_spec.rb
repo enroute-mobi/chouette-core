@@ -1,4 +1,6 @@
-describe 'stop_areas/new', type: :view do
+# frozen_string_literal: true
+
+describe 'stop_areas/new.html.slim', type: :view do
 
   let(:context) { Chouette.create { stop_area_referential } }
 

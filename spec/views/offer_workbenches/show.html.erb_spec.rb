@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 RSpec::Matchers.define :have_box_for_item do |item, disabled|
   match do |actual|
     klass = "#{TableBuilderHelper.item_row_class_name([item])}-#{item.id}"
@@ -11,7 +13,7 @@ RSpec::Matchers.define :have_box_for_item do |item, disabled|
   description { "have a #{disabled ? "disabled ": ""}box for the item ##{item.id}" }
 end
 
-RSpec.describe "workbenches/show", :type => :view do
+RSpec.describe 'workbenches/show.html.slim', type: :view do
   let(:context) do
     Chouette.create do
       workgroup do

@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-RSpec.describe 'documents/show', type: :view do
+RSpec.describe 'documents/show.html.slim', type: :view do
   let(:context) do
     Chouette.create do
       workbench organisation: Organisation.find_by(code: 'first') do

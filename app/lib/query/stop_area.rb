@@ -87,7 +87,7 @@ module Query
     end
 
     def with_coordinates
-      scope.where.not(latitude: nil, longitude: nil)
+      scope.where.not(latitude: nil).where.not(longitude: nil)
     end
 
     def with_country

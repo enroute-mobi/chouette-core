@@ -18,6 +18,7 @@ en:
     attribute_uniqueness: "The %{target_model} '%{name}' with id '%{id}' has not an unique '%{target_attribute}'"
     absence_attribute: "The attribute %{target_attribute} of %{target_model} %{name} is defined"
     transport_mode_compatibility: "The Stop Area %{stop_area_name} has a Transport Mode incompatible with the Line %{line_name}"
+    travel_time: "The travel time is longer than expected on %{date}"
 
   activerecord:
     models:

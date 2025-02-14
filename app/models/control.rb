@@ -23,6 +23,7 @@ module Control
       Control::ServiceCountInRange,
       Control::AbsenceAttribute,
       Control::TransportModeCompatibility,
+      Control::TravelTime,
       Control::Dummy
     ]
   end

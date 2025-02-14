@@ -62,6 +62,8 @@ fr:
         one: Absence d'un attribut
       control/transport_mode_compatibility:
         one: Compatibilité des modes de transport
+      control/travel_time:
+        one: Temps de Parcours
 
     attributes:
       control/base:
@@ -121,3 +123,8 @@ fr:
         uniqueness_scope: Portée de l'unicité
       control/absence_attribute:
         target_attribute: Attribut cible
+      control/travel_time:
+        from_stop_area_id: Origine
+        to_stop_area_id: Destination
+        departure_time_of_day: Horaire de départ
+        maximum_travel_time_in_minutes: Temps de Parcours maximum

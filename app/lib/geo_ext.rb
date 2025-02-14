@@ -6,6 +6,8 @@ module Geo
     FORMAT = /\A *(?<first>-?[0-9]+(?>\.[0-9]+)?) *[,: ] *(?<second>-?[0-9]+(?>\.[0-9]+)?) *\Z/.freeze
 
     def self.parse(definition)
+      return definition if definition.is_a?(Geo::Position)
+
       if FORMAT =~ definition
         Geo::Position.new latitude: ::Regexp.last_match(1).to_f, longitude: ::Regexp.last_match(2).to_f
       end

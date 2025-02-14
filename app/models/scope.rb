@@ -140,6 +140,10 @@ module Scope
       )
     end
 
+    def validity_period
+      nil
+    end
+
     protected
 
     def workgroup_scope
@@ -276,6 +280,10 @@ module Scope
       ServiceCount.none
     end
 
+    def validity_period
+      nil
+    end
+
     private
 
     attr_reader :workbench
@@ -305,6 +313,7 @@ module Scope
              :time_table_periods,
              :time_table_dates,
              :service_counts,
+             :validity_period,
              to: :referential
     delegate :workgroup, to: :workbench
 

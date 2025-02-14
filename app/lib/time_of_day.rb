@@ -272,6 +272,7 @@ class TimeOfDay
       def serialize(value)
         return unless value.present?
 
+        value = TimeOfDay.from_input_hash(value) if value.is_a?(Hash)
         value.to_hms
       end
 
@@ -290,6 +291,7 @@ class TimeOfDay
       def serialize(value)
         return unless value.present?
 
+        value = TimeOfDay.from_input_hash(value) if value.is_a?(Hash)
         value.second_offset
       end
 

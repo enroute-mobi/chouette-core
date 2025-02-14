@@ -51,8 +51,17 @@ module OptionsSupport
             serializer.new.cast(value)
           end
         rescue => e
-          Rails.logger.warn("Could not serialize #{attribute_name}. value: #{value}, \n Error: #{e}")
+          Rails.logger.warn("Could not cast #{attribute_name}. value: #{value}, \n Error: #{e}")
           value
+        end
+
+        if serializer && opts[:fixed_serializer]
+          define_method "#{attribute_name}=" do |value|
+            super serializer.new.serialize(value)
+          rescue => e
+            Rails.logger.warn("Could not serialize #{attribute_name}: value: #{value}", e)
+            raise e
+          end
         end
       end
 

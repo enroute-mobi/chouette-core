@@ -1694,3 +1694,161 @@ RSpec.describe Import::Gtfs do
     end
   end
 end
+
+# rubocop:disable Style/WordArray
+RSpec.describe Import::Gtfs::TripDecorator do
+  subject(:trip_decorator) { described_class.new(trip, stop_times) }
+  let(:trip) do
+    GTFS::Trip.new(id: 'AAMV1', route_id: 'AAMV', service_id: 'WE', direction_id: '0', headsign: 'to Amargosa Valley')
+  end
+  let(:stop_time_1_pickup) { nil }
+  let(:stop_time_1_drop_off) { nil }
+  let(:stop_time_2_pickup) { nil }
+  let(:stop_time_2_drop_off) { nil }
+  let(:stop_times) do
+    [
+      GTFS::StopTime.new(
+        trip_id: 'AAMV1',
+        stop_id: 'BEATTY_AIRPORT',
+        arrival_time: '8:00:00',
+        departure_time: '8:00:00',
+        stop_sequence: '1',
+        pickup_type: stop_time_1_pickup,
+        drop_off_type: stop_time_1_drop_off
+      ),
+      GTFS::StopTime.new(
+        trip_id: 'AAMV1',
+        stop_id: 'AMV',
+        arrival_time: '9:00:00',
+        departure_time: '9:00:00',
+        stop_sequence: '2',
+        pickup_type: stop_time_2_pickup,
+        drop_off_type: stop_time_2_drop_off
+      )
+    ]
+  end
+
+  describe '#route_signature' do
+    subject { trip_decorator.route_signature }
+
+    context 'without pickup/dropoff' do
+      it { is_expected.to eq(['AAMV', '0', []]) }
+    end
+
+    context 'with pickup/drop_off' do
+      let(:stop_time_1_pickup) { '1' }
+      let(:stop_time_2_drop_off) { '1' }
+
+      it { is_expected.to eq(['AAMV', '0', [['AMV', '0', '1'], ['BEATTY_AIRPORT', '1', '0']]]) }
+
+      context 'but not on the last stop' do
+        let(:stop_time_2_drop_off) { nil }
+
+        it { is_expected.to eq(['AAMV', '0', [['BEATTY_AIRPORT', '1', '0']]]) }
+      end
+    end
+  end
+
+  describe '#journey_pattern_signature' do
+    subject { trip_decorator.journey_pattern_signature }
+
+    it { is_expected.to eq(['AAMV', '0', [], 'to Amargosa Valley', nil, 'BEATTY_AIRPORT', 'AMV']) }
+  end
+end
+# rubocop:enable Style/WordArray
+
+describe Import::Gtfs::RouteJourneyPatterns::RouteDecorator do
+  subject(:route_decorator) do
+    described_class.new(route_description, journey_pattern_descriptions, stop_areas: stop_areas_finder)
+  end
+  let(:stop_time_pickup) { nil }
+  let(:stop_time_drop_off) { nil }
+  let(:stop_time) do
+    GTFS::StopTime.new(
+      trip_id: 'AAMV1',
+      stop_id: 'BEATTY_AIRPORT',
+      arrival_time: '8:00:00',
+      departure_time: '8:00:00',
+      stop_sequence: '1',
+      pickup_type: stop_time_pickup,
+      drop_off_type: stop_time_drop_off
+    )
+  end
+  let(:route_description) { double(:route_description, stop_times: [stop_time]) }
+  let(:journey_pattern_descriptions) { double(:journey_pattern_descriptions) }
+  let(:stop_area_ids) { { 'BEATTY_AIRPORT' => 42 } }
+  let(:stop_areas_finder) do
+    double(:stop_areas_finder).tap do |stop_areas_finder|
+      allow(stop_areas_finder).to receive(:find) { |stop_id| stop_area_ids[stop_id] }
+    end
+  end
+
+  describe '#stop_points' do
+    subject { route_decorator.stop_points }
+
+    context 'when pickup/drop_off is nil' do
+      let(:stop_time_pickup) { nil }
+      let(:stop_time_drop_off) { nil }
+
+      it do
+        is_expected.to match_array(
+          [
+            have_attributes(stop_area_id: 42, position: 0, for_boarding: 'normal', for_alighting: 'normal')
+          ]
+        )
+      end
+    end
+
+    context 'when pickup/drop_off is 0' do
+      let(:stop_time_pickup) { '0' }
+      let(:stop_time_drop_off) { '0' }
+
+      it do
+        is_expected.to match_array(
+          [
+            have_attributes(stop_area_id: 42, position: 0, for_boarding: 'normal', for_alighting: 'normal')
+          ]
+        )
+      end
+    end
+
+    context 'when pickup/drop_off is 1' do
+      let(:stop_time_pickup) { '1' }
+      let(:stop_time_drop_off) { '1' }
+
+      it do
+        is_expected.to match_array(
+          [
+            have_attributes(stop_area_id: 42, position: 0, for_boarding: 'forbidden', for_alighting: 'forbidden')
+          ]
+        )
+      end
+    end
+
+    context 'when pickup/drop_off is 2' do
+      let(:stop_time_pickup) { '2' }
+      let(:stop_time_drop_off) { '2' }
+
+      it do
+        is_expected.to match_array(
+          [
+            have_attributes(stop_area_id: 42, position: 0, for_boarding: 'request_stop', for_alighting: 'request_stop')
+          ]
+        )
+      end
+    end
+
+    context 'when pickup/drop_off is 3' do
+      let(:stop_time_pickup) { '3' }
+      let(:stop_time_drop_off) { '3' }
+
+      it do
+        is_expected.to match_array(
+          [
+            have_attributes(stop_area_id: 42, position: 0, for_boarding: 'is_flexible', for_alighting: 'is_flexible')
+          ]
+        )
+      end
+    end
+  end
+end

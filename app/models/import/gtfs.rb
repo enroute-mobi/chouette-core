@@ -902,7 +902,11 @@ class Import::Gtfs < Import::Base
     delegate :each, :length, :[], to: :stop_ids
 
     def route_signature
-      [ route_id, direction_id ]
+      @route_signature ||= [
+        route_id,
+        direction_id,
+        stop_times_signature
+      ].freeze
     end
 
     def stop_ids
@@ -910,17 +914,28 @@ class Import::Gtfs < Import::Base
     end
 
     def journey_pattern_signature
-      [
-        route_id,
-        direction_id,
+      @journey_pattern_signature ||= [
+        *route_signature,
         headsign,
         shape_id,
         *stop_ids
-      ]
+      ].freeze
     end
 
     def valid?
       stop_times.many?
+    end
+
+    private
+
+    def stop_times_signature
+      skip = true
+      stop_times.reverse_each.filter_map do |stop_time|
+        next if skip && stop_time.pickup_type.nil? && stop_time.drop_off_type.nil?
+
+        skip = false
+        [stop_time.stop_id, stop_time.pickup_type || '0', stop_time.drop_off_type || '0']
+      end.to_a
     end
   end
 
@@ -1166,7 +1181,12 @@ class Import::Gtfs < Import::Base
       def stop_points
         @stop_points ||= stop_times.map.with_index do |stop_time, position|
           stop_area_id = stop_areas.find stop_time.stop_id
-          Chouette::StopPoint.new(stop_area_id: stop_area_id, position: position).with_transient(stop_id: stop_time.stop_id)
+          Chouette::StopPoint.new(
+            stop_area_id: stop_area_id,
+            position: position,
+            for_boarding: convert_pickup_and_drop_off_type(stop_time.pickup_type),
+            for_alighting: convert_pickup_and_drop_off_type(stop_time.drop_off_type)
+          ).with_transient(stop_id: stop_time.stop_id)
         end
       end
 
@@ -1178,6 +1198,17 @@ class Import::Gtfs < Import::Base
         journey_pattern_descriptions.map do |journey_pattern_description|
           JourneyPatternDecorator.new self, journey_pattern_description
         end
+      end
+
+      private
+
+      def convert_pickup_and_drop_off_type(value)
+        @convert_pickup_and_drop_off_type_hash ||= {
+          '1' => 'forbidden',
+          '2' => 'request_stop',
+          '3' => 'is_flexible'
+        }.freeze
+        @convert_pickup_and_drop_off_type_hash[value] || 'normal'
       end
     end
 

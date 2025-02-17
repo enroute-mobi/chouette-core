@@ -610,7 +610,7 @@ RSpec.describe Export::Gtfs, type: [:model, :with_exportable_referential] do
         end
 
         context 'when Line is flexible' do
-          before { line.flexible_service = true }
+          before { allow(line).to receive(:flexible_service?).and_return(true) }
 
           it { is_expected.to eq(715)  }
         end
@@ -655,7 +655,7 @@ RSpec.describe Export::Gtfs, type: [:model, :with_exportable_referential] do
             it { is_expected.to eq(expected_route) }
 
             context 'when Line is flexible' do
-              before { line.flexible_service = true }
+              before { allow(line).to receive(:flexible_service?).and_return(true) }
 
               it { is_expected.to eq(expected_route)  }
             end
@@ -1239,7 +1239,7 @@ RSpec.describe Export::Gtfs, type: [:model, :with_exportable_referential] do
     context "when the Line has flexible service" do
       it "registers the GTFS pickup_type according to the Line" do
         vehicle_journey = vehicle_journeys.first
-        vehicle_journey.line.update flexible_service: true
+        vehicle_journey.line.update flexible_line_type: :other
 
         part.export!
 

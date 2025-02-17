@@ -763,7 +763,7 @@ class Export::Gtfs < Export::Base
       end
 
       def route_type
-        return 715 if flexible_service && !ignore_extended_gtfs_route_types
+        return 715 if flexible_service? && !ignore_extended_gtfs_route_types
 
         route_type_mapper.for chouette_transport_mode
       end

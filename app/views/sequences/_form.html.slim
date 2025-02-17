@@ -21,17 +21,19 @@
         .flex.items-center.mb-10
           = f.label :static_list, class: 'flex items-center justify-end text-right w-2/6 mr-8 mb-0 control-label pt-0 control-label'
           .w-4/6.flex.flex-col.items-start.relative
-            textarea.form-control.text.optional.placeholder-gray-500 x-on:paste="pasteFromClipboard"
+            textarea.form-control.text.optional.placeholder-gray-500 x-ref="manualInput" x-on:paste="pasteFromClipboard" placeholder=I18n.t('sequences.form.placeholders.static_list')
+
+            button.bg-enroute-chouette-primary.text-white.px-4.py-2.rounded.mt-2 @click.prevent="addFromTextArea()"
+              i.fas.fa-plus-circle.mr-2
+              span
+                = t('actions.add')
+
         = f.hidden_field :static_list, input_html: { "x-bind:value" => "static_list" }
 
         .flex.items-center.mb-10
           .flex.justify-end.text-right.w-2/6.mr-8.mb-0.control-label.pt-0.text.optional
           .w-4/6.flex.flex-col.items-center.relative
             table.w-full.border-collapse.mt-4
-              thead
-                tr.bg-gray-200.text-left.text-sm.uppercase
-                  th.px-6.py-4.font-medium.text-gray-900 = t("activerecord.attributes.sequence.values")
-                  th.px-6.py-4.font-medium.text-gray-900
               tbody
                 template x-for="(item, index) in paginatedItems" :key="index"
                   tr :class="index % 2 === 0 ? 'bg-gray-50' : 'bg-white'"
@@ -40,7 +42,8 @@
                     td.px-6.py-4.text-right
                       span.inline-flex.items-center.justify-center.bg-red-500.text-white.px-4.py-2.rounded.cursor-pointer.hover:bg-red-600 @click="removeItem(index)"
                         i.fas.fa-trash.mr-2
-                        span.cursor-pointer Supprimer
+                        span.cursor-pointer
+                          = t('actions.delete')
 
             div.flex.items-center.ml-auto.mt-4
               span.text-gray-700 x-text="'Page ' + currentPage + ' / ' + totalPages"

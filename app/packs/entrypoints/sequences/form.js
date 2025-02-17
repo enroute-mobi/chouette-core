@@ -16,14 +16,23 @@ class Store {
 		return {
 			items: this.static_list,
 			currentPage: 1,
-			itemsPerPage: 15, // Nombre d'éléments affichés par page
+			itemsPerPage: 15,
 
 			pasteFromClipboard(event) {
 				event.preventDefault();
 				const clipboardData = event.clipboardData || window.clipboardData;
 				const pastedData = clipboardData.getData('Text');
 				this.addItems(pastedData);
-				event.target.value = ''; // Vider la textarea après collage
+				event.target.value = '';
+			},
+
+			addFromTextArea() {
+				const manualInput = this.$refs.manualInput.value;
+				if (manualInput) {
+					this.addItems(manualInput);
+					this.$refs.manualInput.value = '';
+					this.currentPage = this.totalPages;
+				}
 			},
 
 			addItems(data) {
@@ -32,7 +41,7 @@ class Store {
 					.filter(item => item && !this.items.includes(item));
 				this.items = this.items.concat(newItems);
 				this.static_list = this.items;
-				this.currentPage = 1;
+				this.currentPage = this.totalPages;
 				this.updateHiddenField();
 			},
 
@@ -47,7 +56,6 @@ class Store {
 				document.querySelector('input[name="sequence[static_list]"]').value = this.items.join(',');
 			},
 
-			// Pagination logic
 			get paginatedItems() {
 				const start = (this.currentPage - 1) * this.itemsPerPage;
 				return this.items.slice(start, start + this.itemsPerPage);
@@ -68,7 +76,7 @@ class Store {
 					this.currentPage++;
 				}
 			}
-		}
+		};
 	}
 }
 

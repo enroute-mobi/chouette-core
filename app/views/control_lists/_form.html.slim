@@ -26,7 +26,7 @@
                       class: "form-control select required",
                       "x-model": "new_child",
                       include_blank: true
-                button.btn.btn-primary x-on:click.prevent= "$refs.children.insertAdjacentHTML('beforeend', prepareForm(new_child, '#{f.object_name}', (children_count++) + 1)); initForm($refs.children.lastChild)"
+                button.btn.btn-primary x-on:click.prevent= "$refs.children.insertAdjacentHTML('beforeend', prepareForm(new_child, '#{f.object_name}', (children_count++) + 1));initForm($refs.children.lastChild);"
                   = t("simple_form.buttons.control_list.control_context_type")
 
       = render partial: 'controls', locals: { controls: @control_list.controls, form: f, read_only: read_only }

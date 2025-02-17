@@ -1,4 +1,14 @@
-= form.input :from_stop_area_id, collection: @workbench.workgroup.stop_area_referential.stop_areas.order(:name).limit(10), include_blank: false
-= form.input :to_stop_area_id, collection: @workbench.workgroup.stop_area_referential.stop_areas.order(:name).limit(10), include_blank: false
+= form.input :from_stop_area_id,
+  as: :ajax_select,
+  collection: @workbench.workgroup.stop_area_referential.stop_areas.order(:name).limit(10),
+  label_method: :display_name,
+  input_html: { 'data-url': stop_areas_workgroup_autocomplete_index_path(@workbench.workgroup, format: :json), class: "w-full" },
+  include_blank: false
+= form.input :to_stop_area_id,
+  as: :ajax_select,
+  collection: @workbench.workgroup.stop_area_referential.stop_areas.order(:name).limit(10),
+  label_method: :display_name,
+  input_html: { 'data-url': stop_areas_workgroup_autocomplete_index_path(@workbench.workgroup, format: :json), class: "w-full" },
+  include_blank: false
 = form.input :departure_time_of_day, as: :time_of_day
 = form.input :maximum_travel_time_in_minutes

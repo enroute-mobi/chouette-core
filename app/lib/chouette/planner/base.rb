@@ -35,7 +35,7 @@ module Chouette
       end
 
       def solution_callback
-        @solution_callback ||= Proc.new { |journey| }
+        @solution_callback ||= proc { |journey| }
       end
 
       def improve
@@ -49,7 +49,9 @@ module Chouette
           improvable = extend
           evaluate
 
-          logger.debug { "#{solutions.count} solutions - #{journeys.count} journeys - #{reverse_journeys.count} reverse journeys" }
+          logger.debug do
+            "#{solutions.count} solutions - #{journeys.count} journeys - #{reverse_journeys.count} reverse journeys"
+          end
         end
 
         improvable
@@ -69,11 +71,11 @@ module Chouette
 
           reverse_journeys.each do |reverse_journey|
             merged_journey = merger.merge journey, reverse_journey
-            if merged_journey
-              solutions << merged_journey
-              solution_callback.call merged_journey
-              merged_performed = true
-            end
+            next unless merged_journey
+
+            solutions << merged_journey
+            solution_callback.call merged_journey
+            merged_performed = true
           end
 
           merged_performed
@@ -113,7 +115,7 @@ module Chouette
         extendable_reverse_journeys.each(&:extended!)
 
         extenders.each do |extender|
-          logger.tagged "reverse", extender.class do
+          logger.tagged 'reverse', extender.class do
             extended_reverse_journeys = extender.extend extendable_reverse_journeys
             logger.debug { "#{extended_reverse_journeys.count} extended reverse journeys by #{extender.class}" }
 
@@ -129,13 +131,13 @@ module Chouette
           journey.cost = evaluator.call journey
         end
 
-        journeys.sort_by! { |journey| journey.cost }
+        journeys.sort_by!(&:cost)
 
         reverse_journeys.each do |journey|
           journey.cost = evaluator.call journey
         end
 
-        reverse_journeys.sort_by! { |journey| journey.cost }
+        reverse_journeys.sort_by!(&:cost)
       end
       measure :evaluate
 
@@ -144,7 +146,7 @@ module Chouette
       end
 
       def evaluator
-        @evaluator ||= proc { |journey| 0 }
+        @evaluator ||= proc { |_journey| 0 }
       end
 
       def merger

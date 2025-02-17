@@ -27,10 +27,10 @@ RSpec.describe Chouette::Planner::Extender::WalkableStopAreas do
 
       it do
         is_expected.to have_attributes(
-                         last: an_object_having_attributes(
-                           stop_area_id: a_value_in(stop_areas.map(&:id))
-                         )
-                       )
+          last: an_object_having_attributes(
+            stop_area_id: a_value_in(stop_areas.map(&:id))
+          )
+        )
       end
     end
   end

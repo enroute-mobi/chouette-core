@@ -71,7 +71,7 @@ module Chouette
 
           def extend
             return [] if extendable_journeys.empty?
-            
+
             next_steps.each do |origin_step_id, next_step|
               extendable_journeys_by_last_id[origin_step_id].each do |journey|
                 extended_journeys << journey.extend(next_step, validity_period: validity_period)
@@ -133,7 +133,7 @@ module Chouette
       end
 
       class ByVehicleJourneyStopAreas
-        def initialize(vehicle_journeys: nil, vehicle_journeys_at_stops: nil, time_tables:, maximun_time_of_day: nil)
+        def initialize(time_tables:, vehicle_journeys: nil, vehicle_journeys_at_stops: nil, maximun_time_of_day: nil)
           @vehicle_journeys = vehicle_journeys
           @vehicle_journey_at_stops = vehicle_journey_at_stops
 
@@ -206,9 +206,7 @@ module Chouette
               steps.each do |next_step|
                 extended_journey = journey.extend(next_step, validity_period: validity_period)
 
-                unless extended_journey.validity_period.empty?
-                  extended_journeys << extended_journey
-                end
+                extended_journeys << extended_journey unless extended_journey.validity_period.empty?
               end
             end
 
@@ -216,7 +214,7 @@ module Chouette
           end
 
           def next_steps
-            next_steps = Hash.new { |h,k| h[k] = [] }
+            next_steps = Hash.new { |h, k| h[k] = [] }
 
             time_tables.load time_table_ids
 
@@ -241,10 +239,15 @@ module Chouette
           end
 
           class Row
-            attr_accessor :journey_id, :stop_area_id, :duration, :stop_area_latitude, :stop_area_longitude, :time_table_ids
+            attr_accessor :journey_id, :stop_area_id, :duration, :stop_area_latitude, :stop_area_longitude,
+                          :time_table_ids
 
             def initialize(journey_id, stop_area_id, duration, stop_area_latitude, stop_area_longitude, time_table_ids)
-              @journey_id, @stop_area_id, @duration, @stop_area_latitude, @stop_area_longitude = journey_id, stop_area_id, duration, stop_area_latitude, stop_area_longitude
+              @journey_id = journey_id
+              @stop_area_id = stop_area_id
+              @duration = duration
+              @stop_area_latitude = stop_area_latitude
+              @stop_area_longitude = stop_area_longitude
               @time_table_ids = time_table_ids.delete('{}').split(',').map(&:to_i)
             end
 
@@ -270,7 +273,7 @@ module Chouette
               # TODO: we could support a mode without time reference
               journey.time_reference? &&
                 journey.last.respond_to?(:stop_area_id)
-                # TODO: seems wrong: journey.last.created_by != self.class
+              # TODO: seems wrong: journey.last.created_by != self.class
             end
           end
 

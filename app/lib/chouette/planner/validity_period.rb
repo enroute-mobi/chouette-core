@@ -19,9 +19,7 @@ module Chouette
         dates.nil?
       end
 
-      def empty?
-        dates.empty?
-      end
+      delegate :empty?, to: :dates
 
       def inspect
         dates ? "[#{dates.map { |d| d.strftime('%Y-%m-%d') }.join(' ')}]" : '∞'
@@ -39,14 +37,12 @@ module Chouette
 
       def intersect(*others)
         intersected_dates = others.inject(dates) do |dates, other|
-          unless other.infinite?
-            if infinite?
-              other.dates
-            else
-              dates & other.dates
-            end
-          else
+          if other.infinite?
             dates
+          elsif infinite?
+            other.dates
+          else
+            dates & other.dates
           end
         end
         ValidityPeriod.new intersected_dates
@@ -66,7 +62,7 @@ module Chouette
       end
 
       protected
-      
+
       attr_reader :dates
     end
   end

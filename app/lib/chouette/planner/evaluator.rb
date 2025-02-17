@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Chouette
   module Planner
     module Evaluator
@@ -25,7 +27,7 @@ module Chouette
         end
 
         def call(journey)
-          @evaluators.map { |evaluator| evaluator.call(journey)  }.sum
+          @evaluators.map { |evaluator| evaluator.call(journey) }.sum
         end
       end
     end

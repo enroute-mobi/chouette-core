@@ -14,7 +14,7 @@ RSpec.describe Chouette::Planner::Extender::ByVehicleJourneyStopAreas do
   let(:vehicle_journeys) { Chouette::VehicleJourney.where(id: vehicle_journey) }
 
   let(:time_table) { context.time_table(:first) }
-  let(:time_tables) { Chouette::TimeTable.where(id: time_table)  }
+  let(:time_tables) { Chouette::TimeTable.where(id: time_table) }
 
   before { context.referential.switch }
 

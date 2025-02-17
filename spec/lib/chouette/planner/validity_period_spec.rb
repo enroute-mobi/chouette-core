@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 RSpec.describe Chouette::Planner::ValidityPeriod do
   def parse(definition)
     return described_class.new if definition == '∞'

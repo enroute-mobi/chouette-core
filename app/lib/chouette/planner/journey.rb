@@ -16,7 +16,7 @@ module Chouette
       def id
         @id ||= SecureRandom.uuid
       end
-      attr_writer :id
+      attr_writer :id, :validity_period, :duration
 
       def reverse?
         @reverse
@@ -45,8 +45,6 @@ module Chouette
         @validity_period ||= ValidityPeriod.new
       end
 
-      attr_writer :validity_period
-
       def merge(reverse_journey, merge_duration: 0)
         unless reverse_journey.reverse?
           raise ArgumentError, "Expected a reverse Journey, got #{reverse_journey.inspect}"
@@ -68,7 +66,6 @@ module Chouette
       def duration
         @duration ||= steps.sum(&:duration)
       end
-      attr_writer :duration
 
       def delta_time
         reverse? ? -duration : duration
@@ -76,6 +73,7 @@ module Chouette
 
       def time_of_day
         return nil unless time_reference?
+
         origin_time_of_day + delta_time
       end
 
@@ -92,7 +90,7 @@ module Chouette
       def _extend(*steps, validity_period: ValidityPeriod.new)
         self.steps.concat steps
 
-        extended_validity_periods = steps.map(&:validity_period) + [ validity_period ]
+        extended_validity_periods = steps.map(&:validity_period) + [validity_period]
         self.validity_period = self.validity_period.intersect(*extended_validity_periods)
         self.duration = nil
         self.extended = false

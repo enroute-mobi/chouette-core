@@ -24,7 +24,7 @@ module Chouette
         def id
           @id ||= SecureRandom.uuid
         end
-        attr_writer :id
+        attr_writer :id, :validity_period
 
         attr_reader :position
 
@@ -43,7 +43,6 @@ module Chouette
         def validity_period
           @validity_period ||= ValidityPeriod.new
         end
-        attr_writer :validity_period
 
         def inspect
           "#{@position} ⏱️#{duration}s"

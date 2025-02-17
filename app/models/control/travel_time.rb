@@ -21,7 +21,7 @@ module Control
       end
 
       def from_stop_area
-        @from_stop_area ||= options_stop_areas.find_by_id(from_stop_area_id)
+        @from_stop_area ||= options_stop_areas.find_by(id: from_stop_area_id)
       end
 
       def from
@@ -29,7 +29,7 @@ module Control
       end
 
       def to_stop_area
-        @to_stop_area ||= options_stop_areas.find_by_id(to_stop_area_id)
+        @to_stop_area ||= options_stop_areas.find_by(id: to_stop_area_id)
       end
 
       def to

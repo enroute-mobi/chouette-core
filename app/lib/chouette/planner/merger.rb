@@ -56,7 +56,7 @@ module Chouette
         end
 
         def mergeable?
-          @mergeable ||= (last == reverse_last || distance < maximum_distance)
+          @mergeable ||= last == reverse_last || distance < maximum_distance
         end
 
         def duration

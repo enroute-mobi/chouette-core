@@ -107,4 +107,4 @@ en:
         from_stop_area: Departure
         to_stop_area: Destination
         departure_time_of_day: Departure Time
-        maximum_travel_time_in_minutes: Maximum Travel Duration
+        maximum_travel_time_in_minutes: Maximum Travel Duration (in minutes)

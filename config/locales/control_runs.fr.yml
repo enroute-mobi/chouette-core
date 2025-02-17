@@ -107,4 +107,4 @@ fr:
         from_stop_area: Origine
         to_stop_area: Destination
         departure_time_of_day: Horaire de départ
-        maximum_travel_time_in_minutes: Temps de Parcours maximum
+        maximum_travel_time_in_minutes: Temps de Parcours maximum (en minutes)

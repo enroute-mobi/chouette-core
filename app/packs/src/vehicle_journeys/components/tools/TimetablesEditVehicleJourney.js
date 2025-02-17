@@ -99,10 +99,7 @@ export default class TimetablesEditVehicleJourney extends Component {
                                   <div className='wrapper'>
                                     <div>
                                       <TimetableSelect2
-                                        placeholder={I18n.t('vehicle_journeys.vehicle_journeys_matrix.filters.timetable')}
                                         onSelect2Timetable={this.props.onSelect2Timetable}
-                                        chunkURL={'/autocomplete_time_tables.json'}
-                                        searchKey={"unaccented_comment_or_objectid_cont_any"}
                                         isFilter={false}
                                       />
                                     </div>

@@ -521,7 +521,7 @@ RSpec.describe Export::Scope, use_chouette_factory: true do
   describe Export::Scope::DateRange do
     it_behaves_like 'Export::Scope::Base'
 
-    let(:date_range) { context.time_table(:default).date_range }
+    let(:date_range) { Range.new(*context.time_table(:default).bounding_dates) }
     let(:period_before_daterange) { (date_range.begin - 100)..(date_range.begin - 10) }
     let(:scope) { Export::Scope::Scheduled.new(Export::Scope::DateRange.new(default_scope, date_range)) }
 

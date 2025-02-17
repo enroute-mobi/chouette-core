@@ -1345,23 +1345,9 @@ RSpec.describe Import::NetexGeneric do
     let(:new_referential) { import.referential }
     let(:time_table) { new_referential.time_tables.find_by(comment: 'Sample')}
 
-    describe '#effective_days' do
+    describe 'effective days' do
+      subject { time_table.to_days_bit.enum_for(:each_date).to_a }
       let(:expected_dates) { ['2030-01-01', '2030-01-04', '2030-01-08', '2030-01-15'].map(&:to_date) }
-      subject { time_table.effective_days }
-
-      it { is_expected.to eq expected_dates}
-    end
-
-    describe '#included_days_in_dates_and_periods' do
-      let(:expected_dates) do 
-        [
-          '2030-01-01', '2030-01-02', '2030-01-03', '2030-01-04',
-          '2030-01-05', '2030-01-06', '2030-01-07', '2030-01-08',
-          '2030-01-09', '2030-01-10', '2030-01-15'
-        ].map(&:to_date)
-      end
-
-      subject { time_table.included_days_in_dates_and_periods }
 
       it { is_expected.to eq expected_dates}
     end

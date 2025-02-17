@@ -79,14 +79,6 @@ class Calendar < ApplicationModel
     date
   end
 
-  def included_days
-    dates
-  end
-
-  def excluded_days
-    excluded_dates
-  end
-
   def every_dates
     dates + excluded_dates
   end
@@ -103,10 +95,6 @@ class Calendar < ApplicationModel
 
   def find_date_by_id id
     every_dates[id]
-  end
-
-  def destroy_date date
-    self.dates.delete(date)||self.excluded_dates.delete(date)
   end
 
   def build_date in_out, date

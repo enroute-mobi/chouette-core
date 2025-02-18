@@ -39,6 +39,14 @@ module Control
       def maximum_travel_time
         maximum_travel_time_in_minutes&.minutes
       end
+
+      def selected_from_stop_area
+        @selected_from_stop_area = [from_stop_area].compact
+      end
+
+      def selected_to_stop_area
+        @selected_to_stop_area = [to_stop_area].compact
+      end
     end
     include Options
 

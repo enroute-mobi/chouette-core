@@ -103,7 +103,7 @@ fr:
         uniqueness_scope: Portée de l'unicité
       control/absence_attribute/run:
         target_attribute: Attribut cible
-      control/travel_time:
+      control/travel_time/run:
         from_stop_area: Origine
         to_stop_area: Destination
         departure_time_of_day: Horaire de départ

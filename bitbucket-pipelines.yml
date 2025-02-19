@@ -7,7 +7,7 @@ definitions:
       type: docker
     postgres:
       image:
-        name: us.gcr.io/enroute-interne/enroute-postgresql:dev
+        name: us-east1-docker.pkg.dev/enroute-interne/enroute-interne/enroute-postgresql:dev
         username: _json_key
         password: "$GCLOUD_API_KEYFILE"
       environment:
@@ -33,7 +33,7 @@ definitions:
     - step: &setup
         name: Setup
         image:
-          name: us.gcr.io/enroute-interne/enroute-ruby:2.7-dev
+          name: us-east1-docker.pkg.dev/enroute-interne/enroute-interne/enroute-ruby:2.7-dev
           username: _json_key
           password: "$GCLOUD_API_KEYFILE"
         caches:
@@ -51,7 +51,7 @@ definitions:
     - step: &build-assets
         name: Build assets
         image:
-          name: us.gcr.io/enroute-interne/enroute-ruby:2.7-dev
+          name: us-east1-docker.pkg.dev/enroute-interne/enroute-interne/enroute-ruby:2.7-dev
           username: _json_key
           password: "$GCLOUD_API_KEYFILE"
         caches:
@@ -70,7 +70,7 @@ definitions:
     - step: &rspec-tests
         name: Ruby Unit tests
         image:
-          name: us.gcr.io/enroute-interne/enroute-ruby:2.7-dev
+          name: us-east1-docker.pkg.dev/enroute-interne/enroute-interne/enroute-ruby:2.7-dev
           username: _json_key
           password: "$GCLOUD_API_KEYFILE"
         size: 4x
@@ -91,7 +91,7 @@ definitions:
     - step: &rspec-tests-1
         name: Ruby Unit tests
         image:
-          name: us.gcr.io/enroute-interne/enroute-ruby:2.7-dev
+          name: us-east1-docker.pkg.dev/enroute-interne/enroute-interne/enroute-ruby:2.7-dev
           username: _json_key
           password: "$GCLOUD_API_KEYFILE"
         size: 4x
@@ -112,7 +112,7 @@ definitions:
     - step: &rspec-tests-2
         name: Ruby Unit tests
         image:
-          name: us.gcr.io/enroute-interne/enroute-ruby:2.7-dev
+          name: us-east1-docker.pkg.dev/enroute-interne/enroute-interne/enroute-ruby:2.7-dev
           username: _json_key
           password: "$GCLOUD_API_KEYFILE"
         size: 4x
@@ -133,7 +133,7 @@ definitions:
     - step: &rspec-tests-3
         name: Ruby Unit tests
         image:
-          name: us.gcr.io/enroute-interne/enroute-ruby:2.7-dev
+          name: us-east1-docker.pkg.dev/enroute-interne/enroute-interne/enroute-ruby:2.7-dev
           username: _json_key
           password: "$GCLOUD_API_KEYFILE"
         size: 4x
@@ -154,7 +154,7 @@ definitions:
     - step: &rspec-tests-4
         name: Ruby Unit tests
         image:
-          name: us.gcr.io/enroute-interne/enroute-ruby:2.7-dev
+          name: us-east1-docker.pkg.dev/enroute-interne/enroute-interne/enroute-ruby:2.7-dev
           username: _json_key
           password: "$GCLOUD_API_KEYFILE"
         size: 4x
@@ -175,7 +175,7 @@ definitions:
     - step: &rebuild-runtime-log
         name: Rebuild runtime log
         image:
-          name: us.gcr.io/enroute-interne/enroute-ruby:2.7-dev
+          name: us-east1-docker.pkg.dev/enroute-interne/enroute-interne/enroute-ruby:2.7-dev
           username: _json_key
           password: "$GCLOUD_API_KEYFILE"
         script:
@@ -187,7 +187,7 @@ definitions:
     - step: &jest-tests
         name: Javascript Unit tests
         image:
-          name: us.gcr.io/enroute-interne/enroute-ruby:2.7-dev
+          name: us-east1-docker.pkg.dev/enroute-interne/enroute-interne/enroute-ruby:2.7-dev
           username: _json_key
           password: "$GCLOUD_API_KEYFILE"
         script:
@@ -199,7 +199,7 @@ definitions:
     - step: &bundle-audit
         name: Bundle Audit
         image:
-          name: us.gcr.io/enroute-interne/enroute-ruby:2.7-dev
+          name: us-east1-docker.pkg.dev/enroute-interne/enroute-interne/enroute-ruby:2.7-dev
           username: _json_key
           password: "$GCLOUD_API_KEYFILE"
         script:
@@ -211,7 +211,7 @@ definitions:
         name: Build Docker
         size: 4x
         image:
-          name: us.gcr.io/enroute-interne/enroute-cloud-sdk:latest
+          name: us-east1-docker.pkg.dev/enroute-interne/enroute-interne/enroute-cloud-sdk:latest
           username: _json_key
           password: "$GCLOUD_API_KEYFILE"
         caches:
@@ -228,7 +228,7 @@ pipelines:
       - step:
           name: Update gems
           image:
-            name: us.gcr.io/enroute-interne/enroute-ruby:2.7-dev
+            name: us-east1-docker.pkg.dev/enroute-interne/enroute-interne/enroute-ruby:2.7-dev
             username: _json_key
             password: "$GCLOUD_API_KEYFILE"
           caches:
@@ -303,7 +303,7 @@ pipelines:
           artifacts:
             download: false
           image:
-              name: eu.gcr.io/enroute-interne/enroute-cloud-sdk:latest
+              name: europe-west1-docker.pkg.dev/enroute-interne/enroute-interne/enroute-cloud-sdk:latest
               username: _json_key
               password: "$GCLOUD_API_KEYFILE"
           deployment: test

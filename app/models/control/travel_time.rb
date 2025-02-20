@@ -88,12 +88,12 @@ module Control
           planner.extenders << Chouette::Planner::Extender::ByVehicleJourneyStopAreas.new(
             vehicle_journeys: vehicle_journeys,
             time_tables: time_tables,
-            maximun_time_of_day: departure_time_of_day + maximum_travel_time
+            maximum_time_of_day: departure_time_of_day + maximum_travel_time
           )
 
           to_step = Chouette::Planner::Step.for(to) # Geo::Position.from doesn't support String parsing
           planner.evaluator = Chouette::Planner::Evaluator::Add.new(
-            Chouette::Planner::Evaluator::RemaingDuration.new(with: to_step.position),
+            Chouette::Planner::Evaluator::RemainingDuration.new(with: to_step.position),
             Chouette::Planner::Evaluator::Duration.new
           )
 

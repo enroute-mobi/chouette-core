@@ -55,6 +55,8 @@ module OptionsSupport
           value
         end
 
+        # Use fixed_serializer option to enable serialization on writer method
+        # TODO: Should be the default behavior
         if serializer && opts[:fixed_serializer]
           define_method "#{attribute_name}=" do |value|
             super serializer.new.serialize(value)

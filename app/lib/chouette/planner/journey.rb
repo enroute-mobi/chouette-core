@@ -30,11 +30,7 @@ module Chouette
         @extended = true
       end
 
-      def each(&block)
-        steps.each(&block)
-      end
-
-      delegate :last, to: :steps
+      delegate :last, :each, to: :steps
 
       def extend(*steps, validity_period: nil)
         validity_period ||= ValidityPeriod.new

@@ -9,7 +9,7 @@ module Chouette
         end
       end
 
-      class RemaingDuration
+      class RemainingDuration
         def initialize(with:, speed: 8)
           @target = Geo::Position.from(with)
           @speed = speed

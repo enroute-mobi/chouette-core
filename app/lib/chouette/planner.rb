@@ -14,11 +14,11 @@ module Chouette
         planner.extenders << Extender::ByVehicleJourneyStopAreas.new(
           vehicle_journeys: context.vehicle_journeys,
           time_tables: context.time_tables,
-          maximun_time_of_day: TimeOfDay.parse('18:00')
+          maximum_time_of_day: TimeOfDay.parse('18:00')
         )
 
         to = Step.for(to) # Geo::Position.from doesn't support String parsing
-        planner.evaluator = Evaluator::Add.new(Evaluator::RemaingDuration.new(with: to.position),
+        planner.evaluator = Evaluator::Add.new(Evaluator::RemainingDuration.new(with: to.position),
                                                Evaluator::Duration.new)
       end
     end

@@ -133,7 +133,7 @@ module Chouette
       end
 
       class ByVehicleJourneyStopAreas
-        def initialize(time_tables:, vehicle_journeys: nil, vehicle_journeys_at_stops: nil, maximun_time_of_day: nil)
+        def initialize(time_tables:, vehicle_journeys: nil, vehicle_journeys_at_stops: nil, maximum_time_of_day: nil)
           @vehicle_journeys = vehicle_journeys
           @vehicle_journey_at_stops = vehicle_journey_at_stops
 
@@ -142,10 +142,10 @@ module Chouette
           end
 
           @time_tables = TimeTables.new time_tables
-          @maximun_time_of_day = maximun_time_of_day
+          @maximum_time_of_day = maximum_time_of_day
         end
 
-        attr_accessor :vehicle_journeys, :time_tables, :maximun_time_of_day
+        attr_accessor :vehicle_journeys, :time_tables, :maximum_time_of_day
 
         def extend(journeys, validity_period: nil)
           Extend.new(self, journeys, validity_period: validity_period).extend
@@ -292,10 +292,10 @@ module Chouette
             end.join(',')
           end
 
-          def maximun_time_of_day_sql
-            return nil unless maximun_time_of_day
+          def maximum_time_of_day_sql
+            return nil unless maximum_time_of_day
 
-            "where arrival_time < '#{maximun_time_of_day.to_hms}' AND arrival_day_offset <= #{maximun_time_of_day.day_offset}"
+            "where arrival_time < '#{maximum_time_of_day.to_hms}' AND arrival_day_offset <= #{maximum_time_of_day.day_offset}"
           end
 
           def query
@@ -336,7 +336,7 @@ module Chouette
               ) departure_stops
               on scoped_vehicle_journey_at_stops.vehicle_journey_id = departure_stops.vehicle_journey_id
                   AND stop_points.position > departure_stops.position
-              #{maximun_time_of_day_sql}
+              #{maximum_time_of_day_sql}
             SQL
           end
         end

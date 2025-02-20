@@ -3,39 +3,8 @@
 	.container-fluid
 		- if @document_memberships.any?
 			.row
-				.col-lg-12
-					= table_builder_2 @document_memberships,
-						[ \
-							TableBuilderHelper::Column.new( \
-								name: Document.human_attribute_name(:uuid), \
-								attribute: -> (document_membership) { document_membership.document.uuid }, \
-								sortable: false, \
-							), \
-							TableBuilderHelper::Column.new( \
-								name: Document.human_attribute_name(:name), \
-								attribute: -> (document_membership) { document_membership.document.name }, \
-								sortable: false, \
-								link_to: -> (document_membership) { workbench_document_path(@workbench, document_membership.document) } \
-							), \
-							TableBuilderHelper::Column.new( \
-								name: Document.human_attribute_name(:document_type_id), \
-								attribute: -> (document_membership) { document_membership.document.document_type.name }, \
-								sortable: false, \
-							), \
-							TableBuilderHelper::Column.new( \
-								name: Document.human_attribute_name(:from), \
-								attribute: -> (document_membership) { document_membership.document.validity_period&.from.present? ? l(document_membership.document.validity_period.from) : '-' }, \
-								sortable: false,\
-							), \
-							TableBuilderHelper::Column.new( \
-								name: Document.human_attribute_name(:to), \
-								attribute: -> (document_membership) { document_membership.document.validity_period&.to.present? ? l(document_membership.document.validity_period.to) : '-' }, \
-								sortable: false,\
-							) \
-						].compact,
-						cls: 'table memberships'
-
-					= new_pagination @document_memberships, 'pull-right'
+				.col-lg-12.document_memberships
+				  = render 'document_memberships'
 
 		- else
 			.row.mt-xs

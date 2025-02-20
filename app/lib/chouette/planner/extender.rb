@@ -288,14 +288,18 @@ module Chouette
           def extendable_steps_sql
             extendable_journeys.map do |journey|
               step = journey.last
-              "('#{journey.id}',#{step.stop_area_id},'#{journey.time_of_day.to_hms}'::time,#{journey.time_of_day.day_offset})"
+              # Use UTC TimeOfDay to approximate the database value
+              database_time_of_day = journey.time_of_day.without_utc_offset
+              "('#{journey.id}',#{step.stop_area_id},'#{database_time_of_day.to_hms}'::time,#{database_time_of_day.day_offset})"
             end.join(',')
           end
 
           def maximum_time_of_day_sql
             return nil unless maximum_time_of_day
 
-            "where arrival_time < '#{maximum_time_of_day.to_hms}' AND arrival_day_offset <= #{maximum_time_of_day.day_offset}"
+            # Use UTC TimeOfDay to approximate the database value
+            database_time_of_day = maximum_time_of_day.without_utc_offset
+            "where arrival_time < '#{database_time_of_day.to_hms}' AND arrival_day_offset <= #{database_time_of_day.day_offset}"
           end
 
           def query

@@ -53,6 +53,14 @@ module Control
     class Run < Control::Base::Run
       include Options
 
+      def time_zone
+        from_stop_area.time_zone || to_stop_area.time_zone
+      end
+
+      def origin_time_of_day
+        departure_time_of_day.force_zone(time_zone)
+      end
+
       def run
         # The Control can be run in a Context without validity period (no Referential for example)
         return unless validity_period
@@ -82,14 +90,14 @@ module Control
       delegate :solutions, to: :planner
 
       def planner
-        @planner ||= Chouette::Planner.create(from, to, origin_time_of_day: departure_time_of_day) do |planner|
+        @planner ||= Chouette::Planner.create(from, to, origin_time_of_day: origin_time_of_day) do |planner|
           planner.validity_period = Chouette::Planner::ValidityPeriod.from_period(validity_period)
 
           planner.extenders << Chouette::Planner::Extender::WalkableStopAreas.new(stop_areas)
           planner.extenders << Chouette::Planner::Extender::ByVehicleJourneyStopAreas.new(
             vehicle_journeys: vehicle_journeys,
             time_tables: time_tables,
-            maximum_time_of_day: departure_time_of_day + maximum_travel_time
+            maximum_time_of_day: origin_time_of_day + maximum_travel_time
           )
 
           to_step = Chouette::Planner::Step.for(to) # Geo::Position.from doesn't support String parsing

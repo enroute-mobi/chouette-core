@@ -66,6 +66,7 @@ module Control
           control_messages.create(
             message_attributes: { date: date },
             criticity: criticity,
+            source: from_stop_area,
             message_key: :travel_time
           )
         end

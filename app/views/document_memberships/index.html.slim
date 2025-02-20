@@ -44,7 +44,7 @@
 
 		h2 = I18n.t('documentable.actions.associate_other_documents')
 		.row
-			= simple_form_for @unassociated_documents_search, url: request.path, method: "GET", remote: true, html: { class: 'form form-filter' }  do |f|
+			= simple_form_for @search, url: request.path, method: "GET", remote: true, html: { class: 'form form-filter' }  do |f|
 				.ffg-row
 					.input-group.search_bar
 						= f.input :name, label: false, class: 'form-control'

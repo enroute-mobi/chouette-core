@@ -14,13 +14,11 @@ class DocumentMembershipsController < Chouette::ResourceController
 
   def index
     @document_memberships = DocumentMembershipDecorator.decorate(
-      document_memberships,
+      document_memberships.paginate(page: params[:document_memberships_page], per_page: 30),
       context: decorator_context.merge(pagination_param_name: :document_memberships_page)
     )
-    @unassociated_documents_search = Search::Document.from_params(params, workgroup: workbench.workgroup)
     @unassociated_documents = DocumentDocumentMembershipDecorator.decorate(
-      @unassociated_documents_search.search(unassociated_documents)
-                                    .paginate(page: params[:unassociated_documents_page], per_page: 30),
+      unassociated_documents_search.paginate(page: params[:unassociated_documents_page], per_page: 30),
       context: decorator_context.merge(pagination_param_name: :unassociated_documents_page)
     )
     index!
@@ -69,15 +67,23 @@ class DocumentMembershipsController < Chouette::ResourceController
   end
 
   def document_memberships
-    documentable.document_memberships.paginate(page: params[:document_memberships_page], per_page: 30)
+    documentable.document_memberships
   end
 
-  def unassociated_documents
+  def scope
     if parent_policy.update?
       workbench.documents.where.not(id: documentable.document_ids)
     else
       workbench.documents.none
     end
+  end
+
+  def search
+    @search ||= Search::Document.from_params(params, workgroup: workbench.workgroup)
+  end
+
+  def unassociated_documents_search
+    @unassociated_documents_search ||= search.search scope
   end
 
   def workbench

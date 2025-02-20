@@ -41,7 +41,7 @@ module Macro
       end
 
       def candidate_stop_area_zones
-        PostgreSQLCursor::Cursor.new(Query.new(scope, model_attribute.name).query)
+        PostgreSQLCursor::Cursor.new(Query.new(self, model_attribute.name).query)
       end
 
       def create_message(stop_area_zone, stop_area_zone_attributes)
@@ -60,11 +60,12 @@ module Macro
       end
 
       class Query
-        def initialize(scope, geographic_attribute)
-          @scope = scope
+        def initialize(macro_run, geographic_attribute)
+          @macro_run = macro_run
+          @scope = macro_run.scope
           @geographic_attribute = geographic_attribute
         end
-        attr_reader :scope, :geographic_attribute
+        attr_reader :macro_run, :scope, :geographic_attribute
 
         def query
           <<-SQL
@@ -107,7 +108,7 @@ module Macro
         end
 
         def fare_zones
-          @fare_zones ||= scope.fare_zones
+          @fare_zones ||= macro_run.workbench.workgroup.fare_zones
         end
       end
     end

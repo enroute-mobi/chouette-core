@@ -25,6 +25,12 @@ RSpec::Matchers.define :a_string_eq_to do |expected|
   end
 end
 
+RSpec::Matchers.define :a_value_in do |collection|
+  match do |actual|
+    actual.in?(collection)
+  end
+end
+
 RSpec::Matchers.alias_matcher :an_array_including, :include
 RSpec::Matchers.define_negated_matcher :an_array_excluding, :include
 RSpec::Matchers.define_negated_matcher :not_change, :change

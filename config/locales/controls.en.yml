@@ -59,9 +59,11 @@ en:
       control/attribute_uniqueness:
         one: Attribute uniqueness
       control/absence_attribute:
-        one: absence of attribute
+        one: Absence of attribute
       control/transport_mode_compatibility:
         one: Stop Area & Line transport mode compatibility
+      control/travel_time:
+        one: Travel Time
 
     attributes:
       control/base:
@@ -121,3 +123,8 @@ en:
         uniqueness_scope: Uniqueness scope
       control/absence_attribute:
         target_attribute: Target Attribute
+      control/travel_time:
+        from_stop_area_id: Departure
+        to_stop_area_id: Destination
+        departure_time_of_day: Departure Time
+        maximum_travel_time_in_minutes: Maximum Travel Duration (in minutes)

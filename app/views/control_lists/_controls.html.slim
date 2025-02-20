@@ -14,6 +14,6 @@ div.controls[x-data="{ control_type: '', children_count: #{controls.count} }"]
               class: "form-control select required",
               "x-model": "control_type",
               include_blank: true
-        button.btn.btn-primary x-on:click.prevent= "$refs.children.insertAdjacentHTML('beforeend', prepareForm(controlForm(control_type), '#{form.object_name}', (children_count++) + 1))"
+        button.btn.btn-primary x-on:click.prevent= "$refs.children.insertAdjacentHTML('beforeend', prepareForm(controlForm(control_type), '#{form.object_name}', (children_count++) + 1));initForm($refs.children.lastChild);"
           = t("simple_form.buttons.control_list.control_type")
 

@@ -8,13 +8,13 @@ GIT
 
 GIT
   remote: https://bitbucket.org/enroute-mobi/bitset.git
-  revision: e37f433e7e5da0cd157cc086a3685e4312dcf018
+  revision: 46d052c410b573a93bf3b90b627d44abb9c6a38f
   specs:
     bitset (1.2.0)
 
 GIT
   remote: https://bitbucket.org/enroute-mobi/cuckoo.git
-  revision: cd2d1c1a82c0d1f30b2e2c880bfcb876aee8dd5f
+  revision: 9b740903d5b20790617f81256f77d2ded44203e9
   specs:
     cuckoo (0.1.0)
       activesupport

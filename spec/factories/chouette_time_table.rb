@@ -22,13 +22,13 @@ FactoryBot.define do
 
       unless time_table.dates.any?
         evaluator.dates_count.times do |i|
-          time_table.dates << create(:time_table_date, :time_table => time_table, :date => start_date + i.days, :in_out => true)
+          create(:time_table_date, time_table: time_table, date: start_date + i.days, in_out: true)
         end
       end
 
       unless time_table.periods.any?
         evaluator.periods_count.times do |i|
-          time_table.periods << create(:time_table_period, :time_table => time_table, :period_start => start_date, :period_end => end_date)
+          create(:time_table_period, time_table: time_table, period_start: start_date, period_end: end_date)
           start_date = start_date + 20
           end_date = start_date + 10
         end

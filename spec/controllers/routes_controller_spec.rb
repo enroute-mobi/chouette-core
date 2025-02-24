@@ -152,7 +152,7 @@ RSpec.describe RoutesController, type: :controller do
 
   describe 'GET #autocomplete_stop_areas' do
     it 'should be successful' do
-      get :autocomplete_stop_areas, params: {
+      get :autocomplete_stop_areas, format: :json, params: {
         workbench_id: referential.workbench.id,
         referential_id: referential.id,
         line_id: line.id,
@@ -190,7 +190,7 @@ RSpec.describe RoutesController, type: :controller do
     describe 'without feature route_stop_areas_all_types' do
       let(:scope) { :route_editor }
       let(:request) do
-        get :autocomplete_stop_areas, params: {
+        get :autocomplete_stop_areas, format: :json, params: {
           workbench_id: referential.workbench.id,
           referential_id: referential.id,
           line_id: line.id,
@@ -218,7 +218,7 @@ RSpec.describe RoutesController, type: :controller do
     describe 'without feature route_stop_areas_all_types' do
       let(:scope) { :route_editor }
       let(:request) do
-        get :autocomplete_stop_areas, params: {
+        get :autocomplete_stop_areas, format: :json, params: {
           workbench_id: referential.workbench.id,
           referential_id: referential.id,
           line_id: line.id,

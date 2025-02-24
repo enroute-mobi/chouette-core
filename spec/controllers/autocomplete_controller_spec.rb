@@ -22,36 +22,25 @@ RSpec.describe AutocompleteController, type: :controller do
 
     context 'for a workbench' do
       it 'returns the complete list when the search parameter is not found' do
-        get :lines, params: {
-          workbench_id: workbench.id
-        }
+        get :lines, params: { workbench_id: workbench.id }, format: 'json'
         expect(assigns(:lines)).to match_array [first_line, second_line]
         expect(response).to be_successful
       end
 
       it 'returns a line when the name contains the search parameter' do
-        get :lines, params: {
-          workbench_id: workbench.id,
-          q: 'Line one'
-        }
+        get :lines, params: { workbench_id: workbench.id, q: 'Line one' }, format: 'json'
         expect(assigns(:lines).to_a).to eq [first_line]
         expect(response).to be_successful
       end
 
       it 'returns a line when the number contains the search parameter' do
-        get :lines, params: {
-          workbench_id: workbench.id,
-          q: 'L1'
-        }
+        get :lines, params: { workbench_id: workbench.id, q: 'L1' }, format: 'json'
         expect(assigns(:lines).to_a).to eq [first_line]
         expect(response).to be_successful
       end
 
       it 'returns a line when the published name contains the search parameter' do
-        get :lines, params: {
-          workbench_id: workbench.id,
-          q: 'First Line'
-        }
+        get :lines, params: { workbench_id: workbench.id, q: 'First Line' }, format: 'json'
         expect(assigns(:lines).to_a).to eq [first_line]
         expect(response).to be_successful
       end
@@ -75,27 +64,19 @@ RSpec.describe AutocompleteController, type: :controller do
 
     context 'for a workbench' do
       it 'returns the complete list when the search parameter is not found' do
-        get :companies, params: {
-          workbench_id: workbench.id
-        }
+        get :companies, params: { workbench_id: workbench.id }, format: 'json'
         expect(assigns(:companies)).to match_array [company]
         expect(response).to be_successful
       end
 
       it 'returns a company when the name contains the search parameter' do
-        get :companies, params: {
-          workbench_id: workbench.id,
-          q: 'Company one'
-        }
+        get :companies, params: { workbench_id: workbench.id, q: 'Company one' }, format: 'json'
         expect(assigns(:companies).to_a).to eq [company]
         expect(response).to be_successful
       end
 
       it 'returns a company when the short name contains the search parameter' do
-        get :companies, params: {
-          workbench_id: workbench.id,
-          q: 'C1'
-        }
+        get :companies, params: { workbench_id: workbench.id, q: 'C1' }, format: 'json'
         expect(assigns(:companies).to_a).to eq [company]
         expect(response).to be_successful
       end
@@ -119,18 +100,13 @@ RSpec.describe AutocompleteController, type: :controller do
 
     context 'for a workbench' do
       it 'returns the complete list when the search parameter is not found' do
-        get :line_providers, params: {
-          workbench_id: workbench.id
-        }
+        get :line_providers, params: { workbench_id: workbench.id }, format: 'json'
         expect(assigns(:line_providers)).to match_array workbench.line_providers
         expect(response).to be_successful
       end
 
       it 'returns a line_provider when the short name contains the search parameter' do
-        get :line_providers, params: {
-          workbench_id: workbench.id,
-          q: 'LP1'
-        }
+        get :line_providers, params: { workbench_id: workbench.id, q: 'LP1' }, format: 'json'
         expect(assigns(:line_providers).to_a).to eq [line_provider]
         expect(response).to be_successful
       end
@@ -138,20 +114,15 @@ RSpec.describe AutocompleteController, type: :controller do
 
     context 'for a referential' do
       it 'returns the complete list when the search parameter is not found' do
-        get :line_providers, params: {
-          workbench_id: workbench.id,
-          referential_id: referential.id
-        }
+        get :line_providers, params: { workbench_id: workbench.id, referential_id: referential.id }, format: 'json'
         expect(assigns(:line_providers)).to match_array referential.line_providers
         expect(response).to be_successful
       end
 
       it 'returns a line_provider when the short name contains the search parameter' do
-        get :line_providers, params: {
-          workbench_id: workbench.id,
-          referential_id: referential.id,
-          q: 'LP1'
-        }
+        get :line_providers,
+            params: { workbench_id: workbench.id, referential_id: referential.id, q: 'LP1' },
+            format: 'json'
         expect(assigns(:line_providers).to_a).to eq [line_provider]
         expect(response).to be_successful
       end
@@ -172,18 +143,13 @@ RSpec.describe AutocompleteController, type: :controller do
 
     context 'for a workbench' do
       it 'returns the complete list when the search parameter is not found' do
-        get :line_notices, params: {
-          workbench_id: workbench.id
-        }
+        get :line_notices, params: { workbench_id: workbench.id }, format: 'json'
         expect(assigns(:line_notices)).to match_array workbench.line_notices
         expect(response).to be_successful
       end
 
       it 'returns a line_notice when the title contains the search parameter' do
-        get :line_notices, params: {
-          workbench_id: workbench.id,
-          q: 'LN1'
-        }
+        get :line_notices, params: { workbench_id: workbench.id, q: 'LN1' }, format: 'json'
         expect(assigns(:line_notices).to_a).to eq [line_notice]
         expect(response).to be_successful
       end
@@ -207,27 +173,19 @@ RSpec.describe AutocompleteController, type: :controller do
 
     context 'for a workbench' do
       it 'returns an empty list when the search parameter is not found' do
-        get :stop_areas, params: {
-          workbench_id: workbench.id
-        }
+        get :stop_areas, params: { workbench_id: workbench.id }, format: 'json'
         expect(assigns(:stop_areas)).to be_empty
         expect(response).to be_successful
       end
 
       it 'returns a stop_area when the name contains the search parameter' do
-        get :stop_areas, params: {
-          workbench_id: workbench.id,
-          q: 'Stop Area 1'
-        }
+        get :stop_areas, params: { workbench_id: workbench.id, q: 'Stop Area 1' }, format: 'json'
         expect(assigns(:stop_areas).to_a).to eq [stop_area]
         expect(response).to be_successful
       end
 
       it 'returns a stop_area when the objectid contains the search parameter' do
-        get :stop_areas, params: {
-          workbench_id: workbench.id,
-          q: stop_area.get_objectid.short_id
-        }
+        get :stop_areas, params: { workbench_id: workbench.id, q: stop_area.get_objectid.short_id }, format: 'json'
         expect(assigns(:stop_areas).to_a).to eq [stop_area]
         expect(response).to be_successful
       end
@@ -235,30 +193,23 @@ RSpec.describe AutocompleteController, type: :controller do
 
     context 'for a referential' do
       it 'returns an empty list when the search parameter is not found' do
-        get :stop_areas, params: {
-          workbench_id: workbench.id,
-          referential_id: referential.id
-        }
+        get :stop_areas, params: { workbench_id: workbench.id, referential_id: referential.id }, format: 'json'
         expect(assigns(:stop_areas)).to be_empty
         expect(response).to be_successful
       end
 
       it 'returns a stop_area when the name contains the search parameter' do
-        get :stop_areas, params: {
-          workbench_id: workbench.id,
-          referential_id: referential.id,
-          q: 'Stop Area 1'
-        }
+        get :stop_areas,
+            params: { workbench_id: workbench.id, referential_id: referential.id, q: 'Stop Area 1' },
+            format: 'json'
         expect(assigns(:stop_areas).to_a).to eq [stop_area]
         expect(response).to be_successful
       end
 
       it 'returns a stop_area when the objectid contains the search parameter' do
-        get :stop_areas, params: {
-          workbench_id: workbench.id,
-          referential_id: referential.id,
-          q: stop_area.get_objectid.short_id
-        }
+        get :stop_areas,
+            params: { workbench_id: workbench.id, referential_id: referential.id, q: stop_area.get_objectid.short_id },
+            format: 'json'
         expect(assigns(:stop_areas).to_a).to eq [stop_area]
         expect(response).to be_successful
       end
@@ -282,27 +233,21 @@ RSpec.describe AutocompleteController, type: :controller do
 
     context 'for a workbench' do
       it 'returns the complete list when the search parameter is not found' do
-        get :stop_area_providers, params: {
-          workbench_id: workbench.id
-        }
+        get :stop_area_providers, params: { workbench_id: workbench.id }, format: 'json'
         expect(assigns(:stop_area_providers)).to match_array workbench.stop_area_providers
         expect(response).to be_successful
       end
 
       it 'returns a stop_area_provider when the name contains the search parameter' do
-        get :stop_area_providers, params: {
-          workbench_id: workbench.id,
-          q: 'Stop Area Provider 1'
-        }
+        get :stop_area_providers, params: { workbench_id: workbench.id, q: 'Stop Area Provider 1' }, format: 'json'
         expect(assigns(:stop_area_providers).to_a).to eq [stop_area_provider]
         expect(response).to be_successful
       end
 
       it 'returns a stop_area_provider when the objectid contains the search parameter' do
-        get :stop_area_providers, params: {
-          workbench_id: workbench.id,
-          q: stop_area_provider.get_objectid.short_id
-        }
+        get :stop_area_providers,
+            params: { workbench_id: workbench.id, q: stop_area_provider.get_objectid.short_id },
+            format: 'json'
         expect(assigns(:stop_area_providers).to_a).to eq [stop_area_provider]
         expect(response).to be_successful
       end
@@ -310,30 +255,27 @@ RSpec.describe AutocompleteController, type: :controller do
 
     context 'for a referential' do
       it 'returns the complete list when the search parameter is not found' do
-        get :stop_area_providers, params: {
-          workbench_id: workbench.id,
-          referential_id: referential.id
-        }
+        get :stop_area_providers, params: { workbench_id: workbench.id, referential_id: referential.id }, format: 'json'
         expect(assigns(:stop_area_providers)).to match_array referential.stop_area_providers
         expect(response).to be_successful
       end
 
       it 'returns a stop_area_provider when the name contains the search parameter' do
-        get :stop_area_providers, params: {
-          workbench_id: workbench.id,
-          referential_id: referential.id,
-          q: 'Stop Area Provider 1'
-        }
+        get :stop_area_providers,
+            params: { workbench_id: workbench.id, referential_id: referential.id, q: 'Stop Area Provider 1' },
+            format: 'json'
         expect(assigns(:stop_area_providers).to_a).to eq [stop_area_provider]
         expect(response).to be_successful
       end
 
       it 'returns a stop_area_provider when the objectid contains the search parameter' do
-        get :stop_area_providers, params: {
-          workbench_id: workbench.id,
-          referential_id: referential.id,
-          q: stop_area_provider.get_objectid.short_id
-        }
+        get :stop_area_providers,
+            params: {
+              workbench_id: workbench.id,
+              referential_id: referential.id,
+              q: stop_area_provider.get_objectid.short_id
+            },
+            format: 'json'
         expect(assigns(:stop_area_providers).to_a).to eq [stop_area_provider]
         expect(response).to be_successful
       end
@@ -355,14 +297,14 @@ RSpec.describe AutocompleteController, type: :controller do
     let(:second_shape) { context.shape(:second) }
 
     it 'returns the complete list when the search parameter is not found' do
-      get :shapes, params: { workgroup_id: workgroup }
+      get :shapes, params: { workgroup_id: workgroup }, format: 'json'
 
       expect(assigns(:shapes)).to contain_exactly(first_shape, second_shape)
       expect(response).to be_successful
     end
 
     it 'returns a Shape when the name contains the search parameter' do
-      get :shapes, params: { workgroup_id: workgroup, q: 'Shape one' }
+      get :shapes, params: { workgroup_id: workgroup, q: 'Shape one' }, format: 'json'
 
       expect(assigns(:shapes)).to contain_exactly(first_shape)
       expect(response).to be_successful

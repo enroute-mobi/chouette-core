@@ -21,40 +21,25 @@ RSpec.describe ReferentialAutocompleteController, type: :controller do
     let(:second_line) { context.line(:second_line) }
 
     it 'returns the complete list when the search parameter is not found' do
-      get :lines, params: {
-        workbench_id: workbench.id,
-        referential_id: referential.id
-      }
+      get :lines, params: { workbench_id: workbench.id, referential_id: referential.id }, format: 'json'
       expect(assigns(:lines)).to match_array [first_line]
       expect(response).to be_successful
     end
 
     it 'returns a line when the name contains the search parameter' do
-      get :lines, params: {
-        workbench_id: workbench.id,
-        referential_id: referential.id,
-        q: 'Line one'
-      }
+      get :lines, params: { workbench_id: workbench.id, referential_id: referential.id, q: 'Line one' }, format: 'json'
       expect(assigns(:lines).to_a).to eq [first_line]
       expect(response).to be_successful
     end
 
     it 'returns a line when the number contains the search parameter' do
-      get :lines, params: {
-        workbench_id: workbench.id,
-        referential_id: referential.id,
-        q: 'L1'
-      }
+      get :lines, params: { workbench_id: workbench.id, referential_id: referential.id, q: 'L1' }, format: 'json'
       expect(assigns(:lines).to_a).to eq [first_line]
       expect(response).to be_successful
     end
 
     it 'returns a line when the published name contains the search parameter' do
-      get :lines, params: {
-        workbench_id: workbench.id,
-        referential_id: referential.id,
-        q: 'First'
-      }
+      get :lines, params: { workbench_id: workbench.id, referential_id: referential.id, q: 'First' }, format: 'json'
       expect(assigns(:lines).to_a).to eq [first_line]
       expect(response).to be_successful
     end
@@ -76,30 +61,21 @@ RSpec.describe ReferentialAutocompleteController, type: :controller do
     let(:company) { context.company(:c1) }
 
     it 'returns the complete list when the search parameter is not found' do
-      get :companies, params: {
-        workbench_id: workbench.id,
-        referential_id: referential.id
-      }
+      get :companies, params: { workbench_id: workbench.id, referential_id: referential.id }, format: 'json'
       expect(assigns(:companies)).to match_array [company]
       expect(response).to be_successful
     end
 
     it 'returns a company when the name contains the search parameter' do
-      get :companies, params: {
-        workbench_id: workbench.id,
-        referential_id: referential.id,
-        q: 'Company one'
-      }
+      get :companies,
+          params: { workbench_id: workbench.id, referential_id: referential.id, q: 'Company one' },
+          format: 'json'
       expect(assigns(:companies).to_a).to eq [company]
       expect(response).to be_successful
     end
 
     it 'returns a company when the short name contains the search parameter' do
-      get :companies, params: {
-        workbench_id: workbench.id,
-        referential_id: referential.id,
-        q: 'C1'
-      }
+      get :companies, params: { workbench_id: workbench.id, referential_id: referential.id, q: 'C1' }, format: 'json'
       expect(assigns(:companies).to_a).to eq [company]
       expect(response).to be_successful
     end

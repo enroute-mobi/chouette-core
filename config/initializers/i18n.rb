@@ -9,6 +9,9 @@ module I18nTranslateWithFallback
       if split.size <= 2
         super original || key, options
       else
+        Rails.logger.warn do
+          "DEPRECATION WARNING: missing i18n key \"#{key}\" falls back to original (I18nTranslateWithFallback)"
+        end
         v = split.pop
         v2 = split.pop
         split.pop if v2 == "default"

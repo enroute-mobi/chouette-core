@@ -40,81 +40,6 @@ module Chouette::ChecksumManager
     logger.send log_level, "#{prefix} #{msg}"
   end
 
-  def self.start_transaction
-    return if in_no_updates?
-    return unless transaction_enabled?
-
-    raise AlreadyInTransactionError if in_transaction?
-    self.current = Chouette::ChecksumManager::Transactional.new
-    log "=== NEW TRANSACTION ==="
-  end
-
-  def self.in_transaction?
-    current.is_a?(Chouette::ChecksumManager::Transactional)
-  end
-
-  def self.in_no_updates?
-    current.is_a?(Chouette::ChecksumManager::NoUpdates)
-  end
-
-  def self.commit
-    return if in_no_updates?
-    return unless transaction_enabled?
-
-    current.log "=== COMMITTING TRANSACTION ==="
-    raise NotInTransactionError unless in_transaction?
-    current.commit
-    log "=== DONE COMMITTING TRANSACTION ==="
-    self.current = nil
-  end
-
-  def self.after_create object
-    current.after_create object
-  end
-
-  def self.after_destroy object
-    current.after_destroy object
-  end
-
-  def self.transaction_enabled?
-    Rails.application.config.enable_transactional_checksums
-  end
-
-  def self.start_no_updates
-    self.current = Chouette::ChecksumManager::NoUpdates.new
-    log "=== NO CHECKSUM UPDATES ==="
-    log "=== BE CAREFUL, YOU WILL NEED TO UPDATE CHECKSUMS MANUALLY ==="
-  end
-
-  def self.commit_no_updates
-    log "=== ENDING NO CHECKSUM UPDATES ==="
-    self.current = nil
-  end
-
-  def self.no_updates
-    begin
-      start_no_updates
-      out = yield
-      commit_no_updates
-      out
-    rescue
-      commit_no_updates
-      raise
-    end
-  end
-
-  def self.transaction
-    begin
-      start_transaction
-      out = yield
-      commit
-      out
-    rescue
-      commit
-      raise
-    end
-  end
-
   def self.inline
     begin
       self.current = Chouette::ChecksumManager::Inline.new
@@ -222,23 +147,5 @@ SQL
 
   def self.child_after_save object
     current.child_after_save(object)
-  end
-
-  def self.child_before_destroy object
-    parents = checksum_parents object
-
-    log "Prepare request for #{object.class.name}##{object.id} deletion checksum updates for #{parents.count} parent(s): #{parents_to_sentence(parents)}"
-
-    @_parents_for_checksum_update ||= {}
-    @_parents_for_checksum_update[object_signature(object)] = parents
-  end
-
-  def self.child_after_destroy object
-    if @_parents_for_checksum_update.present? && @_parents_for_checksum_update[object_signature(object)].present?
-      parents = @_parents_for_checksum_update[object_signature(object)]
-      log "Request from #{object.class.name}##{object.id} checksum updates for #{parents.count} parent(s): #{parents_to_sentence(parents)}"
-      parents.each { |parent| Chouette::ChecksumManager.watch parent, from: object }
-      @_parents_for_checksum_update.delete object
-    end
   end
 end

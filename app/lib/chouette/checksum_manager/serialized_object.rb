@@ -32,10 +32,6 @@ module Chouette::ChecksumManager
       @need_save
     end
 
-    def object_class
-      @object_class ||= @serialized_object.first.constantize
-    end
-
     def serialized_object
       @serialized_object
     end

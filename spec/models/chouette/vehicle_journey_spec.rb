@@ -228,14 +228,6 @@ describe Chouette::VehicleJourney, type: :model do
                     reload: true
 
     it_behaves_like 'it works with both checksums modes',
-                    "changes when a vjas is deleted",
-                    -> {
-                      vjas = checksum_owner.vehicle_journey_at_stops.last
-                      vjas.destroy
-                    },
-                    reload: true
-
-    it_behaves_like 'it works with both checksums modes',
                     "changes when a footnote is added",
                     -> {
                       footnote = create :footnote
@@ -253,20 +245,6 @@ describe Chouette::VehicleJourney, type: :model do
     end
 
     it_behaves_like 'it works with both checksums modes',
-                    "changes when a footnote is deleted",
-                    -> {
-                      footnote.destroy
-                    },
-                    reload: true do
-        let(:footnote){ create :footnote }
-        before do
-          checksum_owner.footnotes << footnote
-          checksum_owner.save
-          footnote.reload
-        end
-    end
-
-    it_behaves_like 'it works with both checksums modes',
                     "changes when a line_notice is added",
                     -> {
                       line_notice = create :line_notice
@@ -281,19 +259,6 @@ describe Chouette::VehicleJourney, type: :model do
                     reload: true do
         let(:line_notice){ create :line_notice }
         before { checksum_owner.update line_notices: [line_notice] }
-    end
-
-    it_behaves_like 'it works with both checksums modes',
-                    "changes when a line_notice is deleted",
-                    -> {
-                      line_notice.destroy
-                    },
-                    reload: true do
-        let(:line_notice){ create :line_notice }
-        before do
-          checksum_owner.update line_notices: [line_notice]
-          line_notice.reload
-        end
     end
 
     context "when a custom_field is added" do

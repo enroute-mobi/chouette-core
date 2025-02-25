@@ -84,8 +84,6 @@ fr:
         journey_patterns: "Missions"
         name: "Nom"
         published_name: "Nom de la direction"
-        number: "Indice"
-        comment: "Commentaire"
         wayback: "Direction"
         stop_points: "Points d'arrêt"
         journey_patterns: "Missions"

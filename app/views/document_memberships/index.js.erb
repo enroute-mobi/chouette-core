@@ -1,1 +1,5 @@
-document.querySelector('.unassociated_documents').innerHTML = ("<%= j (render partial: 'unassociated_documents') %>")
+<% if params[:document_memberships_page].present? %>
+  document.querySelector('.document_memberships').innerHTML = ("<%= j (render partial: 'document_memberships') %>")
+<% else %>
+  document.querySelector('.unassociated_documents').innerHTML = ("<%= j (render partial: 'unassociated_documents') %>")
+<% end %>

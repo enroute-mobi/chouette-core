@@ -19,8 +19,4 @@ class DeviseMailerPreview < ActionMailer::Preview
   def password_change
     DeviseMailer.password_change(User.first)
   end
-
-  def invitation_instructions
-    DeviseMailer.invitation_instructions(User.first, "faketoken")
-  end
 end

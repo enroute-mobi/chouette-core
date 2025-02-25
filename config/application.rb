@@ -99,6 +99,8 @@ module ChouetteIhm
       'FeatureChecker::NotAuthorizedError' => :unauthorized
     )
 
+    config.action_mailer.preview_path = Rails.root.join('spec/mailers/previews')
+
     config.subscriptions_notifications_recipients = []
 
     config.vehicle_journeys_extra_headers = []

@@ -512,10 +512,10 @@ describe Merge do
           end
 
           let(:merge) { merge_context.merge }
-
+          
+          before { merge.merge! }
+          
           it 'creates the VehicleJourney code in the merged data set' do
-            merge.merge!
-
             merge.new.switch do
               vehicle_journey = merge.new.vehicle_journeys.sole
               expected_code = an_object_having_attributes(
@@ -523,6 +523,15 @@ describe Merge do
                 code_space: an_object_having_attributes(short_name: 'test')
               )
               expect(vehicle_journey.codes).to contain_exactly(expected_code)
+            end
+          end
+
+          if merge_method == :experimental
+            it 'should not change updated_at' do
+              merge.new.switch do
+                vehicle_journey = merge.new.vehicle_journeys.sole
+                expect(vehicle_journey.updated_at).to eq vehicle_journey.created_at
+              end
             end
           end
         end
@@ -574,13 +583,13 @@ describe Merge do
               merge_context.existing_journey_pattern.update_column :checksum, existing_journey_pattern_checksum
               merge_context.existing_vehicle_journey.update_column :checksum, existing_vehicle_journey_checksum
             end
+
+            merge.merge!
           end
 
           let(:merge) { merge_context.merge }
 
           it 'creates the VehicleJourney code in the merged data set' do
-            merge.merge!
-
             merge.new.switch do
               vehicle_journey = merge.new.vehicle_journeys.sole
               expected_code = an_object_having_attributes(
@@ -588,6 +597,15 @@ describe Merge do
                 code_space: an_object_having_attributes(short_name: 'test')
               )
               expect(vehicle_journey.codes).to contain_exactly(expected_code)
+            end
+          end
+
+          if merge_method == :experimental
+            it 'should change updated_at' do
+              merge.new.switch do
+                vehicle_journey = merge.new.vehicle_journeys.sole
+                expect(vehicle_journey.updated_at > vehicle_journey.created_at).to be_truthy
+              end
             end
           end
         end
@@ -640,13 +658,13 @@ describe Merge do
               merge_context.existing_journey_pattern.update_column :checksum, existing_journey_pattern_checksum
               merge_context.existing_vehicle_journey.update_column :checksum, existing_vehicle_journey_checksum
             end
+
+            merge.merge!
           end
 
           let(:merge) { merge_context.merge }
 
           it 'keeps existing VehicleJourney code in the merged data set' do
-            merge.merge!
-
             merge.new.switch do
               vehicle_journey = merge.new.vehicle_journeys.sole
               expected_code = an_object_having_attributes(
@@ -654,6 +672,15 @@ describe Merge do
                 code_space: an_object_having_attributes(short_name: 'test')
               )
               expect(vehicle_journey.codes).to contain_exactly(expected_code)
+            end
+          end
+
+          if merge_method == :experimental
+            it 'should not change updated_at' do
+              merge.new.switch do
+                vehicle_journey = merge.new.vehicle_journeys.sole
+                expect(vehicle_journey.updated_at).to eq vehicle_journey.created_at
+              end
             end
           end
         end
@@ -706,13 +733,13 @@ describe Merge do
             merge_context.existing_journey_pattern.update_column :checksum, existing_journey_pattern_checksum
             merge_context.existing_vehicle_journey.update_column :checksum, existing_vehicle_journey_checksum
           end
+
+          merge.merge!
         end
 
         let(:merge) { merge_context.merge }
 
         it 'creates new VehicleJourney code and keep old one in the merged data set' do
-          merge.merge!
-
           merge.new.switch do
             vehicle_journey = merge.new.vehicle_journeys.sole
             expected_codes = %w[old new].map do |value|
@@ -721,7 +748,17 @@ describe Merge do
                 code_space: an_object_having_attributes(short_name: 'test')
               )
             end
+
             expect(vehicle_journey.codes).to match_array(expected_codes)
+          end
+        end
+
+        if merge_method == :experimental
+          it 'should change updated_at' do
+            merge.new.switch do
+              vehicle_journey = merge.new.vehicle_journeys.sole
+              expect(vehicle_journey.updated_at > vehicle_journey.created_at).to be_truthy
+            end
           end
         end
       end

@@ -326,10 +326,13 @@ module Merge::Referential
             referential_inserter.codes << code
           end
         end
+
+        # should be replaced by vehicle_journeys.touch_all when the version is upgraded Rails 6
+        vehicle_journeys.update_all(vehicle_journeys.touch_attributes_with_time)
       end
 
-      def codes
-        source.referential_codes.where(resource_type: 'Chouette::VehicleJourney').
+      def base_codes
+        @base_codes ||= source.referential_codes.where(resource_type: 'Chouette::VehicleJourney').
           joins("INNER JOIN vehicle_journeys ON referential_codes.resource_id = vehicle_journeys.id").
           joins("INNER JOIN journey_patterns ON vehicle_journeys.journey_pattern_id = journey_patterns.id").
           joins("INNER JOIN routes ON journey_patterns.route_id = routes.id").
@@ -337,7 +340,28 @@ module Merge::Referential
           joins(sanitize_joins("LEFT OUTER JOIN \":new_slug\".journey_patterns as existing_journey_patterns ON journey_patterns.checksum = existing_journey_patterns.checksum AND existing_routes.id = existing_journey_patterns.route_id")).
           joins(sanitize_joins("LEFT OUTER JOIN \":new_slug\".vehicle_journeys as existing_vehicle_journeys ON vehicle_journeys.checksum = existing_vehicle_journeys.checksum AND existing_journey_patterns.id = existing_vehicle_journeys.journey_pattern_id")).
           joins(sanitize_joins("LEFT OUTER JOIN \":new_slug\".referential_codes as existing_codes ON referential_codes.code_space_id = existing_codes.code_space_id AND referential_codes.value = existing_codes.value AND existing_vehicle_journeys.id = existing_codes.resource_id AND existing_codes.resource_type = 'Chouette::VehicleJourney'")).
-          where("existing_codes.id" => nil).select("referential_codes.*", "existing_vehicle_journeys.id as existing_resource_id")
+          where("existing_codes.id" => nil)
+      end
+
+      def codes
+        base_codes.select('referential_codes.*', 'existing_vehicle_journeys.id AS existing_resource_id')
+      end
+
+      def existing_vehicle_journey_ids
+        base_codes.select('existing_vehicle_journeys.id AS id')
+      end
+
+      def vehicle_journeys
+        @vehicle_journeys ||= begin
+          vehicle_journeys_table = Chouette::VehicleJourney.arel_table.dup
+          vehicle_journeys_table.name = "#{new.slug}.vehicle_journeys"
+
+          new.vehicle_journeys.where(id: existing_vehicle_journey_ids).
+              from(vehicle_journeys_table.name).
+              tap do |vehicle_journey|
+                vehicle_journey.instance_variable_set(:@table, vehicle_journeys_table)
+              end
+        end
       end
     end
   end

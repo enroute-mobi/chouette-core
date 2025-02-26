@@ -101,25 +101,3 @@ module Macro
     end
   end
 end
-
-# STI
-require_dependency 'macro/associate_shape'
-require_dependency 'macro/associate_stop_area_referent'
-require_dependency 'macro/associate_stop_area_with_fare_zone'
-require_dependency 'macro/compute_journey_pattern_distances'
-require_dependency 'macro/compute_journey_pattern_durations'
-require_dependency 'macro/create_code'
-require_dependency 'macro/create_shape'
-require_dependency 'macro/create_stop_area_referents'
-require_dependency 'macro/define_attribute_from_particulars'
-require_dependency 'macro/define_postal_address'
-require_dependency 'macro/dummy'
-require_dependency 'macro/update_stop_area_compass_bearing'
-require_dependency 'macro/compute_service_counts'
-require_dependency 'macro/associate_documents'
-require_dependency 'macro/create_code_from_sequence'
-require_dependency 'macro/create_code_from_uuid'
-require_dependency 'macro/define_french_code_insee'
-require_dependency 'macro/define_stop_area_transport_mode'
-require_dependency 'macro/define_route_name'
-require_dependency 'macro/create_codes_from_particulars'

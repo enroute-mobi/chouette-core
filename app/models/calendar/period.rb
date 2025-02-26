@@ -1,5 +1,3 @@
-require_dependency "../calendar"
-
 class Calendar::Period
   include ActiveAttr::Model
 

@@ -38,7 +38,7 @@ module Macro
 
       def stop_areas
         scope.stop_areas.where(area_type: Chouette::AreaType::QUAY)
-             .where.not(latitude: nil, longitude: nil, compass_bearing: nil)
+             .where.not(latitude: nil).where.not(longitude: nil).where.not(compass_bearing: nil)
       end
 
       # Creates a cluster with ~20 meters between two positions

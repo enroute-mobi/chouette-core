@@ -1,6 +1,6 @@
-- @export = Export::NetexGeneric.new(@export.attributes.except('id', 'type').symbolize_keys)
+- export = Export::NetexGeneric.new(@export.attributes.slice(*Export::NetexGeneric.attribute_names).except('id', 'type'))
 
-= form.simple_fields_for(resource_type, @export) do |sub_form|
+= form.simple_fields_for(resource_type, export) do |sub_form|
   = render 'exports/options/period', form: sub_form
   = sub_form.input :profile, as: :select, include_blank: false
   = render 'exports/options/exported_lines', form: sub_form

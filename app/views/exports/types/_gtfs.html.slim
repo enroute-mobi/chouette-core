@@ -1,6 +1,6 @@
-- @export = Export::Gtfs.new(@export.attributes.except('id', 'type').symbolize_keys)
+- export = Export::Gtfs.new(@export.attributes.slice(*Export::Gtfs.attribute_names).except('id', 'type'))
 
-= form.simple_fields_for(resource_type, @export) do |sub_form|
+= form.simple_fields_for(resource_type, export) do |sub_form|
   = render 'exports/options/period', form: sub_form
   = render 'exports/options/exported_lines', form: sub_form
   - if has_feature?("export_with_code_space")

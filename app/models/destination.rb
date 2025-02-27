@@ -28,7 +28,7 @@ class Destination < ApplicationModel
       do_transmit publication, report
       report.success! unless report.failed?
     rescue StandardError => e
-      Chouette::Safe.capture "Destination ##{id} transmission failed for Publication #{publication.id}", e
+      ::Chouette::Safe.capture "Destination ##{id} transmission failed for Publication #{publication.id}", e
       report.failed! message: e.message, backtrace: e.backtrace
     end
   end
@@ -52,3 +52,5 @@ require_dependency './destination/sftp'
 require_dependency './destination/mail'
 require_dependency './destination/publication_api'
 require_dependency './destination/ara'
+require_dependency './destination/chouette'
+

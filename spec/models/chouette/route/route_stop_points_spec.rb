@@ -39,17 +39,17 @@ RSpec.describe Chouette::Route, type: :model do
       let!( :new_stop_id_list ){ subject.stop_points.map(&:id).tap {|array| array.insert( 1, array.delete_at(3)); array.insert( 3, array.delete_at(2) )} }
 
       it "should have swap stop_points from route" do
-        subject.update_attributes( :stop_points_attributes => swapped_stop_hash)
+        subject.update(stop_points_attributes: swapped_stop_hash)
         expect(Chouette::Route.find(subject.id).stop_points.map(&:id).sort).to eq(new_stop_id_list.sort)
       end
 
       it "should have swap stop_points from route's journey pattern" do
-        subject.update_attributes( :stop_points_attributes => swapped_stop_hash)
+        subject.update(stop_points_attributes: swapped_stop_hash)
         expect(Chouette::JourneyPattern.find( journey_pattern.id ).stop_points.map(&:id).sort).to eq(new_stop_id_list.sort)
       end
 
       it "should have swap stop_points from route's vehicle journey at stop" do
-        subject.update_attributes( :stop_points_attributes => swapped_stop_hash)
+        subject.update(stop_points_attributes: swapped_stop_hash)
         expect(Chouette::VehicleJourney.find( vehicle_journey.id ).vehicle_journey_at_stops.map(&:stop_point_id)).to match_array(new_stop_id_list)
       end
     end
@@ -63,17 +63,17 @@ RSpec.describe Chouette::Route, type: :model do
       let!( :new_stop_id_list ){ subject.stop_points.map(&:id).tap {|array| array.delete_at(1) } }
 
       it "should ignore deleted stop_point from route" do
-        subject.update_attributes( :stop_points_attributes => removed_stop_hash)
+        subject.update(stop_points_attributes: removed_stop_hash)
         expect(Chouette::Route.find( subject.id ).stop_points.map(&:id).sort).to eq(new_stop_id_list.sort)
       end
 
       it "should ignore deleted stop_point from route's journey pattern" do
-        subject.update_attributes( :stop_points_attributes => removed_stop_hash)
+        subject.update(stop_points_attributes: removed_stop_hash)
         expect(Chouette::JourneyPattern.find( journey_pattern.id ).stop_points.map(&:id).sort).to eq(new_stop_id_list.sort)
       end
 
       it "should ignore deleted stop_point from route's vehicle journey at stop" do
-        subject.update_attributes( :stop_points_attributes => removed_stop_hash)
+        subject.update(stop_points_attributes: removed_stop_hash)
         expect(Chouette::VehicleJourney.find( vehicle_journey.id ).vehicle_journey_at_stops.map(&:stop_point_id).sort).to match_array(new_stop_id_list.sort)
       end
     end

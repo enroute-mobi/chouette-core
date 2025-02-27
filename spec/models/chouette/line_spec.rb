@@ -135,7 +135,7 @@ describe Chouette::Line, type: :model do
     end
   end
 
-  describe '#update_attributes footnotes_attributes' do
+  describe '#update footnotes_attributes' do
     context 'instanciate 2 footnotes without line' do
       let!(:footnote_first) { build(:footnote, line_id: nil) }
       let!(:footnote_second) { build(:footnote, line_id: nil) }

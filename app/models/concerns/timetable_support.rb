@@ -101,7 +101,7 @@ module TimetableSupport
   def state_update state
     state.delete('errors')
 
-    update_attributes(self.class.state_permited_attributes(state))
+    update(self.class.state_permited_attributes(state))
     self.calendar_id = nil if self.respond_to?(:calendar_id) && !state['calendar']
 
     days = state['day_types'].split(',')

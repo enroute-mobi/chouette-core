@@ -115,7 +115,7 @@ fr:
       destination/iboo:
         workbench_id: Identification d'espace de travail
         workbench_api_key: api key
-        automatic_merge: Fusion automatique
+        automatic_merge: Finalisation automatique
       destination/custom:
         url: URL du service
         workbench_id: Identification d'espace de travail

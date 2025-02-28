@@ -1,15 +1,8 @@
 class Export::NetexGeneric < Export::Base
-  include LocalExportSupport
-
   option :profile, enumerize: %w[none french european idfm/iboo idfm/icar idfm/full], default: :none
-  option :duration
   option :from, serialize: ActiveModel::Type::Date
   option :to, serialize: ActiveModel::Type::Date
-  option :line_ids, serialize: :map_ids
-  option :company_ids, serialize: :map_ids
-  option :line_provider_ids, serialize: :map_ids
   option :period, default_value: 'all_periods', enumerize: %w[all_periods only_next_days static_day_period]
-  option :exported_lines, default_value: 'all_line_ids', enumerize: %w[line_ids company_ids line_provider_ids all_line_ids]
   option :participant_ref, default_value: 'enRoute'
   option :profile_options, default_value: '{}', serialize: ActiveRecord::Type::Json
   option :prefer_referent_line, default_value: false, enumerize: [true, false], serialize: ActiveModel::Type::Boolean

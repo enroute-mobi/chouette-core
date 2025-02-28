@@ -16,6 +16,7 @@ class Export::Base < ApplicationModel
   include PurgeableResource
   include Rails.application.routes.url_helpers
   include ActionView::Helpers::TagHelper
+  include LocalExportSupport
   extend Enumerize
 
   belongs_to :referential # CHOUETTE-3247 validates presence
@@ -37,6 +38,17 @@ class Export::Base < ApplicationModel
   attr_accessor :synchronous
   enumerize :status, in: %w(new pending successful warning failed running aborted canceled), scope: true, default: :new
   mount_uploader :file, ImportUploader
+
+  option :line_ids, serialize: :map_ids
+  option :company_ids, serialize: :map_ids
+  option :line_provider_ids, serialize: :map_ids
+  option :exported_lines, default_value: 'all_line_ids',
+                          enumerize: %w[line_ids company_ids line_provider_ids all_line_ids]
+  option :duration
+
+  def period
+    nil
+  end
 
   attr_accessor :cache_prefix
 

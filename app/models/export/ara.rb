@@ -3,15 +3,7 @@
 # Export a dataset into a Ara CSV file
 require 'ara/file'
 class Export::Ara < Export::Base
-  include LocalExportSupport
-
-  # FIXME: Should be shared
-  option :line_ids, serialize: :map_ids
-  option :company_ids, serialize: :map_ids
-  option :line_provider_ids, serialize: :map_ids
-  option :exported_lines, default_value: 'all_line_ids',
-                          enumerize: %w[line_ids company_ids line_provider_ids all_line_ids]
-  option :duration # Ignored by this export .. but required by Export::Scope builder
+  # :duration ignored by this export .. but required by Export::Scope builder
   option :include_stop_visits
 
   skip_empty_exports

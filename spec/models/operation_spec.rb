@@ -33,7 +33,10 @@ RSpec.describe Operation do
   subject(:operation) { self.class::Test.new }
 
   it { is_expected.to enumerize(:status).in(:new, :enqueued, :running, :done).with_default(:new).with_scope(true) }
-  it { is_expected.to enumerize(:user_status).in(:pending, :successful, :warning, :failed).with_default(:pending).with_scope(true) }
+  it {
+    is_expected.to enumerize(:user_status).in(:pending, :successful, :warning,
+                                              :failed).with_default(:pending).with_scope(true)
+  }
 
   describe '#perform' do
     context 'when perform experiences no error' do

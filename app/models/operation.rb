@@ -443,9 +443,7 @@ class Operation < ApplicationModel
 
     alias to_sym slug
 
-    def to_s
-      slug.to_s
-    end
+    delegate :to_s, to: :slug
 
     def self.find(*slugs)
       slugs = slugs.flatten.map(&:to_sym)
@@ -477,7 +475,7 @@ class Operation < ApplicationModel
 
     def initialize(operation, options = {})
       @operation = operation
-      options.each { |k,v| send "#{k}=", v }
+      options.each { |k, v| send "#{k}=", v }
     end
 
     def internal_description

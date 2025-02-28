@@ -253,24 +253,13 @@ class Export::NetexGeneric < Export::Base
     alias << add
   end
 
-  class Part < Operation::Part
-    alias export operation
+  class Part < Export::Part
+    delegate :resource_tagger, :alternate_identifiers_extractor, to: :export
 
-    delegate :target, :resource_tagger, :export_scope, :workgroup,
-             :alternate_identifiers_extractor, :code_provider, :cache_key_provider, to: :export
-
-    def decorate(model, **attributes)
-      decorator_class = attributes.delete(:with) || default_decorator_class
-
-      attributes = attributes.merge(
+    def decorator_attributes
+      {
         alternate_identifiers_extractor: alternate_identifiers_extractor,
-        code_provider: code_provider
-      )
-      decorator_class.new model, **attributes
-    end
-
-    def default_decorator_class
-      @decorator_class ||= self.class.const_get('Decorator')
+      }
     end
 
     def scoped_time_table_ids
@@ -492,17 +481,7 @@ class Export::NetexGeneric < Export::Base
     end
   end
 
-  class ModelDecorator < SimpleDelegator
-    def initialize(model, **attributes)
-      super model
-
-      attributes.each { |k,v| send "#{k}=", v }
-    end
-
-    def model
-      __getobj__
-    end
-
+  class ModelDecorator < Export::Decorator
     attr_writer :alternate_identifiers_extractor
 
     def alternate_identifiers_extractor
@@ -512,8 +491,6 @@ class Export::NetexGeneric < Export::Base
     def netex_alternate_identifiers
       alternate_identifiers_extractor.decorate(model).alternate_identifiers
     end
-
-    attr_writer :code_provider
 
     def netex_identifier
       @netex_identifier ||= Code::Value.parse(code_provider.code(model))
@@ -525,20 +502,6 @@ class Export::NetexGeneric < Export::Base
         changed: updated_at,
         created: created_at
       }
-    end
-
-    def code_provider
-      @code_provider ||= Export::CodeProvider.null
-    end
-
-    def decorate(model, **attributes)
-      decorator_class = attributes.delete(:with) || default_decorator_class
-
-      attributes = attributes.merge(
-        alternate_identifiers_extractor: alternate_identifiers_extractor,
-        code_provider: code_provider
-      )
-      decorator_class.new model, **attributes
     end
   end
 

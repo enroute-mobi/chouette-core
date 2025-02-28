@@ -34,8 +34,9 @@ RSpec.describe Operation do
 
   it { is_expected.to enumerize(:status).in(:new, :enqueued, :running, :done).with_default(:new).with_scope(true) }
   it {
- is_expected.to enumerize(:user_status).in(:pending, :successful, :warning,
-                                           :failed).with_default(:pending).with_scope(true) }
+    is_expected.to enumerize(:user_status).in(:pending, :successful, :warning,
+                                              :failed).with_default(:pending).with_scope(true)
+  }
 
   describe '#perform' do
     context 'when perform experiences no error' do
@@ -543,5 +544,23 @@ RSpec.describe Operation::Job do
         expect { subject }.not_to raise_error
       end
     end
+  end
+end
+
+RSpec.describe Operation::Part do
+  class self::Test < Operation::Part # rubocop:disable Lint/ConstantDefinitionInBlock,Style/ClassAndModuleChildren
+  end
+
+  subject(:part) { self.class::Test.new(operation) }
+  let(:operation) { double }
+
+  describe '#internal_description' do
+    subject { part.internal_description }
+    it { is_expected.to eq('test') }
+  end
+
+  describe '#logger' do
+    subject { part.logger }
+    it { is_expected.to eq(Rails.logger) }
   end
 end

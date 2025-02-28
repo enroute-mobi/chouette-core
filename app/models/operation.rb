@@ -443,9 +443,7 @@ class Operation < ApplicationModel
 
     alias to_sym slug
 
-    def to_s
-      slug.to_s
-    end
+    delegate :to_s, to: :slug
 
     def self.find(*slugs)
       slugs = slugs.flatten.map(&:to_sym)
@@ -469,6 +467,46 @@ class Operation < ApplicationModel
 
     def self.failed
       FAILED
+    end
+  end
+
+  class Part
+    attr_reader :operation
+
+    def initialize(operation, options = {})
+      @operation = operation
+      options.each { |k, v| send "#{k}=", v }
+    end
+
+    def internal_description
+      @internal_description ||= self.class.name.demodulize.underscore
+    end
+
+    def logger
+      Rails.logger
+    end
+
+    include CallbackSupport
+
+    class Benchmarker < Callback
+      delegate :internal_description, to: :operation
+      def around(&block)
+        Chouette::Benchmark.measure(internal_description, &block)
+      end
+    end
+
+    callback LogTagger
+    callback Benchmarker
+    callback Bullet if defined?(::Bullet) # By waiting Operation as real Operation
+    callback StackProf if defined?(::StackProf)
+
+    include AroundMethod
+    around_method :perform
+
+    def around_perform(&block)
+      Callback::Invoker.new(callbacks) do
+        block.call
+      end.call
     end
   end
 end

@@ -655,7 +655,7 @@ RSpec.describe Export::NetexGeneric do
     before { context.referential.switch }
 
     it 'create a Netex::Route for each Chouette Route and a Netex::Direction for routes having a published_name' do
-      part.export_part
+      part.perform
       count = routes.count + routes.count { |route| route.published_name.present? }
       expect(target.resources).to have_attributes(count: count)
 
@@ -679,7 +679,7 @@ RSpec.describe Export::NetexGeneric do
     end
 
     it 'create a Netex::Direction for each Chouette Route that have a published_name' do
-      part.export_part
+      part.perform
 
       directions = target.resources.select { |r| r.is_a? Netex::Direction }
 
@@ -690,7 +690,7 @@ RSpec.describe Export::NetexGeneric do
 
     it 'create Netex::Routes with line_id tag' do
       routes.each { |route| export.resource_tagger.register_tags_for(route.line) }
-      part.export_part
+      part.perform
       expect(target.resources).to all(have_tag(:line_id))
     end
 
@@ -920,7 +920,7 @@ RSpec.describe Export::NetexGeneric do
         stop_points_1_route_1.update(stop_area: stop_area_1)
         stop_points_2_route_1.update(stop_area: stop_area_2)
 
-        part.export_part
+        part.perform
       end
 
       let(:routing_constraint_zone_resources) { target.resources.select { |r| r.is_a? Netex::RoutingConstraintZone } }
@@ -954,7 +954,7 @@ RSpec.describe Export::NetexGeneric do
     let(:routing_constraint_zone) { context.routing_constraint_zone }
 
     context 'when RoutingConstraintZones part is exported' do
-      before { part.export_part }
+      before { part.perform }
 
       describe 'the NeTEx target' do
       end
@@ -1068,7 +1068,7 @@ RSpec.describe Export::NetexGeneric do
     before { context.referential.switch }
 
     it 'create Netex resources with correct coordinates' do
-      part.export_part
+      part.perform
       context.stop_points.each do |sp|
         expect(target.resources.find do |e|
                  e.longitude == sp.stop_area.longitude && e.latitude == sp.stop_area.latitude
@@ -1236,13 +1236,13 @@ RSpec.describe Export::NetexGeneric do
 
       it 'have line_id tag' do
         context.routes.each { |route| export.resource_tagger.register_tags_for(route.line) }
-        part.export_part
+        part.perform
         is_expected.to all(have_tag(:line_id))
       end
 
       it 'have data_source_ref attribute (using Route data_source_ref)' do
         context.routes.each { |route| route.update data_source_ref: 'test' }
-        part.export_part
+        part.perform
         is_expected.to all(have_attributes(data_source_ref: 'test'))
       end
     end
@@ -1268,7 +1268,7 @@ RSpec.describe Export::NetexGeneric do
     before { context.referential.switch }
 
     it 'create a Netex::JourneyPattern for each Chouette JourneyPattern' do
-      part.export_part
+      part.perform
       count = journey_patterns.count + journey_patterns.count { |j| j.published_name.present? }
       expect(target.resources).to have_attributes(count: count)
 
@@ -1290,7 +1290,7 @@ RSpec.describe Export::NetexGeneric do
     end
 
     it 'creates a Netex::DestinationDisplay for each Chouette Route having a published_name' do
-      part.export_part
+      part.perform
 
       destination_displays = target.resources.select { |r| r.is_a? Netex::DestinationDisplay }
 
@@ -1301,7 +1301,7 @@ RSpec.describe Export::NetexGeneric do
 
     it 'create Netex resources with line_id tag' do
       context.routes.each { |route| export.resource_tagger.register_tags_for(route.line) }
-      part.export_part
+      part.perform
       expect(target.resources).to all(have_tag(:line_id))
     end
   end
@@ -1345,7 +1345,7 @@ RSpec.describe Export::NetexGeneric do
           end
 
           export.resource_tagger.register_tags_for line
-          part.export_part
+          part.perform
         end
 
         it 'should create a Netex::VehicleJourneyStopAssignment' do
@@ -1375,7 +1375,7 @@ RSpec.describe Export::NetexGeneric do
           end
 
           export.resource_tagger.register_tags_for line
-          part.export_part
+          part.perform
         end
 
         it 'should create a Netex::VehicleJourneyStopAssignment with quay_ref' do
@@ -1395,7 +1395,7 @@ RSpec.describe Export::NetexGeneric do
           end
 
           export.resource_tagger.register_tags_for line
-          part.export_part
+          part.perform
         end
 
         it 'should create a Netex::VehicleJourneyStopAssignment with stop_place_ref' do
@@ -1409,7 +1409,7 @@ RSpec.describe Export::NetexGeneric do
 
     context 'when stop_area is absent' do
       it 'should not create a Netex::VehicleJourneyStopAssignment' do
-        part.export_part
+        part.perform
 
         vjas_assignments_count = target.resources.count { |r| r.is_a? Netex::VehicleJourneyStopAssignment }
 
@@ -1453,7 +1453,7 @@ RSpec.describe Export::NetexGeneric do
 
     it 'create Netex resources with line_id tag' do
       context.routes.each { |route| export.resource_tagger.register_tags_for(route.line) }
-      part.export_part
+      part.perform
       expect(target.resources).to all(have_tag(:line_id))
     end
 

@@ -230,11 +230,11 @@ class Export::NetexGeneric < Export::Base
       FareZones
     ]
 
-    part_classes.each_with_index do |part_class, index|
-      part_class.new(self).export_part
-    end
+    part_classes << Finalizer
 
-    Finalizer.new(self).export_part
+    part_classes.each do |part_class|
+      part_class.new(self).perform
+    end
 
     export_file.close
     export_file
@@ -253,47 +253,11 @@ class Export::NetexGeneric < Export::Base
     alias << add
   end
 
-  class Part
-    attr_reader :export
-
-    def initialize(export, options = {})
-      @export = export
-      options.each { |k,v| send "#{k}=", v }
-    end
+  class Part < Operation::Part
+    alias export operation
 
     delegate :target, :resource_tagger, :export_scope, :workgroup,
              :alternate_identifiers_extractor, :code_provider, :cache_key_provider, to: :export
-
-    def internal_description
-      @internal_description ||= self.class.name.demodulize.underscore
-    end
-
-    def logger
-      Rails.logger
-    end
-
-    include Operation::CallbackSupport
-
-    class Benchmarker < Operation::Callback
-      delegate :internal_description, to: :operation
-      def around(&block)
-        Chouette::Benchmark.measure(internal_description, &block)
-      end
-    end
-
-    callback Operation::LogTagger
-    callback Benchmarker
-    callback Operation::Bullet if defined?(::Bullet) # By waiting Export as real Operation
-    callback Operation::StackProf if defined?(::StackProf)
-
-    include AroundMethod
-    around_method :export_part
-
-    def around_export_part(&block)
-      Operation::Callback::Invoker.new(callbacks) do
-        block.call
-      end.call
-    end
 
     def decorate(model, **attributes)
       decorator_class = attributes.delete(:with) || default_decorator_class
@@ -315,7 +279,7 @@ class Export::NetexGeneric < Export::Base
   end
 
   class Finalizer < Part
-    def export_part
+    def perform
       target.close
     end
   end
@@ -579,7 +543,7 @@ class Export::NetexGeneric < Export::Base
   end
 
   class StopAreas < Part
-    def export_part
+    def perform
       stop_areas.each_instance do |stop_area|
         resource = decorate(stop_area, with: Decorator).netex_resource
         target << resource
@@ -718,7 +682,7 @@ class Export::NetexGeneric < Export::Base
   class Entrances < Part
     delegate :entrances, to: :export_scope
 
-    def export_part
+    def perform
       entrances.includes(:raw_import).find_each do |entrance|
         decorated_entrance = decorate(entrance)
         target << decorated_entrance.netex_resource
@@ -778,7 +742,7 @@ class Export::NetexGeneric < Export::Base
   class FareZones < Part
     delegate :fare_zones, to: :export_scope
 
-    def export_part
+    def perform
       fare_zones.find_each do |fare_zone|
         decorated_fare_zone = decorate(fare_zone)
         target << decorated_fare_zone.netex_resource
@@ -807,7 +771,7 @@ class Export::NetexGeneric < Export::Base
 
   class PointOfInterests < Part
 
-    def export_part
+    def perform
       point_of_interests.find_each do |point_of_interest|
         decorated_point_of_interest = decorate(point_of_interest)
         target << decorated_point_of_interest.netex_resource
@@ -955,7 +919,7 @@ class Export::NetexGeneric < Export::Base
 
     delegate :lines, to: :export_scope
 
-    def export_part
+    def perform
       export_scope.referenced_lines.pluck(:id, :referent_id).each do |line_id, referent_id|
         code_provider.lines.alias(line_id, as: referent_id)
         resource_tagger.alias_tags_for line_id, as: referent_id
@@ -1058,7 +1022,7 @@ class Export::NetexGeneric < Export::Base
   class LineNotices < Part
     delegate :line_notices, to: :export_scope
 
-    def export_part
+    def perform
       line_notices.includes(:codes).find_each do |line_notice|
         target << decorate(line_notice).netex_resource
       end
@@ -1086,7 +1050,7 @@ class Export::NetexGeneric < Export::Base
 
     delegate :companies, to: :export_scope
 
-    def export_part
+    def perform
       companies.includes(:codes).find_each do |company|
         decorated_company = decorate(company)
         target << decorated_company.netex_resource
@@ -1114,7 +1078,7 @@ class Export::NetexGeneric < Export::Base
 
     delegate :networks, to: :export_scope
 
-    def export_part
+    def perform
       networks.find_each do |network|
         decorated_network = decorate(network)
         target << decorated_network.netex_resource
@@ -1430,7 +1394,7 @@ class Export::NetexGeneric < Export::Base
 
     delegate :routes, to: :export_scope
 
-    def export_part
+    def perform
       routes.includes(:line, :stop_points, :codes).find_each do |route|
         tags = resource_tagger.tags_for(route.line_id)
         tagged_target = TaggedTarget.new(target, tags)
@@ -1573,7 +1537,7 @@ class Export::NetexGeneric < Export::Base
 
     delegate :stop_points, to: :export_scope
 
-    def export_part
+    def perform
       prefetch_codes
 
       stop_points.joins(:route, :stop_area).select(selected).find_each_light do |stop_point|
@@ -1610,7 +1574,7 @@ class Export::NetexGeneric < Export::Base
 
     delegate :routing_constraint_zones, to: :export_scope
 
-    def export_part
+    def perform
       routing_constraint_zones.includes(:route).find_each do |routing_constraint_zone|
         tags = resource_tagger.tags_for(routing_constraint_zone.route.line_id)
         tagged_target = TaggedTarget.new(target, tags)
@@ -1659,7 +1623,7 @@ class Export::NetexGeneric < Export::Base
 
     delegate :journey_patterns, to: :export_scope
 
-    def export_part
+    def perform
       journey_patterns.includes(:route, :codes, :stop_points).find_each do |journey_pattern|
         tags = resource_tagger.tags_for(journey_pattern.route.line_id)
         tagged_target = TaggedTarget.new(target, tags)
@@ -1725,7 +1689,7 @@ class Export::NetexGeneric < Export::Base
 
     delegate :cache, to: :export
 
-    def export_part
+    def perform
       return unless cache_key_provider
 
       cache_hit = 0
@@ -1835,7 +1799,7 @@ class Export::NetexGeneric < Export::Base
   end
 
   class VehicleJourneyAtStops < Part
-    def export_part
+    def perform
       stop_point_in_journey_pattern_ref_cache = {}
       passing_time_cache = {}
 
@@ -1949,7 +1913,7 @@ class Export::NetexGeneric < Export::Base
     # For the moment, no CustomField is used in VehicleJourney. See CHOUETTE-3939
     callback Operation::CustomFieldIgnored
 
-    def export_part
+    def perform
       vehicle_journeys.each_instance do |vehicle_journey|
         tags = resource_tagger.tags_for(vehicle_journey.line_id)
         tagged_target = TaggedTarget.new(target, tags)
@@ -2083,7 +2047,7 @@ class Export::NetexGeneric < Export::Base
   end
 
   class VehicleJourneyStopAssignments < Part
-    def export_part
+    def perform
       vehicle_journey_at_stops.find_each_light do |vehicle_journey_at_stop|
         tags = resource_tagger.tags_for(vehicle_journey_at_stop.line_id)
         tagged_target = TaggedTarget.new(target, tags)
@@ -2300,7 +2264,7 @@ class Export::NetexGeneric < Export::Base
     delegate :time_tables, to: :export_scope
     delegate :validity_period, to: :export_scope
 
-    def export_part
+    def perform
       time_tables.includes(:periods, :dates, :codes).find_each do |time_table|
         decorated_time_table = decorate(time_table, validity_period: validity_period)
 
@@ -2406,7 +2370,7 @@ class Export::NetexGeneric < Export::Base
   class Organisations < Part
     delegate :organisations, to: :export_scope
 
-    def export_part
+    def perform
       organisations.find_each do |o|
         target << Decorator.new(o).netex_resource
       end

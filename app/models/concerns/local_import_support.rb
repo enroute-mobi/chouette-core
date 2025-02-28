@@ -32,7 +32,9 @@ module LocalImportSupport
       referential&.active!
       update status: @status, ended_at: Time.now
     end
-  rescue InvalidReferential, StandardError => e
+  rescue InvalidReferential
+    update status: 'failed', ended_at: Time.now
+  rescue StandardError => e
     update status: 'failed', ended_at: Time.now
     Chouette::Safe.capture "#{self.class.name} ##{id} failed", e
 

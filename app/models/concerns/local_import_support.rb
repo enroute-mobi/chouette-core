@@ -32,12 +32,7 @@ module LocalImportSupport
       referential&.active!
       update status: @status, ended_at: Time.now
     end
-  rescue InvalidReferential
-    update status: 'failed', ended_at: Time.now
-    if overlapping_referential_ids.present?
-      create_message criticity: :error, message_key: 'referential_creation_overlapping_existing_referential_block'
-    end
-  rescue StandardError => e
+  rescue InvalidReferential, StandardError => e
     update status: 'failed', ended_at: Time.now
     Chouette::Safe.capture "#{self.class.name} ##{id} failed", e
 
@@ -101,11 +96,28 @@ module LocalImportSupport
     end
 
     def valid?
-      @valid ||= referential.valid?
+      validate
+      referential.valid? && errors.empty?
+    end
+
+    def validate
+      referential.validate
+
+      if overlapping_referential_ids.presence
+        errors << 'referential_creation_overlapping_existing_referential_block'
+      end
+
+      if metadata.periodes.empty?
+        errors << 'missing_validity_period'
+      end
     end
 
     def overlapping_referential_ids
       @overlapping_referential_ids ||= referential.overlapped_referential_ids
+    end
+
+    def errors
+      @errors ||= []
     end
   end
 
@@ -117,6 +129,10 @@ module LocalImportSupport
       main_resource.update referential: referential if main_resource
 
       unless referential_builder.valid?
+        referential_builder.errors.each do |message_key|
+          create_message criticity: :error, message_key: message_key
+        end
+
         self.overlapping_referential_ids = referential_builder.overlapping_referential_ids
         raise InvalidReferential
       end

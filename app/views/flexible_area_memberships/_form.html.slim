@@ -1,0 +1,8 @@
+.row
+  .col-lg-12
+    h2.mb-lg= t("stop_areas.form.sections.flexible_area")
+    = form.simple_fields_for(:flexible_area_memberships) do |flexible_area_memberships_form|
+      = render 'flexible_area_memberships/fields', f: flexible_area_memberships_form
+
+.links.nested-linker
+  = link_to_add_association t('actions.add_flexible_area_membership'), form, :flexible_area_memberships, class: 'btn btn-primary', partial: 'flexible_area_memberships/fields'

@@ -39,6 +39,13 @@ module Chouette
     has_many :group_members, class_name: 'StopAreaGroup::Member', dependent: :destroy, inverse_of: :stop_area
     has_many :groups, through: :group_members, inverse_of: :stop_areas
 
+    has_many :flexible_area_memberships, class_name: '::FlexibleAreaMembership', foreign_key: :flexible_area_id, dependent: :destroy
+    has_many :flexible_area_members, through: :flexible_area_memberships, source: :member
+    has_many :flexible_areas, through: :flexible_area_memberships, source: :flexible_area
+
+    accepts_nested_attributes_for :flexible_area_memberships, allow_destroy: true, reject_if: :all_blank
+    validates_associated :flexible_area_memberships
+
     scope :light, ->{ select(:id, :name, :city_name, :zip_code, :time_zone, :registration_number, :kind, :area_type, :time_zone, :stop_area_referential_id, :objectid) }
     scope :with_time_zone, -> { where.not time_zone: nil }
 
@@ -91,6 +98,8 @@ module Chouette
     validate :parent_kind_must_be_the_same
     validate :area_type_of_right_kind
     validate :registration_number_is_set
+    validate :validate_flexible_stop_place_relations
+    validate :cannot_be_member_if_flexible_stop_place
     validates_absence_of :parent_id, message: I18n.t('stop_areas.errors.parent_id.must_be_absent'), if: Proc.new { |stop_area| stop_area.kind == 'non_commercial' }
 
     validates :registration_number, uniqueness: { scope: :stop_area_provider_id }, allow_blank: true
@@ -123,6 +132,7 @@ module Chouette
 
     def parent_area_type_must_be_greater
       return unless self.parent && has_valid_area_type?
+      return if flexible_stop_place? # Flexible stop places can't have parents
 
       parent_area_type = Chouette::AreaType.find(self.parent.area_type)
       if Chouette::AreaType.find(self.area_type) >= parent_area_type
@@ -158,6 +168,19 @@ module Chouette
 
       unless stop_area_referential.validates_registration_number(registration_number)
         errors.add(:registration_number, I18n.t('stop_areas.errors.registration_number.invalid', mask: stop_area_referential.registration_number_format))
+      end
+    end
+
+    def validate_flexible_stop_place_relations
+      if flexible_stop_place?
+        errors.add(:parent_id, :not_allowed_for_flexible) if parent_id.present?
+        errors.add(:base, :children_not_allowed_for_flexible) if children.any?
+      end
+    end
+
+    def cannot_be_member_if_flexible_stop_place
+      if flexible_stop_place? && flexible_areas.any?
+        errors.add(:base, :cannot_be_member_if_flexible_stop_place)
       end
     end
 
@@ -245,6 +268,10 @@ module Chouette
 
     def quay?
       area_type&.to_sym == Chouette::AreaType::QUAY
+    end
+
+    def flexible_stop_place?
+      area_type&.to_sym == Chouette::AreaType::FLEXIBLE_STOP_PLACE
     end
 
     def to_lat_lng

@@ -5,6 +5,7 @@ fr:
     add_referential: Ajoutez un jeu de données
     add: 'Ajouter'
     add_code: 'Ajouter un code'
+    add_flexible_area_membership: 'Ajouter un adhésion'
     add_fare_geographic_reference: 'Ajouter une Référence Géographique'
     add_setting: 'Ajouter une option'
     archive: 'Archiver'

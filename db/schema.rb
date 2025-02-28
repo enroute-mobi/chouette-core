@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2025_02_12_100249) do
+ActiveRecord::Schema.define(version: 2025_02_28_103946) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "btree_gin"
@@ -675,6 +675,16 @@ ActiveRecord::Schema.define(version: 2025_02_12_100249) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["fare_provider_id"], name: "index_fare_zones_on_fare_provider_id"
+  end
+
+  create_table "flexible_area_memberships", force: :cascade do |t|
+    t.bigint "flexible_area_id", null: false
+    t.bigint "member_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["flexible_area_id", "member_id"], name: "index_flexible_area_memberships_unique", unique: true
+    t.index ["flexible_area_id"], name: "index_flexible_area_memberships_on_flexible_area_id"
+    t.index ["member_id"], name: "index_flexible_area_memberships_on_member_id"
   end
 
   create_table "footnotes", force: :cascade do |t|
@@ -1793,6 +1803,8 @@ ActiveRecord::Schema.define(version: 2025_02_12_100249) do
   add_foreign_key "controls", "control_contexts"
   add_foreign_key "custom_fields", "custom_field_groups"
   add_foreign_key "exports", "workgroups"
+  add_foreign_key "flexible_area_memberships", "stop_areas", column: "flexible_area_id"
+  add_foreign_key "flexible_area_memberships", "stop_areas", column: "member_id"
   add_foreign_key "journey_patterns", "routes", name: "jp_route_fkey", on_delete: :cascade
   add_foreign_key "journey_patterns", "stop_points", column: "arrival_stop_point_id", name: "arrival_point_fkey", on_delete: :nullify
   add_foreign_key "journey_patterns", "stop_points", column: "departure_stop_point_id", name: "departure_point_fkey", on_delete: :nullify

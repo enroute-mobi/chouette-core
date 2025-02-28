@@ -1,14 +1,15 @@
 class Chouette::AreaType
   include Comparable
 
+  FLEXIBLE_STOP_PLACE = :flexible_stop_place
   QUAY = :zdep
   STOP_PLACE = :zdlp
 
-  COMMERCIAL = %i(zdep zdlp lda gdl).freeze
+  COMMERCIAL = %i(zdep zdlp lda gdl flexible_stop_place).freeze
   NON_COMMERCIAL = %i(deposit border service_area relief other).freeze
   ALL = COMMERCIAL + NON_COMMERCIAL
 
-  @@commercial ||= %i(zdep zdlp lda gdl).freeze
+  @@commercial ||= %i(zdep zdlp lda gdl flexible_stop_place).freeze
   @@non_commercial ||= NON_COMMERCIAL
   @@all = ALL
   mattr_accessor :all, :commercial, :non_commercial

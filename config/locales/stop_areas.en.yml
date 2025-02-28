@@ -16,6 +16,9 @@ en:
         must_be_absent: A non commercial Stop Area cannot have a parent
       referent_id:
         cannot_be_referent_and_specific: "A Stop Area can't be both referent and specific"
+      not_allowed_for_flexible: "Flexible stop places cannot have a parent"
+      children_not_allowed_for_flexible: "Flexible stop places cannot have children"
+      associated_stop_areas_cannot_be_flexible: "Associated stops cannot be flexible stop places"
     default_geometry_success: "%{count} modified Stop Areas"
     stop_area:
       no_position: "No Position"
@@ -46,6 +49,8 @@ en:
       zip_code: Enter a zip code...
       city_name: Enter a city name...
       area_type: Enter an area type...
+      area_type:
+        flexible_stop_place: "Flexible Stop Place"
     statuses:
       in_creation: In creation
       confirmed: Activated
@@ -66,8 +71,11 @@ en:
         fare: "Fare"
         accessibility: "Accessibility"
         custom_fields: "Custom fields"
+        flexible_area: "Flexible Stop Area"
       address: "246 Boulevard Saint-Germain, 75007 Paris"
       geolocalize: "Pinpoint "
+      flexible_stop_place:
+        associated_stops: "Associated stops"
     edit:
       title: "Update stop %{name}"
     update:

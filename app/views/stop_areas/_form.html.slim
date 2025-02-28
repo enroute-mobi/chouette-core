@@ -26,9 +26,8 @@
   .separator.section_separator
 
   .row
-    .col-lg-12 x-data="{ kind: '#{@stop_area.kind}' || 'commercial'}"
+    .col-lg-12 x-data="{ kind: '#{@stop_area.kind}' || 'commercial', area_type: '#{@stop_area.area_type}' }"
       h2.mb-lg= t("stop_areas.form.sections.hierarchy")
-        // as: :radio_buttons
       - if has_feature?("route_stop_areas_all_types")
         = f.input :kind,
             as: :radio_buttons,
@@ -44,10 +43,22 @@
         = f.input :kind, as: :hidden, input_html: { value: :commercial }
       - %i(non_commercial commercial).each do |kind|
           .kind x-show="kind === '#{kind}'"
-            - area_type_input_options = { as: :select, input_html: { id: kind, disabled: !@stop_area.new_record? }, collection: area_type_options(kind), include_blank: false }
+            - area_type_input_options = { as: :select, input_html: { id: kind, disabled: !@stop_area.new_record?, 'x-bind:disabled': "kind !== '#{kind}' || area_type === 'flexible_stop_place'", 'x-on:change': 'area_type = $event.target.value' }, collection: area_type_options(kind), include_blank: false }
             - area_type_input_options[:input_html]['x-bind:disabled'] = "kind !== '#{kind}'" if @stop_area.new_record?
             = f.input :area_type, **area_type_input_options
-      = f.input :parent_id, as: :select, collection: [f.object.parent_id], input_html: {'x-bind:disabled': "kind === 'non_commercial'", data: { select2ed_placeholder: Chouette::StopArea.tmf('parent'), select2ed_allow_clear: 'true', select2_ajax: 'true', url: autocomplete_workbench_stop_area_referential_stop_areas_path(@workbench), initvalue: {id: f.object.parent_id, text: f.object.parent.try(:formatted_selection_details)}}}
+      = f.input :parent_id, as: :select, collection: [f.object.parent_id], input_html: { 'x-bind:disabled': "kind === 'non_commercial' || area_type === 'flexible_stop_place'", data: { select2ed_placeholder: Chouette::StopArea.tmf('parent'), select2ed_allow_clear: 'true', select2_ajax: 'true', url: autocomplete_workbench_stop_area_referential_stop_areas_path(@workbench), initvalue: { id: f.object.parent_id, text: f.object.parent.try(:formatted_selection_details) } } }
+
+
+        / = f.association :flexible_area_members,
+        /   as: :ajax_select,
+        /   collection: f.object.flexible_area_members,
+        /   label: t('stop_areas.form.flexible_stop_place.associated_stops'),
+        /   label_method: :display_name,
+        /   input_html: { multiple: true, 'data-url': autocomplete_workbench_stop_area_referential_stop_areas_path(@workbench, format: :json) }
+
+  /- if @stop_area.flexible_stop_place?
+  .separator.section_separator
+  = render 'flexible_area_memberships/form', form: f
 
   .separator.section_separator
 

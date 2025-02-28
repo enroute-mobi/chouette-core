@@ -78,6 +78,13 @@ class StopAreasController < Chouette::StopAreaReferentialController
     @saved_searches ||= workbench.saved_searches.for(Search::StopArea)
   end
 
+  def autocomplete_flexible_members
+    scope = stop_area_referential.stop_areas.where.not(area_type: 'flexible_stop_place')
+    scope = scope.by_text(params[:q]) if params[:q].present?
+    scope = scope.limit(50)
+    render json: scope.map { |s| { id: s.id, text: s.formatted_selection_details } }
+  end
+
   protected
 
   alias stop_area resource
@@ -139,6 +146,7 @@ class StopAreasController < Chouette::StopAreaReferentialController
       :status,
       :stop_area_provider_id,
       :transport_mode,
+      flexible_area_memberships_attributes: [:id, :member_id, :_destroy],
       fare_zone_ids: [],
       codes_attributes: [:id, :code_space_id, :value, :_destroy],
       localized_names: stop_area_referential.locales.map{|l| l[:code]}

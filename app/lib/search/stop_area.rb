@@ -50,6 +50,7 @@ module Search
     end
 
     def candidate_parents
+      # return Chouette::StopArea.none if area_type&.to_sym == Chouette::AreaType::FLEXIBLE_STOP_PLACE
       stop_area_referential&.stop_areas
     end
 

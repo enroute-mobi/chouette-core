@@ -52,14 +52,6 @@ en:
         zero:  "Chouette SaaS"
         one:   "Chouette SaaS"
         other: "Chouette SaaS"
-      destination/iboo:
-        zero:  "Iboo SaaS"
-        one:   "Iboo SaaS"
-        other: "Iboo SaaS"
-      destination/custom:
-        zero:  "Custom SaaS"
-        one:   "Custom SaaS"
-        other: "Custom SaaS"
     attributes:
       destination:
         name: "Name"

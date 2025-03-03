@@ -9,7 +9,7 @@ module Export
     def decorate(model, **attributes)
       decorator_class = attributes.delete(:with) || default_decorator_class
 
-      attributes = attributes.merge(code_provider: code_provider, decorator_builder: self).merge(decorator_attributes)
+      attributes = attributes.merge(code_provider: code_provider, decorator_builder: self, **decorator_attributes)
       decorator_class.new model, **attributes
     end
 

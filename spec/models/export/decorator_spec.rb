@@ -1,4 +1,5 @@
 # frozen_string_literal: true
+
 RSpec.describe Export::Decorator do
   subject(:decorator) { self.class::Test.new model }
 
@@ -20,6 +21,14 @@ RSpec.describe Export::Decorator do
   end
 
   describe '#model_code' do
+    subject { decorator.model_code }
+
+    let(:expected_code) { 'Code from CodeProvider' }
+
+    it do
+      expect(decorator.code_provider).to receive(:code).with(model).and_return(expected_code)
+      is_expected.to eq(expected_code)
+    end
   end
 
   describe '#decorate' do

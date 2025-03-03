@@ -62,6 +62,22 @@ RSpec.describe Export::NetexGeneric do
     end
   end
 
+  describe Export::NetexGeneric::Part do
+    subject(:part) { described_class.new(export) }
+
+    let(:export) { double }
+
+    describe '#decorator_attributes' do
+      subject { part.decorator_attributes }
+
+      before { allow(export).to receive(:alternate_identifiers_extractor).and_return(double('Export AlternateIdentifiersExtractor')) }
+
+      it do
+        is_expected.to eq(alternate_identifiers_extractor: export.alternate_identifiers_extractor)
+      end
+    end
+  end
+
   describe Export::NetexGeneric::AlternateIdentifiersExtractor::Decorator do
     subject(:decorator) { described_class.new(model, code_spaces: code_spaces) }
     let(:model) { double }

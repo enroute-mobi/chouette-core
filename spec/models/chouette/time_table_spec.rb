@@ -88,225 +88,6 @@ RSpec.describe Chouette::TimeTable, :type => :model do
     end
   end
 
-  describe "#merge! with time_table" do
-    let(:another_tt) { create(:time_table, dates_count: 0, periods_count: 0) }
-    let(:another_tt_periods_to_range) { another_tt.periods.map{|p| p.period_start..p.period_end } }
-    let(:dates) { another_tt.dates.map(&:date) }
-    let(:continuous_dates) { another_tt.continuous_dates.flatten.map(&:date) }
-
-    # Make sur we don't have overlapping periods or dates
-    before do
-      another_tt.periods.create period_start: 1.year.from_now, period_end: 1.year.from_now + 1.month
-
-      5.times do |i|
-        another_tt.dates.create date: 1.year.from_now + i.days, in_out: true
-      end
-
-      another_tt.save
-    end
-
-    it 'should merge dates' do
-      subject.dates.clear
-      subject.merge!(another_tt)
-      expect(subject.dates.map(&:date)).to match_array(dates - continuous_dates)
-    end
-
-    it 'should not merge continuous dates' do
-      subject.dates.clear
-      subject.merge!(another_tt)
-      expect(subject.dates.map(&:date)).not_to include(*continuous_dates)
-    end
-
-    it 'should merge periods' do
-      subject.periods.clear
-      subject.merge!(another_tt)
-
-      expect(subject_periods_to_range).to include(*another_tt_periods_to_range)
-    end
-
-    it 'should not modify int_day_types' do
-      int_day_types = subject.int_day_types
-      subject.merge!(another_tt)
-      expect(subject.int_day_types).to eq int_day_types
-    end
-
-    it 'should not merge date in_out false' do
-      another_tt.dates.last.in_out = false
-      another_tt.save
-
-      subject.merge!(another_tt)
-      expect(subject.dates.map(&:date)).not_to include(another_tt.dates.last.date)
-    end
-
-    it 'should remove all date in_out false' do
-      subject.dates.create(in_out: false, date: Time.zone.today + 5.day + 1.year)
-      another_tt.dates.last.in_out = false
-      subject.merge!(another_tt)
-      expect(subject.reload.excluded_days.count).to eq(0)
-    end
-  end
-
-  context "#merge! with calendar" do
-    let(:calendar) { create(:calendar, date_ranges: [Time.zone.today + 1.year..Time.zone.today + 5.day + 1.year]) }
-    let(:another_tt) { calendar.convert_to_time_table }
-    let(:dates) { subject.dates.map(&:date) }
-    let(:continuous_dates) { subject.continuous_dates.flatten.map(&:date) }
-
-    it 'should merge calendar dates' do
-      subject.dates.clear
-      subject.merge!(another_tt)
-      expect(subject.dates.map(&:date)).to match_array(dates - continuous_dates)
-    end
-
-    it 'should not merge calendar continuous dates' do
-      subject.dates.clear
-      subject.merge!(another_tt)
-      expect(subject.dates.map(&:date)).not_to include(*continuous_dates)
-    end
-
-    it 'should merge calendar periods with no periods in source' do
-      subject.periods.clear
-      subject.merge!(another_tt)
-      expect(subject_periods_to_range).to include(*calendar.date_ranges)
-    end
-
-    it 'should add calendar periods with existing periods in source' do
-      subject.merge!(another_tt)
-      expect(subject_periods_to_range).to include(*calendar.date_ranges)
-    end
-  end
-
-  describe "#disjoin!" do
-    let(:another_tt) { create(:time_table) }
-
-    context 'dates' do
-      before do
-        subject.periods.clear
-        another_tt.periods.clear
-      end
-
-      it 'should remove common dates' do
-        subject.disjoin!(another_tt)
-        expect(subject.reload.dates).to be_empty
-      end
-
-      it 'should remove common dates with mixed none common dates' do
-        another_tt.dates.clear
-        another_tt.dates << create(:time_table_date, time_table: another_tt, date: subject.dates[0].date)
-
-        subject.disjoin!(another_tt)
-        expect(subject.reload.dates.map(&:date)).to_not include(another_tt.dates[0].date)
-      end
-    end
-
-    context 'periods' do
-      let(:another_tt_periods_to_range) { another_tt.periods.map{|p| p.period_start..p.period_end } }
-      # Clear dates as we are testing periods
-      before do
-        subject.dates.clear
-        another_tt.dates.clear
-      end
-
-      it 'should remove common dates in periods' do
-        subject.disjoin!(another_tt)
-        expect(subject_periods_to_range).to_not include(*another_tt_periods_to_range)
-      end
-
-      it 'should build new period without common dates in periods' do
-        t = Time.local(2018, 1, 1, 12, 0, 0)
-        Timecop.freeze(t) do
-          subject.periods.clear
-          another_tt.periods.clear
-
-          subject.periods << create_time_table_periode(subject, Time.zone.today, Time.zone.today + 10.day)
-          another_tt.periods << create_time_table_periode(another_tt, Date.tomorrow, Time.zone.today + 3.day)
-
-          subject.disjoin!(another_tt)
-          expected_range = Date.tomorrow..Time.zone.today + 3.day
-
-          expect(subject_periods_to_range).to_not include(expected_range)
-          expect(subject.periods.count).to eq 1
-        end
-      end
-    end
-  end
-
-  describe '#intersect! with time_table' do
-    let(:another_tt) { create(:time_table) }
-
-    context 'dates' do
-      # Clear periods as we are testing dates
-      before do
-        subject.periods.clear
-        another_tt.periods.clear
-      end
-
-      it 'should keep common dates' do
-        days = subject.dates.map(&:date)
-        subject.intersect!(another_tt)
-        expect(subject.included_days_in_dates_and_periods).to include(*days)
-      end
-
-      it 'should not keep dates who are not in common' do
-        # Add 1 year interval, to make sur we have not dates in common
-        another_tt.dates.map{|d| d.date = d.date + 1.year }
-        subject.intersect!(another_tt)
-
-        expect(subject.reload.dates).to be_empty
-      end
-    end
-
-    context 'periods' do
-      let(:another_tt_periods_to_range) { another_tt.periods.map{|p| p.period_start..p.period_end } }
-      # Clear dates as we are testing periods
-      before do
-        subject.dates.clear
-        another_tt.dates.clear
-      end
-
-      it 'should keep common dates in periods' do
-        subject.intersect!(another_tt)
-        expect(subject_periods_to_range).to include(*another_tt_periods_to_range)
-      end
-
-      it 'should build new period with common dates in periods' do
-        subject.periods.clear
-        another_tt.periods.clear
-
-        subject.periods << create_time_table_periode(subject, Time.zone.today, Time.zone.today + 10.day)
-        another_tt.periods << create_time_table_periode(another_tt, Date.tomorrow, Time.zone.today + 3.day)
-
-        subject.intersect!(another_tt)
-        expected_range = Date.tomorrow..Time.zone.today + 3.day
-
-        expect(subject_periods_to_range).to include(expected_range)
-        expect(subject.periods.count).to eq 1
-      end
-
-      it 'should not keep dates in periods who are not in common' do
-        another_tt.periods.map do |p|
-          p.period_start = p.period_start + 1.year
-          p.period_end   = p.period_end + 1.year
-        end
-
-        subject.intersect!(another_tt)
-        expect(subject.periods).to be_empty
-      end
-
-      context 'with calendar' do
-        let(:period_start) { subject.periods[0].period_start }
-        let(:period_end)   { subject.periods[0].period_end }
-        let(:another_tt)   { create(:calendar, date_ranges: [period_start..period_end]).convert_to_time_table }
-
-        it 'should keep common dates in periods' do
-          subject.intersect!(another_tt)
-          expect(subject.reload.periods.count).to eq 1
-          expect(subject_periods_to_range).to include(*another_tt_periods_to_range)
-        end
-      end
-    end
-  end
-
   describe "actualize" do
     let(:calendar) { create(:calendar) }
     let(:int_day_types) { 508 }
@@ -467,31 +248,31 @@ RSpec.describe Chouette::TimeTable, :type => :model do
         end
 
         subject.state_update state
-        expect(subject.reload.excluded_days.count).to eq (updated.compact.count)
+        expect(subject.reload.dates.excluded.count).to eq (updated.compact.count)
     end
 
     it 'should create new include date' do
       day  = state['current_month'].find{|d| !d['excluded_date'] && !d['include_date'] }
       date = Date.parse(day['date'])
       day['include_date'] = true
-      expect(subject.included_days).not_to include(date)
+      expect(subject.dates.included).not_to include(have_attributes(date: date))
 
       expect {
         subject.state_update state
       }.to change {subject.dates.count}.by(1)
-      expect(subject.reload.included_days).to include(date)
+      expect(subject.reload.dates.included).to include(have_attributes(date: date))
     end
 
     it 'should create new exclude date' do
       day  = state['current_month'].find{|d| !d['excluded_date'] && !d['include_date']}
       date = Date.parse(day['date'])
       day['excluded_date'] = true
-      expect(subject.excluded_days).not_to include(date)
+      expect(subject.dates.excluded).not_to include(have_attributes(date: date))
 
       expect {
         subject.state_update state
       }.to change {subject.dates.count}.by(1)
-      expect(subject.reload.excluded_days).to include(date)
+      expect(subject.dates.excluded).to include(have_attributes(date: date))
     end
   end
 
@@ -917,30 +698,6 @@ RSpec.describe Chouette::TimeTable, :type => :model do
     end
   end
 
-  describe "#intersects" do
-    it "should return day if a date equal day" do
-      time_table = Chouette::TimeTable.create!(:comment => "Test", :objectid => "test:Timetable:1:loc")
-      time_table.dates << Chouette::TimeTableDate.new( :date => Time.zone.today, :in_out => true)
-      expect(time_table.intersects([Time.zone.today])).to eq([Time.zone.today])
-    end
-
-    it "should return [] if a period not include days" do
-      time_table = Chouette::TimeTable.create!(:comment => "Test", :objectid => "test:Timetable:1:loc", :int_day_types => 12)
-      time_table.periods << Chouette::TimeTablePeriod.new(
-                              :period_start => Date.new(2013, 05, 27),
-                              :period_end => Date.new(2013, 05, 30))
-      expect(time_table.intersects([ Date.new(2013, 05, 29),  Date.new(2013, 05, 30)])).to eq([])
-    end
-
-    it "should return days if a period include day" do
-      time_table = Chouette::TimeTable.create!(:comment => "Test", :objectid => "test:Timetable:1:loc", :int_day_types => 12) # Day type monday and tuesday
-      time_table.periods << Chouette::TimeTablePeriod.new(
-                              :period_start => Date.new(2013, 05, 27),
-                              :period_end => Date.new(2013, 05, 30))
-      expect(time_table.intersects([ Date.new(2013, 05, 27),  Date.new(2013, 05, 28)])).to eq([ Date.new(2013, 05, 27),  Date.new(2013, 05, 28)])
-    end
-  end
-
   describe "#include_day?" do
     it "should return true if a date equal day" do
       time_table = Chouette::TimeTable.create!(:comment => "Test", :objectid => "test:Timetable:1:loc")
@@ -989,51 +746,6 @@ RSpec.describe Chouette::TimeTable, :type => :model do
                               :period_start => Date.new(2013, 05, 27),
                               :period_end => Date.new(2013, 05, 29))
       expect(time_table.include_in_periods?( excluded_date)).to be_falsey
-    end
-  end
-
-  describe "#validity_out_between?" do
-    let(:empty_tm) {build(:time_table)}
-    it "should be false if empty calendar" do
-      expect(empty_tm.validity_out_between?( Time.zone.today, Time.zone.today + 7.day)).to be_falsey
-    end
-    it "should be true if caldendar is out during start_date and end_date period" do
-      start_date = subject.bounding_dates.max - 2.day
-      end_date = subject.bounding_dates.max + 2.day
-      expect(subject.validity_out_between?( start_date, end_date)).to be_truthy
-    end
-    it "should be false if calendar is out on start date" do
-      start_date = subject.bounding_dates.max
-      end_date = subject.bounding_dates.max + 2.day
-      expect(subject.validity_out_between?( start_date, end_date)).to be_falsey
-    end
-    it "should be false if calendar is out on end date" do
-      start_date = subject.bounding_dates.max - 2.day
-      end_date = subject.bounding_dates.max
-      expect(subject.validity_out_between?( start_date, end_date)).to be_truthy
-    end
-    it "should be false if calendar is out after start_date" do
-      start_date = subject.bounding_dates.max + 2.day
-      end_date = subject.bounding_dates.max + 4.day
-      expect(subject.validity_out_between?( start_date, end_date)).to be_falsey
-    end
-  end
-  describe "#validity_out_from_on?" do
-    let(:empty_tm) {build(:time_table)}
-    it "should be false if empty calendar" do
-      expect(empty_tm.validity_out_from_on?( Time.zone.today)).to be_falsey
-    end
-    it "should be true if caldendar ends on expected date" do
-      expected_date = subject.bounding_dates.max
-      expect(subject.validity_out_from_on?( expected_date)).to be_truthy
-    end
-    it "should be true if calendar ends before expected date" do
-      expected_date = subject.bounding_dates.max + 30.day
-      expect(subject.validity_out_from_on?( expected_date)).to be_truthy
-    end
-    it "should be false if calendars ends after expected date" do
-      expected_date = subject.bounding_dates.max - 30.day
-      expect(subject.validity_out_from_on?( expected_date)).to be_falsey
     end
   end
 
@@ -1141,47 +853,6 @@ RSpec.describe Chouette::TimeTable, :type => :model do
                     ->{ create(:time_table_period, period_start: 5.month.from_now, period_end: 6.month.from_now, time_table: checksum_owner) }
   end
 
-  describe "#excluded_days" do
-      before do
-        subject.dates.clear
-        subject.dates << Chouette::TimeTableDate.new( :date => Date.new(2014,7,16), :in_out => true)
-        subject.dates << Chouette::TimeTableDate.new( :date => Date.new(2014,7,17), :in_out => false)
-        subject.dates << Chouette::TimeTableDate.new( :date => Date.new(2014,7,18), :in_out => true)
-        subject.dates << Chouette::TimeTableDate.new( :date => Date.new(2014,7,19), :in_out => false)
-        subject.dates << Chouette::TimeTableDate.new( :date => Date.new(2014,7,20), :in_out => true)
-      end
-      it "should return 3 dates" do
-        days = subject.excluded_days
-        expect(days.size).to eq(2)
-        expect(days[0]).to eq(Date.new(2014, 7, 17))
-        expect(days[1]).to eq(Date.new(2014,7, 19))
-      end
-  end
-
-  describe "#effective_days" do
-      before do
-        subject.periods.clear
-        subject.periods << Chouette::TimeTablePeriod.new(
-                              :period_start => Date.new(2014, 6, 30),
-                              :period_end => Date.new(2014, 7, 6))
-        subject.int_day_types = 4|8|16
-        subject.dates.clear
-        subject.dates << Chouette::TimeTableDate.new( :date => Date.new(2014,7,1), :in_out => false)
-        subject.dates << Chouette::TimeTableDate.new( :date => Date.new(2014,7,16), :in_out => true)
-        subject.dates << Chouette::TimeTableDate.new( :date => Date.new(2014,7,18), :in_out => true)
-        subject.dates << Chouette::TimeTableDate.new( :date => Date.new(2014,7,20), :in_out => true)
-      end
-      it "should return 5 dates" do
-        days = subject.effective_days
-        expect(days.size).to eq(5)
-        expect(days[0]).to eq(Date.new(2014, 6, 30))
-        expect(days[1]).to eq(Date.new(2014, 7, 2))
-        expect(days[2]).to eq(Date.new(2014, 7, 16))
-        expect(days[3]).to eq(Date.new(2014, 7, 18))
-        expect(days[4]).to eq(Date.new(2014, 7, 20))
-      end
-  end
-
   describe "#optimize_overlapping_periods" do
       before do
         subject.periods.clear
@@ -1206,39 +877,6 @@ RSpec.describe Chouette::TimeTable, :type => :model do
         expect(periods[0].period_end).to eq(Date.new(2014, 6, 14))
         expect(periods[1].period_start).to eq(Date.new(2014, 6, 30))
         expect(periods[1].period_end).to eq(Date.new(2014, 7, 14))
-      end
-  end
-
-  describe "#add_included_day" do
-      before do
-        subject.dates.clear
-        subject.dates << Chouette::TimeTableDate.new( :date => Date.new(2014,7,16), :in_out => true)
-        subject.dates << Chouette::TimeTableDate.new( :date => Date.new(2014,7,18), :in_out => false)
-        subject.dates << Chouette::TimeTableDate.new( :date => Date.new(2014,7,20), :in_out => true)
-      end
-      it "should do nothing" do
-        subject.add_included_day(Date.new(2014,7,16))
-        days = subject.included_days
-        expect(days.size).to eq(2)
-        expect(days.include?(Date.new(2014,7,16))).to be_truthy
-        expect(days.include?(Date.new(2014,7,18))).to be_falsey
-        expect(days.include?(Date.new(2014,7,20))).to be_truthy
-      end
-      it "should switch in_out flag" do
-        subject.add_included_day(Date.new(2014,7,18))
-        days = subject.included_days
-        expect(days.size).to eq(3)
-        expect(days.include?(Date.new(2014,7,16))).to be_truthy
-        expect(days.include?(Date.new(2014,7,18))).to be_truthy
-        expect(days.include?(Date.new(2014,7,20))).to be_truthy
-      end
-      it "should add date" do
-        subject.add_included_day(Date.new(2014,7,21))
-        days = subject.included_days
-        expect(days.size).to eq(3)
-        expect(days.include?(Date.new(2014,7,16))).to be_truthy
-        expect(days.include?(Date.new(2014,7,20))).to be_truthy
-        expect(days.include?(Date.new(2014,7,21))).to be_truthy
       end
   end
 

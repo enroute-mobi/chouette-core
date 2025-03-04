@@ -15,11 +15,7 @@ fr:
       destroy: "Supprimer ce calendrier"
       duplicate: "Dupliquer ce calendrier"
       destroy_confirm: "Etes vous sûr de supprimer ce calendrier ?"
-      destroy_date_confirm: "Etes vous sûr de supprimer cette date ?"
-      destroy_period_confirm: "Etes vous sûr de supprimer cette période ?"
       add_period: "Ajouter une période"
-      add_date: "Ajouter une date particulière"
-      add_excluded_date: "Ajouter une date exclue"
     actualize:
       success: "Actualisation terminée"
     new:
@@ -75,7 +71,6 @@ fr:
       from: "du"
       to: "au"
       add_period: "Ajouter une période"
-      add_date: "Ajouter une date"
       combine: "Appliquer"
     show_time_table:
       resume: "Validité comprise du %{start_date} au %{end_date}"

@@ -15,11 +15,7 @@ en:
       destroy: "Remove this timetable"
       duplicate: "Duplicate this timetable"
       destroy_confirm: "Are you sure you want destroy this timetable ?"
-      destroy_date_confirm: "Are you sure you want destroy this date ?"
-      destroy_period_confirm: "Are you sure you want destroy this period ?"
       add_period: "Add a period"
-      add_date: "Add a peculiar date"
-      add_excluded_date: "Add an excluded date"
     actualize:
       success: "Actualize succeded"
     new:
@@ -75,7 +71,6 @@ en:
       from: "from"
       to: "to"
       add_period: "Add a period"
-      add_date: "Add a date"
       combine: "Apply"
     show_time_table:
       resume: "From %{start_date} to %{end_date}"

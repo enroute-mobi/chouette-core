@@ -142,24 +142,24 @@ RSpec.describe Calendar, type: :model do
       day  = state['current_month'].find{|d| !d['excluded_date'] && !d['include_date'] }
       date = Date.parse(day['date'])
       day['include_date'] = true
-      expect(subject.included_days).not_to include(date)
+      expect(subject.dates).not_to include(date)
 
       expect {
         subject.state_update state
       }.to change {subject.dates.count}.by(1)
-      expect(subject.reload.included_days).to include(date)
+      expect(subject.reload.dates).to include(date)
     end
 
     it 'should create new exclude date' do
       day  = state['current_month'].find{|d| !d['excluded_date'] && !d['include_date']}
       date = Date.parse(day['date'])
       day['excluded_date'] = true
-      expect(subject.excluded_days).not_to include(date)
+      expect(subject.excluded_dates).not_to include(date)
 
       expect {
         subject.state_update state
       }.to change {subject.all_dates.count}.by(1)
-      expect(subject.reload.excluded_days).to include(date)
+      expect(subject.reload.excluded_dates).to include(date)
     end
   end
 

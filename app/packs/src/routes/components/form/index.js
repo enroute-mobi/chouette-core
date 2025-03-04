@@ -2,6 +2,7 @@ import React, { Component } from 'react'
 import PropTypes from 'prop-types'
 import TextInput from './TextInput'
 import SelectInput from './SelectInput'
+import SwitchInput from './SwitchInput'
 
 export default class RouteForm extends Component {
   constructor(props) {
@@ -15,6 +16,7 @@ export default class RouteForm extends Component {
       errors,
       onUpdateName,
       onUpdatePublishedName,
+      onUpdateWayback,
       onUpdateOppositeRoute,
       oppositeRoutesOptions
     } = this.props

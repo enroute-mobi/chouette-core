@@ -26,6 +26,10 @@ const mapDispatchToProps = (dispatch) => ({
     const newPublishedName = handleInputChange('published_name')(e.target.value)()
     dispatch(actions.updateRouteFormInput(newPublishedName))
   },
+  onUpdateWayback(e) {
+    const newAtributes  = handleInputChange('wayback')(getWayback(e))()
+    dispatch(actions.updateRouteFormInput(newAtributes))
+  },
   onUpdateOppositeRoute(e) {
     const newOppositeRouteId = handleInputChange('opposite_route_id')(parseInt(e.target.value) || undefined)()
     dispatch(actions.updateRouteFormInput(newOppositeRouteId))

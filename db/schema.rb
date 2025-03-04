@@ -1563,7 +1563,7 @@ ActiveRecord::Schema.define(version: 2025_02_12_100249) do
     t.bigint "stop_area_id", null: false
     t.string "objectid", null: false
     t.bigint "object_version"
-    t.bigint "position", null: false
+    t.integer "position", null: false
     t.string "for_boarding"
     t.string "for_alighting"
     t.datetime "created_at"

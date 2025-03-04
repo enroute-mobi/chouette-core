@@ -9,7 +9,7 @@ class CleanReferentialTables < ActiveRecord::Migration[5.2]
     # stop_points
     change_column :stop_points, :route_id, :bigint, null: false
     change_column :stop_points, :stop_area_id, :bigint, null: false
-    change_column :stop_points, :position, :bigint, null: false
+    change_column :stop_points, :position, :integer, null: false
 
     # journey_patterns
     remove_column :journey_patterns, :comment

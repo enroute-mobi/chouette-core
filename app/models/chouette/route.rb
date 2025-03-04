@@ -28,11 +28,10 @@ module Chouette
       INBOUND
     end
 
-    enumerize :direction, in: %i(straight_forward backward clockwise counter_clockwise north north_west west south_west south south_east east north_east)
     enumerize :wayback, in: [OUTBOUND, INBOUND], default: OUTBOUND, scope: true
 
     def self.nullable_attributes
-      [:published_name, :comment, :number, :name, :direction, :wayback]
+      [:published_name, :name, :wayback]
     end
 
     belongs_to :line # CHOUETTE-3247 validates presence
@@ -242,7 +241,7 @@ module Chouette
 
     # DEPRECATED Only used by legacy specs
     def full_journey_pattern
-      journey_pattern = journey_patterns.find_or_create_by registration_number: self.number, name: self.name
+      journey_pattern = journey_patterns.find_or_create_by name: self.name
       journey_pattern.stop_points = self.stop_points
       journey_pattern
     end

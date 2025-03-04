@@ -502,9 +502,7 @@ describe Chouette::VehicleJourney, type: :model do
   describe "state_update" do
     def vehicle_journey_at_stop_to_state vjas
       at_stop = {'stop_area_object_id' => vjas.stop_point.stop_area.objectid }
-      [:id, :connecting_service_id, :boarding_alighting_possibility].map do |att|
-        at_stop[att.to_s] = vjas.send(att) unless vjas.send(att).nil?
-      end
+      at_stop['id'] = vjas.id unless vjas.id.nil?
 
       at_stop["stop_point_objectid"] = vjas&.stop_point&.objectid
 

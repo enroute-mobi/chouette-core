@@ -137,8 +137,6 @@ fr:
         created_at: "Créé le"
         creator_id: "Créé par"
         departure_time: "Départ"
-        facility: "Equipement"
-        flexible_service: "Transport à la demande"
         footnote_ids: "Notes de bas de page"
         id: "Course"
         journey_frequency_ids: "Créneau horaire"
@@ -148,10 +146,8 @@ fr:
         journey_pattern_published_name: "Destination de la mission"
         journey_length: "Parcours commercial"
         line: "Ligne"
-        mobility_restricted_suitability: "Accessibilité PMR"
         name: "Nom Course"
         not_accessible: "Non accessible"
-        number: "Numéro"
         object_version: "Version"
         objectid: "Identifiant Neptune"
         on_demand_fs: "Service à la demande"
@@ -170,7 +166,6 @@ fr:
         updated_at: "Edité le"
         vehicle_journey_at_stops: "La liste des horaires"
         vehicle_journey_at_stop_ids: "La liste des horaires"
-        vehicle_type_identifier: "Type d'identifiant du véhicule"
         start_time: Heure de départ
         constraint_exclusions: Exclusions d'interdictions de trafic
     errors:

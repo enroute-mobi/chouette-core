@@ -386,9 +386,6 @@ class Import::Neptune < Import::Base
       end
       vehicle_journey = journey_pattern.vehicle_journeys.build do |v|
         v.published_journey_identifier = source_vehicle_journey[:number]
-        if source_vehicle_journey[:number] =~ /\A[0-9]+\z/
-          v.number = source_vehicle_journey[:number].to_i
-        end
         v.published_journey_name = source_vehicle_journey[:published_journey_name]
         v.route = journey_pattern.route
         v.metadata = { creator_username: source_vehicle_journey[:creator_id], created_at: source_vehicle_journey[:creation_time] }

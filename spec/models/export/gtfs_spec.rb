@@ -1209,8 +1209,8 @@ RSpec.describe Export::Gtfs, type: [:model, :with_exportable_referential] do
     let(:context) do
       Chouette.create do
         time_table :default
-        vehicle_journey time_tables: [:default], flexible_service: true
-        vehicle_journey time_tables: [:default], flexible_service: false
+        vehicle_journey time_tables: [:default]
+        vehicle_journey time_tables: [:default]
       end
     end
 
@@ -1226,13 +1226,6 @@ RSpec.describe Export::Gtfs, type: [:model, :with_exportable_referential] do
       part.export!
       vehicle_journeys.each do |vehicle_journey|
         expect(index.trip_ids(vehicle_journey.id)).to eq([vehicle_journey.objectid])
-      end
-    end
-
-    it "registers the GTFS pickup_type for each VehicleJourney" do
-      part.export!
-      vehicle_journeys.each do |vehicle_journey|
-        expect(index.pickup_type(vehicle_journey.id)).to eq(vehicle_journey.flexible_service)
       end
     end
 

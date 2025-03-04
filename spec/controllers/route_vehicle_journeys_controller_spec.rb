@@ -43,10 +43,6 @@ RSpec.describe RouteVehicleJourneysController, type: :controller do
         vehicle_journey = parsed_response['vehicle_journeys'].first
         vehicle_journey['vehicle_journey_at_stops'].each do |received_vjas|
           expect(received_vjas).to have_key('id')
-          vjas = Chouette::VehicleJourneyAtStop.find(received_vjas['id'])
-          %i[connecting_service_id boarding_alighting_possibility].each do |att|
-            expect(received_vjas[att]).to eq vjas.send(att)
-          end
         end
       end
 

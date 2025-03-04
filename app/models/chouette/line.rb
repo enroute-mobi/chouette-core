@@ -143,10 +143,6 @@ module Chouette
       Chouette::StopArea.joins(stop_points: [route: :line]).where(lines: { id: id }).collect(&:root).flatten.uniq
     end
 
-    def vehicle_journey_frequencies?
-      vehicle_journeys.unscoped.where(journey_category: 1).count.positive?
-    end
-
     def full_display_name
       [get_objectid.short_id, number, name, company_light.try(:name)].compact.join(' - ')
     end

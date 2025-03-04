@@ -7,14 +7,10 @@ module Chouette
 
     has_metadata
 
-    enum journey_category: { timed: 0, frequency: 1 }
-
-    # default_scope { where(journey_category: journey_categories[:timed]) }
-
     attr_reader :time_table_tokens
 
     def self.nullable_attributes
-      [:transport_mode, :published_journey_name, :vehicle_type_identifier, :published_journey_identifier, :comment]
+      [:transport_mode, :published_journey_name, :published_journey_identifier]
     end
 
     belongs_to :company, optional: true # CHOUETTE-3247 failing specs
@@ -40,14 +36,11 @@ module Chouette
       except_in_inserter_context.before_validation :calculate_vehicle_journey_at_stop_day_offset
     end
     validate :validate_passing_times_chronology
-    validates :number, presence: true
 
     has_many :vehicle_journey_at_stops, -> { includes(:stop_point).order("stop_points.position") }, inverse_of: :vehicle_journey, dependent: :destroy
     has_and_belongs_to_many :time_tables, :class_name => 'Chouette::TimeTable', :foreign_key => "vehicle_journey_id", :association_foreign_key => "time_table_id"
     has_many :stop_points, -> { order("stop_points.position") }, :through => :vehicle_journey_at_stops
     has_many :vehicle_journey_time_table_relationships, class_name: 'Chouette::TimeTablesVehicleJourney'
-
-    before_validation :set_default_values
 
     scope :with_companies, -> (companies) { joins(route: :line).where(lines: { company_id: companies }) }
 
@@ -210,12 +203,6 @@ module Chouette
     has_checksum_children Footnote
     has_checksum_children Chouette::LineNotice
     has_checksum_children StopPoint
-
-    def set_default_values
-      if number.nil?
-        self.number = 0
-      end
-    end
 
     def calculate_vehicle_journey_at_stop_day_offset
       Chouette::VehicleJourneyAtStopsDayOffset.new(

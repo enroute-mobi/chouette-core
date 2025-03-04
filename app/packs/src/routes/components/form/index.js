@@ -1,8 +1,8 @@
 import React, { Component } from 'react'
 import PropTypes from 'prop-types'
 import TextInput from './TextInput'
-import SwitchInput from './SwitchInput'
 import SelectInput from './SelectInput'
+import SwitchInput from './SwitchInput'
 
 export default class RouteForm extends Component {
   constructor(props) {
@@ -45,7 +45,7 @@ export default class RouteForm extends Component {
               <SwitchInput
                 inputId='route_wayback'
                 name='route[wayback]'
-                labelText={I18n.t('activerecord.attributes.route.direction')}
+                labelText={I18n.t('activerecord.attributes.route.wayback')}
                 onChange={onUpdateWayback}
                 isChecked={route.wayback === 'outbound'}
               />

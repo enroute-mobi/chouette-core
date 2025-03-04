@@ -135,8 +135,6 @@ en:
         created_at: Created at
         creator_id: "Created by"
         departure_time: "Departure"
-        facility: "Facility"
-        flexible_service: "On demond transportation"
         footnote_ids: "Footnotes"
         id: "Journey ID"
         journey_name: "Name of the vehicle journey"
@@ -145,10 +143,8 @@ en:
         journey_pattern_published_name: "Journey Pattern Destination"
         journey_length: "Journey length"
         line: "Line"
-        mobility_restricted_suitability: "PRM accessibility"
         name: "Journey Name"
         not_accessible: "Not accessible"
-        number: "Number"
         object_version: "Version"
         objectid: "Neptune identifier"
         on_demand_fs: "On demand service"
@@ -167,7 +163,6 @@ en:
         updated_at: Updated at
         vehicle_journey_at_stop_ids: "Time list"
         vehicle_journey_at_stops: "Time list"
-        vehicle_type_identifier: "Vehicle Type Identifier"
         start_time: Start time
         constraint_exclusions: Constraint Zones exclusions
     errors:

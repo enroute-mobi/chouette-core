@@ -78,10 +78,10 @@ RSpec.describe Destination::Chouette, type: :model do
         expect(a_request(:post, "https://test.com/workbenches/#{workbench.id}/imports")).to have_been_made.once
         expect(@chouette_request_body).to(
           match_array([
-            ['automatic_merge', true],
-            ['archive_on_fail', true],
-            ['file', be_present],
-            ["name", "Chouette Saas"]
+            ['workbench_import[options][automatic_merge]', 'true'],
+            ['workbench_import[options][archive_on_fail]', 'true'],
+            ['workbench_import[file]', be_present],
+            ['workbench_import[name]', 'Chouette Saas']
           ])
         )
       end

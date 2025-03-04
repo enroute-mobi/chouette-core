@@ -25,7 +25,7 @@ class Destination
     end
 
     def import_url
-      "#{url}/#{workbench_id}/imports"
+      "#{url}/api/v1/workbenches/#{workbench_id}/imports"
     end
 
     def do_transmit(publication, report)
@@ -54,10 +54,10 @@ class Destination
       request['Authorization'] = "Token token=#{workbench_api_key}"
 
       form_data = [
-        ['name', name],
-        ['file', file],
-        ['automatic_merge', automatic_merge],
-        ['archive_on_fail', archive_on_fail]
+        ['workbench_import[name]', name],
+        ['workbench_import[file]', file.file.to_file],
+        ['workbench_import[options][automatic_merge]', automatic_merge.to_s],
+        ['workbench_import[options][archive_on_fail]', archive_on_fail.to_s]
       ]
       request.set_form form_data, 'multipart/form-data'
 
@@ -69,10 +69,10 @@ class Destination
 
       Rails.logger.info "Chouette response #{response.code} #{response.body.truncate(256)}"
 
-      if response.is_a?(Net::HTTPSuccess) && response['content-type'] == 'application/json'
+      if response.is_a?(Net::HTTPSuccess) && response.content_type == 'application/json'
         import_status = JSON.parse response.body
-        unless import_status['Errors'].empty?
-          report.failed! message: "Errors returned by Chouette API: #{import_status['Errors'].inspect}"
+        if import_status['status'] == 'error' && !import_status['messages'].empty?
+          report.failed! message: "Errors returned by Chouette API: #{import_status['messages'].inspect}"
         end
       else
         report.failed! message: "Unexpected response from Chouette API: #{response.code}"

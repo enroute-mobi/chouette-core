@@ -52,14 +52,6 @@ fr:
         zero:  "Chouette SaaS"
         one:   "Chouette SaaS"
         other: "Chouette SaaS"
-      destination/iboo:
-        zero:  "Iboo SaaS"
-        one:   "Iboo SaaS"
-        other: "Iboo SaaS"
-      destination/custom:
-        zero:  "Personnalisé SaaS"
-        one:   "Personnalisé SaaS"
-        other: "Personnalisé SaaS"
     attributes:
       destination:
         name: "Nom"
@@ -109,15 +101,6 @@ fr:
         credentials: Token d'identification
         force_import: Remplacer les données existantes
       destination/chouette:
-        workbench_id: Identification d'espace de travail
-        workbench_api_key: api key
-        automatic_merge: Fusion automatique
-      destination/iboo:
-        workbench_id: Identification d'espace de travail
-        workbench_api_key: api key
-        automatic_merge: Finalisation automatique
-      destination/custom:
-        url: URL du service
         workbench_id: Identification d'espace de travail
         workbench_api_key: api key
         automatic_merge: Fusion automatique

@@ -32,11 +32,11 @@ class CopyInserter < ByClassInserter
       @csv_file ||= Tempfile.new(['copy','.csv'])
     end
 
-    delegate :connection, :columns, to: :model_class
+    delegate :connection, to: :model_class
     delegate :target, to: :parent_inserter
 
     def csv_headers
-      @headers ||= columns.map(&:name)
+      model_class.attribute_names # defined in ActiveRecord::AttributeMethods as attribute_types.keys
     end
 
     def insert(model, options = {})
@@ -47,11 +47,10 @@ class CopyInserter < ByClassInserter
       column_values = []
 
       attributes = model.attributes
-      columns.each do |column|
-        attribute_name = column.name
+      model_class.attribute_types.each do |attribute_name, attribute_type|
         attribute_value = attributes[attribute_name]
 
-        column_value = connection.type_cast(attribute_value, column)
+        column_value = connection.type_cast(attribute_type.serialize(attribute_value))
         column_values << column_value
       end
 

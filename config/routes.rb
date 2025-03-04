@@ -4,14 +4,6 @@ Rails.application.routes.draw do # rubocop:disable Metrics/BlockLength
   resource :dashboard, only: :show
   resource :subscriptions, only: :create
 
-  # Used to the redirect user to the current workbench
-  # See CHOUETTE-797
-  namespace :redirect do
-    resources :lines, only: :show
-    resources :companies, only: :show
-    resources :stop_areas, only: :show
-  end
-
   resources :workbenches, only: %i[show] do # rubocop:disable Metrics/BlockLength
     resources :searches, only: %i[index show create update destroy], path: ':parent_resources/searches'
     resources :api_keys

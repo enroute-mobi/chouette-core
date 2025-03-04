@@ -71,7 +71,7 @@ export default class BSelect3 extends Component {
         return (
           <a
             className='navlink'
-            href={origin + '/redirect/stop_areas/' + value.stoparea_id}
+            href={`${origin}/workbenches/${workbenchId}/stop_area_referential/stop_areas/${value.stoparea_id}`}
             title="Voir l'arrêt"
             dangerouslySetInnerHTML={{__html: value.name }}
           >

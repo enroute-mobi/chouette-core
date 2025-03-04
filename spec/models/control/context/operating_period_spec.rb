@@ -83,20 +83,53 @@ RSpec.describe Control::Context::OperatingPeriod::Run do
   let(:vehicle_journey_second) { context.vehicle_journey(:second) }
   let(:time_table) { context.time_table(:time_table) }
 
-  subject { control_list_run.control_context_runs }
+  subject(:control_context_runs) { control_list_run.control_context_runs }
 
-  describe ".context" do
-    before do
-      referential.switch
+  before do
+    referential.switch
 
-      control_list.reload
-      control_list_run.build_with_original_control_list
-      control_list_run.save
-      control_list_run.reload
+    control_list.reload
+    control_list_run.build_with_original_control_list
+    control_list_run.save
+    control_list_run.reload
+  end
+
+  let(:control_context_run_first) { subject.find { |e| e.name == 'Control Context OperatingPeriod 1' } }
+  let(:control_context_run_second) { subject.find { |e| e.name == 'Control Context OperatingPeriod 2' } }
+
+  describe '#validity_period' do
+    subject { control_context_run.validity_period }
+
+    let(:control_context_run) { control_list_run.control_context_runs.first }
+    let(:referential_validity_period) { nil }
+
+    before { allow(control_list_run.referential).to receive(:validity_period).and_return(referential_validity_period) }
+
+    context 'when referential validity period is nil' do
+      it { is_expected.to be_nil }
     end
 
-    let(:control_context_run_first) { subject.find{ |e| e.name == "Control Context OperatingPeriod 1" } }
-    let(:control_context_run_second) { subject.find{ |e| e.name == "Control Context OperatingPeriod 2" } }
+    context 'when referential validity period includes operating period date range' do
+      let(:referential_validity_period) { (100.days.before.to_date)..(100.days.after.to_date) }
+
+      it { is_expected.to eq((Date.current)..(Date.current + 10)) }
+    end
+
+    context 'when referential validity period overlaps by operating period date range' do
+      let(:referential_validity_period) { (1.day.before.to_date)..(1.day.after.to_date) }
+
+      it { is_expected.to eq((Date.current)..(Date.current + 1)) }
+    end
+
+    context 'without referential' do
+      before { control_list_run.referential = nil }
+
+      it { is_expected.to be_nil }
+    end
+  end
+
+  describe ".context" do
+    before { referential.switch }
 
     context "when Control is created with next days context" do
       let(:control_context_run_names) do

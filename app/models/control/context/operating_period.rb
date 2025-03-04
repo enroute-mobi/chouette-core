@@ -86,6 +86,13 @@ class Control::Context::OperatingPeriod < Control::Context
       date..(date + next_days)
     end
 
+    def validity_period
+      referential_validity_period = super
+      return nil unless referential_validity_period
+
+      referential_validity_period & data_range
+    end
+
     def documents
       context.documents
     end

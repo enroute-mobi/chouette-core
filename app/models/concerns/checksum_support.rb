@@ -8,14 +8,6 @@ module ChecksumSupport
       Chouette::ChecksumManager.watch self
     end
 
-    after_create do
-      Chouette::ChecksumManager.after_create self
-    end
-
-    after_destroy do
-      Chouette::ChecksumManager.after_destroy self
-    end
-
     Referential.register_model_with_checksum self
     into.extend ClassMethods
   end
@@ -33,8 +25,6 @@ module ChecksumSupport
       klass.checksum_parent_relations[self] = opts
 
       klass.after_save     { Chouette::ChecksumManager.child_after_save(self) }
-      klass.before_destroy { Chouette::ChecksumManager.child_before_destroy(self) }
-      klass.after_destroy  { Chouette::ChecksumManager.child_after_destroy(self) }
     end
   end
 

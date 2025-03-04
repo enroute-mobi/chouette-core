@@ -12,12 +12,6 @@ module Chouette::ChecksumManager
       Chouette::ChecksumManager.object_signature object
     end
 
-    def after_create object
-    end
-
-    def after_destroy object
-    end
-
     def log msg
       Chouette::ChecksumManager.log msg
     end

@@ -4,10 +4,6 @@ RSpec.describe Chouette::Route, :type => :model do
   context "the checksum" do
     around { |example| Chouette::ChecksumManager.inline{ example.run }}
 
-    it "should change when a stop is removed" do
-      expect{route.stop_points.last.destroy}.to(change {route.reload.checksum})
-    end
-
     it "should change when a rcz changes" do
       rcz = create :routing_constraint_zone, route: route, stop_points: route.stop_points[0..2]
       expect{rcz.stop_points << route.stop_points.last; rcz.save!}.to(change {route.reload.checksum})

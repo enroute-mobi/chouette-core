@@ -1253,7 +1253,7 @@ module Import
 
           # TODO: share error creating from model errors
           unless line_routing_constraint_zone.valid?
-            line_routing_constraint_zone.errors.each_key do |attribute|
+            line_routing_constraint_zone.errors.messages.each_key do |attribute|
               attribute_value = line_routing_constraint_zone.send(attribute)
 
               # FIXME: little trick to avoid message like:

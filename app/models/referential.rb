@@ -475,6 +475,10 @@ class Referential < ApplicationModel
     workbench_id.present?
   end
 
+  def browse?
+    active? || archived?
+  end
+
   def init_metadatas(attributes = {})
     if metadatas.blank?
       date_range = attributes.delete :default_date_range

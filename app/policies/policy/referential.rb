@@ -11,7 +11,7 @@ module Policy
     authorize_by Strategy::Permission, only: %i[create update destroy flag_urgent]
 
     def browse?
-      around_can(:browse) { resource.active? || resource.archived? }
+      around_can(:browse) { resource.browse? }
     end
 
     def clone?

@@ -47,12 +47,10 @@ module Macro
       # Should only used to provide a link in the UI
       belongs_to :original_macro_list, optional: true, foreign_key: :original_macro_list_id, class_name: 'Macro::List' # CHOUETTE-3247
 
-      has_many :macro_runs, -> { order(position: :asc) }, class_name: 'Macro::Base::Run',
-                                                          dependent: :destroy, foreign_key: 'macro_list_run_id'
-
-      has_many :macro_context_runs, class_name: 'Macro::Context::Run', dependent: :destroy,
-                                    foreign_key: 'macro_list_run_id', inverse_of: :macro_list_run
-
+      with_options(foreign_key: 'macro_list_run_id', dependent: :destroy, inverse_of: :macro_list_run) do
+        has_many :macro_runs, -> { order(position: :asc) }, class_name: 'Macro::Base::Run'
+        has_many :macro_context_runs, class_name: 'Macro::Context::Run'
+      end
       has_many :macro_messages, class_name: 'Macro::Message', through: :macro_runs
       has_many :context_macro_messages,
                class_name: 'Macro::Message',

@@ -33,10 +33,14 @@ module Macro
     class Run < ApplicationModel
       self.table_name = 'macro_runs'
 
-      belongs_to :macro_context_run, class_name: 'Macro::Context::Run', optional: true, inverse_of: :macro_runs # CHOUETTE-3247
-      belongs_to :macro_list_run, class_name: 'Macro::List::Run', optional: true, inverse_of: :macro_runs # CHOUETTE-3247 failing specs
+      with_options(inverse_of: :macro_runs) do
+        belongs_to :macro_context_run, class_name: 'Macro::Context::Run', optional: true
+        belongs_to :macro_list_run, class_name: 'Macro::List::Run', optional: true
+      end
 
-      has_many :macro_messages, class_name: 'Macro::Message', foreign_key: 'macro_run_id', inverse_of: :macro_run
+      with_options(foreign_key: 'macro_run_id', inverse_of: :macro_run) do
+        has_many :macro_messages, class_name: 'Macro::Message', dependent: :delete_all
+      end
 
       store :options, coder: JSON
       # TODO: Retrieve options definition from Macro class

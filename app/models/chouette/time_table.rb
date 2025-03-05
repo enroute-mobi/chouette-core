@@ -285,6 +285,8 @@ module Chouette
       dates
     end
 
+    alias_attribute :name, :comment
+
     def full_display_name
       [get_objectid.short_id, comment].join(' - ')
     end

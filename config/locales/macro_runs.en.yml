@@ -53,6 +53,8 @@ en:
         one: Associate Stop Areas with Fare Zones
       macro/create_codes_from_particulars/run:
         one: Create codes from particulars
+      macro/adjust_periods/run:
+        one: Adjust Timetable Periods
     attributes:
       macro/base/run:
         name: Name
@@ -89,3 +91,6 @@ en:
       macro/create_codes_from_particulars/run:
         particular_code_space_id: Particular Code Space
         referent_code_space_id: Referent Code Space
+
+      macro/adjust_periods/run:
+        end_correction: Period End Correction

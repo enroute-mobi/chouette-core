@@ -39,9 +39,10 @@ module Chouette
     has_many :group_members, class_name: 'StopAreaGroup::Member', dependent: :destroy, inverse_of: :stop_area
     has_many :groups, through: :group_members, inverse_of: :stop_areas
 
-    has_many :flexible_area_memberships, class_name: '::FlexibleAreaMembership', foreign_key: :flexible_area_id, dependent: :destroy
+    has_many :flexible_area_memberships, class_name: '::FlexibleAreaMembership', foreign_key: :flexible_area_id, dependent: :destroy, inverse_of: :flexible_area
     has_many :flexible_area_members, through: :flexible_area_memberships, source: :member
-    has_many :flexible_areas, through: :flexible_area_memberships, source: :flexible_area
+    has_many :flexible_area_memberships_as_member, class_name: '::FlexibleAreaMembership', foreign_key: :member_id, dependent: :destroy, inverse_of: :member
+    has_many :flexible_areas, through: :flexible_area_memberships_as_member, source: :flexible_area
 
     accepts_nested_attributes_for :flexible_area_memberships, allow_destroy: true, reject_if: :all_blank
     validates_associated :flexible_area_memberships
@@ -98,8 +99,8 @@ module Chouette
     validate :parent_kind_must_be_the_same
     validate :area_type_of_right_kind
     validate :registration_number_is_set
-    validate :validate_flexible_stop_place_relations
-    validate :cannot_be_member_if_flexible_stop_place
+    validate :validate_no_parent_when_flexible
+    validate :validate_parent_is_not_flexible
     validates_absence_of :parent_id, message: I18n.t('stop_areas.errors.parent_id.must_be_absent'), if: Proc.new { |stop_area| stop_area.kind == 'non_commercial' }
 
     validates :registration_number, uniqueness: { scope: :stop_area_provider_id }, allow_blank: true
@@ -171,16 +172,15 @@ module Chouette
       end
     end
 
-    def validate_flexible_stop_place_relations
+    def validate_no_parent_when_flexible
       if flexible_stop_place?
         errors.add(:parent_id, :not_allowed_for_flexible) if parent_id.present?
-        errors.add(:base, :children_not_allowed_for_flexible) if children.any?
       end
     end
 
-    def cannot_be_member_if_flexible_stop_place
-      if flexible_stop_place? && flexible_areas.any?
-        errors.add(:base, :cannot_be_member_if_flexible_stop_place)
+    def validate_parent_is_not_flexible
+      if parent && parent.flexible_stop_place?
+        errors.add(:parent_id, :children_not_allowed_for_flexible)
       end
     end
 

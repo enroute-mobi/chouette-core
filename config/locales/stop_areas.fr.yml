@@ -17,9 +17,6 @@ fr:
         must_be_absent: Un parent ne peut être sélectionné pour un Arrêt non commercial
       referent_id:
         cannot_be_referent_and_specific: Un Arrêt ne peut être à la fois référent et Arrêt spécifique
-      not_allowed_for_flexible: "Les lieux d'arrêt à la demande ne peuvent pas avoir de parent"
-      children_not_allowed_for_flexible: "Les lieux d'arrêt à la demande ne peuvent pas avoir d'enfants"
-      associated_stop_areas_cannot_be_flexible: "Les arrêts associés ne peuvent pas être des lieux d'arrêt à la demande"
     default_geometry_success: "%{count} Arrêts édités"
     stop_area:
       no_position: "Pas de position"
@@ -75,8 +72,6 @@ fr:
         flexible_area: "Zone d'arrêt à la demande"
       address: "246 Boulevard Saint-Germain, 75007 Paris"
       geolocalize: "Géolocalisez "
-      flexible_stop_place:
-        associated_stops: "Arrêts associés"
     edit:
       title: "Editer l'Arrêt %{name}"
     update:
@@ -225,6 +220,9 @@ fr:
             referent_id:
               an_object_used_as_referent_must_be_flagged_as_referent: un Arrêt utilisé en référent doit être référencé en tant que référent
               a_referent_cannot_have_a_referent: un référent ne peut pas référencer un référent
+            parent_id:
+              not_allowed_for_flexible: "Les lieux d'arrêt à la demande ne peuvent pas avoir de parent"
+              children_not_allowed_for_flexible: "Les lieux d'arrêt à la demande ne peuvent pas avoir d'enfants"
   chart:
     values:
       stop_area:

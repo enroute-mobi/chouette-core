@@ -48,4 +48,8 @@ function addAjaxSelectToForm(dom_part) {
   })
 }
 
+$('.simple_form').on('cocoon:after-insert', function(e, insertedItem, originalEvent) {
+  addAjaxSelectToForm(insertedItem[0]);
+});
+
 window.addAjaxSelectToForm = addAjaxSelectToForm

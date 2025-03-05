@@ -1,0 +1,13 @@
+fr:
+  activerecord:
+    attributes:
+      flexible_area_membership:
+        member_id: "Arrêt associé"
+    errors:
+      models:
+        flexible_area_membership:
+          attributes:
+            member_id:
+              cannot_be_flexible_stop_place: "Le membre ne peut pas être un lieu d'arrêt à la demande"
+            flexible_area_id:
+              must_be_flexible_stop_place: "La zone flexible doit être un lieu d'arrêt à la demande"

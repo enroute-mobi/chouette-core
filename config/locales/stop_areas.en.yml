@@ -16,9 +16,6 @@ en:
         must_be_absent: A non commercial Stop Area cannot have a parent
       referent_id:
         cannot_be_referent_and_specific: "A Stop Area can't be both referent and specific"
-      not_allowed_for_flexible: "Flexible stop places cannot have a parent"
-      children_not_allowed_for_flexible: "Flexible stop places cannot have children"
-      associated_stop_areas_cannot_be_flexible: "Associated stops cannot be flexible stop places"
     default_geometry_success: "%{count} modified Stop Areas"
     stop_area:
       no_position: "No Position"
@@ -74,8 +71,6 @@ en:
         flexible_area: "Flexible Stop Area"
       address: "246 Boulevard Saint-Germain, 75007 Paris"
       geolocalize: "Pinpoint "
-      flexible_stop_place:
-        associated_stops: "Associated stops"
     edit:
       title: "Update stop %{name}"
     update:
@@ -222,6 +217,9 @@ en:
             referent_id:
               an_object_used_as_referent_must_be_flagged_as_referent: a Stop Area used as referent must be flagged as referent
               a_referent_cannot_have_a_referent: a Stop Area referent can't have a referent
+            parent_id:
+              not_allowed_for_flexible: "Flexible stop places cannot have a parent"
+              children_not_allowed_for_flexible: "Flexible stop places cannot have children"
   chart:
     values:
       stop_area:

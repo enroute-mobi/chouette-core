@@ -9,9 +9,8 @@ module I18nTranslateWithFallback
       if split.size <= 2
         super original || key, options
       else
-        Rails.logger.warn do
-          "DEPRECATION WARNING: missing i18n key \"#{key}\" falls back to original (I18nTranslateWithFallback)"
-        end
+        log_missing_key_falls_back_to_original(key, original)
+
         v = split.pop
         v2 = split.pop
         split.pop if v2 == "default"
@@ -22,7 +21,16 @@ module I18nTranslateWithFallback
     end
   end
 
+  private
 
+  def log_missing_key_falls_back_to_original(key, original)
+    @already_logged_keys ||= Set.new
+    return unless @already_logged_keys.add?(key)
+
+    Rails.logger.warn do
+      "DEPRECATION WARNING: missing i18n key \"#{key}\" falls back to original#{" \"#{original}\"" if original} (I18nTranslateWithFallback)"
+    end
+  end
 end
 
 module I18n

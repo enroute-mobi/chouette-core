@@ -71,7 +71,7 @@ class AggregateScheduling < ApplicationModel
 
     def perform
       aggregate_scheduling.workgroup.aggregate!(
-        force_daily_publishing: aggregate_scheduling.force_daily_publishing
+        daily_publications: aggregate_scheduling.force_daily_publishing
       )
     end
 

@@ -160,14 +160,39 @@ RSpec.describe AggregateScheduling, type: :model do
   describe AggregateScheduling::ScheduledJob do
     subject(:job) { described_class.new(aggregate_scheduling) }
 
+    let(:context) do
+      Chouette.create do
+        workgroup do
+          referential
+        end
+      end
+    end
+    let(:daily_publication) do
+      workgroup.publication_setups.create!(
+        name: 'Daily',
+        force_daily_publishing: true,
+        export_options: { 'type' => 'Export::Gtfs' }
+      )
+    end
+    let(:aggregate) do
+      workgroup.aggregates.create!(referentials: [context.referential], creator: 'none').tap(&:aggregate!)
+    end
+
     describe '#perform' do
       subject { job.perform }
 
       it 'calls #aggregate! with the correct arguments' do
         expect(aggregate_scheduling.workgroup).to receive(:aggregate!).with(
-          force_daily_publishing: true
+          daily_publications: true
         )
         subject
+      end
+
+      it 'triggers daily publications' do
+        daily_publication
+        aggregate
+
+        expect { subject }.to change { daily_publication.publications.count }.by(1)
       end
 
       context 'when force_daily_publishing is false' do
@@ -175,9 +200,16 @@ RSpec.describe AggregateScheduling, type: :model do
 
         it 'calls #aggregate! with the correct arguments' do
           expect(aggregate_scheduling.workgroup).to receive(:aggregate!).with(
-            force_daily_publishing: false
+            daily_publications: false
           )
           subject
+        end
+
+        it 'does not trigger daily publications' do
+          daily_publication
+          aggregate
+
+          expect { subject }.not_to change { daily_publication.publications.count }
         end
       end
     end

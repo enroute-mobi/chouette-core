@@ -9,7 +9,7 @@
 #   inserter.routes << Chouette::TimeTable.new
 #
 class IdInserter < ByClassInserter
-  def initialize(_target, _options = {})
+  def initialize(_target, **)
     super()
   end
 

@@ -1,7 +1,7 @@
 class IdMapInserter < ByClassInserter
 
   attr_reader :target
-  def initialize(target, options = {})
+  def initialize(target, **options)
     @target = target
     options.each { |k,v| send "#{k}=", v }
   end

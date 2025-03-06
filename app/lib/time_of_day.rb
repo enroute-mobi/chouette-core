@@ -55,8 +55,7 @@ class TimeOfDay
       attributes[:second] = second 
     end
 
-    new attributes.fetch(:hour), attributes[:minute], attributes[:second],
-        attributes.except(:hour, :minute, :second)
+    new(attributes.fetch(:hour), attributes[:minute], attributes[:second], **attributes.except(:hour, :minute, :second))
   end
 
   def self.now(time_zone: Time.zone)
@@ -244,7 +243,7 @@ class TimeOfDay
 
     time_zone = attributes.delete(:time_zone)
 
-    time_of_day = new(hour, minute, second, attributes)
+    time_of_day = new(hour, minute, second, **attributes)
     time_of_day = time_of_day.with_zone(time_zone) if time_zone
     time_of_day
   end

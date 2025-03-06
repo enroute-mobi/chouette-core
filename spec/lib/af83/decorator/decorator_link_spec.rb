@@ -57,7 +57,7 @@ RSpec.describe Af83::Decorator::Link do
       link.type = :spaghetti
       link.bind_to_context context, :show
       expect(context.h).to(
-        receive(:link_to).with('foo', 'href', class: '', data: {}, disabled: false, method: nil, type: :spaghetti)
+        receive(:link_to).with('foo', 'href', { class: '', data: {}, disabled: false, method: nil, type: :spaghetti })
                          .and_return('<a></a>')
       )
       expect(link.to_html).to eq('<a></a>')

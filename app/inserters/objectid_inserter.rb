@@ -1,7 +1,7 @@
 class ObjectidInserter
 
   attr_reader :target
-  def initialize(target, _options = {})
+  def initialize(target, **)
     @target = target
   end
 

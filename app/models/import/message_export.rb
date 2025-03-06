@@ -20,8 +20,8 @@ class Import::MessageExport
     ["criticity", "message_key", "message", "filename", "line", "column"].map {|c| Import::Message.tmf(c)}
   end
 
-  def to_csv(options = {})
-    csv_string = CSV.generate(options) do |csv|
+  def to_csv(**options)
+    csv_string = CSV.generate(**options) do |csv|
       csv << column_names
       import_messages.each do |import_message|
         resource_attributes = import_message.resource_attributes&.transform_keys{ |key| key.gsub(/_number$/, '') } || {}
@@ -31,7 +31,7 @@ class Import::MessageExport
           message_attributes['test_id'],
           I18n.t(
             "import_messages.#{import_message.message_key}",
-            message_attributes.deep_symbolize_keys.update(
+            **message_attributes.deep_symbolize_keys.update(
               default: import_message.message_key
             )
           ),

@@ -485,7 +485,7 @@ module Search
         def groupdate_adapter(models, **options) # rubocop:disable Metrics/MethodLength,Metrics/AbcSize
           # copied from Groupdate::Magic::Relation.generate_relation
 
-          magic = ::Groupdate::Magic::Relation.new(**groupdate_magic_options(options).merge(period: groupdate_period))
+          magic = ::Groupdate::Magic::Relation.new(**groupdate_magic_options(**options).merge(period: groupdate_period))
           adapter_name = models.connection.adapter_name
           adapter = ::Groupdate.adapters[adapter_name]
 
@@ -831,7 +831,7 @@ module Search
         new_options[:height] = '600px'
         new_options[:stacked] = true if type == 'column'
 
-        view_context.send("#{type}_chart", data, new_options.deep_merge(options))
+        view_context.send("#{type}_chart", data, **new_options.deep_merge(options))
       end
 
       # used by RequestBuilder

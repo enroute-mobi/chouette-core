@@ -34,7 +34,7 @@ class ReferentialInserter
     delegate :referential, to: :referential_inserter
 
     def build(inserter_class, options = {})
-      inserter_class.new referential_inserter.referential, options
+      inserter_class.new referential_inserter.referential, **options
     end
 
   end

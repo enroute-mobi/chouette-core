@@ -204,7 +204,7 @@ class Export::Base < ApplicationModel
   end
 
   def build_export_scope
-    Export::Scope.build(referential, export_scope_options)
+    Export::Scope.build(referential, **export_scope_options)
   end
 
   def export_scope

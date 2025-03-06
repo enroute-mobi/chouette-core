@@ -1350,7 +1350,7 @@ class Export::NetexGeneric < Export::Base
     # </ServiceJourneyPattern>
     class StopPointInJourneyPattern < Base
       def initialize(stop_point, journey_pattern_id:, **attributes)
-        super stop_point, attributes
+        super(stop_point, **attributes)
         @journey_pattern_id = journey_pattern_id
       end
 

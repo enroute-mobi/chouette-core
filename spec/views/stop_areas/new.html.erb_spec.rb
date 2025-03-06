@@ -17,9 +17,7 @@ describe 'stop_areas/new.html.slim', type: :view do
   describe "form" do
     it "should render input for name" do
       render
-      expect(rendered).to have_selector("form") do
-        with_selector "input[type=text][name=?]", stop_area.name
-      end
+      expect(rendered).to have_selector("form input[type=text][name='stop_area[name]'][value='#{stop_area.name}']")
     end
   end
 end

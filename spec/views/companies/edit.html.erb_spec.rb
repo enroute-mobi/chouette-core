@@ -20,9 +20,7 @@ describe 'companies/edit.html.slim', type: :view do
   describe "form" do
     it "should render input for name" do
       render
-      expect(rendered).to have_selector("form") do
-        with_tag "input[type=text][name='company[name]'][value=?]", company.name
-      end
+      expect(rendered).to have_selector("form input[type=text][name='company[name]'][value='#{company.name}']")
     end
   end
 end

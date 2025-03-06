@@ -166,7 +166,7 @@ group :test do
   gem 'rspec-snapshot'
   gem 'rails-controller-testing', '>= 1.0.5'
   gem 'rspec-rails'
-  gem 'capybara', '~> 3.15.1'
+  gem 'capybara'
   gem 'database_cleaner'
   gem 'poltergeist', '>= 1.18.1'
   gem 'rspec-benchmark'

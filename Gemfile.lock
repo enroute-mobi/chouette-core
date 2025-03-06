@@ -202,13 +202,14 @@ GEM
     byebug (11.1.3)
     calendar_helper (0.2.5)
       open4
-    capybara (3.15.1)
+    capybara (3.39.2)
       addressable
+      matrix
       mini_mime (>= 0.1.3)
       nokogiri (~> 1.8)
       rack (>= 1.6.0)
       rack-test (>= 0.6.3)
-      regexp_parser (~> 1.2)
+      regexp_parser (>= 1.5, < 3.0)
       xpath (~> 3.2)
     carrierwave (1.3.4)
       activemodel (>= 4.0.0)
@@ -517,6 +518,7 @@ GEM
       net-pop
       net-smtp
     marcel (1.0.4)
+    matrix (0.4.2)
     memory_profiler (1.0.0)
     method_source (1.1.0)
     mime-types (3.5.2)
@@ -682,7 +684,7 @@ GEM
       redis-store (>= 1.2, < 2)
     redis-store (1.11.0)
       redis (>= 4, < 6)
-    regexp_parser (1.8.2)
+    regexp_parser (2.10.0)
     representable (3.2.0)
       declarative (< 0.1.0)
       trailblazer-option (>= 0.1.1, < 0.2.0)
@@ -910,7 +912,7 @@ DEPENDENCIES
   bundler-audit
   byebug
   calendar_helper (= 0.2.5)
-  capybara (~> 3.15.1)
+  capybara
   carrierwave (~> 1.3.2)
   carrierwave-google-storage!
   chartkick

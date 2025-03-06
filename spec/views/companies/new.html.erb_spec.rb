@@ -19,9 +19,7 @@ describe 'companies/new.html.slim', type: :view do
   describe "form" do
     it "should render input for name" do
       render
-      expect(rendered).to have_selector("form") do
-        with_selector "input[type=text][name=?]", company.name
-      end
+      expect(rendered).to have_selector("form input[type=text][name='company[name]'][value='#{company.name}']")
     end
   end
 end

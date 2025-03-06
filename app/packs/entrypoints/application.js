@@ -40,6 +40,8 @@ import 'entrypoints/inputs/ajax_select'
 import "src/flash_messages"
 import "src/date_filters"
 import "src/chartkick"
+import "src/main_menu"
+import "src/forms"
 
 // React Apps
 import './journey_patterns'

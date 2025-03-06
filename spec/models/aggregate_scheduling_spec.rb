@@ -209,7 +209,7 @@ RSpec.describe AggregateScheduling, type: :model do
           daily_publication
           aggregate
 
-          expect { subject }.not_to change { daily_publication.publications.count }
+          expect { subject }.not_to(change { daily_publication.publications.count })
         end
       end
     end

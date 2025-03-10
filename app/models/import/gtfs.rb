@@ -1204,9 +1204,7 @@ class Import::Gtfs < Import::Base
 
       def convert_pickup_and_drop_off_type(value)
         @convert_pickup_and_drop_off_type_hash ||= {
-          '1' => 'forbidden',
-          '2' => 'request_stop',
-          '3' => 'is_flexible'
+          '1' => 'forbidden'
         }.freeze
         @convert_pickup_and_drop_off_type_hash[value] || 'normal'
       end

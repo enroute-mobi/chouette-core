@@ -538,12 +538,8 @@ module Chouette
     end
 
     # NB: Can't be used with by_text scope because of distinct usage
-    def self.all_parents(relation, ignore_mono_parent: false)
+    def self.all_parents(relation)
       stop_area_parents = joins('JOIN "public"."stop_areas" children on "public"."stop_areas"."id" = children.parent_id').where("children.id" => relation)
-
-      if ignore_mono_parent
-        stop_area_parents = stop_area_parents.group(:id).having('count(children.id) > 1')
-      end
 
       stop_area_parents.distinct
     end

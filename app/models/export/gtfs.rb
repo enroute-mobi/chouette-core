@@ -60,7 +60,7 @@ class Export::Gtfs < Export::Base
 
     Companies.new(self).export_part
 
-    StopAreas.new(self).export_part
+    StopAreas.new(self).perform
 
     Lines.new(self).export_part
 
@@ -107,7 +107,7 @@ class Export::Gtfs < Export::Base
 
   def exported_stop_areas
     unless ignore_parent_stop_places?
-      parents = Chouette::StopArea.all_parents(export_scope.stop_areas.where(area_type: 'zdep'), ignore_mono_parent: ignore_single_stop_station)
+      parents = Chouette::StopArea.all_parents(export_scope.stop_areas.where(area_type: 'zdep'))
       Chouette::StopArea.union(export_scope.stop_areas, parents).where(kind: :commercial)
     else
       export_scope.stop_areas
@@ -116,7 +116,7 @@ class Export::Gtfs < Export::Base
 
   def export_stop_areas_to(target)
     @target = target
-    StopAreas.new(self).export_part
+    StopAreas.new(self).perform
   end
 
   def export_transfers_to(target)
@@ -152,7 +152,7 @@ class Export::Gtfs < Export::Base
     @code_spaces ||= CodeSpaces.new code_space, scope: export_scope
   end
 
-  delegate :shape_referential, to: :workgroup
+  delegate :shape_referential, :stop_area_referential, :line_referential, to: :workgroup
 
   # Use dedicated "Resource" Find an unique code for a given Resource
   #
@@ -368,6 +368,109 @@ class Export::Gtfs < Export::Base
 
   end
 
+  class Scope < Export::Base::Scope
+    concerning :StopArea do
+      def stop_areas
+        return current_scope.stop_areas if ignore_parent_stop_places?
+
+        parents = Chouette::StopArea.all_parents(current_scope.stop_areas.where(area_type: 'zdep'))
+        Chouette::StopArea.union(current_scope.stop_areas, parents).where(kind: :commercial)
+      end
+
+      def ignore_parent_stop_places?
+        export.ignore_parent_stop_places
+      end
+
+      def prefer_referent_stop_areas?
+        export.prefer_referent_stop_area
+      end
+
+      def referenced_stop_areas
+        return Chouette::StopArea.none unless prefer_referent_stop_areas?
+
+        stop_areas.particulars.with_referent
+      end
+
+      def entrances
+        current_scope.entrances.where(stop_area: stop_areas).or(
+          current_scope.entrances.where(stop_area_id: referent_ids))
+        )
+      end
+
+      def connection_links
+        current_scope.connection_links.where(departure: stop_areas, arrival: stop_areas).or(
+          current_scope.connection_links.where(departure_id: referent_ids, arrival_id: referent_ids)
+        )
+      end
+
+      private
+
+      def referent_ids
+        @referent_ids ||= referenced_stop_areas.select(:referent_id)
+      end
+    end
+
+    concerning :Lines do
+      def lines
+        current_scope.lines
+      end
+
+      def prefer_referent_lines?
+        export.prefer_referent_line
+      end
+
+      def referenced_lines
+        return Chouette::Line.none unless prefer_referent_lines?
+
+        current_scope.lines.particulars.with_referent
+      end
+
+      def contracts
+        current_scope.contract.with_lines(lines)
+      end
+    end
+
+    concerning :Companies do
+      def companies
+        line_referential.companies.where(id: company_ids).or(
+          line_referential.companies.where(id: vehicle_journey_company_ids)
+        ).distinct
+      end
+      
+      def prefer_referent_companies?
+        export.prefer_referent_company
+      end      
+      
+      def referenced_companies
+        return Chouette::Company.none unless prefer_referent_companies?
+
+        companies.particulars.with_referent
+      end
+
+      def fare_products
+        current_scope.fare_products.where(company: companies)
+      end
+
+      def fare_validities
+        current_scope.fare_validities.by_products(fare_products)
+      end
+
+      private
+
+      def company_ids
+        lines.where.not(company_id: nil).select(:company_id).distinct
+      end
+
+      def vehicle_journey_company_ids
+        current_scope.vehicle_journeys.where.not(company_id: nil).select(:company_id).distinct
+      end      
+    end
+  end
+
+  def export_scope
+    @local_export_scope ||= Scope.new(super, export: self)
+  end
+
   class Part
 
     attr_reader :export
@@ -411,48 +514,30 @@ class Export::Gtfs < Export::Base
     end
   end
 
-  class StopAreas < Part
+  class NewPart < Export::Part
+    delegate :target, :export_scope, :messages, :date_range,
+             :code_spaces, :public_code_space, :code_space,
+             :prefer_referent_stop_area, :prefer_referent_company,
+             :prefer_referent_line, :referential, :shape_referential, to: :export
+  end
 
-    def stop_areas
-      export.exported_stop_areas
-    end
+  class StopAreas < NewPart
+    delegate :stop_areas, :referenced_stop_areas, to: :export_scope
 
-    def export!
-      stop_areas.includes(:referent, :parent, :codes, fare_zones: :codes).order("parent_id NULLS first").each_instance do |stop_area|
-        decorated_stop_area = handle_referent(stop_area)
-        next if index.has_stop_id? decorated_stop_area
+    def perform
+      referenced_stop_areas.pluck(:id, :referent_id).each do |model_id, referent_id|
+        code_provider.stop_areas.alias(model_id, as: referent_id)
+      end
 
-        target.stops << decorated_stop_area.stop_attributes
-        index.register_stop_id decorated_stop_area, decorated_stop_area.stop_id
+      stop_areas.includes(:referent, :parent, :codes, fare_zones: :codes).each_instance do |stop_area|
+        resource = decorate(stop_area, public_code_space: public_code_space).gtfs_resource
+        target.stops << resource
       end
     end
 
-    def handle_referent stop_area
-      unless prefer_referent_stop_area && stop_area.referent
-        return Decorator.new(stop_area, index, public_code_space, duplicated_registration_numbers, code_space)
-      end
-
-      decorated_referent = Decorator.new(stop_area.referent, index, public_code_space,
-                                         duplicated_registration_numbers, code_space)
-      index.register_stop_id(stop_area, decorated_referent.stop_id)
-      return decorated_referent
-    end
-
-    class Decorator < SimpleDelegator
-
-      # index is optional to make tests easier
-      def initialize(stop_area, index = nil, public_code_space = "", duplicated_registration_numbers = [], code_space = nil)
-        super stop_area
-        @index = index
-        @public_code_space = public_code_space
-        @duplicated_registration_numbers = duplicated_registration_numbers
-        @code_space = code_space
-      end
-
-      attr_reader :index, :public_code_space, :duplicated_registration_numbers, :code_space
-
+    class Decorator
       def zone_id
-        code_value || fare_zone&.uuid
+        code_provider.fare_zones.code(default_fare_zone_id)
       end
 
       def code_value
@@ -469,21 +554,12 @@ class Export::Gtfs < Export::Base
         @fare_zone ||= fare_zones&.first
       end
 
-      def stop_id
-        if registration_number.present? &&
-           duplicated_registration_numbers.exclude?(registration_number)
-          registration_number
-        else
-          objectid
-        end
-      end
-
       def parent_station
-        return unless parent_id
-
-        parent_stop_id = index&.stop_id(parent_id)
-        Rails.logger.warn "Can't find parent stop_id in index for StopArea #{stop_id}" unless parent_stop_id
-        parent_stop_id
+        code_provider.stop_areas.code(parent_id)
+      end
+      
+      def default_fare_zone_id
+        fare_zone.id
       end
 
       def gtfs_platform_code
@@ -501,9 +577,9 @@ class Export::Gtfs < Export::Base
         end
       end
 
-      def stop_attributes
+      def gtfs_attributes
         {
-          id: stop_id,
+          id: model_code,
           code: codes.find_by(code_space: public_code_space)&.value,
           name: name,
           location_type: area_type == 'zdep' ? 0 : 1,
@@ -519,6 +595,9 @@ class Export::Gtfs < Export::Base
         }
       end
 
+      def gtfs_resource
+        GTFS::Stop.new(gtfs_attributes)
+      end
     end
 
   end

@@ -31,8 +31,10 @@ module Macro
 
       def run
         referents.find_each do |referent|
-          code = referent.codes.create(code_space_id: referent_code_space_id, value: referent.particular_code_value)
-          create_message(referent, code)
+          referent.particular_code_values.each do |code_value|
+            code = referent.codes.create(code_space_id: referent_code_space_id, value: code_value)
+            create_message(referent, code)
+          end
         end
       end
 
@@ -41,9 +43,7 @@ module Macro
           message_attributes: { referent_name: referent.name, code_value: code.value },
           source: referent
         }
-
         attributes.merge!(criticity: 'error', message_key: 'error') unless code.valid?
-
         macro_messages.create!(attributes)
       end
 
@@ -52,11 +52,12 @@ module Macro
                              .joins(:codes, particulars: :codes)
                              .select(
                                 "public.#{model_collection}.*",
-                                "codes_public_#{model_collection}.value AS particular_code_value"
+                                "ARRAY_AGG(codes_public_#{model_collection}.value) AS particular_code_values"
                               )
                              .where('codes.code_space_id' => referent_code_space_id)
                              .where("codes_public_#{model_collection}.code_space_id" => particular_code_space_id)
                              .where("codes.value <> codes_public_#{model_collection}.value")
+                             .group(:id)
       end
 
       def model_collection

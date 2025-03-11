@@ -12,4 +12,4 @@ fr:
       aggregate_scheduling:
         aggregate_days:  Jours d’agrégation
         aggregate_time: Heure du lancement
-        force_daily_publishing: Forcer la Publication Quotidiennement
+        force_daily_publishing: Forcer les publications quotidiennes

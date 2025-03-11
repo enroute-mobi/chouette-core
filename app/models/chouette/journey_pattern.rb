@@ -315,23 +315,27 @@ module Chouette
       end
     end
 
-    def waypoints
+    def waypoints # rubocop:disable Metrics/MethodLength
       # Because stop_points can be not loaded when journey_pattern_stop_points is loaded
       loaded_stop_points = stop_points.presence || journey_pattern_stop_points.map(&:stop_point)
 
-      loaded_stop_points.map.with_index do |stop_point, position|
+      position = -1
+
+      loaded_stop_points.filter_map do |stop_point|
         stop_area = stop_point.stop_area
-        longitude, latitude = stop_area.longitude, stop_area.latitude
+        longitude = stop_area.longitude
+        latitude = stop_area.latitude
+        next nil unless longitude && latitude
 
-        return nil unless longitude && latitude
+        position += 1
 
-        Waypoint.new({
+        Waypoint.new(
           name: stop_area.name,
           position: position,
-          waypoint_type: "waypoint",
+          waypoint_type: 'waypoint',
           coordinates: [longitude, latitude],
           stop_area: stop_area
-        })
+        )
       end
     end
   end

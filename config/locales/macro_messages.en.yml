@@ -85,6 +85,10 @@ en:
     messages:
       default: "The Route '%{name_before_change}' is renamed into '%{attribute_value_after_change}'"
       error: "The Route '%{name_before_change}' is renamed can't be modified"
+  macro/create_codes_from_particulars/run:
+    messages:
+      default: "The code %{value} has been added for the %{target_model} %{referent_name}"
+      error: "The code %{value} can't be created for the %{target_model} %{referent_name}"
   macro_messages:
     search_no_results_for_filter: "No messages found"
     no_address: "No address"

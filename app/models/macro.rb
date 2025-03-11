@@ -25,6 +25,7 @@ module Macro
       Macro::ForceAttributeValue,
       Macro::DefineRouteName,
       Macro::AssociateStopAreaWithFareZone,
+      Macro::CreateCodesFromParticulars,
       Macro::Dummy # Keep this dummy last
     ]
   end

@@ -60,6 +60,8 @@ en:
         one: Define route name
       macro/associate_stop_area_with_fare_zone:
         one: Associate Stop areas with Fare Zones
+      macro/create_codes_from_particulars:
+        one: Create codes from particulars
     attributes:
       macro/base:
         name: Name
@@ -100,6 +102,9 @@ en:
         target_format: Format
       macro/associate_stop_area_with_fare_zone:
         target_attribute: Attribute
+      macro/create_codes_from_particulars:
+        particular_code_space_id: Particular Code Space
+        referent_code_space_id: Referent Code Space
   simple_form:
     placeholders:
       macro_base:

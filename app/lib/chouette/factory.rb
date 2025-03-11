@@ -249,9 +249,11 @@ module Chouette
               after do
                 new_instance.line_referential = parent.line_referential
 
-                (transient(:codes) || {}).each do |code_space_short_name, value|
-                  code_space = new_instance.workgroup.code_spaces.find_by!(short_name: code_space_short_name)
-                  new_instance.codes.build(code_space: code_space, value: value)
+                (transient(:codes) || {}).each do |code_space_short_name, values|
+                  Array(values).each do |value|
+                    code_space = new_instance.workgroup.code_spaces.find_by!(short_name: code_space_short_name)
+                    new_instance.codes.build(code_space: code_space, value: value)
+                  end
                 end
 
                 Array(transient(:documents, resolve_instances: true)).each do |document|
@@ -273,9 +275,11 @@ module Chouette
               after do
                 new_instance.line_referential = parent.line_referential
 
-                (transient(:codes) || {}).each do |code_space_short_name, value|
-                  code_space = new_instance.workgroup.code_spaces.find_by!(short_name: code_space_short_name)
-                  new_instance.codes.build(code_space: code_space, value: value)
+                (transient(:codes) || {}).each do |code_space_short_name, values|
+                  Array(values).each do |value|
+                    code_space = new_instance.workgroup.code_spaces.find_by!(short_name: code_space_short_name)
+                    new_instance.codes.build(code_space: code_space, value: value)
+                  end
                 end
 
                 Array(transient(:documents, resolve_instances: true)).each do |document|

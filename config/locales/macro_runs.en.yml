@@ -51,6 +51,8 @@ en:
         one: Define Route name
       macro/associate_stop_area_with_fare_zone/run:
         one: Associate Stop Areas with Fare Zones
+      macro/create_codes_from_particulars/run:
+        one: Create codes from particulars
     attributes:
       macro/base/run:
         name: Name

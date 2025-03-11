@@ -36,6 +36,7 @@ Apartment.configure do |config|
     'BookingArrangement',
     'Chouette::LineNotice',
     'StopAreaGroup::Member',
+    'FlexibleAreaMembership',
     'Chouette::StopArea',
     'CleanUp',
     'CleanUpResult',

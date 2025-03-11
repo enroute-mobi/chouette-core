@@ -66,7 +66,7 @@ gem 'devise_saml_authenticatable'
 gem 'rgeo'
 gem 'rgeo-proj4'
 gem 'geokit'
-gem 'georuby', '2.3.0' # Fix version for georuby-ext because api has changed
+gem 'georuby'
 
 gem 'mimemagic', '>= 0.4.3'
 

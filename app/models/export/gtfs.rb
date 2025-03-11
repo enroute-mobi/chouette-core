@@ -368,12 +368,14 @@ class Export::Gtfs < Export::Base
   end
 
   class Scope < Export::Base::Scope
-    concerning :StopArea do
+    concerning :StopAreas do
       def stop_areas
-        return current_scope.stop_areas if ignore_parent_stop_places?
-
-        parents = Chouette::StopArea.all_parents(current_scope.stop_areas.where(area_type: 'zdep'))
-        Chouette::StopArea.union(current_scope.stop_areas, parents).where(kind: :commercial)
+        @stop_areas ||=
+          if prefer_referent_stop_areas?
+            scoped_stop_areas.referents_or_self
+          else
+            scoped_stop_areas
+          end
       end
 
       def ignore_parent_stop_places?
@@ -387,25 +389,23 @@ class Export::Gtfs < Export::Base
       def referenced_stop_areas
         return Chouette::StopArea.none unless prefer_referent_stop_areas?
 
-        stop_areas.particulars.with_referent
+        scoped_stop_areas.particulars.with_referent
       end
 
       def entrances
-        current_scope.entrances.where(stop_area: stop_areas).or(
-          current_scope.entrances.where(stop_area_id: referent_ids)
-        )
+        current_scope.entrances.where(stop_area: stop_areas)
       end
 
       def connection_links
-        current_scope.connection_links.where(departure: stop_areas, arrival: stop_areas).or(
-          current_scope.connection_links.where(departure_id: referent_ids, arrival_id: referent_ids)
-        )
+        current_scope.connection_links.where(departure: stop_areas, arrival: stop_areas)
       end
 
-      private
-
-      def referent_ids
-        @referent_ids ||= referenced_stop_areas.select(:referent_id)
+      def scoped_stop_areas
+        if ignore_parent_stop_places?
+          current_scope.stop_areas
+        else
+          current_scope.stop_areas.self_and_parents
+        end
       end
     end
 
@@ -435,11 +435,11 @@ class Export::Gtfs < Export::Base
           line_referential.companies.where(id: vehicle_journey_company_ids)
         ).distinct
       end
-      
+
       def prefer_referent_companies?
         export.prefer_referent_company
-      end      
-      
+      end
+
       def referenced_companies
         return Chouette::Company.none unless prefer_referent_companies?
 
@@ -462,7 +462,7 @@ class Export::Gtfs < Export::Base
 
       def vehicle_journey_company_ids
         current_scope.vehicle_journeys.where.not(company_id: nil).select(:company_id).distinct
-      end      
+      end
     end
   end
 

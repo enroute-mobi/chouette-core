@@ -109,7 +109,8 @@ module Chouette
       def resolve_instance(name_or_value)
         if name_or_value.is_a?(Symbol)
           name = name_or_value
-          registry.find name: name
+          value = registry.find(name: name)
+          value || name_or_value
         else
           name_or_value
         end

@@ -83,8 +83,8 @@ fr:
       error: "L'itinéraire '%{name_before_change}' ne peut pas être défini"
   macro/create_codes_from_particulars/run:
     messages:
-      default: "Le code %{value} a été ajouté sur un(e) %{target_model} %{referent_name}"
-      error: "Le code %{value} ne peut pas être créé sur un(e) %{target_model} %{referent_name}"
+      default: "Le code %{code_value} a été ajouté sur un(e) %{target_model} %{referent_name}"
+      error: "Le code %{code_value} ne peut pas être créé sur un(e) %{target_model} %{referent_name}"
   macro/associate_stop_area_with_fare_zone/run:
     messages:
       default: "L'arrêt %{stop_area_name} a été associé avec la Zone tarifaire %{fare_zone_name}"

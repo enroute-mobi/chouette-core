@@ -116,7 +116,6 @@ fr:
         prefer_referent_line: Préférer les lignes Référentes
         ignore_referent_stop_areas: Ignorer les zones d'arrêt référentes
         prefer_referent_company: Préférer les transporteurs Référents
-        ignore_single_stop_station: "Ignorer les Zones de Lieux avec une Zone d’Embarquement unique"
         include_stop_visits: "Inclure les Passages aux Arrêts"
         ignore_parent_stop_places: "Ignorer les arrêts Parents"
         ignore_extended_gtfs_route_types: "Ignorer les types de route étendus"

@@ -17,7 +17,7 @@ RSpec.describe Publication, type: :model do
 
   let(:export_type) { 'Export::Gtfs' }
   let(:export_options) do
-    { type: export_type, duration: 90, prefer_referent_stop_area: false, ignore_single_stop_station: false }
+    { type: export_type, duration: 90, prefer_referent_stop_area: false }
   end
   let(:publication_setup) { create :publication_setup, export_options: export_options }
   let(:referential) { first_referential }

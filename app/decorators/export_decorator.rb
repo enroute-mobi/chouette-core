@@ -87,7 +87,6 @@ class ExportDecorator < Af83::Decorator
 
     if object.is_a?(Export::Gtfs)
       add_option.call(:prefer_referent_stop_area, I18n.t(prefer_referent_stop_area))
-      add_option.call(:ignore_single_stop_station, I18n.t(ignore_single_stop_station))
     end
 
     options.map { |k, v| "#{k} : #{v}"}.join('<br/>').html_safe

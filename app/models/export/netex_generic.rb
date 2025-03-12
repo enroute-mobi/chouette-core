@@ -514,7 +514,11 @@ class Export::NetexGeneric < Export::Base
     end
 
     def stop_areas
-      export_scope.stop_areas.left_joins(:codes).select('stop_areas.*', stop_areas_codes).group('stop_areas.id')
+      export_scope.stop_areas
+                  .left_joins(:codes)
+                  .select('stop_areas.*', "area_type = 'zdep' as quay", stop_areas_codes)
+                  .group('stop_areas.id')
+                  .order(quay: :desc)
     end
 
     def stop_areas_codes

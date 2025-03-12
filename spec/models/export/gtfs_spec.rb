@@ -84,7 +84,7 @@ RSpec.describe Export::Gtfs::Scope do
 
       before { allow(scope).to receive(:scoped_stop_areas) { Chouette::StopArea.where(id: [particular, other]) } }
 
-      context 'when prefer_referent_stop_area? is enabled' do
+      context 'when prefer_referent_stop_areas? is enabled' do
         before { allow(scope).to receive(:prefer_referent_stop_areas?).and_return(true) }
 
         it { is_expected.to include(referent) }
@@ -93,7 +93,7 @@ RSpec.describe Export::Gtfs::Scope do
         it { is_expected.to include(other) }
       end
 
-      context 'when prefer_referent_stop_area? is disabled' do
+      context 'when prefer_referent_stop_areas? is disabled' do
         before { allow(scope).to receive(:prefer_referent_stop_areas?).and_return(false) }
 
         it { is_expected.to_not include(referent) }
@@ -140,6 +140,294 @@ RSpec.describe Export::Gtfs::Scope do
 
         it { is_expected.to include(particular) }
         it { is_expected.to_not include(other) }
+      end
+    end
+  end
+
+  describe 'Lines concerning' do
+    describe '#prefer_referent_lines?' do
+      subject { scope.prefer_referent_lines? }
+
+      context 'when Export#prefer_referent_lines is true' do
+        before { export.prefer_referent_line = true }
+
+        it { is_expected.to be_truthy }
+      end
+
+      context 'when Export#prefer_referent_lines is false' do
+        before { export.prefer_referent_line = false }
+
+        it { is_expected.to be_falsy }
+      end
+    end
+
+    describe '#scoped_lines' do
+      subject { scope.scoped_lines }
+
+      let(:initial_scope) { double(lines: double("Initial Scope lines")) }
+
+      it { is_expected.to eq(initial_scope.lines) }
+    end
+
+    describe '#referenced_lines' do
+      subject { scope.referenced_lines }
+
+      context 'when prefer_referent_lines? is disabled' do
+        before { allow(scope).to receive(:prefer_referent_lines?).and_return(false) }
+
+        let(:context) do
+          Chouette.create do
+            line
+          end
+        end
+
+        let(:initial_scope) { double lines: Chouette::Line.where(id: context.line) }
+
+        it { is_expected.to be_empty }
+      end
+
+      context 'when prefer_referent_lines? is enabled' do
+        before { allow(scope).to receive(:prefer_referent_lines?).and_return(true) }
+
+        let(:context) do
+          Chouette.create do
+            line :referent, name: 'Referent', is_referent: true
+            line :particular, name: 'Particular', referent: :referent
+
+            line :other
+          end
+        end
+
+        let(:particular) { context.line :particular }
+        let(:referent) { context.line :referent }
+        let(:other) { context.line :other }
+
+        before { allow(scope).to receive(:scoped_lines) { Chouette::Line.where(id: [ particular, other ]) } }
+
+        it { is_expected.to include(particular) }
+        it { is_expected.to_not include(other) }
+      end
+    end
+
+    describe '#lines' do
+      subject { scope.lines }
+
+      let(:context) do
+        Chouette.create do
+          line :referent, name: 'Referent', is_referent: true
+          line :particular, name: 'Particular', referent: :referent
+
+          line :other, name: 'Other'
+        end
+      end
+
+      let(:particular) { context.line :particular }
+      let(:referent) { context.line :referent }
+      let(:other) { context.line :other }
+
+      before { allow(scope).to receive(:scoped_lines) { Chouette::Line.where(id: [particular, other]) } }
+
+      context 'when prefer_referent_lines? is enabled' do
+        before { allow(scope).to receive(:prefer_referent_lines?).and_return(true) }
+
+        it { is_expected.to include(referent) }
+        it { is_expected.to_not include(particular) }
+
+        it { is_expected.to include(other) }
+      end
+
+      context 'when prefer_referent_lines? is disabled' do
+        before { allow(scope).to receive(:prefer_referent_lines?).and_return(false) }
+
+        it { is_expected.to_not include(referent) }
+        it { is_expected.to include(particular) }
+
+        it { is_expected.to include(other) }
+      end
+    end
+  end
+
+  describe 'Companies concerning' do
+    describe '#prefer_referent_companies?' do
+      subject { scope.prefer_referent_companies? }
+
+      context 'when Export#prefer_referent_companies is true' do
+        before { export.prefer_referent_company = true }
+
+        it { is_expected.to be_truthy }
+      end
+
+      context 'when Export#prefer_referent_companies is false' do
+        before { export.prefer_referent_company = false }
+
+        it { is_expected.to be_falsy }
+      end
+    end
+
+    describe '#referenced_companies' do
+      subject { scope.referenced_companies }
+
+      context 'when prefer_referent_companies? is disabled' do
+        before { allow(scope).to receive(:prefer_referent_companies?).and_return(false) }
+
+        let(:context) do
+          Chouette.create do
+            company
+          end
+        end
+
+        let(:initial_scope) { double companies: Chouette::Company.where(id: context.company) }
+
+        it { is_expected.to be_empty }
+      end
+
+      context 'when prefer_referent_companies? is enabled' do
+        before { allow(scope).to receive(:prefer_referent_companies?).and_return(true) }
+
+        let(:context) do
+          Chouette.create do
+            company :referent, name: 'Referent', is_referent: true
+            company :particular, name: 'Particular', referent: :referent
+
+            company :other
+          end
+        end
+
+        let(:particular) { context.company :particular }
+        let(:referent) { context.company :referent }
+        let(:other) { context.company :other }
+
+        before { allow(scope).to receive(:scoped_companies) { Chouette::Company.where(id: [ particular, other ]) } }
+
+        it { is_expected.to include(particular) }
+        it { is_expected.to_not include(other) }
+      end
+    end
+
+    describe '#line_company_ids' do
+      subject { scope.line_company_ids }
+
+      let(:context) do
+        Chouette.create do
+          company :first
+          company :second
+
+          line company: :first
+          line company: :first
+
+          line :unscoped, company: :second
+        end
+      end
+
+      before { allow(scope).to receive(:lines).and_return(scoped_lines) }
+
+      let(:scoped_lines) { context.line_referential.lines.where.not(id: unscoped_line) }
+      let(:unscoped_line) { context.line :unscoped }
+
+      let(:scoped_company) { context.company :first }
+
+      it "contains identifiers of Company associated to scoped lines" do
+        is_expected.to match_array(scoped_company.id)
+      end
+    end
+
+    describe '#vehicle_journey_company_ids' do
+      subject { scope.vehicle_journey_company_ids }
+
+      let(:context) do
+        Chouette.create do
+          company :first
+          company :second
+
+          vehicle_journey company: :first
+          vehicle_journey company: :first
+
+          vehicle_journey :unscoped, company: :second
+        end
+      end
+
+      before { context.referential.switch }
+      before do
+        current_scope = double(vehicle_journeys: scoped_vehicle_journeys)
+        allow(scope).to receive(:current_scope).and_return(current_scope)
+      end
+
+      let(:scoped_vehicle_journeys) { context.referential.vehicle_journeys.where.not(id: unscoped_vehicle_journey) }
+      let(:unscoped_vehicle_journey) { context.vehicle_journey :unscoped }
+
+      let(:scoped_company) { context.company :first }
+
+      it "contains identifiers of Company associated to scoped Vehicle Journeys" do
+        is_expected.to match_array(scoped_company.id)
+      end
+    end
+
+    describe '#company_ids' do
+      subject { scope.company_ids }
+
+      before do
+        allow(scope).to receive(:line_company_ids) { [ 42 ] }
+        allow(scope).to receive(:vehicle_journey_company_ids) { [ 42, 43 ] }
+      end
+
+      context 'when line_company_ids is [ 42 ] and vehicle_journey_company_ids is [ 42, 43 ]' do
+        it { is_expected.to contain_exactly(42, 43) }
+      end
+    end
+
+    describe '#scoped_companies' do
+      subject { scope.scoped_companies }
+
+      let(:context) do
+        Chouette.create do
+          company
+        end
+      end
+
+      let(:company) { context.company }
+
+      before do
+        allow(scope).to receive(:company_ids) { company.id }
+        allow(scope).to receive(:line_referential) { context.line_referential }
+      end
+
+      it { is_expected.to include(company) }
+    end
+
+    describe '#companies' do
+      subject { scope.companies }
+
+      let(:context) do
+        Chouette.create do
+          company :referent, name: 'Referent', is_referent: true
+          company :particular, name: 'Particular', referent: :referent
+
+          company :other, name: 'Other'
+        end
+      end
+
+      let(:particular) { context.company :particular }
+      let(:referent) { context.company :referent }
+      let(:other) { context.company :other }
+
+      before { allow(scope).to receive(:scoped_companies) { Chouette::Company.where(id: [particular, other]) } }
+
+      context 'when prefer_referent_companies? is enabled' do
+        before { allow(scope).to receive(:prefer_referent_companies?).and_return(true) }
+
+        it { is_expected.to include(referent) }
+        it { is_expected.to_not include(particular) }
+
+        it { is_expected.to include(other) }
+      end
+
+      context 'when prefer_referent_companies? is disabled' do
+        before { allow(scope).to receive(:prefer_referent_companies?).and_return(false) }
+
+        it { is_expected.to_not include(referent) }
+        it { is_expected.to include(particular) }
+
+        it { is_expected.to include(other) }
       end
     end
   end

@@ -411,7 +411,11 @@ class Export::Gtfs < Export::Base
 
     concerning :Lines do
       def lines
-        current_scope.lines
+        if prefer_referent_lines?
+          scoped_lines.referents_or_self
+        else
+          scoped_lines
+        end
       end
 
       def prefer_referent_lines?
@@ -421,7 +425,11 @@ class Export::Gtfs < Export::Base
       def referenced_lines
         return Chouette::Line.none unless prefer_referent_lines?
 
-        current_scope.lines.particulars.with_referent
+        scoped_lines.particulars.with_referent
+      end
+
+      def scoped_lines
+        current_scope.lines
       end
 
       def contracts
@@ -431,9 +439,11 @@ class Export::Gtfs < Export::Base
 
     concerning :Companies do
       def companies
-        line_referential.companies.where(id: company_ids).or(
-          line_referential.companies.where(id: vehicle_journey_company_ids)
-        ).distinct
+        if prefer_referent_companies?
+          scoped_companies.referents_or_self
+        else
+          scoped_companies
+        end
       end
 
       def prefer_referent_companies?
@@ -443,7 +453,7 @@ class Export::Gtfs < Export::Base
       def referenced_companies
         return Chouette::Company.none unless prefer_referent_companies?
 
-        companies.particulars.with_referent
+        scoped_companies.particulars.with_referent
       end
 
       def fare_products
@@ -454,14 +464,20 @@ class Export::Gtfs < Export::Base
         current_scope.fare_validities.by_products(fare_products)
       end
 
-      private
+      def scoped_companies
+        line_referential.companies.where(id: company_ids)
+      end
 
       def company_ids
-        lines.where.not(company_id: nil).select(:company_id).distinct
+        @company_ids ||= (line_company_ids + vehicle_journey_company_ids).uniq
+      end
+
+      def line_company_ids
+        lines.where.not(company_id: nil).distinct.pluck(:company_id)
       end
 
       def vehicle_journey_company_ids
-        current_scope.vehicle_journeys.where.not(company_id: nil).select(:company_id).distinct
+        current_scope.vehicle_journeys.where.not(company_id: nil).distinct.pluck(:company_id)
       end
     end
   end

@@ -76,7 +76,7 @@ class Export::Gtfs < Export::Base
     # Export stop_times.txt
     JourneyPatternDistances.new(self).export_part
     filter_non_commercial = referential.stop_areas.non_commercial.exists?
-    ignore_time_zone = !export_scope.stop_areas.with_time_zone.exists?
+    ignore_time_zone = !legacy_export_scope.stop_areas.with_time_zone.exists?
 
     VehicleJourneyAtStops.new(self, filter_non_commercial: filter_non_commercial, ignore_time_zone: ignore_time_zone).export_part
 
@@ -104,13 +104,9 @@ class Export::Gtfs < Export::Base
 
   alias ignore_parent_stop_places? ignore_parent_stop_places
 
+  # DEPRECATED
   def exported_stop_areas
-    unless ignore_parent_stop_places?
-      parents = Chouette::StopArea.all_parents(export_scope.stop_areas.where(area_type: 'zdep'))
-      Chouette::StopArea.union(export_scope.stop_areas, parents).where(kind: :commercial)
-    else
-      export_scope.stop_areas
-    end
+    legacy_export_scope.stop_areas
   end
 
   def export_stop_areas_to(target)
@@ -152,6 +148,12 @@ class Export::Gtfs < Export::Base
   end
 
   delegate :shape_referential, to: :workgroup
+
+  alias legacy_export_scope export_scope
+
+  def export_scope
+    @local_export_scope ||= Scope.new(legacy_export_scope, export: self)
+  end
 
   # Use dedicated "Resource" Find an unique code for a given Resource
   #
@@ -509,7 +511,7 @@ class Export::Gtfs < Export::Base
     end
   end
 
-  class Part
+  class LegacyPart
 
     attr_reader :export
     def initialize(export, options = {})
@@ -517,8 +519,12 @@ class Export::Gtfs < Export::Base
       options.each { |k,v| send "#{k}=", v }
     end
 
-    delegate :target, :index, :export_scope, :messages, :date_range, :code_spaces, :public_code_space, :code_space,
+    delegate :target, :index, :messages, :date_range, :code_spaces, :public_code_space, :code_space,
              :prefer_referent_stop_area, :prefer_referent_company, :prefer_referent_line, :referential, :shape_referential, to: :export
+
+    def export_scope
+      export.legacy_export_scope
+    end
 
     def part_name
       @part_name ||= self.class.name.demodulize.underscore
@@ -552,7 +558,7 @@ class Export::Gtfs < Export::Base
     end
   end
 
-  class StopAreas < Part
+  class StopAreas < LegacyPart
 
     def stop_areas
       export.exported_stop_areas
@@ -664,7 +670,7 @@ class Export::Gtfs < Export::Base
 
   end
 
-  class Companies < Part
+  class Companies < LegacyPart
 
     delegate :vehicle_journeys, to: :export_scope
 
@@ -790,7 +796,7 @@ class Export::Gtfs < Export::Base
 
   end
 
-  class Lines < Part
+  class Lines < LegacyPart
 
     delegate :lines, to: :export_scope
 
@@ -934,7 +940,7 @@ class Export::Gtfs < Export::Base
     end
   end
 
-  class TimeTables < Part
+  class TimeTables < LegacyPart
 
     delegate :time_tables, to: :export_scope
 
@@ -1108,7 +1114,7 @@ class Export::Gtfs < Export::Base
     VehicleJourneys.new(self).export!
   end
 
-  class VehicleJourneys < Part
+  class VehicleJourneys < LegacyPart
 
     delegate :vehicle_journeys, to: :export_scope
 
@@ -1327,7 +1333,7 @@ class Export::Gtfs < Export::Base
     end
   end
 
-  class JourneyPatternDistances  < Part
+  class JourneyPatternDistances  < LegacyPart
 
     def journey_patterns
       export_scope.journey_patterns.includes(:stop_points).where.not(costs: [{}, nil])
@@ -1352,7 +1358,7 @@ class Export::Gtfs < Export::Base
     VehicleJourneyAtStops.new(self).export!
   end
 
-  class VehicleJourneyAtStops < Part
+  class VehicleJourneyAtStops < LegacyPart
 
     delegate :prefer_referent_stop_area, to: :export
     attr_writer :filter_non_commercial, :ignore_time_zone
@@ -1507,7 +1513,7 @@ class Export::Gtfs < Export::Base
 
   end
 
-  class Shapes < Part
+  class Shapes < LegacyPart
 
     delegate :shapes, to: :export_scope
 
@@ -1560,7 +1566,7 @@ class Export::Gtfs < Export::Base
 
   end
 
-  class VehicleJourneyCompany < Part
+  class VehicleJourneyCompany < LegacyPart
     def export!
       vehicle_journeys.find_each do |vehicle_journey|
         Decorator.new(vehicle_journey, index: index).attributions.each do |attribution|
@@ -1630,7 +1636,7 @@ class Export::Gtfs < Export::Base
     end
   end
 
-  class Contract < Part
+  class Contract < LegacyPart
     def export!
       contracts.find_each do |contract|
         Decorator.new(contract, index: index).attributions.each do |attribution|
@@ -1688,7 +1694,7 @@ class Export::Gtfs < Export::Base
     end
   end
 
-  class FeedInfo < Part
+  class FeedInfo < LegacyPart
     delegate :companies, :validity_period, to: :export_scope
 
     def export!
@@ -1750,7 +1756,7 @@ class Export::Gtfs < Export::Base
     end
   end
 
-  class FareProducts < Part
+  class FareProducts < LegacyPart
     delegate :code_space, to: :export
     delegate :fare_products, to: :export_scope
 
@@ -1806,7 +1812,7 @@ class Export::Gtfs < Export::Base
     end
   end
 
-  class FareValidities < Part
+  class FareValidities < LegacyPart
     delegate :code_space, to: :export
     delegate :fare_validities, to: :export_scope
 

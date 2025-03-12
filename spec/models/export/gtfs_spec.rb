@@ -142,6 +142,104 @@ RSpec.describe Export::Gtfs::Scope do
         it { is_expected.to_not include(other) }
       end
     end
+
+    describe '#dependencies_stop_areas' do
+      subject { scope.dependencies_stop_areas }
+
+      context 'when prefer_referent_stop_area? is disabled' do
+        before { allow(scope).to receive(:prefer_referent_stop_areas?).and_return(false) }
+
+        let(:context) do
+          Chouette.create do
+            stop_area :referent, name: 'Referent', is_referent: true
+            stop_area :particular, name: 'Particular', referent: :referent
+          end
+        end
+
+        let(:particular) { context.stop_area :particular }
+        let(:initial_scope) { double stop_areas: Chouette::StopArea.where(id: particular) }
+
+        it { is_expected.to include(particular) }
+      end
+
+      context 'when prefer_referent_stop_area? is enabled' do
+        before { allow(scope).to receive(:prefer_referent_stop_areas?).and_return(true) }
+
+        let(:context) do
+          Chouette.create do
+            stop_area :referent, name: 'Referent', is_referent: true
+            stop_area :particular, name: 'Particular', referent: :referent
+
+            stop_area :other
+          end
+        end
+
+        let(:particular) { context.stop_area :particular }
+        let(:referent) { context.stop_area :referent }
+        let(:other) { context.stop_area :other }
+
+        before { allow(scope).to receive(:scoped_stop_areas) { Chouette::StopArea.where(id: [ particular, other ]) } }
+
+        it { is_expected.to include(particular) }
+        it { is_expected.to include(referent) }
+        it { is_expected.to include(other) }
+      end
+    end
+
+    describe '#entrances' do
+      subject { scope.entrances }
+
+      let(:context) do
+        Chouette.create do
+          stop_area :first
+
+          entrance :scoped, stop_area: :first
+          entrance
+        end
+      end
+
+      let(:stop_area) { context.stop_area :first }
+      let(:entrance) { context.entrance :scoped }
+
+      before do
+        allow(scope).to receive(:stop_area_referential) { context.stop_area_referential }
+
+        allow(scope).to receive(:dependencies_stop_areas) do
+          Chouette::StopArea.where(id: [ stop_area ])
+        end
+      end
+
+      it { is_expected.to include(entrance) }
+    end
+
+    describe '#connection_links' do
+      subject { scope.connection_links }
+
+      let(:context) do
+        Chouette.create do
+          stop_area :first
+          stop_area :other
+          stop_area :other2
+
+          connection_link departure: :first, arrival: :other
+          connection_link arrival: :first, departure: :other
+          connection_link :unscoped, departure: :other, arrival: :other2
+        end
+      end
+
+      let(:stop_area) { context.stop_area :first }
+      let(:unscoped) { context.connection_link :unscoped }
+
+      before do
+        allow(scope).to receive(:stop_area_referential) { context.stop_area_referential }
+
+        allow(scope).to receive(:dependencies_stop_areas) do
+          Chouette::StopArea.where(id: [ stop_area ])
+        end
+      end
+
+      it { is_expected.to_not include(unscoped) }
+    end
   end
 
   describe 'Lines concerning' do

@@ -392,12 +392,21 @@ class Export::Gtfs < Export::Base
         scoped_stop_areas.particulars.with_referent
       end
 
+      def dependencies_stop_areas
+        @dependencies_stop_areas ||=
+          if prefer_referent_stop_areas?
+            scoped_stop_areas.self_and_referents
+          else
+            scoped_stop_areas
+          end
+      end
+
       def entrances
-        current_scope.entrances.where(stop_area: stop_areas)
+        stop_area_referential.entrances.where(stop_area: dependencies_stop_areas)
       end
 
       def connection_links
-        current_scope.connection_links.where(departure: stop_areas, arrival: stop_areas)
+        stop_area_referential.connection_links.where(departure: dependencies_stop_areas, arrival: dependencies_stop_areas)
       end
 
       def scoped_stop_areas
@@ -428,12 +437,21 @@ class Export::Gtfs < Export::Base
         scoped_lines.particulars.with_referent
       end
 
+      def dependencies_lines
+        @dependencies_lines ||=
+          if prefer_referent_lines?
+            scoped_lines.self_and_referents
+          else
+            scoped_lines
+          end
+      end
+
       def scoped_lines
         current_scope.lines
       end
 
       def contracts
-        current_scope.contract.with_lines(lines)
+        line_referential.contracts.with_lines(dependencies_lines)
       end
     end
 
@@ -456,12 +474,21 @@ class Export::Gtfs < Export::Base
         scoped_companies.particulars.with_referent
       end
 
+      def dependencies_companies
+        @dependencies_companies ||=
+          if prefer_referent_companies?
+            scoped_companies.self_and_referents
+          else
+            scoped_companies
+          end
+      end
+
       def fare_products
-        current_scope.fare_products.where(company: companies)
+        fare_referential.fare_products.where(company: dependencies_companies)
       end
 
       def fare_validities
-        current_scope.fare_validities.by_products(fare_products)
+        fare_referential.fare_validities.by_products(fare_products)
       end
 
       def scoped_companies

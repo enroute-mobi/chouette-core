@@ -42,7 +42,7 @@ class Export::Base < ApplicationModel
     end
 
     attr_reader :export
-    delegate :stop_area_referential, :line_referential, to: :export
+    delegate :stop_area_referential, :line_referential, :fare_referential, to: :export
 
     def current_scope
       __getobj__

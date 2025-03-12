@@ -779,6 +779,7 @@ RSpec.describe Control::PresenceAssociatedModel do
           Chouette.create do
             referential do
               time_table :time_table,
+                         comment: 'Test',
                          periods: [Date.parse('2024-01-18')..Date.parse('2024-01-20')],
                          dates_included: [Date.parse('2024-01-19')]
             end
@@ -786,7 +787,7 @@ RSpec.describe Control::PresenceAssociatedModel do
         end
 
         let(:source) { context.time_table(:time_table) }
-        let(:attribute_name) { nil } # FIXME: CHOUETTE-3397
+        let(:attribute_name) { 'Test' }
         let(:target_model) { 'TimeTable' }
 
         context 'periods' do
@@ -797,6 +798,7 @@ RSpec.describe Control::PresenceAssociatedModel do
               Chouette.create do
                 referential do
                   time_table :time_table,
+                             comment: 'Test',
                              periods: [Date.parse('2024-01-18')..Date.parse('2024-01-20')]
                 end
               end
@@ -814,6 +816,7 @@ RSpec.describe Control::PresenceAssociatedModel do
               Chouette.create do
                 referential do
                   time_table :time_table,
+                             comment: 'Test',
                              periods: [Date.parse('2024-01-18')..Date.parse('2024-01-20')]
                 end
               end
@@ -831,6 +834,7 @@ RSpec.describe Control::PresenceAssociatedModel do
               Chouette.create do
                 referential do
                   time_table :time_table,
+                             comment: 'Test',
                              periods: [
                                Date.parse('2024-01-18')..Date.parse('2024-01-20'),
                                Date.parse('2024-01-22')..Date.parse('2024-01-24'),
@@ -856,6 +860,7 @@ RSpec.describe Control::PresenceAssociatedModel do
               Chouette.create do
                 referential do
                   time_table :time_table,
+                             comment: 'Test',
                              dates_included: [Date.parse('2024-01-19')]
                 end
               end
@@ -873,6 +878,7 @@ RSpec.describe Control::PresenceAssociatedModel do
               Chouette.create do
                 referential do
                   time_table :time_table,
+                             comment: 'Test',
                              dates_included: [Date.parse('2024-01-19')]
                 end
               end
@@ -890,6 +896,7 @@ RSpec.describe Control::PresenceAssociatedModel do
               Chouette.create do
                 referential do
                   time_table :time_table,
+                             comment: 'Test',
                              dates_included: [
                                Date.parse('2024-01-19'),
                                Date.parse('2024-01-23'),

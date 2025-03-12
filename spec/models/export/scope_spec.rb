@@ -359,7 +359,7 @@ RSpec.describe Export::Scope, use_chouette_factory: true do
           Chouette.create do
             referential
             company :exported
-            fare_product company: :nil
+            fare_product company: nil
           end
         end
 

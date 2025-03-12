@@ -189,6 +189,8 @@ module Chouette
 
           if resolve_instances
             values = context.resolve_instances(values)
+            # When given symbol can't resolved
+            return nil if values == name.to_sym
           end
 
           values

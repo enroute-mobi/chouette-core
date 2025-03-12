@@ -86,8 +86,8 @@ RSpec.describe Macro::CreateCodeFromSequence do
             Chouette.create do
               code_space short_name: 'test'
 
-              line :line, company: :company
-              line :other_line, company: :other_company, codes: { test: 'dummy:1' }
+              line :line
+              line :other_line, codes: { test: 'dummy:1' }
             end
           end
           let(:model) { context.line(:line) }

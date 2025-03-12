@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 RSpec.describe ReferentSupport do
   with_model :WithReferent do
     table do |t|

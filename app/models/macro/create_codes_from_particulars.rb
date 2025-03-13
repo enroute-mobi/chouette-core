@@ -48,16 +48,15 @@ module Macro
       end
 
       def referents
-        @referents ||= models.referents
-                             .joins(:codes, particulars: :codes)
-                             .select(
-                                "public.#{model_collection}.*",
-                                "ARRAY_AGG(codes_public_#{model_collection}.value) AS particular_code_values"
-                              )
-                             .where('codes.code_space_id' => referent_code_space_id)
-                             .where("codes_public_#{model_collection}.code_space_id" => particular_code_space_id)
-                             .where("codes.value <> codes_public_#{model_collection}.value")
-                             .group(:id)
+        models.referents.left_joins(:codes, particulars: :codes).
+          select(
+            "public.#{model_collection}.*",
+            "ARRAY_AGG(codes_public_#{model_collection}.value) AS particular_code_values"
+          ).
+          where("codes.code_space_id = #{referent_code_space_id} OR codes.code_space_id IS NULL").
+          where("codes_public_#{model_collection}.code_space_id" => particular_code_space_id).
+          where("codes.value <> codes_public_#{model_collection}.value OR codes.value IS NULL").
+          group(:id)
       end
 
       def model_collection

@@ -20,5 +20,23 @@ module Export
     def decorator_attributes
       {}
     end
+
+    def create_messages(decorator_or_messages)
+      messages, decorator = if decorator_or_messages.respond_to?(:messages)
+                              [decorator_or_messages.messages, decorator_or_messages]
+                            else
+                              [ decorator_or_messages, nil ]
+                            end
+
+      messages.each do |message|
+        export.messages.create(
+          criticity: message.criticity,
+          message_key: message.message_key,
+          message_attributes: {
+            name: decorator&.name
+          }.merge(message.message_attributes).compact
+        )
+      end
+    end
   end
 end

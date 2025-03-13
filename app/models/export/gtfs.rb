@@ -61,7 +61,7 @@ class Export::Gtfs < Export::Base
 
     StopAreas.new(self).perform
 
-    Lines.new(self).export_part
+    Lines.new(self).perform
 
     Chouette::Benchmark.measure "transfers" do
       export_transfers_to target
@@ -94,7 +94,7 @@ class Export::Gtfs < Export::Base
   # For legacy specs
   def export_lines_to(target)
     @target = target
-    Lines.new(self).export_part
+    Lines.new(self).perform
   end
 
   def export_companies_to(target)
@@ -147,7 +147,7 @@ class Export::Gtfs < Export::Base
     @code_spaces ||= CodeSpaces.new code_space, scope: export_scope
   end
 
-  delegate :shape_referential, to: :workgroup
+  delegate :shape_referential, :line_referential, :stop_area_referential, to: :workgroup
 
   alias legacy_export_scope export_scope
 
@@ -793,75 +793,32 @@ class Export::Gtfs < Export::Base
 
   end
 
-  class Lines < LegacyPart
+  class Lines < Part
 
     delegate :lines, to: :export_scope
 
-    def create_messages(decorated_line)
-      if decorated_line.default_agency?
-        messages.create({
-          criticity: :info,
-          message_key: :no_company,
-          message_attributes: {
-            line_name: decorated_line.name
-          }
-        })
+    def perform
+      lines.find_each do |line|
+        decorated_line = decorate(line)
+        create_messages decorated_line unless decorated_line.valid?
+
+        target.routes << decorated_line.gtfs_attributes
       end
     end
 
-    def export!
-      lines.includes(:referent).find_each do |line|
-        exported_line = (prefer_referent_line ? line.referent : line) || line
-        decorated_line = Decorator.new(
-          exported_line,
-          index: index,
-          duplicated_registration_numbers: duplicated_registration_numbers,
-          ignore_extended_gtfs_route_types: export.ignore_extended_gtfs_route_types
-        )
-
-        unless line_referent_exported?(exported_line)
-          create_messages decorated_line
-          target.routes << decorated_line.route_attributes
-          register_line_referent(exported_line)
-        end
-        index.register_route_id line, decorated_line.route_id
-      end
+    def ignore_extended_gtfs_route_types?
+      export.ignore_extended_gtfs_route_types
     end
 
-    def register_line_referent(exported_line)
-      return unless exported_line.referent?
-
-      line_referents[exported_line.id] = true
+    def decorator_attributes
+      super.merge(
+        ignore_extended_gtfs_route_types: ignore_extended_gtfs_route_types?
+      )
     end
 
-    def line_referent_exported?(exported_line)
-      line_referents[exported_line.id]
-    end
+    class Decorator < ModelDecorator
 
-    def line_referents
-      @line_referents ||= {}
-    end
-
-    class Decorator < SimpleDelegator
-
-      # index is optional to make tests easier
-      def initialize(line, index: nil, duplicated_registration_numbers: [], ignore_extended_gtfs_route_types: false)
-        super line
-        @index = index
-        @duplicated_registration_numbers = duplicated_registration_numbers
-        @ignore_extended_gtfs_route_types = ignore_extended_gtfs_route_types
-      end
-
-      attr_reader :index, :duplicated_registration_numbers, :ignore_extended_gtfs_route_types
-
-      def route_id
-        if registration_number.present? &&
-           duplicated_registration_numbers.exclude?(registration_number)
-          registration_number
-        else
-          objectid
-        end
-      end
+      attr_accessor :ignore_extended_gtfs_route_types
 
       def route_long_name
         value = (published_name.presence || name)
@@ -916,13 +873,16 @@ class Export::Gtfs < Export::Base
         route_agency_id == DEFAULT_AGENCY_ID
       end
 
-      def route_agency_id
-        index&.agency_id(company_id) || DEFAULT_AGENCY_ID
+      def validate
+        messages.add :no_company, criticity: :info if default_agency?
       end
 
-      def route_attributes
-        {
-          id: route_id,
+      def route_agency_id
+        code_provider.companies.code(company_id) || DEFAULT_AGENCY_ID
+      end
+
+      def gtfs_attributes
+        super.merge(
           agency_id: route_agency_id,
           long_name: route_long_name,
           short_name: route_short_name,
@@ -931,9 +891,8 @@ class Export::Gtfs < Export::Base
           url: url,
           color: color,
           text_color: text_color
-        }
+        )
       end
-
     end
   end
 

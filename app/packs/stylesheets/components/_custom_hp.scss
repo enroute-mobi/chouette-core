@@ -4,15 +4,15 @@
 
     .product_summary {
       color: white;
-      height: calc(100vh - 152px);
+      height: calc(100vh - 150px);
       overflow: hidden;
       padding: 0;
       .content {
         p {
-          margin-top: 2em;
+          margin-top: 1em;
         }
         a {
-          font-size: 1.5em;
+          font-size: 1em;
           border-radius: 5px;
           padding: 10px 20px;
           background-color: rgba(255, 255, 255, 0.1);

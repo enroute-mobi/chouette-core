@@ -30,7 +30,7 @@
       = f.label Entrance.tmf(:exit_flag), required: false, class: 'control-label'
       = f.input :exit_flag, as: :check_boxes, label: false, label_method: lambda { |w| ("<span>#{w.first}</span>").html_safe }, include_blank: false, wrapper_html: { class: 'checkbox_list' }
 
-  .flex.flex-col.justify-center.items-center.actions.ml-auto.py-3.w-80
+  .flex.flex-col.justify-center.items-center.actions.ml-auto.w-56
     .flex.items-center.mb-3
       = render partial: 'shared/per_page', locals: {f:f}
     .flex.items-center

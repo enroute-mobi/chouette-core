@@ -3,7 +3,7 @@
     = f.input :opening_time_of_day, as: :time_of_day
     = f.input :closing_time_of_day, as: :time_of_day
     .flex.items-center
-      = f.label :week_days, class: "flex justify-end w-2/6 mr-8 mb-0 control-label pt-0 required"
+      = f.label :week_days, class: "flex justify-end w-2/6 mr-4 mb-0 control-label pt-0 required"
       .flex.items-center
         = f.simple_fields_for :week_days, wrapper: false do |days_of_week_form|
           - Cuckoo::Timetable::DaysOfWeek.each_day do |day|

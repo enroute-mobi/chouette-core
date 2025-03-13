@@ -216,14 +216,14 @@ SimpleForm.setup do |config|
     end
   end
 
-  config.wrappers :horizontal_form_tailwind, tag: 'div', class: 'flex items-center mb-10', error_class: 'has-error' do |b|
+  config.wrappers :horizontal_form_tailwind, tag: 'div', class: 'flex items-center mb-6', error_class: 'has-error' do |b|
     b.use :html5
     b.use :placeholder
     b.optional :maxlength
     b.optional :pattern
     b.optional :min_max
     b.optional :readonly
-    b.use :label, class: 'flex justify-end text-right w-2/6 mr-8 mb-0 control-label pt-0'
+    b.use :label, class: 'flex justify-end text-right w-2/6 mr-4 mb-0 control-label pt-0'
 
     b.wrapper tag: 'div', class: 'w-4/6 flex items-center relative' do |ba|
       ba.use :input, class: 'form-control'
@@ -232,10 +232,10 @@ SimpleForm.setup do |config|
     end
   end
 
-  config.wrappers :vertical_radio_and_checkboxes_tailwind, tag: 'div', class: 'flex items-center mb-10', error_class: 'has-error' do |b|
+  config.wrappers :vertical_radio_and_checkboxes_tailwind, tag: 'div', class: 'flex items-center mb-6', error_class: 'has-error' do |b|
     b.use :html5
     b.optional :readonly
-    b.use :label, class: 'flex justify-end w-2/6 mr-8 mb-0 control-label pt-0'
+    b.use :label, class: 'flex justify-end w-2/6 mr-4 mb-0 control-label pt-0'
 
     b.wrapper tag: 'div', class: 'w-4/6 flex flex-col relative' do |ba|
       ba.use :input, class: 'cursor-pointer'
@@ -252,28 +252,28 @@ SimpleForm.setup do |config|
     b.use :hint,  wrap_with: { tag: 'p', class: 'help-block small' }
   end
 
-  config.wrappers :filters_form_tailwind, tag: 'div', class: 'flex items-center py-3 px-6 border-white', error_class: 'has-error' do |b|
+  config.wrappers :filters_form_tailwind, tag: 'div', class: 'flex items-center py-2 px-3 border-white', error_class: 'has-error' do |b|
     b.use :html5
     b.use :placeholder
     b.optional :maxlength
     b.optional :pattern
     b.optional :min_max
     b.optional :readonly
-    b.use :label, class: 'control-label pr-6 whitespace-nowrap'
+    b.use :label, class: 'control-label pr-3 whitespace-nowrap'
 
-    b.use :input, class: 'shadow appearance-none border border-gray-300 rounded w-full py-4 px-3 bg-white focus:outline-none focus:ring-0 focus:border-blue-500 text-gray-400 leading-7 transition-colors duration-200 ease-in-out'
+    b.use :input, class: 'shadow appearance-none border border-gray-300 rounded w-full py-1 px-3 bg-white focus:outline-none focus:ring-0 focus:border-blue-500 text-gray-400 leading-7 transition-colors duration-200 ease-in-out'
     b.use :error, wrap_with: { tag: 'span', class: 'help-block small' }
     b.use :hint,  wrap_with: { tag: 'p', class: 'help-block small' }
   end
 
-  config.wrappers :horizontal_input_editable_select_tailwind, tag: 'div', class: 'flex items-center mb-10', error_class: 'has-error' do |b|
+  config.wrappers :horizontal_input_editable_select_tailwind, tag: 'div', class: 'flex items-center mb-6', error_class: 'has-error' do |b|
     b.use :html5
     b.use :placeholder
     b.optional :maxlength
     b.optional :pattern
     b.optional :min_max
     b.optional :readonly
-    b.use :label, class: 'flex justify-end w-2/6 mr-8 mb-0 control-label pt-0'
+    b.use :label, class: 'flex justify-end w-2/6 mr-4 mb-0 control-label pt-0'
 
     b.wrapper tag: 'div', class: 'w-4/6 flex items-center relative' do |ba|
       ba.use :input, class: ''

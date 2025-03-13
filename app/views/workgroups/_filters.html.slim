@@ -7,7 +7,7 @@
     .flex.items-center.border-r.border-white
       = f.input :name, label: false, wrapper_html: {class: "w-2/5"}, placeholder: I18n.t('simple_form.placeholders.search.workgroup_id')
 
-  .flex.flex-col.justify-center.items-center.actions.ml-auto.py-3.w-80
+  .flex.flex-col.justify-center.items-center.actions.ml-auto.w-56
     .flex.items-center.mb-3
       = render partial: 'shared/per_page', locals: {f:f}
     .flex.items-center

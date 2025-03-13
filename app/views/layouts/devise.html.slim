@@ -17,7 +17,7 @@ html lang=I18n.locale
     // Sprockets bundle
     = javascript_include_tag 'application'
 
-  body.devise
+  body.devise.overflow-hidden
     nav#main_nav
       // Top menu content
       = render 'layouts/navigation/main_nav_top', user: false

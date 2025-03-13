@@ -1,5 +1,5 @@
 .flex.items-center.mb-10
-  = form.label :profile_options, class: 'flex items-center justify-end text-right w-2/6 mr-8 mb-0 control-label pt-0 control-label'
+  = form.label :profile_options, class: 'flex items-center justify-end text-right w-2/6 mr-4 mb-0 control-label pt-0 control-label'
   .w-4/6.flex.flex-col.items-start.relative x-data="handleProfileOptions()"
     template[x-for="(field, index) in fields" :key="index"]
       .profile_option.flex.w-2/5.mb-5

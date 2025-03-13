@@ -1,16 +1,16 @@
 // Use by SimpleSearchForHelper#simple_search_for helper
 
 - if save_search && @saved_searches
-  .flex.justify-end.mb-5
+  .flex.justify-end.mb-3
     .flex.items-center.w-1/6
       = button_tag t("searchs.actions.open_save_search_panel"),
-          class: 'mr-5 hover:text-enroute-blue open_search_panel',
+          class: 'mr-3 hover:text-enroute-blue open_search_panel',
           id: 'open_search_panel',
           'x-on:click.prevent': "saveSearchPanel = ! saveSearchPanel"
         span.far.fa-save.fa-2x
       - if graph_panel == :button
         = button_tag t("searchs.actions.open_graph_panel"),
-            class: 'mr-5 hover:text-enroute-blue open_graph_panel',
+            class: 'mr-3 hover:text-enroute-blue open_graph_panel',
             id: 'open_graph_panel',
             'x-on:click.prevent': "graphPanel = ! graphPanel"
           span.far.fa-chart-bar.fa-2x
@@ -50,7 +50,7 @@
         = f.input :display_percent, as: :boolean, boolean_style: :inline, wrapper_html: {class: "flex items-center py-3 px-6 border-white border-l"}, input_html: {class: "cursor-pointer"}, wrapper: :horizontal_boolean_tailwind
         = f.input :chart_type, wrapper_html: {class: "border-l"}
 
-  .flex.flex-col.justify-center.items-center.actions.ml-auto.py-3.w-80.border-white.border-t.border-l.h-max
+  .flex.flex-col.justify-center.items-center.actions.ml-auto.w-56.border-white.border-t.border-l.h-max
     .flex.items-center.mb-3.ml-8
       = f.label :per_page, class: 'control-label'
       = f.input :per_page, as: :select, collection: [ 30, 50, 100 ], include_blank: false, label: false, width: 2, wrapper_html: {class: "border-none"}

@@ -1075,9 +1075,14 @@ RSpec.describe Export::NetexGeneric do
 
     let(:context) do
       Chouette.create do
-        stop_area :parent_stop_place, area_type: 'zdlp'
-        stop_area :quay, parent: :parent_stop_place
-        3.times { stop_point }
+        stop_area :parent_stop_place, area_type: 'zdlp', name: 'Parent'
+        stop_area :quay, parent: :parent_stop_place, name: 'Quay'
+        referential do
+          route with_stops: false do
+            stop_point stop_area: :parent_stop_place
+            stop_point stop_area: :quay
+          end
+        end
       end
     end
 
@@ -1089,6 +1094,35 @@ RSpec.describe Export::NetexGeneric do
         expect(target.resources.find do |e|
                  e.longitude == sp.stop_area.longitude && e.latitude == sp.stop_area.latitude
                end).to be_truthy
+      end
+    end
+
+    context 'when parent is created before child' do
+      it 'processes stop areas in correct order' do
+        part.perform
+        expect(target.resources.map(&:name)).to eq(['Quay', 'Parent'])
+      end
+    end
+
+    context 'when child is created before parent' do
+      let(:context) do
+        Chouette.create do
+          stop_area :quay, name: 'Quay'
+          stop_area :parent_stop_place, area_type: 'zdlp', name: 'Parent'
+          referential do
+            route with_stops: false do
+              stop_point stop_area: :parent_stop_place
+              stop_point stop_area: :quay
+            end
+          end
+        end.tap do |context|
+          context.stop_area(:quay).update(parent: context.stop_area(:parent_stop_place))
+        end
+      end
+
+      it 'processes stop areas in correct order' do
+        part.perform
+        expect(target.resources.map(&:name)).to eq(['Quay', 'Parent'])
       end
     end
 

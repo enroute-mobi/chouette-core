@@ -57,7 +57,7 @@ class Export::Gtfs < Export::Base
     # FIXME
     @target = GTFS::Target.new(File.join(directory, "#{zip_file_name}.zip"))
 
-    Companies.new(self).export_part
+    Companies.new(self).perform
 
     StopAreas.new(self).perform
 
@@ -99,7 +99,7 @@ class Export::Gtfs < Export::Base
 
   def export_companies_to(target)
     @target = target
-    Companies.new(self).export_part
+    Companies.new(self).perform
   end
 
   alias ignore_parent_stop_places? ignore_parent_stop_places
@@ -667,97 +667,43 @@ class Export::Gtfs < Export::Base
     end
   end
 
-  class Companies < LegacyPart
+  class Companies < Part
 
-    delegate :vehicle_journeys, to: :export_scope
+    delegate :companies, :referenced_companies, :lines, to: :export_scope
 
-    def company_ids
-      ids = Set.new
-      # OPTIMIZEME pluck is great bu can consume a lot of memory for very large Vehicle Journey collection
-      vehicle_journeys.left_joins(route: :line).pluck("vehicle_journeys.id", "lines.company_id").each do |vehicle_journey_id, line_company_id|
-        company_id = line_company_id.presence || DEFAULT_AGENCY_ID
-
-        if prefer_referent_company && (referent = referents[company_id]).present?
-          company_id = referent.id
-        end
-
-        ids << company_id
-      end
-      ids
-    end
-
-    def referents
-      @referents ||= export_scope.companies.includes(:referent).where.not(referent: nil).map { |company| [ company.id, company.referent ] }.to_h
-    end
-
-    def companies
-      @companies ||= referential.companies.where(id: company_ids-[DEFAULT_AGENCY_ID])
-    end
-
-    def handle_referent(company, duplicated_registration_numbers)
-      decorated_company = Decorator.new(company, duplicated_registration_numbers)
-
-      index.register_agency_id(decorated_company, decorated_company.agency_id)
-
-      return decorated_company unless prefer_referent_company
-
-      company.particulars.each do |particular_company|
-        index.register_agency_id(particular_company, decorated_company.agency_id)
+    def perform
+      referenced_companies.pluck(:id, :referent_id).each do |model_id, referent_id|
+        code_provider.companies.alias(model_id, as: referent_id)
       end
 
-      decorated_company
-    end
+      companies.find_each do |company|
+        decorated_company = decorate company
 
-    def create_message(decorated_company)
-      if decorated_company.time_zone.blank?
-        messages.create({
-          criticity: :info,
-          message_key: :no_timezone,
-          message_attributes: {
-            company_name: decorated_company.name
-          }
-        })
+        create_messages decorated_company unless decorated_company.valid?
+        target.agencies << decorated_company.gtfs_attributes
+      end
+
+      if lines.without_company.exists?
+        target.agencies << default_agency
       end
     end
 
-    def export!
-      companies.includes(:particulars).order("name").find_each do |company|
-        decorated_company = handle_referent(company, duplicated_registration_numbers)
-
-        create_message decorated_company
-        target.agencies << decorated_company.agency_attributes
-      end
-
-      if company_ids.include? DEFAULT_AGENCY_ID
-        target.agencies << {
-          id: DEFAULT_AGENCY_ID,
-          name: "Default Agency",
-          timezone: DEFAULT_TIMEZONE,
-        }
-      end
+    def default_agency
+      {
+        id: DEFAULT_AGENCY_ID,
+        name: "Default Agency",
+        timezone: DEFAULT_TIMEZONE
+      }
     end
 
-    class Decorator < SimpleDelegator
-
-      # index is optional to make tests easier
-      def initialize(company, duplicated_registration_numbers = [])
-        super company
-        @duplicated_registration_numbers = duplicated_registration_numbers
-      end
-
-      attr_reader :index, :duplicated_registration_numbers
-
-      def agency_id
-        @agency_id ||= registration_number && duplicated_registration_numbers.exclude?(registration_number) ? registration_number : objectid
-      end
+    class Decorator < ModelDecorator
 
       def timezone
         time_zone.presence || DEFAULT_TIMEZONE
       end
 
-      def agency_attributes
-        {
-          id: agency_id,
+      def gtfs_attributes
+        super.merge(
           name: name,
           url: default_contact_url,
           timezone: timezone,
@@ -765,7 +711,11 @@ class Export::Gtfs < Export::Base
           email: default_contact_email,
           lang: default_language,
           fare_url: fare_url
-        }
+        )
+      end
+
+      def validate
+        messages.add :no_timezone if time_zone.blank?
       end
     end
 

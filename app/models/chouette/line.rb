@@ -117,6 +117,8 @@ module Chouette
                                  where('deactivated = ? OR (active_from IS NOT NULL AND active_from >= ?) OR (active_until IS NOT NULL AND active_until < ?)', true, to, from)
                                }
 
+    scope :without_company, -> { left_joins(:company).where "companies.id" => nil }
+
     def self.nullable_attributes
       %i[registration_number published_name number comment url color text_color]
     end

@@ -190,6 +190,14 @@ RSpec.describe Export::Gtfs::Lines::Decorator do
       before { allow(decorator).to receive(:default_agency?).and_return(true) }
 
       it { expect { subject }.to change(decorator, :messages).from(be_empty).to(be_one) }
+
+      describe 'the message' do
+        subject { decorator.messages.first }
+
+        before { decorator.validate }
+
+        it { is_expected.to have_attributes(message_key: :no_company) }
+      end
     end
   end
 end

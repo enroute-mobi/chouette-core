@@ -524,8 +524,8 @@ module Chouette
     end
 
     def self.union(relation1, relation2)
-      union_query = "select id from ((#{relation1.select(:id).to_sql}) UNION (#{relation2.select(:id).to_sql})) stop_area_ids"
-      where "stop_areas.id IN (#{union_query})"
+      union_query = "select id from ((#{relation1.select(:id).to_sql}) UNION ALL (#{relation2.select(:id).to_sql})) stop_area_ids"
+      unscoped.where "stop_areas.id IN (#{union_query})"
     end
 
     # Find parents associated to the current Stop Areas
@@ -547,7 +547,7 @@ module Chouette
 
     # Returns scoped Stop Areas and their parents
     def self.self_and_parents
-      self.or(parent_stop_areas)
+      union self, parent_stop_areas
     end
 
     def formatted_area_type

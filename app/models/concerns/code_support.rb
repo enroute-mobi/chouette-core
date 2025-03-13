@@ -4,7 +4,17 @@ module CodeSupport
   extend ActiveSupport::Concern
 
   included do
-    has_many :codes, as: :resource, dependent: :delete_all
+    has_many :codes, as: :resource, dependent: :delete_all do
+      def code_values(code_space)
+        return [] unless code_space
+
+        if loaded?
+          select { |code| code.code_space == code_space }.map(&:value)
+        else
+          where(code_space: code_space).pluck(&:value)
+        end
+      end
+    end
     accepts_nested_attributes_for :codes, allow_destroy: true, reject_if: :all_blank
     validates_associated :codes
 

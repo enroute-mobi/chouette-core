@@ -59,7 +59,7 @@ class Export::Gtfs < Export::Base
 
     Companies.new(self).export_part
 
-    StopAreas.new(self).export_part
+    StopAreas.new(self).perform
 
     Lines.new(self).export_part
 
@@ -511,6 +511,28 @@ class Export::Gtfs < Export::Base
     end
   end
 
+  class Part < Export::Part
+    delegate :index, to: :export
+
+    def decorator_attributes
+      {
+        index: index
+      }
+    end
+  end
+
+  class ModelDecorator < Export::Decorator
+    alias gtfs_identifier model_code
+
+    attr_accessor :index
+
+    def gtfs_attributes
+      {
+        id: gtfs_identifier
+      }
+    end
+  end
+
   class LegacyPart
 
     attr_reader :export
@@ -558,83 +580,49 @@ class Export::Gtfs < Export::Base
     end
   end
 
-  class StopAreas < LegacyPart
+  class StopAreas < Part
 
-    def stop_areas
-      export.exported_stop_areas
-    end
+    delegate :stop_areas, :referenced_stop_areas, to: :export_scope
+    delegate :public_code_space, to: :export
 
-    def export!
-      stop_areas.includes(:referent, :parent, :codes, fare_zones: :codes).order("parent_id NULLS first").each_instance do |stop_area|
-        decorated_stop_area = handle_referent(stop_area)
-        next if index.has_stop_id? decorated_stop_area
+    def perform
+      referenced_stop_areas.pluck(:id, :referent_id).each do |model_id, referent_id|
+        code_provider.stop_areas.alias(model_id, as: referent_id)
 
-        target.stops << decorated_stop_area.stop_attributes
-        index.register_stop_id decorated_stop_area, decorated_stop_area.stop_id
+        index.register_stop_id stop_area, code_provider.stop_areas.code(referent_id)
+      end
+
+      stop_areas.includes(:referent, :parent, :codes, :fare_zones).order('parent_id NULLS first').each_instance do |stop_area|
+        decorated_stop_area = decorate(stop_area, public_code_space: public_code_space)
+        target.stops << decorated_stop_area.gtfs_attributes
+
+        # TODO: remove this legacy part
+        index.register_stop_id decorated_stop_area, decorated_stop_area.model_code
       end
     end
 
-    def handle_referent stop_area
-      unless prefer_referent_stop_area && stop_area.referent
-        return Decorator.new(stop_area, index, public_code_space, duplicated_registration_numbers, code_space)
+    class Decorator < ModelDecorator
+
+      attr_accessor :public_code_space
+
+      def gtfs_zone_id
+        code_provider.code(default_fare_zone)
       end
 
-      decorated_referent = Decorator.new(stop_area.referent, index, public_code_space,
-                                         duplicated_registration_numbers, code_space)
-      index.register_stop_id(stop_area, decorated_referent.stop_id)
-      return decorated_referent
-    end
-
-    class Decorator < SimpleDelegator
-
-      # index is optional to make tests easier
-      def initialize(stop_area, index = nil, public_code_space = "", duplicated_registration_numbers = [], code_space = nil)
-        super stop_area
-        @index = index
-        @public_code_space = public_code_space
-        @duplicated_registration_numbers = duplicated_registration_numbers
-        @code_space = code_space
-      end
-
-      attr_reader :index, :public_code_space, :duplicated_registration_numbers, :code_space
-
-      def zone_id
-        code_value || fare_zone&.uuid
-      end
-
-      def code_value
-        return unless fare_zone_codes
-
-        fare_zone_codes.find { |code| code.code_space && code.code_space == code_space }&.value
-      end
-
-      def fare_zone_codes
-        fare_zone&.codes
-      end
-
-      def fare_zone
+      def default_fare_zone
         @fare_zone ||= fare_zones&.first
       end
 
-      def stop_id
-        if registration_number.present? &&
-           duplicated_registration_numbers.exclude?(registration_number)
-          registration_number
-        else
-          objectid
-        end
-      end
-
-      def parent_station
-        return unless parent_id
-
-        parent_stop_id = index&.stop_id(parent_id)
-        Rails.logger.warn "Can't find parent stop_id in index for StopArea #{stop_id}" unless parent_stop_id
-        parent_stop_id
+      def gtfs_parent_station
+        code_provider.stop_areas.code parent_id
       end
 
       def gtfs_platform_code
         public_code.presence
+      end
+
+      def gtfs_stop_code
+        codes.code_values(public_code_space).first
       end
 
       def gtfs_wheelchair_boarding
@@ -648,26 +636,35 @@ class Export::Gtfs < Export::Base
         end
       end
 
-      def stop_attributes
-        {
-          id: stop_id,
-          code: codes.find_by(code_space: public_code_space)&.value,
+      def gtfs_location_type
+        quay? ? 0 : 1
+      end
+
+      def has_parent_station?
+        quay? && parent_id.present?
+      end
+
+      def gtfs_timezone
+        time_zone unless has_parent_station?
+      end
+
+      def gtfs_attributes
+        super.merge(
           name: name,
-          location_type: area_type == 'zdep' ? 0 : 1,
-          parent_station: parent_station,
+          code: gtfs_stop_code,
+          location_type: gtfs_location_type,
+          parent_station: gtfs_parent_station,
           lat: latitude,
           lon: longitude,
           desc: comment,
           url: url,
-          timezone: (time_zone unless parent),
+          timezone: gtfs_timezone,
           wheelchair_boarding: gtfs_wheelchair_boarding,
           platform_code: gtfs_platform_code,
-          zone_id: zone_id
-        }
+          zone_id: gtfs_zone_id
+        )
       end
-
     end
-
   end
 
   class Companies < LegacyPart

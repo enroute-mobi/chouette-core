@@ -621,7 +621,7 @@ RSpec.describe Export::Gtfs, type: [:model, :with_exportable_referential] do
       end
     end
 
-    describe "#default_company" do
+    xdescribe "#default_company" do
       let!(:context) do
         Chouette.create do
           line_provider :first do

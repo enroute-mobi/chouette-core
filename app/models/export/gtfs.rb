@@ -671,39 +671,19 @@ class Export::Gtfs < Export::Base
 
     delegate :vehicle_journeys, to: :export_scope
 
-    def vehicle_journey_count_by_company
-      @vehicle_journey_count_by_company ||= Hash.new { |h,k| h[k] = 0 }
-    end
-
     def company_ids
       ids = Set.new
       # OPTIMIZEME pluck is great bu can consume a lot of memory for very large Vehicle Journey collection
-      vehicle_journeys.left_joins(route: { line: :company }).
-        pluck("vehicle_journeys.id", "companies.id", "companies.time_zone").
-        each do |vehicle_journey_id, line_company_id, company_time_zone|
-
+      vehicle_journeys.left_joins(route: :line).pluck("vehicle_journeys.id", "lines.company_id").each do |vehicle_journey_id, line_company_id|
         company_id = line_company_id.presence || DEFAULT_AGENCY_ID
-        time_zone = company_time_zone
 
         if prefer_referent_company && (referent = referents[company_id]).present?
           company_id = referent.id
-          time_zone = referent.time_zone
         end
 
-        vehicle_journey_count_by_company[company_id] += 1
-
         ids << company_id
-        index.register_vehicle_journey_time_zone vehicle_journey_id, time_zone if time_zone
       end
       ids
-    end
-
-    def most_used_company_id
-      vehicle_journey_count_by_company.max_by{|k,v| v}&.first
-    end
-
-    def default_company
-      referential.companies.find_by(id: most_used_company_id)
     end
 
     def referents
@@ -755,8 +735,6 @@ class Export::Gtfs < Export::Base
           timezone: DEFAULT_TIMEZONE,
         }
       end
-
-      index.default_company = default_company
     end
 
     class Decorator < SimpleDelegator
@@ -1074,14 +1052,39 @@ class Export::Gtfs < Export::Base
 
     delegate :vehicle_journeys, to: :export_scope
 
+    def vehicle_journey_count_by_company
+      @vehicle_journey_count_by_company ||= Hash.new { |h,k| h[k] = 0 }
+    end
+
+    def default_company
+      export_scope.companies.find_by(id: most_used_company_id)
+    end
+
+    def most_used_company_id
+      vehicle_journey_count_by_company.max_by{|k,v| v}&.first
+    end
+
     def export!
-      vehicle_journeys.includes(:time_tables, :journey_pattern, :accessibility_assessment, :codes, route: :line).find_each do |vehicle_journey|
+      vehicle_journeys.includes(:time_tables, :journey_pattern, :accessibility_assessment, :codes, route: {line: :company}).find_each do |vehicle_journey|
         decorated_vehicle_journey = Decorator.new(
           vehicle_journey,
           index: index,
           code_provider: code_spaces.vehicle_journeys,
           bikes_allowed_resolver: bikes_allowed_resolver
         )
+
+        company = vehicle_journey.line.company
+        if company
+          if prefer_referent_company && company.referent
+            company = company.referent
+          end
+
+          if company.time_zone
+            index.register_vehicle_journey_time_zone vehicle_journey.id, company.time_zone
+          end
+
+          vehicle_journey_count_by_company[company.id] += 1
+        end
 
         decorated_vehicle_journey.services.each do |service|
           trip_attributes = decorated_vehicle_journey.trip_attributes(service)
@@ -1093,6 +1096,8 @@ class Export::Gtfs < Export::Base
           index.register_pickup_type vehicle_journey, flexible_service
         end
       end
+
+      index.default_company = default_company
     end
 
     def bikes_allowed_resolver

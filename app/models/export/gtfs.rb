@@ -71,7 +71,7 @@ class Export::Gtfs < Export::Base
 
     # Export Trips
     TimeTables.new(self).perform
-    VehicleJourneys.new(self).export_part
+    VehicleJourneys.new(self).perform
 
     # Export stop_times.txt
     JourneyPatternDistances.new(self).export_part
@@ -973,12 +973,13 @@ class Export::Gtfs < Export::Base
   def export_vehicle_journeys_to(target)
     @target = target
     TimeTables.new(self).perform
-    VehicleJourneys.new(self).export!
+    VehicleJourneys.new(self).perform
   end
 
-  class VehicleJourneys < LegacyPart
+  class VehicleJourneys < Part
 
     delegate :vehicle_journeys, to: :export_scope
+    delegate :shape_referential, to: :export
 
     def vehicle_journey_count_by_company
       @vehicle_journey_count_by_company ||= Hash.new { |h,k| h[k] = 0 }
@@ -992,27 +993,15 @@ class Export::Gtfs < Export::Base
       vehicle_journey_count_by_company.max_by{|k,v| v}&.first
     end
 
-    def export!
-      vehicle_journeys.includes(:time_tables, :journey_pattern, :accessibility_assessment, :codes, route: {line: :company}).find_each do |vehicle_journey|
-        decorated_vehicle_journey = Decorator.new(
-          vehicle_journey,
-          index: index,
-          code_provider: code_spaces.vehicle_journeys,
-          bikes_allowed_resolver: bikes_allowed_resolver
-        )
+    def decorator_attributes
+      super.merge(
+        bikes_allowed_resolver: bikes_allowed_resolver
+      )
+    end
 
-        company = vehicle_journey.line.company
-        if company
-          if prefer_referent_company && company.referent
-            company = company.referent
-          end
-
-          if company.time_zone
-            index.register_vehicle_journey_time_zone vehicle_journey.id, company.time_zone
-          end
-
-          vehicle_journey_count_by_company[company.id] += 1
-        end
+    def perform
+      vehicle_journeys.includes(:time_tables, :journey_pattern, :accessibility_assessment, :codes, :route).find_each do |vehicle_journey|
+        decorated_vehicle_journey = decorate(vehicle_journey)
 
         decorated_vehicle_journey.services.each do |service|
           trip_attributes = decorated_vehicle_journey.trip_attributes(service)
@@ -1024,8 +1013,6 @@ class Export::Gtfs < Export::Base
           index.register_pickup_type vehicle_journey, flexible_service
         end
       end
-
-      index.default_company = default_company
     end
 
     def bikes_allowed_resolver
@@ -1090,18 +1077,9 @@ class Export::Gtfs < Export::Base
       end
     end
 
-    class Decorator < SimpleDelegator
+    class Decorator < ModelDecorator
 
-      # index is optional to make tests easier
-      def initialize(vehicle_journey, index: nil, code_provider: nil, bikes_allowed_resolver: nil)
-        super vehicle_journey
-        @index = index
-        @code_provider = code_provider
-        @bikes_allowed_resolver = bikes_allowed_resolver
-      end
-
-      attr_reader :index
-      attr_accessor :code_provider
+      attr_writer :bikes_allowed_resolver
 
       def bikes_allowed_resolver
         @bikes_allowed_resolver ||= BikesAllowedResolver.new
@@ -1119,13 +1097,7 @@ class Export::Gtfs < Export::Base
         end
       end
 
-      def base_trip_id
-        gtfs_code || objectid
-      end
-
-      def gtfs_code
-        code_provider.unique_code(self) if code_provider
-      end
+      alias base_trip_id model_code
 
       def services
         return [] unless index
@@ -1146,7 +1118,7 @@ class Export::Gtfs < Export::Base
       end
 
       def gtfs_shape_id
-        index.shape_id(journey_pattern&.shape_id)
+        code_provider.shapes.code journey_pattern&.shape_id
       end
 
       def gtfs_headsign

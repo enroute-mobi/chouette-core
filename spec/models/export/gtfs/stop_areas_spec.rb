@@ -86,7 +86,7 @@ RSpec.describe Export::Gtfs::StopAreas::Decorator do
     end
   end
 
-  describe 'gtfs_attributes' do
+  describe '#gtfs_attributes' do
     subject { decorator.gtfs_attributes }
 
     context "when gtfs_platform_code is 'dummy'" do

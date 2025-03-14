@@ -70,7 +70,7 @@ class Export::Gtfs < Export::Base
     Shapes.new(self).export_part
 
     # Export Trips
-    TimeTables.new(self).export_part
+    TimeTables.new(self).perform
     VehicleJourneys.new(self).export_part
 
     # Export stop_times.txt
@@ -824,13 +824,13 @@ class Export::Gtfs < Export::Base
     end
   end
 
-  class TimeTables < LegacyPart
+  class TimeTables < Part
 
     delegate :time_tables, to: :export_scope
 
-    def export!
+    def perform
       time_tables.includes(:periods, :dates).find_each do |time_table|
-        decorated_time_table = TimeTableDecorator.new(time_table, export_scope.validity_period)
+        decorated_time_table = decorate time_table
 
         decorated_time_table.calendars.each { |c| target.calendars << c }
         decorated_time_table.calendar_dates.each { |cd| target.calendar_dates << cd }
@@ -839,43 +839,21 @@ class Export::Gtfs < Export::Base
       end
     end
 
-    class TimeTableDecorator < SimpleDelegator
-      # index is optional to make tests easier
-      def initialize(time_table, export_date_range = nil)
-        super time_table
-        @export_date_range = export_date_range
-
+    class Decorator < ModelDecorator
+      def services_by_id
         @services_by_id ||= Hash.new { |h, service_id| h[service_id] = Service.new(service_id) }
       end
 
       def service(service_id)
-        @services_by_id[service_id]
+        services_by_id[service_id]
       end
 
       def services
-        @services_by_id.values
-      end
-
-      def periods
-        @periods ||= if @export_date_range.nil?
-          super
-        else
-          super.select { |p| p.range & @export_date_range }
-        end
-      end
-
-      def dates
-        @dates ||= if @export_date_range.nil?
-          super
-        else
-          super.select {|d| (d.in_out && @export_date_range.cover?(d.date)) || (!d.in_out && periods.select{|p| p.range.cover? d.date}.any?)}
-        end
+        services_by_id.values
       end
 
       def decorated_periods
-        @decorated_periods ||= periods.map do |period|
-          PeriodDecorator.new(period)
-        end
+        @decorated_periods ||= periods.map { |period| PeriodDecorator.new(period) }
       end
 
       def calendars
@@ -904,14 +882,14 @@ class Export::Gtfs < Export::Base
       end
 
       def default_service_id
-        objectid
+        model_code
       end
 
       def period_service_id(decorated_period)
         if first_period? decorated_period
           default_service_id
         else
-          decorated_period.calendar_service_id
+          [ default_service_id, decorated_period.calendar_service_id ].join('-')
         end
       end
 
@@ -994,7 +972,7 @@ class Export::Gtfs < Export::Base
   # For legacy specs
   def export_vehicle_journeys_to(target)
     @target = target
-    TimeTables.new(self).export!
+    TimeTables.new(self).perform
     VehicleJourneys.new(self).export!
   end
 

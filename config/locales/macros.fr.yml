@@ -59,7 +59,9 @@ fr:
       macro/define_route_name:
         one: Définir le nom de l'itinéraire
       macro/associate_stop_area_with_fare_zone:
-        one: Associer les arrêts avec les zones tarifaires 
+        one: Associer les arrêts avec les zones tarifaires
+      macro/create_codes_from_particulars:
+        one: Créer des codes à partir des Particuliers
     attributes:
       macro/base:
         name: Nom
@@ -100,6 +102,9 @@ fr:
         target_format: Format
       macro/associate_stop_area_with_fare_zone:
         target_attribute: Attribut
+      macro/create_codes_from_particulars:
+        particular_code_space_id: Espace de code du Particulier
+        referent_code_space_id: Espace de code du Référent
   simple_form:
     placeholders:
       macro_base:

@@ -622,7 +622,7 @@ class Export::Gtfs < Export::Base
       end
 
       def gtfs_stop_code
-        codes.code_values(public_code_space).first
+        codes.first { |code| code.code_space == public_code_space }&.value
       end
 
       def gtfs_wheelchair_boarding

@@ -10,20 +10,6 @@ module IconHelper
     Private.icon_join(icon, text, right_icon)
   end
 
-  def fa_stacked_icon(names = "flag", options = {})
-    classes = Private.icon_names("stack").concat(Array(options.delete(:class)))
-    base_names = Private.array_value(options.delete(:base) || "square-o").push("stack-2x")
-    names = Private.array_value(names).push("stack-1x")
-    base = fa_icon(base_names, options.delete(:base_options) || {})
-    icon = fa_icon(names, options.delete(:icon_options) || {})
-    icons = [base, icon]
-    icons.reverse! if options.delete(:reverse)
-    text = options.delete(:text)
-    right_icon = options.delete(:right)
-    stacked_icon = content_tag(:span, safe_join(icons), options.merge(:class => classes))
-    Private.icon_join(stacked_icon, text, right_icon)
-  end
-
   def boolean_icon val
     icon = val ? 'check' : 'times'
     txt = fa_icon(icon) + (val ? 'true'.t : 'false'.t)

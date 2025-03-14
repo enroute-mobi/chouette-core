@@ -118,7 +118,7 @@ gem 'rake'
 gem 'ros-apartment', require: 'apartment'
 gem 'aasm'
 gem 'puma', '>= 5.6.4'
-gem 'postgresql_cursor', '0.6.6' # See https://enroute.atlassian.net/browse/CHOUETTE-2938 for details
+gem 'postgresql_cursor'
 
 # CSS styled emails without the hassle.
 gem 'premailer-rails', '>= 1.11.1'
@@ -134,7 +134,7 @@ gem 'neptune', en_route: 'neptune'
 
 # Monitoring
 gem 'ddtrace'
-gem 'google-protobuf', '~> 3.0'
+gem 'google-protobuf'
 gem 'dogstatsd-ruby'
 gem 'prometheus-client'
 
@@ -176,7 +176,7 @@ group :test do
   gem 'webmock'
   gem 'shoulda-matchers'
   gem 'with_model'
-  gem 'factory_bot_rails', '~> 6.2.0' # Could not upgrade to another version without https://enroute.atlassian.net/browse/CHOUETTE-3190
+  gem 'factory_bot_rails'
   gem 'faker'
 
   gem 'teaspoon-jasmine', '>= 2.9.1'
@@ -194,7 +194,7 @@ group :test, :development do
   gem 'parallel_tests'
 
   gem 'letter_opener'
-  gem 'letter_opener_web', '~> 1.4', '>= 1.4.1'
+  gem 'letter_opener_web'
 
   gem 'dotenv-rails', '>= 2.7.6'
   gem 'bullet', '>= 7.1.6'

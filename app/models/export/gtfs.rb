@@ -500,7 +500,7 @@ class Export::Gtfs < Export::Base
       end
 
       def line_company_ids
-        lines.where.not(company_id: nil).distinct.pluck(:company_id)
+        dependencies_lines.where.not(company_id: nil).distinct.pluck(:company_id)
       end
 
       def vehicle_journey_company_ids

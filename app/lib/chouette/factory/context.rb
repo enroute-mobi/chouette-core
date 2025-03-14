@@ -110,10 +110,10 @@ module Chouette
         if name_or_value.is_a?(Symbol)
           name = name_or_value
           value = registry.find(name: name)
-          value || name_or_value
-        else
-          name_or_value
+          return value unless value.nil?
         end
+
+        name_or_value
       end
 
       def children

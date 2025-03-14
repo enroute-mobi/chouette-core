@@ -43,7 +43,7 @@ module ReferentSupport
     end
 
     def all_referents
-      unscoped.where(id: where.not(referent_id: nil).select(:referent_id).distinct)
+      unscoped.where(id: with_referent.select(:referent_id).distinct)
     end
 
     def self_and_referents

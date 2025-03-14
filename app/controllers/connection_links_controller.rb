@@ -41,7 +41,7 @@ class ConnectionLinksController < Chouette::StopAreaReferentialController
   end
 
   def collection
-    @q = parent.connection_links.search(params[:q])
+    @q = parent.connection_links.ransack(params[:q])
     @connection_links ||= if sort_column == 'departure'
       @q.result.joins('INNER JOIN public.stop_areas departures ON departures.id = connection_links.departure_id').order("departures.name #{sort_direction}").paginate(:page => params[:page])
     else

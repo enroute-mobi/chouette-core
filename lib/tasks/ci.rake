@@ -39,7 +39,7 @@ namespace :ci do
     unless ENV["CI_CHECKSECURITY_DISABLED"]
       command = "bundle exec bundle-audit check --update"
       ignoring_lapse = 1.month
-      if File.exists? '.bundle-audit-ignore'
+      if File.exist? '.bundle-audit-ignore'
         ignored = []
         File.open('.bundle-audit-ignore').each_line do |line|
           next unless line.present?

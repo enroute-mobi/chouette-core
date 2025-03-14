@@ -34,6 +34,22 @@ class Export::Base < ApplicationModel
 
   attr_accessor :cache_prefix
 
+  class Scope < SimpleDelegator
+    def initialize(export_scope, export:)
+      super export_scope
+
+      @export = export
+    end
+
+    attr_reader :export
+
+    delegate :stop_area_referential, :line_referential, :fare_referential, to: :export
+
+    def current_scope
+      __getobj__
+    end
+  end
+
   class CacheKeyProvider
     attr_accessor :cache_prefix, :code_provider
 

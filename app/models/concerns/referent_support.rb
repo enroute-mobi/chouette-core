@@ -9,6 +9,7 @@ module ReferentSupport
     scope :particulars, -> { where.not is_referent: true }
     scope :with_referent, -> { where.not referent: nil }
     scope :without_referent, -> { where referent: nil }
+    scope :referents_or_self, -> { unscoped.where(id: select('DISTINCT COALESCE(referent_id, id)')) }
 
     has_many :particulars, class_name: name, foreign_key: 'referent_id'
 
@@ -39,6 +40,14 @@ module ReferentSupport
     # DEPRECATED. Use referents scope
     def referent_only
       referents
+    end
+
+    def all_referents
+      unscoped.where(id: with_referent.select(:referent_id).distinct)
+    end
+
+    def self_and_referents
+      self.or(all_referents)
     end
   end
 end

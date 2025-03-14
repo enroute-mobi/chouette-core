@@ -7,9 +7,9 @@ RSpec.describe PublicationSetup, type: :model, use_chouette_factory: true do
   let!(:context) do
     Chouette.create do
       company :first_company
-      line_provider :first_lp
-
-      line :first, company: :first_company, line_provider: :first_lp
+      line_provider do
+        line :first, company: :first_company
+      end
       line :second
 
       referential lines: [:first, :second] do

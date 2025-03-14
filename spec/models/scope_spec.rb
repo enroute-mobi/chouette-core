@@ -1389,8 +1389,8 @@ RSpec.describe Scope::Referential do
             company :company, documents: %i[document_company]
             company :company_outside, documents: %i[document_outside]
 
-            line :line, company: :company, network: :network, documents: %i[document_line document_other_workbench]
-            line :line_outside, company: :company_outside, network: :network_outside, documents: %i[document_outside]
+            line :line, company: :company, documents: %i[document_line document_other_workbench]
+            line :line_outside, company: :company_outside, documents: %i[document_outside]
 
             stop_area :stop_area, documents: %i[document_stop_area]
             stop_area :stop_area_outside, documents: %i[document_outside]

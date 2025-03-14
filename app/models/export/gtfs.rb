@@ -14,7 +14,6 @@ class Export::Gtfs < Export::Base
   option :line_provider_ids, serialize: :map_ids
   option :prefer_referent_stop_area, required: true, default_value: false, enumerize: [true, false], serialize: ActiveModel::Type::Boolean
   option :prefer_referent_line, required: true, default_value: false, enumerize: [true, false], serialize: ActiveModel::Type::Boolean
-  option :ignore_single_stop_station, required: true, default_value: false, enumerize: [true, false], serialize: ActiveModel::Type::Boolean
   option :prefer_referent_company, required: true, default_value: false, enumerize: [true, false], serialize: ActiveModel::Type::Boolean
   option :ignore_parent_stop_places, required: true, default_value: false, enumerize: [true, false], serialize: ActiveModel::Type::Boolean
   option :ignore_extended_gtfs_route_types, required: true, default_value: false, enumerize: [true, false], serialize: ActiveModel::Type::Boolean
@@ -107,7 +106,7 @@ class Export::Gtfs < Export::Base
 
   def exported_stop_areas
     unless ignore_parent_stop_places?
-      parents = Chouette::StopArea.all_parents(export_scope.stop_areas.where(area_type: 'zdep'), ignore_mono_parent: ignore_single_stop_station)
+      parents = Chouette::StopArea.all_parents(export_scope.stop_areas.where(area_type: 'zdep'))
       Chouette::StopArea.union(export_scope.stop_areas, parents).where(kind: :commercial)
     else
       export_scope.stop_areas
@@ -366,6 +365,148 @@ class Export::Gtfs < Export::Base
       @shape_ids[shape_id]
     end
 
+  end
+
+  class Scope < Export::Base::Scope
+    concerning :StopAreas do
+      def stop_areas
+        @stop_areas ||=
+          if prefer_referent_stop_areas?
+            scoped_stop_areas.referents_or_self
+          else
+            scoped_stop_areas
+          end
+      end
+
+      def ignore_parent_stop_places?
+        export.ignore_parent_stop_places
+      end
+
+      def prefer_referent_stop_areas?
+        export.prefer_referent_stop_area
+      end
+
+      def referenced_stop_areas
+        return Chouette::StopArea.none unless prefer_referent_stop_areas?
+
+        scoped_stop_areas.particulars.with_referent
+      end
+
+      def dependencies_stop_areas
+        @dependencies_stop_areas ||=
+          if prefer_referent_stop_areas?
+            scoped_stop_areas.self_and_referents
+          else
+            scoped_stop_areas
+          end
+      end
+
+      def entrances
+        stop_area_referential.entrances.where(stop_area: dependencies_stop_areas)
+      end
+
+      def connection_links
+        stop_area_referential.connection_links.where(departure: dependencies_stop_areas, arrival: dependencies_stop_areas)
+      end
+
+      def scoped_stop_areas
+        if ignore_parent_stop_places?
+          current_scope.stop_areas
+        else
+          current_scope.stop_areas.self_and_parents
+        end
+      end
+    end
+
+    concerning :Lines do
+      def lines
+        if prefer_referent_lines?
+          scoped_lines.referents_or_self
+        else
+          scoped_lines
+        end
+      end
+
+      def prefer_referent_lines?
+        export.prefer_referent_line
+      end
+
+      def referenced_lines
+        return Chouette::Line.none unless prefer_referent_lines?
+
+        scoped_lines.particulars.with_referent
+      end
+
+      def dependencies_lines
+        @dependencies_lines ||=
+          if prefer_referent_lines?
+            scoped_lines.self_and_referents
+          else
+            scoped_lines
+          end
+      end
+
+      def scoped_lines
+        current_scope.lines
+      end
+
+      def contracts
+        line_referential.contracts.with_lines(dependencies_lines)
+      end
+    end
+
+    concerning :Companies do
+      def companies
+        if prefer_referent_companies?
+          scoped_companies.referents_or_self
+        else
+          scoped_companies
+        end
+      end
+
+      def prefer_referent_companies?
+        export.prefer_referent_company
+      end
+
+      def referenced_companies
+        return Chouette::Company.none unless prefer_referent_companies?
+
+        scoped_companies.particulars.with_referent
+      end
+
+      def dependencies_companies
+        @dependencies_companies ||=
+          if prefer_referent_companies?
+            scoped_companies.self_and_referents
+          else
+            scoped_companies
+          end
+      end
+
+      def fare_products
+        fare_referential.fare_products.where(company: dependencies_companies)
+      end
+
+      def fare_validities
+        fare_referential.fare_validities.by_products(fare_products)
+      end
+
+      def scoped_companies
+        line_referential.companies.where(id: company_ids)
+      end
+
+      def company_ids
+        @company_ids ||= (line_company_ids + vehicle_journey_company_ids).uniq
+      end
+
+      def line_company_ids
+        dependencies_lines.where.not(company_id: nil).distinct.pluck(:company_id)
+      end
+
+      def vehicle_journey_company_ids
+        current_scope.vehicle_journeys.where.not(company_id: nil).distinct.pluck(:company_id)
+      end
+    end
   end
 
   class Part

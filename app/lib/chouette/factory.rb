@@ -86,9 +86,6 @@ module Chouette
               unless new_instance.export_options.key?(:prefer_referent_stop_area)
                 new_instance.export_options[:prefer_referent_stop_area] = false
               end
-              unless new_instance.export_options.key?(:ignore_single_stop_station)
-                new_instance.export_options[:ignore_single_stop_station] = false
-              end
             end
           end
 

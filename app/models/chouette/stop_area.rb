@@ -533,19 +533,21 @@ module Chouette
     #   stop_areas.where(...).parent_stop_areas
     #
     # NB: Can be used with by_text scope
-    def self.parent_stop_areas(scope: Chouette::StopArea)
+    def self.parent_stop_areas(scope: unscoped)
       scope.where(id: select(:parent_id).distinct)
     end
 
+    # DEPRECATED
     # NB: Can't be used with by_text scope because of distinct usage
-    def self.all_parents(relation, ignore_mono_parent: false)
+    def self.all_parents(relation)
       stop_area_parents = joins('JOIN "public"."stop_areas" children on "public"."stop_areas"."id" = children.parent_id').where("children.id" => relation)
 
-      if ignore_mono_parent
-        stop_area_parents = stop_area_parents.group(:id).having('count(children.id) > 1')
-      end
-
       stop_area_parents.distinct
+    end
+
+    # Returns scoped Stop Areas and their parents
+    def self.self_and_parents
+      self.or(parent_stop_areas)
     end
 
     def formatted_area_type

@@ -70,20 +70,7 @@ class Export::NetexGeneric < Export::Base
 
   delegate :stop_area_referential, :line_referential, to: :workgroup
 
-  class Scope < SimpleDelegator
-    def initialize(export_scope, export:)
-      super export_scope
-
-      @export = export
-    end
-
-    attr_reader :export
-    delegate :stop_area_referential, :line_referential, to: :export
-
-    def current_scope
-      __getobj__
-    end
-
+  class Scope < Export::Base::Scope
     def stop_areas
       @stop_areas ||=
         ::Query::StopArea.new(stop_area_referential.stop_areas).

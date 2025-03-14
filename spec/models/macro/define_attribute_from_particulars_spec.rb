@@ -250,7 +250,7 @@ RSpec.describe Macro::DefineAttributeFromParticulars::Run do
       Chouette.create do
         stop_area :referent1, is_referent: true
         stop_area :referent2, is_referent: true
-        stop_area :particular, referent: :referent
+        stop_area :particular, referent: :referent1
       end
     end
 

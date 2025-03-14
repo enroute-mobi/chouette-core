@@ -417,7 +417,7 @@ RSpec.describe Export::Gtfs::Scope do
         end
       end
 
-      before { allow(scope).to receive(:lines).and_return(scoped_lines) }
+      before { allow(scope).to receive(:dependencies_lines).and_return(scoped_lines) }
 
       let(:scoped_lines) { context.line_referential.lines.where.not(id: unscoped_line) }
       let(:unscoped_line) { context.line :unscoped }

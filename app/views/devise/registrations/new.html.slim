@@ -12,7 +12,7 @@
     .signup.flex.flex-col.justify-center.col-span-1.px-6
       .panel.panel-default
         .panel-heading
-          .panel-title= t('.sign_up')
+          = t('.sign_up')
         .panel-body
           = simple_form_for(@subscription, url: [@subscription], html: { class: "form-horizontal registration_new" } ) do |form|
             = form.input :organisation_name, required: true

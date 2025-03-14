@@ -12,7 +12,7 @@
     .login.flex.flex-col.justify-center.col-span-1.px-6
       .panel.panel-default
         .panel-heading
-          .panel-title= t('.sign_in')
+          = t('.sign_in')
         .panel-body
           - user = resource.is_a?(User) ? resource : User.new
           = simple_form_for(user, :as => :user, :url => session_path(:user), html: { :class => 'form-horizontal session_new' } ) do |form|

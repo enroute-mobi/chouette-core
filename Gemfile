@@ -73,7 +73,6 @@ gem 'mimemagic', '>= 0.4.3'
 # User interface
 gem 'bootstrap-sass', '3.4.1'
 gem 'language_engine', en_route: 'language_engine'
-gem 'calendar_helper', '0.2.5'
 gem 'cocoon'
 gem 'slim-rails', '>= 3.3.0'
 gem 'simple_form', '~> 5.1.0'

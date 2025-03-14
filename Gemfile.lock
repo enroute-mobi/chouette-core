@@ -200,8 +200,6 @@ GEM
       bundler (>= 1.2.0, < 3)
       thor (~> 1.0)
     byebug (11.1.3)
-    calendar_helper (0.2.5)
-      open4
     capybara (3.39.2)
       addressable
       matrix
@@ -569,7 +567,6 @@ GEM
       version_gem (~> 1.1)
     observer (0.1.2)
     offline-sort (0.2.0)
-    open4 (1.3.4)
     orm_adapter (0.5.0)
     os (1.1.4)
     ox (2.14.22)
@@ -911,7 +908,6 @@ DEPENDENCIES
   bullet (>= 7.1.6)
   bundler-audit
   byebug
-  calendar_helper (= 0.2.5)
   capybara
   carrierwave (~> 1.3.2)
   carrierwave-google-storage!

@@ -163,16 +163,19 @@ RSpec.describe Chouette::StopArea do
       Chouette.create do
         stop_area :parent, name: 'Parent', area_type: Chouette::AreaType::STOP_PLACE
         stop_area :child, name: 'Child', parent: :parent
+        stop_area :other, name: 'Other'
       end
     end
 
     let(:child) { context.stop_area :child }
     let(:parent) { context.stop_area :parent }
+    let(:other) { context.stop_area :other }
 
     let(:scope) { Chouette::StopArea.where(id: child) }
 
     it { is_expected.to include(child) }
     it { is_expected.to include(parent) }
+    it { is_expected.to_not include(other) }
   end
 end
 

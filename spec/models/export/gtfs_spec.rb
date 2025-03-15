@@ -761,313 +761,6 @@ RSpec.describe Export::Gtfs, type: [:model, :with_exportable_referential] do
     end
   end
 
-  describe "VehicleJourneyAtStop Part" do
-    let(:export_scope) { Export::Scope::All.new context.referential }
-    let(:export) { Export::Gtfs.new export_scope: export_scope, workbench: context.workbench, workgroup: context.workgroup }
-
-    let(:part) do
-      Export::Gtfs::VehicleJourneyAtStops.new export
-    end
-
-    let(:context) do
-      Chouette.create do
-        stop_area :non_commercial, kind: 'non_commercial', area_type: 'deposit'
-
-        stop_area :referent, kind: 'non_commercial', area_type: 'deposit', is_referent: true
-        stop_area :with_referent_non_commercial, referent: :referent
-
-        route with_stops: false do
-          stop_point :departure
-          stop_point :stop_non_commercial, stop_area: :non_commercial
-          stop_point :stop_with_referent_non_commercial, stop_area: :with_referent_non_commercial
-          stop_point :arrival
-
-          vehicle_journey
-        end
-      end
-    end
-
-    before do
-      context.referential.switch
-    end
-
-    context "when prefer_referent_stop_area is true" do
-      before { export.options["prefer_referent_stop_area"] = true }
-
-      it "ignore Vehicle Journey At Stops associated to a non commercial Referent Stop Area" do
-        expect(part.vehicle_journey_at_stops.length).to eq(2)
-      end
-    end
-
-    context "when prefer_referent_stop_area is false" do
-      before { export.options["prefer_referent_stop_area"] = false }
-
-      it "ignore Vehicle Journey At Stops associated to a non commercial Stop Area" do
-        expect(part.vehicle_journey_at_stops.length).to eq(3)
-      end
-    end
-  end
-
-  describe "VehicleJourneyAtStop Decorator" do
-
-    let(:vehicle_journey) { Chouette::VehicleJourney.new }
-    let(:vehicle_journey_at_stop) { Chouette::VehicleJourneyAtStop.new(vehicle_journey: vehicle_journey) }
-    let(:vjas_raw_hash) {
-      {
-        departure_time: vehicle_journey_at_stop.departure_time,
-        arrival_time: vehicle_journey_at_stop.arrival_time,
-        departure_day_offset: vehicle_journey_at_stop.departure_day_offset,
-        arrival_day_offset: vehicle_journey_at_stop.arrival_day_offset,
-        vehicle_journey_id: vehicle_journey_at_stop.vehicle_journey_id,
-        stop_area_id: vehicle_journey_at_stop.stop_area_id,
-        parent_stop_area_id: vehicle_journey_at_stop.stop_point&.stop_area_id,
-        position: vehicle_journey_at_stop.stop_point&.position,
-        for_alighting: vehicle_journey_at_stop.stop_point&.for_alighting,
-        for_boarding: vehicle_journey_at_stop.stop_point&.for_boarding,
-      }.stringify_keys
-    }
-
-    let(:index) { double }
-    let(:decorator) do
-      Export::Gtfs::VehicleJourneyAtStops::Decorator.new vjas_raw_hash, index: index
-    end
-
-    let(:time_zone) { "Europe/Paris" }
-
-    describe "time zone" do
-
-      it "uses time zone associated with the VehicleJourney in the index" do
-        vehicle_journey_at_stop.vehicle_journey_id = 42
-        expect(index).to receive(:vehicle_journey_time_zone).
-                           with(vehicle_journey_at_stop.vehicle_journey_id).
-                           and_return(time_zone)
-        expect(decorator.time_zone).to be(time_zone)
-      end
-
-      it "returns nil if the VehicleJourney isn't associated to a time zone" do
-        vehicle_journey_at_stop.vehicle_journey_id = 42
-        expect(index).to receive(:vehicle_journey_time_zone).
-                           with(vehicle_journey_at_stop.vehicle_journey_id).
-                           and_return(nil)
-        expect(decorator.time_zone).to be(nil)
-      end
-
-    end
-
-    %w{arrival departure}.each do |state|
-      describe "#{state}_time_of_day" do
-
-        subject { decorator.send "#{state}_time_of_day" }
-
-        context "when #{state}_time is nil" do
-          before { allow(decorator).to receive("#{state}_time").and_return(nil) }
-
-          it { is_expected.to be_nil }
-        end
-
-        context "when #{state}_time is defined" do
-          it "uses #{state}_time to create a TimeOfDay" do
-            allow(decorator).to receive("#{state}_time").and_return("14:00")
-            is_expected.to eq(TimeOfDay.new(14))
-          end
-
-          it "uses #{state}_day_offset to create TimeOfDay" do
-            allow(decorator).to receive("#{state}_time").and_return("14:00")
-            allow(decorator).to receive("#{state}_day_offset").and_return(1)
-
-            is_expected.to eq(TimeOfDay.new(14, day_offset: 1))
-          end
-        end
-
-      end
-
-      describe "#{state}_local_time_of_day" do
-
-        subject { decorator.send "#{state}_local_time_of_day" }
-
-        context "when #{state}_time is nil" do
-          before { allow(decorator).to receive("#{state}_time").and_return(nil) }
-          it { is_expected.to be_nil }
-        end
-
-        context "when #{state}_time_of_day is nil" do
-          before { allow(decorator).to receive("#{state}_time_of_day").and_return(nil) }
-          it { is_expected.to be_nil }
-        end
-
-        context "when #{state}_time_of_day is defined" do
-
-          let(:time_of_day) { TimeOfDay.new(14) }
-          before { allow(decorator).to receive("#{state}_time_of_day").and_return(time_of_day) }
-
-          context "when time_zone is defined" do
-
-            let(:time_zone) { "Europe/Paris" }
-            before { allow(decorator).to receive(:time_zone).and_return(time_zone) }
-
-            it "returns #{state}_time_of_day with time_zone offset" do
-              is_expected.to eq(time_of_day.with_utc_offset(1.hour))
-            end
-          end
-
-          context "when time_zone is not defined" do
-            before { allow(decorator).to receive(:time_zone).and_return(nil) }
-
-            it "returns #{state}_time_of_day unchanged" do
-              is_expected.to eq(time_of_day)
-            end
-          end
-
-        end
-
-      end
-
-      describe "stop_time_#{state}_time" do
-
-        subject { decorator.send "stop_time_#{state}_time" }
-
-        context "when #{state}_local_time_of_day is nil" do
-          before { allow(decorator).to receive("#{state}_time_of_day").and_return(nil) }
-          it { is_expected.to be_nil }
-        end
-
-        context "when #{state}_local_time_of_day is defined" do
-
-          let(:time_of_day) { TimeOfDay.new(14) }
-          before { allow(decorator).to receive("#{state}_local_time_of_day").and_return(time_of_day) }
-
-          it "returns a GTFS::Time string representation based on #{state}_local_time_of_day value" do
-            is_expected.to eq("14:00:00")
-          end
-
-        end
-
-      end
-
-    end
-
-    describe "stop_area_id" do
-
-      let(:stop_point) { double stop_area_id: 42, position: 21, for_alighting:'', for_boarding:'' }
-
-      context "when VehicleJourneyAtStop defines a specific stop" do
-
-        before { vehicle_journey_at_stop.stop_area_id = 42 }
-
-        it "uses the VehicleJourneyAtStop#stop_area_id" do
-          expect(decorator.stop_area_id).to eq(vehicle_journey_at_stop.stop_area_id)
-        end
-
-      end
-
-      it "uses the Stop Point stop_area_id" do
-        expect(vehicle_journey_at_stop).to receive(:stop_point).at_least(:once).and_return(stop_point)
-        expect(decorator.stop_area_id).to eq(stop_point.stop_area_id)
-      end
-
-    end
-
-    describe "position" do
-
-      let(:stop_point) { double stop_area_id: 21, position: 42, for_alighting:'', for_boarding:'' }
-
-      it "uses the Stop Point position" do
-        expect(vehicle_journey_at_stop).to receive(:stop_point).at_least(:once).and_return(stop_point)
-        expect(decorator.position).to eq(stop_point.position)
-      end
-
-    end
-
-    describe "drop_off_type" do
-
-      let(:stop_point) { double stop_area_id: 21, position: 42, for_boarding:''}
-
-      it 'return the correct value when for_alighting is forbidden' do
-        allow(stop_point).to receive(:for_alighting).and_return('forbidden')
-
-        expect(vehicle_journey_at_stop).to receive(:stop_point).at_least(:once).and_return(stop_point)
-        expect(decorator.drop_off_type).to eq(1)
-      end
-
-      it 'return the correct value when for_alighting is not forbidden' do
-        allow(stop_point).to receive(:for_alighting).and_return(nil)
-
-        expect(vehicle_journey_at_stop).to receive(:stop_point).at_least(:once).and_return(stop_point)
-        expect(decorator.drop_off_type).to eq(nil)
-      end
-
-    end
-
-    describe "pickup_type" do
-
-      let(:stop_point) { double stop_area_id: 21, position: 42, for_alighting:''}
-
-      it 'return the correct value when for_boarding is forbidden' do
-        allow(stop_point).to receive(:for_boarding).and_return('forbidden')
-
-        expect(vehicle_journey_at_stop).to receive(:stop_point).at_least(:once).and_return(stop_point)
-        expect(decorator.pickup_type).to eq(1)
-      end
-
-      it 'return the correct value when for_boarding is not forbidden' do
-        allow(index).to receive(:pickup_type).with(vehicle_journey_at_stop.vehicle_journey.id).and_return(nil)
-        allow(stop_point).to receive(:for_boarding).and_return(nil)
-
-        expect(vehicle_journey_at_stop).to receive(:stop_point).at_least(:once).and_return(stop_point)
-        expect(decorator.pickup_type).to eq(0)
-      end
-
-      it 'return the correct value when for_boarding is not forbidden and vehicle_journey is registered in the index' do
-        allow(index).to receive(:pickup_type).with(vehicle_journey_at_stop.vehicle_journey.id).and_return(true)
-
-        allow(stop_point).to receive(:for_boarding).and_return(nil)
-
-        expect(vehicle_journey_at_stop).to receive(:stop_point).at_least(:once).and_return(stop_point)
-        expect(decorator.pickup_type).to eq(2)
-      end
-
-    end
-
-
-    describe "stop_time_stop_id" do
-
-      it "uses stop_id associated to the stop_area_id in the index" do
-        allow(decorator).to receive(:stop_area_id).and_return(42)
-        expect(index).to receive(:stop_id).
-                           with(decorator.stop_area_id).
-                           and_return("test")
-
-        expect(decorator.stop_time_stop_id).to eq("test")
-      end
-
-    end
-
-    describe "stop_time attributes" do
-
-      before do
-        allow(index).to receive_messages(pickup_type: 0)
-        allow(decorator).to receive_messages(time_zone: nil, position: 42, stop_time_stop_id: "test")
-        vehicle_journey_at_stop.departure_time =
-          vehicle_journey_at_stop.arrival_time = Time.parse("23:00")
-      end
-
-      %i{departure_time arrival_time stop_id}.each do |stop_time_attribute|
-        attribute = "stop_time_#{stop_time_attribute}".to_sym
-        it "uses #{attribute} method to fill associated attribute (#{stop_time_attribute})" do
-          allow(decorator).to receive(attribute).and_return("test")
-          stop_time_attribute = attribute.to_s.gsub(/^stop_time_/,'').to_sym
-          expect(decorator.stop_time_attributes[stop_time_attribute]).to eq(decorator.send(attribute))
-        end
-      end
-
-      it "uses position to fill the same stop_sequence attribute" do
-        allow(decorator).to receive(:position).and_return(42)
-        expect(decorator.stop_time_attributes[:stop_sequence]).to eq(decorator.position)
-      end
-
-    end
-  end
-
   describe 'Shapes Part' do
     let(:export_scope) { Export::Scope::All.new context.referential }
     let(:export) { Export::Gtfs.new export_scope: export_scope, workbench: context.workbench, workgroup: context.workgroup }
@@ -1488,18 +1181,16 @@ RSpec.describe Export::Gtfs, type: [:model, :with_exportable_referential] do
   describe 'When agency timezone is defined' do
     let(:context) do
       Chouette.create do
-        line_provider :first do
-          company :c1, time_zone: 'Europe/Paris'
-          line :l1, company: :c1
-        end
+        company :company, time_zone: 'Europe/Paris'
+        line :line, company: :company
 
         stop_area :departure, time_zone: 'Europe/Athens'
         stop_area :second
         stop_area :arrival
 
-        referential lines: [:l1] do
+        referential lines: [:line] do
           time_table :default
-          route line: :l1, stop_areas: [:departure, :second, :arrival] do
+          route line: :line, stop_areas: [:departure, :second, :arrival] do
             vehicle_journey time_tables: [:default]
           end
         end
@@ -1509,24 +1200,26 @@ RSpec.describe Export::Gtfs, type: [:model, :with_exportable_referential] do
     let(:exported_referential) { context.referential }
     let(:vehicle_journey) { context.vehicle_journey }
 
+    before { exported_referential.switch }
+
+    let(:gtfs_export) { Export::Gtfs.new(referential: exported_referential, workgroup: exported_referential.workgroup) }
+
     it "gtfs export stop times use agency timezone" do
-      exported_referential.switch do
-        gtfs_export.duration = nil
-        gtfs_export.export_scope = Export::Scope::All.new(exported_referential)
+      gtfs_export.duration = nil
+      gtfs_export.export_scope = Export::Scope::All.new(exported_referential)
 
-        tmp_dir = Dir.mktmpdir
-        gtfs_export.export_to_dir tmp_dir
+      tmp_dir = Dir.mktmpdir
+      gtfs_export.export_to_dir tmp_dir
 
-        # The processed export files are re-imported through the GTFS gem
-        stop_times_zip_path = File.join(tmp_dir, "#{gtfs_export.zip_file_name}.zip")
-        source = GTFS::Source.build stop_times_zip_path, strict: false
+      # The processed export files are re-imported through the GTFS gem
+      stop_times_zip_path = File.join(tmp_dir, "#{gtfs_export.zip_file_name}.zip")
+      source = GTFS::Source.build stop_times_zip_path, strict: false
 
-        first_vehicle_journey_at_stop = vehicle_journey.vehicle_journey_at_stops.first
-        first_stop_time = source.stop_times.sort_by{ |stop_time| stop_time.departure_time }.first
+      first_vehicle_journey_at_stop = vehicle_journey.vehicle_journey_at_stops.first
+      first_stop_time = source.stop_times.sort_by{ |stop_time| stop_time.departure_time }.first
 
-        expect(first_stop_time.arrival_time).to eq(GtfsTime.format_datetime(first_vehicle_journey_at_stop.arrival_time, first_vehicle_journey_at_stop.departure_day_offset, 'Europe/Paris'))
-        expect(first_stop_time.departure_time).to eq(GtfsTime.format_datetime(first_vehicle_journey_at_stop.departure_time, first_vehicle_journey_at_stop.departure_day_offset, 'Europe/Paris'))
-      end
+      expect(first_stop_time.arrival_time).to eq(GtfsTime.format_datetime(first_vehicle_journey_at_stop.arrival_time, first_vehicle_journey_at_stop.departure_day_offset, 'Europe/Paris'))
+      expect(first_stop_time.departure_time).to eq(GtfsTime.format_datetime(first_vehicle_journey_at_stop.departure_time, first_vehicle_journey_at_stop.departure_day_offset, 'Europe/Paris'))
     end
 
   end

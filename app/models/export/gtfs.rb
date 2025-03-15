@@ -75,10 +75,7 @@ class Export::Gtfs < Export::Base
 
     # Export stop_times.txt
     JourneyPatternDistances.new(self).export_part
-    filter_non_commercial = referential.stop_areas.non_commercial.exists?
-    ignore_time_zone = !legacy_export_scope.stop_areas.with_time_zone.exists?
-
-    VehicleJourneyAtStops.new(self, filter_non_commercial: filter_non_commercial, ignore_time_zone: ignore_time_zone).export_part
+    VehicleJourneyAtStops.new(self).perform
 
     VehicleJourneyCompany.new(self).export_part
     Contract.new(self).export_part
@@ -275,8 +272,6 @@ class Export::Gtfs < Export::Base
       @line_referents = {}
     end
 
-    attr_reader :default_company
-
     def register_journey_pattern_distance(journey_pattern_id, stop_point_id, value)
       @journey_pattern_distances[[journey_pattern_id, stop_point_id]] = value
     end
@@ -285,10 +280,6 @@ class Export::Gtfs < Export::Base
       return unless journey_pattern_id && stop_point_id
 
       @journey_pattern_distances[[journey_pattern_id, stop_point_id]]
-    end
-
-    def default_company=(value)
-      @default_company ||= value
     end
 
     def stop_id(stop_area_id)
@@ -578,6 +569,18 @@ class Export::Gtfs < Export::Base
           SortedSet.new(ActiveRecord::Base.connection.select_values(query))
         end
     end
+  end
+
+  def default_company
+    @default_company ||=
+      begin
+        company_id, _ = export_scope.lines.group(:company_id).order(count_all: :desc).count.first
+        line_referential.companies.find(company_id) if company_id
+      end
+  end
+
+  def default_timezone
+    @default_timezone ||= (default_company&.time_zone || DEFAULT_TIMEZONE)
   end
 
   class StopAreas < Part
@@ -981,18 +984,6 @@ class Export::Gtfs < Export::Base
     delegate :vehicle_journeys, to: :export_scope
     delegate :shape_referential, to: :export
 
-    def vehicle_journey_count_by_company
-      @vehicle_journey_count_by_company ||= Hash.new { |h,k| h[k] = 0 }
-    end
-
-    def default_company
-      export_scope.companies.find_by(id: most_used_company_id)
-    end
-
-    def most_used_company_id
-      vehicle_journey_count_by_company.max_by{|k,v| v}&.first
-    end
-
     def decorator_attributes
       super.merge(
         bikes_allowed_resolver: bikes_allowed_resolver
@@ -1216,45 +1207,28 @@ class Export::Gtfs < Export::Base
   # For legacy specs
   def export_vehicle_journey_at_stops_to(target)
     @target = target
-    VehicleJourneyAtStops.new(self).export!
+    VehicleJourneyAtStops.new(self).perform
   end
 
-  class VehicleJourneyAtStops < LegacyPart
+  class VehicleJourneyAtStops < Part
 
-    delegate :prefer_referent_stop_area, to: :export
-    attr_writer :filter_non_commercial, :ignore_time_zone
+    delegate :vehicle_journey_at_stops, to: :export_scope
+    delegate :default_timezone, to: :export
 
-    def filter_non_commercial?
-      # false ||= true -> true :-/
-      @filter_non_commercial = true if @filter_non_commercial.nil?
+    def perform
+      vehicle_journey_at_stops.find_each_light do |light_vehicle_journey_at_stop|
+        decorated_vehicle_journey_at_stop = decorate(light_vehicle_journey_at_stop)
 
-      @filter_non_commercial
-    end
-
-    def ignore_time_zone?
-      @ignore_time_zone
+        # Duplicate the stop time for each exported trip
+        index.trip_ids(light_vehicle_journey_at_stop.vehicle_journey_id).each do |trip_id|
+          route_attributes = decorated_vehicle_journey_at_stop.gtfs_attributes
+          route_attributes.merge!(trip_id: trip_id)
+          target.stop_times << route_attributes
+        end
+      end
     end
 
     def vehicle_journey_at_stops
-      @vehicle_journey_at_stops ||=
-        begin
-          base_scope = export_scope.vehicle_journey_at_stops
-
-          if filter_non_commercial?
-            Rails.logger.warn "Export GTFS #{export.id} uses non optimized non_commercial filter"
-            if prefer_referent_stop_area
-              base_scope = base_scope.left_joins(stop_point: {stop_area: :referent})
-              base_scope = base_scope.where.not("stop_areas.kind" => "non_commercial").where("referents_public_stop_areas.kind != 'non_commercial' OR referents_public_stop_areas.kind is NULL")
-            else
-              base_scope = base_scope.joins(stop_point: :stop_area).where("stop_areas.kind" => "commercial")
-            end
-          end
-
-          base_scope
-        end
-    end
-
-    def export!
       attributes = [
         :departure_time,
         :arrival_time,
@@ -1270,34 +1244,18 @@ class Export::Gtfs < Export::Base
         'vehicle_journeys.journey_pattern_id AS journey_pattern_id'
       ]
 
-      vehicle_journey_at_stops.joins(:stop_point, :vehicle_journey).select(*attributes).each_row do |vjas_raw_hash|
-        decorated_vehicle_journey_at_stop = Decorator.new(vjas_raw_hash, index: index, ignore_time_zone: ignore_time_zone?)
-        # Duplicate the stop time for each exported trip
-        index.trip_ids(vjas_raw_hash["vehicle_journey_id"].to_i).each do |trip_id|
-          route_attributes = decorated_vehicle_journey_at_stop.stop_time_attributes
-          route_attributes.merge!(trip_id: trip_id)
-          target.stop_times << route_attributes
-        end
-      end
+      export_scope.vehicle_journey_at_stops.joins(:stop_point, :vehicle_journey).select(*attributes)
     end
 
-    class Decorator
+    def decorator_attributes
+      super.merge(
+        default_timezone: default_timezone
+      )
+    end
 
-      # index is optional to make tests easier
-      def initialize(vjas_raw_hash, index: nil, ignore_time_zone: false)
-        @attributes = vjas_raw_hash
-        @index = index
-        @ignore_time_zone = ignore_time_zone
-      end
+    class Decorator < ModelDecorator
 
-      %w[
-        vehicle_journey_id departure_time departure_day_offset arrival_time arrival_day_offset
-        position for_boarding for_alighting journey_pattern_id stop_point_id
-      ].each do |attribute|
-        define_method(attribute) do
-          @attributes[attribute]
-        end
-      end
+      attr_accessor :default_timezone
 
       def shape_dist_traveled
         return unless journey_pattern_id && stop_point_id
@@ -1308,14 +1266,8 @@ class Export::Gtfs < Export::Base
         journey_pattern_distance.to_f / 1000
       end
 
-      attr_reader :index
-
-      def ignore_time_zone?
-        @ignore_time_zone
-      end
-
       def time_zone
-        index&.vehicle_journey_time_zone(vehicle_journey_id) unless ignore_time_zone?
+        default_timezone
       end
 
       def departure_time_of_day
@@ -1343,11 +1295,11 @@ class Export::Gtfs < Export::Base
       end
 
       def stop_area_id
-        @attributes["stop_area_id"] || @attributes["parent_stop_area_id"]
+        super || parent_stop_area_id
       end
 
       def stop_time_stop_id
-        index&.stop_id(stop_area_id)
+        code_provider.stop_areas.code stop_area_id
       end
 
       def drop_off_type
@@ -1359,7 +1311,7 @@ class Export::Gtfs < Export::Base
         index&.pickup_type(vehicle_journey_id) ? 2 : 0
       end
 
-      def stop_time_attributes
+      def gtfs_attributes
         { departure_time: stop_time_departure_time,
           arrival_time: stop_time_arrival_time,
           stop_id: stop_time_stop_id,
@@ -1369,9 +1321,7 @@ class Export::Gtfs < Export::Base
           shape_dist_traveled: shape_dist_traveled
         }
       end
-
     end
-
   end
 
   class Shapes < LegacyPart
@@ -1557,14 +1507,13 @@ class Export::Gtfs < Export::Base
 
   class FeedInfo < LegacyPart
     delegate :companies, :validity_period, to: :export_scope
+    delegate :default_company, to: :export
 
     def export!
       target.feed_infos << Decorator.new(company: company, validity_period: validity_period).feed_info_attributes
     end
 
-    def company
-      index.default_company
-    end
+    alias company default_company
 
     class Decorator
       attr_reader :company, :validity_period

@@ -80,7 +80,7 @@ class Export::Gtfs < Export::Base
     VehicleJourneyCompanies.new(self).perform
     Contracts.new(self).perform
 
-    FeedInfo.new(self).export_part
+    FeedInfo.new(self).perform
 
     FareProducts.new(self).export_part
     FareValidities.new(self).export_part
@@ -1469,11 +1469,11 @@ class Export::Gtfs < Export::Base
     end
   end
 
-  class FeedInfo < LegacyPart
-    delegate :companies, :validity_period, to: :export_scope
+  class FeedInfo < Part
+    delegate :validity_period, to: :export_scope
     delegate :default_company, to: :export
 
-    def export!
+    def perform
       target.feed_infos << Decorator.new(company: company, validity_period: validity_period).feed_info_attributes
     end
 

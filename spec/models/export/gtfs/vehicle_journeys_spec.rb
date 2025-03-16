@@ -215,7 +215,7 @@ RSpec.describe Export::Gtfs::VehicleJourneys::Decorator do
 
     before do
       vehicle_journey.route = Chouette::Route.new(line_id: line.id)
-      index.register_route_id line, indexed_route_id
+      allow(decorator.code_provider).to receive_message_chain(:lines, :code).with(line.id) { indexed_route_id }
     end
 
     it { is_expected.to be(indexed_route_id) }
@@ -393,7 +393,7 @@ RSpec.describe Export::Gtfs::VehicleJourneys::Decorator do
         vehicle_journey.journey_pattern = Chouette::JourneyPattern.new(shape_id: 12)
         shape_id = vehicle_journey.journey_pattern.shape_id
 
-        allow(decorator.code_provider).to receive_message_chain(:shapes,:code).with(shape_id) { indexed_shape_id }
+        allow(decorator.code_provider).to receive_message_chain(:shapes, :code).with(shape_id) { indexed_shape_id }
       end
 
       it { is_expected.to be(indexed_shape_id) }

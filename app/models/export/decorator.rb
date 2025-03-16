@@ -36,8 +36,7 @@ module Export
       @messages ||= Messages.new
     end
 
-    def validate
-    end
+    def validate; end
 
     def valid?
       messages.clear
@@ -57,13 +56,13 @@ module Export
     end
 
     class Message
-      attr_accessor :message_key, :criticity
-      attr_writer :message_attributes
+      attr_accessor :message_key
+      attr_writer :message_attributes, :criticity
 
       def initialize(message_key, **attributes)
         @message_key = message_key
 
-        attributes.each { |k,v| send "#{k}=", v }
+        attributes.each { |k, v| send "#{k}=", v }
       end
 
       def criticity

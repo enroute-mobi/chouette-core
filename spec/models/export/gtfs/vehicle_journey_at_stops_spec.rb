@@ -150,7 +150,9 @@ RSpec.describe Export::Gtfs::VehicleJourneyAtStops::Decorator do
     context 'when stop_area_id is associated by CodeProvider to 42' do
       before do
         allow(decorator).to receive(:stop_area_id).and_return(12)
-        allow(decorator.code_provider).to receive_message_chain(:stop_areas,:code).with(decorator.stop_area_id) { '42' }
+        allow(decorator.code_provider).to receive_message_chain(:stop_areas, :code).with(decorator.stop_area_id) {
+                                            '42'
+                                          }
       end
 
       it { is_expected.to eq('42') }

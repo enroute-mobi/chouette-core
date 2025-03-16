@@ -25,7 +25,7 @@ module Export
       messages, decorator = if decorator_or_messages.respond_to?(:messages)
                               [decorator_or_messages.messages, decorator_or_messages]
                             else
-                              [ decorator_or_messages, nil ]
+                              [decorator_or_messages, nil]
                             end
 
       messages.each do |message|

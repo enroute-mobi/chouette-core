@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 RSpec.describe Export::Gtfs::ConnectionLinks::Decorator do
   subject(:decorator) { described_class.new connection_link }
 
@@ -25,7 +27,9 @@ RSpec.describe Export::Gtfs::ConnectionLinks::Decorator do
     context 'when departure StopArea is associated to code "42"' do
       before do
         connection_link.departure_id = 12
-        allow(decorator.code_provider).to receive_message_chain(:stop_areas, :code).with(connection_link.departure_id) { '42' }
+        allow(decorator.code_provider).to receive_message_chain(:stop_areas, :code).with(connection_link.departure_id) {
+                                            '42'
+                                          }
       end
 
       it { is_expected.to eq('42') }
@@ -38,7 +42,9 @@ RSpec.describe Export::Gtfs::ConnectionLinks::Decorator do
     context 'when arrival StopArea is associated to code "42"' do
       before do
         connection_link.arrival_id = 12
-        allow(decorator.code_provider).to receive_message_chain(:stop_areas, :code).with(connection_link.arrival_id) { '42' }
+        allow(decorator.code_provider).to receive_message_chain(:stop_areas, :code).with(connection_link.arrival_id) {
+                                            '42'
+                                          }
       end
 
       it { is_expected.to eq('42') }

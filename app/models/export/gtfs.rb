@@ -77,7 +77,7 @@ class Export::Gtfs < Export::Base
     JourneyPatternDistances.new(self).perform
     VehicleJourneyAtStops.new(self).perform
 
-    VehicleJourneyCompany.new(self).export_part
+    VehicleJourneyCompanies.new(self).perform
     Contract.new(self).export_part
 
     FeedInfo.new(self).export_part
@@ -1356,10 +1356,10 @@ class Export::Gtfs < Export::Base
     end
   end
 
-  class VehicleJourneyCompany < LegacyPart
-    def export!
+  class VehicleJourneyCompanies < Part
+    def perform
       vehicle_journeys.find_each do |vehicle_journey|
-        Decorator.new(vehicle_journey, index: index).attributions.each do |attribution|
+        decorate(vehicle_journey).attributions.each do |attribution|
           target.attributions << attribution
         end
       end
@@ -1369,13 +1369,8 @@ class Export::Gtfs < Export::Base
       export_scope.vehicle_journeys.joins(route: :line).where.not(company: nil).where("vehicle_journeys.company_id != lines.company_id")
     end
 
-    class Decorator < SimpleDelegator
-      attr_reader :index, :vehicle_journey
-      def initialize(vehicle_journey, index: nil)
-        super vehicle_journey
-        @vehicle_journey = vehicle_journey
-        @index = index
-      end
+    class Decorator < ModelDecorator
+      alias vehicle_journey model
 
       def trip_ids
         index ? index.trip_ids(id) : []

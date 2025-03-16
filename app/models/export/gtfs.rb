@@ -67,7 +67,7 @@ class Export::Gtfs < Export::Base
       export_transfers_to target
     end
 
-    Shapes.new(self).export_part
+    Shapes.new(self).perform
 
     # Export Trips
     TimeTables.new(self).perform
@@ -1324,36 +1324,17 @@ class Export::Gtfs < Export::Base
     end
   end
 
-  class Shapes < LegacyPart
-
+  class Shapes < Part
     delegate :shapes, to: :export_scope
 
-    def export!
+    def perform
       shapes.find_each do |shape|
-        decorated_shape = Decorator.new(shape, code_provider: code_spaces.shapes)
+        decorated_shape = decorate(shape)
         target.shapes << decorated_shape.gtfs_shape
-
-        index.register_shape_id shape, decorated_shape.gtfs_id
       end
     end
 
-    class Decorator < SimpleDelegator
-
-      def initialize(shape, code_provider: nil)
-        super shape
-        @code_provider = code_provider
-      end
-
-      attr_reader :code_provider
-
-      def gtfs_id
-        gtfs_code || uuid
-      end
-
-      def gtfs_code
-        code_provider.unique_code(self) if code_provider
-      end
-
+    class Decorator < ModelDecorator
       def gtfs_shape_points
         distance = 0.0
         last_point = nil
@@ -1368,13 +1349,11 @@ class Export::Gtfs < Export::Base
       end
 
       def gtfs_shape
-        GTFS::Shape.new(id: gtfs_id).tap do |shape|
+        GTFS::Shape.new(id: model_code).tap do |shape|
           gtfs_shape_points.each { |point| shape.points << point }
         end
       end
-
     end
-
   end
 
   class VehicleJourneyCompany < LegacyPart

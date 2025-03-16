@@ -82,8 +82,8 @@ class Export::Gtfs < Export::Base
 
     FeedInfo.new(self).perform
 
-    FareProducts.new(self).export_part
-    FareValidities.new(self).export_part
+    FareProducts.new(self).perform
+    FareValidities.new(self).perform
 
     target.close
   end
@@ -144,7 +144,7 @@ class Export::Gtfs < Export::Base
     @code_spaces ||= CodeSpaces.new code_space, scope: export_scope
   end
 
-  delegate :shape_referential, :line_referential, :stop_area_referential, to: :workgroup
+  delegate :shape_referential, :line_referential, :stop_area_referential, :fare_referential, to: :workgroup
 
   alias legacy_export_scope export_scope
 
@@ -1530,29 +1530,20 @@ class Export::Gtfs < Export::Base
     end
   end
 
-  class FareProducts < LegacyPart
-    delegate :code_space, to: :export
+  class FareProducts < Part
     delegate :fare_products, to: :export_scope
 
-    def export!
+    def perform
       fare_products.find_each do |fare_product|
-        decorated_product = Decorator.new(fare_product, index: index, code_space: code_space)
+        decorated_product = decorate(fare_product)
         target.fare_attributes << decorated_product.fare_attribute
       end
     end
 
-    class Decorator < SimpleDelegator
-      def initialize(fare_product, index: nil, code_space: nil)
-        super fare_product
-        @index = index
-        @code_space = code_space
-      end
-
-      attr_accessor :index, :code_space
-
+    class Decorator < ModelDecorator
       def gtfs_attributes
         {
-          fare_id: gtfs_id,
+          fare_id: model_code,
           price: gtfs_price,
           agency_id: gtfs_agency_id,
           # Not managed for the moment
@@ -1563,21 +1554,12 @@ class Export::Gtfs < Export::Base
         }
       end
 
-      def gtfs_id
-        gtfs_code || uuid
-      end
-
       def gtfs_price
         price_cents.to_f / 100
       end
 
       def gtfs_agency_id
-        index.agency_id(company.id) if index && company
-      end
-
-      def gtfs_code
-        codes.where(code_space: code_space).first&.value
-        # code_provider.unique_code(self) if code_provider
+        code_provider.companies.code company_id
       end
 
       def fare_attribute
@@ -1586,13 +1568,12 @@ class Export::Gtfs < Export::Base
     end
   end
 
-  class FareValidities < LegacyPart
-    delegate :code_space, to: :export
+  class FareValidities < Part
     delegate :fare_validities, to: :export_scope
 
-    def export!
+    def perform
       fare_validities.includes(:products).find_each do |fare_validity|
-        decorated_validity = Decorator.new(fare_validity, index: index, code_space: code_space)
+        decorated_validity = decorate(fare_validity)
 
         decorated_validity.fare_rules.each do |fare_rule|
           target.fare_rules << fare_rule
@@ -1600,15 +1581,7 @@ class Export::Gtfs < Export::Base
       end
     end
 
-    class Decorator < SimpleDelegator
-      def initialize(fare_validity, index: nil, code_space: nil)
-        super fare_validity
-        @index = index
-        @code_space = code_space
-      end
-
-      attr_accessor :index, :code_space
-
+    class Decorator < ModelDecorator
       def fare_rules
         products.map do |fare_product|
           GTFS::FareRule.new attributes.merge(fare_id: fare_id(fare_product))
@@ -1616,7 +1589,7 @@ class Export::Gtfs < Export::Base
       end
 
       def fare_id(fare_product)
-        fare_product.codes.where(code_space: code_space).first&.value || fare_product.uuid
+        code_provider.code(fare_product)
       end
 
       def attributes
@@ -1629,7 +1602,7 @@ class Export::Gtfs < Export::Base
       end
 
       def route_id
-        index.route_id(line_expression.line_id) if line_expression
+        code_provider.lines.code line_expression.line_id if line_expression
       end
 
       def origin_id
@@ -1644,10 +1617,8 @@ class Export::Gtfs < Export::Base
         zone_gtfs_code zone_expression&.zone
       end
 
-      def zone_gtfs_code(zone)
-        return nil unless zone
-
-        zone.codes.where(code_space: code_space).first&.value || zone.uuid
+      def zone_gtfs_code(fare_zone)
+        code_provider.code(fare_zone)
       end
 
       def find_expression(klass)

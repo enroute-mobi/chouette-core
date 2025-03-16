@@ -63,9 +63,7 @@ class Export::Gtfs < Export::Base
 
     Lines.new(self).perform
 
-    Chouette::Benchmark.measure "transfers" do
-      export_transfers_to target
-    end
+    ConnectionLinks.new(self).perform
 
     Shapes.new(self).perform
 
@@ -112,23 +110,8 @@ class Export::Gtfs < Export::Base
   end
 
   def export_transfers_to(target)
-    stop_ids = exported_stop_areas.select(:id).to_sql
-    connections = referential.stop_area_referential.connection_links.where("departure_id IN (#{stop_ids}) AND arrival_id IN (#{stop_ids})")
-    transfers = {}
-    stops = connections.map do |c|
-      # all transfers are both ways
-      key = [index.stop_id(c.departure), index.stop_id(c.arrival)].sort
-      transfers[key] = c.default_duration
-    end.uniq
-
-    transfers.each do |stops, min_transfer_time|
-      target.transfers << {
-        from_stop_id: stops.first,
-        to_stop_id: stops.last,
-        type: '2',
-        min_transfer_time: min_transfer_time
-      }
-    end
+    @target = target
+    ConnectionLinks.new(self).perform
   end
 
   def index
@@ -1641,6 +1624,43 @@ class Export::Gtfs < Export::Base
 
       def zone_to_zone_expression
         @zone_to_zone_expression ||= find_expression Fare::Validity::Expression::ZoneToZone
+      end
+    end
+  end
+
+  class ConnectionLinks < Part
+    delegate :connection_links, to: :export_scope
+
+    def perform
+      connection_links.each do |connection_link|
+        target.transfers << decorate(connection_link).gtfs_attributes
+      end
+    end
+
+    class Decorator < ModelDecorator
+      def gtfs_min_transfer_time
+        default_duration
+      end
+
+      def gtfs_from_stop_id
+        code_provider.stop_areas.code(departure_id)
+      end
+
+      def gtfs_to_stop_id
+        code_provider.stop_areas.code(arrival_id)
+      end
+
+      def gtfs_type
+        '2'
+      end
+
+      def gtfs_attributes
+        {
+          from_stop_id: gtfs_from_stop_id,
+          to_stop_id: gtfs_to_stop_id,
+          type: gtfs_type,
+          min_transfer_time: gtfs_min_transfer_time
+        }
       end
     end
   end

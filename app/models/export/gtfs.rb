@@ -78,7 +78,7 @@ class Export::Gtfs < Export::Base
     VehicleJourneyAtStops.new(self).perform
 
     VehicleJourneyCompanies.new(self).perform
-    Contract.new(self).export_part
+    Contracts.new(self).perform
 
     FeedInfo.new(self).export_part
 
@@ -444,7 +444,7 @@ class Export::Gtfs < Export::Base
       end
 
       def contracts
-        line_referential.contracts.with_lines(dependencies_lines)
+        workbench.contracts.with_lines(dependencies_lines)
       end
     end
 
@@ -1384,7 +1384,6 @@ class Export::Gtfs < Export::Base
     end
 
     class TripDecorator < SimpleDelegator
-
       def initialize(vehicle_journey, trip_id: nil)
         super vehicle_journey
         @trip_id = trip_id
@@ -1421,29 +1420,20 @@ class Export::Gtfs < Export::Base
     end
   end
 
-  class Contract < LegacyPart
-    def export!
+  class Contracts < Part
+    delegate :contracts, to: :export_scope
+
+    def perform
       contracts.find_each do |contract|
-        Decorator.new(contract, index: index).attributions.each do |attribution|
+        decorate(contract).attributions.each do |attribution|
           target.attributions << attribution
         end
       end
     end
 
-    def contracts
-      export_scope.contracts
-    end
-
-    class Decorator < SimpleDelegator
-      def initialize(contract, index: nil)
-        super contract
-        @index = index
-      end
-
-      attr_reader :index
-
+    class Decorator < ModelDecorator
       def route_id(line)
-        index.route_id(line.id) if line
+        code_provider.code(line)
       end
 
       def attributions

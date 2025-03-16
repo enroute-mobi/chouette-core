@@ -74,7 +74,7 @@ class Export::Gtfs < Export::Base
     VehicleJourneys.new(self).perform
 
     # Export stop_times.txt
-    JourneyPatternDistances.new(self).export_part
+    JourneyPatternDistances.new(self).perform
     VehicleJourneyAtStops.new(self).perform
 
     VehicleJourneyCompany.new(self).export_part
@@ -1185,13 +1185,13 @@ class Export::Gtfs < Export::Base
     end
   end
 
-  class JourneyPatternDistances  < LegacyPart
+  class JourneyPatternDistances  < Part
 
     def journey_patterns
       export_scope.journey_patterns.includes(:stop_points).where.not(costs: [{}, nil])
     end
 
-    def export!
+    def perform
       journey_patterns.find_each do |journey_pattern|
         journey_pattern.stop_points.find_each do |stop_point|
           index.register_journey_pattern_distance(

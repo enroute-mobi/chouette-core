@@ -574,7 +574,7 @@ class Export::Gtfs < Export::Base
   def default_company
     @default_company ||=
       begin
-        company_id, _ = export_scope.lines.group(:company_id).order(count_all: :desc).count.first
+        company_id, _ = export_scope.lines.group(:company_id).order(count_all: :desc).limit(1).count.first
         line_referential.companies.find(company_id) if company_id
       end
   end

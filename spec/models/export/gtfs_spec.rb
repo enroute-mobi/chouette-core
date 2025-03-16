@@ -1076,57 +1076,60 @@ RSpec.describe Export::Gtfs, type: [:model, :with_exportable_referential] do
 
   end
 
-  describe Export::Gtfs::Service do
-    subject(:service) { Export::Gtfs::Service.new('test') }
+  describe '#default_company' do
+    subject { export.default_company }
 
-    describe '==' do
-      subject { service == other }
+    # TODO: Should be provided by top describe
+    let(:export) { Export::Gtfs.new export_scope: export_scope, workgroup: context.workgroup }
 
-      context 'when the given Service has the same id' do
-        let(:other) { Export::Gtfs::Service.new('test') }
-        it { is_expected.to be_truthy }
+    let(:export_scope) { double lines: context.line_referential.lines }
+
+    context 'when scoped lines have no company' do
+      let(:context) do
+        Chouette.create do
+          5.times { line }
+        end
       end
 
-      context 'when the given Service has a different id' do
-        let(:other) { Export::Gtfs::Service.new('other') }
-        it { is_expected.to be_falsy }
-      end
-
-      context 'when the given Service is nil' do
-        let(:other) { nil }
-        it { is_expected.to be_falsy }
-      end
+      it { is_expected.to be_nil }
     end
 
-    describe '#extend_validity_period' do
-      context 'when the Service has no validity period' do
-        it 'sets to the validity period to the given period' do
-          period = Period.parse('2030-01-01..2030-01-10')
-          expect { service.extend_validity_period(period) }.to change(service, :validity_period).from(nil).to(period)
+    context 'when more scoped lines are associated to a Company "default"' do
+      let(:context) do
+        Chouette.create do
+          company :target, name: 'Default'
+          company :wrong
+
+          5.times { line company: :target }
+          4.times { line company: :wrong }
+          3.times { line }
         end
       end
 
-      context 'when the Service has the validity period "2030-01-10..2030-01-20"' do
-        before { service.validity_period = Period.parse '2030-01-10..2030-01-20' }
+      let(:company) { context.company :target }
 
-        context 'when the period "2030-01-20..2030-01-30" is given' do
-          let(:period) { Period.parse '2030-01-20..2030-01-30' }
+      it { is_expected.to eq(company) }
+    end
+  end
 
-          it do
-            expect { service.extend_validity_period(period) }.to change(service, :validity_period)
-              .to(Period.parse('2030-01-10..2030-01-30'))
-          end
-        end
+  describe '#default_timezone' do
+    subject { export.default_timezone }
 
-        context 'when the date "2030-01-30" is given' do
-          let(:date) { Date.parse '2030-01-30' }
+    # TODO: Should be provided by top describe
+    let(:export) { Export::Gtfs.new }
 
-          it do
-            expect { service.extend_validity_period(date) }.to change(service, :validity_period)
-              .to(Period.parse('2030-01-10..2030-01-30'))
-          end
-        end
-      end
+    context 'when default_company is defined with "Europe/Berlin" timezone' do
+      before { allow(export).to receive(:default_company).and_return(company) }
+
+      let(:company) { Chouette::Company.new time_zone: 'Europe/Berlin' }
+
+      it { is_expected.to eq(company.time_zone) }
+    end
+
+    context 'when default_company is not defined' do
+      before { allow(export).to receive(:default_company).and_return(nil) }
+
+      it { is_expected.to eq(Export::Gtfs::DEFAULT_TIMEZONE) }
     end
   end
 

@@ -959,7 +959,6 @@ module Export
 
     class VehicleJourneyAtStops < Part
       delegate :vehicle_journey_at_stops, to: :export_scope
-      delegate :default_timezone, to: :export
 
       def perform
         vehicle_journey_at_stops.find_each_light do |light_vehicle_journey_at_stop|
@@ -972,6 +971,18 @@ module Export
             target.stop_times << route_attributes
           end
         end
+      end
+
+      def ignore_time_zone?
+        return @ignore_time_zone unless @ignore_time_zone.nil?
+
+        @ignore_time_zone ||= !export_scope.stop_areas.with_time_zone.exists?
+      end
+
+      def default_timezone
+        return nil if ignore_time_zone?
+
+        export.default_timezone
       end
 
       def vehicle_journey_at_stops

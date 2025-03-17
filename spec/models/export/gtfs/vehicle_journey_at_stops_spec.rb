@@ -1,5 +1,50 @@
 # frozen_string_literal: true
 
+RSpec.describe Export::Gtfs::VehicleJourneyAtStops do
+  subject(:part) { Export::Gtfs::VehicleJourneyAtStops.new(export) }
+  let(:export) { Export::Gtfs.new export_scope: export_scope }
+  let(:export_scope) { double }
+
+  describe '#ignore_time_zone?' do
+    subject { part.ignore_time_zone? }
+
+    let(:context) do
+      Chouette.create do
+        5.times { stop_area }
+      end
+    end
+
+    let(:export_scope) { double stop_areas: context.stop_area_referential.stop_areas }
+
+    context 'when no scoped StopAreas has a timezone' do
+      it { is_expected.to be_truthy }
+    end
+
+    context 'when one of the StopAreas has a timezone' do
+      before { export_scope.stop_areas.sample.update time_zone: 'Europe/London' }
+
+      it { is_expected.to be_falsy }
+    end
+  end
+
+  describe '#default_timezone' do
+    context 'without ignore_time_zone?' do
+      before do
+        allow(export).to receive(:default_timezone) { 'Europe/Madrid' }
+        allow(part).to receive(:ignore_time_zone?) { false }
+      end
+
+      it { is_expected.to have_same_attributes(:default_timezone, than: export) }
+    end
+
+    context 'when ignore_time_zone?' do
+      before { allow(part).to receive(:ignore_time_zone?) { true } }
+
+      it { is_expected.to have_attributes(default_timezone: be_nil) }
+    end
+  end
+end
+
 RSpec.describe Export::Gtfs::VehicleJourneyAtStops::Decorator do
   let(:light_vehicle_journey_at_stop) { Chouette::VehicleJourneyAtStop::Light::VehicleJourneyAtStop.new }
 

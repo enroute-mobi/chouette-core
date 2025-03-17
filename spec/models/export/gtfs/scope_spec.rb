@@ -404,94 +404,34 @@ RSpec.describe Export::Gtfs::Scope do
       end
     end
 
-    describe '#line_company_ids' do
-      subject { scope.line_company_ids }
+    describe '#scoped_companies' do
+      subject { scope.scoped_companies }
 
       let(:context) do
         Chouette.create do
           company :first
-          company :second
+          company :wrong
 
           line company: :first
           line company: :first
 
-          line :unscoped, company: :second
+          line :unscoped, company: :wrong
         end
       end
 
-      before { allow(scope).to receive(:dependencies_lines).and_return(scoped_lines) }
+      before do
+        allow(scope).to receive(:dependencies_lines).and_return(scoped_lines)
+        allow(scope).to receive(:line_referential) { context.line_referential }
+      end
 
       let(:scoped_lines) { context.line_referential.lines.where.not(id: unscoped_line) }
       let(:unscoped_line) { context.line :unscoped }
 
       let(:scoped_company) { context.company :first }
 
-      it 'contains identifiers of Company associated to scoped lines' do
-        is_expected.to match_array(scoped_company.id)
+      it 'contains Companies associated to scoped lines' do
+        is_expected.to match_array(scoped_company)
       end
-    end
-
-    describe '#vehicle_journey_company_ids' do
-      subject { scope.vehicle_journey_company_ids }
-
-      let(:context) do
-        Chouette.create do
-          company :first
-          company :second
-
-          vehicle_journey company: :first
-          vehicle_journey company: :first
-
-          vehicle_journey :unscoped, company: :second
-        end
-      end
-
-      before { context.referential.switch }
-      before do
-        current_scope = double(vehicle_journeys: scoped_vehicle_journeys)
-        allow(scope).to receive(:current_scope).and_return(current_scope)
-      end
-
-      let(:scoped_vehicle_journeys) { context.referential.vehicle_journeys.where.not(id: unscoped_vehicle_journey) }
-      let(:unscoped_vehicle_journey) { context.vehicle_journey :unscoped }
-
-      let(:scoped_company) { context.company :first }
-
-      it 'contains identifiers of Company associated to scoped Vehicle Journeys' do
-        is_expected.to match_array(scoped_company.id)
-      end
-    end
-
-    describe '#company_ids' do
-      subject { scope.company_ids }
-
-      before do
-        allow(scope).to receive(:line_company_ids) { [42] }
-        allow(scope).to receive(:vehicle_journey_company_ids) { [42, 43] }
-      end
-
-      context 'when line_company_ids is [ 42 ] and vehicle_journey_company_ids is [ 42, 43 ]' do
-        it { is_expected.to contain_exactly(42, 43) }
-      end
-    end
-
-    describe '#scoped_companies' do
-      subject { scope.scoped_companies }
-
-      let(:context) do
-        Chouette.create do
-          company
-        end
-      end
-
-      let(:company) { context.company }
-
-      before do
-        allow(scope).to receive(:company_ids) { company.id }
-        allow(scope).to receive(:line_referential) { context.line_referential }
-      end
-
-      it { is_expected.to include(company) }
     end
 
     describe '#companies' do

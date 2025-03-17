@@ -264,7 +264,7 @@ module Export
         end
 
         def contracts
-          workbench.contracts.with_lines(dependencies_lines)
+          (workbench || workgroup).contracts.with_lines(dependencies_lines)
         end
       end
 
@@ -305,19 +305,7 @@ module Export
         end
 
         def scoped_companies
-          line_referential.companies.where(id: company_ids)
-        end
-
-        def company_ids
-          @company_ids ||= (line_company_ids + vehicle_journey_company_ids).uniq
-        end
-
-        def line_company_ids
-          dependencies_lines.where.not(company_id: nil).distinct.pluck(:company_id)
-        end
-
-        def vehicle_journey_company_ids
-          current_scope.vehicle_journeys.where.not(company_id: nil).distinct.pluck(:company_id)
+          line_referential.companies.where(id: dependencies_lines.with_company.distinct.pluck(:company_id))
         end
       end
     end

@@ -118,6 +118,7 @@ module Chouette
                                }
 
     scope :without_company, -> { left_joins(:company).where 'companies.id' => nil }
+    scope :with_company, -> { left_joins(:company).where.not 'companies.id' => nil }
 
     def self.nullable_attributes
       %i[registration_number published_name number comment url color text_color]

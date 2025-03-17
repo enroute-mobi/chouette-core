@@ -9,7 +9,7 @@ module ReferentSupport
     scope :particulars, -> { where.not is_referent: true }
     scope :with_referent, -> { where.not referent: nil }
     scope :without_referent, -> { where referent: nil }
-    scope :referents_or_self, -> { unscoped.where(id: select('DISTINCT COALESCE(referent_id, id)')) }
+    scope :referents_or_self, -> { unscoped.where(id: select("DISTINCT COALESCE(#{table_name}.referent_id, #{table_name}.id)")) }
 
     has_many :particulars, class_name: name, foreign_key: 'referent_id'
 
@@ -47,7 +47,14 @@ module ReferentSupport
     end
 
     def self_and_referents
-      self.or(all_referents)
+      _union self, all_referents
+    end
+
+    private
+
+    def _union(relation1, relation2)
+      union_query = "select id from ((#{relation1.select(:id).to_sql}) UNION ALL (#{relation2.select(:id).to_sql})) identifiers"
+      unscoped.where "#{table_name}.id IN (#{union_query})"
     end
   end
 end

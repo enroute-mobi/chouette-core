@@ -485,9 +485,13 @@ module Export
     end
 
     class Lines < Part
-      delegate :lines, to: :export_scope
+      delegate :lines, :referenced_lines, to: :export_scope
 
       def perform
+        referenced_lines.pluck(:id, :referent_id).each do |model_id, referent_id|
+          code_provider.lines.alias(model_id, as: referent_id)
+        end
+
         lines.find_each do |line|
           decorated_line = decorate(line)
           create_messages decorated_line unless decorated_line.valid?

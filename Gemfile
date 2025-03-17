@@ -52,7 +52,7 @@ gem 'postgres-copy', '>= 1.7.2'
 
 gem 'bulk_insert'
 
-gem 'graphql', '2.2.5'
+gem 'graphql'
 
 # Authentication
 gem 'devise', '>= 4.9.3'

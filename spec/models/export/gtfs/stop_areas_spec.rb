@@ -147,7 +147,7 @@ RSpec.describe Export::Gtfs::StopAreas::Decorator do
 
     context 'when public_code_space is "test"' do
       before { decorator.public_code_space = code_space }
-      let(:code_space) { CodeSpace.new name: 'test' }
+      let(:code_space) { CodeSpace.new name: 'test', id: 42 }
 
       context 'when StopArea has a code test:dummy' do
         before do

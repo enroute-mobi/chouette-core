@@ -314,6 +314,8 @@ module Export
     end
 
     class Part < Export::Part
+      callback Operation::CustomFieldIgnored
+
       delegate :index, to: :export
 
       def decorator_attributes
@@ -360,8 +362,7 @@ module Export
           code_provider.stop_areas.alias(model_id, as: referent_id)
         end
 
-        stop_areas.includes(:referent, :parent, :codes,
-                            :fare_zones).order('parent_id NULLS first').each_instance do |stop_area|
+        stop_areas.includes(:referent, :parent, :codes, :fare_zones).find_each do |stop_area|
           decorated_stop_area = decorate(stop_area, public_code_space: public_code_space)
           target.stops << decorated_stop_area.gtfs_attributes
         end
@@ -387,7 +388,7 @@ module Export
         end
 
         def gtfs_stop_code
-          codes.find { |code| code.code_space == public_code_space }&.value
+          codes.find { |code| code.code_space_id == public_code_space.id }&.value
         end
 
         def gtfs_wheelchair_boarding
@@ -746,8 +747,7 @@ module Export
       end
 
       def perform
-        vehicle_journeys.includes(:time_tables, :journey_pattern, :accessibility_assessment, :codes,
-                                  :route).find_each do |vehicle_journey|
+        vehicle_journeys.includes(:time_tables, :journey_pattern, :accessibility_assessment, :codes, route: :line).find_each do |vehicle_journey|
           decorated_vehicle_journey = decorate(vehicle_journey)
 
           decorated_vehicle_journey.services.each do |service|

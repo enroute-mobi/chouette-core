@@ -18,7 +18,7 @@ module Chouette::Sync
         delegate :target, to: :updater
 
         def position
-          "#{longitude} #{latitude}"
+          "#{latitude} #{longitude}"
         end
 
         delegate :postal_region, :address_line_1, to: :postal_address, allow_nil: true

@@ -33,7 +33,7 @@
     .col-lg-12
       h2.mb-lg= t("lines.form.sections.internals")
       = f.association :line_provider, as: :select, collection: candidate_line_providers, include_blank: false
-      = f.input :comment, as: :text, input_html: { rows: 5, title: t("formtastic.titles#{format_restriction_for_locales(@referential)}.stop_area.comment") }
+      = f.input :comment, as: :text, input_html: { rows: 5 }
 
   .separator.section_separator
   = render 'codes/form', form: f

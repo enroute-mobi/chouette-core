@@ -2,7 +2,7 @@
   .row
     .col-lg-12
       h2.mb-lg= t("companies.form.sections.identification")
-      = f.input :name, input_html: {title: t("formtastic.titles#{format_restriction_for_locales(@line_referential)}.company.name")}
+      = f.input :name
       = f.input :short_name
       = f.input :code
       = custom_fields_for_section(f, "identification")

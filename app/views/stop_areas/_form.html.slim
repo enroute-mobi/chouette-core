@@ -65,7 +65,7 @@
       h2.mb-lg= t("stop_areas.form.sections.internals")
       = f.input :status, as: :select, collection: stop_area_status_options, include_blank: false
       = f.association :stop_area_provider, as: :select, collection: candidate_stop_area_providers, include_blank: false
-      = f.input :comment, as: :text, input_html: {rows: 5, title: t("formtastic.titles#{format_restriction_for_locales(@referential)}.stop_area.comment")}
+      = f.input :comment, as: :text, input_html: { rows: 5 }
 
   .separator.section_separator
 
@@ -76,8 +76,8 @@
       = f.input :coordinates, input_html: { title: t("formtastic.titles#{format_restriction_for_locales(@referential)}.stop_area.coordinates") }
       = f.input :compass_bearing
       = f.input :street_name
-      = f.input :zip_code, input_html: { title: t("formtastic.titles#{format_restriction_for_locales(@referential)}.stop_area.zip_code") }
-      = f.input :city_name, input_html: {title: t("formtastic.titles#{format_restriction_for_locales(@referential)}.stop_area.city_name")}
+      = f.input :zip_code
+      = f.input :city_name
       = f.input :postal_region
       = f.input :country_code, as: :country, priority: ['FR', 'GB', 'DE', 'ES'], include_blank: true, input_html: { data: { select2ed: true } }
       = f.input :time_zone, as: :full_time_zone, include_blank: false

@@ -2,7 +2,7 @@
 
   .row
     .col-lg-12
-      = form.input :comment, :input_html => { :title => t("formtastic.titles#{format_restriction_for_locales(@referential)}.time_table.comment")}
+      = form.input :comment
 
       - if @time_table.new_record? && !@time_table.created_from
         = form.input :calendar_id,

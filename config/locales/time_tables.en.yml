@@ -140,19 +140,15 @@ en:
   formtastic:
     titles:
       time_table:
-        comment: ""
         objectid: "[prefix]:Timetable:[unique_key] : prefix contains only alphanumerical or underscore characters, unique_key accepts also minus character"
       neptune:
         time_table:
-          comment: ""
           objectid: "[prefix]:Timetable:[unique_key] : prefix contains only alphanumerical or underscore characters, unique_key accepts also minus character"
       netex:
         time_table:
-          comment: ""
           objectid: "[prefix]:Timetable:[unique_key] : prefix contains only alphanumerical or underscore characters, unique_key accepts also minus character"
       gtfs:
         time_table:
-          comment: ""
           objectid: "[prefix]:Timetable:[unique_key] : prefix contains only alphanumerical or underscore characters, unique_key accepts also minus character"
     placeholders:
       time_table:

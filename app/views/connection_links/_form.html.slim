@@ -37,7 +37,7 @@
 
       = f.input :connection_link_type, as: :select, collection: connection_link_type_options, include_blank: false
       = f.input :name
-      = f.input :comment, as: :text, input_html: {rows: 5, title: t("formtastic.titles#{format_restriction_for_locales(@referential)}.connection_links.comment")}
+      = f.input :comment, as: :text, input_html: { rows: 5 }
 
   .separator
 

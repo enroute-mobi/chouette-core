@@ -232,7 +232,6 @@ fr:
   formtastic:
     titles:
       stop_area:
-        name: ""
         public_code: ""
         registration_number: "caractères autorisés : alphanumériques et 'souligné'"
         registration_number_format: "format autorisé: %{registration_number_format}"
@@ -243,30 +242,18 @@ fr:
         coordinates: "latitude,longitude dans le référentiel WGS84, le séparateur de décimales est 'point'"
       neptune:
         stop_area:
-          name: ""
           registration_number: "caractères autorisés : alphanumériques et 'souligné'"
           objectid: "[prefixe]:StopArea:[clé_unique]  caractères autorisés : alphanumériques et 'souligné' pour le préfixe, la clé unique accepte en plus le 'moins'"
-          city_name: ""
-          zip_code: ""
-          comment: ""
           coordinates: "latitude,longitude dans le référentiel WGS84, le séparateur de décimales est 'point'"
       netex:
         stop_area:
-          name: ""
           registration_number: "caractères autorisés : alphanumériques et 'souligné'"
           objectid: "[prefixe]:StopArea:[clé_unique]  caractères autorisés : alphanumériques et 'souligné' pour le préfixe, la clé unique accepte en plus le 'moins'"
-          city_name: ""
-          zip_code: ""
-          comment: ""
           coordinates: "latitude,longitude dans le référentiel WGS84, le séparateur de décimales est 'point'"
       gtfs:
         stop_area:
-          name: ""
           registration_number: "caractères autorisés : alphanumériques et 'souligné'"
           objectid: "[prefixe]:StopArea:[clé_unique]  caractères autorisés : alphanumériques et 'souligné' pour le préfixe, la clé unique accepte en plus le 'moins'"
-          city_name: ""
-          zip_code: ""
-          comment: ""
           coordinates: "latitude,longitude dans le référentiel WGS84, le séparateur de décimales est 'point'"
     hints:
       stop_area:

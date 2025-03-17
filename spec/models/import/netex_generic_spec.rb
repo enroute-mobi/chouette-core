@@ -913,7 +913,11 @@ RSpec.describe Import::NetexGeneric do
                 country: 'France',
                 phone: '815 00 888',
                 email: 'ola@nordman.no',
-                point_of_interest_category_id: category.id
+                point_of_interest_category_id: category.id,
+                position: have_attributes(
+                  latitude: 48.862725,
+                  longitude: 2.287592
+                )
               )
             end
 

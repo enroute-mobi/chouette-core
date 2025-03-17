@@ -40,6 +40,33 @@ RSpec.describe Export::Gtfs, type: %i[model with_exportable_referential] do
 
       it { is_expected.to eq(company) }
     end
+
+    context 'when more scoped lines are associated to a Company with a Referent' do
+      let(:context) do
+        Chouette.create do
+          company :referent, name: 'Referent', is_referent: true
+          company :target, name: 'Default', referent: :referent
+          company :wrong
+
+          5.times { line company: :target }
+          4.times { line company: :wrong }
+          3.times { line }
+        end
+      end
+
+      let(:referent) { context.company :referent }
+      let(:company) { context.company :target }
+
+      context 'when prefer_referent_company option is used' do
+        before { export.prefer_referent_company = true }
+
+        it { is_expected.to eq(referent) }
+      end
+
+      context 'when prefer_referent_company option isn\'t used' do
+        it { is_expected.to eq(company) }
+      end
+    end
   end
 
   describe '#default_timezone' do

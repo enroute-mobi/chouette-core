@@ -348,7 +348,11 @@ module Export
       @default_company ||=
         begin
           company_id, = export_scope.lines.group(:company_id).order(count_all: :desc).limit(1).count.first
-          line_referential.companies.find(company_id) if company_id
+          return nil unless company_id
+
+          company = line_referential.companies.find(company_id)
+          company = company.referent if prefer_referent_company && company.referent
+          company
         end
     end
 

@@ -24,7 +24,7 @@ fr:
     duplicate:
       title: "Dupliquer un calendrier"
     edit:
-      title: "Editer %{time_table}"
+      title: "Editer le calendrier %{name}"
       day_types: Journées d'application
       periods: Périodes
       exceptions: Exceptions
@@ -106,7 +106,7 @@ fr:
     attributes:
       time_table:
         checksum: Signature métier
-        comment: "Nom du calendrier"
+        comment: "Nom"
         shared: "Partagé"
         color: "Couleur associée"
         bounding_dates: 'Période contenue dans le calendrier'

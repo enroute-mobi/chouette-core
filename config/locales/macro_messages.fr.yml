@@ -88,6 +88,10 @@ fr:
   macro/associate_stop_area_with_fare_zone/run:
     messages:
       default: "L'arrêt %{stop_area_name} a été associé avec la Zone tarifaire %{fare_zone_name}"
+  macro/adjust_periods/run:
+    messages:
+      default: "La fin de la Période du Calendrier %{name} a été modifiée au %{period_end}"
+      error: "La Période du Calendrier %{name} n'a pu être modifiée"
   macro_messages:
     search_no_results_for_filter: "Aucun messages"
     no_address: "Aucune adresse"

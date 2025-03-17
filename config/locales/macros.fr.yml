@@ -62,6 +62,8 @@ fr:
         one: Associer les arrêts avec les zones tarifaires
       macro/create_codes_from_particulars:
         one: Créer des codes à partir des Particuliers
+      macro/adjust_periods:
+        one: Ajuster les Périodes des Calendriers
     attributes:
       macro/base:
         name: Nom
@@ -105,6 +107,8 @@ fr:
       macro/create_codes_from_particulars:
         particular_code_space_id: Espace de code du Particulier
         referent_code_space_id: Espace de code du Référent
+      macro/adjust_periods:
+        end_correction: Correction sur la fin de Période
   simple_form:
     placeholders:
       macro_base:

@@ -74,7 +74,6 @@ en:
     messages:
       default: "The attribute %{target_attribute} of %{target_model} %{name} has been updated"
       error: "The attribute %{target_attribute} of %{target_model} %{name} can't be modified"
-  macro_messages:
   macro/create_code_from_uuid/run:
     messages:
       default: "A code %{code_value} has been added for the %{target_model} %{model_name}"
@@ -89,6 +88,10 @@ en:
     messages:
       default: "The code %{code_value} has been added for the %{target_model} %{referent_name}"
       error: "The code %{code_value} can't be created for the %{target_model} %{referent_name}"
+  macro/adjust_periods/run:
+    messages:
+      default: "The %{name} Timetable Period End has been changed to %{period_end}"
+      error: "The %{name} Timetable Period can't be changed"
   macro_messages:
     search_no_results_for_filter: "No messages found"
     no_address: "No address"

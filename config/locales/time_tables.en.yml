@@ -24,7 +24,7 @@ en:
     duplicate:
       title: "Duplicate timetable"
     edit:
-      title: "Update %{time_table}"
+      title: "Edit timetable %{name}"
       day_types: Day types
       periods: Periods
       exceptions: Exceptions

@@ -524,7 +524,7 @@ module Chouette
     end
 
     def self.union(relation1, relation2)
-      union_query = "select id from ((#{relation1.select(:id).to_sql}) UNION ALL (#{relation2.select(:id).to_sql})) stop_area_ids"
+      union_query = "select id from ((#{relation1.select(:id).to_sql}) UNION (#{relation2.select(:id).to_sql})) stop_area_ids"
       unscoped.where "stop_areas.id IN (#{union_query})"
     end
 

@@ -170,6 +170,12 @@ RSpec.describe Export::Gtfs::VehicleJourneyAtStops::Decorator do
       before { allow(light_vehicle_journey_at_stop).to receive(:for_alighting).and_return(nil) }
 
       it { is_expected.to be_zero }
+
+      context 'when the associated Line is flexible' do
+        before { allow(decorator).to receive(:flexible?).and_return(true) }
+
+        it { is_expected.to eq(2) }
+      end
     end
   end
 
@@ -186,6 +192,12 @@ RSpec.describe Export::Gtfs::VehicleJourneyAtStops::Decorator do
       before { allow(light_vehicle_journey_at_stop).to receive(:for_boarding).and_return(nil) }
 
       it { is_expected.to be_zero }
+
+      context 'when the associated Line is flexible' do
+        before { allow(decorator).to receive(:flexible?).and_return(true) }
+
+        it { is_expected.to eq(2) }
+      end
     end
   end
 
@@ -195,9 +207,7 @@ RSpec.describe Export::Gtfs::VehicleJourneyAtStops::Decorator do
     context 'when stop_area_id is associated by CodeProvider to 42' do
       before do
         allow(decorator).to receive(:stop_area_id).and_return(12)
-        allow(decorator.code_provider).to receive_message_chain(:stop_areas, :code).with(decorator.stop_area_id) {
-                                            '42'
-                                          }
+        allow(decorator.code_provider).to receive_message_chain(:stop_areas, :code).with(decorator.stop_area_id).and_return('42')
       end
 
       it { is_expected.to eq('42') }

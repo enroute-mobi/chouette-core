@@ -124,7 +124,7 @@ RSpec.describe Export::Gtfs::VehicleJourneyAtStops::Decorator do
     context 'when for_alighting is not forbidden' do
       before { allow(light_vehicle_journey_at_stop).to receive(:for_alighting).and_return(nil) }
 
-      it { is_expected.to be_nil }
+      it { is_expected.to be_zero }
     end
   end
 

@@ -2,7 +2,6 @@
 
 RSpec.describe Export::Gtfs::VehicleJourneys do
   let(:export_scope) { Export::Scope::All.new context.referential }
-  let(:index) { export.index }
   let(:export) do
     Export::Gtfs.new export_scope: export_scope, workbench: context.workbench, workgroup: context.workgroup
   end
@@ -11,37 +10,40 @@ RSpec.describe Export::Gtfs::VehicleJourneys do
     Export::Gtfs::VehicleJourneys.new export
   end
 
-  let(:context) do
-    Chouette.create do
-      time_table :default
-      vehicle_journey time_tables: [:default]
-      vehicle_journey time_tables: [:default]
+  describe '#perform' do
+    let(:context) do
+      Chouette.create do
+        time_table :default
+        vehicle_journey time_tables: [:default]
+        vehicle_journey time_tables: [:default]
+      end
     end
-  end
 
-  let(:time_table) { context.time_table(:default) }
-  let(:vehicle_journeys) { context.vehicle_journeys }
+    let(:time_table) { context.time_table(:default) }
+    let(:vehicle_journeys) { context.vehicle_journeys }
+    let(:index) { export.index }
 
-  before do
-    context.referential.switch
-    index.register_services time_table, [Export::Gtfs::Service.new(time_table.objectid)]
-  end
-
-  it 'registers the GTFS Trip identifiers used for each VehicleJourney' do
-    part.perform
-    vehicle_journeys.each do |vehicle_journey|
-      expect(index.trip_ids(vehicle_journey.id)).to eq([vehicle_journey.objectid])
+    before do
+      context.referential.switch
+      index.register_services time_table, [Export::Gtfs::Service.new(time_table.objectid)]
     end
-  end
 
-  context 'when the Line has flexible service' do
-    it 'registers the GTFS pickup_type according to the Line' do
-      vehicle_journey = vehicle_journeys.first
-      vehicle_journey.line.update flexible_line_type: :other
-
+    it 'registers the GTFS Trip identifiers used for each VehicleJourney' do
       part.perform
+      vehicle_journeys.each do |vehicle_journey|
+        expect(index.trip_ids(vehicle_journey.id)).to eq([vehicle_journey.objectid])
+      end
+    end
 
-      expect(index.pickup_type(vehicle_journey.id)).to be_truthy
+    context 'when the Line has flexible service' do
+      it 'registers the GTFS pickup_type according to the Line' do
+        vehicle_journey = vehicle_journeys.first
+        vehicle_journey.line.update flexible_line_type: :other
+
+        part.perform
+
+        expect(index.flexible?(vehicle_journey.id)).to be_truthy
+      end
     end
   end
 end

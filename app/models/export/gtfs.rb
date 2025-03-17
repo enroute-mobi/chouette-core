@@ -143,7 +143,7 @@ module Export
       def initialize
         @trip_ids = Hash.new { |h, k| h[k] = [] }
         @services = Hash.new { |h, k| h[k] = [] }
-        @pickup_type = {}
+        @flexible = {}
         @journey_pattern_distances = {}
       end
 
@@ -173,12 +173,12 @@ module Export
         @trip_ids[vehicle_journey_id]
       end
 
-      def register_pickup_type(vehicle_journey, flexible_service)
-        @pickup_type[vehicle_journey.id] = flexible_service
+      def register_flexible(vehicle_journey, flexible_service)
+        @flexible[vehicle_journey.id] = flexible_service
       end
 
-      def pickup_type(vehicle_journey_id)
-        @pickup_type[vehicle_journey_id]
+      def flexible?(vehicle_journey_id)
+        @flexible[vehicle_journey_id]
       end
     end
 
@@ -757,7 +757,7 @@ module Export
             index.register_trip_id vehicle_journey, trip_attributes[:id]
 
             flexible_service = vehicle_journey.line.flexible_service? || false
-            index.register_pickup_type vehicle_journey, flexible_service
+            index.register_flexible vehicle_journey, flexible_service
           end
         end
       end
@@ -1047,14 +1047,18 @@ module Export
           code_provider.stop_areas.code stop_area_id
         end
 
+        def flexible?
+          index&.flexible?(vehicle_journey_id)
+        end
+
         def drop_off_type
-          1 if for_alighting == 'forbidden'
+          return 1 if for_alighting == 'forbidden'
+          flexible? ? 2 : 0
         end
 
         def pickup_type
           return 1 if for_boarding == 'forbidden'
-
-          index&.pickup_type(vehicle_journey_id) ? 2 : 0
+          flexible? ? 2 : 0
         end
 
         def gtfs_attributes

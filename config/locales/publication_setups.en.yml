@@ -13,6 +13,7 @@ en:
     form:
       add_destination: Add an output
       sections:
+        destinations: "Destinations"
         export: Export settings
   activerecord:
     models:

@@ -2,7 +2,6 @@ fr:
   calendars:
     filters:
       name_cont: 'Indiquez un nom de calendrier...'
-      no_results: 'Aucun calendrier ne correspond à votre recherche'
     days:
       monday: L
       tuesday: Ma

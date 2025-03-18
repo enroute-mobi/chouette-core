@@ -16,6 +16,9 @@ fr:
       create: Agréger l'Offre
       rollback: 'Revenir à cette offre agrégée'
       rollback_confirm: Etes vous sûr de vouloir revenir à cette offre aggrégée ?
+    form:
+      sections:
+        informations: "Informations"
     statuses:
       new: Nouveau
       pending: En attente

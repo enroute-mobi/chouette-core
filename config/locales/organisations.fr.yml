@@ -11,7 +11,7 @@ fr:
       title: "Mon organisation"
     form:
       sections:
-        information: "Informations"
+        informations: "Informations"
         identity_provider: "Fournisseur d'identité"
   activerecord:
     models:

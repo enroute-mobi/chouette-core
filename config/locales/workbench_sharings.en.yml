@@ -2,6 +2,7 @@ en:
   workbench/sharings:
     form:
       sections:
+        identification: "Identification"
         recipient: "Recipient"
       recipient_id:
         none: None (Use a confirmation code)

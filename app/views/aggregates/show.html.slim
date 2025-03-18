@@ -5,7 +5,7 @@
   .container-fluid
     .row
       .col-lg-6.col-md-6.col-sm-12.col-xs-12
-        = simple_block_for @aggregate, title: t('aggregate.form.sections.informations') do |d|
+        = simple_block_for @aggregate, title: t('aggregates.form.sections.informations') do |d|
 					= d.attribute :status, value: operation_status(@aggregate.status, verbose: true, i18n_prefix: "aggregates.statuses")
 					= d.attribute :new, as: :association, link: default_workbench ? ->(new) { workbench_referential_path(default_workbench, new) } : nil
 					= d.attribute :contains_urgent_offer, value: boolean_icon(@aggregate.contains_urgent_offer?)

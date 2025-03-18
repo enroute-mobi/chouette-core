@@ -7,7 +7,7 @@
   .container-fluid
     .row
       .col-lg-6.col-md-6.col-sm-12.col-xs-12
-        = simple_block_for @workbench_sharing, title: t("workbench/sharing.form.sections.identification") do |d|
+        = simple_block_for @workbench_sharing, title: t('workbench/sharings.form.sections.identification') do |d|
           = d.attribute :name
           = d.attribute :status, value_method: :human_status
           = d.attribute :recipient_type, value_method: :human_recipient_type

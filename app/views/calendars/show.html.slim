@@ -5,7 +5,7 @@
   .container-fluid
     .row
       .col-lg-6.col-md-6.col-sm-12.col-xs-12
-        = simple_block_for @calendar, title: t('calendar.form.sections.informations') do |d|
+        = simple_block_for @calendar, title: t('calendars.form.sections.informations') do |d|
           = d.attribute :shared, as: :boolean
           = d.attribute :organisation, value: @calendar.organisation.name
           = d.attribute :dates, as: :associations, value: @calendar.dates.collect{|d| l(d)}.join(', ').html_safe

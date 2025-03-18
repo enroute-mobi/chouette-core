@@ -52,6 +52,7 @@ module ReferentSupport
 
     private
 
+    # TODO: Find a safe/clean way to share this union mechanism
     def _union(relation1, relation2)
       union_query = "select id from ((#{relation1.select(:id).to_sql}) UNION (#{relation2.select(:id).to_sql})) identifiers"
       unscoped.where "#{table_name}.id IN (#{union_query})"

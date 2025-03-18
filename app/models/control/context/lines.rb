@@ -62,6 +62,10 @@ class Control::Context::Lines < Control::Context
       context.vehicle_journey_at_stops.where(vehicle_journey: vehicle_journeys)
     end
 
+    def time_tables
+      context.time_tables.joins(:vehicle_journeys).where(vehicle_journeys: { id: vehicle_journeys.select(:id) })
+    end
+
     def shapes
       context.shapes.where(id: journey_patterns.select(:shape_id))
     end

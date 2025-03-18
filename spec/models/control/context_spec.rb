@@ -1,41 +1,63 @@
 RSpec.describe Control::Context do
+  let(:context) do
+    Chouette.create do
+      referential
+    end
+  end
+
   let(:control_list) do
     Control::List.create name: "Control List 1", workbench: context.workbench
   end
-
   let(:control_context) do
     Control::Context.create name: "Control Context 1", control_list: control_list
   end
 
+  let(:control_list_run_referential) { context.referential }
+  let(:control_list_run) do
+    Control::List::Run.create(
+      name: 'Control List Run 1',
+      workbench: context.workbench,
+      referential: control_list_run_referential,
+      original_control_list: control_list
+    )
+  end
   let(:control_context_run) do
     Control::Context::Run.create name: "Control Context Run 1", control_list_run: control_list_run, options: {transport_mode: "bus"}, type: "Control::Context::Run"
   end
-
   let(:control_run) { Control::Base::Run.new control_list_run: control_list_run, control_context_run: control_context_run}
 
-  subject { model.pluck(:id) }
+  describe '#validity_period' do
+    subject { control_context_run.validity_period }
 
-  describe ".context" do
-    let(:context) do
-      Chouette.create do
-        referential do
-          journey_pattern
-        end
-      end
+    context 'without referential' do
+      let(:control_list_run_referential) { nil }
+
+      it { is_expected.to be_nil }
     end
 
-    before { context.referential.switch }
-
-    describe "#control_run is created with referential" do
+    context 'with referential' do
       let(:control_list_run) do
         Control::List::Run.create(
-          name: "Control List Run 1",
+          name: 'Control List Run 1',
           referential: context.referential,
           workbench: context.workbench,
           original_control_list: control_list
         )
       end
+      let(:referential_validity_period) { double(:referential_validity_period) }
 
+      before { expect(context.referential).to receive(:validity_period).and_return(referential_validity_period) }
+
+      it { is_expected.to eq(referential_validity_period) }
+    end
+  end
+
+  describe ".context" do
+    subject { model.pluck(:id) }
+
+    before { control_list_run_referential&.switch }
+
+    describe "#control_run is created with referential" do
       context "when model is stop_areas" do
         let(:model) { control_run.context.context.stop_areas }
         let(:referential_stop_area_ids) { context.referential.stop_areas.pluck(:id) }
@@ -86,9 +108,7 @@ RSpec.describe Control::Context do
     end
 
     describe "#control_run is created without referential" do
-      let(:control_list_run) do
-        Control::List::Run.create name: "Control List Run 1", workbench: context.workbench, original_control_list: control_list
-      end
+      let(:control_list_run_referential) { nil }
 
       context "when model is stop_areas" do
         let(:model) { control_run.context.context.stop_areas }

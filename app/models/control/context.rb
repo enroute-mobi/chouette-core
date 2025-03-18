@@ -66,6 +66,7 @@ module Control
       store :options, coder: JSON
 
       delegate :referential, :workbench, to: :control_list_run
+      delegate :validity_period, to: :referential, allow_nil: true
 
       def context
         referential || Scope::Workbench.new(workbench)

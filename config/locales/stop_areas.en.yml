@@ -12,8 +12,6 @@ en:
         already_taken: Already taken
         cannot_be_empty: This field is mandatory
         invalid: "Incorrect value (expected value: \"%{mask}\")"
-      parent_id:
-        must_be_absent: A non commercial Stop Area cannot have a parent
       referent_id:
         cannot_be_referent_and_specific: "A Stop Area can't be both referent and specific"
     default_geometry_success: "%{count} modified Stop Areas"
@@ -220,6 +218,7 @@ en:
             parent_id:
               not_allowed_for_flexible: "Flexible stop places cannot have a parent"
               children_not_allowed_for_flexible: "Flexible stop places cannot have children"
+              must_be_absent: A non commercial Stop Area cannot have a parent
   chart:
     values:
       stop_area:

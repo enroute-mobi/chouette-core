@@ -2,6 +2,6 @@ fr:
   export_messages:
     success: Succès
     no_matching_journey: "L'export ne peut pas produire de résultat car il n'y a pas de données d'offre de transport pendant la période donnée"
-    no_company: "La ligne %{line_name} n'est pas associée à un transporteur. Une agency GTFS 'chouette_default' sera créée pour les besoins de l'export."
-    no_timezone: "Le transporteur %{company_name} n'a pas de fuseau horaire défini. Il sera considéré comme 'Etc/UTC' lors de l'export."
+    no_company: "La ligne %{name} n'est pas associée à un transporteur. Une agency GTFS 'chouette_default' sera créée pour les besoins de l'export."
+    no_timezone: "Le transporteur %{name} n'a pas de fuseau horaire défini. Il sera considéré comme 'Etc/UTC' lors de l'export."
     skipping_invalid_object: "La ressource suivante a été ignorée: %{object_class}#%{object_id} car elle n'est pas valide: %{errors}"

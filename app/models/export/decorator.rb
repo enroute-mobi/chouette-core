@@ -31,5 +31,47 @@ module Export
       decorator_class = attributes.delete(:with) || self.class
       decorator_class.new(model, **attributes.merge(code_provider: code_provider))
     end
+
+    def messages
+      @messages ||= Messages.new
+    end
+
+    def validate; end
+
+    def valid?
+      messages.clear
+      validate
+      messages.empty?
+    end
+
+    class Messages < SimpleDelegator
+      def initialize
+        @messages = []
+        super @messages
+      end
+
+      def add(message_key, **attributes)
+        @messages << Message.new(message_key, **attributes)
+      end
+    end
+
+    class Message
+      attr_accessor :message_key
+      attr_writer :message_attributes, :criticity
+
+      def initialize(message_key, **attributes)
+        @message_key = message_key
+
+        attributes.each { |k, v| send "#{k}=", v }
+      end
+
+      def criticity
+        @criticity ||= :warning
+      end
+
+      def message_attributes
+        @message_attributes ||= {}
+      end
+    end
   end
 end

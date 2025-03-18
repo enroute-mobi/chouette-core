@@ -28,9 +28,7 @@ module TableBuilderHelper
     def header_label(model = nil)
       return @name unless @name.nil?
 
-      # Transform `Chouette::Line` into "line"
-      model_key = model.model_name.i18n_key.to_s
-      I18n.t("activerecord.attributes.#{model_key}.#{@key}")
+      model.human_attribute_name(@key)
     end
 
     def linkable?

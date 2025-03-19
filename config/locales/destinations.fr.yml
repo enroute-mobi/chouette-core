@@ -68,7 +68,7 @@ fr:
       destination/chouette:
         workbench_id: Identification d'espace de travail
         workbench_api_key: Clé d'accès API
-        automatic_merge: Fusion automatique
+        automatic_merge: Finalisation automatique
         host_type: Type d'hôte
         custom_url: URL personnalisé
       destination/google_cloud_storage:

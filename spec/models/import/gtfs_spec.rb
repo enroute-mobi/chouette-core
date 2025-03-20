@@ -862,6 +862,134 @@ RSpec.describe Import::Gtfs do
     end
   end
 
+  describe Import::Gtfs::BookingArrangements do
+    let(:booking_rule) { GTFS::BookingRule.new }
+
+    describe Import::Gtfs::BookingArrangements::Decorator do
+      let(:decorator) { described_class.new booking_rule }
+
+      describe "#book_when" do
+        subject { decorator.book_when }
+
+        context "when the booking_rule book_when is invalid" do
+          before { booking_rule.booking_type = "dummy" }
+          it { is_expected.to be_nil }
+        end
+
+        context "when the booking_rule book_when is blank" do
+          before { booking_rule.booking_type = "" }
+          it { is_expected.to be_nil }
+        end
+
+        context "when the booking_rule book_when is valid" do
+          before { booking_rule.booking_type = '1' }
+          it { is_expected.to eq :advance_and_day_of_travel }
+        end
+      end
+
+      describe "#booking_arrangement_attributes" do
+        subject { decorator.booking_arrangement_attributes }
+
+        it 'uses the booking_rule booking type as book when' do
+          booking_rule.booking_type = '1'
+          is_expected.to include(book_when: :advance_and_day_of_travel)
+        end
+
+        it 'uses the booking_rule prior_notice_duration_min as minimum booking period' do
+          booking_rule.prior_notice_duration_min = 'Test'
+          is_expected.to include(minimum_booking_period: booking_rule.prior_notice_duration_min)
+        end
+
+        it 'uses the booking_rule prior_notice_last_time as minimum booking period' do
+          booking_rule.prior_notice_last_time = '15:00:00'
+          is_expected.to include(latest_booking_time: booking_rule.prior_notice_last_time)
+        end
+
+        it 'uses the booking_rule message as booking notes' do
+          booking_rule.message = 'Test'
+          is_expected.to include(booking_notes: booking_rule.message)
+        end
+
+        it 'uses the booking_rule phone_number as phone' do
+          booking_rule.phone_number = '0600000000'
+          is_expected.to include(phone: booking_rule.phone_number)
+        end
+
+        it 'uses the booking_rule info_url as url' do
+          booking_rule.info_url = 'test.com'
+          is_expected.to include(url: booking_rule.info_url)
+        end
+
+        it 'uses the booking_rule booking_url as booking_url' do
+          booking_rule.booking_url = 'test.com'
+          is_expected.to include(booking_url: booking_rule.booking_url)
+        end
+      end
+
+      describe "validation" do
+        subject { decorator.valid? }
+
+        context "when booking type is in (0..2)" do
+          (0..1).each do |booking_type|
+            it "should valid when booking type is #{booking_type}" do
+              booking_rule.booking_type = booking_type.to_s
+              booking_rule.prior_notice_duration_min = '1'
+
+              is_expected.to be_truthy
+            end
+          end
+        end
+
+        context "when booking type is not in (0..2)" do
+          it "creates an error 'gtfs.booking_arrangements.invalid_booking_type'" do
+            booking_rule.booking_type = '3'
+            is_expected.to be_falsy
+            expect(decorator.errors).to include({ criticity: :error, message_key: 'gtfs.booking_arrangements.invalid_booking_type' })
+          end
+        end
+
+        describe "Missing prior_notice_duration_min" do
+          context "when booking type is 1" do
+            before do
+              booking_rule.booking_type = '1'
+              booking_rule.prior_notice_duration_min = ""
+            end
+
+            it "creates an error 'gtfs.booking_arrangements.missing_prior_notice_duration_min'" do
+              is_expected.to be_falsy
+              expect(decorator.errors).to include({ criticity: :error, message_key: 'gtfs.booking_arrangements.missing_prior_notice_duration_min' })
+            end
+          end
+
+          context "when booking type is not 1" do
+            before do
+              booking_rule.booking_type = '2'
+              booking_rule.prior_notice_duration_min = ""
+            end
+
+            it 'should valid when prior_notice_duration_min is blank ' do
+              is_expected.to be_truthy
+            end
+          end
+        end
+
+        describe "Missing prior_notice_last_time" do
+          context 'when prior_notice_last_day is present and prior_notice_last_time is blank' do
+            before do
+              booking_rule.prior_notice_last_day = '1'
+              booking_rule.prior_notice_last_time = ""
+            end
+
+            it "creates an error 'gtfs.booking_arrangements.missing_prior_notice_last_time'" do
+              is_expected.to be_falsy
+              expect(decorator.errors).to include({ criticity: :error, message_key: 'gtfs.booking_arrangements.missing_prior_notice_last_time' })
+            end
+          end
+        end
+      end
+    end
+  end
+
   describe Import::Gtfs::RouteJourneyPatterns::RouteCluster do
     describe "#include?" do
       subject { route_cluster.include?(candidate) }

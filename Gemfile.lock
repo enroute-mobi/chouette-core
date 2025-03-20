@@ -23,7 +23,8 @@ GIT
 
 GIT
   remote: https://bitbucket.org/enroute-mobi/gtfs.git
-  revision: fffc0f1136c50f140a61895c549986999a816f00
+  revision: 1fe263f2e7205b57eac0892ed13cd2cd8b189e5a
+  branch: DATA-14-read-gtfs-bookingrules
   specs:
     gtfs (0.3.6)
       csv

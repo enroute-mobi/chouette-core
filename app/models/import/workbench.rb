@@ -6,14 +6,14 @@ module Import
 
     after_commit :launch_worker, on: :create
 
-    option :import_category, collection: %w[automatic shape_file netex_generic], default_value: 'automatic'
+    option :import_category, enumerize: %w[automatic shape_file netex_generic], default_value: 'automatic'
     option :automatic_merge, default_value: false,
                              depends: { option: :import_category, values: %w[automatic netex_generic] }, type: :boolean
     option :archive_on_fail, default_value: false,
                              depends: { option: :import_category, values: %w[automatic netex_generic] }, type: :boolean
     option :flag_urgent, default_value: false, depends: { option: :import_category, values: ['automatic'] },
                          type: :boolean
-    option :merge_method, collection: %w[legacy experimental], default_value: 'legacy',
+    option :merge_method, enumerize: %w[legacy experimental], default_value: 'legacy',
                           depends: { option: :import_category, values: ['automatic'] }
     option :shape_attribute_as_id, type: :string, depends: { option: :import_category, values: ['shape_file'] }
     option :update_workgroup_providers, default_value: false, type: :boolean
@@ -22,9 +22,15 @@ module Import
     option :strict_mode, default_value: false, type: :boolean
     option :ignore_particulars, default_value: false, type: :boolean
     option :ignore_parent_stop_areas, required: true, default_value: false, type: :boolean
-    option :stop_area_provider_id, collection: -> { candidate_stop_area_providers.order(:name) }, allow_blank: true
-    option :line_provider_id, collection: -> { candidate_line_providers.order(:name) }, allow_blank: true
-    option :specific_default_company_id, collection: -> { candidate_companies.order(:name) }, allow_blank: true
+    option :stop_area_provider_id, display: :stop_area_provider,
+                                   collection: -> { candidate_stop_area_providers.order(:name) },
+                                   allow_blank: true
+    option :line_provider_id, display: :line_provider,
+                              collection: -> { candidate_line_providers.order(:name) },
+                              allow_blank: true
+    option :specific_default_company_id, display: :specific_default_company,
+                                         collection: -> { candidate_companies.order(:name) },
+                                         allow_blank: true
 
     has_many :children_processings, through: :children, source: :processings
     has_many :control_list_runs, through: :children_processings, source: :processed, source_type: 'Control::List::Run'

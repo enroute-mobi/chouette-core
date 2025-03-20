@@ -11,10 +11,6 @@ class ImportDecorator < Af83::Decorator
     cls
   end
 
-  define_instance_method :i18n_attribute_scope do
-    [:activerecord, :attributes, :import, short_type.to_sym]
-  end
-
   create_action_link if: -> { context[:parent].is_a? (Workbench) }
 
   with_instance_decorator do |instance_decorator|

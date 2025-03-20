@@ -15,12 +15,18 @@ class Destination::Mail < ::Destination
   validates :recipients, presence: true
   validate :check_mail_array
 
-  option :link_to_api, collection: ->(){publication_setup.workgroup.publication_apis.map{|pbl| [pbl.name, pbl.id]}}, allow_blank: true
+  option :link_to_api, display: :display_link_to_api,
+                       collection: -> { publication_setup.workgroup.publication_apis.order(:name) },
+                       allow_blank: true
 
   option :attached_export_file, type: :boolean, default_value: false
 
   option :attached_export_filename
   validates :attached_export_filename, format: { with: /\A[A-Za-z0-9%{:}_-]+\.(xml|zip)\z/i, message: :filename, allow_blank: true }
+
+  def display_link_to_api
+    @display_link_to_api ||= publication_setup.workgroup.publication_apis.find_by(id: link_to_api)
+  end
 
   def do_transmit(publication, _report)
     PublicationMailer.publish(publication, self).deliver_later

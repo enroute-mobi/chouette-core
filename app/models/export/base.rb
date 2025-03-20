@@ -3,6 +3,14 @@
 class Export::Base < ApplicationModel
   self.table_name = 'exports'
 
+  class << self
+    def model_name
+      @_model_name ||= ActiveModel::Name.new(Export::Base, Export::Base, 'Export').tap do |model_name| # rubocop:disable Naming/MemoizedInstanceVariableName
+        model_name.instance_variable_set(:@i18n_key, name.underscore) unless self == ::Export::Base
+      end
+    end
+  end
+
   include OptionsSupport
   include NotifiableSupport
   include PurgeableResource
@@ -210,10 +218,6 @@ class Export::Base < ApplicationModel
 
   def failed!
     update_columns status: :failed, ended_at: Time.now
-  end
-
-  def self.model_name
-    ActiveModel::Name.new Export::Base, Export::Base, 'Export'
   end
 
   def self.user_visible_descendants

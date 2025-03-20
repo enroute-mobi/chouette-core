@@ -33,31 +33,24 @@ module OptionsHelper
 
     end
 
-    if option_def.key?(:collection)
-      opts[:collection] = if option_def[:collection].is_a?(Array) && !option_def[:collection].first.is_a?(Array)
-                            option_def_collection = option_def[:collection]
-                            if (features = option_def[:features]).is_a?(Hash)
-                              features.each do |feature, collection|
-                                option_def_collection += collection if current_organisation&.has_feature?(feature)
-                              end
-                            end
-                            option_def_collection.map { |k| [translate_option_value(type, attr, k), k] }
-                          else
-                            option_def[:collection]
-                          end
-      opts[:collection] = export.instance_exec(&option_def[:collection]) if option_def[:collection].is_a?(Proc)
+    if option_def.key?(:collection) || option_def.key?(:enumerize)
+      if option_def.key?(:enumerize)
+        collection = type.enumerized_attributes[attr].options
 
-      if option_def[:allow_blank]
-        if opts[:collection].respond_to? :model
-          none = opts[:collection].model.new
-          opts[:collection] = [none] + opts[:collection].sort_by(&:name)
-        else
-          opts[:collection] = opts[:collection].push([t('none'), nil])
+        if option_def.key?(:features)
+          collection.delete_if do |_, key|
+            option_def[:features].key?(key) && !current_organisation.has_feature?(option_def[:features][key])
+          end
         end
+      else
+        collection = export.instance_exec(&option_def[:collection])
       end
+
+      opts[:collection] = collection
+      opts[:include_blank] = t('none') if option_def[:allow_blank]
     end
 
-    opts[:label] = translate_option_key(type, attr)
+    opts[:label] = type.human_attribute_name(attr)
 
     opts[:input_html] = { 'x-on:change': 'import_category = $event.target.value' } if attr == :import_category
     opts[:input_html] = { 'x-on:change': 'host_type = $event.target.value' } if attr == :host_type
@@ -73,30 +66,23 @@ module OptionsHelper
     out
   end
 
-  def display_option_value(record, option_name)
-    option = record.option_def(option_name)
+  def option_attribute(builder, option_name) # rubocop:disable Metrics/MethodLength,Metrics/AbcSize
+    record = builder.object
+    option_def = record.option_def(option_name)
     val = record.options[option_name.to_s]
 
-    if option[:display]
-      instance_exec(val, &option[:display])
-    elsif option[:type] == :boolean
-      val.to_s.t
-    elsif option.key?(:collection)
-      translate_option_value(record.object.class, option_name, val)
+    opts = {}
+    if option_def[:display] # :collection
+      opts[:value_method] = option_def[:display]
+      opts[:as] = :association
+    elsif option_def[:type] == :boolean
+      opts[:value] = t(val.to_s)
+    elsif record.class.enumerized_attributes[option_name]
+      opts[:value] = record.class.enumerized_attributes[option_name].find_value(val).text
     else
-      val
+      opts[:value] = val
     end
-  end
 
-  def translate_option_key(parent_class, key)
-    root = parent_class
-    root = Destination if root < Destination
-    root.tmf("#{parent_class.name.demodulize.underscore}.#{key}")
-  end
-
-  def translate_option_value(parent_class, attr, key)
-    root = parent_class
-    root = Destination if root < Destination
-    root.tmf("#{parent_class.name.demodulize.underscore}.#{attr}_collection.#{key}", default: key)
+    builder.attribute option_name, **opts
   end
 end

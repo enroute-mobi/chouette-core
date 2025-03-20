@@ -6,8 +6,8 @@ class Destination
     option :workbench_api_key, type: :password
     option :automatic_merge, type: :boolean, default_value: true
     option :host_type, type: :select,
-                       collection: %w[chouette iboo],
-                       features: { destination_chouette_custom: %w[custom] },
+                       enumerize: %w[chouette iboo custom],
+                       features: { 'custom' => :destination_chouette_custom },
                        default_value: 'chouette'
     option :custom_url
 

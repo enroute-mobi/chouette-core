@@ -1,5 +1,5 @@
 class Destination::Dummy < ::Destination
-  option :result, collection: %w(successful unexpected_failure expected_failure)
+  option :result, enumerize: %w[successful unexpected_failure expected_failure]
   validates :result, presence: true
 
   def do_transmit(publication, report)

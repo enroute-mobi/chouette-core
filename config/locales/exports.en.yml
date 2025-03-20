@@ -82,7 +82,7 @@ en:
             to:
               invalid: 'invalid period'
     attributes:
-      attrs: &attrs
+      export:
         created_at: Created at
         started_at: Started at
         ended_at: Ended at
@@ -109,22 +109,21 @@ en:
         exported_lines: Exported lines
         exported_code_space: Exported Code Space
         profile: Profile
-        prefer_referent_stop_area: Prefer Referent Stop Areas
         prefer_referent_line: Prefer Referent Lines
+        period: Exported periods
+      export/ara:
+        include_stop_visits: "Include Stop Visits"
+      export/gtfs:
+        prefer_referent_stop_area: Prefer Referent Stop Areas
+        prefer_referent_company: Prefer Referent Companies
+        ignore_parent_stop_places: "Ignore parent Stop Places"
+        ignore_extended_gtfs_route_types: "Ignorer extended route types"
+      export/netex_generic:
+        participant_ref: Netex Participant Ref
+        profile_options: Netex Profile Settings
         ignore_referent_stop_areas: Ignore referent Stop Areas
         skip_line_resources: Skip Line Resources
         skip_stop_area_resources: Skip Stop Area Resources
-        prefer_referent_company: Prefer Referent Companies
-        include_stop_visits: "Include Stop Visits"
-        ignore_parent_stop_places: "Ignore parent Stop Places"
-        ignore_extended_gtfs_route_types: "Ignorer extended route types"
-        period: Exported periods
-        participant_ref: Netex Participant Ref
-        profile_options: Netex Profile Settings
-      export:
-        <<: *attrs
-        base:
-          <<: *attrs
   flash:
     exports:
       create:

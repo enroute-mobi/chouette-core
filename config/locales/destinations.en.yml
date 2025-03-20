@@ -59,44 +59,6 @@ en:
         options: "Options"
         secret_file: "Secret file"
         _destroy: "Remove"
-        dummy:
-          result: Expected outcome
-          result_collection:
-            successful: Success
-            unexpected_failure: Unexpected failure
-            expected_failure: Expected failure
-        ara:
-          ara_url: Referential URL
-          credentials: Import Token
-          force_import: Replace existing data
-        chouette:
-          workbench_id: Workbench ID
-          workbench_api_key: Workbench api key
-          automatic_merge: Automatic merge
-        iboo:
-          workbench_id: Workbench ID
-          workbench_api_key: Workbench api key
-          automatic_merge: Automatic merge
-        custom:
-          url: Url
-          workbench_id: Workbench ID
-          workbench_api_key: Workbench api key
-          automatic_merge: Automatic merge
-        google_cloud_storage:
-          project: Project
-          bucket:  Bucket
-        mail:
-          email_title: Email title
-          email_text: Email text
-          recipients: Recipients
-          link_to_api: Include link to API
-          attached_export_file: Attached export file
-          attached_export_filename: Attachment name
-        sftp:
-          host: Host
-          port: Port
-          directory: Directory
-          username: Username
       destination/dummy:
         result: Expected outcome
       destination/ara:
@@ -108,18 +70,17 @@ en:
         workbench_api_key: Workbench api key
         automatic_merge: Automatic merge
         host_type: Host type
-        host_type_collection:
-          chouette: Chouette
-          iboo: Iboo
-          custom: Custom
         custom_url: Custom URL
       destination/google_cloud_storage:
         project: Project
         bucket:  Bucket
       destination/mail:
+        email_title: Email title
+        email_text: Email text
         recipients: Recipients
         link_to_api: Include link to API
         attached_export_file: Attached export file
+        attached_export_filename: Attachment name
       destination/sftp:
         host: Host
         port: Port
@@ -133,3 +94,14 @@ en:
               mail_format: Invalid email address
             attached_export_filename:
               filename: "Invalid format, only letters, numbers and '-', '{', '}', '%', '_' symbols are allowed"
+  enumerize:
+    destination/dummy:
+      result:
+        successful: Success
+        unexpected_failure: Unexpected failure
+        expected_failure: Expected failure
+    destination/chouette:
+      host_type:
+        chouette: Chouette
+        iboo: Iboo
+        custom: Custom

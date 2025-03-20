@@ -87,7 +87,7 @@ en:
         one:   "NeTEx import"
         other: "imports"
     attributes:
-      attrs: &attrs
+      import:
         created_at: Created at
         started_at: Started at
         ended_at: Ended at
@@ -109,34 +109,31 @@ en:
         code_space: Code Space
         workbench_id: Workbench
         duration: "Duration"
-      import:
-        <<: *attrs
-        base:
-          <<: *attrs
-        workbench:
-          <<: *attrs
-          merge_method: Merge Method
-          automatic_merge: Automatic Merge
-          archive_on_fail: Automatic Archive on failure
-          flag_urgent: Contains urgent data
-          update_workgroup_providers: Allow changes on Workbenches resources
-          store_xml: Store original XML resources
-          disable_missing_resources: Disable missing Stop Areas and Lines
-          strict_mode: Strict Mode (reset any undefined attribute)
-          ignore_particulars: Ignore Particular resources
-          ignore_parent_stop_areas: "Ignore parent stop areas"
-          line_provider_id: Line Provider
-          stop_area_provider_id: Stop Area Provider
-          specific_default_company_id: Specific default company
-          shape_attribute_as_id: Attribute used as id
-          import_category: Import type
-          import_category_collection:
-            netex_generic: Netex Generic
-            shape_file: Shape file
-            automatic: Automatic
-          merge_method_collection:
-            legacy: Classic
-            experimental: Experimental
+      import/workbench:
+        merge_method: Merge Method
+        automatic_merge: Automatic Merge
+        archive_on_fail: Automatic Archive on failure
+        flag_urgent: Contains urgent data
+        update_workgroup_providers: Allow changes on Workbenches resources
+        store_xml: Store original XML resources
+        disable_missing_resources: Disable missing Stop Areas and Lines
+        strict_mode: Strict Mode (reset any undefined attribute)
+        ignore_particulars: Ignore Particular resources
+        ignore_parent_stop_areas: "Ignore parent stop areas"
+        line_provider_id: Line Provider
+        stop_area_provider_id: Stop Area Provider
+        specific_default_company_id: Specific default company
+        shape_attribute_as_id: Attribute used as id
+        import_category: Import type
   errors:
     messages:
       extension_whitelist_error: "You are not allowed to upload %{extension} files, allowed types: %{allowed_types}"
+  enumerize:
+    import/workbench:
+      import_category:
+        netex_generic: Netex Generic
+        shape_file: Shape file
+        automatic: Automatic
+      merge_method:
+        legacy: Classic
+        experimental: Experimental

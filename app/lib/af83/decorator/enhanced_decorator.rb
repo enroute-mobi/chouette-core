@@ -1,4 +1,18 @@
 module Af83::Decorator::EnhancedDecorator
+  extend ActiveSupport::Concern
+
+  included do
+    singleton_class.prepend(Inherited)
+  end
+
+  module Inherited
+    def inherited(base)
+      super
+      base.instance_variable_set(:@_action_links, @_action_links.dup)
+      base.instance_variable_set(:@scope, @scope)
+    end
+  end
+
   module ClassMethods
     def action_link args={}
       raise "You are using `action_link` inside a with_instance_decorator block, but not on the instance decorator itself.\n Use `instance_decorator.action_link` or move outside of the block, as this may lead to an unforeseen behaviour." if @_with_instance_decorator

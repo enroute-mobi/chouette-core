@@ -7,19 +7,20 @@ end
 
 class Af83::Decorator < ModelDecorator
   include Af83::Decorator::EnhancedDecorator
-  extend Af83::Decorator::EnhancedDecorator::ClassMethods
 
   class << self
     prepend DecoratorWithScope
 
     def decorates klass
       instance_decorator.decorates klass
+      instance_decorators[klass] = instance_decorator
     end
 
     def instance_decorator
       @instance_decorator ||= begin
         klass = Class.new(Af83::Decorator::InstanceDecorator)
         klass.delegate_all
+        const_set(:InstanceDecorator, klass)
         klass
       end
     end
@@ -30,9 +31,18 @@ class Af83::Decorator < ModelDecorator
       @_with_instance_decorator = false
     end
 
+    def instance_decorators
+      @instance_decorators ||= Hash.new do |h, subklass|
+        instance_decorator_subklass = Class.new(instance_decorator)
+        instance_decorator_subklass.decorates subklass
+        instance_decorator.const_set(subklass.name.demodulize.to_sym, instance_decorator_subklass)
+        h[subklass] = instance_decorator_subklass
+      end
+    end
+
     def decorate object, options = {}
       if object.is_a?(ActiveRecord::Base)
-        return instance_decorator.decorate object, options
+        instance_decorators[object.class].decorate object, options
       else
         self.new object, options.update(with: instance_decorator)
       end
@@ -128,7 +138,6 @@ class Af83::Decorator < ModelDecorator
 
   class InstanceDecorator < Draper::Decorator
     include Af83::Decorator::EnhancedDecorator
-    extend Af83::Decorator::EnhancedDecorator::ClassMethods
 
     def on_instance?
       true

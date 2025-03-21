@@ -20,9 +20,9 @@ div[x-data="{ destinationType: '#{destination.type}', host_type: '#{f.object.opt
               - if attr == :custom_url
                   template[x-if="host_type == 'custom'"]
                     div
-                      = option_input f, f.object, attr, option_def, child
+                      = option_input f, attr, klass: child
               - else
-                = option_input f, f.object, attr, option_def, child
+                = option_input f, attr, klass: child
 
             = f.input :secret_file, wrapper: :inline_file_input, required: true if child.secret_file_required?
 

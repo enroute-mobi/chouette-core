@@ -42,6 +42,10 @@ module Chouette
       @mailer ||= Mailer.new(env)
     end
 
+    def referential_additional_constraints?
+      env.boolean('REFERENTIAL_ADDITIONAL_CONSTRAINTS', default: true)
+    end
+
     # See Feature.additionals
     def additional_features
       @additional_features ||= env.array('FEATURES_ADDITIONAL')
@@ -144,9 +148,17 @@ module Chouette
         raw_value.strip
       end
 
-      BOOLEAN_VALUES = %w[true TRUE 1].freeze
-      def boolean(name)
-        BOOLEAN_VALUES.include? value(name)
+      BOOLEAN_TRUE_VALUES = %w[true 1].freeze
+      BOOLEAN_FALSE_VALUES = %w[false 0].freeze
+
+      def boolean(name, default: false)
+        raw_value = value(name)
+        return default unless raw_value
+
+        raw_value = raw_value.downcase
+        candidate_values = default ? BOOLEAN_FALSE_VALUES : BOOLEAN_TRUE_VALUES
+
+        candidate_values.include? value(name)
       end
 
       def array(name)

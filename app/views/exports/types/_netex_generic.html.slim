@@ -1,11 +1,13 @@
 - @export = Export::NetexGeneric.new(@export.attributes.except('id', 'type').symbolize_keys)
 
-= form.simple_fields_for(resource_type, @export)do |sub_form|
+= form.simple_fields_for(resource_type, @export) do |sub_form|
   = render 'exports/options/period', form: sub_form
   = sub_form.input :profile, as: :select, include_blank: false
   = render 'exports/options/exported_lines', form: sub_form
   = sub_form.input :prefer_referent_line, as: :switchable_checkbox
   = sub_form.input :ignore_referent_stop_areas, as: :switchable_checkbox
+  = sub_form.input :skip_line_resources, as: :switchable_checkbox
+  = sub_form.input :skip_stop_area_resources, as: :switchable_checkbox
   - if has_feature?("export_with_code_space")
     = render 'exports/options/exported_code_space', form: sub_form
   = sub_form.input :participant_ref

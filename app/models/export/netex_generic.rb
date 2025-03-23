@@ -14,6 +14,8 @@ class Export::NetexGeneric < Export::Base
   option :profile_options, default_value: '{}', serialize: ActiveRecord::Type::Json
   option :prefer_referent_line, default_value: false, enumerize: [true, false], serialize: ActiveModel::Type::Boolean
   option :ignore_referent_stop_areas, default_value: false, enumerize: [true, false], serialize: ActiveModel::Type::Boolean
+  option :skip_line_resources, default_value: false, enumerize: [true, false], serialize: ActiveModel::Type::Boolean
+  option :skip_stop_area_resources, default_value: false, enumerize: [true, false], serialize: ActiveModel::Type::Boolean
   option :exported_code_space
 
   validate :ensure_is_valid_period
@@ -193,32 +195,22 @@ class Export::NetexGeneric < Export::Base
     @export_file ||= Tempfile.new(["export#{id}",'.zip'])
   end
 
-  def generate_export_file
-    part_classes = [
-      Entrances,
-      StopAreas,
-      Companies,
-      Networks,
-      LineNotices,
-      Lines,
+  def part_classes
+    [].tap do |part_classes|
+      part_classes.push(Entrances, StopAreas) unless skip_stop_area_resources
+      part_classes.push(Companies, Networks, LineNotices, Lines) unless skip_line_resources
+
       # Export StopPoints before Routes to detect local references
-      StopPoints,
-      Routes,
-      RoutingConstraintZones,
-      JourneyPatterns,
-      TimeTables,
-      VehicleJourneyStopAssignments,
-      Organisations,
-      PointOfInterests,
-      # Because of Exportable#processed side-effects, these 3 parts are the last ones
-      VehicleJourneysCache,
-      VehicleJourneyAtStops,
-      VehicleJourneys,
-      FareZones
-    ]
+      part_classes.push(StopPoints, Routes, RoutingConstraintZones, JourneyPatterns, TimeTables, VehicleJourneyStopAssignments, Organisations, PointOfInterests)
 
-    part_classes << Finalizer
+      # Because of Exportable#processed side-effects, these 4 parts are the last ones
+      part_classes.push(VehicleJourneysCache, VehicleJourneyAtStops, VehicleJourneys, FareZones)
 
+      part_classes << Finalizer
+    end
+  end
+
+  def generate_export_file
     part_classes.each do |part_class|
       part_class.new(self).perform
     end
@@ -1509,6 +1501,7 @@ class Export::NetexGeneric < Export::Base
 
     def prefetch_codes
       # Requires to avoid conflict in query contexts between find_each_light and
+      code_provider.collection("stop_areas")
       code_provider.collection("stop_points")
     end
 

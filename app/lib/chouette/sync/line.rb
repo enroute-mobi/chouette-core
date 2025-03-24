@@ -72,6 +72,10 @@ module Chouette::Sync
           end
         end
 
+        def booking_arrangement_id
+          resolve :booking_arrangement, booking_arrangements&.first.ref
+        end
+
         def line_notice_ids
           resolve :line_notice, line_notice_refs
         end
@@ -99,6 +103,7 @@ module Chouette::Sync
             company_id: line_company_id,
             secondary_company_ids: line_secondary_company_ids,
             network_id: line_network_id,
+            booking_arrangement_id: booking_arrangement_id,
             line_notice_ids: line_notice_ids,
             mobility_impaired_accessibility: accessibility.mobility_impaired_access,
             wheelchair_accessibility: accessibility.wheelchair_access,

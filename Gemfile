@@ -128,7 +128,7 @@ gem 'premailer-rails', '>= 1.11.1'
 gem 'redis-actionpack', '>= 5.3.0'
 
 gem 'gtfs', en_route: 'gtfs'
-gem 'netex', en_route: 'netex'
+gem 'netex', en_route: 'netex', branch: 'DATA-15-support-bookingarrangement-resou'
 gem 'rgeo-shapefile'
 gem 'ara', '>= 3.0.0', en_route: 'ara-ruby'
 gem 'neptune', en_route: 'neptune'

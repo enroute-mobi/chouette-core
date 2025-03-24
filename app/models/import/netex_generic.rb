@@ -275,6 +275,7 @@ module Import
           sync.synchronize_with Chouette::Sync::Company::Netex
           sync.synchronize_with Chouette::Sync::Network::Netex
           sync.synchronize_with Chouette::Sync::LineNotice::Netex
+          sync.synchronize_with Chouette::Sync::BookingArrangement::Netex
           sync.synchronize_with Chouette::Sync::Line::Netex
         end
       end

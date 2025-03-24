@@ -9,6 +9,7 @@ class LineProvider < ApplicationModel
   has_many :line_notices, class_name: "Chouette::LineNotice"
   has_many :line_routing_constraint_zones
   has_many :line_groups, inverse_of: :line_provider
+  has_many :booking_arrangements, class_name: "BookingArrangement"
 
   validates :name, presence: true
   validates :short_name, presence: true, uniqueness: { scope: :workbench }, format: { with: %r{\A[0-9a-zA-Z_]+\Z} }

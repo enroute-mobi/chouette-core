@@ -1,7 +1,6 @@
 class BookingArrangement < ApplicationModel
   include CodeSupport
-
-  belongs_to :line_provider
+  include LineReferentialSupport
 
   has_many :lines
 

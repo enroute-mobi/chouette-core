@@ -356,6 +356,9 @@ GEM
     fugit (1.11.1)
       et-orbi (~> 1, >= 1.2.11)
       raabro (~> 1.4)
+    fuubar (2.5.1)
+      rspec-core (~> 3.0)
+      ruby-progressbar (~> 1.4)
     geokit (1.14.0)
     georuby (2.5.2)
     get_process_mem (0.2.7)
@@ -536,6 +539,8 @@ GEM
       racc (~> 1.4)
     nokogiri (1.15.7-x86_64-linux)
       racc (~> 1.4)
+    nyan-cat-formatter (0.12.0)
+      rspec (>= 2.99, >= 2.14.2, < 4)
     oauth2 (2.0.9)
       faraday (>= 0.17.3, < 3.0)
       jwt (>= 1.0, < 3.0)
@@ -919,6 +924,7 @@ DEPENDENCIES
   faraday
   faraday_middleware
   font_awesome5_rails (>= 1.5.0)
+  fuubar
   geokit
   georuby
   google-cloud-storage (>= 1.19.0)
@@ -948,6 +954,7 @@ DEPENDENCIES
   net-sftp
   netex!
   nokogiri (>= 1.14.3)
+  nyan-cat-formatter
   parallel_tests
   pg
   pg_search

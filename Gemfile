@@ -170,6 +170,9 @@ group :test do
   gem 'database_cleaner'
   gem 'poltergeist', '>= 1.18.1'
   gem 'rspec-benchmark'
+  # RSpec progress bar
+  gem 'fuubar'
+  gem 'nyan-cat-formatter'
 
   gem 'webmock'
   gem 'shoulda-matchers'

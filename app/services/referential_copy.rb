@@ -77,7 +77,7 @@ class ReferentialCopy
       measure "vehicle_journey_at_stops" do
         vehicle_journey_at_stops = source.vehicle_journey_at_stops.where(vehicle_journey: vehicle_journeys)
 
-        vehicle_journey_at_stops.find_each_light do |light_vehicle_journey_at_stop|
+        vehicle_journey_at_stops.find_each_light(block_size: 10_000) do |light_vehicle_journey_at_stop|
           referential_inserter.vehicle_journey_at_stops << light_vehicle_journey_at_stop
         end
       end

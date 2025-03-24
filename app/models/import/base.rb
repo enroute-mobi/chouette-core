@@ -117,10 +117,6 @@ class Import::Base < ApplicationModel
     "Import::Resource"
   end
 
-  def self.human_name
-    I18n.t("import.#{short_type}")
-  end
-
   def self.short_type
     @short_type ||= self.name.demodulize.underscore
   end

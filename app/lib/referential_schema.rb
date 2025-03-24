@@ -39,6 +39,14 @@ class ReferentialSchema
     @tables ||= Table.create self, table_names
   end
 
+  def reset_caches
+    @tables = nil
+    @excluded_tables = nil
+    @connection = nil
+    @table_names_ordered_by_constraints = nil
+    @cloned_tables = nil
+  end
+
   def analyse
     # With postgresql 9.6 ANALYZE could be used for only one table
     # With postgresql above 9.6 ANALYZE could be used with table list
@@ -187,6 +195,10 @@ class ReferentialSchema
                          (SELECT #{columns_arg} FROM #{full_name})")
 
       target_table.reset_pk_sequence
+    end
+
+    def inspect
+      "<#ReferentialSchema::Table '#{schema.name}.#{name}'>"
     end
   end
 

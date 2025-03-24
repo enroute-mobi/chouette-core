@@ -49,6 +49,8 @@ RSpec.describe ReferentialSchema do
   describe '#tables' do
     subject { referential_schema.tables }
 
+    before { referential_schema.reset_caches }
+
     it 'returns a Table for each model table' do
       table_name = 'dummy'
       allow(referential_schema).to receive(:table_names).and_return([table_name])

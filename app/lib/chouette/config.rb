@@ -158,7 +158,7 @@ module Chouette
         raw_value = raw_value.downcase
         candidate_values = default ? BOOLEAN_FALSE_VALUES : BOOLEAN_TRUE_VALUES
 
-        candidate_values.include? value(name)
+        candidate_values.include? raw_value
       end
 
       def array(name)

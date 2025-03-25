@@ -73,7 +73,7 @@ module Chouette::Sync
         end
 
         def booking_arrangement_id
-          resolve :booking_arrangement, booking_arrangements&.first.ref
+          resolve :booking_arrangement, booking_arrangements&.first&.ref
         end
 
         def line_notice_ids

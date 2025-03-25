@@ -1,0 +1,13 @@
+en:
+  activerecord:
+    attributes:
+      flexible_area_membership:
+        member_id: "Associated stop"
+    errors:
+      models:
+        flexible_area_membership:
+          attributes:
+            member_id:
+              cannot_be_flexible_stop_place: "The member cannot be a flexible stop place"
+            flexible_area_id:
+              must_be_flexible_stop_place: "The flexible area must be a flexible stop place"

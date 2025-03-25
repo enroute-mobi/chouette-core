@@ -171,6 +171,7 @@ Rails.application.routes.draw do # rubocop:disable Metrics/BlockLength
       resources :stop_areas do
         get :autocomplete, on: :collection
         get :fetch_connection_links, on: :member, defaults: { format: 'geojson' }
+        get :autocomplete_flexible_members, on: :collection
 
         resources :document_memberships, only: %i[index create destroy], controller: :stop_area_document_memberships
       end

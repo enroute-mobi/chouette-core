@@ -47,6 +47,8 @@ fr:
       zip_code: Indiquez un code postal...
       city_name: Indiquez un nom de commune...
       area_type: "Indiquez un type d'Arrêt..."
+      area_type:
+        flexible_stop_place: "Lieu d'arrêt à la demande"
     statuses:
       in_creation: En création
       confirmed: Activé
@@ -67,6 +69,7 @@ fr:
         fare: "Tarification"
         accessibility: "Accessibilité"
         custom_fields: "Champs personnalisés"
+        flexible_area: "Zone d'arrêt à la demande"
       address: "246 Boulevard Saint-Germain, 75007 Paris"
       geolocalize: "Géolocalisez "
     edit:
@@ -217,6 +220,9 @@ fr:
             referent_id:
               an_object_used_as_referent_must_be_flagged_as_referent: un Arrêt utilisé en référent doit être référencé en tant que référent
               a_referent_cannot_have_a_referent: un référent ne peut pas référencer un référent
+            parent_id:
+              not_allowed_for_flexible: "Les lieux d'arrêt à la demande ne peuvent pas avoir de parent"
+              children_not_allowed_for_flexible: "Les lieux d'arrêt à la demande ne peuvent pas avoir d'enfants"
   chart:
     values:
       stop_area:

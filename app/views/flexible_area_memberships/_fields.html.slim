@@ -1,0 +1,10 @@
+.nested-fields
+  = f.input :id, as: :hidden, wrapper: false
+  .wrapper
+    = f.input :member_id,
+      as: :ajax_select,
+      collection: [f.object.member].compact,
+      label_method: :display_name,
+      input_html: { 'data-url': autocomplete_workbench_stop_area_referential_stop_areas_path(@workbench, format: :json) }
+    div
+      = link_to_remove_association '', f, class: 'fa fa-trash'

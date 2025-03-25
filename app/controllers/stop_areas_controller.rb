@@ -3,14 +3,14 @@
 class StopAreasController < Chouette::StopAreaReferentialController
   include ApplicationHelper
 
-  defaults :resource_class => Chouette::StopArea
+  defaults resource_class: Chouette::StopArea
 
   # rubocop:disable Rails/LexicallyScopedActionFilter
   before_action :authorize_resource, except: %i[new create index show autocomplete fetch_connection_links]
   # rubocop:enable Rails/LexicallyScopedActionFilter
 
   respond_to :html, :geojson, :xml, :json
-  respond_to :js, :only => :index
+  respond_to :js, only: :index
 
   def autocomplete
     scope = stop_area_referential.stop_areas.where(deleted_at: nil)
@@ -21,15 +21,15 @@ class StopAreasController < Chouette::StopAreaReferentialController
   end
 
   def index # rubocop:disable Metrics/MethodLength
-    if saved_search = saved_searches.find_by(id: params[:search_id])
+    if (saved_search = saved_searches.find_by(id: params[:search_id]))
       @search = saved_search.search
     end
 
     @per_page = 25
-    @zip_codes = stop_area_referential.stop_areas.where("zip_code is NOT null").distinct.pluck(:zip_code)
+    @zip_codes = stop_area_referential.stop_areas.where('zip_code is NOT null').distinct.pluck(:zip_code)
 
     index! do |format|
-      format.html {
+      format.html do
         @chart = @search.chart(scope) if @search.graphical?
 
         unless @chart
@@ -40,7 +40,7 @@ class StopAreasController < Chouette::StopAreaReferentialController
             }
           )
         end
-      }
+      end
     end
   end
 
@@ -49,7 +49,8 @@ class StopAreasController < Chouette::StopAreaReferentialController
       format.geojson { render 'stop_areas/show.geo' }
 
       format.json do
-        attributes = stop_area.attributes.slice(:id, :name, :objectid, :comment, :area_type, :registration_number, :longitude, :latitude, :country_code, :time_zone, :street_name, :kind, :custom_field_values, :metadata)
+        attributes = stop_area.attributes.slice(:id, :name, :objectid, :comment, :area_type, :registration_number,
+                                                :longitude, :latitude, :country_code, :time_zone, :street_name, :kind, :custom_field_values, :metadata)
         area_type_label = I18n.t("area_types.label.#{stop_area.area_type}")
         attributes[:text] = "<span class='small label label-info'>#{area_type_label}</span>#{stop_area.full_name}"
         render json: attributes
@@ -76,6 +77,13 @@ class StopAreasController < Chouette::StopAreaReferentialController
 
   def saved_searches
     @saved_searches ||= workbench.saved_searches.for(Search::StopArea)
+  end
+
+  def autocomplete_flexible_members
+    scope = stop_area_referential.stop_areas.where.not(area_type: 'flexible_stop_place')
+    scope = scope.by_text(params[:q]) if params[:q].present?
+    scope = scope.limit(50)
+    render json: scope.map { |s| { id: s.id, text: s.formatted_selection_details } }
   end
 
   protected
@@ -139,9 +147,10 @@ class StopAreasController < Chouette::StopAreaReferentialController
       :status,
       :stop_area_provider_id,
       :transport_mode,
-      fare_zone_ids: [],
-      codes_attributes: [:id, :code_space_id, :value, :_destroy],
-      localized_names: stop_area_referential.locales.map{|l| l[:code]}
+      { flexible_area_memberships_attributes: %i[id member_id _destroy],
+        fare_zone_ids: [],
+        codes_attributes: %i[id code_space_id value _destroy],
+        localized_names: stop_area_referential.locales.map { |l| l[:code] } }
     ] + permitted_custom_fields_params(Chouette::StopArea.custom_fields(stop_area_referential.workgroup))
     fields += [:area_type] if params[:action] == 'create' || params[:action] == 'new'
 

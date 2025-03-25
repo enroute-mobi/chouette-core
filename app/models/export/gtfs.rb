@@ -356,6 +356,7 @@ module Export
     class StopAreas < Part
       delegate :stop_areas, :referenced_stop_areas, to: :export_scope
       delegate :public_code_space, to: :export
+      delegate :code_space, to: :export # TODO CHOUETTE-4496 temporary
 
       def perform
         referenced_stop_areas.pluck(:id, :referent_id).each do |model_id, referent_id|
@@ -363,16 +364,35 @@ module Export
         end
 
         stop_areas.includes(:referent, :parent, :codes, :fare_zones).find_each do |stop_area|
-          decorated_stop_area = decorate(stop_area, public_code_space: public_code_space)
+          decorated_stop_area = decorate(stop_area, public_code_space: public_code_space, code_space: code_space)
           target.stops << decorated_stop_area.gtfs_attributes
         end
       end
 
       class Decorator < ModelDecorator
         attr_accessor :public_code_space
+        attr_accessor :code_space # TODO CHOUETTE-4496 temporary
 
         def gtfs_zone_id
-          code_provider.code(default_fare_zone)
+          # TODO CHOUETTE-4496 this is correct code to restore
+          # code_provider.code(default_fare_zone)
+
+          zone_id
+        end
+
+        # TODO CHOUETTE-4496 #zone_id, #code_value and #fare_zone_codes are temporary
+        def zone_id
+          code_value || default_fare_zone&.uuid
+        end
+
+        def code_value
+          return unless fare_zone_codes
+
+          fare_zone_codes.find { |code| code.code_space && code.code_space == code_space }&.value
+        end
+
+        def fare_zone_codes
+          default_fare_zone&.codes
         end
 
         def default_fare_zone

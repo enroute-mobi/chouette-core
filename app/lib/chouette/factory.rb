@@ -494,6 +494,17 @@ module Chouette
             model :fare_zone do
               attribute(:name) { |n| "Fare Zone #{n}" }
 
+              transient :codes, {}
+
+              after do
+                transient(:codes).each do |code_space_short_name, values|
+                  Array(values).each do |value|
+                    code_space = new_instance.workbench.workgroup.code_spaces.find_by!(short_name: code_space_short_name)
+                    new_instance.codes.build(code_space: code_space, value: value)
+                  end
+                end
+              end
+
               model :fare_geographic_reference do
                 attribute(:short_name) { |n| "geographic_zone_#{n}" }
                 attribute(:name) { |n| "Fare Geographic Reference #{n}" }

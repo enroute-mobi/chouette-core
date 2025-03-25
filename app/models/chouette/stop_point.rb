@@ -89,9 +89,9 @@ module Chouette
       Chouette::StopArea.where(:area_type => ['Quay', 'BoardingPosition'])
     end
 
-    def self.find_each_light(&block)
+    def self.find_each_light(**options, &block)
       stop_point = Light::StopPoint.new
-      each_row do |row|
+      each_row(**options) do |row|
         stop_point.attributes = row
         block.call stop_point
       end

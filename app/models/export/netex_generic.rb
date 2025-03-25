@@ -1750,7 +1750,7 @@ class Export::NetexGeneric < Export::Base
       stop_point_in_journey_pattern_ref_cache = {}
       passing_time_cache = {}
 
-      vehicle_journey_at_stops.find_each_light do |light_vehicle_journey_at_stop|
+      vehicle_journey_at_stops.find_each_light(block_size: 10_000) do |light_vehicle_journey_at_stop|
         decorated_vehicle_journey_at_stop = decorate(
           light_vehicle_journey_at_stop,
           stop_point_in_journey_pattern_ref_cache: stop_point_in_journey_pattern_ref_cache,
@@ -1995,7 +1995,7 @@ class Export::NetexGeneric < Export::Base
 
   class VehicleJourneyStopAssignments < Part
     def perform
-      vehicle_journey_at_stops.find_each_light do |vehicle_journey_at_stop|
+      vehicle_journey_at_stops.find_each_light(block_size: 10_000) do |vehicle_journey_at_stop|
         tags = resource_tagger.tags_for(vehicle_journey_at_stop.line_id)
         tagged_target = TaggedTarget.new(target, tags)
 

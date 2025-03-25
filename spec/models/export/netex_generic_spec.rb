@@ -448,7 +448,8 @@ RSpec.describe Export::NetexGeneric do
             'Export::Scope',
             lines: Chouette::Line.where(id: line.id),
             companies: Chouette::Company.where(id: [first_company_id, second_company_id]),
-            networks: Chouette::Network.where(id: context.network)
+            networks: Chouette::Network.where(id: context.network),
+            booking_arrangements: BookingArrangement.where(id: context.booking_arrangement)
           )
         end
 
@@ -457,6 +458,7 @@ RSpec.describe Export::NetexGeneric do
             company :first
             company :second
             network
+            booking_arrangement
             code_space short_name: 'test'
             line
           end

@@ -75,7 +75,7 @@ RSpec.describe Export::Gtfs::StopAreas::Decorator do
       it { is_expected.to be_nil }
     end
 
-    context 'when the CodeProvider returns 42 for the default FareZone' do
+    context 'when the CodeProvider returns 42 for the default FareZone', skip: 'CHOUETTE-4496' do
       before do
         fare_zone = Fare::Zone.new
         allow(decorator).to receive(:default_fare_zone).and_return(fare_zone)
@@ -83,6 +83,57 @@ RSpec.describe Export::Gtfs::StopAreas::Decorator do
       end
 
       it { is_expected.to eq('42') }
+    end
+
+    # TODO CHOUETTE-4496 temporary
+    context 'with default_fare_zone' do
+      let(:context) do
+        Chouette.create do
+          code_space :code_space1, short_name: 'cs1'
+          code_space :code_space2, short_name: 'cs2'
+          code_space :no_code_space, short_name: 'ncs'
+
+          fare_zone :fare_zone, uuid: '1a9c0d69-e8be-46fb-a28c-0e139fb74539', codes: { 'cs1' => 'V1', 'cs2' => 'V2' }
+          fare_zone :other_fare_zone, codes: { 'cs1' => 'V1' }
+        end
+      end
+      let(:fare_zone) { context.fare_zone(:fare_zone) }
+      let(:code_space) { nil }
+
+      before do
+        allow(decorator).to receive(:default_fare_zone).and_return(fare_zone)
+        allow(decorator).to receive(:code_space).and_return(code_space)
+      end
+
+      context 'when export has no code_space' do
+        it 'returns fare zone uuid' do
+          is_expected.to eq('1a9c0d69-e8be-46fb-a28c-0e139fb74539')
+        end
+      end
+
+      context 'when export has a code space' do
+        let(:code_space) { context.code_space(:code_space1) }
+
+        it 'returns the fare zone code in this code space' do
+          is_expected.to eq('V1')
+        end
+
+        context 'but there are 2 fare zones with the same values in this code space' do
+          let(:code_space) { context.code_space(:code_space2) }
+
+          it 'still returns the fare zone code in this code space' do
+            is_expected.to eq('V2')
+          end
+        end
+
+        context 'but the fare zone has no code in this code space' do
+          let(:code_space) { context.code_space(:no_code_space) }
+
+          it 'returns fare zone uuid' do
+            is_expected.to eq('1a9c0d69-e8be-46fb-a28c-0e139fb74539')
+          end
+        end
+      end
     end
   end
 

@@ -105,7 +105,7 @@ class TimeOfDayInput < SimpleForm::Inputs::Base
   end
 
   def minute_options
-    base_options.merge(field_name: attribute_name_with_position(2), minute_step: 5)
+    base_options.merge(field_name: attribute_name_with_position(2))
   end
 
   def time_of_day

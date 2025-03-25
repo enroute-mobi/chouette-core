@@ -101,7 +101,7 @@ module Export
       delegate :workgroup, :workbench, :line_referential, :stop_area_referential, :metadatas, to: :referential
       delegate :shape_referential, :fare_referential, to: :workgroup
 
-      delegate :line_groups, :companies, :networks, :line_notices, to: :line_referential
+      delegate :line_groups, :companies, :networks, :line_notices, :booking_arrangements, to: :line_referential
       delegate :stop_area_groups, :entrances, to: :stop_area_referential
 
       delegate :shapes, :point_of_interests, to: :shape_referential

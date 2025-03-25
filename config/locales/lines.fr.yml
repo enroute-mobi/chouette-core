@@ -69,6 +69,7 @@ fr:
       sections:
         identification: "Identification"
         hierarchy: "Hiérarchie"
+        booking: "Réservation"
         location: "Localisation"
         activation: "Activation"
         publication_data: "Publication"

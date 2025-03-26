@@ -55,6 +55,7 @@ en:
         content_type: Content Type
         preview: Preview
         document_type_id: Document Type
+        document_type: Document Type
         document_provider_id: Document provider
     errors:
       models:

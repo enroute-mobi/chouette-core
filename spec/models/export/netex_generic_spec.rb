@@ -70,7 +70,9 @@ RSpec.describe Export::NetexGeneric do
     describe '#decorator_attributes' do
       subject { part.decorator_attributes }
 
-      before { allow(export).to receive(:alternate_identifiers_extractor).and_return(double('Export AlternateIdentifiersExtractor')) }
+      before do
+        allow(export).to receive(:alternate_identifiers_extractor).and_return(double('Export AlternateIdentifiersExtractor'))
+      end
 
       it do
         is_expected.to eq(alternate_identifiers_extractor: export.alternate_identifiers_extractor)
@@ -1102,7 +1104,7 @@ RSpec.describe Export::NetexGeneric do
     context 'when parent is created before child' do
       it 'processes stop areas in correct order' do
         part.perform
-        expect(target.resources.map(&:name)).to eq(['Quay', 'Parent'])
+        expect(target.resources.map(&:name)).to eq(%w[Quay Parent])
       end
     end
 
@@ -1124,7 +1126,7 @@ RSpec.describe Export::NetexGeneric do
 
       it 'processes stop areas in correct order' do
         part.perform
-        expect(target.resources.map(&:name)).to eq(['Quay', 'Parent'])
+        expect(target.resources.map(&:name)).to eq(%w[Quay Parent])
       end
     end
 
@@ -2186,9 +2188,9 @@ RSpec.describe Export::NetexGeneric do
 
       let(:decorator) { described_class.new fare_zone, code_provider: code_provider }
 
-      describe "netex_resource" do
+      describe 'netex_resource' do
         describe '#id' do
-          it "uses FareZone uuid" do
+          it 'uses FareZone uuid' do
             is_expected.to include(id: fare_zone.uuid)
           end
         end
@@ -2239,16 +2241,16 @@ RSpec.describe Export::NetexGeneric do
 
       let(:decorator) { described_class.new booking_arrangement, code_provider: code_provider }
 
-      describe "netex_resource" do
+      describe 'netex_resource' do
         describe '#id' do
-          it "uses Booking Arrangement code" do
+          it 'uses Booking Arrangement code' do
             is_expected.to include(id: 'standard')
           end
         end
 
         describe '#booking_contact' do
-          it "uses Booking Arrangement code" do
-            is_expected.to (
+          it 'uses Booking Arrangement code' do
+            is_expected.to(
               include(
                 booking_contact: an_object_having_attributes(
                   phone: booking_arrangement.phone,
@@ -2260,49 +2262,49 @@ RSpec.describe Export::NetexGeneric do
         end
 
         describe '#booking_methods' do
-          it "uses Booking Arrangement code" do
+          it 'uses Booking Arrangement code' do
             is_expected.to include(booking_methods: 'callOffice')
           end
         end
 
         describe '#booking_access' do
-          it "uses booking access" do
+          it 'uses booking access' do
             is_expected.to include(booking_access: 'public')
           end
         end
 
         describe '#buy_when' do
-          it "uses buy when" do
+          it 'uses buy when' do
             is_expected.to include(buy_when: 'beforeBoarding')
           end
         end
 
         describe '#book_when' do
-          it "uses book when" do
+          it 'uses book when' do
             is_expected.to include(book_when: 'untilPreviousDay')
           end
         end
 
         describe '#latest_booking_time' do
-          it "uses latest booking time" do
+          it 'uses latest booking time' do
             is_expected.to include(latest_booking_time: an_object_having_attributes(hour: 16, minute: 30))
           end
         end
 
         describe '#minimum_booking_period' do
-          it "uses minimum booking period" do
+          it 'uses minimum booking period' do
             is_expected.to include(minimum_booking_period: 'PT30M')
           end
         end
 
         describe '#booking_url' do
-          it "uses booking url" do
+          it 'uses booking url' do
             is_expected.to include(booking_url: booking_arrangement.booking_url)
           end
         end
 
         describe '#booking_note' do
-          it "uses booking notes" do
+          it 'uses booking notes' do
             is_expected.to include(booking_note: 'Booking notes')
           end
         end

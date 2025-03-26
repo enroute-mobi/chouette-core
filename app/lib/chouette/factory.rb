@@ -302,6 +302,32 @@ module Chouette
               end
             end
 
+            model :booking_arrangement do
+              attribute(:name) { |n| "Booking arrangement #{n}" }
+              attribute(:phone) { |n| "+33 #{n} 23 45 67 89" }
+              attribute(:url) { |n| "https://#{n}.com/info" }
+              attribute(:booking_methods) { [:call_office] }
+              attribute(:booking_access) { 'public' }
+              attribute(:book_when) { 'until_previous_day' }
+              attribute(:buy_when) { 'before_boarding'}
+              attribute(:latest_booking_time) { TimeOfDay.new(16, 30) }
+              attribute(:minimum_booking_period) { 30 }
+              attribute(:booking_url) { |n| "https://#{n}.com/booking" }
+              attribute(:booking_notes) { 'Booking notes' }
+
+              transient :codes
+              after do
+                new_instance.line_referential = parent.line_referential
+
+                (transient(:codes) || {}).each do |code_space_short_name, values|
+                  Array(values).each do |value|
+                    code_space = new_instance.workgroup.code_spaces.find_by!(short_name: code_space_short_name)
+                    new_instance.codes.build(code_space: code_space, value: value)
+                  end
+                end
+              end
+            end
+
             model :line_routing_constraint_zone do
               transient :lines
               transient :stop_areas

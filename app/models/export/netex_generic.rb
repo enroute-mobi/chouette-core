@@ -198,7 +198,7 @@ class Export::NetexGeneric < Export::Base
   def part_classes
     [].tap do |part_classes|
       part_classes.push(Entrances, StopAreas) unless skip_stop_area_resources
-      part_classes.push(Companies, Networks, LineNotices, Lines) unless skip_line_resources
+      part_classes.push(Companies, Networks, LineNotices, BookingArrangements, Lines) unless skip_line_resources
 
       # Export StopPoints before Routes to detect local references
       part_classes.push(StopPoints, Routes, RoutingConstraintZones, JourneyPatterns, TimeTables, VehicleJourneyStopAssignments, Organisations, PointOfInterests)
@@ -894,6 +894,7 @@ class Export::NetexGeneric < Export::Base
           represented_by_group_ref: represented_by_group_ref,
           presentation: presentation,
           additional_operators: additional_operators,
+          booking_arrangements: booking_arrangements,
           key_list: netex_alternate_identifiers,
           accessibility_assessment: accessibility_assessment,
           status: status,
@@ -930,6 +931,11 @@ class Export::NetexGeneric < Export::Base
           company_code = code_provider.companies.code(company_id)
           Netex::Reference.new(company_code, type: 'OperatorRef') if company_code
         end.compact
+      end
+
+      def booking_arrangements
+        booking_arrangement_code = code_provider.booking_arrangements.code(booking_arrangement_id)
+        [Netex::Reference.new(booking_arrangement_code, type: 'BookingArrangementRef')] if booking_arrangement_code
       end
 
       def status
@@ -987,6 +993,71 @@ class Export::NetexGeneric < Export::Base
 
       def netex_resource
         Netex::Notice.new netex_attributes
+      end
+    end
+  end
+
+  class BookingArrangements < Part
+    delegate :booking_arrangements, to: :export_scope
+
+    def perform
+      booking_arrangements.includes(:codes).find_each do |booking_arrangement|
+        target << decorate(booking_arrangement).netex_resource
+      end
+    end
+
+    class Decorator < ModelDecorator
+      def netex_attributes
+        super.merge(
+          booking_contact: netex_booking_contact,
+          booking_methods: netex_booking_methods,
+          booking_access: netex_booking_access,
+          book_when: netex_book_when,
+          buy_when: netex_buy_when,
+          latest_booking_time: netex_latest_booking_time,
+          minimum_booking_period: netex_minimum_booking_period,
+          booking_url: booking_url,
+          booking_note: booking_notes
+        )
+      end
+
+      def netex_book_when
+        book_when&.camelize(:lower)
+      end
+
+      def netex_buy_when
+        buy_when&.camelize(:lower)
+      end
+
+      def netex_booking_contact
+        Netex::ContactDetails.new(
+          phone: phone,
+          url: url
+        )
+      end
+
+      def netex_booking_access
+        booking_access&.camelize(:lower)
+      end
+
+      def netex_booking_methods
+        booking_methods.map { |booking_method| booking_method.camelize(:lower) }.join(' ')
+      end
+
+      def netex_minimum_booking_period
+        "PT#{minimum_booking_period}M" if minimum_booking_period
+      end
+
+      def netex_latest_booking_time
+        Netex::TimeOfDay.new(
+          hour: latest_booking_time.hour,
+          minute: latest_booking_time.minute,
+          second: latest_booking_time.second
+        ) if latest_booking_time
+      end
+
+      def netex_resource
+        Netex::BookingArrangement.new netex_attributes
       end
     end
   end

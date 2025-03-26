@@ -36,7 +36,7 @@ module Chouette
           end
 
           def netex_booking_methods
-            [booking_methods.underscore]
+            booking_methods&.split(/\s/).map(&:underscore)
           end
 
           def netex_booking_access

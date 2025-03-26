@@ -70,7 +70,9 @@ RSpec.describe Export::NetexGeneric do
     describe '#decorator_attributes' do
       subject { part.decorator_attributes }
 
-      before { allow(export).to receive(:alternate_identifiers_extractor).and_return(double('Export AlternateIdentifiersExtractor')) }
+      before do
+        allow(export).to receive(:alternate_identifiers_extractor).and_return(double('Export AlternateIdentifiersExtractor'))
+      end
 
       it do
         is_expected.to eq(alternate_identifiers_extractor: export.alternate_identifiers_extractor)
@@ -448,7 +450,8 @@ RSpec.describe Export::NetexGeneric do
             'Export::Scope',
             lines: Chouette::Line.where(id: line.id),
             companies: Chouette::Company.where(id: [first_company_id, second_company_id]),
-            networks: Chouette::Network.where(id: context.network)
+            networks: Chouette::Network.where(id: context.network),
+            booking_arrangements: BookingArrangement.where(id: context.booking_arrangement)
           )
         end
 
@@ -457,6 +460,7 @@ RSpec.describe Export::NetexGeneric do
             company :first
             company :second
             network
+            booking_arrangement
             code_space short_name: 'test'
             line
           end
@@ -1100,7 +1104,7 @@ RSpec.describe Export::NetexGeneric do
     context 'when parent is created before child' do
       it 'processes stop areas in correct order' do
         part.perform
-        expect(target.resources.map(&:name)).to eq(['Quay', 'Parent'])
+        expect(target.resources.map(&:name)).to eq(%w[Quay Parent])
       end
     end
 
@@ -1122,7 +1126,7 @@ RSpec.describe Export::NetexGeneric do
 
       it 'processes stop areas in correct order' do
         part.perform
-        expect(target.resources.map(&:name)).to eq(['Quay', 'Parent'])
+        expect(target.resources.map(&:name)).to eq(%w[Quay Parent])
       end
     end
 
@@ -2184,9 +2188,9 @@ RSpec.describe Export::NetexGeneric do
 
       let(:decorator) { described_class.new fare_zone, code_provider: code_provider }
 
-      describe "netex_resource" do
+      describe 'netex_resource' do
         describe '#id' do
-          it "uses FareZone uuid" do
+          it 'uses FareZone uuid' do
             is_expected.to include(id: fare_zone.uuid)
           end
         end
@@ -2206,6 +2210,102 @@ RSpec.describe Export::NetexGeneric do
 
           it 'uses FareZone fare geographic references' do
             is_expected.to match_array(expected_result)
+          end
+        end
+      end
+    end
+  end
+
+  describe 'BookingArrangements export' do
+    let(:target) { MockNetexTarget.new }
+    let(:export_scope) { Export::Scope::All.new context }
+    let(:export) { Export::NetexGeneric.new export_scope: export_scope, target: target, workgroup: context.workgroup }
+
+    let(:part) do
+      Export::NetexGeneric::BookingArrangements.new export
+    end
+
+    let!(:context) do
+      Chouette.create do
+        code_space :test, short_name: 'test'
+
+        booking_arrangement :booking_arrangement, codes: { 'test' => 'standard' }
+      end
+    end
+
+    let(:booking_arrangement) { context.booking_arrangement(:booking_arrangement) }
+    let(:code_provider) { Export::CodeProvider.new export_scope, code_space: context.code_space(:test) }
+
+    describe Export::NetexGeneric::BookingArrangements::Decorator do
+      subject { decorator.netex_attributes }
+
+      let(:decorator) { described_class.new booking_arrangement, code_provider: code_provider }
+
+      describe 'netex_resource' do
+        describe '#id' do
+          it 'uses Booking Arrangement code' do
+            is_expected.to include(id: 'standard')
+          end
+        end
+
+        describe '#booking_contact' do
+          it 'uses Booking Arrangement code' do
+            is_expected.to(
+              include(
+                booking_contact: an_object_having_attributes(
+                  phone: booking_arrangement.phone,
+                  url: booking_arrangement.url
+                )
+              )
+            )
+          end
+        end
+
+        describe '#booking_methods' do
+          it 'uses Booking Arrangement code' do
+            is_expected.to include(booking_methods: 'callOffice')
+          end
+        end
+
+        describe '#booking_access' do
+          it 'uses booking access' do
+            is_expected.to include(booking_access: 'public')
+          end
+        end
+
+        describe '#buy_when' do
+          it 'uses buy when' do
+            is_expected.to include(buy_when: 'beforeBoarding')
+          end
+        end
+
+        describe '#book_when' do
+          it 'uses book when' do
+            is_expected.to include(book_when: 'untilPreviousDay')
+          end
+        end
+
+        describe '#latest_booking_time' do
+          it 'uses latest booking time' do
+            is_expected.to include(latest_booking_time: an_object_having_attributes(hour: 16, minute: 30))
+          end
+        end
+
+        describe '#minimum_booking_period' do
+          it 'uses minimum booking period' do
+            is_expected.to include(minimum_booking_period: 'PT30M')
+          end
+        end
+
+        describe '#booking_url' do
+          it 'uses booking url' do
+            is_expected.to include(booking_url: booking_arrangement.booking_url)
+          end
+        end
+
+        describe '#booking_note' do
+          it 'uses booking notes' do
+            is_expected.to include(booking_note: 'Booking notes')
           end
         end
       end

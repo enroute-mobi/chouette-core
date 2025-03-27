@@ -101,7 +101,7 @@ module Chouette
     validate :registration_number_is_set
     validate :validate_no_parent_when_flexible
     validate :validate_parent_is_not_flexible
-    validates_absence_of :parent_id, message: I18n.t('stop_areas.errors.parent_id.must_be_absent'), if: Proc.new { |stop_area| stop_area.kind == 'non_commercial' }
+    validates_absence_of :parent_id, message: :must_be_absent, if: Proc.new { |stop_area| stop_area.kind == 'non_commercial' }
 
     validates :registration_number, uniqueness: { scope: :stop_area_provider_id }, allow_blank: true
 

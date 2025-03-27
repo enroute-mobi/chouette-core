@@ -139,19 +139,15 @@ fr:
   formtastic:
     titles:
       time_table:
-        comment: ""
         objectid: "[prefixe]:Timetable:[clé_unique]  caractères autorisés : alphanumériques et 'souligné' pour le préfixe, la clé unique accepte en plus le 'moins'"
       neptune:
         time_table:
-          comment: ""
           objectid: "[prefixe]:Timetable:[clé_unique]  caractères autorisés : alphanumériques et 'souligné' pour le préfixe, la clé unique accepte en plus le 'moins'"
       netex:
         time_table:
-          comment: ""
           objectid: "[prefixe]:Timetable:[clé_unique]  caractères autorisés : alphanumériques et 'souligné' pour le préfixe, la clé unique accepte en plus le 'moins'"
       gtfs:
         time_table:
-          comment: ""
           objectid: "[prefixe]:Timetable:[clé_unique]  caractères autorisés : alphanumériques et 'souligné' pour le préfixe, la clé unique accepte en plus le 'moins'"
     placeholders:
       time_table:

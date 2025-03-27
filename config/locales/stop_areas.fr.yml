@@ -13,8 +13,6 @@ fr:
         already_taken: Déjà utilisé
         cannot_be_empty: Ce champ est requis
         invalid: "Valeur invalide (valeur attendue: \"%{mask}\")"
-      parent_id:
-        must_be_absent: Un parent ne peut être sélectionné pour un Arrêt non commercial
       referent_id:
         cannot_be_referent_and_specific: Un Arrêt ne peut être à la fois référent et Arrêt spécifique
     default_geometry_success: "%{count} Arrêts édités"
@@ -223,6 +221,7 @@ fr:
             parent_id:
               not_allowed_for_flexible: "Les lieux d'arrêt à la demande ne peuvent pas avoir de parent"
               children_not_allowed_for_flexible: "Les lieux d'arrêt à la demande ne peuvent pas avoir d'enfants"
+              must_be_absent: Un parent ne peut être sélectionné pour un Arrêt non commercial
   chart:
     values:
       stop_area:
@@ -232,7 +231,6 @@ fr:
   formtastic:
     titles:
       stop_area:
-        name: ""
         public_code: ""
         registration_number: "caractères autorisés : alphanumériques et 'souligné'"
         registration_number_format: "format autorisé: %{registration_number_format}"
@@ -243,30 +241,18 @@ fr:
         coordinates: "latitude,longitude dans le référentiel WGS84, le séparateur de décimales est 'point'"
       neptune:
         stop_area:
-          name: ""
           registration_number: "caractères autorisés : alphanumériques et 'souligné'"
           objectid: "[prefixe]:StopArea:[clé_unique]  caractères autorisés : alphanumériques et 'souligné' pour le préfixe, la clé unique accepte en plus le 'moins'"
-          city_name: ""
-          zip_code: ""
-          comment: ""
           coordinates: "latitude,longitude dans le référentiel WGS84, le séparateur de décimales est 'point'"
       netex:
         stop_area:
-          name: ""
           registration_number: "caractères autorisés : alphanumériques et 'souligné'"
           objectid: "[prefixe]:StopArea:[clé_unique]  caractères autorisés : alphanumériques et 'souligné' pour le préfixe, la clé unique accepte en plus le 'moins'"
-          city_name: ""
-          zip_code: ""
-          comment: ""
           coordinates: "latitude,longitude dans le référentiel WGS84, le séparateur de décimales est 'point'"
       gtfs:
         stop_area:
-          name: ""
           registration_number: "caractères autorisés : alphanumériques et 'souligné'"
           objectid: "[prefixe]:StopArea:[clé_unique]  caractères autorisés : alphanumériques et 'souligné' pour le préfixe, la clé unique accepte en plus le 'moins'"
-          city_name: ""
-          zip_code: ""
-          comment: ""
           coordinates: "latitude,longitude dans le référentiel WGS84, le séparateur de décimales est 'point'"
     hints:
       stop_area:

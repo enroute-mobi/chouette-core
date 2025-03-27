@@ -12,8 +12,6 @@ en:
         already_taken: Already taken
         cannot_be_empty: This field is mandatory
         invalid: "Incorrect value (expected value: \"%{mask}\")"
-      parent_id:
-        must_be_absent: A non commercial Stop Area cannot have a parent
       referent_id:
         cannot_be_referent_and_specific: "A Stop Area can't be both referent and specific"
     default_geometry_success: "%{count} modified Stop Areas"
@@ -220,6 +218,7 @@ en:
             parent_id:
               not_allowed_for_flexible: "Flexible stop places cannot have a parent"
               children_not_allowed_for_flexible: "Flexible stop places cannot have children"
+              must_be_absent: A non commercial Stop Area cannot have a parent
   chart:
     values:
       stop_area:
@@ -229,7 +228,6 @@ en:
   formtastic:
     titles:
       stop_area:
-        name: ""
         public_code: ""
         registration_number: "only alphanumerical or underscore characters"
         registration_number_format: "authorized format : %{registration_number_format}"
@@ -240,30 +238,18 @@ en:
         coordinates: "latitude,longitude in WGS84 referential, dot for decimal separator"
       neptune:
         stop_area:
-          name: ""
           registration_number: "only alphanumerical or underscore characters"
           objectid: "[prefix]:StopArea:[unique_key] : prefix contains only alphanumerical or underscore characters, unique_key accepts also minus character"
-          city_name: ""
-          zip_code: ""
-          comment: ""
           coordinates: "latitude,longitude in WGS84 referential, dot for decimal separator"
       netex:
         stop_area:
-          name: ""
           registration_number: "only alphanumerical or underscore characters"
           objectid: "[prefix]:StopArea:[unique_key] : prefix contains only alphanumerical or underscore characters, unique_key accepts also minus character"
-          city_name: ""
-          zip_code: ""
-          comment: ""
           coordinates: "latitude,longitude in WGS84 referential, dot for decimal separator"
       gtfs:
         stop_area:
-          name: ""
           registration_number: "only alphanumerical or underscore characters"
           objectid: "[prefix]:StopArea:[unique_key] : prefix contains only alphanumerical or underscore characters, unique_key accepts also minus character"
-          city_name: ""
-          zip_code: ""
-          comment: ""
           coordinates: "latitude,longitude in WGS84 referential, dot for decimal separator"
     hints:
       stop_area:

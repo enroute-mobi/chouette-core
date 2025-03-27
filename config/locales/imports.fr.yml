@@ -1,10 +1,9 @@
 fr:
-  imports: &imports
+  imports:
     search_no_results: "Aucun import ne correspond à votre recherche"
     filters:
       referential: "Sélectionnez un jeu de données..."
       name_or_creator_cont: "Indiquez un nom d'import ou d'opérateur..."
-      name: "Indiquez un nom d'import..."
       error_period_filter: "La date de fin doit être supérieure ou égale à la date de début"
     actions:
       new: "Nouvel import"
@@ -38,7 +37,6 @@ fr:
       results: "%{count} jeu(x) de données validé(s) sur %{total}"
       parent: Parent
       status: État
-      referential: Jeu de données
       overlapping: Chevauchement
       overlapping_tips: Vous pouvez archiver ou supprimer ces Jeux de Données avant de relancer le même import
       netex:
@@ -63,18 +61,9 @@ fr:
       ok:         Succès
       warning:    Avertissement
       failed:     Échec
-      error:      Échec
       running:    En cours
       aborted:    Interrompu
       canceled:   Annulé
-  import:
-    workgroup: Groupe de travail
-    workbench: Espace de travail
-    netex:     Netex
-    referential_companies: Transporteurs
-    gtfs: GTFS
-    base:
-      <<: *imports
   activerecord:
     models:
       import:
@@ -98,7 +87,7 @@ fr:
         one:   "import NeTEx"
         other: "imports"
     attributes:
-      attrs: &attrs
+      import:
         created_at: Créé le
         started_at: Début
         ended_at: Fin
@@ -120,34 +109,31 @@ fr:
         code_space: Espace de code
         workbench_id: "Espace de travail"
         duration: "Durée"
-      import:
-        <<: *attrs
-        base:
-          <<: *attrs
-        workbench:
-          <<: *attrs
-          merge_method: Méthode de Finalisation
-          automatic_merge: Finalisation automatique des jeux de données importés
-          archive_on_fail: Archivage automatique en cas d'erreur
-          flag_urgent: Contient de l'offre urgente
-          update_workgroup_providers: Autorisation des changements sur les ressources de l'Espace de travail
-          store_xml: Conserver les definitions XML originelles
-          disable_missing_resources: Désactiver les arrêts et lignes manquantes
-          strict_mode: Mode strict (tout attribut non défini est réinitialisé)
-          ignore_particulars: Ignorer les ressources Particulières
-          ignore_parent_stop_areas: "Ignorer les arrêts parents"
-          line_provider_id: Fournisseur de lignes
-          stop_area_provider_id: Fournisseur d'arrêts
-          specific_default_company_id: Transporteur par défaut spécifique
-          shape_attribute_as_id: Attribut utilisé comme identifiant
-          import_category: Type d'import
-          import_category_collection:
-            netex_generic: Netex Générique
-            shape_file: Fichier tracé
-            automatic: Automatique
-          merge_method_collection:
-            legacy: Classique
-            experimental: Expérimentale
+      import/workbench:
+        merge_method: Méthode de Finalisation
+        automatic_merge: Finalisation automatique des jeux de données importés
+        archive_on_fail: Archivage automatique en cas d'erreur
+        flag_urgent: Contient de l'offre urgente
+        update_workgroup_providers: Autorisation des changements sur les ressources de l'Espace de travail
+        store_xml: Conserver les definitions XML originelles
+        disable_missing_resources: Désactiver les arrêts et lignes manquantes
+        strict_mode: Mode strict (tout attribut non défini est réinitialisé)
+        ignore_particulars: Ignorer les ressources Particulières
+        ignore_parent_stop_areas: "Ignorer les arrêts parents"
+        line_provider_id: Fournisseur de lignes
+        stop_area_provider_id: Fournisseur d'arrêts
+        specific_default_company_id: Transporteur par défaut spécifique
+        shape_attribute_as_id: Attribut utilisé comme identifiant
+        import_category: Type d'import
   errors:
     messages:
       extension_whitelist_error: "Vous n'êtes pas autorisé à uploader des fichiers %{extension}, types autorisés: %{allowed_types}"
+  enumerize:
+    import/workbench:
+      import_category:
+        netex_generic: Netex Générique
+        shape_file: Fichier tracé
+        automatic: Automatique
+      merge_method:
+        legacy: Classique
+        experimental: Expérimentale

@@ -21,7 +21,7 @@
       - import.class.options.each do |attr, option_def|
         - next if (attr == :merge_method)
         - if resource_policy.option?(attr)
-          = option_input form, import, attr, option_def, import.class
+          = option_input form, attr
 
       - if has_feature?("import_with_code_space")
         = form.association :code_space, collection: workbench.workgroup.code_spaces, include_blank: false, required: false

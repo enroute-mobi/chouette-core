@@ -72,8 +72,3 @@ en:
   brandname: Chouette
   error: "Error"
   undefined: 'undefined'
-
-  activerecord:
-    default:
-      created_at: Created at
-      updated_at: Updated at

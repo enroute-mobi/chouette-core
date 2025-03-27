@@ -2,7 +2,6 @@ en:
   calendars:
     filters:
       name_cont: Search by name
-    search_no_results: 'No calendar template matching your query'
     days:
       monday: M
       tuesday: Tu

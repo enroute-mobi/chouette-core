@@ -4,7 +4,6 @@ fr:
     filters:
       referential: "Sélectionnez un jeu de données..."
       name_or_creator_cont: "Indiquez un nom d'export ou d'opérateur..."
-      name: "Indiquez un nom d'export..."
       error_period_filter: "La date de fin doit être supérieure ou égale à la date de début"
     actions:
       new: "Nouvel export"
@@ -73,18 +72,17 @@ fr:
     errors:
       models:
         export:
-          base:
-            attributes:
-              file:
-                wrong_file_extension: "Le fichier exporté doit être au format zip"
-              options:
-                not_supported: L'option %{name} n'est pas valide pour ce type d'export
-                from:
-                  invalid: 'période non valide'
-                to:
-                  invalid: 'période non valide'
+          attributes:
+            file:
+              wrong_file_extension: "Le fichier exporté doit être au format zip"
+            options:
+              not_supported: L'option %{name} n'est pas valide pour ce type d'export
+            from:
+              invalid: 'période non valide'
+            to:
+              invalid: 'période non valide'
     attributes:
-      attrs: &attrs
+      export:
         created_at: Créé le
         started_at: Début
         ended_at: Fin
@@ -105,31 +103,27 @@ fr:
         parent: Parent
         referential_id: Jeu de données
         referential: Jeu de données
-        options: Options
         duration: Durée
         from: De
         to: Vers
         exported_lines: Lignes exportées
         exported_code_space: Espace de Code exporté
         profile: Profil
-        prefer_referent_stop_area: Préférer les arrêts Référents
         prefer_referent_line: Préférer les lignes Référentes
+        period: Période exportée
+      export/ara:
+        include_stop_visits: "Inclure les Passages aux Arrêts"
+      export/gtfs:
+        prefer_referent_stop_area: Préférer les arrêts Référents
+        prefer_referent_company: Préférer les transporteurs Référents
+        ignore_parent_stop_places: "Ignorer les arrêts Parents"
+        ignore_extended_gtfs_route_types: "Ignorer les types de route étendus"
+      export/netex_generic:
+        participant_ref: Netex Participant Ref
+        profile_options: Paramètres du profil Netex
         ignore_referent_stop_areas: Ignorer les zones d'arrêt référentes
         skip_line_resources: Ignorer les ressources de lignes
         skip_stop_area_resources: Ignorer les ressources d'arrêts
-        prefer_referent_company: Préférer les transporteurs Référents
-        include_stop_visits: "Inclure les Passages aux Arrêts"
-        ignore_parent_stop_places: "Ignorer les arrêts Parents"
-        ignore_extended_gtfs_route_types: "Ignorer les types de route étendus"
-        period: Période exportée
-        participant_ref: Netex Participant Ref
-        profile_options: Paramètres du profil Netex
-      export:
-        <<: *attrs
-        base:
-          <<: *attrs
-
-
   flash:
     exports:
       create:

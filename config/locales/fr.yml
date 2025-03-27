@@ -71,8 +71,3 @@ fr:
   brandname: Chouette
   error: "Erreur"
   undefined: 'non renseigné'
-
-  activerecord:
-    default:
-      created_at: Créé le
-      updated_at: Mis à jour le

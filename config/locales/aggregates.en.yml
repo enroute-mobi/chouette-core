@@ -16,6 +16,9 @@ en:
       create: Aggregate data sets
       rollback: Rollback
       rollback_confirm: Are you sure to rollback to this aggregated offer ?
+    form:
+      sections:
+        informations: "Informations"
     statuses:
       new: New
       pending: Pending

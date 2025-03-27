@@ -41,22 +41,18 @@ en:
   formtastic:
     titles:
       network:
-        name: ""
         registration_number: "only alphanumerical or underscore characters"
         objectid: "[prefix]:PTNetwork:[unique_key] : prefix contains only alphanumerical or underscore characters, unique_key accepts also minus character"
       neptune:
         network:
-          name: ""
           registration_number: "only alphanumerical or underscore characters"
           objectid: "[prefix]:PTNetwork:[unique_key] : prefix contains only alphanumerical or underscore characters, unique_key accepts also minus character"
       netex:
         network:
-          name: ""
           registration_number: "only alphanumerical or underscore characters"
           objectid: "[prefix]:PTNetwork:[unique_key] : prefix contains only alphanumerical or underscore characters, unique_key accepts also minus character"
       gtfs:
         network:
-          name: ""
           registration_number: "only alphanumerical or underscore characters"
           objectid: "[prefix]:PTNetwork:[unique_key] : prefix contains only alphanumerical or underscore characters, unique_key accepts also minus character"
 

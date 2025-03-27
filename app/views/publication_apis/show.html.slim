@@ -6,20 +6,21 @@
   .container-fluid
     .row
       .col-lg-6.col-md-6.col-sm-12.col-xs-12
-        - metadatas = { PublicationApi.tmf(:name) => @publication_api.name }
-        - metadatas.update( PublicationApi.tmf(:slug) => @publication_api.slug )
-        - metadatas.update( PublicationApi.tmf(:public_url) => link_to(@publication_api.public_url, @publication_api.public_url, target: :blank) )
-        - metadatas.update( PublicationApi.tmf(:public) => (@publication_api.public? ? t('true') : t('false')) )
-        - metadatas.update( PublicationApi.tmf(:created_at) => l(@publication_api.created_at, format: :short_with_time))
-        - metadatas.update( PublicationApi.tmf(:updated_at) => l(@publication_api.updated_at, format: :short_with_time))
-        = definition_list t('metadatas'), metadatas
+        = definition_list t('metadatas'), { \
+          PublicationApi.human_attribute_name(:name) => @publication_api.name, \
+          PublicationApi.human_attribute_name(:slug) => @publication_api.slug, \
+          PublicationApi.human_attribute_name(:public_url) => link_to(@publication_api.public_url, @publication_api.public_url, target: :blank), \
+          PublicationApi.human_attribute_name(:public) => (@publication_api.public? ? t('true') : t('false')), \
+          PublicationApi.human_attribute_name(:created_at) => l(@publication_api.created_at, format: :short_with_time), \
+          PublicationApi.human_attribute_name(:updated_at) => l(@publication_api.updated_at, format: :short_with_time) \
+        }
 
       .col-lg-6.col-md-6.col-sm-12.col-xs-12
         - metadatas = {}
         - @publication_api.publication_setups.each do |publication_setup|
           - metadatas.update( publication_setup.human_export_name => link_to(publication_setup.name, [@workgroup, publication_setup]) )
 
-        = definition_list PublicationApi.tmf(:publications), metadatas
+        = definition_list PublicationApi.human_attribute_name(:publications), metadatas
 
     - unless @publication_api.public?
       .row

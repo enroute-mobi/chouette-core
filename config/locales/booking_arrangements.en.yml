@@ -18,7 +18,7 @@ en:
       placeholders:
       sections:
         identification: "Identification"
-        content: Content
+        contact: "Contact"
         internals: "Internals"
         rules: "Rules"
         codes: "Codes"

@@ -13,6 +13,7 @@ fr:
     form:
       add_destination: Ajouter une destination
       sections:
+        destinations: "Destinations"
         export: Paramètres de l'export
   activerecord:
     models:

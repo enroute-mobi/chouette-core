@@ -565,7 +565,7 @@ crumb :line_notice do |workbench, line_notice|
 end
 
 crumb :new_line_notice_membership do |workbench, line|
-  link I18n.t('line_notice_memberships.actions.new.title')
+  link I18n.t('line_notice_memberships.new.title')
   parent line, workbench
 end
 

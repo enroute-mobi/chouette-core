@@ -2,6 +2,15 @@
 
 class Import::Base < ApplicationModel
   self.table_name = "imports"
+
+  class << self
+    def model_name
+      @_model_name ||= ActiveModel::Name.new(Import::Base, Import::Base, 'Import').tap do |model_name| # rubocop:disable Naming/MemoizedInstanceVariableName
+        model_name.instance_variable_set(:@i18n_key, name.underscore) unless self == ::Import::Base
+      end
+    end
+  end
+
   include OptionsSupport
   include NotifiableSupport
   include PurgeableResource
@@ -117,10 +126,6 @@ class Import::Base < ApplicationModel
     "Import::Resource"
   end
 
-  def self.human_name
-    I18n.t("import.#{short_type}")
-  end
-
   def self.short_type
     @short_type ||= self.name.demodulize.underscore
   end
@@ -153,10 +158,6 @@ class Import::Base < ApplicationModel
       Rails.logger.error("#{import.class.name} #{import.id} #{import.name} takes too much time and is aborted")
       import.update_attribute(:status, "aborted")
     end
-  end
-
-  def self.model_name
-    ActiveModel::Name.new Import::Base, Import::Base, "Import"
   end
 
   # call this method to mark an import as failed, as weel as the resulting referential
@@ -252,6 +253,15 @@ class Import::Base < ApplicationModel
 
   def stop_area_provider
     @stop_area_provider ||= (workbench.stop_area_providers.find_by(id: stop_area_provider_id) || workbench.default_stop_area_provider)
+  end
+
+  def specific_default_company_id
+    return unless parent&.options
+    parent.options['specific_default_company_id']
+  end
+
+  def specific_default_company
+    @specific_default_company ||= workbench.companies.find_by(id: specific_default_company_id)
   end
 
   protected

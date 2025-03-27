@@ -1,46 +1,4 @@
-module I18nTranslateWithFallback
-  def translate key, options={}, original=nil
-    options[:locale] ||= I18n.locale
-    begin
-      super(key, {raise: true}.update(options))
-    rescue I18n::MissingTranslationData, I18n::InvalidPluralizationData
-      # No capture
-      split = key.to_s.split('.')
-      if split.size <= 2
-        super original || key, options
-      else
-        log_missing_key_falls_back_to_original(key, original)
-
-        v = split.pop
-        v2 = split.pop
-        split.pop if v2 == "default"
-        split << "default" << v
-        new_key = split.join('.')
-        translate new_key, options, original || key
-      end
-    end
-  end
-
-  private
-
-  def log_missing_key_falls_back_to_original(key, original)
-    @already_logged_keys ||= Set.new
-    return unless @already_logged_keys.add?(key)
-
-    Rails.logger.warn do
-      "DEPRECATION WARNING: missing i18n key \"#{key}\" falls back to original#{" \"#{original}\"" if original} (I18nTranslateWithFallback)"
-    end
-  end
-end
-
 module I18n
-  class << self
-    alias_method :translate_without_fallback, :translate
-    prepend I18nTranslateWithFallback
-
-    alias_method :t, :translate
-  end
-
   def self.tc(key, params={})
     self.t('label_with_colon', label: key.t(params)).html_safe
   end
@@ -48,16 +6,12 @@ module I18n
   def self.tmf(key, params={})
     model, col = key.split "."
     begin
-      self.t "activerecord.attributes.#{key}", {raise: true}.update(params)
+      t("activerecord.attributes.#{key}", **{ raise: true }.update(params))
     rescue
       begin
-        self.t "activerecord.attributes.common.#{col}", {raise: true}.update(params)
+        t("simple_form.labels.#{key}", **{ raise: true }.update(params))
       rescue
-        begin
-          self.t "simple_form.labels.#{key}", {raise: true}.update(params)
-        rescue
-          "activerecord.attributes.#{key}".t params
-        end
+        "activerecord.attributes.#{key}".t(params)
       end
     end
   end
@@ -169,16 +123,16 @@ module EnhancedModelI18n
     end
 
     begin
-      I18n.translate_without_fallback "#{i18n_key.pluralize}.actions.#{key}", ({raise: true}.update(params))
+      I18n.t("#{i18n_key.pluralize}.actions.#{key}", **{ raise: true }.update(params))
     rescue
       if :index == action.to_sym
         begin
-          I18n.translate_without_fallback "#{i18n_key.pluralize}.#{key}.title", ({raise: true}.update(params))
+          I18n.t("#{i18n_key.pluralize}.#{key}.title", **{ raise: true }.update(params))
         rescue
-          I18n.translate_without_fallback "#{key}.title", params
+          I18n.t("#{key}.title", **params)
         end
       else
-        I18n.translate_without_fallback "actions.#{key}", params
+        I18n.t("actions.#{key}", **params)
       end
     end
   end

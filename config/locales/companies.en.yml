@@ -96,22 +96,18 @@ en:
   formtastic:
     titles:
       company:
-        name: ""
         registration_number: "only alphanumerical or underscore characters "
         objectid: "[prefix]:Company:[unique_key] : prefix contains only alphanumerical or underscore characters, unique_key accepts also minus character"
       neptune:
         company:
-          name: ""
           registration_number: "only alphanumerical or underscore characters "
           objectid: "[prefix]:Company:[unique_key] : prefix contains only alphanumerical or underscore characters, unique_key accepts also minus character"
       netex:
         company:
-          name: ""
           registration_number: "only alphanumerical or underscore characters "
           objectid: "[prefix]:Company:[unique_key] : prefix contains only alphanumerical or underscore characters, unique_key accepts also minus character"
       gtfs:
         company:
-          name: ""
           registration_number: "only alphanumerical or underscore characters "
           objectid: "[prefix]:Company:[unique_key] : prefix contains only alphanumerical or underscore characters, unique_key accepts also minus character"
   simple_form:

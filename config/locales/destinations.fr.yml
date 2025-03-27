@@ -59,41 +59,6 @@ fr:
         options: "Options"
         secret_file: "Clé secrète"
         _destroy: "Supprimer"
-        dummy:
-          result: Résultat attendu
-          result_collection:
-            successful: Succès
-            unexpected_failure: Erreur non-controlée
-            expected_failure: Erreur controlée
-        ara:
-          ara_url: URL du Réferential
-          credentials: Token d'identification
-          force_import: Remplacer les données existantes
-        chouette:
-          workbench_id: Identification d'espace de travail
-          workbench_api_key: Clé d'accès API
-          automatic_merge: Fusion automatique
-          host_type: Type d'hôte
-          host_type_collection:
-            chouette: Chouette
-            iboo: Iboo
-            custom: Personnalisé
-          custom_url: URL personnalisé
-        google_cloud_storage:
-          project: Projet
-          bucket:  Bucket
-        mail:
-          email_title: Titre du mail
-          email_text: Texte du mail
-          recipients: Destinataires
-          link_to_api: Inclus un lien vers l'API
-          attached_export_file: Fichier exporté en pièce jointe
-          attached_export_filename: Nom de la pièce jointe
-        sftp:
-          host: Hôte
-          port: Port
-          directory: Répertoire
-          username: Nom d'utilisateur
       destination/dummy:
         result: Résultat attendu
       destination/ara:
@@ -102,15 +67,20 @@ fr:
         force_import: Remplacer les données existantes
       destination/chouette:
         workbench_id: Identification d'espace de travail
-        workbench_api_key: api key
+        workbench_api_key: Clé d'accès API
         automatic_merge: Fusion automatique
+        host_type: Type d'hôte
+        custom_url: URL personnalisé
       destination/google_cloud_storage:
         project: Projet
         bucket:  Bucket
       destination/mail:
+        email_title: Titre du mail
+        email_text: Texte du mail
         recipients: Destinataires
         link_to_api: Inclus un lien vers l'API
         attached_export_file: Fichier exporté en pièce jointe
+        attached_export_filename: Nom de la pièce jointe
       destination/sftp:
         host: Hôte
         port: Port
@@ -124,3 +94,14 @@ fr:
               mail_format: Adresse mail invalide
             attached_export_filename:
               filename: "Format invalide, seuls les lettres, les chiffres et les caractères '-', '{', '}', '%', '_' sont autorisés"
+  enumerize:
+    destination/dummy:
+      result:
+        successful: Succès
+        unexpected_failure: Erreur non-controlée
+        expected_failure: Erreur controlée
+    destination/chouette:
+      host_type:
+        chouette: Chouette
+        iboo: Iboo
+        custom: Personnalisé

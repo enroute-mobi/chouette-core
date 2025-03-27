@@ -882,8 +882,20 @@ RSpec.describe Import::Gtfs do
         end
 
         context "when the booking_rule book_when is valid" do
-          before { booking_rule.booking_type = '1' }
-          it { is_expected.to eq :advance_and_day_of_travel }
+          it 'should return :advance_and_day_of_travel' do
+            booking_rule.booking_type = '1'
+            is_expected.to eq :advance_and_day_of_travel
+          end
+
+          it 'should return :time_of_travel_only' do
+            booking_rule.booking_type = '0'
+            is_expected.to eq :time_of_travel_only
+          end
+
+          it 'should return :until_previous_day' do
+            booking_rule.booking_type = '2'
+            is_expected.to eq :until_previous_day
+          end
         end
       end
 
@@ -926,10 +938,10 @@ RSpec.describe Import::Gtfs do
         end
       end
 
-      describe "validation" do
+      describe 'validation' do
         subject { decorator.valid? }
 
-        context "when booking type is in (0..2)" do
+        context 'when booking type is in (0..1)' do
           (0..1).each do |booking_type|
             it "should valid when booking type is #{booking_type}" do
               booking_rule.booking_type = booking_type.to_s
@@ -940,7 +952,7 @@ RSpec.describe Import::Gtfs do
           end
         end
 
-        context "when booking type is not in (0..2)" do
+        context 'when booking type is not in (0..1)' do
           it "creates an error 'gtfs.booking_arrangements.invalid_booking_type'" do
             booking_rule.booking_type = '3'
             is_expected.to be_falsy
@@ -948,7 +960,7 @@ RSpec.describe Import::Gtfs do
           end
         end
 
-        describe "Missing prior_notice_duration_min" do
+        describe 'Missing prior_notice_duration_min' do
           context "when booking type is 1" do
             before do
               booking_rule.booking_type = '1'
@@ -973,17 +985,56 @@ RSpec.describe Import::Gtfs do
           end
         end
 
-        describe "Missing prior_notice_last_time" do
-          context 'when prior_notice_last_day is present and prior_notice_last_time is blank' do
-            before do
-              booking_rule.prior_notice_last_day = '1'
-              booking_rule.prior_notice_last_time = ""
+        describe 'Presence prior_notice_duration_min' do
+          before { booking_rule.prior_notice_duration_min = '30' }
+          context "when booking type is 1" do
+            it do
+              booking_rule.booking_type = '1'
+              is_expected.to be_truthy
             end
+          end
 
+          context "when booking type is not 1" do
+            it  do
+              booking_rule.booking_type = '2'
+              is_expected.to be_truthy
+            end
+          end
+        end
+
+        describe 'Missing prior_notice_last_time' do
+          before do
+            booking_rule.booking_type = '2'
+            booking_rule.prior_notice_last_time = ''
+          end
+
+          context 'when prior_notice_last_day is present' do
             it "creates an error 'gtfs.booking_arrangements.missing_prior_notice_last_time'" do
+              booking_rule.prior_notice_last_day = '1'
+
               is_expected.to be_falsy
               expect(decorator.errors).to include({ criticity: :error, message_key: 'gtfs.booking_arrangements.missing_prior_notice_last_time' })
             end
+          end
+
+          context 'when prior_notice_last_day is blank' do
+            it do
+              booking_rule.prior_notice_last_day = ''
+
+              is_expected.to be_truthy
+            end
+          end
+        end
+
+        describe "Presence prior_notice_last_time" do
+          context 'when prior_notice_last_day is present' do
+            before do
+              booking_rule.prior_notice_last_day = '1'
+              booking_rule.booking_type = '2'
+              booking_rule.prior_notice_last_time = '15:00:00'
+            end
+
+            it { is_expected.to be_truthy }
           end
         end
       end

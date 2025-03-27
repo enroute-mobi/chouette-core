@@ -33,7 +33,7 @@
                 sortable: false \
               ), \
               TableBuilderHelper::Column.new( \
-                key: :line, \
+                key: :lines, \
                 attribute: Proc.new { |line_group| line_group.lines.map(&:name).join(", ").truncate(100) }, \
                 sortable: false, \
               ), \

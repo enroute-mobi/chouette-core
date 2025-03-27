@@ -3,7 +3,7 @@ en:
     search_no_results: "No Line Group"
     actions:
       show: "Display this Line Group"
-      new: "Add a Line Groups"
+      new: "Add a Line Group"
       edit: "Edit this Line Group"
       destroy: "Delete this Line Group"
       destroy_confirm: "Are you sur to delete this Line Group ?"

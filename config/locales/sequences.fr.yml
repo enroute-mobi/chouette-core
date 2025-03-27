@@ -19,6 +19,7 @@ fr:
       destroy_confirm: "Etes vous sûr de supprimer cette Séquence ?"
     form:
       placeholders:
+        static_list: "Collez vos éléments ici..."
       sections:
         identification: "Identification"
     search_no_results: "Aucune séquence ne correspond à votre recherche"

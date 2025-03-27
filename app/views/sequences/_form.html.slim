@@ -1,20 +1,57 @@
+- javascript_additional_packs 'sequences/form'
+
 = simple_form_for([@workbench, @sequence],
     html: { \
       multipart: true, \
       class: 'tailwind-form', \
-      id: 'sequence_form'\
+      id: 'sequence_form', \
+      'x-data': "sequenceForm(#{@sequence.alpine_state()})" \
     }, \
     wrapper: :horizontal_form_tailwind \
   ) do |f|
   .row
-    .col-lg-12 x-data="{ sequence_type: '#{@sequence.sequence_type}'}"
+    .col-lg-12
       = f.input :name
       = f.input :description
       = f.input :sequence_type, include_blank: false, input_html: { 'x-on:change': 'sequence_type = $event.target.value' }, disabled: @sequence.persisted?
       .range x-show="sequence_type == 'range_sequence'"
         = f.input :range_start, input_html: { "x-bind:disabled" => "sequence_type != 'range_sequence'" }
         = f.input :range_end, input_html: { "x-bind:disabled" => "sequence_type != 'range_sequence'" }
-      = f.input :static_list, as: :editable_select, collection: @sequence.static_list, include_blank: false, selected: @sequence.static_list, wrapper: :horizontal_input_editable_select_tailwind, wrapper_html: { 'x-show': "sequence_type == 'static_list'" }, input_html: { multiple: true }
+      .static_list x-show="sequence_type == 'static_list'" x-data="clipboardComponent()"
+        .flex.items-center.mb-10
+          = f.label :static_list, class: 'flex items-center justify-end text-right w-2/6 mr-8 mb-0 control-label pt-0 control-label'
+          .w-4/6.flex.flex-col.items-start.relative
+            textarea.form-control.text.optional.placeholder-gray-500 x-ref="manualInput" x-on:paste="pasteFromClipboard" placeholder=I18n.t('sequences.form.placeholders.static_list')
+
+            button.bg-enroute-chouette-primary.text-white.px-4.py-2.rounded.mt-2 @click.prevent="addFromTextArea()"
+              i.fas.fa-plus-circle.mr-2
+              span
+                = t('actions.add')
+
+        = f.hidden_field :static_list, input_html: { "x-bind:value" => "static_list" }
+
+        .flex.items-center.mb-10
+          .flex.justify-end.text-right.w-2/6.mr-8.mb-0.control-label.pt-0.text.optional
+          .w-4/6.flex.flex-col.items-center.relative
+            table.w-full.border-collapse.mt-4
+              tbody
+                template x-for="(item, index) in paginatedItems" :key="index"
+                  tr :class="index % 2 === 0 ? 'bg-gray-50' : 'bg-white'"
+                    td.px-6.py-4.text-gray-700
+                      span.font-semibold x-text="item"
+                    td.px-6.py-4.text-right
+                      span.inline-flex.items-center.justify-center.bg-red-500.text-white.px-4.py-2.rounded.cursor-pointer.hover:bg-red-600 @click="removeItem(index)"
+                        i.fas.fa-trash.mr-2
+                        span.cursor-pointer
+                          = t('actions.delete')
+
+            div.flex.items-center.ml-auto.mt-4
+              span.text-gray-700 x-text="'Page ' + currentPage + ' / ' + totalPages"
+              .pagination
+                .page_links
+                  span.previous_page.cursor-pointer @click="prevPage" :disabled="currentPage === 1"
+                  span.next_page.cursor-pointer @click="nextPage" :disabled="currentPage === totalPages"
+
 
   = cancel_button
   = f.button :submit, t('actions.submit'), class: 'btn btn-default formSubmitr', form: 'sequence_form'

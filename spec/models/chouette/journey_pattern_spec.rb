@@ -407,4 +407,47 @@ describe Chouette::JourneyPattern, :type => :model do
     end
   end
 
+  describe '#waypoints' do
+    subject { journey_pattern.waypoints }
+
+    let(:context) do
+      Chouette.create do
+        stop_area :stop_area1
+        stop_area :stop_area_without_coordinates, longitude: nil, latitude: nil
+        stop_area :stop_area2
+
+        route with_stops: false do
+          stop_point stop_area: :stop_area1
+          stop_point stop_area: :stop_area_without_coordinates
+          stop_point stop_area: :stop_area2
+
+          journey_pattern
+        end
+      end
+    end
+    let(:journey_pattern) { context.journey_pattern }
+    let(:stop_area1) { context.stop_area(:stop_area1) }
+    let(:stop_area2) { context.stop_area(:stop_area2) }
+
+    it 'returns only waypoints for stop areas having coordinates' do
+      is_expected.to match(
+        [
+          have_attributes(
+            name: stop_area1.name,
+            position: 0,
+            waypoint_type: 'waypoint',
+            coordinates: [stop_area1.longitude, stop_area1.latitude],
+            stop_area: stop_area1
+          ),
+          have_attributes(
+            name: stop_area2.name,
+            position: 1,
+            waypoint_type: 'waypoint',
+            coordinates: [stop_area2.longitude, stop_area2.latitude],
+            stop_area: stop_area2
+          )
+        ]
+      )
+    end
+  end
 end

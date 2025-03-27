@@ -19,7 +19,7 @@ fr:
     absence_attribute: "L'attribut %{target_attribute} de l'/la/le %{target_model} %{name} est défini"
     transport_mode_compatibility: "L'arrêt %{stop_area_name} n'a pas un mode de transport compatible avec la Ligne %{line_name}"
     travel_time: "Le temps de parcours est supérieur à celui attendu le %{date}"
-    search_no_results_for_filter: "Aucun messages"
+    search_no_results_for_filter: "Aucun message"
 
   activerecord:
     models:

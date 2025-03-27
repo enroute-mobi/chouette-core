@@ -31,6 +31,10 @@ class Import::Gtfs < Import::Base
     line_referential.companies.by_provider(line_provider)
   end
 
+  def booking_arrangements
+    line_referential.booking_arrangements.by_provider(line_provider)
+  end
+
   def referential_metadata
     registration_numbers = source.routes.map(&:id)
     line_ids = lines.where(registration_number: registration_numbers).pluck(:id)
@@ -43,7 +47,7 @@ class Import::Gtfs < Import::Base
   end
 
   def prepare_referential
-    import_resources :agencies, :stops, :routes, :shapes, :fare_products, :fare_validities
+    import_resources :agencies, :stops, :routes, :shapes, :fare_products, :fare_validities, :booking_arrangements
 
     create_referential
     referential.switch
@@ -177,6 +181,93 @@ class Import::Gtfs < Import::Base
         contract.update line_ids: [contract.line_ids, line.id].flatten.compact.uniq
       end
     end
+  end
+
+  class BookingArrangements < Base
+    delegate :booking_arrangements, :create_message, :save_model, :source, :code_space, to: :import
+
+    def import!
+      source.booking_rules.each do |booking_rule|
+        decorated_booking_arrangement = Decorator.new(booking_rule)
+
+        unless decorated_booking_arrangement.valid?
+          decorated_booking_arrangement.errors.each { |error| create_message error }
+          next
+        end
+
+        booking_arrangements.first_or_initialize_by_code(code_space, decorated_booking_arrangement.id) do |booking_arrangement|
+          booking_arrangement.attributes = decorated_booking_arrangement.booking_arrangement_attributes
+
+          save_model booking_arrangement
+        end
+      end
+    end
+
+    class Decorator < SimpleDelegator
+      def book_when
+        case booking_type
+        when '0'
+          :time_of_travel_only
+        when '1'
+          :advance_and_day_of_travel
+        when '2'
+          :until_previous_day
+        end
+      end
+
+      def booking_arrangement_attributes
+        {
+          name: "GTFS Booking Rule #{id}",
+          book_when: book_when,
+          minimum_booking_period: prior_notice_duration_min,
+          latest_booking_time: prior_notice_last_time,
+          booking_notes: message,
+          phone: phone_number,
+          url: info_url,
+          booking_url: booking_url
+        }
+      end
+
+      def errors
+        @errors ||= []
+      end
+
+      def valid?
+        errors.clear
+
+        unless booking_type.in? %w{0 1 2}
+          errors << {
+            criticity: :error,
+            message_key: 'gtfs.booking_arrangements.invalid_booking_type'
+          }
+        end
+
+        if booking_type == '1' && prior_notice_duration_min.blank?
+          errors << {
+            criticity: :error,
+            message_key: 'gtfs.booking_arrangements.missing_prior_notice_duration_min'
+          }
+        end
+
+        if prior_notice_last_day.present? && prior_notice_last_time.blank?
+          errors << {
+            criticity: :error,
+            message_key: 'gtfs.booking_arrangements.missing_prior_notice_last_time'
+          }
+        end
+
+        errors.empty?
+      end
+    end
+  end
+
+  def import_booking_arrangements
+    resource = create_resource(:booking_rules)
+    resource.rows_count = source.booking_rules.count
+    resource.save!
+
+    BookingArrangements.new(WithResource.new(self, resource)).import!
+    resource.update_status_from_messages
   end
 
   def import_agencies

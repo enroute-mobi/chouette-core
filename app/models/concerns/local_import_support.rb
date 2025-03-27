@@ -254,6 +254,7 @@ module LocalImportSupport
           end
         end
       end
+
       @models_in_error ||= Hash.new { |hash, key| hash[key] = [] }
       @models_in_error[model.class.name] << model_key(model)
       @status = 'failed'
@@ -299,6 +300,6 @@ module LocalImportSupport
     return model.comment if model.is_a?(Chouette::TimeTable)
     return model.checksum_source if model.is_a?(Chouette::VehicleJourneyAtStop)
 
-    model.objectid
+    model.try(:objectid) || model.try(:uuid)
   end
 end

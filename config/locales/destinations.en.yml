@@ -68,7 +68,7 @@ en:
       destination/chouette:
         workbench_id: Workbench ID
         workbench_api_key: Workbench api key
-        automatic_merge: Automatic merge
+        automatic_merge: Automatic finalisation
         host_type: Host type
         custom_url: Custom URL
       destination/google_cloud_storage:

@@ -97,3 +97,61 @@ RSpec.describe Chouette::Config do
     end
   end
 end
+
+RSpec.describe Chouette::Config::Environment do
+  subject(:environment) { described_class.new(raw_env) }
+
+  let(:raw_env) { {} }
+
+  def self.with_env(env, &block)
+    description = env.map { |k, v| "#{k} is '#{v}'" }.to_sentence
+    context "when #{description}" do
+      before { env.each { |k, v| raw_env[k.to_s] = v.to_s } }
+      class_exec(&block)
+    end
+  end
+
+  describe '.boolean' do
+    context 'for name "DUMMY" without default' do
+      subject { environment.boolean('DUMMY') }
+
+      it { is_expected.to be_falsy }
+
+      with_env CHOUETTE_DUMMY: 'true' do
+        it { is_expected.to be_truthy }
+      end
+
+      with_env CHOUETTE_DUMMY: 'false' do
+        it { is_expected.to be_falsy }
+      end
+    end
+
+    context 'for name "DUMMY" without default true' do
+      subject { environment.boolean('DUMMY', default: true) }
+
+      it { is_expected.to be_truthy }
+
+      with_env CHOUETTE_DUMMY: 'true' do
+        it { is_expected.to be_truthy }
+      end
+
+      with_env CHOUETTE_DUMMY: 'false' do
+        it { is_expected.to be_falsy }
+      end
+    end
+
+    context 'for name "DUMMY" without default false' do
+      subject { environment.boolean('DUMMY', default: false) }
+
+      it { is_expected.to be_falsy }
+
+      with_env CHOUETTE_DUMMY: 'true' do
+        it { is_expected.to be_truthy }
+      end
+
+      with_env CHOUETTE_DUMMY: 'false' do
+        it { is_expected.to be_falsy }
+      end
+    end
+  end
+end

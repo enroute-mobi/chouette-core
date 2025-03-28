@@ -156,9 +156,12 @@ module Chouette
         return default unless raw_value
 
         raw_value = raw_value.downcase
-        candidate_values = default ? BOOLEAN_FALSE_VALUES : BOOLEAN_TRUE_VALUES
 
-        candidate_values.include? raw_value
+        if default
+          !BOOLEAN_FALSE_VALUES.include? raw_value
+        else
+          BOOLEAN_TRUE_VALUES.include? raw_value
+        end
       end
 
       def array(name)

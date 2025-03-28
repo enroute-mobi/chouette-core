@@ -421,7 +421,9 @@ class Import::Gtfs < Import::Base
   end
 
   def specific_default_company
-    @specific_default_company ||= parent&.specific_default_company
+    return nil unless parent_option('specific_default_company_id').present?
+
+    @specific_default_company ||= parent.candidate_companies.find_by(id: parent_options['specific_default_company_id'])
   end
 
   class Agencies < Base

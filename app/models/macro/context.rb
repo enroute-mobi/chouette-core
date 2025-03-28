@@ -53,12 +53,14 @@ module Macro
 
       self.table_name = 'macro_context_runs'
 
-      belongs_to :macro_list_run, class_name: 'Macro::List::Run', inverse_of: :macro_context_runs # CHOUETTE-3247 optional: false
-      belongs_to :macro_context, class_name: 'Macro::Context', optional: true, inverse_of: :macro_context_runs # CHOUETTE-3247
+      with_options(inverse_of: :macro_context_runs) do
+        belongs_to :macro_list_run, class_name: 'Macro::List::Run'
+        belongs_to :macro_context, class_name: 'Macro::Context', optional: true
+      end
 
-      has_many :macro_runs, -> { order(position: :asc) },
-               class_name: 'Macro::Base::Run', foreign_key: 'macro_context_run_id',
-               inverse_of: :macro_context_run, dependent: :delete_all
+      with_options(inverse_of: :macro_context_run, foreign_key: 'macro_context_run_id') do
+        has_many :macro_runs, -> { order(position: :asc) }, class_name: 'Macro::Base::Run', dependent: :destroy
+      end
 
       has_many :macro_messages, class_name: 'Macro::Message', through: :macro_runs
 

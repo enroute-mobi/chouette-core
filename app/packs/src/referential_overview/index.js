@@ -101,7 +101,7 @@ export default class ReferentialOverview {
     this.container = $(`#${selector}`);
     this.timeTravel = new TimeTravel(this);
     const param_name = `${this.container.attr('id')}_date`;
-    
+
     const date = new URL(document.location.href).searchParams.get(param_name) || getDate()
 
     this.currentOffset = 0;
@@ -123,7 +123,6 @@ export default class ReferentialOverview {
       const parentOffset = this.currentOffset + this.container.find(".right").offset().left;
       this.scrollTo(parentOffset - offset);
     }
-    
   }
 
   currentOffset() {
@@ -131,8 +130,13 @@ export default class ReferentialOverview {
   }
 
   top() {
-    return this._top || (this._top = this.container.find('.days').offset().top - 80);
+    if (!this._top) {
+      const daysElement = this.container.find('.days');
+      this._top = daysElement.length ? daysElement.offset().top - 80 : 0;
+    }
+    return this._top;
   }
+
   bottom() {
     return this._bottom || (this._bottom = (this.top() + this.container.height()) - 50);
   }

@@ -121,7 +121,15 @@ RSpec.describe Chouette::Config::Environment do
         it { is_expected.to be_truthy }
       end
 
+      with_env CHOUETTE_DUMMY: '1' do
+        it { is_expected.to be_truthy }
+      end
+
       with_env CHOUETTE_DUMMY: 'false' do
+        it { is_expected.to be_falsy }
+      end
+
+      with_env CHOUETTE_DUMMY: '0' do
         it { is_expected.to be_falsy }
       end
     end

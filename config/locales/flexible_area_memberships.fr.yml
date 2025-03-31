@@ -2,7 +2,7 @@ fr:
   activerecord:
     attributes:
       flexible_area_membership:
-        member_id: "Arrêt associé"
+        member_id: "Arrêts associés"
     errors:
       models:
         flexible_area_membership:

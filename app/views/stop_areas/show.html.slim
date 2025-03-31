@@ -43,14 +43,8 @@
 
         - if @stop_area.flexible_area_memberships.any?
           = simple_block_for @stop_area, title: t("stop_areas.form.sections.flexible_area") do |d|
-              table.table.table-bordered
-                thead
-                  tr
-                    th= t('activerecord.attributes.flexible_area_membership.member_id')
-                tbody
-                  - @stop_area.flexible_area_memberships.includes(:member).each do |membership|
-                    tr
-                      td= membership.member.display_name
+            - o = join_members(@stop_area.flexible_area_members)
+            = d.attribute :values, label: o.label, object: o
 
         = simple_block_for @stop_area, title: Chouette::StopArea.tmf('referent') do |d|
           - if @stop_area.is_referent

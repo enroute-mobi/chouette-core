@@ -2,7 +2,7 @@ en:
   activerecord:
     attributes:
       flexible_area_membership:
-        member_id: "Associated stop"
+        member_id: "Associated stops"
     errors:
       models:
         flexible_area_membership:

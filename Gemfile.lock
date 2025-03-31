@@ -66,7 +66,8 @@ GIT
 
 GIT
   remote: https://bitbucket.org/enroute-mobi/netex.git
-  revision: 667c6a66dea0ab18e9fd2c32b1611fd82019d301
+  revision: 3cb9dd064ff19d9b8c7897588210a9d806a82ba1
+  branch: DATA-17-manage-flexiblestopplace-netex-r
   specs:
     netex (0.1.2)
       activesupport

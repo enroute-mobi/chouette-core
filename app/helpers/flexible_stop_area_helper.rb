@@ -16,9 +16,3 @@ module FlexibleStopAreaHelper
     attr_reader :label, :values
   end
 end
-
-
-
-
-
-

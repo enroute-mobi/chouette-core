@@ -142,10 +142,6 @@ module Chouette::Sync
           @postal_address ||= __getobj__.try(:postal_address)
         end
 
-        def accessibility
-          @accessibility ||= __getobj__.try(:accessibility)
-        end
-
         def transport_mode
           __getobj__.try(:transport_mode)
         end

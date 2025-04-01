@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2025_03_05_102006) do
+ActiveRecord::Schema.define(version: 2025_03_31_140009) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "btree_gin"
@@ -1579,6 +1579,7 @@ ActiveRecord::Schema.define(version: 2025_03_05_102006) do
     t.datetime "created_at"
     t.datetime "updated_at"
     t.jsonb "metadata", default: {}
+    t.boolean "flexible", default: false, null: false
     t.index ["objectid"], name: "stop_points_objectid_key", unique: true
     t.index ["route_id"], name: "index_stop_points_on_route_id"
   end
@@ -1692,6 +1693,8 @@ ActiveRecord::Schema.define(version: 2025_03_05_102006) do
     t.string "checksum"
     t.text "checksum_source"
     t.bigint "stop_area_id"
+    t.integer "earliest_departure_time_of_day"
+    t.integer "latest_arrival_time_of_day"
     t.index ["stop_area_id"], name: "index_vehicle_journey_at_stops_on_stop_area_id"
     t.index ["stop_point_id"], name: "index_vehicle_journey_at_stops_on_stop_pointid"
     t.index ["vehicle_journey_id", "stop_area_id"], name: "index_vjas_on_vehicle_journey_id_and_stop_area_id"

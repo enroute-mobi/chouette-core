@@ -73,6 +73,16 @@ module Chouette
       self.arrival_day_offset = time_of_day.day_offset
     end
 
+    attribute :earliest_departure_time_of_day, TimeOfDay::Type::SecondOffset.new
+    attribute :latest_arrival_time_of_day, TimeOfDay::Type::SecondOffset.new
+
+    def earliest_departure_local_time_of_day
+      @earliest_departure_local_time_of_day ||= earliest_departure_time_of_day&.with_utc_offset(time_zone_offset)
+    end
+
+    def latest_arrival_local_time_of_day
+      @latest_arrival_local_time_of_day ||= latest_arrival_time_of_day&.with_utc_offset(time_zone_offset)
+    end
 
     %i[departure_time arrival_time].each do |attr|
       define_method "#{attr}=" do |val|
@@ -148,12 +158,18 @@ module Chouette
       end
     end
 
+    attr_writer :raw_time_zone
+
+    def raw_time_zone
+      @raw_time_zone ||= stop_point&.stop_area_light&.time_zone
+    end
+
     def time_zone
-      ActiveSupport::TimeZone[stop_point&.stop_area_light&.time_zone || "UTC"]
+      ActiveSupport::TimeZone[raw_time_zone || "UTC"]
     end
 
     def time_zone_offset
-      return 0 unless stop_point&.stop_area_light&.time_zone.present?
+      return 0 unless raw_time_zone.present?
       time_zone&.utc_offset || 0
     end
 

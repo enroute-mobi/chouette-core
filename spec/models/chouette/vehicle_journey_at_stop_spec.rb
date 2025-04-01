@@ -1,5 +1,63 @@
 RSpec.describe Chouette::VehicleJourneyAtStop, type: :model do
-  subject { build_stubbed(:vehicle_journey_at_stop) }
+  subject(:vehicle_journey_at_stop) { described_class.new }
+
+  it { is_expected.to_not validate_presence_of(:earliest_departure_time_of_day) }
+
+  describe '#earliest_departure_time_of_day' do
+    subject { vehicle_journey_at_stop.earliest_departure_time_of_day }
+
+    context 'when raw value is nil' do
+      it { is_expected.to be_nil }
+    end
+  end
+
+  describe '#earliest_departure_local_time_of_day' do
+    subject { vehicle_journey_at_stop.earliest_departure_local_time_of_day }
+
+    context 'when earliest_departure_time_of_day is nil' do
+      it { is_expected.to be_nil }
+    end
+
+    context 'when earliest_departure_time_of_day is 00:00' do
+      before { vehicle_journey_at_stop.earliest_departure_time_of_day = TimeOfDay.parse('00:00') }
+
+      context 'when time_zone is "Europe/London"' do
+        before { vehicle_journey_at_stop.raw_time_zone = 'Europe/London' }
+
+        it { is_expected.to eq(TimeOfDay.parse('00:00')) }
+      end
+
+      context 'when time_zone is "Europe/Paris"' do
+        before { vehicle_journey_at_stop.raw_time_zone = 'Europe/Paris' }
+
+        it { is_expected.to eq(TimeOfDay.parse('00:00', time_zone: 'Europe/Paris')) }
+      end
+    end
+  end
+
+  describe '#latest_arrival_local_time_of_day' do
+    subject { vehicle_journey_at_stop.latest_arrival_local_time_of_day }
+
+    context 'when latest_arrival_time_of_day is nil' do
+      it { is_expected.to be_nil }
+    end
+
+    context 'when latest_arrival_time_of_day is 00:00' do
+      before { vehicle_journey_at_stop.latest_arrival_time_of_day = TimeOfDay.parse('00:00') }
+
+      context 'when time_zone is "Europe/London"' do
+        before { vehicle_journey_at_stop.raw_time_zone = 'Europe/London' }
+
+        it { is_expected.to eq(TimeOfDay.parse('00:00')) }
+      end
+
+      context 'when time_zone is "Europe/Paris"' do
+        before { vehicle_journey_at_stop.raw_time_zone = 'Europe/Paris' }
+
+        it { is_expected.to eq(TimeOfDay.parse('00:00', time_zone: 'Europe/Paris')) }
+      end
+    end
+  end
 
   describe 'checksum' do
     subject(:at_stop) { create(:vehicle_journey_at_stop) }

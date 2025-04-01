@@ -210,6 +210,7 @@ fr:
         routes: Itinéraires
         fare_zones: Zones Tarifaires
         transport_mode: Mode de transport
+        flexible_area_members: Arrêts associés
     errors:
       models:
         stop_area:

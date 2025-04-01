@@ -50,7 +50,7 @@ module Chouette::Sync
 
       class Decorator < Chouette::Sync::Netex::Decorator
         # Use type_of_place found in the id when no defined
-        CANDIDATE_TYPES = %w{quay monomodalStopPlace multimodalStopPlace flexibleStopPlace}
+        CANDIDATE_TYPES = %w[quay monomodalStopPlace multimodalStopPlace flexibleStopPlace].freeze
         def type_of_place_in_id
           CANDIDATE_TYPES.find { |type| id.downcase.include?(type.downcase) } if id
         end
@@ -204,6 +204,7 @@ module Chouette::Sync
       def pending_flexible_area_memberships(resource_id, flexible_area_members)
         pending_flexible_area_memberships_resolver.declare(resource_id, flexible_area_members)
       end
+
       def update_pending_flexible_area_memberships
         pending_flexible_area_memberships_resolver.update
       end

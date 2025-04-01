@@ -19,7 +19,7 @@ RSpec.describe Chouette::Config do
     end
   end
 
-  describe '#subscriotion' do
+  describe '#subscription' do
     subject(:subscription) { config.subscription }
 
     describe '#enabled?' do
@@ -134,7 +134,7 @@ RSpec.describe Chouette::Config::Environment do
       end
     end
 
-    context 'for name "DUMMY" without default true' do
+    context 'for name "DUMMY" with default true' do
       subject { environment.boolean('DUMMY', default: true) }
 
       it { is_expected.to be_truthy }
@@ -148,7 +148,7 @@ RSpec.describe Chouette::Config::Environment do
       end
     end
 
-    context 'for name "DUMMY" without default false' do
+    context 'for name "DUMMY" with default false' do
       subject { environment.boolean('DUMMY', default: false) }
 
       it { is_expected.to be_falsy }

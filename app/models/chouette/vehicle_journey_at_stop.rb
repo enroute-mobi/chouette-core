@@ -155,6 +155,10 @@ module Chouette
         attrs << self.departure_day_offset.to_s
         attrs << self.arrival_day_offset.to_s
         attrs << self.stop_area_id.to_s if self.stop_area_id.present?
+        if earliest_departure_time_of_day
+          attrs << earliest_departure_time_of_day.second_offset
+          attrs << latest_arrival_time_of_day&.second_offset
+        end
       end
     end
 

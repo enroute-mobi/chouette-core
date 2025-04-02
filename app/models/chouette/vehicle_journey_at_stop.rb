@@ -224,6 +224,7 @@ module Chouette
       class VehicleJourneyAtStop
         attr_accessor :id, :vehicle_journey_id, :stop_point_id, :stop_area_id
         attr_accessor :arrival_time, :departure_time, :departure_day_offset, :arrival_day_offset
+        attr_accessor :earliest_departure_time_of_day, :latest_arrival_time_of_day
         attr_accessor :checksum, :checksum_source
         attr_accessor :time_zone
 
@@ -232,17 +233,19 @@ module Chouette
         end
 
         def attributes=(attributes)
-          @id = attributes["id"]
-          @vehicle_journey_id = attributes["vehicle_journey_id"]
-          @stop_point_id = attributes["stop_point_id"]
-          @arrival_time = attributes["arrival_time"]
-          @departure_time = attributes["departure_time"]
-          @departure_day_offset = attributes["departure_day_offset"]
-          @arrival_day_offset = attributes["arrival_day_offset"]
-          @stop_area_id = attributes["stop_area_id"]
-          @checksum = attributes["checksum"]
-          @checksum_source = attributes["checksum_source"]
-          @time_zone = attributes["time_zone"]
+          @id = attributes['id']
+          @vehicle_journey_id = attributes['vehicle_journey_id']
+          @stop_point_id = attributes['stop_point_id']
+          @arrival_time = attributes['arrival_time']
+          @departure_time = attributes['departure_time']
+          @departure_day_offset = attributes['departure_day_offset']
+          @arrival_day_offset = attributes['arrival_day_offset']
+          @stop_area_id = attributes['stop_area_id']
+          @checksum = attributes['checksum']
+          @checksum_source = attributes['checksum_source']
+          @time_zone = attributes['time_zone']
+          @earliest_departure_time_of_day_seconds = attributes['earliest_departure_time_of_day']
+          @latest_arrival_time_of_day_seconds = attributes['latest_arrival_time_of_day']
 
           @attributes = attributes
         end
@@ -274,6 +277,18 @@ module Chouette
 
         def departure_local_time_of_day
           TimeOfDay.parse(departure_time, day_offset: departure_day_offset, time_zone: time_zone) if departure_time
+        end
+
+        def earliest_departure_time_of_day
+          return unless @earliest_departure_time_of_day_seconds
+
+          @earliest_departure_time_of_day ||= TimeOfDay.from_second_offset(@earliest_departure_time_of_day_seconds)
+        end
+
+        def latest_arrival_time_of_day
+          return unless @latest_arrival_time_of_day_seconds
+
+          @latest_arrival_time_of_day ||= TimeOfDay.from_second_offset(@latest_arrival_time_of_day_seconds)
         end
       end
     end

@@ -90,7 +90,7 @@ class Workbench < ApplicationModel
   validates :priority, presence: true, numericality: { greater_than_or_equal_to: 1 }
   validates :hidden, inclusion: { in: [true, false] }
 
-  scope :with_active_workgroup, -> { joins(:workgroup).where('workgroups.deleted_at': nil) }
+  scope :with_active_workgroup, -> { joins(:workgroup).where(::Workgroup.quoted_table_name => { deleted_at: nil }) }
 
   def pending?
     organisation_id.blank?

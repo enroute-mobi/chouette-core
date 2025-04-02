@@ -21,9 +21,9 @@ module LazyLoading
       else
         # The record hasn't been loaded yet, so hit the database with all pending IDs
         pending_ids = @lazy_state[:pending_ids].to_a
-        stop_areas = Chouette::StopArea.joins(:stop_points => [:route => :line])
-          .where(:lines => {:id => pending_ids})
-          .select('stop_areas.*', 'lines.id as line_id')
+        stop_areas = Chouette::StopArea.joins(stop_points: { route: :line })
+                                       .where(Chouette::Line.quoted_table_name => { id: pending_ids })
+                                       .select('stop_areas.*', "#{Chouette::Line.quoted_table_name}.\"id\" as line_id")
 
         # Fill and clean the map
         stop_areas.each do |stop|

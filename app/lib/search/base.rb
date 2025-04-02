@@ -358,7 +358,7 @@ module Search
         end
 
         def order_arg(request, asc_desc)
-          groups.map { |s| [request.send(:column_alias_for, s), asc_desc] }.to_h
+          groups.map { |s| [request.send(:column_alias_for, s.downcase), asc_desc] }.to_h
         end
 
         protected
@@ -438,7 +438,7 @@ module Search
 
         class DayOfWeek < StringGroupByAttribute
           def keys
-            @keys ||= (0..6).map { |d| (d + Date::DAYS_INTO_WEEK[Date.beginning_of_week] + 1) % 7 }
+            @keys ||= (0..6).map { |d| (d + Date::DAYS_INTO_WEEK[Date.beginning_of_week]) % 7 }
           end
 
           def sortable
@@ -668,7 +668,7 @@ module Search
       end
 
       def column_alias(operation, sql_definition)
-        models.send(:column_alias_for, "#{operation} #{sql_definition}")
+        models.send(:column_alias_for, "#{operation} #{sql_definition.downcase}")
       end
 
       def aggregate(request)

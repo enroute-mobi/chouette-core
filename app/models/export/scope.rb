@@ -319,7 +319,10 @@ module Export
       end
 
       def line_notices
-        current_scope.line_notices.joins(:lines).where('lines.id' => selected_line_ids).distinct
+        current_scope.line_notices
+                     .joins(:lines)
+                     .where(::Chouette::Line.quoted_table_name => { id: selected_line_ids })
+                     .distinct
       end
 
       def time_tables
@@ -329,7 +332,11 @@ module Export
       private
 
       def time_table_ids
-        current_scope.time_tables.joins(:lines).where('lines.id' => selected_line_ids).distinct.select(:id)
+        current_scope.time_tables
+                     .joins(:lines)
+                     .where(::Chouette::Line.quoted_table_name => { id: selected_line_ids })
+                     .distinct
+                     .select(:id)
       end
     end
 

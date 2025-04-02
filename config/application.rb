@@ -19,7 +19,8 @@ Chouette::Config.load
 module ChouetteIhm
   class Application < Rails::Application
     # Initialize configuration defaults for originally generated Rails version.
-    config.load_defaults 5.2
+    config.load_defaults 6.0
+    config.autoloader = :classic
 
     # Settings in config/environments/* take precedence over those specified here.
 
@@ -87,6 +88,8 @@ module ChouetteIhm
     SmartEnv.add_boolean :FORCE_MERGE_METHOD
 
     config.i18n.default_locale = SmartEnv[:RAILS_LOCALE].to_sym
+
+    config.hosts << URI.parse(SmartEnv[:PUBLIC_HOST]).host if SmartEnv[:PUBLIC_HOST]
 
     # Configure Browserify to use babelify to compile ES6
     # config.browserify_rails.commandline_options = "-t [ babelify --presets [ react es2015 ] ]"

@@ -24,7 +24,9 @@ module Chouette
 
     scope :by_provider, ->(line_provider) { where(line_provider_id: line_provider.id) }
 
-    scope :with_lines, ->(lines) { joins(:line_notice_memberships).where(line_notices_lines: { line_id: lines }) }
+    scope :with_lines, lambda { |lines|
+      joins(:line_notice_memberships).where(::Chouette::LineNoticeMembership.quoted_table_name => { line_id: lines })
+    }
 
     has_many :line_notice_memberships, inverse_of: :line_notice, dependent: :destroy
     has_many :lines, through: :line_notice_memberships, inverse_of: :line_notices

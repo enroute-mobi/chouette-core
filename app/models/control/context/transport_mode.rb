@@ -61,7 +61,10 @@ class Control::Context::TransportMode < Control::Context
     end
 
     def point_of_interests
-      context.point_of_interests.joins(shape_provider: :shapes).where('shapes.id': shapes).distinct
+      context.point_of_interests
+             .joins(shape_provider: :shapes)
+             .where(::Shape.quoted_table_name => { id: shapes })
+             .distinct
     end
 
     def connection_links

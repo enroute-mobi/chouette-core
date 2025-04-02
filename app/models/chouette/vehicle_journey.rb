@@ -42,7 +42,9 @@ module Chouette
     has_many :stop_points, -> { order("stop_points.position") }, :through => :vehicle_journey_at_stops
     has_many :vehicle_journey_time_table_relationships, class_name: 'Chouette::TimeTablesVehicleJourney'
 
-    scope :with_companies, -> (companies) { joins(route: :line).where(lines: { company_id: companies }) }
+    scope :with_companies, lambda { |companies|
+      joins(route: :line).where(::Chouette::Line.quoted_table_name => { company_id: companies })
+    }
 
     scope :with_stop_area_ids, ->(ids){
       _ids = ids.select(&:present?).map(&:to_i)

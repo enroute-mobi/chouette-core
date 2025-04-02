@@ -5,7 +5,7 @@ git_source(:github) { |name| "https://github.com/#{name}.git" }
 git_source(:en_route) { |name| "https://bitbucket.org/enroute-mobi/#{name}.git" }
 
 # Bundle edge Rails instead: gem 'rails', github: 'rails/rails'
-gem 'rails', '~> 5.2.8.1'
+gem 'rails', '~> 6.0.0'
 gem 'bootsnap', require: false
 
 gem 'health_check', '>= 3.1.0'
@@ -46,7 +46,7 @@ gem 'faraday'
 
 gem 'pg'
 
-gem 'activerecord-postgis-adapter', '~> 5.2.3'
+gem 'activerecord-postgis-adapter'
 gem 'pg_search'
 gem 'postgres-copy', '>= 1.7.2'
 
@@ -165,7 +165,7 @@ group :test do
   gem 'timecop'
   gem 'rspec-snapshot'
   gem 'rails-controller-testing', '>= 1.0.5'
-  gem 'rspec-rails', '>= 5.1.0'
+  gem 'rspec-rails'
   gem 'capybara', '~> 3.15.1'
   gem 'database_cleaner'
   gem 'poltergeist', '>= 1.18.1'

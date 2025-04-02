@@ -45,6 +45,14 @@ module Chouette
       @table_name ||= model_class.table_name
     end
 
+    def reflection
+      if defined?(@reflection)
+        @reflection
+      else
+        @reflection = model_class.reflections[name.to_s]
+      end
+    end
+
     # "stop_area#name", "line#name", ...
     def code
       @code ||= "#{resource_name}##{name}"

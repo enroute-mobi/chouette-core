@@ -117,8 +117,8 @@ module Chouette
                                  where('deactivated = ? OR (active_from IS NOT NULL AND active_from >= ?) OR (active_until IS NOT NULL AND active_until < ?)', true, to, from)
                                }
 
-    scope :without_company, -> { left_joins(:company).where 'companies.id' => nil }
-    scope :with_company, -> { left_joins(:company).where.not 'companies.id' => nil }
+    scope :without_company, -> { left_joins(:company).where(Chouette::Company.quoted_table_name => { id: nil }) }
+    scope :with_company, -> { left_joins(:company).where.not(Chouette::Company.quoted_table_name => { id: nil }) }
 
     def self.nullable_attributes
       %i[registration_number published_name number comment url color text_color]
@@ -135,15 +135,21 @@ module Chouette
     end
 
     def commercial_stop_areas
-      Chouette::StopArea.joins(children: [stop_points: [route: :line]]).where(lines: { id: id }).distinct
+      Chouette::StopArea.joins(children: { stop_points: { route: :line } })
+                        .where(::Chouette::Line.quoted_table_name => { id: id })
+                        .distinct
     end
 
     def stop_areas
-      Chouette::StopArea.joins(stop_points: [route: :line]).where(lines: { id: id })
+      Chouette::StopArea.joins(stop_points: { route: :line }).where(::Chouette::Line.quoted_table_name => { id: id })
     end
 
     def stop_areas_last_parents
-      Chouette::StopArea.joins(stop_points: [route: :line]).where(lines: { id: id }).collect(&:root).flatten.uniq
+      Chouette::StopArea.joins(stop_points: { route: :line })
+                        .where(::Chouette::Line.quoted_table_name => { id: id })
+                        .collect(&:root)
+                        .flatten
+                        .uniq
     end
 
     def full_display_name

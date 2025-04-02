@@ -103,7 +103,11 @@ module Macro
 
         def base_sql
           select = "public.shapes.*, array_to_string(array_agg(public.waypoints.stop_area_id order by position),'-') AS stop_area_sequence"
-          scope.select(select).group(:id).joins(:waypoints).where.not('waypoints.stop_area_id' => nil).to_sql
+          scope.select(select)
+               .group(:id)
+               .joins(:waypoints)
+               .where.not(::Waypoint.quoted_table_name => { stop_area_id: nil })
+               .to_sql
         end
 
         def scope

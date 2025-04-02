@@ -1150,7 +1150,10 @@ module Export
       end
 
       def vehicle_journeys
-        export_scope.vehicle_journeys.joins(route: :line).where.not(company: nil).where('vehicle_journeys.company_id != lines.company_id')
+        export_scope.vehicle_journeys
+                    .joins(route: :line)
+                    .where.not(company: nil)
+                    .where("vehicle_journeys.company_id != #{Chouette::Line.quoted_table_name}.company_id")
       end
 
       class Decorator < ModelDecorator

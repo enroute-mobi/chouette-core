@@ -20,7 +20,7 @@ module Fare
     validates :name, :products, :expression, presence: true
     validates_associated :expression
 
-    scope :by_products, ->(products) { joins(:products).where(fare_products: { id: products }) }
+    scope :by_products, ->(products) { joins(:products).where(::Fare::Product.quoted_table_name => { id: products }) }
     class << self
       alias by_product by_products
     end

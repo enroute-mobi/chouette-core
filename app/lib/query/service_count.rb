@@ -8,19 +8,19 @@ module Query
 
     def company_ids(value)
       change_scope(if: value.present?) do |scope|
-        scope.joins(:line).where(lines: { company_id: value })
+        scope.joins(:line).where(::Chouette::Line.quoted_table_name => { company_id: value })
       end
     end
 
     def network_ids(value)
       change_scope(if: value.present?) do |scope|
-        scope.joins(:line).where(lines: { network_id: value })
+        scope.joins(:line).where(::Chouette::Line.quoted_table_name => { network_id: value })
       end
     end
 
     def transport_modes(value)
       change_scope(if: value.present?) do |scope|
-        scope.joins(:line).where(lines: { transport_mode: value.to_a })
+        scope.joins(:line).where(::Chouette::Line.quoted_table_name => { transport_mode: value.to_a })
       end
     end
 
@@ -42,9 +42,5 @@ module Query
         end
       end
     end
-
-    # TODO Could use a nice RecurviseQuery common object
-    delegate :table_name, to: ::ServiceCount.table_name
-    private :table_name
   end
 end

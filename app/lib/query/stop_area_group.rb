@@ -12,7 +12,7 @@ module Query
     def stop_areas(value)
       value = value.reject(&:blank?) if value.present?
       change_scope(if: value.present?) do |scope|
-        scope.joins(:members).where(stop_area_group_members: { stop_area_id: value })
+        scope.joins(:members).where(::StopAreaGroup::Member.quoted_table_name => { stop_area_id: value })
       end
     end
 

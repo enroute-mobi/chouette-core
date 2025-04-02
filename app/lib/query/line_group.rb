@@ -12,7 +12,7 @@ module Query
     def lines(value)
       value = value.reject(&:blank?) if value.present?
       change_scope(if: value.present?) do |scope|
-        scope.joins(:members).where(line_group_members: { line_id: value })
+        scope.joins(:members).where(::LineGroup::Member.quoted_table_name => { line_id: value })
       end
     end
 

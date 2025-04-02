@@ -175,7 +175,7 @@ module Control
           with_query = WithQuery.new(scope, model_attribute)
           return with_query if with_query.support?
 
-          if model_attribute.model_class.reflections[model_attribute.name] # TODO: CHOUETTE-3266 meh...
+          if model_attribute.reflection
             Reference.new scope, model_attribute
           else
             SimpleAttribute.new scope, model_attribute
@@ -195,8 +195,7 @@ module Control
         end
 
         def association_collection
-          model_attribute.options[:association_collection] ||
-          model_attribute.name.to_s.pluralize.to_sym
+          model_attribute.reflection.klass.quoted_table_name
         end
       end
 

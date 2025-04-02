@@ -64,8 +64,6 @@ class User < ApplicationModel
 
   scope :with_organisation, -> { where.not(organisation_id: nil) }
 
-  scope :from_workgroup, ->(workgroup_id) { joins(:workbenches).where(workbenches: {workgroup_id: workgroup_id}) }
-
   scope :with_profiles, ->(*profile_names) { where(profile: profile_names) }
 
   scope :active, ->() { where(locked_at: nil) }
@@ -89,14 +87,15 @@ class User < ApplicationModel
   end
 
   def workbenches
+    workbench_sharings = Workbench::Sharing.quoted_table_name
     Workbench.left_outer_joins(:sharings) \
-             .where(workbenches: { organisation_id: organisation_id, hidden: false }) \
+             .where(Workbench.quoted_table_name => { organisation_id: organisation_id, hidden: false }) \
              .or(
                Workbench.left_outer_joins(:sharings) \
-                        .where(workbench_sharings: { recipient_type: 'User', recipient_id: id })
+                        .where(workbench_sharings => { recipient_type: 'User', recipient_id: id })
              ).or(
                Workbench.left_outer_joins(:sharings) \
-                        .where(workbench_sharings: { recipient_type: 'Organisation', recipient_id: organisation_id })
+                        .where(workbench_sharings => { recipient_type: 'Organisation', recipient_id: organisation_id })
              ) \
              .distinct
   end

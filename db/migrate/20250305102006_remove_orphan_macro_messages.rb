@@ -3,7 +3,7 @@
 class RemoveOrphanMacroMessages < ActiveRecord::Migration[5.2]
   def up
     on_public_schema_only do
-      Macro::Message.left_outer_joins(:macro_run).where(macro_runs: { id: nil }).delete_all
+      Macro::Message.left_outer_joins(:macro_run).where(Macro::Base::Run.quoted_table_name => { id: nil }).delete_all
     end
   end
 

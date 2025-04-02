@@ -113,7 +113,8 @@ class Referential < ApplicationModel
     kept.each do |kept_scope|
       scope = scope.where("referentials.id NOT IN (#{kept_scope})")
     end
-    scope.joins('LEFT JOIN public.referential_metadata ON referential_metadata.referential_source_id = referentials.id').where('referential_metadata.id' => nil)
+    scope.joins('LEFT JOIN public.referential_metadata ON referential_metadata.referential_source_id = referentials.id')
+         .where(ReferentialMetadata.quoted_table_name => { id: nil })
   }
 
   after_destroy :clean_cross_referential_index!
@@ -541,13 +542,7 @@ class Referential < ApplicationModel
     delegate :lines, :metadatas, to: :referential
 
     def updated_at_by_lines
-      @updated_at_by_lines ||= ::ActiveRecord::Base.connection.select_rows(query).map do |line_id, time|
-        [ line_id, database_timezone.parse(time) ]
-      end.to_h
-    end
-
-    def database_timezone
-      @database_timezone ||= Time.find_zone("UTC")
+      @updated_at_by_lines ||= ::ActiveRecord::Base.connection.select_rows(query).to_h
     end
 
     def query

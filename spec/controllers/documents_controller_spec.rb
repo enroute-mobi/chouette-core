@@ -162,7 +162,7 @@ RSpec.describe DocumentsController, type: :controller do
       expect(response.headers.to_h).to include(
         {
           'Content-Type' => 'application/pdf',
-          'Content-Disposition' => 'attachment; filename="test-0.pdf"'
+          'Content-Disposition' => 'attachment; filename="test-0.pdf"; filename*=UTF-8\'\'test-0.pdf'
         }
       )
     end

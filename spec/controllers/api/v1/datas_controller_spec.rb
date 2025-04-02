@@ -60,7 +60,7 @@ RSpec.describe Api::V1::DatasController, type: :controller do
           it 'should not be successful' do
             get_request
             expect(response).to have_http_status(:not_found)
-            expect(response.content_type).to eq('text/html')
+            expect(response.content_type).to eq('text/html; charset=utf-8')
             expect(response).to render_template('missing_file_error.html.slim', layout: 'layouts/api')
           end
         end

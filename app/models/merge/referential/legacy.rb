@@ -260,7 +260,7 @@ class Merge::Referential::Legacy < Merge::Referential::Base
 
                         previous_position = -1
                         stop_points = stop_areas_objectids.map do |_, object_id|
-                          stop_point = existing_associated_route.stop_points.joins(:stop_area).where("stop_areas.objectid": object_id).where('position > ?', previous_position).order(:position).first
+                          stop_point = existing_associated_route.stop_points.joins(:stop_area).where(Chouette::StopArea.quoted_table_name => { objectid: object_id }).where('position > ?', previous_position).order(:position).first
                           unless stop_point
                             raise "Can't find StopPoint associated to #{object_id} with position > #{previous_position} in #{stop_areas_objectids} #{existing_associated_route.stop_points.inspect}"
                           end

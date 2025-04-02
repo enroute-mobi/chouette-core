@@ -78,8 +78,9 @@ RSpec.describe Publication, type: :model do
         )
 
         expect { subject }.to change { Delayed::Job.count }.by(1)
-        expect(Delayed::Job.last.payload_object.job_data['job_class']).to eq('ActionMailer::DeliveryJob')
-        expect(Delayed::Job.last.payload_object.job_data['arguments']).to include('user@test.ex')
+        expect(Delayed::Job.last.payload_object.job_data['job_class']).to eq('ActionMailer::MailDeliveryJob')
+        expect(Delayed::Job.last.payload_object.job_data['arguments'].first).to eq('PublicationMailer')
+        expect(Delayed::Job.last.payload_object.job_data['arguments'].last['args']).to include('user@test.ex')
       end
     end
 

@@ -96,7 +96,7 @@ module Macro
             'codes.value AS document_code_value'
           )
           .joins(codes: :code_space)
-          .where('code_spaces.id' => document_code_space)
+          .where(::CodeSpace.quoted_table_name => { id: document_code_space })
           .to_sql
       end
 
@@ -108,7 +108,7 @@ module Macro
             'codes.value AS model_code_value'
           )
           .joins(codes: :code_space)
-          .where('code_spaces.id' => model_code_space)
+          .where(::CodeSpace.quoted_table_name => { id: model_code_space })
           .to_sql
       end
 

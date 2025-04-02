@@ -341,7 +341,7 @@ RSpec.describe Macro::CreateCode do
       let(:referential) { context.referential }
       let(:code_space) { context.code_space(:test) }
       let(:context_model) { nil }
-      let(:model) { context_model ? Macro::CreateCodeFromUuid::Run::RequestBuilder.new(context.workgroup, context_model.class.all, code_space, target.pattern).run.where(context_model.class.table_name => { id: context_model.id }).first : nil }
+      let(:model) { context_model ? Macro::CreateCodeFromUuid::Run::RequestBuilder.new(context.workgroup, context_model.class.all, code_space, target.pattern).run.where(context_model.class.quoted_table_name => { id: context_model.id }).first : nil }
 
       before { referential.switch }
 

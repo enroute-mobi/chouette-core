@@ -553,7 +553,7 @@ module Chouette
     # TODO: Find a safe/clean way to share this union mechanism
     def self.union(relation1, relation2)
       union_query = "select id from ((#{relation1.select(:id).to_sql}) UNION (#{relation2.select(:id).to_sql})) stop_area_ids"
-      unscoped.where "stop_areas.id IN (#{union_query})"
+      unscoped.where "#{quoted_table_name}.id IN (#{union_query})"
     end
 
     # Find parents associated to the current Stop Areas

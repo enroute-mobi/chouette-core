@@ -1,3 +1,14 @@
+RSpec.describe Chouette::StopPoint do
+  subject(:stop_point) { described_class.new }
+
+  describe '#flexible?' do
+    subject { stop_point.flexible? }
+
+    it { is_expected.to be_falsy }
+  end
+end
+
+# LEGACY: use new RSpec.describe section
 describe Chouette::StopPoint, :type => :model do
   let!(:vehicle_journey) { create(:vehicle_journey)}
   subject { Chouette::Route.find( vehicle_journey.route_id).stop_points.first }

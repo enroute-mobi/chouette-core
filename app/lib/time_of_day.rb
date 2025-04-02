@@ -284,6 +284,7 @@ class TimeOfDay
     class SecondOffset < ActiveRecord::Type::Value
       def cast(value)
         return unless value.present?
+        return value if value.is_a? TimeOfDay
 
         TimeOfDay.from_second_offset(value)
       end

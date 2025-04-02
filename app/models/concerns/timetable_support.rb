@@ -153,9 +153,7 @@ module TimetableSupport
       period.period_end   = Date.parse(item['period_end'])
     end
 
-    if state.key?('code_values')
-      assign_state_codes(state['code_values'])
-    end
+    assign_state_codes(state['code_values']) if state.key?('code_values') && respond_to?(:assign_state_codes)
 
     self.save
 

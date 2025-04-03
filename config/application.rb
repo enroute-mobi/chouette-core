@@ -89,10 +89,8 @@ module ChouetteIhm
 
     config.i18n.default_locale = SmartEnv[:RAILS_LOCALE].to_sym
 
-    if SmartEnv[:PUBLIC_HOST]
-      config.hosts << URI.parse(SmartEnv[:PUBLIC_HOST]).host
-      config.host_authorization = { exclude: ->(request) { request.path == "/healthz" } }
-    end
+    # See CHOUETTE-4533
+    config.hosts = nil
 
     # Configure Browserify to use babelify to compile ES6
     # config.browserify_rails.commandline_options = "-t [ babelify --presets [ react es2015 ] ]"

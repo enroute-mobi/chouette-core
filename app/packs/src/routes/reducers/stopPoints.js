@@ -1,7 +1,7 @@
 import _ from 'lodash'
 import { RECEIVE_ROUTE } from './route'
 
-const stopPoint = ({ type }, length) => {
+const stopPoint = ({ type }, length, flexible) => {
   switch (type) {
     case 'ADD_STOP':
       return {
@@ -10,6 +10,7 @@ const stopPoint = ({ type }, length) => {
         edit: true,
         for_boarding: 'normal',
         for_alighting: 'normal',
+        flexible: flexible,
         olMap: {
           isOpened: false,
           json: {}
@@ -25,7 +26,7 @@ const stopPoints = (state = [], action) => {
     case 'ADD_STOP':
       return [
         ...state,
-        stopPoint(action, state.length)
+        stopPoint(action, state.length, action.flexible)
       ]
     case 'MOVE_STOP_UP':
       return [
@@ -67,6 +68,7 @@ const stopPoints = (state = [], action) => {
               name: action.text.name,
               short_name: action.text.short_name,
               area_type: action.text.area_type,
+              flexible: t.flexible,
               city_name: action.text.city_name,
               comment: action.text.comment,
               registration_number: action.text.registration_number,

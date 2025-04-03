@@ -61,7 +61,11 @@ class RoutesController < Chouette::ReferentialController
 
     unless current_user.organisation.has_feature?('route_stop_areas_all_types')
       scope = scope.where(kind: :non_commercial)
-                   .or(scope.where(area_type: referential.stop_area_referential.available_stops))
+      .or(scope.where(area_type: referential.stop_area_referential.available_stops))
+    end
+
+    if params[:without_flexible_stop_place]
+      scope = scope.where.not(area_type: 'flexible_stop_place')
     end
 
     text = params[:q]&.strip
@@ -194,7 +198,7 @@ class RoutesController < Chouette::ReferentialController
       :opposite_route_id,
       :published_name,
       :wayback,
-      stop_points_attributes: %i[id _destroy position stop_area_id for_boarding for_alighting]
+      stop_points_attributes: %i[id _destroy position stop_area_id for_boarding for_alighting flexible]
     )
   end
 end

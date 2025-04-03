@@ -1,9 +1,10 @@
 import { getRedirectUrl } from '../reducers/status'
 
 const actions = {
-  addStop : () => {
+  addStop : (flexible) => {
     return {
-      type: 'ADD_STOP'
+      type: 'ADD_STOP',
+      flexible
     }
   },
   moveStopUp : (index) => {

@@ -99,7 +99,7 @@ class BSelect2 extends Component{
           theme: 'bootstrap',
           width: '100%',
           ajax: {
-            url: `${path.build({ workbenchId, referentialId, lineId, routeId })}/autocomplete_stop_areas.json`,
+            url: `${path.build({ workbenchId, referentialId, lineId, routeId })}/${this.props.autocompleteUrl}`,
             dataType: 'json',
             delay: '500',
             data: function(params) {

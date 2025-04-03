@@ -25,6 +25,7 @@ fr:
       custom_fields: "Champs personnalisés"
     actions:
       new: "Ajouter un Arrêt"
+      new_flexible: "Ajouter un arrêt à la demande"
       create: "Ajouter un Arrêt"
       edit: "Editer cet Arrêt"
       update: "Editer cet Arrêt"

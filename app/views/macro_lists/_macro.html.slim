@@ -8,8 +8,8 @@
 = form.simple_fields_for(:macros, macro, fields_for_options) do |macro_form|
   .flex.flex-col.items-center.macro[x-data = "{ expanded: #{expanded || macro_form.object.errors.present?}, name: '#{escape_javascript(macro.name)}', class_description: '#{escape_javascript(class_description)}', deleted: false }" x-show="!deleted" x-ref="macro" id=dom_id(macro)]
     .flex.items-center.w-full.mb-8 x-show="!expanded"
-      button x-on:click.prevent=="expanded = ! expanded" class="expand flex items-center justify-between p-3 pl-3 mr-3 font-bold text-white bg-enroute-chouette-primary rounded cursor-pointer hover:text-indigo-100"
-        <span class="text-3xl w-4">+</span>
+      button x-on:click.prevent=="expanded = ! expanded" class="expand flex items-center justify-between p-1 mr-3 font-bold text-white bg-enroute-chouette-primary rounded cursor-pointer hover:text-indigo-100"
+        <span class="text-lg w-4">+</span>
 
       .grow
         p.mb-0.mr-2.truncate x-text="name ? (name + ' (' + class_description + ')') : class_description"
@@ -18,8 +18,8 @@
 
     .expanded class="w-full" x-show="expanded"
       .flex.items-center.w-full.mb-8
-        button x-on:click.prevent=="expanded = ! expanded" class="flex items-center justify-between p-3 pl-3 mr-3 font-bold text-white bg-enroute-chouette-primary rounded cursor-pointer hover:text-indigo-100"
-          <span class="text-3xl w-4">-</span>
+        button x-on:click.prevent=="expanded = ! expanded" class="flex items-center justify-between p-1 mr-3 font-bold text-white bg-enroute-chouette-primary rounded cursor-pointer hover:text-indigo-100"
+          <span class="text-lg w-4">-</span>
         .grow
           = macro_form.input :name, as: :string, placeholder: "#{I18n.t('macro_lists.form.macro_placeholder')}", label: false, wrapper_html: {'class': 'mb-0 mx-0', 'x-model': 'name'}
 

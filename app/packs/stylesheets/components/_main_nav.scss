@@ -61,9 +61,6 @@ $menuW: 300px;
         font-weight: 900;
       }
     }
-    .openMenu {
-      transition: 0.1s;
-    }
     .closeMenu {
       &:before {
         content: "\f00d";
@@ -137,7 +134,7 @@ $menuW: 300px;
 
             > .panel-title {
               font-weight: 600;
-              font-size: 1.6rem;
+              font-size: 1rem;
               line-height: 30px;
 
               > a {
@@ -404,8 +401,7 @@ $menuW: 300px;
     &,
     #menu_left .openMenu,
     #menu_top {
-      // height: $menuH * 2;
-      @apply h-40;
+      height: 6rem;
     }
     #menu_top > .menu-content {
       & > .menu-item {

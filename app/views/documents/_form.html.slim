@@ -25,7 +25,7 @@
         = t('documents.form.sections.content')
 
       .flex.items-center.mb-10.relative x-data="fileInput(#{@document.json_state})"
-        label.flex.justify-end.w-2/6.mr-8.mb-0.control-label.pt-0.text.required = I18n.t('activerecord.attributes.document.file')
+        label.flex.justify-end.w-2/6.mr-4.mb-0.control-label.pt-0.text.required = I18n.t('activerecord.attributes.document.file')
         .flex.justify-center.w-4/6
           .flex.flex-col.justify-center
             .btn.btn-primary x-on:click="openFileDialog()"

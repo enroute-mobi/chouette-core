@@ -12,7 +12,7 @@
       = f.input :category, as: :tom_select, collection: @search.candidate_categories.map { |l| {id: l.id, text: l.name } }, wrapper_html: {class: "w-2/6"}
       = f.input :shape_provider_id, as: :autocomplete_select, collection: @search.candidate_shape_providers, wrapper_html: {class: "w-2/5"}
 
-  .flex.flex-col.justify-center.items-center.actions.ml-auto.py-3.w-80
+  .flex.flex-col.justify-center.items-center.actions.ml-auto.w-56
     .flex.items-center.mb-3
       = render partial: 'shared/per_page', locals: {f:f}
     .flex.items-center

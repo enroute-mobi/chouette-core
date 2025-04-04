@@ -1,22 +1,15 @@
-.col-md-8.product_summary
-  .overlay-effect
+.flex.product_summary.col-span-2.relative
+  .bg-gradient-to-tr.from-pink-500.to-indigo-600.absolute.z-1.inset-0.overflow-hidden.opacity-60
   - if photo = WelcomePhoto.current
-    = image_tag photo.image_url, class:"img-hp w-full"
-    p.absolute.bottom-1.right-5.z-10.text-white-300
+    = image_tag photo.image_url, class:"w-full h-full flex object-cover"
+    p.absolute.bottom-1.right-5.z-20.text-white-300
       | Photo by&nbsp;
       = link_to photo.author_name, photo.author_link, target: "_blank", class: "hover:text-white"
       |  on&nbsp;
       = link_to "Unsplash", "https://unsplash.com/?utm_source=chouette&utm_medium=referral", target: "_blank", class: "hover:text-white"
 
-  .content
-      h2 = t("devise.sessions.new.baseline")
-      p = link_to t("devise.sessions.new.know_more").html_safe, 'https://enroute.mobi/chouette/', target: :blank
-coffee:
-  $(document).ready ->
-    $('.product_summary').addClass 'loaded'
-    setTimeout ->
-      $('.product_summary a').addClass 'shine'
-    , 1000
-    setTimeout ->
-      $('.product_summary a').removeClass 'shine'
-    , 1300
+  .content.absolute.inset-0.flex.flex-col.items-start.justify-center.bg-opacity-50.text-white.text-xl.md:text-2xl.font-bold.z-10.ml-32.2xl:ml-64
+    = image_pack_tag "static/logo-chouette-2020-saas-bgwhite.svg", class:"w-full max-w-xs 2xl:max-w-md"
+    h2.text-2xl.lg:text-3xl.xl:text-4xl.2xl:text-6xl
+      = t("devise.sessions.new.baseline").html_safe
+    p = link_to t("devise.sessions.new.know_more").html_safe, 'https://enroute.mobi/chouette/', target: :blank

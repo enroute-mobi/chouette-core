@@ -17,7 +17,7 @@ class TimePickerInput < SimpleForm::Inputs::Base
   end
 
   def input_html_classes
-    super.push 'border border-gray-300 rounded-tl rounded-bl w-full py-4 px-3 focus:outline-none focus:ring-0 focus:border-blue-500 leading-6 transition-colors duration-200 ease-in-out string optional'
+    super.push 'border border-gray-300 rounded-tl rounded-bl w-full py-1 px-3 focus:outline-none focus:ring-0 focus:border-blue-500 leading-6 transition-colors duration-200 ease-in-out string optional'
   end
 
   private

@@ -34,7 +34,7 @@ class ConfigBuilder {
             `<div data-group="${data.group}">${escape(data.text)}</div>`
           ),
           optgroup_header: (data, escape) => (
-            `<div class="font-bold ml-2 my-2 p-3 text-2xl">${escape(data.label)}</div>`
+            `<div class="font-bold ml-2 my-2 p-3 text-lg">${escape(data.label)}</div>`
           )
         }
       },

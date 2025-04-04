@@ -6,6 +6,7 @@
   font-weight: 700;
   border-radius: 25px;
   border: 0;
+  font-size: $base-font-size;
 
   .fa + span:not(.caret) {
     padding-left: 0.5em;
@@ -233,7 +234,7 @@ table,
           font-weight: normal;
           line-height: $line-height;
           display: block;
-          font-size: 14px;
+          font-size: $base-font-size;
           &:hover,
           &:focus {
             text-decoration: none;

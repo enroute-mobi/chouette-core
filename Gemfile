@@ -143,7 +143,7 @@ gem 'sentry-delayed_job'
 gem 'sentry-ruby'
 gem 'sentry-rails'
 
-gem 'coverband', '~> 6.0.0' # cannot update to 6.1 until ruby 3.0
+gem 'coverband', '~> 6.0.0', require: false # cannot update to 6.1 until ruby 3.0
 
 gem 'nest', en_route: 'nest'
 

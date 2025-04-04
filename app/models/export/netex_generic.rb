@@ -542,10 +542,11 @@ class Export::NetexGeneric < Export::Base
             transport_submode: netex_transport_submode,
             tariff_zones: tariff_zones
           }.tap do |attributes|
-            unless netex_quay?
+            unless netex_quay? && netex_flexible_stop_place?
               attributes[:parent_site_ref] = parent_site_ref
               attributes[:place_types] = place_types
             end
+            attributes[:areas] = areas if netex_flexible_stop_place?
           end
         )
       end
@@ -567,6 +568,24 @@ class Export::NetexGeneric < Export::Base
 
       def parent_objectid
         @parent_objectid ||= code_provider.stop_areas.code(parent_id)
+      end
+
+      def areas
+        [
+          Netex::FlexibleArea.new(
+            id: "#{netex_identifier.to_s}-area",
+            members: netex_flexible_area_members
+          )
+        ]
+      end
+
+      def netex_flexible_area_members
+        [].tap do |members|
+          flexible_area_members.find_each do |member|
+            quay_code = code_provider.stop_areas.code(member.id)
+            members << Netex::Reference.new(quay_code, type: 'QuayRef')
+          end
+        end
       end
 
       def derived_from_object_ref
@@ -603,6 +622,8 @@ class Export::NetexGeneric < Export::Base
           'generalStopPlace'
         when 'gdl'
           'groupOfStopPlaces'
+        when 'flexible_stop_place'
+          'flexibleStopPlace'
         end
       end
 
@@ -633,8 +654,19 @@ class Export::NetexGeneric < Export::Base
         area_type&.to_sym == Chouette::AreaType::QUAY
       end
 
+      def netex_flexible_stop_place?
+        area_type&.to_sym == Chouette::AreaType::FLEXIBLE_STOP_PLACE
+      end
+
       def netex_resource_class
-        netex_quay? ? Netex::Quay : Netex::StopPlace
+        case area_type&.to_sym
+        when Chouette::AreaType::QUAY
+          Netex::Quay
+        when Chouette::AreaType::FLEXIBLE_STOP_PLACE
+          Netex::FlexibleStopPlace
+        else
+          Netex::StopPlace
+        end
       end
 
       def private_code

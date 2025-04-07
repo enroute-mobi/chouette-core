@@ -542,7 +542,7 @@ class Export::NetexGeneric < Export::Base
             transport_submode: netex_transport_submode,
             tariff_zones: tariff_zones
           }.tap do |attributes|
-            unless netex_quay? && netex_flexible_stop_place?
+            unless netex_quay? || netex_flexible_stop_place?
               attributes[:parent_site_ref] = parent_site_ref
               attributes[:place_types] = place_types
             end

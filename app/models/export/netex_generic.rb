@@ -535,18 +535,19 @@ class Export::NetexGeneric < Export::Base
             centroid: centroid,
             raw_xml: import_xml,
             key_list: key_list,
-            accessibility_assessment: accessibility_assessment,
-            postal_address: postal_address,
-            url: url,
-            transport_mode: netex_transport_mode,
-            transport_submode: netex_transport_submode,
-            tariff_zones: tariff_zones
           }.tap do |attributes|
             unless netex_quay? || netex_flexible_stop_place?
               attributes[:parent_site_ref] = parent_site_ref
-              attributes[:place_types] = place_types
             end
-            attributes[:areas] = areas if netex_flexible_stop_place?
+            if netex_flexible_stop_place?
+              attributes[:areas] = areas
+            else
+              attributes[:transport_mode] = netex_transport_mode
+              attributes[:transport_submode] = netex_transport_submode
+              attributes[:accessibility_assessment] = accessibility_assessment
+              attributes[:postal_address] = postal_address
+              attributes[:url] = url
+            end
           end
         )
       end

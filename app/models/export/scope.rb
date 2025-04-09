@@ -220,7 +220,9 @@ module Export
       end
 
       def stop_areas
-        current_scope.stop_areas.where(Chouette::StopArea.arel_table[:id].in(stop_area_ids))
+        current_scope.stop_areas.where(Chouette::StopArea.arel_table[:id].in(stop_area_ids)).or(
+          current_scope.stop_areas.where(id: flexible_stop_area_ids)
+        )
       end
 
       def stop_area_groups
@@ -228,6 +230,15 @@ module Export
           id: ::StopAreaGroup::Member.where(::StopAreaGroup::Member.arel_table[:stop_area_id].in(stop_area_ids))
                                      .select(:group_id).distinct
         )
+      end
+
+      def flexible_stop_area_ids
+        condition = <<~SQL
+          (flexible_area_memberships.member_id IN (#{stop_points_stop_area_ids.to_sql})) OR
+          (flexible_area_memberships.member_id IN (#{specific_vehicle_journey_at_stops_stop_area_ids.to_sql}))
+        SQL
+
+        current_scope.stop_areas.joins(:flexible_area_memberships).where(condition).select(:id).distinct
       end
 
       def stop_points_stop_area_ids

@@ -233,12 +233,16 @@ module Export
       end
 
       def flexible_stop_area_ids
-        condition = <<~SQL
-          (flexible_area_memberships.member_id IN (#{stop_points_stop_area_ids.to_sql})) OR
-          (flexible_area_memberships.member_id IN (#{specific_vehicle_journey_at_stops_stop_area_ids.to_sql}))
-        SQL
-
-        current_scope.stop_areas.joins(:flexible_area_memberships).where(condition).select(:id).distinct
+        current_scope.
+          stop_areas.
+          joins(:flexible_area_memberships).
+          where(id: specific_vehicle_journey_at_stops_stop_area_ids).
+          or(
+            current_scope.
+              stop_areas.
+              joins(:flexible_area_memberships).
+              where(id: stop_points_stop_area_ids)
+          ).select(:id).distinct
       end
 
       def stop_points_stop_area_ids

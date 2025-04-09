@@ -536,8 +536,9 @@ class Export::NetexGeneric < Export::Base
             raw_xml: import_xml,
             key_list: key_list,
           }.tap do |attributes|
-            unless netex_quay? || netex_flexible_stop_place?
-              attributes[:parent_site_ref] = parent_site_ref
+            unless netex_quay?
+              attributes[:parent_site_ref] = parent_site_ref unless netex_flexible_stop_place?
+              attributes[:place_types] = place_types
             end
             if netex_flexible_stop_place?
               attributes[:areas] = areas

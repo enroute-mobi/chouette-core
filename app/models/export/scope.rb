@@ -222,7 +222,7 @@ module Export
       def stop_areas
         current_scope.stop_areas.where(Chouette::StopArea.arel_table[:id].in(stop_area_ids)).or(
           current_scope.stop_areas.where(id: flexible_stop_area_ids)
-        )
+        ).distinct
       end
 
       def stop_area_groups
@@ -246,11 +246,12 @@ module Export
       end
 
       def stop_points_stop_area_ids
-        stop_points.select(:stop_area_id).distinct
+        @stop_points_stop_area_ids ||= stop_points.select(:stop_area_id).distinct
       end
 
       def specific_vehicle_journey_at_stops_stop_area_ids
-        vehicle_journey_at_stops.where.not(stop_area_id: nil).select(:stop_area_id).distinct
+        @specific_vehicle_journey_at_stops_stop_area_ids ||=
+          vehicle_journey_at_stops.where.not(stop_area_id: nil).select(:stop_area_id).distinct
       end
 
       def entrances

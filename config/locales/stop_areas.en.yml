@@ -24,6 +24,7 @@ en:
       custom_fields: "Custom fields"
     actions:
       new: "Add a Stop Area"
+      new_flexible: "Add a Flexible Stop Area"
       create: "Add a Stop Area"
       edit: "Edit Stop Area"
       update: "Edit Stop Area"

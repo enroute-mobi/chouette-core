@@ -64,6 +64,10 @@ class RoutesController < Chouette::ReferentialController
                    .or(scope.where(area_type: referential.stop_area_referential.available_stops))
     end
 
+    if params[:without_flexible_stop_place]
+      scope = scope.where.not(area_type: 'flexible_stop_place')
+    end
+
     text = params[:q]&.strip
     @stop_areas = text.present? ? scope.by_text(text).limit(50) : Chouette::StopArea.none
   end
@@ -194,7 +198,7 @@ class RoutesController < Chouette::ReferentialController
       :opposite_route_id,
       :published_name,
       :wayback,
-      stop_points_attributes: %i[id _destroy position stop_area_id for_boarding for_alighting]
+      stop_points_attributes: %i[id _destroy position stop_area_id for_boarding for_alighting flexible]
     )
   end
 end

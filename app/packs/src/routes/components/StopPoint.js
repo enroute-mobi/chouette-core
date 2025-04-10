@@ -1,5 +1,6 @@
 import React from 'react'
 import PropTypes from 'prop-types'
+import classNames from 'classnames'
 
 import BSelect2 from './BSelect2'
 import OlMap from './OlMap'
@@ -7,15 +8,24 @@ import OlMap from './OlMap'
 import { defaultAttribute } from '../actions'
 
 export default function StopPoint(props) {
+  var isFlexible = props.value.flexible
+
   return (
-    <div className='nested-fields'>
+    <div className={classNames('nested-fields', { 'flexible-stop-point': isFlexible })}>
       <div className='wrapper'>
-        <div style={{width: 90}}>
-          <span>{props.value.user_objectid}</span>
+        <div style={{width: 40}}>
+          <div className="form-group">
+            {isFlexible && <i className="fa fa-phone"></i>}
+          </div>
         </div>
 
+        <div style={{width: 100}}>
+          <div className="form-group">
+            <div>{props.value.user_objectid || '-'}</div>
+          </div>
+        </div>
         <div style={{width: 250}}>
-          <BSelect2 id={props.id} value={props.value} onChange={props.onChange} index={props.index} hasError={props.hasError}/>
+          <BSelect2 id={props.id} value={props.value} onChange={props.onChange} index={props.index} hasError={props.hasError} autocompleteUrl="/autocomplete_stop_areas.json{isFlexible ? '?without_flexible_stop_place=true' : ''}" />
         </div>
 
         <div style={{width: 120}}>

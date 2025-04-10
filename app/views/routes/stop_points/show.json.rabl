@@ -21,6 +21,7 @@ end
 
 attributes :for_boarding
 attributes :for_alighting
+attributes :flexible
 node(:longitude) { |sp| sp.stop_area.longitude || 0 }
 node(:latitude) { |sp| sp.stop_area.latitude || 0 }
 node(:comment) { |sp| sp.stop_area&.comment&.gsub("&#39;", "'") }

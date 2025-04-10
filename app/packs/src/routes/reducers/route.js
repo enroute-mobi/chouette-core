@@ -43,6 +43,7 @@ export const getStopPointsAttributes = state => {
       position: index,
       for_boarding: sp.for_boarding,
       for_alighting: sp.for_alighting,
+      flexible: sp.flexible,
       _destroy: sp._destroy
     }
   })

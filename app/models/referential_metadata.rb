@@ -1,6 +1,3 @@
-require 'activeattr_ext.rb'
-require 'range_ext'
-
 class ReferentialMetadata < ApplicationModel
   belongs_to :referential, touch: true # CHOUETTE-3247 validates presence
   belongs_to :referential_source, class_name: 'Referential', optional: true # CHOUETTE-3247 failing specs

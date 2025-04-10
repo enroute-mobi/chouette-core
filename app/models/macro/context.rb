@@ -86,8 +86,3 @@ module Macro
     end
   end
 end
-
-# STI
-require_dependency 'macro/context/transport_mode'
-require_dependency 'macro/context/saved_search'
-

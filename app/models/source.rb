@@ -1,4 +1,3 @@
-require 'mimemagic_ext'
 require 'net/ftp'
 
 class Source < ApplicationModel

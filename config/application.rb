@@ -20,7 +20,6 @@ module ChouetteIhm
   class Application < Rails::Application
     # Initialize configuration defaults for originally generated Rails version.
     config.load_defaults 6.0
-    config.autoloader = :classic
 
     # Settings in config/environments/* take precedence over those specified here.
 
@@ -158,11 +157,16 @@ module ChouetteIhm
     config.semantic_logger.environment = nil
     config.rails_semantic_logger.add_file_appender = false
     config.logger_reopen_max = nil
+
+    overrides = Rails.root.join('app/overrides')
+    Rails.autoloaders.main.ignore(overrides)
+
+    config.to_prepare do
+      Dir.glob("#{overrides}/**/*_override.rb").sort.each do |override|
+        load override
+      end
+    end
   end
 end
-
-require_relative '../app/lib/geo_ext'
-require_relative '../app/lib/http_ext'
-require_relative '../app/lib/enumerable_ext'
 
 require 'prometheus/middleware/exporter'

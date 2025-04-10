@@ -36,8 +36,6 @@ module Cron
       end
 
       def schedule_all
-        load_all_subclasses
-
         descendants.each do |job_class|
           next if job_class.abstract_class?
 
@@ -60,16 +58,6 @@ module Cron
 
       def cron_name
         name.demodulize[0...-3]
-      end
-
-      private
-
-      def load_all_subclasses
-        # Need to load all jobs definitions in order to find subclasses
-        glob = Rails.root.join('app/jobs/cron/**/*_job.rb')
-        Dir.glob(glob).sort.each do |file|
-          require file
-        end
       end
     end
 

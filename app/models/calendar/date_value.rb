@@ -1,5 +1,3 @@
-require_dependency "../calendar"
-
 class Calendar::DateValue
   include ActiveAttr::Model
 

@@ -1,4 +1,5 @@
-require 'range_ext'
+# frozen_string_literal: true
+
 RSpec.describe Range do
   describe "#intersection" do
     it "is nil (sic) for two distinct ranges" do

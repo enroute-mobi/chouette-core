@@ -1,5 +1,3 @@
-require 'range_ext'
-
 class Calendar < ApplicationModel
   include DateSupport
   include PeriodSupport

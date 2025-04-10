@@ -1603,7 +1603,7 @@ RSpec.describe Export::NetexGeneric do
   end
 
   describe 'TimeTables export' do
-    describe Export::NetexGeneric::TimeTableDecorator do
+    describe Export::NetexGeneric::TimeTables::Decorator do
       let(:decorated_tt) { Export::NetexGeneric::TimeTables::Decorator.new time_table, code_provider: code_provider }
       let(:netex_resources) { decorated_tt.netex_resources }
       let(:operating_periods) { netex_resources.select { |r| r.is_a? Netex::OperatingPeriod } }

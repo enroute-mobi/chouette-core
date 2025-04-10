@@ -45,12 +45,3 @@ class Destination < ApplicationModel
     ts
   end
 end
-
-require_dependency './destination/dummy'
-require_dependency './destination/google_cloud_storage'
-require_dependency './destination/sftp'
-require_dependency './destination/mail'
-require_dependency './destination/publication_api'
-require_dependency './destination/ara'
-require_dependency './destination/chouette'
-

@@ -2300,7 +2300,7 @@ class Export::NetexGeneric < Export::Base
          time_tables
            .left_joins(:lines)
            .group(:id)
-           .pluck(:id, 'array_agg(distinct line_id) as line_ids').to_h
+           .pluck(:id, Arel.sql('array_agg(distinct line_id) as line_ids')).to_h
     end
 
     class Decorator < ModelDecorator

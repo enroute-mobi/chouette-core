@@ -8,11 +8,7 @@ let AddStopPoint = ({ dispatch }) => {
       <form onSubmit={e => {
         e.preventDefault()
         dispatch(actions.closeMaps())
-        if (e.nativeEvent.submitter.className.includes('new_flexible')) {
-          dispatch(actions.addStop(true))
-        } else {
-          dispatch(actions.addStop(false))
-        }
+        dispatch(actions.addStop(e.nativeEvent.submitter.className.includes('new_flexible')))
       }}>
         <button type="submit" className="btn btn-primary">
           {I18n.t('stop_areas.actions.new')}

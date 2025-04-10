@@ -25,11 +25,7 @@ export default function StopPoint(props) {
           </div>
         </div>
         <div style={{width: 250}}>
-          {isFlexible ? (
-            <BSelect2 id={props.id} value={props.value} onChange={props.onChange} index={props.index} hasError={props.hasError} autocompleteUrl="/autocomplete_stop_areas.json"/>
-          ) : (
-            <BSelect2 id={props.id} value={props.value} onChange={props.onChange} index={props.index} hasError={props.hasError} autocompleteUrl="/autocomplete_stop_areas.json?without_flexible_stop_place=true" />
-          )}
+          <BSelect2 id={props.id} value={props.value} onChange={props.onChange} index={props.index} hasError={props.hasError} autocompleteUrl="/autocomplete_stop_areas.json{isFlexible ? '?without_flexible_stop_place=true' : ''}" />
         </div>
 
         <div style={{width: 120}}>

@@ -61,7 +61,7 @@ class RoutesController < Chouette::ReferentialController
 
     unless current_user.organisation.has_feature?('route_stop_areas_all_types')
       scope = scope.where(kind: :non_commercial)
-      .or(scope.where(area_type: referential.stop_area_referential.available_stops))
+                   .or(scope.where(area_type: referential.stop_area_referential.available_stops))
     end
 
     if params[:without_flexible_stop_place]

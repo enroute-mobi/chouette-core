@@ -60,6 +60,7 @@ fr:
         group_by_attribute: Grouper par
         sort_by: "Trier par"
         display_percent: "Afficher en %"
+        subgroup_by_attribute: "Sous-grouper par"
         wayback: Direction
         chart:
           group_by_attribute:

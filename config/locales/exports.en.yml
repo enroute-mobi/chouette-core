@@ -87,7 +87,7 @@ en:
         started_at: Started at
         ended_at: Ended at
         creator: Created by
-        notification_target: Notifications recipients
+        notification_target: Notification recipients
         resources: "File to export"
         name: "Name"
         status: "Status"
@@ -117,7 +117,7 @@ en:
         prefer_referent_stop_area: Prefer Referent Stop Areas
         prefer_referent_company: Prefer Referent Companies
         ignore_parent_stop_places: "Ignore parent Stop Places"
-        ignore_extended_gtfs_route_types: "Ignorer extended route types"
+        ignore_extended_gtfs_route_types: "Ignore extended route types"
       export/netex_generic:
         participant_ref: Netex Participant Ref
         profile_options: Netex Profile Settings

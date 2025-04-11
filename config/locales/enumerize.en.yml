@@ -379,8 +379,8 @@ en:
       line_provider_ids: "Associated line providers"
       all_line_ids: All available lines
     period:
-      all_periods: All available period
-      only_next_days: Only next days
+      all_periods: All available periods
+      only_next_days: Only upcoming days
       static_day_period: Static day period
     profile:
       none: None

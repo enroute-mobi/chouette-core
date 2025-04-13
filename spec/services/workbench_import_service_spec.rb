@@ -35,7 +35,7 @@ RSpec.describe WorkbenchImportService, type: [:request, :zip] do
   end
 
   context 'with one directory and valid datas' do
-    let(:zip_path) { fixtures_path 'imports/idfm_netex/OFFRE_TRANSDEV_20170301122517.zip' }
+    let(:zip_path) { file_fixture('imports/idfm_netex/OFFRE_TRANSDEV_20170301122517.zip') }
 
     it 'should make the import running' do
       expect{ worker.perform(workbench_import.id) }.not_to change{ workbench_import.messages.count }
@@ -44,7 +44,7 @@ RSpec.describe WorkbenchImportService, type: [:request, :zip] do
   end
 
   context 'with too many directories' do
-    let(:zip_path) { fixtures_path 'imports/idfm_netex/too_many_directories.zip' }
+    let(:zip_path) { file_fixture('imports/idfm_netex/too_many_directories.zip') }
 
     it 'should make the import failed and write message key several_datasets' do
       expect{ worker.perform(workbench_import.id) }.to change{ workbench_import.messages.count }.by(1)
@@ -54,7 +54,7 @@ RSpec.describe WorkbenchImportService, type: [:request, :zip] do
   end
 
   context 'with spurious directories' do
-    let(:zip_path) { fixtures_path 'imports/idfm_netex/spurious.zip' }
+    let(:zip_path) { file_fixture('imports/idfm_netex/spurious.zip') }
 
     it 'should make the import failed and write message key inconsistent_zip_file' do
       worker.perform(workbench_import.id)
@@ -64,7 +64,7 @@ RSpec.describe WorkbenchImportService, type: [:request, :zip] do
   end
 
   context 'with foreign lines' do
-    let(:zip_path) { fixtures_path 'imports/idfm_netex/foreign_line.zip' }
+    let(:zip_path) { file_fixture('imports/idfm_netex/foreign_line.zip') }
 
     it 'should make the import failed and write message key foreign_lines_in_referential' do
       worker.perform(workbench_import.id)

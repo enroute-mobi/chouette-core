@@ -17,41 +17,46 @@ RSpec.describe Import::Gtfs do
   let(:workbench) { context.workbench }
 
   def build_import(file)
-    Import::Gtfs.new workbench: workbench, local_file: open_fixture(file), creator: "test", name: "test"
+    Import::Gtfs.new(workbench: workbench, local_file: file_fixture(file).open, creator: 'test', name: 'test')
   end
 
   describe '.accepts_file?' do
     subject { Import::Gtfs.accepts_file?(file) }
 
     context "when file is a 'classic' GTFS file" do
-      let(:file) { open_fixture('google-sample-feed.zip') }
+      let(:file) { file_fixture('google-sample-feed.zip').open }
 
       it { is_expected.to be_truthy }
     end
 
     context "when file is a GTFS file with directories" do
-      let(:file) { open_fixture('google-sample-feed-with-directories.zip') }
+      let(:file) { file_fixture('google-sample-feed-with-directories.zip').open }
 
       it { is_expected.to be_truthy }
     end
 
     context "when file is a Neptune file" do
-      let(:file) { open_fixture('sample_neptune.zip') }
+      let(:file) { file_fixture('sample_neptune.zip').open }
 
       it { is_expected.to be_falsy }
     end
 
     context "when file isn't a Zip file" do
-      let(:file) { open_fixture('sample_png.png') }
+      let(:file) { file_fixture('sample_png.png').open }
 
       it { is_expected.to be_falsy }
     end
   end
 
   context "when the file is not directly accessible" do
-    let(:import) {
-      Import::Gtfs.create workbench: workbench, name: "test", creator: "Albator", file: open_fixture('google-sample-feed.zip')
-    }
+    let(:import) do
+      Import::Gtfs.create(
+        workbench: workbench,
+        name: 'test',
+        creator: 'Albator',
+        file: file_fixture('google-sample-feed.zip').open
+      )
+    end
 
     before(:each) do
       allow(import).to receive(:file).and_return(nil)
@@ -1371,17 +1376,23 @@ RSpec.describe Import::Gtfs do
   describe '#download_local_file' do
     let(:file) { 'google-sample-feed.zip' }
     let(:import) do
-      Import::Gtfs.create! name: 'GTFS test', creator: 'Test', workbench: workbench, file: open_fixture(file), download_host: 'rails_host'
+      Import::Gtfs.create!(
+        name: 'GTFS test',
+        creator: 'Test',
+        workbench: workbench,
+        file: file_fixture(file).open,
+        download_host: 'rails_host'
+      )
     end
 
     let(:download_url) { "#{import.download_host}/workbenches/#{import.workbench_id}/imports/#{import.id}/internal_download?token=#{import.token_download}" }
 
     before do
-      stub_request(:get, download_url).to_return(status: 200, body: read_fixture(file))
+      stub_request(:get, download_url).to_return(status: 200, body: file_fixture(file).read)
     end
 
     it 'should download local_file' do
-      expect(File.read(import.download_local_file)).to eq(read_fixture(file))
+      expect(File.read(import.download_local_file)).to eq(file_fixture(file).read)
     end
   end
 
@@ -1438,7 +1449,13 @@ RSpec.describe Import::Gtfs do
   describe '#download_path' do
     let(:file) { 'google-sample-feed.zip' }
     let(:import) do
-      Import::Gtfs.create! name: 'GTFS test', creator: 'Test', workbench: workbench, file: open_fixture(file), download_host: 'rails_host'
+      Import::Gtfs.create!(
+        name: 'GTFS test',
+        creator: 'Test',
+        workbench: workbench,
+        file: file_fixture(file).open,
+        download_host: 'rails_host'
+      )
     end
 
     it 'should return the pathwith the token' do

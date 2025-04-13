@@ -132,9 +132,9 @@ module Search
       end
 
       errors.copy!(saved_search.errors)
-      rewrite_keys = ->(k) { SAVED_SEARCH_ATTRIBUTE_MAPPING[k] }
-      errors.messages.transform_keys!(&rewrite_keys)
-      errors.details.transform_keys!(&rewrite_keys)
+      errors.errors.each do |error|
+        error.instance_variable_set(:@attribute, SAVED_SEARCH_ATTRIBUTE_MAPPING[error.attribute])
+      end
     end
 
     # TODO: Why the default ActiveAttr::AttributeDefaults#apply_defaults

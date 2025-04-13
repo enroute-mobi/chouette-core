@@ -11,7 +11,7 @@ RSpec.describe Import::Workbench do
 
   let(:filename) { 'OFFRE_TRANSDEV_2017030112251.zip' }
   subject(:import_workbench) do
-    create(:workbench_import, workbench: workbench, referential: referential, file: open_fixture(filename))
+    create(:workbench_import, workbench: workbench, referential: referential, file: file_fixture(filename).open)
   end
 
   describe '#lanch_worker (after_commit)' do
@@ -260,7 +260,7 @@ RSpec.describe Import::Workbench do
     subject { import_workbench.file_type }
 
     let(:import_workbench) do
-      build(:workbench_import, workbench: workbench, referential: referential, file: open_fixture(filename))
+      build(:workbench_import, workbench: workbench, referential: referential, file: file_fixture(filename).open)
     end
 
     context 'with a GTFS file' do

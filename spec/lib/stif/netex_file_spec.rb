@@ -1,6 +1,6 @@
 RSpec.describe Stif::NetexFile do
 
-  let( :zip_file ){ fixtures_path 'OFFRE_TRANSDEV_2017030112251.zip' }
+  let(:zip_file) { file_fixture('OFFRE_TRANSDEV_2017030112251.zip') }
 
   let(:frames) { described_class.new(zip_file).frames }
 
@@ -22,7 +22,7 @@ RSpec.describe Stif::NetexFile do
   end
 
   context 'with a different namespace' do
-    let( :zip_file ){ fixtures_path 'netex_file_different_namespace.zip' }
+    let(:zip_file) { file_fixture('netex_file_different_namespace.zip') }
 
     context "each frame" do
       it "should return the line identifiers defined in frame" do
@@ -35,7 +35,7 @@ RSpec.describe Stif::NetexFile do
   end
 
   context 'without namespace' do
-    let( :zip_file ){ fixtures_path 'netex_file_no_namespace.zip' }
+    let(:zip_file) { file_fixture('netex_file_no_namespace.zip') }
 
     context "each frame" do
       it "should return the line identifiers defined in frame" do
@@ -48,8 +48,8 @@ RSpec.describe Stif::NetexFile do
   end
 
   context "calendar parsing" do
-    let( :calendar_file_1 ){ fixtures_path "netex-calendar-files/single_period_calendar.xml" }
-    let( :calendar_file_2 ){ fixtures_path "netex-calendar-files/multiple_periods_calendar.xml" }
+    let(:calendar_file_1) { file_fixture('netex-calendar-files/single_period_calendar.xml') }
+    let(:calendar_file_2) { file_fixture('netex-calendar-files/multiple_periods_calendar.xml') }
 
     context "with single period calendar file" do
       let (:periods) do

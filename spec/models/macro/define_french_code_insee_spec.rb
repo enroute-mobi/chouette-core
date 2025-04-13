@@ -38,7 +38,7 @@ RSpec.describe Macro::DefineFrenchCodeInsee do
 
         context 'when the postion is in France' do
           let(:url) { 'https://geo.api.gouv.fr/communes?lat=47.2372428&lon=-1.5767392' }
-          let(:insee_postal_region_response) { read_fixture('insee-postal-region-response.json') }
+          let(:insee_postal_region_response) { file_fixture('insee-postal-region-response.json').read }
 
           context 'when postal region is nil' do
             let(:context) do
@@ -107,7 +107,7 @@ RSpec.describe Macro::DefineFrenchCodeInsee do
           end
 
           let(:url) { 'https://geo.api.gouv.fr/communes?lat=36.868446&lon=-116.784582' }
-          let(:insee_postal_region_response) { read_fixture('insse-postal-region-empty-response.json') }
+          let(:insee_postal_region_response) { file_fixture('insse-postal-region-empty-response.json').read }
 
           it 'should not update postal_region into stop area' do
             expect do

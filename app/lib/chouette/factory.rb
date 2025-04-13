@@ -480,7 +480,7 @@ module Chouette
               transient :document_type
 
               after do
-                file_path = File.expand_path("spec/fixtures/#{transient(:file)}")
+                file_path = File.expand_path("spec/fixtures/files/#{transient(:file)}")
                 new_instance.file = File.new(file_path)
 
                 document_type = transient(:document_type, resolve_instances: true) ||

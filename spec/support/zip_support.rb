@@ -10,7 +10,7 @@ module ZipSupport
   end
 
   def zip_fixtures_path(file_name)
-    fixtures_path(File.join('zip', file_name))
+    file_fixture(File.join('zip', file_name))
   end
 
   def clear_all_zip_fixtures! relpath = ''

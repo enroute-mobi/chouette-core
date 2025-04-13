@@ -1,5 +1,14 @@
 module OptionsSupport
   extend ActiveSupport::Concern
+
+  module Inherit
+    def inherited(base)
+      super
+
+      base.instance_variable_set(:@options, @options.dup) if instance_variable_get(:@options)
+    end
+  end
+
   included do |into|
     extend Enumerize
 
@@ -10,6 +19,7 @@ module OptionsSupport
     end
 
     class << self
+      prepend Inherit
 
       def option name, opts={}
         @options ||= {}

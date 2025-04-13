@@ -3,8 +3,10 @@
 class PublicationSetupsController < Chouette::WorkgroupController
   defaults :resource_class => PublicationSetup
 
-  before_action :resource, only: %i[show]
-  before_action :build_export, only: %i[show new create edit update]
+  # rubocop:disable Rails/LexicallyScopedActionFilter
+  before_action :build_export, only: %i[new create]
+  before_action :export, only: %i[show edit update]
+  # rubocop:enable Rails/LexicallyScopedActionFilter
 
   respond_to :html
 
@@ -26,8 +28,6 @@ class PublicationSetupsController < Chouette::WorkgroupController
             publication_setup: @publication_setup
           }
         )
-
-        @export = @export.decorate
       }
     end
   end
@@ -36,6 +36,10 @@ class PublicationSetupsController < Chouette::WorkgroupController
 
   def build_export
     @export = build_resource.export.decorate
+  end
+
+  def export
+    @export = resource.export.decorate
   end
 
   def publication_setup_params

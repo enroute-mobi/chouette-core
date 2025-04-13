@@ -7,7 +7,7 @@ RSpec.describe ImportMailer, type: :mailer do
   let(:import) do
     Import::Workbench.create!(name: "test", creator: "test",
                               workbench: context.workbench,
-                              file: open_fixture('google-sample-feed.zip'))
+                              file: file_fixture('google-sample-feed.zip').open)
   end
   subject(:email) { ImportMailer.finished(import.id, recipient) }
 

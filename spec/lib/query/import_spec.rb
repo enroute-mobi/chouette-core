@@ -5,7 +5,7 @@ RSpec.describe Query::Import do
   let(:workbench) { context.workbench }
 
   let(:import) do
-    workbench.imports.create!(name: "test", creator: "test", file: open_fixture('google-sample-feed.zip'))
+    workbench.imports.create!(name: "test", creator: "test", file: file_fixture('google-sample-feed.zip').open)
   end
 
   describe "#statuses" do

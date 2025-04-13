@@ -1,5 +1,7 @@
+# frozen_string_literal: true
+
 class SubscriptionMailer < ApplicationMailer
-  add_template_helper MailerHelper
+  helper MailerHelper
 
   def self.recipients
     Chouette::Config.subscription.notification_recipients

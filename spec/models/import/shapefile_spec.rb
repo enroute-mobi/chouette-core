@@ -10,7 +10,7 @@ RSpec.describe Import::Shapefile do
 
   let(:workbench) { context.workbench }
   let(:filename) { 'shapefile.zip' }
-  let(:file) { File.open(Rails.root.join('spec', 'fixtures', 'imports', 'shapefile', filename)) }
+  let(:file) { file_fixture("imports/shapefile/#{filename}").open }
 
   let(:parent) { Import::Workbench.create workbench: workbench, file: file, creator: "test", name: "test", import_category: 'shape_file', shape_attribute_as_id: 'id_chainag' }
   let(:import) { parent.reload.children.first}

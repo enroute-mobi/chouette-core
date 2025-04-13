@@ -25,11 +25,13 @@ FactoryBot.define do
             arrival_time   = prev_stop ? prev_stop[:departure_time] + 1.minute : evaluator.stop_arrival_time
             departure_time = prev_stop ? arrival_time + 1.minute : evaluator.stop_departure_time
 
-            vehicle_journey.vehicle_journey_at_stops << create(:vehicle_journey_at_stop,
-                   :vehicle_journey => vehicle_journey,
-                   :stop_point      => stop_point,
-                   :arrival_time    => "2000-01-01 #{arrival_time} UTC",
-                   :departure_time  => "2000-01-01 #{departure_time} UTC")
+            create(
+              :vehicle_journey_at_stop,
+              vehicle_journey: vehicle_journey,
+              stop_point: stop_point,
+              arrival_time: "2000-01-01 #{arrival_time} UTC",
+              departure_time: "2000-01-01 #{departure_time} UTC"
+            )
           end
         end
 

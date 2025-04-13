@@ -23,7 +23,7 @@ RSpec.describe Export::Base, type: :model do
         export = create(
           :gtfs_export,
           workbench: workbench,
-          file: File.open(File.join(Rails.root, 'spec', 'fixtures', 'terminated_job.json'))
+          file: file_fixture('terminated_job.json').open
         )
       end
 
@@ -31,7 +31,7 @@ RSpec.describe Export::Base, type: :model do
         export = create(
           :gtfs_export,
           workbench: other_workbench,
-          file: File.open(File.join(Rails.root, 'spec', 'fixtures', 'terminated_job.json'))
+          file: file_fixture('terminated_job.json').open
         )
       end
 

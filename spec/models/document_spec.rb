@@ -51,8 +51,8 @@ RSpec.describe Document, type: :model do
   let(:workbench) { context.workbench }
   let(:document_provider) { workbench.document_providers.create!(name: 'document_provider_name', short_name: 'titi') }
   let(:document_type) { workbench.workgroup.document_types.create!(name: 'document_type_name', short_name: 'toto') }
-  let(:file_fixture) { 'sample_pdf.pdf' }
-  let(:file) { fixture_file_upload(file_fixture) }
+  let(:file_path) { 'sample_pdf.pdf' }
+  let(:file) { fixture_file_upload(file_path) }
   let(:document) do
     Document.create!(
       name: 'test',
@@ -71,7 +71,7 @@ RSpec.describe Document, type: :model do
     end
 
     context 'with a JPEG file' do
-      let(:file_fixture) { 'sample_jpeg.jpeg' }
+      let(:file_path) { 'sample_jpeg.jpeg' }
 
       it { is_expected.to eq('image/jpeg') }
     end
@@ -120,7 +120,7 @@ RSpec.describe Document, type: :model do
 
       it 'should create local cache file' do
         expect { subject }.to change { File.exist?(document.file.local_cache_file) }.from(false).to(true)
-        expect(File.read(document.file.local_cache_file)).to eq(read_fixture(file_fixture))
+        expect(File.read(document.file.local_cache_file)).to eq(file_fixture(file_path).read)
       end
 
       it 'should change path from storage to cache' do

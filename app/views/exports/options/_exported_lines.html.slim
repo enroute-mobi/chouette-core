@@ -1,5 +1,3 @@
-- decorated_export = form.object.decorate
-
 div
   = form.input :exported_lines,
     include_blank: false,
@@ -16,9 +14,9 @@ div
       div
         = form.input attribute.to_sym,
           as: :tom_select,
-          collection: decorated_export.send(options),
+          collection: @export.send(options),
           input_html: { multiple: true, style: 'width: 100%', 'x-bind:data-url': "getExportedLinesSelectURL()", 'x-ref': 'exprtedLinesSelect' },
           label_html: {class: 'invisible'},
           include_hidden: false,
           config: { type: 'ajax', placeholder: I18n.t("exports.form.#{n}_name") },
-          selected: decorated_export.send(attribute)
+          selected: @export.send(attribute)

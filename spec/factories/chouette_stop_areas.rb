@@ -40,7 +40,6 @@ FactoryBot.define do
           organisation.sso_attributes['stop_area_providers'] = functional_scope.to_json
           organisation.save
         end
-        stop_area_provider.stop_areas << stop_area
         stop_area_provider.save
       end
     end

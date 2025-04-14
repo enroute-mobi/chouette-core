@@ -94,7 +94,7 @@ gem 'rails_semantic_logger'
 
 # Model
 gem 'will_paginate'
-gem 'ransack'
+gem 'ransack', '< 4' # TODO: the new version require too much work and we will get rid of ransack anyway
 gem 'active_attr', '>= 0.15.4'
 
 gem 'draper', '>= 4.0.2'
@@ -115,7 +115,7 @@ gem 'delayed_job_heartbeat_plugin'
 gem 'delayed_cron_job'
 
 gem 'rake'
-gem 'ros-apartment', require: 'apartment'
+gem 'ros-apartment', '< 3', require: 'apartment' # TODO: until ruby 3.0
 gem 'aasm'
 gem 'puma', '>= 5.6.4'
 gem 'postgresql_cursor'
@@ -142,7 +142,7 @@ gem 'sentry-delayed_job'
 gem 'sentry-ruby'
 gem 'sentry-rails'
 
-gem 'coverband', '~> 6.0.0', require: false # cannot update to 6.1 until ruby 3.0
+gem 'coverband', '~> 6.0.0', require: false # TODO: cannot update to 6.1 until ruby 3.0
 
 gem 'nest', en_route: 'nest'
 

@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'ostruct'
 
 module MetadataSupport
@@ -14,12 +16,7 @@ module MetadataSupport
 
         define_method :metadata do
           attr_name = opts[:attr_name] || :metadata
-          @wrapped_metadata ||= begin
-            wrapped = MetadataSupport::MetadataWrapper.new self.read_attribute(attr_name)
-            wrapped.attribute_name = attr_name
-            wrapped.owner = self
-            wrapped
-          end
+          @wrapped_metadata ||= MetadataSupport::MetadataWrapper.new(attr_name, self, read_attribute(attr_name))
         end
 
         define_method :metadata= do |val|
@@ -58,7 +55,32 @@ module MetadataSupport
   end
 
   class MetadataWrapper < OpenStruct
-    attr_accessor :attribute_name, :owner
+    def initialize(attribute_name, owner, hash = nil)
+      @attribute_name = attribute_name
+      @owner = owner
+      @_init = true
+      super(hash)
+      @_init = nil
+    end
+    attr_reader :attribute_name, :owner
+
+    delegate :as_json, :each, to: :@table
+
+    def []=(name, value)
+      if @_init
+        # If we are still in constructor, we:
+        #   - do not write timestamp as it should be initialized from the hash
+        #   - do not write attribute in record as the hash is very probably initialized from this very same attribute
+        super
+      else
+        super.tap do
+          @table[timestamp_attr(name)] = Time.zone.now unless is_timestamp_attr?(name)
+          owner.send(:write_attribute, attribute_name, @table)
+        end
+      end
+    end
+    alias_method :set_ostruct_member_value!, :[]= # rubocop:disable Style/Alias
+    private :set_ostruct_member_value!
 
     def is_timestamp_attr? name
       name =~ /_updated_at$/
@@ -68,52 +90,34 @@ module MetadataSupport
       "#{name}_updated_at".to_sym
     end
 
-    def as_json *args
-      @table.as_json *args
-    end
+    private
 
-    def method_missing(mid, *args)
-      out = super(mid, *args)
-      owner.send :write_attribute, attribute_name, @table
-      out = out&.to_time if args.length == 0 && is_timestamp_attr?(mid)
-      out
-    end
+    def new_ostruct_member!(name) # rubocop:disable Metrics/MethodLength,Metrics/AbcSize
+      return if @table.key?(name) || is_method_protected!(name)
 
-    def each
-      @table.each do |k,v|
-        yield k, v
-      end
-    end
-
-    def delete(key)
-      @table.delete(key)
-    end
-
-    def new_ostruct_member! name
-      @_initialized_members ||= []
-      unless is_timestamp_attr?(name)
+      if is_timestamp_attr?(name)
+        attr_name = nil
+        timestamp_attr_name = name
+      else
+        attr_name = name
         timestamp_attr_name = timestamp_attr(name)
       end
 
-      name = name.to_sym
-      unless @_initialized_members.include?(name)
-        @_initialized_members << name
-        if timestamp_attr_name
-          define_singleton_method(timestamp_attr_name) { @table[timestamp_attr_name]&.to_time }
-          define_singleton_method(name) { @table[name] }
-        else
-          # we are defining an accessor for a timestamp
-          define_singleton_method(name) { @table[name]&.to_time }
-        end
+      if attr_name
+        define_singleton_method!(attr_name) { @table[attr_name] }
 
         define_singleton_method("#{name}=") do |x|
-          modifiable?[timestamp_attr_name] = Time.now if timestamp_attr_name
-          modifiable?[name] = x
-          owner.send :write_attribute, attribute_name, @table
+          @table[name] = x
+          @table[timestamp_attr_name] = Time.zone.now
+          owner.send(:write_attribute, attribute_name, @table)
         end
-        modifiable?[timestamp_attr_name] = Time.now if timestamp_attr_name
       end
-      name
+
+      define_singleton_method!(timestamp_attr_name) { @table[timestamp_attr_name]&.to_time }
+      define_singleton_method!("#{timestamp_attr_name}=") do |x|
+        @table[timestamp_attr_name] = x
+        owner.send(:write_attribute, attribute_name, @table)
+      end
     end
   end
 end

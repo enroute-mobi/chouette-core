@@ -59,7 +59,7 @@ RSpec.describe MetadataSupport do
     context 'when the target has incomplete metadata' do
       let(:source_metadata) { { 'creator_username' => 'jane' } }
 
-      before { record.metadata.delete(:creator_username_updated_at) }
+      before { record.metadata.delete_field(:creator_username_updated_at) }
 
       it 'should do nothing' do
         expect { subject }.to(
@@ -106,12 +106,115 @@ RSpec.describe MetadataSupport do
 
   describe '#metadata.initialize' do
     let(:time_value) { 1.day.ago.change(usec: 0) }
-    let(:record_metadata) { { creator_username: 'john', creator_username_updated_at: time_value } }
+    let(:timestamp_value) { time_value }
 
-    it 'does not change timestamp' do
-      expect(record.metadata.send(:table)).to(
-        eq({ creator_username: 'john', creator_username_updated_at: time_value.as_json })
-      )
+    context 'when missing attribute is not a timestamp' do
+      let(:record_metadata) { { creator_username: 'john' } }
+
+      it 'sets attribute value' do
+        expect(record.metadata.send(:table)[:creator_username]).to eq('john')
+      end
+
+      it 'does not set attribute timestamp' do
+        expect(record.metadata.send(:table)).not_to have_key(:creator_username_updated_at)
+      end
+
+      it 'returns value through method' do
+        expect(record.metadata.creator_username).to eq('john')
+      end
+
+      it 'returns timestamp value through method' do
+        record.metadata.send(:table)[:creator_username_updated_at] = time_value
+        expect(record.metadata.creator_username_updated_at).to eq(time_value)
+      end
+
+      it 'casts timestamp value through method' do
+        record.metadata.send(:table)[:creator_username_updated_at] = time_value.as_json
+        expect(record.metadata.creator_username_updated_at).to eq(time_value)
+      end
+
+      it 'does not cast timestamp value through method when its value is nil' do
+        record.metadata.send(:table)[:creator_username_updated_at] = nil
+        expect(record.metadata.creator_username_updated_at).to be_nil
+      end
+
+      context 'when initialized with a timestamp' do
+        let(:record_metadata) { { creator_username: 'john', creator_username_updated_at: timestamp_value } }
+
+        context 'encoded as a time' do
+          it 'returns timestamp value through method' do
+            expect(record.metadata.send(:table)[:creator_username_updated_at]).to eq(time_value.as_json)
+          end
+        end
+
+        context 'encoded as a string' do
+          let(:timestamp_value) { time_value.as_json }
+
+          it 'returns timestamp value through method' do
+            expect(record.metadata.send(:table)[:creator_username_updated_at]).to eq(time_value.as_json)
+          end
+        end
+
+        context 'being nil' do
+          let(:timestamp_value) { nil }
+
+          it 'returns nil through method' do
+            expect(record.metadata.send(:table)[:creator_username_updated_at]).to be_nil
+          end
+        end
+      end
+    end
+
+    context 'when missing attribute is a timestamp' do
+      let(:record_metadata) { { creator_username_updated_at: timestamp_value } }
+
+      context 'encoded as a time' do
+        it 'returns timestamp value through method' do
+          expect(record.metadata.send(:table)[:creator_username_updated_at]).to eq(time_value.as_json)
+        end
+
+        it 'returns value through method' do
+          expect(record.metadata.creator_username_updated_at).to eq(time_value)
+        end
+      end
+
+      context 'encoded as a string' do
+        let(:timestamp_value) { time_value.as_json }
+
+        it 'returns timestamp value through method' do
+          expect(record.metadata.send(:table)[:creator_username_updated_at]).to eq(time_value.as_json)
+        end
+
+        it 'returns value through method' do
+          expect(record.metadata.creator_username_updated_at).to eq(time_value)
+        end
+      end
+
+      context 'being nil' do
+        let(:timestamp_value) { nil }
+
+        it 'returns nil through method' do
+          expect(record.metadata.send(:table)[:creator_username_updated_at]).to be_nil
+        end
+
+        it 'returns nil value through method' do
+          expect(record.metadata.creator_username_updated_at).to be_nil
+        end
+      end
+    end
+
+    context 'when missing attribute is unknown' do
+      subject { record.metadata.unknown }
+
+      it { is_expected.to eq(nil) }
+
+      it 'does not create new attributes' do
+        expect { subject }.to(not_change { record.metadata.send(:table) })
+      end
+
+      it 'does not change record attributes to write' do
+        expect { subject }.to(not_change { record.read_attribute(:metadata) })
+      end
     end
   end
 
@@ -136,97 +239,7 @@ RSpec.describe MetadataSupport do
   end
 
   describe '#metadata.method_missing' do
-    describe '#metadata.b' do # TODO: move this to init in ruby 3
-      context 'when missing attribute is not a timestamp' do
-        subject { record.metadata.creator_username }
-
-        let(:record_metadata) { { creator_username: 'john' } }
-
-        it 'simply returns its value' do
-          is_expected.to eq('john')
-        end
-
-        it 'sets attribute timestamp' do
-          expect { subject }.to(
-            change { record.metadata.send(:table)[:creator_username_updated_at] }.from(nil).to(be_present)
-          )
-        end
-
-        it 'returns timestamp value through method' do
-          expect { subject }.to change { record.metadata.creator_username_updated_at }.from(nil).to(be_present)
-        end
-
-        it 'casts timestamp value through method' do
-          subject
-          time_value = 1.day.ago.to_time.change(usec: 0)
-          record.metadata.send(:table)[:creator_username_updated_at] = time_value.as_json
-          expect(record.metadata.creator_username_updated_at).to eq(time_value)
-        end
-
-        it 'does not cast timestamp value through method when its value is nil' do
-          subject
-          record.metadata.send(:table)[:creator_username_updated_at] = nil
-          expect(record.metadata.creator_username_updated_at).to be_nil
-        end
-
-        it 'changes record attributes to write' do
-          expect { subject }.to(
-            change { record.read_attribute(:metadata) }.from({ 'creator_username' => 'john' }).to(
-              match({ 'creator_username' => 'john', 'creator_username_updated_at' => be_present })
-            )
-          )
-        end
-      end
-
-      context 'when missing attribute is a timestamp' do
-        subject { record.metadata.creator_username_updated_at }
-
-        let(:record_metadata) { { creator_username_updated_at: Time.zone.now } }
-
-        context 'encoded as a time' do
-          it 'simply returns its value' do
-            is_expected.to be_a(Time)
-          end
-
-          it 'does not set attribute timestamp' do
-            expect { subject }.to(
-              not_change { record.metadata.send(:table)[:creator_username_updated_at_updated_at] }.from(nil)
-            )
-          end
-
-          it 'casts value through method' do
-            subject
-            time_value = 1.day.ago.to_time.change(usec: 0)
-            record.metadata.send(:table)[:creator_username_updated_at] = time_value.as_json
-            expect(record.metadata.creator_username_updated_at).to eq(time_value)
-          end
-
-          it 'does not cast value through method when value is nil' do
-            subject
-            record.metadata.send(:table)[:creator_username_updated_at] = nil
-            expect(record.metadata.creator_username_updated_at).to be_nil
-          end
-
-          it 'does not changes record attributes to write' do
-            expect { subject }.to(not_change { record.read_attribute(:metadata) })
-          end
-        end
-
-        context 'encoded as a string' do
-          before { record.metadata.creator_username_updated_at = Time.zone.now.as_json }
-
-          it 'casts its value as a Time' do
-            is_expected.to be_a(Time)
-          end
-        end
-
-        context 'being nil' do
-          before { record.metadata.creator_username_updated_at = nil }
-
-          it { is_expected.to be_nil }
-        end
-      end
-
+    describe '#metadata.b' do
       context 'when missing attribute is unknown' do
         subject { record.metadata.unknown }
 
@@ -234,10 +247,6 @@ RSpec.describe MetadataSupport do
 
         it 'does not create new attributes' do
           expect { subject }.to(not_change { record.metadata.send(:table) })
-        end
-
-        it 'does not change record attributes to write' do
-          expect { subject }.to(not_change { record.read_attribute(:metadata) })
         end
       end
     end
@@ -415,7 +424,7 @@ RSpec.describe MetadataSupport do
         expect(record.metadata.creator_username_updated_at).to be_nil
       end
 
-      xit 'changes record attributes to write' do
+      it 'changes record attributes to write' do
         expect { subject }.to(
           change { record.read_attribute(:metadata) }.from({}).to(
             match({ 'creator_username' => 'john', 'creator_username_updated_at' => be_present })
@@ -433,11 +442,11 @@ RSpec.describe MetadataSupport do
           expect { subject }.to change { record.metadata.send(:table)[:creator_username] }.from('jane').to('john')
         end
 
-        xit 'updates attribute timestamp' do
+        it 'updates attribute timestamp' do
           expect { subject }.to(change { record.metadata.send(:table)[:creator_username_updated_at] })
         end
 
-        xit 'changes record attributes to write' do
+        it 'changes record attributes to write' do
           expect { subject }.to(change { record.read_attribute(:metadata) })
         end
 
@@ -486,7 +495,7 @@ RSpec.describe MetadataSupport do
         expect(record.metadata.creator_username_updated_at).to be_nil
       end
 
-      xit 'changes record attributes to write' do
+      it 'changes record attributes to write' do
         expect { subject }.to(
           change { record.read_attribute(:metadata) }.from({}).to(
             match({ 'creator_username_updated_at' => time_value.as_json })
@@ -518,7 +527,7 @@ RSpec.describe MetadataSupport do
           expect { subject }.to(change { record.metadata.send(:table)[:creator_username_updated_at] })
         end
 
-        xit 'changes record attributes to write' do
+        it 'changes record attributes to write' do
           expect { subject }.to(change { record.read_attribute(:metadata) })
         end
 
@@ -538,7 +547,7 @@ RSpec.describe MetadataSupport do
   end
 
   it 'should set the correct values on save' do
-    Timecop.freeze(Time.now) do
+    Timecop.freeze(Time.zone.now) do
       record.metadata.creator_username = 'john.doe'
       record.save!
       copy = WithMetadata.find(record.id)
@@ -550,7 +559,7 @@ RSpec.describe MetadataSupport do
   end
 
   it 'should set the correct values on update' do
-    Timecop.freeze(Time.now) do
+    Timecop.freeze(Time.zone.now) do
       record.save!
       id = record.id
       copy1 = WithMetadata.find(id)

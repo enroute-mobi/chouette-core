@@ -38,7 +38,7 @@ case $command in
     exec bundle exec rake db:seed
     ;;
   migrate-and-seed)
-    RAILS_DB_ADVISORY_LOCKS=false bundle exec rake db:migrate && bundle exec rake db:seed
+    bundle exec rake db:migrate && bundle exec rake db:seed
     ;;
   cucumber-cron)
     bundle exec rake cucumber:clean

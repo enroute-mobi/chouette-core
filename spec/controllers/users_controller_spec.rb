@@ -1,5 +1,6 @@
-RSpec.describe UsersController, :type => :controller do
+# frozen_string_literal: true
 
+RSpec.describe UsersController, :type => :controller do
   let(:organisation) { @user.organisation }
 
   [
@@ -19,7 +20,7 @@ RSpec.describe UsersController, :type => :controller do
 
       it 'should be forbidden' do
         do_request
-        expect(response.status).to eq 302
+        expect(response).to redirect_to(new_user_session_url)
       end
 
       context 'logged in' do
@@ -40,7 +41,7 @@ RSpec.describe UsersController, :type => :controller do
             let(:profile){ :visitor }
             it 'should be forbidden' do
               do_request
-              expect(response.status).to eq 403
+              expect(response).to have_http_status(:forbidden)
             end
           end
 
@@ -48,7 +49,7 @@ RSpec.describe UsersController, :type => :controller do
             let(:profile){ :editor }
             it 'should be forbidden' do
               do_request
-              expect(response.status).to eq 403
+              expect(response).to have_http_status(:forbidden)
             end
           end
 
@@ -56,7 +57,13 @@ RSpec.describe UsersController, :type => :controller do
             let(:profile){ :admin }
             it 'should be authorized' do
               do_request
-              expect(response.status).to eq (verb == :get ? 200 : 302)
+              if verb == :get
+                expect(response).to have_http_status(:ok)
+              elsif action == :destroy
+                expect(response).to redirect_to(organisation_url)
+              else
+                expect(response).to redirect_to(organisation_user_url(target_user.id))
+              end
             end
           end
         end
@@ -119,7 +126,7 @@ RSpec.describe UsersController, :type => :controller do
             let(:profile){ user_profile }
             it 'should be forbidden' do
               do_request
-              expect(response.status).to eq 403
+              expect(response).to have_http_status(:forbidden)
             end
           end
         end

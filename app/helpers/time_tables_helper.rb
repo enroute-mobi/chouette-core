@@ -174,11 +174,4 @@ module TimeTablesHelper
   def weekend?(date)
     [0, 6].include?(date.wday)
   end
-
-  class Engine < Rails::Engine # :nodoc:
-    ActiveSupport.on_load(:action_view) do
-      include CalendarHelper
-    end
-  end if defined? Rails::Engine
-
 end

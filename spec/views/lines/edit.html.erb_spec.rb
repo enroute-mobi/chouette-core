@@ -19,19 +19,7 @@ describe 'lines/edit.html.slim', type: :view do
   describe "form" do
     it "should render input for name" do
       render
-      expect(rendered).to have_selector("form") do
-        with_tag "input[type=text][name='line[name]'][value=?]", line.name
-      end
-    end
-
-    it "should render a checkbox for each line" do
-      render
-      lines.each do |line|
-        expect(rendered).to have_selector("form") do
-          with_tag "input[type='checkbox'][value=?]", line.id.to_s
-        end
-      end
-
+      expect(rendered).to have_selector("form input[type=text][name='line[name]'][value='#{line.name}']")
     end
   end
 end

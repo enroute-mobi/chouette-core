@@ -73,7 +73,6 @@ gem 'mimemagic', '>= 0.4.3'
 # User interface
 gem 'bootstrap-sass', '3.4.1'
 gem 'language_engine', en_route: 'language_engine'
-gem 'calendar_helper', '0.2.5'
 gem 'cocoon'
 gem 'slim-rails', '>= 3.3.0'
 gem 'simple_form', '~> 5.1.0'
@@ -95,7 +94,7 @@ gem 'rails_semantic_logger'
 
 # Model
 gem 'will_paginate'
-gem 'ransack'
+gem 'ransack', '< 4' # TODO: the new version require too much work and we will get rid of ransack anyway
 gem 'active_attr', '>= 0.15.4'
 
 gem 'draper', '>= 4.0.2'
@@ -116,10 +115,10 @@ gem 'delayed_job_heartbeat_plugin'
 gem 'delayed_cron_job'
 
 gem 'rake'
-gem 'ros-apartment', require: 'apartment'
+gem 'ros-apartment', '< 3', require: 'apartment' # TODO: until ruby 3.0
 gem 'aasm'
 gem 'puma', '>= 5.6.4'
-gem 'postgresql_cursor', '0.6.6' # See https://enroute.atlassian.net/browse/CHOUETTE-2938 for details
+gem 'postgresql_cursor'
 
 # CSS styled emails without the hassle.
 gem 'premailer-rails', '>= 1.11.1'
@@ -135,7 +134,7 @@ gem 'neptune', en_route: 'neptune'
 
 # Monitoring
 gem 'ddtrace'
-gem 'google-protobuf', '~> 3.0'
+gem 'google-protobuf'
 gem 'dogstatsd-ruby'
 gem 'prometheus-client'
 
@@ -143,7 +142,7 @@ gem 'sentry-delayed_job'
 gem 'sentry-ruby'
 gem 'sentry-rails'
 
-gem 'coverband', '~> 6.0.0', require: false # cannot update to 6.1 until ruby 3.0
+gem 'coverband', '~> 6.0.0', require: false # TODO: cannot update to 6.1 until ruby 3.0
 
 gem 'nest', en_route: 'nest'
 
@@ -166,7 +165,7 @@ group :test do
   gem 'rspec-snapshot'
   gem 'rails-controller-testing', '>= 1.0.5'
   gem 'rspec-rails'
-  gem 'capybara', '~> 3.15.1'
+  gem 'capybara'
   gem 'database_cleaner'
   gem 'poltergeist', '>= 1.18.1'
   gem 'rspec-benchmark'
@@ -177,7 +176,7 @@ group :test do
   gem 'webmock'
   gem 'shoulda-matchers'
   gem 'with_model'
-  gem 'factory_bot_rails', '~> 6.2.0' # Could not upgrade to another version without https://enroute.atlassian.net/browse/CHOUETTE-3190
+  gem 'factory_bot_rails'
   gem 'faker'
 
   gem 'teaspoon-jasmine', '>= 2.9.1'
@@ -195,7 +194,7 @@ group :test, :development do
   gem 'parallel_tests'
 
   gem 'letter_opener'
-  gem 'letter_opener_web', '~> 1.4', '>= 1.4.1'
+  gem 'letter_opener_web'
 
   gem 'dotenv-rails', '>= 2.7.6'
   gem 'bullet', '>= 7.1.6'

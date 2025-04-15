@@ -17,9 +17,7 @@ describe 'lines/new.html.slim', type: :view do
 
     it "should render input for name" do
       render
-      expect(rendered).to have_selector("form") do
-        with_selector "input[type=text][name=?]", line.name
-      end
+      expect(rendered).to have_selector("form input[type=text][name='line[name]'][value='#{line.name}']")
     end
   end
 end

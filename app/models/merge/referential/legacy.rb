@@ -334,7 +334,7 @@ class Merge::Referential::Legacy < Merge::Referential::Base
             end
 
             time_tables_with_associated_lines =
-              referential.time_tables.joins(vehicle_journeys: {route: :line}).distinct.pluck("lines.id", :id, "vehicle_journeys.id")
+              referential.time_tables.joins(vehicle_journeys: {route: :line}).distinct.pluck(Arel.sql("#{::Chouette::Line.quoted_table_name}.id"), :id, "vehicle_journeys.id")
 
             # Because TimeTables will be modified according metadata periods
             # we're loading timetables per line (line is associated to a period list)

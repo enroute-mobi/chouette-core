@@ -115,7 +115,9 @@ module Export
       def organisations
         # Find organisations which provided metadata in the referential
         # Only works for merged/aggregated datasets
-        organisation_ids = metadatas.joins(referential_source: :organisation).distinct.pluck('organisations.id')
+        organisation_ids = metadatas.joins(referential_source: :organisation)
+                                    .distinct
+                                    .pluck(Arel.sql("#{::Organisation.quoted_table_name}.id"))
 
         # Use the Referential owner in fallback
         organisation_ids = [referential.organisation_id] if organisation_ids.empty?

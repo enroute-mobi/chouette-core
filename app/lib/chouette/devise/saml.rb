@@ -34,8 +34,7 @@ module Chouette
           Organisation
             .where(code: params[:organisation_code])
             .joins(:authentication)
-            .pluck('authentications.saml_idp_entity_id')
-            .first
+            .pick(Arel.sql("#{::Authentication::Saml.quoted_table_name}.saml_idp_entity_id"))
         end
       end
 

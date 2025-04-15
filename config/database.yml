@@ -8,6 +8,7 @@ default: &default
   password: <%= ENV.fetch('RAILS_DB_PASSWORD','chouette') %>
   postgis_schema: 'shared_extensions'
   pool: 10
+  advisory_locks: <%= ENV['RAILS_DB_ADVISORY_LOCKS'] != 'false' %>
   variables:
     statement_timeout: 1800000
 

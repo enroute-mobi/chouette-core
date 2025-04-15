@@ -15,7 +15,7 @@ en:
       last_aggregate: "Associated aggregate"
       last_aggregated_at: "Aggregated at"
       last_aggregated_referential: "Aggregated Dataset"
-      table_headers: 
+      table_headers:
         referentials: Referentials
         merged_referential: Merged dataset
         workbench_macro_list_run: Macro list
@@ -52,7 +52,7 @@ en:
         ended_at: Ended at
         creator: Created by
         duration: Duration
-        notification_target: Notifications recipients
+        notification_target: Notification recipients
         name: Name
         status: "Status"
         referentials: "Data sets"

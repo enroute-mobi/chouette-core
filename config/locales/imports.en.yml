@@ -93,7 +93,7 @@ en:
         ended_at: Ended at
         creator: Created by
         duration: Duration
-        notification_target: Notifications recipients
+        notification_target: Notification recipients
         resources: "File to import"
         name: "Name"
         status: "Status"

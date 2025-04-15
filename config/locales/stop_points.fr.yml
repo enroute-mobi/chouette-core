@@ -45,6 +45,7 @@ fr:
         deleted_at: 'Activé'
         for_boarding: "Montée"
         for_alighting: "Descente"
+        flexible: 'Arrêt à la demande'
         area_type: "Type d'arrêt"
         city_name: "Commune"
         zip_code: "Code postal"

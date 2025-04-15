@@ -948,7 +948,7 @@ class Import::Gtfs < Import::Base
   def process_trip(resource, trip, stop_times)
     begin
       raise InvalidTripSingleStopTime unless stop_times.many?
-      raise InvalidTripTimesError unless consistent_stop_times(stop_times)
+      #raise InvalidTripTimesError unless consistent_stop_times(stop_times)
 
       journey_pattern = find_or_create_journey_pattern(trip, stop_times)
       vehicle_journey = journey_pattern.vehicle_journeys.build route: journey_pattern.route
@@ -964,7 +964,7 @@ class Import::Gtfs < Import::Base
         save_model vehicle_journey, resource: resource
       end
 
-      starting_day_offset = GtfsTime.parse(stop_times.first.departure_time).day_offset
+      starting_day_offset = GtfsTime.parse(stop_times.first.departure_time || stop_times.first.start_pickup_drop_off_window).day_offset
       time_table_id = handle_timetable_with_offset(resource, trip, starting_day_offset)
 
       if time_table_id
@@ -1125,7 +1125,8 @@ class Import::Gtfs < Import::Base
         next if skip && stop_time.pickup_type.nil? && stop_time.drop_off_type.nil?
 
         skip = false
-        [stop_time.stop_id, stop_time.pickup_type || '0', stop_time.drop_off_type || '0']
+        flexible = stop_time.start_pickup_drop_off_window.present? && stop_time.end_pickup_drop_off_window.present?
+        [stop_time.stop_id, stop_time.pickup_type || '0', stop_time.drop_off_type || '0', flexible]
       end.to_a
     end
   end
@@ -1376,7 +1377,8 @@ class Import::Gtfs < Import::Base
             stop_area_id: stop_area_id,
             position: position,
             for_boarding: convert_pickup_and_drop_off_type(stop_time.pickup_type),
-            for_alighting: convert_pickup_and_drop_off_type(stop_time.drop_off_type)
+            for_alighting: convert_pickup_and_drop_off_type(stop_time.drop_off_type),
+            flexible: flexible?(stop_time),
           ).with_transient(stop_id: stop_time.stop_id)
         end
       end
@@ -1393,11 +1395,14 @@ class Import::Gtfs < Import::Base
 
       private
 
+      def flexible?(stop_time)
+        stop_time.start_pickup_drop_off_window.present? && stop_time.end_pickup_drop_off_window.present?
+      end
+
       def convert_pickup_and_drop_off_type(value)
-        @convert_pickup_and_drop_off_type_hash ||= {
-          '1' => 'forbidden'
-        }.freeze
-        @convert_pickup_and_drop_off_type_hash[value] || 'normal'
+        return 'normal' if value == '2'
+
+        'forbidden'
       end
     end
 
@@ -1470,14 +1475,20 @@ class Import::Gtfs < Import::Base
   def add_stop_point(stop_time, position, starting_day_offset, stop_point, vehicle_journey, worker)
     # JourneyPattern#vjas_add creates automaticaly VehicleJourneyAtStop
     vehicle_journey_at_stop = vehicle_journey.vehicle_journey_at_stops.build(stop_point_id: stop_point.id)
+    if stop_time.departure_time
+      departure_time_of_day = time_of_day stop_time.departure_time, starting_day_offset
+      vehicle_journey_at_stop.departure_time_of_day = departure_time_of_day
 
-    departure_time_of_day = time_of_day stop_time.departure_time, starting_day_offset
-    vehicle_journey_at_stop.departure_time_of_day = departure_time_of_day
-
-    if position == 0
-      vehicle_journey_at_stop.arrival_time_of_day = departure_time_of_day
+      if position == 0
+        vehicle_journey_at_stop.arrival_time_of_day = departure_time_of_day
+      else
+        vehicle_journey_at_stop.arrival_time_of_day = time_of_day stop_time.arrival_time, starting_day_offset
+      end
     else
-      vehicle_journey_at_stop.arrival_time_of_day = time_of_day stop_time.arrival_time, starting_day_offset
+      vehicle_journey_at_stop.latest_arrival_time_of_day =
+        time_of_day(stop_time.start_pickup_drop_off_window, starting_day_offset).second_offset
+      vehicle_journey_at_stop.earliest_departure_time_of_day =
+        time_of_day(stop_time.end_pickup_drop_off_window, starting_day_offset).second_offset
     end
 
     worker.add vehicle_journey_at_stop.attributes

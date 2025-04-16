@@ -122,6 +122,6 @@ class Api::V1::DatasController < Api::V1::BaseController
   end
 
   def missing_file_error
-    render 'missing_file_error.html.slim', status: :not_found
+    render :missing_file_error, formats: %i[html], status: :not_found
   end
 end

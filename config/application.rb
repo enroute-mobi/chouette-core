@@ -16,7 +16,7 @@ end
 require_relative '../app/lib/chouette/config'
 Chouette::Config.load
 
-module ChouetteIhm
+module Chouette
   class Application < Rails::Application
     # Initialize configuration defaults for originally generated Rails version.
     config.load_defaults 6.1

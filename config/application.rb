@@ -128,7 +128,7 @@ module Chouette
     end
 
     config.to_prepare do
-      Devise::Mailer.layout 'mailer'
+      ::Devise::Mailer.layout 'mailer'
     end
 
     require_relative '../app/lib/rack/validate_request_params'

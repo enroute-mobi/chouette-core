@@ -90,8 +90,12 @@ module Chouette::Sync
           postal_address&.town
         end
 
+        def try(method)
+          __getobj__.try(method)
+        end
+
         def stop_area_parent_ref
-          tag(:parent_id) || (__getobj__.try(:parent_site_ref) || __getobj__.try(:parent_zone_ref))&.ref
+          tag(:parent_id) || (try(:parent_site_ref) || try(:parent_zone_ref))&.ref
         end
 
         delegate :pending_parent, :pending_referent, :pending_flexible_area_memberships, to: :updater, allow_nil: true
@@ -125,13 +129,13 @@ module Chouette::Sync
 
           [].tap do |flexible_area_members|
             flexible_area.members.each do |member|
-              flexible_area_members << member&.ref if member.type == ::Netex::Quay
+              flexible_area_members << member&.ref if [::Netex::Quay, ::Netex::StopPlace].include?(member.type)
             end
           end
         end
 
         def flexible_area
-          @flexible_area ||= __getobj__.try(:areas)&.first
+          @flexible_area ||= try(:areas)&.first
         end
 
         def chouette_transport_mode
@@ -139,15 +143,15 @@ module Chouette::Sync
         end
 
         def postal_address
-          @postal_address ||= __getobj__.try(:postal_address)
+          try :postal_address
         end
 
         def transport_mode
-          __getobj__.try(:transport_mode)
+          try :transport_mode
         end
 
         def transport_submode
-          __getobj__.try(:transport_submode)
+          try :transport_submode
         end
 
         def model_attributes # rubocop:disable Metrics/AbcSize,Metrics/MethodLength

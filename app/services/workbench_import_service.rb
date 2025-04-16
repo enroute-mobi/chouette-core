@@ -5,10 +5,6 @@ class WorkbenchImportService
 
   attr_reader :entries, :workbench_import
 
-  class << self
-    attr_accessor :import_dir
-  end
-
   def logger
     Rails.logger
   end

@@ -160,9 +160,12 @@ module Chouette
     config.rails_semantic_logger.add_file_appender = false
     config.logger_reopen_max = nil
 
+    once = Rails.root.join('app/once')
+    Rails.autoloaders.main.ignore(once)
+    config.autoload_once_paths << once
+
     overrides = Rails.root.join('app/overrides')
     Rails.autoloaders.main.ignore(overrides)
-
     config.to_prepare do
       Dir.glob("#{overrides}/**/*_override.rb").sort.each do |override|
         load override

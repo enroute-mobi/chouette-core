@@ -106,7 +106,7 @@ class NetexImportCreator
         import.main_resource.update referential: referential
         import.save!
 
-        return true
+        next true
       end
 
       # Create error messages associated to this invalid Referential

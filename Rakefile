@@ -1,6 +1,6 @@
 #!/usr/bin/env rake
-require File.expand_path('../config/application', __FILE__)
-Chouette::Application.load_tasks
+require_relative 'config/application'
+Rails.application.load_tasks
 
 %w{seed create drop}.each do |task|
   Rake::Task["apartment:#{task}"].clear

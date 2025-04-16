@@ -132,6 +132,7 @@ class RouteVehicleJourneysController < Chouette::ReferentialController
         :position => sp.try(:position),
         :for_boarding => sp.try(:for_boarding),
         :for_alighting => sp.try(:for_alighting),
+        :flexible => sp.try(:flexible),
         :name => sp.stop_area.try(:name),
         :time_zone_offset => sp.stop_area.try(:time_zone_offset),
         :time_zone_formatted_offset => sp.stop_area.try(:time_zone_formatted_offset),

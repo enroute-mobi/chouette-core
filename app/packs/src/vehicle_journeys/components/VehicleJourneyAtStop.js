@@ -7,7 +7,7 @@ import autoBind from 'react-autobind'
 class VehicleJourneyAtStop extends Component {
 	constructor(props) {
 		super(props)
-		
+
 		autoBind(this)
 	}
 
@@ -29,7 +29,7 @@ class VehicleJourneyAtStop extends Component {
 		out.push('selectable')
 
 		if (isSelecting || isSelected || isInSelection) {
-			out.push('selected')	
+			out.push('selected')
 		}
 
 		return out.join(' ')
@@ -61,7 +61,7 @@ class VehicleJourneyAtStop extends Component {
 
 	renderDelta() {
 		return (
-			<div className={(this.hasDelta ? '' : 'hidden')}>
+			<div>
 				{this.hasDelta &&
 					<span className='sb sb-chrono sb-lg text-warning' data-textinside={this.displayDelta()}></span>
 				}
@@ -93,7 +93,7 @@ class VehicleJourneyAtStop extends Component {
 			>
 				{this.renderSelectionSize()}
 				<div className={'cellwrap' + (cityNameChecker(vjas) ? ' headlined' : '')}>
-					{toggleArrivals &&
+					{!vjas.flexible && toggleArrivals && (
 						<div data-headline={I18n.t("vehicle_journeys.form.arrival_at")}>
 							<span className={((isDisabled || !hasUpdatePermission) ? 'disabled ' : '') + 'input-group time'}>
 								<input
@@ -119,19 +119,75 @@ class VehicleJourneyAtStop extends Component {
 								/>
 							</span>
 						</div>
-					}
-					{this.renderDelta()}
-					<div data-headline={I18n.t("vehicle_journeys.form.departure_at")}>
-						<span className={((isDisabled || !hasUpdatePermission) ? 'disabled ' : '') + 'input-group time'}>
+					)}
+					{!vjas.flexible && toggleArrivals && (
+						this.renderDelta()
+					)}
+					{!vjas.flexible && (
+						<div data-headline={I18n.t("vehicle_journeys.form.departure_at")}>
+							<span className={((isDisabled || !hasUpdatePermission) ? 'disabled ' : '') + 'input-group time'}>
+								<input
+									type='number'
+									className='form-control'
+									disabled={!isEditable || isDisabled || !hasUpdatePermission}
+									readOnly={!isEditable && !vjas.dummy}
+									onChange={e => { isEditable && onUpdateTime(e, 'hour', true, toggleArrivals) }}
+									onMouseOut={e => { isEditable && onUpdateTime(e, 'hour', true, toggleArrivals, true) }}
+									onBlur={e => { isEditable && onUpdateTime(e, 'hour', true, toggleArrivals, true) }}
+									value={vjas.departure_time['hour']}
+								/>
+								<span>:</span>
+								<input
+									type='number'
+									className='form-control'
+									disabled={!isEditable || isDisabled || !hasUpdatePermission}
+									readOnly={!isEditable && !vjas.dummy}
+									onChange={e => { isEditable && onUpdateTime(e, 'minute', true, toggleArrivals) }}
+									onMouseOut={e => { isEditable && onUpdateTime(e, 'minute', true, toggleArrivals, true) }}
+									onBlur={e => { isEditable && onUpdateTime(e, 'minute', true, toggleArrivals, true) }}
+									value={vjas.departure_time['minute']}
+								/>
+							</span>
+						</div>
+					)}
+					{vjas.flexible && (
+						<div data-headline={I18n.t("vehicle_journeys.form.earliest_departure")}>
+							<span className='input-group time'>
+								<input
+									type='number'
+									className='form-control'
+									disabled={!isEditable || isDisabled || !hasUpdatePermission}
+									readOnly={!isEditable && !vjas.dummy}
+									onChange={e => { isEditable && onUpdateTime(e, 'hour', true, toggleArrivals) }}
+									value={vjas.earliest_departure_time_of_day['hour']}
+								/>
+								<span>:</span>
+								<input
+									type='number'
+									className='form-control'
+									disabled={!isEditable || isDisabled || !hasUpdatePermission}
+									readOnly={!isEditable && !vjas.dummy}
+									onChange={e => { isEditable && onUpdateTime(e, 'minute', true, toggleArrivals) }}
+									value={vjas.earliest_departure_time_of_day['minute']}
+								/>
+							</span>
+						</div>
+					)}
+					{vjas.flexible && toggleArrivals && (
+						<div>
+							<i className="fas fa-arrows-alt-h"></i>
+						</div>
+					)}
+					{vjas.flexible && toggleArrivals && (
+					<div data-headline={I18n.t("vehicle_journeys.form.latest_arrival")}>
+						<span className='input-group time'>
 							<input
 								type='number'
 								className='form-control'
 								disabled={!isEditable || isDisabled || !hasUpdatePermission}
 								readOnly={!isEditable && !vjas.dummy}
 								onChange={e => { isEditable && onUpdateTime(e, 'hour', true, toggleArrivals) }}
-								onMouseOut={e => { isEditable && onUpdateTime(e, 'hour', true, toggleArrivals, true) }}
-								onBlur={e => { isEditable && onUpdateTime(e, 'hour', true, toggleArrivals, true) }}
-								value={vjas.departure_time['hour']}
+								value={vjas.latest_arrival_time_of_day['hour']}
 							/>
 							<span>:</span>
 							<input
@@ -140,12 +196,11 @@ class VehicleJourneyAtStop extends Component {
 								disabled={!isEditable || isDisabled || !hasUpdatePermission}
 								readOnly={!isEditable && !vjas.dummy}
 								onChange={e => { isEditable && onUpdateTime(e, 'minute', true, toggleArrivals) }}
-								onMouseOut={e => { isEditable && onUpdateTime(e, 'minute', true, toggleArrivals, true) }}
-								onBlur={e => { isEditable && onUpdateTime(e, 'minute', true, toggleArrivals, true) }}
-								value={vjas.departure_time['minute']}
+								value={vjas.latest_arrival_time_of_day['minute']}
 							/>
 						</span>
 					</div>
+				)}
 				</div>
 			</div>
 		)

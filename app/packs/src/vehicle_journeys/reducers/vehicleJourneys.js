@@ -58,6 +58,10 @@ const vehicleJourney= (state = {}, action, keep) => {
               hour: (24 + current_time.hour + offsetHours) % 24,
               minute: current_time.minute + offsetminutes
             },
+            latest_arrival:{
+              hour: (24 + current_time.hour + offsetHours) % 24,
+              minute: current_time.minute + offsetminutes
+            },
             stop_point_objectid: sp.object_id,
             stop_area_cityname: sp.city_name,
             dummy: true,
@@ -71,6 +75,11 @@ const vehicleJourney= (state = {}, action, keep) => {
           }
 
           newVjas.departure_time = {
+            hour: (24 + current_time.hour + offsetHours) % 24,
+            minute: current_time.minute + offsetminutes
+          }
+
+          newVjas.earliest_departure = {
             hour: (24 + current_time.hour + offsetHours) % 24,
             minute: current_time.minute + offsetminutes
           }

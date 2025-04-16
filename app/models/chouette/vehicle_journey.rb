@@ -251,6 +251,15 @@ module Chouette
           time_of_day = TimeOfDay.new vjas[field]['hour'], vjas[field]['minute'], utc_offset: utc_offset
           params["#{part}_time_of_day".to_sym] = time_of_day
         end
+
+        %w{earliest_departure latest_arrival}.each do |part|
+          field = "#{part}_time_of_day"
+          if vjas[field]
+            time_of_day = TimeOfDay.new vjas[field]['hour'], vjas[field]['minute'], utc_offset: utc_offset
+            params[field.to_sym] = time_of_day
+          end
+        end
+
         params[:stop_area_id] = vjas['specific_stop_area_id']
         stop = create_or_find_vjas_from_state(vjas)
         stop.update(params)

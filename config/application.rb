@@ -16,7 +16,7 @@ end
 require_relative '../app/lib/chouette/config'
 Chouette::Config.load
 
-module ChouetteIhm
+module Chouette
   class Application < Rails::Application
     # Initialize configuration defaults for originally generated Rails version.
     config.load_defaults 6.1
@@ -128,7 +128,7 @@ module ChouetteIhm
     end
 
     config.to_prepare do
-      Devise::Mailer.layout 'mailer'
+      ::Devise::Mailer.layout 'mailer'
     end
 
     require_relative '../app/lib/rack/validate_request_params'

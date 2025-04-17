@@ -2,7 +2,7 @@
 
 describe Rack::ValidateRequestParams do
   include Rack::Test::Methods
-  let(:app) { ChouetteIhm::Application }
+  let(:app) { Chouette::Application }
 
   # We need a page without redirection
   let(:path) { '/users/sign_up' }

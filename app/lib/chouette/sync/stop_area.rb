@@ -117,11 +117,11 @@ module Chouette::Sync
         end
 
         def flexible_area_memberships_attributes
-          return unless flexible_area_members
+          if flexible_area_members
+            pending_flexible_area_memberships id, flexible_area_members
+          end
 
-          pending_flexible_area_memberships id, flexible_area_members
-
-          nil
+          {}
         end
 
         def flexible_area_members
@@ -264,7 +264,7 @@ module Chouette::Sync
         end
       end
 
-      # Resolve Stop Area referents
+      # Resolve Stop Area referentsp
       class PendingReferentResolver < PendingResolver
         def initialize(updater)
           super updater, :referent

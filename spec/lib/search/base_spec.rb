@@ -860,7 +860,7 @@ RSpec.describe Search::Base::Chart do
       primary_key: 'id',
       connection: connection
     )
-    allow(models).to receive(:column_alias_for) { |arg| Search::Save.all.send(:column_alias_for, arg) }
+    allow(connection).to receive(:table_alias_for) { |table_name| Search::Save.connection.table_alias_for(table_name) }
     models
   end
   let(:chart_type) { 'line' }

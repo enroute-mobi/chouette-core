@@ -86,7 +86,7 @@ module Search
       end
 
       def count_column_name
-        column_alias(:sum, :count)
+        column_alias_for_operation(:sum, :count)
       end
 
       def aggregate_count(request)

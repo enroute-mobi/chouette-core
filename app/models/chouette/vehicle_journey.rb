@@ -256,7 +256,7 @@ module Chouette
           field = "#{part}_time_of_day"
           if vjas[field]
             time_of_day = TimeOfDay.new vjas[field]['hour'], vjas[field]['minute'], utc_offset: utc_offset
-            params[field.to_sym] = time_of_day
+            params[field.to_sym] = time_of_day.second_offset
           end
         end
 

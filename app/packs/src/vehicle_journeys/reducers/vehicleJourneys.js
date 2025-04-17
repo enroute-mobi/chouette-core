@@ -58,7 +58,7 @@ const vehicleJourney= (state = {}, action, keep) => {
               hour: (24 + current_time.hour + offsetHours) % 24,
               minute: current_time.minute + offsetminutes
             },
-            latest_arrival:{
+            latest_arrival_time_of_day:{
               hour: (24 + current_time.hour + offsetHours) % 24,
               minute: current_time.minute + offsetminutes
             },
@@ -79,7 +79,7 @@ const vehicleJourney= (state = {}, action, keep) => {
             minute: current_time.minute + offsetminutes
           }
 
-          newVjas.earliest_departure = {
+          newVjas.earliest_departure_time_of_day = {
             hour: (24 + current_time.hour + offsetHours) % 24,
             minute: current_time.minute + offsetminutes
           }
@@ -100,6 +100,14 @@ const vehicleJourney= (state = {}, action, keep) => {
               hour: 0,
               minute: 0
             },
+            latest_arrival_time_of_day: {
+              hour: 0,
+              minute: 0
+            },
+            earliest_departure_time_of_day: {
+              hour: 0,
+              minute: 0
+            },
             stop_point_objectid: sp.object_id,
             stop_area_cityname: sp.city_name,
             dummy: true,
@@ -115,12 +123,15 @@ const vehicleJourney= (state = {}, action, keep) => {
         let lastStop = action.selectedJourneyPattern.stop_areas && action.selectedJourneyPattern.stop_areas[action.selectedJourneyPattern.stop_areas.length - 1]
         if(lastStop && lastStop.stop_area_short_description.id == sp.id){
           newVjas.departure_time = newVjas.arrival_time
+          newVjas.earliest_departure_time_of_day = newVjas.latest_arrival_time_of_day
           newVjas.delta = 0
         }
 
         if(newVjas.dummy){
           newVjas.departure_time = {hour: "00", minute: "00"}
           newVjas.arrival_time = {hour: "00", minute: "00"}
+          newVjas.earliest_departure_time_of_day = {hour: "00", minute: "00"}
+          newVjas.latest_arrival_time_of_day = {hour: "00", minute: "00"}
         }
         pristineVjasList.push(newVjas)
 
@@ -194,23 +205,28 @@ const vehicleJourney= (state = {}, action, keep) => {
         if(i == action.subIndex){
           let schedule = {
             departure_time: _.assign({}, vjas.departure_time),
-            arrival_time: _.assign({}, vjas.arrival_time)
+            arrival_time: _.assign({}, vjas.arrival_time),
+            earliest_departure_time_of_day: _.assign({}, vjas.earliest_departure_time_of_day),
+            latest_arrival_time_of_day: _.assign({}, vjas.latest_arrival_time_of_day)
           }
           newSchedule = _.assign({}, schedule)
           if (action.isDeparture){
             actions.getDelta(schedule, false)
             newSchedule.departure_time[action.timeUnit] = actions.pad(val, action.timeUnit)
+            newSchedule.earliest_departure_time_of_day[action.timeUnit] = actions.pad(val, action.timeUnit)
             if(!action.isArrivalsToggled){
-              schedule = actions.getShiftedSchedule({arrival_time: newSchedule.departure_time, departure_time: newSchedule.departure_time}, - schedule.delta)
+              schedule = actions.getShiftedSchedule({arrival_time: newSchedule.departure_time, departure_time: newSchedule.departure_time, latest_arrival_time_of_day: newSchedule.earliest_departure_time_of_day, earliest_departure_time_of_day: newSchedule.earliest_departure_time_of_day}, - schedule.delta)
               newSchedule.arrival_time = schedule.arrival_time
+              newSchedule.latest_arrival_time_of_day = schedule.latest_arrival_time_of_day
             }
 
             newSchedule = actions.adjustSchedule(action, newSchedule, isFirstOrLastStop, action.enforceConsistency)
-            return _.assign({}, state.vehicle_journey_at_stops[action.subIndex], {arrival_time: newSchedule.arrival_time, departure_time: newSchedule.departure_time, delta: newSchedule.delta})
+            return _.assign({}, state.vehicle_journey_at_stops[action.subIndex], {arrival_time: newSchedule.arrival_time, departure_time: newSchedule.departure_time, latest_arrival_time_of_day: newSchedule.latest_arrival_time_of_day, earliest_departure_time_of_day: newSchedule.earliest_departure_time_of_day, delta: newSchedule.delta})
           }else{
             newSchedule.arrival_time[action.timeUnit] = actions.pad(val, action.timeUnit)
+            newSchedule.latest_arrival_time_of_day[action.timeUnit] = actions.pad(val, action.timeUnit)
             newSchedule = actions.adjustSchedule(action, newSchedule, isFirstOrLastStop, action.enforceConsistency)
-            return _.assign({}, state.vehicle_journey_at_stops[action.subIndex],  {arrival_time: newSchedule.arrival_time, departure_time: newSchedule.departure_time, delta: newSchedule.delta})
+            return _.assign({}, state.vehicle_journey_at_stops[action.subIndex],  {arrival_time: newSchedule.arrival_time, departure_time: newSchedule.departure_time, latest_arrival_time_of_day: newSchedule.latest_arrival_time_of_day, earliest_departure_time_of_day: newSchedule.earliest_departure_time_of_day, delta: newSchedule.delta})
           }
         }else{
           return vjas

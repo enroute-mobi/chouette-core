@@ -37,6 +37,10 @@ export default class DuplicateVehicleJourney extends Component {
         departure_time : {
           hour: this.state.duplicate_time_hh,
           minute: this.state.duplicate_time_mm
+        },
+        earliest_departure_time_of_day : {
+          hour: this.state.duplicate_time_hh,
+          minute: this.state.duplicate_time_mm
         }
       }
       let val = actions.getDuplicateDelta(_.find(actions.getSelected(this.props.vehicleJourneys)[0].vehicle_journey_at_stops, {'dummy': false}), newDeparture)

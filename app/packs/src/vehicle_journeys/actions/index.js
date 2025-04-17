@@ -542,25 +542,40 @@ const actions = {
     if (vjas.departure_time.minute == null) vjas.departure_time.minute = '00'
     if (vjas.arrival_time.hour == null) vjas.arrival_time.hour = '00'
     if (vjas.arrival_time.minute == null) vjas.arrival_time.minute = '00'
+    if (vjas.earliest_departure_time_of_day.hour == null) vjas.earliest_departure_time_of_day.hour = '00'
+    if (vjas.earliest_departure_time_of_day.minute == null) vjas.earliest_departure_time_of_day.minute = '00'
+    if (vjas.latest_arrival_time_of_day.hour == null) vjas.latest_arrival_time_of_day.hour = '00'
+    if (vjas.latest_arrival_time_of_day.minute == null) vjas.latest_arrival_time_of_day.minute = '00'
     return vjas
   },
   getDuplicateDelta: (original, newDeparture) => {
     if (original.departure_time.hour != '' && original.departure_time.minute != '' && newDeparture.departure_time.hour != undefined && newDeparture.departure_time.minute != undefined){
       return  (newDeparture.departure_time.hour - parseInt(original.departure_time.hour)) * 60 + (newDeparture.departure_time.minute - parseInt(original.departure_time.minute))
     }
+    if (original.earliest_departure_time_of_day.hour != '' && original.earliest_departure_time_of_day.minute != '' && newDeparture.earliest_departure_time_of_day.hour != undefined && newDeparture.earliest_departure_time_of_day.minute != undefined){
+      return  (newDeparture.earliest_departure_time_of_day.hour - parseInt(original.earliest_departure_time_of_day.hour)) * 60 + (newDeparture.earliest_departure_time_of_day.minute - parseInt(original.earliest_departure_time_of_day.minute))
+    }
     return 0
   },
   getDelta: (vjas, allowNegative=false) => {
-    let { hasAllAttributes, departure_time, arrival_time} = actions.scheduleToDates(vjas)
+    let { hasAllAttributes, departure_time, arrival_time, earliest_departure_time_of_day, latest_arrival_time_of_day} = actions.scheduleToDates(vjas)
     let delta = 0
 
     if (hasAllAttributes) {
-      if (arrival_time.getHours() == 23 && (departure_time.getHours() == 0 || (departure_time.getHours() == 1 && departure_time.getMinutes() == 0)))  {
-        departure_time.setDate(arrival_time.getDate() + 1)
+      if (arrival_time) {
+        if (arrival_time.getHours() == 23 && (departure_time.getHours() == 0 || (departure_time.getHours() == 1 && departure_time.getMinutes() == 0)))  {
+          departure_time.setDate(arrival_time.getDate() + 1)
+        }
+        // We want the delta in minutes
+        delta = (departure_time.getTime() - arrival_time.getTime()) / 60000
       }
-
-      // We want the delta in minutes
-      delta = (departure_time.getTime() - arrival_time.getTime()) / 60000
+      else {
+        if (latest_arrival_time_of_day.getHours() == 23 && (earliest_departure_time_of_day.getHours() == 0 || (earliest_departure_time_of_day.getHours() == 1 && earliest_departure_time_of_day.getMinutes() == 0)))  {
+          earliest_departure_time_of_day.setDate(latest_arrival_time_of_day.getDate() + 1)
+        }
+        // We want the delta in minutes
+        delta = (earliest_departure_time_of_day.getTime() - latest_arrival_time_of_day.getTime()) / 60000
+      }
     }
 
     if (!allowNegative && delta < 0) {
@@ -578,6 +593,7 @@ const actions = {
     if (newSchedule.delta < 0 || isFirstOrLastStop) {
       if (action.isDeparture) {
         newSchedule.arrival_time = newSchedule.departure_time
+        newSchedule.latest_arrival_time_of_day = newSchedule.earliest_departure_time_of_day
       }
       else {
         newSchedule.departure_time = newSchedule.arrival_time
@@ -585,13 +601,19 @@ const actions = {
     }
     return actions.getDelta(newSchedule)
   },
-  getShiftedSchedule: ({departure_time, arrival_time}, additional_time) => {
+  getShiftedSchedule: ({departure_time, arrival_time, latest_arrival_time_of_day, earliest_departure_time_of_day}, additional_time) => {
     // We create dummy dates objects to manipulate time more easily
     let departureDT = new Date (Date.UTC(2017, 2, 1, parseInt(departure_time.hour), parseInt(departure_time.minute)))
     let arrivalDT = new Date (Date.UTC(2017, 2, 1, parseInt(arrival_time.hour), parseInt(arrival_time.minute)))
 
     let newDepartureDT = new Date (departureDT.getTime() + additional_time * 60000)
     let newArrivalDT = new Date (arrivalDT.getTime() + additional_time * 60000)
+
+    let earliestDepartureTimeOfDayDT = new Date (Date.UTC(2017, 2, 1, parseInt(earliest_departure_time_of_day.hour), parseInt(earliest_departure_time_of_day.minute)))
+    let latestArrivalTimeOfDayDT = new Date (Date.UTC(2017, 2, 1, parseInt(latest_arrival_time_of_day.hour), parseInt(latest_arrival_time_of_day.minute)))
+
+    let newEarliestDepartureTimeOfDayDT = new Date (earliestDepartureTimeOfDayDT.getTime() + additional_time * 60000)
+    let newLatestArrivalTimeOfDayDT = new Date (latestArrivalTimeOfDayDT.getTime() + additional_time * 60000)
 
     return {
       departure_time: {
@@ -601,18 +623,30 @@ const actions = {
       arrival_time: {
         hour: actions.simplePad(newArrivalDT.getUTCHours()),
         minute: actions.simplePad(newArrivalDT.getUTCMinutes())
+      },
+      earliest_departure_time_of_day: {
+        hour: actions.simplePad(newEarliestDepartureTimeOfDayDT.getUTCHours()),
+        minute: actions.simplePad(newEarliestDepartureTimeOfDayDT.getUTCMinutes())
+      },
+      latest_arrival_time_of_day: {
+        hour: actions.simplePad(newLatestArrivalTimeOfDayDT.getUTCHours()),
+        minute: actions.simplePad(newLatestArrivalTimeOfDayDT.getUTCMinutes())
       }
     }
   },
   scheduleToDates: (vjas) =>{
     let { departure_time: { hour: depHour, minute: depMinute } } = vjas
     let { arrival_time: { hour: arrHour, minute: arrMinute } } = vjas
+    let { earliest_departure_time_of_day: { hour: earliest_depHour, minute: earliest_depMinute } } = vjas
+    let { latest_arrival_time_of_day: { hour: latest_arrHour, minute: latest_arrMinute } } = vjas
 
-    let hasAllAttributes = depHour != '' && depMinute != '' && arrHour != '' && arrMinute != ''
+    let hasAllAttributes = depHour != '' && depMinute != '' && arrHour != '' && arrMinute != '' && earliest_depHour != '' && earliest_depMinute != '' && latest_arrHour != '' && latest_arrMinute != ''
     return {
       hasAllAttributes,
       departure_time: hasAllAttributes && new Date(2017, 2, 1, parseInt(depHour), parseInt(depMinute)),
-      arrival_time: hasAllAttributes && new Date(2017, 2, 1, parseInt(arrHour), parseInt(arrMinute))
+      arrival_time: hasAllAttributes && new Date(2017, 2, 1, parseInt(arrHour), parseInt(arrMinute)),
+      earliest_departure_time_of_day: hasAllAttributes && new Date(2017, 2, 1, parseInt(earliest_depHour), parseInt(earliest_depMinute)),
+      latest_arrival_time_of_day: hasAllAttributes && new Date(2017, 2, 1, parseInt(latest_arrHour), parseInt(latest_arrMinute))
     }
   },
   addMinutesToTime: (time, minutes) => {

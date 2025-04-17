@@ -16,10 +16,10 @@ export default function selection(state = initialState, action) {
 					items: [],
 					width: 0,
 					height: 0,
-					
+
 				}
 			}
-		case 'TOGGLE_SELECTION_MODE':	
+		case 'TOGGLE_SELECTION_MODE':
 			return {
 				...state,
 				selection: {
@@ -95,7 +95,7 @@ export default function selection(state = initialState, action) {
 			}
 		case 'COPY_MODAL_TO_PASTE_MODE':
 		case 'PASTE_CLIPBOARD':
-			ClipboardHelper.updatePasteContent('')	
+			ClipboardHelper.updatePasteContent('')
 			return {
 				...state,
 				selection: {
@@ -151,6 +151,8 @@ export default function selection(state = initialState, action) {
 						// ...dayOffSets,
 						departure_time: stopParams.departure_time,
 						arrival_time: stopParams.arrival_time,
+						earliest_departure_time_of_day: stopParams.earliest_departure_time_of_day,
+						latest_arrival_time_of_day: stopParams.latest_arrival_time_of_day,
 						delta: stopParams.delta
 					}
 				})
@@ -161,7 +163,7 @@ export default function selection(state = initialState, action) {
 					vehicle_journey_at_stops: newStops
 				}
 			})
-	
+
 			return {
 				...state,
 				vehicleJourneys,

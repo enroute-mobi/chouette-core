@@ -40,21 +40,31 @@ export class CopyContent {
 	setContent(items, width) {
 		this.contentTable = chunk(items, width)
 	}
-		
+
 	serialize(toggleArrivals) {
 		return this.contentTable.map(row => {
 			return row.map(item => {
-				const { arrival_time, departure_time, dummy } = item
+				const { arrival_time, departure_time, latest_arrival_time_of_day, earliest_departure_time_of_day, dummy } = item
 				const out = []
+				if (arrival_time) {
+					toggleArrivals && out.push(
+						dummy ? '00:00' : formatTime(arrival_time)
+					)
 
-				toggleArrivals && out.push(
-					dummy ? '00:00' : formatTime(arrival_time)
-				)
+					out.push(
+						dummy ? '00:00' : formatTime(departure_time, dummy)
+					)
+				}
+				else {
+					toggleArrivals && out.push(
+						dummy ? '00:00' : formatTime(latest_arrival_time_of_day)
+					)
 
-				out.push(
-					dummy ? '00:00' : formatTime(departure_time, dummy)
-				)
-			
+					out.push(
+						dummy ? '00:00' : formatTime(earliest_departure_time_of_day, dummy)
+					)
+				}
+
 				return out.join('\t')
 			}).join('\t')
 		}
@@ -64,13 +74,21 @@ export class CopyContent {
 	deserialize(toggleArrivals) {
 		return this.contentTable.map(row => {
 			return row.reduce((result, item) => {
-				const { arrival_time, departure_time } = item
-		
-				return [
-					...result,
-					...toggleArrivals ? [arrival_time] : [],
-					departure_time
-				]
+				const { arrival_time, departure_time, latest_arrival_time_of_day, earliest_departure_time_of_day } = item
+				if (arrival_time && departure_time) {
+					return [
+						...result,
+						...toggleArrivals ? [arrival_time] : [],
+						departure_time
+					]
+				}
+				else {
+					return [
+						...result,
+						...toggleArrivals ? [latest_arrival_time_of_day] : [],
+						earliest_departure_time_of_day
+					]
+				}
 
 			}, [])
 		})
@@ -165,7 +183,7 @@ export class PasteContent {
 					if (!isEqual(hour.length, 2) || !isEqual((minute || '').length, 2)) {
 						throw ('wrong_time_format')
 					}
-					
+
 					const date = parseTime({ hour, minute })
 
 					if(isNaN(date.getTime())) {

@@ -30,14 +30,14 @@ module Import
       referential_inserter.routes << route
 
       route.stop_points.each do |stop_point|
-        stop_point.route_id = route.id
+        stop_point.route = route
         referential_inserter.stop_points << stop_point
       end
 
       insert_codes route
 
       route.journey_patterns.each do |journey_pattern|
-        journey_pattern.route_id = route.id
+        journey_pattern.route = route
         insert_journey_pattern journey_pattern
       end
 
@@ -59,12 +59,8 @@ module Import
       referential_inserter.journey_patterns << journey_pattern
 
       journey_pattern.journey_pattern_stop_points.each do |journey_pattern_stop_point|
-        journey_pattern_stop_point.journey_pattern_id = journey_pattern.id
-
-        stop_point = journey_pattern_stop_point.stop_point
-
-        journey_pattern_stop_point.stop_point_id = journey_pattern_stop_point.stop_point.id
-        journey_pattern_stop_point.stop_point = stop_point # Avoid reset ??!!
+        journey_pattern_stop_point.journey_pattern = journey_pattern
+        journey_pattern_stop_point.stop_point = journey_pattern_stop_point.stop_point
 
         referential_inserter.journey_pattern_stop_points << journey_pattern_stop_point
       end

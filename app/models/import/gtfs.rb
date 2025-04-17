@@ -291,13 +291,13 @@ class Import::Gtfs < Import::Base
             message_attributes: {
               stop_area_name: stop_area.name,
               registration_number: stop_area.registration_number,
-              area_type: top_area.area_type,
+              area_type: stop_area.area_type
             }
           )
           next
         end
 
-        stop_area.attributes = decorated_location_group.location_group_attributes
+        stop_area.attributes = decorated_location_group.stop_area_attributes
 
         save_model stop_area
       end
@@ -311,7 +311,7 @@ class Import::Gtfs < Import::Base
       end
       attr_reader :stop_areas
 
-      def location_group_attributes
+      def stop_area_attributes
         {
           name: name,
           flexible_area_memberships_attributes: flexible_area_memberships_attributes,
@@ -320,9 +320,9 @@ class Import::Gtfs < Import::Base
       end
 
       def flexible_area_memberships_attributes
-        [].tap do |flexible_area_memberships_attributes|
+        @flexible_area_memberships_attributes ||= [].tap do |flexible_area_memberships_attributes|
           stops.each do |stop|
-            if member_id = stop_areas.find_by(registration_number: stop.stop_id)&.id
+            if member_id = stop_areas.select(:id).find_by(registration_number: stop.stop_id)&.id
               flexible_area_memberships_attributes << { member_id: member_id }
             else
               missing_member_ids << stop.stop_id
@@ -341,6 +341,9 @@ class Import::Gtfs < Import::Base
 
       def valid?
         errors.clear
+
+        # Compute attributes before
+        stop_area_attributes
 
         if missing_member_ids.any?
           errors << {

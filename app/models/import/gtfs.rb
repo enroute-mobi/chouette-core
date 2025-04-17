@@ -47,7 +47,7 @@ class Import::Gtfs < Import::Base
   end
 
   def prepare_referential
-    import_resources :agencies, :stops, :routes, :shapes, :fare_products, :fare_validities, :booking_arrangements
+    import_resources :agencies, :stops, :routes, :shapes, :fare_products, :fare_validities, :booking_arrangements, :location_groups
 
     create_referential
     referential.switch
@@ -269,6 +269,106 @@ class Import::Gtfs < Import::Base
     BookingArrangements.new(WithResource.new(self, resource)).import!
     resource.update_status_from_messages
   end
+
+  class LocationGroups < Base
+    delegate :stop_areas, :create_message, :save_model, :source, to: :import
+
+    def import!
+      source.location_groups.each do |location_group|
+        decorated_location_group = Decorator.new(location_group, stop_areas)
+
+        unless decorated_location_group.valid?
+          decorated_location_group.errors.each { |error| create_message error }
+          next
+        end
+
+        stop_area = stop_areas.find_or_initialize_by(registration_number: decorated_location_group.id)
+
+        if stop_area.persisted? && stop_area.area_type.to_sym != Chouette::AreaType::FLEXIBLE_STOP_PLACE
+          create_message(
+            criticity: :error,
+            message_key: 'gtfs.location_groups.area_type_is_not_flexible_stop_place',
+            message_attributes: {
+              stop_area_name: stop_area.name,
+              registration_number: stop_area.registration_number,
+              area_type: stop_area.area_type
+            }
+          )
+          next
+        end
+
+        stop_area.attributes = decorated_location_group.stop_area_attributes
+
+        save_model stop_area
+      end
+    end
+
+    class Decorator < SimpleDelegator
+      def initialize(location_group, stop_areas)
+        super location_group
+
+        @stop_areas = stop_areas
+      end
+      attr_reader :stop_areas
+
+      def stop_area_attributes
+        {
+          name: name,
+          flexible_area_memberships_attributes: flexible_area_memberships_attributes,
+          area_type: Chouette::AreaType::FLEXIBLE_STOP_PLACE
+        }
+      end
+
+      def flexible_area_memberships_attributes
+        @flexible_area_memberships_attributes ||= [].tap do |flexible_area_memberships_attributes|
+          stops.each do |stop|
+            if member_id = stop_areas.select(:id).find_by(registration_number: stop.stop_id)&.id
+              flexible_area_memberships_attributes << { member_id: member_id }
+            else
+              missing_member_ids << stop.stop_id
+            end
+          end
+        end
+      end
+
+      def missing_member_ids
+        @missing_member_ids ||= []
+      end
+
+      def errors
+        @errors ||= []
+      end
+
+      def valid?
+        errors.clear
+
+        # Compute attributes before
+        stop_area_attributes
+
+        if missing_member_ids.any?
+          errors << {
+            criticity: :error,
+            message_key: 'gtfs.location_groups.missing_member_ids',
+            message_attributes: {
+              missing_member_ids: missing_member_ids.join(', ')
+            }
+          }
+        end
+
+        errors.empty?
+      end
+    end
+  end
+
+  def import_location_groups
+    resource = create_resource(:location_groups)
+    resource.rows_count = source.location_groups.count
+    resource.save!
+
+    LocationGroups.new(WithResource.new(self, resource)).import!
+    resource.update_status_from_messages
+  end
+
 
   def import_agencies
     resource = create_resource(:agencies)

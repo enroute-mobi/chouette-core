@@ -207,6 +207,7 @@ en:
         routes: Routes
         fare_zones: Fare zones
         transport_mode: Transport mode
+        flexible_area_members: Associated stops
     errors:
       models:
         stop_area:

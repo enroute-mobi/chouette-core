@@ -20,14 +20,19 @@ module Chouette::Sync
         @stop_place_updater ||= new_updater(resource_type: :stop_place)
       end
 
+      def flexible_stop_place_updater
+        @flexible_stop_place_updater ||= new_updater(resource_type: :flexible_stop_place)
+      end
+
       def update_or_create
         # Order matters, parents "first"
         stop_place_updater.update_or_create
         quay_updater.update_or_create
+        flexible_stop_place_updater.update_or_create
       end
 
       def delete_after_update_or_create
-        deleter.delete_from(quay_updater, stop_place_updater)
+        deleter.delete_from(quay_updater, stop_place_updater, flexible_stop_place_updater)
       end
 
       def after_synchronisation
@@ -35,22 +40,30 @@ module Chouette::Sync
           updater.update_pending_parents
           updater.update_pending_referents
         end
+        flexible_stop_place_updater.update_pending_flexible_area_memberships
       end
 
       def counters
-        counters = [stop_place_updater, quay_updater, deleter].map(&:counters)
+        counters = [stop_place_updater, quay_updater, flexible_stop_place_updater, deleter].map(&:counters)
         Counters.sum(counters)
       end
 
       class Decorator < Chouette::Sync::Netex::Decorator
         # Use type_of_place found in the id when no defined
-        CANDIDATE_TYPES = %w{quay monomodalStopPlace multimodalStopPlace}
+        CANDIDATE_TYPES = %w[quay monomodalStopPlace multimodalStopPlace flexibleStopPlace].freeze
         def type_of_place_in_id
           CANDIDATE_TYPES.find { |type| id.downcase.include?(type.downcase) } if id
         end
 
         def type_of_place_in_resource_class
-          name_of_class == 'quay' ? 'quay' : 'monomodalStopPlace'
+          case name_of_class
+          when 'quay'
+            'quay'
+          when 'flexible_stop_place'
+            'flexibleStopPlace'
+          else
+            'monomodalStopPlace'
+          end
         end
 
         def type_of_place
@@ -62,6 +75,7 @@ module Chouette::Sync
           'quay' => 'zdep',
           'monomodalStopPlace' => 'zdlp',
           'multimodalStopPlace' => 'lda',
+          'flexibleStopPlace' => 'flexible_stop_place'
         }.freeze
 
         def stop_area_type
@@ -76,11 +90,15 @@ module Chouette::Sync
           postal_address&.town
         end
 
-        def stop_area_parent_ref
-          tag(:parent_id) || (parent_site_ref || parent_zone_ref)&.ref
+        def try(method)
+          __getobj__.try(method)
         end
 
-        delegate :pending_parent, :pending_referent, to: :updater, allow_nil: true
+        def stop_area_parent_ref
+          tag(:parent_id) || (try(:parent_site_ref) || try(:parent_zone_ref))&.ref
+        end
+
+        delegate :pending_parent, :pending_referent, :pending_flexible_area_memberships, to: :updater, allow_nil: true
 
         def stop_area_parent_id
           return unless stop_area_parent_ref
@@ -98,8 +116,42 @@ module Chouette::Sync
           nil
         end
 
+        def flexible_area_memberships_attributes
+          return unless flexible_area_members
+
+          pending_flexible_area_memberships id, flexible_area_members
+
+          nil
+        end
+
+        def flexible_area_members
+          return unless flexible_area
+
+          [].tap do |flexible_area_members|
+            flexible_area.members.each do |member|
+              flexible_area_members << member&.ref if [::Netex::Quay, ::Netex::StopPlace].include?(member.type)
+            end
+          end
+        end
+
+        def flexible_area
+          @flexible_area ||= try(:areas)&.first
+        end
+
         def chouette_transport_mode
           Chouette::TransportMode.new(transport_mode&.underscore, transport_submode&.underscore).code
+        end
+
+        def postal_address
+          try :postal_address
+        end
+
+        def transport_mode
+          try :transport_mode
+        end
+
+        def transport_submode
+          try :transport_submode
         end
 
         def model_attributes # rubocop:disable Metrics/AbcSize,Metrics/MethodLength
@@ -116,16 +168,17 @@ module Chouette::Sync
             referent_id: stop_area_referent_id,
             parent_id: stop_area_parent_id,
             status: :confirmed,
-            mobility_impaired_accessibility: accessibility.mobility_impaired_access,
-            wheelchair_accessibility: accessibility.wheelchair_access,
-            step_free_accessibility: accessibility.step_free_access,
-            escalator_free_accessibility: accessibility.escalator_free_access,
-            lift_free_accessibility: accessibility.lift_free_access,
-            audible_signals_availability: accessibility.audible_signals_available,
-            visual_signs_availability: accessibility.visual_signs_available,
-            accessibility_limitation_description: accessibility.description,
+            mobility_impaired_accessibility: accessibility&.mobility_impaired_access,
+            wheelchair_accessibility: accessibility&.wheelchair_access,
+            step_free_accessibility: accessibility&.step_free_access,
+            escalator_free_accessibility: accessibility&.escalator_free_access,
+            lift_free_accessibility: accessibility&.lift_free_access,
+            audible_signals_availability: accessibility&.audible_signals_available,
+            visual_signs_availability: accessibility&.visual_signs_available,
+            accessibility_limitation_description: accessibility&.description,
             import_xml: raw_xml,
-            transport_mode: chouette_transport_mode
+            transport_mode: chouette_transport_mode,
+            flexible_area_memberships_attributes: flexible_area_memberships_attributes
           }.tap do |attributes|
             attributes[:is_referent] = false if particular?
           end
@@ -152,11 +205,25 @@ module Chouette::Sync
         pending_referent_resolver.update
       end
 
+      def pending_flexible_area_memberships(resource_id, flexible_area_members)
+        pending_flexible_area_memberships_resolver.declare(resource_id, flexible_area_members)
+      end
+
+      def update_pending_flexible_area_memberships
+        pending_flexible_area_memberships_resolver.update
+      end
+
       def pending_referent_resolver
         @pending_referent_resolver ||= PendingReferentResolver.new(self)
       end
+
       def pending_parent_resolver
         @pending_parent_resolver ||= PendingResolver.new(self, :parent)
+      end
+
+      def pending_flexible_area_memberships_resolver
+        @pending_flexible_area_memberships_resolver ||=
+          PendingFlexibleAreaMembershipsResolver.new(self, :flexible_area_memberships_attributes)
       end
 
       class PendingResolver
@@ -213,6 +280,42 @@ module Chouette::Sync
         end
       end
 
+      class PendingFlexibleAreaMembershipsResolver < PendingResolver
+        def declare(resource_id, associated_collection)
+          associated_collection.each do |reference|
+            pendings[resource_id] << reference unless pendings[resource_id].include?(reference)
+          end
+        end
+
+        def pendings
+          @pendings ||= Hash.new { |h, key| h[key] = [] }
+        end
+
+        def update
+          pendings.each do |resource_id, associated_collection|
+            model = find_model resource_id
+            unless model
+              Rails.logger.debug { "Can't find model #{model_id_attribute}=#{resource_id} to define #{attribute}" }
+              next
+            end
+
+            flexible_area_memberships_attributes =
+              [].tap do |flexible_area_memberships_attributes|
+                associated_collection.each do |reference|
+                  referenced = find_model reference
+                  unless referenced
+                    Rails.logger.warn "Can't find reference with #{attribute} #{reference} for StopArea #{resource_id}"
+                    next
+                  end
+
+                  flexible_area_memberships_attributes << { member_id: referenced.id }
+                end
+              end
+
+            model.update flexible_area_memberships_attributes: flexible_area_memberships_attributes
+          end
+        end
+      end
     end
 
     class Deleter < Chouette::Sync::Deleter

@@ -28,7 +28,7 @@ module Chouette::Sync
       protected
 
       def accessibility
-        @accessibility ||= AccessibilityAssessment.new accessibility_assessment
+        @accessibility ||= AccessibilityAssessment.new __getobj__.try(:accessibility_assessment)
       end
 
       class AccessibilityAssessment

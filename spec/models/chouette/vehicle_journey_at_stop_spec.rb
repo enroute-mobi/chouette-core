@@ -66,7 +66,7 @@ RSpec.describe Chouette::VehicleJourneyAtStop, type: :model do
 
     context '#checksum_attributes' do
       it 'should return attributes' do
-        expected = [at_stop.departure_time.utc.to_s(:time), at_stop.arrival_time.utc.to_s(:time)]
+        expected = [at_stop.departure_time.utc.to_fs(:time), at_stop.arrival_time.utc.to_fs(:time)]
         expected << at_stop.departure_day_offset.to_s
         expected << at_stop.arrival_day_offset.to_s
         expect(at_stop.checksum_attributes).to include(*expected)

@@ -1,22 +1,22 @@
-class Control::Context::SavedSearch < Control::Context
-  module Options
-    extend ActiveSupport::Concern
+# frozen_string_literal: true
 
-    included do
+module Control
+  class Context
+    class SavedSearch < Control::Context
       option :saved_search_id
 
-      validates_presence_of :saved_search_id
+      validates :saved_search_id, presence: true
 
       def candidate_saved_searches
         [].tap do |groups|
-          if stop_area_saved_searches = saved_searches.for('Search::StopArea').presence
+          if (stop_area_saved_searches = saved_searches.for('Search::StopArea').presence)
             groups << [
               Chouette::StopArea.model_name.human.pluralize.capitalize,
               stop_area_saved_searches.sort_by(&:name).pluck(:name, :id)
             ]
           end
 
-          if line_saved_searches = saved_searches.for('Search::Line').presence
+          if (line_saved_searches = saved_searches.for('Search::Line').presence)
             groups << [
               Chouette::Line.model_name.human.pluralize.capitalize,
               line_saved_searches.sort_by(&:name).pluck(:name, :id)
@@ -28,88 +28,47 @@ class Control::Context::SavedSearch < Control::Context
       def saved_searches
         @saved_searches ||= workbench.saved_searches
       end
-    end
-  end
-  include Options
 
-  class Run < Control::Context::Run
-    include Options
+      class Run < Control::Context::Run
+        def scope
+          saved_search.search.scope(context)
+        end
 
-    def saved_search
-      @saved_search ||= saved_searches.find_by(id: saved_search_id)
-    end
+        delegate :saved_searches, to: :workbench
+        delegate :lines,
+                 :line_groups,
+                 :line_notices,
+                 :companies,
+                 :networks,
+                 :stop_areas,
+                 :stop_area_groups,
+                 :entrances,
+                 :connection_links,
+                 :shapes,
+                 :point_of_interests,
+                 :service_facility_sets,
+                 :accessibility_assessments,
+                 :fare_zones,
+                 :line_routing_constraint_zones,
+                 :document_memberships,
+                 :documents,
+                 :contracts,
+                 :routes,
+                 :stop_points,
+                 :journey_patterns,
+                 :journey_pattern_stop_points,
+                 :vehicle_journeys,
+                 :vehicle_journey_at_stops,
+                 :time_tables,
+                 :time_table_periods,
+                 :time_table_dates,
+                 :service_counts,
+                 to: :scope
 
-    def search_type
-      @search_type ||= saved_search.search_type
-    end
-
-    def collection_name
-      search_type.demodulize.underscore.pluralize.to_sym
-    end
-
-    def lines
-      case collection_name
-      when :lines
-        saved_search.search(context.lines).without_pagination.collection
-      when :stop_areas
-        context.lines.where(routes: routes.select(:id)).distinct
-      else
-        context.lines
+        def saved_search
+          @saved_search ||= saved_searches.find_by(id: options[:saved_search_id])
+        end
       end
-    end
-
-    def routes
-      return context.routes.where(stop_points: stop_points.select(:id)).distinct if collection_name == :stop_areas
-
-      context.routes.where(line: lines)
-    end
-
-    def stop_points
-      return context.stop_points.where(stop_area_id: stop_areas.select(:id)) if collection_name == :stop_areas
-
-      context.stop_points.where(route: routes)
-    end
-
-    def stop_areas
-      return saved_search.search(context.stop_areas).without_pagination.collection if collection_name == :stop_areas
-
-      context.stop_areas.where(id: stop_points.select(:stop_area_id))
-    end
-
-    def entrances
-      context.entrances.where(stop_area: stop_areas)
-    end
-
-    def journey_patterns
-      context.journey_patterns.where(route: routes)
-    end
-
-    def vehicle_journeys
-      context.vehicle_journeys.where(journey_pattern: journey_patterns)
-    end
-
-    def shapes
-      context.shapes.where(id: journey_patterns.select(:shape_id))
-    end
-
-    def service_counts
-      context.service_counts.where(line: lines)
-    end
-
-    def networks
-      context.networks.where(id: lines.where.not(network_id: nil).select(:network_id))
-    end
-
-    def point_of_interests
-      context.point_of_interests.where(shape_provider_id: shapes.select(:shape_provider_id))
-    end
-
-    def documents
-      context.documents
-    end
-
-    def connection_links
-      context.connection_links.where(stop_area_provider_id: stop_areas.select(:stop_area_provider_id))
     end
   end
 end

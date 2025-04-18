@@ -25,7 +25,7 @@ fr:
       control/context/lines:
         one: Lignes
       control/context/saved_search:
-        one: Recherche enregistrée
+        one: Recherche sauvegardée
 
     attributes:
       control/context: &control_context
@@ -38,7 +38,7 @@ fr:
       control/context/lines: &lines
         line_ids: Lignes
       control/context/saved_search: &saved_search
-        saved_search_id: Recherche enregistrée
+        saved_search_id: Recherche sauvegardée
       control/context/run:
         <<: *control_context
       control/context/transport_mode/run:

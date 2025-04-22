@@ -542,7 +542,7 @@ class Export::NetexGeneric < Export::Base
       def tariff_zones
         fare_zone_ids.map do |fare_zone_id|
           fare_zone_code = code_provider.fare_zones.code(fare_zone_id)
-          Netex::Reference.new(fare_zone_code, type: 'FareZoneRef') if fare_zone_code
+          Netex::Reference.new(fare_zone_code, type: Netex::FareZone) if fare_zone_code
         end.compact
       end
 

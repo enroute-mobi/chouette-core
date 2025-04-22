@@ -487,8 +487,8 @@ class Export::NetexGeneric < Export::Base
 
     def stop_areas
       export_scope.stop_areas
-                  .left_joins(:codes)
-                  .select('stop_areas.*', "area_type = 'zdep' as quay", stop_areas_codes)
+                  .left_joins(:codes, :fare_zones)
+                  .select('stop_areas.*', "area_type = 'zdep' as quay", stop_areas_codes, fare_zone_ids)
                   .group('stop_areas.id')
                   .order(quay: :desc)
     end
@@ -502,6 +502,12 @@ class Export::NetexGeneric < Export::Base
            'value', codes.value
          )
        ) AS codes_values
+     SQL
+    end
+
+    def fare_zone_ids
+      <<~SQL
+       array_agg(fare_zones.id) AS fare_zone_ids
      SQL
     end
 
@@ -522,7 +528,8 @@ class Export::NetexGeneric < Export::Base
             postal_address: postal_address,
             url: url,
             transport_mode: netex_transport_mode,
-            transport_submode: netex_transport_submode
+            transport_submode: netex_transport_submode,
+            tariff_zones: tariff_zones
           }.tap do |attributes|
             unless netex_quay?
               attributes[:parent_site_ref] = parent_site_ref
@@ -530,6 +537,13 @@ class Export::NetexGeneric < Export::Base
             end
           end
         )
+      end
+
+      def tariff_zones
+        fare_zone_ids.map do |fare_zone_id|
+          fare_zone_code = code_provider.fare_zones.code(fare_zone_id)
+          Netex::Reference.new(fare_zone_code, type: Netex::FareZone) if fare_zone_code
+        end.compact
       end
 
       def netex_transport_mode

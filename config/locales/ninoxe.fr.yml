@@ -12,6 +12,4 @@ fr:
           attributes:
             date:
               taken: date déjà saisie pour ce calendrier
-        vehicle_journey_at_stop:
-          arrival_must_be_before_departure: "l'heure d'arrivée doit être antérieure à l'heure de départ"
         

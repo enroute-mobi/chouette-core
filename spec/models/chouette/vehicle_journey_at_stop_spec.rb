@@ -158,7 +158,41 @@ RSpec.describe Chouette::VehicleJourneyAtStop, type: :model do
     end
   end
 
-  describe "#validate" do
+  describe 'validation' do
+    it 'does not crash when arrival_time, departure_time, earliest_departure_time_of_day and latest_arrival_time_of_day are all nil' do # rubocop:disable Layout/LineLength
+      expect { vehicle_journey_at_stop.valid? }.not_to raise_error
+    end
+
+    describe '#arrival_must_be_before_departure' do
+      it 'is valid when arrival_time is before departure_time' do
+        vehicle_journey_at_stop.arrival_time_of_day = TimeOfDay.new(8, 0)
+        vehicle_journey_at_stop.departure_time_of_day = TimeOfDay.new(9, 0)
+        expect { vehicle_journey_at_stop.valid? }.not_to(
+          change { vehicle_journey_at_stop.errors[:arrival_time] }.from(be_empty)
+        )
+      end
+
+      it 'is not valid when arrival_time is after departure_time' do
+        vehicle_journey_at_stop.arrival_time_of_day = TimeOfDay.new(9, 0)
+        vehicle_journey_at_stop.departure_time_of_day = TimeOfDay.new(8, 0)
+        expect { vehicle_journey_at_stop.valid? }.to(
+          change { vehicle_journey_at_stop.errors[:arrival_time] }.from(be_empty).to(be_present)
+        )
+      end
+    end
+
+    describe '#earliest_departure_time_of_day_must_be_before_latest_arrival_time_of_day' do
+      it 'is valid when earliest_departure_time_of_day is before latest_arrival_time_of_day' do
+        vehicle_journey_at_stop.latest_arrival_time_of_day = TimeOfDay.new(9, 0)
+        expect(vehicle_journey_at_stop).to allow_value(TimeOfDay.new(8, 0)).for(:earliest_departure_time_of_day)
+      end
+
+      it 'is not valid when arrival time is after latest_arrival_time_of_day' do
+        vehicle_journey_at_stop.latest_arrival_time_of_day = TimeOfDay.new(8, 0)
+        expect(vehicle_journey_at_stop).not_to allow_value(TimeOfDay.new(9, 0)).for(:earliest_departure_time_of_day)
+      end
+    end
+
     it "displays the proper error message when day offset exceeds the max" do
       bad_offset = Chouette::VehicleJourneyAtStop.day_offset_max + 1
 
@@ -168,7 +202,7 @@ RSpec.describe Chouette::VehicleJourneyAtStop, type: :model do
         departure_day_offset: bad_offset
       )
       error_message = I18n.t(
-        'vehicle_journey_at_stops.errors.day_offset_must_not_exceed_max',
+        'activerecord.errors.models.vehicle_journey_at_stop.day_offset_must_not_exceed_max',
         short_id: at_stop.vehicle_journey.get_objectid.short_id,
         max: Chouette::VehicleJourneyAtStop.day_offset_max
       )

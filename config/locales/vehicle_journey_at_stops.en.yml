@@ -1,4 +1,7 @@
 en:
-  vehicle_journey_at_stops:
+  activerecord:
     errors:
-      day_offset_must_not_exceed_max: "The vehicle journey with ID %{short_id} cannot have times exceeding %{max} days"
+      models:
+        vehicle_journey_at_stop:
+          arrival_must_be_before_departure: "arrival time must be before departure time"
+          day_offset_must_not_exceed_max: "The vehicle journey with ID %{short_id} cannot have times exceeding %{max} days"

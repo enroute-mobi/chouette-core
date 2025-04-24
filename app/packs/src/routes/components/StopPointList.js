@@ -45,7 +45,7 @@ export default function StopPointList({ stopPoints, onDeleteClick, onMoveUpClick
       {stopPoints.map((stopPoint, index) =>
         <StopPoint
           id={`route_stop_point_${index + 1}`}
-          key={'item-' + index}
+          key={stopPoint.stoppoint_id || (stopPoint.flexible ? `flexible-${index}` : `regular-${index}`)}
           onDeleteClick={() => onDeleteClick(index, stopPoint.stoppoint_id)}
           onMoveUpClick={() => {
             onMoveUpClick(index)

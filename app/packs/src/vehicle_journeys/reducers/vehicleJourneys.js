@@ -30,13 +30,19 @@ const vehicleJourney= (state = {}, action, keep) => {
 
       _.each(action.stopPointsList, (sp) => {
         let inJourney = false
-        let newVjas
+
+        const flexible = sp.flexible
+        let firstTime = { hour: 0, minute: 0 }, secondTime = { hour: 0, minute: 0 }
+        let arrival_day_offset = null, departure_day_offset = null
+        let delta = 0
+        const belongToJP = !!action.selectedJourneyPattern.stop_areas.find(({ stop_area_short_description: stopArea }) => stopArea.object_id == sp.area_object_id && stopArea.position == sp.position)
+        let dummy = !belongToJP
 
         if(computeSchedule){
           if(prevSp && action.selectedJourneyPattern.costs[prevSp.stop_area_id + "-" + sp.stop_area_id]){
-            let delta = parseInt(action.selectedJourneyPattern.costs[prevSp.stop_area_id + "-" + sp.stop_area_id].time)
-            delta = _.round(delta / 60);
-            current_time = actions.addMinutesToTime(current_time, delta)
+            let current_time_delta = parseInt(action.selectedJourneyPattern.costs[prevSp.stop_area_id + "-" + sp.stop_area_id].time)
+            current_time_delta = _.round(current_time_delta / 60);
+            current_time = actions.addMinutesToTime(current_time, current_time_delta)
             prevSp = sp
             inJourney = true
           }
@@ -52,89 +58,48 @@ const vehicleJourney= (state = {}, action, keep) => {
           let offsetHours = sp.time_zone_offset / 3600
           let offsetminutes = sp.time_zone_offset/60 - 60*offsetHours
 
-          newVjas = {
-            delta: 0,
-            arrival_time:{
+          if (!dummy) {
+            firstTime = {
               hour: (24 + current_time.hour + offsetHours) % 24,
               minute: current_time.minute + offsetminutes
-            },
-            latest_arrival_time_of_day:{
-              hour: (24 + current_time.hour + offsetHours) % 24,
-              minute: current_time.minute + offsetminutes
-            },
-            stop_point_objectid: sp.object_id,
-            stop_area_cityname: sp.city_name,
-            dummy: true,
-            stop_point_id: sp.id,
-            stop_area_id: sp.stop_area_id
+            }
           }
-
           if(sp.waiting_time && inJourney){
             current_time = actions.addMinutesToTime(current_time, parseInt(sp.waiting_time))
-            newVjas.delta = parseInt(sp.waiting_time)
+            delta = parseInt(sp.waiting_time)
           }
-
-          newVjas.departure_time = {
-            hour: (24 + current_time.hour + offsetHours) % 24,
-            minute: current_time.minute + offsetminutes
+          if (!dummy) {
+            secondTime = {
+              hour: (24 + current_time.hour + offsetHours) % 24,
+              minute: current_time.minute + offsetminutes
+            }
           }
-
-          newVjas.earliest_departure_time_of_day = {
-            hour: (24 + current_time.hour + offsetHours) % 24,
-            minute: current_time.minute + offsetminutes
-          }
-
           if(current_time.hour + offsetHours > 24){
-            newVjas.departure_day_offset = 1
-            newVjas.arrival_day_offset = 1
+            arrival_day_offset = 1
+            departure_day_offset = 1
           }
         }
-        else{
-          newVjas = {
-            delta: 0,
-            arrival_time: {
-              hour: 0,
-              minute: 0
-            },
-            departure_time: {
-              hour: 0,
-              minute: 0
-            },
-            latest_arrival_time_of_day: {
-              hour: 0,
-              minute: 0
-            },
-            earliest_departure_time_of_day: {
-              hour: 0,
-              minute: 0
-            },
-            stop_point_objectid: sp.object_id,
-            stop_area_cityname: sp.city_name,
-            dummy: true,
-            stop_point_id: sp.id,
-            stop_area_id: sp.stop_area_id
-          }
-        }
-
-        let belongToJP = !!action.selectedJourneyPattern.stop_areas.find(({ stop_area_short_description: stopArea }) => stopArea.object_id == sp.area_object_id && stopArea.position == sp.position)
-
-        if (belongToJP) newVjas.dummy = false
 
         let lastStop = action.selectedJourneyPattern.stop_areas && action.selectedJourneyPattern.stop_areas[action.selectedJourneyPattern.stop_areas.length - 1]
         if(lastStop && lastStop.stop_area_short_description.id == sp.id){
-          newVjas.departure_time = newVjas.arrival_time
-          newVjas.earliest_departure_time_of_day = newVjas.latest_arrival_time_of_day
-          newVjas.delta = 0
+          secondTime = firstTime
+          delta = 0
         }
 
-        if(newVjas.dummy){
-          newVjas.departure_time = {hour: "00", minute: "00"}
-          newVjas.arrival_time = {hour: "00", minute: "00"}
-          newVjas.earliest_departure_time_of_day = {hour: "00", minute: "00"}
-          newVjas.latest_arrival_time_of_day = {hour: "00", minute: "00"}
+        let newVjas = {
+          delta,
+          flexible,
+          dummy,
+          arrival_day_offset,
+          departure_day_offset,
+          stop_point_objectid: sp.object_id,
+          stop_area_cityname: sp.city_name,
+          stop_point_id: sp.id,
+          stop_area_id: sp.stop_area_id
         }
+        newVjas[actions.vjasFirstTimeAttribute(newVjas)] = firstTime
+        newVjas[actions.vjasSecondTimeAttribute(newVjas)] = secondTime
         pristineVjasList.push(newVjas)
-
       })
 
       return {
@@ -203,30 +168,30 @@ const vehicleJourney= (state = {}, action, keep) => {
       }
       vjasArray = state.vehicle_journey_at_stops.map((vjas, i) => {
         if(i == action.subIndex){
+          const firstTimeAttribute = actions.vjasFirstTimeAttribute(vjas)
+          const secondTimeAttribute = actions.vjasSecondTimeAttribute(vjas)
           let schedule = {
-            departure_time: _.assign({}, vjas.departure_time),
-            arrival_time: _.assign({}, vjas.arrival_time),
-            earliest_departure_time_of_day: _.assign({}, vjas.earliest_departure_time_of_day),
-            latest_arrival_time_of_day: _.assign({}, vjas.latest_arrival_time_of_day)
+            flexible: vjas.flexible,
+            arrival_time: vjas.arrival_time ? _.assign({}, vjas.arrival_time) : null,
+            departure_time: vjas.departure_time ? _.assign({}, vjas.departure_time) : null,
+            earliest_departure_time_of_day: vjas.earliest_departure_time_of_day ? _.assign({}, vjas.earliest_departure_time_of_day) : null,
+            latest_arrival_time_of_day: vjas.latest_arrival_time_of_day ? _.assign({}, vjas.latest_arrival_time_of_day) : null
           }
           newSchedule = _.assign({}, schedule)
           if (action.isDeparture){
             actions.getDelta(schedule, false)
-            newSchedule.departure_time[action.timeUnit] = actions.pad(val, action.timeUnit)
-            newSchedule.earliest_departure_time_of_day[action.timeUnit] = actions.pad(val, action.timeUnit)
+            newSchedule[secondTimeAttribute][action.timeUnit] = actions.pad(val, action.timeUnit)
             if(!action.isArrivalsToggled){
-              schedule = actions.getShiftedSchedule({arrival_time: newSchedule.departure_time, departure_time: newSchedule.departure_time, latest_arrival_time_of_day: newSchedule.earliest_departure_time_of_day, earliest_departure_time_of_day: newSchedule.earliest_departure_time_of_day}, - schedule.delta)
-              newSchedule.arrival_time = schedule.arrival_time
-              newSchedule.latest_arrival_time_of_day = schedule.latest_arrival_time_of_day
+              schedule = actions.getShiftedSchedule({arrival_time: newSchedule.departure_time, departure_time: newSchedule.departure_time, earliest_departure_time_of_day: newSchedule.latest_arrival_time_of_day, latest_arrival_time_of_day: newSchedule.latest_arrival_time_of_day}, - schedule.delta)
+              newSchedule[firstTimeAttribute] = schedule[firstTimeAttribute]
             }
 
             newSchedule = actions.adjustSchedule(action, newSchedule, isFirstOrLastStop, action.enforceConsistency)
-            return _.assign({}, state.vehicle_journey_at_stops[action.subIndex], {arrival_time: newSchedule.arrival_time, departure_time: newSchedule.departure_time, latest_arrival_time_of_day: newSchedule.latest_arrival_time_of_day, earliest_departure_time_of_day: newSchedule.earliest_departure_time_of_day, delta: newSchedule.delta})
+            return _.assign({}, state.vehicle_journey_at_stops[action.subIndex], {arrival_time: newSchedule.arrival_time, departure_time: newSchedule.departure_time, earliest_departure_time_of_day: newSchedule.earliest_departure_time_of_day, latest_arrival_time_of_day: newSchedule.latest_arrival_time_of_day, delta: newSchedule.delta})
           }else{
-            newSchedule.arrival_time[action.timeUnit] = actions.pad(val, action.timeUnit)
-            newSchedule.latest_arrival_time_of_day[action.timeUnit] = actions.pad(val, action.timeUnit)
+            newSchedule[firstTimeAttribute][action.timeUnit] = actions.pad(val, action.timeUnit)
             newSchedule = actions.adjustSchedule(action, newSchedule, isFirstOrLastStop, action.enforceConsistency)
-            return _.assign({}, state.vehicle_journey_at_stops[action.subIndex],  {arrival_time: newSchedule.arrival_time, departure_time: newSchedule.departure_time, latest_arrival_time_of_day: newSchedule.latest_arrival_time_of_day, earliest_departure_time_of_day: newSchedule.earliest_departure_time_of_day, delta: newSchedule.delta})
+            return _.assign({}, state.vehicle_journey_at_stops[action.subIndex], {arrival_time: newSchedule.arrival_time, departure_time: newSchedule.departure_time, earliest_departure_time_of_day: newSchedule.earliest_departure_time_of_day, latest_arrival_time_of_day: newSchedule.latest_arrival_time_of_day, delta: newSchedule.delta})
           }
         }else{
           return vjas

@@ -158,9 +158,9 @@ class VehicleJourneyAtStop extends Component {
 									className='form-control'
 									disabled={!isEditable || isDisabled || !hasUpdatePermission}
 									readOnly={!isEditable && !vjas.dummy}
-									onChange={e => { isEditable && onUpdateTime(e, 'hour', true, toggleArrivals) }}
-									onMouseOut={e => { isEditable && onUpdateTime(e, 'hour', true, toggleArrivals, true) }}
-									onBlur={e => { isEditable && onUpdateTime(e, 'hour', true, toggleArrivals, true) }}
+									onChange={e => { isEditable && onUpdateTime(e, 'hour', false, false) }}
+									onMouseOut={e => { isEditable && onUpdateTime(e, 'hour', false, false, true) }}
+									onBlur={e => { isEditable && onUpdateTime(e, 'hour', false, false, true) }}
 									value={vjas.earliest_departure_time_of_day['hour']}
 								/>
 								<span>:</span>
@@ -169,9 +169,9 @@ class VehicleJourneyAtStop extends Component {
 									className='form-control'
 									disabled={!isEditable || isDisabled || !hasUpdatePermission}
 									readOnly={!isEditable && !vjas.dummy}
-									onChange={e => { isEditable && onUpdateTime(e, 'minute', true, toggleArrivals) }}
-									onMouseOut={e => { isEditable && onUpdateTime(e, 'minute', true, toggleArrivals, true) }}
-									onBlur={e => { isEditable && onUpdateTime(e, 'minute', true, toggleArrivals, true) }}
+									onChange={e => { isEditable && onUpdateTime(e, 'minute', false, false) }}
+									onMouseOut={e => { isEditable && onUpdateTime(e, 'minute', false, false, true) }}
+									onBlur={e => { isEditable && onUpdateTime(e, 'minute', false, false, true) }}
 									value={vjas.earliest_departure_time_of_day['minute']}
 								/>
 							</span>
@@ -183,32 +183,32 @@ class VehicleJourneyAtStop extends Component {
 						</div>
 					)}
 					{vjas.flexible && toggleArrivals && (
-					<div data-headline={I18n.t("vehicle_journeys.form.latest_arrival")}>
-						<span className='input-group time'>
-							<input
-								type='number'
-								className='form-control'
-								disabled={!isEditable || isDisabled || !hasUpdatePermission}
-								readOnly={!isEditable && !vjas.dummy}
-								onChange={e => { isEditable && onUpdateTime(e, 'hour', false, false) }}
-								onMouseOut={e => { isEditable && onUpdateTime(e, 'hour', false, false, true) }}
-								onBlur={e => { isEditable && onUpdateTime(e, 'hour', false, false, true) }}
-								value={vjas.latest_arrival_time_of_day['hour']}
-							/>
-							<span>:</span>
-							<input
-								type='number'
-								className='form-control'
-								disabled={!isEditable || isDisabled || !hasUpdatePermission}
-								readOnly={!isEditable && !vjas.dummy}
-								onChange={e => { isEditable && onUpdateTime(e, 'minute', false, false) }}
-								onMouseOut={e => { isEditable && onUpdateTime(e, 'minute', false, false, true) }}
-								onBlur={e => { isEditable && onUpdateTime(e, 'minute', false, false, true) }}
-								value={vjas.latest_arrival_time_of_day['minute']}
-							/>
-						</span>
-					</div>
-				)}
+						<div data-headline={I18n.t("vehicle_journeys.form.latest_arrival")}>
+							<span className='input-group time'>
+								<input
+									type='number'
+									className='form-control'
+									disabled={!isEditable || isDisabled || !hasUpdatePermission}
+									readOnly={!isEditable && !vjas.dummy}
+									onChange={e => { isEditable && onUpdateTime(e, 'hour', true, toggleArrivals) }}
+									onMouseOut={e => { isEditable && onUpdateTime(e, 'hour', true, toggleArrivals, true) }}
+									onBlur={e => { isEditable && onUpdateTime(e, 'hour', true, toggleArrivals, true) }}
+									value={vjas.latest_arrival_time_of_day['hour']}
+								/>
+								<span>:</span>
+								<input
+									type='number'
+									className='form-control'
+									disabled={!isEditable || isDisabled || !hasUpdatePermission}
+									readOnly={!isEditable && !vjas.dummy}
+									onChange={e => { isEditable && onUpdateTime(e, 'minute', true, toggleArrivals) }}
+									onMouseOut={e => { isEditable && onUpdateTime(e, 'minute', true, toggleArrivals, true) }}
+									onBlur={e => { isEditable && onUpdateTime(e, 'minute', true, toggleArrivals, true) }}
+									value={vjas.latest_arrival_time_of_day['minute']}
+								/>
+							</span>
+						</div>
+					)}
 				</div>
 			</div>
 		)

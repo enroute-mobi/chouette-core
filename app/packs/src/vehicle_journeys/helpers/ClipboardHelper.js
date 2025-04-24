@@ -5,6 +5,7 @@ import getHours from 'date-fns/getHours'
 import differenceInMinutes from 'date-fns/differenceInMinutes'
 import { formatTime, parseTime } from './index'
 import { is } from 'date-fns/locale'
+import actions from '../actions'
 
 const computeArrivalTime = (departure, copyItem) => {
 	if (copyItem.isDummy) return parseTime('00:00')
@@ -44,26 +45,14 @@ export class CopyContent {
 	serialize(toggleArrivals) {
 		return this.contentTable.map(row => {
 			return row.map(item => {
-				const { arrival_time, departure_time, latest_arrival_time_of_day, earliest_departure_time_of_day, dummy } = item
+				const firstTime = item[actions.vjasFirstTimeAttribute(item)]
+				const secondTime = item[actions.vjasSecondTimeAttribute(item)]
+
 				const out = []
-				if (arrival_time) {
-					toggleArrivals && out.push(
-						dummy ? '00:00' : formatTime(arrival_time)
-					)
+				if (toggleArrivals)
+					out.push(item.dummy ? '00:00' : formatTime(firstTime))
 
-					out.push(
-						dummy ? '00:00' : formatTime(departure_time, dummy)
-					)
-				}
-				else {
-					toggleArrivals && out.push(
-						dummy ? '00:00' : formatTime(latest_arrival_time_of_day)
-					)
-
-					out.push(
-						dummy ? '00:00' : formatTime(earliest_departure_time_of_day, dummy)
-					)
-				}
+				out.push(item.dummy ? '00:00' : formatTime(secondTime))
 
 				return out.join('\t')
 			}).join('\t')
@@ -74,22 +63,14 @@ export class CopyContent {
 	deserialize(toggleArrivals) {
 		return this.contentTable.map(row => {
 			return row.reduce((result, item) => {
-				const { arrival_time, departure_time, latest_arrival_time_of_day, earliest_departure_time_of_day } = item
-				if (arrival_time && departure_time) {
-					return [
-						...result,
-						...toggleArrivals ? [arrival_time] : [],
-						departure_time
-					]
-				}
-				else {
-					return [
-						...result,
-						...toggleArrivals ? [latest_arrival_time_of_day] : [],
-						earliest_departure_time_of_day
-					]
-				}
+				const firstTime = item[actions.vjasFirstTimeAttribute(item)]
+				const secondTime = item[actions.vjasSecondTimeAttribute(item)]
 
+				return [
+					...result,
+					...toggleArrivals ? [firstTime] : [],
+					secondTime
+				]
 			}, [])
 		})
 	}
@@ -134,19 +115,19 @@ export class PasteContent {
 				*/
 				const copyItem = copyRow[j]
 				const cellContent = this.isDummy(last(cells)) ? '00:00' : last(cells)
-				const departure = parseTime(cellContent)
 				const arrival = toggleArrivals ? parseTime(cells[0]) : computeArrivalTime(departure, copyItem)
+				const departure = parseTime(cellContent)
 
 				return {
 					x: copyItem.x,
 					y: copyItem.y,
-					departure_time: {
-						hour: getHours(departure),
-						minute: getMinutes(departure)
-					},
-					arrival_time: {
+					firstTime: {
 						hour: getHours(arrival),
 						minute: getMinutes(arrival)
+					},
+					secondTime: {
+						hour: getHours(departure),
+						minute: getMinutes(departure)
 					},
 					delta: differenceInMinutes(departure, arrival)
 				}

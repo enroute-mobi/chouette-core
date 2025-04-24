@@ -66,8 +66,14 @@ GIT
 
 GIT
   remote: https://bitbucket.org/enroute-mobi/netex.git
-  revision: d8115f9be4dcf3af1cd878ef74280778f33ab3c7
+  revision: eba14084f12b6b8c04b1d4d33c04e261e0c10287
+  branch: DATA-20-update-french-profile
   specs:
+    netex (0.1.2)
+      activesupport
+      ox
+      rgeo-proj4
+      rubyzip
 
 GIT
   remote: https://github.com/metaware/carrierwave-google-storage.git
@@ -77,15 +83,6 @@ GIT
       activemodel (>= 3.2.0)
       carrierwave (>= 1.3.2, < 4)
       google-cloud-storage (~> 1.18)
-
-PATH
-  remote: ../netex
-  specs:
-    netex (0.1.2)
-      activesupport
-      ox
-      rgeo-proj4
-      rubyzip
 
 GEM
   remote: https://rubygems.org/

@@ -1,4 +1,4 @@
-= simple_form_for @search, url: request.path, method: "GET", html: { class: 'flex items-center tailwind-filters bg-grey relative pr-6' }, wrapper: :filters_form_tailwind  do |f|
+= simple_form_for @search, url: request.path, method: "GET", html: { class: 'flex items-center tailwind-filters bg-grey relative' }, wrapper: :filters_form_tailwind  do |f|
   = f.simple_fields_for :order, @search.order, defaults: { wrapper: false } do |form_order|
     - form_order.object.attributes.keys.each do |attribute|
       = form_order.input attribute, as: :hidden
@@ -9,7 +9,7 @@
       = f.input :is_referent, as: :autocomplete_select
 
   .flex.flex-col.justify-center.items-center.actions.ml-auto.w-56
-    .flex.items-center.mb-3
+    .flex.items-center.mb-2.ml-3
       = render partial: 'shared/per_page', locals: {f:f}
     .flex.items-center
       = link_to t('actions.erase'), workbench_line_referential_companies_path(@workbench), class: 'btn btn-link'

@@ -11,7 +11,7 @@ module SimpleSearchForHelper
     end
 
     html = {
-      class: "flex items-stretch tailwind-filters bg-grey relative pr-6"
+      class: "flex items-stretch tailwind-filters bg-grey relative"
     }
 
     if save_search

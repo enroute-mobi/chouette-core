@@ -86,7 +86,7 @@ export default class VehicleJourneysList extends Component {
     let ttURL = refURL + '/time_tables/' + tt.id
 
     return (
-      <a href={ttURL} title='Voir le calendrier'><span className='fa fa-calendar-alt' style={{ color: (tt.color ? tt.color : '#4B4B4B') }}></span>{tt.days || tt.comment}</a>
+      <a href={ttURL} title='Voir le calendrier'><span className='fa fa-calendar-alt mr-1' style={{ color: (tt.color ? tt.color : '#4B4B4B') }}></span>{tt.days || tt.comment}</a>
     )
   }
 
@@ -226,7 +226,7 @@ export default class VehicleJourneysList extends Component {
                   <div>
                     { detailed_calendars &&
                       <a href='#' onClick={this.toggleTimetables} className='detailed-timetables-bt'>
-                        <span className='fa fa-angle-up'></span>
+                        <span className='fa fa-angle-up mr-1'></span>
                         {I18n.model_name("time_table", {"plural": true})}
                       </a>
                     }

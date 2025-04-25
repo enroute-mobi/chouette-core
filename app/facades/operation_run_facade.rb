@@ -19,7 +19,7 @@ class OperationRunFacade
 
     color = color_map[criticity.to_sym]
 
-    content_tag(:span, '', class: "span fa fa-circle text-enroute-chouette-#{color}") + criticity.text
+    content_tag(:span, '', class: "span fa fa-circle text-enroute-chouette-#{color} mr-1") + criticity.text
   end
 
   #  Duplicate method of link_to_if_table in ApplicationHelper

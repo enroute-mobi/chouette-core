@@ -67,6 +67,7 @@ class PointOfInterestsController < Chouette::TopologicReferentialController
     @point_of_interest_params ||= params.require(:point_of_interest).permit(
       :name,
       :url,
+      :description,
       :position_input,
       :address_line_1,
       :zip_code,

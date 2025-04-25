@@ -42,6 +42,13 @@
         = link_to_add_association t('point_of_interests.form.add_hours'), f, :point_of_interest_hours, class: 'btn btn-primary'
 
   .separator.section_separator
+  .row
+    .col-lg-12
+      h2.my-16
+        = t("point_of_interests.form.sections.description")
+      = f.input :description, as: :text
+
+  .separator.section_separator
 
   = render 'codes/form', form: f
 

@@ -105,6 +105,7 @@ module Chouette::Sync
           {
             name: name,
             url: url,
+            description: description,
             position_input: position,
             address_line_1: address_line_1,
             zip_code: zip_code,

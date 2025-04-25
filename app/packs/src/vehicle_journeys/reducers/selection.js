@@ -1,7 +1,7 @@
 import { flatten } from 'lodash'
 import ClipboardHelper from '../helpers/ClipboardHelper'
 import { initialState } from '../reducers'
-// import { computeDayOffSet } from '../helpers'
+import actions from '../actions'
 
 export default function selection(state = initialState, action) {
 	const { selection, filters: { toggleArrivals } } = state
@@ -16,10 +16,10 @@ export default function selection(state = initialState, action) {
 					items: [],
 					width: 0,
 					height: 0,
-					
+
 				}
 			}
-		case 'TOGGLE_SELECTION_MODE':	
+		case 'TOGGLE_SELECTION_MODE':
 			return {
 				...state,
 				selection: {
@@ -95,7 +95,7 @@ export default function selection(state = initialState, action) {
 			}
 		case 'COPY_MODAL_TO_PASTE_MODE':
 		case 'PASTE_CLIPBOARD':
-			ClipboardHelper.updatePasteContent('')	
+			ClipboardHelper.updatePasteContent('')
 			return {
 				...state,
 				selection: {
@@ -135,24 +135,19 @@ export default function selection(state = initialState, action) {
 			const pasteContent = ClipboardHelper.content.paste.deserialize(toggleArrivals)
 			const stops = flatten(pasteContent)
 
-			// let prevStop
-
 			const vehicleJourneys = state.vehicleJourneys.map((vj, x) => {
 				const newStops = vj.vehicle_journey_at_stops.map((vjas, y) => {
 					if (vjas.dummy) return vjas // We dont want data to be uptaded in this case
 
 					const stopParams = stops.find(stop => stop.x == x && stop.y == y) || vjas
-					// const dayOffSets = computeDayOffSet(prevStop, stopParams)
 
-					// prevStop = vjas
-
-					return {
-						...vjas,
-						// ...dayOffSets,
-						departure_time: stopParams.departure_time,
-						arrival_time: stopParams.arrival_time,
-						delta: stopParams.delta
+					let result = {
+					  ...vjas,
+					  delta: stopParams.delta
 					}
+					result[actions.vjasFirstTimeAttribute(vjas)] = stopParams.firstTime
+					result[actions.vjasSecondTimeAttribute(vjas)] = stopParams.secondTime
+					return result
 				})
 
 
@@ -161,7 +156,7 @@ export default function selection(state = initialState, action) {
 					vehicle_journey_at_stops: newStops
 				}
 			})
-	
+
 			return {
 				...state,
 				vehicleJourneys,

@@ -49,6 +49,8 @@ fr:
       arrival: "Arrivée"
       departure_at: "Départ à"
       departure: "Départ"
+      earliest_departure: "Permier départ"
+      latest_arrival: "Dernière arrivée"
       departure_range:
         label: Plage horaire au départ de la course
         start: Début

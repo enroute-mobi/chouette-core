@@ -62,6 +62,7 @@ child(:vehicle_journey_at_stops_matrix, :object_root => false) do |vehicle_stops
   node do |vehicle_stop|
 
     node(:dummy) { vehicle_stop.dummy }
+    node(:flexible) { vehicle_stop.stop_point.flexible }
     node(:area_kind) { vehicle_stop.stop_point.stop_area.kind }
 
     node(:specific_stop_area_id) do
@@ -86,11 +87,13 @@ child(:vehicle_journey_at_stops_matrix, :object_root => false) do |vehicle_stops
 
     [:arrival, :departure].each do |att|
       node("#{att}_time") do |vs|
-        time_of_day = vs.send("#{att}_local_time_of_day")
-        {
-          hour: time_of_day&.hour&.to_s,
-          minute: time_of_day&.minute&.to_s
-        }
+        vs.send("#{att}_local_time_of_day")&.as_json&.slice('hour', 'minute')
+      end
+    end
+
+    [:latest_arrival, :earliest_departure].each do |att|
+      node("#{att}_time_of_day") do |vs|
+        vs.send("#{att}_local_time_of_day")&.as_json&.slice('hour', 'minute')
       end
     end
   end

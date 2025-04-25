@@ -33,13 +33,11 @@ export default class DuplicateVehicleJourney extends Component {
 
   handleSubmit() {
     if(actions.validateFields(this.refs) == true) {
-      let newDeparture = {
-        departure_time : {
-          hour: this.state.duplicate_time_hh,
-          minute: this.state.duplicate_time_mm
-        }
+      const duplicateTime = {
+        hour: this.state.duplicate_time_hh,
+        minute: this.state.duplicate_time_mm
       }
-      let val = actions.getDuplicateDelta(_.find(actions.getSelected(this.props.vehicleJourneys)[0].vehicle_journey_at_stops, {'dummy': false}), newDeparture)
+      let val = actions.getDuplicateDelta(_.find(actions.getSelected(this.props.vehicleJourneys)[0].vehicle_journey_at_stops, {'dummy': false}), duplicateTime)
       this.props.onDuplicateVehicleJourney(this.state.additional_time, this.state.duplicate_number, val)
       this.props.onModalClose()
       $('#DuplicateVehicleJourneyModal').modal('hide')
@@ -57,7 +55,7 @@ export default class DuplicateVehicleJourney extends Component {
 
   getDefaultValue(type) {
     let vjas = _.find(actions.getSelected(this.props.vehicleJourneys)[0].vehicle_journey_at_stops, {'dummy': false})
-    return vjas.departure_time[type]
+    return vjas[actions.vjasSecondTimeAttribute(vjas)][type]
   }
 
   disableValidateButton() {

@@ -18,7 +18,10 @@ const mapStateToProps = (state) => {
     vehicleJourneys: state.vehicleJourneys,
     returnVehicleJourneys: state.returnVehicleJourneys,
     status: state.status,
-    filters: state.filters,
+    filters: {
+      ...state.filters,
+      toggleArrivals,
+    },
     stopPointsList: state.stopPointsList,
     returnStopPointsList: state.returnStopPointsList,
     extraHeaders: window.extra_headers,
@@ -43,14 +46,14 @@ const mapDispatchToProps = (dispatch) => {
     },
     onKeyDown: (e, selection, toggleArrivals) => {
       const { key, metaKey, ctrlKey } = e
-      const { 
+      const {
         locked,
         copyModal: {
           mode,
           visible
         }
       } = selection
-      
+
       if (visible) {
         if(mode == 'paste' && key == 'Enter') {
           dispatch(actions.pasteContent())

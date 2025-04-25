@@ -537,30 +537,34 @@ const actions = {
     let queryString = Object.keys(params).map((k) => esc(k) + '=' + esc(params[k])).join('&')
     return queryString
   },
+  vjasFirstTimeAttribute(vjas) {
+    return vjas.flexible ? "earliest_departure_time_of_day" : "arrival_time"
+  },
+  vjasSecondTimeAttribute(vjas) {
+    return vjas.flexible ? "latest_arrival_time_of_day" : "departure_time"
+  },
   fillEmptyFields: (vjas) => {
-    if (vjas.departure_time.hour == null) vjas.departure_time.hour = '00'
-    if (vjas.departure_time.minute == null) vjas.departure_time.minute = '00'
-    if (vjas.arrival_time.hour == null) vjas.arrival_time.hour = '00'
-    if (vjas.arrival_time.minute == null) vjas.arrival_time.minute = '00'
+    vjas[actions.vjasFirstTimeAttribute(vjas)] = vjas[actions.vjasFirstTimeAttribute(vjas)] || { hour: '00', minute: '00' }
+    vjas[actions.vjasSecondTimeAttribute(vjas)] = vjas[actions.vjasSecondTimeAttribute(vjas)] || { hour: '00', minute: '00' }
     return vjas
   },
-  getDuplicateDelta: (original, newDeparture) => {
-    if (original.departure_time.hour != '' && original.departure_time.minute != '' && newDeparture.departure_time.hour != undefined && newDeparture.departure_time.minute != undefined){
-      return  (newDeparture.departure_time.hour - parseInt(original.departure_time.hour)) * 60 + (newDeparture.departure_time.minute - parseInt(original.departure_time.minute))
+  getDuplicateDelta: (original, duplicateTime) => {
+    const originalSecondTime = original[actions.vjasSecondTimeAttribute(original)]
+    if (originalSecondTime && duplicateTime.hour && duplicateTime.minute) {
+      return (duplicateTime.hour - parseInt(originalSecondTime.hour)) * 60 + (duplicateTime.minute - parseInt(originalSecondTime.minute))
     }
     return 0
   },
   getDelta: (vjas, allowNegative=false) => {
-    let { hasAllAttributes, departure_time, arrival_time} = actions.scheduleToDates(vjas)
+    const { hasAllAttributes, firstTime, secondTime } = actions.scheduleToDates(vjas)
     let delta = 0
 
     if (hasAllAttributes) {
-      if (arrival_time.getHours() == 23 && (departure_time.getHours() == 0 || (departure_time.getHours() == 1 && departure_time.getMinutes() == 0)))  {
-        departure_time.setDate(arrival_time.getDate() + 1)
+      if (firstTime.getHours() == 23 && (secondTime.getHours() == 0 || (secondTime.getHours() == 1 && secondTime.getMinutes() == 0)))  {
+        secondTime.setDate(firstTime.getDate() + 1)
       }
-
       // We want the delta in minutes
-      delta = (departure_time.getTime() - arrival_time.getTime()) / 60000
+      delta = (secondTime.getTime() - firstTime.getTime()) / 60000
     }
 
     if (!allowNegative && delta < 0) {
@@ -575,44 +579,48 @@ const actions = {
 
     let newSchedule = actions.getDelta(schedule, true)
 
-    if (newSchedule.delta < 0 || isFirstOrLastStop) {
-      if (action.isDeparture) {
-        newSchedule.arrival_time = newSchedule.departure_time
-      }
-      else {
-        newSchedule.departure_time = newSchedule.arrival_time
-      }
+    /*
+     * We update the other field if arrival is after departure or if we are on the first or last stop since the first
+     * stop is only a departure and therefore does not have an arrival and the last stop is only an arrival and
+     * therefore does not have a departure, but only if the stop is not flexible.
+     */
+    if (newSchedule.delta < 0 || (isFirstOrLastStop && !schedule.flexible)) {
+      const sourceAttribute = action.isDeparture ? actions.vjasSecondTimeAttribute(schedule) : actions.vjasFirstTimeAttribute(schedule)
+      const targetAttribute = action.isDeparture ? actions.vjasFirstTimeAttribute(schedule) : actions.vjasSecondTimeAttribute(schedule)
+      newSchedule[targetAttribute] = newSchedule[sourceAttribute]
     }
     return actions.getDelta(newSchedule)
   },
-  getShiftedSchedule: ({departure_time, arrival_time}, additional_time) => {
-    // We create dummy dates objects to manipulate time more easily
-    let departureDT = new Date (Date.UTC(2017, 2, 1, parseInt(departure_time.hour), parseInt(departure_time.minute)))
-    let arrivalDT = new Date (Date.UTC(2017, 2, 1, parseInt(arrival_time.hour), parseInt(arrival_time.minute)))
+  getOneShiftedSchedule: (time, additional_time) => {
+    if (!time)
+      return null
 
-    let newDepartureDT = new Date (departureDT.getTime() + additional_time * 60000)
-    let newArrivalDT = new Date (arrivalDT.getTime() + additional_time * 60000)
+    const timeDT = new Date(Date.UTC(2017, 2, 1, parseInt(time.hour), parseInt(time.minute)))
+    const newTimeDT = new Date(timeDT.getTime() + additional_time * 60000)
 
     return {
-      departure_time: {
-        hour: actions.simplePad(newDepartureDT.getUTCHours()),
-        minute: actions.simplePad(newDepartureDT.getUTCMinutes())
-      },
-      arrival_time: {
-        hour: actions.simplePad(newArrivalDT.getUTCHours()),
-        minute: actions.simplePad(newArrivalDT.getUTCMinutes())
-      }
+      hour: actions.simplePad(newTimeDT.getUTCHours()),
+      minute: actions.simplePad(newTimeDT.getUTCMinutes())
+    }
+  },
+  getShiftedSchedule: ({arrival_time, departure_time, earliest_departure_time_of_day, latest_arrival_time_of_day}, additional_time) => {
+    return {
+      arrival_time: actions.getOneShiftedSchedule(arrival_time, additional_time),
+      departure_time: actions.getOneShiftedSchedule(departure_time, additional_time),
+      earliest_departure_time_of_day: actions.getOneShiftedSchedule(earliest_departure_time_of_day, additional_time),
+      latest_arrival_time_of_day: actions.getOneShiftedSchedule(latest_arrival_time_of_day, additional_time)
     }
   },
   scheduleToDates: (vjas) =>{
-    let { departure_time: { hour: depHour, minute: depMinute } } = vjas
-    let { arrival_time: { hour: arrHour, minute: arrMinute } } = vjas
-
-    let hasAllAttributes = depHour != '' && depMinute != '' && arrHour != '' && arrMinute != ''
+    const firstTime = vjas[actions.vjasFirstTimeAttribute(vjas)]
+    const secondTime = vjas[actions.vjasSecondTimeAttribute(vjas)]
+    const { hour: firstHour, minute: firstMinute } = firstTime
+    const { hour: secondHour, minute: secondMinute } = secondTime
+    const hasAllAttributes = firstHour != '' && firstMinute != '' && secondHour != '' && secondMinute != ''
     return {
       hasAllAttributes,
-      departure_time: hasAllAttributes && new Date(2017, 2, 1, parseInt(depHour), parseInt(depMinute)),
-      arrival_time: hasAllAttributes && new Date(2017, 2, 1, parseInt(arrHour), parseInt(arrMinute))
+      firstTime: hasAllAttributes && new Date(2017, 2, 1, parseInt(firstHour), parseInt(firstMinute)),
+      secondTime: hasAllAttributes && new Date(2017, 2, 1, parseInt(secondHour), parseInt(secondMinute))
     }
   },
   addMinutesToTime: (time, minutes) => {

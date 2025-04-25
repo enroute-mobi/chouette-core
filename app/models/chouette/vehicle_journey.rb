@@ -161,8 +161,11 @@ module Chouette
     # Returns ordered arrival/departure time of days for all Vehicle Journey stops
     def passing_times
       vehicle_journey_at_stops.flat_map do |vehicle_journey_at_stop|
-        %w{arrival departure}.map do |part|
-          vehicle_journey_at_stop.send "#{part}_time_of_day"
+        [
+          %i[arrival_time_of_day earliest_departure_time_of_day],
+          %i[departure_time_of_day latest_arrival_time_of_day]
+        ].map do |non_flexible_attr, flexible_attr|
+          vehicle_journey_at_stop.send(non_flexible_attr) || vehicle_journey_at_stop.send(flexible_attr)
         end
       end
     end
@@ -248,9 +251,20 @@ module Chouette
 
         %w{departure arrival}.each do |part|
           field = "#{part}_time"
+          next unless vjas[field].present?
+
           time_of_day = TimeOfDay.new vjas[field]['hour'], vjas[field]['minute'], utc_offset: utc_offset
           params["#{part}_time_of_day".to_sym] = time_of_day
         end
+
+        %w{earliest_departure latest_arrival}.each do |part|
+          field = "#{part}_time_of_day"
+          next unless vjas[field].present?
+
+          time_of_day = TimeOfDay.new vjas[field]['hour'], vjas[field]['minute'], utc_offset: utc_offset
+          params[field.to_sym] = time_of_day.second_offset
+        end
+
         params[:stop_area_id] = vjas['specific_stop_area_id']
         stop = create_or_find_vjas_from_state(vjas)
         stop.update(params)
@@ -318,6 +332,7 @@ module Chouette
             item.delete('objectid') if item['new_record']
             item['vehicle_journey_at_stops'].map {|vjas| vjas.delete('id') if vjas['new_record'] }
           end
+
           raise ::ActiveRecord::Rollback
         end
       end

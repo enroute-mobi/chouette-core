@@ -18,20 +18,54 @@ module Chouette
 
     attr_accessor :_destroy, :dummy
 
-    validate :arrival_must_be_before_departure
-    def arrival_must_be_before_departure
-      # security against nil values
-      return unless arrival_time && departure_time
+    concerning :Validations do # rubocop:disable Metrics/BlockLength
+      included do
+        validate :arrival_must_be_before_departure, unless: :flexible?
+        validate :earliest_departure_time_of_day_must_be_before_latest_arrival_time_of_day, if: :flexible?
 
-      if TimeDuration.exceeds_gap?(4.hours, arrival_time, departure_time)
-        errors.add(
-          :arrival_time,
-          I18n.t("activerecord.errors.models.vehicle_journey_at_stop.arrival_must_be_before_departure")
-        )
+        validate :day_offset_must_be_within_range
+      end
+
+      private
+
+      def flexible?
+        earliest_departure_time_of_day.present? || latest_arrival_time_of_day.present?
+      end
+
+      def arrival_must_be_before_departure
+        return unless arrival_time_of_day && departure_time_of_day
+        return if arrival_time_of_day <= departure_time_of_day
+
+        errors.add(:arrival_time, :arrival_must_be_before_departure)
+      end
+
+      def earliest_departure_time_of_day_must_be_before_latest_arrival_time_of_day
+        return unless earliest_departure_time_of_day && latest_arrival_time_of_day
+        return if earliest_departure_time_of_day < latest_arrival_time_of_day
+
+        errors.add(:earliest_departure_time_of_day, :arrival_must_be_before_departure)
+      end
+
+      def day_offset_must_be_within_range
+        if day_offset_outside_range?(arrival_day_offset)
+          errors.add(
+            :arrival_day_offset,
+            :day_offset_must_not_exceed_max,
+            short_id: vehicle_journey&.get_objectid&.short_id,
+            max: day_offset_max
+          )
+        end
+
+        if day_offset_outside_range?(departure_day_offset)
+          errors.add(
+            :departure_day_offset,
+            :day_offset_must_not_exceed_max,
+            short_id: vehicle_journey&.get_objectid&.short_id,
+            max: day_offset_max
+          )
+        end
       end
     end
-
-    validate :day_offset_must_be_within_range
 
     after_initialize :set_virtual_attributes
     def set_virtual_attributes
@@ -111,30 +145,6 @@ module Chouette
       end
       base_date = '2000/01/01 00:00:00 UTC'.to_time.utc
       base_date.change hour: val.utc.hour, min: val.utc.min, sec: val.sec
-    end
-
-    def day_offset_must_be_within_range
-      if day_offset_outside_range?(arrival_day_offset)
-        errors.add(
-          :arrival_day_offset,
-          I18n.t(
-            'vehicle_journey_at_stops.errors.day_offset_must_not_exceed_max',
-            short_id: vehicle_journey&.get_objectid&.short_id,
-            max: day_offset_max
-          )
-        )
-      end
-
-      if day_offset_outside_range?(departure_day_offset)
-        errors.add(
-          :departure_day_offset,
-          I18n.t(
-            'vehicle_journey_at_stops.errors.day_offset_must_not_exceed_max',
-            short_id: vehicle_journey&.get_objectid&.short_id,
-            max: day_offset_max
-          )
-        )
-      end
     end
 
     # Compare absolute day offset value with day_offset_max (if defined)

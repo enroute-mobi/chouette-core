@@ -23,7 +23,7 @@ const initialState = {
     selectedJourneyPatterns: selectedJP,
     policy: window.perms,
     features: window.features,
-    toggleArrivals: false,
+    toggleArrivals: Array.isArray(window.stopPoints) && window.stopPoints.some(sp => sp.flexible),
     queryString: '',
     query: {
       interval: {

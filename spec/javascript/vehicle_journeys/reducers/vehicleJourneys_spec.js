@@ -30,6 +30,7 @@ let fakeTimeTables = [{
 let fakeVJAS = [
   {
   delta : 0,
+  flexible: false,
   arrival_time : {
     hour: '07',
     minute: '02'
@@ -46,6 +47,7 @@ let fakeVJAS = [
 },
 {
   delta: 627,
+  flexible: false,
   arrival_time: {
     hour: '11',
     minute: '55'
@@ -62,6 +64,7 @@ let fakeVJAS = [
 },
 {
   delta: 0,
+  flexible: false,
   arrival_time: {
     hour: '23',
     minute: '00'
@@ -119,14 +122,17 @@ describe('vehicleJourneys reducer', () => {
   it('should handle ADD_VEHICLEJOURNEY', () => {
     let pristineVjasList = [{
       delta : 0,
+      flexible: false,
       arrival_time : {
         hour: 0,
         minute: 0
       },
+      arrival_day_offset: null,
       departure_time : {
         hour: 0,
         minute: 0
       },
+      departure_day_offset: null,
       stop_point_objectid: 'test',
       stop_area_cityname: 'city',
       dummy: false
@@ -147,7 +153,7 @@ describe('vehicleJourneys reducer', () => {
         type: 'ADD_VEHICLEJOURNEY',
         data: fakeData,
         selectedJourneyPattern: fakeSelectedJourneyPattern,
-        stopPointsList: [{object_id: 'test', city_name: 'city', area_object_id: '001', position: 0}],
+        stopPointsList: [{ object_id: 'test', city_name: 'city', area_object_id: '001', position: 0, flexible: false }],
         selectedCompany: fakeSelectedCompany
       })
     ).toEqual([{
@@ -177,14 +183,17 @@ describe('vehicleJourneys reducer', () => {
   it('should handle ADD_VEHICLEJOURNEY with a loop in the route', () => {
     let pristineVjasList = [{
       delta : 0,
+      flexible: false,
       arrival_time : {
         hour: 0,
         minute: 0
       },
+      arrival_day_offset: null,
       departure_time : {
         hour: 0,
         minute: 0
       },
+      departure_day_offset: null,
       stop_point_objectid: 'test',
       stop_area_cityname: 'city',
       dummy: false,
@@ -193,14 +202,17 @@ describe('vehicleJourneys reducer', () => {
     },
     {
       delta : 0,
+      flexible: false,
       arrival_time : {
         hour: 0,
         minute: 0
       },
+      arrival_day_offset: null,
       departure_time : {
         hour: 0,
         minute: 0
       },
+      departure_day_offset: null,
       stop_point_objectid: 'test2',
       stop_area_cityname: 'city',
       dummy: false,
@@ -209,14 +221,17 @@ describe('vehicleJourneys reducer', () => {
     },
     {
       delta : 0,
+      flexible: false,
       arrival_time : {
-        hour: '00',
-        minute: '00'
+        hour: 0,
+        minute: 0
       },
+      arrival_day_offset: null,
       departure_time : {
-        hour: '00',
-        minute: '00'
+        hour: 0,
+        minute: 0
       },
+      departure_day_offset: null,
       stop_point_objectid: 'test',
       stop_area_cityname: 'city',
       dummy: true,
@@ -225,14 +240,17 @@ describe('vehicleJourneys reducer', () => {
     },
     {
       delta: 0,
+      flexible: false,
       arrival_time: {
         hour: 0,
         minute: 0
       },
+      arrival_day_offset: null,
       departure_time: {
         hour: 0,
         minute: 0
       },
+      departure_day_offset: null,
       stop_point_objectid: 'test',
       stop_area_cityname: 'city',
       dummy: false,
@@ -281,10 +299,10 @@ describe('vehicleJourneys reducer', () => {
         data: fakeData,
         selectedJourneyPattern: fakeSelectedJourneyPattern,
         stopPointsList: [
-          { object_id: 'test', city_name: 'city', id: 'sp1', area_object_id: '001', position: 0, stop_area_id: 'sa1'},
-          { object_id: 'test2', city_name: 'city', id: 'sp2', area_object_id: '002', position: 1, stop_area_id: 'sa2'},
-          { object_id: 'test', city_name: 'city', id: 'sp3', area_object_id: '001', position: 2, stop_area_id: 'sa1'},
-          { object_id: 'test', city_name: 'city', id: 'sp4', area_object_id: '003', position: 3, stop_area_id: 'sa3'}
+          { object_id: 'test', city_name: 'city', id: 'sp1', area_object_id: '001', position: 0, stop_area_id: 'sa1', flexible: false },
+          { object_id: 'test2', city_name: 'city', id: 'sp2', area_object_id: '002', position: 1, stop_area_id: 'sa2', flexible: false },
+          { object_id: 'test', city_name: 'city', id: 'sp3', area_object_id: '001', position: 2, stop_area_id: 'sa1', flexible: false },
+          { object_id: 'test', city_name: 'city', id: 'sp4', area_object_id: '003', position: 3, stop_area_id: 'sa3', flexible: false }
         ],
         selectedCompany: fakeSelectedCompany
       })
@@ -315,14 +333,17 @@ describe('vehicleJourneys reducer', () => {
   it('should handle ADD_VEHICLEJOURNEY with a start time and a fully timed JP', () => {
     let pristineVjasList = [{
       delta : 0,
+      flexible: false,
       arrival_time : {
         hour: 22,
         minute: 59
       },
+      arrival_day_offset: null,
       departure_time : {
         hour: 22,
         minute: 59
       },
+      departure_day_offset: null,
       stop_point_objectid: 'test-1',
       stop_area_cityname: 'city',
       dummy: false,
@@ -331,14 +352,17 @@ describe('vehicleJourneys reducer', () => {
     },
     {
       delta : 10,
+      flexible: false,
       arrival_time : {
         hour: 23,
         minute: 2
       },
+      arrival_day_offset: null,
       departure_time : {
         hour: 23,
         minute: 12
       },
+      departure_day_offset: null,
       stop_point_objectid: 'test-2',
       stop_area_cityname: 'city',
       dummy: false,
@@ -347,14 +371,17 @@ describe('vehicleJourneys reducer', () => {
     },
     {
       delta : 0,
+      flexible: false,
       arrival_time : {
-        hour: "00",
-        minute: "00"
+        hour: 0,
+        minute: 0
       },
+      arrival_day_offset: null,
       departure_time : {
-        hour: "00",
-        minute: "00"
+        hour: 0,
+        minute: 0
       },
+      departure_day_offset: null,
       stop_point_objectid: 'test-3',
       stop_area_cityname: 'city',
       dummy: true,
@@ -363,14 +390,17 @@ describe('vehicleJourneys reducer', () => {
     },
     {
       delta : 0,
+      flexible: false,
       arrival_time : {
         hour: 0,
         minute: 42
       },
+      arrival_day_offset: null,
       departure_time : {
         hour: 0,
         minute: 42
       },
+      departure_day_offset: null,
       stop_point_objectid: 'test-4',
       stop_area_cityname: 'city',
       dummy: false,
@@ -409,10 +439,10 @@ describe('vehicleJourneys reducer', () => {
         data: fakeData,
         selectedJourneyPattern: fakeSelectedJourneyPattern,
         stopPointsList: [
-          { object_id: 'test-1', city_name: 'city', stop_area_id: 1, id: 1, time_zone_offset: 0, waiting_time: 10, area_object_id: '001', position: 0 },
-          { object_id: 'test-2', city_name: 'city', stop_area_id: 2, id: 2, time_zone_offset: -3600, waiting_time: 10, area_object_id: '002', position: 1 },
-          { object_id: 'test-3', city_name: 'city', stop_area_id: 3, id: 3, time_zone_offset: 0, waiting_time: 20, area_object_id: '003', position: 2 },
-          { object_id: 'test-4', city_name: 'city', stop_area_id: 4, id: 4, time_zone_offset: 0, waiting_time: 100, area_object_id: '004', position: 3}
+          { object_id: 'test-1', city_name: 'city', stop_area_id: 1, id: 1, time_zone_offset: 0, waiting_time: 10, area_object_id: '001', position: 0, flexible: false },
+          { object_id: 'test-2', city_name: 'city', stop_area_id: 2, id: 2, time_zone_offset: -3600, waiting_time: 10, area_object_id: '002', position: 1, flexible: false },
+          { object_id: 'test-3', city_name: 'city', stop_area_id: 3, id: 3, time_zone_offset: 0, waiting_time: 20, area_object_id: '003', position: 2, flexible: false },
+          { object_id: 'test-4', city_name: 'city', stop_area_id: 4, id: 4, time_zone_offset: 0, waiting_time: 100, area_object_id: '004', position: 3, flexible: false }
         ],
         selectedCompany: fakeSelectedCompany
       })
@@ -439,14 +469,17 @@ describe('vehicleJourneys reducer', () => {
   it('should handle ADD_VEHICLEJOURNEY with a start time and a fully timed JP not starting on the first stop', () => {
     let pristineVjasList = [{
       delta : 0,
+      flexible: false,
       arrival_time : {
-        hour: "00",
-        minute: "00"
+        hour: 0,
+        minute: 0
       },
+      arrival_day_offset: null,
       departure_time : {
-        hour: "00",
-        minute: "00"
+        hour: 0,
+        minute: 0
       },
+      departure_day_offset: null,
       stop_point_objectid: 'test-1',
       stop_area_cityname: 'city',
       dummy: true,
@@ -455,14 +488,17 @@ describe('vehicleJourneys reducer', () => {
     },
     {
       delta : 0,
+      flexible: false,
       arrival_time : {
         hour: 23,
         minute: 2
       },
+      arrival_day_offset: null,
       departure_time : {
         hour: 23,
         minute: 2
       },
+      departure_day_offset: null,
       stop_point_objectid: 'test-2',
       stop_area_cityname: 'city',
       dummy: false,
@@ -471,14 +507,17 @@ describe('vehicleJourneys reducer', () => {
     },
     {
       delta : 0,
+      flexible: false,
       arrival_time : {
-        hour: "00",
-        minute: "00"
+        hour: 0,
+        minute: 0
       },
+      arrival_day_offset: null,
       departure_time : {
-        hour: "00",
-        minute: "00"
+        hour: 0,
+        minute: 0
       },
+      departure_day_offset: null,
       stop_point_objectid: 'test-3',
       stop_area_cityname: 'city',
       dummy: true,
@@ -487,14 +526,17 @@ describe('vehicleJourneys reducer', () => {
     },
     {
       delta : 0,
+      flexible: false,
       arrival_time : {
         hour: 0,
         minute: 32
       },
+      arrival_day_offset: null,
       departure_time : {
         hour: 0,
         minute: 32
       },
+      departure_day_offset: null,
       stop_point_objectid: 'test-4',
       stop_area_cityname: 'city',
       dummy: false,
@@ -528,10 +570,10 @@ describe('vehicleJourneys reducer', () => {
         data: fakeData,
         selectedJourneyPattern: fakeSelectedJourneyPattern,
         stopPointsList: [
-          { object_id: 'test-1', city_name: 'city', stop_area_id: 1, id: 1, time_zone_offset: 0, waiting_time: 10, position: 0, area_object_id: '001' },
-          { object_id: 'test-2', city_name: 'city', stop_area_id: 2, id: 2, time_zone_offset: -3600, waiting_time: 10, position: 1, area_object_id: '002' },
-          { object_id: 'test-3', city_name: 'city', stop_area_id: 3, id: 3, time_zone_offset: 0, waiting_time: 20, position: 2, area_object_id: '003' },
-          { object_id: 'test-4', city_name: 'city', stop_area_id: 4, id: 4, time_zone_offset: 0, waiting_time: 100, position: 3, area_object_id: '004'}
+          { object_id: 'test-1', city_name: 'city', stop_area_id: 1, id: 1, time_zone_offset: 0, waiting_time: 10, position: 0, area_object_id: '001', flexible: false },
+          { object_id: 'test-2', city_name: 'city', stop_area_id: 2, id: 2, time_zone_offset: -3600, waiting_time: 10, position: 1, area_object_id: '002', flexible: false },
+          { object_id: 'test-3', city_name: 'city', stop_area_id: 3, id: 3, time_zone_offset: 0, waiting_time: 20, position: 2, area_object_id: '003', flexible: false },
+          { object_id: 'test-4', city_name: 'city', stop_area_id: 4, id: 4, time_zone_offset: 0, waiting_time: 100, position: 3, area_object_id: '004', flexible: false }
         ],
         selectedCompany: fakeSelectedCompany
       })
@@ -558,14 +600,17 @@ describe('vehicleJourneys reducer', () => {
   it('should handle ADD_VEHICLEJOURNEY with a start time and a fully timed JP, and use user\'s TZ', () => {
     let pristineVjasList = [{
       delta : 0,
+      flexible: false,
       arrival_time : {
         hour: 22,
         minute: 59
       },
+      arrival_day_offset: null,
       departure_time : {
         hour: 22,
         minute: 59
       },
+      departure_day_offset: null,
       stop_point_objectid: 'test-1',
       stop_area_cityname: 'city',
       dummy: false,
@@ -574,14 +619,17 @@ describe('vehicleJourneys reducer', () => {
     },
     {
       delta : 10,
+      flexible: false,
       arrival_time : {
         hour: 23,
         minute: 2
       },
+      arrival_day_offset: null,
       departure_time : {
         hour: 23,
         minute: 12
       },
+      departure_day_offset: null,
       stop_point_objectid: 'test-2',
       stop_area_cityname: 'city',
       dummy: false,
@@ -590,14 +638,17 @@ describe('vehicleJourneys reducer', () => {
     },
     {
       delta : 0,
+      flexible: false,
       arrival_time : {
-        hour: "00",
-        minute: "00"
+        hour: 0,
+        minute: 0
       },
+      arrival_day_offset: null,
       departure_time : {
-        hour: "00",
-        minute: "00"
+        hour: 0,
+        minute: 0
       },
+      departure_day_offset: null,
       stop_point_objectid: 'test-3',
       stop_area_cityname: 'city',
       dummy: true,
@@ -606,14 +657,17 @@ describe('vehicleJourneys reducer', () => {
     },
     {
       delta : 0,
+      flexible: false,
       arrival_time : {
         hour: 0,
         minute: 42
       },
+      arrival_day_offset: null,
       departure_time : {
         hour: 0,
         minute: 42
       },
+      departure_day_offset: null,
       stop_point_objectid: 'test-4',
       stop_area_cityname: 'city',
       dummy: false,
@@ -653,10 +707,10 @@ describe('vehicleJourneys reducer', () => {
         data: fakeData,
         selectedJourneyPattern: fakeSelectedJourneyPattern,
         stopPointsList: [
-          { object_id: 'test-1', city_name: 'city', stop_area_id: 1, id: 1, time_zone_offset: 0, waiting_time: null, area_object_id: '001', position: 0 },
-          { object_id: 'test-2', city_name: 'city', stop_area_id: 2, id: 2, time_zone_offset: -3600, waiting_time: 10, area_object_id: '002', position: 1 },
-          { object_id: 'test-3', city_name: 'city', stop_area_id: 3, id: 3, time_zone_offset: 0, waiting_time: 20, area_object_id: '003', position: 2 },
-          { object_id: 'test-4', city_name: 'city', stop_area_id: 4, id: 4, time_zone_offset: 0, area_object_id: '004', position: 3}
+          { object_id: 'test-1', city_name: 'city', stop_area_id: 1, id: 1, time_zone_offset: 0, waiting_time: null, area_object_id: '001', position: 0, flexible: false },
+          { object_id: 'test-2', city_name: 'city', stop_area_id: 2, id: 2, time_zone_offset: -3600, waiting_time: 10, area_object_id: '002', position: 1, flexible: false },
+          { object_id: 'test-3', city_name: 'city', stop_area_id: 3, id: 3, time_zone_offset: 0, waiting_time: 20, area_object_id: '003', position: 2, flexible: false },
+          { object_id: 'test-4', city_name: 'city', stop_area_id: 4, id: 4, time_zone_offset: 0, area_object_id: '004', position: 3, flexible: false }
         ],
         selectedCompany: fakeSelectedCompany
       })
@@ -683,14 +737,17 @@ describe('vehicleJourneys reducer', () => {
   it('should handle ADD_VEHICLEJOURNEY with a start time and a fully timed JP but no time is set', () => {
     let pristineVjasList = [{
       delta : 0,
+      flexible: false,
       arrival_time : {
         hour: 0,
         minute: 0
       },
+      arrival_day_offset: null,
       departure_time : {
         hour: 0,
         minute: 0
       },
+      departure_day_offset: null,
       stop_point_objectid: 'test-1',
       stop_area_cityname: 'city',
       dummy: false,
@@ -699,14 +756,17 @@ describe('vehicleJourneys reducer', () => {
     },
     {
       delta : 0,
+      flexible: false,
       arrival_time : {
         hour: 0,
         minute: 0
       },
+      arrival_day_offset: null,
       departure_time : {
         hour: 0,
         minute: 0
       },
+      departure_day_offset: null,
       stop_point_objectid: 'test-2',
       stop_area_cityname: 'city',
       dummy: false,
@@ -740,8 +800,8 @@ describe('vehicleJourneys reducer', () => {
         data: fakeData,
         selectedJourneyPattern: fakeSelectedJourneyPattern,
         stopPointsList: [
-          {object_id: 'test-1', city_name: 'city', stop_area_id: 1, id: 1, time_zone_offset: 0, position: 0, area_object_id: '001'},
-          {object_id: 'test-2', city_name: 'city', stop_area_id: 2, id: 2, time_zone_offset: -3600, position: 1, area_object_id: '002'}
+          { object_id: 'test-1', city_name: 'city', stop_area_id: 1, id: 1, time_zone_offset: 0, position: 0, area_object_id: '001', flexible: false },
+          { object_id: 'test-2', city_name: 'city', stop_area_id: 2, id: 2, time_zone_offset: -3600, position: 1, area_object_id: '002', flexible: false }
         ],
         selectedCompany: fakeSelectedCompany
       })
@@ -768,14 +828,17 @@ describe('vehicleJourneys reducer', () => {
   it('should handle ADD_VEHICLEJOURNEY with a start time and a fully timed JP but the minutes are not set', () => {
     let pristineVjasList = [{
       delta : 0,
+      flexible: false,
       arrival_time : {
         hour: 22,
         minute: 0
       },
+      arrival_day_offset: null,
       departure_time : {
         hour: 22,
         minute: 0
       },
+      departure_day_offset: null,
       stop_point_objectid: 'test-1',
       stop_area_cityname: 'city',
       dummy: false,
@@ -784,14 +847,17 @@ describe('vehicleJourneys reducer', () => {
     },
     {
       delta : 0,
+      flexible: false,
       arrival_time : {
         hour: 22,
         minute: 3
       },
+      arrival_day_offset: null,
       departure_time : {
         hour: 22,
         minute: 3
       },
+      departure_day_offset: null,
       stop_point_objectid: 'test-2',
       stop_area_cityname: 'city',
       dummy: false,
@@ -825,8 +891,8 @@ describe('vehicleJourneys reducer', () => {
         data: fakeData,
         selectedJourneyPattern: fakeSelectedJourneyPattern,
         stopPointsList: [
-          {object_id: 'test-1', city_name: 'city', stop_area_id: 1, id: 1, time_zone_offset: 0, position: 0, area_object_id: '001'},
-          {object_id: 'test-2', city_name: 'city', stop_area_id: 2, id: 2, time_zone_offset: -3600, position: 1, area_object_id: '002'}
+          { object_id: 'test-1', city_name: 'city', stop_area_id: 1, id: 1, time_zone_offset: 0, position: 0, area_object_id: '001', flexible: false },
+          { object_id: 'test-2', city_name: 'city', stop_area_id: 2, id: 2, time_zone_offset: -3600, position: 1, area_object_id: '002', flexible: false }
         ],
         selectedCompany: fakeSelectedCompany
       })
@@ -867,6 +933,7 @@ describe('vehicleJourneys reducer', () => {
       set('updatedVJAS', () => {
         return {
           delta: 0,
+          flexible: false,
           arrival_time: {
             hour: '07',
             minute: val
@@ -875,6 +942,8 @@ describe('vehicleJourneys reducer', () => {
             hour: '07',
             minute: val
           },
+          earliest_departure_time_of_day: null,
+          latest_arrival_time_of_day: null,
           stop_area_object_id: "chouette:StopArea:8000b367-e07c-43b8-b1be-766f1bfe542a:LOC",
           dummy: false,
           stop_point_id: 1,
@@ -887,16 +956,6 @@ describe('vehicleJourneys reducer', () => {
         const vjas = state[index]['vehicle_journey_at_stops']
         const newVJAS = [updatedVJAS, ...vjas.slice(1)]
         const newVJ = Object.assign({}, state[subIndex], { vehicle_journey_at_stops: newVJAS })
-        let a = vjReducer(state, {
-          type: 'UPDATE_TIME',
-          val,
-          subIndex,
-          index,
-          timeUnit,
-          isDeparture,
-          isArrivalsToggled,
-          enforceConsistency
-        })
 
         expect(
           vjReducer(state, {
@@ -918,6 +977,7 @@ describe('vehicleJourneys reducer', () => {
       set('updatedVJAS', () => {
         return {
           delta: 638,
+          flexible: false,
           arrival_time: {
             hour: '11',
             minute: '55'
@@ -926,6 +986,8 @@ describe('vehicleJourneys reducer', () => {
             hour: '22',
             minute: '33'
           },
+          earliest_departure_time_of_day: null,
+          latest_arrival_time_of_day: null,
           stop_area_object_id: "chouette:StopArea:c9d50c53-e4f4-4ccb-b5bd-6b80c4a3e6d0:LOC",
           dummy: false,
           stop_point_id: 2,
@@ -1002,20 +1064,23 @@ describe('vehicleJourneys reducer', () => {
     const newState = JSON.parse(JSON.stringify(state))
 
     const newVJAS = newState[0].vehicle_journey_at_stops.map((vjas, index) => {
-      let { hasAllAttributes, departure_time, arrival_time } = actions.scheduleToDates(vjas)
-      let shiftedDT = new Date(departure_time.getTime() + (addtionalTime * 60000))
-      let shiftedAT = new Date(arrival_time.getTime() + (addtionalTime * 60000))
+      let { hasAllAttributes, firstTime, secondTime } = actions.scheduleToDates(vjas)
+      let shiftedAT = new Date(firstTime.getTime() + (addtionalTime * 60000))
+      let shiftedDT = new Date(secondTime.getTime() + (addtionalTime * 60000))
       return {
         delta: vjas.delta,
+        flexible: false,
         stop_area_object_id: vjas.stop_area_object_id,
-        departure_time: {
-          hour: actions.simplePad(shiftedDT.getHours()),
-          minute: actions.simplePad(shiftedDT.getMinutes())
-        },
         arrival_time: {
           hour: actions.simplePad(shiftedAT.getHours()),
           minute: actions.simplePad(shiftedAT.getMinutes())
         },
+        earliest_departure_time_of_day: null,
+        departure_time: {
+          hour: actions.simplePad(shiftedDT.getHours()),
+          minute: actions.simplePad(shiftedDT.getMinutes())
+        },
+        latest_arrival_time_of_day: null,
         dummy: false,
         stop_point_id: (index+1),
         stop_area_id: (index+1),
@@ -1039,20 +1104,23 @@ describe('vehicleJourneys reducer', () => {
     let duplicateNumber = 1
 
     const newVJAS = state[0].vehicle_journey_at_stops.map((vjas, index) => {
-      let { hasAllAttributes, departure_time, arrival_time } = actions.scheduleToDates(vjas)
-      let shiftedDT = new Date(departure_time.getTime() + ((addtionalTime + departureDelta) * 60000))
-      let shiftedAT = new Date(arrival_time.getTime() + ((addtionalTime + departureDelta) * 60000))
+      let { hasAllAttributes, firstTime, secondTime } = actions.scheduleToDates(vjas)
+      let shiftedAT = new Date(firstTime.getTime() + ((addtionalTime + departureDelta) * 60000))
+      let shiftedDT = new Date(secondTime.getTime() + ((addtionalTime + departureDelta) * 60000))
       return {
         delta: vjas.delta,
+        flexible: false,
         stop_area_object_id: vjas.stop_area_object_id,
-        departure_time: {
-          hour: actions.simplePad(shiftedDT.getHours()),
-          minute: actions.simplePad(shiftedDT.getMinutes())
-        },
         arrival_time: {
           hour: actions.simplePad(shiftedAT.getHours()),
           minute: actions.simplePad(shiftedAT.getMinutes())
         },
+        earliest_departure_time_of_day: null,
+        departure_time: {
+          hour: actions.simplePad(shiftedDT.getHours()),
+          minute: actions.simplePad(shiftedDT.getMinutes())
+        },
+        latest_arrival_time_of_day: null,
         dummy: false,
         stop_point_id: (index+1),
         stop_area_id: (index+1),

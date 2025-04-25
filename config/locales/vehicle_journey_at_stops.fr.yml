@@ -1,4 +1,7 @@
 fr:
-  vehicle_journey_at_stops:
+  activerecord:
     errors:
-      day_offset_must_not_exceed_max: "La course avec l'identifiant %{short_id} ne peut pas avoir des horaires sur plus de %{max} jours"
+      models:
+        vehicle_journey_at_stop:
+          arrival_must_be_before_departure: "l'heure d'arrivée doit être antérieure à l'heure de départ"
+          day_offset_must_not_exceed_max: "La course avec l'identifiant %{short_id} ne peut pas avoir des horaires sur plus de %{max} jours"

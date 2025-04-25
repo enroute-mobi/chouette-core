@@ -5,6 +5,7 @@ import getHours from 'date-fns/getHours'
 import differenceInMinutes from 'date-fns/differenceInMinutes'
 import { formatTime, parseTime } from './index'
 import { is } from 'date-fns/locale'
+import actions from '../actions'
 
 const computeArrivalTime = (departure, copyItem) => {
 	if (copyItem.isDummy) return parseTime('00:00')
@@ -40,21 +41,19 @@ export class CopyContent {
 	setContent(items, width) {
 		this.contentTable = chunk(items, width)
 	}
-		
+
 	serialize(toggleArrivals) {
 		return this.contentTable.map(row => {
 			return row.map(item => {
-				const { arrival_time, departure_time, dummy } = item
+				const firstTime = item[actions.vjasFirstTimeAttribute(item)]
+				const secondTime = item[actions.vjasSecondTimeAttribute(item)]
+
 				const out = []
+				if (toggleArrivals)
+					out.push(item.dummy ? '00:00' : formatTime(firstTime))
 
-				toggleArrivals && out.push(
-					dummy ? '00:00' : formatTime(arrival_time)
-				)
+				out.push(item.dummy ? '00:00' : formatTime(secondTime))
 
-				out.push(
-					dummy ? '00:00' : formatTime(departure_time, dummy)
-				)
-			
 				return out.join('\t')
 			}).join('\t')
 		}
@@ -64,14 +63,14 @@ export class CopyContent {
 	deserialize(toggleArrivals) {
 		return this.contentTable.map(row => {
 			return row.reduce((result, item) => {
-				const { arrival_time, departure_time } = item
-		
+				const firstTime = item[actions.vjasFirstTimeAttribute(item)]
+				const secondTime = item[actions.vjasSecondTimeAttribute(item)]
+
 				return [
 					...result,
-					...toggleArrivals ? [arrival_time] : [],
-					departure_time
+					...toggleArrivals ? [firstTime] : [],
+					secondTime
 				]
-
 			}, [])
 		})
 	}
@@ -116,19 +115,19 @@ export class PasteContent {
 				*/
 				const copyItem = copyRow[j]
 				const cellContent = this.isDummy(last(cells)) ? '00:00' : last(cells)
-				const departure = parseTime(cellContent)
 				const arrival = toggleArrivals ? parseTime(cells[0]) : computeArrivalTime(departure, copyItem)
+				const departure = parseTime(cellContent)
 
 				return {
 					x: copyItem.x,
 					y: copyItem.y,
-					departure_time: {
-						hour: getHours(departure),
-						minute: getMinutes(departure)
-					},
-					arrival_time: {
+					firstTime: {
 						hour: getHours(arrival),
 						minute: getMinutes(arrival)
+					},
+					secondTime: {
+						hour: getHours(departure),
+						minute: getMinutes(departure)
 					},
 					delta: differenceInMinutes(departure, arrival)
 				}
@@ -165,7 +164,7 @@ export class PasteContent {
 					if (!isEqual(hour.length, 2) || !isEqual((minute || '').length, 2)) {
 						throw ('wrong_time_format')
 					}
-					
+
 					const date = parseTime({ hour, minute })
 
 					if(isNaN(date.getTime())) {

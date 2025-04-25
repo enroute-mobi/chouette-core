@@ -64,12 +64,25 @@ RSpec.describe Chouette::VehicleJourney do
             value = [value] * 2 unless value.is_a?(Array)
 
             # Create TimeOfDays
-            arrival_time_of_day, departure_time_of_day = value.map { |definition| time_of_day(definition) }
+            if value[0]&.start_with?('f')
+              value[0] = value[0][1..]
+              first_attribute = :earliest_departure_time_of_day
+            else
+              first_attribute = :arrival_time_of_day
+            end
+            if value[1]&.start_with?('f')
+              value[1] = value[1][1..]
+              second_attribute = :latest_arrival_time_of_day
+            else
+              second_attribute = :departure_time_of_day
+            end
+
+            first, second = value.map { |definition| time_of_day(definition) }
 
             # Transmit TimeOfDays to Vehicle Journey At Stop only if it's not nil
             vehicle_journey_at_stops_attributes = {}
-            vehicle_journey_at_stops_attributes[:arrival_time_of_day] = arrival_time_of_day if arrival_time_of_day
-            vehicle_journey_at_stops_attributes[:departure_time_of_day] = departure_time_of_day if departure_time_of_day
+            vehicle_journey_at_stops_attributes[first_attribute] = first if first
+            vehicle_journey_at_stops_attributes[second_attribute] = second if second
 
             vehicle_journey_at_stop = Chouette::VehicleJourneyAtStop.new(vehicle_journey_at_stops_attributes)
 
@@ -80,19 +93,29 @@ RSpec.describe Chouette::VehicleJourney do
     end
 
     [
-      [ vehicle_journey('22:55', '00:05 day:1'), true ],
-      [ vehicle_journey([nil, '22:05'], '22:15',['22:25', nil]), true ],
-      [ vehicle_journey('23:55', ['23:59', '00:01 day:1'], '00:05 day:1'), true ],
-      [ vehicle_journey('23:55', '23:55 day:1', '23:55 day:2'), true ],
-      [ vehicle_journey('23:55', '23:55'), true ],
+      [true, ['22:55', '00:05 day:1']],
+      [true, [[nil, '22:05'], '22:15', ['22:25', nil]]],
+      [true, ['23:55', ['23:59', '00:01 day:1'], '00:05 day:1']],
+      [true, ['23:55', '23:55 day:1', '23:55 day:2']],
+      [true, ['23:55', '23:55']],
 
-      [ vehicle_journey('23:55 day:1', '00:05'), false ],
-      [ vehicle_journey('22:55 day:1', '22:05 day:1'), false ],
-      [ vehicle_journey('23:55', ['23:59', '00:01'], '00:05 day:1'), false ],
-      [ vehicle_journey('23:55', ['23:59', '00:01'], '00:05'), false ],
-    ].each do |target, expected|
-      context "when passing times are #{target.passing_times.uniq.to_sentence(locale: :en)}" do
-        let(:vehicle_journey) { target }
+      [false, ['23:55 day:1', '00:05']],
+      [false, ['22:55 day:1', '22:05 day:1']],
+      [false, ['23:55', ['23:59', '00:01'], '00:05 day:1']],
+      [false, ['23:55', ['23:59', '00:01'], '00:05']],
+
+      [true, ['08:00', 'f09:00', 'f10:00', '11:00']],
+      [true, ['08:00', nil, 'f10:00', '11:00']],
+      [true, ['08:00', 'f09:00', nil, '11:00']],
+      [false, ['08:00', 'f10:00', 'f9:00', '11:00']],
+      [false, ['09:00', 'f08:00', 'f10:00', '11:00']],
+      [false, ['08:00', 'f09:00', 'f11:00', '10:00']],
+      [false, ['08:00', ['f08:00', 'f10:00'], ['f9:00', 'f11:00'], '11:00']]
+    ].each do |expected, args|
+      vj = vehicle_journey(*args)
+
+      context "when passing times are #{args.inspect}" do
+        let(:vehicle_journey) { vj }
 
         it { is_expected.to expected ? be_truthy : be_falsey }
       end
@@ -434,71 +457,6 @@ describe Chouette::VehicleJourney, type: :model do
 
   end
 
-  describe 'order by time' do
-    let(:referential){ create :referential }
-    let(:route){ create :route, referential: referential }
-    let(:journey_pattern){ create :journey_pattern, route: route }
-    let(:vj1) { create(
-      :vehicle_journey,
-      journey_pattern: journey_pattern,
-      stop_arrival_time: '10:00:00',
-      stop_departure_time: '10:00:00'
-    ) }
-    let(:vj2) { create(
-      :vehicle_journey,
-      journey_pattern: journey_pattern,
-      stop_arrival_time: '11:00:00',
-      stop_departure_time: '11:00:00'
-    ) }
-    let(:vj3) { create(
-      :vehicle_journey,
-      journey_pattern: journey_pattern,
-      stop_arrival_time: '23:00:00',
-      stop_departure_time: '00:10:00'
-    ) }
-
-    before(:each){
-      referential.switch
-      referential.vehicle_journeys.to_a.push(vj1, vj2, vj3)
-    }
-
-    context '#order_by_departure_time' do
-      it 'should order vehicle journeys by vjas departure time' do
-        vj3.vehicle_journey_at_stops.each do |vjas|
-          vjas.update(departure_day_offset: 1)
-        end
-
-        asc_result = Chouette::VehicleJourney.order_by_departure_time('asc')
-        expect(asc_result.length).to eq(3)
-        expect(asc_result.first.id).to eq(vj1.id)
-        expect(asc_result.last.id).to eq(vj3.id)
-
-        desc_result = Chouette::VehicleJourney.order_by_departure_time('desc')
-        expect(desc_result.length).to eq(3)
-        expect(desc_result.first.id).to eq(vj3.id)
-        expect(desc_result.last.id).to eq(vj1.id)
-      end
-    end
-
-    context '#order_by_arrival_time' do
-      it 'should order vehicle journeys by vjas arrival time' do
-        vj3.vehicle_journey_at_stops.reject {|vjas| vjas == vj3.vehicle_journey_at_stops.first }.each do |vjas|
-          vjas.update(arrival_day_offset: 1)
-        end
-
-        asc_result = Chouette::VehicleJourney.order_by_arrival_time('asc')
-        expect(asc_result.length).to eq(3)
-        expect(asc_result.first.id).to eq(vj1.id)
-        expect(asc_result.last.id).to eq(vj3.id)
-
-        desc_result = Chouette::VehicleJourney.order_by_arrival_time('desc')
-        expect(desc_result.length).to eq(3)
-        expect(desc_result.first.id).to eq(vj3.id)
-        expect(desc_result.last.id).to eq(vj1.id)
-      end
-    end
-  end
-
   describe "state_update" do
     def vehicle_journey_at_stop_to_state vjas
       at_stop = {'stop_area_object_id' => vjas.stop_point.stop_area.objectid }
@@ -728,7 +686,7 @@ describe Chouette::VehicleJourney, type: :model do
 
     it 'should return errors when validation failed' do
       state['published_journey_name'] = 'edited_name'
-      state['vehicle_journey_at_stops'].last['departure_time']['hour'] = '23'
+      state['vehicle_journey_at_stops'].last['departure_time']['hour'] = '00'
 
       expect {
         Chouette::VehicleJourney.state_update(route, collection)

@@ -36,7 +36,7 @@ class RouteVehicleJourneysController < Chouette::ReferentialController
   def update
     state = JSON.parse request.raw_post
     @resources = Chouette::VehicleJourney.state_update route, state
-    errors = state.any? { |item| item['errors'] }
+    errors = state.any? { |item| item['errors'] || item['vehicle_journey_at_stops'].any? { |vjas| vjas['errors'] } }
 
     respond_to do |format|
       format.json do

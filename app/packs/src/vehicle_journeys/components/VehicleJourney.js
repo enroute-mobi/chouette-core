@@ -1,7 +1,7 @@
 import React, { Component } from 'react'
 import PropTypes from 'prop-types'
 import autoBind from 'react-autobind'
-import { last, truncate } from 'lodash'
+import { last, some, truncate } from 'lodash'
 import actions from '../actions'
 import EditVehicleJourney from '../containers/tools/EditVehicleJourney'
 import VehicleJourneyInfoButton from '../containers/tools/VehicleJourneyInfoButton'
@@ -91,7 +91,7 @@ export default class VehicleJourney extends Component {
 
 
     return (
-      <div className={'t2e-item' + (this.props.value.deletable ? ' disabled' : '') + (this.props.value.errors ? ' has-error': '')}>
+      <div className={'t2e-item' + (this.props.value.deletable ? ' disabled' : '') + (this.props.value.errors || some(this.props.value.vehicle_journey_at_stops, 'errors') ? ' has-error': '')}>
         <div
           className='th'
           onClick={(e) =>

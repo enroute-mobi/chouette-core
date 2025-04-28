@@ -165,6 +165,11 @@ en:
         vehicle_journey_at_stops: "Time list"
         start_time: Start time
         constraint_exclusions: Constraint Zones exclusions
+      vehicle_journey/vehicle_journey_at_stops:
+        arrival_time: "An arrival of the time list"
+        departure_time: "A departure of the time list"
+        earliest_departure_time_of_day: "A first departure of the time list"
+        latest_arrival_time_of_day: "A last arrival of the time list"
     errors:
       models:
         vehicle_journey:

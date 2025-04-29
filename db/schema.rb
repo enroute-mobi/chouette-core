@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2025_04_25_132626) do
+ActiveRecord::Schema.define(version: 2025_04_29_195523) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "btree_gin"
@@ -778,6 +778,7 @@ ActiveRecord::Schema.define(version: 2025_04_25_132626) do
     t.jsonb "metadata", default: {}
     t.jsonb "custom_field_values"
     t.bigint "shape_id"
+    t.bigint "booking_arrangement_id"
     t.index ["checksum"], name: "index_journey_patterns_on_checksum"
     t.index ["custom_field_values"], name: "index_journey_patterns_on_custom_field_values", using: :gin
     t.index ["objectid"], name: "journey_patterns_objectid_key", unique: true

@@ -448,8 +448,14 @@ class Source < ApplicationModel
         logger.info "Checksum unchanged. Import is skipped"
       end
     rescue Source::Retrieval::Error => e
-      logger.info "Retrieval failed with user message: #{e.message_key}"
+      logger.error("Retrieval failed with user message: #{e.message_key}")
       self.message_key = e.message_key
+      self.source_error = e
+    rescue ActiveRecord::RecordInvalid, # on import creation
+           Zip::Error,
+           GTFS::InvalidSourceException => e
+      logger.error("Retrieval failed with exception: #{e.inspect}")
+      self.message_key = :invalid_content
       self.source_error = e
     ensure
       save
@@ -481,6 +487,12 @@ class Source < ApplicationModel
     def process
       return unless processor
       logger.info "Process downloaded file"
+
+      unless downloaded_file_type
+        logger.error('Downloaded file is empty')
+        raise Error.new(:invalid_content)
+      end
+
       processor.process downloaded_file, processed_file
     end
     measure :process

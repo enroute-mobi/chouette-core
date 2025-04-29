@@ -23,8 +23,7 @@ GIT
 
 GIT
   remote: https://bitbucket.org/enroute-mobi/gtfs.git
-  revision: 230204191f0fdfeb048fe3617a592024bd6fe81c
-  branch: DATA-19-manage-gtfs-stop-time-start-end_
+  revision: 099b446b55bd410b34027069b14fa61505d73578
   specs:
     gtfs (0.3.6)
       csv

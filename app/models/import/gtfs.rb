@@ -948,7 +948,7 @@ class Import::Gtfs < Import::Base
   def process_trip(resource, trip, stop_times)
     begin
       raise InvalidTripSingleStopTime unless stop_times.many?
-      #raise InvalidTripTimesError unless consistent_stop_times(stop_times)
+      raise InvalidTripTimesError unless consistent_stop_times(stop_times)
 
       journey_pattern = find_or_create_journey_pattern(trip, stop_times)
       vehicle_journey = journey_pattern.vehicle_journeys.build route: journey_pattern.route
@@ -1468,7 +1468,10 @@ class Import::Gtfs < Import::Base
   end
 
   def consistent_stop_times(stop_times)
-    times = stop_times.flat_map { |s| [ s.arrival_time, s.departure_time ] }.compact.map { |t| GTFS::Time.parse(t) }
+    times = stop_times.flat_map.select { |s| s.arrival_time.present? && s.departure_time.present? }
+    return true unless times.any?
+
+    times = times.map { |s| [ s.arrival_time, s.departure_time ] }.compact.map { |t| GTFS::Time.parse(t) }
     times.sorted?
   end
 

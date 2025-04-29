@@ -130,6 +130,10 @@ module Search
         def label(key)
           key.human_name
         end
+
+        def sql_quote(request, value)
+          super(request, value.to_s)
+        end
       end
     end
 

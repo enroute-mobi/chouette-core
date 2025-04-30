@@ -415,8 +415,10 @@ Devise.setup do |config|
   end
 end
 
-Devise::Mailer.class_eval do
-  helper :mailer
+Rails.configuration.to_prepare do
+  Devise::Mailer.class_eval do
+    helper :mailer
+  end
 end
 
 require Rails.root.join('lib/devise/hooks/invite_on_saml_session')

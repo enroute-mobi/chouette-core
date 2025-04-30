@@ -42,7 +42,7 @@ GIT
 
 GIT
   remote: https://bitbucket.org/enroute-mobi/language_engine.git
-  revision: 05a0320b14dfe78cdd5fb72410ade7df312e804f
+  revision: 53dbcf977d7b9a690fa33c2d37b9eb0cdd255da9
   specs:
     language_engine (0.0.10)
       rails (>= 5.2)

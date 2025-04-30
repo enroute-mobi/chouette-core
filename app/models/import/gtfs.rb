@@ -1376,8 +1376,8 @@ class Import::Gtfs < Import::Base
           Chouette::StopPoint.new(
             stop_area_id: stop_area_id,
             position: position,
-            for_boarding: convert_pickup_and_drop_off_type(stop_time.pickup_type),
-            for_alighting: convert_pickup_and_drop_off_type(stop_time.drop_off_type),
+            for_boarding: convert_pickup_and_drop_off_type(stop_time.pickup_type, flexible?(stop_time)),
+            for_alighting: convert_pickup_and_drop_off_type(stop_time.drop_off_type, flexible?(stop_time)),
             flexible: flexible?(stop_time),
           ).with_transient(stop_id: stop_time.stop_id)
         end
@@ -1396,13 +1396,17 @@ class Import::Gtfs < Import::Base
       private
 
       def flexible?(stop_time)
-        stop_time.start_pickup_drop_off_window.present? && stop_time.end_pickup_drop_off_window.present?
+        stop_time.start_pickup_drop_off_window.present? || stop_time.end_pickup_drop_off_window.present?
       end
 
-      def convert_pickup_and_drop_off_type(value)
-        return 'normal' if value == '2'
-
-        'forbidden'
+      def convert_pickup_and_drop_off_type(value, is_flexible)
+        if is_flexible
+          @cache_pickup_and_drop_off_type_flexible ||= { '2' => 'normal' }.freeze
+          @cache_pickup_and_drop_off_type_flexible[value] || 'forbidden'
+        else
+          @cache_pickup_and_drop_off_type ||= { '1' => 'forbidden' }.freeze
+          @cache_pickup_and_drop_off_type[value] || 'normal'
+        end
       end
     end
 

@@ -1472,10 +1472,7 @@ class Import::Gtfs < Import::Base
   end
 
   def consistent_stop_times(stop_times)
-    times = stop_times.flat_map.select { |s| s.arrival_time.present? && s.departure_time.present? }
-    return true unless times.any?
-
-    times = times.map { |s| [ s.arrival_time, s.departure_time ] }.compact.map { |t| GTFS::Time.parse(t) }
+    times = stop_times.flat_map { |s| [ s.arrival_time, s.departure_time ] }.compact.map { |t| GTFS::Time.parse(t) }
     times.sorted?
   end
 

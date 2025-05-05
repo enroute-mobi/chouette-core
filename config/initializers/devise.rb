@@ -281,16 +281,6 @@ Devise.setup do |config|
   # so you need to do it manually. For the users scope, it would be:
   # config.omniauth_path_prefix = '/my_engine/users/auth'
 
-  if Rails.application.config.chouette_authentication_settings[:type] == "cas"
-    config.cas_base_url = Rails.application.config.chouette_authentication_settings[:cas_server]
-    config.cas_validate_url = Rails.application.config.chouette_authentication_settings[:cas_validate_url]
-  end
-
-  # you can override these if you need to, but cas_base_url is usually enough
-  # config.cas_login_url = "https://cas.myorganization.com/login"
-  # config.cas_logout_url = "https://cas.myorganization.com/logout"
-  # config.cas_validate_url = "https://cas.myorganization.com/serviceValidate"
-
   # The CAS specification allows for the passing of a follow URL to be displayed when
   # a user logs out on the CAS server. RubyCAS-Server also supports redirecting to a
   # URL via the destination param. Set either of these urls and specify either nil,
@@ -309,27 +299,10 @@ Devise.setup do |config|
   # CAS, uncomment the following line.
   # config.cas_create_user = false
 
-  # You can enable Single Sign Out, which by default is disabled.
-  # config.cas_enable_single_sign_out = true
-
   # If you don't want to use the username returned from your CAS server as the unique
   # identifier, but some other field passed in cas_extra_attributes, you can specify
   # the field name here.
   # config.cas_user_identifier = nil
-
-  # If you want to use the Devise Timeoutable module with single sign out,
-  # uncommenting this will redirect timeouts to the logout url, so that the CAS can
-  # take care of signing out the other serviced applocations. Note that each
-  # application manages timeouts independently, so one application timing out will
-  # kill the session on all applications serviced by the CAS.
-  # config.warden do |manager|
-  #   manager.failure_app = DeviseCasAuthenticatable::SingleSignOut::WardenFailureApp
-  # end
-
-  # If you need to specify some extra configs for rubycas-client, you can do this via:
-  # config.cas_client_config_options = {
-  #     logger: Rails.logger
-  # }
 
   # ==> Configuration for :saml_authenticatable
   # Create user if the user does not exist. (Default is false)

@@ -8,7 +8,6 @@ Rails.application.configure do
 
   SmartEnv.set :RAILS_HOST, default: 'http://front:3000'
   SmartEnv.set :RAILS_DB_PASSWORD, required: true
-  SmartEnv.add :AUTH_SETTINGS, default: { type: 'database' }
   SmartEnv.add_boolean :RAILS_SERVE_STATIC_FILES, default: true
 
   SmartEnv.add :MAIL_DELIVERY_METHOD, default: 'smtp'
@@ -172,8 +171,6 @@ Rails.application.configure do
   config.chouette_email_user = SmartEnv.boolean('CHOUETTE_EMAIL_USER')
   config.chouette_email_whitelist = SmartEnv.array('CHOUETTE_EMAIL_WHITELIST')
   config.chouette_email_blacklist = SmartEnv.array('CHOUETTE_EMAIL_BLACKLIST')
-
-  config.chouette_authentication_settings = SmartEnv.hash('AUTH_SETTINGS')
 
   config.to_prepare do
     Devise::Mailer.layout "mailer"

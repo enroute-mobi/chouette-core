@@ -75,11 +75,6 @@ Rails.application.configure do
   # Annotate rendered view with file names.
   # config.action_view.annotate_rendered_view_with_filenames = true
 
-  config.chouette_authentication_settings = {
-    type: 'cas',
-    cas_server: 'http://cas-portal.example.com/sessions'
-  }
-
   config.action_mailer.default_url_options = { host: 'localhost:3000' }
 
   # Configure the e-mail address which will be shown in Devise::Maile

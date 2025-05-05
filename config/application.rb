@@ -77,6 +77,7 @@ module Chouette
     SmartEnv.add_boolean :ENABLE_LINK_TO_SUPPORT, default: false
     SmartEnv.add :SUPPORT_LINK, default: 'https://support.enroute.mobi'
     SmartEnv.add_integer :CHOUETTE_IMPORT_MAX_RUNTIME
+    SmartEnv.add :AUTH_SETTINGS, default: { type: 'database' }
 
     # Manage Storage configuration
     SmartEnv.add :STORAGE, default: 'file'
@@ -159,6 +160,12 @@ module Chouette
     config.semantic_logger.environment = nil
     config.rails_semantic_logger.add_file_appender = false
     config.logger_reopen_max = nil
+
+    config.chouette_authentication_settings = SmartEnv.hash('AUTH_SETTINGS')
+    if config.chouette_authentication_settings[:type] == 'cas'
+      config.rack_cas.exclude_paths = ['/api/', '/healthz', '/subscriptions', %r{\A/\d{3}}]
+      config.rack_cas.server_url = config.chouette_authentication_settings[:cas_server]
+    end
 
     once = Rails.root.join('app/once')
     Rails.autoloaders.main.ignore(once)

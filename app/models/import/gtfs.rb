@@ -1479,7 +1479,15 @@ class Import::Gtfs < Import::Base
   def add_stop_point(stop_time, position, starting_day_offset, stop_point, vehicle_journey, worker)
     # JourneyPattern#vjas_add creates automaticaly VehicleJourneyAtStop
     vehicle_journey_at_stop = vehicle_journey.vehicle_journey_at_stops.build(stop_point_id: stop_point.id)
-    if stop_time.departure_time
+
+    if stop_time.start_pickup_drop_off_window.present? || stop_time.end_pickup_drop_off_window.present?
+      vehicle_journey_at_stop.latest_arrival_time_of_day =
+        time_of_day(stop_time.start_pickup_drop_off_window, starting_day_offset).second_offset
+      vehicle_journey_at_stop.earliest_departure_time_of_day =
+        time_of_day(stop_time.end_pickup_drop_off_window, starting_day_offset).second_offset
+
+      stop_point.update flexible: true
+    else
       departure_time_of_day = time_of_day stop_time.departure_time, starting_day_offset
       vehicle_journey_at_stop.departure_time_of_day = departure_time_of_day
 
@@ -1488,13 +1496,6 @@ class Import::Gtfs < Import::Base
       else
         vehicle_journey_at_stop.arrival_time_of_day = time_of_day stop_time.arrival_time, starting_day_offset
       end
-    elsif stop_time.start_pickup_drop_off_window.present? && stop_time.end_pickup_drop_off_window.present?
-      vehicle_journey_at_stop.latest_arrival_time_of_day =
-        time_of_day(stop_time.start_pickup_drop_off_window, starting_day_offset).second_offset
-      vehicle_journey_at_stop.earliest_departure_time_of_day =
-        time_of_day(stop_time.end_pickup_drop_off_window, starting_day_offset).second_offset
-
-      stop_point.update flexible: true
     end
 
     worker.add vehicle_journey_at_stop.attributes

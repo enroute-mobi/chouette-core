@@ -47,9 +47,9 @@ module ZipSupport
       end
 
       def add_entries zio
-        -> name, content do
-          zio.put_next_entry(name)
-          zio.write(content)
+        -> entry do
+          zio.put_next_entry(entry.first)
+          zio.write(entry.second)
         end
       end
     end

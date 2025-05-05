@@ -12,7 +12,7 @@ module Macro
     enumerize :criticity, in: %w[info warning error], default: 'info', scope: :shallow
 
     def full_message
-      I18n.t i18n_key, i18n_attributes
+      I18n.t i18n_key, **i18n_attributes
     end
 
     def i18n_key

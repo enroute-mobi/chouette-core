@@ -32,7 +32,7 @@ module Macro
 
         def shape
           if attributes = shapes[stop_area_sequence]
-            @shape ||= Shape.new attributes
+            @shape ||= Shape.new(**attributes)
           end
         end
 

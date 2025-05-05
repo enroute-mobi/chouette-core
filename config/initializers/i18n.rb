@@ -30,7 +30,7 @@ module I18n
 
   def self.t_with_default(key, params={})
     begin
-      self.t(key, {raise: true}.update(params))
+      self.t(key, **{ raise: true }.update(params))
     rescue
       if Rails.env.development?
         log_missing_key key, params
@@ -62,7 +62,7 @@ end
 
 module EnhancedTimeI18n
   def l(params={})
-    I18n.l(self, params)
+    I18n.l(self, **params)
   end
 end
 

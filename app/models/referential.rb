@@ -1,8 +1,8 @@
 # frozen_string_literal: true
 
 module ReferentialSaveWithLock
-  def save(options = {})
-    super(options)
+  def save(*, **)
+    super
   rescue ActiveRecord::StatementInvalid => e
     Chouette::Safe.capture "Referential #{name} with slug #{slug} save failed", e
 

@@ -172,7 +172,7 @@ module Chouette
       end
 
       def measure
-        ::Datadog::Tracing.trace(full_name, datadog_options) do |_span|
+        ::Datadog::Tracing.trace(full_name, **datadog_options) do |_span|
           next!
         end
       end

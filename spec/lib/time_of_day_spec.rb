@@ -151,7 +151,7 @@ RSpec.describe TimeOfDay do
       [ TimeOfDay.new(0), {seconds: 1.hour}, TimeOfDay.new(1) ],
     ].each do |time_of_day, arguments, expected|
       it "add #{arguments.inspect} to #{time_of_day.inspect} gives #{expected.inspect}" do
-        expect(time_of_day.add(arguments)).to eq(expected)
+        expect(time_of_day.add(**arguments)).to eq(expected)
       end
     end
   end

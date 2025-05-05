@@ -31,6 +31,6 @@ RSpec.describe 'imports/show.html.slim', type: :view do
   end
 
   def rendered_message(message)
-    I18n.t(message.message_key, message.message_attributes.symbolize_keys)
+    I18n.t(message.message_key, **message.message_attributes.symbolize_keys)
   end
 end

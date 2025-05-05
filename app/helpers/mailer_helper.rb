@@ -46,9 +46,9 @@ module MailerHelper
     i18n ||= "mailers.#{self.class.name.underscore}.#{method}.subject"
     if @status
       operation_status ||= "mailers.statuses.#{@status}"
-      [subject_prefix, translate(i18n, attributes), '(' + translate(operation_status) + ')'].compact.join(' ')
+      [subject_prefix, translate(i18n, **attributes), '(' + translate(operation_status) + ')'].compact.join(' ')
     else
-      [subject_prefix, translate(i18n, attributes)].compact.join(' ')
+      [subject_prefix, translate(i18n, **attributes)].compact.join(' ')
     end
   end
 end

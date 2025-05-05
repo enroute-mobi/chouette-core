@@ -12,7 +12,7 @@ module Control
     scope :error, -> { where(criticity: :error) }
 
     def full_message
-      I18n.t("control_messages.#{message_key || 'default'}", human_message_attributes)
+      I18n.t("control_messages.#{message_key || 'default'}", **human_message_attributes)
     end
 
     def human_message_attributes

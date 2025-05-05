@@ -11,7 +11,7 @@ module ExportsHelper
       end
 
       # Because .. one import message includes an URL ...
-      t(message_key, message_attributes).html_safe
+      t(message_key, **message_attributes).html_safe
     end
   end
 

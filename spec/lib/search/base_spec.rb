@@ -229,7 +229,7 @@ RSpec.describe Search::Base, type: :model do
         search.per_page = 42
         search.page = 7
 
-        expect(scope).to receive(:paginate).with(per_page: 42, page: 7).and_return(scope)
+        expect(scope).to receive(:paginate).with({ per_page: 42, page: 7 }).and_return(scope)
 
         subject
       end
@@ -909,7 +909,7 @@ RSpec.describe Search::Base::Chart do
 
       it do
         expect(models).to receive(:group).with('some_attribute').and_return(models)
-        expect(models).to receive(:order).with(count_id: :desc, 'some_attribute' => :desc).and_return(models)
+        expect(models).to receive(:order).with({ count_id: :desc, 'some_attribute' => :desc }).and_return(models)
         expect(models).to receive(:limit).with(10).and_return(models)
         expect(models).to receive(:count).with(:id).and_return({ 'A' => 1, 'B' => 0 })
         is_expected.to eq(['A', 'B'])
@@ -920,7 +920,7 @@ RSpec.describe Search::Base::Chart do
 
         it do
           expect(models).to receive(:group).and_return(models)
-          expect(models).to receive(:order).with(count_id: :asc, 'some_attribute' => :asc).and_return(models)
+          expect(models).to receive(:order).with({ count_id: :asc, 'some_attribute' => :asc }).and_return(models)
           expect(models).to receive(:limit).and_return(models)
           expect(models).to receive(:count).and_return({ 'A' => 1, 'B' => 0 })
           subject
@@ -932,7 +932,7 @@ RSpec.describe Search::Base::Chart do
 
         it do
           expect(models).to receive(:group).and_return(models)
-          expect(models).to receive(:order).with(count_id: :desc, 'some_attribute' => :desc).and_return(models)
+          expect(models).to receive(:order).with({ count_id: :desc, 'some_attribute' => :desc }).and_return(models)
           expect(models).to receive(:limit).and_return(models)
           expect(models).to receive(:count).and_return({ 'A' => 1, 'B' => 0 })
           subject
@@ -946,7 +946,8 @@ RSpec.describe Search::Base::Chart do
         it do
           expect(models).to receive(:group).and_return(models)
           expect(models).to(
-            receive(:order).with('sum_some_numeric_attribute' => :desc, 'some_attribute' => :desc).and_return(models)
+            receive(:order).with({ 'sum_some_numeric_attribute' => :desc, 'some_attribute' => :desc })
+                           .and_return(models)
           )
           expect(models).to receive(:limit).and_return(models)
           expect(models).to receive(:sum).with('some_numeric_attribute').and_return({ 'A' => 1, 'B' => 0 })
@@ -960,7 +961,7 @@ RSpec.describe Search::Base::Chart do
         it do
           expect(models).to receive(:select).with('some_attribute AS some_attribute').and_return(models)
           expect(models).to receive(:group).with('some_attribute').and_return(models)
-          expect(models).to receive(:order).with('some_attribute' => :desc).and_return(models)
+          expect(models).to receive(:order).with({ 'some_attribute' => :desc }).and_return(models)
           expect(models).to receive(:limit).and_return(models)
           expect(models.connection).to receive(:select_values).with(models)
           subject
@@ -972,7 +973,7 @@ RSpec.describe Search::Base::Chart do
           it do
             expect(models).to receive(:select).and_return(models)
             expect(models).to receive(:group).and_return(models)
-            expect(models).to receive(:order).with('some_attribute' => :asc).and_return(models)
+            expect(models).to receive(:order).with({ 'some_attribute' => :asc }).and_return(models)
             expect(models).to receive(:limit).and_return(models)
             expect(models.connection).to receive(:select_values).with(models)
             subject
@@ -985,7 +986,7 @@ RSpec.describe Search::Base::Chart do
           it do
             expect(models).to receive(:select).and_return(models)
             expect(models).to receive(:group).and_return(models)
-            expect(models).to receive(:order).with('some_attribute' => :desc).and_return(models)
+            expect(models).to receive(:order).with({ 'some_attribute' => :desc }).and_return(models)
             expect(models).to receive(:limit).and_return(models)
             expect(models.connection).to receive(:select_values).with(models)
             subject
@@ -1007,7 +1008,7 @@ RSpec.describe Search::Base::Chart do
         expect(models).to receive(:select).with('other_relations.name', 'another_relations.label').and_return(models)
         expect(models).to receive(:group).with('other_relations.name', 'another_relations.label').and_return(models)
         expect(models).to(
-          receive(:order).with(count_id: :desc, 'other_relations_name' => :desc, 'another_relations_label' => :desc)
+          receive(:order).with({ count_id: :desc, 'other_relations_name' => :desc, 'another_relations_label' => :desc })
                          .and_return(models)
         )
         expect(models).to receive(:limit).and_return(models)
@@ -1031,7 +1032,7 @@ RSpec.describe Search::Base::Chart do
           )
           expect(models).to receive(:group).with('other_relations.name', 'another_relations.label').and_return(models)
           expect(models).to(
-            receive(:order).with('other_relations_name' => :desc, 'another_relations_label' => :desc)
+            receive(:order).with({ 'other_relations_name' => :desc, 'another_relations_label' => :desc })
                            .and_return(models)
           )
           expect(models).to receive(:limit).and_return(models)
@@ -1047,7 +1048,7 @@ RSpec.describe Search::Base::Chart do
             expect(models).to receive(:select).and_return(models)
             expect(models).to receive(:group).and_return(models)
             expect(models).to(
-              receive(:order).with('other_relations_name' => :asc, 'another_relations_label' => :asc)
+              receive(:order).with({ 'other_relations_name' => :asc, 'another_relations_label' => :asc })
                              .and_return(models)
             )
             expect(models).to receive(:limit).and_return(models)
@@ -1088,7 +1089,7 @@ RSpec.describe Search::Base::Chart do
           ).and_return(models)
         )
         expect(models).to receive(:group).with('some_attribute').and_return(models)
-        expect(models).to receive(:order).with(count_id: :desc, 'some_attribute' => :desc).and_return(models)
+        expect(models).to receive(:order).with({ count_id: :desc, 'some_attribute' => :desc }).and_return(models)
         expect(models).to receive(:limit).with(5).and_return(models)
         expect(models).to receive(:count).with(:id).and_return({ 'A' => 1, 'B' => 0 })
         is_expected.to eq(['A', 'B'])
@@ -1100,7 +1101,7 @@ RSpec.describe Search::Base::Chart do
         it do
           expect(models).to receive(:where).and_return(models)
           expect(models).to receive(:group).and_return(models)
-          expect(models).to receive(:order).with(count_id: :asc, 'some_attribute' => :desc).and_return(models)
+          expect(models).to receive(:order).with({ count_id: :asc, 'some_attribute' => :desc }).and_return(models)
           expect(models).to receive(:limit).and_return(models)
           expect(models).to receive(:count).and_return({ 'A' => 1, 'B' => 0 })
           subject
@@ -1113,7 +1114,7 @@ RSpec.describe Search::Base::Chart do
         it do
           expect(models).to receive(:where).and_return(models)
           expect(models).to receive(:group).and_return(models)
-          expect(models).to receive(:order).with(count_id: :desc, 'some_attribute' => :asc).and_return(models)
+          expect(models).to receive(:order).with({ count_id: :desc, 'some_attribute' => :asc }).and_return(models)
           expect(models).to receive(:limit).and_return(models)
           expect(models).to receive(:count).and_return({ 'A' => 1, 'B' => 0 })
           subject
@@ -1126,7 +1127,7 @@ RSpec.describe Search::Base::Chart do
         it do
           expect(models).to receive(:none).and_return(models)
           expect(models).to receive(:group).with('some_attribute').and_return(models)
-          expect(models).to receive(:order).with(count_id: :desc, 'some_attribute' => :desc).and_return(models)
+          expect(models).to receive(:order).with({ count_id: :desc, 'some_attribute' => :desc }).and_return(models)
           expect(models).to receive(:limit).with(5).and_return(models)
           expect(models).to receive(:count).with(:id).and_return({})
           is_expected.to eq([])
@@ -1141,7 +1142,8 @@ RSpec.describe Search::Base::Chart do
           expect(models).to receive(:where).and_return(models)
           expect(models).to receive(:group).and_return(models)
           expect(models).to(
-            receive(:order).with('sum_some_numeric_attribute' => :desc, 'some_attribute' => :desc).and_return(models)
+            receive(:order).with({ 'sum_some_numeric_attribute' => :desc, 'some_attribute' => :desc })
+                           .and_return(models)
           )
           expect(models).to receive(:limit).and_return(models)
           expect(models).to receive(:sum).with('some_numeric_attribute').and_return({ 'A' => 1, 'B' => 0 })
@@ -1419,7 +1421,7 @@ RSpec.describe Search::Base::Chart do
             ).and_return(models)
           )
           expect(models).to receive(:group).with('some_attribute').and_return(models)
-          expect(models).to receive(:order).with('some_attribute' => :desc).and_return(models)
+          expect(models).to receive(:order).with({ 'some_attribute' => :desc }).and_return(models)
           expect(models).to receive(:limit).and_return(models)
           expect(models.connection).to receive(:select_values).with(models)
           subject
@@ -1432,7 +1434,7 @@ RSpec.describe Search::Base::Chart do
             expect(models).to receive(:select).and_return(models)
             expect(models).to receive(:where).and_return(models)
             expect(models).to receive(:group).and_return(models)
-            expect(models).to receive(:order).with('some_attribute' => :desc).and_return(models)
+            expect(models).to receive(:order).with({ 'some_attribute' => :desc }).and_return(models)
             expect(models).to receive(:limit).and_return(models)
             expect(models.connection).to receive(:select_values).with(models)
             subject
@@ -1446,7 +1448,7 @@ RSpec.describe Search::Base::Chart do
             expect(models).to receive(:select).and_return(models)
             expect(models).to receive(:where).and_return(models)
             expect(models).to receive(:group).and_return(models)
-            expect(models).to receive(:order).with('some_attribute' => :asc).and_return(models)
+            expect(models).to receive(:order).with({ 'some_attribute' => :asc }).and_return(models)
             expect(models).to receive(:limit).and_return(models)
             expect(models.connection).to receive(:select_values).with(models)
             subject
@@ -1690,7 +1692,7 @@ RSpec.describe Search::Base::Chart do
           ).and_return(models)
         )
         expect(models).to(
-          receive(:order).with(count_id: :desc, 'mock_groupdate_group_clause' => :desc).and_return(models)
+          receive(:order).with({ count_id: :desc, 'mock_groupdate_group_clause' => :desc }).and_return(models)
         )
         expect(models).to receive(:limit).and_return(models)
         expect(models).to receive(:count).and_return(double(keys: keys))
@@ -1741,7 +1743,7 @@ RSpec.describe Search::Base::Chart do
               series: false
             ).and_return(models)
           )
-          expect(models).to receive(:order).with('mock_groupdate_group_clause' => :desc).and_return(models)
+          expect(models).to receive(:order).with({ 'mock_groupdate_group_clause' => :desc }).and_return(models)
           expect(models).to receive(:limit).and_return(models)
           expect(models.connection).to receive(:select_values).with(models)
           subject
@@ -1795,7 +1797,7 @@ RSpec.describe Search::Base::Chart do
           ).and_return(models)
         )
         expect(models).to(
-          receive(:order).with(count_id: :desc, 'mock_groupdate_group_clause' => :desc).and_return(models)
+          receive(:order).with({ count_id: :desc, 'mock_groupdate_group_clause' => :desc }).and_return(models)
         )
         expect(models).to receive(:limit).and_return(models)
         expect(models).to receive(:count).and_return(double(keys: keys))
@@ -1820,7 +1822,7 @@ RSpec.describe Search::Base::Chart do
               series: false
             ).and_return(models)
           )
-          expect(models).to receive(:order).with('mock_groupdate_group_clause' => :desc).and_return(models)
+          expect(models).to receive(:order).with({ 'mock_groupdate_group_clause' => :desc }).and_return(models)
           expect(models).to receive(:limit).with(5).and_return(models)
           expect(models.connection).to receive(:select_values).with(models)
           subject
@@ -1848,7 +1850,7 @@ RSpec.describe Search::Base::Chart do
           ).and_return(models)
         )
         expect(models).to(
-          receive(:order).with(count_id: :desc, 'mock_groupdate_group_clause' => :desc).and_return(models)
+          receive(:order).with({ count_id: :desc, 'mock_groupdate_group_clause' => :desc }).and_return(models)
         )
         expect(models).to receive(:limit).and_return(models)
         expect(models).to receive(:count).and_return(double(keys: keys))
@@ -1873,7 +1875,7 @@ RSpec.describe Search::Base::Chart do
               series: false
             ).and_return(models)
           )
-          expect(models).to receive(:order).with('mock_groupdate_group_clause' => :desc).and_return(models)
+          expect(models).to receive(:order).with({ 'mock_groupdate_group_clause' => :desc }).and_return(models)
           expect(models).to receive(:limit).and_return(models)
           expect(models.connection).to receive(:select_values).with(models)
           subject
@@ -1900,7 +1902,7 @@ RSpec.describe Search::Base::Chart do
           ).and_return(models)
         )
         expect(models).to(
-          receive(:order).with(count_id: :desc, 'mock_groupdate_group_clause' => :desc).and_return(models)
+          receive(:order).with({ count_id: :desc, 'mock_groupdate_group_clause' => :desc }).and_return(models)
         )
         expect(models).to receive(:limit).and_return(models)
         expect(models).to receive(:count).and_return(double(keys: [1, 2, 3]))
@@ -1947,7 +1949,7 @@ RSpec.describe Search::Base::Chart do
               series: false
             ).and_return(models)
           )
-          expect(models).to receive(:order).with('mock_groupdate_group_clause' => :desc).and_return(models)
+          expect(models).to receive(:order).with({ 'mock_groupdate_group_clause' => :desc }).and_return(models)
           expect(models).to receive(:limit).and_return(models)
           expect(models.connection).to receive(:select_values).with(models)
           subject
@@ -1999,7 +2001,7 @@ RSpec.describe Search::Base::Chart do
           ).and_return(models)
         )
         expect(models).to(
-          receive(:order).with(count_id: :desc, 'mock_groupdate_group_clause' => :desc).and_return(models)
+          receive(:order).with({ count_id: :desc, 'mock_groupdate_group_clause' => :desc }).and_return(models)
         )
         expect(models).to receive(:limit).and_return(models)
         expect(models).to receive(:count).and_return(double(keys: [1, 2, 3]))
@@ -2052,7 +2054,7 @@ RSpec.describe Search::Base::Chart do
           ).and_return(models)
         )
         expect(models).to(
-          receive(:order).with(count_id: :desc, 'mock_groupdate_group_clause' => :desc).and_return(models)
+          receive(:order).with({ count_id: :desc, 'mock_groupdate_group_clause' => :desc }).and_return(models)
         )
         expect(models).to receive(:limit).and_return(models)
         expect(models).to receive(:count).and_return(double(keys: keys))
@@ -2103,7 +2105,7 @@ RSpec.describe Search::Base::Chart do
               series: false
             ).and_return(models)
           )
-          expect(models).to receive(:order).with('mock_groupdate_group_clause' => :desc).and_return(models)
+          expect(models).to receive(:order).with({ 'mock_groupdate_group_clause' => :desc }).and_return(models)
           expect(models).to receive(:limit).and_return(models)
           expect(models.connection).to receive(:select_values).with(models)
           subject
@@ -2159,7 +2161,7 @@ RSpec.describe Search::Base::Chart do
           ).and_return(models)
         )
         expect(models).to(
-          receive(:order).with(count_id: :desc, 'mock_groupdate_group_clause' => :desc).and_return(models)
+          receive(:order).with({ count_id: :desc, 'mock_groupdate_group_clause' => :desc }).and_return(models)
         )
         expect(models).to receive(:limit).and_return(models)
         expect(models).to receive(:count).and_return(double(keys: keys))
@@ -2184,7 +2186,7 @@ RSpec.describe Search::Base::Chart do
               series: false
             ).and_return(models)
           )
-          expect(models).to receive(:order).with('mock_groupdate_group_clause' => :desc).and_return(models)
+          expect(models).to receive(:order).with({ 'mock_groupdate_group_clause' => :desc }).and_return(models)
           expect(models).to receive(:limit).and_return(models)
           expect(models.connection).to receive(:select_values).with(models)
           subject
@@ -2212,7 +2214,7 @@ RSpec.describe Search::Base::Chart do
           ).and_return(models)
         )
         expect(models).to(
-          receive(:order).with(count_id: :desc, 'mock_groupdate_group_clause' => :desc).and_return(models)
+          receive(:order).with({ count_id: :desc, 'mock_groupdate_group_clause' => :desc }).and_return(models)
         )
         expect(models).to receive(:limit).and_return(models)
         expect(models).to receive(:count).and_return(double(keys: keys))
@@ -2237,7 +2239,7 @@ RSpec.describe Search::Base::Chart do
               series: false
             ).and_return(models)
           )
-          expect(models).to receive(:order).with('mock_groupdate_group_clause' => :desc).and_return(models)
+          expect(models).to receive(:order).with({ 'mock_groupdate_group_clause' => :desc }).and_return(models)
           expect(models).to receive(:limit).and_return(models)
           expect(models.connection).to receive(:select_values).with(models)
           subject
@@ -2264,7 +2266,7 @@ RSpec.describe Search::Base::Chart do
           ).and_return(models)
         )
         expect(models).to(
-          receive(:order).with(count_id: :desc, 'mock_groupdate_group_clause' => :desc).and_return(models)
+          receive(:order).with({ count_id: :desc, 'mock_groupdate_group_clause' => :desc }).and_return(models)
         )
         expect(models).to receive(:limit).and_return(models)
         expect(models).to receive(:count).and_return(double(keys: [1, 2, 3]))
@@ -2311,7 +2313,7 @@ RSpec.describe Search::Base::Chart do
               series: false
             ).and_return(models)
           )
-          expect(models).to receive(:order).with('mock_groupdate_group_clause' => :desc).and_return(models)
+          expect(models).to receive(:order).with({ 'mock_groupdate_group_clause' => :desc }).and_return(models)
           expect(models).to receive(:limit).and_return(models)
           expect(models.connection).to receive(:select_values).with(models)
           subject
@@ -2372,7 +2374,13 @@ RSpec.describe Search::Base::Chart do
         )
         expect(models).to receive(:group).with('other_relation_bs.name', 'another_relation_bs.label').and_return(models)
         expect(models).to(
-          receive(:order).with(count_id: :desc, 'other_relation_bs_name' => :desc, 'another_relation_bs_label' => :desc)
+          receive(:order).with(
+                            {
+                              count_id: :desc,
+                             'other_relation_bs_name' => :desc,
+                             'another_relation_bs_label' => :desc
+                            }
+                          )
                          .and_return(models)
         )
         expect(models).to receive(:limit).and_return(models)
@@ -2413,7 +2421,7 @@ RSpec.describe Search::Base::Chart do
             receive(:group).with('other_relation_bs.name', 'another_relation_bs.label').and_return(models)
           )
           expect(models).to(
-            receive(:order).with('other_relation_bs_name' => :desc, 'another_relation_bs_label' => :desc)
+            receive(:order).with({ 'other_relation_bs_name' => :desc, 'another_relation_bs_label' => :desc })
                            .and_return(models)
           )
           expect(models).to receive(:limit).and_return(models)
@@ -2430,7 +2438,7 @@ RSpec.describe Search::Base::Chart do
             expect(models).to receive(:where).and_return(models)
             expect(models).to receive(:group).and_return(models)
             expect(models).to(
-              receive(:order).with('other_relation_bs_name' => :asc, 'another_relation_bs_label' => :asc)
+              receive(:order).with({ 'other_relation_bs_name' => :asc, 'another_relation_bs_label' => :asc })
                              .and_return(models)
             )
             expect(models).to receive(:limit).and_return(models)
@@ -2464,7 +2472,7 @@ RSpec.describe Search::Base::Chart do
     context 'with a simple string attribute' do
       it do
         expect(models).to receive(:group).with('some_attribute').and_return(models)
-        expect(models).to receive(:order).with(count_id: :desc, 'some_attribute' => :desc).and_return(models)
+        expect(models).to receive(:order).with({ count_id: :desc, 'some_attribute' => :desc }).and_return(models)
         expect(models).to receive(:limit).with(10).and_return(models)
         expect(models).to receive(:count).with(:id)
         subject
@@ -2475,7 +2483,7 @@ RSpec.describe Search::Base::Chart do
 
         it do
           expect(models).to receive(:group).and_return(models)
-          expect(models).to receive(:order).with(count_id: :asc, 'some_attribute' => :asc).and_return(models)
+          expect(models).to receive(:order).with({ count_id: :asc, 'some_attribute' => :asc }).and_return(models)
           expect(models).to receive(:limit).and_return(models)
           expect(models).to receive(:count)
           subject
@@ -2499,7 +2507,7 @@ RSpec.describe Search::Base::Chart do
 
         it do
           expect(models).to receive(:group).with('some_attribute').and_return(models)
-          expect(models).to receive(:order).with('some_attribute' => :desc).and_return(models)
+          expect(models).to receive(:order).with({ 'some_attribute' => :desc }).and_return(models)
           expect(models).to receive(:limit).with(10).and_return(models)
           expect(models).to receive(:count).with(:id)
           subject
@@ -2510,7 +2518,7 @@ RSpec.describe Search::Base::Chart do
 
           it do
             expect(models).to receive(:group).and_return(models)
-            expect(models).to receive(:order).with('some_attribute' => :asc).and_return(models)
+            expect(models).to receive(:order).with({ 'some_attribute' => :asc }).and_return(models)
             expect(models).to receive(:limit).and_return(models)
             expect(models).to receive(:count)
             subject
@@ -2546,7 +2554,7 @@ RSpec.describe Search::Base::Chart do
           expect(models).to receive(:group).with('some_attribute').and_return(models)
           expect(models).to receive(:group).with('some_other_attribute').and_return(models)
           expect(models).to(
-            receive(:order).with(count_id: :desc, 'some_other_attribute' => :desc, 'some_attribute' => :desc)
+            receive(:order).with({ count_id: :desc, 'some_other_attribute' => :desc, 'some_attribute' => :desc })
                            .and_return(models)
           )
           expect(models).to receive(:limit).with(50).and_return(models)
@@ -2561,7 +2569,7 @@ RSpec.describe Search::Base::Chart do
             expect(models).to receive(:where).twice.and_return(models)
             expect(models).to receive(:group).twice.and_return(models)
             expect(models).to(
-              receive(:order).with(count_id: :asc, 'some_other_attribute' => :asc, 'some_attribute' => :desc)
+              receive(:order).with({ count_id: :asc, 'some_other_attribute' => :asc, 'some_attribute' => :desc })
                              .and_return(models)
             )
             expect(models).to receive(:limit).and_return(models)
@@ -2577,7 +2585,7 @@ RSpec.describe Search::Base::Chart do
             expect(models).to receive(:where).twice.and_return(models)
             expect(models).to receive(:group).twice.and_return(models)
             expect(models).to(
-              receive(:order).with(count_id: :desc, 'some_other_attribute' => :desc, 'some_attribute' => :asc)
+              receive(:order).with({ count_id: :desc, 'some_other_attribute' => :desc, 'some_attribute' => :asc })
                              .and_return(models)
             )
             expect(models).to receive(:limit).and_return(models)
@@ -2593,7 +2601,7 @@ RSpec.describe Search::Base::Chart do
             expect(models).to receive(:where).twice.and_return(models)
             expect(models).to receive(:group).twice.and_return(models)
             expect(models).to(
-              receive(:order).with('some_other_attribute' => :desc, 'some_attribute' => :desc).and_return(models)
+              receive(:order).with({ 'some_other_attribute' => :desc, 'some_attribute' => :desc }).and_return(models)
             )
             expect(models).to receive(:limit).and_return(models)
             expect(models).to receive(:count)
@@ -2607,7 +2615,7 @@ RSpec.describe Search::Base::Chart do
               expect(models).to receive(:where).twice.and_return(models)
               expect(models).to receive(:group).twice.and_return(models)
               expect(models).to(
-                receive(:order).with('some_other_attribute' => :asc, 'some_attribute' => :desc).and_return(models)
+                receive(:order).with({ 'some_other_attribute' => :asc, 'some_attribute' => :desc }).and_return(models)
               )
               expect(models).to receive(:limit).and_return(models)
               expect(models).to receive(:count)
@@ -2622,7 +2630,7 @@ RSpec.describe Search::Base::Chart do
               expect(models).to receive(:where).twice.and_return(models)
               expect(models).to receive(:group).twice.and_return(models)
               expect(models).to(
-                receive(:order).with('some_other_attribute' => :desc, 'some_attribute' => :asc).and_return(models)
+                receive(:order).with({ 'some_other_attribute' => :desc, 'some_attribute' => :asc }).and_return(models)
               )
               expect(models).to receive(:limit).and_return(models)
               expect(models).to receive(:count)
@@ -2891,7 +2899,7 @@ RSpec.describe Search::Base::Chart do
           )
           expect(models).to receive(:group).with('some_attribute').and_return(models)
           expect(models).to(
-            receive(:order).with(count_id: :desc, 'some_attribute' => :desc, 'mock_groupdate_group_clause' => :desc)
+            receive(:order).with({ count_id: :desc, 'some_attribute' => :desc, 'mock_groupdate_group_clause' => :desc })
                            .and_return(models)
           )
           expect(models).to receive(:limit).with(50).and_return(models)
@@ -3268,7 +3276,7 @@ RSpec.describe Search::Base::Chart do
           )
           expect(models).to receive(:group).and_return(models)
           expect(models).to(
-            receive(:order).with(count_id: :desc, 'some_attribute' => :desc, 'mock_groupdate_group_clause' => :desc)
+            receive(:order).with({ count_id: :desc, 'some_attribute' => :desc, 'mock_groupdate_group_clause' => :desc })
                            .and_return(models)
           )
           expect(models).to receive(:limit).and_return(models)
@@ -3368,7 +3376,7 @@ RSpec.describe Search::Base::Chart do
           )
           expect(models).to receive(:group).with('some_attribute').and_return(models)
           expect(models).to(
-            receive(:order).with(count_id: :desc, 'some_attribute' => :desc, 'mock_groupdate_group_clause' => :desc)
+            receive(:order).with({ count_id: :desc, 'some_attribute' => :desc, 'mock_groupdate_group_clause' => :desc })
                            .and_return(models)
           )
           expect(models).to receive(:limit).with(50).and_return(models)
@@ -3625,7 +3633,7 @@ RSpec.describe Search::Base::Chart do
           receive(:group).with('CASE WHEN 1 "true" ELSE "false" END').and_return(models)
         )
         expect(models).to(
-          receive(:order).with(count_id: :desc, 'case_when_1_true_else_false_end' => :desc).and_return(models)
+          receive(:order).with({ count_id: :desc, 'case_when_1_true_else_false_end' => :desc }).and_return(models)
         )
         expect(models).to receive(:limit).and_return(models)
         expect(models).to receive(:count)
@@ -3648,7 +3656,7 @@ RSpec.describe Search::Base::Chart do
           receive(:group).with('other_relations.name', 'another_relations.label').and_return(models)
         )
         expect(models).to(
-          receive(:order).with(count_id: :desc, 'other_relations_name' => :desc, 'another_relations_label' => :desc)
+          receive(:order).with({ count_id: :desc, 'other_relations_name' => :desc, 'another_relations_label' => :desc })
                          .and_return(models)
         )
         expect(models).to receive(:limit).and_return(models)
@@ -3664,7 +3672,8 @@ RSpec.describe Search::Base::Chart do
           expect(models).to receive(:select).and_return(models)
           expect(models).to receive(:group).and_return(models)
           expect(models).to(
-            receive(:order).with('other_relations_name' => :desc, 'another_relations_label' => :desc).and_return(models)
+            receive(:order).with({ 'other_relations_name' => :desc, 'another_relations_label' => :desc })
+                           .and_return(models)
           )
           expect(models).to receive(:limit).and_return(models)
           expect(models).to receive(:count)
@@ -3679,7 +3688,8 @@ RSpec.describe Search::Base::Chart do
             expect(models).to receive(:select).and_return(models)
             expect(models).to receive(:group).and_return(models)
             expect(models).to(
-              receive(:order).with('other_relations_name' => :asc, 'another_relations_label' => :asc).and_return(models)
+              receive(:order).with({ 'other_relations_name' => :asc, 'another_relations_label' => :asc })
+                             .and_return(models)
             )
             expect(models).to receive(:limit).and_return(models)
             expect(models).to receive(:count)
@@ -3729,13 +3739,17 @@ RSpec.describe Search::Base::Chart do
           expect(models).to(
             receive(:group).with('other_relations.name', 'another_relations.label').and_return(models)
           )
-          expect(models).to receive(:order).with(
-            count_id: :desc,
-            'other_relations_name' => :desc,
-            'another_relations_label' => :desc,
-            'other_relation_bs_name' => :desc,
-            'another_relation_bs_label' => :desc
-          ).and_return(models)
+          expect(models).to(
+            receive(:order).with(
+              {
+                count_id: :desc,
+                'other_relations_name' => :desc,
+                'another_relations_label' => :desc,
+                'other_relation_bs_name' => :desc,
+                'another_relation_bs_label' => :desc
+              }
+            ).and_return(models)
+          )
           expect(models).to receive(:limit).with(50).and_return(models)
           expect(models).to receive(:count)
           subject
@@ -3749,13 +3763,17 @@ RSpec.describe Search::Base::Chart do
             expect(models).to receive(:select).twice.and_return(models)
             expect(models).to receive(:where).twice.and_return(models)
             expect(models).to receive(:group).twice.and_return(models)
-            expect(models).to receive(:order).with(
-              count_id: :desc,
-              'other_relations_name' => :desc,
-              'another_relations_label' => :desc,
-              'other_relation_bs_name' => :asc,
-              'another_relation_bs_label' => :asc
-            ).and_return(models)
+            expect(models).to(
+              receive(:order).with(
+                {
+                  count_id: :desc,
+                  'other_relations_name' => :desc,
+                  'another_relations_label' => :desc,
+                  'other_relation_bs_name' => :asc,
+                  'another_relation_bs_label' => :asc
+                }
+              ).and_return(models)
+            )
             expect(models).to receive(:limit).and_return(models)
             expect(models).to receive(:count)
             subject
@@ -3770,12 +3788,16 @@ RSpec.describe Search::Base::Chart do
             expect(models).to receive(:select).twice.and_return(models)
             expect(models).to receive(:where).twice.and_return(models)
             expect(models).to receive(:group).twice.and_return(models)
-            expect(models).to receive(:order).with(
-              'other_relations_name' => :desc,
-              'another_relations_label' => :desc,
-              'other_relation_bs_name' => :desc,
-              'another_relation_bs_label' => :desc
-            ).and_return(models)
+            expect(models).to(
+              receive(:order).with(
+                {
+                  'other_relations_name' => :desc,
+                  'another_relations_label' => :desc,
+                  'other_relation_bs_name' => :desc,
+                  'another_relation_bs_label' => :desc
+                }
+              ).and_return(models)
+            )
             expect(models).to receive(:limit).and_return(models)
             expect(models).to receive(:count)
             subject
@@ -3789,12 +3811,16 @@ RSpec.describe Search::Base::Chart do
               expect(models).to receive(:select).twice.and_return(models)
               expect(models).to receive(:where).twice.and_return(models)
               expect(models).to receive(:group).twice.and_return(models)
-              expect(models).to receive(:order).with(
-                'other_relations_name' => :desc,
-                'another_relations_label' => :desc,
-                'other_relation_bs_name' => :asc,
-                'another_relation_bs_label' => :asc
-              ).and_return(models)
+              expect(models).to(
+                receive(:order).with(
+                  {
+                    'other_relations_name' => :desc,
+                    'another_relations_label' => :desc,
+                    'other_relation_bs_name' => :asc,
+                    'another_relation_bs_label' => :asc
+                  }
+                ).and_return(models)
+              )
               expect(models).to receive(:limit).and_return(models)
               expect(models).to receive(:count)
               subject
@@ -3812,7 +3838,8 @@ RSpec.describe Search::Base::Chart do
         it do
           expect(models).to receive(:group).and_return(models)
           expect(models).to(
-            receive(:order).with('sum_some_numeric_attribute' => :desc, 'some_attribute' => :desc).and_return(models)
+            receive(:order).with({ 'sum_some_numeric_attribute' => :desc, 'some_attribute' => :desc })
+                           .and_return(models)
           )
           expect(models).to receive(:limit).and_return(models)
           expect(models).to receive(:sum).with('some_numeric_attribute')
@@ -3826,7 +3853,7 @@ RSpec.describe Search::Base::Chart do
         it do
           expect(models).to receive(:group).and_return(models)
           expect(models).to(
-            receive(:order).with('sum_extract_epoch_from_updated_at_created_at' => :desc, 'some_attribute' => :desc)
+            receive(:order).with({ 'sum_extract_epoch_from_updated_at_created_at' => :desc, 'some_attribute' => :desc })
                            .and_return(models)
           )
           expect(models).to receive(:limit).and_return(models)
@@ -3843,7 +3870,8 @@ RSpec.describe Search::Base::Chart do
       it do
         expect(models).to receive(:group).and_return(models)
         expect(models).to(
-          receive(:order).with('average_some_numeric_attribute' => :desc, 'some_attribute' => :desc).and_return(models)
+          receive(:order).with({ 'average_some_numeric_attribute' => :desc, 'some_attribute' => :desc })
+                         .and_return(models)
         )
         expect(models).to receive(:limit).and_return(models)
         expect(models).to receive(:average).with('some_numeric_attribute')

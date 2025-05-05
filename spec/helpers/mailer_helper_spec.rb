@@ -17,7 +17,7 @@ describe MailerHelper, type: :helper do
       subject { helper.mail_subject(i18n: '18n key') }
 
       let(:i18n_subject) { 'i18n translation of given key' }
-      before { allow(helper).to receive(:translate).with('18n key', {}).and_return(i18n_subject) }
+      before { allow(helper).to receive(:translate).with('18n key', **{}).and_return(i18n_subject) }
 
       it { is_expected.to eq(i18n_subject) }
     end
@@ -28,7 +28,7 @@ describe MailerHelper, type: :helper do
 
         let(:i18n_subject) { "i18n translation of 'mailers.<class>.<method>.subject'" }
         before do
-          allow(helper).to receive(:translate).with('mailers.test.<method>.subject', {}).and_return(i18n_subject)
+          allow(helper).to receive(:translate).with('mailers.test.<method>.subject', **{}).and_return(i18n_subject)
         end
 
         it { is_expected.to eq(i18n_subject) }
@@ -39,7 +39,7 @@ describe MailerHelper, type: :helper do
 
         let(:i18n_subject) { "i18n translation of 'mailers.<class>.finished.subject'" }
         before do
-          allow(helper).to receive(:translate).with('mailers.test.finished.subject', {}).and_return(i18n_subject)
+          allow(helper).to receive(:translate).with('mailers.test.finished.subject', **{}).and_return(i18n_subject)
         end
 
         it { is_expected.to eq(i18n_subject) }
@@ -53,7 +53,7 @@ describe MailerHelper, type: :helper do
 
       let(:i18n_subject) { "i18n translation with attributes" }
       before do
-        allow(helper).to receive(:translate).with(a_value, attributes).and_return(i18n_subject)
+        allow(helper).to receive(:translate).with(a_value, **attributes).and_return(i18n_subject)
       end
 
       it { is_expected.to eq(i18n_subject) }

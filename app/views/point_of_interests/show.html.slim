@@ -7,19 +7,21 @@
       .col-lg-6.col-md-6.col-sm-12.col-xs-12
         = simple_block_for @point_of_interest, title: t('point_of_interests.form.sections.identification') do |d|
           = d.attribute :name
-          = d.attribute :url, link: @point_of_interest.url
           = d.attribute :point_of_interest_category, as: :association, link: ->(category) { workbench_shape_referential_point_of_interest_category_path(@workbench, category) }
+          = d.attribute :url, link: @point_of_interest.url
+
+      .col-lg-6.col-md-6.col-sm-12.col-xs-12
+        = simple_block_for @point_of_interest, title: t('point_of_interests.form.sections.localisation') do |d|
           = d.attribute :position_input
           = d.attribute :address_line_1
           = d.attribute :zip_code
           = d.attribute :city_name
           = d.attribute :postal_region
           = d.attribute :country
+
+        = simple_block_for @point_of_interest, title: t('point_of_interests.form.sections.contact') do |d|
           = d.attribute :email
           = d.attribute :phone
-
-      .col-lg-6.col-md-6.col-sm-12.col-xs-12
-        = render 'codes/block', model: @point_of_interest
     .row
       .col-lg-6.col-md-6.col-sm-12.col-xs-12
         = simple_block_for @point_of_interest, title: t('point_of_interests.form.sections.hours') do |d|
@@ -31,3 +33,8 @@
               = d.attribute :opening_time_of_day, as: :time_of_day, object: c
               = d.attribute :closing_time_of_day, as: :time_of_day, object: c
               = d.attribute :week_days, value: %w(monday tuesday wednesday thursday friday saturday sunday).collect{ |d| content_tag(:span, t("calendars.days.#{d}"), class: "label label-default #{c.week_days.send(d + '?') ? '' : 'disabled'}") }.join.html_safe, object: c
+
+        = simple_block_for @point_of_interest, title: t('point_of_interests.form.sections.description') do |d|
+          = d.attribute :description
+
+        = render 'codes/block', model: @point_of_interest

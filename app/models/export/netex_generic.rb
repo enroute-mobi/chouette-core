@@ -748,6 +748,7 @@ class Export::NetexGeneric < Export::Base
           id: uuid,
           name: name,
           url: url,
+          description: description,
           centroid: centroid,
           postal_address: postal_address,
           key_list: netex_alternate_identifiers,

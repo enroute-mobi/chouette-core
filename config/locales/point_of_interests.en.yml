@@ -21,6 +21,7 @@ en:
         localisation: "Localisation"
         contact: "Contact"
         hours: "Hours"
+        description: "Description"
         codes: "Codes"
       point_of_interest_category_placeholder: Search by name of Point of Interest Category
       add_hours: "Add hour"
@@ -46,6 +47,7 @@ en:
       point_of_interest:
         name: "Name"
         url: "Url"
+        description: "Description"
         point_of_interest_category_id: "Category"
         point_of_interest_category: "Category"
         position_input: "Position"

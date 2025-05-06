@@ -1848,12 +1848,14 @@ class Export::NetexGeneric < Export::Base
           "vehicle_journeys.journey_pattern_id AS journey_pattern_id",
           "vehicle_journeys.id AS vehicle_journey_id",
           "stop_areas.time_zone AS time_zone",
+          "stop_points.position as position"
         )
     end
 
     class Decorator < ModelDecorator
       def netex_attributes
         {
+          id: netex_identifier,
           stop_point_in_journey_pattern_ref: stop_point_in_journey_pattern_ref
         }.tap do |attributes|
           if departure_passing_time
@@ -1878,6 +1880,10 @@ class Export::NetexGeneric < Export::Base
 
       def netex_resource
         Netex::TimetabledPassingTime.new(netex_attributes).with_tag(parent_id: parent_code)
+      end
+
+      def netex_identifier
+        Code::Value.merge(parent_code, position, type: 'TimetabledPassingTime') if parent_code
       end
 
       def parent_code

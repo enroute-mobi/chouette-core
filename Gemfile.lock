@@ -66,8 +66,7 @@ GIT
 
 GIT
   remote: https://bitbucket.org/enroute-mobi/netex.git
-  revision: eba14084f12b6b8c04b1d4d33c04e261e0c10287
-  branch: DATA-20-update-french-profile
+  revision: cfc8339f30938eb04f09b9498d6c4933a582a1d2
   specs:
     netex (0.1.2)
       activesupport

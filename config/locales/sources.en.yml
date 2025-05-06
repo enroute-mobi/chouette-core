@@ -32,6 +32,7 @@ en:
       authentication_failed: Authentication failed
       url_not_available: URL not available
       download_failed:  Download failed
+      invalid_content: Invalid content
   activerecord:
     models:
       source:

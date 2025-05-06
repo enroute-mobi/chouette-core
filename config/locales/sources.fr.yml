@@ -32,6 +32,7 @@ fr:
       authentication_failed: Authentification refusée
       url_not_available: URL indisponible
       download_failed: Le téléchargement a échoué
+      invalid_content: Contenu invalide
   activerecord:
     models:
       source:

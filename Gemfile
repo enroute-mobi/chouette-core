@@ -142,7 +142,7 @@ gem 'sentry-delayed_job'
 gem 'sentry-ruby'
 gem 'sentry-rails'
 
-gem 'coverband', require: false
+gem 'coverband', '~> 6.0.0', require: false # TODO: CHOUETTE-4408 cannot update to 6.1 until ruby 3.1
 
 gem 'nest', en_route: 'nest'
 

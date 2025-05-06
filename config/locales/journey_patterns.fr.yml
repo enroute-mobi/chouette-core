@@ -34,6 +34,8 @@ fr:
     form:
       warning: "Attention, la sélection s'applique aussi aux %{count} courses de la mission"
       shape_placeholder: Filtrer par nom ou ID
+      flexible: "Flexible"
+      booking_arrangement_placeholder: "Utiliser une condition de réservation de ligne"
   activerecord:
     errors:
       models:
@@ -68,6 +70,7 @@ fr:
         checksum: Signature métier
         shape: Tracé
         vehicle_journeys: Courses
+        booking_arrangement: "Condition de réservation"
   formtastic:
     titles:
       journey_pattern:

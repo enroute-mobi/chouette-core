@@ -60,7 +60,8 @@ describe('journeyPatterns reducer', () => {
       name: {value : 'm3'},
       published_name: {value: 'M3'},
       registration_number: {value: ''},
-      shape: {id: 1, name: "test", uuid: "test-uuid"}
+      shape: {id: 1, name: "test", uuid: "test-uuid"},
+      booking_arrangement_id: { value: '42' }
     }
 
     expect(
@@ -74,7 +75,8 @@ describe('journeyPatterns reducer', () => {
       registration_number: '',
       deletable: false,
       costs: {},
-      shape: {id: 1, name: "test", uuid: "test-uuid"}
+      shape: {id: 1, name: "test", uuid: "test-uuid"},
+      booking_arrangement_id: '42'
     }, ...state])
   })
 

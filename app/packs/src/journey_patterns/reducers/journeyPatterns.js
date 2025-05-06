@@ -20,7 +20,8 @@ const journeyPattern = (state = {}, action) =>{
         costs: {},
         custom_fields: action.data.custom_fields,
         deletable: false,
-        shape: action.data.shape
+        shape: action.data.shape,
+        booking_arrangement_id: action.data.booking_arrangement_id.value
       }
     case 'UPDATE_CHECKBOX_VALUE':
       var updatedStopPoints = state.stop_points.map((s) => {

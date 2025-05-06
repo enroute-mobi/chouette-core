@@ -83,7 +83,8 @@ module Chouette
         published_name: item['published_name'],
         registration_number: item['registration_number'],
         costs: item['costs'],
-        shape_id: item['shape'].try(:[], 'id')
+        shape_id: item['shape'].try(:[], 'id'),
+        booking_arrangement_id: item['booking_arrangement_id']
       }
       attrs["custom_field_values"] = Hash[
         *(item["custom_fields"] || {})

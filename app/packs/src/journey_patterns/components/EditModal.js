@@ -137,6 +137,42 @@ export default class EditModal extends Component {
                         </div>
                       </div>
                     )}
+                    <div className='row'>
+                      <div className='col-xs-12'>
+                        <div className='subform'>
+                          <div className='nested-head'>
+                            <div className='wrapper'>
+                              <div>
+                                <div className='form-group'>
+                                  <label className='control-label'>{I18n.t('journey_patterns.form.flexible')}</label>
+                                </div>
+                              </div>
+                              <div></div>
+                            </div>
+                          </div>
+                          <div className='nested-fields'>
+                            <div className='wrapper'>
+                              <div className='form-group'>
+                                <label className='control-label'>{I18n.attribute_name('journey_pattern', 'booking_arrangement')}</label>
+                                <select
+                                  ref='booking_arrangement_id'
+                                  className='form-control'
+                                  disabled={!editMode}
+                                  value={journeyPattern.booking_arrangement_id || ''}
+                                  id={index}
+                                  onChange={(e) => this.updateValue('booking_arrangement_id', e)}
+                                >
+                                  <option value=''>{I18n.t('journey_patterns.form.booking_arrangement_placeholder')}</option>
+                                  {
+                                    window.bookingArrangements.map(ba => <option value={ba.id}>{ba.name}</option>)
+                                  }
+                                </select>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
                     <div>
                       <label className='control-label'>{I18n.attribute_name('journey_pattern', 'checksum')}</label>
                         <input

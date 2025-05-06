@@ -127,6 +127,40 @@ export default class CreateModal extends Component {
                             </div>
                           </div>
                         )}
+                        <div className='row'>
+                          <div className='col-xs-12'>
+                            <div className='subform'>
+                              <div className='nested-head'>
+                                <div className='wrapper'>
+                                  <div>
+                                    <div className='form-group'>
+                                      <label className='control-label'>{I18n.t('journey_patterns.form.flexible')}</label>
+                                    </div>
+                                  </div>
+                                  <div></div>
+                                </div>
+                              </div>
+                              <div className='nested-fields'>
+                                <div className='wrapper'>
+                                  <div className='form-group'>
+                                    <label className='control-label'>{I18n.attribute_name('journey_pattern', 'booking_arrangement')}</label>
+                                    <select
+                                      ref='booking_arrangement_id'
+                                      className='form-control'
+                                      disabled={!editMode}
+                                      onChange={(e) => actions.resetValidation(e.currentTarget)}
+                                    >
+                                      <option value=''>{I18n.t('journey_patterns.form.booking_arrangement_placeholder')}</option>
+                                      {
+                                        window.bookingArrangements.map(ba => <option value={ba.id}>{ba.name}</option>)
+                                      }
+                                    </select>
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
                       </div>
 
                       <div className='modal-footer'>

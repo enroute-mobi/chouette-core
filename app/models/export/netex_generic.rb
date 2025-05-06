@@ -1316,7 +1316,7 @@ class Export::NetexGeneric < Export::Base
         {
           id: netex_identifier.to_s,
           data_source_ref: data_source_ref,
-          order: 0,
+          order: 1,
           scheduled_stop_point_ref: scheduled_stop_point_ref
         }
       end
@@ -2237,7 +2237,7 @@ class Export::NetexGeneric < Export::Base
         data_source_ref: time_table.data_source_ref,
         operating_period_ref: operating_period_ref,
         day_type_ref: day_type_ref,
-        order: 0
+        order: 1
       }
     end
 
@@ -2280,7 +2280,7 @@ class Export::NetexGeneric < Export::Base
         date: date,
         is_available: in_out,
         day_type_ref: day_type_ref,
-        order: 0
+        order: 1
       }
     end
 

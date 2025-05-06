@@ -2101,6 +2101,26 @@ RSpec.describe Export::NetexGeneric do
         end
       end
 
+      describe '#netex_identifier' do
+        subject { decorator.netex_identifier }
+
+        context 'when parent_code is "parent"' do
+          before { allow(decorator).to receive(:parent_code) { 'parent' } }
+
+          context 'when position is 42' do
+            before { model.position = 42 }
+
+            it { is_expected.to eq('TimetabledPassingTime:parent-42') }
+          end
+        end
+
+        context 'when parent_code is "parent"' do
+          before { allow(decorator).to receive(:parent_code).and_return(nil) }
+
+          it { is_expected.to be_nil }
+        end
+      end
+
       describe '#netex_attributes' do
         subject { decorator.netex_attributes }
 
@@ -2140,6 +2160,12 @@ RSpec.describe Export::NetexGeneric do
           before { allow(decorator).to receive(:departure_passing_time).and_return(passing_time) }
 
           it { is_expected.to include(departure_day_offset: passing_time.netex_day_offset) }
+        end
+
+        context 'when netex_identifier is "dummy"' do
+          before { allow(decorator).to receive(:netex_identifier) { 'dummy'} }
+
+          it { is_expected.to include(id: 'dummy') }
         end
       end
     end

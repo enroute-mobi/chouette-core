@@ -877,6 +877,8 @@ RSpec.describe Export::NetexGeneric do
           before { allow(decorator).to receive(:netex_quay?).and_return(false) }
           it { is_expected.to have_attributes(stop_place_ref: an_instance_of(Netex::Reference)) }
         end
+
+        it { is_expected.to have_attributes(order: 1) }
       end
     end
 
@@ -1842,6 +1844,7 @@ RSpec.describe Export::NetexGeneric do
                                       period_end: Date.parse('2021-12-31'),
                                       time_table: time_table
       end
+
       let(:decorator) { Export::NetexGeneric::PeriodDecorator.new period, nil, code_provider }
       let(:code_provider) { Export::CodeProvider.new export_scope }
       let(:export_scope) { double('Export::Scope', time_tables: Chouette::TimeTable.all) }
@@ -1869,6 +1872,8 @@ RSpec.describe Export::NetexGeneric do
           expect(subject[:id]).to include('DayTypeAssignment')
           expect(subject[:id]).to match(/p#{period.id}/)
         end
+
+        it { is_expected.to include(order: 1) }
       end
 
       describe '#to_days_bit' do
@@ -1898,6 +1903,8 @@ RSpec.describe Export::NetexGeneric do
         expect(subject[:id]).to include('DayTypeAssignment')
         expect(subject[:id]).to match(/d#{date.id}/)
       end
+
+      it { is_expected.to include(order: 1) }
     end
   end
 

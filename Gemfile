@@ -11,7 +11,7 @@ gem 'bootsnap', require: false
 gem 'health_check', '>= 3.1.0'
 
 group :production do
-  gem 'mini_racer'
+  gem 'mini_racer', '0.9.0' # TODO: only version compatible with node 20 used in production
 end
 
 # Use Uglifier as compressor for JavaScript assets
@@ -78,7 +78,7 @@ gem 'slim-rails', '>= 3.3.0'
 gem 'simple_form', '~> 5.1.0'
 gem 'will_paginate-bootstrap'
 gem 'gretel', '>= 4.4.0'
-gem 'country_select'
+gem 'country_select', '< 9' # TODO: until simple_form is updated to 5.3 (CHOUETTE-3166)
 gem 'i18n-js'
 gem 'font_awesome5_rails', '>= 1.5.0'
 
@@ -101,7 +101,7 @@ gem 'draper', '>= 4.0.2'
 
 gem 'enumerize', '>= 2.8.1'
 gem 'deep_cloneable'
-gem 'nokogiri', '>= 1.14.3'
+gem 'nokogiri'
 
 gem 'acts_as_list'
 gem 'acts_as_tree'
@@ -115,7 +115,7 @@ gem 'delayed_job_heartbeat_plugin'
 gem 'delayed_cron_job'
 
 gem 'rake'
-gem 'ros-apartment', '< 3', require: 'apartment' # TODO: until ruby 3.0
+gem 'ros-apartment', require: 'apartment'
 gem 'aasm'
 gem 'puma', '>= 5.6.4'
 gem 'postgresql_cursor'
@@ -142,7 +142,7 @@ gem 'sentry-delayed_job'
 gem 'sentry-ruby'
 gem 'sentry-rails'
 
-gem 'coverband', '~> 6.0.0', require: false # TODO: cannot update to 6.1 until ruby 3.0
+gem 'coverband', require: false
 
 gem 'nest', en_route: 'nest'
 
@@ -152,6 +152,7 @@ group :development do
   gem 'better_errors'
   gem 'binding_of_caller' # optional dependency of better_errors
   gem 'derailed_benchmarks'
+  gem 'syntax_suggest' # TODO: remove after update to ruby 3.2 (silent dependency of derailed_benchmarks)
 
   gem 'i18n-tasks'
   gem 'listen' # dependency of i18n-js

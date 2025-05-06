@@ -194,18 +194,18 @@ GEM
     builder (3.3.0)
     bulk_insert (1.9.0)
       activerecord (>= 3.2.0)
-    bullet (8.0.3)
+    bullet (8.0.5)
       activesupport (>= 3.0.0)
       uniform_notifier (~> 1.11)
     bundler-audit (0.9.2)
       bundler (>= 1.2.0, < 3)
       thor (~> 1.0)
     byebug (11.1.3)
-    capybara (3.39.2)
+    capybara (3.40.0)
       addressable
       matrix
       mini_mime (>= 0.1.3)
-      nokogiri (~> 1.8)
+      nokogiri (~> 1.11)
       rack (>= 1.6.0)
       rack-test (>= 0.6.3)
       regexp_parser (>= 1.5, < 3.0)
@@ -228,18 +228,18 @@ GEM
       execjs
     coffee-script-source (1.12.2)
     concurrent-ruby (1.3.5)
-    connection_pool (2.5.0)
+    connection_pool (2.5.3)
     countries (5.7.2)
       unaccent (~> 0.3)
     country_select (8.0.3)
       countries (~> 5.0)
-    coverband (6.0.2)
+    coverband (6.1.4)
       redis (>= 3.0)
     crack (1.0.0)
       bigdecimal
       rexml
     crass (1.0.6)
-    css_parser (1.17.1)
+    css_parser (1.21.1)
       addressable
     csv (3.3.4)
     curb (1.0.9)
@@ -261,8 +261,8 @@ GEM
       msgpack
     datadog-ruby_core_source (3.4.1)
     date (3.4.1)
-    dbf (4.2.4)
-    dead_end (4.0.0)
+    dbf (4.3.2)
+      csv
     debug_inspector (1.2.0)
     declarative (0.0.20)
     deep_cloneable (3.2.1)
@@ -277,17 +277,23 @@ GEM
     delayed_job_heartbeat_plugin (0.5.0)
       delayed_job (>= 4.1.0)
       delayed_job_active_record (>= 4.1.0)
-    derailed_benchmarks (2.1.2)
+    derailed_benchmarks (2.2.1)
+      base64
       benchmark-ips (~> 2)
-      dead_end
-      get_process_mem (~> 0)
+      bigdecimal
+      drb
+      get_process_mem
       heapy (~> 0)
+      logger
       memory_profiler (>= 0, < 2)
       mini_histogram (>= 0.3.0)
+      mutex_m
+      ostruct
       rack (>= 1)
       rack-test
       rake (> 10, < 14)
-      ruby-statistics (>= 2.1)
+      ruby-statistics (>= 4.0.1)
+      ruby2_keywords
       thor (>= 0.19, < 2)
     devise (4.9.4)
       bcrypt (~> 3.0)
@@ -306,18 +312,18 @@ GEM
     devise_invitable (2.0.10)
       actionmailer (>= 5.0)
       devise (>= 4.6)
-    devise_saml_authenticatable (1.9.1)
+    devise_saml_authenticatable (2.0.0)
       devise (> 2.0.0)
-      ruby-saml (~> 1.7)
+      ruby-saml (~> 1.18)
     diff-lcs (1.6.1)
     digest-crc (0.7.0)
       rake (>= 12.0.0, < 14.0.0)
     docile (1.4.1)
     dogstatsd-ruby (5.6.6)
-    dotenv (2.8.1)
-    dotenv-rails (2.8.1)
-      dotenv (= 2.8.1)
-      railties (>= 3.2)
+    dotenv (3.1.8)
+    dotenv-rails (3.1.8)
+      dotenv (= 3.1.8)
+      railties (>= 6.1)
     draper (4.0.4)
       actionpack (>= 5.0)
       activemodel (>= 5.0)
@@ -326,7 +332,7 @@ GEM
       request_store (>= 1.0)
       ruby2_keywords
     drb (2.2.1)
-    ed25519 (1.3.0)
+    ed25519 (1.4.0)
     email_spec (2.3.0)
       htmlentities (~> 4.3.3)
       launchy (>= 2.1, < 4.0)
@@ -337,12 +343,12 @@ GEM
     et-orbi (1.2.11)
       tzinfo
     execjs (2.10.0)
-    factory_bot (6.4.5)
-      activesupport (>= 5.0.0)
-    factory_bot_rails (6.4.3)
-      factory_bot (~> 6.4)
+    factory_bot (6.5.1)
+      activesupport (>= 6.1.0)
+    factory_bot_rails (6.4.4)
+      factory_bot (~> 6.5)
       railties (>= 5.0.0)
-    faker (3.4.2)
+    faker (3.5.1)
       i18n (>= 1.8.11, < 2)
     faraday (1.10.4)
       faraday-em_http (~> 1.0)
@@ -383,7 +389,8 @@ GEM
       ruby-progressbar (~> 1.4)
     geokit (1.14.0)
     georuby (2.5.2)
-    get_process_mem (0.2.7)
+    get_process_mem (1.0.0)
+      bigdecimal (>= 2.0)
       ffi (~> 1.0)
     glob (0.4.1)
     globalid (1.2.1)
@@ -396,47 +403,53 @@ GEM
       mutex_m
       representable (~> 3.0)
       retriable (>= 2.0, < 4.a)
-    google-apis-iamcredentials_v1 (0.22.0)
+    google-apis-iamcredentials_v1 (0.23.0)
       google-apis-core (>= 0.15.0, < 2.a)
     google-apis-storage_v1 (0.50.0)
       google-apis-core (>= 0.15.0, < 2.a)
-    google-cloud-core (1.7.1)
+    google-cloud-core (1.8.0)
       google-cloud-env (>= 1.0, < 3.a)
       google-cloud-errors (~> 1.0)
-    google-cloud-env (2.1.1)
+    google-cloud-env (2.2.2)
+      base64 (~> 0.2)
       faraday (>= 1.0, < 3.a)
-    google-cloud-errors (1.4.0)
-    google-cloud-storage (1.53.0)
+    google-cloud-errors (1.5.0)
+    google-cloud-storage (1.56.0)
       addressable (~> 2.8)
       digest-crc (~> 0.4)
       google-apis-core (~> 0.13)
       google-apis-iamcredentials_v1 (~> 0.18)
-      google-apis-storage_v1 (~> 0.38)
+      google-apis-storage_v1 (>= 0.42)
       google-cloud-core (~> 1.6)
       googleauth (~> 1.9)
       mini_mime (~> 1.0)
-    google-protobuf (4.26.1)
+    google-logging-utils (0.1.0)
+    google-protobuf (4.30.2)
+      bigdecimal
       rake (>= 13)
-    google-protobuf (4.26.1-x86_64-darwin)
+    google-protobuf (4.30.2-x86_64-darwin)
+      bigdecimal
       rake (>= 13)
-    google-protobuf (4.26.1-x86_64-linux)
+    google-protobuf (4.30.2-x86_64-linux)
+      bigdecimal
       rake (>= 13)
-    googleauth (1.11.2)
+    googleauth (1.14.0)
       faraday (>= 1.0, < 3.a)
-      google-cloud-env (~> 2.1)
+      google-cloud-env (~> 2.2)
+      google-logging-utils (~> 0.1)
       jwt (>= 1.4, < 3.0)
       multi_json (~> 1.11)
       os (>= 0.9, < 2.0)
       signet (>= 0.16, < 2.a)
-    graphql (2.5.2)
+    graphql (2.5.5)
       base64
       fiber-storage
       logger
     gretel (5.0.1)
       actionview (>= 6.1)
       railties (>= 6.1)
-    groupdate (6.2.1)
-      activesupport (>= 5.2)
+    groupdate (6.4.0)
+      activesupport (>= 6.1)
     has_scope (0.8.2)
       actionpack (>= 5.2)
       activesupport (>= 5.2)
@@ -446,7 +459,8 @@ GEM
       railties (>= 5.0)
     heapy (0.2.0)
       thor
-    highline (2.1.0)
+    highline (3.1.2)
+      reline
     htmlbeautifier (1.4.3)
     htmlentities (4.3.4)
     httparty (0.23.1)
@@ -476,13 +490,14 @@ GEM
       has_scope (>= 0.6)
       railties (>= 6.0)
       responders (>= 2)
+    io-console (0.8.0)
     jquery-rails (4.6.0)
       rails-dom-testing (>= 1, < 3)
       railties (>= 4.2.0)
       thor (>= 0.14, < 2.0)
-    jquery-ui-rails (7.0.0)
+    jquery-ui-rails (8.0.0)
       railties (>= 3.2.16)
-    json (2.10.2)
+    json (2.11.3)
     jwt (2.10.1)
       base64
     language_server-protocol (3.17.0.4)
@@ -505,9 +520,9 @@ GEM
       ffi (~> 1.0)
     libddwaf (1.22.0.0.2-x86_64-linux)
       ffi (~> 1.0)
-    libv8-node (16.19.0.1)
-    libv8-node (16.19.0.1-x86_64-darwin)
-    libv8-node (16.19.0.1-x86_64-linux)
+    libv8-node (18.19.0.0)
+    libv8-node (18.19.0.0-x86_64-darwin)
+    libv8-node (18.19.0.0-x86_64-linux)
     license_finder (7.2.1)
       bundler
       csv (~> 3.2)
@@ -536,15 +551,15 @@ GEM
     mime-types (3.6.2)
       logger
       mime-types-data (~> 3.2015)
-    mime-types-data (3.2025.0408)
+    mime-types-data (3.2025.0429)
     mimemagic (0.4.3)
       nokogiri (~> 1)
       rake
     mini_histogram (0.3.1)
     mini_mime (1.1.5)
     mini_portile2 (2.8.8)
-    mini_racer (0.6.4)
-      libv8-node (~> 16.19.0.0)
+    mini_racer (0.9.0)
+      libv8-node (~> 18.19.0.0)
     minitest (5.25.5)
     msgpack (1.8.0)
     multi_json (1.15.0)
@@ -564,12 +579,12 @@ GEM
       net-protocol
     net-ssh (7.3.0)
     nio4r (2.7.4)
-    nokogiri (1.15.7)
+    nokogiri (1.17.2)
       mini_portile2 (~> 2.8.2)
       racc (~> 1.4)
-    nokogiri (1.15.7-x86_64-darwin)
+    nokogiri (1.17.2-x86_64-darwin)
       racc (~> 1.4)
-    nokogiri (1.15.7-x86_64-linux)
+    nokogiri (1.17.2-x86_64-linux)
       racc (~> 1.4)
     nyan-cat-formatter (0.12.0)
       rspec (>= 2.99, >= 2.14.2, < 4)
@@ -584,20 +599,21 @@ GEM
     offline-sort (0.2.0)
     orm_adapter (0.5.0)
     os (1.1.4)
+    ostruct (0.6.1)
     ox (2.14.22)
       bigdecimal (>= 3.0)
-    parallel (1.26.3)
-    parallel_tests (4.7.1)
+    parallel (1.27.0)
+    parallel_tests (4.10.1)
       parallel
     parser (3.3.8.0)
       ast (~> 2.4.1)
       racc
     pg (1.5.9)
-    pg_search (2.3.6)
-      activerecord (>= 5.2)
-      activesupport (>= 5.2)
+    pg_search (2.3.7)
+      activerecord (>= 6.1)
+      activesupport (>= 6.1)
     phantomjs (2.1.1.0)
-    pkg-config (1.6.0)
+    pkg-config (1.6.2)
     poltergeist (1.18.1)
       capybara (>= 2.1, < 4)
       cliver (~> 0.3.1)
@@ -608,9 +624,9 @@ GEM
       pg (>= 0.17)
     postgresql_cursor (0.6.9)
       activerecord (>= 6.0)
-    premailer (1.22.0)
+    premailer (1.27.0)
       addressable
-      css_parser (>= 1.12.0)
+      css_parser (>= 1.19.0)
       htmlentities (>= 4.0.0)
     premailer-rails (1.12.0)
       actionmailer (>= 3)
@@ -619,7 +635,7 @@ GEM
     prism (1.4.0)
     prometheus-client (4.2.4)
       base64
-    public_suffix (4.0.7)
+    public_suffix (5.1.1)
     puma (6.6.0)
       nio4r (~> 2.0)
     raabro (1.4.0)
@@ -702,6 +718,8 @@ GEM
     redis-store (1.11.0)
       redis (>= 4, < 6)
     regexp_parser (2.10.0)
+    reline (0.6.1)
+      io-console (~> 0.5)
     representable (3.2.0)
       declarative (< 0.1.0)
       trailblazer-option (>= 0.1.1, < 0.2.0)
@@ -722,15 +740,15 @@ GEM
     rgeo-shapefile (3.1.0)
       dbf (~> 4.0)
       rgeo (>= 1.0)
-    rmagick (5.5.0)
+    rmagick (6.1.1)
       observer (~> 0.1)
       pkg-config (~> 1.4)
-    ros-apartment (2.11.0)
-      activerecord (>= 5.0.0, < 7.1)
+    ros-apartment (3.1.0)
+      activerecord (>= 6.1.0, < 7.2)
       parallel (< 2.0)
-      public_suffix (>= 2.0.5, < 5.0)
-      rack (>= 1.3.6, < 3.0)
-    rouge (4.5.1)
+      public_suffix (>= 2.0.5, < 6.0)
+      rack (>= 1.3.6, < 4.0)
+    rouge (4.5.2)
     rspec (3.13.0)
       rspec-core (~> 3.13.0)
       rspec-expectations (~> 3.13.0)
@@ -742,10 +760,10 @@ GEM
       rspec (>= 3.0)
     rspec-core (3.13.3)
       rspec-support (~> 3.13.0)
-    rspec-expectations (3.13.3)
+    rspec-expectations (3.13.4)
       diff-lcs (>= 1.2.0, < 2.0)
       rspec-support (~> 3.13.0)
-    rspec-mocks (3.13.2)
+    rspec-mocks (3.13.3)
       diff-lcs (>= 1.2.0, < 2.0)
       rspec-support (~> 3.13.0)
     rspec-rails (6.1.5)
@@ -759,10 +777,10 @@ GEM
     rspec-snapshot (2.0.3)
       awesome_print (> 1.0.0)
       rspec (> 3.0.0)
-    rspec-support (3.13.2)
+    rspec-support (3.13.3)
     rspec_junit_formatter (0.6.0)
       rspec-core (>= 2, < 4, != 2.12.0)
-    rubocop (1.75.2)
+    rubocop (1.75.5)
       json (~> 2.3)
       language_server-protocol (~> 3.17.0.2)
       lint_roller (~> 1.1.0)
@@ -786,7 +804,7 @@ GEM
     ruby-saml (1.18.0)
       nokogiri (>= 1.13.10)
       rexml
-    ruby-statistics (3.0.2)
+    ruby-statistics (4.1.0)
     ruby2_keywords (0.0.5)
     rubyzip (2.4.1)
     sassc (2.4.0)
@@ -806,8 +824,8 @@ GEM
     sentry-ruby (5.23.0)
       bigdecimal
       concurrent-ruby (~> 1.0, >= 1.0.2)
-    set (1.0.4)
-    shoulda-matchers (5.3.0)
+    set (1.1.1)
+    shoulda-matchers (6.5.0)
       activesupport (>= 5.2.0)
     signet (0.19.0)
       addressable (~> 2.8)
@@ -849,6 +867,7 @@ GEM
       sprockets (>= 3.0.0)
     ssrf_filter (1.0.8)
     stackprof (0.2.27)
+    syntax_suggest (2.0.2)
     teaspoon (1.4.0)
       railties (>= 5.0)
     teaspoon-jasmine (2.9.1)
@@ -877,7 +896,7 @@ GEM
       faraday-multipart (~> 1.0.4)
       httparty (~> 0.20)
       oauth2 (>= 2.0.8)
-    version_gem (1.1.6)
+    version_gem (1.1.7)
     warden (1.2.9)
       rack (>= 2.0.9)
     webmock (3.25.1)
@@ -936,8 +955,8 @@ DEPENDENCIES
   chartkick
   cocoon
   coffee-rails (>= 5.0.0)
-  country_select
-  coverband (~> 6.0.0)
+  country_select (< 9)
+  coverband
   cuckoo!
   curb
   database_cleaner
@@ -989,12 +1008,12 @@ DEPENDENCIES
   license_finder
   listen
   mimemagic (>= 0.4.3)
-  mini_racer
+  mini_racer (= 0.9.0)
   neptune!
   nest!
   net-sftp
   netex!
-  nokogiri (>= 1.14.3)
+  nokogiri
   nyan-cat-formatter
   parallel_tests
   pg
@@ -1020,7 +1039,7 @@ DEPENDENCIES
   rgeo-proj4
   rgeo-shapefile
   rmagick
-  ros-apartment (< 3)
+  ros-apartment
   rspec-benchmark
   rspec-rails
   rspec-snapshot
@@ -1039,6 +1058,7 @@ DEPENDENCIES
   slim-rails (>= 3.3.0)
   sprockets (~> 3.7.2)
   stackprof
+  syntax_suggest
   teaspoon-jasmine (>= 2.9.1)
   timecop
   uglifier (~> 2.7.2)

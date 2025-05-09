@@ -49,6 +49,8 @@ en:
       arrival: "Arrival"
       departure_at: "Departure at"
       departure: "Departure"
+      earliest_departure: "Earliest departure at"
+      latest_arrival: "Latest arrival at"
       departure_range:
         label: Journey departure range
         start: Start

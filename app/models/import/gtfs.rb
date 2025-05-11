@@ -708,7 +708,8 @@ class Import::Gtfs < Import::Base
       205 => 'coach/specialCoach',
       208 => 'coach/commuterCoach',
       700 => 'bus',
-      713 => 'bus/schoolAndPublicServiceBus'
+      713 => 'bus/schoolAndPublicServiceBus',
+      715 => 'bus/demand_and_response_bus'
     }.transform_keys(&:to_s).transform_values { |definition| Chouette::TransportMode.from(definition) }
   end
 

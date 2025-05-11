@@ -561,6 +561,7 @@ module Export
             register 'coach/special_coach', 205
             register 'coach/commuter_coach', 208
             register 'bus/school_and_public_service_bus', 713
+            register 'bus/demand_and_response_bus', 715
           end
         end
 

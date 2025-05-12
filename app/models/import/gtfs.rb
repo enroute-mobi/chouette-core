@@ -708,8 +708,12 @@ class Import::Gtfs < Import::Base
       205 => 'coach/specialCoach',
       208 => 'coach/commuterCoach',
       700 => 'bus',
+      702 => 'bus/expressBus',
+      705 => 'bus/nightBus',
+      711 => 'bus/shuttleBus',
       713 => 'bus/schoolAndPublicServiceBus',
-      715 => 'bus/demand_and_response_bus'
+      714 => 'bus/railReplacementBus',
+      715 => 'bus/demandAndResponseBus'
     }.transform_keys(&:to_s).transform_values { |definition| Chouette::TransportMode.from(definition) }
   end
 

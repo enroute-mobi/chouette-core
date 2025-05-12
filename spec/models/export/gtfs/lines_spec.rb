@@ -29,7 +29,11 @@ RSpec.describe Export::Gtfs::Lines::Decorator do
         'coach/regional_coach': 204,
         'coach/special_coach': 205,
         'coach/commuter_coach': 208,
+        'bus/express_bus': 702,
+        'bus/night_bus': 705,
+        'bus/shuttle_bus': 711,
         'bus/school_and_public_service_bus': 713,
+        'bus/railReplacementBus': 714,
         'bus/demand_and_response_bus': 715
       }.each do |transport_mode, expected_route|
         transport_mode = Chouette::TransportMode.from(transport_mode)
@@ -76,7 +80,12 @@ RSpec.describe Export::Gtfs::Lines::Decorator do
         'coach/regional_coach': 3,
         'coach/special_coach': 3,
         'coach/commuter_coach': 3,
-        'bus/school_and_public_service_bus': 3
+        'bus/express_bus': 3,
+        'bus/night_bus': 3,
+        'bus/shuttle_bus': 3,
+        'bus/school_and_public_service_bus': 3,
+        'bus/rail_replacement_bus': 3,
+        'bus/demand_and_response_bus': 3
       }.each do |transport_mode, expected_route|
         transport_mode = Chouette::TransportMode.from(transport_mode)
 

@@ -1401,11 +1401,11 @@ class Import::Gtfs < Import::Base
 
       def convert_pickup_and_drop_off_type(value, is_flexible)
         if is_flexible
-          @cache_pickup_and_drop_off_type_flexible ||= { '2' => 'normal' }.freeze
-          @cache_pickup_and_drop_off_type_flexible[value] || 'forbidden'
+          # A flexible GTFS Stop Time should use drop_off/pickup type 2
+          value == '2' ? 'normal' : 'forbidden'
         else
-          @cache_pickup_and_drop_off_type ||= { '1' => 'forbidden' }.freeze
-          @cache_pickup_and_drop_off_type[value] || 'normal'
+          # A standard GTFS Stop Time is 'normal' excepted if type 1 is used
+          value == '1' ? 'forbidden' : 'normal'
         end
       end
     end

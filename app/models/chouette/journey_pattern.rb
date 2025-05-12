@@ -19,6 +19,7 @@ module Chouette
 
     belongs_to :shape, optional: true # CHOUETTE-3247
     belongs_to_public :shape
+    belongs_to :booking_arrangement, optional: true
 
     scope :light, ->{ select(:id, :name, :route_id, :objectid) }
 

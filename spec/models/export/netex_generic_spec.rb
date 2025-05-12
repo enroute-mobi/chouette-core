@@ -1,6 +1,12 @@
 # frozen_string_literal: true
 
 RSpec.describe Export::NetexGeneric do
+  describe '#cache_version' do
+    subject { Export::NetexGeneric.new.cache_version }
+
+    it { is_expected.to eq('2025-05-06') }
+  end
+
   describe '#content_type' do
     subject { export.content_type }
 

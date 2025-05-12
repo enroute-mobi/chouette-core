@@ -63,6 +63,10 @@ class Export::NetexGeneric < Export::Base
     profile? ? "zip" : 'xml'
   end
 
+  def cache_version
+    '2025-05-06'
+  end
+
   delegate :stop_area_referential, :line_referential, to: :workgroup
 
   class Scope < Export::Base::Scope

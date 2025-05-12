@@ -69,11 +69,12 @@ class Export::Base < ApplicationModel
   end
 
   class CacheKeyProvider
-    attr_accessor :cache_prefix, :code_provider
+    attr_accessor :cache_prefix, :cache_version, :code_provider
 
-    def initialize(cache_prefix:, code_provider:)
+    def initialize(cache_prefix: nil, code_provider: nil, cache_version: nil)
       @cache_prefix = cache_prefix
       @code_provider = code_provider
+      @cache_version = cache_version
     end
 
     def cache_key(model)
@@ -92,7 +93,11 @@ class Export::Base < ApplicationModel
       model_cache_key = model.cache_key
       model_cache_key += "-#{code}" unless model_cache_key.include?(code)
 
-      "#{cache_prefix}/#{model_cache_key}"
+      format_key model_cache_key
+    end
+
+    def format_key(model_cache_key)
+      "#{cache_prefix}#{cache_version}/#{model_cache_key}"
     end
   end
 
@@ -101,8 +106,13 @@ class Export::Base < ApplicationModel
 
     @cache_key_provider ||= CacheKeyProvider.new(
       cache_prefix: cache_prefix,
+      cache_version: cache_version,
       code_provider: code_provider
     )
+  end
+
+  def cache_version
+    nil
   end
 
   def cache

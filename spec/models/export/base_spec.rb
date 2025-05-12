@@ -1,6 +1,8 @@
 # frozen_string_literal: true
 
 RSpec.describe Export::Base, type: :model do
+  subject(:export) { Export::Base.new }
+
   it { should belong_to(:referential) }
   it { is_expected.to belong_to(:workbench).optional }
 
@@ -167,4 +169,53 @@ RSpec.describe Export::Base, type: :model do
     end
   end
 
+  describe '#cache_key_provider' do
+    subject { export.cache_key_provider }
+
+    context 'when cache_prefix is nil' do
+      before { export.cache_prefix = nil }
+
+      it { is_expected.to be_nil }
+    end
+
+    context "when cache_prefix is'nt nil (for example: 'dummy')" do
+      before { export.cache_prefix = 'dummy' }
+
+      it { is_expected.to an_instance_of(Export::Base::CacheKeyProvider) }
+
+      describe 'returned CacheKeyProvider' do
+        it { is_expected.to have_attributes(cache_prefix: export.cache_prefix) }
+
+        context "when cache_version is 'version'" do
+          before { allow(export).to receive(:cache_version) { 'version' } }
+
+          it { is_expected.to have_attributes(cache_version: export.cache_version) }
+        end
+      end
+    end
+  end
+
+  describe Export::Base::CacheKeyProvider do
+    subject(:cache_key_provider) { described_class.new }
+
+    describe '#format_key' do
+      subject { cache_key_provider.send :format_key, model_cache_key }
+
+      context 'when a model_cache_key is "model_cache_key"' do
+        let(:model_cache_key) { 'model_cache_key' }
+
+        context 'when a cache_prefix is "prefix"' do
+          before { cache_key_provider.cache_prefix = 'prefix' }
+
+          it { is_expected.to eq('prefix/model_cache_key') }
+
+          context 'when a cache_version is "version"' do
+            before { cache_key_provider.cache_version = 'version' }
+
+            it { is_expected.to eq('prefixversion/model_cache_key') }
+          end
+        end
+      end
+    end
+  end
 end

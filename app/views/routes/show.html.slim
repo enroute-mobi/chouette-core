@@ -58,6 +58,10 @@
               TableBuilderHelper::Column.new( \
                 key: :for_alighting, \
                 attribute: Proc.new { |s| t("stop_points.stop_point.for_alighting.#{s.for_alighting}") } \
+              ), \
+              TableBuilderHelper::Column.new( \
+                key: :flexible, \
+                attribute: Proc.new { |s| t(s.flexible).capitalize } \
               ) \
             ]
 

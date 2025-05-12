@@ -964,7 +964,7 @@ class Import::Gtfs < Import::Base
         save_model vehicle_journey, resource: resource
       end
 
-      starting_day_offset = GtfsTime.parse(stop_times.first.departure_time).day_offset
+      starting_day_offset = GtfsTime.parse(stop_times.first.departure_time || stop_times.first.start_pickup_drop_off_window).day_offset
       time_table_id = handle_timetable_with_offset(resource, trip, starting_day_offset)
 
       if time_table_id
@@ -1125,7 +1125,8 @@ class Import::Gtfs < Import::Base
         next if skip && stop_time.pickup_type.nil? && stop_time.drop_off_type.nil?
 
         skip = false
-        [stop_time.stop_id, stop_time.pickup_type || '0', stop_time.drop_off_type || '0']
+        flexible = stop_time.start_pickup_drop_off_window.present? && stop_time.end_pickup_drop_off_window.present?
+        [stop_time.stop_id, stop_time.pickup_type || '0', stop_time.drop_off_type || '0', flexible]
       end.to_a
     end
   end
@@ -1375,8 +1376,9 @@ class Import::Gtfs < Import::Base
           Chouette::StopPoint.new(
             stop_area_id: stop_area_id,
             position: position,
-            for_boarding: convert_pickup_and_drop_off_type(stop_time.pickup_type),
-            for_alighting: convert_pickup_and_drop_off_type(stop_time.drop_off_type)
+            for_boarding: convert_pickup_and_drop_off_type(stop_time.pickup_type, flexible?(stop_time)),
+            for_alighting: convert_pickup_and_drop_off_type(stop_time.drop_off_type, flexible?(stop_time)),
+            flexible: flexible?(stop_time),
           ).with_transient(stop_id: stop_time.stop_id)
         end
       end
@@ -1393,11 +1395,18 @@ class Import::Gtfs < Import::Base
 
       private
 
-      def convert_pickup_and_drop_off_type(value)
-        @convert_pickup_and_drop_off_type_hash ||= {
-          '1' => 'forbidden'
-        }.freeze
-        @convert_pickup_and_drop_off_type_hash[value] || 'normal'
+      def flexible?(stop_time)
+        stop_time.start_pickup_drop_off_window.present? || stop_time.end_pickup_drop_off_window.present?
+      end
+
+      def convert_pickup_and_drop_off_type(value, is_flexible)
+        if is_flexible
+          # A flexible GTFS Stop Time should use drop_off/pickup type 2
+          value == '2' ? 'normal' : 'forbidden'
+        else
+          # A standard GTFS Stop Time is 'normal' excepted if type 1 is used
+          value == '1' ? 'forbidden' : 'normal'
+        end
       end
     end
 
@@ -1471,16 +1480,24 @@ class Import::Gtfs < Import::Base
     # JourneyPattern#vjas_add creates automaticaly VehicleJourneyAtStop
     vehicle_journey_at_stop = vehicle_journey.vehicle_journey_at_stops.build(stop_point_id: stop_point.id)
 
-    departure_time_of_day = time_of_day stop_time.departure_time, starting_day_offset
-    vehicle_journey_at_stop.departure_time_of_day = departure_time_of_day
-
-    if position == 0
-      vehicle_journey_at_stop.arrival_time_of_day = departure_time_of_day
+    flexible_attributes = {}
+    if stop_time.start_pickup_drop_off_window.present? || stop_time.end_pickup_drop_off_window.present?
+      flexible_attributes['earliest_departure_time_of_day'] =
+        time_of_day(stop_time.start_pickup_drop_off_window, starting_day_offset).second_offset
+      flexible_attributes['latest_arrival_time_of_day'] =
+        time_of_day(stop_time.end_pickup_drop_off_window, starting_day_offset).second_offset
     else
-      vehicle_journey_at_stop.arrival_time_of_day = time_of_day stop_time.arrival_time, starting_day_offset
+      departure_time_of_day = time_of_day stop_time.departure_time, starting_day_offset
+      vehicle_journey_at_stop.departure_time_of_day = departure_time_of_day
+
+      if position == 0
+        vehicle_journey_at_stop.arrival_time_of_day = departure_time_of_day
+      else
+        vehicle_journey_at_stop.arrival_time_of_day = time_of_day stop_time.arrival_time, starting_day_offset
+      end
     end
 
-    worker.add vehicle_journey_at_stop.attributes
+    worker.add vehicle_journey_at_stop.attributes.merge(flexible_attributes)
   end
 
   def time_of_day gtfs_time, offset

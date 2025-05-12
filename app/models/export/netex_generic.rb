@@ -1376,11 +1376,20 @@ class Export::NetexGeneric < Export::Base
           scheduled_stop_point_ref: scheduled_stop_point_ref,
           for_boarding: netex_for_boarding,
           for_alighting: netex_for_alighting
-        }
+        }.tap do |attributes|
+          attributes[:flexible_point_properties] = flexible_point_properties if flexible
+        end
       end
 
       def netex_identifier
         @netex_identifier ||= super.merge(Code::Value.parse(journey_pattern_code), type: "StopPointInJourneyPattern")
+      end
+
+      def flexible_point_properties
+        Netex::FlexiblePointProperties.new(
+          point_standing_for_a_zone: true,
+          zone_containing_stops: true
+        )
       end
 
       def journey_pattern_code

@@ -1935,12 +1935,12 @@ RSpec.describe Import::Gtfs::TripDecorator do
       let(:stop_time_1_pickup) { '1' }
       let(:stop_time_2_drop_off) { '1' }
 
-      it { is_expected.to eq(['AAMV', '0', [['AMV', '0', '1'], ['BEATTY_AIRPORT', '1', '0']]]) }
+      it { is_expected.to eq(['AAMV', '0', [['AMV', '0', '1', false], ['BEATTY_AIRPORT', '1', '0', false]]]) }
 
       context 'but not on the last stop' do
         let(:stop_time_2_drop_off) { nil }
 
-        it { is_expected.to eq(['AAMV', '0', [['BEATTY_AIRPORT', '1', '0']]]) }
+        it { is_expected.to eq(['AAMV', '0', [['BEATTY_AIRPORT', '1', '0', false]]]) }
       end
     end
   end

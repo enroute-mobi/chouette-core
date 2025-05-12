@@ -175,6 +175,8 @@ class TimeOfDay
   end
 
   def ==(other)
+    return false unless other.is_a?(TimeOfDay)
+
     second_offset == other.second_offset
   end
   alias eql? ==

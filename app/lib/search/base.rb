@@ -401,6 +401,10 @@ module Search
           end
         end
 
+        def sql_quote(request, value)
+          request.connection.quote(value)
+        end
+
         # SQL expressions used to compute the value of each value of a key
         def sql_expressions(_models, _period)
           selects_from_options
@@ -1016,7 +1020,7 @@ module Search
           if key_part.nil?
             "#{sql_expression} IS NULL"
           else
-            "#{sql_expression} = #{chart.models.connection.quote(key_part)}"
+            "#{sql_expression} = #{attribute.sql_quote(chart.models, key_part)}"
           end
         end
 

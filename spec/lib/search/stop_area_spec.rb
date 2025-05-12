@@ -926,4 +926,74 @@ RSpec.describe Search::StopArea do
       it { is_expected.to match_array([service_count_match]) }
     end
   end
+
+  describe '#chart' do
+    subject(:chart) { search.chart(scope) }
+
+    let(:context) do # rubocop:disable Metrics/BlockLength
+      Chouette.create do # rubocop:disable Metrics/BlockLength
+        stop_area :stop_area_bus_utc, transport_mode: 'bus', time_zone: 'UTC'
+        stop_area :stop_area_bus_paris, transport_mode: 'bus', time_zone: 'Europe/Paris'
+        stop_area :stop_area_air_utc, transport_mode: 'air', time_zone: 'UTC'
+      end
+    end
+
+    let(:subgroup_by_attribute) { nil }
+    let(:search) do
+      described_class.new(
+        workbench: context.workbench,
+        chart_type: 'line',
+        group_by_attribute: group_by_attribute,
+        subgroup_by_attribute: subgroup_by_attribute,
+        top_count: 10
+      )
+    end
+    let(:scope) { context.workbench.stop_areas }
+
+    describe '#data' do
+      subject { chart.data }
+
+      context 'with group_by_attribute "transport_mode"' do
+        let(:group_by_attribute) { 'transport_mode' }
+
+        it do
+          is_expected.to(
+            match_array(
+              {
+                Chouette::TransportMode.from('bus').human_name => 2,
+                Chouette::TransportMode.from('air').human_name => 1
+              }
+            )
+          )
+        end
+
+        context 'with subgroup' do
+          let(:subgroup_by_attribute) { 'time_zone' }
+
+          it do
+            is_expected.to(
+              match_array(
+                [
+                  {
+                    name: 'UTC',
+                    data: {
+                      Chouette::TransportMode.from('bus').human_name => 1,
+                      Chouette::TransportMode.from('air').human_name => 1
+                    }
+                  },
+                  {
+                    name: 'Europe/Paris',
+                    data: {
+                      Chouette::TransportMode.from('bus').human_name => 1,
+                      Chouette::TransportMode.from('air').human_name => 0
+                    }
+                  }
+                ]
+              )
+            )
+          end
+        end
+      end
+    end
+  end
 end

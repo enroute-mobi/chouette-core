@@ -560,7 +560,12 @@ module Export
             register 'coach/regional_coach', 204
             register 'coach/special_coach', 205
             register 'coach/commuter_coach', 208
+            register 'bus/express_bus', 702
+            register 'bus/night_bus', 705
+            register 'bus/shuttle_bus', 711
             register 'bus/school_and_public_service_bus', 713
+            register 'bus/rail_replacement_bus', 714
+            register 'bus/demand_and_response_bus', 715
           end
         end
 

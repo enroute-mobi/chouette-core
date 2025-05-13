@@ -18,6 +18,7 @@
 
 = javascript_tag do
   | window.stopPoints = #{(@stop_points_list.to_json).html_safe};
+  | window.bookingArrangements = #{@workbench.line_referential.booking_arrangements.to_json(only: %w[id name]).html_safe};
   | window.journeyPatternLength = #{@journey_patterns.total_entries()};
   | window.journeyPatternsPerPage = #{@ppage};
   | window.perms = #{raw @perms};

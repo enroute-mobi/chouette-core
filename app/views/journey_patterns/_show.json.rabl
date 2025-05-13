@@ -10,6 +10,7 @@
   object_version
   created_at
   updated_at
+  booking_arrangement_id
 ].each do |attr|
   attributes attr, unless: ->(m) { m.send(attr).nil? }
 end

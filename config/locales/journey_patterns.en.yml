@@ -34,6 +34,8 @@ en:
     form:
       warning: "Be careful, selection is also applied to the %{count} vehicle journeys associated to this journey pattern"
       shape_placeholder: Filter by name or ID
+      flexible: "Flexible"
+      booking_arrangement_placeholder: "Use line booking arrangement"
   activerecord:
     errors:
       models:
@@ -67,6 +69,7 @@ en:
         stop_points: Stop Points
         checksum: Checksum
         shape: Shape
+        booking_arrangement: "Booking arrangement"
   formtastic:
     titles:
       journey_pattern:

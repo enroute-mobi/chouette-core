@@ -606,11 +606,19 @@ module Import
             merger << route_scheduled_point_refs
 
             journey_patterns.each do |netex_journey_pattern|
-              scheduled_point_ids =
+               scheduled_point_ids =
                 netex_journey_pattern
-                .points_in_sequence
-                .sort_by { |stop_point_in_journey_pattern| stop_point_in_journey_pattern.order.to_i }
-                .map { |stop_point_in_journey_pattern| stop_point_in_journey_pattern.scheduled_stop_point_ref&.ref }
+                  .points_in_sequence
+                  .sort_by { |stop_point_in_journey_pattern| stop_point_in_journey_pattern.order.to_i }
+                  .map do |stop_point_in_journey_pattern|
+                    {
+                      element: stop_point_in_journey_pattern.scheduled_stop_point_ref&.ref,
+                      enriched_elements: {
+                        for_boarding: stop_point_in_journey_pattern.for_boarding,
+                        for_alighting: stop_point_in_journey_pattern.for_alighting
+                      }
+                    }
+                  end
 
               merger << scheduled_point_ids
             end
@@ -720,30 +728,69 @@ module Import
       end
 
       class Sequence
-        # Create a Sequence from an array
+        # Create a Sequence from an array like:
+        # [
+        #  {
+        #   element: 'scheduled-stop-point-1',
+        #   enriched_elements: { for_boarding: true, for_alighting: true }
+        #  },
+        #  {
+        #   element: 'scheduled-stop-point-2',
+        #   enriched_elements: { for_boarding: true, for_alighting: false }
+        #  }
+        # ]
+
         def self.create(*elements)
           links = []
           elements.flatten.each_cons(2) do |from, to|
-            links << Link.new(from, to)
+            links << Link.new(from[:element], to[:element]) if from[:element] && to[:element]
           end
-          new links
+          new links, raw_elements: elements
         end
 
-        def initialize(links = [])
+        def initialize(links = [], raw_elements: [])
+          @raw_elements = raw_elements
           @links = links
           @last = links.last
           freeze
         end
-        attr_reader :links, :last
+        attr_reader :links, :last, :raw_elements
 
         delegate :empty?, to: :links
 
-        def add(link)
+        def add(link, raw_elements)
+          raw_elements = raw_elements.flatten.uniq
           if empty?
-            Sequence.new([link])
+            Sequence.new([link], raw_elements: raw_elements)
           elsif link.from?(last.to)
-            Sequence.new(links + [link])
+            Sequence.new(links + [link], raw_elements: raw_elements)
           end
+        end
+
+        def enriched_sequences
+          groups.map do |group|
+            group.map do |raw_element|
+              Step.new(raw_element[:element], raw_element[:enriched_elements])
+            end
+          end
+        end
+
+        def groups
+          self.to_a.map do |element|
+            raw_elements.select do |raw_element|
+              raw_element[:element] == element
+            end
+          end.inject([[]]) do |acc, group|
+            acc.flat_map { |partial| group.map { |item| partial + [item] } }
+          end
+        end
+
+        class Step
+          def initialize(element, enriched_elements)
+            @element = element
+            @enriched_elements = enriched_elements
+          end
+          attr_reader :element, :enriched_elements
         end
 
         def to_s
@@ -796,15 +843,24 @@ module Import
             @links ||= Set.new
           end
 
+          def raw_elements
+            @raw_elements ||= Set.new
+          end
+
           def add(sequence)
             sequence = Sequence.create(sequence)
+
+            raw_elements.merge sequence.raw_elements
+            @merge = nil
             links.merge sequence.links
           end
           alias << add
 
           def merge
-            solution = Path.new(Sequence.new, links.dup).complete
-            solution&.sequence
+            @merge ||= begin
+              solution = Path.new(Sequence.new(raw_elements: raw_elements), links.dup).complete
+              solution&.sequence
+            end
           end
 
           class Path
@@ -813,6 +869,8 @@ module Import
               @pending_links = pending_links
             end
             attr_reader :sequence, :pending_links
+
+            delegate :raw_elements, to: :sequence
 
             def completed?
               unsolved_links.empty?
@@ -834,7 +892,7 @@ module Import
             # Next possible sequences by following unsolved links
             def next_sequences
               unsolved_links.map do |link|
-                sequence.add(link)
+                sequence.add(link, raw_elements)
               end.compact
             end
 

@@ -473,7 +473,9 @@ module Import
             next
           end
 
-          route_inserter << decorator.chouette_route
+          decorator.chouette_routes.each do |chouette_route|
+            route_inserter << chouette_route
+          end
         end
 
         referential_inserter.flush
@@ -519,11 +521,13 @@ module Import
           line
         end
 
-        def chouette_route
+        def chouette_routes
           return unless chouette_line
 
-          @chouette_route ||= chouette_line.routes.build(route_attributes).tap do |chouette_route|
-            chouette_route.journey_patterns = chouette_journey_patterns
+          @chouette_routes ||= routes_attributes.map do |route_attributes|
+            chouette_line.routes.build(route_attributes).tap do |chouette_route|
+              chouette_route.journey_patterns = chouette_journey_patterns
+            end
           end
         end
 
@@ -533,14 +537,16 @@ module Import
           end
         end
 
-        def route_attributes
-          {
-            name: chouette_name,
-            wayback: wayback,
-            published_name: direction_name,
-            stop_points: stop_points,
-            codes: codes
-          }
+        def routes_attributes
+          enriched_stop_points.map do |stop_points|
+            {
+              name: chouette_name,
+              wayback: wayback,
+              published_name: direction_name,
+              stop_points: stop_points,
+              codes: codes
+            }
+          end
         end
 
         def chouette_name
@@ -626,17 +632,28 @@ module Import
         end
 
         def complete_scheduled_stop_points
-          sequence_merger.merge.to_a
+          #sequence_merger.merge.to_a
+          sequence_merger.merge.enriched_sequences
         end
 
         def stop_points_by_scheduled_stop_point_id
           @stop_points_by_scheduled_stop_point_id ||= {}.tap do |by_scheduled_stop_point_id|
-            complete_scheduled_stop_points.map.with_index do |scheduled_stop_point_id, position|
-              if (stop_area_id = scheduled_stop_points[scheduled_stop_point_id]&.stop_area_id)
-                stop_point = Chouette::StopPoint.new stop_area_id: stop_area_id, position: position
-                by_scheduled_stop_point_id[scheduled_stop_point_id] = stop_point
-              else
-                add_error :stop_area_not_found_in_scheduled_stop_points
+            complete_scheduled_stop_points.each do |steps|
+              steps.each do |step|
+                scheduled_stop_point_id = step.element
+                enriched_elements = step.enriched_elements
+
+                if (stop_area_id = scheduled_stop_points[scheduled_stop_point_id]&.stop_area_id)
+                  stop_point = Chouette::StopPoint.new(
+                    stop_area_id: stop_area_id,
+                    position: step.position,
+                    for_boarding: step.for_boarding,
+                    for_alighting: step.for_alighting
+                  )
+                  by_scheduled_stop_point_id[step.scheduled_stop_point_id] = stop_point
+                else
+                  add_error :stop_area_not_found_in_scheduled_stop_points
+                end
               end
             end
           end
@@ -647,10 +664,12 @@ module Import
         end
 
         # Route Stop Points ordered by #complete_scheduled_stop_points
-        def stop_points
-          complete_scheduled_stop_points.map do |scheduled_stop_point_id|
-            stop_point_for_scheduled_stop_point_id scheduled_stop_point_id
-          end.compact
+        def enriched_stop_points
+          complete_scheduled_stop_points.map do |steps|
+            steps.map do |step|
+              stop_point_for_scheduled_stop_point_id(step.scheduled_stop_point_id)
+            end.compact
+          end
         end
 
         def add_error(message_key)
@@ -662,7 +681,7 @@ module Import
         end
 
         def valid?
-          chouette_route
+          chouette_routes
           errors.empty?
         end
       end
@@ -716,7 +735,13 @@ module Import
           @scheduled_point_ids ||=
             points_in_sequence
             .sort_by { |stop_point_in_journey_pattern| stop_point_in_journey_pattern.order.to_i }
-            .map { |stop_point_in_journey_pattern| stop_point_in_journey_pattern.scheduled_stop_point_ref&.ref }
+            .map do |stop_point_in_journey_pattern|
+              [
+                stop_point_in_journey_pattern.scheduled_stop_point_ref&.ref,
+                stop_point_in_journey_pattern&.for_boarding,
+                stop_point_in_journey_pattern&.for_alighting
+              ].join('-')
+            end
         end
 
         def journey_pattern_stop_points
@@ -769,8 +794,8 @@ module Import
 
         def enriched_sequences
           groups.map do |group|
-            group.map do |raw_element|
-              Step.new(raw_element[:element], raw_element[:enriched_elements])
+            group.map.with_index do |raw_element, position|
+              Step.new(raw_element[:element], raw_element[:enriched_elements], position)
             end
           end
         end
@@ -786,11 +811,35 @@ module Import
         end
 
         class Step
-          def initialize(element, enriched_elements)
+          def initialize(element, enriched_elements, position)
             @element = element
             @enriched_elements = enriched_elements
+            @position = position
           end
-          attr_reader :element, :enriched_elements
+          attr_reader :element, :enriched_elements, :position
+
+          def scheduled_stop_point_id
+            [
+              element,
+              enriched_elements[:for_boarding],
+              enriched_elements[:for_alighting]
+            ].join('-')
+          end
+
+          def for_alighting
+            @for_alighting ||= convert_for_boarding_and_for_alighting(enriched_elements[:for_alighting])
+          end
+
+          def for_boarding
+            @for_boarding ||= convert_for_boarding_and_for_alighting(enriched_elements[:for_boarding])
+          end
+
+          private
+
+          def convert_for_boarding_and_for_alighting(value)
+            return :forbidden if value == 'false'
+            :normal
+          end
         end
 
         def to_s

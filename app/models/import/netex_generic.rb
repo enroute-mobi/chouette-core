@@ -525,16 +525,35 @@ module Import
           return unless chouette_line
 
           @chouette_routes ||= routes_attributes.map do |route_attributes|
+            stop_point_keys = route_attributes[:stop_points].map do |stop_point|
+              generate_stop_point_key(stop_point)
+            end
+
             chouette_line.routes.build(route_attributes).tap do |chouette_route|
-              chouette_route.journey_patterns = chouette_journey_patterns
+              chouette_route.journey_patterns = chouette_journey_patterns[stop_point_keys]
             end
           end
         end
 
+        def generate_stop_point_key(stop_point)
+          [
+            stop_point.stop_area_id,
+            stop_point.position,
+            stop_point.for_boarding,
+            stop_point.for_alighting
+          ].join('-')
+        end
+
         def chouette_journey_patterns
-          journey_patterns.map do |netex_journey_pattern|
-            JourneyPatternDecorator.new(self, netex_journey_pattern).chouette_journey_pattern
-          end
+          @chouette_journey_patterns ||=
+            Hash.new { |h, k| h[k] = [] }.tap do |chouette_journey_patterns|
+              journey_patterns.map do |netex_journey_pattern|
+                journey_pattern_decorator = JourneyPatternDecorator.new(self, netex_journey_pattern)
+                chouette_journey_pattern = journey_pattern_decorator.chouette_journey_pattern
+
+                chouette_journey_patterns[journey_pattern_decorator.stop_point_keys] << chouette_journey_pattern
+              end
+            end
         end
 
         def routes_attributes
@@ -747,8 +766,13 @@ module Import
         def journey_pattern_stop_points
           scheduled_point_ids.map do |scheduled_point_id|
             stop_point = route_decorator.stop_point_for_scheduled_stop_point_id(scheduled_point_id)
+            stop_point_keys << route_decorator.generate_stop_point_key(stop_point)
             Chouette::JourneyPatternStopPoint.new stop_point: stop_point
           end
+        end
+
+        def stop_point_keys
+          @stop_point_keys ||= []
         end
       end
 

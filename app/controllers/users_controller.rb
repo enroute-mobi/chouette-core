@@ -9,7 +9,8 @@ class UsersController < Chouette::ResourceController
   defaults :resource_class => User
 
   def invite
-    already_existing, user = User.invite(user_params.to_h.update(organisation: current_organisation, from_user: current_user).symbolize_keys)
+    user_invite_arguments = user_params.to_h.update(organisation: current_organisation, from_user: current_user).symbolize_keys
+    already_existing, user = User.invite(**user_invite_arguments)
     if already_existing
       @error = true
       @existing_user = user

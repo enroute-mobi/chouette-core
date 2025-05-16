@@ -648,14 +648,15 @@ module Import
           @stop_points_by_scheduled_stop_point_id ||= {}.tap do |by_scheduled_stop_point_id|
             complete_scheduled_stop_points.each do |steps|
               steps.each do |step|
-                scheduled_stop_point_id = step.element
+                scheduled_stop_point = scheduled_stop_points[step.scheduled_stop_point_id]
 
-                if (stop_area_id = scheduled_stop_points[scheduled_stop_point_id]&.stop_area_id)
+                if (stop_area_id = scheduled_stop_point&.stop_area_id)
                   stop_point = Chouette::StopPoint.new(
                     stop_area_id: stop_area_id,
                     position: step.position,
                     for_boarding: step.for_boarding,
-                    for_alighting: step.for_alighting
+                    for_alighting: step.for_alighting,
+                    flexible: scheduled_stop_point.flexible
                   )
                   by_scheduled_stop_point_id[step.full_scheduled_stop_point_id] = stop_point
                 else
@@ -811,7 +812,7 @@ module Import
 
         def groups
           g = to_a.map do |element|
-            raw_elements.select do |raw_element|
+            raw_elements.flatten.reject(&:blank?).select do |raw_element|
               raw_element[:element] == element
             end
           end
@@ -831,6 +832,8 @@ module Import
             @group_index = group_index
           end
           attr_reader :element, :enriched_elements, :position, :group_index
+
+          alias scheduled_stop_point_id element
 
           def full_scheduled_stop_point_id
             [
@@ -915,7 +918,7 @@ module Import
           def add(sequence)
             sequence = Sequence.create(sequence)
 
-            raw_elements.merge sequence.raw_elements
+            raw_elements.merge sequence.raw_elements.flat_map
             @merge = nil
             links.merge sequence.links
           end
@@ -1325,35 +1328,54 @@ module Import
     end
 
     class ScheduledStopPoint
-      def initialize(id:, stop_area_id:)
+      def initialize(id:, stop_area_id:, flexible: false)
         @id = id
         @stop_area_id = stop_area_id
+        @flexible = flexible
       end
 
-      attr_accessor :id, :stop_area_id
+      attr_accessor :id, :stop_area_id, :flexible
     end
 
     class ScheduledStopPoints < WithResourcePart
       delegate :netex_source, :code_space, :stop_area_provider, :scheduled_stop_points, to: :import
 
       def import!
-        netex_source.passenger_stop_assignments.each do |stop_assignment|
-          scheduled_stop_point_id = stop_assignment.scheduled_stop_point_ref&.ref
-          stop_area_code = (stop_assignment.quay_ref || stop_assignment.stop_place_ref)&.ref
+        %i[passenger_stop_assignments flexible_stop_assignments].each do |assignment_type|
+          netex_source.send(assignment_type).each do |stop_assignment|
+            scheduled_stop_point_id = stop_assignment.scheduled_stop_point_ref&.ref
+            stop_area_code = find_stop_area_code(stop_assignment)
 
-          unless stop_area_code
-            create_message :stop_area_code_empty
-            next
-          end
+            unless stop_area_code
+              create_message :stop_area_code_empty
+              next
+            end
 
-          if (stop_area = stop_area_provider.stop_areas.find_by(registration_number: stop_area_code).presence)
-            scheduled_stop_point = ScheduledStopPoint.new(id: scheduled_stop_point_id, stop_area_id: stop_area.id)
-            scheduled_stop_points[scheduled_stop_point.id] = scheduled_stop_point
-          else
-            create_message :stop_area_not_found, code: stop_area_code
-            next
+            if (stop_area = stop_area_provider.stop_areas.find_by(registration_number: stop_area_code).presence)
+              scheduled_stop_point = ScheduledStopPoint.new(
+                id: scheduled_stop_point_id,
+                stop_area_id: stop_area.id,
+                flexible: flexible?(stop_assignment)
+              )
+              scheduled_stop_points[scheduled_stop_point.id] = scheduled_stop_point
+            else
+              create_message :stop_area_not_found, code: stop_area_code
+              next
+            end
           end
         end
+      end
+
+      private
+
+      def find_stop_area_code(stop_assignment)
+        return stop_assignment.flexible_stop_place_ref&.ref if flexible?(stop_assignment)
+
+        stop_assignment.quay_ref&.ref || stop_assignment.stop_place_ref&.ref
+      end
+
+      def flexible?(stop_assignment)
+        stop_assignment.is_a?(::Netex::FlexibleStopAssignment)
       end
     end
 

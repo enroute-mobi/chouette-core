@@ -535,10 +535,10 @@ module Import
           @chouette_journey_patterns ||=
             Hash.new { |h, k| h[k] = [] }.tap do |chouette_journey_patterns|
               journey_patterns.map.with_index do |netex_journey_pattern, index|
-                journey_pattern_decorator = JourneyPatternDecorator.new(self, netex_journey_pattern, index)
+                key = several_routes? ? index : 0
+                journey_pattern_decorator = JourneyPatternDecorator.new(self, netex_journey_pattern, key)
                 chouette_journey_pattern = journey_pattern_decorator.chouette_journey_pattern
-
-                chouette_journey_patterns[index] << chouette_journey_pattern
+                chouette_journey_patterns[key] << chouette_journey_pattern
               end
             end
         end
@@ -553,6 +553,10 @@ module Import
               codes: codes
             }
           end
+        end
+
+        def several_routes?
+          complete_scheduled_stop_points.many?
         end
 
         def chouette_name
@@ -618,19 +622,18 @@ module Import
             merger << route_scheduled_point_refs
 
             journey_patterns.each do |netex_journey_pattern|
-               scheduled_point_ids =
-                netex_journey_pattern
-                  .points_in_sequence
-                  .sort_by { |stop_point_in_journey_pattern| stop_point_in_journey_pattern.order.to_i }
-                  .map do |stop_point_in_journey_pattern|
-                    {
-                      element: stop_point_in_journey_pattern.scheduled_stop_point_ref&.ref,
-                      enriched_elements: {
-                        for_boarding: stop_point_in_journey_pattern.for_boarding,
-                        for_alighting: stop_point_in_journey_pattern.for_alighting
-                      }
+              scheduled_point_ids = netex_journey_pattern
+                .points_in_sequence
+                .sort_by { |stop_point_in_journey_pattern| stop_point_in_journey_pattern.order.to_i }
+                .map do |stop_point_in_journey_pattern|
+                  {
+                    element: stop_point_in_journey_pattern.scheduled_stop_point_ref&.ref,
+                    enriched_elements: {
+                      for_boarding: stop_point_in_journey_pattern.for_boarding,
+                      for_alighting: stop_point_in_journey_pattern.for_alighting
                     }
-                  end
+                  }
+                end
 
               merger << scheduled_point_ids
             end
@@ -638,7 +641,6 @@ module Import
         end
 
         def complete_scheduled_stop_points
-          #sequence_merger.merge.to_a
           sequence_merger.merge.enriched_sequences
         end
 
@@ -647,7 +649,6 @@ module Import
             complete_scheduled_stop_points.each do |steps|
               steps.each do |step|
                 scheduled_stop_point_id = step.element
-                enriched_elements = step.enriched_elements
 
                 if (stop_area_id = scheduled_stop_points[scheduled_stop_point_id]&.stop_area_id)
                   stop_point = Chouette::StopPoint.new(
@@ -758,10 +759,6 @@ module Import
             Chouette::JourneyPatternStopPoint.new stop_point: stop_point
           end
         end
-
-        def stop_point_keys
-          @stop_point_keys ||= []
-        end
       end
 
       class Sequence
@@ -813,7 +810,7 @@ module Import
         end
 
         def groups
-          g = self.to_a.map do |element|
+          g = to_a.map do |element|
             raw_elements.select do |raw_element|
               raw_element[:element] == element
             end
@@ -823,7 +820,7 @@ module Import
 
           g.map do |subarray|
             subarray.cycle.take(max_length)
-          end.transpose
+          end.transpose.uniq
         end
 
         class Step
@@ -856,6 +853,7 @@ module Import
 
           def convert_for_boarding_and_for_alighting(value)
             return :forbidden if value == 'false'
+
             :normal
           end
         end

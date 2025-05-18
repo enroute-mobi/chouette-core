@@ -536,7 +536,7 @@ GEM
       rb-fsevent (~> 0.10, >= 0.10.3)
       rb-inotify (~> 0.9, >= 0.9.10)
     logger (1.7.0)
-    loofah (2.24.0)
+    loofah (2.24.1)
       crass (~> 1.0.2)
       nokogiri (>= 1.12.0)
     mail (2.8.1)
@@ -557,7 +557,7 @@ GEM
       rake
     mini_histogram (0.3.1)
     mini_mime (1.1.5)
-    mini_portile2 (2.8.8)
+    mini_portile2 (2.8.9)
     mini_racer (0.9.0)
       libv8-node (~> 18.19.0.0)
     minitest (5.25.5)

@@ -46,7 +46,7 @@ fr:
       high_frequency_bus: Bus à haute fréquence
       dedicated_lane_bus: Bus à voie réservée
       school_bus: Bus scolaire
-      school_and_public_service_bus: School and Public Service Bus
+      school_and_public_service_bus: "Bus scolaire et de service public"
       rail_replacement_bus: Bus de remplacement ferré
       demand_and_response_bus: Bus à la demande
       airport_link_bus: "Bus d'aéroport"

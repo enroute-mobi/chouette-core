@@ -127,7 +127,7 @@ gem 'premailer-rails', '>= 1.11.1'
 gem 'redis-actionpack', '>= 5.3.0'
 
 gem 'gtfs', en_route: 'gtfs'
-gem 'netex', en_route: 'netex', branch: 'CHOUETTE-4529-support-flexible-stops-assignment-netex'
+gem 'netex', en_route: 'netex', branch: 'CHOUETTE-4572-netex-gem-support-booking-arrangements-in-journey-pattern'
 gem 'rgeo-shapefile'
 gem 'ara', '>= 3.0.0', en_route: 'ara-ruby'
 gem 'neptune', en_route: 'neptune'

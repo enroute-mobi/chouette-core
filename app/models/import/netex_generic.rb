@@ -427,7 +427,7 @@ module Import
 
     class RouteJourneyPatterns < WithResourcePart
       include ReferentialPart
-      delegate :netex_source, :scheduled_stop_points, :line_provider, :index_route_journey_patterns, to: :import
+      delegate :netex_source, :scheduled_stop_points, :line_provider, :index_route_journey_patterns, :code_space, to: :import
 
       def route_inserter
         @route_inserter ||= RouteInserter.new(
@@ -463,7 +463,8 @@ module Import
             directions: directions,
             destination_displays: destination_displays,
             line_provider: line_provider,
-            code_builder: code_builder
+            code_builder: code_builder,
+            code_space: code_space
           )
 
           unless decorator.valid?
@@ -500,7 +501,7 @@ module Import
 
       class Decorator < SimpleDelegator
         def initialize(route, journey_patterns, scheduled_stop_points: nil, route_points: nil, directions: nil,
-                       destination_displays: nil, line_provider: nil, code_builder: nil)
+                       destination_displays: nil, line_provider: nil, code_builder: nil, code_space: nil)
           super route
 
           @journey_patterns = journey_patterns
@@ -510,9 +511,10 @@ module Import
           @destination_displays = destination_displays
           @line_provider = line_provider
           @code_builder = code_builder
+          @code_space = code_space
         end
         attr_accessor :journey_patterns, :scheduled_stop_points, :route_points, :directions, :line_provider,
-                      :destination_displays, :code_builder
+                      :destination_displays, :code_builder, :code_space
 
         def chouette_line
           line = line_provider.lines.find_by(registration_number: line_ref.ref) if line_ref
@@ -703,7 +705,7 @@ module Import
         end
         attr_accessor :route_decorator, :group_index
 
-        delegate :destination_displays, :code_builder, to: :route_decorator
+        delegate :destination_displays, :code_builder, :line_provider, :code_space, to: :route_decorator
 
         def chouette_journey_pattern
           Chouette::JourneyPattern.new journey_pattern_attributes
@@ -716,8 +718,14 @@ module Import
             name: chouette_name,
             published_name: published_name,
             journey_pattern_stop_points: journey_pattern_stop_points,
-            codes: codes
+            codes: codes,
+            booking_arrangement_id: booking_arrangement_id
           }
+        end
+
+        def booking_arrangement_id
+          netex_booking_arrangement_id = booking_arrangements&.first&.ref
+          line_provider.booking_arrangements.by_code(code_space, netex_booking_arrangement_id)&.first&.id
         end
 
         def chouette_name

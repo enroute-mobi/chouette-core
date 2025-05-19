@@ -1309,6 +1309,8 @@ module Import
                 stop_point_id: stop_point_id,
                 arrival_time: passing_time.arrival_time,
                 departure_time: passing_time.departure_time,
+                latest_arrival_time_of_day: second_offset(passing_time.latest_arrival_time),
+                earliest_departure_time_of_day: second_offset(passing_time.earliest_departure_time),
                 arrival_day_offset: passing_time.arrival_day_offset || 0,
                 departure_day_offset: passing_time.departure_day_offset || 0
               )
@@ -1327,6 +1329,14 @@ module Import
               end
             end
           end
+        end
+
+        private
+
+        def second_offset(time)
+          return unless time.present?
+
+          TimeOfDay.parse(time).second_offset
         end
       end
     end

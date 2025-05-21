@@ -94,18 +94,18 @@ class Import::Gtfs < Import::Base
     end
 
     attr_reader :import
+    delegate :source, :lookup, :create_message, :workbench, :referential, :code_space, :save_model, to: :import
   end
 
   class Attributions < Base
-    delegate :source, :workbench, :referential, :code_space, to: :import
-
     def import!
       source.attributions.each do |attribution|
         decorator = Decorator.for(attribution)&.new(
           attribution,
           referential: referential,
           code_space: code_space,
-          workbench: workbench
+          workbench: workbench,
+          lookup: lookup
         )
 
         decorator.attribute! if decorator
@@ -114,13 +114,14 @@ class Import::Gtfs < Import::Base
 
     class Decorator < SimpleDelegator
 
-      def initialize(attribution, referential: nil, code_space: nil, workbench: nil)
+      def initialize(attribution, referential: nil, code_space: nil, workbench: nil, lookup: nil)
         super attribution
         @referential = referential
         @code_space = code_space
         @workbench = workbench
+        @lookup = lookup
       end
-      attr_accessor :referential, :code_space, :workbench
+      attr_accessor :referential, :code_space, :workbench, :lookup
 
       def self.for(gtfs_attribution)
         [TripOperatorDecorator, ContractDecorator].find do |decorator_class|
@@ -143,6 +144,7 @@ class Import::Gtfs < Import::Base
       end
 
       def vehicle_journey
+        # TODO: should be managed by Lookup
         referential.vehicle_journeys.by_code(code_space, trip_id).first
       end
 
@@ -168,7 +170,7 @@ class Import::Gtfs < Import::Base
       end
 
       def line
-        workbench.lines.find_by(registration_number: route_id)
+        lookup.lines.find(route_id)
       end
 
       def code_value
@@ -184,7 +186,7 @@ class Import::Gtfs < Import::Base
   end
 
   class BookingArrangements < Base
-    delegate :booking_arrangements, :create_message, :save_model, :source, :code_space, to: :import
+    delegate :booking_arrangements, to: :import
 
     def import!
       source.booking_rules.each do |booking_rule|
@@ -271,11 +273,11 @@ class Import::Gtfs < Import::Base
   end
 
   class LocationGroups < Base
-    delegate :stop_areas, :create_message, :save_model, :source, to: :import
+    delegate :stop_areas, to: :import
 
     def import!
       source.location_groups.each do |location_group|
-        decorated_location_group = Decorator.new(location_group, stop_areas)
+        decorated_location_group = Decorator.new(location_group, lookup.stop_areas)
 
         unless decorated_location_group.valid?
           decorated_location_group.errors.each { |error| create_message error }
@@ -300,7 +302,6 @@ class Import::Gtfs < Import::Base
         stop_area.attributes = decorated_location_group.stop_area_attributes
 
         save_model stop_area
-        import.store_stop_area_id_by_registration_number(stop_area)
       end
     end
 
@@ -323,7 +324,7 @@ class Import::Gtfs < Import::Base
       def flexible_area_memberships_attributes
         @flexible_area_memberships_attributes ||= [].tap do |flexible_area_memberships_attributes|
           stops.each do |stop|
-            if member_id = stop_areas.select(:id).find_by(registration_number: stop.stop_id)&.id
+            if member_id = stop_areas.find_id(stop.stop_id)
               flexible_area_memberships_attributes << { member_id: member_id }
             else
               missing_member_ids << stop.stop_id
@@ -426,8 +427,8 @@ class Import::Gtfs < Import::Base
 
   class Agencies < Base
     attr_reader :import
-    delegate :companies, :create_message, :save_model, :specific_default_company,
-             :source, :default_company=, :default_time_zone, :default_time_zone=, to: :import
+    delegate :companies, :specific_default_company,
+             :default_company=, :default_time_zone, :default_time_zone=, to: :import
 
     def import!
       if specific_default_company
@@ -665,7 +666,6 @@ class Import::Gtfs < Import::Base
         end
 
         save_model stop_area, resource: resource
-        store_stop_area_id_by_registration_number(stop_area)
 
         StopAreaZone.new(
           zone_id: stop.zone_id,
@@ -736,15 +736,13 @@ class Import::Gtfs < Import::Base
         end
 
         if line_published_name = route.long_name.presence
-          line.published_name = route.long_name
+          line.published_name = line_published_name
         end
 
-        if route.agency_id.blank? && default_company
-          line.company = default_company
+        if route.agency_id.blank?
+          line.company = default_company if default_company
         else
-          unless route.agency_id == line.company&.registration_number
-            line.company = companies.find_by(registration_number: route.agency_id) if route.agency_id.present?
-          end
+          line.company_id = lookup.companies.find_id(route.agency_id)
         end
 
         if line_comment = route.desc.presence
@@ -778,9 +776,32 @@ class Import::Gtfs < Import::Base
 
   def import_transfers
     @trips = {}
+
+    with_warning_lookup = lookup.on_response(on: :stop_areas) do |response, arguments|
+      if response.source == :workgroup
+        resource = arguments[:resource]
+        code = response.code
+
+        create_message(
+          {
+            criticity: :warning,
+            message_key: 'gtfs.transfers.stop_id_from_stop_area_referential',
+            message_attributes: { stop_id: code },
+            resource_attributes: {
+              filename: "#{resource.name}.txt",
+              line_number: resource.rows_count,
+              column_number: 0
+            }
+          },
+          resource: resource,
+          commit: true
+        )
+      end
+    end
+
     create_resource(:transfers).each(source.transfers, slice: 100, transaction: true) do |transfer, resource|
       next unless transfer.type == '2'
-      from_id = lookup.stop_areas.find(transfer.from_stop_id, resource)
+      from_id = with_warning_lookup.stop_areas.find_id(transfer.from_stop_id, resource: resource)
       unless from_id
         create_message(
           {
@@ -798,7 +819,7 @@ class Import::Gtfs < Import::Base
         )
         next
       end
-      to_id = lookup.stop_areas.find(transfer.to_stop_id, resource)
+      to_id = with_warning_lookup.stop_areas.find_id(transfer.to_stop_id, resource: resource)
       unless to_id
         create_message(
           {
@@ -860,59 +881,7 @@ class Import::Gtfs < Import::Base
   end
 
   def lookup
-    @lookup ||= Lookup.new(self)
-  end
-
-  class Lookup
-    def initialize(import)
-      @import = import
-    end
-    attr_reader :import
-
-    delegate :stop_area_id_by_stop_id, :stop_area_provider, :create_message, to: :import
-    delegate :stop_area_referential, to: :stop_area_provider
-
-    def stop_areas
-      @stop_areas = Class.new do
-        def initialize(lookup)
-          @lookup = lookup
-          @stop_ids = {}
-        end
-
-        def find(stop_id, resource)
-          @stop_ids[stop_id] = load_id(stop_id, resource)
-        end
-
-        def load_id(stop_id, resource)
-          model_id = @lookup.stop_area_id_by_stop_id(stop_id)
-          return model_id if model_id
-
-          model_id = @lookup.stop_area_provider.stop_areas.where(registration_number: stop_id).limit(1).pluck(:id).first
-          return model_id if model_id
-
-          model_id = @lookup.stop_area_referential.stop_areas.where(registration_number: stop_id).limit(1).pluck(:id).first
-          if model_id
-            @lookup.create_message(
-              {
-                criticity: :warning,
-                message_key: 'gtfs.transfers.stop_id_from_stop_area_referential',
-                message_attributes: { stop_id: stop_id },
-                resource_attributes: {
-                  filename: "#{resource.name}.txt",
-                  line_number: resource.rows_count,
-                  column_number: 0
-                }
-              },
-              resource: resource,
-              commit: true
-            )
-            return model_id
-          end
-
-          nil
-        end
-      end.new(self)
-    end
+    @lookup ||= Import::Lookup.default(self)
   end
 
   def service_facility_set(bikes_allowed)
@@ -1066,16 +1035,6 @@ class Import::Gtfs < Import::Base
     @journey_pattern_ids ||= {}
   end
 
-  def stop_area_id_by_stop_id(stop_id)
-    @stop_areas_id_by_registration_number[stop_id]
-  end
-
-  # stores both stops.txt and location_groups.txt
-  def store_stop_area_id_by_registration_number(stop_area)
-    @stop_areas_id_by_registration_number ||= {}
-    @stop_areas_id_by_registration_number[stop_area.registration_number] = stop_area.id
-  end
-
   def find_or_create_journey_pattern(trip, stop_times)
     decorator = TripDecorator.new(trip, stop_times)
     journey_pattern_id = journey_pattern_ids[decorator.journey_pattern_signature]
@@ -1149,8 +1108,7 @@ class Import::Gtfs < Import::Base
 
   # Import Routes and JourneyPatterns according to GTFS Trips
   class RouteJourneyPatterns < Base
-    delegate :source, :referential_inserter, :shape_provider,
-             :code_space, :stop_area_id_by_stop_id, :journey_pattern_ids, to: :import
+    delegate :referential_inserter, :journey_pattern_ids, :lookup, to: :import
 
     def route_inserter
       @route_inserter ||= Import::RouteInserter.new(
@@ -1236,56 +1194,9 @@ class Import::Gtfs < Import::Base
         RouteDecorator.new(
           route_cluster.stop_sequence,
           route_cluster.children,
-          stop_areas: stop_areas,
-          lines: lines,
-          shapes: shapes
+          lookup: lookup
         )
       end
-    end
-
-    # TODO: share this pattern with other parts (without anonymous classes :D)
-    def stop_areas
-      @stop_areas ||= Class.new do
-        def initialize(part)
-          @part = part
-        end
-
-        def find(stop_id)
-          @part.stop_area_id_by_stop_id(stop_id)
-        end
-      end.new(self)
-    end
-
-    def lines
-      @lines ||= Class.new do
-        def initialize(part)
-          @part = part
-        end
-
-        def lines
-          @lines ||= {}
-        end
-
-        def find(route_id)
-          lines[route_id] ||= @part.import.lines.find_by(registration_number: route_id)&.id
-        end
-      end.new(self)
-    end
-
-    def shapes
-      @shapes ||= Class.new do
-        def initialize(part)
-          @part = part
-        end
-
-        def shapes
-          @shapes ||= {}
-        end
-
-        def find(shape_id)
-          shapes[shape_id] ||= @part.shape_provider.shapes.by_code(@part.code_space, shape_id).select(:id).first&.id
-        end
-      end.new(self)
     end
 
     class RouteCluster
@@ -1348,17 +1259,16 @@ class Import::Gtfs < Import::Base
     end
 
     class RouteDecorator < SimpleDelegator
-      def initialize(route_description, journey_pattern_descriptions, stop_areas: nil, lines: nil, shapes: nil)
+      def initialize(route_description, journey_pattern_descriptions, lookup: nil)
         super route_description
         @journey_pattern_descriptions = journey_pattern_descriptions
 
         # Used to retrieve model identifiers for associated resources
-        @stop_areas = stop_areas
-        @lines = lines
-        @shapes = shapes
+        @lookup = lookup
       end
 
-      attr_reader :journey_pattern_descriptions, :stop_areas, :lines, :shapes
+      attr_reader :journey_pattern_descriptions, :lookup
+      delegate :stop_areas, :lines, :shapes, to: :lookup
 
       def route
         Chouette::Route.new(route_attributes)
@@ -1375,7 +1285,7 @@ class Import::Gtfs < Import::Base
       end
 
       def line_id
-        lines.find route_id
+        lines.find_id route_id
       end
 
       def wayback
@@ -1390,6 +1300,7 @@ class Import::Gtfs < Import::Base
         @stop_points ||= stop_times.map.with_index do |stop_time, position|
           gtfs_stop_id = stop_time.stop_id.presence || stop_time.location_group_id
           stop_area_id = stop_areas.find(gtfs_stop_id)
+
           Chouette::StopPoint.new(
             stop_area_id: stop_area_id,
             position: position,
@@ -1469,7 +1380,7 @@ class Import::Gtfs < Import::Base
       end
 
       def chouette_shape_id
-        shapes.find shape_id
+        shapes.find_id shape_id
       end
     end
   end
@@ -1532,18 +1443,18 @@ class Import::Gtfs < Import::Base
   end
 
   def find_stop_parent_or_create_message(stop_area_name, parent_station, resource)
-    parent = stop_areas.find_by(registration_number: parent_station)
+    # Ugly, but this code should be into a dedicated Part :-/
+    @with_warning_parent_lookup ||= lookup.on_response(on: :stop_areas) do |response, arguments|
+      if response.source == :workgroup
+        resource = arguments[:resource]
+        code = response.code
 
-    unless parent
-      parent = stop_area_referential.stop_areas.find_by(registration_number: parent_station)
-
-      if parent
         create_message(
           {
             criticity: :warning,
             message_key: :stop_area_parent_in_workgroup,
             message_attributes: {
-              parent: parent.registration_number,
+              parent: code,
               # TODO: We should use the registration number to identify Stop Areas in message
               stop_area: stop_area_name
             }
@@ -1552,6 +1463,8 @@ class Import::Gtfs < Import::Base
         )
       end
     end
+
+    parent = @with_warning_parent_lookup.stop_areas.find(parent_station, resource: resource)
 
     unless parent
       create_message(
@@ -1650,7 +1563,7 @@ class Import::Gtfs < Import::Base
   end
 
   class Shapes < Base
-    delegate :source, :shape_provider, :code_space, :create_message, to: :import
+    delegate :shape_provider, to: :import
 
     def import!
       source.shapes.each_slice(1000).each do |gtfs_shapes|
@@ -1745,11 +1658,11 @@ class Import::Gtfs < Import::Base
   end
 
   class FareProducts < Base
-    delegate :code_space, :companies, :source, :fare_provider, :index, :default_company, to: :import
+    delegate :fare_provider, :index, :default_company, to: :import
 
     def import!
       source.fare_attributes.each do |fare_atribute|
-        decorator = Decorator.new(fare_atribute, code_space: code_space, company_scope: companies,
+        decorator = Decorator.new(fare_atribute, code_space: code_space, companies: lookup.companies,
                                                  default_company: default_company, fare_provider: fare_provider)
 
         product = decorator.build_or_update
@@ -1763,16 +1676,16 @@ class Import::Gtfs < Import::Base
     end
 
     class Decorator < SimpleDelegator
-      def initialize(fare_attribute, code_space: nil, company_scope: nil, default_company: nil, fare_provider: nil)
+      def initialize(fare_attribute, code_space: nil, companies: nil, default_company: nil, fare_provider: nil)
         super fare_attribute
 
         @code_space = code_space
-        @company_scope = company_scope
+        @companies = companies
         @fare_provider = fare_provider
         @default_company = default_company
       end
 
-      attr_accessor :code_space, :company_scope, :fare_provider, :default_company
+      attr_accessor :code_space, :companies, :fare_provider, :default_company
 
       def build_or_update
         return unless fare_provider
@@ -1798,7 +1711,7 @@ class Import::Gtfs < Import::Base
         if agency_id.blank?
           default_company
         else
-          company_scope&.find_by(registration_number: agency_id)
+          companies&.find(agency_id)
         end
       end
 
@@ -1826,11 +1739,11 @@ class Import::Gtfs < Import::Base
   end
 
   class FareValidities < Base
-    delegate :code_space, :lines, :source, :fare_provider, :index, to: :import
+    delegate :fare_provider, :index, to: :import
 
     def import!
       source.fare_rules.each do |fare_rule|
-        decorator = Decorator.new(fare_rule, code_space: code_space, fare_provider: fare_provider, line_scope: lines)
+        decorator = Decorator.new(fare_rule, code_space: code_space, fare_provider: fare_provider, lines: lookup.lines)
 
         validity = decorator.build_or_update
         unless validity.save
@@ -1856,15 +1769,15 @@ class Import::Gtfs < Import::Base
     end
 
     class Decorator < SimpleDelegator
-      def initialize(fare_rule, code_space: nil, line_scope: nil, fare_provider: nil)
+      def initialize(fare_rule, code_space: nil, lines: nil, fare_provider: nil)
         super fare_rule
 
         @code_space = code_space
-        @line_scope = line_scope
+        @lines = lines
         @fare_provider = fare_provider
       end
 
-      attr_accessor :code_space, :line_scope, :fare_provider
+      attr_accessor :code_space, :lines, :fare_provider
 
       delegate :fare_validities, :fare_products, :fare_zones, to: :fare_provider, allow_nil: true
 
@@ -1936,7 +1849,7 @@ class Import::Gtfs < Import::Base
       end
 
       def line
-        line_scope.find_by(registration_number: route_id) if line_scope && route_id.present?
+        lines&.find(route_id)
       end
 
       def find_or_create_zone(zone_id)
@@ -2036,7 +1949,7 @@ class Import::Gtfs < Import::Base
   end
 
   class Services < Base
-    delegate :source, :time_tables_by_service_id, :code_space, to: :import
+    delegate :time_tables_by_service_id, to: :import
 
     def import!
       # Retrieve both calendar and associated calendar_dates into a single GTFS::Service model

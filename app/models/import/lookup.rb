@@ -96,6 +96,8 @@ module Import
         @callback = on_response
       end
 
+      # Returns identifier associated to the given code (or nil).
+      # Additionnal arguments are used by on_response handler
       def find_id(code, **arguments)
         return nil unless code.present?
 
@@ -104,12 +106,20 @@ module Import
         response.model_id
       end
 
+      # Returns model associated to the given code (or nil).
+      # Additionnal arguments are used by on_response handler
       def find(code, **arguments)
         return nil unless code.present?
 
         response = internal_collection.find(code)
         on_response response, **arguments
         response.model
+      end
+
+      # Returns all (uniq) identifiers associated to given codes
+      def find_ids(*codes)
+        codes = codes.flatten.compact.uniq
+        codes.map { |code| find_id code }.compact.uniq
       end
 
       private

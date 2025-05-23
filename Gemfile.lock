@@ -66,16 +66,7 @@ GIT
 
 GIT
   remote: https://bitbucket.org/enroute-mobi/netex.git
-<<<<<<< HEAD
-<<<<<<< HEAD
   revision: 135790739f69363cee9b4858ebf2ad4de4f82fa8
-=======
-  revision: 603fabcc9d639ee7c78e2658422853933cb85ec1
-=======
-  revision: 52f56bdef723ebc8bde5d56693579d6cee73757c
->>>>>>> c014e0bb9 (CHOUETTE-4528 Export Flexible Vehicle Journey with LatestArrivalTime/EarliestDepartureTime NeTEx attributes)
-  branch: CHOUETTE-4530-netex-gem-support-earliest-departure-latest-arrival
->>>>>>> 96718844d (CHOUETTE-4530 Import Flexible Vehicle Journey with EarliestDepartureTime/LatestArrivalTime NeTEx attributes)
   specs:
     netex (0.1.2)
       activesupport

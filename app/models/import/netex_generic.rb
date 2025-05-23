@@ -621,7 +621,12 @@ module Import
 
         def sequence_merger
           @sequence_merger ||= Sequence::Merger.new.tap do |merger|
-            merger << route_scheduled_point_refs
+            merger << route_scheduled_point_refs.map do |route_scheduled_point_ref|
+              {
+                element: route_scheduled_point_ref,
+                enriched_elements: { for_boarding: true, for_alighting: true }
+              }
+            end
 
             journey_patterns.each do |netex_journey_pattern|
               scheduled_point_ids = netex_journey_pattern

@@ -546,15 +546,19 @@ module Import
         end
 
         def routes_attributes
-          enriched_stop_points.map do |stop_points|
-            {
-              name: chouette_name,
-              wayback: wayback,
-              published_name: direction_name,
-              stop_points: stop_points,
-              codes: codes
-            }
-          end
+          return [route_attributes] unless enriched_stop_points.present?
+
+          enriched_stop_points.map { |stop_points|  route_attributes(stop_points) }
+        end
+
+        def route_attributes(stop_points = [])
+          {
+            name: chouette_name,
+            wayback: wayback,
+            published_name: direction_name,
+            stop_points: stop_points,
+            codes: codes
+          }
         end
 
         def several_routes?
@@ -624,7 +628,7 @@ module Import
             merger << route_scheduled_point_refs.map do |route_scheduled_point_ref|
               {
                 element: route_scheduled_point_ref,
-                enriched_elements: { for_boarding: true, for_alighting: true }
+                enriched_elements: { for_boarding: nil, for_alighting: nil }
               }
             end
 

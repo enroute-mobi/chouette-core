@@ -1,5 +1,6 @@
 class Export::NetexGeneric < Export::Base
-  option :profile, enumerize: %w[none french european idfm/iboo idfm/icar idfm/full], default: :none
+  # TODO: Remove deprecated idfm/full. See @CHOUETTE-4619
+  option :profile, enumerize: %w[none french european idfm/iboo idfm/icar idfm/publication idfm/full], default: :none
   option :from, serialize: ActiveModel::Type::Date
   option :to, serialize: ActiveModel::Type::Date
   option :period, default_value: 'all_periods', enumerize: %w[all_periods only_next_days static_day_period]
@@ -52,7 +53,13 @@ class Export::NetexGeneric < Export::Base
   end
 
   def netex_profile
-    @netex_profile ||= Netex::Profile.create(profile) if profile?
+    return unless profile?
+
+    # TODO: To be remove me. See @CHOUETTE-4619
+    real_profile = profile
+    real_profile = 'idfm/publication/legacy' if profile == 'idfm/full'
+
+    @netex_profile ||= Netex::Profile.create(real_profile)
   end
 
   def content_type

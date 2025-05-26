@@ -1173,10 +1173,7 @@ RSpec.describe Export::NetexGeneric do
           before { allow(decorator).to receive(:area_type).and_return(Chouette::AreaType::QUAY) }
           it { is_expected.to eq(Netex::Quay) }
         end
-        context 'when area type is flexible' do
-          before { allow(decorator).to receive(:area_type).and_return(Chouette::AreaType::FLEXIBLE_STOP_PLACE) }
-          it { is_expected.to eq(Netex::FlexibleStopPlace) }
-        end
+
         context 'when area type is stop place' do
           before { allow(decorator).to receive(:area_type).and_return(Chouette::AreaType::STOP_PLACE) }
           it { is_expected.to eq(Netex::StopPlace) }

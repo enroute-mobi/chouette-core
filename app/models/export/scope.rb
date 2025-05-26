@@ -220,9 +220,17 @@ module Export
       end
 
       def stop_areas
-        current_scope.stop_areas.where(Chouette::StopArea.arel_table[:id].in(stop_area_ids)).or(
-          current_scope.stop_areas.where(id: flexible_stop_area_ids)
-        ).distinct
+        current_scope.
+          stop_areas.
+          where(Chouette::StopArea.arel_table[:id].in(stop_area_ids)).
+          where.not(area_type: Chouette::AreaType::FLEXIBLE_STOP_PLACE)
+      end
+
+      def flexible_stop_areas
+        current_scope.
+          stop_areas.
+          where(Chouette::StopArea.arel_table[:id].in(scheduled_stop_area_ids)).
+          joins(:flexible_area_memberships).distinct
       end
 
       def stop_area_groups
@@ -230,19 +238,6 @@ module Export
           id: ::StopAreaGroup::Member.where(::StopAreaGroup::Member.arel_table[:stop_area_id].in(stop_area_ids))
                                      .select(:group_id).distinct
         )
-      end
-
-      def flexible_stop_area_ids
-        current_scope.
-          stop_areas.
-          joins(:flexible_area_memberships).
-          where(id: specific_vehicle_journey_at_stops_stop_area_ids).
-          or(
-            current_scope.
-              stop_areas.
-              joins(:flexible_area_memberships).
-              where(id: stop_points_stop_area_ids)
-          ).select(:id).distinct
       end
 
       def stop_points_stop_area_ids
@@ -281,11 +276,22 @@ module Export
 
       private
 
-      def stop_area_ids
+      def scheduled_stop_area_ids
         Arel::Nodes::Union.new(
           stop_points_stop_area_ids.arel.ast,
-          specific_vehicle_journey_at_stops_stop_area_ids.arel.ast
+          specific_vehicle_journey_at_stops_stop_area_ids.arel.ast,
         )
+      end
+
+      def stop_area_ids
+        Arel::Nodes::Union.new(
+          scheduled_stop_area_ids,
+          flexible_stop_area_member_ids.arel.ast
+        )
+      end
+
+      def flexible_stop_area_member_ids
+        flexible_stop_areas.select('flexible_area_memberships.member_id').distinct
       end
     end
 

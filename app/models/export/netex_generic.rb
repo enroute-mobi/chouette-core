@@ -201,7 +201,7 @@ class Export::NetexGeneric < Export::Base
 
   def part_classes
     [].tap do |part_classes|
-      part_classes.push(Entrances, StopAreas) unless skip_stop_area_resources
+      part_classes.push(Entrances, StopAreas, FlexibleStopAreas) unless skip_stop_area_resources
       part_classes.push(Companies, Networks, LineNotices, BookingArrangements, Lines) unless skip_line_resources
 
       # Export StopPoints before Routes to detect local references
@@ -535,19 +535,16 @@ class Export::NetexGeneric < Export::Base
             centroid: centroid,
             raw_xml: import_xml,
             key_list: key_list,
+            accessibility_assessment: accessibility_assessment,
+            postal_address: postal_address,
+            url: url,
+            transport_mode: netex_transport_mode,
+            transport_submode: netex_transport_submode,
+            tariff_zones: tariff_zones
           }.tap do |attributes|
             unless netex_quay?
-              attributes[:parent_site_ref] = parent_site_ref unless netex_flexible_stop_place?
+              attributes[:parent_site_ref] = parent_site_ref
               attributes[:place_types] = place_types
-            end
-            if netex_flexible_stop_place?
-              attributes[:areas] = areas
-            else
-              attributes[:transport_mode] = netex_transport_mode
-              attributes[:transport_submode] = netex_transport_submode
-              attributes[:accessibility_assessment] = accessibility_assessment
-              attributes[:postal_address] = postal_address
-              attributes[:url] = url
             end
           end
         )
@@ -570,24 +567,6 @@ class Export::NetexGeneric < Export::Base
 
       def parent_objectid
         @parent_objectid ||= code_provider.stop_areas.code(parent_id)
-      end
-
-      def areas
-        [
-          Netex::FlexibleArea.new(
-            id: "#{netex_identifier.to_s}-area",
-            members: netex_flexible_area_members
-          )
-        ]
-      end
-
-      def netex_flexible_area_members
-        [].tap do |members|
-          flexible_area_members.find_each do |member|
-            quay_code = code_provider.stop_areas.code(member.id)
-            members << Netex::Reference.new(quay_code, type: 'QuayRef')
-          end
-        end
       end
 
       def derived_from_object_ref
@@ -624,8 +603,6 @@ class Export::NetexGeneric < Export::Base
           'generalStopPlace'
         when 'gdl'
           'groupOfStopPlaces'
-        when 'flexible_stop_place'
-          'flexibleStopPlace'
         end
       end
 
@@ -656,19 +633,100 @@ class Export::NetexGeneric < Export::Base
         area_type&.to_sym == Chouette::AreaType::QUAY
       end
 
-      def netex_flexible_stop_place?
-        area_type&.to_sym == Chouette::AreaType::FLEXIBLE_STOP_PLACE
+      def netex_resource_class
+        netex_quay? ? Netex::Quay : Netex::StopPlace
       end
 
-      def netex_resource_class
-        case area_type&.to_sym
-        when Chouette::AreaType::QUAY
-          Netex::Quay
-        when Chouette::AreaType::FLEXIBLE_STOP_PLACE
-          Netex::FlexibleStopPlace
-        else
-          Netex::StopPlace
+      def private_code
+        registration_number
+      end
+    end
+  end
+
+  class FlexibleStopAreas < Part
+    def perform
+      flexible_stop_areas.each_instance do |flexible_stop_area|
+        resource = decorate(flexible_stop_area, with: Decorator).netex_resource
+        target << resource
+      end
+    end
+
+    def flexible_stop_areas
+      export_scope.flexible_stop_areas
+                  .left_joins(:codes)
+                  .select('stop_areas.*', stop_areas_codes)
+                  .group('stop_areas.id')
+    end
+
+    def stop_areas_codes
+      <<~SQL
+       array_agg(
+         DISTINCT
+         jsonb_build_object(
+           'id', codes.code_space_id,
+           'value', codes.value
+         )
+       ) AS codes_values
+     SQL
+    end
+
+    class Decorator < ModelDecorator
+      def netex_attributes
+        super.merge(
+          {
+            derived_from_object_ref: derived_from_object_ref,
+            name: name,
+            public_code: public_code,
+            private_code: private_code,
+            centroid: centroid,
+            raw_xml: import_xml,
+            key_list: key_list,
+            place_types: place_types,
+            areas: areas
+          }
+        )
+      end
+
+      def areas
+        [
+          Netex::FlexibleArea.new(
+            id: "#{netex_identifier.to_s}-area",
+            members: netex_flexible_area_members
+          )
+        ]
+      end
+
+      def netex_flexible_area_members
+        [].tap do |members|
+          flexible_area_members.find_each do |member|
+            quay_code = code_provider.stop_areas.code(member.id)
+            members << Netex::Reference.new(quay_code, type: 'QuayRef')
+          end
         end
+      end
+
+      def derived_from_object_ref
+        code_provider.stop_areas.code(referent_id)
+      end
+
+      def key_list
+        netex_alternate_identifiers + netex_custom_field_identifiers
+      end
+
+      def netex_custom_field_identifiers
+        CustomFieldExtractor.new(self).custom_field_identifiers
+      end
+
+      def centroid
+        Netex::Point.new(location: Netex::Location.new(longitude: longitude, latitude: latitude))
+      end
+
+      def place_types
+        [Netex::Reference.new('flexibleStopPlace', type: String)]
+      end
+
+      def netex_resource
+        Netex::FlexibleStopPlace.new(netex_attributes)
       end
 
       def private_code

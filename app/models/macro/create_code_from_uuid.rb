@@ -64,7 +64,8 @@ module Macro
 
         attributes.merge!(criticity: 'error', message_key: 'error') unless code.valid?
 
-        macro_messages.create!(attributes)
+        attributes[:macro_run_id] = self.id
+        Macro::Message.create!(attributes)
       end
 
       def models_without_code

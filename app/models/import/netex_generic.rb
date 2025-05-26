@@ -628,7 +628,7 @@ module Import
             merger << route_scheduled_point_refs.map do |route_scheduled_point_ref|
               {
                 element: route_scheduled_point_ref,
-                enriched_elements: { for_boarding: nil, for_alighting: nil }
+                enriched_elements: { for_boarding: 'true', for_alighting: 'true' }
               }
             end
 
@@ -640,8 +640,8 @@ module Import
                   {
                     element: stop_point_in_journey_pattern.scheduled_stop_point_ref&.ref,
                     enriched_elements: {
-                      for_boarding: stop_point_in_journey_pattern.for_boarding,
-                      for_alighting: stop_point_in_journey_pattern.for_alighting
+                      for_boarding: stop_point_in_journey_pattern.for_boarding || 'true',
+                      for_alighting: stop_point_in_journey_pattern.for_alighting || 'true'
                     }
                   }
                 end
@@ -765,8 +765,8 @@ module Import
               [
                 group_index,
                 stop_point_in_journey_pattern.scheduled_stop_point_ref&.ref,
-                stop_point_in_journey_pattern&.for_boarding,
-                stop_point_in_journey_pattern&.for_alighting
+                stop_point_in_journey_pattern&.for_boarding || 'true',
+                stop_point_in_journey_pattern&.for_alighting || 'true'
               ].join('-')
             end
         end
@@ -856,8 +856,8 @@ module Import
             [
               group_index,
               element,
-              enriched_elements[:for_boarding],
-              enriched_elements[:for_alighting]
+              enriched_elements[:for_boarding] || 'true',
+              enriched_elements[:for_alighting] || 'true'
             ].join('-')
           end
 

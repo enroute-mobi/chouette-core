@@ -12,7 +12,7 @@ module TomTom
     def call
       url = "https://api.tomtom.com/routing/1/calculateRoute/#{locations}/json?routeType=fastest&traffic=false&travelMode=bus&key=#{TOMTOM_API_KEY}"
 
-      raw_response = open(url).read
+      raw_response = Net::HTTP.get(URI(url))
       response = JSON.parse(raw_response)
       
       new_coordinates = response['routes'].first['legs'].flat_map { |leg| leg['points'].flat_map { |point| [ point.values_at("longitude", "latitude") ] } }

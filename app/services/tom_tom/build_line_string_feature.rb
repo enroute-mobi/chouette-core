@@ -32,7 +32,7 @@ module TomTom
     private
 
     def locations
-      @coordinates.map { |(longitude, latitude)| "#{latitude},#{longitude}" }.join(':')
+      @coordinates.filter_map { |(lng, lat)| lat && lng ? "#{lat},#{lng}" : nil }.join(':')
     end
   end
 end

@@ -1801,29 +1801,47 @@ RSpec.describe Import::NetexGeneric::RouteJourneyPatterns::Sequence::Merger do
       [
         {
           element: 'scheduled-stop-point-1',
-          enriched_elements: { for_boarding: true, for_alighting: true }
+          enriched_elements: { for_boarding: 'true', for_alighting: 'true' },
+          journey_pattern_id: 'journey-pattern-1'
         },
         {
           element: 'scheduled-stop-point-2',
-          enriched_elements: { for_boarding: true, for_alighting: true }
+          enriched_elements: { for_boarding: 'true', for_alighting: 'true' },
+          journey_pattern_id: 'journey-pattern-1'
         },
         {
           element: 'scheduled-stop-point-3',
-          enriched_elements: { for_boarding: true, for_alighting: true }
+          enriched_elements: { for_boarding: 'true', for_alighting: 'true' },
+          journey_pattern_id: 'journey-pattern-1'
         }
       ],
       [
         {
           element: 'scheduled-stop-point-1',
-          enriched_elements: { for_boarding: true, for_alighting: true }
+          enriched_elements: { for_boarding: 'true', for_alighting: 'true' },
+          journey_pattern_id: 'journey-pattern-2'
         },
         {
           element: 'scheduled-stop-point-2',
-          enriched_elements: { for_boarding: true, for_alighting: false }
+          enriched_elements: { for_boarding: 'true', for_alighting: 'false' },
+          journey_pattern_id: 'journey-pattern-2'
         },
         {
           element: 'scheduled-stop-point-3',
-          enriched_elements: { for_boarding: true, for_alighting: true }
+          enriched_elements: { for_boarding: 'true', for_alighting: 'true' },
+          journey_pattern_id: 'journey-pattern-2'
+        }
+      ],
+      [
+        {
+          element: 'scheduled-stop-point-1',
+          enriched_elements: { for_boarding: 'true', for_alighting: 'true' },
+          journey_pattern_id: 'journey-pattern-3'
+        },
+        {
+          element: 'scheduled-stop-point-2',
+          enriched_elements: { for_boarding: 'true', for_alighting: 'true' },
+          journey_pattern_id: 'journey-pattern-3'
         }
       ]
     ].each do |scheduled_point_ids|

@@ -526,9 +526,9 @@ module Import
         def chouette_routes
           return unless chouette_line
 
-          @chouette_routes ||= routes_attributes.map.with_index do |route_attributes, index|
+          @chouette_routes ||= routes_attributes.map.with_index do |route_attributes, route_index|
             chouette_line.routes.build(route_attributes).tap do |chouette_route|
-              chouette_route.journey_patterns = chouette_journey_patterns[index]
+              chouette_route.journey_patterns = chouette_journey_patterns[route_index]
             end
           end
         end
@@ -536,19 +536,21 @@ module Import
         def chouette_journey_patterns
           @chouette_journey_patterns ||=
             Hash.new { |h, k| h[k] = [] }.tap do |chouette_journey_patterns|
-              journey_patterns.map.with_index do |netex_journey_pattern, index|
-                key = several_routes? ? index : 0
-                journey_pattern_decorator = JourneyPatternDecorator.new(self, netex_journey_pattern, key)
-                chouette_journey_pattern = journey_pattern_decorator.chouette_journey_pattern
-                chouette_journey_patterns[key] << chouette_journey_pattern
+              complete_scheduled_stop_points.each.with_index do |route_steps, route_index|
+                route_steps.each do |steps|
+                  netex_journey_pattern = journey_patterns.find { |jp| jp.id == steps.first.journey_pattern_id }
+                  journey_pattern_decorator = JourneyPatternDecorator.new(self, netex_journey_pattern, route_index)
+                  chouette_journey_pattern = journey_pattern_decorator.chouette_journey_pattern
+                  chouette_journey_patterns[route_index] << chouette_journey_pattern
+                end
               end
             end
         end
 
         def routes_attributes
-          return [route_attributes] unless enriched_stop_points.present?
+          return [route_attributes] unless routes_stop_points.present?
 
-          enriched_stop_points.map { |stop_points|  route_attributes(stop_points) }
+          routes_stop_points.map { |stop_points|  route_attributes(stop_points) }
         end
 
         def route_attributes(stop_points = [])
@@ -559,10 +561,6 @@ module Import
             stop_points: stop_points,
             codes: codes
           }
-        end
-
-        def several_routes?
-          complete_scheduled_stop_points.many?
         end
 
         def chouette_name
@@ -625,11 +623,13 @@ module Import
 
         def sequence_merger
           @sequence_merger ||= Sequence::Merger.new.tap do |merger|
-            merger << route_scheduled_point_refs.map do |route_scheduled_point_ref|
+            route_scheduled_point_refs.map do |route_scheduled_point_ref|
               {
                 element: route_scheduled_point_ref,
-                enriched_elements: { for_boarding: 'true', for_alighting: 'true' }
+                enriched_elements: { for_boarding: nil, for_alighting: nil }
               }
+            end.tap do |route_scheduled_point_refs|
+               route_scheduled_point_refs if route_scheduled_point_refs.present?
             end
 
             journey_patterns.each do |netex_journey_pattern|
@@ -642,7 +642,8 @@ module Import
                     enriched_elements: {
                       for_boarding: stop_point_in_journey_pattern.for_boarding || 'true',
                       for_alighting: stop_point_in_journey_pattern.for_alighting || 'true'
-                    }
+                    },
+                    journey_pattern_id: netex_journey_pattern.id,
                   }
                 end
 
@@ -655,21 +656,35 @@ module Import
           sequence_merger.merge.enriched_sequences
         end
 
-        def stop_points_by_scheduled_stop_point_id
-          @stop_points_by_scheduled_stop_point_id ||= {}.tap do |by_scheduled_stop_point_id|
+        # Route Stop Points ordered by #complete_scheduled_stop_points
+        def routes_stop_points
+          complete_scheduled_stop_points.map do |steps|
+            steps.flatten.map do |step|
+              route_stop_point_for_scheduled_stop_point_id(step.route_stop_points_key)
+            end.uniq
+          end
+        end
+
+        def route_stop_points_by_scheduled_stop_point_id
+          @route_stop_points_by_scheduled_stop_point_id ||= {}.tap do |by_scheduled_stop_point_id|
             complete_scheduled_stop_points.each do |steps|
-              steps.each do |step|
+              steps.flatten.each do |step|
                 scheduled_stop_point = scheduled_stop_points[step.scheduled_stop_point_id]
 
                 if (stop_area_id = scheduled_stop_point&.stop_area_id)
-                  stop_point = Chouette::StopPoint.new(
-                    stop_area_id: stop_area_id,
-                    position: step.position,
-                    for_boarding: step.for_boarding,
-                    for_alighting: step.for_alighting,
-                    flexible: scheduled_stop_point.flexible
-                  )
-                  by_scheduled_stop_point_id[step.full_scheduled_stop_point_id] = stop_point
+                  unless by_scheduled_stop_point_id[step.route_stop_points_key]
+                    stop_point = Chouette::StopPoint.new(
+                      stop_area_id: stop_area_id,
+                      position: step.position,
+                      for_boarding: step.for_boarding,
+                      for_alighting: step.for_alighting,
+                      flexible: scheduled_stop_point.flexible
+                    )
+                    by_scheduled_stop_point_id[step.route_stop_points_key] = stop_point
+                  end
+
+                  journey_pattern_stop_points_by_scheduled_stop_point_id[step.journey_pattern_stop_points_key] =
+                    by_scheduled_stop_point_id[step.route_stop_points_key]
                 else
                   add_error :stop_area_not_found_in_scheduled_stop_points
                 end
@@ -678,17 +693,16 @@ module Import
           end
         end
 
-        def stop_point_for_scheduled_stop_point_id(scheduled_stop_point_id)
-          stop_points_by_scheduled_stop_point_id[scheduled_stop_point_id]
+        def route_stop_point_for_scheduled_stop_point_id(route_scheduled_stop_point_id)
+          route_stop_points_by_scheduled_stop_point_id[route_scheduled_stop_point_id]
         end
 
-        # Route Stop Points ordered by #complete_scheduled_stop_points
-        def enriched_stop_points
-          complete_scheduled_stop_points.map do |steps|
-            steps.map do |step|
-              stop_point_for_scheduled_stop_point_id(step.full_scheduled_stop_point_id)
-            end.compact
-          end
+        def journey_pattern_stop_points_by_scheduled_stop_point_id
+          @journey_pattern_stop_points_by_scheduled_stop_point_id ||= {}
+        end
+
+        def journey_pattern_stop_point_for_scheduled_stop_point_id(jp_scheduled_stop_point_id)
+          journey_pattern_stop_points_by_scheduled_stop_point_id[jp_scheduled_stop_point_id]
         end
 
         def add_error(message_key)
@@ -706,13 +720,13 @@ module Import
       end
 
       class JourneyPatternDecorator < SimpleDelegator
-        def initialize(route_decorator, journey_pattern, group_index)
+        def initialize(route_decorator, journey_pattern, route_index)
           super journey_pattern
 
           @route_decorator = route_decorator
-          @group_index = group_index
+          @route_index = route_index
         end
-        attr_accessor :route_decorator, :group_index
+        attr_accessor :route_decorator, :route_index
 
         delegate :destination_displays, :code_builder, :line_provider, :code_space, to: :route_decorator
 
@@ -763,7 +777,8 @@ module Import
             .sort_by { |stop_point_in_journey_pattern| stop_point_in_journey_pattern.order.to_i }
             .map do |stop_point_in_journey_pattern|
               [
-                group_index,
+                id,
+                route_index,
                 stop_point_in_journey_pattern.scheduled_stop_point_ref&.ref,
                 stop_point_in_journey_pattern&.for_boarding || 'true',
                 stop_point_in_journey_pattern&.for_alighting || 'true'
@@ -773,29 +788,17 @@ module Import
 
         def journey_pattern_stop_points
           scheduled_point_ids.map do |scheduled_point_id|
-            stop_point = route_decorator.stop_point_for_scheduled_stop_point_id(scheduled_point_id)
+            stop_point = route_decorator.journey_pattern_stop_point_for_scheduled_stop_point_id(scheduled_point_id)
             Chouette::JourneyPatternStopPoint.new stop_point: stop_point
           end
         end
       end
 
       class Sequence
-        # Create a Sequence from an array like:
-        # [
-        #  {
-        #   element: 'scheduled-stop-point-1',
-        #   enriched_elements: { for_boarding: true, for_alighting: true }
-        #  },
-        #  {
-        #   element: 'scheduled-stop-point-2',
-        #   enriched_elements: { for_boarding: true, for_alighting: false }
-        #  }
-        # ]
-
         def self.create(*elements)
           links = []
           elements.flatten.each_cons(2) do |from, to|
-            links << Link.new(from[:element], to[:element]) if from[:element] && to[:element]
+            links << Link.new(from[:element], to[:element])
           end
           new links, raw_elements: elements
         end
@@ -811,7 +814,6 @@ module Import
         delegate :empty?, to: :links
 
         def add(link, raw_elements)
-          raw_elements = raw_elements.flatten.uniq
           if empty?
             Sequence.new([link], raw_elements: raw_elements)
           elsif link.from?(last.to)
@@ -821,40 +823,73 @@ module Import
 
         def enriched_sequences
           groups.map.with_index do |group, group_index|
-            group.map.with_index do |raw_element, position|
-              Step.new(raw_element[:element], raw_element[:enriched_elements], position, group_index)
+            group.map do |raw_sequence|
+              raw_sequence.map.with_index do |raw_element, position|
+                Step.new(
+                  raw_element[:element],
+                  raw_element[:enriched_elements],
+                  position,
+                  group_index,
+                  raw_element[:journey_pattern_id]
+                )
+              end
             end
           end
         end
 
         def groups
-          g = to_a.map do |element|
-            raw_elements.flatten.reject(&:blank?).select do |raw_element|
-              raw_element[:element] == element
+          [].tap do |groups|
+            raw_elements.each do |raw_sequence|
+              raw_sequence_set = except_journey_pattern_id(raw_sequence)
+
+              group = groups.find do |inserted_group|
+                inserted_group.any? do |inserted_raw_sequence|
+                  inserted_raw_sequence_without_journey_pattern_id = except_journey_pattern_id(inserted_raw_sequence)
+                  raw_sequence_set.subset?(inserted_raw_sequence_without_journey_pattern_id) ||
+                  inserted_raw_sequence_without_journey_pattern_id.subset?(raw_sequence_set)
+                end
+              end
+
+              if group
+                group << raw_sequence
+              else
+                groups << [raw_sequence]
+              end
             end
           end
+        end
 
-          max_length = g.map(&:length).max
-
-          g.map do |subarray|
-            subarray.cycle.take(max_length)
-          end.transpose.uniq
+        def except_journey_pattern_id(array)
+          array.map do |hash|
+            hash.except(:journey_pattern_id)
+          end.to_set
         end
 
         class Step
-          def initialize(element, enriched_elements, position, group_index)
+          def initialize(element, enriched_elements, position, route_index, journey_pattern_id)
             @element = element
             @enriched_elements = enriched_elements
             @position = position
-            @group_index = group_index
+            @route_index = route_index
+            @journey_pattern_id = journey_pattern_id
           end
-          attr_reader :element, :enriched_elements, :position, :group_index
+          attr_reader :element, :enriched_elements, :position, :route_index, :journey_pattern_id
 
           alias scheduled_stop_point_id element
 
-          def full_scheduled_stop_point_id
+          def journey_pattern_stop_points_key
             [
-              group_index,
+              journey_pattern_id,
+              route_index,
+              element,
+              enriched_elements[:for_boarding] || 'true',
+              enriched_elements[:for_alighting] || 'true'
+            ].join('-')
+          end
+
+          def route_stop_points_key
+            [
+              route_index,
               element,
               enriched_elements[:for_boarding] || 'true',
               enriched_elements[:for_alighting] || 'true'
@@ -935,7 +970,7 @@ module Import
           def add(sequence)
             sequence = Sequence.create(sequence)
 
-            raw_elements.merge sequence.raw_elements.flat_map
+            raw_elements.merge sequence.raw_elements
             @merge = nil
             links.merge sequence.links
           end
@@ -943,7 +978,7 @@ module Import
 
           def merge
             @merge ||= begin
-              solution = Path.new(Sequence.new(raw_elements: raw_elements), links.dup).complete
+              solution = Path.new(Sequence.new(raw_elements: raw_elements.to_a), links.dup).complete
               solution&.sequence
             end
           end

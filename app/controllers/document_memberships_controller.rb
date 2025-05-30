@@ -55,7 +55,7 @@ class DocumentMembershipsController < Chouette::ResourceController
   helper_method :documentable
 
   def document
-    workbench.documents.find(params[:document_id])
+    workbench.workgroup.documents.find(params[:document_id])
   end
 
   def build_resource
@@ -72,9 +72,9 @@ class DocumentMembershipsController < Chouette::ResourceController
 
   def scope
     if parent_policy.update?
-      workbench.documents.where.not(id: documentable.document_ids)
+      workbench.workgroup.documents.where.not(id: documentable.document_ids)
     else
-      workbench.documents.none
+      workbench.workgroup.documents.none
     end
   end
 

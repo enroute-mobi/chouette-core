@@ -28,7 +28,7 @@ class Destination::Mail < ::Destination
     @display_link_to_api ||= publication_setup.workgroup.publication_apis.find_by(id: link_to_api)
   end
 
-  def do_transmit(publication, _report)
+  def transmit_export(publication, _report)
     PublicationMailer.publish(publication, self).deliver_later
   end
 

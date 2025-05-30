@@ -25,22 +25,6 @@ RSpec.describe Destination::Ara, type: :model do
     end
   end
 
-  describe '#use_ssl?' do
-    subject { destination.use_ssl? }
-
-    context 'when URL is http://test.com' do
-      let(:destination) { Destination::Ara.new ara_url: 'http://test.com' }
-
-      it { is_expected.to be_falsey }
-    end
-
-    context 'when URL is https://test.com' do
-      let(:destination) { Destination::Ara.new ara_url: 'https://test.com' }
-
-      it { is_expected.to be_truthy }
-    end
-  end
-
   describe '#transmit' do
     let(:context) do
       Chouette.create do
@@ -90,8 +74,7 @@ RSpec.describe Destination::Ara, type: :model do
 
     subject { destination.transmit(publication) }
 
-    # TODO: crashes when trying to cache file
-    xcontext 'when no file is attached to export' do
+    context 'when no file is attached to export' do
       let(:export_file) { nil }
 
       it 'should succeed' do

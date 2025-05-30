@@ -6,13 +6,11 @@ class Destination
 
     validate :api_is_not_already_used
 
-    def do_transmit(publication, report)
+    def transmit_export_file(publication, report, export) # rubocop:disable Metrics/MethodLength
       unless publication_api
         report.failed! message: I18n.t('destinations.errors.publication_api.empty')
         return
       end
-
-      return unless (export = publication.export)
 
       key = generate_key(export)
       return unless key

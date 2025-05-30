@@ -623,15 +623,6 @@ module Import
 
         def sequence_merger
           @sequence_merger ||= Sequence::Merger.new.tap do |merger|
-            route_scheduled_point_refs.map do |route_scheduled_point_ref|
-              {
-                element: route_scheduled_point_ref,
-                enriched_elements: { for_boarding: nil, for_alighting: nil }
-              }
-            end.tap do |route_scheduled_point_refs|
-               route_scheduled_point_refs if route_scheduled_point_refs.present?
-            end
-
             journey_patterns.each do |netex_journey_pattern|
               scheduled_point_ids = netex_journey_pattern
                 .points_in_sequence
@@ -648,6 +639,17 @@ module Import
                 end
 
               merger << scheduled_point_ids
+            end
+
+            if merger.empty?
+              route_scheduled_point_refs.map do |route_scheduled_point_ref|
+                {
+                  element: route_scheduled_point_ref,
+                  enriched_elements: { for_boarding: nil, for_alighting: nil },
+                }
+              end.tap do |route_scheduled_point_ids|
+                merger << route_scheduled_point_ids if route_scheduled_point_ids.present?
+              end
             end
           end
         end
@@ -969,6 +971,10 @@ module Import
 
           def raw_elements
             @raw_elements ||= Set.new
+          end
+
+          def empty?
+            links.empty? && raw_elements.empty?
           end
 
           def add(sequence)

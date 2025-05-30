@@ -824,7 +824,9 @@ module Import
         def enriched_sequences
           groups.map.with_index do |group, group_index|
             group.map do |raw_sequence|
-              raw_sequence.map.with_index do |raw_element, position|
+              raw_sequence.map.with_index do |raw_element|
+                position = merged_stop_point_ids.index(raw_element[:element])
+
                 Step.new(
                   raw_element[:element],
                   raw_element[:enriched_elements],
@@ -922,6 +924,8 @@ module Import
 
           links.map(&:from) + [last.to]
         end
+
+        alias merged_stop_point_ids to_a
 
         def cover?(from, to)
           from_found = false

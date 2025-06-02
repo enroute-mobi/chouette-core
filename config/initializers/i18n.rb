@@ -34,7 +34,7 @@ module I18n
     rescue
       if Rails.env.development?
         log_missing_key key, params
-        "<span class='label label-danger' title='#{self.t(key, params)}'>!</span>#{key.split('.').last}".html_safe
+        "<span class='label label-danger' title='#{self.t(key, **params)}'>!</span>#{key.split('.').last}".html_safe
       else
         key.split('.').last
       end

@@ -300,6 +300,7 @@ class Import::Gtfs < Import::Base
         stop_area.attributes = decorated_location_group.stop_area_attributes
 
         save_model stop_area
+        import.store_stop_area_id_by_registration_number(stop_area)
       end
     end
 
@@ -567,7 +568,6 @@ class Import::Gtfs < Import::Base
 
   def import_stops
     sorted_stops = source.stops.sort_by { |s| s.parent_station.present? ? 1 : 0 }
-    @stop_areas_id_by_registration_number = {}
 
     CustomFieldsSupport.within_workgroup(workbench.workgroup) do
       create_resource(:stops).each(sorted_stops, slice: 100, transaction: true) do |stop, resource|
@@ -665,7 +665,7 @@ class Import::Gtfs < Import::Base
         end
 
         save_model stop_area, resource: resource
-        @stop_areas_id_by_registration_number[stop_area.registration_number] = stop_area.id
+        store_stop_area_id_by_registration_number(stop_area)
 
         StopAreaZone.new(
           zone_id: stop.zone_id,
@@ -1070,6 +1070,12 @@ class Import::Gtfs < Import::Base
     @stop_areas_id_by_registration_number[stop_id]
   end
 
+  # stores both stops.txt and location_groups.txt
+  def store_stop_area_id_by_registration_number(stop_area)
+    @stop_areas_id_by_registration_number ||= {}
+    @stop_areas_id_by_registration_number[stop_area.registration_number] = stop_area.id
+  end
+
   def find_or_create_journey_pattern(trip, stop_times)
     decorator = TripDecorator.new(trip, stop_times)
     journey_pattern_id = journey_pattern_ids[decorator.journey_pattern_signature]
@@ -1377,7 +1383,8 @@ class Import::Gtfs < Import::Base
 
       def stop_points
         @stop_points ||= stop_times.map.with_index do |stop_time, position|
-          stop_area_id = stop_areas.find stop_time.stop_id
+          gtfs_stop_id = stop_time.stop_id.presence || stop_time.location_group_id
+          stop_area_id = stop_areas.find(gtfs_stop_id)
           Chouette::StopPoint.new(
             stop_area_id: stop_area_id,
             position: position,

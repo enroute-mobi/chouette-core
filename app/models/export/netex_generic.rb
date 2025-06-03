@@ -1887,6 +1887,14 @@ class Export::NetexGeneric < Export::Base
             attributes[:arrival_time] = arrival_passing_time.netex_time
             attributes[:arrival_day_offset] = arrival_passing_time.netex_day_offset
           end
+
+          if earliest_departure_passing_time
+            attributes[:earliest_departure_time] = earliest_departure_passing_time
+          end
+
+          if latest_arrival_passing_time
+            attributes[:latest_arrival_time] = latest_arrival_passing_time
+          end
         end
       end
 
@@ -1896,6 +1904,26 @@ class Export::NetexGeneric < Export::Base
 
       def departure_passing_time
         @departure_passing_time ||= passing_time(time: departure_time, day_offset: departure_day_offset, time_zone: time_zone)
+      end
+
+      def earliest_departure_passing_time
+        return unless earliest_departure_local_time_of_day
+
+        Netex::Time.new(
+          earliest_departure_local_time_of_day.hour,
+          earliest_departure_local_time_of_day.minute,
+          earliest_departure_local_time_of_day.second
+        )
+      end
+
+      def latest_arrival_passing_time
+        return unless latest_arrival_local_time_of_day
+
+        Netex::Time.new(
+          latest_arrival_local_time_of_day.hour,
+          latest_arrival_local_time_of_day.minute,
+          latest_arrival_local_time_of_day.second
+        )
       end
 
       def netex_resource

@@ -671,6 +671,10 @@ class Export::NetexGeneric < Export::Base
     end
 
     class Decorator < ModelDecorator
+      def netex_identifier
+        @netex_identifier ||= Code::Value.parse(code_provider.flexible_stop_areas.code(model.id))
+      end
+
       def netex_attributes
         super.merge(
           {

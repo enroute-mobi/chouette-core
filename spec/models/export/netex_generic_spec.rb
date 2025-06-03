@@ -858,7 +858,7 @@ RSpec.describe Export::NetexGeneric do
       end
     end
 
-    describe Export::NetexGeneric::StopPointDecorator::PassengerStopAssignment do
+    describe Export::NetexGeneric::StopPointDecorator::StopAssignment do
       let(:stop_point) { Chouette::StopPoint.new }
       let(:decorator) { described_class.new stop_point }
 
@@ -895,6 +895,27 @@ RSpec.describe Export::NetexGeneric do
         end
 
         it { is_expected.to have_attributes(order: 1) }
+      end
+
+      describe '#flexible_stop_assignment' do
+        subject { decorator.flexible_stop_assignment }
+
+        it { is_expected.to have_attributes(flexible_stop_place_ref: an_instance_of(Netex::Reference)) }
+        it { is_expected.to have_attributes(order: 1) }
+      end
+
+      describe '#stop_assignment' do
+        subject { decorator.stop_assignment }
+
+        context 'when the associated Stop Place is a flexible Stop Area' do
+          before { allow(decorator).to receive(:netex_flexible_stop_place?).and_return(true) }
+          it { is_expected.to an_instance_of(Netex::FlexibleStopAssignment) }
+        end
+
+        context 'when the associated Stop Place is not a flexible Stop Area' do
+          before { allow(decorator).to receive(:netex_flexible_stop_place?).and_return(false) }
+          it { is_expected.to an_instance_of(Netex::PassengerStopAssignment) }
+        end
       end
     end
 

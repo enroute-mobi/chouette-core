@@ -230,7 +230,7 @@ module Export
         current_scope.
           stop_areas.
           where(Chouette::StopArea.arel_table[:id].in(scheduled_stop_area_ids)).
-          joins(:flexible_area_memberships).distinct
+          where(area_type: Chouette::AreaType::FLEXIBLE_STOP_PLACE)
       end
 
       def stop_area_groups
@@ -276,6 +276,7 @@ module Export
 
       private
 
+      # Returns all Stop Areas used by Routes / Vehicle Journeys
       def scheduled_stop_area_ids
         Arel::Nodes::Union.new(
           stop_points_stop_area_ids.arel.ast,
@@ -283,6 +284,7 @@ module Export
         )
       end
 
+      # Returns not flexible Stop Areas and Stop Areas members of flexible Stop Areas
       def stop_area_ids
         Arel::Nodes::Union.new(
           scheduled_stop_area_ids,
@@ -290,8 +292,9 @@ module Export
         )
       end
 
+      # Returns all flexible Stop Areas members
       def flexible_stop_area_member_ids
-        flexible_stop_areas.select('flexible_area_memberships.member_id').distinct
+        flexible_stop_areas.select('flexible_area_memberships.member_id').joins(:flexible_area_memberships).distinct
       end
     end
 

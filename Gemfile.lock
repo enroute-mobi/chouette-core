@@ -66,8 +66,7 @@ GIT
 
 GIT
   remote: https://bitbucket.org/enroute-mobi/netex.git
-  revision: 55fa215597779c44de8e2c81139cc97b78082914
-  branch: DATA-34-idfm-publication-booking-arrangements
+  revision: 11ffd07269983c09de9a3002161ddb61f2f1a075
   specs:
     netex (0.1.2)
       activesupport
@@ -184,7 +183,7 @@ GEM
       erubi (>= 1.0.0)
       rack (>= 0.9.0)
       rouge (>= 1.0.0)
-    bigdecimal (3.1.9)
+    bigdecimal (3.2.2)
     binding_of_caller (1.0.1)
       debug_inspector (>= 1.2.0)
     bootsnap (1.18.6)
@@ -600,7 +599,7 @@ GEM
     orm_adapter (0.5.0)
     os (1.1.4)
     ostruct (0.6.1)
-    ox (2.14.22)
+    ox (2.14.23)
       bigdecimal (>= 3.0)
     parallel (1.27.0)
     parallel_tests (4.10.1)

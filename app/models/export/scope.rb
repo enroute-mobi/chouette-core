@@ -220,7 +220,17 @@ module Export
       end
 
       def stop_areas
-        current_scope.stop_areas.where(Chouette::StopArea.arel_table[:id].in(stop_area_ids))
+        current_scope.
+          stop_areas.
+          where(Chouette::StopArea.arel_table[:id].in(stop_area_ids)).
+          where.not(area_type: Chouette::AreaType::FLEXIBLE_STOP_PLACE)
+      end
+
+      def flexible_stop_areas
+        current_scope.
+          stop_areas.
+          where(Chouette::StopArea.arel_table[:id].in(scheduled_stop_area_ids)).
+          where(area_type: Chouette::AreaType::FLEXIBLE_STOP_PLACE)
       end
 
       def stop_area_groups
@@ -231,11 +241,12 @@ module Export
       end
 
       def stop_points_stop_area_ids
-        stop_points.select(:stop_area_id).distinct
+        @stop_points_stop_area_ids ||= stop_points.select(:stop_area_id).distinct
       end
 
       def specific_vehicle_journey_at_stops_stop_area_ids
-        vehicle_journey_at_stops.where.not(stop_area_id: nil).select(:stop_area_id).distinct
+        @specific_vehicle_journey_at_stops_stop_area_ids ||=
+          vehicle_journey_at_stops.where.not(stop_area_id: nil).select(:stop_area_id).distinct
       end
 
       def entrances
@@ -265,11 +276,25 @@ module Export
 
       private
 
-      def stop_area_ids
+      # Returns all Stop Areas used by Routes / Vehicle Journeys
+      def scheduled_stop_area_ids
         Arel::Nodes::Union.new(
           stop_points_stop_area_ids.arel.ast,
-          specific_vehicle_journey_at_stops_stop_area_ids.arel.ast
+          specific_vehicle_journey_at_stops_stop_area_ids.arel.ast,
         )
+      end
+
+      # Returns not flexible Stop Areas and Stop Areas members of flexible Stop Areas
+      def stop_area_ids
+        Arel::Nodes::Union.new(
+          scheduled_stop_area_ids,
+          flexible_stop_area_member_ids.arel.ast
+        )
+      end
+
+      # Returns all flexible Stop Areas members
+      def flexible_stop_area_member_ids
+        flexible_stop_areas.select('flexible_area_memberships.member_id').joins(:flexible_area_memberships).distinct
       end
     end
 

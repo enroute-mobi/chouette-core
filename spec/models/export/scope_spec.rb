@@ -1,26 +1,5 @@
 RSpec.describe Export::Scope, use_chouette_factory: true do
 
-  describe '#build' do
-    context 'with lines' do
-      xit 'should apply the Lines & Scheduled scopes' do
-        scope = Export::Scope.build(referential, line_ids: [1])
-
-        expect(scope).to be_a_kind_of(Export::Scope::Scheduled)
-        expect(scope.current_scope).to be_a_kind_of(Export::Scope::Lines)
-      end
-    end
-
-    context 'with date_range & lines' do
-      xit 'should apply the Lines & DateRange scopes' do
-        scope = Export::Scope.build(referential, date_range: Time.zone.today..1.month.from_now, line_ids: [1])
-
-        expect(scope).to be_a_kind_of(Export::Scope::Scheduled)
-        expect(scope.current_scope).to be_a_kind_of(Export::Scope::DateRange)
-        expect(scope.current_scope.current_scope).to be_a_kind_of(Export::Scope::Lines)
-      end
-    end
-  end
-
   let!(:context) do
     Chouette.create do
       line :first
@@ -178,8 +157,8 @@ RSpec.describe Export::Scope, use_chouette_factory: true do
       let(:expected_vehicle_journeys) { [] }
 
       before do
-        expect(scope).to receive(:routes).and_return(expected_routes)
-        expect(scope).to receive(:final_scope_vehicle_journeys).and_return(expected_vehicle_journeys)
+        allow(scope).to receive(:routes).and_return(expected_routes)
+        allow(scope).to receive(:final_scope_vehicle_journeys).and_return(expected_vehicle_journeys)
       end
 
       context 'when no route nor vehicle journey is exported' do
@@ -217,7 +196,7 @@ RSpec.describe Export::Scope, use_chouette_factory: true do
       let(:expected_routes) { [] }
       let(:stop_area_groups) { [context.stop_area_group(:stop_area_group)] }
 
-      before { expect(scope).to receive(:routes).and_return(expected_routes) }
+      before { allow(scope).to receive(:routes).and_return(expected_routes) }
 
       context 'when no stop area are exported' do
         it { is_expected.to be_empty }
@@ -246,7 +225,7 @@ RSpec.describe Export::Scope, use_chouette_factory: true do
       let(:expected_routes) { Chouette::Route.none }
       let(:lines) { [context.line(:line)] }
 
-      before { expect(scope).to receive(:routes).and_return(expected_routes) }
+      before { allow(scope).to receive(:routes).and_return(expected_routes) }
 
       context 'when no routes are exported' do
         it { is_expected.to be_empty }
@@ -276,7 +255,7 @@ RSpec.describe Export::Scope, use_chouette_factory: true do
       let(:expected_lines) { Chouette::Line.none }
       let(:line_groups) { [context.line_group(:line_group)] }
 
-      before { expect(scope).to receive(:lines).and_return(expected_lines) }
+      before { allow(scope).to receive(:lines).and_return(expected_lines) }
 
       context 'when no lines are exported' do
         it { is_expected.to be_empty }

@@ -440,7 +440,7 @@ module Import
         lambda do |model|
           case model
           when Chouette::Route
-            cache_stop_points
+            replace_stop_points_by_their_ids_in_scheduled_stop_points
           when Chouette::JourneyPattern
             cache_journey_pattern model
           end
@@ -496,14 +496,9 @@ module Import
         }
       end
 
-      def cache_stop_points
-        pending_keys = scheduled_stop_points.select do |_, scheduled_stop_point|
-          scheduled_stop_point.pending_cache_stop_point_id?
-        end.keys
-
-        pending_keys.each do |scheduled_stop_point_id|
-          scheduled_stop_points[scheduled_stop_point_id].refresh_cache_stop_point_id
-        end
+      def replace_stop_points_by_their_ids_in_scheduled_stop_points
+        # now that the stop points are saved, we can replace them by their id in order to save memory
+        scheduled_stop_points.each_value(&:replace_stop_point_by_its_id!)
       end
 
       def each_route_with_journey_patterns(&block)
@@ -701,7 +696,7 @@ module Import
                       flexible: scheduled_stop_point.flexible
                     )
                     by_scheduled_stop_point_id[step.route_stop_points_key] = stop_point
-                    # initialize cache stop_point_ids
+                    # associate chouette StopPoint (currently still a new record) to its ScheduledStopPoint in cache
                     scheduled_stop_point.stop_point_id = stop_point
                   end
 
@@ -1492,12 +1487,12 @@ module Import
 
       attr_accessor :id, :stop_area_id, :stop_point_id, :flexible
 
-      def pending_cache_stop_point_id?
+      def replace_stop_point_by_its_id?
         @stop_point_id.is_a?(::Chouette::StopPoint)
       end
 
-      def refresh_cache_stop_point_id
-        @stop_point_id = @stop_point_id&.id if pending_cache_stop_point_id?
+      def replace_stop_point_by_its_id!
+        @stop_point_id = @stop_point_id.id if replace_stop_point_by_its_id?
       end
     end
 

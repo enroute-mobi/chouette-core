@@ -1404,6 +1404,10 @@ class Export::NetexGeneric < Export::Base
         code_provider.stop_areas.code(stop_area_id)
       end
 
+      def flexible_stop_area_code
+        code_provider.flexible_stop_areas.code(stop_area_id)
+      end
+
       def stop_area_area_type
         __getobj__.try(:stop_area_area_type) || stop_area&.area_type
       end
@@ -1460,7 +1464,7 @@ class Export::NetexGeneric < Export::Base
       end
 
       def flexible_stop_place_ref
-        Netex::Reference.new(stop_area_code, type: 'FlexibleStopPlaceRef')
+        Netex::Reference.new(flexible_stop_area_code, type: 'FlexibleStopPlaceRef')
       end
     end
 

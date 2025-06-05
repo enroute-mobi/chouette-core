@@ -536,6 +536,8 @@ module Import
         def chouette_journey_patterns
           @chouette_journey_patterns ||=
             Hash.new { |h, k| h[k] = [] }.tap do |chouette_journey_patterns|
+              next unless journey_patterns.any?
+
               complete_scheduled_stop_points.each.with_index do |route_steps, route_index|
                 route_steps.each do |steps|
                   netex_journey_pattern = journey_patterns.find { |jp| jp.id == steps.first.journey_pattern_id }

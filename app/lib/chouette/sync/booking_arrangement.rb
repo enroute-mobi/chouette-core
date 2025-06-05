@@ -36,26 +36,28 @@ module Chouette
           end
 
           def netex_booking_methods
-            booking_methods&.split(/\s/).map(&:underscore)
+            booking_methods&.split(/\s/)&.map(&:underscore)
           end
 
           def netex_booking_access
-            booking_access.underscore
+            booking_access&.underscore
           end
 
           def netex_book_when
-            book_when.underscore
+            book_when&.underscore
           end
 
           def netex_buy_when
-            buy_when.underscore
+            buy_when&.underscore
           end
 
           def netex_minimum_booking_period
-            minimum_booking_period.scan(/\d+/).first&.to_i
+            minimum_booking_period&.scan(/\d+/)&.first&.to_i
           end
 
           def netex_latest_booking_time
+            return nil unless latest_booking_time
+
             TimeOfDay.new(
               latest_booking_time.hour,
               latest_booking_time.minute,

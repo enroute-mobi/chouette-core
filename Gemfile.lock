@@ -239,7 +239,8 @@ GEM
       unaccent (~> 0.3)
     country_select (8.0.3)
       countries (~> 5.0)
-    coverband (6.0.2)
+    coverband (6.1.5)
+      base64
       redis (>= 3.0)
     crack (1.0.0)
       bigdecimal
@@ -961,7 +962,7 @@ DEPENDENCIES
   cocoon
   coffee-rails (>= 5.0.0)
   country_select (< 9)
-  coverband (~> 6.0.0)
+  coverband
   cuckoo!
   curb
   database_cleaner

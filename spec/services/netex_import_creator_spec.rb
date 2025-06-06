@@ -324,7 +324,7 @@ RSpec.describe NetexImportCreator do
 
   context "after YAML reload" do
 
-    subject { YAML.load creator.to_yaml }
+    subject { YAML.load_dj(creator.to_yaml) }
 
     it "uses the same Workbench than the original creator" do
       is_expected.to have_attributes(workbench: creator.workbench)

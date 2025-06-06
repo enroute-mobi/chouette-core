@@ -21,7 +21,7 @@ class ConnectionLinksController < Chouette::StopAreaReferentialController
     show! do |format|
       @connection_link = @connection_link.decorate context: { workbench: workbench }
 
-      format.geojson { render 'connection_links/show.geo' }
+      format.geojson { render 'connection_links/show' }
     end
   end
 

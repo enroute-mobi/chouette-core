@@ -23,6 +23,6 @@ node(:features) do |route|
         name: route.line.name
       }
     },
-    *partial('stop_areas/index.geo', object: route.stop_areas)
+    *partial('stop_areas/index', object: route.stop_areas)
   ]
 end

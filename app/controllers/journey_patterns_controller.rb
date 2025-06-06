@@ -4,7 +4,6 @@ class JourneyPatternsController < Chouette::ReferentialController
   defaults :resource_class => Chouette::JourneyPattern
 
   respond_to :json, :only => :available_specific_stop_places
-  respond_to :geojson, only: :show
 
   belongs_to :line, parent_class: Chouette::Line
   belongs_to :route, parent_class: Chouette::Route

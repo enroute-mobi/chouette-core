@@ -25,7 +25,7 @@ class RoutesController < Chouette::ReferentialController
     @routes = collection
     index! do |format|
       format.html { redirect_to workbench_referential_line_path(current_workbench, @referential, @line) }
-      format.geojson { render 'routes/index.geo' }
+      format.geojson { render 'routes/index' }
     end
   end
 
@@ -92,7 +92,7 @@ class RoutesController < Chouette::ReferentialController
                                                   workbench: @workbench
                                               })
 
-      format.geojson { render 'routes/show.geo' }
+      format.geojson { render 'routes/show' }
     end
   end
 

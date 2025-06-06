@@ -7,7 +7,7 @@ class LineGroupsController < Chouette::LineReferentialController
 
   before_action :line_group_params, only: %i[create update]
 
-  respond_to :html, :xml, :json, :geojson
+  respond_to :html, :xml, :json
 
   def index
     index! do |format|

@@ -26,7 +26,7 @@ class EntrancesController < Chouette::StopAreaReferentialController
     show! do |format|
       @entrance = @entrance.decorate context: { workbench: workbench }
 
-      format.geojson { render 'entrances/show.geo' }
+      format.geojson { render 'entrances/show' }
     end
   end
 

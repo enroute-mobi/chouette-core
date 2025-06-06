@@ -10,7 +10,7 @@ class ShapesController < Chouette::TopologicReferentialController
 
   def index
     index! do |format|
-      format.geojson { render 'shapes/index.geo' }
+      format.geojson { render 'shapes/index' }
 
       format.html {
         @shapes = ShapeDecorator.decorate(
@@ -25,7 +25,7 @@ class ShapesController < Chouette::TopologicReferentialController
 
   def show
     show! do |format|
-      format.geojson { render 'shapes/show.geo' }
+      format.geojson { render 'shapes/show' }
     end
   end
 

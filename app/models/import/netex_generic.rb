@@ -103,10 +103,19 @@ module Import
     end
 
     def referential_metadata
-      return unless [imported_line_ids, netex_source.validity_period].all?(&:present?)
+      return unless [metadata_line_ids, netex_source.validity_period].all?(&:present?)
 
       @referential_metadata ||=
-        ReferentialMetadata.new line_ids: imported_line_ids, periodes: [netex_source.validity_period]
+        ReferentialMetadata.new line_ids: metadata_line_ids, periodes: [netex_source.validity_period]
+    end
+
+    def metadata_line_ids
+      (imported_line_ids + existing_chouette_line_ids).uniq
+    end
+
+    def existing_chouette_line_ids
+      netex_routes_line_refs = netex_source.routes.map { |route| route&.line_ref&.ref }.compact.uniq
+      line_provider.lines.where(registration_number: netex_routes_line_refs).pluck(:id)
     end
 
     # TODO: why the resource statuses are not checked automaticaly ??

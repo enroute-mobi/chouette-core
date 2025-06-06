@@ -1395,13 +1395,17 @@ class Export::NetexGeneric < Export::Base
     #   <ScheduledStopPointRef ref="chouette:ScheduledStopPoint:2f924949-e287-4f10-bbe0-4a50f9debf9e:LOC" version="any"/>
     #   <QuayRef ref="chouette:StopArea:fe90c70f-d9ac-45cd-b044-0d4adcfaa997:LOC"/>
     # </PassengerStopAssignment>
-    class PassengerStopAssignment < Base
+    class StopAssignment < Base
       def netex_identifier
         @netex_identifier ||= super&.change(type: 'PassengerStopAssignment')
       end
 
       def stop_area_code
         code_provider.stop_areas.code(stop_area_id)
+      end
+
+      def flexible_stop_area_code
+        code_provider.flexible_stop_areas.code(stop_area_id)
       end
 
       def stop_area_area_type
@@ -1413,7 +1417,7 @@ class Export::NetexGeneric < Export::Base
       end
 
       def passenger_stop_assignment
-        Netex::PassengerStopAssignment.new(passenger_stop_assignment_attributes).tap do |passenger_stop_assignment|
+        Netex::PassengerStopAssignment.new(stop_assignment_attributes).tap do |passenger_stop_assignment|
           if netex_quay?
             passenger_stop_assignment.quay_ref = quay_ref
           else
@@ -1422,7 +1426,7 @@ class Export::NetexGeneric < Export::Base
         end
       end
 
-      def passenger_stop_assignment_attributes
+      def stop_assignment_attributes
         {
           id: netex_identifier.to_s,
           data_source_ref: data_source_ref,
@@ -1441,6 +1445,26 @@ class Export::NetexGeneric < Export::Base
 
       def scheduled_stop_point_ref
         decorate(with: ScheduledStopPoint).scheduled_stop_point_ref
+      end
+
+      def stop_assignment
+        return flexible_stop_assignment if netex_flexible_stop_place?
+
+        passenger_stop_assignment
+      end
+
+      def netex_flexible_stop_place?
+        stop_area_area_type&.to_sym == Chouette::AreaType::FLEXIBLE_STOP_PLACE
+      end
+
+      def flexible_stop_assignment
+        Netex::FlexibleStopAssignment.new(stop_assignment_attributes).tap do |flexible_stop_assignment|
+          flexible_stop_assignment.flexible_stop_place_ref = flexible_stop_place_ref
+        end
+      end
+
+      def flexible_stop_place_ref
+        Netex::Reference.new(flexible_stop_area_code, type: 'FlexibleStopPlaceRef')
       end
     end
 
@@ -1691,7 +1715,7 @@ class Export::NetexGeneric < Export::Base
         tagged_target <<
           decorate(stop_point, with: StopPointDecorator::ScheduledStopPoint).scheduled_stop_point
         tagged_target <<
-          decorate(stop_point, with: StopPointDecorator::PassengerStopAssignment).passenger_stop_assignment
+          decorate(stop_point, with: StopPointDecorator::StopAssignment).stop_assignment
         tagged_target <<
           decorate(stop_point, with: StopPointDecorator::RoutePoint).route_point
       end

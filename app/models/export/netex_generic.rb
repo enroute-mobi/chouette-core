@@ -464,6 +464,13 @@ class Export::NetexGeneric < Export::Base
     end
   end
 
+  module BookingArrangementSupport
+    def booking_arrangements
+      booking_arrangement_code = code_provider.booking_arrangements.code(booking_arrangement_id)
+      [Netex::Reference.new(booking_arrangement_code, type: 'BookingArrangementRef')] if booking_arrangement_code
+    end
+  end
+
   class ModelDecorator < Export::Decorator
     attr_writer :alternate_identifiers_extractor
 
@@ -998,6 +1005,7 @@ class Export::NetexGeneric < Export::Base
 
     class Decorator < ModelDecorator
       include Accessibility
+      include BookingArrangementSupport
 
       def netex_attributes
         super.merge(
@@ -1046,11 +1054,6 @@ class Export::NetexGeneric < Export::Base
           company_code = code_provider.companies.code(company_id)
           Netex::Reference.new(company_code, type: 'OperatorRef') if company_code
         end.compact
-      end
-
-      def booking_arrangements
-        booking_arrangement_code = code_provider.booking_arrangements.code(booking_arrangement_id)
-        [Netex::Reference.new(booking_arrangement_code, type: 'BookingArrangementRef')] if booking_arrangement_code
       end
 
       def status
@@ -1778,6 +1781,7 @@ class Export::NetexGeneric < Export::Base
     end
 
     class Decorator < ModelDecorator
+      include BookingArrangementSupport
 
       def netex_attributes
         super.merge(
@@ -1786,7 +1790,8 @@ class Export::NetexGeneric < Export::Base
           route_ref: route_ref,
           points_in_sequence: points_in_sequence,
           key_list: netex_alternate_identifiers,
-          destination_display_ref: destination_display_ref
+          destination_display_ref: destination_display_ref,
+          booking_arrangements: booking_arrangements
         )
       end
 

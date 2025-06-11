@@ -31,7 +31,7 @@ module Stif
     protected
 
     def allowed_line_ids
-      @allowed_line_ids ||= workbenches.lines.plunk(:id)
+      @allowed_line_ids ||= workbench.line_ids
     end
 
     def sso_attributes

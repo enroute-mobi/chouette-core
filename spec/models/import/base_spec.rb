@@ -268,4 +268,30 @@ RSpec.describe Import::Base, type: :model do
       it { is_expected.to be_nil }
     end
   end
+
+  describe '#import_async' do
+    # automatically called on creation commit
+
+    let(:workbench) { Chouette.create { workbench }.workbench }
+    let(:import) do
+      Import::Gtfs.create!(
+        workbench: workbench,
+        local_file: file_fixture('google-sample-feed.zip').open,
+        creator: 'test',
+        name: 'test'
+      )
+    end
+
+    it 'creates a delayed job' do
+      expect { import }.to change { Delayed::Job.count }.by(1)
+    end
+
+    it 'properly sets up the delayed job' do
+      import
+      expect(Delayed::Job.last).to have_attributes(
+        payload_object: have_attributes(operation: import, target_method: :import),
+        concurrent_target: "imports[workbench:#{workbench.id}]"
+      )
+    end
+  end
 end

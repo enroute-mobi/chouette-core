@@ -57,6 +57,15 @@ class LegacyOperationJob
     end
   end
 
+  def concurrent_target
+    @concurrent_target ||= case operation
+                           when Import::Base
+                             "imports[workbench:#{operation.workbench_id}]"
+                           else # rubocop:disable Style/EmptyElse
+                             nil
+                           end
+  end
+
   # Extracts information from Organisation context (for Datadog, log, etc)
 
   def context

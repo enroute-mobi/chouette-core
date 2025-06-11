@@ -111,20 +111,11 @@ class Workbench < ApplicationModel
   end
 
   def workbench_scopes
-    workgroup.workbench_scopes(self)
+    @workbench_scopes ||= workgroup.workbench_scopes(self)
   end
 
   def all_referentials
-    if line_ids.empty?
-      Referential.none
-    else
-      Referential.where(id: workgroup
-        .referentials
-        .joins(:metadatas)
-        .where(['referential_metadata.line_ids && ARRAY[?]::bigint[]', line_ids])
-        .not_in_referential_suite.select(:id).distinct
-      )
-    end
+    workbench_scopes.referentials_scope(workgroup.referentials.not_in_referential_suite)
   end
 
   def find_referential(referential_id)
@@ -138,16 +129,12 @@ class Workbench < ApplicationModel
     find_referential(referential_id) || (raise ActiveRecord::RecordNotFound)
   end
 
-  def notifications_channel
-    "/workbenches/#{id}"
-  end
-
   def notification_center
     @notification_center ||= NotificationCenter.new(self)
   end
 
   def referential_to_aggregate
-    locked_referential_to_aggregate || output. current
+    locked_referential_to_aggregate || output.current
   end
 
   def calendars_with_shared

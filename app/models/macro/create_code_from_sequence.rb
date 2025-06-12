@@ -80,7 +80,7 @@ module Macro
       end
 
       def models_with_code
-        @models_with_code || models.with_code(code_space)
+        @models_with_code ||= models.with_code(code_space)
       end
 
       def model_collection

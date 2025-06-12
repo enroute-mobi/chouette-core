@@ -80,7 +80,7 @@ module Macro
       end
 
       def models_with_code
-        @models_with_code ||= models.with_code(code_space)
+        @models_with_code ||= models_inside_workbench.with_code(code_space)
       end
 
       def model_collection
@@ -89,6 +89,10 @@ module Macro
 
       def models
         @models ||= scope.send(model_collection)
+      end
+
+      def models_inside_workbench
+        @models_inside_workbench ||= workbench.send(model_collection)
       end
 
       def code_generator

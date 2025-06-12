@@ -11,6 +11,7 @@ module Macro
         option :format
         option :sequence_id
 
+        # Target model should only used models outside referential for the moment See CHOUETTE-4640
         enumerize :target_model, in: %w[
           Line
           LineGroup
@@ -27,10 +28,6 @@ module Macro
           LineRoutingConstraintZone
           Document
           Contract
-          Route
-          JourneyPattern
-          VehicleJourney
-          TimeTable
         ]
 
         validates :target_model, :code_space_id, :sequence_id, :format, presence: true

@@ -13,7 +13,7 @@ describe 'companies/new.html.slim', type: :view do
   before do
     allow(view).to receive(:resource) { company }
     allow(view).to receive(:resource_class) { Chouette::Company }
-    allow(template).to receive(:candidate_line_providers).and_return([line_provider])
+    allow(view).to receive(:candidate_line_providers).and_return([line_provider])
   end
 
   describe "form" do

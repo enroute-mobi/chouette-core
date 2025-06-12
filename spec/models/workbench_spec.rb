@@ -174,6 +174,72 @@ RSpec.describe Workbench, type: :model do
     end
   end
 
+  describe '#all_referentials' do
+    subject { workbench.all_referentials }
+
+    let(:workbench) { context.workbench(:workbench) }
+    let(:context) do
+      Chouette.create do
+        organisation :organisation
+        workgroup owner: :organisation do
+          workbench :workbench, organisation: :organisation do
+            line :line
+
+            # archived_at to prevent referential overlap validation
+            referential :workbench_referential, lines: %i[line], archived_at: Time.zone.now
+            referential :workbench_in_referential_suite, lines: %i[line], archived_at: Time.zone.now
+            referential :workbench_referential_without_lines, archived_at: Time.zone.now
+          end
+          workbench :other_workbench, organisation: :organisation do
+            referential :other_workbench_referential, lines: %i[line], archived_at: Time.zone.now
+          end
+        end
+        workgroup owner: :organisation do
+          referential :other_workgroup_referential, lines: %i[line], archived_at: Time.zone.now
+        end
+      end.tap do |c|
+        c.organisation(:organisation).sso_attributes = { 'functional_scope' => [c.line(:line).objectid] }
+        c.workbench(:workbench).output.referentials << c.referential(:workbench_in_referential_suite)
+      end
+    end
+    let(:workbench_scopes_class) { WorkbenchScopes::All }
+
+    before { allow(Workgroup).to receive(:workbench_scopes_class).and_return(workbench_scopes_class) }
+
+    context 'with WorkbenchScopes::All' do
+      let(:workbench_scopes_class) { WorkbenchScopes::All }
+
+      it 'returns all referentials linked to the workbench' do
+        is_expected.to match_array(
+          [
+            context.referential(:workbench_referential),
+            context.referential(:workbench_referential_without_lines),
+            context.referential(:other_workbench_referential)
+          ]
+        )
+      end
+    end
+
+    context 'with Stif::WorkbenchScopes' do
+      let(:workbench_scopes_class) { Stif::WorkbenchScopes }
+
+      it 'returns only referentials having 1 of the workbench lines' do
+        is_expected.to match_array(
+          [
+            context.referential(:workbench_referential),
+            context.referential(:other_workbench_referential)
+          ]
+        )
+      end
+
+      context 'when workbench.line_ids is empty' do
+        before { allow(workbench).to receive(:line_ids).and_return([]) }
+
+        it { is_expected.to be_empty }
+      end
+    end
+  end
+
   describe '#find_referential!' do
     let(:workbench) { context.workbench(:workbench) }
     let(:referential) { context.referential(:referential) }

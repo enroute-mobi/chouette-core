@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module WorkbenchScopes
   class All
     attr_accessor :workbench
@@ -11,6 +13,10 @@ module WorkbenchScopes
     end
 
     def stop_areas_scope(initial_scope)
+      initial_scope
+    end
+
+    def referentials_scope(initial_scope)
       initial_scope
     end
   end

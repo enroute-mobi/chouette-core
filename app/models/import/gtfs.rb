@@ -1137,7 +1137,12 @@ class Import::Gtfs < Import::Base
 
         skip = false
         flexible = stop_time.start_pickup_drop_off_window.present? && stop_time.end_pickup_drop_off_window.present?
-        [stop_time.stop_id, stop_time.pickup_type || '0', stop_time.drop_off_type || '0', flexible]
+        [
+          stop_time.stop_id.presence || stop_time.location_group_id,
+          stop_time.pickup_type || '0',
+          stop_time.drop_off_type || '0',
+          flexible
+        ]
       end.to_a
     end
   end

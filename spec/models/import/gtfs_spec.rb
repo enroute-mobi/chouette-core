@@ -1942,6 +1942,34 @@ RSpec.describe Import::Gtfs::TripDecorator do
 
         it { is_expected.to eq(['AAMV', '0', [['BEATTY_AIRPORT', '1', '0', false]]]) }
       end
+
+      context 'with location_group_id' do
+        let(:stop_times) do
+          [
+            GTFS::StopTime.new(
+              trip_id: 'AAMV1',
+              stop_id: nil,
+              location_group_id: 'FLEXIBLE',
+              arrival_time: '8:00:00',
+              departure_time: '8:00:00',
+              stop_sequence: '1',
+              pickup_type: stop_time_1_pickup,
+              drop_off_type: stop_time_1_drop_off
+            ),
+            GTFS::StopTime.new(
+              trip_id: 'AAMV1',
+              stop_id: 'AMV',
+              arrival_time: '9:00:00',
+              departure_time: '9:00:00',
+              stop_sequence: '2',
+              pickup_type: stop_time_2_pickup,
+              drop_off_type: stop_time_2_drop_off
+            )
+          ]
+        end
+
+        it { is_expected.to eq(['AAMV', '0', [['AMV', '0', '1', false], ['FLEXIBLE', '1', '0', false]]]) }
+      end
     end
   end
 

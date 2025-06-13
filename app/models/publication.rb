@@ -51,6 +51,10 @@ class Publication < Operation
     "publications[referential:#{referential_id}]"
   end
 
+  def priority
+    publication_setup.priority - 1
+  end
+
   class ExportStatus < Operation::Callback
     delegate :export, to: :operation
 

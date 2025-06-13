@@ -111,16 +111,21 @@ class Operation < ApplicationModel
     raise InvalidStatusError, status unless status.new?
 
     # We'll certainly need to manage queues
-    Delayed::Job.enqueue job
+    job = self.job
+    Delayed::Job.enqueue(job, **job.options)
     change_status Operation.status.enqueued
   end
 
   def job
     # We could use a dedicated subclass for each Operation class (Control::Job, Macro::Job, etc)
-    Job.new(id, self.class, concurrent_target: concurrent_target) if persisted?
+    Job.new(id, self.class, concurrent_target: concurrent_target, priority: priority) if persisted?
   end
 
   def concurrent_target
+    nil
+  end
+
+  def priority
     nil
   end
 
@@ -392,7 +397,7 @@ class Operation < ApplicationModel
     end
 
     attr_reader :operation_id, :operation_class_name
-    attr_accessor :concurrent_target
+    attr_accessor :concurrent_target, :priority
 
     def operation_class
       @operation_class ||= @operation_class_name.constantize
@@ -429,6 +434,12 @@ class Operation < ApplicationModel
 
     def dead_worker
       operation&.interrupted
+    end
+
+    def options
+      @options ||= {
+        priority: priority
+      }.freeze
     end
   end
 

@@ -19,7 +19,10 @@ RSpec.describe Publication, type: :model do
   let(:export_options) do
     { type: export_type, duration: 90, prefer_referent_stop_area: false }
   end
-  let(:publication_setup) { create :publication_setup, export_options: export_options }
+  let(:publication_setup_priority) { 1 }
+  let(:publication_setup) do
+    create(:publication_setup, priority: publication_setup_priority, export_options: export_options)
+  end
   let(:referential) { first_referential }
   let(:publication) do
     create(
@@ -160,6 +163,19 @@ RSpec.describe Publication, type: :model do
     subject { publication.concurrent_target }
 
     it { is_expected.to eq("publications[referential:#{first_referential.id}]") }
+  end
+
+  context '#priority' do
+    subject { publication.priority }
+
+    context 'when publication setup priority is 1' do
+      it { is_expected.to eq(0) }
+    end
+
+    context 'when publication setup priority is 50' do
+      let(:publication_setup_priority) { 50 }
+      it { is_expected.to eq(49) }
+    end
   end
 
   describe 'when associated Referential is destroyed' do

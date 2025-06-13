@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2025_06_11_103319) do
+ActiveRecord::Schema.define(version: 2025_06_13_122420) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "btree_gin"
@@ -1199,6 +1199,7 @@ ActiveRecord::Schema.define(version: 2025_06_11_103319) do
     t.string "name"
     t.boolean "force_daily_publishing", default: false
     t.boolean "enable_cache", default: false, null: false
+    t.integer "priority", default: 1, null: false
     t.index ["workgroup_id"], name: "index_publication_setups_on_workgroup_id"
   end
 

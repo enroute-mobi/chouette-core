@@ -380,8 +380,16 @@ module Export
 
       LOADED_CLASSES.each do |loaded_class|
         define_method loaded_class.model_name.collection do
-          @loaders[loaded_class] ||= Loader.new(current_scope, export_id, loaded_class).loaded_models
+          loader(loaded_class).loaded_models
         end
+      end
+
+      def loader(model_class)
+        @loaders[model_class] ||= Loader.new(current_scope, export_id, model_class)
+      end
+
+      def empty?
+        loader(Chouette::VehicleJourney).empty?
       end
 
       class Loader
@@ -391,6 +399,12 @@ module Export
           @loaded_class = loaded_class
         end
         attr_reader :export_id, :current_scope, :loaded_class
+
+        def empty?
+          loaded_models
+
+          @empty
+        end
 
         def loaded_models
           unless @loaded
@@ -404,8 +418,13 @@ module Export
               query = <<~SQL
                 INSERT INTO public.exportables (#{columns}) #{sql}
               SQL
-              ActiveRecord::Base.connection.execute query
+              result = ActiveRecord::Base.connection.execute query
+              Rails.logger.info "Created #{result.cmd_tuples} #{loaded_class_name} exportables"
+
+              @empty = result.cmd_tuples.zero?
               ActiveRecord::Base.connection.execute 'ANALYZE public.exportables'
+            else
+              @empty = true
             end
 
             @loaded = true
@@ -415,11 +434,7 @@ module Export
         end
 
         def exportable_models
-          @exportable_models ||=
-            begin
-              exportables = Exportable.where(uuid: uuid, model_type: loaded_class_name, processed: false)
-              loaded_class.where(id: exportables.select(:model_id))
-            end
+          @exportable_models ||= loaded_class.joins(:exportables).where(exportables: {uuid: uuid, processed: false})
         end
 
         private

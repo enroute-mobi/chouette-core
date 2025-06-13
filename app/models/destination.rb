@@ -64,7 +64,7 @@ class Destination < ApplicationModel
       name,
       uri_s,
       request_content_type: 'multipart/form-data',
-      response_content_type: 'application/json'
+      response_content_type: nil
     )
       @report = report
       @name = name
@@ -79,7 +79,9 @@ class Destination < ApplicationModel
     end
 
     def request
-      @request ||= Net::HTTP::Post.new(uri)
+      @request ||= Net::HTTP::Post.new(uri).tap do |request|
+        request['Content-Type'] = request_content_type
+      end
     end
 
     def request_body=(data)
@@ -98,16 +100,16 @@ class Destination < ApplicationModel
 
       logger.info("Send file to #{name} on #{uri}")
 
-      response ||= Net::HTTP.start(uri.hostname, uri.port, use_ssl: use_ssl?) do |http|
+      response = Net::HTTP.start(uri.hostname, uri.port, use_ssl: use_ssl?) do |http|
         http.request(request)
       end
 
       logger.info("#{name} response #{response.code} #{response.body.truncate(256)}")
 
-      if response.is_a?(Net::HTTPSuccess) && response.content_type == response_content_type
+      if response.is_a?(Net::HTTPSuccess) && expected_response_content_type?(response)
         @success = true
       else
-        report.failed!(message: "Unexpected response from #{name} API: #{response.code}")
+        report.failed!(message: "Unexpected response from #{name} API: #{response.code} (#{response.content_type})")
         @success = false
       end
 
@@ -115,7 +117,7 @@ class Destination < ApplicationModel
     end
 
     def response_content
-      case response_content_type
+      case response.content_type
       when 'application/json'
         JSON.parse(response.body)
       else
@@ -136,6 +138,12 @@ class Destination < ApplicationModel
 
     def use_ssl?
       uri.instance_of?(URI::HTTPS)
+    end
+
+    def expected_response_content_type?(response)
+      return true unless response_content_type
+
+      response.content_type == response_content_type
     end
   end
 end

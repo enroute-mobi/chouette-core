@@ -14,7 +14,7 @@ class Destination
     end
 
     def transmit_export_file(_publication, report, export)
-      http_request = HttpRequest.new(report, 'Ara', ara_import_url)
+      http_request = HttpRequest.new(report, 'Ara', ara_import_url, response_content_type: 'application/json')
 
       http_request.request['Authorization'] = "Token token=#{credentials}"
 

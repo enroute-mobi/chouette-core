@@ -33,7 +33,7 @@ class Destination
     end
 
     def transmit_export_file(_publication, report, export) # rubocop:disable Metrics/MethodLength,Metrics/AbcSize
-      http_request = HttpRequest.new(report, 'Chouette', import_url)
+      http_request = HttpRequest.new(report, 'Chouette', import_url, response_content_type: 'application/json')
 
       http_request.request['Authorization'] = "Token token=#{workbench_api_key}"
 

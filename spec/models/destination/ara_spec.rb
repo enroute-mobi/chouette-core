@@ -68,7 +68,7 @@ RSpec.describe Destination::Ara, type: :model do
         m.call(*args)
       end
       stub_request(:post, 'https://test.com/import') \
-        .with(headers: { 'Authorization' => 'Token token=TOKEN' }) \
+        .with(headers: { 'Content-Type' => 'multipart/form-data', 'Authorization' => 'Token token=TOKEN' }) \
         .to_return(api_result)
     end
 

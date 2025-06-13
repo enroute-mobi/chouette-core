@@ -53,7 +53,8 @@ RSpec.describe Destination::Icar, type: :model do
     let(:api_result) do
       {
         status: 200,
-        headers: { 'Content-Type' => 'application/json' }
+        headers: { 'Content-Type' => 'text/plain' },
+        body: "Le fichier d'alimentation a bien \xC3\xA9t\xC3\xA9 transf\xC3\xA9r\xC3\xA9"
       }
     end
 
@@ -62,8 +63,8 @@ RSpec.describe Destination::Icar, type: :model do
         @request_body = args[0]
         m.call(*args)
       end
-      stub_request(:post, 'https://icar.iledefrance-mobilites.fr/api/v1/imports') \
-        .with(headers: { 'Authorization' => "Bearer #{icar_token}" }) \
+      stub_request(:post, destination.icar_import_url) \
+        .with(headers: { 'Content-Type' => 'application/json', 'Authorization' => "Bearer #{icar_token}" }) \
         .to_return(api_result)
     end
 
@@ -76,15 +77,34 @@ RSpec.describe Destination::Icar, type: :model do
         expect(destination.reports.first).to be_successful
       end
 
-      it 'should send file to Chouette' do
+      it 'should send file to ICAR' do
         subject
-        expect(a_request(:post, 'https://icar.iledefrance-mobilites.fr/api/v1/imports')).to have_been_made.once
+        expect(a_request(:post, destination.icar_import_url)).to have_been_made.once
         expect(JSON.parse(@request_body)).to eq(
           {
             'nomFichier' => export_filename,
             'content' => Base64.encode64(File.read(export_file_path))
           }
         )
+      end
+
+      context 'when API returns an error' do
+        let(:api_result) do
+          {
+            status: 400,
+            headers: { 'Content-Type' => 'text/plain' },
+            body: 'Le nom du fichier ne respecte pas la nomenclature attendue'
+          }
+        end
+
+        it 'should fail' do
+          subject
+          expect(destination.reports.count).to eq(1)
+          expect(destination.reports.first).to be_failed
+          expect(destination.reports.first.error_message).to(
+            eq('Unexpected response from ICAR API: 400 (text/plain)')
+          )
+        end
       end
     end
   end

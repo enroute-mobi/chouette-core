@@ -12,6 +12,8 @@ class Referential
     include ObjectidSupport
     include ReferentialCodeSupport
 
+    has_many :exportables, as: :model
+
     # Ugly code which can be shared by a super class :-/
     # has_metadata
   end

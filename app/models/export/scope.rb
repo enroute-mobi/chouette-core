@@ -432,11 +432,7 @@ module Export
         end
 
         def exportable_models
-          @exportable_models ||=
-            begin
-              exportables = Exportable.where(uuid: uuid, model_type: loaded_class_name, processed: false)
-              loaded_class.where(id: exportables.select(:model_id))
-            end
+          @exportable_models ||= loaded_class.joins(:exportables).where(exportables: {uuid: uuid, processed: false})
         end
 
         private

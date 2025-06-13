@@ -11,6 +11,7 @@ module Macro
         option :format
         option :sequence_id
 
+        # Target model should only used models outside referential for the moment See CHOUETTE-4640
         enumerize :target_model, in: %w[
           Line
           LineGroup
@@ -27,10 +28,6 @@ module Macro
           LineRoutingConstraintZone
           Document
           Contract
-          Route
-          JourneyPattern
-          VehicleJourney
-          TimeTable
         ]
 
         validates :target_model, :code_space_id, :sequence_id, :format, presence: true
@@ -80,7 +77,7 @@ module Macro
       end
 
       def models_with_code
-        @models_with_code || models.with_code(code_space)
+        @models_with_code ||= models_inside_workbench.with_code(code_space)
       end
 
       def model_collection
@@ -89,6 +86,10 @@ module Macro
 
       def models
         @models ||= scope.send(model_collection)
+      end
+
+      def models_inside_workbench
+        @models_inside_workbench ||= workbench.send(model_collection)
       end
 
       def code_generator

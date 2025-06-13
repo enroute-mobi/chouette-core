@@ -116,26 +116,6 @@ RSpec.describe Macro::CreateCodeFromSequence do
           end
         end
 
-        context 'with Route' do
-          let(:target_model) { 'Route' }
-          let(:context) do
-            Chouette.create do
-              code_space short_name: 'test'
-
-              referential do
-                route :route
-                route :other_route, codes: { test: 'dummy:1' }
-              end
-            end
-          end
-          let(:referential) { context.referential }
-          let(:model) { context.route(:route) }
-
-          it 'should create code' do
-            expect { subject }.to change { model.codes.count }.from(0).to(1)
-            expect(macro_run.macro_messages).to include(expected_message)
-          end
-        end
       end
       # rubocop:enable Style/FormatStringToken
     end

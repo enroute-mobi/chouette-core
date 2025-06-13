@@ -423,6 +423,8 @@ module Export
 
               @empty = result.cmd_tuples.zero?
               ActiveRecord::Base.connection.execute 'ANALYZE public.exportables'
+            else
+              @empty = true
             end
 
             @loaded = true

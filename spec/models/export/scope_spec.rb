@@ -600,26 +600,58 @@ RSpec.describe Export::Scope, use_chouette_factory: true do
       end
     end
 
-    describe Export::Scope::Stateful::Loader do
-      subject { described_class.new(scope, nil, Chouette::VehicleJourney).loaded_models }
+    describe '#empty?' do
+      subject { scope.empty? }
 
-      context 'when model scope is none' do
-        before do
-          allow(scope).to receive(:vehicle_journeys).and_return(Chouette::VehicleJourney.none)
+      it 'delegates #empty? to vehicle journeys' do
+        empty = double('empty?')
+        expect(scope.loader(Chouette::VehicleJourney)).to receive(:empty?).and_return(empty)
+        is_expected.to eq(empty)
+      end
+    end
+
+    describe Export::Scope::Stateful::Loader do
+      subject(:loader) { described_class.new(scope, nil, Chouette::VehicleJourney) }
+
+      let(:vehicle_journeys) { referential.vehicle_journeys }
+
+      before { allow(scope).to receive(:vehicle_journeys).and_return(vehicle_journeys) }
+
+      describe '#loaded_models' do
+        subject { loader.loaded_models }
+
+        context 'when model scope is none' do
+          let(:vehicle_journeys) { Chouette::VehicleJourney.none }
+
+          it 'should return empty loaded models' do
+            is_expected.to be_empty
+          end
         end
 
-        it 'should return empty loaded models' do
-          is_expected.to be_empty
+        context 'when model scope contains vehicle journeys' do
+          it 'should contain loaded models' do
+            is_expected.to match_array referential.vehicle_journeys
+          end
         end
       end
 
-      context 'when model scope contains vehicle journeys' do
-        before do
-          allow(scope).to receive(:vehicle_journeys).and_return(referential.vehicle_journeys)
+      describe '#empty?' do
+        subject { loader.empty? }
+
+        context 'when model scope is none' do
+          let(:vehicle_journeys) { Chouette::VehicleJourney.none }
+
+          it { is_expected.to eq(true) }
         end
 
-        it 'should contain loaded models' do
-          is_expected.to match_array referential.vehicle_journeys
+        context 'when model scope contains no vehicle journey' do
+          before { vehicle_journeys.destroy_all }
+
+          it { is_expected.to eq(true) }
+        end
+
+        context 'when model scope contains vehicle journeys' do
+          it { is_expected.to eq(false) }
         end
       end
     end

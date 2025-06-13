@@ -12,6 +12,10 @@ class Contract < ApplicationModel
 
   def self.with_lines(*lines)
     lines = lines.flatten
-    where('line_ids::integer[] && ARRAY[?]', lines.map(&:id))
+    if lines.empty?
+      self.class.none
+    else
+      where('line_ids::integer[] && ARRAY[?]', lines.map(&:id))
+    end
   end
 end

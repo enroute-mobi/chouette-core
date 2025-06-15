@@ -86,7 +86,7 @@ GIT
 GEM
   remote: https://rubygems.org/
   specs:
-    aasm (5.5.0)
+    aasm (5.5.1)
       concurrent-ruby (~> 1.0)
     actioncable (6.1.7.10)
       actionpack (= 6.1.7.10)

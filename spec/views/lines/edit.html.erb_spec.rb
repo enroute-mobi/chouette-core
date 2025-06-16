@@ -10,7 +10,7 @@ describe 'lines/edit.html.slim', type: :view do
   let(:workbench) { assign :workbench, current_workbench }
 
   before :each do
-    allow(template).to receive(:candidate_line_providers).and_return([line_provider])
+    allow(view).to receive(:candidate_line_providers).and_return([line_provider])
     allow(view).to receive(:resource).and_return(line)
     allow(view).to receive(:resource_class).and_return(Chouette::Line)
     allow(view).to receive(:referential).and_return(line_referential)

@@ -2,6 +2,9 @@
 
 class Destination
   class Icar < ::Destination
+    option :site_id, type: :string
+    option :site_name, type: :string
+    option :file_type, enumerize: %w[T P]
     option :icar_token, type: :password
 
     validates :icar_token, presence: true
@@ -16,11 +19,17 @@ class Destination
       http_request.request['Authorization'] = "Bearer #{icar_token}"
 
       http_request.request_body = {
-        'nomFichier' => File.basename(export.file.filename),
+        'nomFichier' => icar_api_filename,
         'content' => Base64.encode64(export.file.read)
       }
 
       http_request.call
+    end
+
+    private
+
+    def icar_api_filename
+      "ARRET_#{site_id}_#{site_name}_#{file_type}_#{ActiveSupport::TimeZone['UTC'].now.strftime('%Y%m%dT%H%M%SZ')}.zip"
     end
   end
 end

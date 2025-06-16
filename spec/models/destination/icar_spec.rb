@@ -4,6 +4,9 @@ RSpec.describe Destination::Icar, type: :model do
   subject(:destination) do
     Destination::Icar.create!(
       name: 'ICAR',
+      site_id: '42',
+      site_name: 'TEST_SITE',
+      file_type: 'T',
       icar_token: icar_token
     )
   end
@@ -26,13 +29,8 @@ RSpec.describe Destination::Icar, type: :model do
     let(:workgroup) { workbench.workgroup }
     let(:referential) { context.referential }
     let(:operation) { create(:aggregate, referentials: [referential], new: referential) }
-    let(:export_filename) { 'ARRET_42_RDMANTOIS_T_20250528T142356Z.zip' }
-    let(:export_file_path) { Rails.root.join('tmp', export_filename) }
-    let(:export_file_fixture_path) { 'OFFRE_TRANSDEV_2017030112251.zip' }
-    let(:export_file) do
-      FileUtils.cp(file_fixture(export_file_fixture_path), export_file_path)
-      File.open(export_file_path)
-    end
+    let(:export_file_fixture) { 'OFFRE_TRANSDEV_2017030112251.zip' }
+    let(:export_file) { fixture_file_upload(export_file_fixture) }
     let(:export) do
       Export::NetexGeneric.create!(
         name: 'Test',
@@ -78,14 +76,16 @@ RSpec.describe Destination::Icar, type: :model do
       end
 
       it 'should send file to ICAR' do
-        subject
-        expect(a_request(:post, destination.icar_import_url)).to have_been_made.once
-        expect(JSON.parse(@request_body)).to eq(
-          {
-            'nomFichier' => export_filename,
-            'content' => Base64.encode64(File.read(export_file_path))
-          }
-        )
+        Timecop.freeze(Time.new(2025, 6, 16, 11, 13, 15, '+02:00')) do
+          subject
+          expect(a_request(:post, destination.icar_import_url)).to have_been_made.once
+          expect(JSON.parse(@request_body)).to eq(
+            {
+              'nomFichier' => 'ARRET_42_TEST_SITE_T_20250616T091315Z.zip',
+              'content' => Base64.encode64(file_fixture(export_file_fixture).read)
+            }
+          )
+        end
       end
 
       context 'when API returns an error' do

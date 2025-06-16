@@ -111,3 +111,7 @@ en:
         chouette: Chouette
         iboo: Iboo
         custom: Custom
+    destination/icar:
+      file_type:
+        T: Complete
+        P: Partial

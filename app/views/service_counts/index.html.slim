@@ -2,14 +2,17 @@
 
 .page_content x-data="{ saveSearchPanel: false, graphPanel: true }"
   .container-fluid
-    .row
-      .col-lg-12
-        = render 'filters'
-
-    - if @chart && !@chart.empty?
-      = @chart.to_chartkick(self, download: true)
-
-    - else
-      .row.mt-xs
+    - if (@chart && !@chart.empty?) || current_referential.service_counts_computed?
+      .row
         .col-lg-12
-          = replacement_msg 'service_counts.search_no_results'.t
+          = render 'filters'
+
+      - if @chart && !@chart.empty?
+        = @chart.to_chartkick(self, download: true)
+
+      - else
+        .row.mt-xs
+          .col-lg-12
+            = replacement_msg t('service_counts.search_no_results')
+    - else
+      = replacement_msg t('service_counts.not_computed')

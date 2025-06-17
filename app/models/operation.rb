@@ -117,7 +117,11 @@ class Operation < ApplicationModel
 
   def job
     # We could use a dedicated subclass for each Operation class (Control::Job, Macro::Job, etc)
-    Job.new id, self.class if persisted?
+    Job.new(id, self.class, concurrent_target: concurrent_target) if persisted?
+  end
+
+  def concurrent_target
+    nil
   end
 
   def internal_description
@@ -379,12 +383,16 @@ class Operation < ApplicationModel
 
   # Store operation id and class name to load and perform it into Delayed worker
   class Job
-    def initialize(operation_id, operation_class)
+    def initialize(operation_id, operation_class, **options)
       @operation_id = operation_id
       @operation_class_name = operation_class.to_s
+      options.each do |k, v|
+        send(:"#{k}=", v)
+      end
     end
 
     attr_reader :operation_id, :operation_class_name
+    attr_accessor :concurrent_target
 
     def operation_class
       @operation_class ||= @operation_class_name.constantize

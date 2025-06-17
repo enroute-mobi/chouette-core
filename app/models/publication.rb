@@ -47,6 +47,10 @@ class Publication < Operation
     end
   end
 
+  def concurrent_target
+    "publications[referential:#{referential_id}]"
+  end
+
   class ExportStatus < Operation::Callback
     delegate :export, to: :operation
 

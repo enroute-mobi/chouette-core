@@ -156,6 +156,12 @@ RSpec.describe Publication, type: :model do
     end
   end
 
+  describe '#concurrent_target' do
+    subject { publication.concurrent_target }
+
+    it { is_expected.to eq("publications[referential:#{first_referential.id}]") }
+  end
+
   describe 'when associated Referential is destroyed' do
     it { expect { referential.destroy }.to change(publication, :exists_in_database?).from(true).to(false) }
   end

@@ -26,8 +26,6 @@ class CreateAggregateSchedulings < ActiveRecord::Migration[5.2]
         t.remove :nightly_aggregate_days
         t.remove :nightly_aggregated_at
       end
-
-      Cron::BaseJob.schedule_all
     end
   end
 

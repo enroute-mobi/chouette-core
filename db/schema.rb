@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2025_04_29_195523) do
+ActiveRecord::Schema.define(version: 2025_06_11_103319) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "btree_gin"
@@ -439,6 +439,8 @@ ActiveRecord::Schema.define(version: 2025_04_29_195523) do
     t.datetime "updated_at"
     t.bigint "organisation_id"
     t.string "cron"
+    t.string "concurrent_target"
+    t.index ["concurrent_target"], name: "index_delayed_jobs_on_concurrent_target"
     t.index ["organisation_id"], name: "index_delayed_jobs_on_organisation_id"
     t.index ["priority", "run_at"], name: "delayed_jobs_priority"
   end

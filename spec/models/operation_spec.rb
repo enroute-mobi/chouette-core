@@ -106,33 +106,55 @@ RSpec.describe Operation do
   end
 
   describe '#enqueue' do
+    subject { operation.enqueue }
+
     context "when Operation isn't persisted" do
       before { operation.persisted = false }
-      it { expect { operation.enqueue }.to raise_error(Operation::NotPersistedError) }
+      it { expect { subject }.to raise_error(Operation::NotPersistedError) }
     end
 
     context 'when Operation is persisted' do
-      before do
-        operation.persisted = true
-        allow(Delayed::Job).to receive(:enqueue)
-      end
+      before { operation.persisted = true }
 
       context "when Operation isn't new" do
         before { operation.status = Operation.status.done }
-        it { expect { operation.enqueue }.to raise_error(Operation::InvalidStatusError) }
+        it { expect { subject }.to raise_error(Operation::InvalidStatusError) }
       end
 
-      let(:job) { double }
-      before { allow(operation).to receive(:job).and_return(job) }
-
       it 'enqueues a Job to perform this Operation' do
+        job = double(:job).tap do |job|
+          allow(job).to receive(:perform)
+        end
+        expect(operation).to receive(:job).and_return(job)
         expect(Delayed::Job).to receive(:enqueue).with(job)
-        operation.enqueue
+        subject
+      end
+
+      context 'when #concurrent_target' do
+        before { allow(operation).to receive(:concurrent_target).and_return(concurrent_target) }
+
+        context 'is nil' do
+          let(:concurrent_target) { nil }
+
+          it 'enqueued delayed job should not set concurrent_target' do
+            subject
+            expect(Delayed::Job.last).to have_attributes(concurrent_target: nil)
+          end
+        end
+
+        context 'is "something"' do
+          let(:concurrent_target) { 'something' }
+
+          it 'enqueued delayed job should set concurrent_target' do
+            subject
+            expect(Delayed::Job.last).to have_attributes(concurrent_target: 'something')
+          end
+        end
       end
 
       it 'changes the status to enqueued' do
         expect do
-          operation.enqueue
+          subject
         end.to change(operation, :status).from(Operation.status.new).to(Operation.status.enqueued)
       end
     end

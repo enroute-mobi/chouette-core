@@ -46,7 +46,7 @@ class StopAreasController < Chouette::StopAreaReferentialController
 
   def show # rubocop:disable Metrics/MethodLength,Metrics/AbcSize
     show! do |format|
-      format.geojson { render 'stop_areas/show.geo' }
+      format.geojson { render 'stop_areas/show' }
 
       format.json do
         attributes = stop_area.attributes.slice(:id, :name, :objectid, :comment, :area_type, :registration_number,
@@ -71,7 +71,7 @@ class StopAreasController < Chouette::StopAreaReferentialController
     @connection_links = stop_area.connection_links if has_feature?(:stop_area_connection_links)
 
     respond_to do |format|
-      format.geojson { render 'connection_links/index.geo' }
+      format.geojson { render 'connection_links/index' }
     end
   end
 

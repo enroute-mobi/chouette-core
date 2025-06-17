@@ -12,7 +12,7 @@ node(:crs) do
 end
 
 node(:features) do |cl|
-  departure, arrival = partial('stop_areas/index.geo', object: [cl.departure, cl.arrival])
+  departure, arrival = partial('stop_areas/index', object: [cl.departure, cl.arrival])
 
 	departure[:properties].merge!(
     marker: 'blue',

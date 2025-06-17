@@ -7,7 +7,7 @@ class StopAreaGroupsController < Chouette::StopAreaReferentialController
 
   before_action :stop_area_group_params, only: %i[create update]
 
-  respond_to :html, :xml, :json, :geojson
+  respond_to :html, :xml, :json
 
   def index
     index! do |format|

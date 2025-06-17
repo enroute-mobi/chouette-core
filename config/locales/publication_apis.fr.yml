@@ -23,6 +23,7 @@ fr:
         name: "Nom"
         slug: "Nom court"
         public_url: "Url Publique"
+        graphql_url: "Url GraphQL Publique"
         publications: "Publications Associées"
         public: "API publique"
 

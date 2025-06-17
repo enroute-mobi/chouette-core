@@ -23,6 +23,7 @@ en:
         name: "Name"
         slug: "Short name"
         public_url: "Public URL"
+        graphql_url: "Public GraphQL URL"
         publications: "Related publications"
         public: "Public API"
   formtastic:

@@ -22,8 +22,9 @@ fr:
       publication_api:
         name: "Nom"
         slug: "Nom court"
-        public_url: "Url Publique"
-        publications: "Publications Associées"
+        public_url: "Url publique"
+        graphql_url: "Url GraphQL publique"
+        publications: "Publications associées"
         public: "API publique"
 
   formtastic:

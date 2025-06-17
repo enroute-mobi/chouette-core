@@ -6,14 +6,14 @@
   .container-fluid
     .row
       .col-lg-6.col-md-6.col-sm-12.col-xs-12
-        = definition_list t('metadatas'), { \
-          PublicationApi.human_attribute_name(:name) => @publication_api.name, \
-          PublicationApi.human_attribute_name(:slug) => @publication_api.slug, \
-          PublicationApi.human_attribute_name(:public_url) => link_to(@publication_api.public_url, @publication_api.public_url, target: :blank), \
-          PublicationApi.human_attribute_name(:public) => (@publication_api.public? ? t('true') : t('false')), \
-          PublicationApi.human_attribute_name(:created_at) => l(@publication_api.created_at, format: :short_with_time), \
-          PublicationApi.human_attribute_name(:updated_at) => l(@publication_api.updated_at, format: :short_with_time) \
-        }
+        = simple_block_for @publication_api, title: t('metadatas') do |d|
+          = d.attribute :name
+          = d.attribute :slug
+          = d.attribute :public_url, value: link_to(@publication_api.public_url, @publication_api.public_url, target: :blank)
+          = d.attribute :graphql_url, value: link_to("#{@publication_api.public_url}/graphql", "#{@publication_api.public_url}/graphql", target: :blank)
+          = d.attribute :public, as: :boolean
+          = d.attribute :created_at, as: :datetime
+          = d.attribute :updated_at, as: :datetime
 
       .col-lg-6.col-md-6.col-sm-12.col-xs-12
         - metadatas = {}

@@ -29,6 +29,7 @@ fr:
         enabled: "Activée"
         force_daily_publishing: "Publication quotidienne"
         enable_cache: "Optimiser via un cache (Expérimental)"
+        priority: "Priorité"
         include_stop_visits: "Inclure les Passages aux Arrêts"
         destinations: "Destinations"
         duration: Durée (en jours)

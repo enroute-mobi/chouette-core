@@ -10,6 +10,7 @@
           = d.attribute :name
           = d.attribute :enabled, as: :boolean, with_icon: true
           = d.attribute :enable_cache, as: :boolean
+          = d.attribute :priority
 
         = render "publication_setups/export/#{@publication_setup.export_type.demodulize.underscore}"
 

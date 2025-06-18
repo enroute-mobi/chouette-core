@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module PublicationSetupWithDefaultExportOptions
   def export_options
     super || {}
@@ -13,6 +15,7 @@ class PublicationSetup < ApplicationModel
   has_many :destinations, dependent: :destroy, inverse_of: :publication_setup
 
   validates :name, presence: true
+  validates :priority, numericality: { only_integer: true, greater_than_or_equal_to: 1, less_than_or_equal_to: 1000 }
   validates_associated :destinations
 
   store_accessor :export_options

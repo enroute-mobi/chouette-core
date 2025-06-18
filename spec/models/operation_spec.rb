@@ -122,7 +122,7 @@ RSpec.describe Operation do
       end
 
       it 'enqueues a Job to perform this Operation' do
-        job = double(:job).tap do |job|
+        job = double(:job, options: {}).tap do |job|
           allow(job).to receive(:perform)
         end
         expect(operation).to receive(:job).and_return(job)
@@ -148,6 +148,28 @@ RSpec.describe Operation do
           it 'enqueued delayed job should set concurrent_target' do
             subject
             expect(Delayed::Job.last).to have_attributes(concurrent_target: 'something')
+          end
+        end
+      end
+
+      context 'when #priority' do
+        before { allow(operation).to receive(:priority).and_return(priority) }
+
+        context 'is nil' do
+          let(:priority) { nil }
+
+          it 'enqueued delayed job should have default priority' do
+            subject
+            expect(Delayed::Job.last).to have_attributes(priority: Delayed::Worker.default_priority)
+          end
+        end
+
+        context 'is 42' do
+          let(:priority) { 42 }
+
+          it 'enqueued delayed job should set priority' do
+            subject
+            expect(Delayed::Job.last).to have_attributes(priority: 42)
           end
         end
       end

@@ -1,8 +1,11 @@
+# frozen_string_literal: true
+
 RSpec.describe PublicationSetup, type: :model, use_chouette_factory: true do
   it { is_expected.to belong_to(:workgroup).required }
   it { should have_many :destinations }
   it { should have_many :publications }
   it { should validate_presence_of :name }
+  it { is_expected.to validate_numericality_of(:priority) }
 
   let!(:context) do
     Chouette.create do

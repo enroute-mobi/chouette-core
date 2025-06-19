@@ -11,7 +11,7 @@ exports[`stopPointHeader should display the city name 1`] = `
       className="table table-2entries mt-sm mb-sm no_result"
     >
       <div
-        className="t2e-head w20"
+        className="t2e-head w25"
       >
         <div
           className="th"
@@ -106,7 +106,7 @@ exports[`stopPointHeader with the "long_distance_routes" feature should display 
       className="table table-2entries mt-sm mb-sm no_result"
     >
       <div
-        className="t2e-head w20"
+        className="t2e-head w25"
       >
         <div
           className="th"

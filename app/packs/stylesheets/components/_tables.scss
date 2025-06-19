@@ -492,6 +492,7 @@
       .th {
         > div:not(.btn-group) {
           min-height: 20px;
+          overflow-x: auto;
         }
         > *:first-child {
           padding-right: 30px;
@@ -513,6 +514,7 @@
               left: 0;
               right: 0;
               color: rgba($grey, 0.75);
+              font-size: 13px;
             }
           }
         }

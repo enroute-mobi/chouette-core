@@ -23,16 +23,13 @@ module Control
 
       def run
         analysis.anomalies.each do |anomaly|
-          control_messages.create({
-            message_attributes: {
-              date: anomaly.date,
-              line: anomaly.line_id
-            },
-            criticity: criticity,
-            source_id: anomaly.line_id,
-            source_type: 'Chouette::Line',
-            message_key: :service_count_trend
-          })
+          messages.create(
+            date: anomaly.date,
+            line: anomaly.line_id
+          ) do |message|
+            message[:source_id] = anomaly.line_id
+            message[:source_type] = 'Chouette::Line'
+          end
         end
       end
 

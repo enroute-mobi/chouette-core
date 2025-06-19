@@ -21,15 +21,7 @@ module Control
 
       def run
         faulty_models.find_each do |model|
-          control_messages.create({
-            message_attributes: {
-              name: model.try(:name) || model.id,
-              expected_status: I18n.t("enumerize.expected_status.#{expected_status}")
-            },
-            criticity: criticity,
-            source: model,
-            message_key: :model_status
-          })
+          messages.create(source: model, expected_status: I18n.t("enumerize.expected_status.#{expected_status}"))
         end
       end
 

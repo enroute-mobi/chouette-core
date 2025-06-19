@@ -71,12 +71,7 @@ module Control
         planner.solve
 
         anomalies.each do |date|
-          control_messages.create(
-            message_attributes: { date: date },
-            criticity: criticity,
-            source: from_stop_area,
-            message_key: :travel_time
-          )
+          messages.create(source: from_stop_area, date: date)
         end
       end
 
@@ -112,6 +107,14 @@ module Control
             end
           end
         end
+      end
+
+      protected
+
+      def messages_options
+        {
+          resource_name_key: nil
+        }
       end
     end
   end

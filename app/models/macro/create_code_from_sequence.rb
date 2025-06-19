@@ -53,22 +53,11 @@ module Macro
 
         models_without_code.find_each do |model|
           code = model.codes.create(code_space: code_space, value: code_generator.value)
-          create_message(model, code)
+
+          messages.create(source: model, code_value: code.value) do |message|
+            message.error! unless code.valid?
+          end
         end
-      end
-
-      def create_message(model, code)
-        model_name = model.try(:name) || model.try(:published_journey_name) ||
-              model.try(:comment) || model.try(:uuid) || model.try(:get_objectid)&.local_id
-
-        attributes = {
-          message_attributes: { model_name: model_name, code_value: code.value },
-          source: model
-        }
-
-        attributes.merge!(criticity: 'error', message_key: 'error') unless code.valid?
-
-        macro_messages.create!(attributes)
       end
 
       def models_without_code
@@ -97,6 +86,14 @@ module Macro
 
       def code_generator
         @code_generator ||= CodeGenerator.new(sequence, format, existing_code_values)
+      end
+
+      protected
+
+      def messages_options
+        {
+          resource_name_key: :model_name
+        }
       end
 
       class CodeGenerator

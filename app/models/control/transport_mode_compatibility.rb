@@ -5,16 +5,13 @@ module Control
     class Run < Control::Base::Run
       def run
         anomalies.each do |anomaly|
-          control_messages.create({
-                                    message_attributes: {
-                                      stop_area_name: anomaly.stop_area_name,
-                                      line_name: anomaly.line_name
-                                    },
-                                    criticity: criticity,
-                                    source_id: anomaly.stop_area_id,
-                                    source_type: 'Chouette::StopArea',
-                                    message_key: :transport_mode_compatibility
-                                  })
+          messages.create(
+            stop_area_name: anomaly.stop_area_name,
+            line_name: anomaly.line_name
+          ) do |message|
+            message[:source_id] = anomaly.stop_area_id
+            message[:source_type] = 'Chouette::StopArea'
+          end
         end
       end
 

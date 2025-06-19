@@ -713,7 +713,7 @@ RSpec.describe Control::PresenceAssociatedModel do
 
       describe 'VehicleJourney' do
         let(:source) { context.vehicle_journey(:vehicle_journey) }
-        let(:attribute_name) { nil } # FIXME: CHOUETTE-3397
+        let(:attribute_name) { source.published_journey_name }
         let(:target_model) { 'VehicleJourney' }
 
         context 'time_tables' do

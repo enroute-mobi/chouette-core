@@ -46,16 +46,11 @@ module Control
 
       def run
         faulty_models.find_each do |model|
-          control_messages.create({
-            message_attributes: {
-              name: model.try(:name) || model.try(:published_journey_name) || model.try(:comment),
-              code_space_name: target_code_space.short_name,
-              expected_format: expected_format
-            },
-            criticity: criticity,
+          messages.create(
             source: model,
-            message_key: :code_format
-          })
+            code_space_name: target_code_space.short_name,
+            expected_format: expected_format
+          )
         end
       end
 

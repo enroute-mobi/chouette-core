@@ -135,21 +135,16 @@ module Control
     class Run < Control::Base::Run
       include Options
 
-      def run
-        faulty_models.find_each do |model|
-          create_message model
+      class << self
+        def message_key
+          nil
         end
       end
 
-      def create_message(model)
-        model_name = model.try(:name) || model.try(:uuid) || model.try(:get_objectid)&.local_id
-        attributes = {
-          message_attributes: { name: model_name, target_attribute: target_attribute,
-                                expected_format: expected_format },
-          criticity: criticity,
-          source: model
-        }
-        control_messages.create! attributes
+      def run
+        faulty_models.find_each do |model|
+          messages.create(source: model, expected_format: expected_format)
+        end
       end
 
       def faulty_models

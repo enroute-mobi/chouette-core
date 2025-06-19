@@ -43,7 +43,7 @@ RSpec.describe Control::PresenceCustomField do
           message_key: 'presence_custom_field',
           criticity: 'warning',
           message_attributes: {
-            'name' => source.try(:name) || source.id,
+            'name' => source.try(:name) || source.try(:published_journey_name) || source.id,
             'custom_field' => target_custom_field.code
           }
         )

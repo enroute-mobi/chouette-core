@@ -9,22 +9,11 @@ module Macro
           #  If no shape found Chouette goes to the next journey_pattern
           if shape.present?
             journey_pattern.update(shape: shape)
-            create_message(journey_pattern, shape)
+            messages.create(source: journey_pattern, shape_name: shape.uuid) do |message|
+              message.error! unless journey_pattern.valid?
+            end
           end
         end
-      end
-
-      # Create a message for the given JourneyPattern
-      # If the JourneyPattern is invalid, an error message is created.
-      def create_message(journey_pattern, shape)
-        attributes = {
-          message_attributes: { shape_name: shape.uuid, journey_pattern_name: journey_pattern.name },
-          source: journey_pattern
-        }
-
-        attributes.merge!(criticity: 'error', message_key: 'error') unless journey_pattern.valid?
-
-        macro_messages.create!(attributes)
       end
 
       def journey_patterns
@@ -37,6 +26,14 @@ module Macro
 
       def code_space
         @code_space ||= workgroup.code_spaces.find_by(short_name: 'external')
+      end
+
+      protected
+
+      def messages_options
+        {
+          resource_name_key: :journey_pattern_name
+        }
       end
     end
   end

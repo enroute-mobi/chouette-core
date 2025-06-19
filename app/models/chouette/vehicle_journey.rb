@@ -140,6 +140,8 @@ module Chouette
       joins(:time_tables).merge(Chouette::TimeTable.scheduled_on(date)).distinct
     end
 
+    alias_attribute :name, :published_journey_name
+
     # Returns ordered arrival/departure time of days for all Vehicle Journey stops
     def passing_times
       vehicle_journey_at_stops.flat_map do |vehicle_journey_at_stop|

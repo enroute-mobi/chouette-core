@@ -87,6 +87,10 @@ module Macro
         end
       end
 
+      def messages
+        @messages ||= ControlMacro::Messages.new(self, Macro::Message, :macro_run_id, **messages_options)
+      end
+
       protected
 
       def around_run(&block)
@@ -99,6 +103,10 @@ module Macro
           end
           logger.info 'Done'
         end
+      end
+
+      def messages_options
+        {}
       end
     end
   end

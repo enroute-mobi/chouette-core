@@ -36,13 +36,25 @@ RSpec.describe Macro::AdjustPeriods do
 
       context 'when a Timetable ends on 2030-01-20' do
         context 'when end correction is 1' do
-          let(:end_correction) { 1 }
-
           it {
             expect { subject }.to change {
                                     period.reload.period_end
                                   }.from(Date.parse('2030-01-20')).to(Date.parse('2030-01-21'))
           }
+
+          it 'creates correct message' do
+            subject
+            expect(macro_run.macro_messages).to include(
+              have_attributes(
+                source: time_table,
+                criticity: 'info',
+                message_attributes: {
+                  'name' => time_table.name,
+                  'period_end' => '21/01/2030'
+                }
+              )
+            )
+          end
         end
 
         context 'when end correction is -1' do
@@ -54,27 +66,26 @@ RSpec.describe Macro::AdjustPeriods do
                                   }.from(Date.parse('2030-01-20')).to(Date.parse('2030-01-19'))
           }
         end
-      end
-    end
 
-    describe '#create_message' do
-      subject { macro_run.create_message period }
+        context 'when end correction is -20' do
+          let(:end_correction) { -20 }
 
-      it { expect { subject }.to change(macro_run.macro_messages, :size).from(0).to(1) }
+          it { expect { subject }.not_to(change { period.reload.period_end }) }
 
-      describe 'created message' do
-        it { is_expected.to have_attributes(message_attributes: a_hash_including('name' => time_table.name)) }
-
-        it { is_expected.to have_attributes(message_attributes: a_hash_including('period_end' => '20/01/2030')) }
-
-        it { is_expected.to have_attributes(source: time_table) }
-
-        context 'when period isn\'t valid' do
-          before { allow(period).to receive(:valid?).and_return(false) }
-
-          it { is_expected.to have_attributes(criticity: 'error') }
-
-          it { is_expected.to have_attributes(message_key: 'error') }
+          it 'creates correct message' do
+            subject
+            expect(macro_run.macro_messages).to include(
+              have_attributes(
+                source: time_table,
+                criticity: 'error',
+                message_key: 'error',
+                message_attributes: {
+                  'name' => time_table.name,
+                  'period_end' => '31/12/2029'
+                }
+              )
+            )
+          end
         end
       end
     end

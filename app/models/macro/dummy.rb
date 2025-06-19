@@ -48,11 +48,9 @@ module Macro
         raise 'Raise error as expected' if expected_result == 'failed'
 
         models.find_each do |model|
-          macro_messages.create(
-            message_attributes: { name: model.try(:name), result: expected_result },
-            criticity: expected_result,
-            source: model
-          )
+          messages.create(source: model, result: expected_result) do |message|
+            message[:criticity] = expected_result
+          end
         end
       end
 

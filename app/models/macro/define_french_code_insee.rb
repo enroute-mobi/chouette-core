@@ -21,44 +21,35 @@ module Macro
 
       def run
         models_without_postal_region.find_in_batches(batch_size: BATCH_SIZE) do |group|
-          group.each { |model| Updater.new(model, macro_messages).update }
+          group.each { |model| Updater.new(self, model).update }
 
           sleep 1
         end
       end
 
       class Updater
-        def initialize(model, messages = nil)
+        def initialize(macro_run, model)
+          @macro_run = macro_run
           @model = model
-          @messages = messages
         end
-        attr_reader :model, :messages
+        attr_reader :macro_run, :model
+
+        delegate :messages, to: :macro_run
 
         def update
-          unless postal_region
-            create_message criticity: 'warning', message_key: 'no_insee_code'
-            return
-          end
+          success = model.update postal_region: postal_region if postal_region
 
-          if model.update postal_region: postal_region
-            create_message
-          else
-            create_message criticity: 'error', message_key: 'error'
+          messages.create(source: model, postal_region: postal_region) do |message|
+            if !postal_region
+              message.error!(criticity: 'warning', message_key: 'no_insee_code')
+            elsif !success
+              message.error!
+            end
           end
         end
 
         def postal_region
           @postal_region ||= Insee.new(lat: model.latitude, lon: model.longitude).code
-        end
-
-        def create_message(attributes = {})
-          return unless messages
-
-          attributes.merge!(
-            message_attributes: { name: model.name, postal_region: postal_region },
-            source: model
-          )
-          messages.create!(attributes)
         end
       end
 

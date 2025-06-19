@@ -64,8 +64,7 @@ RSpec.describe Macro::ForceAttributeValue::Run do
           expected_message = an_object_having_attributes(
             criticity: 'info',
             message_attributes: {
-              'name' => stop_area.name,
-              'target_attribute' => 'city_name'
+              'name' => stop_area.name
             },
             source: stop_area
           )
@@ -104,8 +103,7 @@ RSpec.describe Macro::ForceAttributeValue::Run do
           expected_message_info = an_object_having_attributes(
             criticity: 'info',
             message_attributes: {
-              'name' => stop_area.name,
-              'target_attribute' => 'is_referent'
+              'name' => stop_area.name
             },
             source: stop_area
           )
@@ -113,8 +111,7 @@ RSpec.describe Macro::ForceAttributeValue::Run do
           expected_message_error = an_object_having_attributes(
             criticity: 'error',
             message_attributes: {
-              'name' => particular.name,
-              'target_attribute' => 'is_referent'
+              'name' => particular.name
             },
             source: particular
           )
@@ -143,8 +140,7 @@ RSpec.describe Macro::ForceAttributeValue::Run do
             an_object_having_attributes(
               criticity: 'info',
               message_attributes: {
-                'name' => line.name,
-                'target_attribute' => 'transport_mode'
+                'name' => line.name
               },
               source: line
             )

@@ -33,18 +33,12 @@ module Macro
         referents.find_each do |referent|
           referent.particular_code_values.each do |code_value|
             code = referent.codes.create(code_space_id: referent_code_space_id, value: code_value)
-            create_message(referent, code)
+
+            messages.create(source: referent, code_value: code.value) do |message|
+              message.error! unless code.valid?
+            end
           end
         end
-      end
-
-      def create_message(referent, code)
-        attributes = {
-          message_attributes: { referent_name: referent.name, code_value: code.value },
-          source: referent
-        }
-        attributes.merge!(criticity: 'error', message_key: 'error') unless code.valid?
-        macro_messages.create!(attributes)
       end
 
       # rubocop:disable Layout/LineLength
@@ -67,6 +61,14 @@ module Macro
 
       def models
         @models ||= scope.send(model_collection)
+      end
+
+      protected
+
+      def messages_options
+        {
+          resource_name_key: :referent_name
+        }
       end
     end
   end

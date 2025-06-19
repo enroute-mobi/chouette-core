@@ -77,19 +77,15 @@ module Control
 
       def run
         analysis.duplicates.each do |duplicate|
-          create_message(duplicate)
-        end
-      end
-
-      def create_message(duplicate)
-        control_messages.create!(
-          message_attributes: {
+          messages.create(
+            name: duplicate.name,
             code_space: target_code_space.short_name,
-            name: duplicate.name, code_value: duplicate.code_value
-          },
-          criticity: criticity, message_key: :code_uniqueness,
-          source_id: duplicate.source_id, source_type: duplicate.source_type
-        )
+            code_value: duplicate.code_value
+          ) do |message|
+            message[:source_id] = duplicate.source_id
+            message[:source_type] = duplicate.source_type
+          end
+        end
       end
 
       def analysis

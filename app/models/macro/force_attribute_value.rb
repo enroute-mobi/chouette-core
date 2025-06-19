@@ -51,7 +51,10 @@ module Macro
       def run
         candidate_models.find_each do |model|
           model.update(updated_attribute_name(model) => updated_value(model))
-          create_message model, target_attribute
+
+          messages.create(source: model) do |message|
+            message.error! unless model.valid?
+          end
         end
       end
 
@@ -65,20 +68,6 @@ module Macro
         return expected_value unless target_attribute == 'transport_mode' && model.respond_to?(:chouette_transport_mode)
 
         Chouette::TransportMode.from(expected_value)
-      end
-
-      def create_message(model, target_attribute)
-        attributes = {
-          message_attributes: {
-            name: model.name, 
-            target_attribute: target_attribute
-          },
-          source: model
-        }
-
-        attributes.merge!(criticity: 'error', message_key: 'error') unless model.valid?
-
-        macro_messages.create!(attributes)
       end
 
       def candidate_models

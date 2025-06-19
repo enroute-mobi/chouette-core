@@ -29,7 +29,7 @@ module Macro
 
       def run
         routes.find_each do |route|
-          Updater.new(route, target_attribute, target_format, macro_messages).update
+          Updater.new(self, route, target_attribute, target_format).update
         end
       end
 
@@ -37,21 +37,35 @@ module Macro
         @routes ||= Query.new(scope).routes_with_departure_and_arrival_names
       end
 
+      protected
+
+      def messages_options
+        {
+          resource_name_key: nil
+        }
+      end
+
       class Updater
-        def initialize(route, attribute, format, messages = nil)
+        def initialize(macro_run, route, attribute, format)
+          @macro_run = macro_run
           @route = route
           @attribute = attribute
-          @messages = messages
           @name_before_change = route.name
           @format = format
         end
-        attr_reader :route, :messages, :attribute, :name_before_change, :format
+        attr_reader :macro_run, :route, :attribute, :name_before_change, :format
+
+        delegate :messages, to: :macro_run
 
         def update
-          if route.update attribute => attribute_value
-            create_message
-          else
-            create_message criticity: 'error', message_key: 'error'
+          success = route.update attribute => attribute_value
+
+          messages.create(
+            source: route,
+            name_before_change: name_before_change,
+            attribute_value_after_change: attribute_value
+          ) do |message|
+            message.error! unless success
           end
         end
 
@@ -60,19 +74,6 @@ module Macro
                                .gsub('%{direction}', route.wayback.text)
                                .gsub('%{departure.name}', route.departure_name)
                                .gsub('%{arrival.name}', route.arrival_name)
-        end
-
-        def create_message(attributes = {})
-          return unless messages
-
-          attributes.merge!(
-            message_attributes: {
-              name_before_change: name_before_change,
-              attribute_value_after_change: attribute_value
-            },
-            source: route
-          )
-          messages.create!(attributes)
         end
       end
 

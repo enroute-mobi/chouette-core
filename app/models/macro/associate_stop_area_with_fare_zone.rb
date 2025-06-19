@@ -36,27 +36,20 @@ module Macro
             stop_area_zone_attributes.except('stop_area_name', 'fare_zone_name')
           )
 
-          create_message(stop_area_zone, stop_area_zone_attributes)
+          messages.create(
+            stop_area_name: stop_area_zone_attributes['stop_area_name'],
+            fare_zone_name: stop_area_zone_attributes['fare_zone_name']
+          ) do |message|
+            message[:source_id] = stop_area_zone.stop_area_id
+            message[:source_type] = '::Chouette::StopArea'
+
+            message.error! unless stop_area_zone.valid?
+          end
         end
       end
 
       def candidate_stop_area_zones
         PostgreSQLCursor::Cursor.new(Query.new(self, model_attribute.name).query)
-      end
-
-      def create_message(stop_area_zone, stop_area_zone_attributes)
-        attributes = {
-          message_attributes: {
-            stop_area_name: stop_area_zone_attributes['stop_area_name'],
-            fare_zone_name: stop_area_zone_attributes['fare_zone_name']
-          },
-          source_id: stop_area_zone.stop_area_id,
-          source_type: '::Chouette::StopArea'
-        }
-
-        attributes.merge!(criticity: 'error', message_key: 'error') unless stop_area_zone.valid?
-
-        macro_messages.create!(attributes)
       end
 
       class Query

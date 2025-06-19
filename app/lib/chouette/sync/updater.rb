@@ -467,6 +467,7 @@ module Chouette
         end
 
         delegate :resolve, :updater, to: :batch, allow_nil: true
+        delegate :pending_referent, to: :updater, allow_nil: true
 
         def self.undecorate(resource_or_decorator)
           if resource_or_decorator.respond_to?(:to_resource)
@@ -474,6 +475,75 @@ module Chouette
           else
             resource_or_decorator
           end
+        end
+      end
+
+      # Decorator can report here when they can find the expect referent
+      def pending_referent(resource_id, referent_ref)
+        pending_referent_resolver.declare(resource_id, referent_ref)
+      end
+
+      def update_pending_referents
+        pending_referent_resolver.update
+      end
+
+      def pending_referent_resolver
+        @pending_referent_resolver ||= PendingReferentResolver.new(self)
+      end
+
+      class PendingResolver
+        def initialize(updater, attribute)
+          @updater = updater
+          @attribute = attribute
+        end
+        attr_reader :attribute, :updater
+
+        delegate :report_invalid_model, :scope, :model_id_attribute, :find_model, :find_models, to: :updater
+
+        def declare(resource_id, reference)
+          pendings[resource_id] ||= reference
+        end
+
+        def pendings
+          @pendings ||= {}
+        end
+
+        def update
+          pendings.each do |resource_id, reference|
+            child = find_model resource_id
+            unless child
+              Rails.logger.debug do
+                "Can't find child #{model_id_attribute}=#{resource_id} to define #{attribute}=#{reference}"
+              end
+              next
+            end
+
+            referenced = find_model reference
+            unless referenced
+              Rails.logger.warn "Can't find reference with #{attribute} #{reference} for StopArea #{resource_id}"
+              next
+            end
+
+            unless child.update_attribute attribute, referenced
+              Rails.logger.error "Invalid child #{child.inspect}"
+            end
+          end
+        end
+      end
+
+      # Resolve resource referents
+      class PendingReferentResolver < PendingResolver
+        def initialize(updater)
+          super updater, :referent
+        end
+
+        def update
+          pending_referents.update_all is_referent: true
+          super
+        end
+
+        def pending_referents
+          find_models pendings.values
         end
       end
     end

@@ -98,7 +98,7 @@ module Chouette::Sync
           tag(:parent_id) || (try(:parent_site_ref) || try(:parent_zone_ref))&.ref
         end
 
-        delegate :pending_parent, :pending_referent, :pending_flexible_area_memberships, to: :updater, allow_nil: true
+        delegate :pending_parent, :pending_flexible_area_memberships, to: :updater, allow_nil: true
 
         def stop_area_parent_id
           return unless stop_area_parent_ref
@@ -197,14 +197,6 @@ module Chouette::Sync
         pending_parent_resolver.update
       end
 
-      # Decorator can report here when they can find the expect referent
-      def pending_referent(resource_id, referent_ref)
-        pending_referent_resolver.declare(resource_id, referent_ref)
-      end
-      def update_pending_referents
-        pending_referent_resolver.update
-      end
-
       def pending_flexible_area_memberships(resource_id, flexible_area_members)
         pending_flexible_area_memberships_resolver.declare(resource_id, flexible_area_members)
       end
@@ -213,12 +205,8 @@ module Chouette::Sync
         pending_flexible_area_memberships_resolver.update
       end
 
-      def pending_referent_resolver
-        @pending_referent_resolver ||= PendingReferentResolver.new(self)
-      end
-
       def pending_parent_resolver
-        @pending_parent_resolver ||= PendingResolver.new(self, :parent)
+        @pending_parent_resolver ||= ::Chouette::Sync::Updater::PendingResolver.new(self, :parent)
       end
 
       def pending_flexible_area_memberships_resolver
@@ -226,61 +214,7 @@ module Chouette::Sync
           PendingFlexibleAreaMembershipsResolver.new(self, :flexible_area_memberships_attributes)
       end
 
-      class PendingResolver
-
-        def initialize(updater, attribute)
-          @updater, @attribute = updater, attribute
-        end
-        attr_reader :attribute, :updater
-
-        delegate :report_invalid_model, :scope, :model_id_attribute, :find_model, :find_models, to: :updater
-
-        def declare(resource_id, reference)
-          pendings[resource_id] ||= reference
-        end
-
-        def pendings
-          @pendings ||= {}
-        end
-
-        def update
-          pendings.each do |resource_id, reference|
-            child = find_model resource_id
-            unless child
-              Rails.logger.debug { "Can't find child #{model_id_attribute}=#{resource_id} to define #{attribute}=#{reference}" }
-              next
-            end
-
-            referenced = find_model reference
-            unless referenced
-              Rails.logger.warn "Can't find reference with #{attribute} #{reference} for StopArea #{resource_id}"
-              next
-            end
-
-            unless child.update_attribute attribute, referenced
-              Rails.logger.error "Invalid child #{child.inspect}"
-            end
-          end
-        end
-      end
-
-      # Resolve Stop Area referentsp
-      class PendingReferentResolver < PendingResolver
-        def initialize(updater)
-          super updater, :referent
-        end
-
-        def update
-          pending_referents.update_all is_referent: true
-          super
-        end
-
-        def pending_referents
-          find_models pendings.values
-        end
-      end
-
-      class PendingFlexibleAreaMembershipsResolver < PendingResolver
+      class PendingFlexibleAreaMembershipsResolver < ::Chouette::Sync::Updater::PendingResolver
         def declare(resource_id, associated_collection)
           associated_collection.each do |reference|
             pendings[resource_id] << reference unless pendings[resource_id].include?(reference)

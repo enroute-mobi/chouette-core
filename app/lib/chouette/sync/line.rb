@@ -17,6 +17,10 @@ module Chouette::Sync
         updater.target.lines.where(registration_number: processed_identifiers).pluck(:id)
       end
 
+      def after_synchronisation
+        updater.update_pending_referents
+      end
+
       class Decorator < Chouette::Sync::Netex::Decorator
         def line_number
           short_name
@@ -88,6 +92,14 @@ module Chouette::Sync
           transport_submode
         end
 
+        def line_referent_id
+          return unless particular?
+
+          pending_referent id, derived_from_object_ref
+
+          nil
+        end
+
         def model_attributes
           {
             name: name,
@@ -105,6 +117,7 @@ module Chouette::Sync
             network_id: line_network_id,
             booking_arrangement_id: booking_arrangement_id,
             line_notice_ids: line_notice_ids,
+            referent_id: line_referent_id,
             mobility_impaired_accessibility: accessibility.mobility_impaired_access,
             wheelchair_accessibility: accessibility.wheelchair_access,
             step_free_accessibility: accessibility.step_free_access,
@@ -114,7 +127,9 @@ module Chouette::Sync
             visual_signs_availability: accessibility.visual_signs_available,
             accessibility_limitation_description: accessibility.description,
             import_xml: raw_xml
-          }
+          }.tap do |attributes|
+            attributes[:is_referent] = false if particular?
+          end
         end
       end
     end

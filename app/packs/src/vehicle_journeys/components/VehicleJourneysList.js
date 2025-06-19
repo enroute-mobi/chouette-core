@@ -206,7 +206,7 @@ export default class VehicleJourneysList extends Component {
             )}
 
             <div className={`table table-2entries mt-sm mb-sm ${isEmpty(this.vehicleJourneysList) ? 'no_result' : ''}`}>
-              <div className='t2e-head w20'>
+              <div className='t2e-head w25'>
                 <div className='th'>
                   <div className='strong mb-xs'>{I18n.attribute_name("vehicle_journey", "id")}</div>
                   <div>{I18n.attribute_name("vehicle_journey", "name")}</div>

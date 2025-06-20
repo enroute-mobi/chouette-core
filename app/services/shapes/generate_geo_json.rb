@@ -7,7 +7,7 @@ module Shapes
 		end
 
 		def call
-			Rabl::Renderer.new("#{object.model_name.plural}/show.geo", object, view_path: 'app/views', format: :json)
+			Rabl::Renderer.new("#{object.model_name.plural}/show.geojson", object, view_path: 'app/views', format: :json)
 		end
 
 		class ShapeDecorator < SimpleDelegator

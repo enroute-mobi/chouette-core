@@ -7,7 +7,7 @@ module Macro
     extend Enumerize
 
     belongs_to :source, polymorphic: true, optional: true # CHOUETTE-3247
-    belongs_to :macro_run, class_name: 'Macro::Base::Run' # CHOUETTE-3247 optional: false
+    belongs_to :macro_run, class_name: 'Macro::Base::Run', inverse_of: nil # see comment in CHOUETTE-4628
 
     enumerize :criticity, in: %w[info warning error], default: 'info', scope: :shallow
 

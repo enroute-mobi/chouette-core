@@ -88,7 +88,7 @@ module Macro
       end
 
       def messages
-        @messages ||= ControlMacro::Messages.new(self, Macro::Message, :macro_run_id, **messages_options)
+        @messages ||= ControlMacro::Messages.new(self, Macro::Message, :macro_run, **messages_options)
       end
 
       protected

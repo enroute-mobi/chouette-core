@@ -91,7 +91,7 @@ module Control
       end
 
       def messages
-        @messages ||= Messages.new(self, Control::Message, :control_run_id, **messages_options)
+        @messages ||= Messages.new(self, Control::Message, :control_run, **messages_options)
       end
 
       protected

@@ -3,7 +3,7 @@ module Control
     self.table_name = 'control_messages'
 
     belongs_to :source, polymorphic: true # CHOUETTE-3247 optional: false
-    belongs_to :control_run, class_name: 'Control::Base::Run' # CHOUETTE-3247 optional: false
+    belongs_to :control_run, class_name: 'Control::Base::Run', inverse_of: nil # see comment in CHOUETTE-4628
 
     extend Enumerize
     enumerize :criticity, in: %w[warning error]

@@ -48,6 +48,8 @@ module Macro
       include Options
 
       def run
+        return unless sequence
+
         models_without_code.find_each do |model|
           code = model.codes.create(code_space: code_space, value: code_generator.value)
           create_message(model, code)

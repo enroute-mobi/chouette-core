@@ -1,4 +1,4 @@
-import React, { useMemo, useEffect, useCallback, useState } from 'react'
+import React, { useMemo, useEffect, useCallback, useState, useRef } from 'react'
 import { PropTypes } from 'prop-types'
 import { Map, View } from 'ol'
 import { Tile as TileLayer, Vector as VectorLayer } from 'ol/layer'
@@ -33,7 +33,41 @@ function MapWrapper({ features, onInit, style, height, width }) {
   )
 
   // pull refs
-  const mapRef = useCallback(node => { node !== null && map.setTarget(node) }, [])
+  const mapRef = useRef(null)
+
+  useEffect(() => {
+    if (mapRef.current) {
+      map.setTarget(mapRef.current)
+      
+      // Forcer l'updateSize après un court délai pour s'assurer que la modal est visible
+      setTimeout(() => {
+        map.updateSize()
+        if (features && features.length > 0) {
+          map.getView().fit(featuresLayer.getSource().getExtent(), {
+            padding: [100, 100, 100, 100],
+            maxZoom: 18
+          })
+        }
+      }, 100)
+
+      // Observer les changements de taille
+      const observer = new ResizeObserver(() => {
+        map.updateSize()
+        if (features && features.length > 0) {
+          map.getView().fit(featuresLayer.getSource().getExtent(), {
+            padding: [100, 100, 100, 100],
+            maxZoom: 18
+          })
+        }
+      })
+
+      observer.observe(mapRef.current)
+
+      return () => {
+        observer.unobserve(mapRef.current)
+      }
+    }
+  }, [mapRef, map, features, featuresLayer])
 
   useEffect(() => {
     map.on('singleclick', e => { setSelectedCoord(toWgs84(e.coordinate)) })

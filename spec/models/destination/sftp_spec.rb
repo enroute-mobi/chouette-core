@@ -75,10 +75,9 @@ RSpec.describe Destination::SFTP, type: :model do
         expect(destination.reports.first).to be_successful
       end
 
-      it 'should send file to FTP server' do
+      it 'should not send file to FTP server' do
         subject
-        expect(@sftp_mock.keys).to include(secret_file.read)
-        expect(@sftp_mock.uploads).to be_empty
+        expect(@sftp_mock).to be_nil
       end
     end
 

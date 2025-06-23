@@ -28,54 +28,31 @@ class Destination
       "#{url}/api/v1/workbenches/#{workbench_id}/imports"
     end
 
-    def do_transmit(publication, report)
-      Rails.logger.tagged("Destination:: ##{id}") do
-        if (export = publication.export)
-          export.file.cache_stored_file!
-          send_to_chouette export.file, report if export[:file]
-        end
-      end
-    end
-
-    def uri
-      @uri ||= URI(import_url)
-    end
-
-    def use_ssl?
-      uri.instance_of?(URI::HTTPS)
-    end
-
     def archive_on_fail
       automatic_merge
     end
 
-    def send_to_chouette(file, report)
-      request = Net::HTTP::Post.new(uri)
-      request['Authorization'] = "Token token=#{workbench_api_key}"
+    def transmit_export_file(_publication, report, export) # rubocop:disable Metrics/MethodLength,Metrics/AbcSize
+      http_request = HttpRequest.new(
+        report: report,
+        name: 'Chouette',
+        uri: import_url,
+        response_content_type: 'application/json'
+      )
 
-      form_data = [
+      http_request.request['Authorization'] = "Token token=#{workbench_api_key}"
+
+      http_request.request_body = [
         ['workbench_import[name]', name],
-        ['workbench_import[file]', file.file.to_file],
+        ['workbench_import[file]', export.file.file.to_file],
         ['workbench_import[options][automatic_merge]', automatic_merge.to_s],
         ['workbench_import[options][archive_on_fail]', archive_on_fail.to_s]
       ]
-      request.set_form form_data, 'multipart/form-data'
 
-      Rails.logger.info "Send file to Chouette on #{import_url}"
-
-      response = Net::HTTP.start(uri.hostname, uri.port, use_ssl: use_ssl?) do |http|
-        http.request(request)
-      end
-
-      Rails.logger.info "Chouette response #{response.code} #{response.body.truncate(256)}"
-
-      if response.is_a?(Net::HTTPSuccess) && response.content_type == 'application/json'
-        import_status = JSON.parse response.body
+      http_request.call do |import_status|
         if import_status['status'] == 'error' && !import_status['messages'].empty?
-          report.failed! message: "Errors returned by Chouette API: #{import_status['messages'].inspect}"
+          report_api_errors!(import_status['messages'])
         end
-      else
-        report.failed! message: "Unexpected response from Chouette API: #{response.code}"
       end
     end
   end

@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 RSpec.describe Destination::PublicationApi, type: :model do
   let(:context) do
     Chouette.create do
@@ -41,7 +43,7 @@ RSpec.describe Destination::PublicationApi, type: :model do
     end
   end
 
-  context '#do_transmit' do
+  context '#transmit_export' do
     let!(:publication) { create :publication, publication_setup: publication_setup, export: gtfs_export }
     let!(:destination) do
       create :publication_api_destination, publication_setup: publication_setup, publication_api: publication_api
@@ -69,7 +71,7 @@ RSpec.describe Destination::PublicationApi, type: :model do
         allow(destination).to receive(:publication_api).and_return(nil)
         allow(destination).to receive(:publication_api_id).and_return(error_publication_api_id)
 
-        destination.do_transmit(publication, report)
+        destination.transmit_export(publication, report)
       end
 
       it 'should update error message into report' do

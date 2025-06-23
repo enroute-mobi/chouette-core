@@ -52,6 +52,7 @@ en:
         zero:  "Chouette SaaS"
         one:   "Chouette SaaS"
         other: "Chouette SaaS"
+      destination/icar: "ICAR API"
     attributes:
       destination:
         name: "Name"
@@ -74,6 +75,11 @@ en:
       destination/google_cloud_storage:
         project: Project
         bucket:  Bucket
+      destination/icar:
+        site_id: Site ID
+        site_name: Site name
+        file_type: File type
+        icar_token: "ICAR Token"
       destination/mail:
         email_title: Email title
         email_text: Email text
@@ -105,3 +111,7 @@ en:
         chouette: Chouette
         iboo: Iboo
         custom: Custom
+    destination/icar:
+      file_type:
+        T: Complete
+        P: Partial

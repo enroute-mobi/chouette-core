@@ -60,7 +60,9 @@ RSpec.describe Destination::Chouette, type: :model do
         m.call(*args)
       end
       stub_request(:post, "https://test.com/workbenches/#{workbench.id}/imports") \
-        .with(headers: { 'Authorization' => "Token token=#{workbench_api_key}" }) \
+        .with(
+          headers: { 'Content-Type' => 'multipart/form-data', 'Authorization' => "Token token=#{workbench_api_key}" }
+        ) \
         .to_return(api_result)
     end
 

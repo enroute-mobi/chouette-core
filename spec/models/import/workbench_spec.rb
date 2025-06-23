@@ -297,7 +297,7 @@ RSpec.describe Import::Workbench do
 
     context 'with skip legacy netex import feature' do
       before do
-        owner = import_workbench.workgroup.owner
+        owner = import_workbench.workbench.organisation
         owner.features.push('skip_legacy_netex_import')
         owner.save!
 

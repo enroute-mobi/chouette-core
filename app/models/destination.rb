@@ -60,15 +60,15 @@ class Destination < ApplicationModel
 
   class HttpRequest
     def initialize(
-      report,
-      name,
-      uri_s,
+      report:,
+      name:,
+      uri:,
       request_content_type: 'multipart/form-data',
       response_content_type: nil
     )
       @report = report
       @name = name
-      @uri = URI(uri_s)
+      @uri = URI(uri)
       @request_content_type = request_content_type
       @response_content_type = response_content_type
     end

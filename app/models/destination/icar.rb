@@ -13,8 +13,13 @@ class Destination
       @icar_import_url ||= ENV['ICAR_IMPORT_URL'] || 'https://icar.iledefrance-mobilites.fr/api/v1/imports'
     end
 
-    def transmit_export_file(_publication, report, export)
-      http_request = HttpRequest.new(report, 'ICAR', icar_import_url, request_content_type: 'application/json')
+    def transmit_export_file(_publication, report, export) # rubocop:disable Metrics/MethodLength
+      http_request = HttpRequest.new(
+        report: report,
+        name: 'ICAR',
+        uri: icar_import_url,
+        request_content_type: 'application/json'
+      )
 
       http_request.request['Authorization'] = "Bearer #{icar_token}"
 

@@ -8,7 +8,7 @@ RSpec.describe Destination, type: :model do
 end
 
 RSpec.describe Destination::HttpRequest do
-  subject(:http_request) { described_class.new(report, 'Test', uri) }
+  subject(:http_request) { described_class.new(report: report, name: 'Test', uri: uri) }
 
   let(:report) { double(:report) }
   let(:uri) { 'http://test.ex' }

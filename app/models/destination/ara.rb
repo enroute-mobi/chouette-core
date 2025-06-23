@@ -13,8 +13,13 @@ class Destination
       "#{ara_url}/import"
     end
 
-    def transmit_export_file(_publication, report, export)
-      http_request = HttpRequest.new(report, 'Ara', ara_import_url, response_content_type: 'application/json')
+    def transmit_export_file(_publication, report, export) # rubocop:disable Metrics/MethodLength
+      http_request = HttpRequest.new(
+        report: report,
+        name: 'Ara',
+        uri: ara_import_url,
+        response_content_type: 'application/json'
+      )
 
       http_request.request['Authorization'] = "Token token=#{credentials}"
 

@@ -20,9 +20,18 @@ fr:
   activerecord:
     models:
       network:
-        zero: "réseaux"
-        one: "réseau"
-        other: "réseaux"
+        zero: "Réseau"
+        one: "Réseau"
+        other: "Réseaux"
+        the:
+          one: "le Réseau"
+          other: "les Réseaux"
+        of:
+          one: "du Réseau"
+          other: "des Réseaux"
+        to:
+          one: "au Réseau"
+          other: "aux Réseaux"
     attributes:
       network:
         registration_number: "Numéro d'enregistrement"

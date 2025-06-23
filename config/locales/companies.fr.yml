@@ -31,9 +31,18 @@ fr:
   activerecord:
     models:
       company:
-        zero:  "transporteur"
-        one:   "transporteur"
-        other: "transporteurs"
+        zero:  "Transporteur"
+        one:   "Transporteur"
+        other: "Transporteurs"
+        the:
+          one: "le Transporteur"
+          other: "les Transporteurs"
+        of:
+          one: "du Transporteur"
+          other: "des Transporteurs"
+        to:
+          one: "au Transporteur"
+          other: "aux Transporteurs"
     attributes:
       company:
         id: ID

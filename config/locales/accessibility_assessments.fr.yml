@@ -61,9 +61,18 @@ fr:
   activerecord:
     models:
       accessibility_assessment:
-        zero:  "Description d'Accessibilité"
-        one:   "Description d'Accessibilité"
-        other: "Descriptions d'Accessibilité"
+        zero:  "Description d’Accessibilité"
+        one:   "Description d’Accessibilité"
+        other: "Descriptions d’Accessibilité"
+        the:
+          one: "la Description d’Accessibilité"
+          other: "les Descriptions d’Accessibilité"
+        of:
+          one: "de la Description d’Accessibilité"
+          other: "des Descriptions d’Accessibilité"
+        to:
+          one: "à la Description d’Accessibilité"
+          other: "aux Descriptions d’Accessibilité"
     attributes:
       accessibility_assessment:
         name: "Nom"

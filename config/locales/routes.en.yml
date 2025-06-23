@@ -65,9 +65,18 @@ en:
   activerecord:
     models:
       route:
-        zero:  "route"
-        one:   "route"
-        other: "routes"
+        zero:  "Routes"
+        one:   "Route"
+        other: "Routes"
+        the:
+          one: "the Route"
+          other: "the Routes"
+        of:
+          one: "of Route"
+          other: "of Routes"
+        to:
+          one: "to Route"
+          other: "to Routes"
     attributes:
       route:
         checksum: Checksum

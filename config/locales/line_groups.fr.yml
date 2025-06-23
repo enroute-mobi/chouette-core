@@ -26,6 +26,15 @@ fr:
         zero:  "Groupe de Lignes"
         one:   "Groupe de Lignes"
         other: "Groupes de Lignes"
+        the:
+          one: "le Groupe de Lignes"
+          other: "les Groupes de Lignes"
+        of:
+          one: "du Groupe de Lignes"
+          other: "des Groupes de Lignes"
+        to:
+          one: "du Groupe de Lignes"
+          other: "des Groupes de Lignes"
     attributes:
       line_group:
         name: "Nom"

@@ -41,9 +41,18 @@ en:
   activerecord:
     models:
       document:
-        zero:  "Documents"
+        zero: "Documents"
         one: "Document"
         other: "Documents"
+        the:
+          one: "the Document"
+          other: "the Documents"
+        of:
+          one: "of Document"
+          other: "of Documents"
+        to:
+          one: "to Document"
+          other: "to Documents"
     attributes:
       document:
         uuid: ID

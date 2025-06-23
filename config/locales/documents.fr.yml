@@ -41,9 +41,18 @@ fr:
   activerecord:
     models:
       document:
-        zero: "Document"
+        zero: "Documents"
         one: "Document"
         other: "Documents"
+        the:
+          one: "le Document"
+          other: "les Documents"
+        of:
+          one: "du Document"
+          other: "des Documents"
+        to:
+          one: "au Document"
+          other: "aux Documents"
     attributes:
       document:
         uuid: ID

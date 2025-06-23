@@ -151,9 +151,18 @@ en:
   activerecord:
     models:
       stop_area:
-        zero: "Stop Area"
+        zero: "Stop Areas"
         one: "Stop Area"
         other: "Stop Areas"
+        the:
+          one: "the Stop Area"
+          other: "the Stop Areas"
+        of:
+          one: "of Stop Area"
+          other: "of Stop Areas"
+        to:
+          one: "to Stop Area"
+          other: "to Stop Areas"
     attributes:
       stop_area:
         full_id: "Full ID"

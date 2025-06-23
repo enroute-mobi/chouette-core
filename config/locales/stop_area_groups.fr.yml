@@ -23,9 +23,18 @@ fr:
   activerecord:
     models:
       stop_area_group:
-        zero:  "Groupe d'Arrêts"
-        one:   "Groupe d'Arrêts"
-        other: "Groupes d'Arrêts"
+        zero:  "Groupe d’Arrêts"
+        one:   "Groupe d’Arrêts"
+        other: "Groupes d’Arrêts"
+        the:
+          one: "le Groupe d’Arrêts"
+          other: "les Groupes d’Arrêts"
+        of:
+          one: "du Groupe d’Arrêts"
+          other: "des Groupes d’Arrêts"
+        to:
+          one: "au Groupe d’Arrêts"
+          other: "aux Groupes d’Arrêts"
     attributes:
       stop_area_group:
         name: "Nom"

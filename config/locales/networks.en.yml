@@ -20,9 +20,18 @@ en:
   activerecord:
     models:
       network:
-        zero:  "network"
-        one:   "network"
-        other: "networks"
+        zero:  "Networks"
+        one:   "Network"
+        other: "Networks"
+        the:
+          one: "the Network"
+          other: "the Networks"
+        of:
+          one: "of Network"
+          other: "of Networks"
+        to:
+          one: "to Network"
+          other: "to Networks"
     attributes:
       network:
         registration_number: "Registration number"

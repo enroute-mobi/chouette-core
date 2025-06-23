@@ -32,9 +32,18 @@ fr:
   activerecord:
     models:
       contract:
-        zero: "Contrat"
+        zero: "Contrats"
         one: "Contrat"
         other: "Contrats"
+        the:
+          one: "le Contrat"
+          other: "les Contrats"
+        of:
+          one: "du Contrat"
+          other: "des Contrats"
+        to:
+          one: "au Contrat"
+          other: "aux Contrats"
     attributes:
       contract:
         name: "Nom"

@@ -40,9 +40,18 @@ en:
   activerecord:
     models:
       point_of_interest:
-        zero:  "Point of Interest"
+        zero: "Points of Interest"
         one: "Point of Interest"
         other: "Points of Interest"
+        the:
+          one: "the Point of Interest"
+          other: "the Points of Interest"
+        of:
+          one: "of Point of Interest"
+          other: "of Points of Interest"
+        to:
+          one: "to Point of Interest"
+          other: "to Points of Interest"
     attributes:
       point_of_interest:
         name: "Name"

@@ -40,9 +40,18 @@ fr:
   activerecord:
     models:
       point_of_interest:
-        zero:  "Point d'intérêt"
-        one: "Point d'intérêt"
-        other: "Points d'intérêt"
+        zero: "Point d’Intérêt"
+        one: "Point d’Intérêt"
+        other: "Points d’Intérêt"
+        the:
+          one: "le Point d’Intérêt"
+          other: "les Points d’Intérêts"
+        of:
+          one: "du Point d’Intérêt"
+          other: "des Points d’Intérêt"
+        to:
+          one: "au Point d’Intérêt"
+          other: "aux Points d’Intérêts"
     attributes:
       point_of_interest:
         name: "Nom"

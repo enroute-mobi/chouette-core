@@ -27,9 +27,18 @@ fr:
   activerecord:
     models:
       shape:
-        zero: tracé
-        one: tracé
-        other: tracés
+        zero: "Tracé"
+        one: "Tracé"
+        other: "Tracés"
+        the:
+          one: "le Tracé"
+          other: "les Tracés"
+        of:
+          one: "du Tracé"
+          other: "des Tracés"
+        to:
+          one: "au Tracé"
+          other: "aux Tracés"
     attributes:
       shape:
         name: Nom

@@ -2,9 +2,18 @@ en:
   activerecord:
     models:
       routing_constraint_zone:
-        zero: routing constraint zone
-        one: routing constraint zone
-        other: routing constraint zones
+        zero: "Routing Constraint Zones"
+        one: "Routing Constraint Zone"
+        other: "Routing Constraint Zones"
+        the:
+          one: "the Routing Constraint Zone"
+          other: "the Routing Constraint Zones"
+        of:
+          one: "of Routing Constraint Zone"
+          other: "of Routing Constraint Zones"
+        to:
+          one: "to Routing Constraint Zone"
+          other: "to Routing Constraint Zones"
     attributes:
       routing_constraint_zone:
         checksum: Checksum

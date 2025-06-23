@@ -1,7 +1,7 @@
 fr:
   model_attribute:
     stop_area:
-      waiting_time: Temps d'attente
+      waiting_time: Temps d’attente
       accessibility_limitation_description: Accessibilité Description
     company:
       house_number: Adresse - Numéro
@@ -48,8 +48,8 @@ en:
       customer_service_contact_phone: Customer Service Contact Phone Number
       customer_service_contact_url: Customer Service Contact Website
       customer_service_contact_more: Customer Service Contact Comments
-      private_contact_name: Privet Contact Name
-      private_contact_email: Privet Contact Email
-      private_contact_phone: Privet Contact Phone Number
-      private_contact_url: Privet Contact Website
-      private_contact_more: Privet Contact Comments
+      private_contact_name: Private Contact Name
+      private_contact_email: Private Contact Email
+      private_contact_phone: Private Contact Phone Number
+      private_contact_url: Private Contact Website
+      private_contact_more: Private Contact Comments

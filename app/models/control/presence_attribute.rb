@@ -145,12 +145,6 @@ module Control
     class Run < Control::Base::Run
       include Options
 
-      class << self
-        def message_key
-          nil
-        end
-      end
-
       def run
         faulty_models.find_each do |model|
           messages.create(source: model)

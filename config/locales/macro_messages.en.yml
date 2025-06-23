@@ -1,104 +1,113 @@
 en:
   macro/associate_shape/run:
     messages:
-      default: "Shape %{shape_name} has been associated to journey pattern %{journey_pattern_name}"
-      error: "Shape %{shape_name} can't be associated to journey pattern %{journey_pattern_name}"
+      default: "The Shape '%{shape_name}' has been associated to Journey Pattern '%{journey_pattern_name}'"
+      error: "The Shape '%{shape_name}' can’t be associated to Journey Pattern '%{journey_pattern_name}'"
   macro/associate_stop_area_referent/run:
     messages:
-      default: "Referent of Stop area %{name} has been updated"
-      error: "Referent of Stop area %{name} can't be updated"
+      default: "Referent of Stop Area '%{name}' has been updated"
+      error: "Referent of Stop Area '%{name}' can't be updated"
   macro/compute_journey_pattern_distances/run:
     messages:
-      default: "Distances between stops for journey pattern %{name} has been updated"
-      error: "Distances between stops for journey pattern %{name} can't be updated"
+      default: "Distances between stops for Journey Pattern '%{name}' has been updated"
+      error: "Distances between stops for Journey Pattern '%{name}' can’t be updated"
   macro/compute_journey_pattern_durations/run:
     messages:
-      default: "Durations between stops for journey pattern %{name} has been updated"
-      error: "Durations between stops for journey pattern %{name} can't be updated"
+      default: "Durations between stops for Journey Pattern '%{name}' has been updated"
+      error: "Durations between stops for Journey Pattern '%{name}' can’t be updated"
   macro/create_code/run:
     messages:
-      default: "A code %{code_value} has been added for a %{target_model} %{name}"
+      default: "A code '%{code_value}' has been added for %{source|the_model_name} '%{name}'"
+      error: "A code can’t be added for %{source|the_model_name} '%{name}'"
   macro/create_shape/run:
     messages:
-      default: "Shape %{shape_name} has been created for journey pattern %{journey_pattern_name}"
-      error: "Shape %{shape_name} can't be created for journey pattern %{journey_pattern_name}"
+      default: "The Shape '%{shape_name}' has been created for Journey Pattern '%{journey_pattern_name}'"
+      error: "The Shape '%{shape_name}' can’t be created for Journey Pattern '%{journey_pattern_name}'"
   macro/create_stop_area_referents/run:
     messages:
-      default: "Referent %{name} has been created"
-      error: "Referent %{name} can't be created"
+      default: "The referent '%{name}' has been created"
+      error: "The referent '%{name}' can’t be created"
   macro/define_attribute_from_particulars/run:
     messages:
-      default: "Attribute %{target_attribute} for referent %{name} has been updated with value %{attribute_value}"
-      error: "Attribute %{target_attribute} for referent %{name} can't be updated with value %{attribute_value}"
+      default: "The attribute '%{target_attribute}' for referent '%{name}' has been updated with value '%{attribute_value}'"
+      error: "The attribute '%{target_attribute}' for referent '%{name}' can’t be updated with value '%{attribute_value}'"
   macro/define_postal_address/run:
     messages:
-      default: "Address '%{address}' has been updated on the %{target_model} %{name}"
-      error: "Address '%{address}' can't be updated on the %{target_model} %{name}"
-      no_address: "Address not found on the %{target_model} %{name}"
+      default: "The address '%{address}' has been updated on %{source|the_model_name} '%{name}'"
+      error: "The address '%{address}' can’t be updated on %{source|the_model_name} '%{name}'"
+      no_address: "The address can’t be found on the %{source|the_model_name} '%{name}'"
   macro/dummy/run:
     messages:
-      default: Simulation is in %{result} for %{name}
+      default: "Simulation is in '%{result}' for %{source|the_model_name} '%{name}'"
+      error: "Error while simulating '%{result}' for %{source|the_model_name} '%{name}'"
   macro/update_stop_area_compass_bearing/run:
     messages:
-      default: "Compass bearing of of Stop area %{name} has been updated with value %{bearing}"
-      error: "Compass bearing of of Stop area %{name} can't be updated with value %{bearing}"
+      default: "Compass bearing of Stop Area '%{name}' has been updated with value '%{bearing}'"
+      error: "Compass bearing of Stop Area '%{name}' can’t be updated with value '%{bearing}'"
   macro/associate_shape_according_waypoints/run:
     messages:
-      default: "Shape '%{shape}' has been associated to Journey pattern '%{name}'"
-      error: "Shape '%{shape}' can't be associated to Journey pattern '%{name}'"
+      default: "The Shape '%{shape}' has been associated to Journey Pattern '%{name}'"
+      error: "The Shape '%{shape}' can’t be associated to Journey Pattern '%{name}'"
   macro/update_attribute_from_referent_to_particulars/run:
     messages:
-      default: "Attribute %{target_attribute} for %{name} has been updated with value %{attribute_value}"
-      error: "Attribute %{target_attribute} for %{name} can't be updated with value %{attribute_value}"
+      default: "The attribute '%{target_attribute}' %{source|of_model_name} '%{name}' has been updated with value '%{attribute_value}'"
+      error: "The attribute '%{target_attribute}' %{source|of_model_name} '%{name}' can’t be updated with value '%{attribute_value}'"
   macro/delete_vehicle_journeys/run:
     messages:
       default: "%{count} Vehicle Journeys have been deleted"
+      error: "Vehicle Journeys can’t be deleted"
   macro/compute_service_counts/run:
     messages:
-      default: "The service counts of the line %{name} have been computed"
+      default: "The Service Counts of the Line '%{name}' have been computed"
+      error: "The Service Counts of the Line '%{name}' can’t be computed"
   macro/associate_documents/run:
     messages:
-      default: "The document '%{document_name}' has been associated with the %{target_model} '%{model_name}'"
+      default: "The Document '%{document_name}' has been associated %{source|to_model_name} '%{model_name}'"
+      error: "The Document '%{document_name}' can’t be associated %{source|to_model_name} '%{model_name}'"
   macro/create_code_from_sequence/run:
     messages:
-      default: "A code %{code_value} has been added for the %{target_model} %{model_name}"
+      default: "A code '%{code_value}' has been added for %{source|the_model_name} '%{model_name}'"
+      error: "A code can’t be added for %{source|the_model_name} '%{model_name}'"
   macro/define_french_code_insee/run:
     messages:
-      default: "An INSEE code '%{postal_region}' has been defined for the %{target_model} %{model_name}"
-      no_insee_code: "No INSEE code found on the %{target_model} %{name}"
+      default: "An INSEE code '%{postal_region}' has been defined for %{source|the_model_name} '%{model_name}'"
+      no_insee_code: "No INSEE code found on %{source|the_model_name} '%{name}'"
   macro/define_stop_area_transport_mode/run:
     messages:
-      default: "The transport mode %{transport_mode} has been defined on the Stop Area %{name}"
-      error: "The transport mode %{transport_mode} can't be defined on the Stop Area %{name}"
+      default: "The transport mode '%{transport_mode}' has been defined on the Stop Area '%{name}'"
+      error: "The transport mode '%{transport_mode}' can’t be defined on the Stop Area '%{name}'"
   macro/force_attribute_value/run:
     messages:
-      default: "The attribute %{target_attribute} of %{target_model} %{name} has been updated"
-      error: "The attribute %{target_attribute} of %{target_model} %{name} can't be modified"
+      default: "The attribute '%{target_attribute}' %{source|of_model_name} '%{name}' has been updated"
+      error: "The attribute '%{target_attribute}' %{source|of_model_name} '%{name}' can’t be updated"
   macro/create_code_from_uuid/run:
     messages:
-      default: "A code %{code_value} has been added for the %{target_model} %{model_name}"
+      default: "A code '%{code_value}' has been added for %{source|the_model_name} '%{model_name}'"
+      error: "A code can’t be added for %{source|the_model_name} '%{model_name}'"
   macro/associate_stop_area_with_fare_zone/run:
     messages:
-      default: "The Stop Area %{stop_area_name} has been associated with the Fare Zone %{fare_zone_name}"
+      default: "The Stop Area '%{stop_area_name}' has been associated with the Fare Zone '%{fare_zone_name}'"
+      error: "The Stop Area '%{stop_area_name}' can’t be associated with the Fare Zone '%{fare_zone_name}'"
   macro/define_route_name/run:
     messages:
       default: "The Route '%{name_before_change}' is renamed into '%{attribute_value_after_change}'"
-      error: "The Route '%{name_before_change}' is renamed can't be modified"
+      error: "The Route '%{name_before_change}' can’t be renamed"
   macro/create_codes_from_particulars/run:
     messages:
-      default: "The code %{code_value} has been added for the %{target_model} %{referent_name}"
-      error: "The code %{code_value} can't be created for the %{target_model} %{referent_name}"
+      default: "A code '%{code_value}' has been added for %{source|the_model_name} '%{referent_name}'"
+      error: "A code can’t be added for %{source|the_model_name} '%{referent_name}'"
   macro/adjust_periods/run:
     messages:
-      default: "The %{name} Timetable Period End has been changed to %{period_end}"
-      error: "The %{name} Timetable Period can't be changed"
+      default: "The end period of the Timetable '%{name}' has been changed to '%{period_end}'"
+      error: "The end period of the Timetable '%{name}' can’t be changed"
   macro/remove_code/run:
     messages:
-      default: "%{codes_count} codes have been removed from %{target_model} '%{name}'"
-      error: "The codes from %{target_model} cannot be removed"
+      default: "%{codes_count} codes have been removed from %{source|the_model_name} '%{name}'"
+      error: "The codes %{source|of_model_name} '%{name}' cannot be removed"
   macro/define_journey_pattern_name_or_destination/run:
     messages:
       default: "The Journey Pattern '%{journey_pattern_name}' is renamed to '%{attribute_value_after_change}'"
+      error: "The Journey Pattern '%{journey_pattern_name}' cannot be renamed"
   macro_messages:
     search_no_results_for_filter: "No messages found"
     no_address: "No address"

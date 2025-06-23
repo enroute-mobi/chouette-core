@@ -31,9 +31,18 @@ en:
   activerecord:
     models:
       company:
-        zero:  "company"
-        one:   "company"
-        other: "companies"
+        zero:  "Companies"
+        one:   "Company"
+        other: "Companies"
+        the:
+          one: "the Company"
+          other: "the Companies"
+        of:
+          one: "of Company"
+          other: "of Companies"
+        to:
+          one: "to Company"
+          other: "to Companies"
     attributes:
       company:
         id: ID

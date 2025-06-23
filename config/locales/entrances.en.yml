@@ -27,6 +27,15 @@ en:
         zero:  "Entry Points"
         one:   "Entry Point"
         other: "Entry Points"
+        the:
+          one: "the Entry Point"
+          other: "the Entry Points"
+        of:
+          one: "of Entry Point"
+          other: "of Entry Points"
+        to:
+          one: "to Entry Point"
+          other: "to Entry Points"
     attributes:
       entrance:
         name: "Name"

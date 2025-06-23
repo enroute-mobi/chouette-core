@@ -70,9 +70,18 @@ fr:
   activerecord:
     models:
       route:
-        zero:  "itinéraire"
-        one:   "itinéraire"
-        other: "itinéraires"
+        zero:  "Itinéraire"
+        one:   "Itinéraire"
+        other: "Itinéraires"
+        the:
+          one: "l’Itinéraire"
+          other: "les Itinéraires"
+        of:
+          one: "de l’Itinéraire"
+          other: "des Itinéraires"
+        to:
+          one: "à l’Itinéraire"
+          other: "aux Itinéraires"
     attributes:
       route:
         checksum: Signature métier

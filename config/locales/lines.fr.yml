@@ -143,9 +143,18 @@ fr:
               active_from_less_than_active_until: "La date 'Active jusqu'au' doit terminer après la date 'Active à partir du'"
     models:
       line:
-        zero:  "ligne"
-        one:   "ligne"
-        other: "lignes"
+        zero:  "Ligne"
+        one:   "Ligne"
+        other: "Lignes"
+        the:
+          one: "la Ligne"
+          other: "les Lignes"
+        of:
+          one: "de la Ligne"
+          other: "des Lignes"
+        to:
+          one: "à la Ligne"
+          other: "aux Lignes"
     attributes:
       line:
         id: "ID"

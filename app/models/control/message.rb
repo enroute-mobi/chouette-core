@@ -1,6 +1,10 @@
+# frozen_string_literal: true
+
 module Control
   class Message < ApplicationModel
     self.table_name = 'control_messages'
+
+    include ControlMacro::Message
 
     belongs_to :source, polymorphic: true # CHOUETTE-3247 optional: false
     belongs_to :control_run, class_name: 'Control::Base::Run', inverse_of: nil # see comment in CHOUETTE-4628
@@ -11,18 +15,12 @@ module Control
     scope :warning, -> { where(criticity: :warning) }
     scope :error, -> { where(criticity: :error) }
 
-    def full_message
-      I18n.t("control_messages.#{message_key || 'default'}", **human_message_attributes)
-    end
+    private
 
-    def human_message_attributes
-      message_attributes.merge(
-        target_model: source_type.constantize.model_name.human
-      ).tap do |human_message_attributes|
-        if model_attribute = control_run.try(:model_attribute)
-          human_message_attributes[:target_attribute] = model_attribute.human_name
-        end
-      end.symbolize_keys
+    alias run control_run
+
+    def i18n_key
+      "control_messages.#{message_key || 'default'}"
     end
   end
 end

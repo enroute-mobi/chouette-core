@@ -155,6 +155,15 @@ fr:
         zero: "Arrêt"
         one: "Arrêt"
         other: "Arrêts"
+        the:
+          one: "l’Arrêt"
+          other: "les Arrêts"
+        of:
+          one: "de l’Arrêt"
+          other: "des Arrêts"
+        to:
+          one: "à l’Arrêt"
+          other: "aux Arrêts"
     attributes:
       stop_area:
         id: "ID"

@@ -26,9 +26,18 @@ fr:
   activerecord:
     models:
       line_routing_constraint_zone:
-        zero:  "Interdiction de Trafic local"
-        one:   "Interdiction de Trafic local"
-        other: "Interdictions de Trafic local"
+        zero:  "Interdiction de Trafic Local"
+        one:   "Interdiction de Trafic Local"
+        other: "Interdictions de Trafic Local"
+        the:
+          one: "l’Interdiction de Trafic Local"
+          other: "les Interdictions de Trafic Local"
+        of:
+          one: "de l’Interdiction de Trafic Local"
+          other: "des Interdictions de Trafic Local"
+        to:
+          one: "à l’Interdiction de Trafic Local"
+          other: "aux Interdictions de Trafic Local"
     attributes:
       line_routing_constraint_zone:
         information: "Information"

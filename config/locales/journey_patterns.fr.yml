@@ -48,9 +48,18 @@ fr:
               time: Le temps de desserte d'un arrêt d'une mission ne peut pas avoir une valeur négative
     models:
       journey_pattern:
-        zero:  "mission"
-        one:   "mission"
-        other: "missions"
+        zero:  "Mission"
+        one:   "Mission"
+        other: "Missions"
+        the:
+          one: "la Mission"
+          other: "les Missions"
+        of:
+          one: "de la Mission"
+          other: "des Missions"
+        to:
+          one: "à la Mission"
+          other: "aux Missions"
     attributes:
       journey_pattern:
         route: "Séquence d'arrêts"

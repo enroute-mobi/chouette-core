@@ -34,7 +34,7 @@ class Destination
     private
 
     def icar_api_filename
-      "ARRET_#{site_id}_#{site_name}_#{file_type}_#{ActiveSupport::TimeZone['UTC'].now.strftime('%Y%m%dT%H%M%SZ')}.zip"
+      "ARRET_#{site_id}_#{site_name}_#{file_type}_#{Time.current.utc.strftime('%Y%m%dT%H%M%SZ')}.zip"
     end
   end
 end

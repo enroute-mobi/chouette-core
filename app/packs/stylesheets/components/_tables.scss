@@ -498,31 +498,6 @@
           padding-right: 30px;
         }
       }
-      .th + .td,
-      .td:first-child {
-        > .headlined {
-          [data-headline] {
-            position: relative;
-            overflow: visible;
-
-            &:before {
-              content: attr(data-headline);
-              display: block;
-              position: absolute;
-              z-index: 5;
-              bottom: calc(100% + 13px);
-              left: 0;
-              right: 0;
-              color: rgba($grey, 0.75);
-              font-size: 13px;
-            }
-          }
-        }
-      }
-      &.disabled {
-        color: rgba($darkgrey, 0.5);
-        background-color: rgba(#fff, 0.5);
-      }
       // TD group
       > .td-group {
         display: inline-block;

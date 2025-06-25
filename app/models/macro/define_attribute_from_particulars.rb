@@ -78,10 +78,10 @@ module Macro
           select Chouette::Line, :number
           select Chouette::Line, :published_name
           select Chouette::Line, :text_color
+          select Chouette::Line, :transport_mode
           select Chouette::Line, :transport_submode
           select Chouette::Line, :url
           #select Chouette::Line, :company
-          #select Chouette::Line, :registration_number
           #select Chouette::Line, :secondary_companies
           #select Chouette::Line, :network
         end

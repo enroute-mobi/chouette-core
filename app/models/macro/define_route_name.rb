@@ -13,6 +13,10 @@ module Macro
         validates :target_attribute, :target_format, presence: true
       end
 
+      def model_attribute
+        candidate_target_attributes.find_by(model_name: 'Route', name: target_attribute)
+      end
+
       def candidate_target_attributes
         Chouette::ModelAttribute.collection do
           # Chouette::Route

@@ -13,8 +13,13 @@ module Macro
         validates :target_attribute, :target_format, presence: true
       end
 
-      def candidate_journey_pattern_attributes
+      def model_attribute
+        candidate_target_attributes.find_by(model_name: 'JourneyPattern', name: target_attribute)
+      end
+
+      def candidate_target_attributes
         Chouette::ModelAttribute.collection do
+          # Chouette::JourneyPattern
           select Chouette::JourneyPattern, :name
           select Chouette::JourneyPattern, :published_name
         end

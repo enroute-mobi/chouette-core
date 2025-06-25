@@ -881,7 +881,7 @@ RSpec.describe Search::Base::Chart do
                        :datetime,
                        sub_types: %i[by_week by_month hour_of_day day_of_week hour_of_day day_of_week]
     group_by_attribute 'date', :date, sub_types: %i[by_week by_month day_of_week]
-    group_by_attribute 'complex_select_attribute', :string, selects: ['CASE WHEN 1 "true" ELSE "false" END']
+    group_by_attribute 'complex_select_attribute', :string, selects: ["CASE WHEN 1 'true' ELSE 'false' END"]
     group_by_attribute 'custom_label_attribute',
                        :string,
                        joins: { relation: { other_relation: {} }, another_relation: {} },
@@ -2499,13 +2499,12 @@ RSpec.describe Search::Base::Chart do
         expect(models).to receive(:group).with('other_relation_bs.name', 'another_relation_bs.label').and_return(models)
         expect(models).to(
           receive(:order).with(
-                            {
-                              count_id: :desc,
-                             'other_relation_bs_name' => :desc,
-                             'another_relation_bs_label' => :desc
-                            }
-                          )
-                         .and_return(models)
+            {
+              count_id: :desc,
+              'other_relation_bs_name' => :desc,
+              'another_relation_bs_label' => :desc
+            }
+          ).and_return(models)
         )
         expect(models).to receive(:limit).and_return(models)
         expect(models).to(
@@ -2579,6 +2578,15 @@ RSpec.describe Search::Base::Chart do
 
     let(:group_by_attribute) { 'some_attribute' }
     let(:display_percent) { true }
+    let(:xaxis) { nil }
+
+    before do
+      if xaxis
+        expect(chart).to receive(:xaxis).at_least(1).and_return(xaxis)
+      else
+        expect(chart).not_to receive(:xaxis)
+      end
+    end
 
     context 'with a simple string attribute' do
       it do
@@ -2586,10 +2594,353 @@ RSpec.describe Search::Base::Chart do
         is_expected.to eq(42)
       end
 
-      context 'with #subgroup_by_attribute' do
+      context 'as #subgroup_by_attribute' do
         let(:subgroup_by_attribute) { 'some_other_attribute' }
+        let(:xaxis) { ['A', 'B', nil] }
 
         it do
+          expect(models).to(
+            receive(:where).with(
+              [
+                "(some_attribute = 'A')",
+                "(some_attribute = 'B')",
+                '(some_attribute IS NULL)'
+              ].join(' OR ')
+            ).and_return(models)
+          )
+          expect(models).to receive(:group).with('some_attribute').and_return(models)
+          expect(models).to receive(:order).with({ count_id: :desc, 'some_attribute' => :desc }).and_return(models)
+          expect(models).to receive(:limit).with(10).and_return(models)
+          expect(models).to receive(:count).with(:id)
+          subject
+        end
+      end
+    end
+
+    context 'with a numeric attribute' do
+      let(:group_by_attribute) { 'some_numeric_attribute' }
+
+      it do
+        expect(models).to receive(:count).with(:id).and_return(42)
+        is_expected.to eq(42)
+      end
+
+      context 'with #subgroup_by_attribute' do
+        let(:subgroup_by_attribute) { 'some_attribute' }
+
+        it do
+          expect(models).to receive(:group).and_return(models)
+          expect(models).to receive(:order).and_return(models)
+          expect(models).to receive(:limit).and_return(models)
+          expect(models).to receive(:count)
+          subject
+        end
+      end
+
+      context 'with keys' do
+        let(:group_by_attribute) { 'more_keys_attribute' }
+
+        it do
+          expect(models).to receive(:count).with(:id).and_return(42)
+          is_expected.to eq(42)
+        end
+
+        context 'with #subgroup_by_attribute' do
+          let(:subgroup_by_attribute) { 'some_attribute' }
+          let(:xaxis) { [1, 2, nil] }
+
+          it do
+            expect(models).to(
+              receive(:where).with(
+                [
+                  '(more_keys_attribute = 1)',
+                  '(more_keys_attribute = 2)',
+                  '(more_keys_attribute IS NULL)'
+                ].join(' OR ')
+              ).and_return(models)
+            )
+            expect(models).to receive(:group).and_return(models)
+            expect(models).to receive(:order).and_return(models)
+            expect(models).to receive(:limit).and_return(models)
+            expect(models).to receive(:count)
+            subject
+          end
+        end
+      end
+    end
+
+    context 'with a datetime attribute' do
+      let(:group_by_attribute) { 'created_at' }
+
+      it do
+        expect(models).to receive(:count)
+        subject
+      end
+
+      context 'with #subgroup_by_attribute' do
+        let(:subgroup_by_attribute) { 'some_attribute' }
+
+        it do
+          expect(models).to(
+            receive(:group_by_period).with(
+              :day,
+              'created_at',
+              last: 10,
+              range: nil,
+              time_zone: Time.zone
+            ).and_return(models)
+          )
+          expect(models).to receive(:count).with(:id)
+          subject
+        end
+      end
+    end
+
+    context 'with a datetime attribute grouped by week' do
+      let(:group_by_attribute) { 'created_at_by_week' }
+
+      it do
+        expect(models).to receive(:count)
+        subject
+      end
+
+      context 'with #subgroup_by_attribute' do
+        let(:subgroup_by_attribute) { 'some_attribute' }
+
+        it do
+          expect(models).to(
+            receive(:group_by_period).with(
+              :week,
+              'created_at',
+              last: 10,
+              range: nil,
+              time_zone: Time.zone
+            ).and_return(models)
+          )
+          expect(models).to receive(:count)
+          subject
+        end
+      end
+    end
+
+    context 'with a datetime attribute grouped by month' do
+      let(:group_by_attribute) { 'created_at_by_month' }
+
+      it do
+        expect(models).to receive(:count)
+        subject
+      end
+
+      context 'with #subgroup_by_attribute' do
+        let(:subgroup_by_attribute) { 'some_attribute' }
+
+        it do
+          expect(models).to(
+            receive(:group_by_period).with(
+              :month,
+              'created_at',
+              last: 10,
+              range: nil,
+              time_zone: Time.zone
+            ).and_return(models)
+          )
+          expect(models).to receive(:count)
+          subject
+        end
+      end
+    end
+
+    context 'with a datetime attribute by hour of day' do
+      let(:group_by_attribute) { 'created_at_hour_of_day' }
+
+      it do
+        expect(models).to receive(:count)
+        subject
+      end
+
+      context 'with #subgroup_by_attribute' do
+        let(:subgroup_by_attribute) { 'some_attribute' }
+
+        it do
+          expect(models).to(
+            receive(:group_by_period).with(
+              :hour_of_day,
+              'created_at',
+              last: nil,
+              range: nil,
+              time_zone: Time.zone
+            ).and_return(models)
+          )
+          expect(models).to receive(:count)
+          subject
+        end
+      end
+    end
+
+    context 'with a datetime attribute by day of week' do
+      let(:group_by_attribute) { 'created_at_day_of_week' }
+
+      it do
+        expect(models).to receive(:count)
+        subject
+      end
+
+      context 'with #subgroup_by_attribute' do
+        let(:subgroup_by_attribute) { 'some_attribute' }
+
+        it do
+          expect(models).to(
+            receive(:group_by_period).with(
+              :day_of_week,
+              'created_at',
+              last: nil,
+              range: nil,
+              time_zone: Time.zone
+            ).and_return(models)
+          )
+          expect(models).to receive(:count)
+          subject
+        end
+      end
+    end
+
+    context 'with a date attribute' do
+      let(:group_by_attribute) { 'date' }
+
+      it do
+        expect(models).to receive(:count)
+        subject
+      end
+
+      context 'with #subgroup_by_attribute' do
+        let(:subgroup_by_attribute) { 'some_attribute' }
+
+        it do
+          expect(models).to(
+            receive(:group_by_period).with(
+              :day,
+              'date',
+              last: 10,
+              range: nil,
+              time_zone: false
+            ).and_return(models)
+          )
+          expect(models).to receive(:count).with(:id)
+          subject
+        end
+      end
+    end
+
+    context 'with a date attribute grouped by week' do
+      let(:group_by_attribute) { 'date_by_week' }
+
+      it do
+        expect(models).to receive(:count)
+        subject
+      end
+
+      context 'with #subgroup_by_attribute' do
+        let(:subgroup_by_attribute) { 'some_attribute' }
+
+        it do
+          expect(models).to(
+            receive(:group_by_period).with(
+              :week,
+              'date',
+              last: 10,
+              range: nil,
+              time_zone: false
+            ).and_return(models)
+          )
+          expect(models).to receive(:count)
+          subject
+        end
+      end
+    end
+
+    context 'with a date attribute grouped by month' do
+      let(:group_by_attribute) { 'date_by_month' }
+
+      it do
+        expect(models).to receive(:count)
+        subject
+      end
+
+      context 'with #subgroup_by_attribute' do
+        let(:subgroup_by_attribute) { 'some_attribute' }
+
+        it do
+          expect(models).to(
+            receive(:group_by_period).with(
+              :month,
+              'date',
+              last: 10,
+              range: nil,
+              time_zone: false
+            ).and_return(models)
+          )
+          expect(models).to receive(:count)
+          subject
+        end
+      end
+    end
+
+    context 'with a date attribute by day of week' do
+      let(:group_by_attribute) { 'date_day_of_week' }
+
+      it do
+        expect(models).to receive(:count)
+        subject
+      end
+
+      context 'with #subgroup_by_attribute' do
+        let(:subgroup_by_attribute) { 'some_attribute' }
+
+        it do
+          expect(models).to(
+            receive(:group_by_period).with(
+              :day_of_week,
+              'date',
+              last: nil,
+              range: nil,
+              time_zone: false
+            ).and_return(models)
+          )
+          expect(models).to receive(:count)
+          subject
+        end
+      end
+    end
+
+    context 'with an attribute having a complex select' do
+      let(:group_by_attribute) { 'complex_select_attribute' }
+
+      it do
+        expect(models).to receive(:count)
+        subject
+      end
+
+      context 'with #subgroup_by_attribute' do
+        let(:subgroup_by_attribute) { 'some_attribute' }
+        let(:xaxis) { ['true', 'false'] }
+
+        it do
+          expect(models).to(
+            receive(:select).with("CASE WHEN 1 'true' ELSE 'false' END").and_return(models)
+          )
+          expect(models).to receive(:where).with(
+            [
+              "(CASE WHEN 1 'true' ELSE 'false' END = 'true')",
+              "(CASE WHEN 1 'true' ELSE 'false' END = 'false')"
+            ].join(' OR ')
+          ).and_return(models)
+          expect(models).to(
+            receive(:group).with("CASE WHEN 1 'true' ELSE 'false' END").and_return(models)
+          )
+          expect(models).to(
+            receive(:order).with({ count_id: :desc, 'case_when_1_true_else_false_end' => :desc }).and_return(models)
+          )
+          expect(models).to receive(:limit).and_return(models)
           expect(models).to receive(:count)
           subject
         end
@@ -2604,10 +2955,34 @@ RSpec.describe Search::Base::Chart do
         subject
       end
 
-      context 'as #subgroup_by_attribute' do
-        let(:subgroup_by_attribute) { 'custom_label_attribute_b' }
+      context 'with #subgroup_by_attribute' do
+        let(:subgroup_by_attribute) { 'some_attribute' }
+        let(:xaxis) { [['SA1', 'SA2'], ['SB1', 'SB2'], ['SC1', nil]] }
 
         it do
+          expect(models).to(
+            receive(:left_outer_joins).with({ relation: { other_relation: {} }, another_relation: {} })
+                                      .and_return(models)
+          )
+          expect(models).to(
+            receive(:select).with('other_relations.name', 'another_relations.label').and_return(models)
+          )
+          expect(models).to receive(:where).with(
+            [
+              "(other_relations.name = 'SA1' AND another_relations.label = 'SA2')",
+              "(other_relations.name = 'SB1' AND another_relations.label = 'SB2')",
+              "(other_relations.name = 'SC1' AND another_relations.label IS NULL)"
+            ].join(' OR ')
+          ).and_return(models)
+          expect(models).to(
+            receive(:group).with('other_relations.name', 'another_relations.label').and_return(models)
+          )
+          expect(models).to(
+            receive(:order).with(
+              { count_id: :desc, 'other_relations_name' => :desc, 'another_relations_label' => :desc }
+            ).and_return(models)
+          )
+          expect(models).to receive(:limit).and_return(models)
           expect(models).to receive(:count)
           subject
         end
@@ -2945,8 +3320,8 @@ RSpec.describe Search::Base::Chart do
             )
             expect(models).to receive(:group).twice.and_return(models)
             expect(models).to receive(:order).and_return(models)
-            expect(models).to receive(:limit).with(50).and_return(models)
-            expect(models).to receive(:count).with(:id)
+            expect(models).to receive(:limit).and_return(models)
+            expect(models).to receive(:count)
             subject
           end
         end
@@ -3087,7 +3462,7 @@ RSpec.describe Search::Base::Chart do
                            .and_return(models)
           )
           expect(models).to receive(:limit).with(50).and_return(models)
-          expect(models).to receive(:count)
+          expect(models).to receive(:count).with(:id)
           subject
         end
 
@@ -3564,7 +3939,7 @@ RSpec.describe Search::Base::Chart do
                            .and_return(models)
           )
           expect(models).to receive(:limit).with(50).and_return(models)
-          expect(models).to receive(:count)
+          expect(models).to receive(:count).with(:id)
           subject
         end
 
@@ -3703,8 +4078,8 @@ RSpec.describe Search::Base::Chart do
           )
           expect(models).to receive(:group).and_return(models)
           expect(models).to receive(:order).and_return(models)
-          expect(models).to receive(:limit).with(50).and_return(models)
-          expect(models).to receive(:count).with(:id)
+          expect(models).to receive(:limit).and_return(models)
+          expect(models).to receive(:count)
           subject
         end
       end
@@ -3811,10 +4186,10 @@ RSpec.describe Search::Base::Chart do
 
       it do
         expect(models).to(
-          receive(:select).with('CASE WHEN 1 "true" ELSE "false" END').and_return(models)
+          receive(:select).with("CASE WHEN 1 'true' ELSE 'false' END").and_return(models)
         )
         expect(models).to(
-          receive(:group).with('CASE WHEN 1 "true" ELSE "false" END').and_return(models)
+          receive(:group).with("CASE WHEN 1 'true' ELSE 'false' END").and_return(models)
         )
         expect(models).to(
           receive(:order).with({ count_id: :desc, 'case_when_1_true_else_false_end' => :desc }).and_return(models)
@@ -3935,7 +4310,7 @@ RSpec.describe Search::Base::Chart do
             ).and_return(models)
           )
           expect(models).to receive(:limit).with(50).and_return(models)
-          expect(models).to receive(:count)
+          expect(models).to receive(:count).with(:id)
           subject
         end
 
@@ -4850,6 +5225,67 @@ RSpec.describe Search::Base::Chart do
 
         it 'computes percents with all values being 0' do
           is_expected.to eq_with_keys_order({ '1' => 0, '2' => 0, '3' => 0 })
+        end
+      end
+
+      context 'with #subgroup_by_attribute' do
+        let(:subgroup_by_attribute) { 'some_other_attribute' }
+        let(:xaxis) { ['1', '2'] }
+        let(:raw_data) { { ['A', '1'] => 2, ['B', '2'] => 1, ['C', '2'] => 0 } }
+        let(:total_aggregate) { { '1' => 2, '2' => 4 } }
+
+        it 'computes percents' do
+          is_expected.to match(
+            [
+              { name: 'C', data: eq_with_keys_order({ '1' => 0, '2' => 0 }) },
+              { name: 'B', data: eq_with_keys_order({ '1' => 0, '2' => 25 }) },
+              { name: 'A', data: eq_with_keys_order({ '1' => 100, '2' => 0 }) }
+            ]
+          )
+        end
+
+        context 'when data contains nil values' do
+          let(:raw_data) { { ['A', '1'] => 2, ['B', '2'] => 1, ['C', '2'] => nil } }
+
+          it 'computes percents' do
+            is_expected.to match(
+              [
+                { name: 'C', data: eq_with_keys_order({ '1' => 0, '2' => 0 }) },
+                { name: 'B', data: eq_with_keys_order({ '1' => 0, '2' => 25 }) },
+                { name: 'A', data: eq_with_keys_order({ '1' => 100, '2' => 0 }) }
+              ]
+            )
+          end
+        end
+
+        context 'when one of the total aggregate is 0' do
+          let(:raw_data) { { ['A', '1'] => 0, ['B', '2'] => 1, ['C', '2'] => 0 } }
+          let(:total_aggregate) { { '1' => 0, '2' => 4 } }
+
+          it 'computes percents' do
+            is_expected.to match(
+              [
+                { name: 'C', data: eq_with_keys_order({ '1' => 0, '2' => 0 }) },
+                { name: 'B', data: eq_with_keys_order({ '1' => 0, '2' => 25 }) },
+                { name: 'A', data: eq_with_keys_order({ '1' => 0, '2' => 0 }) }
+              ]
+            )
+          end
+        end
+
+        context 'when total aggregate is empty' do
+          let(:raw_data) { { ['A', '1'] => 0, ['B', '2'] => nil, ['C', '2'] => 0 } }
+          let(:total_aggregate) { {} }
+
+          it 'computes percents' do
+            is_expected.to match(
+              [
+                { name: 'C', data: eq_with_keys_order({ '1' => 0, '2' => 0 }) },
+                { name: 'B', data: eq_with_keys_order({ '1' => 0, '2' => 0 }) },
+                { name: 'A', data: eq_with_keys_order({ '1' => 0, '2' => 0 }) }
+              ]
+            )
+          end
         end
       end
     end

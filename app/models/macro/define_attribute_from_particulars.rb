@@ -130,8 +130,6 @@ module Macro
       def undefined_value
         # For example Chouette::StopArea.wheelchair_accessibility.default_value => "unknown"
         # or nil ...
-        # For Chouette::Line.active_from or Chouette::Line.active_until,
-        # this implementation will fail because it is overridden by two scopes active_from and active_until
         model_attribute.model_class.try(attribute_name).try(:default_value)
       rescue => e
         Rails.logger.error "Error retrieving undefined value for #{model_attribute.model_class}##{attribute_name}: #{e.message}"

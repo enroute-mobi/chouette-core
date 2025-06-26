@@ -169,16 +169,6 @@ module Chouette
       errors.add(:active_until, :active_from_less_than_active_until)
     end
 
-    def active?(on_date = Time.zone.now)
-      on_date = on_date.to_date
-
-      return false if deactivated
-      return false if active_from && active_from > on_date
-      return false if active_until && active_until < on_date
-
-      true
-    end
-
     def always_active_on_period?(from, to)
       return false if deactivated
 

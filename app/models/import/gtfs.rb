@@ -1299,7 +1299,7 @@ class Import::Gtfs < Import::Base
       def stop_points
         @stop_points ||= stop_times.map.with_index do |stop_time, position|
           gtfs_stop_id = stop_time.stop_id.presence || stop_time.location_group_id
-          stop_area_id = stop_areas.find(gtfs_stop_id)
+          stop_area_id = stop_areas.find_id(gtfs_stop_id)
 
           Chouette::StopPoint.new(
             stop_area_id: stop_area_id,

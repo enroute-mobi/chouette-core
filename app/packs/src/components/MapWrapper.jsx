@@ -35,39 +35,32 @@ function MapWrapper({ features, onInit, style, height, width }) {
   // pull refs
   const mapRef = useRef(null)
 
+  const handleMapSizeUpdate = useCallback(() => {
+    if (features && features.length > 0) {
+      map.updateSize()
+      map.getView().fit(featuresLayer.getSource().getExtent(), {
+        padding: [100, 100, 100, 100],
+        maxZoom: 18
+      })
+    }
+  }, [map, features, featuresLayer])
+
   useEffect(() => {
     if (mapRef.current) {
       map.setTarget(mapRef.current)
-      
-      // Forcer l'updateSize après un court délai pour s'assurer que la modal est visible
-      setTimeout(() => {
-        map.updateSize()
-        if (features && features.length > 0) {
-          map.getView().fit(featuresLayer.getSource().getExtent(), {
-            padding: [100, 100, 100, 100],
-            maxZoom: 18
-          })
-        }
-      }, 100)
 
-      // Observer les changements de taille
-      const observer = new ResizeObserver(() => {
-        map.updateSize()
-        if (features && features.length > 0) {
-          map.getView().fit(featuresLayer.getSource().getExtent(), {
-            padding: [100, 100, 100, 100],
-            maxZoom: 18
-          })
-        }
-      })
+      // Force updateSize after a short delay to ensure modal is visible
+      setTimeout(handleMapSizeUpdate, 100)
 
+      // Observe size changes
+      const observer = new ResizeObserver(handleMapSizeUpdate)
       observer.observe(mapRef.current)
 
       return () => {
         observer.unobserve(mapRef.current)
       }
     }
-  }, [mapRef, map, features, featuresLayer])
+  }, [mapRef, handleMapSizeUpdate])
 
   useEffect(() => {
     map.on('singleclick', e => { setSelectedCoord(toWgs84(e.coordinate)) })
@@ -80,15 +73,6 @@ function MapWrapper({ features, onInit, style, height, width }) {
 
       // set features to map
       featuresLayer.setSource(new VectorSource({ features }))
-
-      // Workaround to prevent openlayer rendering bugs within modal
-      map.updateSize()
-
-      // Fit map to feature extent (with 100px of padding)
-      map.getView().fit(featuresLayer.getSource().getExtent(), {
-        padding: [100,100,100,100],
-        maxZoom: 18
-      })
     }
   },[features])
 

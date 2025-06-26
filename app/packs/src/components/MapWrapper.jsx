@@ -1,4 +1,4 @@
-import React, { useMemo, useEffect, useCallback, useState } from 'react'
+import React, { useMemo, useEffect, useCallback, useState, useRef } from 'react'
 import { PropTypes } from 'prop-types'
 import { Map, View } from 'ol'
 import { Tile as TileLayer, Vector as VectorLayer } from 'ol/layer'
@@ -33,7 +33,34 @@ function MapWrapper({ features, onInit, style, height, width }) {
   )
 
   // pull refs
-  const mapRef = useCallback(node => { node !== null && map.setTarget(node) }, [])
+  const mapRef = useRef(null)
+
+  const handleMapSizeUpdate = useCallback(() => {
+    if (features && features.length > 0) {
+      map.updateSize()
+      map.getView().fit(featuresLayer.getSource().getExtent(), {
+        padding: [100, 100, 100, 100],
+        maxZoom: 18
+      })
+    }
+  }, [map, features, featuresLayer])
+
+  useEffect(() => {
+    if (mapRef.current) {
+      map.setTarget(mapRef.current)
+
+      // Force updateSize after a short delay to ensure modal is visible
+      setTimeout(handleMapSizeUpdate, 100)
+
+      // Observe size changes
+      const observer = new ResizeObserver(handleMapSizeUpdate)
+      observer.observe(mapRef.current)
+
+      return () => {
+        observer.unobserve(mapRef.current)
+      }
+    }
+  }, [mapRef, handleMapSizeUpdate])
 
   useEffect(() => {
     map.on('singleclick', e => { setSelectedCoord(toWgs84(e.coordinate)) })
@@ -46,15 +73,6 @@ function MapWrapper({ features, onInit, style, height, width }) {
 
       // set features to map
       featuresLayer.setSource(new VectorSource({ features }))
-
-      // Workaround to prevent openlayer rendering bugs within modal
-      map.updateSize()
-
-      // Fit map to feature extent (with 100px of padding)
-      map.getView().fit(featuresLayer.getSource().getExtent(), {
-        padding: [100,100,100,100],
-        maxZoom: 18
-      })
     }
   },[features])
 

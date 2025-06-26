@@ -115,8 +115,8 @@ export class PasteContent {
 				*/
 				const copyItem = copyRow[j]
 				const cellContent = this.isDummy(last(cells)) ? '00:00' : last(cells)
-				const arrival = toggleArrivals ? parseTime(cells[0]) : computeArrivalTime(departure, copyItem)
 				const departure = parseTime(cellContent)
+				const arrival = toggleArrivals ? parseTime(cells[0]) : computeArrivalTime(departure, copyItem)
 
 				return {
 					x: copyItem.x,

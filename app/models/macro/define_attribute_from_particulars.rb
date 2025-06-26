@@ -8,7 +8,7 @@ module Macro
         option :target_model
         option :target_attribute
 
-        enumerize :target_model, in: %w[StopArea Company]
+        enumerize :target_model, in: %w[StopArea Company Line]
 
         validates :target_model, :target_attribute, :model_attribute, presence: true
       end
@@ -70,6 +70,20 @@ module Macro
           select Chouette::StopArea, :wheelchair_accessibility
           select Chouette::StopArea, :visual_signs_availability
           select Chouette::StopArea, :audible_signals_availability
+
+          # Chouette::Line
+          select Chouette::Line, :active_from
+          select Chouette::Line, :active_until
+          select Chouette::Line, :color
+          select Chouette::Line, :number
+          select Chouette::Line, :published_name
+          select Chouette::Line, :text_color
+          select Chouette::Line, :transport_mode
+          select Chouette::Line, :transport_submode
+          select Chouette::Line, :url
+          #select Chouette::Line, :company
+          #select Chouette::Line, :secondary_companies
+          #select Chouette::Line, :network
         end
       end
     end
@@ -116,7 +130,12 @@ module Macro
       def undefined_value
         # For example Chouette::StopArea.wheelchair_accessibility.default_value => "unknown"
         # or nil ...
-        model_attribute.model_class.try(attribute_name).try(:default_value)
+        return nil unless model_attribute.model_class.respond_to?(:enumerized_attributes)
+
+        enumerized_attribute = model_attribute.model_class.enumerized_attributes[attribute_name]
+        return nil unless enumerized_attribute
+
+        enumerized_attribute.default_value
       end
 
       # Retrieve all particulars associated to the referents (so in the whole scope)

@@ -11,7 +11,7 @@ RSpec.describe Macro::DefineAttributeFromParticulars::Run do
   it { should validate_presence_of :target_attribute }
   it do
     should enumerize(:target_model).in(
-      %w[StopArea Company]
+      %w[StopArea Company Line]
     )
   end
 

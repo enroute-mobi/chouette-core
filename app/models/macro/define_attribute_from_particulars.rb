@@ -130,10 +130,12 @@ module Macro
       def undefined_value
         # For example Chouette::StopArea.wheelchair_accessibility.default_value => "unknown"
         # or nil ...
-        model_attribute.model_class.try(attribute_name).try(:default_value)
-      rescue => e
-        Rails.logger.error "Error retrieving undefined value for #{model_attribute.model_class}##{attribute_name}: #{e.message}"
-        nil
+        return nil unless model_attribute.model_class.respond_to?(:enumerized_attributes)
+
+        enumerized_attribute = model_attribute.model_class.enumerized_attributes[attribute_name]
+        return nil unless enumerized_attribute
+
+        enumerized_attribute.default_value
       end
 
       # Retrieve all particulars associated to the referents (so in the whole scope)

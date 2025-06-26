@@ -107,7 +107,7 @@ const CopyModal = props => {
                   <br/>
                 </div>}
               </div>
-              <div className='modal-footer flex items-center mt-8'>
+              <div className='modal-footer flex items-center justify-end mt-8'>
               {mode == 'copy' && <button
                 className='btn btn-default'
                 onClick={toPasteMode}>

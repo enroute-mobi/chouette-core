@@ -51,7 +51,7 @@ class Destination
 
       http_request.call do |import_status|
         if import_status['status'] == 'error' && !import_status['messages'].empty?
-          report_api_errors!(import_status['messages'])
+          http_request.report_api_errors!(import_status['messages'])
         end
       end
     end

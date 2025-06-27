@@ -28,7 +28,7 @@ class Destination
       http_request.request_body = form_data
 
       http_request.call do |import_status|
-        report_api_errors!(import_status['Errors']) unless import_status['Errors'].empty?
+        http_request.report_api_errors!(import_status['Errors']) unless import_status['Errors'].empty?
       end
     end
   end

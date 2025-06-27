@@ -104,6 +104,25 @@ RSpec.describe Destination::Ara, type: :model do
           eq(file_fixture(export_file_path).read)
         )
       end
+
+      context 'when API returns an error' do
+        let(:api_result) do
+          {
+            status: 200,
+            body: { 'Errors' => ['Something went wrong'] }.to_json,
+            headers: { 'Content-Type' => 'application/json' }
+          }
+        end
+
+        it 'should fail' do
+          subject
+          expect(destination.reports.count).to eq(1)
+          expect(destination.reports.first).to be_failed
+          expect(destination.reports.first.error_message).to(
+            eq('Errors returned by Ara API: ["Something went wrong"]')
+          )
+        end
+      end
     end
   end
 end

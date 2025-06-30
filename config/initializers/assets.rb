@@ -15,3 +15,14 @@ Rails.application.config.assets.precompile += %w( base.css es6_browserified/*.js
 Rails.application.config.assets.precompile += %w( api.css )
 Rails.application.config.assets.precompile += %w( OpenLayers/maps_backgrounds.js )
 Rails.application.config.assets.precompile += %w( language_engine/*_flag.png )
+
+Rails.application.config.assets.configure do |env|
+  paths_to_exclude = %w[
+    actioncable
+    actiontext
+    activestorage
+  ].map { |g| Gem.loaded_specs[g].full_gem_path }
+  env.config = env.hash_reassoc(env.config, :paths) do |paths|
+    paths.delete_if { |p| paths_to_exclude.any? { |e| p.start_with?(e) } }
+  end
+end

@@ -83,6 +83,8 @@ module Import
 
       referential_builder.create do |referential|
         self.referential = referential
+        self.imported_line_ids |= referential_metadata.line_ids
+
         referential.switch
 
         block.call referential
@@ -114,8 +116,10 @@ module Import
     end
 
     def existing_chouette_line_ids
-      netex_routes_line_refs = netex_source.routes.map { |route| route&.line_ref&.ref }.compact.uniq
-      line_provider.lines.where(registration_number: netex_routes_line_refs).pluck(:id)
+      @existing_chouette_line_ids ||= begin
+        netex_routes_line_refs = netex_source.routes.map { |route| route&.line_ref&.ref }.compact.uniq
+        lookup.lines.find_ids(netex_routes_line_refs)
+      end
     end
 
     # TODO: why the resource statuses are not checked automaticaly ??

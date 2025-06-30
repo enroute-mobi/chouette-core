@@ -426,7 +426,8 @@ module Import
 
     class RouteJourneyPatterns < WithResourcePart
       include ReferentialPart
-      delegate :netex_source, :scheduled_stop_points, :line_provider, :index_route_journey_patterns, :code_space, to: :import
+      delegate :netex_source, :scheduled_stop_points, :index_route_journey_patterns,
+               :line_provider, :code_space, :lookup, to: :import
 
       def route_inserter
         @route_inserter ||= RouteInserter.new(
@@ -468,7 +469,8 @@ module Import
             destination_displays: destination_displays,
             line_provider: line_provider,
             code_builder: code_builder,
-            code_space: code_space
+            code_space: code_space,
+            lookup: lookup
           )
 
           unless decorator.valid?
@@ -510,7 +512,7 @@ module Import
 
       class Decorator < SimpleDelegator
         def initialize(route, journey_patterns, scheduled_stop_points: nil, route_points: nil, directions: nil,
-                       destination_displays: nil, line_provider: nil, code_builder: nil, code_space: nil)
+                       destination_displays: nil, line_provider: nil, code_builder: nil, code_space: nil, lookup: nil)
           super route
 
           @journey_patterns = journey_patterns
@@ -521,12 +523,13 @@ module Import
           @line_provider = line_provider
           @code_builder = code_builder
           @code_space = code_space
+          @lookup = lookup
         end
         attr_accessor :journey_patterns, :scheduled_stop_points, :route_points, :directions, :line_provider,
-                      :destination_displays, :code_builder, :code_space
+                      :destination_displays, :code_builder, :code_space, :lookup
 
         def chouette_line
-          line = line_provider.lines.find_by(registration_number: line_ref.ref) if line_ref
+          line = lookup.lines.find(line_ref.ref)
           add_error :line_not_found unless line
 
           line

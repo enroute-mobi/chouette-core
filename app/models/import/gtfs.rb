@@ -886,10 +886,6 @@ class Import::Gtfs < Import::Base
     end
   end
 
-  def lookup
-    @lookup ||= Import::Lookup.default(self)
-  end
-
   def service_facility_set(bikes_allowed)
     case bikes_allowed
     when '1'

@@ -1004,7 +1004,15 @@ RSpec.describe Import::NetexGeneric do
       )
     end
 
-    before { allow(import).to receive(:stop_area_provider).and_return(stop_area.stop_area_provider) }
+    let(:stop_area_ids) { { '123' => stop_area.id } }
+    let(:stop_areas_finder) do
+      double(:stop_areas_finder).tap do |stop_areas_finder|
+        allow(stop_areas_finder).to receive(:find_id) { |stop_id| stop_area_ids[stop_id] }
+      end
+    end
+    let(:lookup) { double(stop_areas: stop_areas_finder) }
+
+    before { allow(import).to receive(:lookup).and_return(lookup) }
 
     context 'when XML contains QuayRef in PassengerStopAssignment' do
       let(:xml) do

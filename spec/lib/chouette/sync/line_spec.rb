@@ -138,6 +138,18 @@ RSpec.describe Chouette::Sync::Line do
       end
     end
 
+    let(:company) do
+      target.companies.create! name: 'Test', model_id_attribute => 'FR1:Operator:210:LOC'
+    end
+
+    let(:company_ids) { { 'FR1:Operator:210:LOC' => company.id } }
+    let(:finder) do
+      double(:finder).tap do |finder|
+        allow(finder).to receive(:find_id) { |stop_id| company_ids[stop_id] }
+      end
+    end
+    let(:lookup) { double(companies: finder) }
+
     before do
       # In IBOO the line_referential should use stif_codifligne objectid_format
       if Chouette::Sync::Base.default_model_id_attribute == :objectid
@@ -146,7 +158,7 @@ RSpec.describe Chouette::Sync::Line do
     end
 
     subject(:sync) do
-      Chouette::Sync::Line::Netex.new source: source, target: target
+      Chouette::Sync::Line::Netex.new source: source, target: target, lookup: lookup
     end
 
     let(:model_id_attribute) { Chouette::Sync::Base.default_model_id_attribute }
@@ -160,8 +172,6 @@ RSpec.describe Chouette::Sync::Line do
     end
 
     it 'should create the Line FR1:Line:C01931:' do
-      company =
-        target.companies.create! name: 'Test', model_id_attribute => 'FR1:Operator:210:LOC'
       network =
         target.networks.create! name: 'Test', model_id_attribute => 'FR1:Network:68:LOC'
       line_notice =

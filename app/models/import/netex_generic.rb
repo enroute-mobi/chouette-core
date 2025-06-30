@@ -242,11 +242,10 @@ module Import
     # Synchronize models in the StopAreaReferential (StopArea, Entrances, etc)
     # with associated NeTEx resources
     class StopAreaReferential < SynchronizedPart
-      delegate :stop_area_provider, to: :import
-      delegate :stop_area_referential, to: :import
+      delegate :stop_area_provider, :stop_area_referential, :lookup, to: :import
 
       def synchronization
-        Chouette::Sync::Referential.new(target).tap do |sync|
+        Chouette::Sync::Referential.new(target, lookup: lookup).tap do |sync|
           sync.synchronize_with Chouette::Sync::StopArea::Netex
           sync.synchronize_with Chouette::Sync::Entrance::Netex
         end
@@ -268,11 +267,10 @@ module Import
     # Synchronize models in the LineReferential (Line, Company, etc)
     # with associated NeTEx resources
     class LineReferential < SynchronizedPart
-      delegate :line_provider, to: :import
-      delegate :line_referential, to: :import
+      delegate :line_provider, :line_referential, :lookup, to: :import
 
       def synchronization
-        @synchronization ||= Chouette::Sync::Referential.new(target).tap do |sync|
+        @synchronization ||= Chouette::Sync::Referential.new(target, lookup: lookup).tap do |sync|
           sync.synchronize_with Chouette::Sync::Company::Netex
           sync.synchronize_with Chouette::Sync::Network::Netex
           sync.synchronize_with Chouette::Sync::LineNotice::Netex
@@ -1497,7 +1495,7 @@ module Import
     end
 
     class ScheduledStopPoints < WithResourcePart
-      delegate :netex_source, :code_space, :stop_area_provider, :scheduled_stop_points, to: :import
+      delegate :netex_source, :code_space, :stop_area_provider, :scheduled_stop_points, :lookup, to: :import
 
       def import!
         %i[passenger_stop_assignments flexible_stop_assignments].each do |assignment_type|
@@ -1510,10 +1508,10 @@ module Import
               next
             end
 
-            if (stop_area = stop_area_provider.stop_areas.find_by(registration_number: stop_area_code).presence)
+            if stop_area_id = lookup.stop_areas.find_id(stop_area_code)
               scheduled_stop_point = ScheduledStopPoint.new(
                 id: scheduled_stop_point_id,
-                stop_area_id: stop_area.id,
+                stop_area_id: stop_area_id,
                 flexible: flexible?(stop_assignment)
               )
               scheduled_stop_points[scheduled_stop_point.id] = scheduled_stop_point

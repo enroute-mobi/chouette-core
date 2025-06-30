@@ -79,6 +79,7 @@ module Import
     end
 
     def within_referential(&block)
+
       return unless referential_metadata
 
       referential_builder.create do |referential|
@@ -105,20 +106,104 @@ module Import
     end
 
     def referential_metadata
-      return unless [metadata_line_ids, netex_source.validity_period].all?(&:present?)
-
-      @referential_metadata ||=
-        ReferentialMetadata.new line_ids: metadata_line_ids, periodes: [netex_source.validity_period]
+      @referential_metadata ||= ReferentialMetadataBuilder.new(netex_source, lookup).referential_metadata
     end
 
-    def metadata_line_ids
-      (imported_line_ids + existing_chouette_line_ids).uniq
-    end
+    class ReferentialMetadataBuilder
+      def initialize(source, lookup)
+        @source = source
+        @lookup = lookup
+      end
+      attr_reader :source, :lookup
 
-    def existing_chouette_line_ids
-      @existing_chouette_line_ids ||= begin
-        netex_routes_line_refs = netex_source.routes.map { |route| route&.line_ref&.ref }.compact.uniq
-        lookup.lines.find_ids(netex_routes_line_refs)
+      def source_decorator
+        @source_decorator ||= SourceDecorator.new(source)
+      end
+
+      def route_line_ids
+        @route_line_ids ||= lookup.lines.find_ids(source_decorator.line_refs)
+      end
+
+      def validity_period
+        @validity_period ||= netex_validity_period || day_types_overall_period
+      end
+
+      # Overall period defined by all NeTEx DayType validity periods
+      def netex_validity_period
+        PeriodBuilder.add(source_decorator.validity_periods).range
+      end
+
+      # Overall period defined by all NeTEx DayTypeAssignement/OperatingPeriod instances
+      def day_types_overall_period
+        PeriodBuilder.add(source_decorator.operating_period_ranges).add(source_decorator.day_type_assignment_ranges).range
+      end
+      
+      def referential_metadata
+        return unless [route_line_ids, validity_period].all?(&:present?)
+      
+        @referential_metadata ||=
+          ReferentialMetadata.new line_ids: route_line_ids, periodes: [validity_period]
+      end
+      
+      class SourceDecorator < SimpleDelegator
+        def line_refs
+          @line_refs ||= routes.map { |r| r.line_ref&.ref }.compact.uniq
+        end
+
+        def frame_validity_periods
+          frames.select { |frame| frame&.valid_between.present? }.map(&:valid_between).map do |valid_between|
+            Range.new(valid_between&.from_date, valid_between&.to_date)
+          end.uniq
+        end
+
+        def day_type_valid_periods
+          day_types.select { |day_type| day_type&.valid_between.present? }.map(&:valid_between).map do |valid_between|
+            Range.new(valid_between&.from_date, valid_between&.to_date)
+          end.uniq
+        end
+
+        def validity_periods
+          (frame_validity_periods + day_type_valid_periods).map do |period|
+            PeriodBuilder.add(period).range
+          end
+        end
+
+        def operating_period_ranges
+          operating_periods.map(&:date_range)
+        end
+
+        def day_type_assignments_with_date
+          day_type_assignments.select do |assignment|
+            assignment.date && assignment.available?
+          end
+        end
+
+        def day_type_assignment_ranges
+          day_type_assignments_with_date.map do |assignment|
+            Range.new assignment.date, assignment.date
+          end
+        end
+      end
+
+      class PeriodBuilder
+        attr_accessor :min, :max
+
+        def add(*ranges)
+          ranges.flatten.compact.each do |range|
+            self.min = [min, range.min].compact.min
+            self.max = [max, range.max].compact.max
+          end
+
+          self
+        end
+
+        def self.add(*ranges)
+          new.add(*ranges)
+        end
+
+        def range
+          min..max if min && max
+        end
       end
     end
 

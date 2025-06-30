@@ -10,8 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2025_06_13_122420) do
-
+ActiveRecord::Schema[7.0].define(version: 2025_06_13_122420) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "btree_gin"
   enable_extension "hstore"
@@ -33,8 +32,8 @@ ActiveRecord::Schema.define(version: 2025_06_13_122420) do
     t.text "accessibility_limitation_description"
     t.bigint "shape_referential_id"
     t.bigint "shape_provider_id"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
+    t.datetime "created_at", precision: nil, null: false
+    t.datetime "updated_at", precision: nil, null: false
     t.index ["shape_provider_id"], name: "index_accessibility_assessments_on_shape_provider_id"
     t.index ["shape_referential_id"], name: "index_accessibility_assessments_on_shape_referential_id"
   end
@@ -46,7 +45,7 @@ ActiveRecord::Schema.define(version: 2025_06_13_122420) do
     t.integer "duration"
     t.jsonb "metrics"
     t.bigint "aggregate_id"
-    t.datetime "referential_created_at", null: false
+    t.datetime "referential_created_at", precision: nil, null: false
     t.index ["aggregate_id"], name: "index_aggregate_resources_on_aggregate_id"
   end
 
@@ -56,8 +55,8 @@ ActiveRecord::Schema.define(version: 2025_06_13_122420) do
     t.bit "aggregate_days", limit: 7, default: "1111111", null: false
     t.boolean "force_daily_publishing", default: true, null: false
     t.bigint "scheduled_job_id"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
+    t.datetime "created_at", precision: nil, null: false
+    t.datetime "updated_at", precision: nil, null: false
     t.index ["scheduled_job_id"], name: "index_aggregate_schedulings_on_scheduled_job_id"
     t.index ["workgroup_id"], name: "index_aggregate_schedulings_on_workgroup_id"
   end
@@ -68,13 +67,13 @@ ActiveRecord::Schema.define(version: 2025_06_13_122420) do
     t.string "name"
     t.bigint "referential_ids", array: true
     t.bigint "new_id"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
+    t.datetime "created_at", precision: nil, null: false
+    t.datetime "updated_at", precision: nil, null: false
     t.string "creator"
-    t.datetime "started_at"
-    t.datetime "ended_at"
+    t.datetime "started_at", precision: nil
+    t.datetime "ended_at", precision: nil
     t.string "notification_target"
-    t.datetime "notified_recipients_at"
+    t.datetime "notified_recipients_at", precision: nil
     t.bigint "user_id"
     t.index ["workgroup_id"], name: "index_aggregates_on_workgroup_id"
   end
@@ -82,8 +81,8 @@ ActiveRecord::Schema.define(version: 2025_06_13_122420) do
   create_table "api_keys", force: :cascade do |t|
     t.string "token"
     t.string "name"
-    t.datetime "created_at"
-    t.datetime "updated_at"
+    t.datetime "created_at", precision: nil
+    t.datetime "updated_at", precision: nil
     t.jsonb "metadata", default: {}
     t.bigint "workbench_id"
   end
@@ -93,8 +92,8 @@ ActiveRecord::Schema.define(version: 2025_06_13_122420) do
     t.string "name", null: false
     t.string "type", null: false
     t.string "subtype"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
+    t.datetime "created_at", precision: nil, null: false
+    t.datetime "updated_at", precision: nil, null: false
     t.string "saml_idp_entity_id"
     t.string "saml_idp_sso_service_url"
     t.string "saml_idp_slo_service_url"
@@ -123,8 +122,8 @@ ActiveRecord::Schema.define(version: 2025_06_13_122420) do
     t.text "booking_notes"
     t.bigint "line_referential_id"
     t.bigint "line_provider_id", null: false
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
+    t.datetime "created_at", precision: nil, null: false
+    t.datetime "updated_at", precision: nil, null: false
     t.index ["line_provider_id"], name: "index_booking_arrangements_on_line_provider_id"
     t.index ["line_referential_id"], name: "index_booking_arrangements_on_line_referential_id"
   end
@@ -134,8 +133,8 @@ ActiveRecord::Schema.define(version: 2025_06_13_122420) do
     t.daterange "date_ranges", array: true
     t.date "dates", array: true
     t.boolean "shared", default: false, null: false
-    t.datetime "created_at"
-    t.datetime "updated_at"
+    t.datetime "created_at", precision: nil
+    t.datetime "updated_at", precision: nil
     t.integer "int_day_types"
     t.date "excluded_dates", array: true
     t.jsonb "metadata", default: {}
@@ -147,19 +146,19 @@ ActiveRecord::Schema.define(version: 2025_06_13_122420) do
     t.string "message_key"
     t.hstore "message_attributes"
     t.bigint "clean_up_id"
-    t.datetime "created_at"
-    t.datetime "updated_at"
+    t.datetime "created_at", precision: nil
+    t.datetime "updated_at", precision: nil
     t.index ["clean_up_id"], name: "index_clean_up_results_on_clean_up_id"
   end
 
   create_table "clean_ups", force: :cascade do |t|
     t.string "status"
-    t.datetime "started_at"
-    t.datetime "ended_at"
+    t.datetime "started_at", precision: nil
+    t.datetime "ended_at", precision: nil
     t.bigint "referential_id"
     t.date "begin_date"
-    t.datetime "created_at"
-    t.datetime "updated_at"
+    t.datetime "created_at", precision: nil
+    t.datetime "updated_at", precision: nil
     t.date "end_date"
     t.string "date_type"
     t.string "data_cleanups", array: true
@@ -169,8 +168,8 @@ ActiveRecord::Schema.define(version: 2025_06_13_122420) do
   create_table "code_spaces", force: :cascade do |t|
     t.bigint "workgroup_id", null: false
     t.string "short_name", null: false
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
+    t.datetime "created_at", precision: nil, null: false
+    t.datetime "updated_at", precision: nil, null: false
     t.string "name"
     t.string "description"
     t.boolean "allow_multiple_values", default: true, null: false
@@ -183,8 +182,8 @@ ActiveRecord::Schema.define(version: 2025_06_13_122420) do
     t.string "resource_type", null: false
     t.bigint "resource_id", null: false
     t.string "value", null: false
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
+    t.datetime "created_at", precision: nil, null: false
+    t.datetime "updated_at", precision: nil, null: false
     t.index ["code_space_id", "resource_type", "resource_id", "value"], name: "index_codes_on_space_resource_and_value", unique: true
     t.index ["code_space_id", "resource_type", "resource_id"], name: "index_codes_on_space_and_resource"
     t.index ["code_space_id"], name: "index_codes_on_code_space_id"
@@ -207,8 +206,8 @@ ActiveRecord::Schema.define(version: 2025_06_13_122420) do
     t.string "time_zone"
     t.bigint "line_referential_id"
     t.text "import_xml"
-    t.datetime "created_at"
-    t.datetime "updated_at"
+    t.datetime "created_at", precision: nil
+    t.datetime "updated_at", precision: nil
     t.jsonb "custom_field_values", default: {}
     t.jsonb "metadata", default: {}
     t.string "default_contact_name"
@@ -258,8 +257,8 @@ ActiveRecord::Schema.define(version: 2025_06_13_122420) do
     t.boolean "stairs_availability"
     t.boolean "lift_availability"
     t.integer "int_user_needs"
-    t.datetime "created_at"
-    t.datetime "updated_at"
+    t.datetime "created_at", precision: nil
+    t.datetime "updated_at", precision: nil
     t.jsonb "metadata", default: {}
     t.boolean "both_ways", default: false
     t.bigint "stop_area_referential_id"
@@ -281,8 +280,8 @@ ActiveRecord::Schema.define(version: 2025_06_13_122420) do
     t.bigint "line_ids", array: true
     t.bigint "company_id"
     t.bigint "workbench_id"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
+    t.datetime "created_at", precision: nil, null: false
+    t.datetime "updated_at", precision: nil, null: false
     t.index ["company_id"], name: "index_contracts_on_company_id"
     t.index ["workbench_id"], name: "index_contracts_on_workbench_id"
   end
@@ -293,8 +292,8 @@ ActiveRecord::Schema.define(version: 2025_06_13_122420) do
     t.string "type", null: false
     t.jsonb "options", default: {}
     t.text "comments"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
+    t.datetime "created_at", precision: nil, null: false
+    t.datetime "updated_at", precision: nil, null: false
     t.index ["control_list_run_id"], name: "index_control_context_runs_on_control_list_run_id"
   end
 
@@ -304,8 +303,8 @@ ActiveRecord::Schema.define(version: 2025_06_13_122420) do
     t.string "type", null: false
     t.jsonb "options", default: {}
     t.text "comments"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
+    t.datetime "created_at", precision: nil, null: false
+    t.datetime "updated_at", precision: nil, null: false
     t.index ["control_list_id"], name: "index_control_contexts_on_control_list_id"
   end
 
@@ -317,10 +316,10 @@ ActiveRecord::Schema.define(version: 2025_06_13_122420) do
     t.string "status"
     t.string "error_uuid"
     t.string "creator"
-    t.datetime "started_at"
-    t.datetime "ended_at"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
+    t.datetime "started_at", precision: nil
+    t.datetime "ended_at", precision: nil
+    t.datetime "created_at", precision: nil, null: false
+    t.datetime "updated_at", precision: nil, null: false
     t.string "user_status", null: false
     t.index ["original_control_list_id"], name: "index_control_list_runs_on_original_control_list_id"
     t.index ["referential_id"], name: "index_control_list_runs_on_referential_id"
@@ -331,8 +330,8 @@ ActiveRecord::Schema.define(version: 2025_06_13_122420) do
     t.bigint "workbench_id"
     t.string "name", null: false
     t.text "comments"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
+    t.datetime "created_at", precision: nil, null: false
+    t.datetime "updated_at", precision: nil, null: false
     t.boolean "shared", default: false
     t.index ["workbench_id"], name: "index_control_lists_on_workbench_id"
   end
@@ -344,8 +343,8 @@ ActiveRecord::Schema.define(version: 2025_06_13_122420) do
     t.string "message_key"
     t.string "criticity", null: false
     t.jsonb "message_attributes", default: {}
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
+    t.datetime "created_at", precision: nil, null: false
+    t.datetime "updated_at", precision: nil, null: false
     t.index ["control_run_id"], name: "index_control_messages_on_control_run_id"
     t.index ["source_type", "source_id"], name: "index_control_messages_on_source_type_and_source_id"
   end
@@ -360,8 +359,8 @@ ActiveRecord::Schema.define(version: 2025_06_13_122420) do
     t.string "criticity", null: false
     t.string "code"
     t.jsonb "options", default: {}
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
+    t.datetime "created_at", precision: nil, null: false
+    t.datetime "updated_at", precision: nil, null: false
     t.index ["control_context_run_id"], name: "index_control_runs_on_control_context_run_id"
     t.index ["control_list_run_id", "control_context_run_id", "position"], name: "index_control_runs_position", unique: true
     t.index ["control_list_run_id"], name: "index_control_runs_on_control_list_run_id"
@@ -377,8 +376,8 @@ ActiveRecord::Schema.define(version: 2025_06_13_122420) do
     t.string "criticity", null: false
     t.string "code"
     t.jsonb "options", default: {}
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
+    t.datetime "created_at", precision: nil, null: false
+    t.datetime "updated_at", precision: nil, null: false
     t.index ["control_context_id"], name: "index_controls_on_control_context_id"
     t.index ["control_list_id", "control_context_id", "position"], name: "index_controls_position", unique: true
     t.index ["control_list_id"], name: "index_controls_on_control_list_id"
@@ -391,8 +390,8 @@ ActiveRecord::Schema.define(version: 2025_06_13_122420) do
     t.bigint "target_id"
     t.string "relation_name"
     t.string "target_referential_slug"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
+    t.datetime "created_at", precision: nil, null: false
+    t.datetime "updated_at", precision: nil, null: false
     t.index ["relation_name", "parent_type", "parent_id", "target_referential_slug"], name: "cross_referential_index_entries_parent"
     t.index ["relation_name", "target_type", "target_id", "target_referential_slug"], name: "cross_referential_index_entries_target"
     t.index ["relation_name"], name: "index_cross_referential_index_entries_on_relation_name"
@@ -403,8 +402,8 @@ ActiveRecord::Schema.define(version: 2025_06_13_122420) do
     t.string "name"
     t.integer "position"
     t.string "resource_type"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
+    t.datetime "created_at", precision: nil, null: false
+    t.datetime "updated_at", precision: nil, null: false
     t.index ["workgroup_id", "resource_type", "position"], name: "uniq_workgroup_id_and_resource_type_and_position", unique: true
     t.index ["workgroup_id"], name: "index_custom_field_groups_on_workgroup_id"
   end
@@ -416,8 +415,8 @@ ActiveRecord::Schema.define(version: 2025_06_13_122420) do
     t.string "field_type"
     t.json "options"
     t.bigint "workgroup_id"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
+    t.datetime "created_at", precision: nil, null: false
+    t.datetime "updated_at", precision: nil, null: false
     t.integer "position", null: false
     t.bigint "custom_field_group_id"
     t.index ["custom_field_group_id"], name: "index_custom_fields_on_custom_field_group_id"
@@ -430,13 +429,13 @@ ActiveRecord::Schema.define(version: 2025_06_13_122420) do
     t.integer "attempts", default: 0, null: false
     t.text "handler", null: false
     t.text "last_error"
-    t.datetime "run_at"
-    t.datetime "locked_at"
-    t.datetime "failed_at"
+    t.datetime "run_at", precision: nil
+    t.datetime "locked_at", precision: nil
+    t.datetime "failed_at", precision: nil
     t.string "locked_by"
     t.string "queue"
-    t.datetime "created_at"
-    t.datetime "updated_at"
+    t.datetime "created_at", precision: nil
+    t.datetime "updated_at", precision: nil
     t.bigint "organisation_id"
     t.string "cron"
     t.string "concurrent_target"
@@ -448,7 +447,7 @@ ActiveRecord::Schema.define(version: 2025_06_13_122420) do
   create_table "delayed_workers", force: :cascade do |t|
     t.string "name"
     t.string "version"
-    t.datetime "last_heartbeat_at"
+    t.datetime "last_heartbeat_at", precision: nil
     t.string "host_name"
     t.string "label"
   end
@@ -457,10 +456,10 @@ ActiveRecord::Schema.define(version: 2025_06_13_122420) do
     t.bigint "destination_id"
     t.bigint "publication_id"
     t.string "status"
-    t.datetime "started_at"
-    t.datetime "ended_at"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
+    t.datetime "started_at", precision: nil
+    t.datetime "ended_at", precision: nil
+    t.datetime "created_at", precision: nil, null: false
+    t.datetime "updated_at", precision: nil, null: false
     t.string "error_message"
     t.text "error_backtrace"
     t.index ["destination_id"], name: "index_destination_reports_on_destination_id"
@@ -473,8 +472,8 @@ ActiveRecord::Schema.define(version: 2025_06_13_122420) do
     t.string "type"
     t.jsonb "options", default: {}
     t.string "secret_file"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
+    t.datetime "created_at", precision: nil, null: false
+    t.datetime "updated_at", precision: nil, null: false
     t.bigint "publication_api_id"
     t.index ["publication_api_id"], name: "index_destinations_on_publication_api_id"
     t.index ["publication_setup_id"], name: "index_destinations_on_publication_setup_id"
@@ -491,8 +490,8 @@ ActiveRecord::Schema.define(version: 2025_06_13_122420) do
   create_table "document_providers", force: :cascade do |t|
     t.string "name", null: false
     t.bigint "workbench_id"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
+    t.datetime "created_at", precision: nil, null: false
+    t.datetime "updated_at", precision: nil, null: false
     t.string "short_name", null: false
     t.index ["workbench_id"], name: "index_document_providers_on_workbench_id"
   end
@@ -502,8 +501,8 @@ ActiveRecord::Schema.define(version: 2025_06_13_122420) do
     t.string "name"
     t.string "short_name"
     t.string "description"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
+    t.datetime "created_at", precision: nil, null: false
+    t.datetime "updated_at", precision: nil, null: false
     t.index ["workgroup_id"], name: "index_document_types_on_workgroup_id"
   end
 
@@ -515,8 +514,8 @@ ActiveRecord::Schema.define(version: 2025_06_13_122420) do
     t.string "file", null: false
     t.bigint "document_type_id"
     t.bigint "document_provider_id"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
+    t.datetime "created_at", precision: nil, null: false
+    t.datetime "updated_at", precision: nil, null: false
     t.index ["document_provider_id"], name: "index_documents_on_document_provider_id"
     t.index ["document_type_id"], name: "index_documents_on_document_type_id"
   end
@@ -537,8 +536,8 @@ ActiveRecord::Schema.define(version: 2025_06_13_122420) do
     t.string "zip_code"
     t.string "city_name"
     t.string "country"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
+    t.datetime "created_at", precision: nil, null: false
+    t.datetime "updated_at", precision: nil, null: false
     t.string "postal_region"
     t.index ["objectid"], name: "index_entrances_on_objectid", unique: true
     t.index ["stop_area_id"], name: "index_entrances_on_stop_area_id"
@@ -552,8 +551,8 @@ ActiveRecord::Schema.define(version: 2025_06_13_122420) do
     t.hstore "message_attributes"
     t.bigint "export_id"
     t.bigint "resource_id"
-    t.datetime "created_at"
-    t.datetime "updated_at"
+    t.datetime "created_at", precision: nil
+    t.datetime "updated_at", precision: nil
     t.hstore "resource_attributes"
     t.index ["export_id"], name: "index_export_messages_on_export_id"
     t.index ["resource_id"], name: "index_export_messages_on_resource_id"
@@ -562,8 +561,8 @@ ActiveRecord::Schema.define(version: 2025_06_13_122420) do
   create_table "export_resources", force: :cascade do |t|
     t.bigint "export_id"
     t.string "status"
-    t.datetime "created_at"
-    t.datetime "updated_at"
+    t.datetime "created_at", precision: nil
+    t.datetime "updated_at", precision: nil
     t.string "resource_type"
     t.string "reference"
     t.string "name"
@@ -588,17 +587,17 @@ ActiveRecord::Schema.define(version: 2025_06_13_122420) do
     t.bigint "workbench_id"
     t.bigint "referential_id"
     t.string "name"
-    t.datetime "created_at"
-    t.datetime "updated_at"
+    t.datetime "created_at", precision: nil
+    t.datetime "updated_at", precision: nil
     t.string "file"
-    t.datetime "started_at"
-    t.datetime "ended_at"
+    t.datetime "started_at", precision: nil
+    t.datetime "ended_at", precision: nil
     t.string "type"
     t.integer "current_step", default: 0
     t.integer "total_steps", default: 0
     t.string "creator"
     t.string "notification_target"
-    t.datetime "notified_recipients_at"
+    t.datetime "notified_recipients_at", precision: nil
     t.bigint "user_id"
     t.bigint "publication_id"
     t.bigint "workgroup_id"
@@ -613,8 +612,8 @@ ActiveRecord::Schema.define(version: 2025_06_13_122420) do
     t.string "short_name", null: false
     t.string "name"
     t.bigint "fare_zone_id", null: false
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
+    t.datetime "created_at", precision: nil, null: false
+    t.datetime "updated_at", precision: nil, null: false
     t.index ["fare_zone_id", "short_name"], name: "index_fare_geographic_references_on_fare_zone_id_and_short_name", unique: true
   end
 
@@ -624,8 +623,8 @@ ActiveRecord::Schema.define(version: 2025_06_13_122420) do
     t.string "name"
     t.bigint "company_id"
     t.integer "price_cents"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
+    t.datetime "created_at", precision: nil, null: false
+    t.datetime "updated_at", precision: nil, null: false
     t.index ["company_id"], name: "index_fare_products_on_company_id"
     t.index ["fare_provider_id"], name: "index_fare_products_on_fare_provider_id"
   end
@@ -641,16 +640,16 @@ ActiveRecord::Schema.define(version: 2025_06_13_122420) do
     t.string "short_name"
     t.bigint "workbench_id"
     t.bigint "fare_referential_id"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
+    t.datetime "created_at", precision: nil, null: false
+    t.datetime "updated_at", precision: nil, null: false
     t.string "name", null: false
     t.index ["fare_referential_id"], name: "index_fare_providers_on_fare_referential_id"
     t.index ["workbench_id"], name: "index_fare_providers_on_workbench_id"
   end
 
   create_table "fare_referentials", force: :cascade do |t|
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
+    t.datetime "created_at", precision: nil, null: false
+    t.datetime "updated_at", precision: nil, null: false
   end
 
   create_table "fare_stop_areas_zones", force: :cascade do |t|
@@ -665,8 +664,8 @@ ActiveRecord::Schema.define(version: 2025_06_13_122420) do
     t.bigint "fare_provider_id"
     t.string "name"
     t.jsonb "expression"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
+    t.datetime "created_at", precision: nil, null: false
+    t.datetime "updated_at", precision: nil, null: false
     t.index ["fare_provider_id"], name: "index_fare_validities_on_fare_provider_id"
   end
 
@@ -674,16 +673,16 @@ ActiveRecord::Schema.define(version: 2025_06_13_122420) do
     t.uuid "uuid", default: -> { "gen_random_uuid()" }, null: false
     t.bigint "fare_provider_id"
     t.string "name"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
+    t.datetime "created_at", precision: nil, null: false
+    t.datetime "updated_at", precision: nil, null: false
     t.index ["fare_provider_id"], name: "index_fare_zones_on_fare_provider_id"
   end
 
   create_table "flexible_area_memberships", force: :cascade do |t|
     t.bigint "flexible_area_id", null: false
     t.bigint "member_id", null: false
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
+    t.datetime "created_at", precision: nil, null: false
+    t.datetime "updated_at", precision: nil, null: false
     t.index ["flexible_area_id", "member_id"], name: "index_flexible_area_memberships_unique", unique: true
     t.index ["flexible_area_id"], name: "index_flexible_area_memberships_on_flexible_area_id"
     t.index ["member_id"], name: "index_flexible_area_memberships_on_member_id"
@@ -693,8 +692,8 @@ ActiveRecord::Schema.define(version: 2025_06_13_122420) do
     t.bigint "line_id", null: false
     t.string "code"
     t.string "label"
-    t.datetime "created_at"
-    t.datetime "updated_at"
+    t.datetime "created_at", precision: nil
+    t.datetime "updated_at", precision: nil
     t.string "checksum"
     t.text "checksum_source"
     t.string "data_source_ref"
@@ -711,8 +710,8 @@ ActiveRecord::Schema.define(version: 2025_06_13_122420) do
     t.hstore "message_attributes"
     t.bigint "import_id"
     t.bigint "resource_id"
-    t.datetime "created_at"
-    t.datetime "updated_at"
+    t.datetime "created_at", precision: nil
+    t.datetime "updated_at", precision: nil
     t.hstore "resource_attributes"
     t.index ["import_id"], name: "index_import_messages_on_import_id"
     t.index ["resource_id"], name: "index_import_messages_on_resource_id"
@@ -721,8 +720,8 @@ ActiveRecord::Schema.define(version: 2025_06_13_122420) do
   create_table "import_resources", force: :cascade do |t|
     t.bigint "import_id"
     t.string "status"
-    t.datetime "created_at"
-    t.datetime "updated_at"
+    t.datetime "created_at", precision: nil
+    t.datetime "updated_at", precision: nil
     t.string "resource_type"
     t.string "reference"
     t.string "name"
@@ -739,22 +738,22 @@ ActiveRecord::Schema.define(version: 2025_06_13_122420) do
     t.bigint "workbench_id"
     t.bigint "referential_id"
     t.string "name"
-    t.datetime "created_at"
-    t.datetime "updated_at"
+    t.datetime "created_at", precision: nil
+    t.datetime "updated_at", precision: nil
     t.string "file"
-    t.datetime "started_at"
-    t.datetime "ended_at"
+    t.datetime "started_at", precision: nil
+    t.datetime "ended_at", precision: nil
     t.string "token_download"
     t.string "type"
     t.bigint "parent_id"
     t.string "parent_type"
-    t.datetime "notified_parent_at"
+    t.datetime "notified_parent_at", precision: nil
     t.integer "current_step", default: 0
     t.integer "total_steps", default: 0
     t.string "creator"
     t.jsonb "options", default: {}
     t.string "notification_target"
-    t.datetime "notified_recipients_at"
+    t.datetime "notified_recipients_at", precision: nil
     t.bigint "user_id"
     t.bigint "overlapping_referential_ids", default: [], array: true
     t.bigint "code_space_id"
@@ -771,8 +770,8 @@ ActiveRecord::Schema.define(version: 2025_06_13_122420) do
     t.string "published_name"
     t.bigint "departure_stop_point_id"
     t.bigint "arrival_stop_point_id"
-    t.datetime "created_at"
-    t.datetime "updated_at"
+    t.datetime "created_at", precision: nil
+    t.datetime "updated_at", precision: nil
     t.string "checksum"
     t.text "checksum_source"
     t.string "data_source_ref"
@@ -797,8 +796,8 @@ ActiveRecord::Schema.define(version: 2025_06_13_122420) do
   create_table "line_group_members", force: :cascade do |t|
     t.bigint "group_id", null: false
     t.bigint "line_id", null: false
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
+    t.datetime "created_at", precision: nil, null: false
+    t.datetime "updated_at", precision: nil, null: false
     t.index ["group_id", "line_id"], name: "index_line_group_members_on_group_id_and_line_id", unique: true
     t.index ["line_id"], name: "index_line_group_members_on_line_id"
   end
@@ -808,8 +807,8 @@ ActiveRecord::Schema.define(version: 2025_06_13_122420) do
     t.text "description"
     t.bigint "line_referential_id"
     t.bigint "line_provider_id"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
+    t.datetime "created_at", precision: nil, null: false
+    t.datetime "updated_at", precision: nil, null: false
     t.string "short_name"
     t.uuid "uuid", default: -> { "gen_random_uuid()" }, null: false
     t.index ["line_provider_id"], name: "index_line_groups_on_line_provider_id"
@@ -823,8 +822,8 @@ ActiveRecord::Schema.define(version: 2025_06_13_122420) do
     t.string "objectid", null: false
     t.text "import_xml"
     t.jsonb "metadata", default: {}
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
+    t.datetime "created_at", precision: nil, null: false
+    t.datetime "updated_at", precision: nil, null: false
     t.integer "object_version"
     t.string "registration_number"
     t.bigint "line_provider_id"
@@ -842,8 +841,8 @@ ActiveRecord::Schema.define(version: 2025_06_13_122420) do
     t.string "short_name", null: false
     t.bigint "workbench_id", null: false
     t.bigint "line_referential_id", null: false
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
+    t.datetime "created_at", precision: nil, null: false
+    t.datetime "updated_at", precision: nil, null: false
     t.string "name", null: false
     t.index ["line_referential_id"], name: "index_line_providers_on_line_referential_id"
     t.index ["workbench_id"], name: "index_line_providers_on_workbench_id"
@@ -857,8 +856,8 @@ ActiveRecord::Schema.define(version: 2025_06_13_122420) do
 
   create_table "line_referentials", force: :cascade do |t|
     t.string "name"
-    t.datetime "created_at"
-    t.datetime "updated_at"
+    t.datetime "created_at", precision: nil
+    t.datetime "updated_at", precision: nil
     t.string "objectid_format"
   end
 
@@ -868,8 +867,8 @@ ActiveRecord::Schema.define(version: 2025_06_13_122420) do
     t.bigint "stop_area_ids", array: true
     t.bigint "line_referential_id"
     t.bigint "line_provider_id"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
+    t.datetime "created_at", precision: nil, null: false
+    t.datetime "updated_at", precision: nil, null: false
     t.index ["line_provider_id"], name: "index_line_routing_constraint_zones_on_line_provider_id"
     t.index ["line_referential_id"], name: "index_line_routing_constraint_zones_on_line_referential_id"
   end
@@ -893,8 +892,8 @@ ActiveRecord::Schema.define(version: 2025_06_13_122420) do
     t.text "import_xml"
     t.string "transport_submode"
     t.bigint "secondary_company_ids", array: true
-    t.datetime "created_at"
-    t.datetime "updated_at"
+    t.datetime "created_at", precision: nil
+    t.datetime "updated_at", precision: nil
     t.boolean "seasonal"
     t.jsonb "metadata", default: {}
     t.date "active_from"
@@ -927,8 +926,8 @@ ActiveRecord::Schema.define(version: 2025_06_13_122420) do
     t.string "name"
     t.jsonb "options", default: {}
     t.text "comments"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
+    t.datetime "created_at", precision: nil, null: false
+    t.datetime "updated_at", precision: nil, null: false
     t.string "type", null: false
     t.index ["macro_list_run_id"], name: "index_macro_context_runs_on_macro_list_run_id"
   end
@@ -938,8 +937,8 @@ ActiveRecord::Schema.define(version: 2025_06_13_122420) do
     t.string "name"
     t.jsonb "options", default: {}
     t.text "comments"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
+    t.datetime "created_at", precision: nil, null: false
+    t.datetime "updated_at", precision: nil, null: false
     t.string "type", null: false
     t.index ["macro_list_id"], name: "index_macro_contexts_on_macro_list_id"
   end
@@ -952,10 +951,10 @@ ActiveRecord::Schema.define(version: 2025_06_13_122420) do
     t.string "status"
     t.string "error_uuid"
     t.string "creator"
-    t.datetime "started_at"
-    t.datetime "ended_at"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
+    t.datetime "started_at", precision: nil
+    t.datetime "ended_at", precision: nil
+    t.datetime "created_at", precision: nil, null: false
+    t.datetime "updated_at", precision: nil, null: false
     t.string "user_status", null: false
     t.index ["original_macro_list_id"], name: "index_macro_list_runs_on_original_macro_list_id"
     t.index ["referential_id"], name: "index_macro_list_runs_on_referential_id"
@@ -966,8 +965,8 @@ ActiveRecord::Schema.define(version: 2025_06_13_122420) do
     t.bigint "workbench_id"
     t.string "name"
     t.text "comments"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
+    t.datetime "created_at", precision: nil, null: false
+    t.datetime "updated_at", precision: nil, null: false
     t.index ["workbench_id"], name: "index_macro_lists_on_workbench_id"
   end
 
@@ -978,8 +977,8 @@ ActiveRecord::Schema.define(version: 2025_06_13_122420) do
     t.string "message_key"
     t.string "criticity"
     t.jsonb "message_attributes", default: {}
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
+    t.datetime "created_at", precision: nil, null: false
+    t.datetime "updated_at", precision: nil, null: false
     t.index ["macro_run_id"], name: "index_macro_messages_on_macro_run_id"
     t.index ["source_type", "source_id"], name: "index_macro_messages_on_source_type_and_source_id"
   end
@@ -991,8 +990,8 @@ ActiveRecord::Schema.define(version: 2025_06_13_122420) do
     t.text "name"
     t.text "comments"
     t.jsonb "options", default: {}
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
+    t.datetime "created_at", precision: nil, null: false
+    t.datetime "updated_at", precision: nil, null: false
     t.bigint "macro_context_run_id"
     t.index ["macro_context_run_id"], name: "index_macro_runs_on_macro_context_run_id"
     t.index ["macro_list_run_id", "position"], name: "index_macro_runs_on_macro_list_run_id_and_position", unique: true
@@ -1006,8 +1005,8 @@ ActiveRecord::Schema.define(version: 2025_06_13_122420) do
     t.string "name"
     t.text "comments"
     t.jsonb "options", default: {}
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
+    t.datetime "created_at", precision: nil, null: false
+    t.datetime "updated_at", precision: nil, null: false
     t.bigint "macro_context_id"
     t.index ["macro_context_id"], name: "index_macros_on_macro_context_id"
     t.index ["macro_list_id", "macro_context_id", "position"], name: "index_macros_position", unique: true
@@ -1019,13 +1018,13 @@ ActiveRecord::Schema.define(version: 2025_06_13_122420) do
     t.bigint "referential_ids", array: true
     t.string "creator"
     t.string "status"
-    t.datetime "started_at"
-    t.datetime "ended_at"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
+    t.datetime "started_at", precision: nil
+    t.datetime "ended_at", precision: nil
+    t.datetime "created_at", precision: nil, null: false
+    t.datetime "updated_at", precision: nil, null: false
     t.bigint "new_id"
     t.string "notification_target"
-    t.datetime "notified_recipients_at"
+    t.datetime "notified_recipients_at", precision: nil
     t.bigint "user_id"
     t.string "merge_method", default: "legacy"
     t.index ["workbench_id"], name: "index_merges_on_workbench_id"
@@ -1044,8 +1043,8 @@ ActiveRecord::Schema.define(version: 2025_06_13_122420) do
     t.string "comment"
     t.text "import_xml"
     t.bigint "line_referential_id"
-    t.datetime "created_at"
-    t.datetime "updated_at"
+    t.datetime "created_at", precision: nil
+    t.datetime "updated_at", precision: nil
     t.jsonb "metadata", default: {}
     t.bigint "line_provider_id"
     t.index ["line_provider_id"], name: "index_networks_on_line_provider_id"
@@ -1058,8 +1057,8 @@ ActiveRecord::Schema.define(version: 2025_06_13_122420) do
     t.string "notification_type"
     t.daterange "period"
     t.bigint "workbench_id"
-    t.datetime "created_at"
-    t.datetime "updated_at"
+    t.datetime "created_at", precision: nil
+    t.datetime "updated_at", precision: nil
     t.bigint "user_ids", default: [], array: true
     t.string "external_email"
     t.integer "priority", default: 10
@@ -1072,11 +1071,11 @@ ActiveRecord::Schema.define(version: 2025_06_13_122420) do
 
   create_table "organisations", force: :cascade do |t|
     t.string "name"
-    t.datetime "created_at"
-    t.datetime "updated_at"
+    t.datetime "created_at", precision: nil
+    t.datetime "updated_at", precision: nil
     t.string "data_format", default: "neptune"
     t.string "code"
-    t.datetime "synced_at"
+    t.datetime "synced_at", precision: nil
     t.hstore "sso_attributes"
     t.string "custom_view"
     t.string "features", default: [], array: true
@@ -1088,8 +1087,8 @@ ActiveRecord::Schema.define(version: 2025_06_13_122420) do
     t.bigint "shape_provider_id", null: false
     t.bigint "parent_id"
     t.string "name", null: false
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
+    t.datetime "created_at", precision: nil, null: false
+    t.datetime "updated_at", precision: nil, null: false
     t.index ["parent_id"], name: "index_point_of_interest_categories_on_parent_id"
     t.index ["shape_provider_id"], name: "index_point_of_interest_categories_on_shape_provider_id"
     t.index ["shape_referential_id"], name: "index_point_of_interest_categories_on_shape_referential_id"
@@ -1100,8 +1099,8 @@ ActiveRecord::Schema.define(version: 2025_06_13_122420) do
     t.time "opening_time_of_day", null: false
     t.time "closing_time_of_day", null: false
     t.bit "week_days", limit: 7, default: "1111111"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
+    t.datetime "created_at", precision: nil, null: false
+    t.datetime "updated_at", precision: nil, null: false
     t.index ["point_of_interest_id"], name: "index_point_of_interest_hours_on_point_of_interest_id"
   end
 
@@ -1118,8 +1117,8 @@ ActiveRecord::Schema.define(version: 2025_06_13_122420) do
     t.string "country"
     t.string "email"
     t.string "phone"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
+    t.datetime "created_at", precision: nil, null: false
+    t.datetime "updated_at", precision: nil, null: false
     t.uuid "uuid", default: -> { "gen_random_uuid()" }, null: false
     t.string "postal_region"
     t.text "description"
@@ -1136,8 +1135,8 @@ ActiveRecord::Schema.define(version: 2025_06_13_122420) do
     t.bigint "processable_id"
     t.string "operation_step"
     t.bigint "target_workbench_ids", default: [], array: true
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
+    t.datetime "created_at", precision: nil, null: false
+    t.datetime "updated_at", precision: nil, null: false
     t.index ["processable_type", "processable_id"], name: "index_processing_rules_on_processable_type_and_processable_id"
     t.index ["workbench_id"], name: "index_processing_rules_on_workbench_id"
     t.index ["workgroup_id"], name: "index_processing_rules_on_workgroup_id"
@@ -1163,8 +1162,8 @@ ActiveRecord::Schema.define(version: 2025_06_13_122420) do
     t.string "name"
     t.string "token"
     t.bigint "publication_api_id"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
+    t.datetime "created_at", precision: nil, null: false
+    t.datetime "updated_at", precision: nil, null: false
     t.index ["publication_api_id"], name: "index_publication_api_keys_on_publication_api_id"
   end
 
@@ -1172,8 +1171,8 @@ ActiveRecord::Schema.define(version: 2025_06_13_122420) do
     t.bigint "publication_id"
     t.bigint "publication_api_id"
     t.string "key"
-    t.datetime "created_at"
-    t.datetime "updated_at"
+    t.datetime "created_at", precision: nil
+    t.datetime "updated_at", precision: nil
     t.bigint "export_id"
     t.index ["publication_api_id"], name: "index_publication_api_sources_on_publication_api_id"
     t.index ["publication_id", "key"], name: "index_publication_api_sources_on_publication_id_and_key"
@@ -1184,8 +1183,8 @@ ActiveRecord::Schema.define(version: 2025_06_13_122420) do
     t.string "name"
     t.string "slug"
     t.bigint "workgroup_id"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
+    t.datetime "created_at", precision: nil, null: false
+    t.datetime "updated_at", precision: nil, null: false
     t.boolean "public", default: false
     t.index ["workgroup_id"], name: "index_publication_apis_on_workgroup_id"
   end
@@ -1194,8 +1193,8 @@ ActiveRecord::Schema.define(version: 2025_06_13_122420) do
     t.bigint "workgroup_id"
     t.hstore "export_options"
     t.boolean "enabled"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
+    t.datetime "created_at", precision: nil, null: false
+    t.datetime "updated_at", precision: nil, null: false
     t.string "name"
     t.boolean "force_daily_publishing", default: false
     t.boolean "enable_cache", default: false, null: false
@@ -1207,11 +1206,11 @@ ActiveRecord::Schema.define(version: 2025_06_13_122420) do
     t.bigint "publication_setup_id"
     t.string "parent_type"
     t.bigint "parent_id"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
+    t.datetime "created_at", precision: nil, null: false
+    t.datetime "updated_at", precision: nil, null: false
     t.string "status"
-    t.datetime "started_at"
-    t.datetime "ended_at"
+    t.datetime "started_at", precision: nil
+    t.datetime "ended_at", precision: nil
     t.string "creator"
     t.string "user_status", null: false
     t.string "error_uuid"
@@ -1225,19 +1224,19 @@ ActiveRecord::Schema.define(version: 2025_06_13_122420) do
     t.string "model_type"
     t.bigint "model_id"
     t.text "content"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
+    t.datetime "created_at", precision: nil, null: false
+    t.datetime "updated_at", precision: nil, null: false
     t.index ["model_id", "model_type"], name: "index_raw_imports_on_model_id_and_model_type", unique: true
   end
 
   create_table "referential_clonings", force: :cascade do |t|
     t.string "status"
-    t.datetime "started_at"
-    t.datetime "ended_at"
+    t.datetime "started_at", precision: nil
+    t.datetime "ended_at", precision: nil
     t.bigint "source_referential_id"
     t.bigint "target_referential_id"
-    t.datetime "created_at"
-    t.datetime "updated_at"
+    t.datetime "created_at", precision: nil
+    t.datetime "updated_at", precision: nil
     t.index ["source_referential_id"], name: "index_referential_clonings_on_source_referential_id"
     t.index ["target_referential_id"], name: "index_referential_clonings_on_target_referential_id"
   end
@@ -1247,8 +1246,8 @@ ActiveRecord::Schema.define(version: 2025_06_13_122420) do
     t.string "resource_type", null: false
     t.bigint "resource_id", null: false
     t.string "value", null: false
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
+    t.datetime "created_at", precision: nil, null: false
+    t.datetime "updated_at", precision: nil, null: false
     t.index ["code_space_id", "resource_type", "resource_id", "value"], name: "index_referential_codes_on_space_resource_and_value", unique: true
     t.index ["code_space_id", "resource_type", "resource_id"], name: "index_referential_codes_on_space_and_resource"
     t.index ["code_space_id"], name: "index_referential_codes_on_code_space_id"
@@ -1259,10 +1258,10 @@ ActiveRecord::Schema.define(version: 2025_06_13_122420) do
     t.bigint "referential_id"
     t.bigint "line_ids", array: true
     t.bigint "referential_source_id"
-    t.datetime "created_at"
-    t.datetime "updated_at"
+    t.datetime "created_at", precision: nil
+    t.datetime "updated_at", precision: nil
     t.daterange "periodes", array: true
-    t.datetime "flagged_urgent_at"
+    t.datetime "flagged_urgent_at", precision: nil
     t.integer "priority"
     t.index ["line_ids"], name: "index_referential_metadata_on_line_ids", using: :gin
     t.index ["referential_id"], name: "index_referential_metadata_on_referential_id"
@@ -1272,8 +1271,8 @@ ActiveRecord::Schema.define(version: 2025_06_13_122420) do
   create_table "referential_suites", force: :cascade do |t|
     t.bigint "new_id"
     t.bigint "current_id"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
+    t.datetime "created_at", precision: nil, null: false
+    t.datetime "updated_at", precision: nil, null: false
     t.index ["current_id"], name: "index_referential_suites_on_current_id"
     t.index ["new_id"], name: "index_referential_suites_on_new_id"
   end
@@ -1281,8 +1280,8 @@ ActiveRecord::Schema.define(version: 2025_06_13_122420) do
   create_table "referentials", force: :cascade do |t|
     t.string "name"
     t.string "slug"
-    t.datetime "created_at"
-    t.datetime "updated_at"
+    t.datetime "created_at", precision: nil
+    t.datetime "updated_at", precision: nil
     t.string "prefix"
     t.string "time_zone"
     t.string "bounds"
@@ -1294,13 +1293,13 @@ ActiveRecord::Schema.define(version: 2025_06_13_122420) do
     t.bigint "line_referential_id"
     t.bigint "stop_area_referential_id"
     t.bigint "workbench_id"
-    t.datetime "archived_at"
+    t.datetime "archived_at", precision: nil
     t.bigint "created_from_id"
     t.boolean "ready", default: false
     t.bigint "referential_suite_id"
     t.string "objectid_format"
-    t.datetime "merged_at"
-    t.datetime "failed_at"
+    t.datetime "merged_at", precision: nil
+    t.datetime "failed_at", precision: nil
     t.integer "vehicle_journeys_count"
     t.index ["created_from_id"], name: "index_referentials_on_created_from_id"
     t.index ["referential_suite_id"], name: "index_referentials_on_referential_suite_id"
@@ -1316,8 +1315,8 @@ ActiveRecord::Schema.define(version: 2025_06_13_122420) do
     t.bigint "opposite_route_id"
     t.string "published_name"
     t.string "wayback"
-    t.datetime "created_at"
-    t.datetime "updated_at"
+    t.datetime "created_at", precision: nil
+    t.datetime "updated_at", precision: nil
     t.string "checksum"
     t.text "checksum_source"
     t.string "data_source_ref"
@@ -1329,8 +1328,8 @@ ActiveRecord::Schema.define(version: 2025_06_13_122420) do
 
   create_table "routing_constraint_zones", force: :cascade do |t|
     t.string "name"
-    t.datetime "created_at"
-    t.datetime "updated_at"
+    t.datetime "created_at", precision: nil
+    t.datetime "updated_at", precision: nil
     t.string "objectid", null: false
     t.bigint "object_version"
     t.bigint "route_id", null: false
@@ -1346,11 +1345,11 @@ ActiveRecord::Schema.define(version: 2025_06_13_122420) do
     t.string "search_type", null: false
     t.string "name", null: false
     t.string "creator"
-    t.datetime "last_used_at"
+    t.datetime "last_used_at", precision: nil
     t.jsonb "search_attributes", default: {}
     t.text "description"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
+    t.datetime "created_at", precision: nil, null: false
+    t.datetime "updated_at", precision: nil, null: false
     t.string "parent_type", null: false
     t.index ["parent_type", "parent_id"], name: "index_saved_searches_on_parent_type_and_parent_id"
   end
@@ -1362,8 +1361,8 @@ ActiveRecord::Schema.define(version: 2025_06_13_122420) do
     t.integer "range_end"
     t.text "description"
     t.bigint "workbench_id"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
+    t.datetime "created_at", precision: nil, null: false
+    t.datetime "updated_at", precision: nil, null: false
     t.string "static_list", default: [], array: true
     t.index ["workbench_id"], name: "index_sequences_on_workbench_id"
   end
@@ -1385,8 +1384,8 @@ ActiveRecord::Schema.define(version: 2025_06_13_122420) do
     t.string "associated_services", default: [], array: true
     t.bigint "shape_referential_id"
     t.bigint "shape_provider_id"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
+    t.datetime "created_at", precision: nil, null: false
+    t.datetime "updated_at", precision: nil, null: false
     t.index ["shape_provider_id"], name: "index_service_facility_sets_on_shape_provider_id"
     t.index ["shape_referential_id"], name: "index_service_facility_sets_on_shape_referential_id"
   end
@@ -1395,15 +1394,15 @@ ActiveRecord::Schema.define(version: 2025_06_13_122420) do
     t.string "short_name", null: false
     t.bigint "workbench_id", null: false
     t.bigint "shape_referential_id", null: false
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
+    t.datetime "created_at", precision: nil, null: false
+    t.datetime "updated_at", precision: nil, null: false
     t.index ["shape_referential_id"], name: "index_shape_providers_on_shape_referential_id"
     t.index ["workbench_id"], name: "index_shape_providers_on_workbench_id"
   end
 
   create_table "shape_referentials", force: :cascade do |t|
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
+    t.datetime "created_at", precision: nil, null: false
+    t.datetime "updated_at", precision: nil, null: false
   end
 
   create_table "shapes", force: :cascade do |t|
@@ -1412,8 +1411,8 @@ ActiveRecord::Schema.define(version: 2025_06_13_122420) do
     t.uuid "uuid", default: -> { "gen_random_uuid()" }, null: false
     t.bigint "shape_referential_id", null: false
     t.bigint "shape_provider_id", null: false
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
+    t.datetime "created_at", precision: nil, null: false
+    t.datetime "updated_at", precision: nil, null: false
     t.index ["shape_provider_id"], name: "index_shapes_on_shape_provider_id"
     t.index ["shape_referential_id"], name: "index_shapes_on_shape_referential_id"
   end
@@ -1425,10 +1424,10 @@ ActiveRecord::Schema.define(version: 2025_06_13_122420) do
     t.string "status"
     t.string "error_uuid"
     t.string "creator"
-    t.datetime "started_at"
-    t.datetime "ended_at"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
+    t.datetime "started_at", precision: nil
+    t.datetime "ended_at", precision: nil
+    t.datetime "created_at", precision: nil, null: false
+    t.datetime "updated_at", precision: nil, null: false
     t.string "user_status", null: false
     t.string "message_key"
     t.index ["import_id"], name: "index_source_retrievals_on_import_id"
@@ -1444,8 +1443,8 @@ ActiveRecord::Schema.define(version: 2025_06_13_122420) do
     t.jsonb "downloader_options", default: {}
     t.string "checksum"
     t.jsonb "import_options", default: {}
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
+    t.datetime "created_at", precision: nil, null: false
+    t.datetime "updated_at", precision: nil, null: false
     t.boolean "ignore_checksum", default: false
     t.time "retrieval_time_of_day"
     t.bigint "scheduled_job_id"
@@ -1458,8 +1457,8 @@ ActiveRecord::Schema.define(version: 2025_06_13_122420) do
   create_table "stop_area_group_members", force: :cascade do |t|
     t.bigint "group_id", null: false
     t.bigint "stop_area_id", null: false
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
+    t.datetime "created_at", precision: nil, null: false
+    t.datetime "updated_at", precision: nil, null: false
     t.index ["group_id", "stop_area_id"], name: "index_stop_area_group_members_on_group_id_and_stop_area_id", unique: true
     t.index ["stop_area_id"], name: "index_stop_area_group_members_on_stop_area_id"
   end
@@ -1469,8 +1468,8 @@ ActiveRecord::Schema.define(version: 2025_06_13_122420) do
     t.text "description"
     t.bigint "stop_area_referential_id"
     t.bigint "stop_area_provider_id"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
+    t.datetime "created_at", precision: nil, null: false
+    t.datetime "updated_at", precision: nil, null: false
     t.string "short_name"
     t.uuid "uuid", default: -> { "gen_random_uuid()" }, null: false
     t.index ["stop_area_provider_id"], name: "index_stop_area_groups_on_stop_area_provider_id"
@@ -1481,8 +1480,8 @@ ActiveRecord::Schema.define(version: 2025_06_13_122420) do
     t.string "objectid"
     t.string "name"
     t.bigint "stop_area_referential_id"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
+    t.datetime "created_at", precision: nil, null: false
+    t.datetime "updated_at", precision: nil, null: false
     t.bigint "workbench_id"
     t.string "short_name"
     t.index ["workbench_id"], name: "index_stop_area_providers_on_workbench_id"
@@ -1496,8 +1495,8 @@ ActiveRecord::Schema.define(version: 2025_06_13_122420) do
 
   create_table "stop_area_referentials", force: :cascade do |t|
     t.string "name"
-    t.datetime "created_at"
-    t.datetime "updated_at"
+    t.datetime "created_at", precision: nil
+    t.datetime "updated_at", precision: nil
     t.string "objectid_format"
     t.string "registration_number_format"
     t.jsonb "locales", default: [{"code"=>"fr_FR", "default"=>true}, {"code"=>"en_UK", "default"=>true}, {"code"=>"nl_NL", "default"=>true}, {"code"=>"es_ES", "default"=>true}, {"code"=>"it_IT", "default"=>true}, {"code"=>"de_DE", "default"=>true}], array: true
@@ -1509,8 +1508,8 @@ ActiveRecord::Schema.define(version: 2025_06_13_122420) do
     t.bigint "from_id"
     t.bigint "to_id"
     t.boolean "both_way"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
+    t.datetime "created_at", precision: nil, null: false
+    t.datetime "updated_at", precision: nil, null: false
     t.string "checksum"
     t.text "checksum_source"
     t.bigint "stop_area_referential_id"
@@ -1540,13 +1539,13 @@ ActiveRecord::Schema.define(version: 2025_06_13_122420) do
     t.bigint "stop_area_referential_id"
     t.string "status"
     t.text "import_xml"
-    t.datetime "deleted_at"
-    t.datetime "created_at"
-    t.datetime "updated_at"
+    t.datetime "deleted_at", precision: nil
+    t.datetime "created_at", precision: nil
+    t.datetime "updated_at", precision: nil
     t.integer "waiting_time"
     t.string "kind"
     t.jsonb "localized_names"
-    t.datetime "confirmed_at"
+    t.datetime "confirmed_at", precision: nil
     t.jsonb "custom_field_values"
     t.jsonb "metadata", default: {}
     t.bigint "referent_id"
@@ -1581,8 +1580,8 @@ ActiveRecord::Schema.define(version: 2025_06_13_122420) do
     t.integer "position", null: false
     t.string "for_boarding"
     t.string "for_alighting"
-    t.datetime "created_at"
-    t.datetime "updated_at"
+    t.datetime "created_at", precision: nil
+    t.datetime "updated_at", precision: nil
     t.jsonb "metadata", default: {}
     t.boolean "flexible", default: false, null: false
     t.index ["objectid"], name: "stop_points_objectid_key", unique: true
@@ -1618,8 +1617,8 @@ ActiveRecord::Schema.define(version: 2025_06_13_122420) do
     t.date "start_date"
     t.date "end_date"
     t.bigint "calendar_id"
-    t.datetime "created_at"
-    t.datetime "updated_at"
+    t.datetime "created_at", precision: nil
+    t.datetime "updated_at", precision: nil
     t.string "color"
     t.bigint "created_from_id"
     t.string "checksum"
@@ -1648,34 +1647,34 @@ ActiveRecord::Schema.define(version: 2025_06_13_122420) do
     t.string "email", default: "", null: false
     t.string "encrypted_password", default: ""
     t.string "reset_password_token"
-    t.datetime "reset_password_sent_at"
-    t.datetime "remember_created_at"
+    t.datetime "reset_password_sent_at", precision: nil
+    t.datetime "remember_created_at", precision: nil
     t.integer "sign_in_count", default: 0
-    t.datetime "current_sign_in_at"
-    t.datetime "last_sign_in_at"
+    t.datetime "current_sign_in_at", precision: nil
+    t.datetime "last_sign_in_at", precision: nil
     t.string "current_sign_in_ip"
     t.string "last_sign_in_ip"
-    t.datetime "created_at"
-    t.datetime "updated_at"
+    t.datetime "created_at", precision: nil
+    t.datetime "updated_at", precision: nil
     t.bigint "organisation_id"
     t.string "name"
     t.string "confirmation_token"
-    t.datetime "confirmed_at"
-    t.datetime "confirmation_sent_at"
+    t.datetime "confirmed_at", precision: nil
+    t.datetime "confirmation_sent_at", precision: nil
     t.string "unconfirmed_email"
     t.integer "failed_attempts", default: 0
     t.string "unlock_token"
-    t.datetime "locked_at"
+    t.datetime "locked_at", precision: nil
     t.string "authentication_token"
     t.string "invitation_token"
-    t.datetime "invitation_sent_at"
-    t.datetime "invitation_accepted_at"
+    t.datetime "invitation_sent_at", precision: nil
+    t.datetime "invitation_accepted_at", precision: nil
     t.integer "invitation_limit"
     t.bigint "invited_by_id"
     t.string "invited_by_type"
-    t.datetime "invitation_created_at"
+    t.datetime "invitation_created_at", precision: nil
     t.string "username"
-    t.datetime "synced_at"
+    t.datetime "synced_at", precision: nil
     t.string "permissions", array: true
     t.string "profile"
     t.string "user_locale"
@@ -1714,8 +1713,8 @@ ActiveRecord::Schema.define(version: 2025_06_13_122420) do
     t.string "transport_mode"
     t.string "published_journey_name"
     t.string "published_journey_identifier"
-    t.datetime "created_at"
-    t.datetime "updated_at"
+    t.datetime "created_at", precision: nil
+    t.datetime "updated_at", precision: nil
     t.string "checksum"
     t.text "checksum_source"
     t.string "data_source_ref"
@@ -1737,8 +1736,8 @@ ActiveRecord::Schema.define(version: 2025_06_13_122420) do
     t.string "waypoint_type", null: false
     t.bigint "shape_id"
     t.float "coordinates", array: true
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
+    t.datetime "created_at", precision: nil, null: false
+    t.datetime "updated_at", precision: nil, null: false
     t.bigint "stop_area_id"
     t.index ["shape_id"], name: "index_waypoints_on_shape_id"
     t.index ["stop_area_id"], name: "index_waypoints_on_stop_area_id"
@@ -1750,8 +1749,8 @@ ActiveRecord::Schema.define(version: 2025_06_13_122420) do
     t.string "recipient_type", null: false
     t.bigint "recipient_id"
     t.string "invitation_code"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
+    t.datetime "created_at", precision: nil, null: false
+    t.datetime "updated_at", precision: nil, null: false
     t.index ["invitation_code"], name: "index_workbench_sharings_on_invitation_code"
     t.index ["recipient_type", "recipient_id", "workbench_id"], name: "index_workbench_sharings_uq_on_recipient_and_workbench", unique: true, where: "((recipient_type IS NOT NULL) AND (recipient_id IS NOT NULL))"
     t.index ["workbench_id"], name: "index_workbench_sharings_on_workbench_id"
@@ -1760,8 +1759,8 @@ ActiveRecord::Schema.define(version: 2025_06_13_122420) do
   create_table "workbenches", force: :cascade do |t|
     t.string "name"
     t.bigint "organisation_id"
-    t.datetime "created_at"
-    t.datetime "updated_at"
+    t.datetime "created_at", precision: nil
+    t.datetime "updated_at", precision: nil
     t.bigint "line_referential_id"
     t.bigint "stop_area_referential_id"
     t.bigint "output_id"
@@ -1784,15 +1783,15 @@ ActiveRecord::Schema.define(version: 2025_06_13_122420) do
     t.string "name"
     t.bigint "line_referential_id"
     t.bigint "stop_area_referential_id"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
+    t.datetime "created_at", precision: nil, null: false
+    t.datetime "updated_at", precision: nil, null: false
     t.string "import_types", default: [], array: true
     t.string "export_types", default: [], array: true
     t.bigint "owner_id"
     t.bigint "output_id"
-    t.datetime "aggregated_at"
+    t.datetime "aggregated_at", precision: nil
     t.string "nightly_aggregate_notification_target", default: "none"
-    t.datetime "deleted_at"
+    t.datetime "deleted_at", precision: nil
     t.integer "maximum_data_age", default: 0
     t.boolean "enable_purge_merged_data", default: false
     t.bigint "shape_referential_id", null: false

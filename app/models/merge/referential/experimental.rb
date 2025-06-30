@@ -285,13 +285,7 @@ module Merge::Referential
         end
 
         def rows
-          Chouette::StopPoint.connection.select_rows sql, "Load Existing StopPoints", stop_point_ids_binds
-        end
-
-        def stop_point_ids_binds
-          stop_point_ids.map do |stop_point_id|
-            [nil, stop_point_id]
-          end
+          Chouette::StopPoint.connection.select_rows sql, 'Load Existing StopPoints', stop_point_ids
         end
 
         def stop_point_ids_bind_params

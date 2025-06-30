@@ -1946,7 +1946,7 @@ class Export::NetexGeneric < Export::Base
       end
 
       def timestamp
-        read_attribute(:updated_at).utc.to_s(:number)
+        read_attribute(:updated_at).utc.to_fs(:number)
       end
 
       def persistent_identifier

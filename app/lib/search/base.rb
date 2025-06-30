@@ -844,8 +844,12 @@ module Search
         :count_id
       end
 
-      def column_alias(operation, sql_definition)
-        models.send(:column_alias_for, "#{operation} #{sql_definition.downcase}")
+      def column_alias_for_operation(operation, sql_definition)
+        column_alias_for("#{operation} #{sql_definition.downcase}")
+      end
+
+      def column_alias_for(field)
+        column_alias_tracker.send(:column_alias_for, field)
       end
 
       def aggregate_count(request)
@@ -920,6 +924,10 @@ module Search
         xaxis_dimension.transform(data)
       end
 
+      def column_alias_tracker
+        @column_alias_tracker ||= ::ActiveRecord::Calculations::ColumnAliasTracker.new(models.connection)
+      end
+
       # An attribute within a chart with its dedicated parameters (top_count, first, period).
       class Dimension
         def initialize(chart)
@@ -953,7 +961,7 @@ module Search
 
         # the aliases of the group clauses to be used in ORDER
         def sql_aliases
-          @sql_aliases ||= sql_expressions.map { |hc| chart.models.send(:column_alias_for, hc.downcase) }.freeze
+          @sql_aliases ||= sql_expressions.map { |hc| chart.column_alias_for(hc.downcase) }.freeze
         end
 
         def where(request) # rubocop:disable Metrics/MethodLength,Metrics/AbcSize
@@ -1226,7 +1234,7 @@ module Search
                  :aggregate_operation,
                  :aggregate_attribute,
                  :count_column_name,
-                 :column_alias,
+                 :column_alias_for_operation,
                  :aggregate_count,
                  to: :chart
 
@@ -1275,7 +1283,7 @@ module Search
           if aggregate_operation == 'count'
             count_column_name
           else
-            column_alias(aggregate_operation, aggregate_attribute.definition)
+            column_alias_for_operation(aggregate_operation, aggregate_attribute.definition)
           end
         end
 

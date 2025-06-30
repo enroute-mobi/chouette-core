@@ -1108,12 +1108,12 @@ module Import
         referential_inserter.time_tables << time_table
 
         time_table.dates.each do |time_table_date|
-          time_table_date.time_table_id = time_table.id
+          time_table_date.time_table = time_table
           referential_inserter.time_table_dates << time_table_date
         end
 
         time_table.periods.each do |time_table_period|
-          time_table_period.time_table_id = time_table.id
+          time_table_period.time_table = time_table
           referential_inserter.time_table_periods << time_table_period
         end
 
@@ -1257,12 +1257,12 @@ module Import
           referential_inserter.vehicle_journeys << vehicle_journey
 
           vehicle_journey.vehicle_journey_at_stops.each do |vehicle_journey_at_stop|
-            vehicle_journey_at_stop.vehicle_journey_id = vehicle_journey.id
+            vehicle_journey_at_stop.vehicle_journey = vehicle_journey
             referential_inserter.vehicle_journey_at_stops << vehicle_journey_at_stop
           end
 
           vehicle_journey.vehicle_journey_time_table_relationships.each do |vehicle_journey_time_table|
-            vehicle_journey_time_table.vehicle_journey_id = vehicle_journey.id
+            vehicle_journey_time_table.vehicle_journey = vehicle_journey
             referential_inserter.vehicle_journey_time_table_relationships << vehicle_journey_time_table
           end
 

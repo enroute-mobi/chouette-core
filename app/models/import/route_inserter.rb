@@ -24,7 +24,7 @@ module Import
       @save_handler&.call model
     end
 
-    def insert(route) # rubocop:disable Metrics/AbcSize,Metrics/MethodLength
+    def insert(route) # rubocop:disable Metrics/MethodLength
       return unless valid? route
 
       referential_inserter.routes << route
@@ -60,7 +60,8 @@ module Import
 
       journey_pattern.journey_pattern_stop_points.each do |journey_pattern_stop_point|
         journey_pattern_stop_point.journey_pattern = journey_pattern
-        journey_pattern_stop_point.stop_point = journey_pattern_stop_point.stop_point
+        # stop_point is reassigned to update stop_point_id
+        journey_pattern_stop_point.stop_point = journey_pattern_stop_point.stop_point # rubocop:disable Lint/SelfAssignment
 
         referential_inserter.journey_pattern_stop_points << journey_pattern_stop_point
       end

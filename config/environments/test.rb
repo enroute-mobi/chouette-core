@@ -19,8 +19,7 @@ Rails.application.configure do
   SmartEnv.set :IEV_URL, default: 'http://localhost:8080'
 
   # Turn false under Spring and add config.action_view.cache_template_loading = true.
-  # TODO: false until ruby 3.1 and with_model is updated to 2.2.0
-  config.cache_classes = false
+  config.cache_classes = true
 
   # Eager loading loads your whole application. When running a single test locally,
   # this probably isn't necessary. It's a good idea to do in a continuous integration

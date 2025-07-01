@@ -1315,7 +1315,11 @@ RSpec.describe Import::NetexGeneric do
           <Line id="line-1">
             <Name>Line Sample</Name>
           </Line> 
-          
+
+          <Route id="1">
+            <LineRef ref="line-1"/>
+          </Route>
+
           <DayType id="daytype-1">
             <Name>Sample</Name>
             <properties>

@@ -529,7 +529,7 @@ module Import
                       :destination_displays, :code_builder, :code_space, :lookup
 
         def chouette_line
-          line = lookup.lines.find(line_ref.ref)
+          line = lookup.lines.find(line_ref.ref) if lookup
           add_error :line_not_found unless line
 
           line

@@ -28,7 +28,6 @@ if ENV['DD_AGENT_HOST']
     c.tracing.instrument :active_record, service_name: "#{app_name}-postgresql"
     c.tracing.instrument :delayed_job, service_name: "#{app_name}-worker"
     c.tracing.instrument :faraday, service_name: default_service
-    c.tracing.instrument :graphql, schemas: [ChouetteSchema], service_name: "#{app_name}-front"
     c.tracing.instrument :http, service_name: default_service
     c.tracing.instrument :rake, service_name: "#{app_name}-rake"
     c.tracing.instrument :redis, service_name: "#{app_name}-cache"

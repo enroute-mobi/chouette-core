@@ -1,4 +1,9 @@
 class ChouetteSchema < GraphQL::Schema
+  trace_with(
+    GraphQL::Tracing::DataDogTrace,
+    service: "#{ENV.fetch('DD_AGENT_APP', 'chouette-core')}-front"
+  )
+
   default_max_page_size 50
 
   mutation(Types::MutationType)

@@ -130,7 +130,7 @@ module Import
 
       # Overall period defined by all NeTEx DayType validity periods
       def netex_validity_period
-        PeriodBuilder.add(source_decorator.validity_periods).range
+        PeriodBuilder.add(source_decorator.day_type_valid_periods).range
       end
 
       # Overall period defined by all NeTEx DayTypeAssignement/OperatingPeriod instances
@@ -150,22 +150,8 @@ module Import
           @line_refs ||= routes.map { |r| r.line_ref&.ref }.compact.uniq
         end
 
-        def frame_validity_periods
-          frames.select { |frame| frame&.valid_between.present? }.map(&:valid_between).map do |valid_between|
-            Range.new(valid_between&.from_date, valid_between&.to_date)
-          end.uniq
-        end
-
         def day_type_valid_periods
-          day_types.select { |day_type| day_type&.valid_between.present? }.map(&:valid_between).map do |valid_between|
-            Range.new(valid_between&.from_date, valid_between&.to_date)
-          end.uniq
-        end
-
-        def validity_periods
-          (frame_validity_periods + day_type_valid_periods).map do |period|
-            PeriodBuilder.add(period).range
-          end
+          day_types.map { |d| PeriodBuilder.add(d.validity_period).add(d.frame_validity_period).range }.compact
         end
 
         def operating_period_ranges

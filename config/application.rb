@@ -110,7 +110,7 @@ module Chouette
       'FeatureChecker::NotAuthorizedError' => :unauthorized
     )
 
-    config.action_mailer.preview_path = Rails.root.join('spec/mailers/previews')
+    config.action_mailer.preview_paths << Rails.root.join('spec/mailers/previews')
 
     config.subscriptions_notifications_recipients = []
 

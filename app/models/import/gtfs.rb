@@ -567,6 +567,10 @@ class Import::Gtfs < Import::Base
     end
   end
 
+  def store_imported_stop_area_registration_number(stop_area)
+    (@store_imported_stop_area_registration_number ||= []) << stop_area.registration_number
+  end
+
   def import_stops
     sorted_stops = source.stops.sort_by { |s| s.parent_station.present? ? 1 : 0 }
 
@@ -666,6 +670,7 @@ class Import::Gtfs < Import::Base
         end
 
         save_model stop_area, resource: resource
+        store_imported_stop_area_registration_number(stop_area)
 
         StopAreaZone.new(
           zone_id: stop.zone_id,
@@ -677,7 +682,8 @@ class Import::Gtfs < Import::Base
     end
 
     if disable_missing_resources?
-      unknown_stop_areas = stop_area_provider.stop_areas.where.not(registration_number: @stop_areas_id_by_registration_number.keys)
+      unknown_stop_areas =
+        stop_area_provider.stop_areas.where.not(registration_number: @store_imported_stop_area_registration_number)
       unknown_stop_areas.update_all deleted_at: Time.current
     end
   end

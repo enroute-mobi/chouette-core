@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2025_09_07_060228) do
+ActiveRecord::Schema[7.1].define(version: 2025_09_07_060228) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "btree_gin"
   enable_extension "hstore"
@@ -381,8 +381,8 @@ ActiveRecord::Schema[7.0].define(version: 2025_09_07_060228) do
     t.datetime "created_at", precision: nil, null: false
     t.datetime "updated_at", precision: nil, null: false
     t.index ["control_context_id"], name: "index_controls_on_control_context_id"
-    t.index ["control_list_id", "control_context_id", "position"], name: "index_controls_position", unique: true
     t.index ["control_list_id"], name: "index_controls_on_control_list_id"
+    t.unique_constraint ["control_list_id", "control_context_id", "position"], deferrable: :deferred, name: "index_controls_position"
   end
 
   create_table "cross_referential_index_entries", force: :cascade do |t|
@@ -533,7 +533,7 @@ ActiveRecord::Schema[7.0].define(version: 2025_09_07_060228) do
     t.boolean "exit_flag", default: false
     t.string "entrance_type"
     t.string "description"
-    t.geography "position", limit: {:srid=>4326, :type=>"st_point", :geographic=>true}
+    t.geography "position", limit: {srid: 4326, type: "st_point", geographic: true}
     t.string "address_line_1"
     t.string "zip_code"
     t.string "city_name"
@@ -1011,8 +1011,8 @@ ActiveRecord::Schema[7.0].define(version: 2025_09_07_060228) do
     t.datetime "updated_at", precision: nil, null: false
     t.bigint "macro_context_id"
     t.index ["macro_context_id"], name: "index_macros_on_macro_context_id"
-    t.index ["macro_list_id", "macro_context_id", "position"], name: "index_macros_position", unique: true
     t.index ["macro_list_id"], name: "index_macros_on_macro_list_id"
+    t.unique_constraint ["macro_list_id", "macro_context_id", "position"], deferrable: :deferred, name: "index_macros_position"
   end
 
   create_table "merges", force: :cascade do |t|
@@ -1413,7 +1413,7 @@ ActiveRecord::Schema[7.0].define(version: 2025_09_07_060228) do
 
   create_table "shapes", force: :cascade do |t|
     t.string "name"
-    t.geometry "geometry", limit: {:srid=>4326, :type=>"line_string"}
+    t.geometry "geometry", limit: {srid: 4326, type: "line_string"}
     t.uuid "uuid", default: -> { "gen_random_uuid()" }, null: false
     t.bigint "shape_referential_id", null: false
     t.bigint "shape_provider_id", null: false
@@ -1505,9 +1505,9 @@ ActiveRecord::Schema[7.0].define(version: 2025_09_07_060228) do
     t.datetime "updated_at", precision: nil
     t.string "objectid_format"
     t.string "registration_number_format"
-    t.jsonb "locales", default: [{"code"=>"fr_FR", "default"=>true}, {"code"=>"en_UK", "default"=>true}, {"code"=>"nl_NL", "default"=>true}, {"code"=>"es_ES", "default"=>true}, {"code"=>"it_IT", "default"=>true}, {"code"=>"de_DE", "default"=>true}], array: true
-    t.jsonb "stops_selection_displayed_fields", default: {"local_id"=>true}
-    t.jsonb "route_edition_available_stops", default: {"gdl"=>false, "lda"=>false, "zdep"=>true, "zdlp"=>false}
+    t.jsonb "locales", default: [{"code" => "fr_FR", "default" => true}, {"code" => "en_UK", "default" => true}, {"code" => "nl_NL", "default" => true}, {"code" => "es_ES", "default" => true}, {"code" => "it_IT", "default" => true}, {"code" => "de_DE", "default" => true}], array: true
+    t.jsonb "stops_selection_displayed_fields", default: {"local_id" => true}
+    t.jsonb "route_edition_available_stops", default: {"gdl" => false, "lda" => false, "zdep" => true, "zdlp" => false}
   end
 
   create_table "stop_area_routing_constraints", force: :cascade do |t|

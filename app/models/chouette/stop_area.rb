@@ -1,5 +1,3 @@
-require 'geokit'
-require 'geo_ruby'
 module Chouette
   class StopArea < Chouette::ActiveRecord
     include StopAreaReferentialSupport

@@ -1,6 +1,6 @@
-class Destination::SFTP < ::Destination
-  require 'net/sftp'
+require 'net/sftp'
 
+class Destination::SFTP < ::Destination
   option :host
   option :port, default_value: 22
   option :directory

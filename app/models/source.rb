@@ -1,4 +1,4 @@
-require 'net/ftp'
+# frozen_string_literal: true
 
 class Source < ApplicationModel
   extend Enumerize
@@ -379,7 +379,7 @@ class Source < ApplicationModel
       protected
 
       def digest_stream(io)
-        buffer = ""
+        buffer = +''
         while io.read 16384, buffer
           digest.update buffer
         end

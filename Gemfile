@@ -39,9 +39,6 @@ gem 'has_array_of', en_route: 'has_array_of'
 gem 'rails-observers'
 # gem 'wisper', '2.0.0'
 
-# Use SeedBank for spliting seeds
-gem 'seedbank', '0.4.0'
-
 gem 'faraday_middleware'
 gem 'faraday'
 
@@ -143,7 +140,7 @@ gem 'sentry-delayed_job'
 gem 'sentry-ruby'
 gem 'sentry-rails'
 
-gem 'coverband', '~> 6.0.0', require: false # TODO: CHOUETTE-4408 cannot update to 6.1 until ruby 3.1
+gem 'coverband', require: false
 
 gem 'nest', en_route: 'nest'
 
@@ -222,5 +219,5 @@ gem 'cuckoo', en_route: 'cuckoo'
 
 gem 'curb'
 
-gem 'chartkick'
+gem 'chartkick' # check the corresponding Chart.js version to change in package.json
 gem 'groupdate'

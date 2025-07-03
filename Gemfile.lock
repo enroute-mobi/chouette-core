@@ -66,8 +66,7 @@ GIT
 
 GIT
   remote: https://bitbucket.org/enroute-mobi/netex.git
-  revision: d7b4cbabdca37787c3c103c5da6a0ecfaecb9a4f
-  branch: DATA-42-idfm-profiles-tad
+  revision: ff2c9a33cc00d8d547f71c26120bb90057f1c485
   specs:
     netex (0.1.2)
       activesupport

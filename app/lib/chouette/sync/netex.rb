@@ -2,22 +2,6 @@ module Chouette::Sync
   module Netex
     class Decorator < Chouette::Sync::Updater::ResourceDecorator
 
-      def line_id
-        lookup.lines.find_id(line_ref&.ref)
-      end
-
-      def stop_area_id
-        lookup.stop_areas.find_id(
-          __getobj__.try(:stop_place_ref).try(:ref) ||
-          __getobj__.try(:quay_ref).try(:ref) ||
-          tag(:parent_id)
-        )
-      end
-
-      def company_id
-        lookup.companies.find_id(operator_ref&.ref)
-      end
-
       def codes
         key_list.select(&type_of_key_filter('ALTERNATE_IDENTIFIER'))
       end

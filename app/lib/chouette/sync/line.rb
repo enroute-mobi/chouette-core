@@ -52,7 +52,7 @@ module Chouette::Sync
         end
 
         def line_company_id
-          company_id
+          lookup.companies.find_id(operator_ref&.ref)
         end
 
         def line_secondary_company_refs

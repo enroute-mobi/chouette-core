@@ -19,6 +19,10 @@ module Chouette::Sync
       class Decorator < Chouette::Sync::Netex::Decorator
         delegate :source, to: :updater
 
+        def stop_area_id
+          lookup.stop_areas.find_id(tag(:parent_id))
+        end
+
         def stop_area_provider_id
           resolve :stop_area_provider, data_source_ref
         end

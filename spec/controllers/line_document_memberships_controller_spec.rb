@@ -8,7 +8,7 @@ RSpec.describe LineDocumentMembershipsController, type: :controller do
       workgroup do
         document_type :document_type
 
-        workbench organisation: Organisation.find_by(code: 'first') do
+        workbench :workbench, organisation: Organisation.find_by(code: 'first') do
           document_provider :document_provider
 
           line :line1, name: 'Line one', published_name: 'First Line', number: 'L1'
@@ -17,16 +17,21 @@ RSpec.describe LineDocumentMembershipsController, type: :controller do
           document :document, document_type: :document_type, document_provider: :document_provider
           document :unassociated_document, document_type: :document_type, document_provider: :document_provider
         end
+
+        workbench :other_workbench do
+          document :other_workbench_document, document_type: :document_type
+        end
       end
     end
   end
 
-  let(:workbench) { context.workbench }
+  let(:workbench) { context.workbench(:workbench) }
   let(:line) { context.line(:line1) }
   let(:redirect_path) { workbench_line_referential_line_document_memberships_path(workbench, line) }
 
   let(:document) { context.document(:document) }
   let(:unassociated_document) { context.document(:unassociated_document) }
+  let(:other_workbench_document) { context.document(:other_workbench_document) }
 
   let(:line_policy_update) { true }
   let(:line_policy) { double(update: line_policy_update) }
@@ -66,7 +71,9 @@ RSpec.describe LineDocumentMembershipsController, type: :controller do
     context 'when user can update lines' do
       it 'returns unassociated documents' do
         expect(assigns(:document_memberships).map(&:document)).to eq([document])
-        expect(assigns(:unassociated_documents).map(&:document)).to eq([unassociated_document])
+        expect(assigns(:unassociated_documents).map(&:document)).to(
+          eq([unassociated_document, other_workbench_document])
+        )
       end
     end
   end
@@ -90,6 +97,20 @@ RSpec.describe LineDocumentMembershipsController, type: :controller do
         post :create, params: { workbench_id: workbench.id, line_id: line.id, document_id: document.id }
         expect(line.reload.documents).to eq([document])
         expect(flash[:error]).to be_present
+        expect(response).to redirect_to(redirect_path)
+      end
+    end
+
+    context 'with document from other workbench' do
+      it 'associates document' do
+        post :create,
+             params: {
+               workbench_id: workbench.id,
+               line_id: line.id,
+               document_id: other_workbench_document.id
+             }
+        expect(line.reload.documents).to eq([other_workbench_document])
+        expect(flash[:success]).to be_present
         expect(response).to redirect_to(redirect_path)
       end
     end
@@ -119,7 +140,10 @@ RSpec.describe LineDocumentMembershipsController, type: :controller do
 
       it 'is not found' do
         expect(
-          delete(:destroy, params: { workbench_id: workbench.id, line_id: line.id, id: document_membership.id })
+          delete(
+            :destroy,
+            params: { workbench_id: workbench.id, line_id: line.id, id: document_membership.id }
+          )
         ).to render_template('errors/not_found')
       end
     end

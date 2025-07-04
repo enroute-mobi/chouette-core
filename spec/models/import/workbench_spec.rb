@@ -294,6 +294,20 @@ RSpec.describe Import::Workbench do
         it { is_expected.to be_nil }
       end
     end
+
+    context 'with skip legacy netex import feature' do
+      before do
+        owner = import_workbench.workbench.organisation
+        owner.features.push('skip_legacy_netex_import')
+        owner.save!
+
+        import_workbench.workgroup.import_types = ['Import::Netex']
+      end
+
+      context 'with a NETEX file' do
+        it { is_expected.to be_nil }
+      end
+    end
   end
 
   describe '#done!' do

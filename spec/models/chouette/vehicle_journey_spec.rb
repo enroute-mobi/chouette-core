@@ -732,7 +732,7 @@ describe Chouette::VehicleJourney, type: :model do
         item['arrival_time']['hour']   = "12"
         item['departure_time']['hour'] = "11"
         vehicle_journey.update_vjas_from_state(state['vehicle_journey_at_stops'])
-        expect(item['errors'][:arrival_time].size).to eq 1
+        expect(item['errors'].size).to eq 1
       end
     end
 

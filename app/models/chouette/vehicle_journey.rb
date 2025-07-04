@@ -269,7 +269,7 @@ module Chouette
         stop = create_or_find_vjas_from_state(vjas)
         stop.update(params)
         vjas.delete('errors')
-        vjas['errors'] = stop.errors if stop.errors.any?
+        vjas['errors'] = stop.errors.full_messages.uniq if stop.errors.any?
       end
     end
 

@@ -1,5 +1,11 @@
 fr:
   activerecord:
+    attributes:
+      vehicle_journey_at_stop:
+        arrival_time: "Arrivée"
+        departure_time: "Départ"
+        earliest_departure_time_of_day: "Premier départ"
+        latest_arrival_time_of_day: "Dernière arrivée"
     errors:
       models:
         vehicle_journey_at_stop:

@@ -1,6 +1,6 @@
 import React, { Component } from 'react'
 import PropTypes from 'prop-types'
-import { flatMap, isEmpty, map, some, uniqBy } from 'lodash'
+import { compact, flatMap, isEmpty, map, some, uniq, uniqBy } from 'lodash'
 import autoBind from 'react-autobind'
 import VehicleJourney from './VehicleJourney'
 import StopAreaHeaderManager from '../../helpers/stop_area_header_manager'
@@ -177,6 +177,8 @@ export default class VehicleJourneysList extends Component {
         </div>
       )
     } else {
+      const errorsByVehicleJourney = this.vehicleJourneysList.map(vj => vj.errors || uniq(compact(flatMap(vj.vehicle_journey_at_stops, 'errors'))))
+
       return (
         <div
           ref='vehicleJourneys'
@@ -190,17 +192,17 @@ export default class VehicleJourneysList extends Component {
               </div>
             )}
 
-            {some(this.vehicleJourneysList, 'errors') && (
+            {some(errorsByVehicleJourney, vjErrors => vjErrors && vjErrors.length) && (
               <div className="alert alert-danger mt-sm">
                 <strong>{I18n.tc("error")}</strong>
-                {this.vehicleJourneysList.map((vj, index) =>
-                  vj.errors && vj.errors.map((err, i) => {
+                {errorsByVehicleJourney.map((vjErrors, index) =>
+                  (vjErrors && vjErrors.length && vjErrors.map((err, i) => {
                     return (
                       <ul key={i}>
                         <li>{err}</li>
                       </ul>
                     )
-                  })
+                  })) || ""
                 )}
               </div>
             )}

@@ -170,6 +170,11 @@ fr:
         vehicle_journey_at_stop_ids: "La liste des horaires"
         start_time: Heure de départ
         constraint_exclusions: Exclusions d'interdictions de trafic
+      vehicle_journey/vehicle_journey_at_stops:
+        arrival_time: "Une arrivée de la liste des horaires"
+        departure_time: "Un départ de la liste des horaires"
+        earliest_departure_time_of_day: "Un premier départ de la liste des horaires"
+        latest_arrival_time_of_day: "Une dernière arrivée de la liste des horaires"
     errors:
       models:
         vehicle_journey:

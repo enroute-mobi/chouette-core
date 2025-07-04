@@ -18,6 +18,12 @@ fr:
         password_confirmation: "Confirmation du mot de passe"
         current_password: "Mot de passe actuel"
         workbench_invitation_code: "Code de confirmation d'un Groupe de Travail"
+    errors:
+      models:
+        subscription:
+          attributes:
+            workbench_invitation_code:
+              blank: "Le code de confirmation du Groupe de Travail est requis"
   simple_form:
     hints:
       subscription:

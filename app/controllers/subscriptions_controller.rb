@@ -3,8 +3,6 @@
 class SubscriptionsController < ApplicationController
   layout 'devise'
 
-  before_action :check_feature_is_activated
-
   def create
     if resource.save
       sign_in resource.user
@@ -44,7 +42,4 @@ class SubscriptionsController < ApplicationController
     Subscription
   end
 
-  def check_feature_is_activated
-    not_found unless Subscription.enabled?
-  end
 end

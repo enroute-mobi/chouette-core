@@ -18,6 +18,12 @@ en:
         password_confirmation: "Password confirmation"
         current_password: "Actual password"
         workbench_invitation_code: "Workgroup confirmation Code"
+    errors:
+      models:
+        subscription:
+          attributes:
+            workbench_invitation_code:
+              blank: "The Workgroup Confirmation Code is required"
   simple_form:
     hints:
       subscription:

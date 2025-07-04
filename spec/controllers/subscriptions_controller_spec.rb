@@ -1,46 +1,25 @@
 # frozen_string_literal: true
 
 RSpec.describe SubscriptionsController, type: :controller do
-  let(:params){{
-    user_name: "foo",
-    organisation_name: "bar"
-  }}
+  let(:email) { 'email@email.com' }
+  let(:workbench_invitation_code) { '' }
 
+  let(:params) do
+    {
+      organisation_name: 'organisation_name',
+      user_name: 'user_name',
+      email: email,
+      password: 'password$42',
+      password_confirmation: 'password$42',
+      workbench_invitation_code: workbench_invitation_code
+    }
+  end
   let(:resource){ assigns(:subscription)}
 
   describe "POST create" do
-    before(:each) do
-      allow(Subscription).to receive(:enabled?) { false }
-    end
+    subject { post :create, params: { subscription: params } }
 
-    it "should be not found" do
-      post :create, params: { subscription: params }
-      expect(response).to have_http_status 404
-    end
-
-    context "with the feature enabled" do
-      before(:each) do
-        allow(Subscription).to receive(:enabled?) { true }
-      end
-
-      it "should be add errors" do
-        post :create, params: { subscription: params }
-        expect(response).to have_http_status 200
-        expect(resource.errors[:email]).to be_present
-      end
-    end
-
-    context "with all data set" do
-      let(:params) do
-        {
-          organisation_name: 'organisation_name',
-          user_name: 'user_name',
-          email: 'email@email.com',
-          password: 'password$42',
-          password_confirmation: 'password$42'
-        }
-      end
-
+    context 'with Subscription enabled' do
       before(:each) do
         allow(Subscription).to receive(:enabled?) { true }
       end
@@ -58,7 +37,6 @@ RSpec.describe SubscriptionsController, type: :controller do
 
       context "when notifications are enabled" do
         before(:each) do
-          allow(Subscription).to receive(:enabled?) { true }
           allow(SubscriptionMailer).to receive(:recipients) { ['test@enroute.mobi'] }
         end
         context 'after_create' do
@@ -71,15 +49,54 @@ RSpec.describe SubscriptionsController, type: :controller do
 
       context "when notifications are disabled" do
         before(:each) do
-          allow(Subscription).to receive(:enabled?) { false }
-
-          expect(Subscription.enabled?).to be_falsy
+          allow(SubscriptionMailer).to receive(:recipients) { [] }
         end
+
         context 'after_create' do
           it 'should not schedule mailer' do
             expect(SubscriptionMailer).to_not receive(:created)
             post :create, params: { subscription: params }
           end
+        end
+      end
+
+      context 'with invalid params' do
+        let(:email) { '' }
+
+        it 'should require email' do
+          subject
+          expect(response).to have_http_status 200
+          expect(resource.errors[:email]).to be_present
+        end
+      end
+    end
+
+    context 'with Subscription disabled' do
+      before(:each) do
+        allow(Subscription).to receive(:enabled?) { false }
+      end
+
+      it 'should require workbench_invitation_code' do
+        subject
+        expect(response).to have_http_status 200
+        expect(resource.errors[:workbench_invitation_code]).to be_present
+      end
+
+      context 'with a valid workbench_invitation_code' do
+        let(:workbench) do
+          Chouette.create do
+            workbench invitation_code: 'W-123-456-789'
+          end.workbench.tap do |w|
+            w.update(organisation: nil)
+          end
+        end
+
+        let(:workbench_invitation_code) { workbench.invitation_code }
+
+        it 'should create the subscription' do
+          subject
+          expect(response).to redirect_to workbench_path(workbench)
+          expect(User.count).to eq 1
         end
       end
     end

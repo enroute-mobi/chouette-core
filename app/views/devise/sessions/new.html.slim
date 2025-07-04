@@ -1,9 +1,8 @@
 - content_for :page_header_title, t('.title')
 
-- if Subscription.enabled?
-  - content_for :page_header_actions do
-    = 'devise.sessions.new.no_account'.t
-    = link_to 'devise.sessions.new.sign_up'.t, new_user_registration_path, class: 'btn btn-default'
+- content_for :page_header_actions do
+  = 'devise.sessions.new.no_account'.t
+  = link_to 'devise.sessions.new.sign_up'.t, new_user_registration_path, class: 'btn btn-default'
 
 .page_content#devise
   #sessions_new.grid.grid-cols-3

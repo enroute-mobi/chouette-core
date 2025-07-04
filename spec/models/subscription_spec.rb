@@ -2,9 +2,14 @@
 
 RSpec.describe Subscription do
   subject(:subscription) { Subscription.new }
+  let(:enabled) { true }
+
+  before { allow(Subscription).to receive(:enabled?).and_return(enabled) if !enabled.nil? }
 
   describe '#enabled?' do
     subject { Subscription.enabled? }
+
+    let(:enabled) { nil }
 
     context 'when Chouette::Config.subscription is enabled' do
       before { allow(Chouette::Config.subscription).to receive(:enabled?).and_return(true) }
@@ -94,7 +99,15 @@ RSpec.describe Subscription do
     end
 
     it { is_expected.to_not validate_presence_of(:workbench_invitation_code) }
+
+    context 'when Subscription is disabled' do
+      let(:enabled) { false }
+
+      it { is_expected.to validate_presence_of(:workbench_invitation_code) }
+    end
+
     it { is_expected.to_not allow_value('dummy').for(:workbench_invitation_code) }
+
   end
 
   describe 'save' do

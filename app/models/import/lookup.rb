@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Import
   # Experimental version
   module Lookup
@@ -51,29 +53,28 @@ module Import
       def internal_stop_areas
         @internal_stop_areas ||=
           Collection.new
-            .add(Finder::RegistrationNumber.new(stop_area_provider.stop_areas, source: :provider))
-            .add(Finder::RegistrationNumber.new(stop_area_referential.stop_areas, source: :workgroup))
+                    .add(Finder::RegistrationNumber.new(stop_area_provider.stop_areas, source: :provider))
+                    .add(Finder::RegistrationNumber.new(stop_area_referential.stop_areas, source: :workgroup))
       end
-
 
       def internal_lines
         @internal_lines ||=
           Collection.new
-            .add(Finder::RegistrationNumber.new(line_provider.lines, source: :provider))
-            .add(Finder::RegistrationNumber.new(line_referential.lines, source: :workgroup))
+                    .add(Finder::RegistrationNumber.new(line_provider.lines, source: :provider))
+                    .add(Finder::RegistrationNumber.new(line_referential.lines, source: :workgroup))
       end
 
       def internal_companies
         @internal_companies ||=
           Collection.new
-            .add(Finder::RegistrationNumber.new(line_provider.companies, source: :provider))
-            .add(Finder::RegistrationNumber.new(line_referential.companies, source: :workgroup))
+                    .add(Finder::RegistrationNumber.new(line_provider.companies, source: :provider))
+                    .add(Finder::RegistrationNumber.new(line_referential.companies, source: :workgroup))
       end
 
       def internal_shapes
         @internal_shapes ||=
           Collection.new
-            .add(Finder::Code.new(shape_provider.shapes, code_space: code_space, source: :provider))
+                    .add(Finder::Code.new(shape_provider.shapes, code_space: code_space, source: :provider))
       end
     end
 
@@ -99,7 +100,7 @@ module Import
       # Returns identifier associated to the given code (or nil).
       # Additionnal arguments are used by on_response handler
       def find_id(code, **arguments)
-        return nil unless code.present?
+        return nil if code.blank?
 
         response = internal_collection.find_id(code)
         on_response response, **arguments
@@ -109,7 +110,7 @@ module Import
       # Returns model associated to the given code (or nil).
       # Additionnal arguments are used by on_response handler
       def find(code, **arguments)
-        return nil unless code.present?
+        return nil if code.blank?
 
         response = internal_collection.find(code)
         on_response response, **arguments
@@ -145,7 +146,7 @@ module Import
         @cache ||= Cache.new
       end
 
-      def find_id(code, **arguments)
+      def find_id(code, **_arguments)
         cache.fetch_id(code) do
           finders.lazy.map do |finder|
             id = finder.find_id(code)
@@ -154,7 +155,7 @@ module Import
         end
       end
 
-      def find(code, **arguments)
+      def find(code, **_arguments)
         cache.fetch_model(code) do
           finders.lazy.map do |finder|
             model = finder.find(code)

@@ -1511,7 +1511,7 @@ module Import
               next
             end
 
-            if stop_area_id = lookup.stop_areas.find_id(stop_area_code)
+            if (stop_area_id = lookup.stop_areas.find_id(stop_area_code))
               scheduled_stop_point = ScheduledStopPoint.new(
                 id: scheduled_stop_point_id,
                 stop_area_id: stop_area_id,

@@ -1,4 +1,4 @@
 
 collection @connection_links
 
-extends 'connection_links/show.geo'
+extends 'connection_links/show'

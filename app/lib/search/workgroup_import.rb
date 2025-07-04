@@ -3,7 +3,7 @@
 module Search
   class WorkgroupImport < AbstractImport
     class Chart < superclass::Chart
-      group_by_attribute 'workbench_id', :string, joins: { workbench: {} }, selects: %w[workbenches.name]
+      group_by_attribute 'workbench_id', :string, joins: { workbench: {} }, selects: %w[public.workbenches.name]
     end
   end
 end

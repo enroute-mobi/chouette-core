@@ -506,8 +506,8 @@ class Export::NetexGeneric < Export::Base
     def stop_areas
       export_scope.stop_areas
                   .left_joins(:codes, :fare_zones)
-                  .select('stop_areas.*', "area_type = 'zdep' as quay", stop_areas_codes, fare_zone_ids)
-                  .group('stop_areas.id')
+                  .select('public.stop_areas.*', "area_type = 'zdep' as quay", stop_areas_codes, fare_zone_ids)
+                  .group('public.stop_areas.id')
                   .order(quay: :desc)
     end
 
@@ -661,8 +661,8 @@ class Export::NetexGeneric < Export::Base
     def flexible_stop_areas
       export_scope.flexible_stop_areas
                   .left_joins(:codes)
-                  .select('stop_areas.*', stop_areas_codes)
-                  .group('stop_areas.id')
+                  .select('public.stop_areas.*', stop_areas_codes)
+                  .group('public.stop_areas.id')
     end
 
     def stop_areas_codes

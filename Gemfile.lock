@@ -643,7 +643,7 @@ GEM
       net-smtp
       premailer (~> 1.7, >= 1.7.9)
     prism (1.4.0)
-    prometheus-client (4.2.4)
+    prometheus-client (4.2.5)
       base64
     public_suffix (6.0.1)
     puma (6.6.0)

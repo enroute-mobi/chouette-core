@@ -83,6 +83,8 @@ module Import
 
       referential_builder.create do |referential|
         self.referential = referential
+        self.imported_line_ids |= referential_metadata.line_ids
+
         referential.switch
 
         block.call referential
@@ -103,10 +105,94 @@ module Import
     end
 
     def referential_metadata
-      return unless [imported_line_ids, netex_source.validity_period].all?(&:present?)
+      @referential_metadata ||= ReferentialMetadataBuilder.new(netex_source, lookup).referential_metadata
+    end
 
-      @referential_metadata ||=
-        ReferentialMetadata.new line_ids: imported_line_ids, periodes: [netex_source.validity_period]
+    class ReferentialMetadataBuilder
+      def initialize(source, lookup)
+        @source = source
+        @lookup = lookup
+      end
+      attr_reader :source, :lookup
+
+      def source_decorator
+        @source_decorator ||= SourceDecorator.new(source)
+      end
+
+      def route_line_ids
+        @route_line_ids ||= lookup.lines.find_ids(source_decorator.line_refs)
+      end
+
+      def validity_period
+        @validity_period ||= netex_validity_period || day_types_overall_period
+      end
+
+      # Overall period defined by all NeTEx DayType validity periods
+      def netex_validity_period
+        PeriodBuilder.add(source_decorator.day_type_valid_periods).range
+      end
+
+      # Overall period defined by all NeTEx DayTypeAssignement/OperatingPeriod instances
+      def day_types_overall_period
+        PeriodBuilder
+          .add(source_decorator.operating_period_ranges)
+          .add(source_decorator.day_type_assignment_ranges)
+          .range
+      end
+
+      def referential_metadata
+        return unless [route_line_ids, validity_period].all?(&:present?)
+
+        @referential_metadata ||=
+          ReferentialMetadata.new line_ids: route_line_ids, periodes: [validity_period]
+      end
+
+      class SourceDecorator < SimpleDelegator
+        def line_refs
+          @line_refs ||= routes.map { |r| r.line_ref&.ref }.compact.uniq
+        end
+
+        def day_type_valid_periods
+          day_types.map { |d| PeriodBuilder.add(d.validity_period).add(d.frame_validity_period).range }.compact
+        end
+
+        def operating_period_ranges
+          operating_periods.map(&:date_range)
+        end
+
+        def day_type_assignments_with_date
+          day_type_assignments.select do |assignment|
+            assignment.date && assignment.available?
+          end
+        end
+
+        def day_type_assignment_ranges
+          day_type_assignments_with_date.map do |assignment|
+            Range.new assignment.date, assignment.date
+          end
+        end
+      end
+
+      class PeriodBuilder
+        attr_accessor :min, :max
+
+        def add(*ranges)
+          ranges.flatten.compact.each do |range|
+            self.min = [min, range.min].compact.min
+            self.max = [max, range.max].compact.max
+          end
+
+          self
+        end
+
+        def self.add(*ranges)
+          new.add(*ranges)
+        end
+
+        def range
+          min..max if min && max
+        end
+      end
     end
 
     # TODO: why the resource statuses are not checked automaticaly ??
@@ -450,7 +536,9 @@ module Import
         lambda do |model|
           case model
           when Chouette::Route
-            Rails.logger.debug { "Invalid Model: #{model.errors.inspect} #{model.journey_patterns.map(&:errors).inspect}" }
+            Rails.logger.debug do
+              "Invalid Model: #{model.errors.inspect} #{model.journey_patterns.map(&:errors).inspect}"
+            end
             create_message :route_invalid
           when Chouette::JourneyPattern
             Rails.logger.debug { "Invalid JourneyPattern: #{model.errors.inspect}" }
@@ -562,9 +650,9 @@ module Import
         end
 
         def routes_attributes
-          return [route_attributes] unless routes_stop_points.present?
+          return [route_attributes] if routes_stop_points.blank?
 
-          routes_stop_points.map { |stop_points|  route_attributes(stop_points) }
+          routes_stop_points.map { |stop_points| route_attributes(stop_points) }
         end
 
         def route_attributes(stop_points = [])
@@ -638,19 +726,20 @@ module Import
         def sequence_merger
           @sequence_merger ||= Sequence::Merger.new.tap do |merger|
             journey_patterns.each do |netex_journey_pattern|
-              scheduled_point_ids = netex_journey_pattern
-                .points_in_sequence
-                .sort_by { |stop_point_in_journey_pattern| stop_point_in_journey_pattern.order.to_i }
-                .map do |stop_point_in_journey_pattern|
-                  {
-                    element: stop_point_in_journey_pattern.scheduled_stop_point_ref&.ref,
-                    enriched_elements: {
-                      for_boarding: stop_point_in_journey_pattern.for_boarding || 'true',
-                      for_alighting: stop_point_in_journey_pattern.for_alighting || 'true'
-                    },
-                    journey_pattern_id: netex_journey_pattern.id,
-                  }
-                end
+              scheduled_point_ids =
+                netex_journey_pattern
+                  .points_in_sequence
+                  .sort_by { |stop_point_in_journey_pattern| stop_point_in_journey_pattern.order.to_i }
+                  .map do |stop_point_in_journey_pattern|
+                {
+                  element: stop_point_in_journey_pattern.scheduled_stop_point_ref&.ref,
+                  enriched_elements: {
+                    for_boarding: stop_point_in_journey_pattern.for_boarding || 'true',
+                    for_alighting: stop_point_in_journey_pattern.for_alighting || 'true'
+                  },
+                  journey_pattern_id: netex_journey_pattern.id
+                }
+              end
 
               merger << scheduled_point_ids
             end
@@ -659,7 +748,7 @@ module Import
               route_scheduled_point_refs.map do |route_scheduled_point_ref|
                 {
                   element: route_scheduled_point_ref,
-                  enriched_elements: { for_boarding: nil, for_alighting: nil },
+                  enriched_elements: { for_boarding: nil, for_alighting: nil }
                 }
               end.tap do |route_scheduled_point_ids|
                 merger << route_scheduled_point_ids if route_scheduled_point_ids.present?
@@ -842,7 +931,7 @@ module Import
         def enriched_sequences
           groups.map.with_index do |group, group_index|
             group.map do |raw_sequence|
-              raw_sequence.map.with_index do |raw_element|
+              raw_sequence.map do |raw_element|
                 position = merged_stop_point_ids.index(raw_element[:element])
 
                 Step.new(
@@ -866,7 +955,7 @@ module Import
                 inserted_group.any? do |inserted_raw_sequence|
                   inserted_raw_sequence_without_journey_pattern_id = except_journey_pattern_id(inserted_raw_sequence)
                   raw_sequence_set.subset?(inserted_raw_sequence_without_journey_pattern_id) ||
-                  inserted_raw_sequence_without_journey_pattern_id.subset?(raw_sequence_set)
+                    inserted_raw_sequence_without_journey_pattern_id.subset?(raw_sequence_set)
                 end
               end
 
@@ -1404,7 +1493,7 @@ module Import
         private
 
         def second_offset(time)
-          return unless time.present?
+          return if time.blank?
 
           TimeOfDay.parse(time).second_offset
         end

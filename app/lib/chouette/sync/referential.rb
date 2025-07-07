@@ -8,7 +8,8 @@ module Chouette
         @options = options
       end
 
-      attr_accessor :source, :code_space, :strict_mode, :ignore_particulars, :default_provider, :event_handler
+      attr_accessor :source, :code_space, :strict_mode, :ignore_particulars,
+                    :default_provider, :event_handler, :lookup
       alias strict_mode? strict_mode
       alias ignore_particulars? ignore_particulars
 

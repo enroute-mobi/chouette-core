@@ -52,7 +52,7 @@ module Chouette::Sync
         end
 
         def line_company_id
-          resolve :company, operator_ref&.ref
+          lookup.companies.find_id(operator_ref&.ref)
         end
 
         def line_secondary_company_refs
@@ -62,7 +62,8 @@ module Chouette::Sync
         end
 
         def line_secondary_company_ids
-          resolve :company, line_secondary_company_refs
+          return [] if line_secondary_company_refs.blank?
+          lookup.companies.find_ids(line_secondary_company_refs)
         end
 
         def line_network_id

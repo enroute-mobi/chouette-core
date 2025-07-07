@@ -1643,12 +1643,11 @@ RSpec.describe Import::Gtfs do
         before { fare_attribute.agency_id = 'dummy' }
 
         before do
-          decorator.company_scope = company_scope
-          allow(company_scope).to receive(:find_by)
-            .with(registration_number: decorator.agency_id)
-            .and_return(company)
+          decorator.companies = companies
+          allow(companies).to receive(:find).with(decorator.agency_id).and_return(company)
         end
-        let(:company_scope) { double }
+
+        let(:companies) { double }
         let(:company) { double('Company with agency_id as registration_number') }
 
         it { is_expected.to eq(company) }
@@ -1983,7 +1982,7 @@ end
 
 describe Import::Gtfs::RouteJourneyPatterns::RouteDecorator do
   subject(:route_decorator) do
-    described_class.new(route_description, journey_pattern_descriptions, stop_areas: stop_areas_finder)
+    described_class.new(route_description, journey_pattern_descriptions, lookup: lookup)
   end
   let(:stop_time_pickup) { nil }
   let(:stop_time_drop_off) { nil }
@@ -2003,9 +2002,10 @@ describe Import::Gtfs::RouteJourneyPatterns::RouteDecorator do
   let(:stop_area_ids) { { 'BEATTY_AIRPORT' => 42 } }
   let(:stop_areas_finder) do
     double(:stop_areas_finder).tap do |stop_areas_finder|
-      allow(stop_areas_finder).to receive(:find) { |stop_id| stop_area_ids[stop_id] }
+      allow(stop_areas_finder).to receive(:find_id) { |stop_id| stop_area_ids[stop_id] }
     end
   end
+  let(:lookup) { double(stop_areas: stop_areas_finder) }
 
   describe '#stop_points' do
     subject { route_decorator.stop_points }

@@ -242,11 +242,10 @@ module Import
     # Synchronize models in the StopAreaReferential (StopArea, Entrances, etc)
     # with associated NeTEx resources
     class StopAreaReferential < SynchronizedPart
-      delegate :stop_area_provider, to: :import
-      delegate :stop_area_referential, to: :import
+      delegate :stop_area_provider, :stop_area_referential, :lookup, to: :import
 
       def synchronization
-        Chouette::Sync::Referential.new(target).tap do |sync|
+        Chouette::Sync::Referential.new(target, lookup: lookup).tap do |sync|
           sync.synchronize_with Chouette::Sync::StopArea::Netex
           sync.synchronize_with Chouette::Sync::Entrance::Netex
         end
@@ -268,11 +267,10 @@ module Import
     # Synchronize models in the LineReferential (Line, Company, etc)
     # with associated NeTEx resources
     class LineReferential < SynchronizedPart
-      delegate :line_provider, to: :import
-      delegate :line_referential, to: :import
+      delegate :line_provider, :line_referential, :lookup, to: :import
 
       def synchronization
-        @synchronization ||= Chouette::Sync::Referential.new(target).tap do |sync|
+        @synchronization ||= Chouette::Sync::Referential.new(target, lookup: lookup).tap do |sync|
           sync.synchronize_with Chouette::Sync::Company::Netex
           sync.synchronize_with Chouette::Sync::Network::Netex
           sync.synchronize_with Chouette::Sync::LineNotice::Netex
@@ -428,7 +426,8 @@ module Import
 
     class RouteJourneyPatterns < WithResourcePart
       include ReferentialPart
-      delegate :netex_source, :scheduled_stop_points, :line_provider, :index_route_journey_patterns, :code_space, to: :import
+      delegate :netex_source, :scheduled_stop_points, :index_route_journey_patterns,
+               :line_provider, :code_space, :lookup, to: :import
 
       def route_inserter
         @route_inserter ||= RouteInserter.new(
@@ -470,7 +469,8 @@ module Import
             destination_displays: destination_displays,
             line_provider: line_provider,
             code_builder: code_builder,
-            code_space: code_space
+            code_space: code_space,
+            lookup: lookup
           )
 
           unless decorator.valid?
@@ -512,7 +512,7 @@ module Import
 
       class Decorator < SimpleDelegator
         def initialize(route, journey_patterns, scheduled_stop_points: nil, route_points: nil, directions: nil,
-                       destination_displays: nil, line_provider: nil, code_builder: nil, code_space: nil)
+                       destination_displays: nil, line_provider: nil, code_builder: nil, code_space: nil, lookup: nil)
           super route
 
           @journey_patterns = journey_patterns
@@ -523,12 +523,13 @@ module Import
           @line_provider = line_provider
           @code_builder = code_builder
           @code_space = code_space
+          @lookup = lookup
         end
         attr_accessor :journey_patterns, :scheduled_stop_points, :route_points, :directions, :line_provider,
-                      :destination_displays, :code_builder, :code_space
+                      :destination_displays, :code_builder, :code_space, :lookup
 
         def chouette_line
-          line = line_provider.lines.find_by(registration_number: line_ref.ref) if line_ref
+          line = lookup.lines.find(line_ref.ref) if lookup
           add_error :line_not_found unless line
 
           line
@@ -1497,7 +1498,7 @@ module Import
     end
 
     class ScheduledStopPoints < WithResourcePart
-      delegate :netex_source, :code_space, :stop_area_provider, :scheduled_stop_points, to: :import
+      delegate :netex_source, :code_space, :stop_area_provider, :scheduled_stop_points, :lookup, to: :import
 
       def import!
         %i[passenger_stop_assignments flexible_stop_assignments].each do |assignment_type|
@@ -1510,10 +1511,10 @@ module Import
               next
             end
 
-            if (stop_area = stop_area_provider.stop_areas.find_by(registration_number: stop_area_code).presence)
+            if (stop_area_id = lookup.stop_areas.find_id(stop_area_code))
               scheduled_stop_point = ScheduledStopPoint.new(
                 id: scheduled_stop_point_id,
-                stop_area_id: stop_area.id,
+                stop_area_id: stop_area_id,
                 flexible: flexible?(stop_assignment)
               )
               scheduled_stop_points[scheduled_stop_point.id] = scheduled_stop_point

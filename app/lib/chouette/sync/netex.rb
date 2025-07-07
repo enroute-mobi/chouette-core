@@ -1,6 +1,7 @@
 module Chouette::Sync
   module Netex
     class Decorator < Chouette::Sync::Updater::ResourceDecorator
+
       def codes
         key_list.select(&type_of_key_filter('ALTERNATE_IDENTIFIER'))
       end

@@ -3,7 +3,7 @@ module Chouette
     class Base
       attr_accessor :source, :target, :default_provider, :delete_batch_size, :update_batch_size,
                     :resource_type, :resource_id_attribute, :resource_decorator, :model_type,
-                    :model_id_attribute, :code_space, :strict_mode, :ignore_particulars
+                    :model_id_attribute, :code_space, :strict_mode, :ignore_particulars, :lookup
 
       alias strict_mode? strict_mode
       alias ignore_particulars? ignore_particulars
@@ -74,7 +74,8 @@ module Chouette
           code_space: code_space,
           default_provider: default_provider,
           strict_mode: strict_mode?,
-          ignore_particulars: ignore_particulars?
+          ignore_particulars: ignore_particulars?,
+          lookup: lookup
         }.delete_if { |_,v| v.nil? }
         options = default_options.merge(options)
         updater_class.new options

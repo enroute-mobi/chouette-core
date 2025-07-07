@@ -10,7 +10,7 @@ module Chouette
         options.each { |k, v| send "#{k}=", v }
       end
 
-      attr_accessor :source, :target, :update_batch_size, :default_provider, :resource_type, :resource_id_attribute,
+      attr_accessor :source, :target, :update_batch_size, :default_provider, :resource_type, :resource_id_attribute, :lookup,
                     :resource_decorator, :model_type, :model_id_attribute, :code_space, :strict_mode, :ignore_particulars
 
       alias strict_mode? strict_mode
@@ -323,10 +323,10 @@ module Chouette
           @updater = updater
         end
 
-        delegate :resource_id_attribute, :model_id_attribute, :models, :resource_decorator, :code_space, to: :updater
+        delegate :resource_id_attribute, :model_id_attribute, :models, :resource_decorator, :code_space, :lookup, to: :updater
 
         def decorate(resource)
-          resource_decorator.new resource, batch: self
+          resource_decorator.new resource, batch: self, lookup: lookup
         end
 
         def resource_ids
@@ -453,13 +453,14 @@ module Chouette
       end
 
       class ResourceDecorator < SimpleDelegator
-        attr_reader :batch
+        attr_reader :batch, :lookup
 
         # Batch is optionnal .. for tests
-        def initialize(resource, batch: nil)
+        def initialize(resource, batch: nil, lookup: nil)
           super resource
           @resource = resource
           @batch = batch
+          @lookup = lookup
         end
 
         def to_resource

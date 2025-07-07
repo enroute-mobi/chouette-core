@@ -265,6 +265,10 @@ class Import::Base < ApplicationModel
     @specific_default_company ||= workbench.companies.find_by(id: specific_default_company_id)
   end
 
+  def lookup
+    @lookup ||= Import::Lookup.default(self)
+  end
+
   protected
 
   # Expected and used file extension

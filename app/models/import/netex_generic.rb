@@ -79,7 +79,6 @@ module Import
     end
 
     def within_referential(&block)
-
       return unless referential_metadata
 
       referential_builder.create do |referential|
@@ -135,12 +134,15 @@ module Import
 
       # Overall period defined by all NeTEx DayTypeAssignement/OperatingPeriod instances
       def day_types_overall_period
-        PeriodBuilder.add(source_decorator.operating_period_ranges).add(source_decorator.day_type_assignment_ranges).range
+        PeriodBuilder
+          .add(source_decorator.operating_period_ranges)
+          .add(source_decorator.day_type_assignment_ranges)
+          .range
       end
-      
+
       def referential_metadata
         return unless [route_line_ids, validity_period].all?(&:present?)
-      
+
         @referential_metadata ||=
           ReferentialMetadata.new line_ids: route_line_ids, periodes: [validity_period]
       end

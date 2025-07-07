@@ -1,5 +1,6 @@
-RSpec.describe Import::NetexGeneric do
+# frozen_string_literal: true
 
+RSpec.describe Import::NetexGeneric do
   let(:context) do
     Chouette.create do
       workbench
@@ -10,12 +11,13 @@ RSpec.describe Import::NetexGeneric do
   let(:workgroup) { context.workgroup }
 
   def build_import(xml)
-    Import::NetexGeneric.new(workbench: workbench, creator: "test", name: "test").tap do |import|
+    Import::NetexGeneric.new(workbench: workbench, creator: 'test', name: 'test').tap do |import|
       allow(import).to receive(:netex_source) do
         Netex::Source.new.tap do |s|
           s.transformers << Netex::Transformer::Indexer.new(Netex::JourneyPattern, by: :route_ref)
           s.transformers << Netex::Transformer::Indexer.new(Netex::DayTypeAssignment, by: :day_type_ref)
-          s.transformers << ::Netex::Transformer::Indexer.new(::Netex::VehicleJourneyStopAssignment, by: :scheduled_stop_point_ref)
+          s.transformers << ::Netex::Transformer::Indexer.new(::Netex::VehicleJourneyStopAssignment,
+                                                              by: :scheduled_stop_point_ref)
 
           s.parse(StringIO.new(xml))
         end
@@ -25,35 +27,34 @@ RSpec.describe Import::NetexGeneric do
 
   let(:import) { build_import xml }
 
-  describe ".accepts_file?" do
+  describe '.accepts_file?' do
     subject { Import::NetexGeneric.accepts_file?(filename) }
 
-    context "when filename is file.xml" do
-      let(:filename) { "file.xml" }
+    context 'when filename is file.xml' do
+      let(:filename) { 'file.xml' }
       it { is_expected.to be_truthy }
     end
 
-    context "when file is Zip file with only .xml entries" do
+    context 'when file is Zip file with only .xml entries' do
       let(:filename) { file_fixture('sample_neptune.zip') }
       it { is_expected.to be_truthy }
     end
 
-    context "when file is GTFS file" do
+    context 'when file is GTFS file' do
       let(:filename) { file_fixture('google-sample-feed.zip') }
       it { is_expected.to be_falsy }
     end
 
-    context "when file is Zip file with .xml in subfolders" do
+    context 'when file is Zip file with .xml in subfolders' do
       let(:filename) { file_fixture('xml_in_subfolder.zip') }
       it { is_expected.to be_truthy }
     end
   end
 
   describe 'StopArea Referential Part' do
-
     subject { import.part(:stop_area_referential).import! }
 
-    context "when update_workgroup_providers option is enabled" do
+    context 'when update_workgroup_providers option is enabled' do
       before do
         import.update options: { 'update_workgroup_providers' => true }
         workbench.stop_area_providers.create(objectid: 'FR1-ARRET_AUTO', name: 'stop_area_provider 1')
@@ -61,7 +62,7 @@ RSpec.describe Import::NetexGeneric do
       let(:stop_area_provider) { workbench.stop_area_providers.find_by(objectid: 'FR1-ARRET_AUTO') }
 
       let(:xml) do
-        %{
+        %(
           <stopPlaces>
             <StopPlace dataSourceRef="FR1-ARRET_AUTO" version="811108" created="2016-10-23T22:00:00Z" changed="2019-04-02T09:43:08Z" id="FR::multimodalStopPlace:424920:FR1">
               <Name>Petits Ponts</Name>
@@ -72,17 +73,17 @@ RSpec.describe Import::NetexGeneric do
               <StopPlaceType>onstreetBus</StopPlaceType>
             </StopPlace>
           </stopPlaces>
-        }
+        )
       end
 
       let(:expected_attributes) do
-          an_object_having_attributes({
-          name: "Petits Ponts",
-          area_type: "lda",
-          object_version: 811108,
-          city_name: "Pantin",
-          postal_region: "93055",
-        })
+        an_object_having_attributes({
+                                      name: 'Petits Ponts',
+                                      area_type: 'lda',
+                                      object_version: 811_108,
+                                      city_name: 'Pantin',
+                                      postal_region: '93055'
+                                    })
       end
 
       context 'when stop_area_provider has id = "FR1-ARRET_AUTO"' do
@@ -94,16 +95,15 @@ RSpec.describe Import::NetexGeneric do
       end
 
       context 'when stop_area_provider has no id = "FR1-ARRET_AUTO"' do
-
         before { stop_area_provider.update objectid: 'test' }
 
         let(:expected_message) do
           an_object_having_attributes(
-            criticity: "error",
-            message_key: "invalid_model_attribute",
+            criticity: 'error',
+            message_key: 'invalid_model_attribute',
             message_attributes: {
-              "attribute_name"=>"provider",
-              "attribute_value"=> "FR1-ARRET_AUTO"
+              'attribute_name' => 'provider',
+              'attribute_value' => 'FR1-ARRET_AUTO'
             }
           )
         end
@@ -119,7 +119,7 @@ RSpec.describe Import::NetexGeneric do
 
       context 'when data_source_ref is empty' do
         let(:xml) do
-          %{
+          %(
             <stopPlaces>
             <StopPlace version="811108" created="2016-10-23T22:00:00Z" changed="2019-04-02T09:43:08Z" id="FR::multimodalStopPlace:424920:FR1">
               <Name>Petits Ponts</Name>
@@ -130,7 +130,7 @@ RSpec.describe Import::NetexGeneric do
               <StopPlaceType>onstreetBus</StopPlaceType>
             </StopPlace>
           </stopPlaces>
-          }
+          )
         end
 
         let!(:stop_area_provider) { workbench.default_stop_area_provider }
@@ -152,7 +152,11 @@ RSpec.describe Import::NetexGeneric do
           workbench.stop_areas.find_by(registration_number: '42')
         end
 
-        it { expect { subject }.to change { stop_area }.from(nil).to(an_object_having_attributes(registration_number: '42', name: 'Tour Eiffel')) }
+        it {
+          expect { subject }.to change {
+            stop_area
+          }.from(nil).to(an_object_having_attributes(registration_number: '42', name: 'Tour Eiffel'))
+        }
       end
 
       context "when a StopArea exists with the registration number '42'" do
@@ -162,14 +166,24 @@ RSpec.describe Import::NetexGeneric do
         before { allow(import).to receive(:stop_area_provider).and_return(stop_area.stop_area_provider) }
         let!(:stop_area) { context.stop_area }
 
-        it { expect { subject ; stop_area.reload }.to change(stop_area, :name).from(a_string_not_matching('Tour Eiffel')).to('Tour Eiffel') }
+        it {
+          expect do
+            subject
+            stop_area.reload
+          end.to change(stop_area, :name).from(a_string_not_matching('Tour Eiffel')).to('Tour Eiffel')
+        }
       end
 
       describe 'resource' do
         subject(:resource) { import.resources.first }
         before { import.part(:stop_area_referential).import! }
 
-        it { is_expected.to have_attributes(status: "OK", metrics: a_hash_including("error_count"=>"0","ok_count"=>"1")) }
+        it {
+          is_expected.to have_attributes(status: 'OK',
+                                         metrics: a_hash_including(
+                                           'error_count' => '0', 'ok_count' => '1'
+                                         ))
+        }
       end
     end
 
@@ -180,26 +194,26 @@ RSpec.describe Import::NetexGeneric do
 
       describe 'status' do
         subject { import.status }
-        it { is_expected.to eq("failed") }
+        it { is_expected.to eq('failed') }
       end
 
       describe 'resource' do
         subject(:resource) { import.resources.first }
-        it { is_expected.to have_attributes(status: "ERROR", metrics: a_hash_including("error_count"=>"1")) }
+        it { is_expected.to have_attributes(status: 'ERROR', metrics: a_hash_including('error_count' => '1')) }
       end
     end
 
     describe 'attributes' do
       let(:stop_area) { workbench.stop_areas.find_by(registration_number: 'test') }
-      before { import.part(:stop_area_referential).import!}
+      before { import.part(:stop_area_referential).import! }
 
-      def self::xml_with(content)
-        %{
+      def self.xml_with(content)
+        %(
         <StopPlace id="test">
           <Name>Tour Eiffel</Name>
           #{content.strip}
         </StopPlace>
-        }
+        )
       end
 
       describe 'name' do
@@ -208,15 +222,15 @@ RSpec.describe Import::NetexGeneric do
         context "when XML is #{self::INVALID_XML}" do
           let(:xml) { self.class::INVALID_XML }
 
-          describe "resource messages" do
+          describe 'resource messages' do
             let(:resource) { import.resources.first }
             subject { resource.messages }
 
             it do
               expected_message = an_object_having_attributes(
-                criticity: "error",
-                message_key: "invalid_model_attribute",
-                message_attributes: {"attribute_name"=>"name", "attribute_value"=> nil}
+                criticity: 'error',
+                message_key: 'invalid_model_attribute',
+                message_attributes: { 'attribute_name' => 'name', 'attribute_value' => nil }
               )
               is_expected.to include(expected_message)
             end
@@ -227,14 +241,14 @@ RSpec.describe Import::NetexGeneric do
       describe 'latitude' do
         subject { stop_area.latitude }
         self::XML = xml_with(
-          %{
+          %(
           <Centroid>
             <Location>
               <Latitude>48.8583701</Latitude>
               <Longitude>2.2922873</Longitude>
             </Location>
           </Centroid>
-          }
+          )
         )
         context "when XML is #{self::XML}" do
           let(:xml) { self.class::XML }
@@ -245,14 +259,14 @@ RSpec.describe Import::NetexGeneric do
       describe 'longitude' do
         subject { stop_area.longitude }
         self::XML = xml_with(
-          %{
+          %(
           <Centroid>
             <Location>
               <Latitude>48.8583701</Latitude>
               <Longitude>2.2922873</Longitude>
             </Location>
           </Centroid>
-          }
+          )
         )
         context "when XML is #{self::XML}" do
           let(:xml) { self.class::XML }
@@ -280,7 +294,7 @@ RSpec.describe Import::NetexGeneric do
     end
 
     context 'codes' do
-      self::XML = %{
+      self::XML = %(
         <StopPlace id='test'>
           <Name>Test</Name>
           <keyList>
@@ -290,25 +304,27 @@ RSpec.describe Import::NetexGeneric do
             </KeyValue>
           </keyList>
         </StopPlace>
-      }
+      )
 
       subject(:codes) { stop_area.reload.codes }
 
       context "when XML is #{self::XML}" do
         let(:xml) { self.class::XML }
 
-        context "when the required code space exists" do
+        context 'when the required code space exists' do
           let!(:code_space) { workgroup.code_spaces.create!(short_name: 'code_space_shortname') }
 
-          context "when no StopArea exists with this registration number" do
+          context 'when no StopArea exists with this registration number' do
             let(:stop_area) { workbench.stop_areas.find_by(registration_number: 'test') }
 
             before { import.part(:stop_area_referential).import! }
 
-            it { is_expected.to include(an_object_having_attributes(code_space_id: code_space.id, value: "code_value")) }
+            it {
+              is_expected.to include(an_object_having_attributes(code_space_id: code_space.id, value: 'code_value'))
+            }
           end
 
-          context "when a StopArea exists with this registration number" do
+          context 'when a StopArea exists with this registration number' do
             let(:context) do
               Chouette.create { stop_area registration_number: 'test' }
             end
@@ -317,7 +333,9 @@ RSpec.describe Import::NetexGeneric do
 
             before { import.part(:stop_area_referential).import! }
 
-            it { is_expected.to include(an_object_having_attributes(code_space_id: code_space.id, value: "code_value")) }
+            it {
+              is_expected.to include(an_object_having_attributes(code_space_id: code_space.id, value: 'code_value'))
+            }
           end
         end
 
@@ -327,24 +345,23 @@ RSpec.describe Import::NetexGeneric do
 
           it { is_expected.to be_empty }
 
-          describe "resource messages" do
+          describe 'resource messages' do
             let(:resource) { import.resources.first }
             subject { resource.messages }
 
             it do
               expected_message = an_object_having_attributes(
-                criticity: "error",
-                message_key: "invalid_model_attribute",
-                message_attributes: {"attribute_name"=>"codes", "attribute_value"=> "code_space_shortname"}
+                criticity: 'error',
+                message_key: 'invalid_model_attribute',
+                message_attributes: { 'attribute_name' => 'codes', 'attribute_value' => 'code_space_shortname' }
               )
               is_expected.to include(expected_message)
             end
           end
-
         end
       end
 
-      self::XML_WITH_2_VALUES = %{
+      self::XML_WITH_2_VALUES = %(
         <StopPlace id='test'>
           <Name>Test</Name>
           <keyList>
@@ -358,7 +375,7 @@ RSpec.describe Import::NetexGeneric do
             </KeyValue>
           </keyList>
         </StopPlace>
-      }
+      )
 
       context "when XML is #{self::XML_WITH_2_VALUES}" do
         let(:xml) { self.class::XML_WITH_2_VALUES }
@@ -370,8 +387,8 @@ RSpec.describe Import::NetexGeneric do
 
         it do
           expected_codes = [
-            an_object_having_attributes(code_space_id: code_space.id, value: "code_value1"),
-            an_object_having_attributes(code_space_id: code_space.id, value: "code_value2")
+            an_object_having_attributes(code_space_id: code_space.id, value: 'code_value1'),
+            an_object_having_attributes(code_space_id: code_space.id, value: 'code_value2')
           ]
           is_expected.to match_array(expected_codes)
         end
@@ -379,7 +396,7 @@ RSpec.describe Import::NetexGeneric do
     end
 
     context 'custom_fields' do
-      self::XML = %{
+      self::XML = %(
         <StopPlace id='test'>
           <Name>Test</Name>
           <keyList>
@@ -389,25 +406,27 @@ RSpec.describe Import::NetexGeneric do
             </KeyValue>
           </keyList>
         </StopPlace>
-      }
+      )
 
       subject(:custom_field_values) { stop_area.reload.custom_field_values }
 
       context "when XML is #{self::XML}" do
         let(:xml) { self.class::XML }
 
-        context "when the required code space exists" do
-          let!(:custom_field) { workgroup.custom_fields.create!(code: 'custom_field_code', resource_type: "StopArea", field_type: "string" ) }
+        context 'when the required code space exists' do
+          let!(:custom_field) do
+            workgroup.custom_fields.create!(code: 'custom_field_code', resource_type: 'StopArea', field_type: 'string')
+          end
 
-          context "when no StopArea exists with this registration number" do
+          context 'when no StopArea exists with this registration number' do
             let(:stop_area) { workbench.stop_areas.find_by(registration_number: 'test') }
 
             before { import.part(:stop_area_referential).import! }
 
-            it { is_expected.to include("custom_field_code" => "custom_field_value") }
+            it { is_expected.to include('custom_field_code' => 'custom_field_value') }
           end
 
-          context "when a StopArea exists with this registration number" do
+          context 'when a StopArea exists with this registration number' do
             let(:context) do
               Chouette.create { stop_area registration_number: 'test' }
             end
@@ -416,7 +435,7 @@ RSpec.describe Import::NetexGeneric do
 
             before { import.part(:stop_area_referential).import! }
 
-            it { is_expected.to include("custom_field_code" => "custom_field_value") }
+            it { is_expected.to include('custom_field_code' => 'custom_field_value') }
           end
         end
 
@@ -425,15 +444,15 @@ RSpec.describe Import::NetexGeneric do
           before { import.part(:stop_area_referential).import! }
           it { is_expected.to be_empty }
 
-          describe "resource messages" do
+          describe 'resource messages' do
             let(:resource) { import.resources.first }
             subject { resource.messages }
 
             it do
               expected_message = an_object_having_attributes(
-                criticity: "error",
-                message_key: "invalid_model_attribute",
-                message_attributes: {"attribute_name"=>"custom_fields", "attribute_value"=> "custom_field_code"}
+                criticity: 'error',
+                message_key: 'invalid_model_attribute',
+                message_attributes: { 'attribute_name' => 'custom_fields', 'attribute_value' => 'custom_field_code' }
               )
               is_expected.to include(expected_message)
             end
@@ -444,7 +463,7 @@ RSpec.describe Import::NetexGeneric do
 
     context 'When XML contains stop place entrances' do
       let(:xml) do
-        %{
+        %(
           <StopPlace id="stop-place-1" version="any">
             <Name>North Ave </Name>
             <entrances>
@@ -477,28 +496,28 @@ RSpec.describe Import::NetexGeneric do
             <Width>3</Width>
             <EntranceType>opening</EntranceType>
           </StopPlaceEntrance>
-        }
+        )
       end
 
       let(:code_space) { workgroup.code_spaces.default }
-      let(:stop_area) {::Chouette::StopArea.find_by_registration_number("stop-place-1")}
+      let(:stop_area) { ::Chouette::StopArea.find_by(registration_number: 'stop-place-1') }
 
-      context "when import has space code input" do
-        let(:entrance) {::Entrance.by_code(code_space, "entrance-1").first}
+      context 'when import has space code input' do
+        let(:entrance) { ::Entrance.by_code(code_space, 'entrance-1').first }
         before do
           import.code_space = code_space
           import.part(:stop_area_referential).import!
         end
 
-        it "should import stop_area" do
+        it 'should import stop_area' do
           expect(stop_area.reload).not_to be_nil
         end
 
-        it "should import entrance" do
+        it 'should import entrance' do
           expect(entrance.reload).not_to be_nil
         end
 
-        it "should create association between stop_area and entrance" do
+        it 'should create association between stop_area and entrance' do
           expect(entrance&.stop_area).to eq(stop_area)
           expect(stop_area&.entrances).to eq([entrance])
         end
@@ -507,8 +526,7 @@ RSpec.describe Import::NetexGeneric do
   end
 
   describe 'Line Referential part' do
-
-    context "when update_workgroup_providers option is enabled" do
+    context 'when update_workgroup_providers option is enabled' do
       subject { import.part(:line_referential).import! }
 
       let(:code_space) { workgroup.code_spaces.default }
@@ -526,7 +544,7 @@ RSpec.describe Import::NetexGeneric do
       let(:line_provider) { workbench.line_providers.by_code(code_space, '2003-line-provider-existing').first }
 
       let(:xml) do
-        %{
+        %(
           <frames>
           <ResourceFrame id="2003-enRoute:ResourceFrame:1" version="any">
             <organisations>
@@ -545,13 +563,13 @@ RSpec.describe Import::NetexGeneric do
             </lines>
           </ServiceFrame>
           </frames>
-        }
+        )
       end
 
       let(:expected_attributes) do
-          an_object_having_attributes({
-          name: "Airport - Bullfrog",
-        })
+        an_object_having_attributes({
+                                      name: 'Airport - Bullfrog'
+                                    })
       end
 
       context 'when line_provider has id' do
@@ -563,16 +581,15 @@ RSpec.describe Import::NetexGeneric do
       end
 
       context 'when line_provider has no id' do
-
         before { line_provider.codes.destroy_all }
 
         let(:expected_message) do
           an_object_having_attributes(
-            criticity: "error",
-            message_key: "invalid_model_attribute",
+            criticity: 'error',
+            message_key: 'invalid_model_attribute',
             message_attributes: {
-              "attribute_name"=>"provider",
-              "attribute_value"=> "2003-line-provider-existing"
+              'attribute_name' => 'provider',
+              'attribute_value' => '2003-line-provider-existing'
             }
           )
         end
@@ -588,7 +605,7 @@ RSpec.describe Import::NetexGeneric do
 
       context 'when data_source_ref is empty' do
         let(:xml) do
-          %{
+          %(
             <frames>
               <ResourceFrame id="2003-enRoute:ResourceFrame:1" version="any">
                 <organisations>
@@ -607,16 +624,16 @@ RSpec.describe Import::NetexGeneric do
                 </lines>
               </ServiceFrame>
             </frames>
-          }
+          )
         end
 
         let!(:line_provider) { workbench.default_line_provider }
         let(:lines) { line_provider.reload.lines }
         let(:expected_attributes) do
-            an_object_having_attributes({
-              name: "Bullfrog - Furnace Creek Resort",
-              line_provider_id: line_provider.id
-          })
+          an_object_having_attributes({
+                                        name: 'Bullfrog - Furnace Creek Resort',
+                                        line_provider_id: line_provider.id
+                                      })
         end
 
         it 'should create a line with the default line_provider' do
@@ -627,9 +644,9 @@ RSpec.describe Import::NetexGeneric do
       end
     end
 
-    context "when XML contains lines, operators and notices" do
+    context 'when XML contains lines, operators and notices' do
       let(:xml) do
-        %{
+        %(
         <frames>
           <ResourceFrame id="enRoute:ResourceFrame:1" version="any">
             <organisations>
@@ -680,48 +697,53 @@ RSpec.describe Import::NetexGeneric do
             </lines>
           </ServiceFrame>
         </frames>
-        }
+        )
       end
 
-      context "when no object exists" do
+      context 'when no object exists' do
         before { import.part(:line_referential).import! }
 
-        describe "#models" do
+        describe '#models' do
           subject { model.pluck(:registration_number) }
 
-          context "when model is Line" do
+          context 'when model is Line' do
             let(:model) { import.workbench.line_referential.lines }
 
-            it { is_expected.to match_array(["line-1", "line-2","line-3", "line-4", "line-5" ]) }
+            it { is_expected.to match_array(%w[line-1 line-2 line-3 line-4 line-5]) }
           end
 
-          context "when model is LineNotice" do
+          context 'when model is LineNotice' do
             let(:model) { import.workbench.line_referential.line_notices }
 
-            it { is_expected.to match_array(["notice-1", "notice-2" ]) }
+            it { is_expected.to match_array(%w[notice-1 notice-2]) }
           end
 
-          context "when model is Company" do
+          context 'when model is Company' do
             let(:model) { import.workbench.line_referential.companies }
 
-            it { is_expected.to match_array(["company-1" ]) }
+            it { is_expected.to match_array(['company-1']) }
           end
         end
 
-      describe "#associations" do
+        describe '#associations' do
+          context 'when model is Line and association is company' do
+            let(:company_registration_numbers) do
+              import.workbench.line_referential.lines.map do |line|
+                line.company.registration_number
+              end.uniq
+            end
 
-        context "when model is Line and association is company" do
-          let(:company_registration_numbers) { import.workbench.line_referential.lines.map{ |line| line.company.registration_number }.uniq }
+            it { expect(company_registration_numbers).to match_array(['company-1']) }
+          end
 
-          it { expect(company_registration_numbers).to match_array(["company-1"]) }
+          context 'when model is Company and association is Line' do
+            let(:line_registration_numbers) do
+              import.workbench.line_referential.companies.first.lines.map(&:registration_number)
+            end
+
+            it { expect(line_registration_numbers).to match_array(%w[line-1 line-2 line-3 line-4 line-5]) }
+          end
         end
-
-        context "when model is Company and association is Line" do
-          let(:line_registration_numbers) { import.workbench.line_referential.companies.first.lines.map { |line| line.registration_number } }
-
-          it { expect(line_registration_numbers).to match_array(["line-1", "line-2","line-3", "line-4", "line-5" ]) }
-        end
-      end
       end
     end
 
@@ -729,18 +751,18 @@ RSpec.describe Import::NetexGeneric do
       subject { described_class.find_by(registration_number: 'test') }
 
       expected_attributes = {
-        mobility_impaired_accessibility: "yes",
-        wheelchair_accessibility: "yes",
-        step_free_accessibility: "no",
-        escalator_free_accessibility: "yes",
-        lift_free_accessibility: "partial",
-        audible_signals_availability: "partial",
-        visual_signs_availability: "yes"
+        mobility_impaired_accessibility: 'yes',
+        wheelchair_accessibility: 'yes',
+        step_free_accessibility: 'no',
+        escalator_free_accessibility: 'yes',
+        lift_free_accessibility: 'partial',
+        audible_signals_availability: 'partial',
+        visual_signs_availability: 'yes'
       }
 
       describe Chouette::Line do
         let(:xml) do
-          %{
+          %(
             <Line id="test">
               <Name>Line Sample</Name>
               <AccessibilityAssessment>
@@ -762,7 +784,7 @@ RSpec.describe Import::NetexGeneric do
                 </limitations>
               </AccessibilityAssessment>
             </Line>
-          }
+          )
         end
 
         before { import.part(:line_referential).import! }
@@ -772,7 +794,7 @@ RSpec.describe Import::NetexGeneric do
 
       describe Chouette::StopArea do
         let(:xml) do
-          %{
+          %(
             <StopPlace id="test">
               <Name>Stop Place Sample</Name>
               <AccessibilityAssessment>
@@ -794,7 +816,7 @@ RSpec.describe Import::NetexGeneric do
                 </limitations>
               </AccessibilityAssessment>
             </StopPlace>
-          }
+          )
         end
 
         before { import.part(:stop_area_referential).import! }
@@ -805,8 +827,7 @@ RSpec.describe Import::NetexGeneric do
   end
 
   describe 'Shape Referential part' do
-
-    context "when XML contains PonitOfInterest" do
+    context 'when XML contains PonitOfInterest' do
       let(:xml) do
         <<~XML
           <pointOfInterests>
@@ -930,7 +951,7 @@ RSpec.describe Import::NetexGeneric do
   end
 
   describe 'Fare Referential part' do
-    context "when XML contains FareZone" do
+    context 'when XML contains FareZone' do
       let(:xml) do
         <<~XML
           <FareZone id="sample">
@@ -973,8 +994,8 @@ RSpec.describe Import::NetexGeneric do
           XML
         end
 
-        let(:expected_fare_geographic_references ) do
-          %w(short_name1 short_name2).map do |short_name|
+        let(:expected_fare_geographic_references) do
+          %w[short_name1 short_name2].map do |short_name|
             an_object_having_attributes(short_name: short_name)
           end
         end
@@ -1113,7 +1134,7 @@ RSpec.describe Import::NetexGeneric do
     end
 
     let(:line_provider) { import.line_provider }
-    let(:line) { line_provider.lines.find_by_registration_number('1') }
+    let(:line) { line_provider.lines.find_by(registration_number: '1') }
     let(:line_routing_constraint_zones) { line_provider.line_routing_constraint_zones }
     let(:stop_area_ids) { import.stop_area_provider.stop_areas.where(registration_number: %w[A B]).pluck(:id) }
 
@@ -1261,7 +1282,7 @@ RSpec.describe Import::NetexGeneric do
       import.part(:line_referential).import!
       import.part(:scheduled_stop_points).import!
 
-      import.within_referential do |referential|
+      import.within_referential do |_referential|
         import.part(:route_journey_patterns).import!
       end
     end
@@ -1278,14 +1299,14 @@ RSpec.describe Import::NetexGeneric do
 
     describe 'Route' do
       describe 'StopPoints in Route' do
-        subject { route.stop_points.map{ |stop_point| stop_point.stop_area.name } }
+        subject { route.stop_points.map { |stop_point| stop_point.stop_area.name } }
 
         it { is_expected.to match_array ['Quay A', 'Quay B', 'Quay C'] }
       end
 
       describe 'JourneyPatterns in Route' do
         let(:journey_pattern) { route.journey_patterns.find_by(name: name) }
-        subject { journey_pattern.stop_points.map{ |stop_point| stop_point.stop_area.name } }
+        subject { journey_pattern.stop_points.map { |stop_point| stop_point.stop_area.name } }
 
         context 'with first journey pattern' do
           let(:name) { 'Journey Pattern 1' }
@@ -1314,7 +1335,7 @@ RSpec.describe Import::NetexGeneric do
         <root>
           <Line id="line-1">
             <Name>Line Sample</Name>
-          </Line> 
+          </Line>#{' '}
 
           <Route id="1">
             <LineRef ref="line-1"/>
@@ -1328,18 +1349,18 @@ RSpec.describe Import::NetexGeneric do
               </PropertyOfDay>
             </properties>
           </DayType>
-          
+        #{'  '}
           <DayTypeAssignment id="assigment-1">
             <OperatingPeriodRef ref="period-1"/>
             <DayTypeRef ref="daytype-1"/>
           </DayTypeAssignment>
-          
+        #{'  '}
           <DayTypeAssignment id="assigment-2">
             <Date>2030-01-15</Date>
             <DayTypeRef ref="daytype-1"/>
             <isAvailable>true</isAvailable>
           </DayTypeAssignment>
-          
+        #{'  '}
           <OperatingPeriod id="period-1">
             <FromDate>2030-01-01T00:00:00</FromDate>
             <ToDate>2030-01-10T00:00:00</ToDate>
@@ -1353,20 +1374,20 @@ RSpec.describe Import::NetexGeneric do
       import.part(:line_referential).import!
       import.part(:scheduled_stop_points).import!
 
-      import.within_referential do |referential|
+      import.within_referential do |_referential|
         import.part(:route_journey_patterns).import!
         import.part(:time_tables).import!
       end
     end
 
     let(:new_referential) { import.referential }
-    let(:time_table) { new_referential.time_tables.find_by(comment: 'Sample')}
+    let(:time_table) { new_referential.time_tables.find_by(comment: 'Sample') }
 
     describe 'effective days' do
       subject { time_table.to_days_bit.enum_for(:each_date).to_a }
-      let(:expected_dates) { ['2030-01-01', '2030-01-04', '2030-01-08', '2030-01-15'].map(&:to_date) }
+      let(:expected_dates) { %w[2030-01-01 2030-01-04 2030-01-08 2030-01-15].map(&:to_date) }
 
-      it { is_expected.to eq expected_dates}
+      it { is_expected.to eq expected_dates }
     end
   end
 
@@ -1383,21 +1404,21 @@ RSpec.describe Import::NetexGeneric do
           <Quay id="quay-3">
             <Name>Quay 3</Name>
           </Quay>
-        
+
           <Line id="line">
             <Name>Line Sample</Name>
           </Line>
-        
+
           <Route id="route">
             <Name>Route Sample</Name>
             <LineRef ref="line"/>
             <DirectionType>outbound</DirectionType>
           </Route>
-        
+
           <ScheduledStopPoint id="scheduled-stop-point-1"/>
           <ScheduledStopPoint id="scheduled-stop-point-2"/>
           <ScheduledStopPoint id="scheduled-stop-point-3"/>
-        
+
           <PassengerStopAssignment id="passenger-stop-assignment-1" order="1">
             <ScheduledStopPointRef ref="scheduled-stop-point-1"/>
             <QuayRef ref="quay-1"/>
@@ -1410,7 +1431,7 @@ RSpec.describe Import::NetexGeneric do
             <ScheduledStopPointRef ref="scheduled-stop-point-3"/>
             <QuayRef ref="quay-3"/>
           </PassengerStopAssignment>
-        
+
           <ServiceJourneyPattern id="journey-pattern-1">
             <Name>Journey Pattern Sample</Name>
             <RouteRef ref="route"/>
@@ -1426,7 +1447,7 @@ RSpec.describe Import::NetexGeneric do
               </StopPointInJourneyPattern>
             </pointsInSequence>
           </ServiceJourneyPattern>
-        
+
           <ServiceJourney id="service-journey">
             <Name>Vehicle Journey Sample</Name>
             <dayTypes>
@@ -1444,11 +1465,11 @@ RSpec.describe Import::NetexGeneric do
               </TimetabledPassingTime>
               <TimetabledPassingTime>
                 <ArrivalTime>00:15:00</ArrivalTime>
-                <ArrivalDayOffset>1</ArrivalDayOffset>                
+                <ArrivalDayOffset>1</ArrivalDayOffset>#{'                '}
               </TimetabledPassingTime>
             </passingTimes>
           </ServiceJourney>
-        
+
           <DayType id="timetable">
             <Name>TimeTable Sample</Name>
             <properties>
@@ -1457,12 +1478,12 @@ RSpec.describe Import::NetexGeneric do
               </PropertyOfDay>
             </properties>
           </DayType>
-        
+
           <OperatingPeriod id="operation-period">
             <FromDate>2030-01-01T00:00:00</FromDate>
             <ToDate>2030-12-31T00:00:00</ToDate>
           </OperatingPeriod>
-        
+
           <DayTypeAssignment id="day-type-assignment" order="1">
             <OperatingPeriodRef ref="operation-period" />
             <DayTypeRef ref="timetable"/>
@@ -1476,7 +1497,7 @@ RSpec.describe Import::NetexGeneric do
       import.part(:line_referential).import!
       import.part(:scheduled_stop_points).import!
 
-      import.within_referential do |referential|
+      import.within_referential do |_referential|
         import.part(:route_journey_patterns).import!
         import.part(:time_tables).import!
         import.part(:vehicle_journeys).import!
@@ -1484,10 +1505,10 @@ RSpec.describe Import::NetexGeneric do
     end
 
     let(:new_referential) { import.referential }
-    let(:vehicle_journey) { new_referential.vehicle_journeys.find_by(published_journey_identifier: 'service-journey')}
+    let(:vehicle_journey) { new_referential.vehicle_journeys.find_by(published_journey_identifier: 'service-journey') }
 
     describe '#vehicle_journey' do
-      subject { vehicle_journey }  
+      subject { vehicle_journey }
       let(:expected_attributes) do
         {
           published_journey_name: 'Vehicle Journey Sample',
@@ -1499,7 +1520,7 @@ RSpec.describe Import::NetexGeneric do
     end
 
     describe '#journey_pattern' do
-      subject { vehicle_journey.journey_pattern }  
+      subject { vehicle_journey.journey_pattern }
       let(:expected_attributes) do
         { name: 'Journey Pattern Sample' }
       end
@@ -1508,21 +1529,29 @@ RSpec.describe Import::NetexGeneric do
     end
 
     describe '#vehicle_journey_at_stops' do
-      subject do 
+      subject do
         vehicle_journey.vehicle_journey_at_stops.map do |at_stop|
           {
             stop_area: at_stop.stop_point.stop_area.name,
-            arrival_time: (at_stop.arrival_time.strftime('%H:%M') rescue nil),
-            departure_time: (at_stop.departure_time.strftime('%H:%M') rescue nil)
+            arrival_time: begin
+              at_stop.arrival_time.strftime('%H:%M')
+            rescue StandardError
+              nil
+            end,
+            departure_time: begin
+              at_stop.departure_time.strftime('%H:%M')
+            rescue StandardError
+              nil
+            end
           }
         end
       end
 
       let(:expected_attributes) do
         [
-          {:stop_area=>"Quay 1", :arrival_time=>nil, :departure_time=>"23:50"}, 
-          {:stop_area=>"Quay 2", :arrival_time=>"23:55", :departure_time=>"00:05"},
-          {:stop_area=>"Quay 3", :arrival_time=>"00:15", :departure_time=>nil}
+          { stop_area: 'Quay 1', arrival_time: nil, departure_time: '23:50' },
+          { stop_area: 'Quay 2', arrival_time: '23:55', departure_time: '00:05' },
+          { stop_area: 'Quay 3', arrival_time: '00:15', departure_time: nil }
         ]
       end
 
@@ -1663,7 +1692,7 @@ RSpec.describe Import::NetexGeneric::TimeTables::Decorator do
     context 'when an Operating Period is present from 2030-01-01 to 2030-01-10' do
       let(:operating_periods) do
         [
-          Netex::OperatingPeriod.new(time_range: Time.parse('2030-01-01')..Time.parse('2030-01-10'))
+          Netex::OperatingPeriod.new(time_range: Time.zone.parse('2030-01-01')..Time.zone.parse('2030-01-10'))
         ]
       end
 
@@ -1677,7 +1706,7 @@ RSpec.describe Import::NetexGeneric::TimeTables::Decorator do
     context 'when an Operating Period and an UicOperatingPeriod are present' do
       let(:operating_periods) do
         [
-          Netex::OperatingPeriod.new(time_range: Time.parse('2030-01-01')..Time.parse('2030-01-10')),
+          Netex::OperatingPeriod.new(time_range: Time.zone.parse('2030-01-01')..Time.zone.parse('2030-01-10')),
           Netex::UicOperatingPeriod.new
         ]
       end
@@ -1693,7 +1722,7 @@ RSpec.describe Import::NetexGeneric::TimeTables::Decorator do
       let(:operating_periods) do
         [
           Netex::UicOperatingPeriod.new(
-            time_range: Time.parse('2030-01-01')..Time.parse('2030-01-10'),
+            time_range: Time.zone.parse('2030-01-01')..Time.zone.parse('2030-01-10'),
             valid_day_bits: '1010110101'
           )
         ]
@@ -1721,9 +1750,9 @@ RSpec.describe Import::NetexGeneric::TimeTables::Decorator do
 
       let(:operating_periods) do
         [
-          Netex::OperatingPeriod.new(time_range: Time.parse('2030-01-01')..Time.parse('2030-01-10')),
+          Netex::OperatingPeriod.new(time_range: Time.zone.parse('2030-01-01')..Time.zone.parse('2030-01-10')),
           Netex::UicOperatingPeriod.new(
-            time_range: Time.parse('2030-01-10')..Time.parse('2030-01-20'),
+            time_range: Time.zone.parse('2030-01-10')..Time.zone.parse('2030-01-20'),
             valid_day_bits: '10000000001'
           )
         ]
@@ -1757,7 +1786,7 @@ RSpec.describe Import::NetexGeneric::RouteJourneyPatterns::Decorator do
   describe '#route_scheduled_point_ref' do
     subject { decorator.route_scheduled_point_ref(route_point_ref) }
 
-    let(:route_point_ref) { "route_point_ref-1" }
+    let(:route_point_ref) { 'route_point_ref-1' }
     let(:route_point) { Netex::RoutePoint.new }
 
     let(:route_points) { double(find: route_point) }
@@ -1768,7 +1797,7 @@ RSpec.describe Import::NetexGeneric::RouteJourneyPatterns::Decorator do
 
       it { is_expected.to be_nil }
 
-      it "adds an error"
+      it 'adds an error'
     end
 
     context 'when a RoutePoint is found but without ProjectToPointRef#ref' do
@@ -1794,7 +1823,7 @@ RSpec.describe Import::NetexGeneric::RouteJourneyPatterns::Decorator do
     end
 
     context 'when #route_point_refs are not associated to a ScheduledPoint' do
-      let(:route_point_refs) { %w{1 2 3} }
+      let(:route_point_refs) { %w[1 2 3] }
       before { allow(decorator).to receive(:route_scheduled_point_ref).and_return(nil) }
 
       it { is_expected.to be_empty }
@@ -1834,7 +1863,7 @@ RSpec.describe Import::NetexGeneric::RouteJourneyPatterns::Decorator do
           before { allow(decorator).to receive(:code_space) }
 
           it { is_expected.to be_nil }
-          it { expect{ subject }.to change(decorator, :errors).from(be_empty).to(include(:unknown_code_space)) }
+          it { expect { subject }.to change(decorator, :errors).from(be_empty).to(include(:unknown_code_space)) }
         end
 
         context 'when given short_name matchs a CodeSpace' do
@@ -1845,14 +1874,14 @@ RSpec.describe Import::NetexGeneric::RouteJourneyPatterns::Decorator do
             it { is_expected.to have_attributes(value: value) }
             it { is_expected.to have_attributes(code_space: have_attributes(short_name: 'test')) }
 
-            it { expect{ subject }.to_not change(decorator, :errors).from(be_empty) }
+            it { expect { subject }.to_not change(decorator, :errors).from(be_empty) }
           end
 
           context 'when given value is blank' do
             let(:value) { nil }
 
             it { is_expected.to be_nil }
-            it { expect{ subject }.to change(decorator, :errors).from(be_empty).to(include(:blank_code)) }
+            it { expect { subject }.to change(decorator, :errors).from(be_empty).to(include(:blank_code)) }
           end
         end
       end
@@ -1896,7 +1925,7 @@ RSpec.describe Import::NetexGeneric::RouteJourneyPatterns::Decorator do
         context 'when key list' do
           let(:key_list) { 3.times.map { Netex::KeyValue.new } }
 
-          it "create a Code for each KeyValue" do
+          it 'create a Code for each KeyValue' do
             key_list.each do |key_value|
               expect(decorator).to receive(:from_key_value).with(key_value)
             end
@@ -1904,7 +1933,7 @@ RSpec.describe Import::NetexGeneric::RouteJourneyPatterns::Decorator do
             subject
           end
 
-          it "ignores missing codes" do
+          it 'ignores missing codes' do
             allow(decorator).to receive(:from_key_value).and_return(nil)
 
             is_expected.to be_empty
@@ -1974,7 +2003,7 @@ RSpec.describe Import::NetexGeneric::RouteJourneyPatterns::Sequence::Merger do
   end
 
   it 'returns one normal sequence' do
-    expect(subject.to_a).to eq ['scheduled-stop-point-1', 'scheduled-stop-point-2', 'scheduled-stop-point-3']
+    expect(subject.to_a).to eq %w[scheduled-stop-point-1 scheduled-stop-point-2 scheduled-stop-point-3]
   end
 
   it 'returns exactly two enriched sequences after merging' do

@@ -255,13 +255,13 @@ GEM
       activerecord (>= 5.a)
       database_cleaner-core (~> 2.0.0)
     database_cleaner-core (2.0.1)
-    datadog (2.17.0)
+    datadog (2.18.0)
       datadog-ruby_core_source (~> 3.4, >= 3.4.1)
       libdatadog (~> 18.1.0.1.0)
-      libddwaf (~> 1.22.0.0.2)
+      libddwaf (~> 1.24.1.0.0)
       logger
       msgpack
-    datadog-ci (1.19.0)
+    datadog-ci (1.20.2)
       datadog (~> 2.4)
       drb
       msgpack
@@ -354,7 +354,7 @@ GEM
     factory_bot_rails (6.5.0)
       factory_bot (~> 6.5)
       railties (>= 6.1.0)
-    faker (3.5.1)
+    faker (3.5.2)
       i18n (>= 1.8.11, < 2)
     faraday (1.10.4)
       faraday-em_http (~> 1.0)
@@ -448,7 +448,7 @@ GEM
       multi_json (~> 1.11)
       os (>= 0.9, < 2.0)
       signet (>= 0.16, < 2.a)
-    graphql (2.5.9)
+    graphql (2.5.10)
       base64
       fiber-storage
       logger
@@ -521,11 +521,11 @@ GEM
       rexml
     libdatadog (18.1.0.1.0)
     libdatadog (18.1.0.1.0-x86_64-linux)
-    libddwaf (1.22.0.0.2)
+    libddwaf (1.24.1.0.0)
       ffi (~> 1.0)
-    libddwaf (1.22.0.0.2-x86_64-darwin)
+    libddwaf (1.24.1.0.0-x86_64-darwin)
       ffi (~> 1.0)
-    libddwaf (1.22.0.0.2-x86_64-linux)
+    libddwaf (1.24.1.0.0-x86_64-linux)
       ffi (~> 1.0)
     libv8-node (18.19.0.0)
     libv8-node (18.19.0.0-x86_64-darwin)
@@ -642,7 +642,7 @@ GEM
       net-smtp
       premailer (~> 1.7, >= 1.7.9)
     prism (1.4.0)
-    prometheus-client (4.2.4)
+    prometheus-client (4.2.5)
       base64
     public_suffix (6.0.1)
     puma (6.6.0)

@@ -139,14 +139,16 @@ export default function selection(state = initialState, action) {
 				const newStops = vj.vehicle_journey_at_stops.map((vjas, y) => {
 					if (vjas.dummy) return vjas // We dont want data to be uptaded in this case
 
-					const stopParams = stops.find(stop => stop.x == x && stop.y == y) || vjas
+					const stopParams = stops.find(stop => stop.x == x && stop.y == y)
 
 					let result = {
-					  ...vjas,
-					  delta: stopParams.delta
+					  ...vjas
 					}
-					result[actions.vjasFirstTimeAttribute(vjas)] = stopParams.firstTime
-					result[actions.vjasSecondTimeAttribute(vjas)] = stopParams.secondTime
+					if (stopParams) {
+					  result.delta = stopParams.delta
+					  result[actions.vjasFirstTimeAttribute(vjas)] = stopParams.firstTime
+					  result[actions.vjasSecondTimeAttribute(vjas)] = stopParams.secondTime
+					}
 					return result
 				})
 

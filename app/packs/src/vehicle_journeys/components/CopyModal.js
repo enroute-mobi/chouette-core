@@ -96,10 +96,9 @@ const CopyModal = props => {
                     ref={pasteContentRef}
                     onPaste={e => updatePasteContent(e.clipboardData.getData('text'))}
                     onChange={e => updatePasteContent(e.target.value)}
+                    defaultValue={content.paste}
                     wrap="off"
-                  >
-                    {content.paste}
-                  </textarea>
+                  />
                   {pasteFromClipboardAvailable() && <button
                     className="btn btn-default pull-right"
                     onClick={pasteFromClipboard}>

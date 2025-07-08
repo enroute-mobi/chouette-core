@@ -20,7 +20,7 @@ module Chouette::Sync
         delegate :source, to: :updater
 
         def stop_area_id
-          lookup.stop_areas.find_id(tag(:parent_id))
+          resolve :stop_area, tag(:parent_id)
         end
 
         def stop_area_provider_id

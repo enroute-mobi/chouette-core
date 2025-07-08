@@ -60,14 +60,6 @@ RSpec.describe Chouette::Sync::Entrance do
       end
     end
 
-    let(:stop_area_ids) { { 'stop-place-1' => stop_area.id } }
-    let(:stop_areas_finder) do
-      double(:stop_areas_finder).tap do |stop_areas_finder|
-        allow(stop_areas_finder).to receive(:find_id) { |stop_id| stop_area_ids[stop_id] }
-      end
-    end
-    let(:lookup) { double(stop_areas: stop_areas_finder) }
-
     before do
       # In IBOO the stop_area_referential should use stif_reflex objectid_format
       if Chouette::Sync::Base.default_model_id_attribute == :objectid
@@ -78,7 +70,7 @@ RSpec.describe Chouette::Sync::Entrance do
     end
 
     subject(:sync) do
-      Chouette::Sync::Entrance::Netex.new source: source, target: target, code_space: code_space, lookup: lookup
+      Chouette::Sync::Entrance::Netex.new source: source, target: target, code_space: code_space
     end
 
     let(:model_id_attribute) { sync.model_id_attribute }

@@ -49,6 +49,7 @@ class LineNoticesController < Chouette::LineReferentialController
       :content,
       :object_id,
       :object_version,
+      :registration_number,
       :line_provider_id,
       codes_attributes: [:id, :code_space_id, :value, :_destroy]
     )

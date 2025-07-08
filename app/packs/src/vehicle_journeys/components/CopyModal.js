@@ -107,31 +107,31 @@ const CopyModal = props => {
                   <br/>
                 </div>}
               </div>
-              <div className='modal-footer'>
-              <button
-                className="btn btn-cancel"
-                onClick={closeModal}>
-                  {I18n.t('cancel')}
-              </button>
+              <div className='modal-footer flex items-center justify-end mt-8'>
               {mode == 'copy' && <button
                 className='btn btn-default'
                 onClick={toPasteMode}>
                   <i className='fa fa-paste'></i>
-                  <span>{ I18n.t('courses_copy_paste.modal.to_paste_mode') }</span>
+                  <span className='ml-1'>{ I18n.t('courses_copy_paste.modal.to_paste_mode') }</span>
               </button>}
               {mode == 'paste' && !pasteOnly && <button
                 className='btn btn-default'
                   onClick={toCopyMode}>
                   <i className='fa fa-caret-left'></i>
-                  <span>{ I18n.t('courses_copy_paste.modal.to_copy_mode') }</span>
+                  <span className='ml-1'>{ I18n.t('courses_copy_paste.modal.to_copy_mode') }</span>
               </button>}
               {mode == 'paste' && <button
                 className='btn btn-default'
                 disabled={!!error || !content.paste}
                 onClick={pasteContent}>
                   <i className='fa fa-paste'></i>
-                  <span>{ I18n.t('courses_copy_paste.modal.paste_content') }</span>
+                  <span className='ml-1'>{ I18n.t('courses_copy_paste.modal.paste_content') }</span>
               </button>}
+              <button
+                className="btn btn-cancel"
+                onClick={closeModal}>
+                  {I18n.t('cancel')}
+              </button>
               </div>
             </div>
           </div>

@@ -9,6 +9,8 @@ class Subscription
 
   attr_accessor :organisation_name, :user_name, :email, :password, :password_confirmation, :workbench_invitation_code
 
+  validates :workbench_invitation_code, presence: true, if: -> { !Subscription.enabled? }
+
   validate do |subscription|
     [OrganisationValidator, UserValidator, WorkbenchConfirmationValidator].each do |validator|
       validator.validate subscription

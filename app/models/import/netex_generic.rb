@@ -63,8 +63,7 @@ module Import
         [
           RouteJourneyPatterns,
           TimeTables,
-          VehicleJourneys,
-          VehicleJourneyStopAssignments
+          VehicleJourneys
         ].each do |part_class|
           part(part_class).import!
         end
@@ -523,12 +522,7 @@ module Import
 
       def on_save
         lambda do |model|
-          case model
-          when Chouette::Route
-            replace_stop_points_by_their_ids_in_scheduled_stop_points
-          when Chouette::JourneyPattern
-            cache_journey_pattern model
-          end
+          cache_journey_pattern model if model.is_a?(Chouette::JourneyPattern)
         end
       end
 
@@ -582,11 +576,6 @@ module Import
           route_id: journey_pattern.route_id,
           stop_point_ids: journey_pattern.journey_pattern_stop_points.map(&:stop_point_id)
         }
-      end
-
-      def replace_stop_points_by_their_ids_in_scheduled_stop_points
-        # now that the stop points are saved, we can replace them by their id in order to save memory
-        scheduled_stop_points.each_value(&:replace_stop_point_by_its_id!)
       end
 
       def each_route_with_journey_patterns(&block)
@@ -786,8 +775,6 @@ module Import
                       flexible: scheduled_stop_point.flexible
                     )
                     by_scheduled_stop_point_id[step.route_stop_points_key] = stop_point
-                    # associate chouette StopPoint (currently still a new record) to its ScheduledStopPoint in cache
-                    scheduled_stop_point.stop_point_id = stop_point
                   end
 
                   journey_pattern_stop_points_by_scheduled_stop_point_id[step.journey_pattern_stop_points_key] =
@@ -1500,90 +1487,18 @@ module Import
       end
     end
 
-    class VehicleJourneyStopAssignments < WithResourcePart
-      include ReferentialPart
-
-      delegate :netex_source, :stop_area_provider, :scheduled_stop_points, to: :import
-
-      def import!
-        netex_source.vehicle_journey_stop_assignments.each do |stop_assignment|
-          decorated_assignment = Decorator.new(stop_assignment, scheduled_stop_points, stop_area_provider)
-
-          unless decorated_assignment.valid?
-            create_message :ancestor_associated_route_not_found
-
-            next
-          end
-
-          decorated_assignment.vehicle_journey_at_stops.find_each do |vehicle_journey_at_stop|
-            vehicle_journey_at_stop.update stop_area_id: decorated_assignment.stop_area&.id
-          end
-        end
-      end
-
-      class Decorator < SimpleDelegator
-        def initialize(stop_assignment, scheduled_stop_points, stop_area_provider)
-          super stop_assignment
-
-          @scheduled_stop_points = scheduled_stop_points
-          @stop_area_provider = stop_area_provider
-        end
-        attr_reader :scheduled_stop_points, :stop_area_provider
-
-        delegate :stop_areas, to: :stop_area_provider
-
-        def stop_area_code
-          (quay_ref || stop_splace_ref)&.ref
-        end
-
-        def stop_area
-          stop_areas.find_by(registration_number: stop_area_code)
-        end
-
-        def scheduled_stop_point
-          return unless scheduled_stop_point_ref
-
-          @scheduled_stop_point ||= scheduled_stop_points[scheduled_stop_point_ref.ref]
-        end
-
-        def valid?
-          stop_area.parent_id == scheduled_stop_point.stop_area_id
-        end
-
-        def vehicle_journey_ids
-          vehicle_journey_refs.map(&:ref)
-        end
-
-        def vehicle_journey_at_stops
-          Chouette::VehicleJourneyAtStop.joins(:vehicle_journey).where(
-            'stop_point_id' => scheduled_stop_point.stop_point_id,
-            'vehicle_journeys.published_journey_identifier' => vehicle_journey_ids
-          )
-        end
-      end
-    end
-
     def scheduled_stop_points
       @scheduled_stop_points ||= {}
     end
 
     class ScheduledStopPoint
-      def initialize(id:, stop_area_id:, stop_point_id: nil, flexible: false)
+      def initialize(id:, stop_area_id:, flexible: false)
         @id = id
         @stop_area_id = stop_area_id
-        @stop_point_id = stop_point_id
         @flexible = flexible
       end
 
-      attr_accessor :id, :stop_area_id, :stop_point_id, :flexible
-
-      def replace_stop_point_by_its_id?
-        @stop_point_id.is_a?(::Chouette::StopPoint)
-      end
-
-      def replace_stop_point_by_its_id!
-        @stop_point_id = @stop_point_id.id if replace_stop_point_by_its_id?
-      end
+      attr_accessor :id, :stop_area_id, :flexible
     end
 
     class ScheduledStopPoints < WithResourcePart

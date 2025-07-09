@@ -16,9 +16,6 @@ RSpec.describe Import::NetexGeneric do
         Netex::Source.new.tap do |s|
           s.transformers << Netex::Transformer::Indexer.new(Netex::JourneyPattern, by: :route_ref)
           s.transformers << Netex::Transformer::Indexer.new(Netex::DayTypeAssignment, by: :day_type_ref)
-          s.transformers << ::Netex::Transformer::Indexer.new(::Netex::VehicleJourneyStopAssignment,
-                                                              by: :scheduled_stop_point_ref)
-
           s.parse(StringIO.new(xml))
         end
       end
@@ -1556,117 +1553,6 @@ RSpec.describe Import::NetexGeneric do
       end
 
       it { is_expected.to match_array expected_attributes }
-    end
-  end
-
-  describe 'VehicleJourneyStopAssignments part' do
-    subject do
-      new_referential.switch.vehicle_journey_at_stops.find do |at_stop|
-        at_stop&.stop_area&.registration_number == 'quay-1'
-      end
-    end
-
-    let(:xml) do
-      <<-XML
-        <members>
-          <VehicleJourneyStopAssignment id="stop-assignment-1">
-            <ScheduledStopPointRef ref="scheduled-stop-point-1"/>
-            <QuayRef ref="quay-1"/>
-            <VehicleJourneyRef ref="vehicleJourney-1"/>
-          </VehicleJourneyStopAssignment>
-
-          <!-- Required resources -->
-
-          <Route id="route-1">
-            <Name>Route Sample</Name>
-            <LineRef ref="line-1"/>
-          </Route>
-
-          <JourneyPattern id="journeypattern-1">
-            <Name>Journey Pattern Sample</Name>
-            <RouteRef ref="route-1"/>
-            <pointsInSequence>
-              <StopPointInJourneyPattern id="stop-point-in-journey-pattern-1" order="1">
-                <ScheduledStopPointRef ref="scheduled-stop-point-1"/>
-              </StopPointInJourneyPattern>
-              <StopPointInJourneyPattern id="stop-point-in-journey-pattern-2" order="2">
-                <ScheduledStopPointRef ref="scheduled-stop-point-2"/>
-              </StopPointInJourneyPattern>
-            </pointsInSequence>
-          </JourneyPattern>
-
-          <ServiceJourney id="vehicleJourney-1" version="any">
-            <Name>Vehicle Journey Sample</Name>
-            <dayTypes>
-              <DayTypeRef ref="daytype-1" version="any"/>
-            </dayTypes>
-            <JourneyPatternRef ref="journeypattern-1" version="any"/>
-            <passingTimes>
-              <TimetabledPassingTime version="any">
-                <ArrivalTime>06:30:00</ArrivalTime>
-                <DepartureTime>06:30:00</DepartureTime>
-              </TimetabledPassingTime>
-              <TimetabledPassingTime version="any">
-                <ArrivalTime>06:35:00</ArrivalTime>
-                <DepartureTime>06:37:00</DepartureTime>
-              </TimetabledPassingTime>
-            </passingTimes>
-          </ServiceJourney>
-
-          <Line id="line-1">
-            <Name>Line Sample</Name>
-          </Line>
-
-          <DayType id="daytype-1">
-            <Name>Timetable sample</Name>
-          </DayType>
-
-          <DayTypeAssignment id="daytype-1" version="any" order="0">
-            <Date>2030-01-01</Date>
-            <DayTypeRef ref="daytype-1"/>
-            <isAvailable>true</isAvailable>
-          </DayTypeAssignment>
-
-          <!-- ScheduledStopPoint + PassengerStopAssignment + Quay -->
-          <ScheduledStopPoint id="scheduled-stop-point-1"/>
-
-          <PassengerStopAssignment id="passenger-stop-assignment-1" order="0">
-            <ScheduledStopPointRef ref="scheduled-stop-point-1"/>
-            <StopPlaceRef ref="parent-1" />
-          </PassengerStopAssignment>
-
-          <StopPlace id="parent-1">
-            <Name>Parent A</Name>
-            <quays>
-              <Quay id="quay-1">
-                <Name>Quay A</Name>
-              </Quay>
-            </quays>
-          </StopPlace>
-
-          <!-- ScheduledStopPoint + PassengerStopAssignment + Quay -->
-          <ScheduledStopPoint id="scheduled-stop-point-2"/>
-
-          <PassengerStopAssignment id="passenger-stop-assignment-2" order="0">
-            <ScheduledStopPointRef ref="scheduled-stop-point-2"/>
-            <QuayRef ref="quay-2" />
-          </PassengerStopAssignment>
-
-          <Quay id="quay-2">
-            <Name>Quay B</Name>
-          </Quay>
-        </members>
-      XML
-    end
-
-    before do
-      import.import_without_status
-    end
-
-    let(:new_referential) { import.referential }
-
-    it 'should import vehicle journey stop assignments' do
-      is_expected.to be_present
     end
   end
 end

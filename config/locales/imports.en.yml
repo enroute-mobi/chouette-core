@@ -120,6 +120,7 @@ en:
         strict_mode: Strict Mode (reset any undefined attribute)
         ignore_particulars: Ignore Particular resources
         ignore_parent_stop_areas: "Ignore parent stop areas"
+        override_internal_identifiers: "Override internal identifiers"
         line_provider_id: Line Provider
         stop_area_provider_id: Stop Area Provider
         specific_default_company_id: Specific default company

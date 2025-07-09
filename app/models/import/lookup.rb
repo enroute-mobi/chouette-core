@@ -53,28 +53,32 @@ module Import
       def internal_stop_areas
         @internal_stop_areas ||=
           Collection.new
-                    .add(Finder::RegistrationNumber.new(stop_area_provider.stop_areas, source: :provider))
-                    .add(Finder::RegistrationNumber.new(stop_area_referential.stop_areas, source: :workgroup))
+                    .add(finder_class.new(stop_area_provider.stop_areas, source: :provider))
+                    .add(finder_class.new(stop_area_referential.stop_areas, source: :workgroup))
       end
 
       def internal_lines
         @internal_lines ||=
           Collection.new
-                    .add(Finder::RegistrationNumber.new(line_provider.lines, source: :provider))
-                    .add(Finder::RegistrationNumber.new(line_referential.lines, source: :workgroup))
+                    .add(finder_class.new(line_provider.lines, source: :provider))
+                    .add(finder_class.new(line_referential.lines, source: :workgroup))
       end
 
       def internal_companies
         @internal_companies ||=
           Collection.new
-                    .add(Finder::RegistrationNumber.new(line_provider.companies, source: :provider))
-                    .add(Finder::RegistrationNumber.new(line_referential.companies, source: :workgroup))
+                    .add(finder_class.new(line_provider.companies, source: :provider))
+                    .add(finder_class.new(line_referential.companies, source: :workgroup))
       end
 
       def internal_shapes
         @internal_shapes ||=
           Collection.new
                     .add(Finder::Code.new(shape_provider.shapes, code_space: code_space, source: :provider))
+      end
+
+      def finder_class
+        import.override_internal_identifiers? ? Finder::Objectid : Finder::RegistrationNumber
       end
     end
 
@@ -223,6 +227,14 @@ module Import
 
         def find(code)
           by_code(code).first
+        end
+      end
+
+      class Objectid < Base
+        private
+
+        def by_code(code)
+          scope.where(objectid: code)
         end
       end
 

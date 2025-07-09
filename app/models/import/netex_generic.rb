@@ -219,7 +219,8 @@ module Import
 
       def default_decorator_attributes # rubocop:disable Metrics/MethodLength
         {
-          code_builder: code_builder
+          code_builder: code_builder,
+          override_internal_identifiers: override_internal_identifiers?
         }.tap do |attributes|
           %i[
             lookup
@@ -249,9 +250,11 @@ module Import
       end
 
       attr_accessor :lookup, :code_space, :code_builder, :scheduled_stop_points,
+                    :override_internal_identifiers,
                     :line_provider, :stop_area_provider # TODO: waiting for lookup whole integration
 
       alias resource __getobj__
+      alias override_internal_identifiers? override_internal_identifiers
 
       def chouette_name
         name || 'Default'
@@ -260,7 +263,9 @@ module Import
       def chouette_attributes
         {
           codes: codes
-        }
+        }.tap do |attributes|
+          attributes[:objectid] = id if override_internal_identifiers?
+        end
       end
 
       def codes
@@ -308,6 +313,8 @@ module Import
         @import = import
       end
       attr_reader :import
+
+      delegate :override_internal_identifiers?, to: :import
 
       include Decorate
 
@@ -408,6 +415,8 @@ module Import
         Chouette::Sync::Referential.new(target).tap do |sync|
           sync.synchronize_with Chouette::Sync::StopArea::Netex
           sync.synchronize_with Chouette::Sync::Entrance::Netex
+
+          sync.model_id_attribute = :objectid if import.override_internal_identifiers?
         end
       end
 
@@ -436,6 +445,8 @@ module Import
           sync.synchronize_with Chouette::Sync::LineNotice::Netex
           sync.synchronize_with Chouette::Sync::BookingArrangement::Netex
           sync.synchronize_with Chouette::Sync::Line::Netex
+
+          sync.model_id_attribute = :objectid if import.override_internal_identifiers?
         end
       end
 

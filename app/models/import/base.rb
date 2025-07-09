@@ -106,6 +106,10 @@ class Import::Base < ApplicationModel
     options['ignore_parent_stop_areas'] == 'true' || parent_option('ignore_parent_stop_areas') == 'true'
   end
 
+  def override_internal_identifiers?
+    options['override_internal_identifiers'] == 'true' || parent_option('override_internal_identifiers') == 'true'
+  end
+
   def parent_options
     parent&.options
   end

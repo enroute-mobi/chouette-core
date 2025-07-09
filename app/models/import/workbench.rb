@@ -22,6 +22,8 @@ module Import
     option :strict_mode, default_value: false, type: :boolean
     option :ignore_particulars, default_value: false, type: :boolean
     option :ignore_parent_stop_areas, required: true, default_value: false, type: :boolean
+    option :override_internal_identifiers, depends: { option: :import_category, values: %w[netex_generic] },
+                                           required: true, default_value: false, type: :boolean
     option :stop_area_provider_id, display: :stop_area_provider,
                                    collection: -> { candidate_stop_area_providers.order(:name) },
                                    allow_blank: true

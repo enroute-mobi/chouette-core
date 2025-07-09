@@ -137,13 +137,11 @@ class Aggregate < ApplicationModel
           ServiceCount.compute_for_referential(new)
         end
 
-        if processing_rules_after_aggregate.present?
-          continue_after_processings = processor.after([new])
-          # Check processed status and stop aggregate if one failed
-          unless continue_after_processings
-            failed_on_processings
-            return
-          end
+        continue_after_processings = processor.after([new])
+        # Check processed status and stop aggregate if one failed
+        unless continue_after_processings
+          failed_on_processings
+          return
         end
 
         save_current
@@ -157,10 +155,6 @@ class Aggregate < ApplicationModel
 
   def processor
     @processor ||= Processor.new(self)
-  end
-
-  def processing_rules_after_aggregate
-    workgroup.processing_rules.where(operation_step: 'after_aggregate')
   end
 
   def workbench_for_notifications

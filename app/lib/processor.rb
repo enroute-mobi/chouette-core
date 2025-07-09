@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class Processor
   attr_reader :operation, :workbench
 
@@ -10,23 +12,30 @@ class Processor
     @workgroup ||= workbench.present? ? workbench.workgroup : operation.try(:workgroup)
   end
 
+  # Specific case when operation is "Aggregate" and there is no workbench defined
+  def operation_workbench
+    @operation_workbench ||= workbench.blank? && workgroup.present? ? workgroup.owner_workbench : workbench
+  end
+
   def before(referentials)
+    return true unless before_processing_rules.any?
+
     referentials.each do |referential|
       before_processing_rules.each do |processing_rule|
         return false unless processing_rule.perform operation: operation, referential: referential,
                                                     operation_workbench: workbench
       end
     end
+
     true
   end
 
-  def after(referentials)
-    # Specific case when operation is "Aggregate" and there is no workbench defined
-    operation_workbench = workbench.blank? && workgroup.present? ? workgroup.owner_workbench : workbench
+  def after(referentials) # rubocop:disable Metrics/MethodLength
+    return true unless after_processing_rules.any?
 
     unless operation_workbench
       Rails.logger.warn('Could not find a workbench to run after processings')
-      return
+      return false
     end
 
     referentials.each do |referential|
@@ -35,6 +44,7 @@ class Processor
                                                     operation_workbench: operation_workbench
       end
     end
+
     true
   end
 
@@ -43,7 +53,8 @@ class Processor
     #   Macro List first
     #   Control List
     #   Workgroup Control List
-    workbench_processing_rules(before_operation_step) + workgroup_processing_rules(before_operation_step)
+    @before_processing_rules ||= workbench_processing_rules(before_operation_step) + \
+                                 workgroup_processing_rules(before_operation_step)
   end
 
   def after_processing_rules
@@ -51,7 +62,8 @@ class Processor
     #   Macro List first
     #   Control List
     #   Workgroup Control List
-    workbench_processing_rules(after_operation_step) + workgroup_processing_rules(after_operation_step)
+    @after_processing_rules ||= workbench_processing_rules(after_operation_step) + \
+                                workgroup_processing_rules(after_operation_step)
   end
 
   def workbench_processing_rules(operation_step)

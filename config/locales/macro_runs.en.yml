@@ -57,6 +57,8 @@ en:
         one: Adjust Timetable Periods
       macro/remove_code/run:
         one: Remove codes
+      macro/define_journey_pattern_name_or_destination/run:
+        one: Compute Journey Pattern name
     attributes:
       macro/base/run:
         name: Name
@@ -93,6 +95,8 @@ en:
       macro/create_codes_from_particulars/run:
         particular_code_space_id: Particular Code Space
         referent_code_space_id: Referent Code Space
-
       macro/adjust_periods/run:
         end_correction: Period End Correction
+      macro/define_journey_pattern_name_or_destination/run:
+        target_attribute: Attribute
+        target_format: Format

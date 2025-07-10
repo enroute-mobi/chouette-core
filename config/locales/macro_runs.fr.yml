@@ -57,6 +57,8 @@ fr:
         one: Ajuster les Périodes des Calendriers
       macro/remove_code/run:
         one: Supprimer des codes
+      macro/define_journey_pattern_name_or_destination/run:
+        one: Définir le Nom ou la Destination de Mission
     attributes:
       macro/base/run:
         name: Nom
@@ -97,3 +99,6 @@ fr:
         referent_code_space_id: Espace de code du Référent
       macro/adjust_periods/run:
         end_correction: Correction sur la fin de Période
+      macro/define_journey_pattern_name_or_destination/run:
+        target_attribute: Attribut
+        target_format: Format

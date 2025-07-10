@@ -1558,7 +1558,9 @@ RSpec.describe Import::NetexGeneric do
 end
 
 RSpec.describe Import::NetexGeneric::TimeTables::Decorator do
-  subject(:decorator) { described_class.new day_type, day_type_assignments, operating_periods }
+  subject(:decorator) do
+    described_class.new(day_type, day_type_assignments: day_type_assignments, raw_operating_periods: operating_periods)
+  end
 
   let(:day_type) { Netex::DayType.new }
   let(:day_type_assignments) { [] }
@@ -1652,7 +1654,7 @@ RSpec.describe Import::NetexGeneric::TimeTables::Decorator do
 end
 
 RSpec.describe Import::NetexGeneric::RouteJourneyPatterns::Decorator do
-  subject(:decorator) { described_class.new netex_route, netex_journey_patterns }
+  subject(:decorator) { described_class.new(netex_route, journey_patterns: netex_journey_patterns) }
 
   let(:netex_route) { Netex::Route.new }
   let(:netex_journey_patterns) { [] }

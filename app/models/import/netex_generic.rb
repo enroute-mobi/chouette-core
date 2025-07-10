@@ -212,6 +212,79 @@ module Import
       Rails.logger.debug "@status: #{@status.inspect}"
     end
 
+    module Decorate
+      def decorate(resource, decorator_class = default_decorator_class, **attributes)
+        decorator_class.new(resource, **default_decorator_attributes.merge(attributes))
+      end
+
+      def default_decorator_attributes # rubocop:disable Metrics/MethodLength
+        {
+          code_builder: code_builder
+        }.tap do |attributes|
+          %i[
+            lookup
+            code_space
+            line_provider
+            stop_area_provider
+            scheduled_stop_points
+          ].each do |attr|
+            attributes[attr] = send(attr) if respond_to?(attr)
+          end
+        end
+      end
+
+      def default_decorator_class
+        @default_decorator_class ||= self.class.const_get(:Decorator)
+      end
+    end
+
+    class ResourceDecorator < SimpleDelegator
+      include Decorate
+
+      def initialize(resource, **attributes)
+        super(resource)
+        attributes.each do |k, v|
+          send("#{k}=", v)
+        end
+      end
+
+      attr_accessor :lookup, :code_space, :code_builder, :scheduled_stop_points,
+                    :line_provider, :stop_area_provider # TODO: waiting for lookup whole integration
+
+      alias resource __getobj__
+
+      def chouette_name
+        name || 'Default'
+      end
+
+      def chouette_attributes
+        {
+          codes: codes
+        }
+      end
+
+      def codes
+        return [] unless code_builder
+
+        code_builder.decorate(key_list).tap do |decorator|
+          errors.concat decorator.errors
+        end.codes
+      end
+
+      def add_error(message_key)
+        errors << message_key
+      end
+
+      def errors
+        @errors ||= []
+      end
+
+      def valid?
+        chouette_model
+        errors.empty?
+      end
+    end
+
     def part(part_class)
       # For test, accept a symbol/name in argument
       # For example: part(:line_referential).import!
@@ -235,6 +308,8 @@ module Import
         @import = import
       end
       attr_reader :import
+
+      include Decorate
 
       # To define callback in import!
       include AroundMethod
@@ -543,16 +618,12 @@ module Import
 
       def import!
         each_route_with_journey_patterns do |netex_route, netex_journey_patterns|
-          decorator = Decorator.new(
-            netex_route, netex_journey_patterns,
-            scheduled_stop_points: scheduled_stop_points,
+          decorator = decorate(
+            netex_route,
+            journey_patterns: netex_journey_patterns,
             route_points: route_points,
             directions: directions,
-            destination_displays: destination_displays,
-            line_provider: line_provider,
-            code_builder: code_builder,
-            code_space: code_space,
-            lookup: lookup
+            destination_displays: destination_displays
           )
 
           unless decorator.valid?
@@ -562,7 +633,7 @@ module Import
             next
           end
 
-          decorator.chouette_routes.each do |chouette_route|
+          decorator.chouette_model.each do |chouette_route|
             route_inserter << chouette_route
           end
         end
@@ -587,23 +658,8 @@ module Import
 
       delegate :route_points, :directions, :destination_displays, to: :netex_source
 
-      class Decorator < SimpleDelegator
-        def initialize(route, journey_patterns, scheduled_stop_points: nil, route_points: nil, directions: nil,
-                       destination_displays: nil, line_provider: nil, code_builder: nil, code_space: nil, lookup: nil)
-          super route
-
-          @journey_patterns = journey_patterns
-          @scheduled_stop_points = scheduled_stop_points
-          @route_points = route_points
-          @directions = directions
-          @destination_displays = destination_displays
-          @line_provider = line_provider
-          @code_builder = code_builder
-          @code_space = code_space
-          @lookup = lookup
-        end
-        attr_accessor :journey_patterns, :scheduled_stop_points, :route_points, :directions, :line_provider,
-                      :destination_displays, :code_builder, :code_space, :lookup
+      class Decorator < ResourceDecorator
+        attr_accessor :journey_patterns, :route_points, :directions, :destination_displays
 
         def chouette_line
           line = lookup.lines.find(line_ref.ref) if lookup
@@ -612,10 +668,10 @@ module Import
           line
         end
 
-        def chouette_routes
+        def chouette_model
           return unless chouette_line
 
-          @chouette_routes ||= routes_attributes.map.with_index do |route_attributes, route_index|
+          @chouette_model ||= routes_attributes.map.with_index do |route_attributes, route_index|
             chouette_line.routes.build(route_attributes).tap do |chouette_route|
               chouette_route.journey_patterns = chouette_journey_patterns[route_index]
             end
@@ -630,8 +686,13 @@ module Import
               complete_scheduled_stop_points.each.with_index do |route_steps, route_index|
                 route_steps.each do |steps|
                   netex_journey_pattern = journey_patterns.find { |jp| jp.id == steps.first.journey_pattern_id }
-                  journey_pattern_decorator = JourneyPatternDecorator.new(self, netex_journey_pattern, route_index)
-                  chouette_journey_pattern = journey_pattern_decorator.chouette_journey_pattern
+                  journey_pattern_decorator = decorate(
+                    netex_journey_pattern,
+                    JourneyPatternDecorator,
+                    route_decorator: self,
+                    route_index: route_index
+                  )
+                  chouette_journey_pattern = journey_pattern_decorator.chouette_model
                   chouette_journey_patterns[route_index] << chouette_journey_pattern
                 end
               end
@@ -649,13 +710,8 @@ module Import
             name: chouette_name,
             wayback: wayback,
             published_name: direction_name,
-            stop_points: stop_points,
-            codes: codes
-          }
-        end
-
-        def chouette_name
-          name || 'Default'
+            stop_points: stop_points
+          }.merge(chouette_attributes)
         end
 
         def wayback
@@ -680,14 +736,6 @@ module Import
 
         def direction_name
           direction&.name
-        end
-
-        def codes
-          return [] unless code_builder
-
-          code_builder.decorate(key_list).tap do |decorator|
-            errors.concat decorator.errors
-          end.codes
         end
 
         def route_point_refs
@@ -798,34 +846,15 @@ module Import
         def journey_pattern_stop_point_for_scheduled_stop_point_id(jp_scheduled_stop_point_id)
           journey_pattern_stop_points_by_scheduled_stop_point_id[jp_scheduled_stop_point_id]
         end
-
-        def add_error(message_key)
-          errors << message_key
-        end
-
-        def errors
-          @errors ||= []
-        end
-
-        def valid?
-          chouette_routes
-          errors.empty?
-        end
       end
 
-      class JourneyPatternDecorator < SimpleDelegator
-        def initialize(route_decorator, journey_pattern, route_index)
-          super journey_pattern
-
-          @route_decorator = route_decorator
-          @route_index = route_index
-        end
+      class JourneyPatternDecorator < ResourceDecorator
         attr_accessor :route_decorator, :route_index
 
-        delegate :destination_displays, :code_builder, :line_provider, :code_space, to: :route_decorator
+        delegate :destination_displays, to: :route_decorator
 
-        def chouette_journey_pattern
-          Chouette::JourneyPattern.new journey_pattern_attributes
+        def chouette_model
+          @chouette_model ||= Chouette::JourneyPattern.new journey_pattern_attributes
         end
 
         def journey_pattern_attributes
@@ -835,9 +864,8 @@ module Import
             name: chouette_name,
             published_name: published_name,
             journey_pattern_stop_points: journey_pattern_stop_points,
-            codes: codes,
             booking_arrangement_id: booking_arrangement_id
-          }
+          }.merge(chouette_attributes)
         end
 
         def booking_arrangement_id
@@ -845,20 +873,8 @@ module Import
           line_provider.booking_arrangements.by_code(code_space, netex_booking_arrangement_id)&.first&.id
         end
 
-        def chouette_name
-          name || 'Default'
-        end
-
         def published_name
           destination_display&.front_text
-        end
-
-        def codes
-          return [] unless code_builder
-
-          code_builder.decorate(key_list).tap do |decorator|
-            # errors.concat decorator.errors
-          end.codes
         end
 
         def destination_display
@@ -1157,7 +1173,11 @@ module Import
 
       def import!
         each_day_type_with_assignements_and_periods do |day_type, day_type_assignments, operating_periods|
-          decorator = Decorator.new(day_type, day_type_assignments, operating_periods, code_builder: code_builder)
+          decorator = decorate(
+            day_type,
+            day_type_assignments: day_type_assignments,
+            raw_operating_periods: operating_periods
+          )
 
           unless decorator.valid?
             decorator.errors.each { |error| create_message error }
@@ -1169,7 +1189,7 @@ module Import
             next
           end
 
-          time_table = decorator.time_table
+          time_table = decorator.chouette_model
           unless time_table&.valid?(:inserter)
             Rails.logger.debug { "Invalid TimeTable: #{time_table.errors.inspect}" }
             next
@@ -1213,31 +1233,15 @@ module Import
         end
       end
 
-      class Decorator < SimpleDelegator
-        def initialize(day_type, day_type_assignments, operating_periods, code_builder: nil)
-          super day_type
-
-          @day_type_assignments = day_type_assignments
-          @operating_periods = operating_periods
-          @code_builder = code_builder
-        end
-        attr_reader :day_type_assignments, :code_builder
+      class Decorator < ResourceDecorator
+        attr_accessor :day_type_assignments, :raw_operating_periods
 
         def operating_periods
-          @operating_periods.reject { |o| o.respond_to? :valid_day_bits }
+          raw_operating_periods.reject { |o| o.respond_to? :valid_day_bits }
         end
 
         def uic_operating_periods
-          @operating_periods.select { |o| o.respond_to? :valid_day_bits }
-        end
-
-        def valid?
-          time_table
-          errors.empty?
-        end
-
-        def errors
-          @errors ||= []
+          raw_operating_periods.select { |o| o.respond_to? :valid_day_bits }
         end
 
         def days_of_week
@@ -1279,20 +1283,14 @@ module Import
           uic_days_bits.map(&:to_timetable)
         end
 
-        def chouette_name
-          name || 'Default'
+        def chouette_model
+          @chouette_model ||= Chouette::TimeTable.new(time_table_attributes).apply(memory_timetable)
         end
 
-        def codes
-          return [] unless code_builder
-
-          code_builder.decorate(key_list).tap do |decorator|
-            errors.concat decorator.errors
-          end.codes
-        end
-
-        def time_table
-          @time_table ||= Chouette::TimeTable.new(comment: chouette_name, codes: codes).apply(memory_timetable)
+        def time_table_attributes
+          {
+            comment: chouette_name
+          }.merge(chouette_attributes)
         end
 
         def base_timetable
@@ -1324,8 +1322,12 @@ module Import
 
       def import!
         netex_source.service_journeys.each do |service_journey|
-          decorator = Decorator.new(service_journey, day_types, index_route_journey_patterns, index_time_tables,
-                                    code_builder: code_builder)
+          decorator = decorate(
+            service_journey,
+            day_types: day_types,
+            index_route_journey_patterns: index_route_journey_patterns,
+            index_time_tables: index_time_tables
+          )
 
           unless decorator.valid?
             decorator.errors.each { |error| create_message error }
@@ -1336,7 +1338,7 @@ module Import
             next
           end
 
-          vehicle_journey = decorator.chouette_vehicle_journey
+          vehicle_journey = decorator.chouette_model
           unless vehicle_journey.valid?(:inserter)
             Rails.logger.debug { "Invalid Vehicle Journey: #{vehicle_journey.errors.inspect}" }
             create_message :vehicle_journey_invalid
@@ -1369,25 +1371,8 @@ module Import
         @day_types ||= netex_source.day_types
       end
 
-      class Decorator < SimpleDelegator
-        def initialize(service_journey, day_types, index_route_journey_patterns, index_time_tables, code_builder: nil)
-          super service_journey
-
-          @day_types = day_types
-          @index_route_journey_patterns = index_route_journey_patterns
-          @index_time_tables = index_time_tables
-          @code_builder = code_builder
-        end
-        attr_reader :day_types, :index_route_journey_patterns, :index_time_tables, :code_builder
-
-        def valid?
-          chouette_vehicle_journey
-          errors.empty?
-        end
-
-        def errors
-          @errors ||= []
-        end
+      class Decorator < ResourceDecorator
+        attr_accessor :day_types, :index_route_journey_patterns, :index_time_tables
 
         def route_id
           @route_id ||= begin
@@ -1421,25 +1406,16 @@ module Import
             published_journey_name: name,
             published_journey_identifier: id,
             vehicle_journey_at_stops: vehicle_journey_at_stops,
-            vehicle_journey_time_table_relationships: vehicle_journey_time_table_relationships,
-            codes: codes
-          }
+            vehicle_journey_time_table_relationships: vehicle_journey_time_table_relationships
+          }.merge(chouette_attributes)
         end
 
-        def chouette_vehicle_journey
-          @chouette_vehicle_journey ||= Chouette::VehicleJourney.new vehicle_journey_attributes
+        def chouette_model
+          @chouette_model ||= Chouette::VehicleJourney.new vehicle_journey_attributes
         end
 
         def chouette_stop_point_ids
           @chouette_stop_point_ids ||= route_journey_pattern(:stop_point_ids) || []
-        end
-
-        def codes
-          return [] unless code_builder
-
-          code_builder.decorate(key_list).tap do |decorator|
-            errors.concat decorator.errors
-          end.codes
         end
 
         def vehicle_journey_at_stops
@@ -1549,17 +1525,14 @@ module Import
 
       def import!
         netex_source.routing_constraint_zones.each do |zone|
-          decorator = Decorator.new(zone, line_provider: line_provider,
-                                          stop_area_provider: stop_area_provider,
-                                          code_space: code_space,
-                                          scheduled_stop_points: scheduled_stop_points)
+          decorator = decorate(zone)
 
           unless decorator.valid?
             create_message :invalid_netex_source_routing_constraint_zone
             next
           end
 
-          line_routing_constraint_zone = decorator.line_routing_constraint_zone
+          line_routing_constraint_zone = decorator.chouette_model
 
           # TODO: share error creating from model errors
           unless line_routing_constraint_zone.valid?
@@ -1578,16 +1551,7 @@ module Import
         end
       end
 
-      class Decorator < SimpleDelegator
-        def initialize(zone, line_provider: nil, stop_area_provider: nil, code_space: nil, scheduled_stop_points: nil)
-          super zone
-          @line_provider = line_provider
-          @stop_area_provider = stop_area_provider
-          @code_space = code_space
-          @scheduled_stop_points = scheduled_stop_points
-        end
-        attr_accessor :zone, :line_provider, :code_space, :scheduled_stop_points, :stop_area_provider
-
+      class Decorator < ResourceDecorator
         def code_value
           id
         end
@@ -1632,9 +1596,10 @@ module Import
 
         delegate :line_referential, to: :line_provider
 
-        def line_routing_constraint_zone
+        def chouette_model
           # TODO: CHOUETTE-3346 this seems untested
-          line_provider.line_routing_constraint_zones.first_or_initialize_by_code(code_space, code_value) do |zone|
+          @chouette_model ||= line_provider.line_routing_constraint_zones
+                                           .first_or_initialize_by_code(code_space, code_value) do |zone|
             zone.attributes = attributes
           end
         end

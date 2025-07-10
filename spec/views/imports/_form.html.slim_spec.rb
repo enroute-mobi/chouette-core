@@ -29,4 +29,22 @@ RSpec.describe 'imports/_form.html.slim', type: :view do
       end
     end
   end
+
+  describe 'option override_internal_identifiers' do
+    context 'when there is feature import_netex_can_override_objectid' do
+      let(:features) { ['import_netex_can_override_objectid'] }
+
+      it 'is visible' do
+        render
+        expect(rendered).to have_field('import[override_internal_identifiers]')
+      end
+    end
+
+    context 'when there is not feature import_netex_can_override_objectid' do
+      it 'is not visible' do
+        render
+        expect(rendered).not_to have_field('import[override_internal_identifiers]')
+      end
+    end
+  end
 end

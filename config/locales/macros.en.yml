@@ -64,6 +64,8 @@ en:
         one: Create codes from particulars
       macro/adjust_periods:
         one: Adjust Timetable Periods
+      macro/remove_code:
+        one: Remove codes
     attributes:
       macro/base:
         name: Name

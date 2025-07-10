@@ -55,6 +55,8 @@ fr:
         one: Créer des codes à partir des Particuliers
       macro/adjust_periods/run:
         one: Ajuster les Périodes des Calendriers
+      macro/remove_code/run:
+        one: Supprimer des codes
     attributes:
       macro/base/run:
         name: Nom

@@ -16,9 +16,7 @@ module Import
         File.open(file) { |f| zip_index.read_from_stream(f) }
 
         file_entries = zip_index.entries.select(&:file?)
-        xml_entries = file_entries.select { |entry| File.extname(entry.name) == '.xml' }
-
-        xml_entries.count.positive? && file_entries.count == xml_entries.count
+        file_entries.any? { |entry| File.extname(entry.name) == '.xml' }
       else
         false
       end

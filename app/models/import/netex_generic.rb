@@ -402,10 +402,10 @@ module Import
     # Synchronize models in the StopAreaReferential (StopArea, Entrances, etc)
     # with associated NeTEx resources
     class StopAreaReferential < SynchronizedPart
-      delegate :stop_area_provider, :stop_area_referential, :lookup, to: :import
+      delegate :stop_area_provider, :stop_area_referential, to: :import
 
       def synchronization
-        Chouette::Sync::Referential.new(target, lookup: lookup).tap do |sync|
+        Chouette::Sync::Referential.new(target).tap do |sync|
           sync.synchronize_with Chouette::Sync::StopArea::Netex
           sync.synchronize_with Chouette::Sync::Entrance::Netex
         end
@@ -427,10 +427,10 @@ module Import
     # Synchronize models in the LineReferential (Line, Company, etc)
     # with associated NeTEx resources
     class LineReferential < SynchronizedPart
-      delegate :line_provider, :line_referential, :lookup, to: :import
+      delegate :line_provider, :line_referential, to: :import
 
       def synchronization
-        @synchronization ||= Chouette::Sync::Referential.new(target, lookup: lookup).tap do |sync|
+        @synchronization ||= Chouette::Sync::Referential.new(target).tap do |sync|
           sync.synchronize_with Chouette::Sync::Company::Netex
           sync.synchronize_with Chouette::Sync::Network::Netex
           sync.synchronize_with Chouette::Sync::LineNotice::Netex

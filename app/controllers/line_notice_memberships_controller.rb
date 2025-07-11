@@ -78,6 +78,7 @@ class LineNoticeMembershipsController < Chouette::LineReferentialController
       :content,
       :object_id,
       :object_version,
+      :registration_number,
       :line_provider_id
     )
     # TODO check if metadata needs to be included as param  t.jsonb "metadata", default: {}

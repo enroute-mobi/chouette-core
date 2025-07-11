@@ -63,10 +63,10 @@ module Search
 
     class Chart < ::Search::Base::Chart
       group_by_attribute 'date', :date, sub_types: %i[by_week by_month day_of_week]
-      group_by_attribute 'line_id', :string, joins: { line: {} }, selects: %w[lines.name]
-      group_by_attribute 'company_id', :string, joins: { line: { company: {} } }, selects: %w[companies.name]
-      group_by_attribute 'network_id', :string, joins: { line: { network: {} } }, selects: %w[networks.name]
-      group_by_attribute 'transport_mode', :string, joins: { line: {} }, selects: %w[lines.transport_mode] do
+      group_by_attribute 'line_id', :string, joins: { line: {} }, selects: %w[public.lines.name]
+      group_by_attribute 'company_id', :string, joins: { line: { company: {} } }, selects: %w[public.companies.name]
+      group_by_attribute 'network_id', :string, joins: { line: { network: {} } }, selects: %w[public.networks.name]
+      group_by_attribute 'transport_mode', :string, joins: { line: {} }, selects: %w[public.lines.transport_mode] do
         def keys
           @keys ||= Chouette::TransportMode.mode_candidates.map(&:to_s)
         end

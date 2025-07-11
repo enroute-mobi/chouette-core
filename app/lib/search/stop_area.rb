@@ -104,7 +104,7 @@ module Search
         end
       end
 
-      group_by_attribute 'status', :string, selects: ["CASE WHEN stop_areas.deleted_at IS NOT NULL THEN 'deactivated' ELSE CASE WHEN stop_areas.confirmed_at IS NOT NULL THEN 'confirmed' ELSE 'in_creation' END END"] do
+      group_by_attribute 'status', :string, selects: ["CASE WHEN public.stop_areas.deleted_at IS NOT NULL THEN 'deactivated' ELSE CASE WHEN public.stop_areas.confirmed_at IS NOT NULL THEN 'confirmed' ELSE 'in_creation' END END"] do # rubocop:disable Layout/LineLength
         def keys
           ::Chouette::StopArea.status.values
         end
@@ -124,7 +124,7 @@ module Search
         end
       end
 
-      group_by_attribute 'stop_area_provider_id', :string, joins: { stop_area_provider: {} }, selects: %w[stop_area_providers.name]
+      group_by_attribute 'stop_area_provider_id', :string, joins: { stop_area_provider: {} }, selects: %w[public.stop_area_providers.name] # rubocop:disable Layout/LineLength
 
       group_by_attribute 'transport_mode', :string do
         def label(key)

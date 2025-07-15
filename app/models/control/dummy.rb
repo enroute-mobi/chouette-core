@@ -27,7 +27,6 @@ module Control
       JourneyPattern
       VehicleJourney
       TimeTable
-      ServiceCount
     ], default: 'Line'
 
     class Run < Control::Base::Run

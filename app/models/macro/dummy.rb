@@ -33,7 +33,6 @@ module Macro
           JourneyPattern
           VehicleJourney
           TimeTable
-          ServiceCount
         ], default: 'Line'
 
         validates :target_model, presence: true

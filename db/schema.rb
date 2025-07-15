@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2025_06_13_122420) do
+ActiveRecord::Schema[7.0].define(version: 2025_07_15_143401) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "btree_gin"
   enable_extension "hstore"
@@ -124,8 +124,10 @@ ActiveRecord::Schema[7.0].define(version: 2025_06_13_122420) do
     t.bigint "line_provider_id", null: false
     t.datetime "created_at", precision: nil, null: false
     t.datetime "updated_at", precision: nil, null: false
+    t.string "objectid", null: false
     t.index ["line_provider_id"], name: "index_booking_arrangements_on_line_provider_id"
     t.index ["line_referential_id"], name: "index_booking_arrangements_on_line_referential_id"
+    t.index ["objectid"], name: "index_booking_arrangements_on_objectid", unique: true
   end
 
   create_table "calendars", force: :cascade do |t|

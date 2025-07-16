@@ -98,7 +98,7 @@ fr:
       error: "Les codes de le/la/l' %{target_model} n'ont pu être retirés"
   macro/define_journey_pattern_name_or_destination/run:
     messages:
-      default: "La mission '%{journey_pattern_name}' est renommée en '%{new_name}'"
+      default: "La mission '%{journey_pattern_name}' est renommée en '%{attribute_value_after_change}'"
   macro_messages:
     search_no_results_for_filter: "Aucun messages"
     no_address: "Aucune adresse"

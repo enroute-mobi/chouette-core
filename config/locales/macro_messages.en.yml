@@ -98,7 +98,7 @@ en:
       error: "The codes from %{target_model} cannot be removed"
   macro/define_journey_pattern_name_or_destination/run:
     messages:
-      default: "The Journey Pattern '%{journey_pattern_name}' is renamed to '%{new_name}'"
+      default: "The Journey Pattern '%{journey_pattern_name}' is renamed to '%{attribute_value_after_change}'"
   macro_messages:
     search_no_results_for_filter: "No messages found"
     no_address: "No address"

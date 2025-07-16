@@ -92,6 +92,10 @@ en:
     messages:
       default: "The %{name} Timetable Period End has been changed to %{period_end}"
       error: "The %{name} Timetable Period can't be changed"
+  macro/remove_code/run:
+    messages:
+      default: "%{codes_count} codes have been removed from %{target_model} '%{name}'"
+      error: "The codes from %{target_model} cannot be removed"
   macro_messages:
     search_no_results_for_filter: "No messages found"
     no_address: "No address"

@@ -92,6 +92,10 @@ fr:
     messages:
       default: "La fin de la Période du Calendrier %{name} a été modifiée au %{period_end}"
       error: "La Période du Calendrier %{name} n'a pu être modifiée"
+  macro/remove_code/run:
+    messages:
+      default: "%{codes_count} codes ont été retirés de le/la/l' %{target_model} '%{name}'"
+      error: "Les codes de le/la/l' %{target_model} n'ont pu être retirés"
   macro_messages:
     search_no_results_for_filter: "Aucun messages"
     no_address: "Aucune adresse"

@@ -128,4 +128,10 @@ RSpec.describe ActiveModel::Name do
       it { is_expected.to eq('aux Modèles') }
     end
   end
+
+  describe '#human_plural' do
+    subject { model_name.human_plural }
+
+    it { is_expected.to eq('Modèles') }
+  end
 end

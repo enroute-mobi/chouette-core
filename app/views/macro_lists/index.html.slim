@@ -28,7 +28,7 @@
                 sortable: false \
               ), \
               TableBuilderHelper::Column.new( \
-                name: ProcessingRule::Base.model_name.human(count: 2), \
+                name: ProcessingRule::Base.model_name.human_plural, \
                 attribute: ->(p){ processing_rules_names(p.processing_rules) }, \
                 sortable: false \
               ), \

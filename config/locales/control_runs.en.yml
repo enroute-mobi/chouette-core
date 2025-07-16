@@ -1,7 +1,7 @@
 en:
   activerecord:
     models:
-      control/run:
+      control/base/run:
         zero:  control runs
         one:   control run
         other: control runs

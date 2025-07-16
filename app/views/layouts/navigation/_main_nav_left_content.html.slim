@@ -8,123 +8,123 @@
     .panel-group
       = main_nav_menu_item "#{Workbench.model_name.human.capitalize} #{workbench.name}" do
         = link_to workbench_path(workbench), class: 'list-group-item' do
-          span = Referential.model_name.human(count: 2).capitalize
+          span = Referential.model_name.human_plural.capitalize
         = link_to workbench_output_path(workbench), class: 'list-group-item' do
-          span = Merge.model_name.human(count: 2)
+          span = Merge.model_name.human_plural
         = link_to workbench_imports_path(workbench), class: 'list-group-item' do
-          span = Import::Base.model_name.human(count: 2).capitalize
+          span = Import::Base.model_name.human_plural.capitalize
         - if workbench.workgroup.export_types.present?
           = link_to workbench_exports_path(workbench), class: 'list-group-item' do
-            span = Export::Base.model_name.human(count: 2)
+            span = Export::Base.model_name.human_plural
         = link_to workbench_calendars_path(workbench), class: 'list-group-item' do
-          span = Calendar.model_name.human(count: 2).capitalize
+          span = Calendar.model_name.human_plural.capitalize
         = link_to workbench_control_lists_path(workbench), class: 'list-group-item' do
-          span = Control::List.model_name.human(count: 2)
+          span = Control::List.model_name.human_plural
         = link_to workbench_control_list_runs_path(workbench), class: 'list-group-item' do
-          span = Control::List::Run.model_name.human(count: 2)
+          span = Control::List::Run.model_name.human_plural
         = link_to workbench_macro_lists_path(workbench), class: 'list-group-item' do
-          span = Macro::List.model_name.human(count: 2)
+          span = Macro::List.model_name.human_plural
         = link_to workbench_macro_list_runs_path(workbench), class: 'list-group-item' do
-          span = Macro::List::Run.model_name.human(count: 2)
+          span = Macro::List::Run.model_name.human_plural
         = link_to workbench_sources_path(workbench), class: 'list-group-item' do
-          span = Source.model_name.human(count: 2)
+          span = Source.model_name.human_plural
         = link_to workbench_contracts_path(workbench), class: 'list-group-item' do
-          span = Contract.model_name.human(count: 2).capitalize
+          span = Contract.model_name.human_plural
         = link_to workbench_documents_path(workbench), class: 'list-group-item' do
-          span = Document.model_name.human(count: 2).capitalize
+          span = Document.model_name.human_plural
         = link_to workbench_document_providers_path(workbench), class: 'list-group-item' do
-          span = DocumentProvider.model_name.human(count: 2)
+          span = DocumentProvider.model_name.human_plural
         = link_to workbench_processing_rule_workbenches_path(workbench), class: 'list-group-item' do
-          span = ProcessingRule::Workbench.model_name.human(count: 2)
+          span = ProcessingRule::Workbench.model_name.human_plural
         = link_to workbench_sequences_path(workbench), class: 'list-group-item' do
-          span = Sequence.model_name.human(count: 2)
+          span = Sequence.model_name.human_plural
         = link_to workbench_tags_path(workbench), class: 'list-group-item' do
-          span = Tag.model_name.human(count: 2)
+          span = Tag.model_name.human_plural
 
       = main_nav_menu_item StopAreaReferential.model_name.human do
         = link_to workbench_stop_area_referential_stop_areas_path(workbench), class: 'list-group-item' do
-          span = Chouette::StopArea.model_name.human(count: 2).capitalize
+          span = Chouette::StopArea.model_name.human_plural
         - if has_feature?(:stop_area_connection_links)
           = link_to workbench_stop_area_referential_connection_links_path(workbench), class: 'list-group-item' do
-            span = Chouette::ConnectionLink.model_name.human(count: 2).capitalize
+            span = Chouette::ConnectionLink.model_name.human_plural
         - if has_feature?(:stop_area_routing_constraints)
           = link_to workbench_stop_area_referential_stop_area_routing_constraints_path(workbench), class: 'list-group-item' do
-            span = StopAreaRoutingConstraint.model_name.human(count: 2)
+            span = StopAreaRoutingConstraint.model_name.human_plural
         = link_to workbench_stop_area_referential_entrances_path(workbench), class: 'list-group-item' do
-          span = Entrance.model_name.human(count: 2).capitalize
+          span = Entrance.model_name.human_plural
         - if policy(workbench.stop_area_referential).create?(StopAreaProvider)
           = link_to workbench_stop_area_referential_stop_area_providers_path(workbench), class: 'list-group-item' do
-            span = StopAreaProvider.model_name.human(count: 2)
+            span = StopAreaProvider.model_name.human_plural
         = link_to workbench_stop_area_referential_stop_area_groups_path(workbench), class: 'list-group-item' do
-          span = StopAreaGroup.model_name.human(count: 2).capitalize
+          span = StopAreaGroup.model_name.human_plural
 
       = main_nav_menu_item LineReferential.model_name.human do
         = link_to workbench_line_referential_lines_path(workbench), class: 'list-group-item' do
-          span = Chouette::Line.model_name.human(count: 2).capitalize
+          span = Chouette::Line.model_name.human_plural
         = link_to workbench_line_referential_networks_path(workbench), class: 'list-group-item' do
-          span = Chouette::Network.model_name.human(count: 2).capitalize
+          span = Chouette::Network.model_name.human_plural
         = link_to workbench_line_referential_companies_path(workbench), class: 'list-group-item' do
-          span = Chouette::Company.model_name.human(count: 2).capitalize
+          span = Chouette::Company.model_name.human_plural
         = link_to workbench_line_referential_line_notices_path(workbench), class: 'list-group-item' do
-          span = Chouette::LineNotice.model_name.human(count: 2).capitalize
+          span = Chouette::LineNotice.model_name.human_plural
         = link_to workbench_line_referential_line_routing_constraint_zones_path(workbench), class: 'list-group-item' do
-          span = LineRoutingConstraintZone.model_name.human(count: 2).capitalize
+          span = LineRoutingConstraintZone.model_name.human_plural
         = link_to workbench_line_referential_line_providers_path(workbench), class: 'list-group-item' do
-          span = LineProvider.model_name.human(count: 2)
+          span = LineProvider.model_name.human_plural
         = link_to workbench_line_referential_line_groups_path(workbench), class: 'list-group-item' do
-          span = LineGroup.model_name.human(count: 2).capitalize
+          span = LineGroup.model_name.human_plural
         = link_to workbench_line_referential_booking_arrangements_path(workbench), class: 'list-group-item' do
-          span = BookingArrangement.model_name.human(count: 2)
+          span = BookingArrangement.model_name.human_plural
 
       = main_nav_menu_item ShapeReferential.model_name.human do
         = link_to workbench_shape_referential_shapes_path(workbench), class: 'list-group-item' do
-          span = Shape.model_name.human(count: 2).capitalize
+          span = Shape.model_name.human_plural
         = link_to workbench_shape_referential_point_of_interests_path(workbench), class: 'list-group-item' do
-          span = PointOfInterest::Base.model_name.human(count: 2).capitalize
+          span = PointOfInterest::Base.model_name.human_plural
         = link_to workbench_shape_referential_point_of_interest_categories_path(workbench), class: 'list-group-item' do
-          span = PointOfInterest::Category.model_name.human(count: 2)
+          span = PointOfInterest::Category.model_name.human_plural
         = link_to workbench_shape_referential_service_facility_sets_path(workbench), class: 'list-group-item' do
-          span = ServiceFacilitySet.model_name.human(count: 2).capitalize
+          span = ServiceFacilitySet.model_name.human_plural
         = link_to workbench_shape_referential_accessibility_assessments_path(workbench), class: 'list-group-item' do
-          span = AccessibilityAssessment.model_name.human(count: 2).capitalize
+          span = AccessibilityAssessment.model_name.human_plural
 
       = main_nav_menu_item Fare::Referential.model_name.human do
         = link_to workbench_fare_zones_path(workbench), class: 'list-group-item' do
-          span = Fare::Zone.model_name.human(count: 2).capitalize
+          span = Fare::Zone.model_name.human_plural
         = link_to workbench_fare_providers_path(workbench), class: 'list-group-item' do
-          span = Fare::Provider.model_name.human(count: 2)
+          span = Fare::Provider.model_name.human_plural
 
       = main_nav_menu_item t('layouts.navbar.configuration') do
         = link_to workbench_notification_rules_path(workbench), class: 'list-group-item' do
           span = t('layouts.navbar.workbench.notification_rules')
         - if current_user.has_permission?('api_keys.index')
           = link_to workbench_api_keys_path(workbench), class: 'list-group-item' do
-            span = ApiKey.model_name.human(count: 2)
+            span = ApiKey.model_name.human_plural
 
 
   - if workgroup
     .panel-group
       = main_nav_menu_item "#{Workgroup.model_name.human} #{workgroup.name}" do
         = link_to workgroup_output_path(workgroup), class: 'list-group-item' do
-          span = Aggregate.model_name.human(count: 2).capitalize
+          span = Aggregate.model_name.human_plural.capitalize
         = link_to workgroup_imports_path(workgroup), class: 'list-group-item' do
-          span = Import::Base.model_name.human(count: 2).capitalize
+          span = Import::Base.model_name.human_plural.capitalize
         = link_to workgroup_exports_path(workgroup), class: 'list-group-item' do
-          span = Export::Base.model_name.human(count: 2)
+          span = Export::Base.model_name.human_plural
         = link_to workgroup_control_list_runs_path(workgroup), class: 'list-group-item' do
-          span = Control::List::Run.model_name.human(count: 2)
+          span = Control::List::Run.model_name.human_plural
         = link_to [workgroup, :publication_setups], class: 'list-group-item' do
-          span = PublicationSetup.model_name.human(count: 2)
+          span = PublicationSetup.model_name.human_plural
         = link_to [workgroup, :publications], class: 'list-group-item' do
-          span = Publication.model_name.human(count: 2)
+          span = Publication.model_name.human_plural
         = link_to [workgroup, :publication_apis], class: 'list-group-item' do
-          span = PublicationApi.model_name.human(count: 2)
+          span = PublicationApi.model_name.human_plural
         = link_to workgroup_code_spaces_path(workgroup), class: 'list-group-item' do
-          span = CodeSpace.model_name.human(count: 2)
+          span = CodeSpace.model_name.human_plural
         = link_to workgroup_document_types_path(workgroup), class: 'list-group-item' do
-          span = DocumentType.model_name.human(count: 2)
+          span = DocumentType.model_name.human_plural
         = link_to workgroup_processing_rule_workgroups_path(workgroup), class: 'list-group-item' do
-          span = ProcessingRule::Workgroup.model_name.human(count: 2)
+          span = ProcessingRule::Workgroup.model_name.human_plural
 
       = main_nav_menu_item t('layouts.navbar.configuration') do
         = link_to [:edit_aggregate, workgroup], class: 'list-group-item' do
@@ -156,6 +156,6 @@
 
     = main_nav_menu_item t('layouts.navbar.administrate') do
       = link_to workgroups_path, class: 'list-group-item' do
-        span = Workgroup.model_name.human(count: 2)
+        span = Workgroup.model_name.human_plural
       = link_to organisation_path, class: 'list-group-item' do
         span = t('layouts.navbar.organisation_configuration')

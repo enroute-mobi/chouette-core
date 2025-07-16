@@ -14,6 +14,10 @@ module ActiveModel
       x_human('to', options)
     end
 
+    def human_plural(options = {})
+      human(options.reverse_merge({ count: 2 }))
+    end
+
     private
 
     def x_human(x, options) # rubocop:disable Naming/MethodParameterName

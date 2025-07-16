@@ -105,11 +105,11 @@ class RoutesController < Chouette::ReferentialController
   def create
     create! do |success, failure|
       failure.json do
-        render json: { message: t('flash.actions.create.error', resource_name: t('activerecord.models.route.one')),
+        render json: { message: t('flash.actions.create.error', resource_name: Chouette::Route.model_name.human),
                        status: 422 }
       end
       success.json do
-        render json: { message: t('flash.actions.create.notice', resource_name: t('activerecord.models.route.one')),
+        render json: { message: t('flash.actions.create.notice', resource_name: Chouette::Route.model_name.human),
                        status: 200 }
       end
     end
@@ -118,11 +118,11 @@ class RoutesController < Chouette::ReferentialController
   def update
     update! do |success, failure|
       failure.json do
-        render json: { message: t('flash.actions.update.error', resource_name: t('activerecord.models.route.one')),
+        render json: { message: t('flash.actions.update.error', resource_name: Chouette::Route.model_name.human),
                        status: 422 }
       end
       success.json do
-        render json: { message: t('flash.actions.update.notice', resource_name: t('activerecord.models.route.one')) },
+        render json: { message: t('flash.actions.update.notice', resource_name: Chouette::Route.model_name.human) },
                status: :ok
       end
     end

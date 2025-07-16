@@ -11,14 +11,14 @@ module Macro
         [].tap do |groups|
           if (stop_area_saved_searches = saved_searches.for('Search::StopArea').presence)
             groups << [
-              Chouette::StopArea.model_name.human.pluralize.capitalize,
+              Chouette::StopArea.model_name.human_plural,
               stop_area_saved_searches.sort_by(&:name).pluck(:name, :id)
             ]
           end
 
           if (line_saved_searches = saved_searches.for('Search::Line').presence)
             groups << [
-              Chouette::Line.model_name.human.pluralize.capitalize,
+              Chouette::Line.model_name.human_plural,
               line_saved_searches.sort_by(&:name).pluck(:name, :id)
             ]
           end

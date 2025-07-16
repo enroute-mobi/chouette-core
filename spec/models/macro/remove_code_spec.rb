@@ -66,7 +66,7 @@ RSpec.describe Macro::RemoveCode do
         an_object_having_attributes(
           message_attributes: {
             'name' => model_name,
-            'codes_count' => 2
+            'count' => 2
           }
         )
       end

@@ -47,7 +47,7 @@ module Macro
       def run
         models_with_code.find_each do |model|
           codes_count = model.codes.where(code_space_id: code_space_id).delete_all
-          messages.create(source: model, codes_count: codes_count) do |message|
+          messages.create(source: model, count: codes_count) do |message|
             message.error! if codes_count.zero?
           end
         end

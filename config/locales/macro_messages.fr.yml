@@ -54,7 +54,10 @@ fr:
       error: "L’attribut '%{target_attribute}' %{source|of_model_name} '%{name}' n’a pas pu être mise à jour avec la valeur '%{attribute_value}'"
   macro/delete_vehicle_journeys/run:
     messages:
-      default: "%{count} Course(s) ont été supprimée(s)"
+      default:
+        zero: "Aucune Course n’a été supprimée"
+        one: "1 Course ont été supprimée"
+        other: "%{count} Courses ont été supprimées"
       error: "Les Courses n’ont pas pu être supprimées"
   macro/compute_service_counts/run:
     messages:
@@ -102,8 +105,11 @@ fr:
       error: "La fin de la période du Calendrier '%{name}' n’a pu être modifiée"
   macro/remove_code/run:
     messages:
-      default: "%{codes_count} codes ont été retirés %{source|of_model_name} '%{name}'"
-      error: "Les codes %{source|of_model_name} '%{name}' n’ont pu être retirés"
+      default:
+        zero: "Aucun code n’a été retiré %{source|of_model_name} '%{name}'"
+        one: "1 code a été retiré %{source|of_model_name} '%{name}'"
+        other: "%{count} codes ont été retirés %{source|of_model_name} '%{name}'"
+      error: "Les codes %{source|of_model_name} '%{name}' n'ont pu être retirés"
   macro/define_journey_pattern_name_or_destination/run:
     messages:
       default: "La Mission '%{journey_pattern_name}' est renommée en '%{attribute_value_after_change}'"

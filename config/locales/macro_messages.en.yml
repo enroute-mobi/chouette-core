@@ -54,7 +54,10 @@ en:
       error: "The attribute '%{target_attribute}' %{source|of_model_name} '%{name}' can’t be updated with value '%{attribute_value}'"
   macro/delete_vehicle_journeys/run:
     messages:
-      default: "%{count} Vehicle Journeys have been deleted"
+      default:
+        zero: "No Vehicle Journeys have been deleted"
+        one: "1 Vehicle Journey have been deleted"
+        other: "%{count} Vehicle Journeys have been deleted"
       error: "Vehicle Journeys can’t be deleted"
   macro/compute_service_counts/run:
     messages:
@@ -102,7 +105,10 @@ en:
       error: "The end period of the Timetable '%{name}' can’t be changed"
   macro/remove_code/run:
     messages:
-      default: "%{codes_count} codes have been removed from %{source|the_model_name} '%{name}'"
+      default:
+        zero: "No codes have been removed from %{source|the_model_name} '%{name}'"
+        one: "1 code have been removed from %{source|the_model_name} '%{name}'"
+        other: "%{count} codes have been removed from %{source|the_model_name} '%{name}'"
       error: "The codes %{source|of_model_name} '%{name}' cannot be removed"
   macro/define_journey_pattern_name_or_destination/run:
     messages:

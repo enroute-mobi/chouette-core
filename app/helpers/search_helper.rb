@@ -2,10 +2,10 @@
 
 module SearchHelper
   def search_breadcrumb
-    args = [saved_search_parent]
+    args = [parent_resources, saved_search_parent]
     args << current_referential if current_referential
 
-    breadcrumb "#{parent_resources}_searches".to_sym, *args
+    breadcrumb :searches, *args
   end
 
   # Provides a simpler path helper for Stop Areas saved searches

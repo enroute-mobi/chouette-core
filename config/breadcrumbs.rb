@@ -356,11 +356,6 @@ crumb :import do |imports_parent, import|
   parent :imports, imports_parent
 end
 
-crumb :imports_searches do |workbench|
-  link Search::Save.model_name.human(count: 2)
-  parent :imports, workbench
-end
-
 crumb :exports do |export_parent|
   link I18n.t('exports.index.title'),[export_parent, :exports]
   parent export_parent
@@ -455,11 +450,6 @@ crumb :stop_area_group do |workbench, stop_area_group|
   parent :stop_area_groups, workbench
 end
 
-crumb :stop_areas_searches do |workbench|
-  link Search::Save.model_name.human(count: 2)
-  parent :stop_areas, workbench
-end
-
 crumb :entrances do |workbench|
   link I18n.t('entrances.index.title'), workbench_stop_area_referential_entrances_path(workbench)
   parent :stop_area_referential, workbench
@@ -523,11 +513,6 @@ end
 crumb :line_group do |workbench, line_group|
   link line_group.name, workbench_line_referential_line_group_path(workbench, line_group)
   parent :line_groups, workbench
-end
-
-crumb :lines_searches do |workbench|
-  link Search::Save.model_name.human(count: 2)
-  parent :lines, workbench
 end
 
 crumb :companies do |workbench|
@@ -819,7 +804,7 @@ crumb :service_counts do |workbench, referential|
   parent :referential, workbench, referential
 end
 
-crumb :service_counts_searches do |workbench, referential|
+crumb :searches do |parent_resources, *args|
   link Search::Save.model_name.human(count: 2)
-  parent :service_counts, workbench, referential
+  parent parent_resources.to_sym, *args
 end

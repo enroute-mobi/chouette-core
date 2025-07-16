@@ -1,11 +1,11 @@
 module SimpleSearchForHelper
-  def simple_search_for(search, index_path, save_search: true, graph_panel: :never, &block)
+  def simple_search_for(search, index_path, save_search: true, graph_panel: :never, parent_resources_path: index_path, &block)
     if save_search
       if search.saved_search&.persisted?
         save_path = saved_search_path(search.saved_search)
         save_method = :patch
       else
-        save_path = "#{index_path}/searches"
+        save_path = "#{parent_resources_path}/searches"
         save_method = :post
       end
     end
@@ -57,7 +57,7 @@ module SimpleSearchForHelper
     end
 
     def row(&block)
-      template.content_tag(:div, class: 'flex items-center border-t border-white') do
+      template.content_tag(:div, class: 'flex items-center border-t border-white h-14') do
         yield
       end
     end

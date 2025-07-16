@@ -161,11 +161,8 @@ module Chouette
     # Returns ordered arrival/departure time of days for all Vehicle Journey stops
     def passing_times
       vehicle_journey_at_stops.flat_map do |vehicle_journey_at_stop|
-        [
-          %i[arrival_time_of_day earliest_departure_time_of_day],
-          %i[departure_time_of_day latest_arrival_time_of_day]
-        ].map do |non_flexible_attr, flexible_attr|
-          vehicle_journey_at_stop.send(non_flexible_attr) || vehicle_journey_at_stop.send(flexible_attr)
+        %i[arrival_time_of_day departure_time_of_day].map do |attr|
+          vehicle_journey_at_stop.send(attr)
         end
       end
     end

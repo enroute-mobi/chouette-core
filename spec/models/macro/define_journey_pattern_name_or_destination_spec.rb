@@ -52,7 +52,7 @@ RSpec.describe Macro::DefineJourneyPatternNameOrDestination::Run do
     let(:expected_message) do
       an_object_having_attributes(
         message_attributes: {
-          'new_name' => 'Departure > Arrival',
+          'attribute_value_after_change' => 'Departure > Arrival',
           'journey_pattern_name' => journey_pattern_name
         },
         source: journey_pattern

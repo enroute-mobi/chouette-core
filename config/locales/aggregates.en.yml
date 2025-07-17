@@ -26,6 +26,7 @@ en:
       failed: Failed
       running: Running
       canceled: Canceled
+    search_no_results: "No aggregated offer found"
   activerecord:
     models:
       aggregate:

@@ -30,9 +30,9 @@ module Search
           I18n.t(key, scope: 'aggregates.statuses')
         end
       end
+      group_by_attribute 'creator', :string
 
       aggregate_attribute 'duration', 'EXTRACT(EPOCH FROM ended_at - started_at)'
-      group_by_attribute 'creator', :string
     end
   end
 end

@@ -30,7 +30,7 @@
             [ \
               TableBuilderHelper::Column.new( \
                 key: :status, \
-                attribute: Proc.new { |n| aggregate_status(n) }, \
+                attribute: Proc.new { |n| aggregate_status(n, verbose: true) }, \
               ), \
               TableBuilderHelper::Column.new( \
                 key: :name, \

@@ -48,7 +48,7 @@ en:
       macro/force_attribute_value/run:
         one: Force attribute value
       macro/define_route_name/run:
-        one: Define Route name
+        one: Define route name or direction
       macro/associate_stop_area_with_fare_zone/run:
         one: Associate Stop Areas with Fare Zones
       macro/create_codes_from_particulars/run:
@@ -58,7 +58,7 @@ en:
       macro/remove_code/run:
         one: Remove codes
       macro/define_journey_pattern_name_or_destination/run:
-        one: Compute Journey Pattern name
+        one: Define Journey Pattern name or destination display
     attributes:
       macro/base/run:
         name: Name

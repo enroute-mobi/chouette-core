@@ -8,8 +8,8 @@ module Chouette
         @options = options
       end
 
-      attr_accessor :source, :code_space, :strict_mode, :ignore_particulars, :default_provider, :event_handler
-
+      attr_accessor :source, :code_space, :strict_mode, :ignore_particulars,
+                    :default_provider, :event_handler, :model_id_attribute
       alias strict_mode? strict_mode
       alias ignore_particulars? ignore_particulars
 
@@ -21,6 +21,7 @@ module Chouette
         syncs.each do |sync|
           sync.code_space = code_space
           sync.default_provider = default_provider
+          sync.model_id_attribute = model_id_attribute if model_id_attribute
 
           sync.update_or_create
         end

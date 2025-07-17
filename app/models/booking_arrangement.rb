@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 class BookingArrangement < ApplicationModel
+  include ObjectidSupport
   include CodeSupport
   include LineReferentialSupport
 

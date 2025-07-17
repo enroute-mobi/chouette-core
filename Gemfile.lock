@@ -985,6 +985,7 @@ DEPENDENCIES
   dogstatsd-ruby
   dotenv-rails (>= 2.7.6)
   draper (>= 4.0.2)
+  drb
   ed25519
   email_spec
   enumerize (>= 2.8.1)

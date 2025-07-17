@@ -30,6 +30,7 @@ module Macro
       Macro::CreateCodesFromParticulars,
       Macro::AdjustPeriods,
       Macro::RemoveCode,
+      Macro::DefineJourneyPatternNameOrDestination,
       Macro::Dummy # Keep this dummy last
     ]
   end

@@ -57,7 +57,7 @@ fr:
       macro/force_attribute_value:
         one: Forcer la valeur de l'attribut
       macro/define_route_name:
-        one: Définir le nom de l'itinéraire
+        one: Définir le nom ou le nom de la direction de l'Itinéraire
       macro/associate_stop_area_with_fare_zone:
         one: Associer les arrêts avec les zones tarifaires
       macro/create_codes_from_particulars:
@@ -66,6 +66,8 @@ fr:
         one: Ajuster les Périodes des Calendriers
       macro/remove_code:
         one: Supprimer des codes
+      macro/define_journey_pattern_name_or_destination:
+        one: Définir le nom ou la destination de la Mission
     attributes:
       macro/base:
         name: Nom
@@ -111,6 +113,9 @@ fr:
         referent_code_space_id: Espace de code du Référent
       macro/adjust_periods:
         end_correction: Correction sur la fin de Période
+      macro/define_journey_pattern_name_or_destination:
+        target_attribute: Attribut
+        target_format: Format
   simple_form:
     placeholders:
       macro_base:

@@ -97,6 +97,7 @@ class ImportsController < Chouette::WorkbenchController
     permitted_keys += Import::Workbench.options.keys
     import_params = params.require(:import).permit(permitted_keys)
     import_params[:user_id] ||= current_user.id
+    import_params[:override_internal_identifiers] = 'true' if has_feature?('import_netex_force_override_objectid')
     import_params
   end
 

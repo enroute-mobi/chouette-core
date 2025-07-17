@@ -20,6 +20,7 @@
       = form.input :notification_target, collection: Import::Base.notification_target_options, selected: :user
       - import.class.options.each do |attr, option_def|
         - next if (attr == :merge_method)
+        - next if attr == :override_internal_identifiers && !has_feature?('import_netex_can_override_objectid')
         - if resource_policy.option?(attr)
           = option_input form, attr
 

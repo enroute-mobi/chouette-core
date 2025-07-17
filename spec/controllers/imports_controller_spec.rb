@@ -50,7 +50,7 @@ RSpec.describe ImportsController, type: :controller do
     end
 
     describe 'POST #create' do
-      it 'creates import and displays a flash message' do
+      let(:request) do
         post :create, params: {
           workbench_id: workbench.id,
           import: {
@@ -58,10 +58,30 @@ RSpec.describe ImportsController, type: :controller do
             file: fixture_file_upload('nozip.zip')
           }
         }
+      end
+
+      it 'creates import and displays a flash message' do
+        request
         new_import = Import::Base.last
         expect(new_import.name).to eq('Offre')
         expect(new_import.file).to be_present
         expect(flash['notice']).to be_present
+      end
+
+      context '#import_override_internal_identifiers' do
+        it 'is false' do
+          request
+          expect(Import::Base.last.override_internal_identifiers).to eq(false)
+        end
+
+        context 'with feature "import_netex_force_override_objectid"' do
+          before { @user.organisation.update(features: ['import_netex_force_override_objectid']) }
+
+          it 'is true' do
+            request
+            expect(Import::Base.last.override_internal_identifiers).to eq(true)
+          end
+        end
       end
     end
 

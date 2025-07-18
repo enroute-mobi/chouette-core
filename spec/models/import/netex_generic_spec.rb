@@ -46,6 +46,11 @@ RSpec.describe Import::NetexGeneric do
       let(:filename) { file_fixture('xml_in_subfolder.zip') }
       it { is_expected.to be_truthy }
     end
+
+    context 'when NeTEx file contains no xml entry' do
+      let(:filename) { file_fixture('contain_no_xml_entry.zip') }
+      it { is_expected.to be_truthy }
+    end
   end
 
   describe 'StopArea Referential Part' do

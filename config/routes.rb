@@ -283,6 +283,7 @@ Rails.application.routes.draw do # rubocop:disable Metrics/BlockLength
 
     resource :output, controller: :workgroup_outputs
     resources :aggregates do
+      resources :searches, only: %i[index show create update destroy], path: ':parent_resources/searches'
       member do
         put :rollback
       end

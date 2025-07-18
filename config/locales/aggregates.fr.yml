@@ -26,6 +26,7 @@ fr:
       failed: Erreur
       running: En cours
       canceled: Annulé
+    search_no_results: "Aucune Agrégation ne correspond à votre recherche"
   activerecord:
     models:
       aggregate:

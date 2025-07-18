@@ -1,7 +1,7 @@
 module AggregatesHelper
-  def aggregate_status(aggregate)
+  def aggregate_status(aggregate, **options)
     content_tag :span, '' do
-      concat operation_status(aggregate.status)
+      concat operation_status(aggregate.status, **options)
       concat render_urgent_icon if aggregate.contains_urgent_offer?
     end
   end

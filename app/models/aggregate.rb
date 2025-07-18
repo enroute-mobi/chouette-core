@@ -12,6 +12,8 @@ class Aggregate < ApplicationModel
   has_many :resources, class_name: 'Aggregate::Resource'
   has_many :processings, as: :operation, dependent: :destroy
 
+  scope :having_status, ->(statuses) { where(status: statuses ) }
+
   delegate :output, to: :workgroup
 
   def parent

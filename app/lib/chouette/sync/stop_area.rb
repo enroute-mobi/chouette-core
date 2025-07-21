@@ -238,6 +238,9 @@ module Chouette::Sync
                 associated_collection.each do |reference|
                   referenced = find_model reference
                   unless referenced
+                    referenced = find_model reference, base_scope: workgroup.stop_area_referential.stop_areas
+                  end
+                  unless referenced
                     Rails.logger.warn "Can't find reference with #{attribute} #{reference} for StopArea #{resource_id}"
                     next
                   end

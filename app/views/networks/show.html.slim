@@ -11,3 +11,4 @@
             @network.human_attribute_name(:registration_number) => @network.registration_number, \
             @network.human_attribute_name(:comment) => (@network.comment.presence || '-'), \
            }
+        = render 'codes/block', model: @network

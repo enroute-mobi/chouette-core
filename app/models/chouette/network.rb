@@ -5,6 +5,7 @@ module Chouette
     has_metadata
     include LineReferentialSupport
     include ObjectidSupport
+    include CodeSupport
     extend Enumerize
 
     has_many :lines, dependent: :nullify

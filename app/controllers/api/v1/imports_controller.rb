@@ -7,6 +7,9 @@ module Api
 
       def create
         args = workbench_import_params.merge(creator: 'Webservice')
+        if current_workbench.organisation.has_feature?('import_netex_force_override_objectid')
+          args[:override_internal_identifiers] = 'true'
+        end
 
         @import = current_workbench.workbench_imports.new(args)
 

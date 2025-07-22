@@ -62,6 +62,7 @@ module Macro
           select Chouette::StopArea, :waiting_time
           select Chouette::StopArea, :postal_region
           select Chouette::StopArea, :public_code
+          select Chouette::StopArea, :transport_mode
           select Chouette::StopArea, :accessibility_limitation_description
           select Chouette::StopArea, :escalator_free_accessibility
           select Chouette::StopArea, :lift_free_accessibility
@@ -107,6 +108,7 @@ module Macro
 
         # When value is an enumerize value
         attribute_value = attribute_value.text if attribute_value.respond_to?(:text)
+        attribute_value = attribute_value.human_name if attribute_value.is_a?(Chouette::TransportMode)
 
         attributes = {
           message_attributes: {

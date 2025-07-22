@@ -109,6 +109,35 @@ RSpec.describe Api::V1::ImportsController, type: :controller do
           expect(import.flag_urgent).to be_falsy
         end
       end
+
+      context '#import_override_internal_identifiers' do
+        let(:created_import) { Import::Workbench.last }
+        let(:make_request) do
+          post :create, params: {
+            workbench_id: workbench.id,
+            workbench_import: {
+              name: 'test',
+              file: file,
+              creator: 'test'
+            },
+            format: :json
+          }
+        end
+
+        it 'is false' do
+          make_request
+          expect(created_import.override_internal_identifiers?).to eq(false)
+        end
+
+        context 'with feature "import_netex_force_override_objectid"' do
+          before { workbench.organisation.update(features: ['import_netex_force_override_objectid']) }
+
+          it 'is true' do
+            make_request
+            expect(created_import.override_internal_identifiers?).to eq(true)
+          end
+        end
+      end
     end
   end
 end

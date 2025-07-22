@@ -69,15 +69,15 @@ module Chouette
         @provider ||= Provider.new target, default_provider
       end
 
-      def find_model(resource_id)
-        find_models([resource_id]).first
+      def find_model(resource_id, base_scope: scope)
+        find_models([resource_id], base_scope: base_scope).first
       end
 
-      def find_models(resource_ids)
+      def find_models(resource_ids, base_scope: scope)
         if use_code?
-          scope.by_code(code_space, resource_ids)
+          base_scope.by_code(code_space, resource_ids)
         else
-          scope.where(model_id_attribute => resource_ids)
+          base_scope.where(model_id_attribute => resource_ids)
         end
       end
 
@@ -498,7 +498,7 @@ module Chouette
         end
         attr_reader :attribute, :updater
 
-        delegate :report_invalid_model, :scope, :model_id_attribute, :find_model, :find_models, to: :updater
+        delegate :report_invalid_model, :scope, :model_id_attribute, :find_model, :find_models, :workgroup, to: :updater
 
         def declare(resource_id, reference)
           pendings[resource_id] ||= reference

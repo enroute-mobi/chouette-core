@@ -42,7 +42,8 @@ RSpec.describe Api::V1::ImportsController, type: :controller do
                 options: {
                   automatic_merge: true,
                   archive_on_fail: true,
-                  flag_urgent: true
+                  flag_urgent: true,
+                  file_type: 'automatic'
                 }
               },
               format: :json

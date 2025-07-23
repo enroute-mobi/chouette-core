@@ -3,7 +3,7 @@
 module Api
   module V1
     class ImportsController < Api::V1::WorkbenchController
-      CHOUETTE_FILE_TYPE = {
+      FILE_TYPE = {
         'netex' => 'netex_generic',
         'shapefile' => 'shape_file',
         'automatic' => 'automatic'
@@ -13,13 +13,12 @@ module Api
 
       def create
         args = workbench_import_params.merge(creator: 'Webservice')
+
         if current_workbench.organisation.has_feature?('import_netex_force_override_objectid')
           args[:override_internal_identifiers] = 'true'
         end
 
-        if args['options'] && file_type = args['options'].delete('file_type').presence
-          args['options']['import_category'] = CHOUETTE_FILE_TYPE[file_type] || file_type
-        end
+        args = process_options(args)
 
         @import = current_workbench.workbench_imports.new(args)
 
@@ -52,6 +51,7 @@ module Api
           status: import.status,
           workbench_id: import.workbench_id,
           name: import.name,
+          file_type: import.import_category,
           created_at: import.created_at,
           updated_at: import.updated_at,
           started_at: import.started_at,
@@ -76,6 +76,18 @@ module Api
         permitted_keys = %i[name file]
         permitted_keys << { options: %w[automatic_merge archive_on_fail flag_urgent file_type] }
         params.require(:workbench_import).permit(permitted_keys)
+      end
+
+      private
+
+      def process_options(args)
+        if options = args.delete('options').presence
+          value = options.delete('file_type')
+          args[:import_category] = FILE_TYPE[value] || value
+          args['options'] = options
+        end
+
+        args
       end
     end
   end

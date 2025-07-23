@@ -8,18 +8,16 @@ module Query
     end
 
     def user_statuses(user_statuses)
-      unless user_statuses.blank?
-        statuses ::Operation::UserStatus.find(user_statuses).flat_map(&:operation_statuses)
+      change_scope(if: value_present?(user_statuses)) do |scope|
+        scope.where(user_status: user_statuses)
       end
-
-      self
     end
 
     def statuses(*statuses)
       statuses = statuses.flatten
 
-      change_scope(if: statuses.present?) do |scope|
-        scope.having_status statuses
+      change_scope(if: value_present?(statuses)) do |scope|
+        scope.where(status: statuses)
       end
     end
 

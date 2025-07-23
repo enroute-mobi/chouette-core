@@ -1,5 +1,5 @@
 module Query
-  class WorkgroupAggregate < Query::Operation
+  class WorkgroupAggregate < Query::LegacyOperation
     def text(value)
       change_scope(if: value.present?) do |scope|
         creator = scope.arel_table[:creator]

@@ -23,7 +23,7 @@ RSpec.describe Api::V1::ImportsController, type: :controller do
     end
 
     describe 'POST #create' do
-      let(:file) { fixture_file_upload('multiple_references_import.zip') }
+      let(:file) { fixture_file_upload('google-sample-feed.zip') }
 
       context 'in a worbench with no restriction' do
         before do
@@ -50,6 +50,25 @@ RSpec.describe Api::V1::ImportsController, type: :controller do
             }
           end.to change { Import::Workbench.count }.by(1)
           expect(response).to be_successful
+          expect(JSON.parse(response.body)).to match(
+            a_hash_including(
+              'id' => be_present,
+              'status' => 'running',
+              'workbench_id' => workbench.id,
+              'name' => 'test',
+              'file_type' => 'automatic',
+              'created_at' => be_present,
+              'updated_at' => be_present,
+              'started_at' => be_present,
+              'ended_at' => be_nil,
+              'creator' => 'Webservice',
+              'options' => a_hash_including(
+                'automatic_merge' => true,
+                'archive_on_fail' => true,
+                'flag_urgent' => true
+              )
+            )
+          )
 
           import = Import::Workbench.last
           expect(import.file).to be_present

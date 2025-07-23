@@ -12,15 +12,7 @@ module Api
       respond_to :json, only: %i[show index create]
 
       def create
-        args = workbench_import_params.merge(creator: 'Webservice')
-
-        if current_workbench.organisation.has_feature?('import_netex_force_override_objectid')
-          args[:override_internal_identifiers] = 'true'
-        end
-
-        args = process_options(args)
-
-        @import = current_workbench.workbench_imports.new(args)
+        @import = current_workbench.workbench_imports.new(import_attributes)
 
         if @import.flag_urgent && !policy(@import).option_flag_urgent?
           logger.error("Import #{@import.name} uses flag_urgent but workbench #{current_workbench.name} inside organisation #{current_workbench.name} doesn't have permission referentials.flag_urgent")
@@ -61,7 +53,6 @@ module Api
             automatic_merge: import.automatic_merge,
             archive_on_fail: import.archive_on_fail,
             flag_urgent: import.flag_urgent,
-            import_category: import.import_category
           }
         }
       end
@@ -80,14 +71,20 @@ module Api
 
       private
 
-      def process_options(args)
-        if options = args.delete('options').presence
-          value = options.delete('file_type')
-          args[:import_category] = FILE_TYPE[value] || value
-          args['options'] = options
-        end
+      def import_attributes
+        workbench_import_params.tap do |import_attributes|
+          import_attributes.merge!(creator: 'Webservice')
 
-        args
+          if current_workbench.organisation.has_feature?('import_netex_force_override_objectid')
+            import_attributes[:override_internal_identifiers] = 'true'
+          end
+
+          if options = import_attributes.delete('options').presence
+            value = options.delete('file_type')
+            import_attributes[:import_category] = FILE_TYPE[value] || value
+            import_attributes[:options] = options
+          end
+        end
       end
     end
   end

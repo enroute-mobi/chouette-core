@@ -220,7 +220,7 @@ GEM
       activesupport (>= 4.0.0)
       mime-types (>= 1.16)
       ssrf_filter (~> 1.0, < 1.1.0)
-    chartkick (5.1.5)
+    chartkick (5.2.0)
     childprocess (5.1.0)
       logger (~> 1.5)
     cliver (0.3.2)

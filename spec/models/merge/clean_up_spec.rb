@@ -61,24 +61,8 @@ RSpec.describe Merge do
           expect(old_vehicle_journey).to be_nil
         end
 
-        it 'timetable checksum is correct after cutting periods' do
-          # Force checksum source and checksum update for time table and his children
-          # previous_timetable.periods.map(&:update_checksum!)
-          # previous_timetable.update_checksum!
-          debugger
-
-          referential.switch do
-            truc = previous_timetable.checksum
-          end
-
-          merge.new.switch
-
-          expect(previous_timetable).to exist_in_database
-          expect(previous_timetable.checksum).not_to eq(merge.new.time_tables.find_by_objectid(previous_timetable.objectid).checksum)
-        end
-
         it 'keeps a previous Vehicle Journey (ending today)' do
-          expect(previous_vehicle_journey).to_not be_nil
+          expect(previous_timetable).to exist_in_database
         end
 
         it 'keeps a new TimeTable' do

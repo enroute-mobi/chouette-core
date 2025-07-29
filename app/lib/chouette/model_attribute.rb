@@ -171,6 +171,7 @@ module Chouette
       define Chouette::StopArea, :waiting_time
       define Chouette::StopArea, :postal_region
       define Chouette::StopArea, :public_code
+      define Chouette::StopArea, :transport_mode
       define Chouette::StopArea, :registration_number
       define Chouette::StopArea, :compass_bearing, data_type: :float
       define Chouette::StopArea, :accessibility_limitation_description

@@ -220,7 +220,7 @@ GEM
       activesupport (>= 4.0.0)
       mime-types (>= 1.16)
       ssrf_filter (~> 1.0, < 1.1.0)
-    chartkick (5.1.5)
+    chartkick (5.2.0)
     childprocess (5.1.0)
       logger (~> 1.5)
     cliver (0.3.2)
@@ -248,20 +248,20 @@ GEM
     css_parser (1.21.1)
       addressable
     csv (3.3.5)
-    curb (1.0.9)
+    curb (1.1.0)
     database_cleaner (2.1.0)
       database_cleaner-active_record (>= 2, < 3)
     database_cleaner-active_record (2.2.1)
       activerecord (>= 5.a)
       database_cleaner-core (~> 2.0.0)
     database_cleaner-core (2.0.1)
-    datadog (2.18.0)
+    datadog (2.19.0)
       datadog-ruby_core_source (~> 3.4, >= 3.4.1)
       libdatadog (~> 18.1.0.1.0)
-      libddwaf (~> 1.24.1.0.0)
+      libddwaf (~> 1.24.1.0.3)
       logger
       msgpack
-    datadog-ci (1.20.2)
+    datadog-ci (1.21.1)
       datadog (~> 2.4)
       drb
       msgpack
@@ -325,7 +325,7 @@ GEM
     digest-crc (0.7.0)
       rake (>= 12.0.0, < 14.0.0)
     docile (1.4.1)
-    dogstatsd-ruby (5.6.6)
+    dogstatsd-ruby (5.7.0)
     dotenv (3.1.8)
     dotenv-rails (3.1.8)
       dotenv (= 3.1.8)
@@ -448,7 +448,7 @@ GEM
       multi_json (~> 1.11)
       os (>= 0.9, < 2.0)
       signet (>= 0.16, < 2.a)
-    graphql (2.5.10)
+    graphql (2.5.11)
       base64
       fiber-storage
       logger
@@ -504,7 +504,7 @@ GEM
       thor (>= 0.14, < 2.0)
     jquery-ui-rails (8.0.0)
       railties (>= 3.2.16)
-    json (2.12.2)
+    json (2.13.1)
     jwt (2.10.2)
       base64
     language_server-protocol (3.17.0.5)
@@ -521,11 +521,11 @@ GEM
       rexml
     libdatadog (18.1.0.1.0)
     libdatadog (18.1.0.1.0-x86_64-linux)
-    libddwaf (1.24.1.0.0)
+    libddwaf (1.24.1.0.3)
       ffi (~> 1.0)
-    libddwaf (1.24.1.0.0-x86_64-darwin)
+    libddwaf (1.24.1.0.3-x86_64-darwin)
       ffi (~> 1.0)
-    libddwaf (1.24.1.0.0-x86_64-linux)
+    libddwaf (1.24.1.0.3-x86_64-linux)
       ffi (~> 1.0)
     libv8-node (18.19.0.0)
     libv8-node (18.19.0.0-x86_64-darwin)
@@ -612,7 +612,7 @@ GEM
     ox (2.14.23)
       bigdecimal (>= 3.0)
     parallel (1.27.0)
-    parallel_tests (5.3.0)
+    parallel_tests (5.3.1)
       parallel
     parser (3.3.8.0)
       ast (~> 2.4.1)
@@ -692,7 +692,7 @@ GEM
       railties (>= 6.0.0, < 8)
     rails-observers (0.1.5)
       activemodel (>= 4.0)
-    rails_semantic_logger (4.17.0)
+    rails_semantic_logger (4.18.0)
       rack
       railties (>= 5.1)
       semantic_logger (~> 4.16)
@@ -749,7 +749,7 @@ GEM
     rgeo-shapefile (3.1.0)
       dbf (~> 4.0)
       rgeo (>= 1.0)
-    rmagick (6.1.1)
+    rmagick (6.1.2)
       observer (~> 0.1)
       pkg-config (~> 1.4)
     ros-apartment (3.2.0)
@@ -821,7 +821,7 @@ GEM
       ffi (~> 1.9)
     saxerator (0.9.9)
     select2-rails (4.0.13)
-    semantic_logger (4.16.1)
+    semantic_logger (4.17.0)
       concurrent-ruby (~> 1.0)
     semantic_range (3.1.0)
     sentry-delayed_job (5.26.0)
@@ -848,10 +848,10 @@ GEM
       docile (~> 1.1)
       simplecov-html (~> 0.11)
       simplecov_json_formatter (~> 0.1)
-    simplecov-cobertura (2.1.0)
+    simplecov-cobertura (3.0.0)
       rexml
       simplecov (~> 0.19)
-    simplecov-html (0.13.1)
+    simplecov-html (0.13.2)
     simplecov_json_formatter (0.1.4)
     slim (5.2.1)
       temple (~> 0.10.0)
@@ -932,7 +932,7 @@ GEM
       rexml
     xpath (3.2.0)
       nokogiri (~> 1.8)
-    zeitwerk (2.6.18)
+    zeitwerk (2.7.3)
 
 PLATFORMS
   ruby

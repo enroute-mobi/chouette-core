@@ -70,6 +70,8 @@ en:
         source_pattern: Source Pattern
         target_code_space: Target code space
         target_pattern: Target pattern
+      macro/remove_code/run:
+        code_space: Code space
       macro/dummy/run:
         expected_result: Expected result
       macro/associate_documents/run:

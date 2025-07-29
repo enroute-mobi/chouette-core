@@ -70,6 +70,8 @@ fr:
         source_pattern: Modèle de source
         target_code_space: Espace code cible
         target_pattern: Modèle de cible
+      macro/remove_code/run:
+        code_space: Espace de code
       macro/dummy/run:
         expected_result: Résultat attendu
       macro/update_attribute_from_referent_to_particulars/run:

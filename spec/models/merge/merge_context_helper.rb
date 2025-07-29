@@ -44,7 +44,7 @@ class MergeContext
   end
 
   def method_missing(name, *arguments)
-    if name =~ /^(.*)_(route|journey_pattern|vehicle_journey)$/
+    if name =~ /^(.*)_(route|journey_pattern|vehicle_journey|time_table)$/
       referential_name = $1
       referential = referential_name == 'source' ? source : new
       referential.switch { context.instance(name)&.reload }
@@ -67,6 +67,7 @@ class MergeContext
       ap Chouette::Route.all
       ap Chouette::JourneyPattern.all
       ap Chouette::VehicleJourney.all
+      ap Chouette::TimeTable.all
     end
 
     puts "In New referential"
@@ -74,6 +75,7 @@ class MergeContext
       ap Chouette::Route.all
       ap Chouette::JourneyPattern.all
       ap Chouette::VehicleJourney.all
+      ap Chouette::TimeTable.all
     end
   end
 end

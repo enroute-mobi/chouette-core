@@ -2,7 +2,7 @@
   = form.label :profile_options, class: 'flex items-center justify-end text-right w-2/6 mr-4 mb-0 control-label pt-0 control-label'
   .w-4/6.flex.flex-col.items-start.relative x-data="handleProfileOptions()"
     template[x-for="(field, index) in fields" :key="index"]
-      .profile_option.flex.w-2/5.mb-5
+      .profile_option.flex.w-3/5.mb-5
         input.form-control.mr-5 x-model="field.key" type="text" required='required' x-bind:name="`export[options][profile_options][${index}][key]`"
         input.form-control.mr-5 x-model="field.value" type="text" required='required' x-bind:name="`export[options][profile_options][${index}][value]`"
         button type="button" class="btn btn-danger btn-small" @click="removeField(index)"

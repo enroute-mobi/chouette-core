@@ -61,7 +61,8 @@ class NetworksController < Chouette::LineReferentialController
       :source_type_name,
       :source_identifier,
       :comment,
-      :line_provider_id
+      :line_provider_id,
+      codes_attributes: %i[id code_space_id value _destroy],
     )
   end
 

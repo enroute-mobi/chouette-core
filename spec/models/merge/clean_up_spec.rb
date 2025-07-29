@@ -181,11 +181,9 @@ end
 require_relative './merge_context_helper'
 
 RSpec.describe Merge do
-
-  %i{legacy experimental}.each do |merge_method|
+  %i[legacy experimental].each do |merge_method|
     context "with #{merge_method} method" do
-
-      context "when the timetable and its associated period is cut by merge and produces a date" do
+      context 'when the timetable and its associated period is cut by merge and produces a date' do
         let(:merge_context) do
           MergeContext.new(merge_method: merge_method) do
             referential :source do
@@ -198,7 +196,7 @@ RSpec.describe Merge do
         let(:source_time_table_checksum) { merge_context.source_time_table.checksum }
         let(:merge) { merge_context.merge }
 
-        it "source checksum should be different from the new checksum" do
+        it 'source checksum should be different from the new checksum' do
           merge.merge!
 
           merge.new.switch do
@@ -208,7 +206,7 @@ RSpec.describe Merge do
         end
       end
 
-      context "when the timetable and its associated period is cut by merge and produces a shorter period" do
+      context 'when the timetable and its associated period is cut by merge and produces a shorter period' do
         let(:merge_context) do
           MergeContext.new(merge_method: merge_method) do
             referential :source do
@@ -221,7 +219,7 @@ RSpec.describe Merge do
         let(:source_time_table_checksum) { merge_context.source_time_table.checksum }
         let(:merge) { merge_context.merge }
 
-        it "source checksum should be different from the new checksum" do
+        it 'source checksum should be different from the new checksum' do
           merge.merge!
 
           merge.new.switch do

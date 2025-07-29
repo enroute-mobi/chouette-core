@@ -421,6 +421,7 @@ fr:
       LineNotice: Notes de lignes
       Company: Transporteur
       Network: Réseau
+      BookingArrangement: Condition de réservation
       StopArea: Arrêt
       StopAreaGroup: Groupe d'arrêts
       Entrance: Point d'accès

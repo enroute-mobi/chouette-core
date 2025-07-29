@@ -160,6 +160,36 @@ RSpec.describe Scope::Workbench do
     end
   end
 
+  describe '#booking_arrangements' do
+    subject { scope.booking_arrangements }
+
+    let(:context) do
+      Chouette.create do
+        workgroup do
+          workbench :same_workgroup_workbench
+
+          workbench :workbench do
+            booking_arrangement :booking_arrangement
+          end
+        end
+
+        workgroup do
+          workbench :other_workbench do
+            booking_arrangement
+          end
+        end
+      end
+    end
+
+    it { is_expected.to match_array([context.booking_arrangement(:booking_arrangement)]) }
+
+    context 'in workbench in the same workgroup' do
+      let(:workbench) { context.workbench(:same_workgroup_workbench) }
+
+      it { is_expected.to match_array([context.booking_arrangement(:booking_arrangement)]) }
+    end
+  end
+
   describe '#stop_areas' do
     subject { scope.stop_areas }
 
@@ -840,6 +870,56 @@ RSpec.describe Scope::Referential do
       let(:workbench) { context.workbench(:same_workgroup_workbench) }
 
       it { is_expected.to match_array([context.network(:network)]) }
+    end
+
+    context 'in workbench of another workgroup' do
+      let(:workbench) { context.workbench(:other_workbench) }
+
+      it { is_expected.to be_empty }
+    end
+  end
+
+  describe '#booking_arrangements' do
+    subject { scope.booking_arrangements }
+
+    let(:context) do
+      Chouette.create do
+        workgroup do
+          workbench :same_workgroup_workbench
+
+          workbench :workbench do
+            booking_arrangement :booking_arrangement
+            booking_arrangement :booking_arrangement_outside
+
+            line :line, booking_arrangement: :booking_arrangement
+            line :line_outside, booking_arrangement: :booking_arrangement_outside
+
+            referential :referential, lines: %i[line]
+
+            referential :same_workbench_referential
+
+            referential lines: %i[line_outside]
+          end
+        end
+
+        workgroup do
+          workbench :other_workbench
+        end
+      end
+    end
+
+    it { is_expected.to match_array([context.booking_arrangement(:booking_arrangement)]) }
+
+    context 'in referential in the same workbench' do
+      let(:referential) { context.referential(:same_workbench_referential) }
+
+      it { is_expected.to be_empty }
+    end
+
+    context 'in workbench in the same workgroup' do
+      let(:workbench) { context.workbench(:same_workgroup_workbench) }
+
+      it { is_expected.to match_array([context.booking_arrangement(:booking_arrangement)]) }
     end
 
     context 'in workbench of another workgroup' do
@@ -2227,6 +2307,30 @@ RSpec.describe Scope::Owned do
       end
     end
 
+    describe '#booking_arrangements' do
+      subject { scope.booking_arrangements }
+
+      let(:context) do
+        Chouette.create do
+          workgroup do
+            workbench :workbench do
+              booking_arrangement :booking_arrangement
+            end
+
+            workbench :same_workgroup_workbench
+          end
+        end
+      end
+
+      it { is_expected.to match_array([context.booking_arrangement(:booking_arrangement)]) }
+
+      context 'in workbench in the same workgroup' do
+        let(:workbench) { context.workbench(:same_workgroup_workbench) }
+
+        it { is_expected.to be_empty }
+      end
+    end
+
     describe '#stop_areas' do
       subject { scope.stop_areas }
 
@@ -2714,6 +2818,30 @@ RSpec.describe Scope::Owned do
       end
 
       it { is_expected.to match_array([context.network(:network)]) }
+    end
+
+    describe '#booking_arrangements' do
+      subject { scope.booking_arrangements }
+
+      let(:context) do
+        Chouette.create do
+          workgroup do
+            workbench :same_workgroup_workbench do
+              booking_arrangement :booking_arrangement_outside
+              line :line_outside, booking_arrangement: :booking_arrangement_outside
+            end
+
+            workbench :workbench do
+              booking_arrangement :booking_arrangement
+              line :line, booking_arrangement: :booking_arrangement
+
+              referential :referential, lines: %i[line line_outside]
+            end
+          end
+        end
+      end
+
+      it { is_expected.to match_array([context.booking_arrangement(:booking_arrangement)]) }
     end
 
     describe '#stop_areas' do

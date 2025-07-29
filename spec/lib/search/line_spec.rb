@@ -169,6 +169,43 @@ RSpec.describe Search::Line do
       end
     end
 
+    describe '#booking_arrangements' do
+      subject { scope.booking_arrangements }
+
+      let(:context) do
+        Chouette.create do
+          booking_arrangement :booking_arrangement_match
+          booking_arrangement :booking_arrangement_no_match
+          booking_arrangement :booking_arrangement_outside
+
+          line :line_match, transport_mode: 'bus', booking_arrangement: :booking_arrangement_match
+          line :line_no_match, transport_mode: 'air', booking_arrangement: :booking_arrangement_no_match
+          line :line_outside, transport_mode: 'bus', booking_arrangement: :booking_arrangement_outside
+
+          referential lines: %i[line_match line_no_match]
+        end
+      end
+
+      context 'in workbench' do
+        let(:initial_scope) { workbench_scope }
+
+        it do
+          is_expected.to(
+            match_array(
+              [
+                context.booking_arrangement(:booking_arrangement_match),
+                context.booking_arrangement(:booking_arrangement_outside)
+              ]
+            )
+          )
+        end
+      end
+
+      context 'in referential' do
+        it { is_expected.to match_array([context.booking_arrangement(:booking_arrangement_match)]) }
+      end
+    end
+
     describe '#stop_areas' do
       subject { scope.stop_areas }
 

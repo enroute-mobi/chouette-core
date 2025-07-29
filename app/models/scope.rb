@@ -58,6 +58,11 @@ module Scope
     link :lines, :networks do
       line_referential_scope.networks.where(id: lines.where.not(network_id: nil).select(:network_id).distinct)
     end
+    link :lines, :booking_arrangements do
+      line_referential_scope.booking_arrangements.where(
+        id: lines.where.not(booking_arrangement_id: nil).select(:booking_arrangement_id).distinct
+      )
+    end
     link :routes, :shapes do
       shape_referential_scope.shapes.where(id: journey_patterns.where.not(shape_id: nil).select(:shape_id).distinct)
     end
@@ -224,6 +229,7 @@ module Scope
              :line_notices,
              :companies,
              :networks,
+             :booking_arrangements,
              :stop_areas,
              :stop_area_groups,
              :entrances,
@@ -370,6 +376,7 @@ module Scope
       line_notices
       companies
       networks
+      booking_arrangements
       line_routing_constraint_zones
     ].each do |method_name|
       class_eval <<-RUBY, __FILE__, __LINE__ + 1

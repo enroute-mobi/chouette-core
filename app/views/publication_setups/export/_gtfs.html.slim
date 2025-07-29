@@ -1,8 +1,7 @@
 = simple_block_for @export, title: PublicationSetup.tmf(:export_options) do |d|
 	= d.attribute :type, value_method: :human_type
 	= d.attribute :duration
-	= d.attribute :from
-	= d.attribute :to
+	= d.attribute :period, value_method: :display_period
 	= d.attribute :exported_lines, value_method: :display_selected_lines_to_export
 	= d.attribute :prefer_referent_stop_area, as: :boolean
 	= d.attribute :ignore_parent_stop_places, as: :boolean

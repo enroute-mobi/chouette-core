@@ -63,17 +63,14 @@ class JourneyPatternsCollectionsController < Chouette::ReferentialController
 
   protected
 
-  def journey_patterns # rubocop:disable Metrics/AbcSize
+  def journey_patterns
     return @journey_patterns if @journey_patterns
 
-    @q = route.journey_patterns
-    if params[:q].present?
-      ids = @q.ransack(params[:q]).result(distinct: true).pluck(:id)
-      @q = @q.where(id: ids)
-    end
-    @q = @q.includes(:stop_points)
     @ppage = 10
-    @journey_patterns = @q.paginate(page: params[:page], per_page: @ppage).order(:name)
+    @journey_patterns = route.journey_patterns
+                             .includes(:stop_points)
+                             .paginate(page: params[:page], per_page: @ppage)
+                             .order(:name)
   end
   alias resource journey_patterns
 

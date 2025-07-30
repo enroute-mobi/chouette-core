@@ -9,6 +9,7 @@ module Control
       LineGroup
       LineNotice
       Company
+      BookingArrangement
       Network
       StopArea
       StopAreaGroup

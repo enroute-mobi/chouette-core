@@ -32,6 +32,7 @@ class Workbench < ApplicationModel
   has_many :companies, through: :line_referential
   has_many :line_notices, through: :line_referential
   has_many :line_routing_constraint_zones, through: :line_referential
+  has_many :booking_arrangements, through: :line_referential
   has_many :imports, class_name: 'Import::Base', dependent: :destroy
   has_many :exports, class_name: 'Export::Base', dependent: :destroy
   has_many :sources, dependent: :destroy

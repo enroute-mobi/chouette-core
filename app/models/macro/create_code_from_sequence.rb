@@ -17,6 +17,7 @@ module Macro
           LineGroup
           LineNotice
           Company
+          BookingArrangement
           StopArea
           StopAreaGroup
           Entrance

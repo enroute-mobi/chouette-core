@@ -3,10 +3,9 @@
 module Api
   module V1
     class ImportsController < Api::V1::WorkbenchController
-      FILE_TYPE = {
+      IMPORT_CATEGORY_ALIASES = {
         'netex' => 'netex_generic',
-        'shapefile' => 'shape_file',
-        'automatic' => 'automatic'
+        'shapefile' => 'shape_file'
       }.freeze
 
       respond_to :json, only: %i[show index create]
@@ -52,7 +51,7 @@ module Api
           options: {
             automatic_merge: import.automatic_merge,
             archive_on_fail: import.archive_on_fail,
-            flag_urgent: import.flag_urgent,
+            flag_urgent: import.flag_urgent
           }
         }
       end
@@ -81,7 +80,7 @@ module Api
 
           if options = import_attributes.delete('options').presence
             value = options.delete('file_type')
-            import_attributes[:import_category] = FILE_TYPE[value] || value
+            import_attributes[:import_category] = IMPORT_CATEGORY_ALIASES[value] || value
             import_attributes[:options] = options
           end
         end

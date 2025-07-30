@@ -1333,7 +1333,6 @@ module Import
         netex_source.service_journeys.each do |service_journey|
           decorator = decorate(
             service_journey,
-            day_types: day_types,
             index_route_journey_patterns: index_route_journey_patterns,
             index_time_tables: index_time_tables
           )
@@ -1376,12 +1375,8 @@ module Import
         referential_inserter.flush
       end
 
-      def day_types
-        @day_types ||= netex_source.day_types
-      end
-
       class Decorator < ResourceDecorator
-        attr_accessor :day_types, :index_route_journey_patterns, :index_time_tables
+        attr_accessor :index_route_journey_patterns, :index_time_tables
 
         def route_id
           @route_id ||= begin
@@ -1452,7 +1447,7 @@ module Import
         def vehicle_journey_time_table_relationships
           @vehicle_journey_time_table_relationships ||= [].tap do |vehicle_journey_time_tables|
             day_types.map do |day_type|
-              time_table_id = index_time_tables[day_type.id]
+              time_table_id = index_time_tables[day_type.ref]
               if time_table_id
                 vehicle_journey_time_tables << Chouette::TimeTablesVehicleJourney.new(time_table_id: time_table_id)
               else

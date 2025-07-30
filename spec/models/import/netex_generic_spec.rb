@@ -1562,6 +1562,52 @@ RSpec.describe Import::NetexGeneric do
   end
 end
 
+RSpec.describe Import::NetexGeneric::VehicleJourneys::Decorator do
+  subject(:decorator) do
+    described_class.new(
+      service_journey,
+      index_route_journey_patterns: index_route_journey_patterns,
+      index_time_tables: index_time_tables
+    )
+  end
+
+  let(:service_journey_day_types) { [] }
+  let(:service_journey) do
+    Netex::ServiceJourney.new(
+      day_types: service_journey_day_types.map { |ref| Netex::Reference.new(ref, type: 'DayTypeRef') }
+    )
+  end
+  let(:index_route_journey_patterns) { {} }
+  let(:index_time_tables) { {} }
+
+  describe '#vehicle_journey_time_table_relationships' do
+    subject { decorator.vehicle_journey_time_table_relationships }
+
+    context 'without day_types' do
+      it 'returns an empty array' do
+        is_expected.to be_empty
+      end
+    end
+
+    context 'with day_types' do
+      let(:service_journey_day_types) { %w[day-type-1 day-type-2] }
+      let(:index_time_tables) { { 'day-type-1' => 42, 'day-type-2' => 21, 'day-type-3' => 12 } }
+
+      it 'builds time table vehicle journeys with time table ids' do
+        is_expected.to match_array([have_attributes(time_table_id: 42), have_attributes(time_table_id: 21)])
+      end
+
+      context 'when day_types contains a ref to an unknown day type' do
+        let(:service_journey_day_types) { %w[day-type-1 day-type-x] }
+
+        it 'builds time table vehicle journeys with time table ids' do
+          expect { subject }.to change(decorator, :errors).from(be_empty).to(include(:time_table_not_found))
+        end
+      end
+    end
+  end
+end
+
 RSpec.describe Import::NetexGeneric::TimeTables::Decorator do
   subject(:decorator) do
     described_class.new(day_type, day_type_assignments: day_type_assignments, raw_operating_periods: operating_periods)

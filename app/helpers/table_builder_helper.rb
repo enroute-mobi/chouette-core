@@ -1,5 +1,3 @@
-require 'table_builder_helper/column'
-
 # table_builder_2
 # A Rails helper that constructs an HTML table from a collection of objects. It
 # receives the collection and an array of columns that get transformed into

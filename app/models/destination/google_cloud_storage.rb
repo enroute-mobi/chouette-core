@@ -1,9 +1,9 @@
 # frozen_string_literal: true
 
+require 'google/cloud/storage'
+
 class Destination
   class GoogleCloudStorage < ::Destination
-    require 'google/cloud/storage'
-
     option :project
     option :bucket
 

@@ -19,7 +19,7 @@ en:
       macro/dummy:
         one: Simulate Macro
       macro/associate_shape:
-        one: Associate Shapes according Code
+        one: Associate Shapes based on Code
       macro/update_stop_area_compass_bearing:
         one: Define Stop Area compass bearing from Shapes
       macro/create_stop_area_referents:

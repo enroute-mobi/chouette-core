@@ -15,7 +15,7 @@ class ControlListDecorator < Af83::Decorator
 
     same_workbench = ->{ object.workbench_id == context[:workbench].id }
 
-    instance_decorator.edit_action_link secondary: :show, if: same_workbench
+    instance_decorator.edit_action_link primary: :show, if: same_workbench
 
     instance_decorator.action_link(on: %i[show index], policy: :execute, secondary: :show) do |l|
       l.content { I18n.t('control_list_run.actions.execute') }

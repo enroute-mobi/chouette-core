@@ -49,9 +49,9 @@ module Import
     end
 
     def assign_attributes(attributes)
-      if (import_category = attributes.delete(:import_category))
-        self.import_category = import_category
-      end
+      # Because import_category is used to valid file attribute
+      # it must be defined before other attributes
+      self.import_category = attributes.dig(:options, :import_category) || attributes[:import_category]
 
       super attributes
     end

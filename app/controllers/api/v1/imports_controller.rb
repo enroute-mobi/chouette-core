@@ -76,10 +76,8 @@ module Api
             import_attributes[:override_internal_identifiers] = 'true'
           end
 
-          if (options = import_attributes.delete('options'))
-            value = options.delete('file_type')
-            import_attributes[:import_category] = IMPORT_CATEGORY_ALIASES[value] || value
-            import_attributes[:options] = options
+          if (file_type = import_attributes['options']&.delete('file_type'))
+            import_attributes['options'][:import_category] = IMPORT_CATEGORY_ALIASES.fetch(file_type, file_type)
           end
         end
       end

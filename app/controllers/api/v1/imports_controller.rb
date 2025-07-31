@@ -68,8 +68,6 @@ module Api
         params.require(:workbench_import).permit(permitted_keys)
       end
 
-      private
-
       def import_attributes
         workbench_import_params.tap do |import_attributes|
           import_attributes.merge!(creator: 'Webservice')
@@ -78,7 +76,7 @@ module Api
             import_attributes[:override_internal_identifiers] = 'true'
           end
 
-          if options = import_attributes.delete('options').presence
+          if (options = import_attributes.delete('options'))
             value = options.delete('file_type')
             import_attributes[:import_category] = IMPORT_CATEGORY_ALIASES[value] || value
             import_attributes[:options] = options

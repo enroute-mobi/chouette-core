@@ -158,10 +158,9 @@ class RoutesController < Chouette::ReferentialController
   alias parent_for_parent_policy referential
 
   def collection
-    @q = parent.routes.ransack(params[:q])
     @collection ||=
       begin
-        routes = @q.result(distinct: true).order(:name)
+        routes = parent.routes
         routes = routes.paginate(page: params[:page]) if @per_page.present?
         routes
       end

@@ -17,19 +17,22 @@ const oldDrawChart = ChartjsAdapter.prototype.drawChart
 
 ChartjsAdapter.prototype.drawChart = function (chart, type, data, options) {
   const dateFnsLocale = DateFns[I18n.locale]
-  const newOptions = dateFnsLocale ? merge(options, {
-                                       locale: I18n.locale,
-                                       scales: {
-                                         x: {
-                                           adapters: {
-                                             date: {
-                                               locale: dateFnsLocale
-                                             }
-                                           }
-                                         }
-                                       }
-                                     })
-                                   : options
+
+  let newOptions = options
+  if (dateFnsLocale && (chart.xtype === "datetime")) {
+    newOptions = merge({}, options, {
+                   locale: I18n.locale,
+                   scales: {
+                     x: {
+                       adapters: {
+                         date: {
+                           locale: dateFnsLocale
+                         }
+                       }
+                     }
+                   }
+                 })
+  }
 
   return oldDrawChart.call(this, chart, type, data, newOptions)
 }

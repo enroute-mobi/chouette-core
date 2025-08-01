@@ -61,7 +61,8 @@ module Import
         [
           RouteJourneyPatterns,
           TimeTables,
-          VehicleJourneys
+          VehicleJourneys,
+          VehicleJourneyStopAssignments
         ].each do |part_class|
           part(part_class).import!
         end
@@ -1509,6 +1510,67 @@ module Import
               end
             end
           end
+        end
+      end
+    end
+
+    class VehicleJourneyStopAssignments < WithResourcePart
+      include ReferentialPart
+
+      delegate :netex_source, :scheduled_stop_points, :lookup, to: :import
+
+      def import!
+        netex_source.vehicle_journey_stop_assignments.each do |stop_assignment|
+          decorated_assignment = Decorator.new(stop_assignment, scheduled_stop_points, stop_areas: lookup.stop_areas)
+
+          unless decorated_assignment.valid?
+            create_message :ancestor_associated_route_not_found
+
+            next
+          end
+
+          decorated_assignment.vehicle_journey_at_stops.find_each do |vehicle_journey_at_stop|
+            vehicle_journey_at_stop.update stop_area_id: decorated_assignment.stop_area&.id
+          end
+        end
+      end
+
+      class Decorator < SimpleDelegator
+        def initialize(stop_assignment, scheduled_stop_points, stop_areas: nil)
+          super stop_assignment
+
+          @scheduled_stop_points = scheduled_stop_points
+          @stop_areas = stop_areas
+        end
+        attr_reader :scheduled_stop_points, :stop_areas
+
+        def stop_area_code
+          (quay_ref || stop_splace_ref)&.ref
+        end
+
+        def stop_area
+          stop_areas.find(stop_area_code)
+        end
+
+        def scheduled_stop_point
+          return unless scheduled_stop_point_ref
+
+          @scheduled_stop_point ||= scheduled_stop_points[scheduled_stop_point_ref.ref]
+        end
+
+        def valid?
+          stop_area.parent_id == scheduled_stop_point.stop_area_id
+        end
+
+        def vehicle_journey_ids
+          vehicle_journey_refs.map(&:ref)
+        end
+
+        def vehicle_journey_at_stops
+          Chouette::VehicleJourneyAtStop.joins(:vehicle_journey).where(
+            'stop_point_id' => scheduled_stop_point.stop_point_id,
+            'vehicle_journeys.published_journey_identifier' => vehicle_journey_ids
+          )
         end
       end
     end

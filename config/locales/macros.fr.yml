@@ -83,6 +83,8 @@ fr:
         target_model: Modèle cible
         target_pattern: Modèle de cible
         expected_result: Résultat attendu
+      macro/remove_code:
+        code_space_id: Espace de code
       macro/define_postal_address:
         target_model: Modèle cible
         reverse_geocoder_provider: Fournisseur

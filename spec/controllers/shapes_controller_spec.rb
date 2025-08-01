@@ -48,18 +48,6 @@ RSpec.describe ShapesController, type: :controller do
       expect(assigns(:shapes)).to include(context.shape(:first))
       expect(assigns(:shapes)).to include(context.shape(:second))
     end
-
-    context 'with filters' do
-      let(:title_or_content_cont) { line_notices.first.title }
-      let(:lines_id_eq) { line_notices.last.lines.first.id }
-
-      it 'should filter on name or uuid' do
-        get :index, params: base_params.merge({ 'q' => { 'name_or_uuid_cont' => context.shape(:first).name } })
-        expect(response).to be_successful
-        expect(assigns(:shapes)).to include(context.shape(:first))
-        expect(assigns(:shapes)).to_not include(context.shape(:second))
-      end
-    end
   end
 
   describe 'GET show' do

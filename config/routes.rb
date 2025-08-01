@@ -215,6 +215,8 @@ Rails.application.routes.draw do # rubocop:disable Metrics/BlockLength
     end
 
     resource :shape_referential, only: [] do
+      resources :searches, only: %i[index show create update destroy], path: ':parent_resources/searches'
+
       resources :shapes, except: [:create]
       resources :point_of_interests
       resources :point_of_interest_categories

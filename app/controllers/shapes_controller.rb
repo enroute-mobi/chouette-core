@@ -9,6 +9,10 @@ class ShapesController < Chouette::TopologicReferentialController
   respond_to :geojson, only: %i[index show]
 
   def index
+    if (saved_search = saved_searches.find_by(id: params[:search_id]))
+      @search = saved_search.search
+    end
+
     index! do |format|
       format.geojson { render 'shapes/index' }
 
@@ -29,11 +33,22 @@ class ShapesController < Chouette::TopologicReferentialController
     end
   end
 
+  def saved_searches
+    @saved_searches ||= workbench.saved_searches.for(::Search::Shape)
+  end
+
   protected
 
+  def scope
+    parent.shapes
+  end
+
+  def search
+    @search ||= ::Search::Shape.from_params(params, workbench: workbench)
+  end
+
   def collection
-    @q = shape_referential.shapes.ransack(params[:q])
-    @shapes ||= @q.result.paginate(page: params[:page], per_page: 12)
+    @shapes ||= search.search(scope) # rubocop:disable Naming/MemoizedInstanceVariableName
   end
 
   private

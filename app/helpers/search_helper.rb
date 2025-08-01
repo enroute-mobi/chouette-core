@@ -18,6 +18,10 @@ module SearchHelper
     url_for([saved_search.parent, :line_referential, saved_search, { parent_resources: :lines }])
   end
 
+  def shapes_saved_search_path(saved_search)
+    url_for([saved_search.parent, :shape_referential, saved_search, { parent_resources: :shapes }])
+  end
+
   def imports_saved_search_path(saved_search)
     url_for([saved_search.parent, saved_search, { parent_resources: :imports }])
   end

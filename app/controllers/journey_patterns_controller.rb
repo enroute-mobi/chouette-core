@@ -32,17 +32,4 @@ class JourneyPatternsController < Chouette::ReferentialController
     journey_pattern.duplicate!
     render json: {}
   end
-
-  protected
-
-  def collection
-    @q = route.journey_patterns.ransack( params[:q])
-    @journey_patterns ||= @q.result(:distinct => true).order(:name)
-  end
-
-  private
-
-  def journey_pattern_params
-    params.require(:journey_pattern).permit(:route_id, :objectid, :object_version, :name, :comment, :registration_number, :published_name, :departure_stop_point_id, :arrival_stop_point_id, {:stop_point_ids => []})
-  end
 end

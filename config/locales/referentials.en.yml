@@ -1,9 +1,5 @@
 en:
   referentials:
-    filters:
-      name_or_number_or_short_id: 'Search by name, number or objectid'
-      name: 'Search by name'
-      line: 'Search by associated lines'
     search_no_results: 'No data set matching your query'
     error_period_filter: "The period filter must have valid bounding dates"
     index:

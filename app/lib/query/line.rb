@@ -18,7 +18,7 @@ module Query
     end
 
     def company_id(value)
-      where(value, :eq, :company_id)
+      where(value, value.is_a?(Array) ? :in : :eq, :company_id)
     end
 
     def line_provider_id(value)

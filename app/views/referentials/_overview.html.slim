@@ -1,9 +1,9 @@
 .referential-overview id=overview.pagination_param_name
   .filters
-    = search_form_for overview.search, as: overview.search_param_name, url: "##{overview.pagination_param_name}", html: {method: :get}, class: 'form form-filter' do |f|
+    = simple_form_for overview.search, url: "##{overview.pagination_param_name}", html: { method: :get, id: nil, class: 'form form-filter' } do |f|
       .ffg-row
         .form-group.input-group.search_bar
-          = f.search_field :name_or_number_or_short_id_cont, placeholder: t('lines.index.name_or_number_or_short_id'), class: 'form-control'
+          = f.input :text, wrapper: false, label: false
           span.input-group-btn
             button.btn.btn-default#search-btn type='submit'
               span.fa.fa-search
@@ -12,16 +12,16 @@
         - if companies.size > 1
           .form-group.togglable
             = f.label Chouette::Line.human_attribute_name(:company_id), required: false, class: 'control-label'
-            = f.input :company_id_eq_any, collection: companies.sort_by(&:name), as: :check_boxes, label: false, label_method: lambda{|l| ("<span>" + l.name + "</span>").html_safe}, required: false, wrapper_html: { class: 'checkbox_list'}
+            = f.input :company_id, collection: companies.sort_by(&:name), as: :check_boxes, label: false, label_method: lambda{ |l| content_tag(:span) { l.name } }, required: false, wrapper_html: { class: 'checkbox_list' }
 
         - transport_modes = overview.referential_lines.map(&:transport_mode).compact.uniq
         - if transport_modes.size > 1
           .form-group.togglable
             = f.label Chouette::Line.human_attribute_name(:transport_mode), required: false, class: 'control-label'
-            = f.input :transport_mode_eq_any, collection: transport_modes.sort, as: :check_boxes, label: false, label_method: lambda{|l| ("<span>" + t("enumerize.transport_mode.#{l}") + "</span>").html_safe}, required: false, wrapper_html: { class: 'checkbox_list'}
+            = f.input :transport_mode, collection: transport_modes.sort, as: :check_boxes, label: false, label_method: lambda { |l| content_tag(:span) { Chouette::TransportMode.new(l).human_name } }, required: false, wrapper_html: { class: 'checkbox_list' }
 
       .actions
-        = link_to t('actions.erase'), url_for() + "##{overview.pagination_param_name}", class: 'btn btn-link'
+        = link_to t('actions.erase'), "#{url_for}##{overview.pagination_param_name}", class: 'btn btn-link'
         = f.submit t('actions.filter'), class: 'btn btn-default'
 
   .time-travel

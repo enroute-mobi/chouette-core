@@ -1,9 +1,5 @@
 fr:
   referentials:
-    filters:
-      name_or_number_or_short_id: 'Indiquez un nom de ligne, nom court ou objectid'
-      name: 'Indiquez un nom de jeu de données...'
-      line: 'Indiquez une ligne...'
     search_no_results: 'Aucun jeu de données ne correspond à votre recherche'
     error_period_filter: "Le filtre par période doit contenir une date de début et de fin valides"
     index:

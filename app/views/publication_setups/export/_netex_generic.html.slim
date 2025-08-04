@@ -4,6 +4,7 @@
 	= d.attribute :participant_ref
 	= d.attribute :profile_options, value_method: :display_profile_options
 	= d.attribute :duration
+	= d.attribute :period, value_method: :display_period
 	= d.attribute :exported_lines, value_method: :display_selected_lines_to_export
 	= d.attribute :skip_line_resources, as: :boolean
 	= d.attribute :skip_stop_area_resources, as: :boolean

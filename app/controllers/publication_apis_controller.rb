@@ -48,7 +48,11 @@ class PublicationApisController < Chouette::WorkgroupController
 
   def publication_api_params
     publication_api_params = params.require(:publication_api)
-    permitted_keys = [:name, :slug, :public]
-    publication_api_params.permit(permitted_keys)
+    publication_api_params.permit(
+      :name,
+      :slug,
+      :public,
+      :prefer_referent_documents
+    )
   end
 end

@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class PublicationApi < ActiveRecord::Base
   belongs_to :workgroup # CHOUETTE-3247
   has_many :api_keys, class_name: 'PublicationApiKey'
@@ -7,6 +9,7 @@ class PublicationApi < ActiveRecord::Base
 
   validates :name, presence: true
   validates :slug, presence: true, uniqueness: true
+  validates :prefer_referent_documents, inclusion: { in: [true, false] }
 
   # When updating this regex, please update the
   # corresponding one in app/javascript/packs/publication_apis/new.js

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2025_07_15_143401) do
+ActiveRecord::Schema[7.0].define(version: 2025_08_04_095811) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "btree_gin"
   enable_extension "hstore"
@@ -1188,6 +1188,7 @@ ActiveRecord::Schema[7.0].define(version: 2025_07_15_143401) do
     t.datetime "created_at", precision: nil, null: false
     t.datetime "updated_at", precision: nil, null: false
     t.boolean "public", default: false
+    t.boolean "prefer_referent_documents", default: false, null: false
     t.index ["workgroup_id"], name: "index_publication_apis_on_workgroup_id"
   end
 

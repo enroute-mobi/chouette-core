@@ -65,6 +65,8 @@ en:
         profile: "Profile"
         state: "State"
         both_way: "Both ways"
+        shared: "Shared"
+        contains_date: "Contains date"
         chart:
           group_by_attribute:
             sub_type:

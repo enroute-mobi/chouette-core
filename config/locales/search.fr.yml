@@ -65,6 +65,8 @@ fr:
         profile: "Profil"
         state: "État"
         both_way: "Aller/Retour"
+        shared: "Partagé"
+        contains_date: "Inclut date"
         chart:
           group_by_attribute:
             sub_type:

@@ -73,7 +73,8 @@ module Api
           import_attributes.merge!(creator: 'Webservice')
 
           if current_workbench.organisation.has_feature?('import_netex_force_override_objectid')
-            import_attributes[:override_internal_identifiers] = 'true'
+            import_attributes['options'] ||= ActionController::Parameters.new.permit!
+            import_attributes['options'][:override_internal_identifiers] = 'true'
           end
 
           if (file_type = import_attributes['options']&.delete('file_type'))

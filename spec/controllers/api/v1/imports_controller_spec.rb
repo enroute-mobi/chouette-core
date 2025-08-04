@@ -156,6 +156,33 @@ RSpec.describe Api::V1::ImportsController, type: :controller do
             make_request
             expect(created_import.override_internal_identifiers?).to eq(true)
           end
+
+          context 'when there are options' do
+            let(:make_request) do
+              post :create, params: {
+                workbench_id: workbench.id,
+                workbench_import: {
+                  name: 'test',
+                  file: file,
+                  creator: 'test',
+                  options: {
+                    file_type: 'netex'
+                  }
+                }.with_indifferent_access,
+                format: :json
+              }
+            end
+
+            it 'is true' do
+              make_request
+              expect(created_import.override_internal_identifiers?).to eq(true)
+            end
+
+            it 'applies options' do
+              make_request
+              expect(created_import.import_category).to eq('netex_generic')
+            end
+          end
         end
       end
     end

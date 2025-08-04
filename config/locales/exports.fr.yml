@@ -118,6 +118,7 @@ fr:
         prefer_referent_company: Préférer les transporteurs Référents
         ignore_parent_stop_places: "Ignorer les arrêts Parents"
         ignore_extended_gtfs_route_types: "Ignorer les types de route étendus"
+        stop_sequence_from_one: Utiliser la séquence d’arrêt à partir de 1
       export/netex_generic:
         participant_ref: Netex Participant Ref
         profile_options: Paramètres du profil Netex

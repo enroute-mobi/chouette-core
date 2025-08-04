@@ -16,7 +16,8 @@ module Export
                                        serialize: ActiveModel::Type::Boolean
     option :ignore_extended_gtfs_route_types, required: true, default_value: false, enumerize: [true, false],
                                               serialize: ActiveModel::Type::Boolean
-
+    option  :stop_sequence_from_one, required: true, default_value: false, enumerize: [true, false],
+                                                     serialize: ActiveModel::Type::Boolean
     # TODO: No longer used by present in database. Remove me
     option :ignore_single_stop_station, required: false, default_value: false, enumerize: [true, false], serialize: ActiveModel::Type::Boolean
 
@@ -92,6 +93,7 @@ module Export
     end
 
     alias ignore_parent_stop_places? ignore_parent_stop_places
+    alias stop_sequence_from_one? stop_sequence_from_one
 
     def index
       @index ||= Index.new
@@ -1027,12 +1029,19 @@ module Export
 
       def decorator_attributes
         super.merge(
-          default_timezone: default_timezone
+          default_timezone: default_timezone,
+          stop_sequence_from_one: export.stop_sequence_from_one?
         )
       end
 
       class Decorator < ModelDecorator
-        attr_accessor :default_timezone
+        attr_accessor :default_timezone, :stop_sequence_from_one
+
+        def gtfs_stop_sequence
+          return position unless stop_sequence_from_one
+
+          position + 1
+        end 
 
         def shape_dist_traveled
           return unless journey_pattern_id && stop_point_id
@@ -1097,10 +1106,11 @@ module Export
           { departure_time: stop_time_departure_time,
             arrival_time: stop_time_arrival_time,
             stop_id: stop_time_stop_id,
-            stop_sequence: position,
+            stop_sequence: gtfs_stop_sequence,
             pickup_type: pickup_type,
             drop_off_type: drop_off_type,
-            shape_dist_traveled: shape_dist_traveled }
+            shape_dist_traveled: shape_dist_traveled
+          }
         end
       end
     end

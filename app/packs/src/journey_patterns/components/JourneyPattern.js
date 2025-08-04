@@ -222,7 +222,7 @@ export default function JourneyPattern({
     <div className={'t2e-item' + (journeyPattern.deletable ? ' disabled' : '') + (object_id ? '' : ' to_record') + (journeyPattern.errors ? ' has-error' : '') + (journeyPattern.costs ? ' with-costs' : '')}>
       <div className='th'>
         <div className='strong mb-xs'>{object_id ? short_id : '-'}</div>
-        <div>{journeyPattern.registration_number}</div>
+        <div className="overflow-x-auto w-40">{journeyPattern.registration_number}</div>
         <div>{I18n.t('journey_patterns.show.stop_points_count', { count: actions.getChecked(stop_points).length })}</div>
         {journeyPattern.costs &&
           <div className="small row totals">

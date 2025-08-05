@@ -26,6 +26,7 @@ en:
         graphql_url: "Public GraphQL URL"
         publications: "Related publications"
         public: "Public API"
+        prefer_referent_documents: "Prefer referent documents"
   formtastic:
     hints:
       publication_api:

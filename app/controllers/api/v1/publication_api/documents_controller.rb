@@ -63,8 +63,26 @@ class Api::V1::PublicationApi::DocumentsController < Api::V1::PublicationApi::Ba
     workgroup.document_types.find_by! short_name: params[:document_type]
   end
 
-  def published_resource
+  def published_resource # rubocop:disable Metrics/MethodLength
+    return @published_resource if @published_resource
+
     resources = params[:resources]
-    published_referential.send(resources).where(registration_number: params[:registration_number]).sole
+    code = params[:registration_number]
+    base_request = published_referential.send(resources).where(registration_number: code)
+
+    if prefer_referent?
+      @published_resource = begin
+        base_request.where(is_referent: true).sole
+      rescue ActiveRecord::RecordNotFound, ActiveRecord::SoleRecordExceeded
+        nil
+      end
+      return @published_resource if @published_resource
+    end
+
+    @published_resource = base_request.sole
+  end
+
+  def prefer_referent?
+    publication_api.prefer_referent_documents?
   end
 end

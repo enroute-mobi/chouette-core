@@ -14,11 +14,14 @@ class ShapesController < Chouette::TopologicReferentialController
     end
 
     index! do |format|
-      format.geojson { render 'shapes/index' }
+      format.geojson do
+        @shapes = @shapes.includes(:waypoints)
+        render 'shapes/index'
+      end
 
       format.html {
         @shapes = ShapeDecorator.decorate(
-          @shapes,
+          @shapes.includes(shape_provider: :workbench),
           context: {
             workbench: workbench
           }

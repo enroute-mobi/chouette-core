@@ -24,6 +24,7 @@ module Import
     option :ignore_parent_stop_areas, required: true, default_value: false, type: :boolean
     option :override_internal_identifiers, depends: { option: :import_category, values: %w[netex_generic] },
                                            required: true, default_value: false, type: :boolean
+    option :tags, type: :editable_select, collection: -> { existing_tags }, input_html: { multiple: true }
     option :stop_area_provider_id, display: :stop_area_provider,
                                    collection: -> { candidate_stop_area_providers.order(:name) },
                                    allow_blank: true
@@ -137,6 +138,28 @@ module Import
     def overlapping_referentials
       children.flat_map(&:overlapping_referentials)
     end
+
+    def existing_tags
+      tags = Import::Workbench.where("options->'tags' IS NOT NULL")
+                            .pluck(Arel.sql("options->'tags'"))
+                            .map { |t| t.is_a?(String) ? t.split(',').map(&:strip) : Array(t) }
+                            .flatten
+                            .reject(&:blank?)
+                            .uniq
+                            .sort
+      tags.presence || []
+    end
+
+    def formatted_tags
+      return [] unless options && options['tags'].present?
+
+      if options['tags'].is_a?(String)
+        options['tags'].split(',').map(&:strip)
+      else
+        Array(options['tags'])
+      end
+    end
+
 
     # Compute children status
     def children_status

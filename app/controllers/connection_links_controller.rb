@@ -12,6 +12,10 @@ class ConnectionLinksController < Chouette::StopAreaReferentialController
   respond_to :html, :geojson
 
   def index
+    if (saved_search = saved_searches.find_by(id: params[:search_id]))
+      @search = saved_search.search
+    end
+
     index! do
       @connection_links = ConnectionLinkDecorator.decorate(@connection_links, context: { workbench: workbench })
     end
@@ -29,6 +33,10 @@ class ConnectionLinksController < Chouette::StopAreaReferentialController
     render json: { connectionSpeed: Rails.application.config.connection_speeds }
   end
 
+  def saved_searches
+    @saved_searches ||= workbench.saved_searches.for(Search::ConnectionLink)
+  end
+
   protected
 
   alias_method :connection_link, :resource
@@ -40,25 +48,19 @@ class ConnectionLinksController < Chouette::StopAreaReferentialController
     end
   end
 
+  def scope
+    parent.connection_links
+  end
+
+  def search
+    @search ||= ::Search::ConnectionLink.from_params(params, workbench: workbench)
+  end
+
   def collection
-    @q = parent.connection_links.ransack(params[:q])
-    @connection_links ||= if sort_column == 'departure'
-      @q.result.joins('INNER JOIN public.stop_areas departures ON departures.id = connection_links.departure_id').order("departures.name #{sort_direction}").paginate(:page => params[:page])
-    else
-      @q.result.joins('INNER JOIN public.stop_areas arrivals ON arrivals.id = connection_links.arrival_id').order("arrivals.name #{sort_direction}").paginate(:page => params[:page])
-    end
+    @connection_links ||= search.search(scope) # rubocop:disable Naming/MemoizedInstanceVariableName
   end
 
   private
-
-  def sort_column
-    params[:sort].presence || 'departure'
-  end
-
-  def sort_direction
-    %w[asc desc].include?(params[:direction]) ?  params[:direction] : 'asc'
-  end
-
 
   def connection_link_params
     return @connection_link_params if @connection_link_params

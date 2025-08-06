@@ -264,8 +264,9 @@ module Search
 
     def search(scope)
       if valid?
-        result = query(scope).scope
+        result = scope
         result = order.order(result) unless without_order?
+        result = query(result).scope
         result = result.paginate(paginate_attributes) unless without_pagination?
         result
       else

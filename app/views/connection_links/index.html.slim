@@ -1,11 +1,10 @@
 - breadcrumb :connection_links, @workbench
 
-.page_content
+.page_content x-data="{ saveSearchPanel: false }"
   .container-fluid
-    - if params[:q].present? or @connection_links.any?
-      .row
-        .col-lg-12
-          = render partial: 'filters'
+    .row
+      .col-lg-12
+        = render partial: 'filters'
 
     - if @connection_links.any?
       .row
@@ -47,7 +46,7 @@
 
           = new_pagination @connection_links, 'pull-right'
 
-    - unless @connection_links.any?
+    - else
       .row.mt-xs
         .col-lg-12
           = replacement_msg t('connection_links.search_no_results')

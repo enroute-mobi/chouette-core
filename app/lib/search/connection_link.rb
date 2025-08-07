@@ -17,7 +17,8 @@ module Search
     end
 
     class Order < ::Search::Order
-      attribute :departure, joins: :departure, column: 'departure.name', default: :desc
+      attribute :name, default: :asc
+      attribute :departure, joins: :departure, column: 'departure.name'
       attribute :arrival, joins: :arrival, column: 'arrival.name'
     end
   end

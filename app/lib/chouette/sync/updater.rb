@@ -531,6 +531,33 @@ module Chouette
         end
       end
 
+      class PendingParentResolver < PendingResolver
+        def update
+          pendings.each do |resource_id, reference|
+            child = find_model resource_id
+            unless child
+              Rails.logger.debug do
+                "Can't find child #{model_id_attribute}=#{resource_id} to define #{attribute}=#{reference}"
+              end
+              next
+            end
+
+            referenced = find_model reference
+            unless referenced
+              referenced = find_model reference, base_scope: workgroup.stop_area_referential.stop_areas
+            end
+            unless referenced
+              Rails.logger.warn "Can't find reference with #{attribute} #{reference} for StopArea #{resource_id}"
+              next
+            end
+
+            unless child.update_attribute attribute, referenced
+              Rails.logger.error "Invalid child #{child.inspect}"
+            end
+          end
+        end
+      end
+
       # Resolve resource referents
       class PendingReferentResolver < PendingResolver
         def initialize(updater)

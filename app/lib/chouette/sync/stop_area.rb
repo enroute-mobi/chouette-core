@@ -206,7 +206,7 @@ module Chouette::Sync
       end
 
       def pending_parent_resolver
-        @pending_parent_resolver ||= ::Chouette::Sync::Updater::PendingResolver.new(self, :parent)
+        @pending_parent_resolver ||= ::Chouette::Sync::Updater::PendingParentResolver.new(self, :parent)
       end
 
       def pending_flexible_area_memberships_resolver

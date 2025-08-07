@@ -68,18 +68,45 @@ RSpec.describe Api::V1::PublicationApi::DocumentsController, type: :controller d
     end
 
     context 'no document is associated to the line' do
-      before { line.document_memberships.delete_all }
-      it { expect { subject }.to raise_error(ActiveRecord::RecordNotFound) }
+      before do
+        line.document_memberships.delete_all
+        subject
+      end
+
+      it do
+        expect(response).to have_http_status(:not_found)
+        expect(response.body).to eq('Document Not Found')
+      end
     end
 
     context 'no document with the expected type is associated to the line' do
       before { params[:document_type] = 'dummy' }
+
       it { expect { subject }.to raise_error(ActiveRecord::RecordNotFound) }
+
+      context 'when the document type exists' do
+        before do
+          context.workgroup.document_types.create!(name: 'Dummy', short_name: 'dummy')
+          subject
+        end
+
+        it do
+          expect(response).to have_http_status(:not_found)
+          expect(response.body).to eq('Document Not Found')
+        end
+      end
     end
 
     context 'no document is currently valid' do
-      before { document.update validity_period: Period.after(1.month.from_now) }
-      it { expect { subject }.to raise_error(ActiveRecord::RecordNotFound) }
+      before do
+        document.update validity_period: Period.after(1.month.from_now)
+        subject
+      end
+
+      it do
+        expect(response).to have_http_status(:not_found)
+        expect(response.body).to eq('Document Not Found')
+      end
     end
 
     context 'when the associated document has no validity period' do

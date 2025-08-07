@@ -26,8 +26,8 @@ class Document < ApplicationModel
   scope :with_type, ->(document_type) { where(document_type: document_type) }
   scope :valid_on, -> (date) { where('validity_period is null or validity_period @> DATE ?', date) }
 
-  def self.most_updated!
-    order(updated_at: :desc).first!
+  def self.most_updated
+    order(updated_at: :desc).first
   end
 
   def validity_period_attributes=(validity_period_attributes)

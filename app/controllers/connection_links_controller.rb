@@ -17,7 +17,10 @@ class ConnectionLinksController < Chouette::StopAreaReferentialController
     end
 
     index! do
-      @connection_links = ConnectionLinkDecorator.decorate(@connection_links, context: { workbench: workbench })
+      @connection_links = ConnectionLinkDecorator.decorate(
+        @connection_links.includes(:departure, :arrival, :stop_area_provider),
+        context: { workbench: workbench }
+      )
     end
   end
 

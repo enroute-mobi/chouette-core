@@ -161,6 +161,21 @@ module SimpleBlockForHelper
             else
               raw_value
             end
+          when :tags
+            if raw_value.try(:to_a).is_a?(Array) && (link = options[:link]).present?
+              content_tag :div, class: 'flex flex-wrap' do
+                raw_value.collect do |tag|
+                  if link.respond_to?(:call)
+                    link_span = link.call(tag).gsub('.', '/')
+                  end
+
+                  displayed_value_span = [tag.name,  tag.try(:get_objectid).try(:short_id)].join(' ')
+                  concat(content_tag(:div, link_to(displayed_value_span, link_span, style: "color: black;"), style: "background-color: ##{tag.color};", class: "inline-flex items-center px-2.5 py-0.5 mr-2 border border-black rounded-full text-sm font-medium"))
+                end
+              end
+            else
+              raw_value
+            end
           when :count
             if raw_value.respond_to?(:count)
               raw_value = raw_value.count

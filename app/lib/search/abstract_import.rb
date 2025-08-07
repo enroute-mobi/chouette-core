@@ -2,6 +2,8 @@
 
 module Search
   class AbstractImport < ::Search::Operation
+    attribute :tags
+
     def searched_class
       ::Import::Base
     end
@@ -10,12 +12,17 @@ module Search
       Query::Import
     end
 
+    def query(scope)
+      super.tags(tags)
+    end
+
     class Order < ::Search::Order
       # Use for Macro::List::Run and Control::List::Run
       attribute :user_status
       # Use for Import and Export classes and should migrate to user_status
       attribute :status
       attribute :name
+      attribute :tags
       attribute :started_at, default: :desc
       attribute :creator
     end

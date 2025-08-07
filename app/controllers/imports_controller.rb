@@ -59,6 +59,10 @@ class ImportsController < Chouette::WorkbenchController
 
   def create
     create! { [parent, resource] }
+
+    workbench.tags.where(id: params[:import].delete(:tags)).find_each do |tag|
+      resource.tags << tag
+    end
   end
 
   def saved_searches

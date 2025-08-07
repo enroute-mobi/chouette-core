@@ -27,7 +27,8 @@ module Policy
           ::ApiKey,
           ::Merge,
           ::Source,
-          ::Sequence
+          ::Sequence,
+          ::Tag
         ].include?(resource_class)
       end
     end

@@ -240,6 +240,8 @@ Rails.application.routes.draw do # rubocop:disable Metrics/BlockLength
 
     resources :processing_rules, as: 'processing_rule_workbenches'
 
+    resources :tags
+
     resources :calendars do
       member do
         get 'month', defaults: { format: :json }

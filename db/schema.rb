@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2025_08_04_095811) do
+ActiveRecord::Schema[7.0].define(version: 2025_08_05_131958) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "btree_gin"
   enable_extension "hstore"
@@ -1589,6 +1589,28 @@ ActiveRecord::Schema[7.0].define(version: 2025_08_04_095811) do
     t.boolean "flexible", default: false, null: false
     t.index ["objectid"], name: "stop_points_objectid_key", unique: true
     t.index ["route_id"], name: "index_stop_points_on_route_id"
+  end
+
+  create_table "taggings", force: :cascade do |t|
+    t.bigint "tag_id", null: false
+    t.string "taggable_type", null: false
+    t.bigint "taggable_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["tag_id", "taggable_type", "taggable_id"], name: "index_taggings_on_tag_id_and_taggable_type_and_taggable_id", unique: true
+    t.index ["tag_id"], name: "index_taggings_on_tag_id"
+    t.index ["taggable_type", "taggable_id"], name: "index_taggings_on_taggable"
+  end
+
+  create_table "tags", force: :cascade do |t|
+    t.string "name", null: false
+    t.string "color"
+    t.text "description"
+    t.bigint "workbench_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["name", "workbench_id"], name: "index_tags_on_name_and_workbench_id", unique: true
+    t.index ["workbench_id"], name: "index_tags_on_workbench_id"
   end
 
   create_table "time_table_dates", force: :cascade do |t|

@@ -23,7 +23,7 @@
 
         = simple_block_for @line, title: Chouette::Line.tmf('is_referent') do |d|
           - if @line.is_referent
-            = d.attribute :particulars, as: :count, value: @line.particulars, link: workbench_line_referential_lines_path(@workbench, :'q[referent_id_eq]' => @line.id)
+            = d.attribute :particulars, as: :count, value: @line.particulars
             - if @line.particulars.present?
               table.table.table-bordered.mt-5
                 thead

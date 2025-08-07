@@ -47,7 +47,7 @@
 
         = simple_block_for @stop_area, title: Chouette::StopArea.tmf('referent') do |d|
           - if @stop_area.is_referent
-            = d.attribute :specific_stops, as: :count, value: @stop_area.specific_stops, link: workbench_stop_area_referential_stop_areas_path(@workbench, :'search[referent_id]' => @stop_area.id)
+            = d.attribute :specific_stops, as: :count, value: @stop_area.specific_stops
             - if @stop_area.closest_specific_stops.present?
               table.table.table-bordered
                 thead

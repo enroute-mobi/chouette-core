@@ -35,7 +35,7 @@
 
         = simple_block_for @company, title: Chouette::Company.tmf('is_referent') do |d|
           - if @company.is_referent
-            = d.attribute :particulars, as: :count, value: @company.particulars, link: workbench_line_referential_companies_path(@workbench, :'q[referent_id_eq]' => @company.id)
+            = d.attribute :particulars, as: :count, value: @company.particulars
             - if @company.particulars.present?
               table.table.table-bordered.mt-5
                 thead

@@ -9,7 +9,6 @@ class CreateTagsAndTaggings < ActiveRecord::Migration[7.0]
         t.references :workbench
 
         t.timestamps
-
       end
 
       create_table :taggings do |t|
@@ -19,7 +18,6 @@ class CreateTagsAndTaggings < ActiveRecord::Migration[7.0]
         t.timestamps
       end
 
-      add_index :taggings, [:tag_id, :taggable_type, :taggable_id], unique: true
       add_index :tags, [:name, :workbench_id], unique: true
     end
   end

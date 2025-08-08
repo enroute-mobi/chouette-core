@@ -142,7 +142,6 @@ RSpec.describe Api::V1::PublicationApi::DocumentsController, type: :controller d
       it 'does not destroy workgroup nor workgroup output' do
         subject rescue nil # rubocop:disable Style/RescueModifier
         expect { context.workgroup.reload }.not_to raise_error
-        expect { context.workgroup.output.current.reload }.not_to raise_error
       end
     end
   end

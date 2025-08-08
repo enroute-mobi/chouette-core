@@ -71,7 +71,7 @@ class Api::V1::PublicationApi::DocumentsController < Api::V1::PublicationApi::Ba
 
     resources = params[:resources]
     code = params[:registration_number]
-    base_request = published_referential.send(resources).where(registration_number: code)
+    base_request = workgroup.send(resources).where(registration_number: code)
 
     if prefer_referent?
       @published_resource = begin

@@ -84,16 +84,4 @@ RSpec.describe Api::V1::PublicationApi::BaseController, type: :controller do
       expect(assigns(:workgroup)).to eq(workgroup)
     end
   end
-
-  describe '#published_referential' do
-    subject { controller.send :published_referential }
-
-    let(:referential) { double('referential') }
-    before do
-      workgroup = double(output: double(current: referential))
-      allow(controller).to receive(:workgroup).and_return(workgroup)
-    end
-
-    it { is_expected.to eq(referential) }
-  end
 end

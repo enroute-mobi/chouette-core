@@ -169,8 +169,16 @@ module SimpleBlockForHelper
                     link_span = link.call(tag).gsub('.', '/')
                   end
 
-                  displayed_value_span = [tag.name,  tag.try(:get_objectid).try(:short_id)].join(' ')
-                  concat(content_tag(:div, link_to(displayed_value_span, link_span, style: "color: black;"), style: "background-color: ##{tag.color};", class: "inline-flex items-center px-2.5 py-0.5 mr-2 border border-black rounded-full text-sm font-medium"))
+                  displayed_value_span = [tag.name, tag.try(:get_objectid).try(:short_id)].join(' ')
+                  concat(
+                    content_tag(
+                      :div,
+                      link_to(displayed_value_span, link_span, style: 'color: black;'),
+                      style: "background-color: ##{tag.color};",
+                      class: "inline-flex items-center px-2.5 py-0.5 mr-2 \
+                              border border-black rounded-full text-sm font-medium"
+                    )
+                  )
                 end
               end
             else

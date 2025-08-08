@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 RSpec.describe Tag do
   let(:context) do
     Chouette.create do

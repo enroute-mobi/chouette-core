@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class TagDecorator < Af83::Decorator
   decorates Tag
 
@@ -5,7 +7,5 @@ class TagDecorator < Af83::Decorator
 
   create_action_link
 
-  with_instance_decorator do |instance_decorator|
-    instance_decorator.crud
-  end
+  with_instance_decorator(&:crud)
 end

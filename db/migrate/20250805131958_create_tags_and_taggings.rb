@@ -1,5 +1,7 @@
+# frozen_string_literal: true
+
 class CreateTagsAndTaggings < ActiveRecord::Migration[7.0]
-  def change
+  def change # rubocop:disable Metrics/MethodLength
     on_public_schema_only do
       create_table :tags do |t|
         t.string :name, null: false
@@ -18,7 +20,7 @@ class CreateTagsAndTaggings < ActiveRecord::Migration[7.0]
         t.timestamps
       end
 
-      add_index :tags, [:name, :workbench_id], unique: true
+      add_index :tags, %i[name workbench_id], unique: true
     end
   end
 end

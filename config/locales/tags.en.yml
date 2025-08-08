@@ -1,21 +1,4 @@
 en:
-  activerecord:
-    models:
-      tag:
-        zero: "Tag"
-        one: "Tags"
-        other: "Tags"
-    attributes:
-      tag:
-        name: Name
-        color: Color
-        description: Description
-    errors:
-      models:
-        tag:
-          duplicate_tags_in_tags: "The Tag \"%{tag}\" doesn't allow several values in the same model"
-          duplicate_values_in_tags: Duplicate key value violates unique constraint
-          blank:  The tag value can't be empty
   tags:
     actions:
       new: Add Tag
@@ -35,3 +18,21 @@ en:
     form:
       sections:
         identification: "Identification"
+    search_no_results: "No Tag found"
+  activerecord:
+    models:
+      tag:
+        zero: "Tag"
+        one: "Tags"
+        other: "Tags"
+    attributes:
+      tag:
+        name: Name
+        color: Color
+        description: Description
+    errors:
+      models:
+        tag:
+          duplicate_tags_in_tags: "The Tag \"%{tag}\" doesn't allow several values in the same model"
+          duplicate_values_in_tags: Duplicate key value violates unique constraint
+          blank:  The tag value can't be empty

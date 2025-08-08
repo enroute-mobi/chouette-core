@@ -399,6 +399,8 @@ Rails.application.routes.draw do # rubocop:disable Metrics/BlockLength
   end
 
   resource :organisation, only: %i[show edit update] do
+    resources :searches, only: %i[index show create update destroy], path: ':parent_resources/searches'
+
     resources :users do
       member do
         put :block

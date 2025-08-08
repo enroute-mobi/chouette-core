@@ -1,0 +1,6 @@
+= simple_search_for @search, organisation_path, parent_resources_path: organisation_users_path do |f|
+  = f.row
+    = f.text
+  = f.row
+    = f.input :profile, as: :autocomplete_select, collection: Permission::Profile.all_i18n, input_html: { multiple: true }
+    = f.input :state, as: :autocomplete_select, collection: User.all_states_i18n, input_html: { multiple: true }

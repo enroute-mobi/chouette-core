@@ -5,6 +5,8 @@ class Organisation < ApplicationModel
 
   has_one :authentication, class_name: 'Authentication::Base', dependent: :destroy
   has_many :users, dependent: :destroy
+  has_many :saved_searches, class_name: 'Search::Save', as: :parent, dependent: :destroy
+
   has_many :referentials, dependent: :destroy
 
   has_many :stop_area_referential_memberships, dependent: :destroy

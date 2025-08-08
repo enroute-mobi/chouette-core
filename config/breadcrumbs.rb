@@ -410,6 +410,11 @@ crumb :organisation do |organisation|
   link breadcrumb_name(organisation), organisation_path
 end
 
+crumb :users do |organisation|
+  link User.model_name.human(count: 2)
+  parent organisation
+end
+
 crumb :service_facility_sets do |workbench|
   link I18n.t('service_facility_sets.index.title'), workbench_shape_referential_service_facility_sets_path(workbench)
   parent :workbench, workbench

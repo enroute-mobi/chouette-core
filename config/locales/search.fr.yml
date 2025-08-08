@@ -62,6 +62,8 @@ fr:
         display_percent: "Afficher en %"
         subgroup_by_attribute: "Sous-grouper par"
         wayback: Direction
+        profile: "Profil"
+        state: "État"
         chart:
           group_by_attribute:
             sub_type:

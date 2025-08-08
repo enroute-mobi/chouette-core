@@ -17,18 +17,6 @@ module Api
           @workgroup ||= publication_api.workgroup
         end
 
-        def published_referential
-          @published_referential ||= workgroup.output.current.tap do |referential|
-            raise ActiveRecord::RecordNotFound unless referential
-          end
-        end
-
-        def use_published_referential(&block)
-          published_referential.switch do
-            CustomFieldsSupport.within_workgroup(workgroup, &block)
-          end
-        end
-
         def authenticate
           return if publication_api.public?
 

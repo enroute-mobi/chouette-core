@@ -8,13 +8,16 @@ class Api::V1::PublicationApi::DocumentsController < Api::V1::PublicationApi::Ba
     render status: :not_acceptable, plain: "Invalid valid_on parameter"
   end
 
+  before_action :find_document!, only: %i[show]
+
   def show
-    document = published_resource.documents.with_type(document_type).valid_on(validity_date).most_updated!
-    prepare_for_download document
-
-    filename = FilenameBuilder.new(publication_api: publication_api, resource: published_resource, document: document).filename
-
-    send_file document.file.path, filename: filename
+    prepare_for_download @document
+    filename_builder = FilenameBuilder.new(
+      publication_api: publication_api,
+      resource: published_resource,
+      document: @document
+    )
+    send_file @document.file.path, filename: filename_builder.filename
   end
 
   # Create filename with the Document
@@ -68,7 +71,7 @@ class Api::V1::PublicationApi::DocumentsController < Api::V1::PublicationApi::Ba
 
     resources = params[:resources]
     code = params[:registration_number]
-    base_request = published_referential.send(resources).where(registration_number: code)
+    base_request = workgroup.send(resources).where(registration_number: code)
 
     if prefer_referent?
       @published_resource = begin
@@ -80,6 +83,18 @@ class Api::V1::PublicationApi::DocumentsController < Api::V1::PublicationApi::Ba
     end
 
     @published_resource = base_request.sole
+  end
+
+  def find_document! # rubocop:disable Metrics/AbcSize
+    @document = published_resource.documents.with_type(document_type).valid_on(validity_date).most_updated
+
+    if @document.nil? && published_resource.referent?
+      @document = workgroup.documents
+                           .joins(:memberships).where(memberships: { documentable: published_resource.particulars })
+                           .with_type(document_type).valid_on(validity_date).most_updated
+    end
+
+    render plain: 'Document Not Found', status: :not_found if @document.nil?
   end
 
   def prefer_referent?

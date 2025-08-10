@@ -193,6 +193,7 @@ class Merge < ApplicationModel
 
     CleanUp.new(clean_up_options).clean
     Clean::Timetable::Date::ExcludedWithoutPeriod.new(clean_scope).clean!
+    Clean::Code::Orphan.new(clean_scope).clean!
   end
 
   def after_save_current

@@ -39,7 +39,7 @@ module Clean
 
       delegate :routes, :vehicle_journeys, :journey_patterns, :service_counts,
                :time_tables, :time_table_dates, :time_table_periods, :metadatas,
-               :companies, to: :referential
+               :companies, :codes, to: :referential
 
       alias timetables time_tables
       alias timetable_periods time_table_periods
@@ -100,6 +100,11 @@ module Clean
 
       def metadatas
         scope.metadatas.include_lines([line_id])
+      end
+
+      def codes
+        # TODO Not supported for the moment
+        ReferentialCode.none
       end
 
       # Returns a (unsaved) metadata which only covers the current
@@ -391,6 +396,17 @@ module Clean
         metadatas.find_each do |metadata|
           clean_metadata metadata
         end
+      end
+    end
+  end
+
+  module Code
+    class Orphan < Base
+      def clean!
+        count = scope.codes.resource_classes.map do |resource_class|
+          scope.codes.without_resource(resource_class: resource_class).delete_all
+        end.sum
+        Rails.logger.info "Cleaned #{count} codes"
       end
     end
   end

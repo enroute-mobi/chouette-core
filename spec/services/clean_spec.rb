@@ -879,3 +879,41 @@ RSpec.describe Clean::VehicleJourney::NullifyCompany do
     end
   end
 end
+
+RSpec.describe Clean::Code::Orphan do
+  subject(:cleaner) { described_class.new(scope) }
+
+  let(:context) do
+    Chouette.create do
+      code_space
+      referential do
+        vehicle_journey
+      end
+    end
+  end
+
+  let(:referential) { context.referential }
+  before { referential.switch }
+
+  let(:scope) { Clean::Scope::Referential.new referential }
+  let(:resource) { context.vehicle_journey }
+
+  let!(:code) { resource.codes.create(code_space: context.code_space, value: 'dummy') }
+
+  context 'when a Code is associated to a resource' do
+    subject { code }
+
+    before { cleaner.clean! }
+
+    it { is_expected.to exist_in_database  }
+  end
+
+  context 'when a Code is associated to a resource' do
+    subject { code }
+
+    before { code.resource.delete }
+    before { cleaner.clean! }
+
+    it { is_expected.to_not exist_in_database  }
+  end
+end

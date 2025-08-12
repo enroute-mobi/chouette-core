@@ -908,7 +908,7 @@ RSpec.describe Clean::Code::Orphan do
     it { is_expected.to exist_in_database  }
   end
 
-  context 'when a Code is associated to a resource' do
+  context 'when a Code isn\'t associated to a resource' do
     subject { code }
 
     before { code.resource.delete }

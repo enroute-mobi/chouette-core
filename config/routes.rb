@@ -41,6 +41,7 @@ Rails.application.routes.draw do # rubocop:disable Metrics/BlockLength
           collection do
             get :companies
             get :lines
+            get :routes
             get :journey_patterns
             get :time_tables
             get :vehicle_journeys

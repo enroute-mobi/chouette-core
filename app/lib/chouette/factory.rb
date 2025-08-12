@@ -691,8 +691,10 @@ module Chouette
               model :routing_constraint_zone do
                 attribute(:name) { |n| "Routing Constraint Zone #{n}" }
 
-                after do |routing_constraint_zone|
-                  routing_constraint_zone.stop_points = routing_constraint_zone.route.stop_points.last(2)
+                transient :stop_points_count, 2
+
+                after do |rcz|
+                  rcz.stop_points = rcz.route.stop_points.last(transient(:stop_points_count))
                 end
               end
             end

@@ -12,6 +12,13 @@ class ReferentialAutocompleteController < Chouette::ReferentialController
     @companies = scope.companies.order(:name).by_text(text).limit(50)
   end
 
+  def routes
+    request = referential.routes.by_text(text)
+    request = request.where(line_id: params[:line_id]) if params[:line_id].present?
+    request = request.with_at_least_three_stop_points if params[:with_at_least_three_stop_points].present?
+    @routes = request.limit(50)
+  end
+
   def journey_patterns
     @journey_patterns = route.journey_patterns.by_text(text).limit(50)
   end

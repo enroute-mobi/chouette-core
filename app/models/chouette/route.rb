@@ -91,6 +91,19 @@ module Chouette
 
     scope :with_at_least_three_stop_points, -> { joins(:stop_points).group('routes.id').having("COUNT(stop_points.id) >= 3") }
     scope :without_any_journey_pattern, -> { joins('LEFT JOIN journey_patterns ON journey_patterns.route_id = routes.id').where(journey_patterns: { id: nil }) }
+    scope :by_text, lambda { |text|
+      return if text.blank?
+
+      match = "%#{text}%"
+      name = arel_table[:name].matches(match)
+      objectid = arel_table[:objectid].matches(match)
+
+      where(name.or(objectid))
+    }
+
+    def display_name
+      "#{get_objectid.local_id} - #{name}"
+    end
 
     def self.clean!
       find_each(&:clean!)

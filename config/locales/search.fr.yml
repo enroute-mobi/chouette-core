@@ -67,6 +67,7 @@ fr:
         both_way: "Aller/Retour"
         shared: "Partagé"
         contains_date: "Inclut date"
+        route_id: "Itinéraire"
         chart:
           group_by_attribute:
             sub_type:

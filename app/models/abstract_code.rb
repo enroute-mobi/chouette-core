@@ -10,6 +10,17 @@ class AbstractCode < ActiveRecord::Base
 
   scope :by_resource_type, ->(resource_class) { where resource_type: resource_class.to_s }
 
+  def self.resource_classes
+    distinct.pluck(:resource_type).map(&:constantize)
+  end
+
+  def self.without_resource(resource_class:)
+    resource_table = resource_class.table_name
+    by_resource_type(resource_class).
+      joins("left join #{resource_table} on #{resource_table}.id = resource_id").
+      where("#{resource_table}.id is null")
+  end
+
   def self.merge(existing_codes, new_codes)
     return if new_codes.blank?
 

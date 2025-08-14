@@ -64,6 +64,7 @@ fr:
         wayback: Direction
         profile: "Profil"
         state: "État"
+        both_way: "Aller/Retour"
         chart:
           group_by_attribute:
             sub_type:

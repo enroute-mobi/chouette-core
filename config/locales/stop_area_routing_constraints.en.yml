@@ -42,8 +42,6 @@ en:
         to: Destination stop
         from_id: Start stop
         to_id: Destination stop
-        from_name: Start stop
-        to_name: Destination stop
     errors:
       models:
         stop_area_routing_constraint:

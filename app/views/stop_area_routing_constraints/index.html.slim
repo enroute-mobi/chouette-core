@@ -1,11 +1,10 @@
 - breadcrumb :stop_area_routing_constraints, @workbench
 
-.page_content
+.page_content x-data="{ saveSearchPanel: false }"
   .container-fluid
-  - if params[:q].present? or @stop_area_routing_constraints.any?
-    .row
-      .col-lg-12
-        = render partial: 'filters'
+  .row
+    .col-lg-12
+      = render partial: 'filters'
 
   - if @stop_area_routing_constraints.any?
     .row
@@ -13,7 +12,7 @@
         = table_builder_2 @stop_area_routing_constraints,
           [ \
             TableBuilderHelper::Column.new( \
-              key: :from_name, \
+              key: :from, \
               attribute: lambda do |stop_area_routing_constraint| \
                 link_to stop_area_routing_constraint.from.formatted_selection_details.html_safe, [\
                   @workbench,
@@ -23,7 +22,7 @@
               end \
             ), \
             TableBuilderHelper::Column.new( \
-              key: :to_name, \
+              key: :to, \
               attribute: lambda do |stop_area_routing_constraint| \
                 link_to stop_area_routing_constraint.to.formatted_selection_details.html_safe, [ \
                   @workbench,
@@ -35,7 +34,7 @@
             TableBuilderHelper::Column.new( \
               key: :direction, \
               attribute: lambda do |stop_area_routing_constraint| \
-                stop_area_routing_constraint.both_way ? 'stop_area_routing_constraints.direction.both_way'.t : 'stop_area_routing_constraints.direction.one_way'.t \
+                t(stop_area_routing_constraint.both_way ? 'both_way' : 'one_way', scope: 'stop_area_routing_constraints.direction') \
               end \
             ), \
           ],\

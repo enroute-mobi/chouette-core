@@ -18,6 +18,10 @@ module SearchHelper
     url_for([saved_search.parent, :stop_area_referential, saved_search, { parent_resources: :stop_areas }])
   end
 
+  def stop_area_routing_constraints_saved_search_path(saved_search)
+    url_for([saved_search.parent, :stop_area_referential, saved_search, { parent_resources: :stop_area_routing_constraints }]) # rubocop:disable Layout/LineLength
+  end
+
   def lines_saved_search_path(saved_search)
     url_for([saved_search.parent, :line_referential, saved_search, { parent_resources: :lines }])
   end

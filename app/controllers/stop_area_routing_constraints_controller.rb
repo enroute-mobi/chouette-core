@@ -10,6 +10,10 @@ class StopAreaRoutingConstraintsController < Chouette::StopAreaReferentialContro
   respond_to :html, :json
 
   def index # rubocop:disable Metrics/MethodLength
+    if (saved_search = saved_searches.find_by(id: params[:search_id]))
+      @search = saved_search.search
+    end
+
     index! do |format|
       format.html {
         if collection.out_of_bounds?
@@ -33,37 +37,27 @@ class StopAreaRoutingConstraintsController < Chouette::StopAreaReferentialContro
     end
   end
 
+  def saved_searches
+    @saved_searches ||= workbench.saved_searches.for(::Search::StopAreaRoutingConstraint)
+  end
+
   protected
 
   alias_method :stop_area, :resource
 
+  def scope
+    parent.stop_area_routing_constraints
+  end
+
+  def search
+    @search ||= ::Search::StopAreaRoutingConstraint.from_params(params, workbench: workbench)
+  end
+
   def collection
-    scope = parent.stop_area_routing_constraints
-    @q = scope.ransack(params[:q])
-    @with_stop = params[:q] && params[:q][:with_stop] && Chouette::StopArea.find(params[:q][:with_stop])
-    @stop_area_routing_constraints ||=
-      begin
-        if sort_column == 'from_name'
-          stop_area_routing_constraints = @q.result.joins('INNER JOIN public.stop_areas froms ON froms.id = stop_area_routing_constraints.from_id').order("froms.name #{sort_direction}")
-        elsif sort_column == 'to_name'
-          stop_area_routing_constraints = @q.result.joins('INNER JOIN public.stop_areas tos ON tos.id = stop_area_routing_constraints.to_id').order("tos.name #{sort_direction}")
-        else
-          stop_area_routing_constraints = @q.result.order("both_way #{sort_direction}")
-        end
-        stop_area_routing_constraints = stop_area_routing_constraints.paginate(:page => params[:page])
-        stop_area_routing_constraints
-      end
+    @stop_area_routing_constraints ||= search.search(scope) # rubocop:disable Naming/MemoizedInstanceVariableName
   end
 
   private
-
-  def sort_column
-    params[:sort].presence || 'from_name'
-  end
-
-  def sort_direction
-    %w[asc desc].include?(params[:direction]) ?  params[:direction] : 'asc'
-  end
 
   def stop_area_routing_constraint_params
     @stop_area_routing_constraint_params ||= params.require(:stop_area_routing_constraint).permit(

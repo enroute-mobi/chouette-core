@@ -21,7 +21,11 @@ class StopAreaRoutingConstraintsController < Chouette::StopAreaReferentialContro
         end
 
         @stop_area_routing_constraints = StopAreaRoutingConstraintDecorator.decorate(
-          @stop_area_routing_constraints,
+          @stop_area_routing_constraints.includes(
+            :stop_area_provider,
+            from: :stop_area_referential, # formatted_selection_details needs the referential of the stop area
+            to: :stop_area_referential
+          ),
           context: {
             workbench: workbench
           }

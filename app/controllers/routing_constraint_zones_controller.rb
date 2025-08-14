@@ -14,7 +14,7 @@ class RoutingConstraintZonesController < Chouette::ReferentialController
     index! do |format|
       format.html do
         @routing_constraint_zones = RoutingConstraintZoneDecorator.decorate(
-          @routing_constraint_zones,
+          @routing_constraint_zones.includes(:route),
           context: {
             workbench: @workbench,
             referential: referential,

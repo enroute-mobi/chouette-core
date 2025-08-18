@@ -12,10 +12,6 @@ module Search
       Query::Import
     end
 
-    def query(scope)
-      super.tags(tags)
-    end
-
     class Order < ::Search::Order
       # Use for Macro::List::Run and Control::List::Run
       attribute :user_status

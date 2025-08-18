@@ -18,7 +18,6 @@ module Search
       # Use for Import and Export classes and should migrate to user_status
       attribute :status
       attribute :name
-      attribute :tags
       attribute :started_at, default: :desc
       attribute :creator
     end

@@ -36,12 +36,7 @@
                 attribute: Proc.new { |object| object.ended_at.presence && object.started_at.presence && duration_in_words(object.ended_at - object.started_at)}, \
                 sortable: false, \
               ), \
-              TableBuilderHelper::Column.new( \
-                key: :tags, \
-                attribute: Proc.new { |import| import.tags.map(&:name).join(', ') if import.tags.any? }, \
-                sortable: false, \
-              ), \
-              *@contextual_cols \
+            *@contextual_cols \
             ],
             cls: 'table has-search'
 

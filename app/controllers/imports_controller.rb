@@ -50,6 +50,11 @@ class ImportsController < Chouette::WorkbenchController
 
         unless @chart
           @contextual_cols = []
+          @contextual_cols << TableBuilderHelper::Column.new(
+            key: :tags,
+            attribute: Proc.new { |import| import.tags.map(&:name).join(', ') if import.tags.any? },
+            sortable: false
+          )
           @contextual_cols << TableBuilderHelper::Column.new(key: :creator, attribute: 'creator')
           @imports = decorate_collection(collection)
         end

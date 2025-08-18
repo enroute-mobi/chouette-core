@@ -176,7 +176,7 @@ module SimpleBlockForHelper
                       link_to(displayed_value_span, link_span, style: 'color: black;'),
                       style: "background-color: ##{tag.color};",
                       class: "inline-flex items-center px-2.5 py-0.5 mr-2 \
-                              border border-black rounded-full text-sm font-medium"
+                              rounded-full text-sm font-medium"
                     )
                   )
                 end

@@ -100,8 +100,8 @@ if (window.jpOrigin) {
     objectid: window.jpOrigin.objectid
   }
   let params = {
-    'q[journey_pattern_id_eq]': initialState.filters.query.journeyPattern.id,
-    'q[objectid_cont]': initialState.filters.query.vehicleJourney.objectid
+    'search[journey_pattern_id]': initialState.filters.query.journeyPattern.id,
+    'search[text]': initialState.filters.query.vehicleJourney.objectid
   }
   initialState.filters.queryString = actions.encodeParams(params)
 }

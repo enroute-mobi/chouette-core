@@ -19,6 +19,8 @@ class RouteVehicleJourneysController < Chouette::ReferentialController
       end
       format.html do
         load_missions
+        load_footnotes
+        load_matrix
         load_custom_fields
         @stop_points_list = map_stop_points(route.stop_points)
         @return_stop_points_list = map_stop_points(route.opposite_route&.stop_points) if has_feature?(:vehicle_journeys_return_route)
@@ -47,61 +49,18 @@ class RouteVehicleJourneysController < Chouette::ReferentialController
 
   protected
 
+  def scope
+    parent.vehicle_journeys.with_stops
+  end
+
+  def search
+    @search ||= Search::VehicleJourney.from_params(params, referential: referential, per_page: 20)
+  end
+
   def collection
-    scope = route.vehicle_journeys.with_stops
-    scope = maybe_filter_by_departure_time(scope)
-    scope = maybe_filter_out_journeys_with_time_tables(scope)
-
-    @vehicle_journeys ||= begin
-      @q = scope.ransack filtered_ransack_params
-
-      @ppage = 20
-      vehicle_journeys = @q.result.paginate(:page => params[:page], :per_page => @ppage)
-      @footnotes = route.line.footnotes.map { |f| f.attributes.slice(*%w[label id code]) }
-      route.line.line_notices.each do |line_notice|
-        @footnotes << {
-          code: line_notice.title,
-          label: helpers.truncate(line_notice.content, length: 120),
-          id: line_notice.id,
-          line_notice: true
-        }
-      end
-      @footnotes = @footnotes.to_json
-      @matrix    = resource_class.matrix(vehicle_journeys)
-      vehicle_journeys
-    end
+    @vehicle_journeys ||= search.search(scope) # rubocop:disable Naming/MemoizedInstanceVariableName
   end
   alias resource collection
-
-  def maybe_filter_by_departure_time(scope)
-    if params[:q] &&
-        params[:q][:vehicle_journey_at_stops_departure_time_gteq] &&
-        params[:q][:vehicle_journey_at_stops_departure_time_lteq]
-      scope = scope.where_departure_time_between(
-        params[:q][:vehicle_journey_at_stops_departure_time_gteq],
-        params[:q][:vehicle_journey_at_stops_departure_time_lteq],
-        allow_empty:
-          params[:q][:vehicle_journey_without_departure_time] == 'true'
-      )
-    end
-
-    scope
-  end
-
-  def maybe_filter_out_journeys_with_time_tables(scope)
-    if params[:q] && params[:q][:vehicle_journey_without_time_table] == 'false'
-      return scope.without_time_tables
-    end
-
-    scope
-  end
-
-  def filtered_ransack_params
-    if params[:q]
-      params[:q] = params[:q].reject { |k| params[:q][k] == 'undefined' }
-      params[:q].except(:vehicle_journey_at_stops_departure_time_gteq, :vehicle_journey_at_stops_departure_time_lteq)
-    end
-  end
 
   def user_permissions
     @features = Hash[*current_organisation.features.map { |f| [f, true] }.flatten].to_json
@@ -193,5 +152,22 @@ class RouteVehicleJourneysController < Chouette::ReferentialController
         text: "<strong>#{published_name} - #{short_id}</strong><br/><small>#{registration_number}</small>"
       }
     end
+  end
+
+  def load_footnotes
+    @footnotes =
+      route.line.footnotes.map { |f| f.attributes.slice(*%w[label id code]) } + \
+      route.line.line_notices.map do |line_notice|
+        {
+          code: line_notice.title,
+          label: helpers.truncate(line_notice.content, length: 120),
+          id: line_notice.id,
+          line_notice: true
+        }
+      end
+  end
+
+  def load_matrix
+    @matrix = resource_class.matrix(collection)
   end
 end

@@ -21,6 +21,12 @@ module Query
       end
     end
 
+    def journey_pattern_id(value)
+      change_scope(if: value.present?) do |scope|
+        scope.where(journey_pattern_id: value)
+      end
+    end
+
     def company(value)
       change_scope(if: value.present?) do |scope|
         scope.with_companies([value])
@@ -39,6 +45,12 @@ module Query
       end
     end
 
+    def with_time_table(value)
+      change_scope(if: value == false) do |scope| # rubocop:disable Style/SymbolProc
+        scope.without_any_time_table
+      end
+    end
+
     def time_table_period(value)
       change_scope(if: value.present?) do |scope|
         scope.with_matching_timetable(value)
@@ -53,6 +65,12 @@ module Query
       change_scope(if: (from_stop_area.present? || to_stop_area.present?)) do |scope|
         stop_area_id = from_stop_area || to_stop_area
         scope.with_stop_area_id(stop_area_id)
+      end
+    end
+
+    def where_departure_time_between(start_time, end_time, **options)
+      change_scope(if: start_time.present? && end_time.present?) do |scope|
+        scope.where_departure_time_between(start_time, end_time, **options)
       end
     end
 

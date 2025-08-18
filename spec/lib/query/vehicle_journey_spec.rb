@@ -1,8 +1,13 @@
 # frozen_string_literal: true
 
 RSpec.describe Query::VehicleJourney do
+  subject(:query) { Query::VehicleJourney.new(scope) }
 
-  let(:query) { Query::VehicleJourney.new(Chouette::VehicleJourney.all) }
+  let(:scope) { Chouette::VehicleJourney.all }
+
+  before(:each) do
+    context.referential.switch
+  end
 
   describe '#text' do
     let(:context) do
@@ -12,10 +17,6 @@ RSpec.describe Query::VehicleJourney do
     end
 
     let(:vehicle_journey) { context.vehicle_journey }
-
-    before(:each) do
-      context.referential.switch
-    end
 
     context 'when published journey name is the vehicle journey published journey name' do
       subject { query.text(vehicle_journey.published_journey_name).scope }
@@ -42,6 +43,38 @@ RSpec.describe Query::VehicleJourney do
     end
   end
 
+  describe '#journey_pattern_id' do
+    subject { query.journey_pattern_id(value).scope }
+
+    let(:context) do
+      Chouette.create do
+        journey_pattern :match_journey_pattern do
+          vehicle_journey :match
+        end
+
+        journey_pattern do
+          vehicle_journey :other
+        end
+      end
+    end
+
+    context 'without value' do
+      let(:value) { nil }
+
+      it 'returns all vehicle journeys' do
+        is_expected.to eq(scope)
+      end
+    end
+
+    context 'with the id of a journey pattern' do
+      let(:value) { context.journey_pattern(:match_journey_pattern).id }
+
+      it 'returns only vehicle journeys having this journey pattern' do
+        is_expected.to match_array([context.vehicle_journey(:match)])
+      end
+    end
+  end
+
   describe '#company' do
     let(:context) do
       Chouette.create do
@@ -54,10 +87,6 @@ RSpec.describe Query::VehicleJourney do
     let(:company_id) { context.vehicle_journey.route.line.company_id }
     let(:other_company_id) { context.company(:other_company).id }
     let(:vehicle_journey) { context.vehicle_journey }
-
-    before(:each) do
-      context.referential.switch
-    end
 
     context 'when company is the vehicle journey company' do
       subject { query.company(company_id).scope }
@@ -88,10 +117,6 @@ RSpec.describe Query::VehicleJourney do
     let(:line_id) { context.vehicle_journey.route.line_id }
     let(:other_line_id) { context.line(:other).id }
     let(:vehicle_journey) { context.vehicle_journey }
-
-    before(:each) do
-      context.referential.switch
-    end
 
     context 'when line is the vehicle journey line' do
       subject { query.line(line_id).scope }
@@ -124,10 +149,6 @@ RSpec.describe Query::VehicleJourney do
     let(:time_table) { context.time_table(:time_table) }
     let(:other_time_table) { context.time_table(:other_time_table) }
 
-    before(:each) do
-      context.referential.switch
-    end
-
     context "when vehicle journey include timetable" do
       subject { query.time_table(time_table).scope }
 
@@ -145,6 +166,43 @@ RSpec.describe Query::VehicleJourney do
     end
   end
 
+  describe '#with_time_table' do
+    subject { query.with_time_table(value).scope }
+
+    let(:context) do
+      Chouette.create do
+        time_table :time_table
+
+        vehicle_journey :vehicle_journey_with_time_table, time_tables: [:time_table]
+        vehicle_journey :vehicle_journey_without_time_table
+      end
+    end
+
+    context 'when given value is blank' do
+      let(:value) { nil }
+
+      it 'returns all vehicle journeys' do
+        is_expected.to eq(scope)
+      end
+    end
+
+    context 'when given value is false' do
+      let(:value) { false }
+
+      it 'returns all vehicle journeys' do
+        is_expected.to match_array([context.vehicle_journey(:vehicle_journey_without_time_table)])
+      end
+    end
+
+    context 'when given value is true' do
+      let(:value) { true }
+
+      it 'returns only vehicle journeys without time table' do
+        is_expected.to eq(scope)
+      end
+    end
+  end
+
   describe '#time_table_period' do
     let(:context) do
       Chouette.create do
@@ -158,10 +216,6 @@ RSpec.describe Query::VehicleJourney do
     let(:time_table) { context.time_table(:time_table) }
     let(:included_range) { time_table.start_date..time_table.end_date }
     let(:excluded_range) { (time_table.end_date + 5.days)..(time_table.end_date + 10.days) }
-
-    before(:each) do
-      context.referential.switch
-    end
 
     context "when range intersects one vehicle journey's timetable" do
       subject { query.time_table_period(included_range).scope }
@@ -194,10 +248,6 @@ RSpec.describe Query::VehicleJourney do
     let(:last_vehicle_journey_stop_area) { context.vehicle_journey.vehicle_journey_at_stops.last.stop_point.stop_area }
     let(:other_stop_area) { context.stop_area(:other) }
 
-    before(:each) do
-      context.referential.switch
-    end
-
     context 'when stop areas are the vehicle journey stop areas' do
       it 'includes vehicle journey with first stop area' do
         scope = query.between_stop_areas(first_vehicle_journey_stop_area.id, nil).scope
@@ -218,4 +268,33 @@ RSpec.describe Query::VehicleJourney do
     end
   end
 
+  describe '#where_departure_time_between' do
+    subject { query.where_departure_time_between(start_time, end_time, allow_empty: allow_empty).scope }
+
+    let(:context) do
+      Chouette.create do
+        vehicle_journey
+      end
+    end
+    let(:allow_empty) { double(:allow_empty) }
+
+    context 'when start_time and end_date empty' do
+      let(:start_time) { nil }
+      let(:end_time) { nil }
+
+      it 'returns all vehicle journeys' do
+        is_expected.to eq(scope)
+      end
+    end
+
+    context 'start_time and end_time are not empty' do
+      let(:start_time) { double(:start_time) }
+      let(:end_time) { double(:end_time) }
+
+      it 'passes paramaters to scope #where_departure_time_between' do
+        expect(scope).to receive(:where_departure_time_between).with(start_time, end_time, allow_empty: allow_empty)
+        subject
+      end
+    end
+  end
 end

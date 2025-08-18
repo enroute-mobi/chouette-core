@@ -15,6 +15,7 @@ describe 'route_vehicle_journeys/show.html.slim', type: :view do
   let!(:line) { assign :line, context.line(:first) }
   let!(:route) { assign :route, context.route }
   let!(:vehicle_journeys) { assign :vehicle_journeys, route.vehicle_journeys.page(1) }
+  let!(:search) { assign :search, double(:search, per_page: 20) }
 
   before :each do
     allow(view).to receive(:link_with_search).and_return('#')

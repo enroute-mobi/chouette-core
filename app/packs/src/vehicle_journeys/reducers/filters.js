@@ -57,13 +57,13 @@ export default function  filters(state = {}, action) {
       return state
     case 'CREATE_QUERY_STRING':
       let params = {
-        'q[journey_pattern_id_eq]': state.query.journeyPattern.id || undefined,
-        'q[objectid_cont]': state.query.vehicleJourney.objectid || undefined,
-        'q[time_tables_id_eq]': state.query.timetable.id || undefined,
-        'q[vehicle_journey_at_stops_departure_time_gteq]': (state.query.interval.start.hour + ':' + state.query.interval.start.minute),
-        'q[vehicle_journey_at_stops_departure_time_lteq]': (state.query.interval.end.hour + ':' + state.query.interval.end.minute),
-        'q[vehicle_journey_without_departure_time]': state.query.withoutSchedule,
-        'q[vehicle_journey_without_time_table]': state.query.withoutTimeTable
+        'search[journey_pattern_id]': state.query.journeyPattern.id || undefined,
+        'search[text]': state.query.vehicleJourney.objectid || undefined,
+        'search[time_table_id]': state.query.timetable.id || undefined,
+        'search[departure_time_start]': (state.query.interval.start.hour + ':' + state.query.interval.start.minute),
+        'search[departure_time_end]': (state.query.interval.end.hour + ':' + state.query.interval.end.minute),
+        'search[departure_time_allow_empty]': state.query.withoutSchedule,
+        'search[with_time_table]': state.query.withoutTimeTable
       }
       let queryString = actions.encodeParams(params)
       return _.assign({}, state, {queryString: queryString})

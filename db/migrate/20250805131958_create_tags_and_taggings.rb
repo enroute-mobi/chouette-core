@@ -15,7 +15,7 @@ class CreateTagsAndTaggings < ActiveRecord::Migration[7.0]
 
       create_table :taggings do |t|
         t.references :tag, null: false
-        t.references :taggable, polymorphic: true, null: false
+        t.references :taggable, polymorphic: true, null: false, index: false
 
         t.timestamps
       end

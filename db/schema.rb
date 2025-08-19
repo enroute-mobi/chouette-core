@@ -1112,7 +1112,7 @@ ActiveRecord::Schema[7.0].define(version: 2025_08_05_131958) do
     t.bigint "point_of_interest_category_id", null: false
     t.string "name", null: false
     t.string "url"
-    t.geography "position", limit: {:srid=>4326, :type=>"st_point", :geographic=>true}
+    t.geography "position", limit: {srid: 4326, type: "st_point", geographic: true}
     t.string "address_line_1"
     t.string "zip_code"
     t.string "city_name"
@@ -1599,7 +1599,6 @@ ActiveRecord::Schema[7.0].define(version: 2025_08_05_131958) do
     t.datetime "updated_at", null: false
     t.index ["tag_id"], name: "index_taggings_on_tag_id"
     t.index ["taggable_type", "taggable_id", "tag_id"], name: "index_taggings_on_taggable_type_and_taggable_id_and_tag_id", unique: true
-    t.index ["taggable_type", "taggable_id"], name: "index_taggings_on_taggable"
   end
 
   create_table "tags", force: :cascade do |t|

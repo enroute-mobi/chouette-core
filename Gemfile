@@ -42,7 +42,7 @@ gem 'rails-observers'
 gem 'faraday_middleware'
 gem 'faraday'
 
-gem 'pg'
+gem 'pg', '< 1.6' # See CHOUETTE-4843
 
 gem 'activerecord-postgis-adapter'
 gem 'pg_search'

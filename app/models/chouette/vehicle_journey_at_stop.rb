@@ -305,13 +305,21 @@ module Chouette
         def earliest_departure_local_time_of_day
           return unless earliest_departure_time_of_day
 
-          TimeOfDay.parse(earliest_departure_time_of_day.to_s, day_offset: departure_day_offset, time_zone: time_zone)
+          TimeOfDay.parse(
+            earliest_departure_time_of_day.to_hms,
+            day_offset: earliest_departure_time_of_day.day_offset,
+            time_zone: time_zone
+          )
         end
 
         def latest_arrival_local_time_of_day
           return unless latest_arrival_time_of_day
 
-          TimeOfDay.parse(latest_arrival_time_of_day.to_s, day_offset: departure_day_offset, time_zone: time_zone)
+          TimeOfDay.parse(
+            latest_arrival_time_of_day.to_hms,
+            day_offset: latest_arrival_time_of_day.day_offset,
+            time_zone: time_zone
+          )
         end
       end
     end

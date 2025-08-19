@@ -2015,10 +2015,12 @@ class Export::NetexGeneric < Export::Base
 
           if earliest_departure_passing_time
             attributes[:earliest_departure_time] = earliest_departure_passing_time
+            attributes[:earliest_departure_day_offset] = earliest_departure_local_time_of_day.day_offset
           end
 
           if latest_arrival_passing_time
             attributes[:latest_arrival_time] = latest_arrival_passing_time
+            attributes[:latest_arrival_day_offset] = latest_arrival_local_time_of_day.day_offset
           end
         end
       end

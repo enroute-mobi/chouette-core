@@ -33,6 +33,16 @@ RSpec.describe Chouette::VehicleJourneyAtStop, type: :model do
         it { is_expected.to eq(TimeOfDay.parse('00:00', time_zone: 'Europe/Paris')) }
       end
     end
+
+    context 'when earliest_departure_time_of_day is 27:00' do
+      before { vehicle_journey_at_stop.earliest_departure_time_of_day = TimeOfDay.parse('27:00') }
+
+      context 'when time_zone is "Europe/London"' do
+        before { vehicle_journey_at_stop.raw_time_zone = 'Europe/London' }
+
+        it { is_expected.to eq(TimeOfDay.parse('3:00', day_offset: 1)) }
+      end
+    end
   end
 
   describe '#latest_arrival_local_time_of_day' do
@@ -55,6 +65,16 @@ RSpec.describe Chouette::VehicleJourneyAtStop, type: :model do
         before { vehicle_journey_at_stop.raw_time_zone = 'Europe/Paris' }
 
         it { is_expected.to eq(TimeOfDay.parse('00:00', time_zone: 'Europe/Paris')) }
+      end
+    end
+
+    context 'when latest_arrival_time_of_day is 27:00' do
+      before { vehicle_journey_at_stop.latest_arrival_time_of_day = TimeOfDay.parse('27:00') }
+
+      context 'when time_zone is "Europe/London"' do
+        before { vehicle_journey_at_stop.raw_time_zone = 'Europe/London' }
+
+        it { is_expected.to eq(TimeOfDay.parse('3:00', day_offset: 1)) }
       end
     end
   end

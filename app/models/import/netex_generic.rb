@@ -1348,7 +1348,7 @@ module Import
 
           vehicle_journey = decorator.chouette_model
           unless vehicle_journey.valid?(:inserter)
-            Rails.logger.debug { "Invalid Vehicle Journey: #{vehicle_journey.errors.inspect}" }
+            Rails.logger.info { "Invalid Vehicle Journey: #{vehicle_journey.errors.inspect}" }
             create_message :vehicle_journey_invalid
 
             next

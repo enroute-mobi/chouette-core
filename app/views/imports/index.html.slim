@@ -36,7 +36,7 @@
                 attribute: Proc.new { |object| object.ended_at.presence && object.started_at.presence && duration_in_words(object.ended_at - object.started_at)}, \
                 sortable: false, \
               ), \
-            *@contextual_cols \
+              *@contextual_cols \
             ],
             cls: 'table has-search'
 

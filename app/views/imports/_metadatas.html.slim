@@ -4,10 +4,10 @@
       = b.attribute :status, value: operation_status(import.status, verbose: true)
       - if import.referential
         = b.attribute :referential, value: link_to_if(@workbench, import.referential.name, [@workbench, import.referential])
-      - if @workgroup
+      - if workgroup_context?
         = b.attribute :workbench, label: Workbench.ts.capitalize, value: import.workbench.name
-      - unless @workgroup
-        = b.attribute :tags, as: :tags, value: import.tags.sort_by(&:name), link: ->(tag) { workbench_tag_path(@workbench, tag) }
+      - else
+        = b.attribute :tags, as: :tags
       - import.visible_options.map do |k, v|
         - if resource_policy.option?(k)
           = option_attribute(b, k)

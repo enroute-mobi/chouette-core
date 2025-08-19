@@ -30,9 +30,3 @@ en:
         name: Name
         color: Color
         description: Description
-    errors:
-      models:
-        tag:
-          duplicate_tags_in_tags: "The Tag \"%{tag}\" doesn't allow several values in the same model"
-          duplicate_values_in_tags: Duplicate key value violates unique constraint
-          blank:  The tag value can't be empty

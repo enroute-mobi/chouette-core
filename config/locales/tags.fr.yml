@@ -30,9 +30,3 @@ fr:
         name: Nom
         color: Couleur
         description: Description
-    errors:
-      models:
-        tag:
-          duplicate_tags_in_tags: "Le Tag \"%{tag}\" n'autorise pas plusieurs valeurs pour un même modèle"
-          duplicate_values_in_tags: La valeur de clé en double viole la contrainte unique
-          blank:  La valeur du tag ne peut pas être vide

@@ -1598,6 +1598,7 @@ ActiveRecord::Schema[7.0].define(version: 2025_08_05_131958) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["tag_id"], name: "index_taggings_on_tag_id"
+    t.index ["taggable_type", "taggable_id", "tag_id"], name: "index_taggings_on_taggable_type_and_taggable_id_and_tag_id", unique: true
     t.index ["taggable_type", "taggable_id"], name: "index_taggings_on_taggable"
   end
 
@@ -1608,7 +1609,7 @@ ActiveRecord::Schema[7.0].define(version: 2025_08_05_131958) do
     t.bigint "workbench_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.index ["name", "workbench_id"], name: "index_tags_on_name_and_workbench_id", unique: true
+    t.index ["workbench_id", "name"], name: "index_tags_on_workbench_id_and_name", unique: true
     t.index ["workbench_id"], name: "index_tags_on_workbench_id"
   end
 

@@ -30,7 +30,7 @@
 
           = new_pagination @tags, 'pull-right'
 
-    - if @tags.blank?
+    - else
       .row.mt-xs
         .col-lg-12
           = replacement_msg t('tags.search_no_results')

@@ -2,6 +2,7 @@
 
 module Policy
   class Tag < Base
+    authorize_by Strategy::Workbench
     authorize_by Strategy::Permission
 
     protected

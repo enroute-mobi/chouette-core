@@ -2,8 +2,6 @@
 
 module Search
   class AbstractImport < ::Search::Operation
-    attribute :tags
-
     def searched_class
       ::Import::Base
     end

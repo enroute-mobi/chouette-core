@@ -20,7 +20,8 @@ class CreateTagsAndTaggings < ActiveRecord::Migration[7.0]
         t.timestamps
       end
 
-      add_index :tags, %i[name workbench_id], unique: true
+      add_index :tags, %i[workbench_id name], unique: true
+      add_index :taggings, %i[taggable_type taggable_id tag_id], unique: true
     end
   end
 end

@@ -162,18 +162,15 @@ module SimpleBlockForHelper
               raw_value
             end
           when :tags
-            if raw_value.try(:to_a).is_a?(Array) && (link = options[:link]).present?
+            if raw_value.try(:to_a).is_a?(Array)
               content_tag :div, class: 'flex flex-wrap' do
                 raw_value.collect do |tag|
-                  if link.respond_to?(:call)
-                    link_span = link.call(tag).gsub('.', '/')
-                  end
+                  url = view.workbench_tag_path(view.instance_variable_get(:@workbench), tag)
 
-                  displayed_value_span = [tag.name, tag.try(:get_objectid).try(:short_id)].join(' ')
                   concat(
                     content_tag(
                       :div,
-                      link_to(displayed_value_span, link_span, style: 'color: black;'),
+                      link_to(tag.name, url, style: 'color: black;'),
                       style: "background-color: ##{tag.color};",
                       class: "inline-flex items-center px-2.5 py-0.5 mr-2 \
                               rounded-full text-sm font-medium"

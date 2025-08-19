@@ -3,6 +3,7 @@
 module Search
   class Import < AbstractImport
     attr_accessor :workbench
+    attribute :tags
 
     def query(scope)
       super.tags(tags)

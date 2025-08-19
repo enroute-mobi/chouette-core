@@ -118,4 +118,10 @@ class ImportsController < Chouette::WorkbenchController
       }
     )
   end
+
+  def workgroup_context?
+    false
+  end
+
+  helper_method :workgroup_context?
 end

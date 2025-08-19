@@ -10,16 +10,29 @@ RSpec.describe Query::VehicleJourney do
   end
 
   describe '#text' do
+    subject { query.text(value).scope }
+
     let(:context) do
       Chouette.create do
-        vehicle_journey
+        code_space short_name: 'code_space'
+
+        vehicle_journey :match, published_journey_identifier: 'identifier', codes: { 'code_space' => 'some_code' }
+        vehicle_journey :other
       end
     end
 
-    let(:vehicle_journey) { context.vehicle_journey }
+    let(:vehicle_journey) { context.vehicle_journey(:match) }
 
     context 'when published journey name is the vehicle journey published journey name' do
-      subject { query.text(vehicle_journey.published_journey_name).scope }
+      let(:value) { vehicle_journey.published_journey_name }
+
+      it 'includes vehicle journey' do
+        is_expected.to include(vehicle_journey)
+      end
+    end
+
+    context 'when published journey name is a part of the vehicle journey published journey identifier' do
+      let(:value) { 'identif' }
 
       it 'includes vehicle journey' do
         is_expected.to include(vehicle_journey)
@@ -27,7 +40,15 @@ RSpec.describe Query::VehicleJourney do
     end
 
     context 'when objectid is a part of the vehicle journey objectid' do
-      subject { query.text(vehicle_journey.objectid.last(20)).scope }
+      let(:value) { vehicle_journey.objectid.last(20) }
+
+      it 'includes vehicle journey' do
+        is_expected.to include(vehicle_journey)
+      end
+    end
+
+    context 'when published journey name is a part of one of the vehicle journey codes' do
+      let(:value) { 'ome_cod' }
 
       it 'includes vehicle journey' do
         is_expected.to include(vehicle_journey)
@@ -35,7 +56,7 @@ RSpec.describe Query::VehicleJourney do
     end
 
     context 'when published journey name is not the vehicle journey published journey name' do
-      subject { query.text('test').scope }
+      let(:value) { 'test' }
 
       it 'not includes vehicle journey' do
         is_expected.not_to include(vehicle_journey)

@@ -50,11 +50,11 @@ class RouteVehicleJourneysController < Chouette::ReferentialController
   protected
 
   def scope
-    parent.vehicle_journeys.with_stops
+    parent.vehicle_journeys.with_stops # .with_stops orders the result
   end
 
   def search
-    @search ||= Search::VehicleJourney.from_params(params, referential: referential, per_page: 20)
+    @search ||= Search::VehicleJourney.from_params(params, referential: referential, per_page: 20).without_order
   end
 
   def collection

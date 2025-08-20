@@ -220,6 +220,7 @@ fr:
             referent_id:
               an_object_used_as_referent_must_be_flagged_as_referent: un Arrêt utilisé en référent doit être référencé en tant que référent
               a_referent_cannot_have_a_referent: un référent ne peut pas référencer un référent
+              cannot_be_its_own_referent: "Un Arrêt ne peut pas être son propre référent"
             parent_id:
               not_allowed_for_flexible: "Les lieux d'arrêt à la demande ne peuvent pas avoir de parent"
               children_not_allowed_for_flexible: "Les lieux d'arrêt à la demande ne peuvent pas avoir d'enfants"

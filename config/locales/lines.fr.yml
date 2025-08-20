@@ -135,6 +135,7 @@ fr:
             referent_id:
               a_referent_cannot_have_a_referent: "Une ligne référente ne peut pas avoir de référente"
               an_object_used_as_referent_must_be_flagged_as_referent: "Une ligne utilisée comme référente doit être signalée comme référente"
+              cannot_be_its_own_referent: "Une Ligne ne peut pas être son propre référent"
             is_referent:
               the_particulars_collection_should_be_empty: "Une ligne non-référente ne peut avoir des lignes particulières"
             active_from:

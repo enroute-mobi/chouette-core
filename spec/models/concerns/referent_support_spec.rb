@@ -28,6 +28,86 @@ RSpec.describe ReferentSupport do
     WithReferent.create! referent: referent
   end
 
+  describe 'validations' do
+    context 'when being a referent and having a referent' do
+      it 'has error when a referent gets a referent' do
+        model = create_referent
+        model.referent_id = create_referent.id
+        expect(model).not_to be_valid
+        expect(model.errors.details[:referent_id]).to include({ error: :a_referent_cannot_have_a_referent })
+      end
+
+      it 'has error when a particular with a referent becomes a referent' do
+        model = create_particular(create_referent)
+        model.is_referent = true
+        expect(model).not_to be_valid
+        expect(model.errors.details[:referent_id]).to include({ error: :a_referent_cannot_have_a_referent })
+      end
+
+      it 'has error when a particular becomes a referent and gets a referent' do
+        model = create_particular
+        model.is_referent = true
+        model.referent_id = create_referent.id
+        expect(model).not_to be_valid
+        expect(model.errors.details[:referent_id]).to include({ error: :a_referent_cannot_have_a_referent })
+      end
+
+      it 'has error when a particular gets itself as referent while becoming a referent' do
+        model = create_particular
+        model.is_referent = true
+        model.referent_id = model.id
+        expect(model).not_to be_valid
+        expect(model.errors.details[:referent_id]).to include({ error: :a_referent_cannot_have_a_referent })
+      end
+
+      it 'has error when a new referent gets itself as referent' do
+        model = WithReferent.new(is_referent: true)
+        model.referent = model
+        expect(model).not_to be_valid
+        expect(model.errors.details[:referent_id]).to include({ error: :cannot_be_its_own_referent })
+      end
+    end
+
+    context 'when having a referent that is not a referent' do
+      it 'has error when a particular gets a particular as a referent' do
+        particular = create_particular
+        model = create_particular
+        model.referent_id = particular.id
+        expect(model).not_to be_valid
+        expect(model.errors.details[:referent_id]).to(
+          include({ error: :an_object_used_as_referent_must_be_flagged_as_referent })
+        )
+      end
+
+      it 'has error when a referent gets itself as a referent while becoming a particular' do
+        model = create_referent
+        model.is_referent = false
+        model.referent_id = model.id
+        expect(model).not_to be_valid
+        expect(model.errors.details[:referent_id]).to include({ error: :cannot_be_its_own_referent })
+      end
+
+      it 'has error when a new particular gets itself as a referent' do
+        model = WithReferent.new(is_referent: false)
+        model.referent = model
+        expect(model).not_to be_valid
+        expect(model.errors.details[:referent_id]).to(
+          include({ error: :an_object_used_as_referent_must_be_flagged_as_referent })
+        )
+      end
+    end
+
+    context 'when being a particular and having particulars' do
+      it 'has error when a referent with particulars becomes particular' do
+        model = create_referent
+        create_particular(model)
+        model.is_referent = false
+        expect(model).not_to be_valid
+        expect(model.errors.details[:is_referent]).to include({ error: :the_particulars_collection_should_be_empty })
+      end
+    end
+  end
+
   describe '#referents_or_self' do
     subject { WithReferent.referents_or_self }
 

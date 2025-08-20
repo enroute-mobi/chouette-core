@@ -15,6 +15,8 @@ class CompaniesController < Chouette::LineReferentialController
   def autocomplete
     scope = line_referential.companies
     scope = scope.referent_only if params[:referent_only]
+    scope = scope.where.not(id: params[:exclude]) if params[:exclude].present?
+
     args  = [].tap { |arg| 4.times { arg << "%#{params[:q]}%" } }
     @companies = scope.where(
       'unaccent(name) ILIKE unaccent(?) OR unaccent(short_name) ILIKE unaccent(?) OR registration_number ILIKE ? OR objectid ILIKE ?', *args

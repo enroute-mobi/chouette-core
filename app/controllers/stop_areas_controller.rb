@@ -15,6 +15,7 @@ class StopAreasController < Chouette::StopAreaReferentialController
   def autocomplete
     scope = stop_area_referential.stop_areas.where(deleted_at: nil)
     scope = scope.referent_only if params[:referent_only]
+    scope = scope.where.not(id: params[:exclude]) if params[:exclude].present?
 
     text = params[:q]&.strip
     @stop_areas = text.present? ? scope.by_text(text).limit(50) : Chouette::StopArea.none

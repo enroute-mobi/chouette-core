@@ -14,6 +14,7 @@ class LinesController < Chouette::LineReferentialController
 
   def autocomplete
     scope = line_referential.lines.referents
+    scope = scope.where.not(id: params[:exclude]) if params[:exclude].present?
 
     query = 'unaccent(name) ILIKE unaccent(?) OR registration_number ILIKE ? OR objectid ILIKE ?'
     args = ["%#{params[:q]}%"] * 3

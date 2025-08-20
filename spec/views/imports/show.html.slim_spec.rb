@@ -17,6 +17,7 @@ RSpec.describe 'imports/show.html.slim', type: :view do
     allow(view).to receive(:parent).and_return(workbench)
     allow(view).to receive(:resource).and_return(workbench_import)
     allow(view).to receive(:resource_class).and_return(Import::Workbench)
+    allow(view).to receive(:workgroup_context?).and_return(false)
     render
   end
 

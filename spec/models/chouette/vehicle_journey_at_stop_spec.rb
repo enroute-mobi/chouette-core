@@ -215,7 +215,6 @@ RSpec.describe Chouette::VehicleJourneyAtStop, type: :model do
   end
 
   describe "#find_each_light" do
-
     let(:context) do
       Chouette.create { vehicle_journey }
     end
@@ -223,7 +222,16 @@ RSpec.describe Chouette::VehicleJourneyAtStop, type: :model do
     before { context.referential.switch }
 
     let(:vehicle_journey_at_stops) { referential.vehicle_journey_at_stops }
-    let(:light_vehicle_journey_at_stops) { referential.vehicle_journey_at_stops.enum_for(:find_each_light) }
+    let(:light_vehicle_journey_at_stops) do
+      referential.vehicle_journey_at_stops
+                 .joins(stop_point: :stop_area)
+                 .select(
+                   'vehicle_journey_at_stops.*',
+                   'stop_areas.time_zone AS time_zone',
+                   'stop_points.position as position'
+                 )
+                 .enum_for(:find_each_light)
+    end
 
     it "should return the same identifiers" do
       expect(light_vehicle_journey_at_stops.map(&:id)).to match_array(vehicle_journey_at_stops.pluck(:id))
@@ -236,22 +244,184 @@ RSpec.describe Chouette::VehicleJourneyAtStop, type: :model do
       expect(light_vehicle_journey_at_stops).to all(have_same_attributes(attributes, than: same_vehicle_journey_at_stop))
     end
 
-    it "have the same departure time than the same 'classic' VehicleJourneyAtStop" do
-      have_same_departure_time = satisfy("have the same departure time") do |light|
-        vehicle_journey_at_stops.find(light.id).departure_time.strftime("%H:%M:%S") == light.departure_time
+    %w[arrival departure].each do |attribute|
+      time = :"#{attribute}_time"
+      time_of_day = :"#{attribute}_time_of_day"
+      local_time_of_day = :"#{attribute}_local_time_of_day"
+
+      it "has the same #{attribute} time than the same 'classic' VehicleJourneyAtStop" do
+        have_same_attribute = satisfy("have the same #{attribute} time") do |light|
+          vjas = vehicle_journey_at_stops.detect { |o| o.id == light.id }
+          vjas.send(time).strftime('%H:%M:%S') == light.send(time)
+        end
+
+        expect(light_vehicle_journey_at_stops).to all(have_same_attribute)
       end
 
-      expect(light_vehicle_journey_at_stops).to all(have_same_departure_time)
-    end
+      it "has the same #{time_of_day} than the same 'classic' VehicleJourneyAtStop" do
+        have_same_attribute = satisfy("have the same #{time_of_day}") do |light|
+          vjas = vehicle_journey_at_stops.detect { |o| o.id == light.id }
+          vjas.send(time_of_day) == light.send(time_of_day)
+        end
 
-    it "have the same arrival time than the same 'classic' VehicleJourneyAtStop" do
-      have_same_arrival_time = satisfy("have the same arrival time") do |light|
-        vehicle_journey_at_stops.find(light.id).arrival_time.strftime("%H:%M:%S") == light.arrival_time
+        expect(light_vehicle_journey_at_stops).to all(have_same_attribute)
       end
 
-      expect(light_vehicle_journey_at_stops).to all(have_same_arrival_time)
+      it "has the same #{local_time_of_day} than the same 'classic' VehicleJourneyAtStop" do
+        have_same_attribute = satisfy("have the same #{local_time_of_day}") do |light|
+          vjas = vehicle_journey_at_stops.detect { |o| o.id == light.id }
+          vjas.send(local_time_of_day) == light.send(local_time_of_day)
+        end
+
+        expect(light_vehicle_journey_at_stops).to all(have_same_attribute)
+      end
     end
 
+    %w[arrival departure].each do |attribute| # rubocop:disable Style/CombinableLoops
+      day_offset = :"#{attribute}_day_offset"
+      time_of_day = :"#{attribute}_time_of_day"
+      local_time_of_day = :"#{attribute}_local_time_of_day"
+
+      context "with #{attribute} day offset" do
+        before { vehicle_journey_at_stops.update_all(day_offset => 1) }
+
+        it "has the same #{time_of_day} than the same 'classic' VehicleJourneyAtStop" do
+          have_same_attribute = satisfy("have the same #{time_of_day}") do |light|
+            vjas = vehicle_journey_at_stops.detect { |o| o.id == light.id }
+            vjas.send(time_of_day) == light.send(time_of_day) &&
+              light.send(time_of_day).day_offset?
+          end
+
+          expect(light_vehicle_journey_at_stops).to all(have_same_attribute)
+        end
+
+        it "has the same #{local_time_of_day} than the same 'classic' VehicleJourneyAtStop" do
+          have_same_attribute = satisfy("have the same #{local_time_of_day}") do |light|
+            vjas = vehicle_journey_at_stops.detect { |o| o.id == light.id }
+            vjas.send(local_time_of_day) == light.send(local_time_of_day) &&
+              light.send(time_of_day).day_offset?
+          end
+
+          expect(light_vehicle_journey_at_stops).to all(have_same_attribute)
+        end
+      end
+    end
+
+    context 'with time zone' do
+      before { Chouette::StopArea.update_all(time_zone: 'Europe/Paris') }
+
+      %w[arrival departure].each do |attribute|
+        local_time_of_day = :"#{attribute}_local_time_of_day"
+
+        it "has the same #{local_time_of_day} than the same 'classic' VehicleJourneyAtStop" do
+          have_same_attribute = satisfy("have the same #{local_time_of_day}") do |light|
+            vjas = vehicle_journey_at_stops.detect { |o| o.id == light.id }
+            vjas.send(local_time_of_day) == light.send(local_time_of_day) &&
+              light.send(local_time_of_day).utc_offset == 3600
+          end
+
+          expect(light_vehicle_journey_at_stops).to all(have_same_attribute)
+        end
+      end
+    end
+
+    context 'when flexible' do
+      before do
+        vehicle_journey_at_stops.each do |vjas|
+          vjas.update(
+            arrival_time: nil,
+            departure_time: nil,
+            earliest_departure_time_of_day: vjas.arrival_time_of_day,
+            latest_arrival_time_of_day: vjas.departure_time_of_day
+          )
+        end
+      end
+
+      %w[earliest_departure latest_arrival].each do |attribute|
+        time_of_day = :"#{attribute}_time_of_day"
+        local_time_of_day = :"#{attribute}_local_time_of_day"
+
+        it "has the same #{time_of_day} than the same 'classic' VehicleJourneyAtStop" do
+          have_same_attribute = satisfy("have the same #{attribute} time") do |light|
+            vjas = vehicle_journey_at_stops.detect { |o| o.id == light.id }
+            vjas.send(time_of_day) == light.send(time_of_day)
+          end
+
+          expect(light_vehicle_journey_at_stops).to all(have_same_attribute)
+        end
+
+        it "has the same #{time_of_day} than the same 'classic' VehicleJourneyAtStop" do
+          have_same_attribute = satisfy("have the same #{time_of_day}") do |light|
+            vjas = vehicle_journey_at_stops.detect { |o| o.id == light.id }
+            vjas.send(time_of_day) == light.send(time_of_day)
+          end
+
+          expect(light_vehicle_journey_at_stops).to all(have_same_attribute)
+        end
+
+        it "has the same #{local_time_of_day} than the same 'classic' VehicleJourneyAtStop" do
+          have_same_attribute = satisfy("have the same #{local_time_of_day}") do |light|
+            vjas = vehicle_journey_at_stops.detect { |o| o.id == light.id }
+            vjas.send(local_time_of_day) == light.send(local_time_of_day)
+          end
+
+          expect(light_vehicle_journey_at_stops).to all(have_same_attribute)
+        end
+      end
+
+      context 'with day offset' do
+        before do
+          vehicle_journey_at_stops.each do |vjas|
+            vjas.update(
+              earliest_departure_time_of_day: vjas.earliest_departure_time_of_day.second_offset + 24*60*60, # rubocop:disable Layout/SpaceAroundOperators
+              latest_arrival_time_of_day: vjas.departure_time_of_day.second_offset + 24*60*60 # rubocop:disable Layout/SpaceAroundOperators
+            )
+          end
+        end
+
+        %w[earliest_departure latest_arrival].each do |attribute|
+          time_of_day = :"#{attribute}_time_of_day"
+          local_time_of_day = :"#{attribute}_local_time_of_day"
+
+          it "has the same #{time_of_day} than the same 'classic' VehicleJourneyAtStop" do
+            have_same_attribute = satisfy("have the same #{time_of_day}") do |light|
+              vjas = vehicle_journey_at_stops.detect { |o| o.id == light.id }
+              vjas.send(time_of_day) == light.send(time_of_day) &&
+                light.send(time_of_day).day_offset?
+            end
+
+            expect(light_vehicle_journey_at_stops).to all(have_same_attribute)
+          end
+
+          it "has the same #{local_time_of_day} than the same 'classic' VehicleJourneyAtStop" do
+            have_same_attribute = satisfy("have the same #{time_of_day}") do |light|
+              vjas = vehicle_journey_at_stops.detect { |o| o.id == light.id }
+              vjas.send(local_time_of_day) == light.send(local_time_of_day) &&
+                light.send(time_of_day).day_offset?
+            end
+
+            expect(light_vehicle_journey_at_stops).to all(have_same_attribute)
+          end
+        end
+      end
+
+      context 'with time zone' do
+        before { Chouette::StopArea.update_all(time_zone: 'Europe/Paris') }
+
+        %w[earliest_departure latest_arrival].each do |attribute|
+          local_time_of_day = :"#{attribute}_local_time_of_day"
+
+          it "has the same #{local_time_of_day} than the same 'classic' VehicleJourneyAtStop" do
+            have_same_attribute = satisfy("have the same #{local_time_of_day}") do |light|
+              vjas = vehicle_journey_at_stops.detect { |o| o.id == light.id }
+              vjas.send(local_time_of_day) == light.send(local_time_of_day) &&
+                light.send(local_time_of_day).utc_offset == 3600
+            end
+
+            expect(light_vehicle_journey_at_stops).to all(have_same_attribute)
+          end
+        end
+      end
+    end
   end
-
 end

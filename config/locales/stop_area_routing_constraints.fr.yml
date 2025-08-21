@@ -42,8 +42,6 @@ fr:
         to: Arrêt de destination
         from_id: Arrêt de départ
         to_id: Arrêt de destination
-        from_name: Arrêt de départ
-        to_name: Arrêt de destination
     errors:
       models:
         stop_area_routing_constraint:

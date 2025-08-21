@@ -64,6 +64,7 @@ en:
         wayback: Direction
         profile: "Profile"
         state: "State"
+        both_way: "Both ways"
         chart:
           group_by_attribute:
             sub_type:

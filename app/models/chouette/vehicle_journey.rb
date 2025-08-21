@@ -137,7 +137,7 @@ module Chouette
     def self.with_matching_timetable date_range
       scope = Chouette::TimeTable.joins(
         :vehicle_journeys
-      ).merge(self.all)
+      ).merge(self.all.reorder(nil))
       dates_scope = scope.joins(:dates).select('time_table_dates.date').order('time_table_dates.date').where('time_table_dates.in_out' => true)
       min_date = scope.joins(:periods).select('time_table_periods.period_start').order('time_table_periods.period_start').first&.period_start
       min_date = [min_date, dates_scope.first&.date].compact.min

@@ -119,7 +119,7 @@ class SearchesController < Chouette::UserController
   helper_method :current_referential
 
   def saved_search_parent
-    workbench || workgroup
+    workbench || workgroup || current_organisation
   end
   helper_method :saved_search_parent
 

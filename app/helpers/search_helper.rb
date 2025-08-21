@@ -10,6 +10,10 @@ module SearchHelper
 
   # Provides a simpler path helper for Stop Areas saved searches
   # TODO: See if it's usefull with other resources
+  def users_saved_search_path(saved_search)
+    url_for([:organisation, saved_search, { parent_resources: :users }])
+  end
+
   def stop_areas_saved_search_path(saved_search)
     url_for([saved_search.parent, :stop_area_referential, saved_search, { parent_resources: :stop_areas }])
   end

@@ -62,6 +62,8 @@ en:
         display_percent: "Display as %"
         subgroup_by_attribute: "Subgroup by"
         wayback: Direction
+        profile: "Profile"
+        state: "State"
         chart:
           group_by_attribute:
             sub_type:

@@ -62,10 +62,6 @@ class User < ApplicationModel
     end
   end
 
-  scope :with_organisation, -> { where.not(organisation_id: nil) }
-
-  scope :with_profiles, ->(*profile_names) { where(profile: profile_names) }
-
   scope :active, ->() { where(locked_at: nil) }
 
   scope :with_states, ->(*states) do
@@ -163,20 +159,6 @@ class User < ApplicationModel
 
   def self.all_states_i18n
     all_states.map {|p| ["users.states.#{p}".t, p.to_s]}
-  end
-
-  def self.subquery_for_state(state)
-    case state.to_s
-
-    when 'blocked'
-      'locked_at IS NOT NULL'
-    when 'confirmed'
-      'confirmed_at IS NOT NULL AND locked_at IS NULL AND (invitation_sent_at IS NULL OR invitation_accepted_at IS NOT NULL)'
-    when 'invited'
-      'invitation_sent_at IS NOT NULL AND invitation_accepted_at IS NULL AND locked_at IS NULL'
-    when 'pending'
-      'invitation_sent_at IS NULL AND confirmed_at IS NULL AND locked_at IS NULL'
-    end
   end
 
   def self.invite(email:, name:, profile:, organisation:, from_user: )

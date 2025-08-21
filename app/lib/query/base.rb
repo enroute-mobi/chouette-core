@@ -7,7 +7,7 @@ module Query
     attr_reader :scope
 
     def where(raw_value, predicate, *columns)
-      change_scope(if: raw_value.present?) do |scope|
+      change_scope(if: value_present?(raw_value)) do |scope|
         value = serialize_value(raw_value, predicate)
 			  get_clause = Proc.new { |c| scope.arel_table[c.to_sym].send(predicate, value) }
 
@@ -38,6 +38,11 @@ module Query
       end
 
       self
+    end
+
+    ARRAY_WITH_EMPTY_STRING = [''].freeze
+    def value_present?(value)
+      value.present? && value != ARRAY_WITH_EMPTY_STRING
     end
   end
 end

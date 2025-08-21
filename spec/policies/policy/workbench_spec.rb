@@ -111,6 +111,11 @@ RSpec.describe Policy::Workbench, type: :policy do
       let(:resource_class) { Sequence }
       it { is_expected.to be_truthy }
     end
+
+    context 'Tag' do
+      let(:resource_class) { Tag }
+      it { is_expected.to be_truthy }
+    end
   end
 
   describe '#update?' do

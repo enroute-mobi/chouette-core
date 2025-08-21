@@ -18,6 +18,7 @@
   .row
     .col-lg-12 x-data="{ import_category: 'automatic'}"
       = form.input :notification_target, collection: Import::Base.notification_target_options, selected: :user
+      = form.input :tags, as: :autocomplete_select, collection: workbench.tags, input_html: { multiple: true }
       - import.class.options.each do |attr, option_def|
         - next if (attr == :merge_method)
         - next if attr == :override_internal_identifiers && !has_feature?('import_netex_can_override_objectid')

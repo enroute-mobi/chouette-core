@@ -1,14 +1,16 @@
-- if @workbench
-  - imports_path = workbench_imports_path(@workbench)
-- else
+- if workgroup_context?
   - imports_path = workgroup_imports_path(@workgroup)
+- else
+  - imports_path = workbench_imports_path(@workbench)
 
 = simple_search_for @search, imports_path, graph_panel: :button do |f|
   = f.row
     = f.name
   = f.row
     = f.input :statuses, collection: @search.candidate_statuses.map(&:slug), label_method: lambda{|slug| ("<span>" + operation_status(slug, verbose: true) + "</span>").html_safe}, wrapper_html: { class: "checkbox_list"}
-    - if @search.workgroup
+    - if workgroup_context?
         = f.input :workbench_ids, as: :autocomplete_select, collection: @search.candidate_workbenches.order('name'), input_html: { multiple: true, style: 'width: 100%' }
     = f.input :start_date, as: :date_picker
     = f.input :end_date, as: :date_picker
+    - unless workgroup_context?
+        = f.input :tags, as: :autocomplete_select, collection: @workbench.tags, input_html: { multiple: true, style: 'width: 100%' }

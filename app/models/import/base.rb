@@ -18,8 +18,12 @@ class Import::Base < ApplicationModel
   after_initialize :set_defaults
 
   has_many :processings, as: :operation, dependent: :destroy
+  has_many :taggings, as: :taggable, dependent: :destroy
+  has_many :tags, through: :taggings
   has_array_of :overlapping_referentials, class_name: '::Referential'
   belongs_to :code_space, default: -> { default_code_space } # CHOUETTE-3247 optional: false
+
+  accepts_nested_attributes_for :taggings, allow_destroy: true
 
   scope :unfinished, -> { where 'notified_parent_at IS NULL' }
   scope :having_status, ->(statuses) { where(status: statuses ) }

@@ -1,0 +1,32 @@
+fr:
+  tags:
+    actions:
+      new: Ajouter un Tag
+      edit: Modifier un Tag
+      destroy: Supprimer un Tag
+      destroy_confirm: "Etes vous sûr de vouloir supprimer ce Tag ?"
+    index:
+      title: Tags
+    show:
+      title: Tag %{name}
+    edit:
+      title: Modifier le Tag %{name}
+    new:
+      title: Ajouter un Tag
+    create:
+      title: Ajouter un Tag
+    form:
+      sections:
+        identification: "Identification"
+    search_no_results: "Aucun Tag ne correspond à votre recherche"
+  activerecord:
+    models:
+      tag:
+        zero: Tag
+        one: Tag
+        other: Tags
+    attributes:
+      tag:
+        name: Nom
+        color: Couleur
+        description: Description

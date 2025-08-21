@@ -1,0 +1,36 @@
+- breadcrumb :tags, @workbench
+
+.page_content
+  .container-fluid
+    - if @tags.any?
+      .row
+        .col-lg-12
+          = table_builder_2 @tags,
+            [ \
+              TableBuilderHelper::Column.new( \
+                key: :name, \
+                attribute: 'name', \
+                sortable: false, \
+                link_to: lambda do |tag| \
+                  workbench_tag_path(@workbench,tag) \
+                end \
+              ), \
+              TableBuilderHelper::Column.new( \
+                key: :color, \
+                attribute: Proc.new { |tag| "#{content_tag(:i, nil, class: 'fa fa-circle fa-lg', style: "color:#{tag.color}")}".html_safe }, \
+                sortable: false \
+              ), \
+              TableBuilderHelper::Column.new( \
+                key: :description, \
+                attribute: Proc.new { |tag| tag.description&.truncate(100) }, \
+                sortable: false \
+              ), \
+            ],\
+            cls: 'table has-filter has-search'
+
+          = new_pagination @tags, 'pull-right'
+
+    - else
+      .row.mt-xs
+        .col-lg-12
+          = replacement_msg t('tags.search_no_results')

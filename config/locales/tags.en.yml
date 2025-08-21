@@ -1,0 +1,32 @@
+en:
+  tags:
+    actions:
+      new: Add Tag
+      edit: Edit Tag
+      destroy: Destroy Tag
+      destroy_confirm: "Are you sure you want destroy this Tag ?"
+    index:
+      title: Tags
+    show:
+      title: Tag %{name}
+    edit:
+      title: Edit Tag %{name}
+    new:
+      title: Create new Tag
+    create:
+      title: Create new Tag
+    form:
+      sections:
+        identification: "Identification"
+    search_no_results: "No Tag found"
+  activerecord:
+    models:
+      tag:
+        zero: "Tag"
+        one: "Tags"
+        other: "Tags"
+    attributes:
+      tag:
+        name: Name
+        color: Color
+        description: Description

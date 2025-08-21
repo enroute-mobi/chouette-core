@@ -50,6 +50,11 @@ class ImportsController < Chouette::WorkbenchController
 
         unless @chart
           @contextual_cols = []
+          @contextual_cols << TableBuilderHelper::Column.new(
+            key: :tags,
+            attribute: Proc.new { |import| import.tags.map(&:name).join(', ') if import.tags.any? },
+            sortable: false
+          )
           @contextual_cols << TableBuilderHelper::Column.new(key: :creator, attribute: 'creator')
           @imports = decorate_collection(collection)
         end
@@ -95,10 +100,14 @@ class ImportsController < Chouette::WorkbenchController
   def import_params
     permitted_keys = %i[name file type referential_id code_space_id notification_target]
     permitted_keys += Import::Workbench.options.keys
-    import_params = params.require(:import).permit(permitted_keys)
-    import_params[:user_id] ||= current_user.id
-    import_params[:override_internal_identifiers] = 'true' if has_feature?('import_netex_force_override_objectid')
-    import_params
+
+    params.require(:import).permit(permitted_keys).tap do |import_params|
+      import_params[:user_id] ||= current_user.id
+      import_params[:override_internal_identifiers] = 'true' if has_feature?('import_netex_force_override_objectid')
+      if (tags = params[:import][:tags]).is_a?(Array)
+        import_params[:taggings_attributes] = tags.reject(&:blank?).map { |tag| { tag_id: tag } }
+      end
+    end
   end
 
   def decorate_collection(imports)
@@ -109,4 +118,10 @@ class ImportsController < Chouette::WorkbenchController
       }
     )
   end
+
+  def workgroup_context?
+    false
+  end
+
+  helper_method :workgroup_context?
 end

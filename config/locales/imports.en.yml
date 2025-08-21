@@ -109,6 +109,7 @@ en:
         code_space: Code Space
         workbench_id: Workbench
         duration: "Duration"
+        tags: "Tags"
       import/workbench:
         merge_method: Merge Method
         automatic_merge: Automatic Merge

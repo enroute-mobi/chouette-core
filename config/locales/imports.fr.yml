@@ -109,6 +109,7 @@ fr:
         code_space: Espace de code
         workbench_id: "Espace de travail"
         duration: "Durée"
+        tags: "Tags"
       import/workbench:
         merge_method: Méthode de Finalisation
         automatic_merge: Finalisation automatique des jeux de données importés

@@ -338,6 +338,21 @@ crumb :time_table do |workbench, referential, time_table|
   parent :time_tables, workbench, referential
 end
 
+crumb :tags do |workbench|
+  link I18n.t('tags.index.title'), workbench_tags_path(workbench)
+  parent :workbench, workbench
+end
+
+crumb :tag do |workbench, tag|
+  link breadcrumb_name(tag, 'name'), workbench_tag_path(workbench, tag)
+  parent :tags, workbench
+end
+
+crumb :new_tag do |workbench|
+  link I18n.t('tags.new.title')
+  parent :tags, workbench
+end
+
 crumb :imports_parent do |imports_parent|
   if imports_parent.is_a? Workgroup
     link Workgroup.ts, [imports_parent]

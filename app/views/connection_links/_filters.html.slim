@@ -1,13 +1,3 @@
-= search_form_for @q, url: workbench_stop_area_referential_connection_links_path(@workbench), html: {method: :get}, class: 'form form-filter' do |f|
-  .ffg-row
-    .input-group.search_bar class=filter_item_class(params[:q], :departure_name_or_arrival_name_cont)
-      = f.search_field :departure_name_or_arrival_name_cont,
-          placeholder: t('.departure_or_arrival_name'),
-          class: 'form-control'
-      span.input-group-btn
-        button.btn.btn-default#search-btn type='submit'
-          span.fa.fa-search
-
-  .actions
-    = link_to t('actions.erase'), workbench_stop_area_referential_connection_links_path(@workbench), class: 'btn btn-link'
-    = f.submit t('actions.filter'), class: 'btn btn-default'
+= simple_search_for @search, workbench_stop_area_referential_connection_links_path(@workbench) do |f|
+  = f.row
+    = f.text

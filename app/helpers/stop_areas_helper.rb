@@ -94,7 +94,7 @@ module StopAreasHelper
 
   def more_connections_link(stop_area, workbench)
     link_name = t('.connections.more', count: (stop_area.connection_links.count - 4))
-    link_path = workbench_stop_area_referential_connection_links_path(workbench, :'q[departure_name_or_arrival_name_cont]' => stop_area.name)
+    link_path = workbench_stop_area_referential_connection_links_path(workbench, :'search[text]' => stop_area.name)
     link_to link_name, link_path, class: 'btn btn-link'
   end
 

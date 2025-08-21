@@ -1,11 +1,10 @@
 - breadcrumb :calendars, workbench
 
-.page_content
+.page_content x-data="{ saveSearchPanel: false }"
   .container-fluid
-    - if params[:q].present? or @calendars.any?
-      .row
-        .col-lg-12
-          = render 'filters'
+    .row
+      .col-lg-12
+        = render 'filters'
 
     - if @calendars.any?
       .row
@@ -20,20 +19,19 @@
                 end \
               ), \
               TableBuilderHelper::Column.new( \
-                key: :organisation_name, \
-                name: Calendar.tmf('organisation'), \
+                key: :organisation, \
                 attribute: Proc.new { |c| c.organisation.name } \
               ), \
               TableBuilderHelper::Column.new( \
                 key: :shared, \
-                attribute: Proc.new { |c| t("#{c.try(:shared)}") } \
+                attribute: Proc.new { |c| t(c.shared.to_s) } \
               ) \
             ],
             cls: 'table has-filter'
 
           = new_pagination @calendars, 'pull-right'
 
-    - unless @calendars.any?
+    - else
       .row.mt-xs
         .col-lg-12
           = replacement_msg t('.search_no_results')

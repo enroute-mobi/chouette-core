@@ -2,12 +2,16 @@
 
 class CalendarsController < Chouette::WorkbenchController
   defaults resource_class: Calendar
-  before_action :ransack_contains_date, only: [:index]
+
   respond_to :html
   respond_to :json, only: :show
   respond_to :js, only: :index
 
   def index
+    if (saved_search = saved_searches.find_by(id: params[:search_id]))
+      @search = saved_search.search
+    end
+
     index! do
       @calendars = @calendars.includes(:organisation)
       @calendars = decorate_calendars(@calendars)
@@ -42,6 +46,37 @@ class CalendarsController < Chouette::WorkbenchController
     end
   end
 
+  def saved_searches
+    @saved_searches ||= workbench.saved_searches.for(::Search::Calendar)
+  end
+
+  protected
+
+  alias workbench parent
+  helper_method :workbench
+
+  def resource
+    @calendar ||= workbench.calendars_with_shared.find_by(id: params[:id]) # rubocop:disable Naming/MemoizedInstanceVariableName
+  end
+
+  def build_resource
+    super.tap do |calendar|
+      calendar.workbench = workbench
+    end
+  end
+
+  def scope
+    parent.calendars
+  end
+
+  def search
+    @search ||= ::Search::Calendar.from_params(params, workbench: workbench)
+  end
+
+  def collection
+    @calendars ||= search.search(scope) # rubocop:disable Naming/MemoizedInstanceVariableName
+  end
+
   private
 
   def decorate_calendars(calendars)
@@ -64,69 +99,5 @@ class CalendarsController < Chouette::WorkbenchController
     # CHOUETTE-3123 Alban's idea: we need an instance but cannot call #build_resource since it calls #calendar_params
     permitted_params << :shared if policy(workbench.calendars.build).share?
     params.require(:calendar).permit(*permitted_params)
-  end
-
-  def sort_results collection
-    dir =  %w[asc desc].include?(params[:direction]) ?  params[:direction] : 'asc'
-    extra_cols = %w(organisation_name)
-    col = (Calendar.column_names + extra_cols).include?(params[:sort]) ? params[:sort] : 'name'
-
-    if extra_cols.include?(col)
-      collection.send("order_by_#{col}", dir)
-    else
-      collection.order("#{col} #{dir}")
-    end
-  end
-
-  protected
-
-  alias workbench parent
-  helper_method :workbench
-
-  # rubocop:disable Naming/MemoizedInstanceVariableName
-  def resource
-    @calendar ||= workbench.calendars_with_shared.find_by(id: params[:id])
-  end
-  # rubocop:enable Naming/MemoizedInstanceVariableName
-
-  def build_resource
-    super.tap do |calendar|
-      calendar.workbench = workbench
-    end
-  end
-
-  # rubocop:disable Naming/MemoizedInstanceVariableName
-  def collection
-    @calendars ||= begin
-      scope = workbench.calendars_with_shared
-      scope = shared_scope(scope)
-      @q = scope.ransack(params[:q])
-      calendars = sort_results(@q.result)
-      calendars = calendars.paginate(page: params[:page])
-      calendars
-    end
-  end
-  # rubocop:enable Naming/MemoizedInstanceVariableName
-
-  def ransack_contains_date
-    date =[]
-    if params[:q] && !params[:q]['contains_date(1i)'].empty?
-      ['contains_date(1i)', 'contains_date(2i)', 'contains_date(3i)'].each do |key|
-        date << params[:q][key].to_i
-        params[:q].delete(key)
-      end
-      params[:q]['contains_date'] = Date.new(*date) rescue nil
-    end
-  end
-
-  def shared_scope scope
-    return scope unless params[:q]
-
-    if params[:q][:shared_true] == params[:q][:shared_false]
-      params[:q].delete(:shared_true)
-      params[:q].delete(:shared_false)
-    end
-
-    scope
   end
 end

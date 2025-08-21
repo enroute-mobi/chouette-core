@@ -15,15 +15,9 @@ class Calendar < ApplicationModel
 
   scope :contains_date, ->(date) { where('(date ? = any (dates) OR date ? <@ any (date_ranges)) AND NOT date ? = any (excluded_dates)', date, date, date) }
 
-  scope :order_by_organisation_name, ->(dir) { joins(:organisation).order("lower(organisations.name) #{dir}") }
-
   scope :by_text, ->(text) { text.blank? ? all : where('lower(name) LIKE :t', t: "%#{text.downcase}%") }
 
   after_initialize :set_defaults
-
-  def self.ransackable_scopes(auth_object = nil)
-    [:contains_date]
-  end
 
   def self.state_permited_attributes item
     item.slice('shared').tap do |h|

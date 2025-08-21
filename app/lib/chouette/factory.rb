@@ -544,6 +544,15 @@ module Chouette
             attribute(:retrieval_time_of_day) { TimeOfDay.new(12, 30) }
           end
 
+          model :calendar do
+            transient :dates, []
+            transient :dates_excluded, []
+            transient :date_ranges, [Period.from(:today).during(30.days)]
+
+            attribute(:name) { |n| "Calendar #{n}" }
+            attribute :int_day_types, ::Calendar::EVERYDAY
+          end
+
           model :referential do
             attribute(:name) { |n| "Referential #{n}" }
 

@@ -217,6 +217,7 @@ en:
             referent_id:
               an_object_used_as_referent_must_be_flagged_as_referent: a Stop Area used as referent must be flagged as referent
               a_referent_cannot_have_a_referent: a Stop Area referent can't have a referent
+              cannot_be_its_own_referent: "A Stop Area cannot be its own referent"
             parent_id:
               not_allowed_for_flexible: "Flexible stop places cannot have a parent"
               children_not_allowed_for_flexible: "Flexible stop places cannot have children"

@@ -22,6 +22,10 @@ module ReferentSupport
         errors.add :referent_id, :an_object_used_as_referent_must_be_flagged_as_referent
       end
 
+      if referent.present? && referent == self
+        errors.add :referent_id, :cannot_be_its_own_referent
+      end
+
       if particular? && particulars.present?
         errors.add :is_referent, :the_particulars_collection_should_be_empty
       end

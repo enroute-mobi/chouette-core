@@ -11,7 +11,9 @@ RSpec.describe Search::Base, type: :model do
     attr_accessor :context
 
     class Order < ::Search::Order
-      attribute :name, column: 'column'
+      attribute :name, default: :asc
+      attribute :joined_column, column: 'others.column', joins: :others
+
       attr_accessor :context
     end
 
@@ -268,9 +270,17 @@ RSpec.describe Search::Base, type: :model do
         subject
       end
 
-      it 'is ordered with order hash' do
-        allow(search.order).to receive(:order_hash).and_return(name: :desc)
-        expect(scope).to receive(:order).with(search.order.order_hash).and_return(scope)
+      it 'is ordered with default order' do
+        expect(scope).to receive(:order).with({ name: :asc }).and_return(scope)
+
+        subject
+      end
+
+      it 'is ordered on a joined column' do
+        search.order.attributes = { joined_column: :desc }
+
+        expect(scope).to receive(:joins).with(:others).and_return(scope)
+        expect(scope).to receive(:order).with({ 'others.column' => :desc }).and_return(scope)
 
         subject
       end
@@ -612,31 +622,43 @@ RSpec.describe Search::Base, type: :model do
   end
 
   describe Search::Order do
-    subject(:order) { self.class::Search::Order.new }
+    subject(:order) { self.class::Search::Order.new({}) }
 
     describe 'initializer' do
-      context "when Order is created with attributes, like name: 'asc'" do
-        subject(:order) { self.class::Search::Order.new name: 'asc' }
+      context 'when Order is created without attributes' do
+        subject(:order) { self.class::Search::Order.new }
         it { is_expected.to have_attributes(name: :asc) }
+      end
+
+      context "when Order is created with attributes, like name: 'desc'" do
+        subject(:order) { self.class::Search::Order.new name: 'desc' }
+        it { is_expected.to have_attributes(name: :desc) }
       end
     end
 
     describe '#attributes=' do
       context 'when a given key matches an defined attribute' do
         it 'changes the attribute value' do
-          expect { search.attributes = { name: 'asc' }; }.to change(search, :name).to('asc')
+          expect { order.attributes = { name: 'asc' } }.to change(order, :name).to(:asc)
         end
       end
 
       context 'when a given key matches a writer method but not a defined attribute' do
         it "doesn't change the Order" do
-          expect { search.attributes = { context: 'dummy' } }.to_not change(search, :context)
+          expect { order.attributes = { context: 'dummy' } }.not_to change(order, :context)
         end
       end
 
       context "when a given key doesn't match any writer method" do
         it "doesn't change the Order (or raise error)" do
-          expect { search.attributes = { dummy: 42 } }.to_not raise_error
+          expect { order.attributes = { dummy: 42 } }.not_to raise_error
+        end
+      end
+
+      context 'when order already has values' do
+        it 'removes old values' do
+          order.joined_column = :asc
+          expect { order.attributes = { name: 'asc' } }.to change(order, :joined_column).from(:asc).to(nil)
         end
       end
     end
@@ -663,50 +685,82 @@ RSpec.describe Search::Base, type: :model do
       subject { self.class::Search::Order.attributes }
 
       it 'contains all defined attributes' do
-        is_expected.to contain_exactly(an_object_having_attributes(name: :name))
+        is_expected.to(
+          contain_exactly(
+            an_object_having_attributes(name: :name, default: :asc),
+            an_object_having_attributes(name: :joined_column, column: 'others.column')
+          )
+        )
       end
     end
 
     describe '#order_hash' do
       subject { order.order_hash }
 
-      context "when attribute name is :asc (and column 'column')" do
+      context 'when attribute name is :asc' do
         before { order.name = :asc }
-        it { is_expected.to eq('column' => :asc) }
+        it { is_expected.to eq(name: :asc) }
       end
-      context "when attribute name is :desc (and column 'column')" do
+
+      context 'when attribute name is :desc' do
         before { order.name = :desc }
-        it { is_expected.to eq('column' => :desc) }
+        it { is_expected.to eq(name: :desc) }
       end
+
       context 'when attribute name is not defined' do
         before { order.name = nil }
         it { is_expected.to be_empty }
       end
+
+      context 'when attribute joined_column is :asc' do
+        before { order.joined_column = :asc }
+        it { is_expected.to eq('others.column' => :asc) }
+      end
     end
 
-    describe '#joins' do
+    describe '#order' do
+      subject { order.order(scope) }
+
       let(:order_class) do
         Class.new(::Search::Order) do
-          attribute :dummy, joins: :other
+          attribute :not_in_order, joins: :something
+          attribute :without_join
+          attribute :with_simple_join, joins: :simple
+          attribute :with_array_join, joins: %i[table1 table2]
+          attribute :with_hash_join, joins: { table_a: { table_b: :table_c }, table_d: {} }
+          attribute :with_string_join, joins: 'INNER JOIN table_x ON table_x.column_id = base.id'
         end
       end
       let(:order) { order_class.new }
-      subject { order.joins }
+      let(:scope) { double(:scope) }
 
-      it { is_expected.to be_an_instance_of(Array) }
+      it 'applies each join separately' do
+        order.attributes = {
+          without_join: :asc,
+          with_simple_join: :asc,
+          with_array_join: :asc,
+          with_hash_join: :asc,
+          with_string_join: :asc
+        }
 
-      context 'when the attribute with joins option is included' do
-        let(:order) { order_class.new(dummy: :asc) }
-        it { is_expected.to contain_exactly(:other) }
-      end
+        expect(scope).to receive(:joins).with(:simple).and_return(scope)
+        expect(scope).to receive(:joins).with(%i[table1 table2]).and_return(scope)
+        expect(scope).to receive(:joins).with({ table_a: { table_b: :table_c }, table_d: {} }).and_return(scope)
+        expect(scope).to receive(:joins).with('INNER JOIN table_x ON table_x.column_id = base.id').and_return(scope)
+        expect(scope).to receive(:order)
 
-      context "when the attribute with joins option isn't included" do
-        it { is_expected.to be_empty }
+        subject
       end
     end
 
     describe '.attribute' do
       context 'when another Order is defined' do
+        let(:order_class) do
+          Class.new(::Search::Order) do
+            attribute :dummy, default: :desc
+          end
+        end
+
         before do
           Class.new(::Search::Order) do
             attribute :other, default: :desc
@@ -714,17 +768,53 @@ RSpec.describe Search::Base, type: :model do
         end
 
         it 'defines attributes specific the Order class' do
-          order_class = Class.new(::Search::Order) do
-            attribute :dummy
-          end
           expect(order_class.attributes).to contain_exactly(an_object_having_attributes(name: :dummy))
         end
 
         it 'defines defaults specific the Order class' do
-          order_class = Class.new(::Search::Order) do
-            attribute :dummy, default: :desc
-          end
           expect(order_class.defaults).to eq(dummy: :desc)
+        end
+
+        context 'when inherting from another Order' do
+          let(:parent_class) do
+            Class.new(::Search::Order) do
+              attribute :other, default: :desc
+            end
+          end
+          let(:order_class) do
+            Class.new(parent_class) do
+              attribute :dummy, default: :desc
+            end
+          end
+
+          it 'inherits attributes from parent' do
+            expect(order_class.attributes).to(
+              contain_exactly(
+                an_object_having_attributes(name: :other),
+                an_object_having_attributes(name: :dummy)
+              )
+            )
+          end
+
+          it 'did not change attributes of parent' do
+            expect(parent_class.attributes).to contain_exactly(an_object_having_attributes(name: :other))
+          end
+
+          it 'inherits defaults from parent' do
+            expect(order_class.defaults).to eq(other: :desc, dummy: :desc)
+          end
+
+          context 'when removing a default inherted from parent' do
+            before { order_class.attributes.find { |a| a.name == :other }.default = nil }
+
+            it 'loses default from parent' do
+              expect(order_class.defaults).to eq(dummy: :desc)
+            end
+
+            it 'did not change defaults of parent' do
+              expect(parent_class.defaults).to eq(other: :desc)
+            end
+          end
         end
       end
     end

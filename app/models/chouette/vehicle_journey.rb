@@ -129,9 +129,6 @@ module Chouette
 
     scope :by_text, ->(text) { text.blank? ? all : where('lower(vehicle_journeys.published_journey_name) LIKE :t or lower(vehicle_journeys.objectid) LIKE :t', t: "%#{text.downcase}%") }
 
-    # We need this for the ransack object in the filters
-    ransacker :stop_area_ids
-
     # returns VehicleJourneys with at least 1 day in their time_tables
     # included in the given range
     def self.with_matching_timetable date_range

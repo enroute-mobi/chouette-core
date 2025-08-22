@@ -533,8 +533,10 @@ const actions = {
     return val
   },
   encodeParams: (params) => {
-    let esc = encodeURIComponent
-    let queryString = Object.keys(params).map((k) => esc(k) + '=' + esc(params[k])).join('&')
+    let queryString = Object.keys(params)
+                            .filter(k => typeof params[k] !== "undefined")
+                            .map((k) => encodeURIComponent(k) + '=' + encodeURIComponent(params[k]))
+                            .join('&')
     return queryString
   },
   vjasFirstTimeAttribute(vjas) {

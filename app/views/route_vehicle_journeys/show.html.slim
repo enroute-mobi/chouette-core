@@ -30,8 +30,8 @@
   | window.transportMode = #{(@transport_mode.to_json).html_safe};
   | window.transportSubmode = #{(@transport_submode.to_json).html_safe};
   | window.vehicleJourneysLength = #{@vehicle_journeys.total_entries()};
-  | window.vehicleJourneysPerPage = #{@ppage};
-  | window.line_footnotes = #{raw @footnotes};
+  | window.vehicleJourneysPerPage = #{@search.per_page};
+  | window.line_footnotes = #{raw(@footnotes.to_json)};
   | window.perms = #{raw @perms};
   | window.features = #{raw @features};
   | window.all_missions = #{(@all_missions.to_json).html_safe};

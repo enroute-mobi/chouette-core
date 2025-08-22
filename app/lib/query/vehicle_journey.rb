@@ -2,22 +2,30 @@
 
 module Query
   class VehicleJourney < Base
-    def text(value)
+    def text(value) # rubocop:disable Metrics/MethodLength,Metrics/AbcSize
       change_scope(if: value.present?) do |scope|
-        column_names = column_names(scope)
-        custom_scope = scope.select(*column_names).from(custom_from(scope, column_names)).distinct
+        ids_request = scope.unscoped
+                           .from("(#{scope.reorder(nil).limit(nil).offset(nil).to_sql}) AS #{scope.quoted_table_name}")
+                           .left_joins(codes: :code_space)
 
-        published_journey_name = custom_scope.arel_table[:published_journey_name]
-        published_journey_identifier = custom_scope.arel_table[:published_journey_identifier]
-        objectid = custom_scope.arel_table[:objectid]
-        code = custom_scope.arel_table[:code]
-        custom_scope = custom_scope.where(published_journey_name.matches("%#{value}%"))
-                                   .or(custom_scope.where(objectid.matches("%#{value}%")))
-                                   .or(custom_scope.where(published_journey_identifier.matches("%#{value}%")))
-                                   .or(custom_scope.where(code.matches("%#{value}%")))
-        ids = scope.select(:id).from("(#{custom_scope.to_sql}) AS vehicle_journeys")
+        published_journey_name = ids_request.arel_table[:published_journey_name]
+        published_journey_identifier = ids_request.arel_table[:published_journey_identifier]
+        objectid = ids_request.arel_table[:objectid]
+        code = Arel.sql("public.code_spaces.short_name || ':' || referential_codes.value")
 
-        scope.where(id: ids)
+        match = "%#{value}%"
+        ids_request = ids_request.where(published_journey_name.matches(match))
+                                 .or(ids_request.where(published_journey_identifier.matches(match)))
+                                 .or(ids_request.where(objectid.matches(match)))
+                                 .or(ids_request.where(code.matches(match)))
+
+        scope.where(id: ids_request.select(:id).distinct)
+      end
+    end
+
+    def journey_pattern_id(value)
+      change_scope(if: value.present?) do |scope|
+        scope.where(journey_pattern_id: value)
       end
     end
 
@@ -39,6 +47,12 @@ module Query
       end
     end
 
+    def with_time_table(value)
+      change_scope(if: value == false) do |scope| # rubocop:disable Style/SymbolProc
+        scope.without_any_time_table
+      end
+    end
+
     def time_table_period(value)
       change_scope(if: value.present?) do |scope|
         scope.with_matching_timetable(value)
@@ -53,6 +67,12 @@ module Query
       change_scope(if: (from_stop_area.present? || to_stop_area.present?)) do |scope|
         stop_area_id = from_stop_area || to_stop_area
         scope.with_stop_area_id(stop_area_id)
+      end
+    end
+
+    def where_departure_time_between(start_time, end_time, **options)
+      change_scope(if: start_time.present? && end_time.present?) do |scope|
+        scope.where_departure_time_between(start_time, end_time, **options)
       end
     end
 

@@ -1,4 +1,6 @@
 class TomSelectInput < SimpleForm::Inputs::CollectionSelectInput
+  enable :placeholder
+
   delegate :content_tag, :concat, :javascript_additional_packs, to: :template
 
   def input(wrapper_options)

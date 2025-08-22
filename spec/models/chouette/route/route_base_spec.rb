@@ -1,5 +1,5 @@
 describe Chouette::Route, type: :model do
-  subject { create(:route) }
+  subject(:route) { create(:route) }
 
   describe 'checksum' do
     it_behaves_like 'checksum support'
@@ -10,6 +10,14 @@ describe Chouette::Route, type: :model do
   it { is_expected.to belong_to(:line).required }
   it { is_expected.to validate_uniqueness_of :objectid }
   it { is_expected.to validate_inclusion_of(:wayback).in_array(%i(outbound inbound)) }
+
+  describe '#display_name' do
+    subject { route.display_name }
+
+    it 'should display local_id and name' do
+      is_expected.to eq("#{route.get_objectid.local_id} - #{route.name}")
+    end
+  end
 
   context "reordering methods" do
     let(:bad_stop_point_ids){subject.stop_points.map { |sp| sp.id + 1}}

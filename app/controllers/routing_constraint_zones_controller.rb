@@ -14,7 +14,7 @@ class RoutingConstraintZonesController < Chouette::ReferentialController
     index! do |format|
       format.html do
         @routing_constraint_zones = RoutingConstraintZoneDecorator.decorate(
-          @routing_constraint_zones,
+          @routing_constraint_zones.includes(:route),
           context: {
             workbench: @workbench,
             referential: referential,
@@ -57,16 +57,16 @@ class RoutingConstraintZonesController < Chouette::ReferentialController
   alias_method :line, :parent
   alias parent_for_parent_policy referential
 
-  def collection
-    @q = line.routing_constraint_zones.ransack(params[:q])
+  def scope
+    parent.routing_constraint_zones
+  end
 
-    @routing_constraint_zones ||= begin
-      routing_constraint_zones = sort_collection
-      routing_constraint_zones = routing_constraint_zones.paginate(
-        page: params[:page],
-        per_page: 10
-      )
-    end
+  def search
+    @search ||= ::Search::RoutingConstraintZone.from_params(params, referential: referential)
+  end
+
+  def collection
+    @routing_constraint_zones ||= search.search(scope) # rubocop:disable Naming/MemoizedInstanceVariableName
   end
 
   def build_resource
@@ -84,30 +84,6 @@ class RoutingConstraintZonesController < Chouette::ReferentialController
   end
 
   private
-  def sort_column
-    (
-      Chouette::RoutingConstraintZone.column_names +
-      [
-        'stop_points_count',
-        'route'
-      ]
-    ).include?(params[:sort]) ? params[:sort] : 'name'
-  end
-  def sort_direction
-    %w[asc desc].include?(params[:direction]) ?  params[:direction] : 'asc'
-  end
-
-  def sort_collection
-    sort_by = sort_column
-
-    if sort_by == 'stop_points_count'
-      @q.result.order_by_stop_points_count(sort_direction)
-    elsif sort_by == 'route'
-      @q.result.order_by_route_name(sort_direction)
-    else
-      @q.result.order(sort_column + ' ' + sort_direction)
-    end
-  end
 
   def routing_constraint_zone_params
     params.require(:routing_constraint_zone).permit(

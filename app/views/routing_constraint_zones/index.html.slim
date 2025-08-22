@@ -2,10 +2,9 @@
 
 .page_content
   .container-fluid
-    - if params[:q].present? or @routing_constraint_zones.any?
-      .row
-        .col-lg-12
-          = render 'filters'
+    .row
+      .col-lg-12
+        = render 'filters'
 
     - if @routing_constraint_zones.any?
       .row
@@ -35,7 +34,7 @@
               ), \
               TableBuilderHelper::Column.new( \
                 key: :route, \
-                attribute: 'route_name' \
+                attribute: Proc.new { |c| c.route.name } \
               ), \
             ],
             links: [:show],
@@ -43,7 +42,7 @@
           
           = new_pagination @routing_constraint_zones, 'pull-right'
 
-    - unless @routing_constraint_zones.any?
+    - else
       .row.mt-xs
         .col-lg-12
           - if can_create_rcz?

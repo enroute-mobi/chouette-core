@@ -19,15 +19,6 @@ module Chouette
       "local-#{self.referential.id}-#{self.route&.line&.get_objectid&.local_id}-#{self.route_id}-#{self.id}"
     end
 
-    scope :order_by_stop_points_count, ->(direction) do
-      order("array_length(stop_point_ids, 1) #{direction}")
-    end
-
-    scope :order_by_route_name, ->(direction) do
-      joins(:route)
-        .order("routes.name #{direction}")
-    end
-
     def checksum_attributes(db_lookup = true)
       [
         self.stop_points.map(&:stop_area_id)
@@ -78,12 +69,7 @@ module Chouette
     end
 
     def stop_points_count
-      stop_points.count
+      stop_point_ids.count
     end
-
-    def route_name
-      route.name
-    end
-
   end
 end

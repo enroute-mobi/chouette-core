@@ -63,6 +63,14 @@ class SearchesController < Chouette::UserController
     redirect_to [saved_search_parent, :searches, { parent_resources: parent_resources }]
   end
 
+  protected
+
+  def workgroup_context?
+    saved_search_parent.is_a?(Workgroup)
+  end
+
+  helper_method :workgroup_context?
+
   private
 
   def parent_resources

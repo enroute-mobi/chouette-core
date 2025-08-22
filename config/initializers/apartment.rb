@@ -125,6 +125,7 @@ Apartment.configure do |config|
     'Source::Retrieval',
     'Search::Save',
     'Tag',
+    'Tagging',
     'User',
     'Waypoint',
     'Workbench::Sharing',

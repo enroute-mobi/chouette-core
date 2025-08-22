@@ -27,7 +27,7 @@ module Search
     attribute :subgroup_first, type: Boolean, default: true
     attribute :subgroup_top_count, type: Integer, default: 30
 
-    attr_accessor :saved_name, :saved_description
+    attr_accessor :saved_name, :saved_description, :param_key
 
     enumerize :chart_type, in: %w[line pie column]
     enumerize :sort_by, in: %w[value label]
@@ -94,7 +94,7 @@ module Search
         Rails.logger.debug "[Search] Raw params: #{params.inspect}"
 
         new(attributes).tap do |search|
-          search.attributes = FromParamsBuilder.new(params).attributes
+          search.attributes = FromParamsBuilder.new(params, param_key: attributes[:param_key]).attributes
           Rails.logger.debug "[Search] #{search.inspect}"
         end
       end
@@ -179,12 +179,25 @@ module Search
       chart_klass.aggregate_attributes
     end
 
+    alias old_model_name model_name
+    private :old_model_name
+    def model_name
+      if param_key
+        @_model_name ||= old_model_name.dup.tap do |model_name|
+          model_name.instance_variable_set(:@param_key, param_key.to_s)
+        end
+      else
+        old_model_name
+      end
+    end
+
     # Create Search attributes from our legacy Controller params (:sort, :direction, :page, etc)
     class FromParamsBuilder
-      def initialize(params = nil)
+      def initialize(params = nil, **options)
         @params = params || {}
+        @options = options
       end
-      attr_reader :params
+      attr_reader :params, :options
 
       def attributes
         {}.tap do |attributes|
@@ -196,6 +209,11 @@ module Search
 
           attributes.delete_if { |_, v| v.blank? }
         end
+      end
+
+      # TODO: :page, :per_page, :sort, :direction and :order should also consider a namespace
+      def param_key
+        options[:param_key] || :search
       end
 
       def page
@@ -215,7 +233,7 @@ module Search
       end
 
       def search_params
-        (params[:search] || {}).tap do |search_params|
+        (params[param_key] || {}).tap do |search_params|
           search_params.try(:permit!)
         end
       end

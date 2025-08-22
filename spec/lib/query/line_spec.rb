@@ -114,6 +114,30 @@ RSpec.describe Query::Line do
       before { selected.update company: company_selected}
 
       it { is_expected.to be_truthy }
+
+      context 'with wrong value' do
+        let(:criteria_value) { 42 }
+
+        it { is_expected.to be_falsy }
+      end
+
+      context 'with array' do
+        let(:criteria_value) { [company_selected.id] }
+
+        it { is_expected.to be_truthy }
+
+        context 'with wrong value' do
+          let(:criteria_value) { [42] }
+
+          it { is_expected.to be_falsy }
+        end
+
+        context 'including only array with empty string' do
+          let(:criteria_value) { [''] }
+
+          it { expect(scope.count).to eq(2) }
+        end
+      end
     end
 
     describe '#line_provider_id' do
@@ -131,6 +155,32 @@ RSpec.describe Query::Line do
       let(:criteria_value) { 'bus' }
 
       it { is_expected.to be_truthy }
+
+      context 'with wrong value' do
+        let(:criteria_value) { 'tram' }
+
+        it { is_expected.to be_falsy }
+      end
+
+      context 'with array' do
+        let(:criteria_value) { ['bus'] }
+
+        it { is_expected.to be_truthy }
+
+        context 'with wrong value' do
+          let(:criteria_value) { ['tram'] }
+
+          it { is_expected.to be_falsy }
+        end
+
+        context 'including only array with empty string' do
+          let(:criteria_value) { [''] }
+
+          before { context }
+
+          it { expect(scope.count).to eq(2) }
+        end
+      end
     end
 
     describe '#statuses' do

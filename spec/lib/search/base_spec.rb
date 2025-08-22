@@ -190,10 +190,44 @@ RSpec.describe Search::Base, type: :model do
       it { expect(search.order).to have_attributes(name: :desc) }
     end
 
+    context 'with param_key' do
+      context 'when search param is still :search' do
+        subject(:search) do
+          self.class::Search.from_params({ search: { name: 'dummy' } }, param_key: :redefined_search)
+        end
+
+        it { is_expected.to have_attributes(model_name: have_attributes(param_key: 'redefined_search')) }
+
+        it { is_expected.not_to have_attributes(name: 'dummy') }
+      end
+
+      context 'when search param is :redefined_search' do
+        subject(:search) do
+          self.class::Search.from_params({ redefined_search: { name: 'dummy' } }, param_key: :redefined_search)
+        end
+
+        it { is_expected.to have_attributes(model_name: have_attributes(param_key: 'redefined_search')) }
+
+        it { is_expected.to have_attributes(name: 'dummy') }
+      end
+    end
+
     context "when context define a Search accessor (like { context: 'test' })" do
       subject { self.class::Search.from_params({}, context: 'test') }
 
       it { is_expected.to have_attributes(context: 'test') }
+    end
+  end
+
+  describe '#model_name.param_key' do
+    subject { search.model_name.param_key }
+
+    it { is_expected.to eq('search') }
+
+    context 'when explicitely setting it' do
+      before { search.param_key = :redefined_search }
+
+      it { is_expected.to eq('redefined_search') }
     end
   end
 

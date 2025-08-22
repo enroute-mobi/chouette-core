@@ -6,7 +6,6 @@ class ReferentialOverview
 
   def initialize referential, h=nil
     @referential = referential
-    @page = h && h.params[pagination_param_name]&.to_i || 1
     @h = h
   end
 
@@ -35,29 +34,36 @@ class ReferentialOverview
   end
 
   def filtered_lines
-    search.result.page(@page).per_page(PER_PAGE)
+    @filtered_lines ||= search.search(referential_lines)
   end
 
   ### Pagination
 
-  delegate :empty?, :first, :total_pages, :size, :total_entries, :offset, :length, to: :filtered_lines
-  def current_page
-    @page
-  end
+  delegate :empty?, :first, :current_page, :total_pages, :size, :total_entries, :offset, :length, to: :filtered_lines
 
   ### search
   def search
-    lines = referential_lines
-    lines = lines.ransack h.params[search_param_name]
-    lines
+    @search ||= Search::Line.from_params(
+      h.params,
+      workbench: referential.workbench,
+      param_key: search_param_key
+    ).tap do |search|
+      # page and per_page must be set after initialization because:
+      #   1. We assign attributes (workbench, param_key) to search. page and per_page and correctly initialized.
+      #   2. Then, we assign params transformed by FromParamsBuilder. If params contains the keys :page and :per_page,
+      #      FromParamsBuilder will return them as the page and per_page of this search despite being assigned to the
+      #      other search on this page.
+      search.page = h.params[pagination_param_name]
+      search.per_page = PER_PAGE
+    end
+  end
+
+  def search_param_key
+    "search_#{pagination_param_name}"
   end
 
   def pagination_param_name
     "referential_#{@referential.slug}_overview"
-  end
-
-  def search_param_name
-    "q_#{pagination_param_name}"
   end
 
   class Line

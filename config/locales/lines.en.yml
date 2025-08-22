@@ -44,7 +44,6 @@ en:
       deactivated: "Disabled line"
       title: "Lines"
       line: "Line %{line}"
-      name_or_number_or_short_id: "Search by name, short name or ID..."
       no_networks: "No networks"
       no_companies: "No companies"
       no_line_notices: "No line notes"

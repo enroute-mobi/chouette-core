@@ -45,7 +45,6 @@ fr:
       deactivated: "Ligne désactivée"
       title: "Lignes"
       line: "Ligne %{line}"
-      name_or_number_or_short_id: "Recherche par nom, nom court ou ID..."
       no_networks: "Aucun réseaux"
       no_companies: "Aucun transporteurs"
       no_line_notices: "Aucune note de ligne"

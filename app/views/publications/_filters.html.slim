@@ -1,4 +1,9 @@
-= simple_search_for @search, workgroup_publication_setup_path(@workgroup, @publication_setup || params[:publication_setup_id]), graph_panel: :button, parent_resources_path: workgroup_publication_setup_publications_path(@workgroup, @publication_setup || params[:publication_setup_id]) do |f|
+- if @publication_setup
+  - publications_path = workgroup_publication_setup_path(@workgroup, @publication_setup)
+- else
+  - publications_path = workgroup_publications_path(@workgroup)
+
+= simple_search_for @search, publications_path, graph_panel: :button, parent_resources_path: workgroup_publications_path(@workgroup) do |f|
   = f.row
     =
   = f.row

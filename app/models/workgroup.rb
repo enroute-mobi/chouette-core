@@ -28,6 +28,7 @@ class Workgroup < ApplicationModel
   has_many :referentials, through: :workbenches
   has_many :aggregates, dependent: :destroy
   has_many :publication_setups, dependent: :destroy
+  has_many :publications, through: :publication_setups
   has_many :publication_apis, dependent: :destroy
   has_many :macro_lists, through: :workbenches
   has_many :macro_list_runs, through: :workbenches

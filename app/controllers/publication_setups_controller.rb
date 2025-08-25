@@ -25,7 +25,7 @@ class PublicationSetupsController < Chouette::WorkgroupController
 
   def show
     if (saved_search = saved_searches.find_by(id: params[:search_id]))
-      search = saved_search.search
+      @search = saved_search.search
     end
 
     show! do |format|
@@ -43,7 +43,7 @@ class PublicationSetupsController < Chouette::WorkgroupController
     end
   end
 
-  def publications_saved_searches
+  def saved_searches
     @saved_searches ||= workgroup.saved_searches.for(::Search::WorkgroupPublication)
   end
 

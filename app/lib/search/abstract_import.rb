@@ -10,18 +10,10 @@ module Search
       Query::Import
     end
 
-    class Order < ::Search::Order
-      # Use for Macro::List::Run and Control::List::Run
-      attribute :user_status
-      # Use for Import and Export classes and should migrate to user_status
-      attribute :status
-      attribute :name
-      attribute :started_at, default: :desc
-      attribute :creator
-    end
+    class Chart < ::Search::Operation::Chart
+      group_by_attributes.delete('user_status')
+      group_by_attributes.delete('creator')
 
-    class Chart < ::Search::Base::Chart
-      group_by_attribute 'started_at', :datetime, sub_types: %i[hour_of_day day_of_week]
       group_by_attribute 'status', :string do
         def keys
           ::Import::Base.status.values
@@ -31,8 +23,6 @@ module Search
           I18n.t(key, scope: 'imports.status')
         end
       end
-
-      aggregate_attribute 'duration', 'EXTRACT(EPOCH FROM ended_at - started_at)'
     end
   end
 end

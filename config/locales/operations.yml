@@ -1,4 +1,8 @@
 fr:
+  activerecord:
+    attributes:
+      operation:
+        user_status: "Statut"
   enumerize:
     operation:
       user_status:
@@ -8,6 +12,10 @@ fr:
         pending: "En cours"
 
 en:
+  activerecord:
+    attributes:
+      operation:
+        user_status: "Status"
   enumerize:
     operation:
       user_status:

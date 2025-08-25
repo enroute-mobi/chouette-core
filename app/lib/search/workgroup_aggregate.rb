@@ -25,8 +25,9 @@ module Search
       attribute :creator
     end
 
-    class Chart < ::Search::Base::Chart
-      group_by_attribute 'started_at', :datetime, sub_types: %i[hour_of_day day_of_week]
+    class Chart < ::Search::Operation::Chart
+      group_by_attributes.delete('user_status')
+
       group_by_attribute 'status', :string do
         def keys
           ::Aggregate.status.values
@@ -36,9 +37,6 @@ module Search
           I18n.t(key, scope: 'aggregates.statuses')
         end
       end
-      group_by_attribute 'creator', :string
-
-      aggregate_attribute 'duration', 'EXTRACT(EPOCH FROM ended_at - started_at)'
     end
   end
 end

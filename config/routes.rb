@@ -298,6 +298,8 @@ Rails.application.routes.draw do # rubocop:disable Metrics/BlockLength
       resources :publications, only: [:create, :show]
     end
 
+    resources :publications, only: [:index]
+
     resources :publication_apis do
       resources :publication_api_keys
     end

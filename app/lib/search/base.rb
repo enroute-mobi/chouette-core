@@ -878,17 +878,17 @@ module Search
       private
 
       def series_data_empty?(series_data)
-        series_data.all? { |_, v| v.zero? }
+        series_data.all? { |_, v| v.nil? || v.zero? }
       end
 
       def compute_percent(result)
         return result unless display_percent
 
-        sum = result.values.sum
+        sum = result.values.compact.sum
         if sum.zero?
-          result
+          result.transform_values { 0 }
         else
-          result.transform_values { |v| v * 100.0 / sum }
+          result.transform_values { |v| v.nil? ? 0 : v * 100.0 / sum }
         end
       end
 

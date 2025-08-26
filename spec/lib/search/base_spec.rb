@@ -4683,10 +4683,18 @@ RSpec.describe Search::Base::Chart do
         is_expected.to eq_with_keys_order({ '1' => 25, '2' => 75, '3' => 0 })
       end
 
-      context 'when data is all 0' do
-        let(:raw_data) { { '1' => 0, '2' => 0, '3' => 0 } }
+      context 'when data contains nil values' do
+        let(:raw_data) { { '1' => 1, '2' => 3, '3' => nil } }
 
-        it 'computes percents' do
+        it 'computes percents by replacing nil with 0' do
+          is_expected.to eq_with_keys_order({ '1' => 25, '2' => 75, '3' => 0 })
+        end
+      end
+
+      context 'when data is all 0 or nil' do
+        let(:raw_data) { { '1' => 0, '2' => nil, '3' => 0 } }
+
+        it 'computes percents with all values being 0' do
           is_expected.to eq_with_keys_order({ '1' => 0, '2' => 0, '3' => 0 })
         end
       end
@@ -4704,13 +4712,13 @@ RSpec.describe Search::Base::Chart do
       it { is_expected.to eq(true) }
     end
 
-    context 'when data only contains 0' do
-      let(:data) { { 'A' => 0, 'B' => 0 } }
+    context 'when data only contains 0 or nil' do
+      let(:data) { { 'A' => 0, 'B' => nil } }
       it { is_expected.to eq(true) }
     end
 
     context 'with data' do
-      let(:data) { { 'A' => 42, 'B' => 0 } }
+      let(:data) { { 'A' => 42, 'B' => 0, 'C' => nil } }
       it { is_expected.to eq(false) }
     end
 
@@ -4727,18 +4735,18 @@ RSpec.describe Search::Base::Chart do
         it { is_expected.to eq(true) }
       end
 
-      context 'when data is 1 series containing only 0' do
-        let(:data) { [{ name: 'S1', data: { 'A' => 0, 'B' => 0 } }] }
+      context 'when data is 1 series containing only 0 or nil' do
+        let(:data) { [{ name: 'S1', data: { 'A' => 0, 'B' => nil } }] }
         it { is_expected.to eq(true) }
       end
 
       context 'when data is 1 empty series and 1 series with data' do
-        let(:data) { [{ name: 'S1', data: {} }, { name: 'S2', data: { 'A' => 42, 'B' => 0 } }] }
+        let(:data) { [{ name: 'S1', data: {} }, { name: 'S2', data: { 'A' => 42, 'B' => 0, 'C' => nil } }] }
         it { is_expected.to eq(false) }
       end
 
       context 'with data' do
-        let(:data) { [{ name: 'S1', data: { 'A' => 21 } }, { name: 'S2', data: { 'A' => 42, 'B' => 0 } }] }
+        let(:data) { [{ name: 'S1', data: { 'A' => 21 } }, { name: 'S2', data: { 'A' => 42, 'B' => 0, 'C' => nil } }] }
         it { is_expected.to eq(false) }
       end
     end

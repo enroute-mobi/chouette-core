@@ -1,9 +1,4 @@
 - breadcrumb :publication_setups, @workgroup
-- content_for :page_header_content do
-  .row.mb-sm
-    .col-lg-12.text-right
-      - if parent_policy.create?(PublicationSetup)
-        = link_to t('publication_setups.actions.create'), new_workgroup_publication_setup_path(@workgroup), class: 'btn btn-primary'
 
 .page_content
   .container-fluid

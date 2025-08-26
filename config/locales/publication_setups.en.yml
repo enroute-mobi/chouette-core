@@ -2,12 +2,12 @@ en:
   publication_setups:
     search_no_results: 'No publication'
     actions:
-      index: Aggregated offer publications
-      create: Add a Publication
-      new: New Publication
-      edit: Edit Publication
-      destroy_confirm: "Are you sure you want destroy this publication setup ?"
+      index: Aggregated offer Publications Setup
+      new: Add a Publication Setup
+      edit: Edit Publication Setup
+      destroy_confirm: "Are you sure you want destroy this Publication Setup ?"
       publish: "Publish now"
+      show_publications: "Show publications"
     show:
       title: "%{name}"
     form:

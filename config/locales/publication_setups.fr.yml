@@ -2,12 +2,12 @@ fr:
   publication_setups:
     search_no_results: 'Aucune publication'
     actions:
-      index: Publications de l'offre agrégée
-      create: Ajouter une Publication
-      new: Nouvelle Publication
-      edit: Modifier une Publication
-      destroy_confirm: "Etes vous sûr de supprimer cette Publication ?"
+      index: Publications Automatiques de l'offre agrégée
+      new: Ajouter une Publication Automatique
+      edit: Modifier une Publication Automatique
+      destroy_confirm: "Etes vous sûr de supprimer cette Publication Automatique ?"
       publish: "Publier maintenant"
+      show_publications: Voir les Publications
     show:
       title: "%{name}"
     form:

@@ -5,6 +5,13 @@ class PublicationSetupDecorator < Af83::Decorator
 
   set_scope { context[:workgroup] }
 
+  create_action_link
+
+  action_link(on: %i[index], secondary: :index) do |l|
+    l.content { I18n.t('publication_setups.actions.show_publications') }
+    l.href { h.workgroup_publications_path(scope) }
+  end
+
   with_instance_decorator do |instance_decorator|
     instance_decorator.crud
 

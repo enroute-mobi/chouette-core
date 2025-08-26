@@ -68,6 +68,7 @@ fr:
         shared: "Partagé"
         contains_date: "Inclut date"
         route_id: "Itinéraire"
+        publication_setup_id: "Publications"
         chart:
           group_by_attribute:
             sub_type:

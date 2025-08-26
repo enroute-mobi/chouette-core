@@ -10,3 +10,4 @@
     = f.input :statuses, collection: @search.candidate_statuses.map(&:slug), label_method: lambda{|slug| ("<span>" + operation_status(slug, verbose: true) + "</span>").html_safe}, wrapper_html: { class: "checkbox_list"}
     = f.input :start_date, as: :date_picker
     = f.input :end_date, as: :date_picker
+    = f.input :publication_setup_id, as: :autocomplete_select, collection: @search.candidate_publication_setup, input_html: { multiple: true }, width: 2

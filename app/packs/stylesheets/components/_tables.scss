@@ -492,10 +492,12 @@
       .th {
         > div:not(.btn-group) {
           min-height: 20px;
-          overflow-x: auto;
         }
         > *:first-child {
           padding-right: 30px;
+        }
+        > :nth-child(2) {
+          overflow-x: auto;
         }
       }
       // TD group

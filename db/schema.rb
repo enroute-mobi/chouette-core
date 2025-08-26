@@ -604,6 +604,7 @@ ActiveRecord::Schema[7.1].define(version: 2025_09_10_060512) do
     t.bigint "publication_id"
     t.bigint "workgroup_id"
     t.hstore "options", default: {}
+    t.jsonb "setup"
     t.index ["publication_id"], name: "index_exports_on_publication_id"
     t.index ["referential_id"], name: "index_exports_on_referential_id"
     t.index ["workbench_id"], name: "index_exports_on_workbench_id"
@@ -1205,6 +1206,7 @@ ActiveRecord::Schema[7.1].define(version: 2025_09_10_060512) do
     t.boolean "force_daily_publishing", default: false
     t.boolean "enable_cache", default: false, null: false
     t.integer "priority", default: 1, null: false
+    t.jsonb "export_setup"
     t.index ["workgroup_id"], name: "index_publication_setups_on_workgroup_id"
   end
 

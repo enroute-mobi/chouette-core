@@ -21,6 +21,8 @@ module Export
     # TODO: No longer used by present in database. Remove me
     option :ignore_single_stop_station, required: false, default_value: false, enumerize: [true, false], serialize: ActiveModel::Type::Boolean
 
+    attribute :setup, Export::Setup::Gtfs.to_type
+
     validate :ensure_is_valid_period
 
     def ensure_is_valid_period

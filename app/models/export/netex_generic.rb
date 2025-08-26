@@ -12,6 +12,8 @@ class Export::NetexGeneric < Export::Base
   option :skip_stop_area_resources, default_value: false, enumerize: [true, false], serialize: ActiveModel::Type::Boolean
   option :exported_code_space
 
+  attribute :setup, Export::Setup::Netex.to_type
+
   validate :ensure_is_valid_period
 
   def ensure_is_valid_period

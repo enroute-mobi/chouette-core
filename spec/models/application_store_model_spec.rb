@@ -266,3 +266,53 @@ RSpec.describe ApplicationStoreModel do
     end
   end
 end
+
+describe ApplicationStoreModel::IntegerArrayType do
+  subject(:type) { described_class.new }
+
+  describe '#cast' do
+    subject { type.cast(value) }
+
+    context 'when value is an array of integers' do
+      let(:value) { [1, 2, 3, 4] }
+
+      it 'returns the same value unchanged' do
+        is_expected.to eq([1, 2, 3, 4])
+      end
+    end
+
+    context 'when value is an array of strings' do
+      let(:value) { %w[1 2 3 4] }
+
+      it 'casts each value of the array' do
+        is_expected.to eq([1, 2, 3, 4])
+      end
+    end
+
+    context 'when value is a string' do
+      context 'when value is serialized array of integers' do
+        let(:value) { '[1, 2, 3, 4]' }
+
+        it 'unserializes the array' do
+          is_expected.to eq([1, 2, 3, 4])
+        end
+      end
+
+      context 'when value is serialized array of strings' do
+        let(:value) { '["1", "2", "3", "4"]' }
+
+        it 'unserialized the array and casts each value' do
+          is_expected.to eq([1, 2, 3, 4])
+        end
+      end
+
+      context 'when "null"' do
+        let(:value) { 'null' }
+
+        it 'returns nil' do
+          is_expected.to eq(nil)
+        end
+      end
+    end
+  end
+end

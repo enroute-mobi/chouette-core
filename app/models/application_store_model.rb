@@ -52,4 +52,20 @@ class ApplicationStoreModel
   def ensure_proper_type
     self.type ||= self.class.name unless self.class.descends_from_application_store_model?
   end
+
+  class IntegerArrayType < ActiveRecord::Type::Value
+    def initialize(**options)
+      super
+      @integer_type = ActiveRecord::Type::Integer.new(**options)
+    end
+
+    def cast(value)
+      case value
+      when ::Array
+        value.map { |v| @integer_type.cast(v) }
+      when ::String
+        cast(ActiveSupport::JSON.decode(value))
+      end
+    end
+  end
 end

@@ -33,19 +33,19 @@ module Export
 
       class LineSelector < ApplicationStoreModel
         class Lines < LineSelector
-          attribute :line_ids#, :array # TODO validate line_ids
+          attribute :line_ids, IntegerArrayType.new # TODO validate line_ids
         end
 
         class Companies < LineSelector
-          attribute :company_ids#, :array
+          attribute :company_ids, IntegerArrayType.new
         end
 
         class Networks < LineSelector # TODO: unused for now
-          attribute :network_ids#, :array
+          attribute :network_ids, IntegerArrayType.new
         end
 
         class LineProviders < LineSelector
-          attribute :line_provider_ids#, :array
+          attribute :line_provider_ids, IntegerArrayType.new
         end
 
         class All < LineSelector

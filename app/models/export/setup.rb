@@ -10,13 +10,14 @@ module Export
         class Duration < PeriodSelector # TODO: Gtfs and Netex only
           attribute :day_count, :integer
 
-          validates :day_count, numericality: { greater_than_or_equal_to: 1 }
+          validates :day_count, numericality: { only_integer: true, greater_than_or_equal_to: 1 }
         end
 
         class Static < PeriodSelector # TODO: Gtfs and Netex only
           attribute :from, :date
           attribute :to, :date
 
+          validates :from, :to, presence: true
           validate :validate_from_to_range
 
           private
@@ -33,19 +34,27 @@ module Export
 
       class LineSelector < ApplicationStoreModel
         class Lines < LineSelector
-          attribute :line_ids, IntegerArrayType.new # TODO validate line_ids
+          attribute :line_ids, IntegerArrayType.new
+
+          validates :line_ids, presence: true
         end
 
         class Companies < LineSelector
           attribute :company_ids, IntegerArrayType.new
+
+          validates :company_ids, presence: true
         end
 
         class Networks < LineSelector # TODO: unused for now
           attribute :network_ids, IntegerArrayType.new
+
+          validates :network_ids, presence: true
         end
 
         class LineProviders < LineSelector
           attribute :line_provider_ids, IntegerArrayType.new
+
+          validates :line_provider_ids, presence: true
         end
 
         class All < LineSelector
@@ -57,9 +66,9 @@ module Export
         end
 
         class Scheduled < StopAreas
-          attribute :prefer_referent_stop_areas, :boolean # TODO: Gtfs only
-          attribute :ignore_parent_stop_areas, :boolean # TODO: Gtfs only
-          attribute :ignore_referent_stop_areas, :boolean # TODO: Netex only
+          attribute :prefer_referent_stop_areas, :boolean, default: false # TODO: Gtfs only
+          attribute :ignore_parent_stop_areas, :boolean, default: false # TODO: Gtfs only
+          attribute :ignore_referent_stop_areas, :boolean, default: false # TODO: Netex only
         end
 
         class All < Scheduled # TODO: unused for now
@@ -72,8 +81,8 @@ module Export
         end
 
         class Scheduled < Lines
-          attribute :prefer_referent_lines, :boolean # TODO: Gtfs and Netex only
-          attribute :prefer_referent_companies, :boolean # TODO: Gtfs only
+          attribute :prefer_referent_lines, :boolean, default: false # TODO: Gtfs and Netex only
+          attribute :prefer_referent_companies, :boolean, default: false # TODO: Gtfs only
         end
 
         class All < Scheduled # TODO: unused for now
@@ -91,7 +100,8 @@ module Export
         attribute :included_lines, LineSelector.one_of_descendants.to_type, default: -> { LineSelector::All.new }
         attribute :excluded_lines, LineSelector.one_of_descendants.to_type, default: nil
 
-        validates :period, :included_lines, :excluded_lines, store_model: true
+        validates :period, :included_lines, store_model: true
+        validates :excluded_lines, store_model: true, if: ->(r) { r.excluded_lines.present? }
       end
 
       class Setup < ApplicationStoreModel
@@ -132,43 +142,55 @@ module Export
       attribute :code_space_id, :integer # TODO: Gtfs and Netex only
 
       validates :scope_setup, store_model: true
+      # rubocop:disable Layout/FirstHashElementIndentation
+      validates :code_space_id, inclusion: {
+                                  in: ->(r) { r.parent.workgroup.code_spaces.pluck(:id) },
+                                  allow_blank: true
+                                }
+      # rubocop:enable Layout/FirstHashElementIndentation
+      validate :validate_scope_setup_class
 
       def candidate_scope_setup_classes
-        []
+        [].tap do |result|
+          result << Scope::Referential if parent.is_a?(::Export::Base)
+          result << Scope::PublishedReferential if parent.is_a?(::PublicationSetup)
+        end
       end
 
       def stateful?
         true
       end
+
+      private
+
+      def validate_scope_setup_class
+        return if candidate_scope_setup_classes.any? { |k| scope_setup.is_a?(k) }
+
+        errors.add(:scope_setup, :invalid)
+      end
     end
 
     class Gtfs < Base
-      attribute :ignore_extended_route_types, :boolean
-      attribute :stop_sequence_from_one, :boolean
-
-      def candidate_scope_setup_classes
-        [Scope::Referential, Scope::PublishedReferential]
-      end
+      attribute :ignore_extended_route_types, :boolean, default: false
+      attribute :stop_sequence_from_one, :boolean, default: false
     end
 
     class Netex < Base
-      attribute :profile, :string
-      attribute :profile_options, default: -> { {} }
-      attribute :participant_ref, :string
-      attribute :skip_line_resources, :boolean
-      attribute :skip_stop_area_resources, :boolean
+      extend Enumerize
 
-      def candidate_scope_setup_classes
-        [Scope::Referential, Scope::PublishedReferential]
-      end
+      attribute :profile, :string, default: 'none'
+      attribute :profile_options, default: -> { {} }
+      attribute :participant_ref, :string, default: 'enRoute'
+      attribute :skip_line_resources, :boolean, default: false
+      attribute :skip_stop_area_resources, :boolean, default: false
+
+      # TODO: Remove deprecated idfm/full. See @CHOUETTE-4619
+      enumerize :profile, in: %w[none french european idfm/iboo idfm/icar idfm/publication idfm/full]
+      validates :profile, presence: true
     end
 
     class Ara < Base
-      attribute :include_stop_visits, :boolean
-
-      def candidate_scope_setup_classes
-        [Scope::Referential, Scope::PublishedReferential]
-      end
+      attribute :include_stop_visits, :boolean, default: false
 
       def stateful?
         false

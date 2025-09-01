@@ -22,6 +22,13 @@ class PublicationSetup < ApplicationModel
 
   attribute :export_setup, Export::Setup::Base.one_of_descendants.to_type
 
+  def migrate_export_options_to_export_setup
+    load Rails.root.join('db/migrate/20250822093323_add_export_setup_to_exports_and_publications.rb')
+    migration = AddExportSetupToExportsAndPublications.new
+    self.export_setup = migration.send(:migrate_publication_setup_export_options_to_export_setup, export_options.deep_stringify_keys)
+  end
+  before_save :migrate_export_options_to_export_setup
+
   accepts_nested_attributes_for :destinations, allow_destroy: true, reject_if: :all_blank
 
   scope :enabled, -> { where enabled: true }

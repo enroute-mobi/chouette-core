@@ -46,6 +46,13 @@ class Export::Base < ApplicationModel
                           enumerize: %w[line_ids company_ids line_provider_ids all_line_ids]
   option :duration
 
+  def migrate_options_to_setup
+    load Rails.root.join('db/migrate/20250822093323_add_export_setup_to_exports_and_publications.rb')
+    migration = AddExportSetupToExportsAndPublications.new
+    self.setup = migration.send(migration.send(:migrate_method_for_export_class, self.class.name), options.deep_stringify_keys)
+  end
+  before_save :migrate_options_to_setup
+
   def period
     nil
   end

@@ -2,7 +2,7 @@
 
 RSpec.describe Export::Gtfs::VehicleJourneyAtStops do
   subject(:part) { Export::Gtfs::VehicleJourneyAtStops.new(export) }
-  let(:export) { Export::Gtfs.new export_scope: export_scope }
+  let(:export) { Export::Gtfs.new(export_scope: export_scope).tap(&:migrate_options_to_setup) }
   let(:export_scope) { double }
 
   describe '#ignore_time_zone?' do

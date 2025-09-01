@@ -29,10 +29,10 @@ class Export::NetexGeneric < Export::Base
     @target ||= ::Netex::Target.build(export_file,
                                     profile: netex_profile,
                                     publication_timestamp: Time.zone.now,
-                                    participant_ref: participant_ref,
+                                    participant_ref: setup.participant_ref,
                                     validity_periods: [export_scope.validity_period],
                                     after_add: target_after_add,
-                                    profile_options: profile_options)
+                                    profile_options: setup.profile_options)
   end
   attr_writer :target
 
@@ -51,15 +51,15 @@ class Export::NetexGeneric < Export::Base
   end
 
   def profile?
-    ! [nil, 'none'].include? profile
+    ![nil, 'none'].include?(setup.profile)
   end
 
   def netex_profile
     return unless profile?
 
     # TODO: To be remove me. See @CHOUETTE-4619
-    real_profile = profile
-    real_profile = 'idfm/publication/legacy' if profile == 'idfm/full'
+    real_profile = setup.profile
+    real_profile = 'idfm/publication/legacy' if real_profile == 'idfm/full'
 
     @netex_profile ||= Netex::Profile.create(real_profile)
   end
@@ -92,7 +92,7 @@ class Export::NetexGeneric < Export::Base
     end
 
     def ignore_referent_stop_areas?
-      export.ignore_referent_stop_areas
+      export.setup.scope_setup.stop_areas.ignore_referent_stop_areas
     end
 
     def entrances
@@ -177,7 +177,7 @@ class Export::NetexGeneric < Export::Base
     end
 
     def prefer_referent_lines?
-      export.prefer_referent_line
+      export.setup.scope_setup.lines.prefer_referent_lines
     end
 
     def referenced_lines
@@ -203,8 +203,8 @@ class Export::NetexGeneric < Export::Base
 
   def part_classes
     [].tap do |part_classes|
-      part_classes.push(Entrances, StopAreas, FlexibleStopAreas) unless skip_stop_area_resources
-      part_classes.push(Companies, Networks, LineNotices, BookingArrangements, Lines) unless skip_line_resources
+      part_classes.push(Entrances, StopAreas, FlexibleStopAreas) unless setup.skip_stop_area_resources
+      part_classes.push(Companies, Networks, LineNotices, BookingArrangements, Lines) unless setup.skip_line_resources
 
       # Export StopPoints before Routes to detect local references
       part_classes.push(StopPoints, Routes, RoutingConstraintZones, JourneyPatterns, TimeTables, VehicleJourneyStopAssignments, Organisations, PointOfInterests)

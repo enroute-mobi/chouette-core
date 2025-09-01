@@ -10,7 +10,7 @@ RSpec.describe Export::Gtfs, type: %i[model with_exportable_referential] do
     subject { export.default_company }
 
     # TODO: Should be provided by top describe
-    let(:export) { Export::Gtfs.new export_scope: export_scope, workgroup: context.workgroup }
+    let(:export) { Export::Gtfs.new(export_scope: export_scope, workgroup: context.workgroup).tap(&:migrate_options_to_setup) }
 
     let(:export_scope) { double lines: context.line_referential.lines }
 
@@ -57,13 +57,13 @@ RSpec.describe Export::Gtfs, type: %i[model with_exportable_referential] do
       let(:referent) { context.company :referent }
       let(:company) { context.company :target }
 
-      context 'when prefer_referent_company option is used' do
-        before { export.prefer_referent_company = true }
+      context 'when prefer_referent_companies option is used' do
+        before { export.setup = { scope_setup: { type: 'Export::Setup::Scope::Referential', lines: { type: 'Export::Setup::Scope::Lines::Scheduled', prefer_referent_companies: true } } } }
 
         it { is_expected.to eq(referent) }
       end
 
-      context 'when prefer_referent_company option isn\'t used' do
+      context 'when prefer_referent_companies option isn\'t used' do
         it { is_expected.to eq(company) }
       end
     end
@@ -161,7 +161,7 @@ RSpec.describe Export::Gtfs, type: %i[model with_exportable_referential] do
 
     before { exported_referential.switch }
 
-    let(:gtfs_export) { Export::Gtfs.new(referential: exported_referential, workgroup: exported_referential.workgroup) }
+    let(:gtfs_export) { Export::Gtfs.new(referential: exported_referential, workgroup: exported_referential.workgroup).tap(&:migrate_options_to_setup) }
 
     it 'gtfs export stop times use agency timezone' do
       gtfs_export.duration = nil

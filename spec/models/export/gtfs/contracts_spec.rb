@@ -9,7 +9,7 @@ RSpec.describe Export::Gtfs::Contracts do
       workbench: workbench,
       workgroup: workgroup,
       referential: referential
-    )
+    ).tap(&:migrate_options_to_setup)
   end
 
   let(:referential) { context.referential }

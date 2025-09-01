@@ -94,8 +94,9 @@ module Export
       Companies.new(self).perform
     end
 
-    alias ignore_parent_stop_places? ignore_parent_stop_places
-    alias stop_sequence_from_one? stop_sequence_from_one
+    def prefer_referent_companies?
+      setup.scope_setup.lines.prefer_referent_companies
+    end
 
     def index
       @index ||= Index.new
@@ -189,12 +190,12 @@ module Export
             end
         end
 
-        def ignore_parent_stop_places?
-          export.ignore_parent_stop_places
+        def ignore_parent_stop_areas?
+          export.setup.scope_setup.stop_areas.ignore_parent_stop_areas
         end
 
         def prefer_referent_stop_areas?
-          export.prefer_referent_stop_area
+          export.setup.scope_setup.stop_areas.prefer_referent_stop_areas
         end
 
         def referenced_stop_areas
@@ -222,7 +223,7 @@ module Export
         end
 
         def scoped_stop_areas
-          if ignore_parent_stop_places?
+          if ignore_parent_stop_areas?
             current_scope.stop_areas
           else
             current_scope.stop_areas.self_and_parents
@@ -240,7 +241,7 @@ module Export
         end
 
         def prefer_referent_lines?
-          export.prefer_referent_line
+          export.setup.scope_setup.lines.prefer_referent_lines
         end
 
         def referenced_lines
@@ -268,16 +269,14 @@ module Export
       end
 
       concerning :Companies do
+        delegate :prefer_referent_companies?, to: :export
+
         def companies
           if prefer_referent_companies?
             scoped_companies.referents_or_self
           else
             scoped_companies
           end
-        end
-
-        def prefer_referent_companies?
-          export.prefer_referent_company
         end
 
         def referenced_companies
@@ -340,7 +339,7 @@ module Export
           return nil unless company_id
 
           company = line_referential.companies.find(company_id)
-          company = company.referent if prefer_referent_company && company.referent
+          company = company.referent if prefer_referent_companies? && company.referent
           company
         end
     end
@@ -516,18 +515,18 @@ module Export
         end
       end
 
-      def ignore_extended_gtfs_route_types?
-        export.ignore_extended_gtfs_route_types
+      def ignore_extended_route_types?
+        export.setup.ignore_extended_route_types
       end
 
       def decorator_attributes
         super.merge(
-          ignore_extended_gtfs_route_types: ignore_extended_gtfs_route_types?
+          ignore_extended_route_types: ignore_extended_route_types?
         )
       end
 
       class Decorator < ModelDecorator
-        attr_accessor :ignore_extended_gtfs_route_types
+        attr_accessor :ignore_extended_route_types
 
         def route_long_name
           value = published_name.presence || name
@@ -574,11 +573,11 @@ module Export
         end
 
         def route_type_mapper
-          ignore_extended_gtfs_route_types ? self.class.base_route_type_mapper : self.class.extended_route_type_mapper
+          ignore_extended_route_types ? self.class.base_route_type_mapper : self.class.extended_route_type_mapper
         end
 
         def route_type
-          return 715 if flexible_service? && !ignore_extended_gtfs_route_types
+          return 715 if flexible_service? && !ignore_extended_route_types
 
           route_type_mapper.for chouette_transport_mode
         end
@@ -1032,7 +1031,7 @@ module Export
       def decorator_attributes
         super.merge(
           default_timezone: default_timezone,
-          stop_sequence_from_one: export.stop_sequence_from_one?
+          stop_sequence_from_one: export.setup.stop_sequence_from_one
         )
       end
 

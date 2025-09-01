@@ -149,16 +149,6 @@ class Export::Base < ApplicationModel
     workbench.exports.purgeable.destroy_all
   end
 
-  before_save :resolve_line_ids
-  def resolve_line_ids
-    return unless respond_to?(:line_ids) # To delete when java export is disabled
-    return unless line_ids.nil? # Useless to update line_ids if line_ids exists
-
-    options = Export::Scope::Options.new(referential, date_range: date_range, line_ids: line_ids,
-                                                      line_provider_ids: line_provider_ids, company_ids: company_ids)
-    self.line_ids = options.line_ids
-  end
-
   scope :not_used_by_publication_apis, lambda {
     joins('LEFT JOIN public.publication_api_sources ON publication_api_sources.export_id = exports.id')
       .where('publication_api_sources.id IS NULL')
@@ -206,21 +196,17 @@ class Export::Base < ApplicationModel
   end
 
   def code_space
-    return nil unless workgroup && exported_code_space
+    return nil unless workgroup && setup.code_space_id
 
-    @code_space ||= workgroup.code_spaces.find_by(id: exported_code_space)
+    @code_space ||= workgroup.code_spaces.find_by(id: setup.code_space_id)
   end
 
   def public_code_space
     @public_code_space ||= workgroup.code_spaces.public if workgroup
   end
 
-  def export_scope_options
-    { date_range: date_range, line_ids: line_ids, export_id: id }
-  end
-
   def build_export_scope
-    Export::Scope.build(referential, **export_scope_options)
+    Export::Scope.build(referential, setup, id)
   end
 
   def export_scope

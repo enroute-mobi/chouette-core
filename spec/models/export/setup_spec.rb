@@ -393,6 +393,8 @@ RSpec.describe Export::Setup::Base do
 end
 
 RSpec.describe Export::Setup::Gtfs do
+  subject(:export_setup) { described_class.new }
+
   describe 'validations' do
     describe '#scope_setup' do
       context 'when parent is an export' do
@@ -414,9 +416,16 @@ RSpec.describe Export::Setup::Gtfs do
       end
     end
   end
+
+  describe 'stateful?' do
+    subject { export_setup.stateful? }
+    it { is_expected.to eq(true) }
+  end
 end
 
 RSpec.describe Export::Setup::Netex do
+  subject(:export_setup) { described_class.new }
+
   describe 'validations' do
     describe '#scope_setup' do
       context 'when parent is an export' do
@@ -449,9 +458,24 @@ RSpec.describe Export::Setup::Netex do
       it { is_expected.not_to allow_value(nil).for(:profile) }
     end
   end
+
+  describe '#participant_ref' do
+    subject { export_setup.participant_ref }
+
+    it 'is "enRoute" by default' do
+      is_expected.to eq('enRoute')
+    end
+  end
+
+  describe 'stateful?' do
+    subject { export_setup.stateful? }
+    it { is_expected.to eq(true) }
+  end
 end
 
 RSpec.describe Export::Setup::Ara do
+  subject(:export_setup) { described_class.new }
+
   describe 'validations' do
     describe '#scope_setup' do
       context 'when parent is an export' do
@@ -472,5 +496,10 @@ RSpec.describe Export::Setup::Ara do
         it { is_expected.not_to allow_value(Export::Setup::Scope::Workgroup.new).for(:scope_setup) }
       end
     end
+  end
+
+  describe '#stateful?' do
+    subject { export_setup.stateful? }
+    it { is_expected.to eq(false) }
   end
 end

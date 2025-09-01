@@ -108,7 +108,11 @@ RSpec.describe Export::Scope, use_chouette_factory: true do
     describe '#time_tables' do
       subject { scope.time_tables }
 
-      let(:scope) { Export::Scope.build(referential, line_ids: selected_line_ids) }
+      let(:scope) do
+        Export::Scope::Builder.new(referential) do |builder|
+          builder.lines(selected_line_ids) if selected_line_ids
+        end.scope
+      end
 
       context 'when the lines associated to time tables are selected' do
         let(:selected_line_ids) { [ context.line(:first).id, context.line(:second).id] }

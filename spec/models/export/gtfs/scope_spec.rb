@@ -2,22 +2,22 @@
 
 RSpec.describe Export::Gtfs::Scope do
   subject(:scope) { described_class.new(initial_scope, export: export) }
-  let(:export) { Export::Gtfs.new }
+  let(:export) { Export::Gtfs.new.tap(&:migrate_options_to_setup) }
   let(:initial_scope) { double }
 
   describe 'StopAreas concerning' do
-    describe '#ignore_parent_stop_places?' do
-      subject { scope.ignore_parent_stop_places? }
+    describe '#ignore_parent_stop_areas?' do
+      subject { scope.ignore_parent_stop_areas? }
 
-      context 'when Export#ignore_parent_stop_places is true' do
-        before { export.ignore_parent_stop_places = true }
+      before { export.setup = { scope_setup: { type: 'Export::Setup::Scope::Referential', stop_areas: { type: 'Export::Setup::Scope::StopAreas::Scheduled', ignore_parent_stop_areas: ignore_parent_stop_areas } } } }
 
+      context 'when ignore_parent_stop_areas is true in export setup' do
+        let(:ignore_parent_stop_areas) { true }
         it { is_expected.to be_truthy }
       end
 
-      context 'when Export#ignore_parent_stop_places is false' do
-        before { export.ignore_parent_stop_places = false }
-
+      context 'when ignore_parent_stop_areas is false in export setup' do
+        let(:ignore_parent_stop_areas) { false }
         it { is_expected.to be_falsy }
       end
     end
@@ -25,15 +25,15 @@ RSpec.describe Export::Gtfs::Scope do
     describe '#prefer_referent_stop_areas?' do
       subject { scope.prefer_referent_stop_areas? }
 
-      context 'when Export#prefer_referent_stop_areas is true' do
-        before { export.prefer_referent_stop_area = true }
+      before { export.setup = { scope_setup: { type: 'Export::Setup::Scope::Referential', stop_areas: { type: 'Export::Setup::Scope::StopAreas::Scheduled', prefer_referent_stop_areas: prefer_referent_stop_areas } } } }
 
+      context 'when prefer_referent_stop_areas is true in export setup' do
+        let(:prefer_referent_stop_areas) { true }
         it { is_expected.to be_truthy }
       end
 
-      context 'when Export#prefer_referent_stop_areas is false' do
-        before { export.prefer_referent_stop_area = false }
-
+      context 'when prefer_referent_stop_areas is false in export setup' do
+        let(:prefer_referent_stop_areas) { false }
         it { is_expected.to be_falsy }
       end
     end
@@ -53,15 +53,15 @@ RSpec.describe Export::Gtfs::Scope do
 
       let(:initial_scope) { double stop_areas: Chouette::StopArea.where(id: child) }
 
-      context 'when ignore_parent_stop_places? is enabled' do
-        before { allow(scope).to receive(:ignore_parent_stop_places?).and_return(true) }
+      context 'when ignore_parent_stop_areas? is enabled' do
+        before { allow(scope).to receive(:ignore_parent_stop_areas?).and_return(true) }
 
         it { is_expected.to include(child) }
         it { is_expected.to_not include(parent) }
       end
 
-      context 'when ignore_parent_stop_places? is disabled' do
-        before { allow(scope).to receive(:ignore_parent_stop_places?).and_return(false) }
+      context 'when ignore_parent_stop_areas? is disabled' do
+        before { allow(scope).to receive(:ignore_parent_stop_areas?).and_return(false) }
 
         it { is_expected.to include(child) }
         it { is_expected.to include(parent) }
@@ -108,7 +108,7 @@ RSpec.describe Export::Gtfs::Scope do
     describe '#referenced_stop_areas' do
       subject { scope.referenced_stop_areas }
 
-      context 'when prefer_referent_stop_area? is disabled' do
+      context 'when prefer_referent_stop_areas? is disabled' do
         before { allow(scope).to receive(:prefer_referent_stop_areas?).and_return(false) }
 
         let(:context) do
@@ -122,7 +122,7 @@ RSpec.describe Export::Gtfs::Scope do
         it { is_expected.to be_empty }
       end
 
-      context 'when prefer_referent_stop_area? is enabled' do
+      context 'when prefer_referent_stop_areas? is enabled' do
         before { allow(scope).to receive(:prefer_referent_stop_areas?).and_return(true) }
 
         let(:context) do
@@ -148,7 +148,7 @@ RSpec.describe Export::Gtfs::Scope do
     describe '#dependencies_stop_areas' do
       subject { scope.dependencies_stop_areas }
 
-      context 'when prefer_referent_stop_area? is disabled' do
+      context 'when prefer_referent_stop_areas? is disabled' do
         before { allow(scope).to receive(:prefer_referent_stop_areas?).and_return(false) }
 
         let(:context) do
@@ -164,7 +164,7 @@ RSpec.describe Export::Gtfs::Scope do
         it { is_expected.to include(particular) }
       end
 
-      context 'when prefer_referent_stop_area? is enabled' do
+      context 'when prefer_referent_stop_areas? is enabled' do
         before { allow(scope).to receive(:prefer_referent_stop_areas?).and_return(true) }
 
         let(:context) do
@@ -248,15 +248,15 @@ RSpec.describe Export::Gtfs::Scope do
     describe '#prefer_referent_lines?' do
       subject { scope.prefer_referent_lines? }
 
-      context 'when Export#prefer_referent_lines is true' do
-        before { export.prefer_referent_line = true }
+      before { export.setup = { scope_setup: { type: 'Export::Setup::Scope::Referential', lines: { type: 'Export::Setup::Scope::Lines::Scheduled', prefer_referent_lines: prefer_referent_lines } } } }
 
+      context 'when prefer_referent_lines is true in export setup' do
+        let(:prefer_referent_lines) { true }
         it { is_expected.to be_truthy }
       end
 
-      context 'when Export#prefer_referent_lines is false' do
-        before { export.prefer_referent_line = false }
-
+      context 'when prefer_referent_lines is false in export setup' do
+        let(:prefer_referent_lines) { false }
         it { is_expected.to be_falsy }
       end
     end
@@ -351,15 +351,15 @@ RSpec.describe Export::Gtfs::Scope do
     describe '#prefer_referent_companies?' do
       subject { scope.prefer_referent_companies? }
 
-      context 'when Export#prefer_referent_companies is true' do
-        before { export.prefer_referent_company = true }
+      before { export.setup = { scope_setup: { type: 'Export::Setup::Scope::Referential', lines: { type: 'Export::Setup::Scope::Lines::Scheduled', prefer_referent_companies: prefer_referent_companies } } } }
 
+      context 'when prefer_referent_companies is true in export setup' do
+        let(:prefer_referent_companies) { true }
         it { is_expected.to be_truthy }
       end
 
-      context 'when Export#prefer_referent_companies is false' do
-        before { export.prefer_referent_company = false }
-
+      context 'when prefer_referent_companies is false in export setup' do
+        let(:prefer_referent_companies) { false }
         it { is_expected.to be_falsy }
       end
     end

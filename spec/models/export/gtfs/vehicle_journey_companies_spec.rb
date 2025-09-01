@@ -8,7 +8,7 @@ RSpec.describe Export::Gtfs::VehicleJourneyCompanies do
   let(:export_scope) { Export::Scope::All.new context.referential }
 
   let(:export) do
-    Export::Gtfs.new export_scope: export_scope, workgroup: context.workgroup
+    Export::Gtfs.new(export_scope: export_scope, workgroup: context.workgroup).tap(&:migrate_options_to_setup)
   end
 
   describe '#perform' do

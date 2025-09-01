@@ -15,14 +15,6 @@ module LocalExportSupport
     end
   end
 
-  def date_range
-    @date_range ||= if duration.present?
-      Time.now.to_date..self.duration.to_i.days.from_now.to_date
-    elsif period == 'static_day_period' && from.present? && to.present?
-      from..to
-    end
-  end
-
   def export_type
     self.class.name.demodulize.underscore
   end

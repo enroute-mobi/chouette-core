@@ -36,25 +36,29 @@ module Export
         class Lines < LineSelector
           attribute :line_ids, IntegerArrayType.new
 
-          validates :line_ids, presence: true
+          validates :line_ids, presence: true,
+                               inclusion: { in: ->(r) { r.parent.parent.candidate_lines.pluck(:id) } }
         end
 
         class Companies < LineSelector
           attribute :company_ids, IntegerArrayType.new
 
-          validates :company_ids, presence: true
+          validates :company_ids, presence: true,
+                                  inclusion: { in: ->(r) { r.parent.parent.candidate_companies.pluck(:id) } }
         end
 
         class Networks < LineSelector # TODO: unused for now
           attribute :network_ids, IntegerArrayType.new
 
-          validates :network_ids, presence: true
+          validates :network_ids, presence: true,
+                                  inclusion: { in: ->(r) { r.parent.parent.candidate_networks.pluck(:id) } }
         end
 
         class LineProviders < LineSelector
           attribute :line_provider_ids, IntegerArrayType.new
 
-          validates :line_provider_ids, presence: true
+          validates :line_provider_ids, presence: true,
+                                        inclusion: { in: ->(r) { r.parent.parent.candidate_line_providers.pluck(:id) } }
         end
 
         class All < LineSelector
@@ -117,12 +121,43 @@ module Export
         attribute :vehicle_journeys, VehicleJourneys.to_type, default: -> { VehicleJourneys.new }
 
         validates :vehicle_journeys, store_model: true
+
+        def candidate_lines
+          parent.parent.referential&.lines || ::Chouette::Line.none
+        end
+
+        def candidate_companies
+          parent.parent.referential&.companies || ::Chouette::Company.none
+        end
+
+        def candidate_networks
+          parent.parent.referential&.networks || ::Chouette::Network.none
+        end
+
+        def candidate_line_providers
+          parent.parent.workbench.line_providers
+        end
       end
 
       class Referential < AbstractReferential
       end
 
       class PublishedReferential < AbstractReferential
+        def candidate_lines
+          parent.parent.workgroup.lines
+        end
+
+        def candidate_companies
+          parent.parent.workgroup.companies
+        end
+
+        def candidate_networks
+          parent.parent.workgroup.networks
+        end
+
+        def candidate_line_providers
+          parent.parent.workgroup.line_providers
+        end
       end
 
       class Workbench < Setup # TODO: unused for now

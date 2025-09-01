@@ -39,8 +39,10 @@ class Workgroup < ApplicationModel
   has_many :contracts, through: :workbenches
   has_many :aggregate_schedulings, dependent: :destroy
   has_many :saved_searches, class_name: 'Search::Save', as: :parent, dependent: :destroy
+  has_many :line_providers, through: :workbenches
   has_many :lines, through: :line_referential
   has_many :companies, through: :line_referential
+  has_many :networks, through: :line_referential
   has_many :stop_areas, through: :stop_area_referential
   has_many :fare_zones, through: :fare_referential
 

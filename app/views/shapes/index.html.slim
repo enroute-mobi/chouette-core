@@ -5,11 +5,11 @@
 .page_content x-data="{ saveSearchPanel: false }"
   .container-fluid
     .row
+      = render 'filters'
+    .row
       .col-md-6.col-sm-12
         .row
           h4.underline= t('activerecord.models.shape.other').capitalize
-        .row
-          = render 'filters'
         - if @shapes.any?
           .row
             = table_builder_2 @shapes,

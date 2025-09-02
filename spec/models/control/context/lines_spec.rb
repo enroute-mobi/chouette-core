@@ -113,21 +113,18 @@ RSpec.describe Control::Context::Lines::Run do
       let(:line_id_outside_workbench) { 9999 }
       let(:errors) { control_context.errors.details[:line_ids] }
 
+      let(:line_ids) { [context.line(:first).id, context.line(:second).id, line_id_outside_workbench] }
       let!(:control_context) do
         Control::Context::Lines.create(
           name: 'Control Context Lines 1',
           control_list: control_list,
-          line_ids: [
-            context.line(:first).id,
-            context.line(:second).id,
-            line_id_outside_workbench
-          ]
+          line_ids: line_ids
         )
       end
 
       it 'should be invalid for line_ids' do
         expect(errors.count).to eq(1)
-        expect(errors.first).to include(error: :inclusion, rejected_values: '9999')
+        expect(errors.first).to include(error: :inclusion, value: line_ids)
       end
     end
 

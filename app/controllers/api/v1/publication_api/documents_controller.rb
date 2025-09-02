@@ -10,6 +10,8 @@ class Api::V1::PublicationApi::DocumentsController < Api::V1::PublicationApi::Ba
 
   before_action :find_document!, only: %i[show]
 
+  delegate :code_space, to: :publication_api
+
   def show
     prepare_for_download @document
     filename_builder = FilenameBuilder.new(
@@ -69,20 +71,25 @@ class Api::V1::PublicationApi::DocumentsController < Api::V1::PublicationApi::Ba
   def published_resource # rubocop:disable Metrics/MethodLength
     return @published_resource if @published_resource
 
-    resources = params[:resources]
+    scope = workgroup.send(params[:resources])
     code = params[:registration_number]
-    base_request = workgroup.send(resources).where(registration_number: code)
+
+    scope = if code_space
+              scope.by_code(code_space, code)
+            else
+              scope.where(registration_number: code)
+            end
 
     if prefer_referent?
       @published_resource = begin
-        base_request.where(is_referent: true).sole
+        scope.where(is_referent: true).sole
       rescue ActiveRecord::RecordNotFound, ActiveRecord::SoleRecordExceeded
         nil
       end
       return @published_resource if @published_resource
     end
 
-    @published_resource = base_request.sole
+    @published_resource = scope.sole
   end
 
   def find_document! # rubocop:disable Metrics/AbcSize

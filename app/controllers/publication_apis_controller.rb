@@ -52,7 +52,8 @@ class PublicationApisController < Chouette::WorkgroupController
       :name,
       :slug,
       :public,
-      :prefer_referent_documents
+      :prefer_referent_documents,
+      :code_space_id
     )
   end
 end

@@ -12,6 +12,7 @@ fr:
     form:
       sections:
         params: "Paramètres techniques de l'API"
+        content_options: "Options de contenu"
   activerecord:
     models:
       publication_api:
@@ -27,6 +28,7 @@ fr:
         publications: "Publications associées"
         public: "API publique"
         prefer_referent_documents: "Préférer les documents des référents"
+        code_space: "Codes"
   formtastic:
     hints:
       publication_api:

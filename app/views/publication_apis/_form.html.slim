@@ -13,8 +13,6 @@
       .col-lg-12
         = form.input :public, as: :switchable_checkbox
       .col-lg-12
-        = form.input :prefer_referent_documents, as: :switchable_checkbox
-      .col-lg-12
         = form.input :slug, hint: 'formtastic.hints.publication_api.slug'.t
       .col-lg-12
         .form-group
@@ -22,6 +20,15 @@
           .col-sm-8.col-xs-7.public-url-preview
             span= "#{SmartEnv['PUBLIC_HOST']}/api/v1/datas/"
             span.slug-preview= @publication_api.slug
+
+    .separator.section_separator
+
+    h2.mb-lg= t('publication_apis.form.sections.content_options')
+    .form-group
+      .col-lg-12
+        = form.input :code_space_id, as: :ajax_select, collection: @workgroup.code_spaces, label_method: :short_name
+      .col-lg-12
+        = form.input :prefer_referent_documents, as: :switchable_checkbox
 
   = cancel_button
 

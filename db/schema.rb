@@ -1189,6 +1189,8 @@ ActiveRecord::Schema[7.0].define(version: 2025_09_07_060228) do
     t.datetime "updated_at", precision: nil, null: false
     t.boolean "public", default: false
     t.boolean "prefer_referent_documents", default: false, null: false
+    t.bigint "code_space_id"
+    t.index ["code_space_id"], name: "index_publication_apis_on_code_space_id"
     t.index ["workgroup_id"], name: "index_publication_apis_on_workgroup_id"
   end
 

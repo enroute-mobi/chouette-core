@@ -2,6 +2,8 @@
 
 class PublicationApi < ActiveRecord::Base
   belongs_to :workgroup # CHOUETTE-3247
+  belongs_to :code_space, optional: true
+
   has_many :api_keys, class_name: 'PublicationApiKey'
   has_many :destinations, dependent: :delete_all
   has_many :publication_setups, through: :destinations

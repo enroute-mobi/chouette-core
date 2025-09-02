@@ -13,7 +13,12 @@ class PublicationSetupsController < Chouette::WorkgroupController
   def index
     index! do |format|
       format.html {
-        @publication_setups = decorate_publication_setups(@publication_setups)
+        @publication_setups = PublicationSetupDecorator.decorate(
+          @publication_setups,
+          context: {
+            workgroup: workgroup
+          }
+        )
       }
     end
   end
@@ -73,10 +78,7 @@ class PublicationSetupsController < Chouette::WorkgroupController
   end
 
   def collection
-    @q = end_of_association_chain.ransack(params[:q])
-    scope = @q.result(distinct: true)
-    scope = scope.order(sort_column + ' ' + sort_direction)
-    @publication_setups = scope.paginate(page: params[:page])
+    @publication_setups ||= super.order(sort_column => sort_direction).paginate(page: params[:page]) # rubocop:disable Naming/MemoizedInstanceVariableName
   end
 
   def sort_column
@@ -85,14 +87,5 @@ class PublicationSetupsController < Chouette::WorkgroupController
 
   def sort_direction
     %w[asc desc].include?(params[:direction]) ? params[:direction] : 'asc'
-  end
-
-  def decorate_publication_setups publication_setups
-    PublicationSetupDecorator.decorate(
-      publication_setups,
-      context: {
-        workgroup: workgroup
-      }
-    )
   end
 end

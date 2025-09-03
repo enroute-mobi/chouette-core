@@ -15,7 +15,7 @@ export default class StopAreaHeaderManager {
     let index = this.ids_list.indexOf(object_id)
     let sp = this.stopPointsList[index]
     let showHeadline =  show_details && this.showHeader(object_id)
-    let title = sp.city_name ? sp.city_name + ' (' + sp.zip_code +')' : ""
+    let title = sp.city_name && sp.zip_code ? sp.city_name + ' (' + sp.zip_code +')' : ""
     if(sp.waiting_time > 0){
       title += " | " + sp.waiting_time_text
     }

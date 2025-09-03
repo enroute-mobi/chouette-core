@@ -1135,7 +1135,8 @@ class Export::NetexGeneric < Export::Base
           latest_booking_time: netex_latest_booking_time,
           minimum_booking_period: netex_minimum_booking_period,
           booking_url: booking_url,
-          booking_note: booking_notes
+          booking_note: booking_notes,
+          key_list: netex_alternate_identifiers
         )
       end
 

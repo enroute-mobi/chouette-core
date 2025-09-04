@@ -36,8 +36,6 @@ fr:
       unassociate:
         notice: Le Zone Tarifaire a été dissocié de la ligne avec succès
         error: Le Zone Tarifaire n'a pas pu être dissocié de la ligne
-  activemodel:
-    attributes:
   activerecord:
     models:
       fare/zone:

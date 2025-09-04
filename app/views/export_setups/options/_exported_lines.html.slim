@@ -1,0 +1,25 @@
+- kinds = %w[Lines Companies LineProviders All]
+
+= form.simple_fields_for(:scope_setup, form.object.scope_setup) do |scope_setup_form|
+  = scope_setup_form.simple_fields_for(:vehicle_journeys, scope_setup_form.object.vehicle_journeys) do |vehicle_journeys_form|
+    = vehicle_journeys_form.simple_fields_for(:included_lines, vehicle_journeys_form.object.included_lines) do |included_lines_form|
+      = included_lines_form.input :type, label: vehicle_journeys_form.object.class.human_attribute_name('included_lines'), as: :select, collection: kinds.map { |k| klass = Export::Setup::Scope::LineSelector.const_get(k); [klass.model_name.human, klass.name] }, required: true, wrapper: :vertical_radio_and_checkboxes_tailwind, input_html: { 'x-model': 'exportedLines', 'x-bind:disabled': 'isExport && !Boolean(referentialId)' }
+
+    - kinds.each do |k|
+      - next if k == 'All'
+
+      template[x-if="exportedLines == 'Export::Setup::Scope::LineSelector::#{k}'"]
+        - klass = Export::Setup::Scope::LineSelector.const_get(k)
+        - underscore = k.underscore
+        - attribute = :"#{underscore.singularize}_ids"
+        - included_lines = vehicle_journeys_form.object.included_lines.becomes(klass)
+        - collection = scope_setup_form.object.send(:"candidate_#{underscore}").where(id: included_lines.send(attribute))
+
+        = vehicle_journeys_form.simple_fields_for(:included_lines, included_lines) do |included_lines_form|
+          = included_lines_form.input attribute,
+                                      as: :tom_select,
+                                      collection: Rabl::Renderer.new("autocomplete/#{underscore}", collection, format: :hash, view_path: 'app/views').render,
+                                      input_html: { multiple: true, style: 'width: 100%', 'x-bind:data-url': "getExportedLinesSelectURL()", 'x-ref': 'exportedLinesSelect' },
+                                      label_html: { class: 'invisible' },
+                                      include_hidden: false,
+                                      config: { type: 'ajax' }

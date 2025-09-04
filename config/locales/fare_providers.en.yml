@@ -36,8 +36,6 @@ en:
       unassociate:
         notice: The document is successfully dissociated to the line
         error: The document could not be dissociated to the line
-  activemodel:
-    attributes:
   activerecord:
     models:
       fare/provider:

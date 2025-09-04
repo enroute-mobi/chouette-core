@@ -29,11 +29,6 @@ en:
       unassociate:
         notice: The Contract is successfully dissociated to the line
         error: The Contract could not be dissociated to the line
-  activemodel:
-    attributes:
-      period:
-        from: Valid after
-        to: Valid until
   activerecord:
     models:
       contract:

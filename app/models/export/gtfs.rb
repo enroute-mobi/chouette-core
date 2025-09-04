@@ -2,37 +2,7 @@
 
 module Export
   class Gtfs < Export::Base
-    option :period, default_value: 'all_periods', enumerize: %w[all_periods only_next_days static_day_period]
-    option :from, serialize: ActiveModel::Type::Date
-    option :to, serialize: ActiveModel::Type::Date
-    option :exported_code_space
-    option :prefer_referent_stop_area, required: true, default_value: false, enumerize: [true, false],
-                                       serialize: ActiveModel::Type::Boolean
-    option :prefer_referent_line, required: true, default_value: false, enumerize: [true, false],
-                                  serialize: ActiveModel::Type::Boolean
-    option :prefer_referent_company, required: true, default_value: false, enumerize: [true, false],
-                                     serialize: ActiveModel::Type::Boolean
-    option :ignore_parent_stop_places, required: true, default_value: false, enumerize: [true, false],
-                                       serialize: ActiveModel::Type::Boolean
-    option :ignore_extended_gtfs_route_types, required: true, default_value: false, enumerize: [true, false],
-                                              serialize: ActiveModel::Type::Boolean
-    option  :stop_sequence_from_one, required: true, default_value: false, enumerize: [true, false],
-                                                     serialize: ActiveModel::Type::Boolean
-    # TODO: No longer used by present in database. Remove me
-    option :ignore_single_stop_station, required: false, default_value: false, enumerize: [true, false], serialize: ActiveModel::Type::Boolean
-
     attribute :setup, Export::Setup::Gtfs.to_type
-
-    validate :ensure_is_valid_period
-
-    def ensure_is_valid_period
-      return unless period == 'static_day_period'
-
-      return unless from.blank? || to.blank? || from > to
-
-      errors.add(:from, :invalid)
-      errors.add(:to, :invalid)
-    end
 
     DEFAULT_AGENCY_ID = 'chouette_default'
     DEFAULT_TIMEZONE = 'Etc/UTC'

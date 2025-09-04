@@ -1,29 +1,5 @@
 class Export::NetexGeneric < Export::Base
-  # TODO: Remove deprecated idfm/full. See @CHOUETTE-4619
-  option :profile, enumerize: %w[none french european idfm/iboo idfm/icar idfm/publication idfm/full], default: :none
-  option :from, serialize: ActiveModel::Type::Date
-  option :to, serialize: ActiveModel::Type::Date
-  option :period, default_value: 'all_periods', enumerize: %w[all_periods only_next_days static_day_period]
-  option :participant_ref, default_value: 'enRoute'
-  option :profile_options, default_value: '{}', serialize: ActiveRecord::Type::Json
-  option :prefer_referent_line, default_value: false, enumerize: [true, false], serialize: ActiveModel::Type::Boolean
-  option :ignore_referent_stop_areas, default_value: false, enumerize: [true, false], serialize: ActiveModel::Type::Boolean
-  option :skip_line_resources, default_value: false, enumerize: [true, false], serialize: ActiveModel::Type::Boolean
-  option :skip_stop_area_resources, default_value: false, enumerize: [true, false], serialize: ActiveModel::Type::Boolean
-  option :exported_code_space
-
   attribute :setup, Export::Setup::Netex.to_type
-
-  validate :ensure_is_valid_period
-
-  def ensure_is_valid_period
-    return unless period == 'static_day_period'
-
-    if from.blank? || to.blank? || from > to
-      errors.add(:from, :invalid)
-      errors.add(:to, :invalid)
-    end
-  end
 
   def target
     @target ||= ::Netex::Target.build(export_file,

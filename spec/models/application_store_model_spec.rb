@@ -265,6 +265,105 @@ RSpec.describe ApplicationStoreModel do
       end
     end
   end
+
+  describe '#becomes' do
+    subject { source.becomes(target_class) }
+
+    let(:model_class) do
+      Class.new(described_class) do
+        attribute :name
+        attribute :invalid_attribute
+        validates :invalid_attribute, presence: true
+      end
+    end
+    let(:base_class) do
+      model_class = self.model_class
+      Class.new(described_class) do
+        attribute :common_attribute
+        attribute :common_model, model_class.to_type
+        attribute :common_invalid
+        validates :common_invalid, presence: true
+        validates :common_model, store_model: true
+      end
+    end
+    let(:source_class) do
+      model_class = self.model_class
+      Class.new(base_class) do
+        attribute :source_attribute
+        attribute :source_model, model_class.to_type
+        attribute :source_invalid
+        validates :source_invalid, presence: true
+        validates :source_model, store_model: true
+      end
+    end
+    let(:target_class) do
+      model_class = self.model_class
+      Class.new(base_class) do
+        attribute :target_attribute
+        attribute :target_model, model_class.to_type
+        attribute :target_invalid
+        validates :target_invalid, presence: true
+        validates :target_model, store_model: true
+      end
+    end
+    let(:parent) { double(:parent) }
+    let(:source) do
+      source_class.new(
+        common_attribute: 'common_attribute_value',
+        common_model: { name: 'common_model_value' },
+        source_attribute: 'source_attribute_value',
+        source_model: { name: 'source_model_value' }
+      ).tap do |source|
+        source.parent = parent
+      end
+    end
+
+    before { source.valid? }
+
+    it 'instantiates target class' do
+      is_expected.to be_a(target_class)
+    end
+
+    it 'copies parent' do
+      expect(subject.parent).to eq(parent)
+    end
+
+    it 'copies common attributes' do
+      is_expected.to have_attributes(common_attribute: 'common_attribute_value')
+    end
+
+    it 'copies common models' do
+      expect(subject.common_model).to be_a(model_class)
+      expect(subject.common_model.parent).to eq(subject)
+      expect(subject.common_model.name).to eq('common_model_value')
+    end
+
+    it 'does not copy unknown attributes' do
+      expect(subject.unknown_attributes).to be_empty
+    end
+
+    it 'does not set target attributes' do
+      expect(subject.target_attribute).to be_nil
+    end
+
+    it 'does not set target models' do
+      expect(subject.target_model).to be_nil
+    end
+
+    describe 'errors' do
+      it 'copies errors' do
+        expect(subject.errors.details).to(
+          include({ common_invalid: [{ error: :blank }], common_model: [{ error: :invalid }] })
+        )
+      end
+
+      it 'copies errors of models' do
+        expect(subject.common_model.errors.details).to(
+          eq({ invalid_attribute: [{ error: :blank }] })
+        )
+      end
+    end
+  end
 end
 
 describe ApplicationStoreModel::IntegerArrayType do

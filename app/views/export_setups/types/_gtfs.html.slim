@@ -1,0 +1,18 @@
+- export_setup = form.object.form_export_setup.becomes(Export::Setup::Gtfs)
+
+= form.simple_fields_for(export_setup_attribute, export_setup) do |sub_form|
+  = render 'export_setups/options/period', form: sub_form
+  = render 'export_setups/options/exported_lines', form: sub_form
+  = render 'export_setups/options/exported_code_space', form: sub_form
+  = sub_form.simple_fields_for(:scope_setup, sub_form.object.scope_setup) do |scope_setup_form|
+    = scope_setup_form.hidden_field :type
+    = scope_setup_form.simple_fields_for(:stop_areas, scope_setup_form.object.stop_areas) do |stop_areas_form|
+      = stop_areas_form.hidden_field :type, value: 'Export::Setup::Scope::StopAreas::Scheduled'
+      = stop_areas_form.input :prefer_referent_stop_areas, as: :switchable_checkbox
+      = stop_areas_form.input :ignore_parent_stop_areas, as: :switchable_checkbox
+    = scope_setup_form.simple_fields_for(:lines, scope_setup_form.object.lines) do |lines_form|
+      = lines_form.hidden_field :type, value: 'Export::Setup::Scope::Lines::Scheduled'
+      = lines_form.input :prefer_referent_companies, as: :switchable_checkbox
+      = lines_form.input :prefer_referent_lines, as: :switchable_checkbox
+  = sub_form.input :ignore_extended_route_types, as: :switchable_checkbox
+  = sub_form.input :stop_sequence_from_one, as: :switchable_checkbox

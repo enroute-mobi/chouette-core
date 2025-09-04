@@ -3,9 +3,6 @@
 # Export a dataset into a Ara CSV file
 require 'ara/file'
 class Export::Ara < Export::Base
-  # :duration ignored by this export .. but required by Export::Scope builder
-  option :include_stop_visits
-
   attribute :setup, Export::Setup::Ara.to_type
 
   skip_empty_exports

@@ -1,5 +1,9 @@
 fr:
   activemodel:
+    attributes:
+      period:
+        from: Valide à partir de
+        to: Valide jusqu'au
     errors:
       models:
         period:

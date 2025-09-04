@@ -74,21 +74,6 @@ module Chouette
           attribute(:enabled) { false }
           attribute(:export_options) { { duration: 200 } }
 
-          transient :export_type
-
-          after do
-            case transient(:export_type)
-            when 'Export::Netex'
-              new_instance.export_options[:type] ||= 'Export::NetexGeneric'
-              new_instance.export_options[:profile] ||= :none
-            else
-              new_instance.export_options[:type] ||= 'Export::Gtfs'
-              unless new_instance.export_options.key?(:prefer_referent_stop_area)
-                new_instance.export_options[:prefer_referent_stop_area] = false
-              end
-            end
-          end
-
           model :publication do
             attribute(:creator) { 'Test' }
           end

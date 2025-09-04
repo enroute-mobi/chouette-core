@@ -1,0 +1,53 @@
+en:
+  activemodel:
+    attributes:
+      export/setup/scope/period_selector/duration:
+        day_count: "Duration"
+      export/setup/scope/period_selector/static:
+        from: "From"
+        to: "To"
+      export/setup/scope/stop_areas/scheduled:
+        prefer_referent_stop_areas: "Prefer Referent Stop Areas"
+        ignore_parent_stop_areas: "Ignore parent Stop Places"
+        ignore_referent_stop_areas: "Ignore referent Stop Areas"
+      export/setup/scope/lines/scheduled:
+        prefer_referent_lines: "Prefer Referent Lines"
+        prefer_referent_companies: "Prefer Referent Companies"
+      export/setup/scope/vehicle_journeys:
+        included_lines: "Exported lines"
+        period: "Exported periods"
+      export/setup/base:
+        code_space_id: "Exported Code Space"
+      export/setup/ara:
+        include_stop_visits: "Include Stop Visits"
+      export/setup/gtfs:
+        ignore_extended_route_types: "Ignore extended route types"
+        stop_sequence_from_one: "Use Stop Sequence from 1"
+      export/setup/netex:
+        profile: "Profile"
+        profile_options: "Netex Profile Settings"
+        participant_ref: "Netex Participant Ref"
+        skip_line_resources: "Skip Line Resources"
+        skip_stop_area_resources: "Skip Stop Area Resources"
+    models:
+      export/setup/scope/period_selector/all: "All available periods"
+      export/setup/scope/period_selector/duration: "Only upcoming days"
+      export/setup/scope/period_selector/static: "Static day period"
+      export/setup/scope/line_selector/lines: "Specific lines"
+      export/setup/scope/line_selector/companies: "Associated companies"
+      export/setup/scope/line_selector/line_providers: "Associated line providers"
+      export/setup/scope/line_selector/all: "All available lines"
+    errors:
+      export/setup/scope/period_selector/static:
+        from:
+          invalid: "invalid period"
+        to:
+          invalid: "invalid period"
+  simple_form:
+    placeholders:
+      scope_setup:
+        vehicle_journeys:
+          included_lines:
+            line_ids: "Search by line name"
+            company_ids: "Search by company name"
+            line_provider_ids: "Search by line provider name"

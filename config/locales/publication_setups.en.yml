@@ -25,17 +25,12 @@ en:
       publication_setup:
         name: "Name"
         export_type: "Export Type"
-        export_options: "Export Settings"
+        export_setup: "Export Settings"
         enabled: "Enabled"
         force_daily_publishing: "Daily publication"
         enable_cache: "Optimize with a cache (Experimental)"
         priority: "Priority"
-        include_stop_visits: "Include stop visits"
         destinations: "Output"
-        duration: Duration (in days)
-        prefer_referent_stop_area: Prefer Referent Stop Areas
-        prefer_referent_line: Prefer Referent Lines
-        ignore_parent_stop_places: "Ignore parent Stop Places"
     errors:
       models:
         publication_setups:

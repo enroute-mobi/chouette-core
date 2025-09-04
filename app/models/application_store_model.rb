@@ -2,6 +2,7 @@
 
 class ApplicationStoreModel
   include StoreModel::Model
+  include ActiveModel::Naming
 
   class << self
     attr_accessor :abstract_class
@@ -45,6 +46,14 @@ class ApplicationStoreModel
   def initialize(*)
     super
     ensure_proper_type
+  end
+
+  def becomes(klass)
+    klass.new.tap do |became|
+      became.instance_variable_set(:@attributes, @attributes)
+      became.errors.copy!(errors)
+      became.parent = parent
+    end
   end
 
   private

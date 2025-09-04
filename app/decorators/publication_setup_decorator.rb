@@ -1,6 +1,8 @@
 # frozen_string_literal: true
 
 class PublicationSetupDecorator < Af83::Decorator
+  prepend ExportSetupDecorator
+
   decorates PublicationSetup
 
   set_scope { context[:workgroup] }
@@ -32,14 +34,23 @@ class PublicationSetupDecorator < Af83::Decorator
       l.content { I18n.t('publication_setups.actions.show_publications') }
       l.href { h.workgroup_publications_path(scope, 'search[publication_setup_id]' => object.id) }
     end
-  end
 
-  define_instance_method :display_profile_options do
-    displayed_profile_options = ""
-    object.profile_options.each_pair do |key, value|
-      displayed_profile_options += ", " if displayed_profile_options.present?
-      displayed_profile_options += "#{key} : #{value}"
+    instance_decorator.class_eval do
+      delegate :export_type, to: :object
+
+      alias_method :super_alpine_state, :alpine_state
+
+      def alpine_state
+        super_alpine_state.merge(
+          {
+            isExport: false
+          }
+        )
+      end
+
+      def export_setup_method_name
+        :export_setup
+      end
     end
-    displayed_profile_options
   end
 end

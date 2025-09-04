@@ -1,6 +1,6 @@
 - javascript_additional_packs 'exports/form', 'publication_setups/form'
 
-= simple_form_for @publication_setup, url: [@workgroup, @publication_setup], html: {class: 'form-horizontal', id: 'publication_setup_form', 'x-data': "exportForm(#{@export.alpine_state(false)})" }, wrapper: :horizontal_form do |form|
+= simple_form_for resource, url: [@workgroup, resource], html: {class: 'form-horizontal', id: 'publication_setup_form', 'x-data': "exportForm(#{ resource.alpine_state.to_json })" }, wrapper: :horizontal_form do |form|
   .row
     .form-group
       .col-lg-12
@@ -15,7 +15,7 @@
     h2.mb-lg= t('publication_setups.form.sections.export')
     .form-group
       .col-lg-12
-        = render'exports/options', form: form, resource_type: :export_options, workgroup: @workgroup
+        = render'export_setups/form', form: form, export_type_attribute: :export_type, export_setup_attribute: :export_setup, workgroup: @workgroup
 
     .separator.section_separator
 

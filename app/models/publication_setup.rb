@@ -34,6 +34,26 @@ class PublicationSetup < ApplicationModel
   scope :enabled, -> { where enabled: true }
   scope :export_type, ->(export_type) { where("export_options -> 'type' = ?", export_type) }
 
+  EXPORT_SETUP_TYPE_TO_EXPORT_TYPE = {
+    'Export::Setup::Gtfs' => 'Export::Gtfs',
+    'Export::Setup::Netex' => 'Export::NetexGeneric',
+    'Export::Setup::Ara' => 'Export::Ara'
+  }.freeze
+  EXPORT_TYPE_TO_EXPORT_SETUP_TYPE = EXPORT_SETUP_TYPE_TO_EXPORT_TYPE.invert.freeze
+
+  def assign_attributes(attributes)
+    export_type = attributes.delete(:export_type)
+    if export_type
+      attributes[:export_setup] ||= {}
+      attributes[:export_setup][:type] = EXPORT_TYPE_TO_EXPORT_SETUP_TYPE[export_type]
+    end
+    super(attributes)
+  end
+
+  def export_type
+    EXPORT_SETUP_TYPE_TO_EXPORT_TYPE[export_setup&.type]
+  end
+
   def self.same_api_usage(other)
    scope = export_type(other.export_type)
    scope = scope.where.not(id: other.id) if other.id
@@ -56,11 +76,6 @@ class PublicationSetup < ApplicationModel
   def publish(referential, attributes = {})
     publications.create!(attributes.merge(referential: referential))
   end
-
-  def export_type
-    export_options["type"]
-  end
-
 
   # DEPRECATED FIXME etc ...
   # We should not create a Building to check its Address

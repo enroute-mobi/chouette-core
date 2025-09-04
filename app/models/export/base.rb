@@ -11,7 +11,6 @@ class Export::Base < ApplicationModel
     end
   end
 
-  include OptionsSupport
   include NotifiableSupport
   include PurgeableResource
   include Rails.application.routes.url_helpers
@@ -39,23 +38,12 @@ class Export::Base < ApplicationModel
   enumerize :status, in: %w(new pending successful warning failed running aborted canceled), scope: true, default: :new
   mount_uploader :file, ImportUploader
 
-  option :line_ids, serialize: :map_ids
-  option :company_ids, serialize: :map_ids
-  option :line_provider_ids, serialize: :map_ids
-  option :exported_lines, default_value: 'all_line_ids',
-                          enumerize: %w[line_ids company_ids line_provider_ids all_line_ids]
-  option :duration
-
   def migrate_options_to_setup
     load Rails.root.join('db/migrate/20250822093323_add_export_setup_to_exports_and_publications.rb')
     migration = AddExportSetupToExportsAndPublications.new
     self.setup = migration.send(migration.send(:migrate_method_for_export_class, self.class.name), options.deep_stringify_keys)
   end
   before_save :migrate_options_to_setup
-
-  def period
-    nil
-  end
 
   attr_accessor :cache_prefix
 
@@ -196,7 +184,7 @@ class Export::Base < ApplicationModel
   end
 
   def code_space
-    return nil unless workgroup && setup.code_space_id
+    return nil unless workgroup && setup&.code_space_id
 
     @code_space ||= workgroup.code_spaces.find_by(id: setup.code_space_id)
   end
@@ -222,7 +210,7 @@ class Export::Base < ApplicationModel
   end
 
   def human_name
-    self.class.human_name(options)
+    self.class.human_name
   end
   alias human_type human_name
 

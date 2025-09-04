@@ -4,24 +4,24 @@
       = d.attribute :type, value: @export.human_type
       = d.attribute :status, value: operation_status(@export.status, verbose: true)
       = d.attribute :referential, value: (@export.referential.present? ? link_to_if(@workbench, @export.referential.name, [@workbench, @export.referential]) : "-")
-      = d.attribute :exported_lines, value_method: :display_selected_lines_to_export
-      = d.attribute :exported_code_space, value_method: :display_code_space
-      = d.attribute :period, value_method: :display_period
-      - if @export.type == "Export::NetexGeneric"
-        = d.attribute :profile, value_method: :display_profile
-        = d.attribute :participant_ref
-        = d.attribute :profile_options, value_method: :display_profile_options
-        = d.attribute :skip_line_resources, as: :boolean
-        = d.attribute :skip_stop_area_resources, as: :boolean
+      = d.attribute :exported_lines, label: Export::Setup::Scope::VehicleJourneys.human_attribute_name('included_lines'), value_method: :display_selected_lines_to_export
+      = d.attribute :exported_code_space, label: Export::Setup::Base.human_attribute_name('code_space_id'), value_method: :display_code_space
+      = d.attribute :period, label: Export::Setup::Scope::VehicleJourneys.human_attribute_name('period'), value_method: :display_period
       - if @export.type == "Export::Gtfs"
-        = d.attribute :prefer_referent_stop_area, as: :boolean
-        = d.attribute :prefer_referent_company, as: :boolean
-        = d.attribute :prefer_referent_line, as: :boolean
-        = d.attribute :ignore_parent_stop_places, as: :boolean
-        = d.attribute :ignore_extended_gtfs_route_types, as: :boolean
-        = d.attribute :stop_sequence_from_one, as: :boolean
+        = d.attribute :prefer_referent_stop_areas, as: :boolean, object: @export.setup.scope_setup.stop_areas
+        = d.attribute :prefer_referent_companies, as: :boolean, object: @export.setup.scope_setup.lines
+        = d.attribute :prefer_referent_lines, as: :boolean, object: @export.setup.scope_setup.lines
+        = d.attribute :ignore_parent_stop_areas, as: :boolean, object: @export.setup.scope_setup.stop_areas
+        = d.attribute :ignore_extended_route_types, as: :boolean, object: @export.setup
+        = d.attribute :stop_sequence_from_one, as: :boolean, object: @export.setup
+      - if @export.type == "Export::NetexGeneric"
+        = d.attribute :profile, as: :enumerize, object: @export.setup
+        = d.attribute :participant_ref, object: @export.setup
+        = d.attribute :profile_options, object: @export.setup, value: @export.display_profile_options
+        = d.attribute :skip_line_resources, as: :boolean, object: @export.setup
+        = d.attribute :skip_stop_area_resources, as: :boolean, object: @export.setup
       - if @export.type == "Export::Ara"
-        = d.attribute :include_stop_visits, as: :boolean
+        = d.attribute :include_stop_visits, as: :boolean, object: @export.setup
 
   = processing_helper(@export)
 

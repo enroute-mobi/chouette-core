@@ -7,10 +7,14 @@ RSpec.describe ExportMailer, type: :mailer do
 
   let(:recipient) { 'user@test.com' }
   let(:export) do
-    Export::Gtfs.create!(name: "Test", creator: 'test',
-                         referential: context.referential,
-                         workgroup: context.workgroup,
-                         workbench: context.workbench)
+    Export::Gtfs.create!(
+      name: 'Test',
+      creator: 'test',
+      referential: context.referential,
+      workgroup: context.workgroup,
+      workbench: context.workbench,
+      setup: { scope_setup: { type: 'Export::Setup::Scope::Referential' } }
+    )
   end
   subject(:email) { ExportMailer.finished(export.id, recipient) }
 

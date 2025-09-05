@@ -27,6 +27,7 @@ RSpec.describe ExportsController, type: :controller do
       referential: referential,
       workgroup: workgroup,
       workbench: workbench,
+      setup: { scope_setup: { type: 'Export::Setup::Scope::Referential' } },
       file: file
     )
   end
@@ -84,7 +85,7 @@ RSpec.describe ExportsController, type: :controller do
                               type: 'Export::Gtfs',
                               referential_id: first_referential.id,
                               creator: 'Test',
-                              options: { duration: 12 }
+                              setup: { scope_setup: { type: 'Export::Setup::Scope::Referential' } }
                             })
       end
 

@@ -13,18 +13,26 @@ RSpec.describe PublicationSetup, type: :model, use_chouette_factory: true do
     let(:context) do
       Chouette.create do
         workgroup do
-          publication_setup :publication_setup_gtfs, export_options: { type: 'Export::Gtfs' }
-          publication_setup :publication_setup_netex, export_options: { type: 'Export::NetexGeneric' }
-          publication_setup :publication_setup_ara, export_options: { type: 'Export::Ara' }
+          publication_setup :publication_setup_gtfs, export_type: 'Export::Gtfs'
+          publication_setup :publication_setup_netex, export_type: 'Export::NetexGeneric'
+          publication_setup :publication_setup_ara, export_type: 'Export::Ara'
         end
       end
     end
     let(:search_publication_setup) do
-      context.workgroup.publication_setups.new(name: 'Search', export_options: { type: 'Export::Gtfs' } )
+      context.workgroup.publication_setups.new(
+        name: 'Search',
+        export_setup: {
+          type: 'Export::Setup::Gtfs',
+          scope_setup: {
+            type: 'Export::Setup::Scope::PublishedReferential'
+          }
+        }
+      )
     end
 
     context "when publication setup in argument doesn't exist" do
-      it 'should return publication setups with same export_options type by default' do
+      it 'should return publication setups with same export type by default' do
         is_expected.to match_array([context.publication_setup(:publication_setup_gtfs)])
       end
     end

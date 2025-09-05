@@ -2,7 +2,7 @@
 
 RSpec.describe Export::Gtfs::Scope do
   subject(:scope) { described_class.new(initial_scope, export: export) }
-  let(:export) { Export::Gtfs.new.tap(&:migrate_options_to_setup) }
+  let(:export) { Export::Gtfs.new }
   let(:initial_scope) { double }
 
   describe 'StopAreas concerning' do
@@ -147,6 +147,8 @@ RSpec.describe Export::Gtfs::Scope do
 
     describe '#dependencies_stop_areas' do
       subject { scope.dependencies_stop_areas }
+
+      before { allow(scope).to receive(:ignore_parent_stop_areas?).and_return(true) }
 
       context 'when prefer_referent_stop_areas? is disabled' do
         before { allow(scope).to receive(:prefer_referent_stop_areas?).and_return(false) }

@@ -8,8 +8,9 @@ RSpec.describe Export::Gtfs::Contracts do
       export_scope: export_scope,
       workbench: workbench,
       workgroup: workgroup,
-      referential: referential
-    ).tap(&:migrate_options_to_setup)
+      referential: referential,
+      setup: { scope_setup: { type: 'Export::Setup::Scope::Referential' } }
+    )
   end
 
   let(:referential) { context.referential }

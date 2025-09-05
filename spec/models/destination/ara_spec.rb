@@ -50,6 +50,7 @@ RSpec.describe Destination::Ara, type: :model do
         referential: referential,
         workgroup: workgroup,
         workbench: workbench,
+        setup: { scope_setup: { type: 'Export::Setup::Scope::Referential' } },
         file: export_file
       )
     end

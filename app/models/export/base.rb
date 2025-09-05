@@ -38,12 +38,7 @@ class Export::Base < ApplicationModel
   enumerize :status, in: %w(new pending successful warning failed running aborted canceled), scope: true, default: :new
   mount_uploader :file, ImportUploader
 
-  def migrate_options_to_setup
-    load Rails.root.join('db/migrate/20250822093323_add_export_setup_to_exports_and_publications.rb')
-    migration = AddExportSetupToExportsAndPublications.new
-    self.setup = migration.send(migration.send(:migrate_method_for_export_class, self.class.name), options.deep_stringify_keys)
-  end
-  before_save :migrate_options_to_setup
+  validates :setup, store_model: true
 
   attr_accessor :cache_prefix
 
@@ -117,7 +112,6 @@ class Export::Base < ApplicationModel
   validates :type, presence: true, inclusion: { in: proc { |e|
                                                       e.workgroup&.export_types || ::Workgroup::DEFAULT_EXPORT_TYPES
                                                     } }
-  validates :options, export_options: true
   validates :name, presence: true
   validates_presence_of :creator
   validates_integrity_of :file

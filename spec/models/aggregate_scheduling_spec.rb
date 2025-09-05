@@ -168,10 +168,15 @@ RSpec.describe AggregateScheduling, type: :model do
       end
     end
     let(:daily_publication) do
-      workgroup.publication_setups.create!(
+      workgroup.publication_setups.create(
         name: 'Daily',
         force_daily_publishing: true,
-        export_options: { 'type' => 'Export::Gtfs' }
+        export_setup: {
+          type: 'Export::Setup::Gtfs',
+          scope_setup: {
+            type: 'Export::Setup::Scope::PublishedReferential'
+          }
+        }
       )
     end
     let(:aggregate) do

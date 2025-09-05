@@ -3,7 +3,7 @@
 RSpec.describe Export::Gtfs::Shapes do
   let(:export_scope) { Export::Scope::All.new context.referential }
   let(:export) do
-    Export::Gtfs.new(export_scope: export_scope, workbench: context.workbench, workgroup: context.workgroup).tap(&:migrate_options_to_setup)
+    Export::Gtfs.new(export_scope: export_scope, workbench: context.workbench, workgroup: context.workgroup)
   end
 
   subject(:part) do

@@ -90,15 +90,15 @@ RSpec.describe Destination::PublicationApi, type: :model do
       expect(destination.api_is_not_already_used).to be_truthy
     end
 
-    it 'should return true if a publication with different export_options type exists' do
+    it 'should return true if a publication with different export type exists' do
       new_publication_setup = create :publication_setup_netex_generic, workgroup: publication_setup.workgroup
       new_destination = build :publication_api_destination, publication_setup: new_publication_setup,
                                                             publication_api: publication_api
       expect(new_destination.api_is_not_already_used).to be_truthy
     end
 
-    it 'should return false and an error if a publication with the same export_options type exists' do
-      new_publication_setup = create :publication_setup, export_options: publication_setup.export_options,
+    it 'should return false and an error if a publication with the same export type exists' do
+      new_publication_setup = create :publication_setup, export_setup: publication_setup.export_setup.as_json,
                                                          workgroup: publication_setup.workgroup
       new_destination = build :publication_api_destination, publication_setup: new_publication_setup,
                                                             publication_api: publication_api

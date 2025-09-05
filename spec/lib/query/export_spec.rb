@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 RSpec.describe Query::Export do
   let(:query) { Query::Export.new(Export::Base.all) }
 
@@ -15,7 +17,14 @@ RSpec.describe Query::Export do
   let(:referential) { context.referential }
 
   let(:export) do
-    workbench.exports.create!(name: "Test", creator: 'test', type: "Export::Gtfs", referential: referential, workgroup: referential.workgroup)
+    workbench.exports.create!(
+      type: 'Export::Gtfs',
+      name: 'Test',
+      creator: 'test',
+      referential: referential,
+      workgroup: referential.workgroup,
+      setup: { scope_setup: { type: 'Export::Setup::Scope::Referential' } }
+    )
   end
 
   describe "#statuses" do

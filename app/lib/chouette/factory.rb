@@ -72,7 +72,27 @@ module Chouette
         model :publication_setup do
           attribute(:name) { |n| "Publication #{n}" }
           attribute(:enabled) { false }
-          attribute(:export_options) { { duration: 200 } }
+
+          transient(:export_type) { 'Export::Gtfs' }
+          transient(:export_setup) do
+            {
+              scope_setup: {
+                type: 'Export::Setup::Scope::PublishedReferential',
+                vehicle_journeys: {
+                  period: {
+                    type: 'Export::Setup::Scope::PeriodSelector::Duration',
+                    day_count: 200
+                  }
+                }
+              }
+            }
+          end
+
+          after do
+            export_setup = transient(:export_setup)
+            export_setup[:type] ||= PublicationSetup::EXPORT_TYPE_TO_EXPORT_SETUP_TYPE[transient(:export_type)]
+            new_instance.export_setup = export_setup
+          end
 
           model :publication do
             attribute(:creator) { 'Test' }

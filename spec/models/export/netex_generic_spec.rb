@@ -69,15 +69,6 @@ RSpec.describe Export::NetexGeneric do
     end
   end
 
-  describe '#participant_ref' do
-    subject { export.participant_ref }
-
-    context 'by default' do
-      let(:export) { Export::NetexGeneric.new }
-      it { is_expected.to eq('enRoute') }
-    end
-  end
-
   describe Export::NetexGeneric::Part do
     subject(:part) { described_class.new(export) }
 
@@ -226,7 +217,13 @@ RSpec.describe Export::NetexGeneric do
         # Creates a fake scope which only contains an initial StopArea
         double 'Export::Scope', stop_areas: context.referential.stop_areas.where(id: stop_area)
       end
-      let(:export) { Export::NetexGeneric.new(export_scope: original_export_scope, workgroup: context.workgroup).tap(&:migrate_options_to_setup) }
+      let(:export) do
+        Export::NetexGeneric.new(
+          export_scope: original_export_scope,
+          workgroup: context.workgroup,
+          setup: { scope_setup: { type: 'Export::Setup::Scope::Referential' } }
+        )
+      end
 
       subject { export.export_scope.stop_areas }
 
@@ -675,7 +672,14 @@ RSpec.describe Export::NetexGeneric do
   describe 'Routes export' do
     let(:target) { MockNetexTarget.new }
     let(:export_scope) { Export::Scope::All.new context.referential }
-    let(:export) { Export::NetexGeneric.new(export_scope: export_scope, target: target, workgroup: context.workgroup).tap(&:migrate_options_to_setup) }
+    let(:export) do
+      Export::NetexGeneric.new(
+        export_scope: export_scope,
+        target: target,
+        workgroup: context.workgroup,
+        setup: { scope_setup: { type: 'Export::Setup::Scope::Referential' } }
+      )
+    end
 
     let(:part) do
       Export::NetexGeneric::Routes.new export
@@ -1107,9 +1111,12 @@ RSpec.describe Export::NetexGeneric do
     let(:target) { MockNetexTarget.new }
     let(:export_scope) { Export::Scope::All.new context.referential }
     let(:export) do
-      Export::NetexGeneric.new(export_scope: export_scope,
-                               target: target,
-                               workgroup: context.workgroup).tap(&:migrate_options_to_setup)
+      Export::NetexGeneric.new(
+        export_scope: export_scope,
+        target: target,
+        workgroup: context.workgroup,
+        setup: { scope_setup: { type: 'Export::Setup::Scope::Referential' } }
+      )
     end
 
     let(:part) do
@@ -1311,7 +1318,14 @@ RSpec.describe Export::NetexGeneric do
   describe 'StopPoints export' do
     let(:target) { MockNetexTarget.new }
     let(:export_scope) { Export::Scope::All.new context.referential }
-    let(:export) { Export::NetexGeneric.new(export_scope: export_scope, target: target, workgroup: context.workgroup).tap(&:migrate_options_to_setup) }
+    let(:export) do
+      Export::NetexGeneric.new(
+        export_scope: export_scope,
+        target: target,
+        workgroup: context.workgroup,
+        setup: { scope_setup: { type: 'Export::Setup::Scope::Referential' } }
+      )
+    end
 
     let(:part) do
       Export::NetexGeneric::StopPoints.new export
@@ -1345,7 +1359,14 @@ RSpec.describe Export::NetexGeneric do
   describe 'JourneyPatterns export' do
     let(:target) { MockNetexTarget.new }
     let(:export_scope) { Export::Scope::All.new context.referential }
-    let(:export) { Export::NetexGeneric.new(export_scope: export_scope, target: target, workgroup: context.workgroup).tap(&:migrate_options_to_setup) }
+    let(:export) do
+      Export::NetexGeneric.new(
+        export_scope: export_scope,
+        target: target,
+        workgroup: context.workgroup,
+        setup: { scope_setup: { type: 'Export::Setup::Scope::Referential' } }
+      )
+    end
 
     let(:part) do
       Export::NetexGeneric::JourneyPatterns.new export
@@ -1403,7 +1424,14 @@ RSpec.describe Export::NetexGeneric do
   describe 'VehicleJourneyStopAssignments export' do
     let(:target) { MockNetexTarget.new }
     let(:export_scope) { Export::Scope::All.new context.referential }
-    let(:export) { Export::NetexGeneric.new(export_scope: export_scope, target: target, workgroup: context.workgroup).tap(&:migrate_options_to_setup) }
+    let(:export) do
+      Export::NetexGeneric.new(
+        export_scope: export_scope,
+        target: target,
+        workgroup: context.workgroup,
+        setup: { scope_setup: { type: 'Export::Setup::Scope::Referential' } }
+      )
+    end
 
     let(:part) do
       Export::NetexGeneric::VehicleJourneyStopAssignments.new export
@@ -1517,7 +1545,14 @@ RSpec.describe Export::NetexGeneric do
     let(:export_scope) do
       Export::Scope::Builder.new(referential).scope
     end
-    let(:export) { Export::NetexGeneric.new(export_scope: export_scope, target: target, workgroup: context.workgroup).tap(&:migrate_options_to_setup) }
+    let(:export) do
+      Export::NetexGeneric.new(
+        export_scope: export_scope,
+        target: target,
+        workgroup: context.workgroup,
+        setup: { scope_setup: { type: 'Export::Setup::Scope::Referential' } }
+      )
+    end
 
     let(:part) do
       Export::NetexGeneric::VehicleJourneys.new export

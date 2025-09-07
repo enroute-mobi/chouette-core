@@ -289,6 +289,11 @@ describe ReferentialsController, type: :controller do
     end
     let(:request) { get :show, params: { workbench_id: workbench.id, id: referential.id } }
 
+    it 'should mark the referential as visited' do
+      expect(request).to have_http_status(:ok)
+      expect(referential.reload.visited_at).to be_present
+    end
+
     context 'when the referential workbench has the same organisation as user' do
       it 'returns http success' do
         expect(request).to have_http_status(:ok)

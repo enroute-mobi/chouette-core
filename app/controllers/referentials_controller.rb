@@ -119,7 +119,7 @@ class ReferentialsController < Chouette::WorkbenchController
   alias_method :referential, :resource
 
   def resource
-    @referential ||= workbench.find_referential!(params[:id]).decorate
+    @referential ||= workbench.find_referential!(params[:id]).visited!.decorate
   end
 
   def scope

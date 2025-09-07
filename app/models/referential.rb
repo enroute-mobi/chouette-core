@@ -820,6 +820,11 @@ class Referential < ApplicationModel
     update_column :vehicle_journeys_count, vehicle_journeys.count
   end
 
+  def visited!
+    touch :visited_at
+    self
+  end
+
   private
 
   def lock_table

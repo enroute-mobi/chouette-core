@@ -248,7 +248,7 @@ GEM
     css_parser (1.21.1)
       addressable
     csv (3.3.5)
-    curb (1.1.0)
+    curb (1.2.0)
     database_cleaner (2.1.0)
       database_cleaner-active_record (>= 2, < 3)
     database_cleaner-active_record (2.2.1)

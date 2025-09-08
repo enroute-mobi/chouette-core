@@ -15,6 +15,10 @@
           = table_builder_2 @publications,
             [ \
               TableBuilderHelper::Column.new( \
+                key: :status, \
+                attribute: Proc.new { |n| operation_user_status(n) }, \
+              ), \
+              TableBuilderHelper::Column.new( \
                 key: :publication_setup, \
                 attribute: ->(publication){ link_to(publication.publication_setup.name, [@workgroup, publication.publication_setup])} \
               ), \
@@ -25,20 +29,22 @@
                 end, \
               ), \
               TableBuilderHelper::Column.new( \
-                key: :status, \
-                attribute: Proc.new { |n| operation_user_status(n) }, \
-              ), \
-              TableBuilderHelper::Column.new( \
-                key: :created_at, \
-                attribute: ->(publication){ link_to(l(publication.created_at, format: :short_with_time), [@workgroup, publication.publication_setup, publication])} \
+                key: :export_type, \
+                attribute: ->(publication){ publication.publication_setup.human_export_name}, \
               ), \
               TableBuilderHelper::Column.new( \
                 key: :started_at, \
                 attribute: ->(publication){ publication.started_at ? link_to(l(publication.started_at, format: :short_with_time), [@workgroup, publication.publication_setup, publication]) : '-' } \
               ), \
               TableBuilderHelper::Column.new( \
-                key: :ended_at, \
-                attribute: ->(publication){ publication.ended_at ? link_to(l(publication.ended_at, format: :short_with_time), [@workgroup, publication.publication_setup, publication]) : '-' } \
+                key: :duration, \
+                attribute: Proc.new { |object| object.ended_at.presence && object.started_at.presence && duration_in_words(object.ended_at - object.started_at)}, \
+                sortable: false, \
+              ), \
+              TableBuilderHelper::Column.new( \
+                key: :created_by, \
+                attribute: :creator, \
+                sortable: false,\
               ), \
             ],
             cls: 'table has-filter'

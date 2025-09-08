@@ -4,7 +4,7 @@ class PublicationsController < Chouette::WorkgroupController
   defaults :resource_class => Publication
   belongs_to :publication_setup, optional: true
 
-  before_action :find_publication!, only: %i[create show]
+  before_action :find_publication_setup!, only: %i[create show]
 
   respond_to :html
 
@@ -64,7 +64,7 @@ class PublicationsController < Chouette::WorkgroupController
     @publications ||= search.search(scope)
   end
 
-  def find_publication!
+  def find_publication_setup!
     parent || raise(ActiveRecord::RecordNotFound)
   end
 

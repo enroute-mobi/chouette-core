@@ -24,6 +24,10 @@ module Import
         @companies ||= ExternalCollection.new(internal_companies)
       end
 
+      def booking_arrangements
+        @booking_arrangements ||= ExternalCollection.new(internal_booking_arrangements)
+      end
+
       def shapes
         @shapes ||= ExternalCollection.new(internal_shapes)
       end
@@ -34,7 +38,8 @@ module Import
           stop_areas: stop_areas,
           lines: lines,
           companies: companies,
-          shapes: shapes
+          shapes: shapes,
+          booking_arrangements: booking_arrangements,
         }
 
         collections[on] = ExternalCollection.new(send("internal_#{on}"), on_response: block)
@@ -71,6 +76,13 @@ module Import
                     .add(finder_class.new(line_referential.companies, source: :workgroup))
       end
 
+      def internal_booking_arrangements
+        @internal_booking_arrangements ||=
+          Collection.new
+                    .add(Finder::Code.new(line_provider.booking_arrangements, code_space: code_space, source: :provider))
+                    .add(finder_class.new(line_provider.booking_arrangements, source: :provider))
+      end
+
       def internal_shapes
         @internal_shapes ||=
           Collection.new
@@ -84,14 +96,15 @@ module Import
 
     # Returns a Lookup which uses the given (External) Collections
     class Composite
-      def initialize(stop_areas:, lines:, companies:, shapes:)
+      def initialize(stop_areas:, lines:, companies:, shapes:, booking_arrangements:)
         @stop_areas = stop_areas
         @lines = lines
         @companies = companies
         @shapes = shapes
+        @booking_arrangements = booking_arrangements
       end
 
-      attr_reader :stop_areas, :lines, :companies, :shapes
+      attr_reader :stop_areas, :lines, :companies, :shapes, :booking_arrangements
     end
 
     # Returns identifier or model instead of internal Response

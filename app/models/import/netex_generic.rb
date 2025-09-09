@@ -860,7 +860,7 @@ module Import
       class JourneyPatternDecorator < ResourceDecorator
         attr_accessor :route_decorator, :route_index
 
-        delegate :destination_displays, to: :route_decorator
+        delegate :destination_displays, :lookup, to: :route_decorator
 
         def chouette_model
           @chouette_model ||= Chouette::JourneyPattern.new journey_pattern_attributes
@@ -879,7 +879,7 @@ module Import
 
         def booking_arrangement_id
           netex_booking_arrangement_id = booking_arrangements&.first&.ref
-          line_provider.booking_arrangements.by_code(code_space, netex_booking_arrangement_id)&.first&.id
+          lookup.booking_arrangements.find_id netex_booking_arrangement_id
         end
 
         def published_name

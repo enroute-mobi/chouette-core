@@ -39,6 +39,9 @@ gem 'has_array_of', en_route: 'has_array_of'
 gem 'rails-observers'
 # gem 'wisper', '2.0.0'
 
+# Use SeedBank for spliting seeds in IBOO
+gem 'seedbank'
+
 gem 'faraday_middleware'
 gem 'faraday'
 

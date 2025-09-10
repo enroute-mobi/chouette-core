@@ -4,7 +4,7 @@ class Control::Context::Lines < Control::Context
 
     included do
       option :line_ids
-      validates :line_ids, presence: true, array_inclusion: { in: ->(context) { context.candidate_lines_id } }
+      validates :line_ids, presence: true, inclusion: { in: ->(context) { context.candidate_lines_id } }
 
       # Avoid empty string sends by select
       #  control_list[control_contexts_attributes][1690296924144][line_ids][]	[…]

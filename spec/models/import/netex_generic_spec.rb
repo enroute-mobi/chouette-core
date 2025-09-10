@@ -1163,7 +1163,7 @@ RSpec.describe Import::NetexGeneric do
   end
 
   describe 'Route and Journay Patterns part' do
-    context 'when there is no override_internal_identifiers' do
+    context 'when default model_id_attribute is used' do
       let(:xml) do
         <<-XML
           <members>
@@ -1332,7 +1332,7 @@ RSpec.describe Import::NetexGeneric do
       end
     end
 
-    context 'when override_internal_identifiers is true' do
+    context 'when objectid is used as model_id_attribute' do
       let(:xml) do
         <<-XML
           <members>
@@ -1442,6 +1442,7 @@ RSpec.describe Import::NetexGeneric do
       end
 
       before do
+        # use objectid as model_id_attribute
         import.options['override_internal_identifiers'] = 'true'
 
         import.part(:stop_area_referential).import!

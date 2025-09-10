@@ -80,7 +80,7 @@ module Import
         @internal_booking_arrangements ||=
           Collection.new
                     .add(Finder::Code.new(line_provider.booking_arrangements, code_space: code_space, source: :provider))
-                    .add(finder_class.new(line_provider.booking_arrangements, source: :provider))
+                    .add(Finder::Objectid.new(line_provider.booking_arrangements, source: :provider))
       end
 
       def internal_shapes

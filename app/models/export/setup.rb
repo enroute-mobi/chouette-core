@@ -33,11 +33,21 @@ module Export
       end
 
       class LineSelector < ApplicationStoreModel
+        def with_scope_setup(_scope_setup)
+          raise NotImplementedError
+        end
+
         class Lines < LineSelector
           attribute :line_ids, IntegerArrayType.new
 
           validates :line_ids, presence: true,
                                inclusion: { in: ->(r) { r.parent.parent.candidate_lines.pluck(:id) } }
+
+          def with_scope_setup(scope_setup)
+            self.class.new(
+              line_ids: scope_setup.candidate_lines.where(id: line_ids).pluck(:id)
+            )
+          end
         end
 
         class Companies < LineSelector
@@ -45,6 +55,12 @@ module Export
 
           validates :company_ids, presence: true,
                                   inclusion: { in: ->(r) { r.parent.parent.candidate_companies.pluck(:id) } }
+
+          def with_scope_setup(scope_setup)
+            self.class.new(
+              company_ids: scope_setup.candidate_companies.where(id: company_ids).pluck(:id)
+            )
+          end
         end
 
         class Networks < LineSelector # TODO: unused for now
@@ -52,6 +68,12 @@ module Export
 
           validates :network_ids, presence: true,
                                   inclusion: { in: ->(r) { r.parent.parent.candidate_networks.pluck(:id) } }
+
+          def with_scope_setup(scope_setup)
+            self.class.new(
+              network_ids: scope_setup.candidate_networks.where(id: network_ids).pluck(:id)
+            )
+          end
         end
 
         class LineProviders < LineSelector
@@ -59,13 +81,26 @@ module Export
 
           validates :line_provider_ids, presence: true,
                                         inclusion: { in: ->(r) { r.parent.parent.candidate_line_providers.pluck(:id) } }
+
+          def with_scope_setup(scope_setup)
+            self.class.new(
+              line_provider_ids: scope_setup.candidate_line_providers.where(id: line_provider_ids).pluck(:id)
+            )
+          end
         end
 
         class All < LineSelector
+          def with_scope_setup(_scope_setup)
+            dup
+          end
         end
       end
 
       class StopAreas < ApplicationStoreModel
+        def with_scope_setup(_scope_setup)
+          dup
+        end
+
         class None < StopAreas # TODO: unused for now
         end
 
@@ -81,6 +116,10 @@ module Export
       end
 
       class Lines < ApplicationStoreModel
+        def with_scope_setup(_scope_setup)
+          dup
+        end
+
         class None < Lines # TODO: unused for now
         end
 
@@ -94,9 +133,15 @@ module Export
       end
 
       class Shapes < ApplicationStoreModel # TODO: unused for now
+        def with_scope_setup(_scope_setup)
+          dup
+        end
       end
 
       class PointOfInterests < ApplicationStoreModel # TODO: unused for now
+        def with_scope_setup(_scope_setup)
+          dup
+        end
       end
 
       class VehicleJourneys < ApplicationStoreModel
@@ -106,6 +151,14 @@ module Export
 
         validates :period, :included_lines, store_model: true
         validates :excluded_lines, store_model: true, if: ->(r) { r.excluded_lines.present? }
+
+        def with_scope_setup(scope_setup)
+          self.class.new(
+            period: period.dup,
+            included_lines: included_lines&.with_scope_setup(scope_setup),
+            excluded_lines: excluded_lines&.with_scope_setup(scope_setup)
+          )
+        end
       end
 
       class Setup < ApplicationStoreModel
@@ -157,6 +210,14 @@ module Export
 
         def candidate_line_providers
           parent.parent.workgroup.line_providers
+        end
+
+        def to_referential
+          Referential.new.tap do |result|
+            %i[stop_areas lines shapes point_of_interests vehicle_journeys].each do |attr|
+              result.send(:"#{attr}=", send(attr)&.with_scope_setup(result))
+            end
+          end
         end
       end
 

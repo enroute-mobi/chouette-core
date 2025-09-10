@@ -94,6 +94,9 @@ class Publication < Operation
     end
 
     def export_attributes
+      export_setup = publication_setup.export_setup.dup
+      export_setup.scope_setup = export_setup.scope_setup.to_referential
+
       {
         type: publication_setup.export_type,
         referential: referential,
@@ -103,7 +106,7 @@ class Publication < Operation
         workgroup: workgroup,
         publication: publication,
         cache_prefix: cache_prefix,
-        setup: publication_setup.export_setup.as_json
+        setup: export_setup.as_json
       }
     end
   end

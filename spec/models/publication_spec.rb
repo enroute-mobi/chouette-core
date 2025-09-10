@@ -16,7 +16,7 @@ RSpec.describe Publication, type: :model do
   end
 
   let(:export_type) { 'Export::Setup::Gtfs' }
-  let(:export_setup) { { type: export_type } }
+  let(:export_setup) { { type: export_type, scope_setup: { type: 'Export::Setup::Scope::PublishedReferential' } } }
   let(:publication_setup_priority) { 1 }
   let(:publication_setup) do
     create(:publication_setup, priority: publication_setup_priority, export_setup: export_setup)

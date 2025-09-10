@@ -30,6 +30,8 @@ RSpec.describe Export::Setup::Scope::PeriodSelector::Static do
 end
 
 RSpec.describe Export::Setup::Scope::LineSelector::Lines do
+  subject(:lines) { described_class.new }
+
   describe 'validations' do
     describe '#line_ids' do
       let(:candidate_line_ids) { [1, 2, 3] }
@@ -40,7 +42,7 @@ RSpec.describe Export::Setup::Scope::LineSelector::Lines do
       end
       let(:parent) { double(:vehicle_journeys, parent: double(:scope_setup, candidate_lines: candidate_lines)) }
 
-      before { subject.parent = parent }
+      before { lines.parent = parent }
 
       it { is_expected.not_to allow_value([]).for(:line_ids) }
       it { is_expected.to allow_value([3, 1]).for(:line_ids) }
@@ -48,9 +50,34 @@ RSpec.describe Export::Setup::Scope::LineSelector::Lines do
       it { is_expected.not_to allow_value([2, 4]).for(:line_ids) }
     end
   end
+
+  describe '#with_scope_setup' do
+    subject { lines.with_scope_setup(scope_setup) }
+
+    let(:context) do
+      Chouette.create do
+        line :line1
+        line :line2
+        line :line3
+      end
+    end
+    let(:scope_setup) do
+      double(:scope_setup, candidate_lines: Chouette::Line.where(id: %i[line1 line2].map { |l| context.line(l) }))
+    end
+
+    before { lines.line_ids = %i[line2 line3].map { |l| context.line(l).id } }
+
+    it { is_expected.to be_a(described_class) }
+
+    it 'removes unauthorized line ids' do
+      is_expected.to have_attributes(line_ids: [context.line(:line2).id])
+    end
+  end
 end
 
 RSpec.describe Export::Setup::Scope::LineSelector::Companies do
+  subject(:companies) { described_class.new }
+
   describe 'validations' do
     describe '#company_ids' do
       let(:candidate_company_ids) { [1, 2, 3] }
@@ -61,7 +88,7 @@ RSpec.describe Export::Setup::Scope::LineSelector::Companies do
       end
       let(:parent) { double(:vehicle_journeys, parent: double(:scope_setup, candidate_companies: candidate_companies)) }
 
-      before { subject.parent = parent }
+      before { companies.parent = parent }
 
       it { is_expected.not_to allow_value([]).for(:company_ids) }
       it { is_expected.to allow_value([3, 1]).for(:company_ids) }
@@ -69,9 +96,37 @@ RSpec.describe Export::Setup::Scope::LineSelector::Companies do
       it { is_expected.not_to allow_value([2, 4]).for(:company_ids) }
     end
   end
+
+  describe '#with_scope_setup' do
+    subject { companies.with_scope_setup(scope_setup) }
+
+    let(:context) do
+      Chouette.create do
+        company :company1
+        company :company2
+        company :company3
+      end
+    end
+    let(:scope_setup) do
+      double(
+        :scope_setup,
+        candidate_companies: Chouette::Company.where(id: %i[company1 company2].map { |c| context.company(c) })
+      )
+    end
+
+    before { companies.company_ids = %i[company2 company3].map { |c| context.company(c).id } }
+
+    it { is_expected.to be_a(described_class) }
+
+    it 'removes unauthorized company ids' do
+      is_expected.to have_attributes(company_ids: [context.company(:company2).id])
+    end
+  end
 end
 
 RSpec.describe Export::Setup::Scope::LineSelector::Networks do
+  subject(:networks) { described_class.new }
+
   describe 'validations' do
     describe '#network_ids' do
       let(:candidate_network_ids) { [1, 2, 3] }
@@ -82,7 +137,7 @@ RSpec.describe Export::Setup::Scope::LineSelector::Networks do
       end
       let(:parent) { double(:vehicle_journeys, parent: double(:scope_setup, candidate_networks: candidate_networks)) }
 
-      before { subject.parent = parent }
+      before { networks.parent = parent }
 
       it { is_expected.not_to allow_value([]).for(:network_ids) }
       it { is_expected.to allow_value([3, 1]).for(:network_ids) }
@@ -90,9 +145,37 @@ RSpec.describe Export::Setup::Scope::LineSelector::Networks do
       it { is_expected.not_to allow_value([2, 4]).for(:network_ids) }
     end
   end
+
+  describe '#with_scope_setup' do
+    subject { networks.with_scope_setup(scope_setup) }
+
+    let(:context) do
+      Chouette.create do
+        network :network1
+        network :network2
+        network :network3
+      end
+    end
+    let(:scope_setup) do
+      double(
+        :scope_setup,
+        candidate_networks: Chouette::Network.where(id: %i[network1 network2].map { |n| context.network(n) })
+      )
+    end
+
+    before { networks.network_ids = %i[network2 network3].map { |n| context.network(n).id } }
+
+    it { is_expected.to be_a(described_class) }
+
+    it 'removes unauthorized network ids' do
+      is_expected.to have_attributes(network_ids: [context.network(:network2).id])
+    end
+  end
 end
 
 RSpec.describe Export::Setup::Scope::LineSelector::LineProviders do
+  subject(:line_providers) { described_class.new }
+
   describe 'validations' do
     describe '#line_provider_ids' do
       let(:candidate_line_provider_ids) { [1, 2, 3] }
@@ -105,7 +188,7 @@ RSpec.describe Export::Setup::Scope::LineSelector::LineProviders do
         double(:vehicle_journeys, parent: double(:scope_setup, candidate_line_providers: candidate_line_providers))
       end
 
-      before { subject.parent = parent }
+      before { line_providers.parent = parent }
 
       it { is_expected.not_to allow_value([]).for(:line_provider_ids) }
       it { is_expected.to allow_value([3, 1]).for(:line_provider_ids) }
@@ -113,13 +196,113 @@ RSpec.describe Export::Setup::Scope::LineSelector::LineProviders do
       it { is_expected.not_to allow_value([2, 4]).for(:line_provider_ids) }
     end
   end
+
+  describe '#with_scope_setup' do
+    subject { line_providers.with_scope_setup(scope_setup) }
+
+    let(:context) do
+      Chouette.create do
+        line_provider :line_provider1
+        line_provider :line_provider2
+        line_provider :line_provider3
+      end
+    end
+    let(:scope_setup) do
+      double(
+        :scope_setup,
+        candidate_line_providers: LineProvider.where(
+          id: %i[line_provider1 line_provider2].map { |lp| context.line_provider(lp) }
+        )
+      )
+    end
+
+    before do
+      line_providers.line_provider_ids = %i[line_provider2 line_provider3].map { |lp| context.line_provider(lp).id }
+    end
+
+    it { is_expected.to be_a(described_class) }
+
+    it 'removes unauthorized line provider ids' do
+      is_expected.to have_attributes(line_provider_ids: [context.line_provider(:line_provider2).id])
+    end
+  end
+end
+
+RSpec.describe Export::Setup::Scope::LineSelector::All do
+  subject(:lines_scheduled) { described_class.new }
+
+  describe '#with_scope_setup' do
+    subject { lines_scheduled.with_scope_setup(scope_setup) }
+
+    let(:scope_setup) { double(:scope_setup) }
+
+    it { is_expected.to be_a(described_class) }
+
+    it { is_expected.to have_attributes(lines_scheduled.attributes) }
+  end
+end
+
+RSpec.describe Export::Setup::Scope::StopAreas::Scheduled do
+  subject(:stop_areas_scheduled) { described_class.new }
+
+  describe '#with_scope_setup' do
+    subject { stop_areas_scheduled.with_scope_setup(scope_setup) }
+
+    let(:scope_setup) { double(:scope_setup) }
+
+    it { is_expected.to be_a(described_class) }
+
+    it { is_expected.to have_attributes(stop_areas_scheduled.attributes) }
+  end
+end
+
+RSpec.describe Export::Setup::Scope::Lines::Scheduled do
+  subject(:lines_scheduled) { described_class.new }
+
+  describe '#with_scope_setup' do
+    subject { lines_scheduled.with_scope_setup(scope_setup) }
+
+    let(:scope_setup) { double(:scope_setup) }
+
+    it { is_expected.to be_a(described_class) }
+
+    it { is_expected.to have_attributes(lines_scheduled.attributes) }
+  end
 end
 
 RSpec.describe Export::Setup::Scope::VehicleJourneys do
+  let(:vehicle_journeys) { described_class.new }
+
   describe 'validations' do
     it { is_expected.not_to allow_value(nil).for(:period) }
     it { is_expected.not_to allow_value(nil).for(:included_lines) }
     it { is_expected.to allow_value(nil).for(:excluded_lines) }
+  end
+
+  describe '#with_scope_setup' do
+    subject { vehicle_journeys.with_scope_setup(scope_setup) }
+
+    let(:scope_setup) { double(:scope_setup) }
+    let(:included_lines) { Export::Setup::Scope::LineSelector.new }
+    let(:excluded_lines) { Export::Setup::Scope::LineSelector.new }
+
+    before do
+      vehicle_journeys.period = { type: 'Export::Setup::Scope::PeriodSelector::Duration', day_count: 42 }
+      vehicle_journeys.included_lines = {}
+      vehicle_journeys.excluded_lines = {}
+      allow(vehicle_journeys.included_lines).to receive(:with_scope_setup).with(scope_setup).and_return(included_lines)
+      allow(vehicle_journeys.excluded_lines).to receive(:with_scope_setup).with(scope_setup).and_return(excluded_lines)
+    end
+
+    it { is_expected.to be_a(described_class) }
+
+    it do
+      is_expected.to have_attributes(
+        period: have_attributes(type: 'Export::Setup::Scope::PeriodSelector::Duration', day_count: 42),
+        included_lines: have_attributes(object_id: included_lines.object_id),
+        excluded_lines: have_attributes(object_id: excluded_lines.object_id)
+      )
+    end
   end
 end
 
@@ -365,6 +548,35 @@ RSpec.describe Export::Setup::Scope::PublishedReferential do
     it 'only returns line providers in workgroup' do
       is_expected.to(
         match_array(%i[line_provider1 line_provider2].map { |l| context.line_provider(l) } + [default_line_provider])
+      )
+    end
+  end
+
+  describe '#to_referential' do
+    subject { setup_scope_published_referential.to_referential }
+
+    let(:stop_areas) { Export::Setup::Scope::StopAreas.new }
+    let(:lines) { Export::Setup::Scope::Lines.new }
+    let(:shapes) { Export::Setup::Scope::Shapes.new }
+    let(:point_of_interests) { Export::Setup::Scope::PointOfInterests.new }
+    let(:vehicle_journeys) { Export::Setup::Scope::VehicleJourneys.new }
+
+    before do
+      %i[stop_areas lines shapes point_of_interests vehicle_journeys].each do |attr|
+        setup_scope_published_referential.send(:"#{attr}=", {})
+        allow(setup_scope_published_referential.send(attr)).to receive(:with_scope_setup).and_return(send(attr))
+      end
+    end
+
+    it { is_expected.to be_a(Export::Setup::Scope::Referential) }
+
+    it do
+      is_expected.to have_attributes(
+        stop_areas: have_attributes(object_id: stop_areas.object_id),
+        lines: have_attributes(object_id: lines.object_id),
+        shapes: have_attributes(object_id: shapes.object_id),
+        point_of_interests: have_attributes(object_id: point_of_interests.object_id),
+        vehicle_journeys: have_attributes(object_id: vehicle_journeys.object_id)
       )
     end
   end

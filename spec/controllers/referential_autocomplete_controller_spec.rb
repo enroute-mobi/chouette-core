@@ -10,8 +10,8 @@ RSpec.describe ReferentialAutocompleteController, type: :controller do
     let(:context) do
       Chouette.create do
         workbench organisation: Organisation.find_by(code: 'first') do
-          line :first_line, name: 'Line one', published_name: 'First Line', number: 'L1'
-          line :second_line, name: 'Line two', published_name: 'Second Line', number: 'L2'
+          line :first_line, name: 'Line one', published_name: 'First Line', number: 'L1', objectid: 'line1'
+          line :second_line, name: 'Line two', published_name: 'Second Line', number: 'L2', objectid: 'line2'
           line :out_of_referential_line
 
           referential lines: %i[first_line second_line]
@@ -44,14 +44,20 @@ RSpec.describe ReferentialAutocompleteController, type: :controller do
       expect(assigns(:lines).to_a).to eq [first_line]
       expect(response).to be_successful
     end
+
+    it 'returns a line when the objectid contains the search parameter' do
+      get :lines, params: { workbench_id: workbench.id, referential_id: referential.id, q: 'line1' }, format: 'json'
+      expect(assigns(:lines).to_a).to eq [first_line]
+      expect(response).to be_successful
+    end
   end
 
   describe 'GET #companies' do
     let(:context) do
       Chouette.create do
         workbench organisation: Organisation.find_by(code: 'first') do
-          company :c1, name: 'Company one', short_name: 'C1'
-          company :other, name: 'Other', short_name: 'other'
+          company :c1, name: 'Company one', short_name: 'Company 1', objectid: 'company1'
+          company :other, name: 'Other', short_name: 'other', objectid: '_other_'
 
           referential
         end
@@ -75,7 +81,17 @@ RSpec.describe ReferentialAutocompleteController, type: :controller do
     end
 
     it 'returns a company when the short name contains the search parameter' do
-      get :companies, params: { workbench_id: workbench.id, referential_id: referential.id, q: 'C1' }, format: 'json'
+      get :companies,
+          params: { workbench_id: workbench.id, referential_id: referential.id, q: 'Company 1' },
+          format: 'json'
+      expect(assigns(:companies).to_a).to eq [company]
+      expect(response).to be_successful
+    end
+
+    it 'returns a company when the objectid contains the search parameter' do
+      get :companies,
+          params: { workbench_id: workbench.id, referential_id: referential.id, q: 'company1' },
+          format: 'json'
       expect(assigns(:companies).to_a).to eq [company]
       expect(response).to be_successful
     end

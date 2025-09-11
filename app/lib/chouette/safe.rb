@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Chouette
   module Safe
     def self.capture(message, e)
@@ -27,13 +29,16 @@ module Chouette
       end
 
       def log_message
-        "[ERROR] #{message} (#{uuid}): #{error.class.name} #{error.message} #{error.backtrace.join("\n")}"
+        "[ERROR] #{message} (#{uuid}): #{error.class.name} #{error_message} #{error.backtrace.join("\n")}"
       end
 
       def uuid
         @uuid ||= SecureRandom.uuid
       end
-    end
 
+      def error_message
+        error.detailed_message(highlight: false)
+      end
+    end
   end
 end

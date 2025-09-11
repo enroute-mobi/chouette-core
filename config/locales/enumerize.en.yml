@@ -377,7 +377,7 @@ en:
       none: None
       french: French (beta)
       european: European
-      'idfm/full': IdFM Publication (Legacy/Invalid)
+      'idfm/publication/legacy': IdFM Publication (Legacy/Invalid)
       'idfm/publication': IdFM Publication
       'idfm/iboo': IdFM Producer IBOO
       'idfm/icar': IdFM Producer ICAR

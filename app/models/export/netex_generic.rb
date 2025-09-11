@@ -33,11 +33,7 @@ class Export::NetexGeneric < Export::Base
   def netex_profile
     return unless profile?
 
-    # TODO: To be remove me. See @CHOUETTE-4619
-    real_profile = setup.profile
-    real_profile = 'idfm/publication/legacy' if real_profile == 'idfm/full'
-
-    @netex_profile ||= Netex::Profile.create(real_profile)
+    @netex_profile ||= Netex::Profile.create(setup.profile)
   end
 
   def content_type

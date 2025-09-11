@@ -147,6 +147,7 @@ class AddExportSetupToExportsAndPublications < ActiveRecord::Migration[7.0]
     }
 
     result[:profile] = export_options['profile']
+    result[:profile] = 'idfm/publication/legacy' if result[:profile] == 'idfm/full' # CHOUETTE-4619 once and for all
     result[:participant_ref] = export_options['participant_ref']
     result[:profile_options] = if export_options['profile_options']
                                  ActiveSupport::JSON.decode(export_options['profile_options'])

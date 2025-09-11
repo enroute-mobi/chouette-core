@@ -280,8 +280,7 @@ module Export
       attribute :skip_line_resources, :boolean, default: false
       attribute :skip_stop_area_resources, :boolean, default: false
 
-      # TODO: Remove deprecated idfm/full. See @CHOUETTE-4619
-      enumerize :profile, in: %w[none french european idfm/iboo idfm/icar idfm/publication idfm/full]
+      enumerize :profile, in: %w[none french european idfm/iboo idfm/icar idfm/publication idfm/publication/legacy]
       validates :profile, presence: true
     end
 

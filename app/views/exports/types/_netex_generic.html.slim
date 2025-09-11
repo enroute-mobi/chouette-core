@@ -8,8 +8,7 @@
   = sub_form.input :ignore_referent_stop_areas, as: :switchable_checkbox
   = sub_form.input :skip_line_resources, as: :switchable_checkbox
   = sub_form.input :skip_stop_area_resources, as: :switchable_checkbox
-  - if has_feature?("export_with_code_space")
-    = render 'exports/options/exported_code_space', form: sub_form
+  = render 'exports/options/exported_code_space', form: sub_form
   = sub_form.input :participant_ref
   = render 'exports/options/profile_options', form: sub_form
 

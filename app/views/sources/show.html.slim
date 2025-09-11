@@ -32,7 +32,6 @@
           = d.attribute :import_option_process_gtfs_route_ids, as: :array
           = d.attribute :import_option_stop_area_provider, as: :association
           = d.attribute :import_option_line_provider, as: :association
-          = d.attribute :import_option_code_space, as: :association
           - if has_feature?("import_with_code_space")
              = d.attribute :import_option_code_space, as: :association
           = d.attribute :import_option_tag, as: :tags

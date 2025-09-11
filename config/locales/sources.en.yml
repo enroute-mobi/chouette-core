@@ -64,7 +64,7 @@ en:
         import_option_stop_area_provider: Stop Area Provider
         import_option_code_space_id: "Code Space"
         import_option_code_space: "Code Space"
-        import_option_tag_id: Tags
+        import_option_tag_ids: Tags
         import_option_tag: Tags
         enabled: "Enabled"
         retrieval_time_of_day: "Retrieval time"

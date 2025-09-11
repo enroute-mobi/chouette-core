@@ -87,7 +87,7 @@ class SourcesController < Chouette::WorkbenchController
       :retrieval_time_of_day,
       :retrieval_frequency,
       retrieval_days_of_week_attributes: %i[monday tuesday wednesday thursday friday saturday sunday],
-      import_option_tag_id: [],
+      import_option_tag_ids: [],
       import_option_process_gtfs_route_ids: []
     ).with_defaults(workbench_id: workbench.id)
   end

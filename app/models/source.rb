@@ -175,11 +175,11 @@ class Source < ApplicationModel
   end
 
   def import_option_tag
-    workbench.tags.where(id: import_option_tag_id)
+    workbench.tags.where(id: import_option_tag_ids)
   end
 
   def import_option_tag=(value)
-    import_options["import_option_tag_id"] = value.reject(&:blank?)
+    import_options["import_option_tag_ids"] = value.reject(&:blank?)
   end
 
   def import_option_process_gtfs_route_ids
@@ -557,12 +557,12 @@ class Source < ApplicationModel
         name: import_name,
         creator: creator,
         file: imported_file,
-        options: import_options.except('code_space_id', 'tag_id'),
+        options: import_options.except('code_space_id', 'tag_ids'),
         type: 'Import::Workbench',
         import_category: import_category,
         code_space_id: import_options['code_space_id']
       }.tap do |import_params|
-        if (tags = import_options['tag_id']).is_a?(Array)
+        if (tags = import_options['tag_ids']).is_a?(Array)
           import_params[:taggings_attributes] = tags.reject(&:blank?).map { |tag| { tag_id: tag } }
         end
       end

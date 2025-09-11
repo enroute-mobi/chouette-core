@@ -77,10 +77,17 @@ module Import
       end
 
       def internal_booking_arrangements
-        @internal_booking_arrangements ||=
-          Collection.new
-                    .add(Finder::Code.new(line_provider.booking_arrangements, code_space: code_space, source: :provider))
-                    .add(Finder::Objectid.new(line_provider.booking_arrangements, source: :provider))
+        @internal_booking_arrangements ||= begin
+          params = { source: :provider }
+          booking_arrangement_finder_class = if import.override_internal_identifiers?
+            Finder::Objectid
+          else
+            params.merge!(code_space: code_space)
+            Finder::Code
+          end
+
+          Collection.new.add(booking_arrangement_finder_class.new(line_provider.booking_arrangements, **params))
+        end
       end
 
       def internal_shapes

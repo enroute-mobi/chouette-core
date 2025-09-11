@@ -64,6 +64,8 @@ fr:
         import_option_stop_area_provider: Fournisseur d'arrêts
         import_option_code_space_id: "Espace de code"
         import_option_code_space: "Espace de code"
+        import_option_tag_ids: Tags
+        import_option_tag: Tags
         enabled: "Activée"
         retrieval_time_of_day: "Heure de récupération"
         retrieval_days_of_week: "Jours de récupération"

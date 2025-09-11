@@ -17,7 +17,7 @@
               ), \
               TableBuilderHelper::Column.new( \
                 key: :color, \
-                attribute: Proc.new { |tag| "#{content_tag(:i, nil, class: 'fa fa-circle fa-lg', style: "color:#{tag.color}")}".html_safe }, \
+                attribute: Proc.new { |tag| tag.color ? content_tag(:span, '', class: 'fa fa-circle', style: "color:##{tag.color}") : '-' }, \
                 sortable: false \
               ), \
               TableBuilderHelper::Column.new( \

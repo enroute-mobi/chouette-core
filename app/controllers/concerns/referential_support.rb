@@ -24,6 +24,6 @@ module ReferentialSupport
   end
 
   def find_referential
-    workbench.find_referential!(params[:referential_id])
+    workbench.find_referential!(params[:referential_id]).visited!
   end
 end

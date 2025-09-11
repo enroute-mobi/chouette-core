@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2025_08_05_131958) do
+ActiveRecord::Schema[7.0].define(version: 2025_09_07_060228) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "btree_gin"
   enable_extension "hstore"
@@ -1304,6 +1304,7 @@ ActiveRecord::Schema[7.0].define(version: 2025_08_05_131958) do
     t.datetime "merged_at", precision: nil
     t.datetime "failed_at", precision: nil
     t.integer "vehicle_journeys_count"
+    t.datetime "visited_at"
     t.index ["created_from_id"], name: "index_referentials_on_created_from_id"
     t.index ["referential_suite_id"], name: "index_referentials_on_referential_suite_id"
     t.index ["slug"], name: "index_referentials_on_slug", unique: true

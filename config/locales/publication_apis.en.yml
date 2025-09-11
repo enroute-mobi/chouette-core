@@ -12,6 +12,7 @@ en:
     form:
       sections:
         params: "Publication API settings"
+        content_options: "Content options"
   activerecord:
     models:
       publication_api:
@@ -27,6 +28,7 @@ en:
         publications: "Related publications"
         public: "Public API"
         prefer_referent_documents: "Prefer referent documents"
+        code_space: "Codes"
   formtastic:
     hints:
       publication_api:

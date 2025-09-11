@@ -11,6 +11,7 @@
           = d.attribute :slug
           = d.attribute :public_url, value: link_to(@publication_api.public_url, @publication_api.public_url, target: :blank)
           = d.attribute :graphql_url, value: link_to("#{@publication_api.public_url}/graphql", "#{@publication_api.public_url}/graphql", target: :blank)
+          = d.attribute :code_space, value: @publication_api.code_space&.short_name
           = d.attribute :public, as: :boolean
           = d.attribute :prefer_referent_documents, as: :boolean
           = d.attribute :created_at, as: :datetime

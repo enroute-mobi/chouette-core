@@ -51,7 +51,9 @@ module Import
     def assign_attributes(attributes)
       # Because import_category is used to valid file attribute
       # it must be defined before other attributes
-      self.import_category = attributes.dig(:options, :import_category) || attributes[:import_category]
+      if (import_category = attributes.dig(:options, :import_category) || attributes[:import_category])
+        self.import_category = import_category
+      end
 
       super attributes
     end

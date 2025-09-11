@@ -4,12 +4,18 @@ module Search
   class WorkgroupAggregate < ::Search::Operation
     attr_accessor :workgroup
 
+    attribute :text
+
     def searched_class
       ::Aggregate
     end
 
     def query_class
       Query::WorkgroupAggregate
+    end
+
+    def query(scope)
+      query_class.new(scope).workbenches(workbenches).text(text).user_statuses(statuses).in_period(period)
     end
 
     class Order < ::Search::Order

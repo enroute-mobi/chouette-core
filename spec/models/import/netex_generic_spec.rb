@@ -1163,169 +1163,330 @@ RSpec.describe Import::NetexGeneric do
   end
 
   describe 'Route and Journay Patterns part' do
-    let(:xml) do
-      <<-XML
-        <members>
-          <Route id="route-1">
-            <Name>Route Sample</Name>
-            <LineRef ref="line-1"/>
-            <DirectionType>outbound</DirectionType>
-          </Route>
+    context 'when default model_id_attribute is used' do
+      let(:xml) do
+        <<-XML
+          <members>
+            <Route id="route-1">
+              <Name>Route Sample</Name>
+              <LineRef ref="line-1"/>
+              <DirectionType>outbound</DirectionType>
+            </Route>
 
-          <ServiceJourneyPattern id="journeypattern-1">
-            <Name>Journey Pattern 1</Name>
-            <RouteRef ref="route-1"/>
-            <pointsInSequence>
-              <StopPointInJourneyPattern id="stop-point-in-journey-pattern-11" order="1">
-                <ScheduledStopPointRef ref="scheduled-stop-point-1"/>
-              </StopPointInJourneyPattern>
-              <StopPointInJourneyPattern id="stop-point-in-journey-pattern-12" order="2">
-                <ScheduledStopPointRef ref="scheduled-stop-point-3"/>
-              </StopPointInJourneyPattern>
-            </pointsInSequence>
-          </ServiceJourneyPattern>
+            <ServiceJourneyPattern id="journeypattern-1">
+              <Name>Journey Pattern 1</Name>
+              <RouteRef ref="route-1"/>
+              <pointsInSequence>
+                <StopPointInJourneyPattern id="stop-point-in-journey-pattern-11" order="1">
+                  <ScheduledStopPointRef ref="scheduled-stop-point-1"/>
+                </StopPointInJourneyPattern>
+                <StopPointInJourneyPattern id="stop-point-in-journey-pattern-12" order="2">
+                  <ScheduledStopPointRef ref="scheduled-stop-point-3"/>
+                </StopPointInJourneyPattern>
+              </pointsInSequence>
+            </ServiceJourneyPattern>
 
-          <ServiceJourneyPattern id="journeypattern-2">
-            <Name>Journey Pattern 2</Name>
-            <RouteRef ref="route-1"/>
-            <pointsInSequence>
-              <StopPointInJourneyPattern id="stop-point-in-journey-pattern-21" order="1">
-                <ScheduledStopPointRef ref="scheduled-stop-point-1"/>
-              </StopPointInJourneyPattern>
-              <StopPointInJourneyPattern id="stop-point-in-journey-pattern-22" order="2">
-                <ScheduledStopPointRef ref="scheduled-stop-point-2"/>
-              </StopPointInJourneyPattern>
-              <StopPointInJourneyPattern id="stop-point-in-journey-pattern-23" order="3">
-                <ScheduledStopPointRef ref="scheduled-stop-point-3"/>
-              </StopPointInJourneyPattern>
-            </pointsInSequence>
-          </ServiceJourneyPattern>
+            <ServiceJourneyPattern id="journeypattern-2">
+              <Name>Journey Pattern 2</Name>
+              <RouteRef ref="route-1"/>
+              <pointsInSequence>
+                <StopPointInJourneyPattern id="stop-point-in-journey-pattern-21" order="1">
+                  <ScheduledStopPointRef ref="scheduled-stop-point-1"/>
+                </StopPointInJourneyPattern>
+                <StopPointInJourneyPattern id="stop-point-in-journey-pattern-22" order="2">
+                  <ScheduledStopPointRef ref="scheduled-stop-point-2"/>
+                </StopPointInJourneyPattern>
+                <StopPointInJourneyPattern id="stop-point-in-journey-pattern-23" order="3">
+                  <ScheduledStopPointRef ref="scheduled-stop-point-3"/>
+                </StopPointInJourneyPattern>
+              </pointsInSequence>
+            </ServiceJourneyPattern>
 
-          <ServiceJourneyPattern id="journeypattern-3">
-            <Name>Journey Pattern 3</Name>
-            <RouteRef ref="route-1"/>
-            <pointsInSequence>
-              <StopPointInJourneyPattern id="stop-point-in-journey-pattern-31" order="1">
-                <ScheduledStopPointRef ref="scheduled-stop-point-2"/>
-              </StopPointInJourneyPattern>
-              <StopPointInJourneyPattern id="stop-point-in-journey-pattern-32" order="2">
-                <ScheduledStopPointRef ref="scheduled-stop-point-3"/>
-              </StopPointInJourneyPattern>
-            </pointsInSequence>
-          </ServiceJourneyPattern>
+            <ServiceJourneyPattern id="journeypattern-3">
+              <Name>Journey Pattern 3</Name>
+              <RouteRef ref="route-1"/>
+              <pointsInSequence>
+                <StopPointInJourneyPattern id="stop-point-in-journey-pattern-31" order="1">
+                  <ScheduledStopPointRef ref="scheduled-stop-point-2"/>
+                </StopPointInJourneyPattern>
+                <StopPointInJourneyPattern id="stop-point-in-journey-pattern-32" order="2">
+                  <ScheduledStopPointRef ref="scheduled-stop-point-3"/>
+                </StopPointInJourneyPattern>
+              </pointsInSequence>
+            </ServiceJourneyPattern>
 
-          <!-- Required resources -->
+            <!-- Required resources -->
 
-          <Line id="line-1">
-            <Name>Line Sample</Name>
-          </Line>
+            <Line id="line-1">
+              <Name>Line Sample</Name>
+            </Line>
 
-          <!-- Timetable -->
-          <DayType id="daytype-1">
-            <Name>Sample</Name>
-            <properties>
-              <PropertyOfDay>
-                <DaysOfWeek>Monday Tuesday Wednesday Thursday Friday Saturday Sunday</DaysOfWeek>
-              </PropertyOfDay>
-            </properties>
-          </DayType>
+            <!-- Timetable -->
+            <DayType id="daytype-1">
+              <Name>Sample</Name>
+              <properties>
+                <PropertyOfDay>
+                  <DaysOfWeek>Monday Tuesday Wednesday Thursday Friday Saturday Sunday</DaysOfWeek>
+                </PropertyOfDay>
+              </properties>
+            </DayType>
 
-          <DayTypeAssignment id="assigment-1" order="0">
-            <OperatingPeriodRef ref="period-1"/>
-            <DayTypeRef ref="daytype-1"/>
-          </DayTypeAssignment>
+            <DayTypeAssignment id="assigment-1" order="0">
+              <OperatingPeriodRef ref="period-1"/>
+              <DayTypeRef ref="daytype-1"/>
+            </DayTypeAssignment>
 
-          <OperatingPeriod id="period-1">
-            <FromDate>2030-01-01T00:00:00</FromDate>
-            <ToDate>2030-01-10T00:00:00</ToDate>
-          </OperatingPeriod>
+            <OperatingPeriod id="period-1">
+              <FromDate>2030-01-01T00:00:00</FromDate>
+              <ToDate>2030-01-10T00:00:00</ToDate>
+            </OperatingPeriod>
 
-          <!-- ScheduledStopPoint + PassengerStopAssignment + Quay -->
-          <ScheduledStopPoint id="scheduled-stop-point-1"/>
+            <!-- ScheduledStopPoint + PassengerStopAssignment + Quay -->
+            <ScheduledStopPoint id="scheduled-stop-point-1"/>
 
-          <PassengerStopAssignment id="passenger-stop-assignment-1" order="0">
-            <ScheduledStopPointRef ref="scheduled-stop-point-1"/>
-            <QuayRef ref="quay-1" />
-          </PassengerStopAssignment>
+            <PassengerStopAssignment id="passenger-stop-assignment-1" order="0">
+              <ScheduledStopPointRef ref="scheduled-stop-point-1"/>
+              <QuayRef ref="quay-1" />
+            </PassengerStopAssignment>
 
-          <Quay id="quay-1">
-            <Name>Quay A</Name>
-          </Quay>
+            <Quay id="quay-1">
+              <Name>Quay A</Name>
+            </Quay>
 
-          <!-- ScheduledStopPoint + PassengerStopAssignment + Quay -->
-          <ScheduledStopPoint id="scheduled-stop-point-2"/>
+            <!-- ScheduledStopPoint + PassengerStopAssignment + Quay -->
+            <ScheduledStopPoint id="scheduled-stop-point-2"/>
 
-          <PassengerStopAssignment id="passenger-stop-assignment-2" order="0">
-            <ScheduledStopPointRef ref="scheduled-stop-point-2"/>
-            <QuayRef ref="quay-2" />
-          </PassengerStopAssignment>
+            <PassengerStopAssignment id="passenger-stop-assignment-2" order="0">
+              <ScheduledStopPointRef ref="scheduled-stop-point-2"/>
+              <QuayRef ref="quay-2" />
+            </PassengerStopAssignment>
 
-          <Quay id="quay-2">
-            <Name>Quay B</Name>
-          </Quay>
+            <Quay id="quay-2">
+              <Name>Quay B</Name>
+            </Quay>
 
-          <!-- ScheduledStopPoint + PassengerStopAssignment + Quay -->
-          <ScheduledStopPoint id="scheduled-stop-point-3"/>
+            <!-- ScheduledStopPoint + PassengerStopAssignment + Quay -->
+            <ScheduledStopPoint id="scheduled-stop-point-3"/>
 
-          <PassengerStopAssignment id="passenger-stop-assignment-3" order="0">
-            <ScheduledStopPointRef ref="scheduled-stop-point-3"/>
-            <QuayRef ref="quay-3" />
-          </PassengerStopAssignment>
+            <PassengerStopAssignment id="passenger-stop-assignment-3" order="0">
+              <ScheduledStopPointRef ref="scheduled-stop-point-3"/>
+              <QuayRef ref="quay-3" />
+            </PassengerStopAssignment>
 
-          <Quay id="quay-3">
-            <Name>Quay C</Name>
-          </Quay>
-        </members>
-      XML
-    end
-
-    before do
-      import.part(:stop_area_referential).import!
-      import.part(:line_referential).import!
-      import.part(:scheduled_stop_points).import!
-
-      import.within_referential do |_referential|
-        import.part(:route_journey_patterns).import!
+            <Quay id="quay-3">
+              <Name>Quay C</Name>
+            </Quay>
+          </members>
+        XML
       end
-    end
 
-    let(:new_referential) { import.referential }
-    let(:stop_areas) { new_referential&.stop_areas }
-    let(:route) { new_referential.routes.first }
+      before do
+        import.part(:stop_area_referential).import!
+        import.part(:line_referential).import!
+        import.part(:scheduled_stop_points).import!
 
-    describe 'StopArea' do
-      subject { stop_areas.map(&:name) }
+        import.within_referential do |_referential|
+          import.part(:route_journey_patterns).import!
+        end
+      end
 
-      it { is_expected.to match_array ['Quay A', 'Quay B', 'Quay C'] }
-    end
+      let(:new_referential) { import.referential }
+      let(:stop_areas) { new_referential&.stop_areas }
+      let(:route) { new_referential.routes.first }
 
-    describe 'Route' do
-      describe 'StopPoints in Route' do
-        subject { route.stop_points.map { |stop_point| stop_point.stop_area.name } }
+      describe 'StopArea' do
+        subject { stop_areas.map(&:name) }
 
         it { is_expected.to match_array ['Quay A', 'Quay B', 'Quay C'] }
       end
 
-      describe 'JourneyPatterns in Route' do
-        let(:journey_pattern) { route.journey_patterns.find_by(name: name) }
-        subject { journey_pattern.stop_points.map { |stop_point| stop_point.stop_area.name } }
-
-        context 'with first journey pattern' do
-          let(:name) { 'Journey Pattern 1' }
-
-          it { is_expected.to match_array ['Quay A', 'Quay C'] }
-        end
-
-        context 'with second journey pattern' do
-          let(:name) { 'Journey Pattern 2' }
+      describe 'Route' do
+        describe 'StopPoints in Route' do
+          subject { route.stop_points.map { |stop_point| stop_point.stop_area.name } }
 
           it { is_expected.to match_array ['Quay A', 'Quay B', 'Quay C'] }
         end
 
-        context 'with last journey pattern' do
-          let(:name) { 'Journey Pattern 3' }
+        describe 'JourneyPatterns in Route' do
+          let(:journey_pattern) { route.journey_patterns.find_by(name: name) }
+          subject { journey_pattern.stop_points.map { |stop_point| stop_point.stop_area.name } }
 
-          it { is_expected.to match_array ['Quay B', 'Quay C'] }
+          context 'with first journey pattern' do
+            let(:name) { 'Journey Pattern 1' }
+
+            it { is_expected.to match_array ['Quay A', 'Quay C'] }
+          end
+
+          context 'with second journey pattern' do
+            let(:name) { 'Journey Pattern 2' }
+
+            it { is_expected.to match_array ['Quay A', 'Quay B', 'Quay C'] }
+          end
+
+          context 'with last journey pattern' do
+            let(:name) { 'Journey Pattern 3' }
+
+            it { is_expected.to match_array ['Quay B', 'Quay C'] }
+          end
+        end
+      end
+    end
+
+    context 'when objectid is used as model_id_attribute' do
+      let(:xml) do
+        <<-XML
+          <members>
+            <Route id="route-1">
+              <Name>Route Sample</Name>
+              <LineRef ref="line-1"/>
+              <DirectionType>outbound</DirectionType>
+            </Route>
+
+            <BookingArrangement id="sample">
+              <BookingContact>
+                <Phone>+33 1 23 45 67 89</Phone>
+                <Url>https://example.com/info</Url>
+              </BookingContact>
+              <BookingMethods>callOffice online</BookingMethods>
+              <BookingAccess>public</BookingAccess>
+              <BookWhen>untilPreviousDay</BookWhen>
+              <BuyWhen>beforeBoarding</BuyWhen>
+              <LatestBookingTime>04:30:00</LatestBookingTime>
+              <MinimumBookingPeriod>PT30M</MinimumBookingPeriod>
+              <BookingUrl>https://example.com/booking</BookingUrl>
+              <BookingNote>Lorem Ipsum is simply dummy text of the printing and typesetting industry.</BookingNote>
+            </BookingArrangement>
+
+            <ServiceJourneyPattern id="journeypattern-1">
+              <Name>Journey Pattern 1</Name>
+              <RouteRef ref="route-1"/>
+              <bookingArrangements>
+                <BookingArrangementRef ref="sample"/>
+              </bookingArrangements>
+              <pointsInSequence>
+                <StopPointInJourneyPattern id="stop-point-in-journey-pattern-1" order="1">
+                  <ScheduledStopPointRef ref="scheduled-stop-point-1"/>
+                </StopPointInJourneyPattern>
+                <StopPointInJourneyPattern id="stop-point-in-journey-pattern-2" order="2">
+                  <ScheduledStopPointRef ref="scheduled-stop-point-2"/>
+                </StopPointInJourneyPattern>
+                <StopPointInJourneyPattern id="stop-point-in-journey-pattern-3" order="3">
+                  <ScheduledStopPointRef ref="scheduled-stop-point-3"/>
+                </StopPointInJourneyPattern>
+              </pointsInSequence>
+            </ServiceJourneyPattern>
+
+            <!-- Required resources -->
+
+            <Line id="line-1">
+              <Name>Line Sample</Name>
+            </Line>
+
+            <!-- Timetable -->
+            <DayType id="daytype-1">
+              <Name>Sample</Name>
+              <properties>
+                <PropertyOfDay>
+                  <DaysOfWeek>Monday Tuesday Wednesday Thursday Friday Saturday Sunday</DaysOfWeek>
+                </PropertyOfDay>
+              </properties>
+            </DayType>
+
+            <DayTypeAssignment id="assigment-1" order="0">
+              <OperatingPeriodRef ref="period-1"/>
+              <DayTypeRef ref="daytype-1"/>
+            </DayTypeAssignment>
+
+            <OperatingPeriod id="period-1">
+              <FromDate>2030-01-01T00:00:00</FromDate>
+              <ToDate>2030-01-10T00:00:00</ToDate>
+            </OperatingPeriod>
+
+            <!-- ScheduledStopPoint + PassengerStopAssignment + Quay -->
+            <ScheduledStopPoint id="scheduled-stop-point-1"/>
+
+            <PassengerStopAssignment id="passenger-stop-assignment-1" order="0">
+              <ScheduledStopPointRef ref="scheduled-stop-point-1"/>
+              <QuayRef ref="quay-1" />
+            </PassengerStopAssignment>
+
+            <Quay id="quay-1">
+              <Name>Quay A</Name>
+            </Quay>
+
+            <!-- ScheduledStopPoint + PassengerStopAssignment + Quay -->
+            <ScheduledStopPoint id="scheduled-stop-point-2"/>
+
+            <PassengerStopAssignment id="passenger-stop-assignment-2" order="0">
+              <ScheduledStopPointRef ref="scheduled-stop-point-2"/>
+              <QuayRef ref="quay-2" />
+            </PassengerStopAssignment>
+
+            <Quay id="quay-2">
+              <Name>Quay B</Name>
+            </Quay>
+
+            <!-- ScheduledStopPoint + PassengerStopAssignment + Quay -->
+            <ScheduledStopPoint id="scheduled-stop-point-3"/>
+
+            <PassengerStopAssignment id="passenger-stop-assignment-3" order="0">
+              <ScheduledStopPointRef ref="scheduled-stop-point-3"/>
+              <QuayRef ref="quay-3" />
+            </PassengerStopAssignment>
+
+            <Quay id="quay-3">
+              <Name>Quay C</Name>
+            </Quay>
+          </members>
+        XML
+      end
+
+      before do
+        # use objectid as model_id_attribute
+        import.options['override_internal_identifiers'] = 'true'
+
+        import.part(:stop_area_referential).import!
+        import.part(:line_referential).import!
+        import.part(:scheduled_stop_points).import!
+
+        import.within_referential do |_referential|
+          import.part(:route_journey_patterns).import!
+        end
+      end
+
+      let(:new_referential) { import.referential }
+      let(:stop_areas) { new_referential&.stop_areas }
+      let(:route) { new_referential.routes.first }
+
+      describe 'StopArea' do
+        subject { stop_areas.map(&:name) }
+
+        it { is_expected.to match_array ['Quay A', 'Quay B', 'Quay C'] }
+      end
+
+      describe 'Route' do
+        describe 'StopPoints in Route' do
+          subject { route.stop_points.map { |stop_point| stop_point.stop_area.name } }
+
+          it { is_expected.to match_array ['Quay A', 'Quay B', 'Quay C'] }
+        end
+
+        describe 'JourneyPatterns in Route' do
+          let(:journey_pattern) { route.journey_patterns.find_by(name: name) }
+          subject { journey_pattern.stop_points.map { |stop_point| stop_point.stop_area.name } }
+
+          context 'with first journey pattern' do
+            let(:name) { 'Journey Pattern 1' }
+
+            it { is_expected.to match_array ['Quay A', 'Quay B', 'Quay C'] }
+
+            describe '#booking_arrangement' do
+              context 'when model_id_attribute is objectid' do
+                subject { journey_pattern.booking_arrangement.objectid }
+                it { is_expected.to include 'sample' }
+              end
+            end
+          end
         end
       end
     end

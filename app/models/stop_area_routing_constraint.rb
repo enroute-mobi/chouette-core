@@ -11,15 +11,6 @@ class StopAreaRoutingConstraint < ApplicationModel
   validate :both_stops_in_the_same_referential
   validate :different_stops
 
-  scope :with_stop, ->(stop_id){
-    stop_id = stop_id.id if stop_id.respond_to?(:id)
-    where('from_id = :stop_id OR to_id = :stop_id', stop_id: stop_id)
-  }
-
-  def self.ransackable_scopes(auth_object = nil)
-    %i[with_stop]
-  end
-
   def both_stops_in_the_same_referential
     if from and stop_area_referential_id != from.stop_area_referential_id
       errors.add(:from_id, :must_be_in_same_referential)

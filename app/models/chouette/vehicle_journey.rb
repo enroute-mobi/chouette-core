@@ -92,22 +92,6 @@ module Chouette
       end
     }
 
-    scope :order_by_departure_time, -> (dir) {
-      field = "MIN(current_date + departure_day_offset * interval '24 hours' + departure_time)"
-      joins(:vehicle_journey_at_stops)
-      .select('id', field)
-      .group(:id)
-      .order(Arel.sql("#{field} #{dir}"))
-    }
-
-    scope :order_by_arrival_time, -> (dir) {
-      field = "MAX(current_date + arrival_day_offset * interval '24 hours' + arrival_time)"
-      joins(:vehicle_journey_at_stops)
-      .select('id', field)
-      .group(:id)
-      .order(Arel.sql("#{field} #{dir}"))
-    }
-
     def self.with_departure_arrival_second_offsets
       stops = Chouette::VehicleJourneyAtStop.joins(:stop_point).where('vehicle_journey_id = vehicle_journeys.id')
 

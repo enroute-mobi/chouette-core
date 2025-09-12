@@ -1,8 +1,6 @@
 # frozen_string_literal: true
 
 class NotificationRulesController < Chouette::WorkbenchController
-  include RansackDateFilter
-
   defaults resource_class: NotificationRule
 
   def index

@@ -507,14 +507,6 @@ describe Referential, :type => :model do
     end
   end
 
-  context "lines" do
-    describe "search" do
-      it "should support Ransack search method" do
-        expect(ref.lines.ransack.result.to_a).to eq(ref.lines.to_a)
-      end
-    end
-  end
-
   context "to be referential_read_only or not to be referential_read_only" do
     let( :referential ){ build( :referential ) }
 

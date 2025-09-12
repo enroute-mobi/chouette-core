@@ -7,19 +7,6 @@ module ObjectidSupport
     validates_presence_of :objectid
     validates_uniqueness_of :objectid, unless: Proc.new {|model| model.read_attribute(:objectid).nil? || model.class.skip_objectid_uniqueness? || model.validation_context == :inserter }
 
-    scope :with_short_id, ->(q){
-      return self.none unless self.exists?
-      # TODO: very ugly code :-/
-      referential = last&.referential
-      self.all.merge referential.objectid_formatter.with_short_id(self, q)
-    }
-
-    ransacker :short_id do |parent|
-      # TODO: very ugly code :-/
-      referential = last&.referential
-      referential.present? ? Arel.sql(referential.objectid_formatter.short_id_sql_expr(self)) : Arel.sql('objectid')
-    end
-
     class << self
 
       def skip_objectid_uniqueness?
@@ -33,10 +20,6 @@ module ObjectidSupport
         ensure
           @skip_objectid_uniqueness = false
         end
-      end
-
-      def ransackable_scopes(auth_object = nil)
-        [:with_short_id]
       end
 
       def reset_objectid_format_cache!

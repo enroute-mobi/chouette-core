@@ -30,11 +30,4 @@ class Shape < ApplicationModel
     # ActiveRecord::Base.connection.execute(query).first
     1
   end
-
-  private
-
-  # Allow ransack to query using "LIKE" on uuids
-  ransacker :uuid do
-    Arel.sql("#{table_name}.uuid::varchar")
-  end
 end

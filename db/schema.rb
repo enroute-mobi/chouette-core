@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2025_09_07_060228) do
+ActiveRecord::Schema[7.0].define(version: 2025_09_10_060512) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "btree_gin"
   enable_extension "hstore"
@@ -1029,6 +1029,7 @@ ActiveRecord::Schema[7.1].define(version: 2025_09_07_060228) do
     t.datetime "notified_recipients_at", precision: nil
     t.bigint "user_id"
     t.string "merge_method", default: "legacy"
+    t.string "name"
     t.index ["workbench_id"], name: "index_merges_on_workbench_id"
   end
 

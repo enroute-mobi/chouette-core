@@ -53,11 +53,14 @@ module OperationSupport
   end
 
   def name
-    created_at.l(format: :short_with_time)
+    self[:name] || created_at.l(format: :short_with_time)
   end
 
-  def full_names
-    referentials.map(&:name).to_sentence
+  def merged_datasets
+    associated_referential_names = referentials.map(&:name).to_sentence
+    return I18n.t('merges.merged_datasets_count', count: referentials.count) if associated_referential_names.length > 30
+
+    associated_referential_names
   end
 
   def contains_urgent_offer?

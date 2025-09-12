@@ -171,7 +171,7 @@ class Merge < ApplicationModel
     new.pending!
 
     output.update new: new
-    update new: new
+    update new: new, name: I18n.t('merges.name', date: I18n.l(Time.now, format: :short_with_time))
   end
 
   def clean_new

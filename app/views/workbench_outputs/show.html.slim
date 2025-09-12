@@ -20,7 +20,14 @@
               ), \
               TableBuilderHelper::Column.new( \
                 key: :name, \
-                attribute: 'full_names', \
+                attribute: 'name', \
+                link_to: lambda do |merge| \
+                  workbench_merge_path merge.workbench, merge \
+                end \
+              ), \
+              TableBuilderHelper::Column.new( \
+                name: t("merges.merged_datasets"), \
+                attribute: 'merged_datasets', \
                 link_to: lambda do |merge| \
                   workbench_merge_path merge.workbench, merge \
                 end \

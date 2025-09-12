@@ -15,10 +15,12 @@ en:
       publication:
         created_at: Created at
         started_at: Started at
+        created_by: Created by
         ended_at: Ended at
         duration: Duration
         status: "Status"
         user_status: "Status"
+        export_type: "Export type"
         parent: "Source"
         export: "Export"
         name: "%{setup_name} on %{date}"

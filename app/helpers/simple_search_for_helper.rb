@@ -48,6 +48,10 @@ module SimpleSearchForHelper
       input :name, label: false, width: 2
     end
 
+    def creator
+      input :creator, label: false, width: 2
+    end
+
     def input attribute, **options
       width = options.delete(:width) || 1
       options[:wrapper_html] ||= { class: "w-#{width}/5 border-l" }

@@ -2,7 +2,7 @@
 
 - page_header_content_for @publication_setup
 
-.page_content x-data="{ saveSearchPanel: false, graphPanel: #{@search.graphical?} }"
+.page_content
   .container-fluid
     .row
       .col-lg-6.col-md-6.col-sm-12.col-xs-12
@@ -17,50 +17,4 @@
       .col-lg-6.col-md-6.col-sm-12.col-xs-12
         - @publication_setup.destinations.each do |destination|
           = render "publication_setups/destination/#{destination.type.demodulize.underscore}", destination: destination
-
-    .row
-      .col-lg-12
-        .h3 = Publication.t
-        = render 'publications/filters'
-
-    - if @chart && !@chart.empty?
-      = @chart.to_chartkick(self, download: true)
-
-    - elsif @publications&.any?
-      .row
-        .col-lg-12
-          = table_builder_2 @publications,
-            [ \
-              TableBuilderHelper::Column.new( \
-                key: :parent, \
-                attribute: Proc.new do |publication| \
-                  publication.parent ? link_to("#{publication.parent.class.ts} #{publication.parent.name}", [@workgroup, @publication_setup, publication]) : '-' \
-                end, \
-                ), \
-              TableBuilderHelper::Column.new( \
-                key: :status, \
-                attribute: Proc.new { |n| operation_user_status(n) }, \
-              ), \
-              TableBuilderHelper::Column.new( \
-                key: :created_at, \
-                attribute: ->(publication){ link_to(l(publication.created_at, format: :short_with_time), [@workgroup, @publication_setup, publication])} \
-              ), \
-              TableBuilderHelper::Column.new( \
-                key: :started_at, \
-                attribute: ->(publication){ publication.started_at ? link_to(l(publication.started_at, format: :short_with_time), [@workgroup, @publication_setup, publication]) : '-' } \
-              ), \
-              TableBuilderHelper::Column.new( \
-                key: :ended_at, \
-                attribute: ->(publication){ publication.ended_at ? link_to(l(publication.ended_at, format: :short_with_time), [@workgroup, @publication_setup, publication]) : '-' } \
-              ), \
-            ],
-            sortable: false,
-            cls: 'table',
-            action: :index
-
-          = new_pagination @publications, 'pull-right'
-    - else
-      .row.mt-xs
-        .col-lg-12
-          = replacement_msg t('publications.search_no_results')
 

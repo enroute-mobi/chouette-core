@@ -24,6 +24,14 @@ class PublicationSetupDecorator < Af83::Decorator
       l.method :post
       l.href { h.workgroup_publication_setup_publications_path(scope, object) }
     end
+
+    instance_decorator.action_link(
+      on: %i[show],
+      secondary: :show
+    ) do |l|
+      l.content { I18n.t('publication_setups.actions.show_publications') }
+      l.href { h.workgroup_publications_path(scope, 'search[publication_setup_id]' => object.id) }
+    end
   end
 
   define_instance_method :display_profile_options do

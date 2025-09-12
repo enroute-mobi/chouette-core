@@ -23,45 +23,9 @@ class PublicationSetupsController < Chouette::WorkgroupController
     end
   end
 
-  def show
-    if (saved_search = saved_searches.find_by(id: params[:search_id]))
-      @search = saved_search.search
-    end
-
-    show! do |format|
-      format.html {
-        publications_collection # to mimic inherited resources index and preload search
-        @chart = @search.chart(publications_scope) if @search && @search.graphical?
-
-        unless @chart
-          @publications = PublicationDecorator.decorate(publications_collection, context: {
-            workgroup: workgroup,
-            publication_setup: @publication_setup
-          })
-        end
-      }
-    end
-  end
-
-  def saved_searches
-    @saved_searches ||= workgroup.saved_searches.for(::Search::WorkgroupPublication)
-  end
-
   protected
 
   alias resource workgroup
-
-  def publications_scope
-    @publications_scope ||= resource.publications
-  end
-
-  def publications_search
-    @search ||= Search::WorkgroupPublication.from_params(params, workgroup: workgroup)
-  end
-
-  def publications_collection
-    @publications_collection ||= publications_search.search(publications_scope)
-  end
 
   private
 

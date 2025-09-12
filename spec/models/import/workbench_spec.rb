@@ -14,6 +14,27 @@ RSpec.describe Import::Workbench do
     create(:workbench_import, workbench: workbench, referential: referential, file: file_fixture(filename).open)
   end
 
+  describe '#import_category' do
+    subject { import_workbench.import_category }
+
+    let(:import_workbench) do
+      workbench.imports.create!(
+        name: 'Test Import',
+        creator: 'Test',
+        type: 'Import::Workbench',
+        file: file_fixture(filename).open,
+        import_category: 'netex_generic'
+      )
+    end
+
+    it { is_expected.to eq('netex_generic') }
+
+    context 'after update' do
+      before { import_workbench.update(ended_at: Time.zone.now, status: 'canceled') }
+      it { is_expected.to eq('netex_generic') }
+    end
+  end
+
   describe '#lanch_worker (after_commit)' do
     it do
       is_expected.to have_attributes(

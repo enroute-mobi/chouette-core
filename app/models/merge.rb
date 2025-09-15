@@ -17,6 +17,7 @@ class Merge < ApplicationModel
   def define_name
     self.name ||= I18n.t('merges.name', date: I18n.l(Time.now, format: :short_with_time))
   end
+  scope :having_status, ->(statuses) { where(status: statuses ) }
 
   def parent
     workbench

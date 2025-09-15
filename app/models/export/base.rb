@@ -159,7 +159,6 @@ class Export::Base < ApplicationModel
   scope :purgeable, lambda {
     not_used_by_publication_apis.where('exports.created_at <= ?', clean_after.days.ago)
   }
-  scope :having_status, ->(statuses) { where(status: statuses) }
   scope :started_at_after, lambda { |date|
     where('started_at > ?', date)
   }

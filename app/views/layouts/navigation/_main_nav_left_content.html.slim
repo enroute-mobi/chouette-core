@@ -115,6 +115,8 @@
           span = Control::List::Run.model_name.human(count: 2)
         = link_to [workgroup, :publication_setups], class: 'list-group-item' do
           span = PublicationSetup.model_name.human(count: 2)
+        = link_to [workgroup, :publications], class: 'list-group-item' do
+          span = Publication.model_name.human(count: 2)
         = link_to [workgroup, :publication_apis], class: 'list-group-item' do
           span = PublicationApi.model_name.human(count: 2)
         = link_to workgroup_code_spaces_path(workgroup), class: 'list-group-item' do

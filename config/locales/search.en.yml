@@ -68,6 +68,7 @@ en:
         shared: "Shared"
         contains_date: "Contains date"
         route_id: "Route"
+        publication_setup_id: "Publication Setup"
         chart:
           group_by_attribute:
             sub_type:

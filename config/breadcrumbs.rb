@@ -254,14 +254,9 @@ crumb :merge do |merge|
   parent :merges, merge.workbench
 end
 
-crumb :publications_menu do |workgroup|
-  link 'layouts.navbar.publications.subtitle'.t
-  parent workgroup
-end
-
 crumb :publication_apis do |workgroup|
   link PublicationApi.t, workgroup_publication_apis_path(workgroup)
-  parent :publications_menu, workgroup
+  parent workgroup
 end
 
 crumb :publication_api do |publication_api|
@@ -286,12 +281,7 @@ end
 
 crumb :publication_setups do |workgroup|
   link PublicationSetup.t, workgroup_publication_setups_path(workgroup)
-  parent :publications_menu, workgroup
-end
-
-crumb :publication do |publication|
-  link publication.pretty_date, [publication.publication_setup.workgroup, publication.publication_setup, publication]
-  parent publication.publication_setup
+  parent workgroup
 end
 
 crumb :publication_setup do |publication_setup|
@@ -302,6 +292,16 @@ end
 crumb :new_publication_setup do |workgroup|
   link 'publication_setups.actions.new'.t
   parent :publication_setups, workgroup
+end
+
+crumb :publications do |workgroup|
+  link Publication.model_name.human(count: 2), workgroup_publications_path(workgroup)
+  parent workgroup
+end
+
+crumb :publication do |publication|
+  link publication.pretty_date, [publication.publication_setup.workgroup, publication.publication_setup, publication]
+  parent publication.publication_setup
 end
 
 crumb :aggregates do |workgroup|

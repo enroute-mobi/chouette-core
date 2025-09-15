@@ -62,7 +62,6 @@ module Macro
       validates :name, presence: true
       validates :original_macro_list_id, presence: true, if: :new_record?
 
-      scope :having_status, ->(statuses) { where(user_status: statuses) }
       scope :purgeable, -> { where("created_at < ?", 90.days.ago) }
 
       def purge_older

@@ -1,5 +1,5 @@
 module Query
-  class StopAreaProvider < Query::Operation
+  class StopAreaProvider < Base
     def text(value)
       change_scope(if: value.present?) do |scope|
         table = scope.arel_table

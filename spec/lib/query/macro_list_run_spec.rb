@@ -23,10 +23,10 @@ RSpec.describe Query::MacroListRun do
     end
   end
 
-  describe "#statuses" do
+  describe '#user_statuses' do
     Macro::List::Run.user_status.values.each do |status|
-      context "when the queried status is #{status}" do
-        subject { query.statuses(status).scope }
+      context "when the queried user status is #{status}" do
+        subject { query.user_statuses(status).scope }
 
         it "includes imports with this status" do
           macro_list_run1.update_column :user_status, status

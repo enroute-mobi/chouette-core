@@ -24,7 +24,6 @@ class Import::Base < ApplicationModel
 
 
   scope :unfinished, -> { where 'notified_parent_at IS NULL' }
-  scope :having_status, ->(statuses) { where(status: statuses ) }
   scope :started_at_after, ->(date) do
     where('started_at > ?', date)
   end

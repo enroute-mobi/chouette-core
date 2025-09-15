@@ -1,4 +1,4 @@
 module Query
-  class Export < Query::Operation
+  class Export < Query::LegacyOperation
   end
 end

@@ -23,19 +23,9 @@ class PublicationSetupsController < Chouette::WorkgroupController
     end
   end
 
-  def show
-    show! do |format|
-      format.html {
-        @publications = PublicationDecorator.decorate(
-          @publication_setup.publications.order('created_at DESC').paginate(page: params[:page]),
-          context: {
-            workgroup: workgroup,
-            publication_setup: @publication_setup
-          }
-        )
-      }
-    end
-  end
+  protected
+
+  alias resource workgroup
 
   private
 

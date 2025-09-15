@@ -1,6 +1,8 @@
 fr:
   publications:
     search_no_results: 'Aucune publication'
+    actions:
+      index: Publications
     show:
       title: "%{name}"
   activerecord:
@@ -13,10 +15,14 @@ fr:
       publication:
         created_at: Créé le
         started_at: Début
+        creator: Créé par
         ended_at: Fin
         duration: Durée
         status: "État"
+        user_status: "État"
+        export_type: "Type d'export"
         parent: "Source"
         export: "Export"
         name: "%{setup_name} du %{date}"
         creator: Créé par
+        publication_setup: Publication Automatique

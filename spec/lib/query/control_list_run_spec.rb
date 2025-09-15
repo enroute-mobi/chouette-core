@@ -23,10 +23,10 @@ RSpec.describe Query::ControlListRun do
     end
   end
 
-  describe "#statuses" do
+  describe '#user_statuses' do
     Control::List::Run.user_status.values.each do |status|
-      context "when the queried status is #{status}" do
-        subject { query.statuses(status).scope }
+      context "when the queried user status is #{status}" do
+        subject { query.user_statuses(status).scope }
 
         it "includes control_list_runs with this status" do
           control_list_run1.update_column :user_status, status

@@ -40,5 +40,21 @@ module Search
       attribute :started_at, default: :desc
       attribute :creator
     end
+
+    class Chart < ::Search::Base::Chart
+      group_by_attribute 'started_at', :datetime, sub_types: %i[hour_of_day day_of_week]
+      group_by_attribute 'user_status', :string do
+        def keys
+          ::Operation.user_status.values
+        end
+
+        def label(key)
+          ::Operation.user_status.find_value(key).text
+        end
+      end
+      group_by_attribute 'creator', :string
+
+      aggregate_attribute 'duration', 'EXTRACT(EPOCH FROM ended_at - started_at)'
+    end
   end
 end

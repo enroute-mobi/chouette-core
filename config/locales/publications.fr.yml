@@ -15,7 +15,7 @@ fr:
       publication:
         created_at: Créé le
         started_at: Début
-        created_by: Créé par
+        creator: Créé par
         ended_at: Fin
         duration: Durée
         status: "État"

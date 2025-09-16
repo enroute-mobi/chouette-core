@@ -51,10 +51,10 @@ RSpec.describe Search::StopAreaRoutingConstraint do
           stop_area :stop_area_d1, name: 'To D1'
           stop_area :stop_area_d2, name: 'To D2'
 
-          stop_area_routing_constraint :cl_ad_12, from: :stop_area_a1, to: :stop_area_d2
-          stop_area_routing_constraint :cl_ad_21, from: :stop_area_a2, to: :stop_area_d1
-          stop_area_routing_constraint :cl_bc_12, from: :stop_area_b1, to: :stop_area_c2
-          stop_area_routing_constraint :cl_bc_21, from: :stop_area_b2, to: :stop_area_c1
+          stop_area_routing_constraint :cl_ad_12, from: :stop_area_a1, to: :stop_area_d2, both_way: true
+          stop_area_routing_constraint :cl_ad_21, from: :stop_area_a2, to: :stop_area_d1, both_way: false
+          stop_area_routing_constraint :cl_bc_12, from: :stop_area_b1, to: :stop_area_c2, both_way: true
+          stop_area_routing_constraint :cl_bc_21, from: :stop_area_b2, to: :stop_area_c1, both_way: false
         end
       end
 
@@ -69,8 +69,16 @@ RSpec.describe Search::StopAreaRoutingConstraint do
       context 'WHERE on to' do
         let(:search_attributes) { { text: 'To C' } }
 
-        it 'filters on from name' do
+        it 'filters on to name' do
           is_expected.to match_array(%i[cl_bc_12 cl_bc_21].map { |i| context.stop_area_routing_constraint(i) })
+        end
+      end
+
+      context 'WHERE on both_way' do
+        let(:search_attributes) { { both_way: '1' } }
+
+        it 'filters on both way' do
+          is_expected.to match_array(%i[cl_ad_12 cl_bc_12].map { |i| context.stop_area_routing_constraint(i) })
         end
       end
 
@@ -119,6 +127,14 @@ RSpec.describe Search::StopAreaRoutingConstraint do
 
         it 'filters on to name and orders on to name' do
           is_expected.to eq(%i[cl_bc_21 cl_bc_12].map { |i| context.stop_area_routing_constraint(i) })
+        end
+      end
+
+      context 'WHERE on both_way and ORDER on from' do
+        let(:search_attributes) { { both_way: '1', order: { from: :desc } } }
+
+        it 'filters on both way and orders on from name' do
+          is_expected.to eq(%i[cl_bc_12 cl_ad_12].map { |i| context.stop_area_routing_constraint(i) })
         end
       end
     end

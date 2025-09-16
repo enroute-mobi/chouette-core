@@ -283,8 +283,8 @@ module Search
     def search(scope)
       if valid?
         result = scope
-        result = order.order(result) unless without_order?
         result = query(result).scope
+        result = order.order(result) unless without_order?
         result = result.paginate(paginate_attributes) unless without_pagination?
         result
       else
@@ -1497,7 +1497,7 @@ module Search
     end
 
     def order(scope)
-      scope = scope.joins(joins) if joins.present?
+      scope = scope.joins(*joins) if joins.present?
       scope.order(order_hash)
     end
 

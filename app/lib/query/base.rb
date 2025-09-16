@@ -2,6 +2,42 @@ module Query
   class Base
     def initialize(scope)
       @scope = scope
+      # TODO: CHOUETTE-4721 (rails 7.2): we may have to simply do scope.order(order_hash) in Search::Base
+      scope_to_extend = if @scope.is_a?(::ActiveRecord::Associations::CollectionProxy)
+                          @scope.proxy_association.scope
+                        else
+                          @scope
+                        end
+      @scope = scope_to_extend.extend(self.class::CustomJoins) if self.class::CustomJoins != ::Query::Base::CustomJoins
+    end
+
+    module CustomJoins
+      def joins
+        @joins ||= {}
+      end
+
+      def define(name, definition)
+        joins[name] = definition
+      end
+
+      private
+
+      def extend_object(base)
+        base.extend(Scope)
+        base.instance_variable_set(:@custom_joins_parent, self)
+
+        super
+      end
+
+      module Scope
+        def joins(*args)
+          if args.is_a?(Array) && args.all? { |a| a.is_a?(Symbol) }
+            super(args.map { |arg| @custom_joins_parent.joins[arg] || arg })
+          else
+            super
+          end
+        end
+      end
     end
 
     attr_reader :scope

@@ -26,7 +26,7 @@ module Query
 
     def in_period(period)
       change_scope(if: period.present?) do |scope|
-        scope.where(date: period.infinite_time_range)
+        scope.where(date: period.infinity_date_range)
       end
     end
 

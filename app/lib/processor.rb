@@ -71,11 +71,12 @@ class Processor
   def workbench_processing_rules(operation_step)
     return [] unless workbench.present?
 
-    workbench.processing_rules
-             .where(operation_step: operation_step)
-             .where("required_tag_ids && ARRAY[?]::int[]", tags_ids)
-             .where.not("excluded_tag_ids && ARRAY[?]::int[]", tags_ids)
-             .order(processable_type: :desc)
+    workbench
+      .processing_rules
+      .where(operation_step: operation_step)
+      .where("(required_tag_ids && ARRAY[?]::int[]) OR ARRAY_LENGTH(required_tag_ids, 1) IS NULL", tags_ids)
+      .where.not("(excluded_tag_ids && ARRAY[?]::int[]) AND ARRAY_LENGTH(excluded_tag_ids, 1) IS NOT NULL", tags_ids)
+      .order(processable_type: :desc)
   end
 
   # Retrieve all processing rules for a workgroup

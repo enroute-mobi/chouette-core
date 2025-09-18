@@ -3,10 +3,7 @@ class MacroListRunDecorator < Af83::Decorator
 
   set_scope { context[:workbench] }
 
-  action_link(on: %i[index], primary: :index, policy: :create) do |l|
-    l.content { I18n.t('macro_list_run.actions.new') }
-    l.href { h.new_workbench_macro_list_run_path }
-  end
+  create_action_link
 
 	action_link(on: %i[index], secondary: :index) do |l|
     l.content { I18n.t('macro_list_run.actions.show') }

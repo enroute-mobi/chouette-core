@@ -1462,7 +1462,7 @@ module Import
         def second_offset(time, day_offset)
           return if time.blank?
 
-          TimeOfDay.parse(time).second_offset + (day_offset&.to_i || 0) * 24 * 60 * 60
+          TimeOfDay.parse(time, day_offset: day_offset).second_offset
         end
       end
     end

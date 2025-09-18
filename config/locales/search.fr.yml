@@ -46,6 +46,7 @@ fr:
         transport_mode: "Mode de transport"
         parent_id: "Parent"
         stop_area_provider_id: Fournisseur d'arrêts
+        fare_zone_id: Zone tarifaire
         shape_provider_id: Fournisseur Topologique
         line_provider_id: Fournisseur de lignes
         document_provider_id: Fournisseur de documents

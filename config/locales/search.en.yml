@@ -33,6 +33,7 @@ en:
         timetable: "Timetable"
         stop_area_id: "Stop area"
         stop_area_provider: Stop area provider
+        fare_zone_id: Fare zone
         stop_area: "Stop area"
         stop_areas: "Stop areas"
         area_type: "Area type"

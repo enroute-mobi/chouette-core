@@ -1435,8 +1435,8 @@ module Import
                 stop_point_id: stop_point_id,
                 arrival_time: passing_time.arrival_time,
                 departure_time: passing_time.departure_time,
-                latest_arrival_time_of_day: second_offset(passing_time.latest_arrival_time),
-                earliest_departure_time_of_day: second_offset(passing_time.earliest_departure_time),
+                latest_arrival_time_of_day: second_offset(passing_time.latest_arrival_time, passing_time.latest_arrival_day_offset),
+                earliest_departure_time_of_day: second_offset(passing_time.earliest_departure_time, passing_time.earliest_departure_day_offset),
                 arrival_day_offset: passing_time.arrival_day_offset || 0,
                 departure_day_offset: passing_time.departure_day_offset || 0
               )
@@ -1459,10 +1459,10 @@ module Import
 
         private
 
-        def second_offset(time)
+        def second_offset(time, day_offset)
           return if time.blank?
 
-          TimeOfDay.parse(time).second_offset
+          TimeOfDay.parse(time).second_offset + (day_offset&.to_i || 0) * 24 * 60 * 60
         end
       end
     end

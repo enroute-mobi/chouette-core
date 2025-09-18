@@ -47,7 +47,10 @@ en:
       blocked: Locked
   activerecord:
     models:
-      user: "user"
+      user:
+        zero: "User"
+        one: "User"
+        other: "Users"
     attributes:
       user:
         name: "Full name"

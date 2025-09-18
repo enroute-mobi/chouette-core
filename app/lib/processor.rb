@@ -8,6 +8,8 @@ class Processor
     @workbench = operation.try(:workbench)
   end
 
+  delegate :parent, to: :operation, allow_nil: true
+
   def workgroup
     @workgroup ||= workbench.present? ? workbench.workgroup : operation.try(:workgroup)
   end
@@ -69,7 +71,11 @@ class Processor
   def workbench_processing_rules(operation_step)
     return [] unless workbench.present?
 
-    workbench.processing_rules.where(operation_step: operation_step).order(processable_type: :desc)
+    workbench.processing_rules
+             .where(operation_step: operation_step)
+             .where("required_tag_ids && ARRAY[?]::int[]", tags_ids)
+             .where.not("excluded_tag_ids && ARRAY[?]::int[]", tags_ids)
+             .order(processable_type: :desc)
   end
 
   # Retrieve all processing rules for a workgroup
@@ -91,5 +97,11 @@ class Processor
 
   def after_operation_step
     "after_#{operation.model_name.singular}"
+  end
+
+  private
+
+  def tags_ids
+    @tags_ids ||= parent.try(:tags).try(:pluck, :id) || []
   end
 end

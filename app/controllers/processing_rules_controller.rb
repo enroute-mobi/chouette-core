@@ -44,7 +44,11 @@ class ProcessingRulesController < Chouette::WorkbenchController
       :processable_type,
       :control_list_id,
       :macro_list_id,
-      :operation_step
-    )
+      :operation_step,
+      required_tag_ids: [],
+      excluded_tag_ids: []
+    ).tap do |processing_rule_params|
+      %i[required_tag_ids excluded_tag_ids].each { |key| processing_rule_params[key].reject!(&:blank?) }
+    end
   end
 end

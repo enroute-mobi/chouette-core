@@ -66,6 +66,8 @@ module ProcessingRule
     validates :operation_step, inclusion: { in: %w[after_import before_merge] }, if: :use_macro_list?
     validates :operation_step, uniqueness: { scope: %i[processable_type workbench] }
 
+    validate :no_tag_overlap
+
     def use_macro_list?
       processable_type == Macro::List.name
     end
@@ -87,6 +89,18 @@ module ProcessingRule
 
     def candidate_control_lists
       workbench&.control_lists_shared_with_workgroup || Control::List.none
+    end
+
+    def candidate_tags
+      workbench&.tags.order(:name).map { |tag| { id: tag.id, text: tag.name } }
+    end
+
+    private
+
+    def no_tag_overlap
+      return unless (required_tag_ids & excluded_tag_ids).any?
+
+      errors.add(:excluded_tag_ids, :required_and_excluded_tags_cannot_overlap)
     end
   end
 

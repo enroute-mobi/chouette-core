@@ -41,6 +41,43 @@ RSpec.describe ProcessingRule::Workbench, type: :model do
       it { expect(subject).to_not be_valid }
     end
   end
+
+  describe '#no_tag_overlap' do
+    let(:context) { Chouette.create { workbench } }
+    let(:workbench) { context.workbench }
+    let(:macro_list) { Macro::List.create!(name: 'Macro List', workbench: workbench) }
+
+    context 'when required and excluded tags overlap' do
+      subject do
+        workbench.processing_rules.build(
+          operation_step: 'after_import',
+          processable: macro_list,
+          required_tag_ids: [1, 2],
+          excluded_tag_ids: [1]
+        )
+      end
+
+      it do
+        expect(subject).to be_invalid
+        I18n.with_locale(:en) do
+          expect(subject.errors[:excluded_tag_ids]).to include('Required and excluded tags cannot overlap')
+        end
+      end
+    end
+
+    context 'when required and excluded tags do not overlap' do
+      subject do
+        workbench.processing_rules.build(
+          operation_step: 'after_import',
+          processable: macro_list,
+          required_tag_ids: [1, 2],
+          excluded_tag_ids: [3]
+        )
+      end
+
+      it { expect(subject).to be_valid }
+    end
+  end
 end
 
 RSpec.describe ProcessingRule::Workgroup, type: :model do

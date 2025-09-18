@@ -31,6 +31,11 @@
                 sortable: false \
               ), \
               TableBuilderHelper::Column.new( \
+                key: :updated_at, \
+                attribute: -> (doc) { l(doc.updated_at, format: :short_with_time) if doc.updated_at }, \
+                sortable: false \
+              ), \
+              TableBuilderHelper::Column.new( \
                 key: :from, \
                 attribute: -> (doc) { doc.validity_period&.from.present? ? l(doc.validity_period.from) : '-' }, \
                 sortable: false,\

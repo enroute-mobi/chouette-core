@@ -326,7 +326,7 @@ RSpec.describe Import::Workbench do
       end
 
       context 'with a NETEX file' do
-        it { is_expected.to be_nil }
+        it { is_expected.to eq :netex_generic }
       end
     end
   end

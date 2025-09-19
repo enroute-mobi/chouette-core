@@ -5,8 +5,8 @@ module PurgeableResource
   DEFAULT_CLEAN_AFTER = 90
 
   included do
-    scope :file_purgeable, -> { where("created_at <= ?", clean_files_after.days.ago) }
-    scope :purgeable, -> { where("created_at <= ?", clean_after.days.ago) }
+    scope :file_purgeable, -> { where("#{quoted_table_name}.created_at <= ?", clean_files_after.days.ago) }
+    scope :purgeable, -> { where("#{quoted_table_name}.created_at <= ?", clean_after.days.ago) }
   end
 
   module ClassMethods

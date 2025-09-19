@@ -56,10 +56,12 @@ RSpec.describe Export::Base, type: :model do
       end
     end
 
-    it 'keeps files used in Publication Apis' do
-      # We create TWO exports
-      old_export = create(:gtfs_export, workbench: workbench)
-      create(:gtfs_export, workbench: workbench)
+    it 'keeps exports and files used in Publication Apis' do
+      old_export = Timecop.freeze(90.days.ago) do
+        # We create TWO exports
+        create(:gtfs_export, workbench: workbench)
+        create(:gtfs_export, workbench: workbench)
+      end
 
       Timecop.travel(90.days.from_now) do
         context = Chouette.create do
@@ -73,11 +75,13 @@ RSpec.describe Export::Base, type: :model do
         context.publication_api.publication_api_sources.create!(
           publication: context.publication, export: old_export, key: 'foo2'
         )
-
-        expect { Export::Gtfs.new(workbench: workbench).purge_exports }.to change {
-          workbench.exports.count
-        }.by -1
       end
+
+      expect { Export::Gtfs.new(workbench: workbench).purge_exports }.to change {
+        workbench.exports.count
+      }.by(-1)
+
+      expect(Export::Gtfs.first.file).to be_present
     end
   end
 

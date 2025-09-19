@@ -1,14 +1,24 @@
 = simple_form_for [@workgroup, @processing_rule], as: 'processing_rule', html: { class: 'form-horizontal', id: 'processing_rule_form' }, wrapper: :horizontal_form  do |f|
   .row
-    .col-lg-12
-      = f.input :operation_step
-      = f.input :target_workbenches,
-        as: :tom_select,
-        required: true,
-        collection: @processing_rule.candidate_target_workbenches.map { |w| { id: w.id, text: w.name } },
-        input_html: { multiple: true },
-        selected: @processing_rule.target_workbench_ids      
-      = f.input :control_list_id, as: :select, collection: @processing_rule.candidate_control_lists.order(:name)
+    .col-lg-12 x-data="{processable_type: '#{@processing_rule.processable_type}', target_workbenches: '#{@processing_rule.target_workbench_ids}', excluded_workbenches: '#{@processing_rule.excluded_workbench_ids}' }"
+      = f.input :operation_step, input_html: { 'x-on:change': 'processable_type = $event.target.value' }
+
+      div x-show="processable_type != 'after_aggregate'"
+        div x-show="excluded_workbenches === '[]' || excluded_workbenches === ''"
+          = f.input :target_workbenches,
+            as: :tom_select,
+            collection: @processing_rule.candidate_target_workbenches.map { |w| { id: w.id, text: w.name } },
+            input_html: { multiple: true, "x-bind:disabled" => "processable_type == 'after_merge'", "x-on:change" => "target_workbenches = $event.target.value" },
+            selected: @processing_rule.target_workbench_ids
+
+        div x-show="target_workbenches === '[]' || target_workbenches === ''"
+          = f.input :excluded_workbenches,
+            as: :tom_select,
+            collection: @processing_rule.candidate_target_workbenches.map { |w| { id: w.id, text: w.name } },
+            input_html: { multiple: true, "x-bind:disabled" => "target_workbenches != '[]' && target_workbenches != '' && target_workbenches.length > 0", "x-on:change" => "excluded_workbenches = $event.target.value" },
+            selected: @processing_rule.excluded_workbench_ids
+
+      = f.input :control_list_id, as: :select, collection: @processing_rule.candidate_control_lists
 
   = cancel_button
   = f.button :submit, t('actions.submit'), class: 'btn btn-default formSubmitr', form: 'processing_rule_form'

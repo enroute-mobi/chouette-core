@@ -49,4 +49,16 @@ RSpec.describe ProcessingRule::Workgroup, type: :model do
   it { is_expected.to enumerize(:operation_step).in('after_import', 'before_merge', 'after_merge', 'after_aggregate') }
 
   it { is_expected.to validate_presence_of(:control_list_id) }
+
+  context 'when target_workbench_ids and excluded_workbench_ids are both present' do
+    subject do
+      ProcessingRule::Workgroup.new(
+        operation_step: 'after_import',
+        target_workbench_ids: [1],
+        excluded_workbench_ids: [1]
+      )
+    end
+
+    it { expect(subject).to_not be_valid }
+  end
 end

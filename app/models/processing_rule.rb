@@ -94,6 +94,7 @@ module ProcessingRule
   class Workgroup < Base
     belongs_to :workgroup # CHOUETTE-3247 required: true
     has_array_of :target_workbenches, class_name: 'Workbench'
+    has_array_of :excluded_workbenches, class_name: 'Workbench'
 
     enumerize :processable_type, in: %w[Control::List]
     enumerize :operation_step, in: %w[after_import before_merge after_merge after_aggregate], scope: :shallow
@@ -108,5 +109,26 @@ module ProcessingRule
 
     validates :operation_step, uniqueness: { scope: %i[processable_type workgroup] }
     validates :control_list_id, presence: true
+
+    validate :exclusive_workbenches
+
+    def self.accept_worbench(workbench)
+      where(
+        'target_workbench_ids && ARRAY[:workbench]::bigint[] OR ARRAY_LENGTH(target_workbench_ids, 1) IS NULL',
+        workbench: workbench
+      )
+      .where.not(
+        '(excluded_workbench_ids && ARRAY[:workbench]::int[]) AND ARRAY_LENGTH(excluded_workbench_ids, 1) IS NOT NULL',
+        workbench: workbench
+      )
+    end
+
+    private
+
+    def exclusive_workbenches
+      if target_workbench_ids.present? && excluded_workbench_ids.present?
+        errors.add(:excluded_workbenches, :must_exclusive_between_target_and_excluded_workbenches)
+      end
+    end
   end
 end

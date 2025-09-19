@@ -53,8 +53,8 @@ fr:
         processable_type: Type de traitement
         processable_id: Traitement
         operation_step: Étape
-        required_tag_ids: Tags requis
-        excluded_tag_ids: Tags exclus
+        required_tags: Tags requis
+        excluded_tags: Tags exclus
       processing_rule/workgroup:
         processable_type: Type de traitement
         processable_id: Traitement

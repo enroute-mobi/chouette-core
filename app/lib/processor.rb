@@ -74,8 +74,8 @@ class Processor
     workbench
       .processing_rules
       .where(operation_step: operation_step)
-      .where("(required_tag_ids && ARRAY[?]::int[]) OR ARRAY_LENGTH(required_tag_ids, 1) IS NULL", tags_ids)
-      .where.not("(excluded_tag_ids && ARRAY[?]::int[]) AND ARRAY_LENGTH(excluded_tag_ids, 1) IS NOT NULL", tags_ids)
+      .where("(required_tag_ids && ARRAY[?]::int[]) OR ARRAY_LENGTH(required_tag_ids, 1) IS NULL", tag_ids)
+      .where.not("(excluded_tag_ids && ARRAY[?]::int[]) AND ARRAY_LENGTH(excluded_tag_ids, 1) IS NOT NULL", tag_ids)
       .order(processable_type: :desc)
   end
 
@@ -102,7 +102,7 @@ class Processor
 
   private
 
-  def tags_ids
-    @tags_ids ||= parent.try(:tags).try(:pluck, :id) || []
+  def tag_ids
+    @tag_ids ||= parent.try(:tags).try(:pluck, :id) || []
   end
 end

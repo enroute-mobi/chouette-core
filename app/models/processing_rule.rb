@@ -10,6 +10,8 @@ module ProcessingRule
     # Macro::List or Control::List to be started
     belongs_to :processable, polymorphic: true # CHOUETTE-3247 required: true
     has_many :processings, foreign_key: 'processing_rule_id'
+    has_array_of :required_tags, class_name: 'Tag'
+    has_array_of :excluded_tags, class_name: 'Tag'
 
     validates :operation_step, presence: true
     validates :control_list_id, presence: true, if: :use_control_list?

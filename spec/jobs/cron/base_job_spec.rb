@@ -85,7 +85,8 @@ RSpec.describe Cron::BaseJob do
         have_attributes(handler: "--- !ruby/object:Cron::CheckDeadOperationsJob {}\n", cron: '*/5 * * * *'),
         have_attributes(handler: "--- !ruby/object:Cron::HandleDeadWorkersJob {}\n", cron: '*/5 * * * *'),
         have_attributes(handler: "--- !ruby/object:Cron::PurgeReferentialJob {}\n", cron: '0 3 * * *'),
-        have_attributes(handler: "--- !ruby/object:Cron::PurgeWorkgroupsJob {}\n", cron: '0 3 * * *')
+        have_attributes(handler: "--- !ruby/object:Cron::PurgeWorkgroupsJob {}\n", cron: '0 3 * * *'),
+        have_attributes(handler: "--- !ruby/object:Cron::StartBlockedPendingMergesJob {}\n", cron: '*/5 * * * *')
       ])
       # rubocop:enable Layout/FirstArrayElementIndentation
     end
@@ -106,7 +107,8 @@ RSpec.describe Cron::BaseJob do
           have_attributes(handler: "--- !ruby/object:Cron::CheckDeadOperationsJob {}\n", cron: '*/5 * * * *'),
           have_attributes(handler: "--- !ruby/object:Cron::HandleDeadWorkersJob {}\n", cron: '*/5 * * * *'),
           have_attributes(handler: "--- !ruby/object:Cron::PurgeReferentialJob {}\n", cron: '0 3 * * *'),
-          have_attributes(handler: "--- !ruby/object:Cron::PurgeWorkgroupsJob {}\n", cron: '0 3 * * *')
+          have_attributes(handler: "--- !ruby/object:Cron::PurgeWorkgroupsJob {}\n", cron: '0 3 * * *'),
+          have_attributes(handler: "--- !ruby/object:Cron::StartBlockedPendingMergesJob {}\n", cron: '*/5 * * * *')
         ])
         # rubocop:enable Layout/FirstArrayElementIndentation
       end
@@ -121,7 +123,8 @@ RSpec.describe Cron::BaseJob do
         expect(Delayed::Job.where(['handler NOT LIKE ?', '%RSpec::ExampleGroups::%'])).to match_array([
           have_attributes(handler: "--- !ruby/object:Cron::CheckDeadOperationsJob {}\n", cron: '*/5 * * * *'),
           have_attributes(handler: "--- !ruby/object:Cron::PurgeReferentialJob {}\n", cron: '0 3 * * *'),
-          have_attributes(handler: "--- !ruby/object:Cron::PurgeWorkgroupsJob {}\n", cron: '0 3 * * *')
+          have_attributes(handler: "--- !ruby/object:Cron::PurgeWorkgroupsJob {}\n", cron: '0 3 * * *'),
+          have_attributes(handler: "--- !ruby/object:Cron::StartBlockedPendingMergesJob {}\n", cron: '*/5 * * * *')
         ])
         # rubocop:enable Layout/FirstArrayElementIndentation
       end
@@ -141,7 +144,8 @@ RSpec.describe Cron::BaseJob do
           expect(Delayed::Job.where(['handler NOT LIKE ?', '%RSpec::ExampleGroups::%'])).to match_array([
             have_attributes(handler: "--- !ruby/object:Cron::CheckDeadOperationsJob {}\n", cron: '*/5 * * * *'),
             have_attributes(handler: "--- !ruby/object:Cron::PurgeReferentialJob {}\n", cron: '0 3 * * *'),
-            have_attributes(handler: "--- !ruby/object:Cron::PurgeWorkgroupsJob {}\n", cron: '0 3 * * *')
+            have_attributes(handler: "--- !ruby/object:Cron::PurgeWorkgroupsJob {}\n", cron: '0 3 * * *'),
+            have_attributes(handler: "--- !ruby/object:Cron::StartBlockedPendingMergesJob {}\n", cron: '*/5 * * * *')
           ])
           # rubocop:enable Layout/FirstArrayElementIndentation
         end

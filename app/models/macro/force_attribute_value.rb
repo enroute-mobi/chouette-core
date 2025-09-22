@@ -32,6 +32,7 @@ module Macro
 
           # Line
           select Chouette::Line, :is_referent
+          select Chouette::Line, :transport_mode
 
           # Entrance
           select Entrance, :city_name
@@ -69,7 +70,7 @@ module Macro
       end
 
       def candidate_models
-        @candidate_models ||= models.where.not(id: models.where(target_attribute => expected_value))  
+        @candidate_models ||= models.where.not(id: models.where(target_attribute => expected_value))
       end
 
       def model_collection

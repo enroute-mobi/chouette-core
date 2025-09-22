@@ -64,16 +64,7 @@ class User < ApplicationModel
 
   scope :active, ->() { where(locked_at: nil) }
 
-  scope :with_states, ->(*states) do
-    subqueries = states.select(&:present?).map{|state| "(#{subquery_for_state(state)})" }
-    where(subqueries.join(' OR '))
-  end
-
   scope :by_text, -> (text) { text.blank? ? all : where('lower(users.email) LIKE :t or lower(users.name) LIKE :t', t: "%#{text}%") }
-
-  def self.ransackable_scopes(auth_object = nil)
-    super + %w[with_profiles with_states]
-  end
 
   # called in Chouette::WorkgroupController:
   #   - begin_of_association_chain = user inherited from Chouette::UserController

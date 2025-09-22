@@ -9,10 +9,6 @@ module Chouette
 
     attr_accessor :skip_save_shortcuts
 
-    def self.ransackable_attributes auth_object = nil
-      column_names + _ransackers.keys
-    end
-
     has_and_belongs_to_many :vehicle_journeys, :class_name => 'Chouette::VehicleJourney'
     has_many :routes, -> { distinct }, through: :vehicle_journeys, :class_name => 'Chouette::Route'
     has_many :lines, -> { distinct }, through: :routes, :class_name => 'Chouette::Line'

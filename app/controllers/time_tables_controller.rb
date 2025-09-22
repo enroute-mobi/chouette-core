@@ -2,13 +2,10 @@
 
 class TimeTablesController < Chouette::ReferentialController
   include TimeTablesHelper
-  include RansackDateFilter
 
   defaults resource_class: Chouette::TimeTable
 
   belongs_to :referential
-
-  before_action(only: [:index]) { set_date_time_params("bounding_dates", Date) }
 
   respond_to :html
   respond_to :xml

@@ -96,9 +96,6 @@ class Referential < ApplicationModel
   scope :in_periode, ->(periode) { where(id: referential_ids_in_periode(periode)) }
   scope :include_metadatas_lines, ->(line_ids) { joins(:metadatas).where('referential_metadata.line_ids && ARRAY[?]::bigint[]', line_ids) }
   scope :include_metadatas_period, ->(period) { joins(:metadatas).where("daterange(:begin, :end,'[]') && ANY(referential_metadata.periodes)", begin: period.min, end: period.max) }
-  scope :order_by_validity_period, ->(dir) { joins(:metadatas).order(Arel.sql("unnest(periodes) #{dir}")) }
-  scope :order_by_lines, ->(dir) { joins(:metadatas).group("public.referentials.id").order(Arel.sql("sum(array_length(public.referential_metadata.line_ids,1)) #{dir}")) }
-  scope :order_by_organisation_name, ->(dir) { joins(:organisation).order(Arel.sql("lower(organisations.name) #{dir}")) }
   scope :not_in_referential_suite, -> { where referential_suite_id: nil }
   scope :created_before, -> (date) { where('created_at < ? ', date) }
 
@@ -125,12 +122,6 @@ class Referential < ApplicationModel
       Rails.logger.info "Clean Referential #{id} #{slug}"
     end
     clean_scope.destroy_all
-  end
-
-  def self.order_by_state(dir)
-    states = ["ready #{dir}", "archived_at #{dir}", "failed_at #{dir}"]
-    states.reverse! if dir == 'asc'
-    Referential.order(*states)
   end
 
   def self.force_register_models_with_checksum

@@ -95,7 +95,6 @@ gem 'rails_semantic_logger'
 
 # Model
 gem 'will_paginate'
-gem 'ransack', '< 4' # TODO: the new version require too much work and we will get rid of ransack anyway
 gem 'active_attr', '>= 0.15.4'
 
 gem 'draper', '>= 4.0.2'

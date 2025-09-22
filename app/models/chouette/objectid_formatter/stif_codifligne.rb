@@ -1,12 +1,6 @@
 module Chouette
   module ObjectidFormatter
     class StifCodifligne < Base
-
-      def short_id_sql_expr(model_class)
-        # we only match V2 format
-        "lower(split_part(#{table_name(model_class)}.objectid, ':', 3))"
-      end
-
       def before_validation(model)
         # unused method in this context
       end

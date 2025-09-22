@@ -73,9 +73,9 @@ class Workbench < ApplicationModel
   has_many :control_lists, class_name: "Control::List", dependent: :destroy
   has_many :control_list_runs, class_name: "Control::List::Run", dependent: :destroy
 
-  has_many :contracts
+  has_many :contracts, dependent: :destroy
 
-  has_many :document_providers
+  has_many :document_providers, dependent: :destroy
   has_many :documents, through: :document_providers
   has_many :document_memberships, through: :documents, source: :memberships
 
@@ -85,7 +85,7 @@ class Workbench < ApplicationModel
 
   has_many :shapes, through: :shape_providers
 
-  has_many :sequences
+  has_many :sequences, dependent: :destroy
   has_many :dashboards, dependent: :destroy
 
   before_validation :create_dependencies, on: :create

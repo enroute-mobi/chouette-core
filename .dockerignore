@@ -22,5 +22,11 @@
 /.sass
 /.sass-cache
 
+# Ignore storage (uploaded files in development and any SQLite databases).
+/storage/*
+!/storage/.keep
+/tmp/storage/*
+!/tmp/storage/.keep
+
 # Cache directory for CI
 /cache

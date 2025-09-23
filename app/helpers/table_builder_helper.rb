@@ -101,7 +101,7 @@ module TableBuilderHelper
       if collection.respond_to?(:model)
         collection.model.name
       elsif collection.respond_to?(:first)
-        collection.first.class.name
+        collection.to_a.first.class.name
       else
         "item"
       end
@@ -192,7 +192,7 @@ module TableBuilderHelper
         end
 
         # Inserts a blank column for the gear menu
-        last_item = collection.first
+        last_item = collection.to_a.first
         action_links = last_item && last_item.respond_to?(:action_links) && (last_item&.action_links&.is_a?(Af83::Decorator::ActionLinks) ? last_item.action_links(action) : last_item.action_links)
         if has_links || action_links.try(:any?)
           hcont << content_tag(:th, '')

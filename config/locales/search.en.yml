@@ -21,7 +21,7 @@ en:
         start_date: "After : "
         end_date: "Before : "
         per_page: "Display per"
-        text: "Search by name or id"
+        text: "Search by text"
         company_ids: "Company"
         company_id: "Company"
         category: "Category"

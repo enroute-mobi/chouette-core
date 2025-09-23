@@ -15,3 +15,4 @@
         input_html: { 'data-url': parent_stop_areas_workbench_autocomplete_index_path(@workbench, format: :json) },
         width: 2
     = f.input :stop_area_provider_id, as: :autocomplete_select, collection: @search.candidate_stop_area_providers, width: 2
+    = f.input :fare_zone_id, as: :autocomplete_select, collection: @search.candidate_fare_zones, width: 2

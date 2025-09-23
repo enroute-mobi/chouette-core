@@ -137,6 +137,12 @@ module Query
       where(value, :eq, :parent_id)
     end
 
+    def fare_zone_id(value)
+      change_scope(if: value.present?) do |scope|
+        scope.joins(:stop_area_zones).where(fare_stop_areas_zones: { fare_zone_id: value })
+      end
+    end
+
     # TODO: Could use a nice RecurviseQuery common object
     delegate :table_name, to: Chouette::StopArea
     private :table_name

@@ -13,6 +13,7 @@ module Search
     attribute :is_referent
     attribute :parent_id
     attribute :stop_area_provider_id
+    attribute :fare_zone_id
 
     enumerize :area_type, in: ::Chouette::AreaType::ALL
     enumerize :statuses, in: ::Chouette::StopArea.statuses, multiple: true, i18n_scope: 'stop_areas.statuses'
@@ -39,6 +40,7 @@ module Search
                      .is_referent(is_referent)
                      .parent_id(parent_id)
                      .stop_area_provider_id(stop_area_provider_id)
+                     .fare_zone_id(fare_zone_id)
     end
 
     def is_referent # rubocop:disable Naming/PredicateName
@@ -47,6 +49,10 @@ module Search
 
     def candidate_stop_area_providers
       stop_area_referential.stop_area_providers
+    end
+
+    def candidate_fare_zones
+      stop_area_referential.fare_zones
     end
 
     def candidate_parents
@@ -125,6 +131,8 @@ module Search
       end
 
       group_by_attribute 'stop_area_provider_id', :string, joins: { stop_area_provider: {} }, selects: %w[public.stop_area_providers.name] # rubocop:disable Layout/LineLength
+
+      group_by_attribute 'fare_zones', :string, joins: { fare_zones: {} }, selects: %w[public.fare_zones.name] # rubocop:disable Layout/LineLength
 
       group_by_attribute 'transport_mode', :string do
         def label(key)

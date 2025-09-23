@@ -1,6 +1,8 @@
 # frozen_string_literal: true
 
 Rails.application.routes.draw do # rubocop:disable Metrics/BlockLength
+  get 'healthz' => 'rails/health#show', as: :rails_health_check
+
   resource :dashboard, only: :show
   resource :subscriptions, only: :create
 

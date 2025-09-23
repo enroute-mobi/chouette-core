@@ -5,10 +5,8 @@ git_source(:github) { |name| "https://github.com/#{name}.git" }
 git_source(:en_route) { |name| "https://bitbucket.org/enroute-mobi/#{name}.git" }
 
 # Bundle edge Rails instead: gem 'rails', github: 'rails/rails'
-gem 'rails', '~> 7.0.0'
+gem 'rails', '~> 7.1.0'
 gem 'bootsnap', require: false
-
-gem 'health_check', '>= 3.1.0'
 
 group :production do
   gem 'mini_racer', '0.9.0' # TODO: only version compatible with node 20 used in production

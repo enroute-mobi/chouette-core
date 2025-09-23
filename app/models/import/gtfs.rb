@@ -422,7 +422,8 @@ class Import::Gtfs < Import::Base
 
   def specific_default_company
     return nil unless parent_option('specific_default_company_id').present?
-    @specific_default_company ||= workbench.companies.find_by(id: parent_options['specific_default_company_id'])
+
+    @specific_default_company ||= parent.candidate_companies.find_by(id: parent_options['specific_default_company_id'])
   end
 
   class Agencies < Base

@@ -183,6 +183,12 @@ module Import
 
     delegate :line_providers, :stop_area_providers, :companies, to: :workbench, prefix: :candidate
 
+    def specific_default_company
+      return nil unless specific_default_company_id.present?
+
+      @specific_default_company ||= candidate_companies.find_by(id: specific_default_company_id)
+    end
+
     # Invokes by IevInterfaces::Task#update_status
     # *only* when status is changed to successful
     def done!(successful)

@@ -20,9 +20,27 @@ RSpec.describe Workbench::Sharing, type: :model do
   it { is_expected.to belong_to(:workbench).required }
   it { is_expected.to belong_to(:recipient).optional }
 
-  it { is_expected.to validate_presence_of(:name) }
-
   describe 'validation' do
+    describe '#name' do
+      it { is_expected.to validate_presence_of(:name) }
+
+      describe 'unicity' do
+        it { is_expected.to allow_value('First').for(:name) }
+
+        context 'when workbench sharing with same name exists in the same workbench' do
+          before { workbench.sharings.create!(name: 'Taken', recipient_type: 'User') }
+
+          it { is_expected.not_to allow_value('Taken').for(:name) }
+        end
+
+        context 'when workbench sharing with same name exists in another workbench' do
+          before { Chouette.create { workbench_sharing name: 'Taken' } }
+
+          it { is_expected.to allow_value('Taken').for(:name) }
+        end
+      end
+    end
+
     describe '#workbench_id' do
       subject(:workbench_sharing) { described_class.new }
 

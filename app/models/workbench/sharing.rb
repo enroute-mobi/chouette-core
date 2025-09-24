@@ -9,7 +9,7 @@ class Workbench
 
     before_validation :create_invitation_code, on: :create, if: :pending?
 
-    validates :name, presence: true
+    validates :name, presence: true, uniqueness: { scope: [:workbench_id] }
     validate :validate_workbench_is_not_pending, on: :create
     validates :recipient_type, inclusion: { in: %w[User Organisation] }
     validates :recipient_id, uniqueness: { scope: %i[workbench_id recipient_type] }, if: :recipient_id?

@@ -95,7 +95,7 @@ class Workbench < ApplicationModel
   scope :with_active_workgroup, -> { joins(:workgroup).where(::Workgroup.quoted_table_name => { deleted_at: nil }) }
 
   def pending?
-    organisation_id.blank?
+    organisation_id.blank? && (!association(:organisation).loaded? || !organisation)
   end
 
   def control_lists_shared_with_workgroup
@@ -221,8 +221,11 @@ class Workbench < ApplicationModel
 
   class Confirmation
     include ActiveModel::Model
+    include ActiveModel::Validations::Callbacks
 
     attr_accessor :organisation, :user, :invitation_code
+
+    before_validation :assign_workbench_or_workbench_sharing
 
     CODE_FORMAT = /\A(?:(?:S|W)-)?\d{3}-\d{3}-\d{3}\z/.freeze
 
@@ -230,6 +233,7 @@ class Workbench < ApplicationModel
     validates :invitation_code, format: { with: CODE_FORMAT }
 
     validate :workbench_exists
+    validate :validate_workbench_or_workbench_sharing
 
     def workbench
       if workbench_sharing?
@@ -249,9 +253,9 @@ class Workbench < ApplicationModel
       return false unless valid?
 
       if workbench_sharing?
-        workbench_sharing.update(recipient: workbench_sharing_recipient)
+        workbench_sharing.save
       else
-        workbench.update(organisation: organisation, invitation_code: nil)
+        workbench.save
       end
     end
 
@@ -261,14 +265,19 @@ class Workbench < ApplicationModel
 
     private
 
-    def workbench_exists
-      unless workbench
-        errors.add :invitation_code, :invalid
-      end
-    end
-
     def workbench_sharing?
       invitation_code.start_with?('S-')
+    end
+
+    def assign_workbench_or_workbench_sharing
+      return unless workbench
+
+      if workbench_sharing?
+        workbench_sharing.recipient = workbench_sharing_recipient
+      else
+        workbench.organisation = organisation
+        workbench.invitation_code = nil
+      end
     end
 
     def workbench_sharing_recipient
@@ -277,6 +286,28 @@ class Workbench < ApplicationModel
       else
         organisation
       end
+    end
+
+    def workbench_exists
+      return if workbench
+
+      invalidate_invitation_code
+    end
+
+    def validate_workbench_or_workbench_sharing
+      return unless workbench
+
+      if workbench_sharing?
+        return if workbench_sharing.valid?
+      else
+        return if workbench.valid? # rubocop:disable Style/IfInsideElse
+      end
+
+      invalidate_invitation_code
+    end
+
+    def invalidate_invitation_code
+      errors.add(:invitation_code, :invalid)
     end
   end
 

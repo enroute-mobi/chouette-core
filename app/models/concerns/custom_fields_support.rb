@@ -89,11 +89,6 @@ module CustomFieldsSupport
       Hash[*custom_fields(workgroup).map{|cf| [cf.code, cf]}.flatten]
     end
 
-    def self.within_workgroup workgroup, &block
-      ActiveSupport::Deprecation.warn('Use CustomFieldsSupport.within_workgroup')
-      CustomFieldsSupport.within_workgroup workgroup, &block
-    end
-
     def self.current_workgroup
       CustomFieldsSupport.current_workgroup
     end

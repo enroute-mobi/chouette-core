@@ -174,6 +174,8 @@ module Chouette
       end
     end
 
+    deprecators[:chouette] = ActiveSupport::Deprecation.new(nil, 'Chouette')
+
     once = Rails.root.join('app/once')
     Rails.autoloaders.main.ignore(once)
     config.autoload_once_paths << once

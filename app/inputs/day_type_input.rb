@@ -2,7 +2,7 @@ class DayTypeInput < SimpleForm::Inputs::CollectionCheckBoxesInput
   # We assume that is input will be used for week_days column type which is a custom representation of a 7 bits string.
   # the relevant input is a hidden field that will send a 7 char string
   # each time a checkbox is (un)checked we update the value of the hidden field 
-  def input
+  def input(_wrapper_options = nil)
     raise "#{attribute_name} is not an instance of Cuckoo::DaysOfWeek" unless days_of_week.is_a?(Cuckoo::DaysOfWeek)
 
     content = ''

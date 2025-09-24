@@ -50,7 +50,7 @@ module SearchHelper
   end
 
   def filter_item_class q, key
-    ActiveSupport::Deprecation.warn "#filter_item_class should be replaced by smart Search inputs"
+    Rails.application.deprecators[:chouette].warn('#filter_item_class should be replaced by smart Search inputs')
 
     active = false
     if q.present? && q[key].present?

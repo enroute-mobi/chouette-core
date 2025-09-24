@@ -51,6 +51,18 @@ module Chouette
       @additional_features ||= env.array('FEATURES_ADDITIONAL')
     end
 
+    # TODO: NEST-11 env.secret
+    def api_token
+      env.string('IEV_API_TOKEN') || 'VFHir2GWWjuRNZnHHnQD5Hn+ubRMQ1kNLnu7oCLf+4KR8+PmYqb1EzKZmmuRfVP/yxS0aQ3NklfNbbgUatTtly5540oo4L6ePdbYkwDzrBXF9xgYekOlTCwIGSl430mluv3wcXNEbrRLu2CevIBULtiRZriAEYVOpp9G+lQI+t8=' # rubocop:disable Layout/LineLength
+    end
+
+    # TODO: NEST-11 env.secret
+    def tomtom_api_key
+      return 'mock_tomtom_api_key' if env.test?
+
+      env.string('TOMTOM_API_KEY')
+    end
+
     class Subscription
       def initialize(env)
         @env = env

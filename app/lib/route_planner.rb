@@ -205,7 +205,7 @@ module RoutePlanner
             end
         end
 
-        mattr_accessor :api_key, default: Rails.application.secrets.tomtom_api_key
+        mattr_accessor :api_key, default: ::Chouette::Config.tomtom_api_key
         def self.uri
           @uri ||= URI("https://api.tomtom.com/routing/1/batch/sync/json?key=#{api_key}")
         end

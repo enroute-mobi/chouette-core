@@ -18,6 +18,7 @@ class StopAreaProvider < ActiveRecord::Base
 
   # TODO Required by Chouette::Sync::Updater::Batch#resolver limitation
   alias_attribute :registration_number, :objectid
+  alias registration_number objectid
   delegate :workgroup, to: :stop_area_referential
 
   before_destroy :can_destroy?, prepend: true

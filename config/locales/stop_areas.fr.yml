@@ -106,6 +106,10 @@ fr:
       selection_all: "Tous"
       area_type: "Type d'Arrêt"
       advanced_search: "Recherche avancée"
+    map:
+      groups:
+        data: "Données"
+        base: "Base"
   enumerize:
     stop_area:
       mobility_impaired_accessibility:

@@ -105,6 +105,10 @@ en:
       selection_all: "All"
       area_type: "Area Type"
       advanced_search: "Advanced Search"
+    map:
+      groups:
+        data: "Data"
+        base: "Base"
   enumerize:
     stop_area:
       mobility_impaired_accessibility:

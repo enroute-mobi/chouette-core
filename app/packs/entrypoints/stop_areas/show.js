@@ -5,12 +5,11 @@ import Group from 'ol/layer/Group'
 import { OSM, XYZ, Vector as VectorSource } from 'ol/source'
 import { ScaleLine, Zoom, ZoomSlider } from 'ol/control'
 import { getCenter, isEmpty as isEmptyExtent, extend as extendExtent, buffer as bufferExtent } from 'ol/extent'
-import { Style, Circle as CircleStyle, Fill, Stroke } from 'ol/style'
 import LayerSwitcher from 'ol-layerswitcher'
 
 import geoJSON from '../../src/helpers/geoJSON'
 import { i18n } from '../../src/i18n'
-import { setConnectionLinkStyle } from '../../src/helpers/open_layers/styles'
+import * as MapStyles from '../../src/helpers/open_layers/map_styles' // Load styles methods
 
 const path = new Path('/workbenches/:workbenchId/stop_area_referential/stop_areas/:id')
 const params = path.partialTest(location.pathname)
@@ -20,34 +19,14 @@ const baseURL = path.build(params)
 const stopAreaURL = `${baseURL}/map.geojson`
 const connectionLinksURL = `${baseURL}/fetch_connection_links.geojson`
 
-function defaultStyleForKey(key) {
-  const colorByKey = {
-    stop_area: '#d62728',
-    parent: '#1f77b4',
-    siblings: '#9467bd',
-    children: '#2ca02c',
-    referent: '#ff7f0e',
-    particulars: '#17becf',
-    ancestors: '#8c564b',
-    connection_link: '#000000'
-  }
-  const fillColor = colorByKey[key] || '#007fbb'
-  return new Style({
-    image: new CircleStyle({
-      radius: 7,
-      fill: new Fill({ color: fillColor }),
-      stroke: new Stroke({ color: '#ffffff', width: 1.5 })
-    })
-  })
-}
-
 const LAYER_I18N_MAP = {
   stop_area: 'activerecord.models.stop_area.zero',
+  connection_link: 'activerecord.models.connection_link.zero',
+
   parent: 'activerecord.attributes.stop_area.parent',
   children: 'activerecord.attributes.stop_area.children',
   referent: 'activerecord.attributes.stop_area.referent',
   particulars: 'activerecord.attributes.stop_area.specific_stops',
-  connection_link: 'activerecord.models.connection_link.zero',
   ancestors: 'activerecord.attributes.stop_area.ancestors'
 }
 
@@ -124,9 +103,6 @@ async function init() {
     ? connectionFC.map(fc => geoJSON.readFeatures(fc)).flat()
     : geoJSON.readFeatures(connectionFC)
 
-  // Style connection link markers
-  setConnectionLinkStyle(connectionFeatures)
-
   // Group by layer/type
   const allFeatures = [...stopAreaFeatures, ...connectionFeatures].filter(f => !!f.getGeometry())
   const groups = {}
@@ -142,7 +118,7 @@ async function init() {
   const dataLayers = []
   Object.entries(groups).forEach(([key, feats]) => {
     const source = new VectorSource({ features: feats })
-    const layer = new VectorLayer({ source, style: defaultStyleForKey(key), title: getLayerTitle(key), visible: true })
+    const layer = new VectorLayer({ source, style: MapStyles[`${key}_style`], title: getLayerTitle(key), visible: true })
     layersByKey[key] = layer
     visibility[key] = true
     dataLayers.push(layer)

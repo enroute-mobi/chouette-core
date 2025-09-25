@@ -6,12 +6,14 @@ module ProcessingRule
     self.table_name = :processing_rules
 
     extend Enumerize
+    include TagsSupport
 
     # Macro::List or Control::List to be started
     belongs_to :processable, polymorphic: true # CHOUETTE-3247 required: true
     has_many :processings, foreign_key: 'processing_rule_id'
-    has_array_of :required_tags, class_name: 'Tag'
-    has_array_of :excluded_tags, class_name: 'Tag'
+
+    has_tags :required_tags
+    has_tags :excluded_tags
 
     validates :operation_step, presence: true
     validates :control_list_id, presence: true, if: :use_control_list?
@@ -68,6 +70,8 @@ module ProcessingRule
     validates :operation_step, inclusion: { in: %w[after_import before_merge] }, if: :use_macro_list?
     validates :operation_step, uniqueness: { scope: %i[processable_type workbench] }
 
+    validate :required_tags_must_be_in_candidates
+    validate :excluded_tags_must_be_in_candidates
     validate :no_tag_overlap
 
     def use_macro_list?
@@ -94,15 +98,65 @@ module ProcessingRule
     end
 
     def candidate_tags
-      workbench&.tags.order(:name).map { |tag| { id: tag.id, text: tag.name } }
+      return Tag.none unless workbench
+
+      workbench.tags
+    end
+
+    def self.compatible_with_operation_via_tags(workbench, operation_step, tag_ids)
+      CompatibleWithOperationViaTags.new(workbench, operation_step, tag_ids).query
+    end
+
+    class CompatibleWithOperationViaTags < ActiveRecord::Relation
+      def initialize(workbench, operation_step, tag_ids)
+        @workbench = workbench
+        @operation_step = operation_step
+        @tag_ids = tag_ids
+      end
+      attr_reader :workbench, :operation_step, :tag_ids
+
+      def query
+        workbench
+          .processing_rules
+          .left_joins(:taggings)
+          .where(operation_step: operation_step)
+          .order(processable_type: :desc)
+          .group(:id)
+          .having(required_tags_condition, tag_ids)
+          .having(excluded_tags_condition, tag_ids)
+      end
+
+      def required_tags_condition
+        <<~SQL
+          ((array_agg(taggings.tag_id) FILTER (WHERE taggings.for_association = 'required_tags'))::int[] && ARRAY[?]::int[])
+          OR ((array_agg(taggings.tag_id) FILTER (WHERE taggings.for_association = 'required_tags')) IS NULL)
+        SQL
+      end
+
+      def excluded_tags_condition
+        <<~SQL
+          NOT(
+            (array_agg(taggings.tag_id) FILTER (WHERE taggings.for_association = 'excluded_tags'))::int[] && ARRAY[?]::int[]
+          )
+          OR ((array_agg(taggings.tag_id) FILTER (WHERE taggings.for_association = 'excluded_tags')) IS NULL)
+        SQL
+      end
     end
 
     private
 
     def no_tag_overlap
-      return unless (required_tag_ids & excluded_tag_ids).any?
+      return unless (required_tags_taggings.map(&:tag_id) & excluded_tags_taggings.map(&:tag_id)).any?
 
-      errors.add(:excluded_tag_ids, :required_and_excluded_tags_cannot_overlap)
+      errors.add(:excluded_tags, :required_and_excluded_tags_cannot_overlap)
+    end
+
+    %i[excluded_tags required_tags].each do |association|
+      define_method("#{association}_must_be_in_candidates") do
+        return if send(association).blank? || (send(association) - candidate_tags).none?
+
+        errors.add(association, :contain_invalid_tags)
+      end
     end
   end
 

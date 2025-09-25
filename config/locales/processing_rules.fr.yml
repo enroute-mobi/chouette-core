@@ -68,9 +68,9 @@ fr:
       models:
         processing_rule/workbench:
           attributes:
-            required_tag_ids:
+            required_tags:
               required_and_excluded_tags_cannot_overlap: "Les tags requis et les tags exclus ne peuvent pas se chevaucher"
-            excluded_tag_ids:
+            excluded_tags:
               required_and_excluded_tags_cannot_overlap: "Les tags requis et les tags exclus ne peuvent pas se chevaucher"
   simple_form:
     hints:

@@ -67,9 +67,9 @@ en:
       models:
         processing_rule/workbench:
           attributes:
-            required_tag_ids:
+            required_tags:
               required_and_excluded_tags_cannot_overlap: "Required and excluded tags cannot overlap"
-            excluded_tag_ids:
+            excluded_tags:
               required_and_excluded_tags_cannot_overlap: "Required and excluded tags cannot overlap"
 
   simple_form:

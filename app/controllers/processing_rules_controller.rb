@@ -44,9 +44,46 @@ class ProcessingRulesController < Chouette::WorkbenchController
       :processable_type,
       :control_list_id,
       :macro_list_id,
-      :operation_step,
-      required_tags: [],
-      excluded_tags: []
-    )
+      :operation_step
+    ).tap do |processing_rule_params|
+      processing_rule_params[:required_tags_taggings_attributes] = build_tagging_attributes(params, :required_tags)
+      processing_rule_params[:excluded_tags_taggings_attributes] = build_tagging_attributes(params, :excluded_tags)
+    end
+  end
+
+  def build_tagging_attributes(params, association)
+    new_ids = params[:processing_rule][association]
+    existing_taggings = params[:action] == 'create' ? [] : processing_rule&.send("#{association}_taggings")
+
+    BuildTaggingAttributes.new(new_ids, existing_taggings).attributes
+  end
+
+  class BuildTaggingAttributes
+    def initialize(new_ids, existing_taggings)
+      @existing_taggings = existing_taggings || []
+      @new_ids = new_ids.reject(&:blank?).map(&:to_i)
+    end
+
+    def attributes
+      return [] unless @new_ids.is_a?(Array)
+
+      destroy_attrs + keep_or_new_attrs
+    end
+
+    private
+
+    def destroy_attrs
+      @existing_taggings.reject { |t| @new_ids.include?(t.tag_id) }.map { |t| { id: t.id, _destroy: 1 } }
+    end
+
+    def keep_or_new_attrs
+      @new_ids.map do |tag_id|
+        if (tagging = @existing_taggings.find { |t| t.tag_id == tag_id })
+          { id: tagging.id, tag_id: tag_id }
+        else
+          { tag_id: tag_id }
+        end
+      end
+    end
   end
 end

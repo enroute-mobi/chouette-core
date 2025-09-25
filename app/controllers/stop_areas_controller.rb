@@ -76,15 +76,6 @@ class StopAreasController < Chouette::StopAreaReferentialController
     end
   end
 
-  # Consolidated GeoJSON used by Stop Area show map to render related objects/layers
-  def map
-    @stop_area = stop_area
-
-    respond_to do |format|
-      format.geojson { render 'stop_areas/map' }
-    end
-  end
-
   def saved_searches
     @saved_searches ||= workbench.saved_searches.for(Search::StopArea)
   end

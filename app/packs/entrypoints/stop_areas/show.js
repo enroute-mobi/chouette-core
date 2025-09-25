@@ -16,8 +16,7 @@ const params = path.partialTest(location.pathname)
 
 const baseURL = path.build(params)
 // Use legacy consolidated map endpoint
-const stopAreaURL = `${baseURL}/map.geojson`
-const connectionLinksURL = `${baseURL}/fetch_connection_links.geojson`
+const stopAreaURL = `${baseURL}.geojson`
 
 const LAYER_I18N_MAP = {
   stop_area: 'activerecord.models.stop_area.zero',
@@ -60,7 +59,7 @@ function fitToLayers(map, layersByKey, visibility) {
 }
 
 async function init() {
-  const container = document.getElementById('connection_link_map')
+  const container = document.getElementById('stop_area_map')
   if (!container) return
 
   // Base map layers (OSM + Satellite)
@@ -92,19 +91,13 @@ async function init() {
   map.setTarget(container)
 
   // Fetch both sources
-  const [stopAreaFC, connectionFC] = await Promise.all([
-    fetch(stopAreaURL).then(r => r.json()),
-    fetch(connectionLinksURL).then(r => r.json())
-  ])
+  const stopAreaFC = await fetch(stopAreaURL).then(r => r.json())
 
   // Read features (projection handled by helper)
   const stopAreaFeatures = geoJSON.readFeatures(stopAreaFC)
-  const connectionFeatures = Array.isArray(connectionFC)
-    ? connectionFC.map(fc => geoJSON.readFeatures(fc)).flat()
-    : geoJSON.readFeatures(connectionFC)
 
   // Group by layer/type
-  const allFeatures = [...stopAreaFeatures, ...connectionFeatures].filter(f => !!f.getGeometry())
+  const allFeatures = [...stopAreaFeatures].filter(f => !!f.getGeometry())
   const groups = {}
   allFeatures.forEach(f => {
     const key = f.get('layer') || f.get('type') || 'other'

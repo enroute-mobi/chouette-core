@@ -41,13 +41,9 @@ node(:features) do
   # Current stop area
   features << as_feature(s, 'stop_area')
 
-  # Parent
+  # Parent and Siblings (excluding current)
   if s.parent
     features << as_feature(s.parent, 'parent')
-  end
-
-  # Siblings (excluding current)
-  if s.parent
     s.parent.children.where.not(id: s.id).find_each do |sib|
       features << as_feature(sib, 'siblings')
     end
@@ -67,18 +63,6 @@ node(:features) do
   if s.is_referent
     s.specific_stops.find_each do |spec|
       features << as_feature(spec, 'particulars')
-    end
-  elsif s.referent
-    s.referent.specific_stops.where.not(id: s.id).find_each do |spec|
-      features << as_feature(spec, 'particulars')
-    end
-  end
-
-  # Ancestors chain (all parents up to root, excluding direct parent marked above)
-  cur = s.parent
-  if cur
-    while (cur = cur.parent)
-      features << as_feature(cur, 'ancestors')
     end
   end
 

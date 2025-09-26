@@ -6,7 +6,7 @@ class StopAreasController < Chouette::StopAreaReferentialController
   defaults resource_class: Chouette::StopArea
 
   # rubocop:disable Rails/LexicallyScopedActionFilter
-  before_action :authorize_resource, except: %i[new create index show autocomplete fetch_connection_links map]
+  before_action :authorize_resource, except: %i[new create index show autocomplete]
   # rubocop:enable Rails/LexicallyScopedActionFilter
 
   respond_to :html, :geojson, :xml, :json

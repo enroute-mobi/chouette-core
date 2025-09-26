@@ -13,7 +13,7 @@ class Calendar < ApplicationModel
 
   has_many :time_tables, class_name: 'Chouette::TimeTable' # rubocop:disable Rails/HasManyOrHasOneDependent
 
-  scope :contains_date, ->(date) { where('(date ? = any (dates) OR date ? <@ any (date_ranges)) AND NOT date ? = any (excluded_dates)', date, date, date) }
+  scope :contains_date, ->(date) { where('(DATE(?) = any (dates) OR DATE(?) <@ any (date_ranges)) AND NOT DATE(?) = any (excluded_dates)', date, date, date) }
 
   scope :by_text, ->(text) { text.blank? ? all : where('lower(name) LIKE :t', t: "%#{text.downcase}%") }
 

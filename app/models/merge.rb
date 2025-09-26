@@ -12,6 +12,12 @@ class Merge < ApplicationModel
   EXPERIMENTAL_METHOD = 'experimental'
   enumerize :merge_method, in: ['legacy', EXPERIMENTAL_METHOD], default: 'legacy'
 
+  before_validation :define_name, if: :new_record?
+
+  def define_name
+    self.name ||= I18n.t('merges.name', date: I18n.l(Time.now, format: :short_with_time))
+  end
+
   def parent
     workbench
   end
@@ -171,7 +177,6 @@ class Merge < ApplicationModel
     new.pending!
 
     output.update new: new
-    update new: new, name: I18n.t('merges.name', date: I18n.l(Time.now, format: :short_with_time))
   end
 
   def clean_new
@@ -225,6 +230,8 @@ class Merge < ApplicationModel
   end
 
   def concurent_operations
+    return Merge.none unless parent
+
     parent.merges.where.not(id: id)
   end
 

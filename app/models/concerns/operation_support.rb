@@ -53,7 +53,7 @@ module OperationSupport
   end
 
   def name
-    self[:name] || created_at.l(format: :short_with_time)
+    self[:name] || created_at&.l(format: :short_with_time)
   end
 
   def merged_datasets

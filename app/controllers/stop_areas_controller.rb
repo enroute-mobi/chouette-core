@@ -58,21 +58,6 @@ class StopAreasController < Chouette::StopAreaReferentialController
       end
 
       @stop_area = @stop_area.decorate(context: { workbench: workbench })
-      @connection_links = ConnectionLinkDecorator.decorate(
-        @stop_area.connection_links.limit(4),
-        context: {
-          workbench: workbench
-        }
-      )
-    end
-  end
-
-  def fetch_connection_links
-    @connection_links = []
-    @connection_links = stop_area.connection_links if has_feature?(:stop_area_connection_links)
-
-    respond_to do |format|
-      format.geojson { render 'connection_links/index' }
     end
   end
 

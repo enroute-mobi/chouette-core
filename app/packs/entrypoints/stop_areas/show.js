@@ -80,6 +80,7 @@ async function init() {
 
   // Satellite layer
   /*
+
   const satelliteLayer = new TileLayer({
     title: 'Satellite',
     type: 'base',
@@ -90,6 +91,7 @@ async function init() {
     })
   })
   */
+
 
   const baseGroup = new Group({
     title: getBaseGroupTitle(),
@@ -107,6 +109,7 @@ async function init() {
   });
 
   // Create map
+
   const map = new Map({
     layers: [baseGroup],
     view: view,

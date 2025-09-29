@@ -18,8 +18,6 @@ module Search
 
     class Order < ::Search::Order
       attribute :name, default: :asc
-      # TODO: CHOUETTE-4721 (rails 7.2): we may have to simply do scope.order(order_hash) in Search::Base with:
-      # attribute :departure, joins: :departure, column: { departure: { name: :asc } }
       attribute :departure, joins: :departure, column: 'departure.name'
       attribute :arrival, joins: :arrival, column: 'arrival.name'
     end

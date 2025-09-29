@@ -73,6 +73,8 @@ Rails.application.configure do
   # Raise error when a before_action's only/except options reference missing actions
   config.action_controller.raise_on_missing_callback_actions = false
 
+  config.secret_key_base = '7e4ef8715ea95895f2244b3715ed428f0565e2a822998955e85db139d64c19f9'
+
   config.action_mailer.default_url_options = { host: 'localhost:3000' }
 
   # Configure the e-mail address which will be shown in Devise::Maile

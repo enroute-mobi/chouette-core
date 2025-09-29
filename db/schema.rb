@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2025_09_10_060512) do
+ActiveRecord::Schema[7.1].define(version: 2025_09_29_122802) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "btree_gin"
   enable_extension "hstore"
@@ -1820,7 +1820,7 @@ ActiveRecord::Schema[7.1].define(version: 2025_09_10_060512) do
     t.datetime "aggregated_at", precision: nil
     t.string "nightly_aggregate_notification_target", default: "none"
     t.datetime "deleted_at", precision: nil
-    t.integer "maximum_data_age", default: 0
+    t.integer "maximum_data_age", default: 0, null: false
     t.boolean "enable_purge_merged_data", default: false
     t.bigint "shape_referential_id", null: false
     t.string "description"

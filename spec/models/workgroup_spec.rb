@@ -16,6 +16,7 @@ RSpec.describe Workgroup, type: :model do
     it{ should validate_uniqueness_of(:stop_area_referential_id) }
     it{ should validate_uniqueness_of(:line_referential_id) }
     it{ should validate_uniqueness_of(:shape_referential_id) }
+    it { expect(workgroup).to validate_numericality_of(:maximum_data_age).only_integer.is_greater_than_or_equal_to(0) }
 
     it 'is valid with both associations' do
       expect(workgroup).to be_valid

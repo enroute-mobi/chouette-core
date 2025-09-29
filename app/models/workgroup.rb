@@ -49,6 +49,7 @@ class Workgroup < ApplicationModel
   validates_uniqueness_of :line_referential_id
   validates_uniqueness_of :shape_referential_id
   validates_uniqueness_of :fare_referential_id
+  validates :maximum_data_age, numericality: { only_integer: true, greater_than_or_equal_to: 0 }
 
   before_validation :create_dependencies, on: :create
 

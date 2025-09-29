@@ -494,7 +494,7 @@ class Referential < ApplicationModel
     lower, upper = row["min"], row["max"]
 
     if lower and upper
-      Range.new(Date.parse(lower), Date.parse(upper)-1)
+      Range.new(lower, upper-1)
     end
   end
   alias_method :validity_period, :metadatas_period

@@ -21,12 +21,12 @@ const stopAreaURL = `${baseURL}.geojson`
 const LAYER_I18N_MAP = {
   stop_area: 'activerecord.models.stop_area.zero',
   connection_link: 'activerecord.models.connection_link.zero',
-
   parent: 'activerecord.attributes.stop_area.parent',
   children: 'activerecord.attributes.stop_area.children',
   referent: 'activerecord.attributes.stop_area.referent',
   particulars: 'activerecord.attributes.stop_area.specific_stops',
-  ancestors: 'activerecord.attributes.stop_area.ancestors'
+  ancestors: 'activerecord.attributes.stop_area.ancestors',
+  siblings: 'activerecord.attributes.stop_area.siblings'
 }
 
 const getLayerTitle = (key) => {
@@ -97,21 +97,29 @@ async function init() {
   const stopAreaFeatures = geoJSON.readFeatures(stopAreaFC)
 
   // Group by layer/type
-  const allFeatures = [...stopAreaFeatures].filter(f => !!f.getGeometry())
   const groups = {}
-  allFeatures.forEach(f => {
-    const key = f.get('layer') || f.get('type') || 'other'
-    if (!groups[key]) groups[key] = []
-    groups[key].push(f)
+  stopAreaFeatures.forEach(f => {
+    if (f.getGeometry()) {
+      const key = f.get('layer') || f.get('type') || 'other'
+      if (!groups[key]) groups[key] = []
+      groups[key].push(f)
+    }
   })
 
-  // Create group for data layers
+  // Create layers
   const layersByKey = {}
   const visibility = {}
   const dataLayers = []
-  Object.entries(groups).forEach(([key, feats]) => {
-    const source = new VectorSource({ features: feats })
-    const layer = new VectorLayer({ source, style: MapStyles[`${key}_style`], title: getLayerTitle(key), visible: true })
+
+  Object.entries(groups).forEach(([key, features]) => {
+    const source = new VectorSource({ features })
+    const layer = new VectorLayer({
+      source,
+      style: MapStyles[`${key}_style`] || MapStyles.stop_area_style,
+      title: getLayerTitle(key),
+      visible: true
+    })
+
     layersByKey[key] = layer
     visibility[key] = true
     dataLayers.push(layer)

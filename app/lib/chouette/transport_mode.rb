@@ -65,6 +65,14 @@ module Chouette
       (mode_candidates - except).map { |candidate| new candidate }
     end
 
+    def self.line_modes
+      self.modes(except: %i[coach air taxi self_drive snow_and_ice])
+    end
+
+    def self.line_mode_codes
+      self.line_modes.map(&:code)
+    end
+
     def self.sorted_modes(**options)
       modes(**options).map { |m| [m.mode_human_name, m.code] }.sort_by(&:first)
     end

@@ -50,8 +50,16 @@ module Macro
 
       def run
         candidate_models.find_each do |model|
-          model.update(target_attribute => expected_value)
+          update_attribute_value(model)
           create_message model, target_attribute
+        end
+      end
+
+      def update_attribute_value(model)
+        if target_model == 'Line' && target_attribute == 'transport_mode'
+          model.update(chouette_transport_mode: Chouette::TransportMode.new(expected_value))
+        else
+          model.update(target_attribute => expected_value)
         end
       end
 

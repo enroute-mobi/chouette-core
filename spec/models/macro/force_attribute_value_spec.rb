@@ -142,7 +142,6 @@ RSpec.describe Macro::ForceAttributeValue::Run do
 
         it 'should update the line with expected value' do
           expect { subject }.to change { line.reload.transport_mode }.from(nil).to(expected_value)
-
         end
 
         it 'should create a macro message' do

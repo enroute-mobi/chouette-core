@@ -62,7 +62,7 @@ RUN bundle exec bootsnap precompile --gemfile app/ lib/
 VOLUME /app/public/uploads
 
 EXPOSE 3000
-ENV RAILS_ENV=production RAILS_SERVE_STATIC_FILES=true RAILS_LOG_TO_STDOUT=true
+ENV RAILS_ENV=production RAILS_SERVE_STATIC_FILES=true RAILS_LOG_TO_STDOUT=true RUBY_YJIT_ENABLE=1
 ENV LD_PRELOAD=/usr/lib/x86_64-linux-gnu/libjemalloc.so.2
 
 ENTRYPOINT ["./script/docker-entrypoint.sh"]

@@ -89,44 +89,6 @@ module ApplicationHelper
     "#{relative_url_root}/assets/#{source}"
   end
 
-  def help_page?
-    controller_name == "help"
-  end
-
-  def help_path
-    path = request.env['PATH_INFO']
-    target = case
-    when path.include?("/help")
-      ""
-    when path.include?("/networks")
-      "networks"
-    when path.include?("/companies")
-      "companies"
-    when path.include?("/vehicle_journeys")
-      "vehicle_journeys"
-    when path.include?("/vehicle_journey_frequencies")
-      "vehicle_journeys"
-    when path.include?("/journey_patterns")
-      "journey_patterns"
-    when path.include?("/routes")
-      "routes"
-    when path.include?("/lines")
-      "lines"
-    when path.include?("/stop_areas")
-      "stop_areas"
-    when path.include?("/time_tables")
-      "time_tables"
-    when path.include?("/exports")
-      "exports"
-    when path.include?("/referentials")
-      "dataspaces"
-    else
-      ""
-    end
-
-    url_for(:controller => "/help", :action => "show") + '/' + target
-  end
-
   def permitted_custom_fields_params(custom_fields)
     [
       {

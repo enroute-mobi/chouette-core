@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Macro
   class CreateCode < Base
     # Use enumerize directly
@@ -89,7 +91,7 @@ module Macro
       end
 
       def target
-        @target ||= Target.new(pattern: target_pattern)
+        @target ||= Target.new(target_pattern)
       end
 
       def code_space
@@ -147,24 +149,15 @@ module Macro
       end
     end
 
-    class Target
-      attr_accessor :pattern
-      def initialize(attributes = {})
-        attributes.each { |k,v| send "#{k}=", v }
+    class Target < CreateCodeFromUuid::Run::AbstractTarget
+      def format?
+        format.present?
       end
 
-      def value(model, value)
-        apply_pattern(model, value)
-      end
+      def value(model, value) # rubocop:disable Metrics/MethodLength
+        return value unless format?
 
-      def has_pattern?
-        pattern.present?
-      end
-
-      def apply_pattern(model, value) # rubocop:disable Metrics/MethodLength
-        return value unless has_pattern?
-
-        result = pattern.gsub(VALUE_REGEXP) do
+        result = format.gsub(VALUE_REGEXP) do
           if ::Regexp.last_match(1) && ::Regexp.last_match(2)
             from = ::Regexp.new(::Regexp.last_match(1))
             to = ::Regexp.last_match(2)
@@ -173,17 +166,11 @@ module Macro
             value
           end
         end
-        result.gsub(CODE_SPACE_REGEXP) do
-          if ::Regexp.last_match(1)
-            model.send("line_code_#{::Regexp.last_match(1)}")
-          else
-            model.line_registration_number
-          end
-        end
+
+        apply_format!(result, model)
       end
     end
 
     VALUE_REGEXP = %r@%{value(?://([^/]+)/([^}]*))?}@.freeze
-    CODE_SPACE_REGEXP = /%{line.code(?::([^}]*))?}/.freeze
   end
 end

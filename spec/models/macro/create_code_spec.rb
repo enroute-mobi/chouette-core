@@ -317,33 +317,73 @@ RSpec.describe Macro::CreateCode do
   end
 
   describe Macro::CreateCode::Target do
-    subject(:target) { Macro::CreateCode::Target.new }
+    subject(:target) { Macro::CreateCode::Target.new(pattern) }
+
+    let(:pattern) { '' }
 
     # rubocop:disable Style/FormatStringToken
-    describe '#apply_pattern' do
-      subject { target.apply_pattern(model, value) }
+    describe '#value' do
+      subject { target.value(model, value) }
 
-      let(:context) do
+      let(:line_context) do
         Chouette.create do
           code_space :public, short_name: 'public'
           code_space :test
 
           line :line, registration_number: 'LINE42', codes: { 'public' => 'PUBLIC_LINE42' }
-          stop_area
+        end
+      end
+      let(:stop_area_context) do
+        Chouette.create do
+          code_space :public, short_name: 'public'
+          code_space :test
+
+          stop_area :stop_area
+        end
+      end
+      let(:vehicle_journey_context) do
+        Chouette.create do
+          code_space :public, short_name: 'public'
+          code_space :test
+
+          line :line, registration_number: 'LINE42', codes: { 'public' => 'PUBLIC_LINE42' }
 
           referential lines: %i[line] do
             route line: :line do
-              vehicle_journey
+              vehicle_journey :vehicle_journey
             end
           end
         end
       end
-      let(:referential) { context.referential }
-      let(:code_space) { context.code_space(:test) }
-      let(:context_model) { nil }
-      let(:model) { context_model ? Macro::CreateCodeFromUuid::Run::RequestBuilder.new(context.workgroup, context_model.class.all, code_space, target.pattern).run.where(context_model.class.quoted_table_name => { id: context_model.id }).first : nil }
+      let(:journey_pattern_context) do
+        Chouette.create do
+          code_space :public, short_name: 'public'
+          code_space :test
 
-      before { referential.switch }
+          shape :shape, codes: { 'public' => 'PUBLIC_SHAPE42' }
+
+          journey_pattern :journey_pattern, shape: :shape
+        end
+      end
+      let(:referential) { context&.referential rescue nil } # rubocop:disable Style/RescueModifier
+      let(:code_space) { context&.code_space(:test) }
+      let(:context_model) { nil }
+      let(:context) { context_model ? send(:"#{context_model}_context") : nil }
+      let(:context_record) { context_model ? context.send(context_model, context_model) : nil }
+      let(:model) do
+        if context_record
+          Macro::CreateCodeFromUuid::Run::RequestBuilder.new(
+            context.workgroup,
+            context_record.class.all,
+            code_space,
+            target.format
+          ).run.where(context_record.class.quoted_table_name => { id: context_record.id }).first
+        else
+          nil
+        end
+      end
+
+      before { referential&.switch }
 
       context "when the given value is 'dummy'" do
         let(:value) { 'dummy' }
@@ -353,68 +393,91 @@ RSpec.describe Macro::CreateCode do
         end
 
         context "when pattern is 'prefix %{value} suffix'" do
-          before { target.pattern = 'prefix %{value} suffix' }
+          let(:pattern) { 'prefix %{value} suffix' }
           it { is_expected.to eq('prefix dummy suffix') }
         end
 
         context "when pattern is '%{value//m/M}'" do
-          before { target.pattern = '%{value//m/M}' }
+          let(:pattern) { '%{value//m/M}' }
           it { is_expected.to eq('duMMy') }
         end
 
         context "when pattern is '%{value//m/MM}'" do
-          before { target.pattern = '%{value//m/MM}' }
+          let(:pattern) { '%{value//m/MM}' }
           it { is_expected.to eq('duMMMMy') }
         end
 
         context "when pattern is '%{value//(.*)(.)/\1_\2}'" do
-          before { target.pattern = '%{value//(.*)(.)/\1_\2}' }
+          let(:pattern) { '%{value//(.*)(.)/\1_\2}' }
           it { is_expected.to eq('dumm_y') }
         end
 
         context "when pattern is '%{line.code}'" do
-          before { target.pattern = '%{line.code}' }
+          let(:pattern) { '%{line.code}' }
 
           context 'with Line' do
-            let(:context_model) { context.line(:line) }
+            let(:context_model) { :line }
             it { is_expected.to eq('') }
           end
 
           context 'with StopArea' do
-            let(:context_model) { context.stop_area }
+            let(:context_model) { :stop_area }
             it { is_expected.to eq('') }
           end
 
           context 'with VehicleJourney' do
-            let(:context_model) { context.vehicle_journey }
+            let(:context_model) { :vehicle_journey }
             it { is_expected.to eq('LINE42') }
           end
         end
 
         context "when pattern is '%{line.code:public}'" do
-          before { target.pattern = '%{line.code:public}' }
+          let(:pattern) { '%{line.code:public}' }
 
           context 'with Line' do
-            let(:context_model) { context.line(:line) }
+            let(:context_model) { :line }
             it { is_expected.to eq('') }
           end
 
           context 'with StopArea' do
-            let(:context_model) { context.stop_area }
+            let(:context_model) { :stop_area }
             it { is_expected.to eq('') }
           end
 
           context 'with VehicleJourney' do
-            let(:context_model) { context.vehicle_journey }
+            let(:context_model) { :vehicle_journey }
             it { is_expected.to eq('PUBLIC_LINE42') }
           end
         end
 
         context "when pattern is '%{line.code:does_not_exist}'" do
-          before { target.pattern = '%{line.code:does_not_exist}' }
+          let(:pattern) { '%{line.code:does_not_exist}' }
 
           context 'with VehicleJourney' do
-            let(:context_model) { context.vehicle_journey }
+            let(:context_model) { :vehicle_journey }
+            it { is_expected.to eq('') }
+          end
+        end
+
+        context "when pattern is '%{shape.code:public}'" do
+          let(:pattern) { '%{shape.code:public}' }
+
+          context 'with Line' do
+            let(:context_model) { :line }
+            it { is_expected.to eq('') }
+          end
+
+          context 'with JourneyPattern' do
+            let(:context_model) { :journey_pattern }
+            it { is_expected.to eq('PUBLIC_SHAPE42') }
+          end
+        end
+
+        context "when pattern is '%{shape.code:does_not_exist}'" do
+          let(:pattern) { '%{shape.code:does_not_exist}' }
+
+          context 'with JourneyPattern' do
+            let(:context_model) { :journey_pattern }
             it { is_expected.to eq('') }
           end
         end

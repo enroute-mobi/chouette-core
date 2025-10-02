@@ -71,7 +71,7 @@ module Control
             .joins(:line)
             .group(:line_id, :date, 'lines.name')
             .select('SUM(count) AS sum_count', :line_id, :date, 'lines.name AS line_name')
-            .having('SUM(count) < ? OR SUM(count) > ?', minimum, maximum)
+            .having(*having)
             .order(:date)
             .to_sql
         end
@@ -85,12 +85,14 @@ module Control
 
         private
 
-        def minimum
-          minimum_service_counts || "'-infinity'::int"
-        end
-
-        def maximum
-          maximum_service_counts || "'infinity'::int"
+        def having
+          if minimum_service_counts.present? && maximum_service_counts.present?
+            ['SUM(count) < ? OR SUM(count) > ?', minimum_service_counts, maximum_service_counts]
+          elsif minimum_service_counts.present?
+            ['SUM(count) < ?', minimum_service_counts]
+          else # maximum_service_counts.present?
+            ['SUM(count) > ?', maximum_service_counts]
+          end
         end
       end
     end

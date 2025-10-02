@@ -9,13 +9,14 @@ RSpec.describe Control::ServiceCountInRange do
     let(:control_list_run) do
       Control::List::Run.create referential: referential, workbench: workbench
     end
-
+    let(:minimum_service_counts) { nil }
+    let(:maximum_service_counts) { nil }
     let(:control_run) do
       described_class.create(
         control_list_run: control_list_run,
         criticity: 'warning',
-        minimum_service_counts: 2,
-        maximum_service_counts: 10,
+        minimum_service_counts: minimum_service_counts,
+        maximum_service_counts: maximum_service_counts,
         position: 0
       )
     end
@@ -131,10 +132,55 @@ RSpec.describe Control::ServiceCountInRange do
                                   })
     end
 
-    it 'should detect the anomalies' do
-      control_run.run
+    context 'with minimum_service_counts and maximum' do
+      let(:minimum_service_counts) { 2 }
+      let(:maximum_service_counts) { 10 }
 
-      expect(control_run.control_messages).to contain_exactly(first_expected_message, second_expected_message)
+      it 'should detect the anomalies' do
+        control_run.run
+
+        expect(control_run.control_messages).to contain_exactly(first_expected_message, second_expected_message)
+      end
+    end
+
+    context 'with minimum_service_counts only' do
+      let(:minimum_service_counts) { 2 }
+
+      it 'should detect the anomalies' do
+        control_run.run
+
+        expect(control_run.control_messages).to contain_exactly(second_expected_message)
+      end
+
+      context 'when maximum_service_counts is an empty string' do
+        let(:maximum_service_counts) { '' }
+
+        it 'should detect the anomalies' do
+          control_run.run
+
+          expect(control_run.control_messages).to contain_exactly(second_expected_message)
+        end
+      end
+    end
+
+    context 'with maximum_service_counts only' do
+      let(:maximum_service_counts) { 10 }
+
+      it 'should detect the anomalies' do
+        control_run.run
+
+        expect(control_run.control_messages).to contain_exactly(first_expected_message)
+      end
+
+      context 'when minimum_service_counts is an empty string' do
+        let(:minimum_service_counts) { '' }
+
+        it 'should detect the anomalies' do
+          control_run.run
+
+          expect(control_run.control_messages).to contain_exactly(first_expected_message)
+        end
+      end
     end
   end
 end

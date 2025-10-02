@@ -1,5 +1,5 @@
 = form.input :target_model
 = form.input :source_attribute
 = form.input :source_pattern
-= form.input :target_code_space
+= form.input :target_code_space_id, collection: @workbench.workgroup.code_spaces.map {|c| [c.short_name, c.id]}, include_blank: false
 = form.input :target_pattern

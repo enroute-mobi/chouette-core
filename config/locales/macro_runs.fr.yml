@@ -68,7 +68,7 @@ fr:
       macro/create_code/run:
         source_attribute: Attribut de la source
         source_pattern: Modèle de source
-        target_code_space: Espace code cible
+        target_code_space_id: Espace code cible
         target_pattern: Modèle de cible
       macro/remove_code/run:
         code_space: Espace de code

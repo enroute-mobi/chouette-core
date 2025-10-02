@@ -27,18 +27,18 @@ module Macro
     option :target_model
     option :source_attribute # TODO use ModelAttribute ?
     option :source_pattern
-    option :target_code_space# TODO must be id or short_name of one of Workgroup CodeSpaces
+    option :target_code_space_id # TODO must be id or short_name of one of Workgroup CodeSpaces
     option :target_pattern
 
     # Use standard Rails validation methods
-    validates :target_model, :source_attribute, :target_code_space, presence: true
+    validates :target_model, :source_attribute, :target_code_space_id, presence: true
 
     class Run < Macro::Base::Run
       # TODO copy options from Macro::CreateCode class
       option :target_model
       option :source_attribute
       option :source_pattern
-      option :target_code_space
+      option :target_code_space_id
       option :target_pattern
 
       def run
@@ -93,7 +93,7 @@ module Macro
       end
 
       def code_space
-        @code_space ||= workgroup.code_spaces.find_by(short_name: target_code_space)
+        @code_space ||= workgroup.code_spaces.find_by(short_name: target_code_space_id)
       end
 
       def model_collection

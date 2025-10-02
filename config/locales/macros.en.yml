@@ -79,7 +79,7 @@ en:
       macro/create_code:
         source_attribute: Source Attribute
         source_pattern: Source Pattern
-        target_code_space: Target Code Space
+        target_code_space_id: Target Code Space
         target_model: Target Model
         target_pattern: Target Pattern
         expected_result: Expected result

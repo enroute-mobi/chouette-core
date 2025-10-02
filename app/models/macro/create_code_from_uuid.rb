@@ -166,48 +166,12 @@ module Macro
 
         private
 
-        # TODO: This could actually be something simple like srequest.left_joins(:line). This would give:
-        #   request.left_joins(:lines).joins('LEFT OUTER JOINS public.codes ON...').
-        # However, there is a weird behavior in Rails where any call to #joins will be placed before any #left_joins.
-        # So the generated SQL will join the codes first and then the lines despite the JOIN on codes needing the lines
-        # first. One solution could be something like:
-        #   request.left_joins(:lines).left_joins('LEFT OUTER JOINS public.codes ON...')
-        # But #left_joins only accepts association names, not row SQL. Only #joins accepts raw SQL.
-        # Therefore, we have to use #joins everywhere using the raw SQL to have a LEFT OUTER JOIN instead of a JOIN.
-        # This may be fixed in future Rails versions.
-        JOINS = {
-          'Chouette::Route' => {
-            # TODO: should be simply request.left_joins(:line)
-            line: ['LEFT OUTER JOIN "public"."lines" ON "public"."lines"."id" = "routes"."line_id"']
-          },
-          'Chouette::JourneyPattern' => {
-            # TODO: should be simply request.left_joins(route: :line)
-            line: [
-              'LEFT OUTER JOIN "routes" ON "routes"."id" = "journey_patterns"."route_id"',
-              'LEFT OUTER JOIN "public"."lines" ON "public"."lines"."id" = "routes"."line_id"'
-            ],
-            # TODO: should be simply request.left_joins(:shape)
-            shape: [
-              'LEFT OUTER JOIN "public"."shapes" ON "public"."shapes"."id" = "journey_patterns"."shape_id"'
-            ]
-          },
-          'Chouette::VehicleJourney' => {
-            # TODO: should be simply request.left_joins(route: :line)
-            line: [
-              'LEFT OUTER JOIN "routes" ON "routes"."id" = "vehicle_journeys"."route_id"',
-              'LEFT OUTER JOIN "public"."lines" ON "public"."lines"."id" = "routes"."line_id"'
-            ]
-          }
-        }
-
         def include_association(request, association)
           return request if @included_associations.include?(association)
-
-          joins = JOINS.key?(models.klass.name) && JOINS[models.klass.name][association]
-          return request unless joins
+          return request unless models.klass.reflections.key?(association)
 
           @included_associations << association
-          request.joins(*joins)
+          request.left_joins(association.to_sym)
         end
 
         def include_and_select_association_code(request, association, code_space_short_name) # rubocop:disable Metrics/MethodLength,Metrics/AbcSize
@@ -224,7 +188,7 @@ module Macro
 
           as = "#{association}_code_#{code_space_short_name}"
           if code_space_id
-            klass_name = models.klass.reflections[association.to_s].klass.name
+            klass_name = models.klass.reflections[association].klass.name
             request.joins("LEFT OUTER JOIN \"public\".codes #{codes_quoted_table_name} ON #{codes_quoted_table_name}.resource_type = '#{klass_name}' AND #{codes_quoted_table_name}.resource_id = #{association_quoted_table_name(association)}.id AND #{codes_quoted_table_name}.code_space_id = #{code_space_id}") # rubocop:disable Layout/LineLength
                    .select("#{codes_quoted_table_name}.value AS #{as}")
           else
@@ -242,13 +206,13 @@ module Macro
         end
 
         def association_quoted_table_name(association)
-          models.klass.reflections[association.to_s].klass.quoted_table_name
+          models.klass.reflections[association].klass.quoted_table_name
         end
       end
 
       CODE_SPACE_REGEXPS = {
-        line: /%{line.code(?::([^}]*))?}/,
-        shape: /%{shape.code:([^}]*)}/
+        'line' => /%{line.code(?::([^}]*))?}/,
+        'shape' => /%{shape.code:([^}]*)}/
       }.freeze
     end
   end

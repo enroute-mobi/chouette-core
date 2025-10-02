@@ -8,6 +8,7 @@ module Chouette
     include TransientSupport
 
     belongs_to :route # CHOUETTE-3247 validates presence
+    has_one :line, through: :route
     has_many :vehicle_journeys, :dependent => :destroy
     has_many :vehicle_journey_at_stops, :through => :vehicle_journeys
     has_and_belongs_to_many :stop_points, -> { order("stop_points.position") }, :before_add => :vjas_add, :before_remove => :vjas_remove, :after_add => :shortcuts_update_for_add, :after_remove => :shortcuts_update_for_remove

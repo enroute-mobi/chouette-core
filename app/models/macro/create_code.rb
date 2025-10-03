@@ -1,45 +1,50 @@
 module Macro
   class CreateCode < Base
-    # Use enumerize directly
-    enumerize :target_model, in: %w[
-      Line
-      LineGroup
-      LineNotice
-      Company
-      BookingArrangement
-      StopArea
-      StopAreaGroup
-      Entrance
-      Shape
-      PointOfInterest
-      ServiceFacilitySet
-      AccessibilityAssessment
-      Fare::Zone
-      LineRoutingConstraintZone
-      Document
-      Contract
-      Route
-      JourneyPattern
-      VehicleJourney
-      TimeTable
-    ]
+    module Options
+      extend ActiveSupport::Concern
 
-    option :target_model
-    option :source_attribute # TODO use ModelAttribute ?
-    option :source_pattern
-    option :target_code_space_id # TODO must be id or short_name of one of Workgroup CodeSpaces
-    option :target_pattern
+      included do
+        option :target_model
+        option :source_attribute # TODO use ModelAttribute ?
+        option :source_pattern
+        option :target_code_space_id # TODO must be id or short_name of one of Workgroup CodeSpaces
+        option :target_pattern
 
-    # Use standard Rails validation methods
-    validates :target_model, :source_attribute, :target_code_space_id, presence: true
+        enumerize :target_model, in: %w[
+          Line
+          LineGroup
+          LineNotice
+          Company
+          BookingArrangement
+          StopArea
+          StopAreaGroup
+          Entrance
+          Shape
+          PointOfInterest
+          ServiceFacilitySet
+          AccessibilityAssessment
+          Fare::Zone
+          LineRoutingConstraintZone
+          Document
+          Contract
+          Route
+          JourneyPattern
+          VehicleJourney
+          TimeTable
+        ]
+
+        validates :target_model, :source_attribute, :target_code_space_id, presence: true
+
+        def code_space
+          @code_space ||= workgroup.code_spaces.find_by(id: code_space_id)
+        end
+      end
+    end
+
+    include Options
 
     class Run < Macro::Base::Run
-      # TODO copy options from Macro::CreateCode class
-      option :target_model
-      option :source_attribute
-      option :source_pattern
-      option :target_code_space_id
-      option :target_pattern
+      include Options
 
       def run
         # This Updater pattern made simple to test
@@ -93,7 +98,7 @@ module Macro
       end
 
       def code_space
-        @code_space ||= workgroup.code_spaces.find_by(short_name: target_code_space_id)
+        @code_space ||= workgroup.code_spaces.find_by(id: target_code_space_id)
       end
 
       def model_collection

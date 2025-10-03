@@ -1,5 +1,5 @@
 = d.attribute :target_model, value: I18n.t(macro_run.target_model, scope: 'enumerize.target_model')
 = d.attribute :source_attribute
 = d.attribute :source_pattern
-= d.attribute :target_code_space_id, value: d.object.workgroup.code_spaces.find_by(id: d.object.target_code_space_id)&.short_name
+= d.attribute :target_code_space_id, value: d.object.code_space&.short_name
 = d.attribute :target_pattern

@@ -33,4 +33,11 @@ class MergeDecorator < Af83::Decorator
       l.href { h.workbench_referential_path(context[:workbench], object.new) }
     end
   end
+
+  define_instance_method :merged_datasets do
+    associated_referential_names = referentials.map(&:name).to_sentence
+    return I18n.t('merges.merged_datasets_count', count: referentials.count) if associated_referential_names.length > 30
+
+    associated_referential_names
+  end
 end

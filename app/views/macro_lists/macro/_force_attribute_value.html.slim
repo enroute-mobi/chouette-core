@@ -11,6 +11,6 @@ div[x-data = "{target_model: '#{form.object.target_model}', target_attribute: '#
       - attribute_name = attribute.name.to_s
       template[x-if = "target_attribute == '#{attribute_name}' && target_model =='#{model_name}'"]
         - if attribute_name == 'transport_mode'
-          = form.input :expected_value, as: :transport_mode, required: false, collection: Chouette::TransportMode.modes
+          = form.input :expected_value, as: :transport_mode, required: false, collection: Chouette::TransportMode.line_modes
         - else
           = form.input :expected_value, as: attribute_name == 'is_referent' ? :switchable_checkbox : :string

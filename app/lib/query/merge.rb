@@ -1,5 +1,7 @@
+# frozen_string_literal: true
+
 module Query
-  class Merge < Query::Operation
+  class Merge < Query::LegacyOperation
     def text(value)
       change_scope(if: value.present?) do |scope|
         creator = scope.arel_table[:creator]

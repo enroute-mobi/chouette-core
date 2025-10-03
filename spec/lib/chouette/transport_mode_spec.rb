@@ -257,6 +257,27 @@ RSpec.describe Chouette::TransportMode do
     it { is_expected.to match_array(expected_transport_modes) }
   end
 
+  describe '.line_modes' do
+    subject { described_class.line_modes.map(&:inspect) }
+
+    let(:expected_line_transport_modes) do
+      transport_modes(%w[
+                        metro
+                        funicular
+                        tram
+                        rail
+                        coach
+                        bus
+                        water
+                        telecabin
+                        air
+                        taxi
+                      ]).map(&:inspect)
+    end
+
+    it { is_expected.to match_array(expected_line_transport_modes) }
+  end
+
   describe Chouette::TransportMode::Mapper do
     let(:mapper) { described_class.new }
 

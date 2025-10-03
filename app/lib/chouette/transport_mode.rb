@@ -66,11 +66,7 @@ module Chouette
     end
 
     def self.line_modes
-      modes(except: %i[self_drive snow_and_ice])
-    end
-
-    def self.line_mode_codes
-      line_modes.map(&:code)
+      modes(except: %i[self_drive snow_and_ice trolley_bus])
     end
 
     def self.sorted_modes(**options)

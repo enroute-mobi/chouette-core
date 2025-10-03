@@ -3,11 +3,7 @@ module TransportModeEnumerations
 
   included do |source|
     extend Enumerize
-    enumerize :transport_mode, in: if source.is_a?(Chouette::Line)
-                                     Chouette::TransportMode.line_mode_codes
-                                   else
-                                     TransportModeEnumerations.transport_modes
-                                   end
+    enumerize :transport_mode, in: TransportModeEnumerations.transport_modes
 
     # Tip: Use `enumerize_transport_submode` in models which supports transport_submode
   end

@@ -177,6 +177,7 @@ class Merge < ApplicationModel
     new.pending!
 
     output.update new: new
+    update new: new
   end
 
   def clean_new

@@ -283,8 +283,8 @@ RSpec.describe Export::Setup::Scope::VehicleJourneys do
     subject { vehicle_journeys.with_scope_setup(scope_setup) }
 
     let(:scope_setup) { double(:scope_setup) }
-    let(:included_lines) { Export::Setup::Scope::LineSelector.new }
-    let(:excluded_lines) { Export::Setup::Scope::LineSelector.new }
+    let(:included_lines) { Export::Setup::Scope::LineSelector::All.new }
+    let(:excluded_lines) { Export::Setup::Scope::LineSelector::All.new }
 
     before do
       vehicle_journeys.period = { type: 'Export::Setup::Scope::PeriodSelector::Duration', day_count: 42 }
@@ -555,8 +555,8 @@ RSpec.describe Export::Setup::Scope::PublishedReferential do
   describe '#to_referential' do
     subject { setup_scope_published_referential.to_referential }
 
-    let(:stop_areas) { Export::Setup::Scope::StopAreas.new }
-    let(:lines) { Export::Setup::Scope::Lines.new }
+    let(:stop_areas) { Export::Setup::Scope::StopAreas::All.new }
+    let(:lines) { Export::Setup::Scope::Lines::All.new }
     let(:shapes) { Export::Setup::Scope::Shapes.new }
     let(:point_of_interests) { Export::Setup::Scope::PointOfInterests.new }
     let(:vehicle_journeys) { Export::Setup::Scope::VehicleJourneys.new }

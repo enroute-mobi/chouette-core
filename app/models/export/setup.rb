@@ -3,17 +3,20 @@
 module Export
   module Setup
     module Scope
-      class PeriodSelector < ApplicationStoreModel
-        class All < PeriodSelector
+      module PeriodSelector
+        class Base < ApplicationStoreModel
         end
 
-        class Duration < PeriodSelector # TODO: Gtfs and Netex only
+        class All < Base
+        end
+
+        class Duration < Base # TODO: Gtfs and Netex only
           attribute :day_count, :integer
 
           validates :day_count, numericality: { only_integer: true, greater_than_or_equal_to: 1 }
         end
 
-        class Static < PeriodSelector # TODO: Gtfs and Netex only
+        class Static < Base # TODO: Gtfs and Netex only
           attribute :from, :date
           attribute :to, :date
 
@@ -32,12 +35,14 @@ module Export
         end
       end
 
-      class LineSelector < ApplicationStoreModel
-        def with_scope_setup(_scope_setup)
-          raise NotImplementedError
+      module LineSelector
+        class Base < ApplicationStoreModel
+          def with_scope_setup(_scope_setup)
+            dup
+          end
         end
 
-        class Lines < LineSelector
+        class Lines < Base
           attribute :line_ids, IntegerArrayType.new
 
           validates :line_ids, presence: true,
@@ -50,7 +55,7 @@ module Export
           end
         end
 
-        class Companies < LineSelector
+        class Companies < Base
           attribute :company_ids, IntegerArrayType.new
 
           validates :company_ids, presence: true,
@@ -63,7 +68,7 @@ module Export
           end
         end
 
-        class Networks < LineSelector # TODO: unused for now
+        class Networks < Base # TODO: unused for now
           attribute :network_ids, IntegerArrayType.new
 
           validates :network_ids, presence: true,
@@ -76,7 +81,7 @@ module Export
           end
         end
 
-        class LineProviders < LineSelector
+        class LineProviders < Base
           attribute :line_provider_ids, IntegerArrayType.new
 
           validates :line_provider_ids, presence: true,
@@ -89,22 +94,21 @@ module Export
           end
         end
 
-        class All < LineSelector
+        class All < Base
+        end
+      end
+
+      module StopAreas
+        class Base < ApplicationStoreModel
           def with_scope_setup(_scope_setup)
             dup
           end
         end
-      end
 
-      class StopAreas < ApplicationStoreModel
-        def with_scope_setup(_scope_setup)
-          dup
+        class None < Base # TODO: unused for now
         end
 
-        class None < StopAreas # TODO: unused for now
-        end
-
-        class Scheduled < StopAreas
+        class Scheduled < Base
           attribute :prefer_referent_stop_areas, :boolean, default: false # TODO: Gtfs only
           attribute :ignore_parent_stop_areas, :boolean, default: false # TODO: Gtfs only
           attribute :ignore_referent_stop_areas, :boolean, default: false # TODO: Netex only
@@ -115,15 +119,17 @@ module Export
         end
       end
 
-      class Lines < ApplicationStoreModel
-        def with_scope_setup(_scope_setup)
-          dup
+      module Lines
+        class Base < ApplicationStoreModel
+          def with_scope_setup(_scope_setup)
+            dup
+          end
         end
 
-        class None < Lines # TODO: unused for now
+        class None < Base # TODO: unused for now
         end
 
-        class Scheduled < Lines
+        class Scheduled < Base
           attribute :prefer_referent_lines, :boolean, default: false # TODO: Gtfs and Netex only
           attribute :prefer_referent_companies, :boolean, default: false # TODO: Gtfs only
         end
@@ -145,9 +151,9 @@ module Export
       end
 
       class VehicleJourneys < ApplicationStoreModel
-        attribute :period, PeriodSelector.one_of_descendants.to_type, default: -> { PeriodSelector::All.new }
-        attribute :included_lines, LineSelector.one_of_descendants.to_type, default: -> { LineSelector::All.new }
-        attribute :excluded_lines, LineSelector.one_of_descendants.to_type, default: nil
+        attribute :period, PeriodSelector::Base.one_of_descendants.to_type, default: -> { PeriodSelector::All.new }
+        attribute :included_lines, LineSelector::Base.one_of_descendants.to_type, default: -> { LineSelector::All.new }
+        attribute :excluded_lines, LineSelector::Base.one_of_descendants.to_type, default: nil
 
         validates :period, :included_lines, store_model: true
         validates :excluded_lines, store_model: true, if: ->(r) { r.excluded_lines.present? }
@@ -162,8 +168,8 @@ module Export
       end
 
       class Setup < ApplicationStoreModel
-        attribute :stop_areas, StopAreas.one_of_descendants.to_type, default: -> { StopAreas::All.new }
-        attribute :lines, Lines.one_of_descendants.to_type, default: -> { Lines::All.new }
+        attribute :stop_areas, StopAreas::Base.one_of_descendants.to_type, default: -> { StopAreas::All.new }
+        attribute :lines, Lines::Base.one_of_descendants.to_type, default: -> { Lines::All.new }
         attribute :shapes, Shapes.to_type, default: -> { Shapes.new }
         attribute :point_of_interests, PointOfInterests.to_type, default: -> { PointOfInterests.new }
 

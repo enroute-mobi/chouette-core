@@ -21,7 +21,7 @@ fr:
         start_date: "Après : "
         end_date: "Avant : "
         per_page: "Afficher par"
-        text: "Recherche par nom ou identification"
+        text: "Rechercher par texte"
         creator: "Recherche par créateur"
         company_ids: "Transporteur"
         company_id: "Transporteur"

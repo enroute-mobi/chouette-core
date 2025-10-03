@@ -66,11 +66,11 @@ module Chouette
     end
 
     def self.line_modes
-      self.modes(except: %i[coach air taxi self_drive snow_and_ice])
+      modes(except: %i[self_drive snow_and_ice])
     end
 
     def self.line_mode_codes
-      self.line_modes.map(&:code)
+      line_modes.map(&:code)
     end
 
     def self.sorted_modes(**options)

@@ -38,10 +38,8 @@ class PublicationSetupDecorator < Af83::Decorator
     instance_decorator.class_eval do
       delegate :export_type, to: :object
 
-      alias_method :super_alpine_state, :alpine_state
-
       def alpine_state
-        super_alpine_state.merge(
+        base_alpine_state.merge(
           {
             isExport: false
           }

@@ -30,10 +30,8 @@ class ExportDecorator < Af83::Decorator
     end
 
     instance_decorator.class_eval do
-      alias_method :super_alpine_state, :alpine_state
-
       def alpine_state
-        super_alpine_state.merge(
+        base_alpine_state.merge(
           {
             isExport: true,
             referentialId: object.referential_id

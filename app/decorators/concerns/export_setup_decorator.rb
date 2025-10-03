@@ -20,7 +20,7 @@ module ExportSetupDecorator
       end
     end
 
-    define_instance_method :alpine_state do
+    define_instance_method :base_alpine_state do
       {
         type: export_type || 'Export::Gtfs',
         exportedLines: form_export_setup.scope_setup.vehicle_journeys.included_lines.type,

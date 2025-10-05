@@ -1,0 +1,7 @@
+= simple_search_for @search, workbench_output_path(@workbench), parent_resources_path: workbench_merges_path(@workbench) do |f|
+  = f.row
+    = f.text
+  = f.row
+    = f.input :statuses, collection: @search.candidate_statuses.map(&:slug), label_method: lambda{|slug| ("<span>" + operation_status(slug, verbose: true) + "</span>").html_safe}, wrapper_html: { class: "checkbox_list"}
+    = f.input :start_date, as: :date_picker
+    = f.input :end_date, as: :date_picker

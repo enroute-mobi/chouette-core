@@ -8,10 +8,12 @@
       - if parent_policy.create?(Merge)
         = link_to t('merges.actions.create'), new_workbench_merge_path(@workbench), class: 'btn btn-primary'
 
-.page_content
+.page_content x-data="{ saveSearchPanel: false, graphPanel: #{@search.graphical?} }"
   .container-fluid
       .row
         .col-lg-12
+          = render 'merges/filters'
+
           = table_builder_2 @workbench_merges,
             [ \
               TableBuilderHelper::Column.new( \

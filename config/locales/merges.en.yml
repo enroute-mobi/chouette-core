@@ -5,6 +5,9 @@ en:
         legacy: "Classic"
         experimental: "Experimental"
   merges:
+    name: "Merge at %{date}"
+    merged_datasets: "Merged datasets"
+    merged_datasets_count: "%{count} datasets"
     referential_name: "Merged offer %{date}"
     index:
       title: "Merged offers"

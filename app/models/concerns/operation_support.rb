@@ -53,11 +53,7 @@ module OperationSupport
   end
 
   def name
-    created_at.l(format: :short_with_time)
-  end
-
-  def full_names
-    referentials.map(&:name).to_sentence
+    self[:name] || created_at&.l(format: :short_with_time)
   end
 
   def contains_urgent_offer?

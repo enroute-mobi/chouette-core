@@ -5,6 +5,9 @@ fr:
         legacy: "Classique"
         experimental: "Expérimentale"
   merges:
+    name: "Finalisation du %{date}"
+    merged_datasets: "Jeux de données finalisés"
+    merged_datasets_count: "%{count} jeux de données"
     referential_name: "Offre finalisée %{date}"
     index:
       title: "Finalisations de l'offre"

@@ -93,4 +93,14 @@ RSpec.describe Merge do
       it { is_expected.to be_nil }
     end
   end
+
+  describe '#name' do
+    subject { Merge.new }
+
+    before { subject.save }
+
+    it 'defines a name' do
+      expect(subject.name).to be_present
+    end
+  end
 end

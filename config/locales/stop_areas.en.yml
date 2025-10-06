@@ -197,6 +197,7 @@ en:
         referent: "Referent"
         referent_id: "Referent Stop Area"
         specific_stops: "Specific stops"
+        siblings: "Sibling Stop Areas"
         coordinates: "Coordinates"
         zip_code: "Zip code"
         city_name: "City"

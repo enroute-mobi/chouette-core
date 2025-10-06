@@ -66,7 +66,6 @@ function fitToLayers(map, layersByKey, visibility) {
     }
   }
 }
-
 async function init() {
   const container = document.getElementById('stop_area_map')
   if (!container) return
@@ -78,20 +77,27 @@ async function init() {
     visible: true,
     source: new OSM({ attributions: '\u00A9 OpenStreetMap contributors' })
   })
+
+  // Satellite layer
+  /*
   const satelliteLayer = new TileLayer({
     title: 'Satellite',
     type: 'base',
     visible: false,
     source: new XYZ({
-      attributions: 'Tiles \u00A9 Esri — Source: Esri, i-cubed, USDA, USGS, AEX, GeoEye, Getmapping, Aerogrid, IGN, IGP, UPR-EGP, and the GIS User Community',
-      url: 'https://services.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}'
+      url: 'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
+      attributions: 'Tiles &copy; Esri &mdash; Source: Esri, i-cubed, USDA, USGS, AEX, GeoEye, Getmapping, Aerogrid, IGN, IGP, UPR-EGP, and the GIS User Community'
     })
   })
+  */
+
   const baseGroup = new Group({
     title: getBaseGroupTitle(),
     fold: 'open',
-    layers: [osmLayer, satelliteLayer]
+    layers: [osmLayer]
+    // layers: [osmLayer, satelliteLayer]
   })
+
   // Create view with reasonable default values
   const view = new View({
     center: [0, 0],
@@ -149,13 +155,32 @@ async function init() {
   const dataGroup = new Group({ title: getGroupTitle(), fold: 'open', layers: dataLayers })
   map.addLayer(dataGroup)
 
-  // Ajout du sélecteur de couches
+  // Add layer switcher
   const layerSwitcher = new LayerSwitcher({
     activationMode: 'click',
     startActive: false,
-    groupSelectStyle: 'children',
+    groupSelectStyle: 'none',
     tipLabel: i18n.t('map.controls.layers')
   });
+
+  // Hide the li element corresponding to the stop_area layer
+  const hideStopAreaLayer = () => {
+    const layerElements = document.querySelectorAll('.layer-switcher li.layer');
+    layerElements.forEach(li => {
+      const label = li.querySelector('label');
+      if (label && label.textContent === getLayerTitle('stop_area')) {
+        li.style.display = 'none';
+      }
+    });
+  };
+
+  // Wait for LayerSwitcher to be rendered
+  setTimeout(hideStopAreaLayer, 100);
+
+  // Reapply after each panel opening
+  const observer = new MutationObserver(hideStopAreaLayer);
+  observer.observe(document.body, { childList: true, subtree: true });
+
   map.addControl(layerSwitcher);
 
   // Adjust LayerSwitcher container z-index
@@ -175,7 +200,7 @@ async function init() {
     borderRadius: '4px',
     boxShadow: '0 1px 3px rgba(0, 0, 0, 0.15)',
     zIndex: '1000',
-    maxWidth: 'calc(100% - 50px)',
+    maxWidth: '80%',
     overflowX: 'auto',
     overflowY: 'hidden',
     whiteSpace: 'nowrap',

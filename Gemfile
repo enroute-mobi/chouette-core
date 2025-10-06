@@ -222,5 +222,3 @@ gem 'curb'
 
 gem 'chartkick' # check the corresponding Chart.js version to change in package.json
 gem 'groupdate'
-
-gem 'drb' # see CHOUETTE-4753

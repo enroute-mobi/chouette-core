@@ -9,7 +9,7 @@ RSpec.describe Macro::CreateCode do
   }
   it { is_expected.to validate_presence_of(:source_attribute) }
   it { is_expected.to_not validate_presence_of(:source_pattern) }
-  it { is_expected.to validate_presence_of(:target_code_space) }
+  it { is_expected.to validate_presence_of(:target_code_space_id) }
   it { is_expected.to_not validate_presence_of(:target_pattern) }
 
   it 'should be one of the available Macro' do
@@ -32,7 +32,7 @@ RSpec.describe Macro::CreateCode do
       Macro::CreateCode::Run.create(
         target_model: target_model,
         source_attribute: source_attribute,
-        target_code_space: 'test',
+        target_code_space_id: code_space.id,
         macro_list_run: macro_list_run,
         position: 0
       ).tap do |run|
@@ -74,6 +74,7 @@ RSpec.describe Macro::CreateCode do
                   stop_area registration_number: 'dummy', codes: { test: 'unchanged' }
                 end
               end
+              let(:code_space) { context.code_space }
 
               it "doesn't change the existing code for this Stop Area" do
                 change_code_value = change { stop_area.codes.find_by(code_space: code_space)&.value }
@@ -106,6 +107,7 @@ RSpec.describe Macro::CreateCode do
                 stop_area registration_number: nil
               end
             end
+            let(:code_space) { context.code_space }
 
             it "doesn't create a code" do
               expect { subject }.to_not(change { stop_area.reload.codes.count })
@@ -141,6 +143,7 @@ RSpec.describe Macro::CreateCode do
                 stop_area
               end
             end
+            let(:code_space) { context.code_space(:code_space_test) }
 
             it "doesn't create a code" do
               expect { subject }.to_not(change { stop_area.reload.codes.count })
@@ -205,6 +208,7 @@ RSpec.describe Macro::CreateCode do
                 end
               end
             end
+            let(:code_space) { context.code_space }
 
             it "doesn't change the existing code for this Vehicle Journey" do
               change_code_value = change { vehicle_journey.codes.find_by(code_space: code_space)&.value }
@@ -241,6 +245,7 @@ RSpec.describe Macro::CreateCode do
               end
             end
           end
+          let(:code_space) { context.code_space }
 
           it "doesn't create a code" do
             expect { subject }.to_not(change { vehicle_journey.reload.codes.count })
@@ -280,6 +285,7 @@ RSpec.describe Macro::CreateCode do
             end
           end
           let(:model) { context.stop_area }
+          let(:code_space) { context.code_space }
 
           it { is_expected.to eq('dummy') }
         end
@@ -292,6 +298,7 @@ RSpec.describe Macro::CreateCode do
             end
           end
           let(:model) { context.stop_area }
+          let(:code_space) { context.code_space }
 
           it { is_expected.to be_nil }
         end

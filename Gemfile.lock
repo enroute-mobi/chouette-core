@@ -58,7 +58,8 @@ GIT
 
 GIT
   remote: https://bitbucket.org/enroute-mobi/nest.git
-  revision: 5976bc194255b52d84ac6dcc7896aad363649850
+  revision: dd7414812a41b39a1fde27b62b566bf4319983fd
+  branch: NEST-39-prevent-false-values-from-being-removed-when-saving-search
   specs:
     nest (0.1)
       active_attr

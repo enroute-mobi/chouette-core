@@ -144,7 +144,7 @@ gem 'sentry-rails', '>= 6.1.0'
 
 gem 'coverband', require: false
 
-gem 'nest', en_route: 'nest'
+gem 'nest', en_route: 'nest', branch: 'NEST-39-prevent-false-values-from-being-removed-when-saving-search'
 
 group :development do
   gem 'bundler-audit'

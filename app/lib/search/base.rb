@@ -1,18 +1,9 @@
 # frozen_string_literal: true
 
 module Search
-  class Base
-    extend ActiveModel::Naming
+  class Base < Nest::Search::Base
     extend Enumerize
 
-    include ActiveModel::Validations
-
-    include ActiveAttr::Attributes
-    include ActiveAttr::TypecastedAttributes
-    include ActiveAttr::AttributeDefaults
-
-    attribute :page, type: Integer
-    attribute :per_page, type: Integer, default: 30
     attribute :chart_type, type: String
     attribute :group_by_attribute, type: String
     attribute :first, type: Boolean, default: false # meaningless if attribute is in DATE_GROUP_BY_ATTRIBUTES
@@ -60,12 +51,6 @@ module Search
       name: :saved_name,
       description: :saved_description
     }.freeze
-
-    def initialize(attributes = {})
-      apply_defaults
-      order.attributes = attributes.delete :order if attributes[:order]
-      attributes.each { |k, v| send "#{k}=", v }
-    end
 
     class << self
       def chart_periods
@@ -118,8 +103,8 @@ module Search
       end
     end
 
-    def inspect
-      "#{self.class.name}(#{attributes.inspect},order=#{order.attributes.inspect})"
+    def scope(initial_scope)
+      initial_scope
     end
 
     attr_reader :saved_search
@@ -140,36 +125,6 @@ module Search
         error.instance_variable_set(:@attribute, SAVED_SEARCH_ATTRIBUTE_MAPPING[error.attribute])
       end
     end
-
-    # TODO: Why the default ActiveAttr::AttributeDefaults#apply_defaults
-    # defines @attributes values without writing the attributes ?
-    def apply_defaults(defaults = attribute_defaults)
-      defaults.each do |name, value|
-        write_attribute name, value
-      end
-    end
-
-    def attributes=(attributes = {})
-      attributes = attributes.with_indifferent_access if attributes.respond_to?(:with_indifferent_access)
-
-      order.attributes = attributes.delete(:order) if attributes[:order]
-
-      # Only used defined attributes
-      self.class.attributes.each_key do |attribute_name|
-        if (value = attributes[attribute_name]).present?
-          write_attribute attribute_name, value
-        end
-      end
-    end
-
-    def attributes
-      super.delete_if { |_k, v| v.blank? && v != false }
-    end
-
-    def searched_class
-      raise NotImplementedError
-    end
-    delegate :human_attribute_name, to: :searched_class
 
     def candidate_group_by_attributes
       chart_klass.group_by_attributes
@@ -239,37 +194,9 @@ module Search
       end
     end
 
-    # Requires to create a form
-    def to_key; end
-
-    validates :page, numericality: { greater_than_or_equal_to: 0 }, allow_nil: true
-    validates :per_page, numericality: { greater_than: 0, less_than_or_equal_to: 100 }, allow_nil: true
-
     # Could be useful for i18n .. but change the params root key
     def self.model_name
       @model_name ||= ActiveModel::Name.new(self, nil, 'Search')
-    end
-
-    def without_order
-      @without_order = true
-      self
-    end
-
-    def without_order?
-      @without_order
-    end
-
-    def without_pagination
-      @without_pagination = true
-      self
-    end
-
-    def without_pagination?
-      @without_pagination
-    end
-
-    def query(_scope)
-      raise 'Not yet implemented'
     end
 
     def graphical?
@@ -278,19 +205,6 @@ module Search
 
     def chart_one_dimensional?
       chart_type == 'pie'
-    end
-
-    def search(scope)
-      if valid?
-        result = scope
-        result = query(result).scope
-        result = order.order(result) unless without_order?
-        result = result.paginate(paginate_attributes) unless without_pagination?
-        result
-      else
-        Rails.logger.debug "[Search] Invalid attributes: #{errors.full_messages}"
-        scope.none
-      end
     end
 
     def chart(scope) # rubocop:disable Metrics/MethodLength,Metrics/AbcSize
@@ -322,19 +236,6 @@ module Search
       return nil unless attribute
 
       self.class.chart_periods[chart_klass.group_by_attributes[attribute].name]&.chart_period(self)
-    end
-
-    def order
-      # Use the local/specific Order class
-      @order ||= self.class.const_get('Order').new
-    end
-
-    def paginate_attributes
-      { per_page: per_page, page: page }
-    end
-
-    def scope(initial_scope)
-      initial_scope
     end
 
     class Chart
@@ -1449,120 +1350,6 @@ module Search
 
     def aggregate_attribute?
       aggregate_operation.in?(%w[sum average])
-    end
-  end
-
-  class Order
-    def initialize(attributes = nil)
-      self.attributes = attributes || self.class.defaults
-    end
-
-    def attributes
-      self.class.attributes.filter_map do |attribute|
-        attribute_value = send(attribute.name)
-        next nil unless attribute_value
-
-        [attribute.name, attribute_value]
-      end.to_h
-    end
-
-    def attributes=(attributes = {})
-      attributes = attributes.with_indifferent_access if attributes.respond_to?(:with_indifferent_access)
-
-      self.class.attributes.each do |attribute|
-        attribute_value = attributes[attribute.name]
-        send("#{attribute.name}=", attribute_value || nil)
-      end
-    end
-
-    def order_hash
-      self.class.attributes.filter_map do |attribute|
-        attribute_value = send(attribute.name)
-        next nil unless attribute_value
-
-        [attribute.column, attribute_value]
-      end.to_h
-    end
-
-    def order(scope)
-      scope = self.class.attributes.inject(scope) do |s, attribute|
-        next s unless attribute.joins
-        next s unless send(attribute.name)
-
-        s.left_outer_joins(attribute.joins)
-      end
-      scope.order(order_hash)
-    end
-
-    class << self
-      def attributes
-        @attributes ||= []
-      end
-
-      def defaults
-        @defaults ||= attributes.filter_map do |attribute|
-          next nil unless attribute.default?
-
-          [attribute.name, attribute.default]
-        end.to_h
-      end
-
-      # TODO: Attributes can only return values :asc, :desc or nil (for security reason)
-      # Attributes can be set with "asc", :asc, 1 to have the :asc value
-      # Attributes can be set with "desc", :desc, -1 to have the :desc value
-      # Attributes can be set with nil, 0 to have the nil value
-      #
-      # These methods ensures that the sort attribute is supported and valid
-      def attribute(name, options = {})
-        attribute = Attribute.new(name, options)
-
-        define_method "#{name}=" do |value|
-          value = attribute.order(value)
-          instance_variable_set "@#{name}", value
-        end
-        attr_reader name
-
-        attributes << attribute
-      end
-
-      def inherited(base)
-        base.instance_variable_set(:@attributes, attributes.deep_dup)
-        super
-      end
-    end
-
-    # Describe a given atribute (name, etc) and its options (default, etc)
-    class Attribute
-      ASCENDANT_VALUES = [:asc, 'asc', 1].freeze
-      DESCENDANT_VALUES = [:desc, 'desc', -1].freeze
-
-      def initialize(name, options)
-        @name = name
-
-        options.each do |option, value|
-          send "#{option}=", value
-        end
-      end
-
-      attr_reader :name
-      attr_writer :column
-      attr_accessor :joins, :default
-
-      def column
-        @column ||= name
-      end
-
-      def default?
-        @default.present?
-      end
-
-      def order(value)
-        if ASCENDANT_VALUES.include?(value)
-          :asc
-        elsif DESCENDANT_VALUES.include?(value)
-          :desc
-        end
-      end
     end
   end
 end

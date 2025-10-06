@@ -422,6 +422,19 @@ module Chouette
             model :shape do
               attribute(:name) { |n| "Shape #{n}" }
               attribute(:geometry) { |n| "LINESTRING(48.8584 2.2945,48.859 2.295)" }
+
+              transient :codes
+
+              after do
+                (transient(:codes) || {}).each do |code_space_short_name, values|
+                  Array(values).each do |value|
+                    code_space = parent.shape_referential.workgroup.code_spaces.find_by!(
+                      short_name: code_space_short_name
+                    )
+                    new_instance.codes.build(code_space: code_space, value: value)
+                  end
+                end
+              end
             end
 
             model :point_of_interest_category do

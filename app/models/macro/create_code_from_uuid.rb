@@ -49,7 +49,8 @@ module Macro
       def run
         request = RequestBuilder.new(workgroup, models, code_space, format).run
         request.find_each do |model|
-          code = model.codes.create(code_space: code_space, value: format_code_space(model))
+          code_value = target.value(model)
+          code = model.codes.create(code_space: code_space, value: code_value)
           create_message(model, code)
         end
       end
@@ -69,10 +70,6 @@ module Macro
         Macro::Message.create!(attributes)
       end
 
-      def models_without_code
-        @models_without_code ||= models.without_code(code_space)
-      end
-
       def model_collection
         @model_collection ||= target_model.underscore.gsub('/', '_').pluralize
       end
@@ -81,17 +78,39 @@ module Macro
         @models ||= scope.send(model_collection)
       end
 
-      def uuid
-        SecureRandom.uuid
+      def target
+        @target ||= Target.new(format)
       end
 
-      def format_code_space(model)
-        format.gsub('%{value}', uuid).gsub(CODE_SPACE_REGEXP) do # rubocop:disable Style/FormatStringToken
-          if ::Regexp.last_match(1)
-            model.send("line_code_#{::Regexp.last_match(1)}")
-          else
-            model.line_registration_number
+      class AbstractTarget
+        def initialize(format)
+          @format = format
+        end
+        attr_reader :format
+
+        def apply_format!(result, model)
+          CODE_SPACE_REGEXPS.each do |association, regexp|
+            result.gsub!(regexp) do
+              if ::Regexp.last_match(1)
+                model.send("#{association}_code_#{::Regexp.last_match(1)}")
+              else
+                model.send("#{association}_registration_number")
+              end
+            end
           end
+          result.freeze
+        end
+      end
+
+      class Target < AbstractTarget
+        def value(model)
+          result = format.gsub('%{value}', uuid) # rubocop:disable Style/FormatStringToken
+
+          apply_format!(result, model)
+        end
+
+        def uuid # rubocop:disable Rails/Delegate
+          SecureRandom.uuid
         end
       end
 
@@ -101,6 +120,8 @@ module Macro
           @models = models
           @code_space = code_space
           @format = format
+          @included_associations = Set.new
+          @included_codes = Hash.new { |h, k| h[k] = Set.new }
         end
         attr_reader :workgroup, :models, :code_space, :format
 
@@ -112,7 +133,7 @@ module Macro
         def run
           request = models
           request = without_code(request)
-          request = preload_line_codes(request)
+          request = preload_pattern_codes(request)
           request = select_all_model_columns(request)
           request
         end
@@ -121,17 +142,19 @@ module Macro
           request.without_code(code_space)
         end
 
-        def preload_line_codes(request)
+        def preload_pattern_codes(request) # rubocop:disable Metrics/MethodLength
           return request unless format
 
-          format.scan(CODE_SPACE_REGEXP) do
-            request = include_lines(request)
+          CODE_SPACE_REGEXPS.each do |association, regexp|
+            format.scan(regexp) do
+              request = include_association(request, association)
 
-            request = if ::Regexp.last_match(1)
-                        include_and_select_line_code(request, ::Regexp.last_match(1))
-                      else
-                        select_line_registration_number(request)
-                      end
+              request = if ::Regexp.last_match(1)
+                          include_and_select_association_code(request, association, ::Regexp.last_match(1))
+                        else
+                          select_association_registration_number(request, association)
+                        end
+            end
           end
 
           request
@@ -143,58 +166,54 @@ module Macro
 
         private
 
-        def include_lines(request) # rubocop:disable Metrics/AbcSize,Metrics/MethodLength
-          if !@lines_included && models.klass == Chouette::Route
-            @lines_included = true
-            # TODO: should be simply request.left_joins(:line)
-            # However, there is a bug with Rails where any call to #joins will be placed before any #left_joins and
-            # since #left_joins does not accept raw SQL, we have to use #joins.
-            # This may be fixed in future Rails versions.
-            request.joins('LEFT OUTER JOIN "public"."lines" ON "public"."lines"."id" = "routes"."line_id"')
-          elsif !@lines_included && models.klass == Chouette::JourneyPattern
-            @lines_included = true
-            # TODO: should be simply request.left_joins(route: :line)
-            request.joins('LEFT OUTER JOIN "routes" ON "routes"."id" = "journey_patterns"."route_id"') \
-                   .joins('LEFT OUTER JOIN "public"."lines" ON "public"."lines"."id" = "routes"."line_id"')
-          elsif !@lines_included && models.klass == Chouette::VehicleJourney
-            @lines_included = true
-            # TODO: should be simply request.left_joins(route: :line)
-            request.joins('LEFT OUTER JOIN "routes" ON "routes"."id" = "vehicle_journeys"."route_id"') \
-                   .joins('LEFT OUTER JOIN "public"."lines" ON "public"."lines"."id" = "routes"."line_id"')
-          else
-            request
-          end
+        def include_association(request, association)
+          return request if @included_associations.include?(association)
+          return request unless models.klass.reflections.key?(association)
+
+          @included_associations << association
+          request.left_joins(association.to_sym)
         end
 
-        def select_line_registration_number(request)
-          if @lines_included
-            request.select('lines.registration_number AS line_registration_number')
-          else
-            request.select('NULL AS line_registration_number')
-          end
-        end
+        def include_and_select_association_code(request, association, code_space_short_name) # rubocop:disable Metrics/MethodLength,Metrics/AbcSize
+          return request if @included_codes[association].include?(code_space_short_name)
 
-        def include_and_select_line_code(request, code_space_short_name) # rubocop:disable Metrics/MethodLength
-          if @lines_included
-            @included_line_codes ||= Set.new
-            return request if @included_line_codes.include?(code_space_short_name)
+          @included_codes[association] << code_space_short_name
 
-            quoted_table_name = ActiveRecord::Base.connection.quote_table_name("line_codes_#{code_space_short_name}")
+          if @included_associations.include?(association)
+            codes_quoted_table_name = ActiveRecord::Base.connection.quote_table_name(
+              "#{association}_codes_#{code_space_short_name}"
+            )
             code_space_id = code_space_by_short_name(code_space_short_name)&.id
-
-            @included_line_codes << code_space_short_name
           end
 
+          as = "#{association}_code_#{code_space_short_name}"
           if code_space_id
-            request.joins("LEFT OUTER JOIN \"public\".codes #{quoted_table_name} ON #{quoted_table_name}.resource_type = 'Chouette::Line' AND #{quoted_table_name}.resource_id = lines.id AND #{quoted_table_name}.code_space_id = #{code_space_id}") \
-                   .select("#{quoted_table_name}.value AS line_code_#{code_space_short_name}")
+            klass_name = models.klass.reflections[association].klass.name
+            request.joins("LEFT OUTER JOIN \"public\".codes #{codes_quoted_table_name} ON #{codes_quoted_table_name}.resource_type = '#{klass_name}' AND #{codes_quoted_table_name}.resource_id = #{association_quoted_table_name(association)}.id AND #{codes_quoted_table_name}.code_space_id = #{code_space_id}") # rubocop:disable Layout/LineLength
+                   .select("#{codes_quoted_table_name}.value AS #{as}")
           else
-            request.select("NULL AS line_code_#{code_space_short_name}")
+            request.select("NULL AS #{as}")
           end
+        end
+
+        def select_association_registration_number(request, association)
+          as = "#{association}_registration_number"
+          if @included_associations.include?(association)
+            request.select("#{association_quoted_table_name(association)}.registration_number AS #{as}")
+          else
+            request.select("NULL AS #{as}")
+          end
+        end
+
+        def association_quoted_table_name(association)
+          models.klass.reflections[association].klass.quoted_table_name
         end
       end
 
-      CODE_SPACE_REGEXP = /%{line.code(?::([^}]*))?}/.freeze
+      CODE_SPACE_REGEXPS = {
+        'line' => /%{line.code(?::([^}]*))?}/,
+        'shape' => /%{shape.code:([^}]*)}/
+      }.freeze
     end
   end
 end

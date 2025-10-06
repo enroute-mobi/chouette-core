@@ -54,14 +54,6 @@ class ReferentialsController < Chouette::WorkbenchController
           current_organisation: current_organisation
         }
       )
-
-      format.json {
-        render :json => { :lines_count => resource.lines.count,
-               :networks_count => resource.networks.count,
-               :vehicle_journeys_count => resource.vehicle_journeys.count + resource.vehicle_journey_frequencies.count,
-               :time_tables_count => resource.time_tables.count,
-               :referential_id => resource.id}
-      }
     end
   end
 

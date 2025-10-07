@@ -2,13 +2,13 @@
 import { Circle, Fill, Icon, Stroke, Style } from 'ol/style'
 
 // Import des icônes SVG
-import stopAreaIcon from 'images/icons/map_stop_area.svg'
-import parentIcon from 'images/icons/map_parent.svg'
-import childrenIcon from 'images/icons/map_children.svg'
-import siblingsIcon from 'images/icons/map_siblings.svg'
-import referentIcon from 'images/icons/map_referent.svg'
-import particularsIcon from 'images/icons/map_particulars.svg'
-import otherParticularsIcon from 'images/icons/map_other_particulars.svg'
+import stopAreaIcon from 'images/map/map_stop_area.svg'
+import parentIcon from 'images/map/map_parent.svg'
+import childrenIcon from 'images/map/map_children.svg'
+import siblingsIcon from 'images/map/map_siblings.svg'
+import referentIcon from 'images/map/map_referent.svg'
+import particularsIcon from 'images/map/map_particulars.svg'
+import otherParticularsIcon from 'images/map/map_other_particulars.svg'
 
 // Fonction utilitaire pour créer un style d'icône
 const createIconStyle = (src) => {

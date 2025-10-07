@@ -63,6 +63,22 @@ describe Chouette::Line, type: :model do
 
       it { is_expected.to eq '#bus' }
     end
+
+    context 'when chouette_transport_mode is defined with a faulty value' do
+      before do
+        line.chouette_transport_mode = Chouette::TransportMode.new(:self_drive)
+      end
+
+      it { expect(line.valid?).to be false }
+    end
+
+    context 'when chouette_transport_mode is defined with a valid value' do
+      before do
+        line.chouette_transport_mode = Chouette::TransportMode.new(:bus)
+      end
+
+      it { expect(line.valid?).to be true }
+    end
   end
 
   describe 'active scopes' do

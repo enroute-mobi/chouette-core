@@ -58,6 +58,12 @@ class StopAreasController < Chouette::StopAreaReferentialController
       end
 
       @stop_area = @stop_area.decorate(context: { workbench: workbench })
+      @connection_links = ConnectionLinkDecorator.decorate(
+        @stop_area.connection_links.limit(4),
+        context: {
+          workbench: workbench
+        }
+      )
     end
   end
 

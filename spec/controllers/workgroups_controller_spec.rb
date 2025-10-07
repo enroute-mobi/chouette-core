@@ -40,4 +40,22 @@ RSpec.describe WorkgroupsController, type: :controller do
       end
     end
   end
+
+  describe 'PUT #setup_deletion' do
+    subject(:request) { put :setup_deletion, params: { id: workgroup } }
+
+    it { is_expected.to redirect_to(workgroup_path(workgroup)) }
+
+    it { expect { subject }.to change { workgroup.reload.deleted_at }.from(be_nil).to(be_present) }
+  end
+
+  describe 'PUT #remove_deletion' do
+    subject(:request) { put :remove_deletion, params: { id: workgroup } }
+
+    before { workgroup.setup_deletion! }
+
+    it { is_expected.to redirect_to(workgroup_path(workgroup)) }
+
+    it { expect { subject }.to change { workgroup.reload.deleted_at }.from(be_present).to(be_nil) }
+  end
 end

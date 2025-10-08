@@ -499,47 +499,6 @@ RSpec.describe Search::Base, type: :model do
   end
 end
 
-RSpec.describe Search::Base::FromParamsBuilder do
-  describe '.attributes' do
-    subject { Search::Base::FromParamsBuilder.new(params).attributes }
-
-    context 'when given params are nil' do
-      let(:params) { nil }
-      it { is_expected.to eq({}) }
-    end
-
-    context "when (legacy) 'sort' param is defined (like sort=name)" do
-      let(:params) { { sort: 'name' } }
-      it { is_expected.to eq(order: { name: :asc }) }
-    end
-
-    context "when (legacy) 'direction' param is defined (like sort=name & direction=desc)" do
-      let(:params) { { sort: 'name', direction: 'desc' } }
-      it { is_expected.to eq(order: { name: :desc }) }
-    end
-
-    context "when (legacy) 'sort' param is defined and search[order][<attribute>] is defined too" do
-      let(:params) { { sort: 'name', search: { order: { other: :desc } } } }
-      it { is_expected.to eq(order: { name: :asc }) }
-    end
-
-    context "when (legacy) 'per_page' param is defined (like per_page=10)" do
-      let(:params) { { per_page: '10' } }
-      it { is_expected.to eq({ per_page: '10' }) }
-    end
-
-    context "when (legacy) 'page' param is defined (like page=2)" do
-      let(:params) { { page: '2' } }
-      it { is_expected.to eq({ page: '2' }) }
-    end
-
-    context 'when search[text] param is defined' do
-      let(:params) { { search: { text: 'dummy' } } }
-      it { is_expected.to eq({ text: 'dummy' }) }
-    end
-  end
-end
-
 RSpec.describe Search::Base::Chart do
   class self::Chart < Search::Base::Chart # rubocop:disable Lint/ConstantDefinitionInBlock,Style/ClassAndModuleChildren
     group_by_attribute 'some_attribute', :string

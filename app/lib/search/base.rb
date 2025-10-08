@@ -75,19 +75,6 @@ module Search
         end
       end
 
-      def attributes_from_params(params, **options)
-        FromParamsBuilder.new(params, **options).attributes
-      end
-
-      def from_params(params, attributes = {})
-        Rails.logger.debug "[Search] Raw params: #{params.inspect}"
-
-        new(attributes).tap do |search|
-          search.attributes = attributes_from_params(params, param_key: attributes[:param_key])
-          Rails.logger.debug "[Search] #{search.inspect}"
-        end
-      end
-
       class Period
         def initialize(name, from, to, **options)
           @name = name
@@ -143,54 +130,6 @@ module Search
         end
       else
         old_model_name
-      end
-    end
-
-    # Create Search attributes from our legacy Controller params (:sort, :direction, :page, etc)
-    class FromParamsBuilder
-      def initialize(params = nil, **options)
-        @params = params || {}
-        @options = options
-      end
-      attr_reader :params, :options
-
-      def attributes
-        {}.tap do |attributes|
-          attributes.merge! search_params
-
-          attributes[:order] = { sort_attribute => sort_direction } if sort_attribute
-          attributes[:page] = page
-          attributes[:per_page] = per_page
-
-          attributes.delete_if { |_, v| v.blank? }
-        end
-      end
-
-      # TODO: :page, :per_page, :sort, :direction and :order should also consider a namespace
-      def param_key
-        options[:param_key] || :search
-      end
-
-      def page
-        params[:page]
-      end
-
-      def per_page
-        params[:per_page]
-      end
-
-      def sort_attribute
-        params[:sort]&.to_sym
-      end
-
-      def sort_direction
-        params[:direction]&.to_sym || :asc
-      end
-
-      def search_params
-        (params[param_key] || {}).tap do |search_params|
-          search_params.try(:permit!)
-        end
       end
     end
 

@@ -2,6 +2,17 @@
 
 RSpec.describe Export::Ara do
   describe 'a whole export' do
+    subject(:export) do
+      Export::Ara.create!(
+        workbench: context.workbench,
+        workgroup: context.workgroup,
+        referential: context.referential,
+        name: 'Test',
+        creator: 'test',
+        setup: { scope_setup: { type: 'Export::Setup::Scope::Referential' }, include_stop_visits: include_stop_visits }
+      )
+    end
+
     let(:context) do
       Chouette.create do
         organisation :owner, features: %w[export_ara_stop_visits]
@@ -12,21 +23,13 @@ RSpec.describe Export::Ara do
       end
     end
 
+    before do
+      export.export
+      export.reload
+    end
+
     describe 'export with include_stop_visits sets to true' do
-      subject(:export) do
-        Export::Ara.create! workbench: context.workbench,
-                            workgroup: context.workgroup,
-                            referential: context.referential,
-                            name: 'Test',
-                            creator: 'test',
-                            options: {include_stop_visits: true}
-
-      end
-
-      before do
-        export.export
-        export.reload
-      end
+      let(:include_stop_visits) { true }
 
       it { is_expected.to be_successful }
 
@@ -52,20 +55,7 @@ RSpec.describe Export::Ara do
     end
 
     describe 'export with include_stop_visits sets to false' do
-      subject(:export) do
-        Export::Ara.create! workbench: context.workbench,
-                            workgroup: context.workgroup,
-                            referential: context.referential,
-                            name: 'Test',
-                            creator: 'test',
-                            options: {include_stop_visits: false}
-
-      end
-
-      before do
-        export.export
-        export.reload
-      end
+      let(:include_stop_visits) { false }
 
       it { is_expected.to be_successful }
 

@@ -36,8 +36,6 @@ fr:
       unassociate:
         notice: Le Fournisseur de tarification a été dissocié de la ligne avec succès
         error: Le Fournisseur de tarification n'a pas pu être dissocié de la ligne
-  activemodel:
-    attributes:
   activerecord:
     models:
       fare/provider:

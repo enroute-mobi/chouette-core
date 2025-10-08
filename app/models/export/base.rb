@@ -11,7 +11,6 @@ class Export::Base < ApplicationModel
     end
   end
 
-  include OptionsSupport
   include NotifiableSupport
   include PurgeableResource
   include Rails.application.routes.url_helpers
@@ -39,16 +38,7 @@ class Export::Base < ApplicationModel
   enumerize :status, in: %w(new pending successful warning failed running aborted canceled), scope: true, default: :new
   mount_uploader :file, ImportUploader
 
-  option :line_ids, serialize: :map_ids
-  option :company_ids, serialize: :map_ids
-  option :line_provider_ids, serialize: :map_ids
-  option :exported_lines, default_value: 'all_line_ids',
-                          enumerize: %w[line_ids company_ids line_provider_ids all_line_ids]
-  option :duration
-
-  def period
-    nil
-  end
+  validates :setup, store_model: true
 
   attr_accessor :cache_prefix
 
@@ -122,7 +112,6 @@ class Export::Base < ApplicationModel
   validates :type, presence: true, inclusion: { in: proc { |e|
                                                       e.workgroup&.export_types || ::Workgroup::DEFAULT_EXPORT_TYPES
                                                     } }
-  validates :options, export_options: true
   validates :name, presence: true
   validates_presence_of :creator
   validates_integrity_of :file
@@ -140,16 +129,6 @@ class Export::Base < ApplicationModel
       export.update(remove_file: true)
     end
     workbench.exports.purgeable.destroy_all
-  end
-
-  before_save :resolve_line_ids
-  def resolve_line_ids
-    return unless respond_to?(:line_ids) # To delete when java export is disabled
-    return unless line_ids.nil? # Useless to update line_ids if line_ids exists
-
-    options = Export::Scope::Options.new(referential, date_range: date_range, line_ids: line_ids,
-                                                      line_provider_ids: line_provider_ids, company_ids: company_ids)
-    self.line_ids = options.line_ids
   end
 
   scope :not_used_by_publication_apis, lambda {
@@ -199,21 +178,17 @@ class Export::Base < ApplicationModel
   end
 
   def code_space
-    return nil unless workgroup && exported_code_space
+    return nil unless workgroup && setup&.code_space_id
 
-    @code_space ||= workgroup.code_spaces.find_by(id: exported_code_space)
+    @code_space ||= workgroup.code_spaces.find_by(id: setup.code_space_id)
   end
 
   def public_code_space
     @public_code_space ||= workgroup.code_spaces.public if workgroup
   end
 
-  def export_scope_options
-    { date_range: date_range, line_ids: line_ids, export_id: id }
-  end
-
   def build_export_scope
-    Export::Scope.build(referential, **export_scope_options)
+    Export::Scope.build(referential, setup, id)
   end
 
   def export_scope
@@ -229,7 +204,7 @@ class Export::Base < ApplicationModel
   end
 
   def human_name
-    self.class.human_name(options)
+    self.class.human_name
   end
   alias human_type human_name
 

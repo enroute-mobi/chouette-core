@@ -2,35 +2,7 @@
 
 module Export
   class Gtfs < Export::Base
-    option :period, default_value: 'all_periods', enumerize: %w[all_periods only_next_days static_day_period]
-    option :from, serialize: ActiveModel::Type::Date
-    option :to, serialize: ActiveModel::Type::Date
-    option :exported_code_space
-    option :prefer_referent_stop_area, required: true, default_value: false, enumerize: [true, false],
-                                       serialize: ActiveModel::Type::Boolean
-    option :prefer_referent_line, required: true, default_value: false, enumerize: [true, false],
-                                  serialize: ActiveModel::Type::Boolean
-    option :prefer_referent_company, required: true, default_value: false, enumerize: [true, false],
-                                     serialize: ActiveModel::Type::Boolean
-    option :ignore_parent_stop_places, required: true, default_value: false, enumerize: [true, false],
-                                       serialize: ActiveModel::Type::Boolean
-    option :ignore_extended_gtfs_route_types, required: true, default_value: false, enumerize: [true, false],
-                                              serialize: ActiveModel::Type::Boolean
-    option  :stop_sequence_from_one, required: true, default_value: false, enumerize: [true, false],
-                                                     serialize: ActiveModel::Type::Boolean
-    # TODO: No longer used by present in database. Remove me
-    option :ignore_single_stop_station, required: false, default_value: false, enumerize: [true, false], serialize: ActiveModel::Type::Boolean
-
-    validate :ensure_is_valid_period
-
-    def ensure_is_valid_period
-      return unless period == 'static_day_period'
-
-      return unless from.blank? || to.blank? || from > to
-
-      errors.add(:from, :invalid)
-      errors.add(:to, :invalid)
-    end
+    attribute :setup, Export::Setup::Gtfs.to_type
 
     DEFAULT_AGENCY_ID = 'chouette_default'
     DEFAULT_TIMEZONE = 'Etc/UTC'
@@ -92,8 +64,9 @@ module Export
       Companies.new(self).perform
     end
 
-    alias ignore_parent_stop_places? ignore_parent_stop_places
-    alias stop_sequence_from_one? stop_sequence_from_one
+    def prefer_referent_companies?
+      setup.scope_setup.lines.prefer_referent_companies
+    end
 
     def index
       @index ||= Index.new
@@ -187,12 +160,12 @@ module Export
             end
         end
 
-        def ignore_parent_stop_places?
-          export.ignore_parent_stop_places
+        def ignore_parent_stop_areas?
+          export.setup.scope_setup.stop_areas.ignore_parent_stop_areas
         end
 
         def prefer_referent_stop_areas?
-          export.prefer_referent_stop_area
+          export.setup.scope_setup.stop_areas.prefer_referent_stop_areas
         end
 
         def referenced_stop_areas
@@ -220,7 +193,7 @@ module Export
         end
 
         def scoped_stop_areas
-          if ignore_parent_stop_places?
+          if ignore_parent_stop_areas?
             current_scope.stop_areas
           else
             current_scope.stop_areas.self_and_parents
@@ -238,7 +211,7 @@ module Export
         end
 
         def prefer_referent_lines?
-          export.prefer_referent_line
+          export.setup.scope_setup.lines.prefer_referent_lines
         end
 
         def referenced_lines
@@ -266,16 +239,14 @@ module Export
       end
 
       concerning :Companies do
+        delegate :prefer_referent_companies?, to: :export
+
         def companies
           if prefer_referent_companies?
             scoped_companies.referents_or_self
           else
             scoped_companies
           end
-        end
-
-        def prefer_referent_companies?
-          export.prefer_referent_company
         end
 
         def referenced_companies
@@ -338,7 +309,7 @@ module Export
           return nil unless company_id
 
           company = line_referential.companies.find(company_id)
-          company = company.referent if prefer_referent_company && company.referent
+          company = company.referent if prefer_referent_companies? && company.referent
           company
         end
     end
@@ -514,18 +485,18 @@ module Export
         end
       end
 
-      def ignore_extended_gtfs_route_types?
-        export.ignore_extended_gtfs_route_types
+      def ignore_extended_route_types?
+        export.setup.ignore_extended_route_types
       end
 
       def decorator_attributes
         super.merge(
-          ignore_extended_gtfs_route_types: ignore_extended_gtfs_route_types?
+          ignore_extended_route_types: ignore_extended_route_types?
         )
       end
 
       class Decorator < ModelDecorator
-        attr_accessor :ignore_extended_gtfs_route_types
+        attr_accessor :ignore_extended_route_types
 
         def route_long_name
           value = published_name.presence || name
@@ -572,11 +543,11 @@ module Export
         end
 
         def route_type_mapper
-          ignore_extended_gtfs_route_types ? self.class.base_route_type_mapper : self.class.extended_route_type_mapper
+          ignore_extended_route_types ? self.class.base_route_type_mapper : self.class.extended_route_type_mapper
         end
 
         def route_type
-          return 715 if flexible_service? && !ignore_extended_gtfs_route_types
+          return 715 if flexible_service? && !ignore_extended_route_types
 
           route_type_mapper.for chouette_transport_mode
         end
@@ -1030,7 +1001,7 @@ module Export
       def decorator_attributes
         super.merge(
           default_timezone: default_timezone,
-          stop_sequence_from_one: export.stop_sequence_from_one?
+          stop_sequence_from_one: export.setup.stop_sequence_from_one
         )
       end
 

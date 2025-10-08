@@ -1,0 +1,53 @@
+fr:
+  activemodel:
+    attributes:
+      export/setup/scope/period_selector/duration:
+        day_count: "Durée"
+      export/setup/scope/period_selector/static:
+        from: "De"
+        to: "Vers"
+      export/setup/scope/stop_areas/scheduled:
+        prefer_referent_stop_areas: "Préférer les arrêts Référents"
+        ignore_parent_stop_areas: "Ignorer les arrêts Parents"
+        ignore_referent_stop_areas: "Ignorer les zones d'arrêt référentes"
+      export/setup/scope/lines/scheduled:
+        prefer_referent_lines: "Préférer les lignes Référentes"
+        prefer_referent_companies: "Préférer les transporteurs Référents"
+      export/setup/scope/vehicle_journeys:
+        included_lines: "Lignes exportées"
+        period: "Période exportée"
+      export/setup/base:
+        code_space_id: "Espace de Code exporté"
+      export/setup/ara:
+        include_stop_visits: "Inclure les Passages aux Arrêts"
+      export/setup/gtfs:
+        ignore_extended_route_types: "Ignorer les types de route étendus"
+        stop_sequence_from_one: "Utiliser la séquence d’arrêt à partir de 1"
+      export/setup/netex:
+        profile: "Profil"
+        profile_options: "Paramètres du profil Netex"
+        participant_ref: "Netex Participant Ref"
+        skip_line_resources: "Ignorer les ressources de lignes"
+        skip_stop_area_resources: "Ignorer les ressources d'arrêts"
+    models:
+      export/setup/scope/period_selector/all: "Toute la période disponible"
+      export/setup/scope/period_selector/duration: "Seulement les jours suivants"
+      export/setup/scope/period_selector/static: "Période statique"
+      export/setup/scope/line_selector/lines: "Lignes suivantes"
+      export/setup/scope/line_selector/companies: "Associées aux transporteurs"
+      export/setup/scope/line_selector/line_providers: "Associées aux fournisseurs de lignes"
+      export/setup/scope/line_selector/all: "Toutes les lignes"
+    errors:
+      export/setup/scope/period_selector/static:
+        from:
+          invalid: "période non valide"
+        to:
+          invalid: "période non valide"
+  simple_form:
+    placeholders:
+      scope_setup:
+        vehicle_journeys:
+          included_lines:
+            line_ids: "Recherche par nom de ligne"
+            company_ids: "Recherche par nom du transporteur"
+            line_provider_ids: "Recherche par nom de fournisseur de ligne"

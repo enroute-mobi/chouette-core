@@ -1,5 +1,6 @@
 - javascript_additional_packs 'exports/form'
-= simple_form_for @export, as: :export, url: workbench_exports_path(workbench), html: {class: 'tailwind-form', id: 'wb_export_form', 'x-data': "exportForm(#{@export.alpine_state(true)})" }, wrapper: :horizontal_form_tailwind do |form|
+
+= simple_form_for @export, as: :export, url: workbench_exports_path(workbench), html: {class: 'tailwind-form', id: 'wb_export_form', 'x-data': "exportForm(#{ @export.alpine_state.to_json })" }, wrapper: :horizontal_form_tailwind do |form|
 
   .row
     .col-lg-12
@@ -13,7 +14,7 @@
           label_method: :name,
           input_html: { 'x-model': 'referentialId', class: "w-full" }
 
-        = render 'exports/options', form: form, resource_type: :options, workgroup: @workbench.workgroup
+        = render 'export_setups/form', form: form, export_type_attribute: :type, export_setup_attribute: :setup, workgroup: @workbench.workgroup
 
     .col-lg-12
       = form.input :notification_target, collection: Export::Base.notification_target_options, selected: :user

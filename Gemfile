@@ -94,6 +94,7 @@ gem 'rails_semantic_logger'
 # Model
 gem 'will_paginate'
 gem 'active_attr', '>= 0.15.4'
+gem 'store_model'
 
 gem 'draper', '>= 4.0.2'
 

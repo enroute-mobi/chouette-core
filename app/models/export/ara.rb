@@ -3,8 +3,7 @@
 # Export a dataset into a Ara CSV file
 require 'ara/file'
 class Export::Ara < Export::Base
-  # :duration ignored by this export .. but required by Export::Scope builder
-  option :include_stop_visits
+  attribute :setup, Export::Setup::Ara.to_type
 
   skip_empty_exports
 
@@ -34,11 +33,9 @@ class Export::Ara < Export::Base
       end
   end
 
-  alias include_stop_visits? include_stop_visits
-
   def parts
     @parts ||= [Stops, StopAreaGroups, Lines, LineGroups, Companies, VehicleJourneys].tap do |parts|
-      parts << StopVisits if include_stop_visits?
+      parts << StopVisits if setup.include_stop_visits
     end
   end
 

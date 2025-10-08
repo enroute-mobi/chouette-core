@@ -3,8 +3,8 @@
 # Selects which models need to be included into an Export
 module Export
   module Scope
-    def self.build(referential, **options)
-      Options.new(referential, options).scope
+    def self.build(referential, setup, export_id)
+      Options.new(referential, setup, export_id).scope
     end
 
     class Builder
@@ -53,26 +53,57 @@ module Export
     end
 
     class Options
-      attr_reader :referential
-      attr_accessor :duration, :date_range, :line_ids, :line_provider_ids, :company_ids, :export_id, :stateful
+      attr_reader :referential, :setup
+      attr_accessor :export_id
 
-      def initialize(referential, attributes = {})
+      def initialize(referential, setup, export_id)
         @referential = referential
-
-        @stateful = true
-        attributes.each { |k, v| send "#{k}=", v }
+        @setup = setup
+        @export_id = export_id
       end
 
       def line_ids
-        @line_ids || companies_line_ids || line_provider_line_ids
+        case setup&.scope_setup&.vehicle_journeys&.included_lines
+        when ::Export::Setup::Scope::LineSelector::Lines
+          setup.scope_setup.vehicle_journeys.included_lines.line_ids
+        when ::Export::Setup::Scope::LineSelector::Companies
+          companies_line_ids
+        when ::Export::Setup::Scope::LineSelector::LineProviders
+          line_provider_line_ids
+        else
+          nil
+        end
       end
 
       def line_provider_line_ids
-        referential.line_referential.lines.where(line_provider: line_provider_ids).pluck(:id) if line_provider_ids
+        referential.line_referential
+                   .lines
+                   .where(line_provider: setup.scope_setup.vehicle_journeys.included_lines.line_provider_ids)
+                   .pluck(:id)
       end
 
       def companies_line_ids
-        referential.line_referential.lines.where(company: company_ids).pluck(:id) if company_ids
+        referential.line_referential
+                   .lines
+                   .where(company: setup.scope_setup.vehicle_journeys.included_lines.company_ids)
+                   .pluck(:id)
+      end
+
+      def date_range # rubocop:disable Metrics/AbcSize
+        return @date_range if defined?(@date_range)
+
+        @date_range = case setup&.scope_setup&.vehicle_journeys&.period
+                      when ::Export::Setup::Scope::PeriodSelector::Duration
+                        Time.zone.now.to_date..setup.scope_setup.vehicle_journeys.period.day_count.days.from_now.to_date
+                      when ::Export::Setup::Scope::PeriodSelector::Static
+                        setup.scope_setup.vehicle_journeys.period.from..setup.scope_setup.vehicle_journeys.period.to
+                      else
+                        nil
+                      end
+      end
+
+      def stateful
+        setup&.stateful?
       end
 
       def builder

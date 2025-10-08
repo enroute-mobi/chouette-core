@@ -85,10 +85,6 @@ class Publication < Operation
       ::Export::Base.new(export_attributes)
     end
 
-    def publication_export_options
-      publication_setup.export_options
-    end
-
     def publication_name
       "#{Publication.model_name.human} #{publication.name}"
     end
@@ -98,15 +94,20 @@ class Publication < Operation
     end
 
     def export_attributes
-      publication_export_options.merge(
+      export_setup = publication_setup.export_setup.dup
+      export_setup.scope_setup = export_setup.scope_setup.to_referential
+
+      {
+        type: publication_setup.export_type,
         referential: referential,
         name: publication_name,
         creator: publication_name,
         synchronous: true,
         workgroup: workgroup,
         publication: publication,
-        cache_prefix: cache_prefix
-      )
+        cache_prefix: cache_prefix,
+        setup: export_setup.as_json
+      }
     end
   end
 end

@@ -172,6 +172,9 @@ RSpec.describe Export::Base, type: :model do
   describe '#cache_key_provider' do
     subject { export.cache_key_provider }
 
+    let(:workgroup) { Chouette.create { workgroup }.workgroup }
+    let(:export) { Export::Base.new(workgroup: workgroup) }
+
     context 'when cache_prefix is nil' do
       before { export.cache_prefix = nil }
 

@@ -28,6 +28,7 @@ RSpec.describe ExportDecorator, type: %i[helper decorator] do
       referential: referential,
       workgroup: workgroup,
       workbench: workbench,
+      setup: { scope_setup: { type: 'Export::Setup::Scope::Referential' } },
       file: file
     )
   end

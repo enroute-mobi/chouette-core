@@ -1,17 +1,14 @@
 import Alpine from 'alpinejs'
-import { bindAll, tap } from 'lodash'
+import { bindAll, snakeCase, tap } from 'lodash'
 
 class Store {
 	constructor({
-		type = '',
-		exportedLines = 'all_line_ids',
-		period = 'all_periods',
-		referentialId = '',
-		profileOptions = null,
-		isExport = null,
-		duration = null,
-		from = null,
-		to = null
+		type,
+		exportedLines,
+		period,
+		referentialId,
+		profileOptions,
+		isExport
 	} = {}) {
 		this.type = type
 		this.exportedLines = exportedLines
@@ -19,13 +16,7 @@ class Store {
 		this.referentialId = referentialId
 		this.profileOptions = profileOptions
 		this.isExport = isExport
-		this.duration = duration
-		this.from = from
-		this.to = to
 		this.workbenchOrWorkgroupId = location.pathname.match(/(\d+)/)[0]
-		this.exportedLinesSelectURL = ''
-		this.exportType = isExport ? null : 'full'
-		this.baseName = isExport ? 'export_options' : 'publication_setup_export_options'
 
 		bindAll(this, 'getExportedLinesSelectURL', 'handleReferentialIdUpdate', 'handleProfileOptions')
 	}
@@ -38,16 +29,14 @@ class Store {
 		}))
 	}
 
-	/* Used in app/views/exports/options/_exported_lines.html.slim as x-bind:data-url
+	/* Used in app/views/export_setups/options/_exported_lines.html.slim as x-bind:data-url
 		on all exported lines related select inputs
 	*/
 	getExportedLinesSelectURL() {
-		if (this.exportedLines === 'all_line_ids') return null
+		if (this.exportedLines === 'Export::Setup::Scope::LineSelector::All') return null
 
 		let prefix
-
-		const suffixMap = new Map([['line_ids', 'lines'], ['company_ids', 'companies'], ['line_provider_ids', 'line_providers']])
-		const suffix = suffixMap.get(this.exportedLines)
+		const suffix = snakeCase(this.exportedLines.split('::')[4])
 
 		if (this.isExport) {
 			prefix = (this.exportedLines == 'line_provider_ids') ? `/workbenches/${this.workbenchOrWorkgroupId}` : `/workbenches/${this.workbenchOrWorkgroupId}/referentials/${this.referentialId}`
@@ -60,9 +49,9 @@ class Store {
 
 	// Event handlers
 	handleReferentialIdUpdate(_referentialId) {
-		if (this.exportedLines === 'all_line_ids') return
+		if (this.exportedLines === 'Export::Setup::Scope::LineSelector::All') return
 
-		tap(this.$refs.exprtedLinesSelect.tomselect, tomselect => {
+		tap(this.$refs.exportedLinesSelect.tomselect, tomselect => {
 			tomselect.clear()
 			tomselect.clearOptions()
 			tomselect.load('')

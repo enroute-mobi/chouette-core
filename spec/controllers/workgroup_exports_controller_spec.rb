@@ -32,6 +32,7 @@ RSpec.describe WorkgroupExportsController, type: :controller do
       referential: referential,
       workgroup: workgroup,
       workbench: workbench,
+      setup: { scope_setup: { type: 'Export::Setup::Scope::Referential' } },
       file: file
     )
   end

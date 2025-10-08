@@ -8,7 +8,7 @@ RSpec.describe Export::Gtfs::Lines::Decorator do
     subject { decorator.route_type }
 
     context "when extended gtfs route types aren't ignored" do
-      before { allow(decorator).to receive(:ignore_extended_gtfs_route_types).and_return(false) }
+      before { allow(decorator).to receive(:ignore_extended_route_types).and_return(false) }
 
       {
         tram: 0,
@@ -59,7 +59,7 @@ RSpec.describe Export::Gtfs::Lines::Decorator do
     end
 
     context 'when extended gtfs route types are ignored' do
-      before { allow(decorator).to receive(:ignore_extended_gtfs_route_types).and_return(true) }
+      before { allow(decorator).to receive(:ignore_extended_route_types).and_return(true) }
 
       {
         tram: 0,

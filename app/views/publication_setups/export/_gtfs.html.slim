@@ -1,8 +1,6 @@
-= simple_block_for @export, title: PublicationSetup.tmf(:export_options) do |d|
-	= d.attribute :type, value_method: :human_type
-	= d.attribute :duration
-	= d.attribute :period, value_method: :display_period
-	= d.attribute :exported_lines, value_method: :display_selected_lines_to_export
-	= d.attribute :prefer_referent_stop_area, as: :boolean
-	= d.attribute :ignore_parent_stop_places, as: :boolean
-	= d.attribute :ignore_extended_gtfs_route_types, as: :boolean
+= simple_block_for @publication_setup.export_setup, title: PublicationSetup.human_attribute_name('export_setup') do |d|
+  = d.attribute :type, label: Export::Base.human_attribute_name('type'), value: @publication_setup.export_type.constantize.human_name
+  = d.attribute :period, object: @publication_setup.export_setup.scope_setup.vehicle_journeys, value: resource.display_period
+  = d.attribute :prefer_referent_stop_areas, as: :boolean, object: @publication_setup.export_setup.scope_setup.stop_areas
+  = d.attribute :ignore_parent_stop_areas, as: :boolean, object: @publication_setup.export_setup.scope_setup.stop_areas
+  = d.attribute :ignore_extended_route_types, as: :boolean

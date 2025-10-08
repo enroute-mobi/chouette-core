@@ -1,36 +1,14 @@
 class Export::NetexGeneric < Export::Base
-  # TODO: Remove deprecated idfm/full. See @CHOUETTE-4619
-  option :profile, enumerize: %w[none french european idfm/iboo idfm/icar idfm/publication idfm/full], default: :none
-  option :from, serialize: ActiveModel::Type::Date
-  option :to, serialize: ActiveModel::Type::Date
-  option :period, default_value: 'all_periods', enumerize: %w[all_periods only_next_days static_day_period]
-  option :participant_ref, default_value: 'enRoute'
-  option :profile_options, default_value: '{}', serialize: ActiveRecord::Type::Json
-  option :prefer_referent_line, default_value: false, enumerize: [true, false], serialize: ActiveModel::Type::Boolean
-  option :ignore_referent_stop_areas, default_value: false, enumerize: [true, false], serialize: ActiveModel::Type::Boolean
-  option :skip_line_resources, default_value: false, enumerize: [true, false], serialize: ActiveModel::Type::Boolean
-  option :skip_stop_area_resources, default_value: false, enumerize: [true, false], serialize: ActiveModel::Type::Boolean
-  option :exported_code_space
-
-  validate :ensure_is_valid_period
-
-  def ensure_is_valid_period
-    return unless period == 'static_day_period'
-
-    if from.blank? || to.blank? || from > to
-      errors.add(:from, :invalid)
-      errors.add(:to, :invalid)
-    end
-  end
+  attribute :setup, Export::Setup::Netex.to_type
 
   def target
     @target ||= ::Netex::Target.build(export_file,
                                     profile: netex_profile,
                                     publication_timestamp: Time.zone.now,
-                                    participant_ref: participant_ref,
+                                    participant_ref: setup.participant_ref,
                                     validity_periods: [export_scope.validity_period],
                                     after_add: target_after_add,
-                                    profile_options: profile_options)
+                                    profile_options: setup.profile_options)
   end
   attr_writer :target
 
@@ -49,17 +27,13 @@ class Export::NetexGeneric < Export::Base
   end
 
   def profile?
-    ! [nil, 'none'].include? profile
+    ![nil, 'none'].include?(setup.profile)
   end
 
   def netex_profile
     return unless profile?
 
-    # TODO: To be remove me. See @CHOUETTE-4619
-    real_profile = profile
-    real_profile = 'idfm/publication/legacy' if profile == 'idfm/full'
-
-    @netex_profile ||= Netex::Profile.create(real_profile)
+    @netex_profile ||= Netex::Profile.create(setup.profile)
   end
 
   def content_type
@@ -90,7 +64,7 @@ class Export::NetexGeneric < Export::Base
     end
 
     def ignore_referent_stop_areas?
-      export.ignore_referent_stop_areas
+      export.setup.scope_setup.stop_areas.ignore_referent_stop_areas
     end
 
     def entrances
@@ -175,7 +149,7 @@ class Export::NetexGeneric < Export::Base
     end
 
     def prefer_referent_lines?
-      export.prefer_referent_line
+      export.setup.scope_setup.lines.prefer_referent_lines
     end
 
     def referenced_lines
@@ -201,8 +175,8 @@ class Export::NetexGeneric < Export::Base
 
   def part_classes
     [].tap do |part_classes|
-      part_classes.push(Entrances, StopAreas, FlexibleStopAreas) unless skip_stop_area_resources
-      part_classes.push(Companies, Networks, LineNotices, BookingArrangements, Lines) unless skip_line_resources
+      part_classes.push(Entrances, StopAreas, FlexibleStopAreas) unless setup.skip_stop_area_resources
+      part_classes.push(Companies, Networks, LineNotices, BookingArrangements, Lines) unless setup.skip_line_resources
 
       # Export StopPoints before Routes to detect local references
       part_classes.push(StopPoints, Routes, RoutingConstraintZones, JourneyPatterns, TimeTables, VehicleJourneyStopAssignments, Organisations, PointOfInterests)

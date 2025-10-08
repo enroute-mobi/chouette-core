@@ -1,12 +1,9 @@
 # frozen_string_literal: true
 
 class PublicationSetupsController < Chouette::WorkgroupController
-  defaults :resource_class => PublicationSetup
+  include ExportSetupControllerSupport
 
-  # rubocop:disable Rails/LexicallyScopedActionFilter
-  before_action :build_export, only: %i[new create]
-  before_action :export, only: %i[show edit update]
-  # rubocop:enable Rails/LexicallyScopedActionFilter
+  defaults :resource_class => PublicationSetup
 
   respond_to :html
 
@@ -29,15 +26,7 @@ class PublicationSetupsController < Chouette::WorkgroupController
 
   private
 
-  def build_export
-    @export = build_resource.export.decorate
-  end
-
-  def export
-    @export = resource.export.decorate
-  end
-
-  def publication_setup_params
+  def publication_setup_params # rubocop:disable Metrics/MethodLength
     destination_options = [:id, :name, :type, :_destroy, :secret_file, :publication_setup_id, :publication_api_id]
     destination_options += Destination.descendants.map do |t|
       t.options.map do |key, value|
@@ -53,13 +42,11 @@ class PublicationSetupsController < Chouette::WorkgroupController
       :enable_cache,
       :priority,
       :workgroup_id,
-      destinations_attributes: destination_options,
-      export_options: {},
+      :export_type,
+      export_setup: {},
+      destinations_attributes: destination_options
     ).tap do |publication_setup_params|
-      if params[:export] && params[:export][:options] && publication_setup_params[:export_options][:type] == "Export::NetexGeneric"
-        publication_setup_params[:export_options][:profile_options] =
-          Hash[params[:export][:options][:profile_options].values.map{ |v| [v['key'], v['value']] }].to_json
-      end
+      parse_export_setup_netex_profile_options!(publication_setup_params, :export_type, :export_setup)
     end
   end
 

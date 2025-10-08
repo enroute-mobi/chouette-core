@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 class ExportsController < Chouette::WorkbenchController
+  include ExportSetupControllerSupport
   include Downloadable
 
   defaults resource_class: Export::Base, collection_name: 'exports', instance_name: 'export'
@@ -71,14 +72,18 @@ class ExportsController < Chouette::WorkbenchController
     @collection ||= search.search(scope)
   end
 
-  def export_params
-    params.require(:export).permit(:name, :type, :referential_id, :notification_target, options: {}).tap do |export_params|
+  def export_params # rubocop:disable Metrics/MethodLength
+    params.require(:export).permit(
+      :name,
+      :type,
+      :referential_id,
+      :notification_target,
+      setup: {}
+    ).tap do |export_params|
       export_params[:workbench_id] = workbench.id
       export_params[:creator] = current_user.name
       export_params[:user_id] = current_user.id
-      if export_params[:options] && export_params[:options][:profile_options] && export_params[:type] == "Export::NetexGeneric"
-        export_params[:options][:profile_options] = Hash[export_params[:options][:profile_options].values.map{ |v| [v['key'], v['value']] }].to_json
-      end
+      parse_export_setup_netex_profile_options!(export_params, :type, :setup)
     end
   end
 

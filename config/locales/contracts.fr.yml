@@ -29,11 +29,6 @@ fr:
         notice: Le Contrat a été dissocié de la ligne avec succès
         error: Le Contrat n'a pas pu être dissocié de la ligne
     no_codes: "Ce Contrat n'a pas de codes"
-  activemodel:
-    attributes:
-      period:
-        from: Valide à partir de
-        to: Valide jusqu'au
   activerecord:
     models:
       contract:

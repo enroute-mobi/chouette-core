@@ -38,11 +38,14 @@ RSpec.describe Destination::Icar, type: :model do
         referential: referential,
         workgroup: workgroup,
         workbench: workbench,
-        profile: 'idfm/icar',
-        profile_options: {
-          'site_id' => '42',
-          'site_name' => 'RDMANTOIS',
-          'file_type' => 'total'
+        setup: {
+          scope_setup: { type: 'Export::Setup::Scope::Referential' },
+          profile: 'idfm/icar',
+          profile_options: {
+            'site_id' => '42',
+            'site_name' => 'RDMANTOIS',
+            'file_type' => 'total'
+          }
         },
         file: export_file
       )

@@ -51,7 +51,7 @@ RSpec.describe User, :type => :model do
 
     context "opeations that belong to user" do
       let!(:import) { create :import,  user: user}
-      let!(:export) { create :export, user: user, type: 'Export::Gtfs' }
+      let!(:export) { create :gtfs_export, user: user }
       let(:workbench) { create :workbench, organisation: user.organisation }
       let(:ref1) {create :referential, workbench: workbench, organisation: user.organisation}
       let(:ref2) {create :referential, workbench: workbench, organisation: user.organisation}

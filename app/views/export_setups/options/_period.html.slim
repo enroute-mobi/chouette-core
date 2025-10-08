@@ -1,0 +1,15 @@
+= form.simple_fields_for(:scope_setup, form.object.scope_setup) do |scope_setup_form|
+  = scope_setup_form.simple_fields_for(:vehicle_journeys, scope_setup_form.object.vehicle_journeys) do |vehicle_journeys_form|
+    = vehicle_journeys_form.simple_fields_for(:period, vehicle_journeys_form.object.period) do |period_form|
+      = period_form.input :type, label: vehicle_journeys_form.object.class.human_attribute_name('period'), as: :radio_buttons, collection: [Export::Setup::Scope::PeriodSelector::All, Export::Setup::Scope::PeriodSelector::Duration, Export::Setup::Scope::PeriodSelector::Static].map { |k| [k.model_name.human, k.name] }, required: true, wrapper: :vertical_radio_and_checkboxes_tailwind, input_html: { 'x-model': 'period' }
+
+    div[x-bind:class="{ 'opacity-50': period != 'Export::Setup::Scope::PeriodSelector::Duration' }" ]
+      - duration_period = vehicle_journeys_form.object.period.becomes(Export::Setup::Scope::PeriodSelector::Duration)
+      = vehicle_journeys_form.simple_fields_for(:period, duration_period) do |duration_period_form|
+        = duration_period_form.input :day_count, legend_tag: false, input_html: { 'x-bind:disabled': "period != 'Export::Setup::Scope::PeriodSelector::Duration'" }
+
+    div[x-bind:class="{ 'opacity-50': period != 'Export::Setup::Scope::PeriodSelector::Static' }" ]
+      - static_period = vehicle_journeys_form.object.period.becomes(Export::Setup::Scope::PeriodSelector::Static)
+      = vehicle_journeys_form.simple_fields_for(:period, static_period) do |static_period_form|
+        = static_period_form.input :from, as: :date_picker, input_html: { 'x-bind:disabled': "period != 'Export::Setup::Scope::PeriodSelector::Static'" }
+        = static_period_form.input :to, as: :date_picker, input_html: { 'x-bind:disabled': "period != 'Export::Setup::Scope::PeriodSelector::Static'" }

@@ -11,12 +11,12 @@ RSpec.describe Export::NetexGeneric do
     subject { export.content_type }
 
     context 'when a profile is selected' do
-      let(:export) { Export::NetexGeneric.new profile: 'european' }
+      let(:export) { Export::NetexGeneric.new(setup: { profile: 'european' }) }
       it { is_expected.to eq('application/zip') }
     end
 
     context 'when no profile is selected' do
-      let(:export) { Export::NetexGeneric.new profile: 'none' }
+      let(:export) { Export::NetexGeneric.new(setup: { profile: 'none' }) }
       it { is_expected.to eq('text/xml') }
     end
   end
@@ -25,12 +25,12 @@ RSpec.describe Export::NetexGeneric do
     subject { export.file_extension }
 
     context 'when a profile is selected' do
-      let(:export) { Export::NetexGeneric.new profile: 'european' }
+      let(:export) { Export::NetexGeneric.new(setup: { profile: 'european' }) }
       it { is_expected.to eq('zip') }
     end
 
     context 'when no profile is selected' do
-      let(:export) { Export::NetexGeneric.new profile: 'none' }
+      let(:export) { Export::NetexGeneric.new(setup: { profile: 'none' }) }
       it { is_expected.to eq('xml') }
     end
   end
@@ -49,32 +49,23 @@ RSpec.describe Export::NetexGeneric do
     subject { export.netex_profile }
 
     context 'when a profile is selected' do
-      let(:export) { Export::NetexGeneric.new profile: 'european' }
+      let(:export) { Export::NetexGeneric.new(setup: { profile: 'european' }) }
       it { is_expected.to be_instance_of(Netex::Profile::European) }
     end
 
-    context 'when profile "idm/full" is selected (legacy value)' do
-      let(:export) { Export::NetexGeneric.new profile: 'idfm/full' }
+    context 'when profile "idfm/publication/legacy" is selected' do
+      let(:export) { Export::NetexGeneric.new(setup: { profile: 'idfm/publication/legacy' }) }
       it { is_expected.to be_instance_of(Netex::Profile::IDFM::Publication::Legacy) }
     end
 
     context 'when profile "idm/publication" is selected' do
-      let(:export) { Export::NetexGeneric.new profile: 'idfm/publication' }
+      let(:export) { Export::NetexGeneric.new(setup: { profile: 'idfm/publication' }) }
       it { is_expected.to be_instance_of(Netex::Profile::IDFM::Publication) }
     end
 
     context 'when no profile is selected' do
-      let(:export) { Export::NetexGeneric.new profile: 'none' }
+      let(:export) { Export::NetexGeneric.new(setup: { profile: 'none' }) }
       it { is_expected.to be_nil }
-    end
-  end
-
-  describe '#participant_ref' do
-    subject { export.participant_ref }
-
-    context 'by default' do
-      let(:export) { Export::NetexGeneric.new }
-      it { is_expected.to eq('enRoute') }
     end
   end
 
@@ -226,7 +217,13 @@ RSpec.describe Export::NetexGeneric do
         # Creates a fake scope which only contains an initial StopArea
         double 'Export::Scope', stop_areas: context.referential.stop_areas.where(id: stop_area)
       end
-      let(:export) { Export::NetexGeneric.new export_scope: original_export_scope, workgroup: context.workgroup }
+      let(:export) do
+        Export::NetexGeneric.new(
+          export_scope: original_export_scope,
+          workgroup: context.workgroup,
+          setup: { scope_setup: { type: 'Export::Setup::Scope::Referential' } }
+        )
+      end
 
       subject { export.export_scope.stop_areas }
 
@@ -675,7 +672,14 @@ RSpec.describe Export::NetexGeneric do
   describe 'Routes export' do
     let(:target) { MockNetexTarget.new }
     let(:export_scope) { Export::Scope::All.new context.referential }
-    let(:export) { Export::NetexGeneric.new export_scope: export_scope, target: target, workgroup: context.workgroup }
+    let(:export) do
+      Export::NetexGeneric.new(
+        export_scope: export_scope,
+        target: target,
+        workgroup: context.workgroup,
+        setup: { scope_setup: { type: 'Export::Setup::Scope::Referential' } }
+      )
+    end
 
     let(:part) do
       Export::NetexGeneric::Routes.new export
@@ -1107,9 +1111,12 @@ RSpec.describe Export::NetexGeneric do
     let(:target) { MockNetexTarget.new }
     let(:export_scope) { Export::Scope::All.new context.referential }
     let(:export) do
-      Export::NetexGeneric.new export_scope: export_scope,
-                               target: target,
-                               workgroup: context.workgroup
+      Export::NetexGeneric.new(
+        export_scope: export_scope,
+        target: target,
+        workgroup: context.workgroup,
+        setup: { scope_setup: { type: 'Export::Setup::Scope::Referential' } }
+      )
     end
 
     let(:part) do
@@ -1311,7 +1318,14 @@ RSpec.describe Export::NetexGeneric do
   describe 'StopPoints export' do
     let(:target) { MockNetexTarget.new }
     let(:export_scope) { Export::Scope::All.new context.referential }
-    let(:export) { Export::NetexGeneric.new export_scope: export_scope, target: target, workgroup: context.workgroup }
+    let(:export) do
+      Export::NetexGeneric.new(
+        export_scope: export_scope,
+        target: target,
+        workgroup: context.workgroup,
+        setup: { scope_setup: { type: 'Export::Setup::Scope::Referential' } }
+      )
+    end
 
     let(:part) do
       Export::NetexGeneric::StopPoints.new export
@@ -1345,7 +1359,14 @@ RSpec.describe Export::NetexGeneric do
   describe 'JourneyPatterns export' do
     let(:target) { MockNetexTarget.new }
     let(:export_scope) { Export::Scope::All.new context.referential }
-    let(:export) { Export::NetexGeneric.new export_scope: export_scope, target: target, workgroup: context.workgroup }
+    let(:export) do
+      Export::NetexGeneric.new(
+        export_scope: export_scope,
+        target: target,
+        workgroup: context.workgroup,
+        setup: { scope_setup: { type: 'Export::Setup::Scope::Referential' } }
+      )
+    end
 
     let(:part) do
       Export::NetexGeneric::JourneyPatterns.new export
@@ -1403,7 +1424,14 @@ RSpec.describe Export::NetexGeneric do
   describe 'VehicleJourneyStopAssignments export' do
     let(:target) { MockNetexTarget.new }
     let(:export_scope) { Export::Scope::All.new context.referential }
-    let(:export) { Export::NetexGeneric.new export_scope: export_scope, target: target, workgroup: context.workgroup }
+    let(:export) do
+      Export::NetexGeneric.new(
+        export_scope: export_scope,
+        target: target,
+        workgroup: context.workgroup,
+        setup: { scope_setup: { type: 'Export::Setup::Scope::Referential' } }
+      )
+    end
 
     let(:part) do
       Export::NetexGeneric::VehicleJourneyStopAssignments.new export
@@ -1515,9 +1543,16 @@ RSpec.describe Export::NetexGeneric do
   describe 'VehicleJourneys export' do
     let(:target) { MockNetexTarget.new }
     let(:export_scope) do
-      Export::Scope.build referential
+      Export::Scope::Builder.new(referential).scope
     end
-    let(:export) { Export::NetexGeneric.new export_scope: export_scope, target: target, workgroup: context.workgroup }
+    let(:export) do
+      Export::NetexGeneric.new(
+        export_scope: export_scope,
+        target: target,
+        workgroup: context.workgroup,
+        setup: { scope_setup: { type: 'Export::Setup::Scope::Referential' } }
+      )
+    end
 
     let(:part) do
       Export::NetexGeneric::VehicleJourneys.new export
@@ -1553,7 +1588,9 @@ RSpec.describe Export::NetexGeneric do
 
     describe Export::NetexGeneric::VehicleJourneys do
       let(:export_scope) do
-        Export::Scope.build double(vehicle_journeys: referential.vehicle_journeys, time_tables: selected_time_tables)
+        Export::Scope::Builder.new(
+          double(vehicle_journeys: referential.vehicle_journeys, time_tables: selected_time_tables)
+        ).scope
       end
       subject(:scoped_vehicle_journeys) { described_class.new(export).vehicle_journeys }
 

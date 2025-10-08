@@ -1,16 +1,35 @@
 # frozen_string_literal: true
 
-RSpec.describe Export::Gtfs, type: %i[model with_exportable_referential] do
-  let(:gtfs_export) do
-    create :gtfs_export, referential: exported_referential, workbench: workbench, duration: 5,
-                         prefer_referent_stop_area: true, prefer_referent_company: true
+RSpec.describe Export::Gtfs, type: :model do
+  let(:context) do
+    Chouette.create do
+      workgroup
+    end
+  end
+  let(:referential) { nil }
+  let(:prefer_referent_companies) { true }
+  let(:export_scope) { nil }
+  let(:export) do
+    Export::Gtfs.new(
+      name: 'Export GTFS',
+      creator: 'Rspec',
+      workgroup: context.workgroup,
+      referential: referential,
+      setup: {
+        scope_setup: {
+          type: 'Export::Setup::Scope::Referential',
+          lines: {
+            type: 'Export::Setup::Scope::Lines::Scheduled',
+            prefer_referent_companies: prefer_referent_companies
+          }
+        }
+      },
+      export_scope: export_scope
+    )
   end
 
   describe '#default_company' do
     subject { export.default_company }
-
-    # TODO: Should be provided by top describe
-    let(:export) { Export::Gtfs.new export_scope: export_scope, workgroup: context.workgroup }
 
     let(:export_scope) { double lines: context.line_referential.lines }
 
@@ -57,13 +76,12 @@ RSpec.describe Export::Gtfs, type: %i[model with_exportable_referential] do
       let(:referent) { context.company :referent }
       let(:company) { context.company :target }
 
-      context 'when prefer_referent_company option is used' do
-        before { export.prefer_referent_company = true }
-
+      context 'when prefer_referent_companies option is used' do
         it { is_expected.to eq(referent) }
       end
 
-      context 'when prefer_referent_company option isn\'t used' do
+      context 'when prefer_referent_companies option isn\'t used' do
+        let(:prefer_referent_companies) { false }
         it { is_expected.to eq(company) }
       end
     end
@@ -71,9 +89,6 @@ RSpec.describe Export::Gtfs, type: %i[model with_exportable_referential] do
 
   describe '#default_timezone' do
     subject { export.default_timezone }
-
-    # TODO: Should be provided by top describe
-    let(:export) { Export::Gtfs.new }
 
     context 'when default_company is defined with "Europe/Berlin" timezone' do
       before { allow(export).to receive(:default_company).and_return(company) }
@@ -91,49 +106,65 @@ RSpec.describe Export::Gtfs, type: %i[model with_exportable_referential] do
   end
 
   describe '#worker_died' do
+    let(:referential) { Chouette.create { referential }.referential }
+
     it 'should set gtfs_export status to failed' do
-      expect(gtfs_export.status).to eq('new')
-      gtfs_export.worker_died
-      expect(gtfs_export.status).to eq('failed')
+      export.save!
+      expect(export.status).to eq('new')
+      export.worker_died
+      expect(export.status).to eq('failed')
     end
   end
 
-  it "should create a default company and generate a message if the journey or its line doesn't have a company" do
-    exported_referential.switch do
-      exported_referential.lines.update_all company_id: nil
-      line = exported_referential.lines.first
+  context 'with an exportable referential' do
+    let(:context) do
+      Chouette.create do
+        workgroup do
+          workbench do
+            line :line1
+            line :line2
 
-      stop_areas = stop_area_referential.stop_areas.order(Arel.sql('random()')).limit(2)
-      route = FactoryBot.create :route, line: line, stop_areas: stop_areas, stop_points_count: 0
-      journey_pattern = FactoryBot.create :journey_pattern, route: route, stop_points: route.stop_points.sample(3)
-      FactoryBot.create :vehicle_journey, journey_pattern: journey_pattern, company: nil
-
-      gtfs_export.export_scope = Export::Scope::All.new(exported_referential)
-
-      tmp_dir = Dir.mktmpdir
-
-      agencies_zip_path = File.join(tmp_dir, '/test_agencies.zip')
-      GTFS::Target.open(agencies_zip_path) do |target|
-        gtfs_export.export_companies_to target
+            referential lines: %i[line1 line2] do
+              route line: :line1 do
+                vehicle_journey
+              end
+            end
+          end
+        end
       end
+    end
+    let(:referential) { context.referential }
+    let(:export_scope) { Export::Scope::All.new(referential) }
 
-      # The processed export files are re-imported through the GTFS gem
-      source = GTFS::Source.build agencies_zip_path, strict: false
-      expect(source.agencies.length).to eq(1)
-      agency = source.agencies.first
-      expect(agency.id).to eq('chouette_default')
-      expect(agency.timezone).to eq('Etc/UTC')
+    it "should create a default company and generate a message if the journey or its line doesn't have a company" do
+      export.save!
 
-      # Test the line-company link
-      lines_zip_path = File.join(tmp_dir, '/test_lines.zip')
-      GTFS::Target.open(lines_zip_path) do |target|
-        expect { gtfs_export.export_lines_to target }.to change { Export::Message.count }.by(2)
+      referential.switch do
+        tmp_dir = Dir.mktmpdir
+
+        agencies_zip_path = File.join(tmp_dir, '/test_agencies.zip')
+        GTFS::Target.open(agencies_zip_path) do |target|
+          export.export_companies_to target
+        end
+
+        # The processed export files are re-imported through the GTFS gem
+        source = GTFS::Source.build agencies_zip_path, strict: false
+        expect(source.agencies.length).to eq(1)
+        agency = source.agencies.first
+        expect(agency.id).to eq('chouette_default')
+        expect(agency.timezone).to eq('Etc/UTC')
+
+        # Test the line-company link
+        lines_zip_path = File.join(tmp_dir, '/test_lines.zip')
+        GTFS::Target.open(lines_zip_path) do |target|
+          expect { export.export_lines_to target }.to change { Export::Message.count }.by(2)
+        end
+
+        # The processed export files are re-imported through the GTFS gem
+        source = GTFS::Source.build lines_zip_path, strict: false
+        route = source.routes.first
+        expect(route.agency_id).to eq('chouette_default')
       end
-
-      # The processed export files are re-imported through the GTFS gem
-      source = GTFS::Source.build lines_zip_path, strict: false
-      route = source.routes.first
-      expect(route.agency_id).to eq('chouette_default')
     end
   end
 
@@ -156,18 +187,14 @@ RSpec.describe Export::Gtfs, type: %i[model with_exportable_referential] do
       end
     end
 
-    let(:exported_referential) { context.referential }
+    let(:referential) { context.referential }
+    let(:export_scope) { Export::Scope::All.new(referential) }
     let(:vehicle_journey) { context.vehicle_journey }
 
-    before { exported_referential.switch }
-
-    let(:gtfs_export) { Export::Gtfs.new(referential: exported_referential, workgroup: exported_referential.workgroup) }
+    before { referential.switch }
 
     it 'gtfs export stop times use agency timezone' do
-      gtfs_export.duration = nil
-      gtfs_export.export_scope = Export::Scope::All.new(exported_referential)
-
-      stop_times_zip_path = gtfs_export.generate_export_file
+      stop_times_zip_path = export.generate_export_file
 
       # The processed export files are re-imported through the GTFS gem
       source = GTFS::Source.build stop_times_zip_path, strict: false

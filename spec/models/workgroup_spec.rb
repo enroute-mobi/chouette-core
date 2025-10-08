@@ -313,7 +313,7 @@ RSpec.describe Workgroup, type: :model do
       workgroup.publication_setups.create!(
         name: 'Daily',
         force_daily_publishing: true,
-        export_options: { 'type' => 'Export::Gtfs' }
+        export_setup: { 'type' => 'Export::Gtfs', scope_setup: { type: 'Export::Setup::Scope::PublishedReferential' } }
       )
     end
     let(:some_referential) { context.referential(:some_referential) }
@@ -478,11 +478,14 @@ RSpec.describe Workgroup, type: :model do
       workgroup.publication_setups.create!(
         name: 'Daily',
         force_daily_publishing: true,
-        export_options: { 'type' => 'Export::Gtfs' }
+        export_setup: { 'type' => 'Export::Gtfs', scope_setup: { type: 'Export::Setup::Scope::PublishedReferential' } }
       )
     end
     let(:other_publication) do
-      workgroup.publication_setups.create!(name: 'Other', export_options: { 'type' => 'Export::Gtfs' })
+      workgroup.publication_setups.create!(
+        name: 'Other',
+        export_setup: { 'type' => 'Export::Gtfs', scope_setup: { type: 'Export::Setup::Scope::PublishedReferential' } }
+      )
     end
     let(:some_referential) { context.referential(:some_referential) }
     let(:aggregate) do

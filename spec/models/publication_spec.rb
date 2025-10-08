@@ -15,13 +15,11 @@ RSpec.describe Publication, type: :model do
     it { is_expected.to include(Publication::ExportStatus) }
   end
 
-  let(:export_type) { 'Export::Gtfs' }
-  let(:export_options) do
-    { type: export_type, duration: 90, prefer_referent_stop_area: false }
-  end
+  let(:export_type) { 'Export::Setup::Gtfs' }
+  let(:export_setup) { { type: export_type, scope_setup: { type: 'Export::Setup::Scope::PublishedReferential' } } }
   let(:publication_setup_priority) { 1 }
   let(:publication_setup) do
-    create(:publication_setup, priority: publication_setup_priority, export_options: export_options)
+    create(:publication_setup, priority: publication_setup_priority, export_setup: export_setup)
   end
   let(:referential) { first_referential }
   let(:publication) do

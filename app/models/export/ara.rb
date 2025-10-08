@@ -382,9 +382,13 @@ class Export::Ara < Export::Base
 
   class StopAreaGroups < Part
     def export!
-      export_scope.stop_area_groups.includes(:members).find_each do |stop_area_group|
+      stop_area_groups.find_each do |stop_area_group|
         target << Decorator.new(stop_area_group, export_scope: export_scope).ara_model
       end
+    end
+
+    def stop_area_groups
+      export_scope.stop_area_groups.includes(:members).where.not(short_name: [nil, ''])
     end
 
     class Decorator < SimpleDelegator
@@ -597,9 +601,13 @@ class Export::Ara < Export::Base
 
   class LineGroups < Part
     def export!
-      export_scope.line_groups.includes(:members).find_each do |line_group|
+      line_groups.find_each do |line_group|
         target << Decorator.new(line_group, export_scope: export_scope).ara_model
       end
+    end
+
+    def line_groups
+      export_scope.line_groups.includes(:members).where.not(short_name: [nil, ''])
     end
 
     class Decorator < SimpleDelegator

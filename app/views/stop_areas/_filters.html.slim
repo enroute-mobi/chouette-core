@@ -6,8 +6,8 @@
     = f.input :city_name
     = f.input :area_type, as: :autocomplete_select
     = f.input :statuses, as: :autocomplete_select, input_html: { multiple: true, style: 'width: 100%' }
-    = f.input :is_referent, as: :autocomplete_select
   = f.row
+    = f.input :is_referent, as: :autocomplete_select
     = f.input :parent_id,
         as: :ajax_select,
         collection: @search.selected_parent_collection,

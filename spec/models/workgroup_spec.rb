@@ -664,36 +664,63 @@ RSpec.describe Workgroup, type: :model do
     end
   end
 
-  describe "when a workgroup is purged" do
-    let!(:workgroup) { create(:workgroup, deleted_at: Time.now) }
-    let!(:workbench) { create(:workbench, workgroup: workgroup) }
-    let!(:new_referential) { create(:referential, organisation: workbench.organisation, workbench: workbench) }
-    let!(:field){ create(:custom_field, workgroup: workgroup) }
-    let!(:publication_api) { create(:publication_api, workgroup: workgroup) }
-    let!(:publication_setup) { create(:publication_setup, workgroup: workgroup)}
+  describe '.purge_all' do
+    subject { described_class.purge_all }
 
-    let!(:line) { create(:line, line_referential: referential.line_referential) }
-    let!(:route) { create(:route, line: line)}
-    let!(:journey_pattern) { create(:journey_pattern, route: route) }
+    context 'on many workgroups' do
+      let(:context) do
+        Chouette.create do
+          organisation :organisation
 
-    it "should cascade destroy every related object" do
-      Workgroup.purge_all
+          workgroup :workgroup1, owner: :organisation
+          workgroup :to_destroy, owner: :organisation, deleted_at: Time.zone.now
+          workgroup :workgroup2, owner: :organisation
+        end
+      end
+      let(:organisation) { context.organisation(:organisation) }
 
-      # The schema that contains our deleted referential data should be destroyed (route, jp, timetables, etc)
-      expect(ActiveRecord::Base.connection.schema_names).not_to include(new_referential.slug)
+      it 'destroys workgroup to destroy and keeps other workgroups intact' do
+        expect { subject }.to(
+          change { Workgroup.where(owner_id: organisation.id) }.from(
+            match_array(%i[workgroup1 workgroup2 to_destroy].map { |w| context.workgroup(w) })
+          ).to(
+            match_array(%i[workgroup1 workgroup2].map { |w| context.workgroup(w) })
+          )
+        )
+      end
+    end
 
-      expect(Chouette::Line.where(id: line.id).exists?).to be_truthy
+    context 'on one workgroup' do
+      let!(:workgroup) { create(:workgroup, deleted_at: Time.zone.now) }
+      let!(:workbench) { create(:workbench, workgroup: workgroup) }
+      let!(:new_referential) { create(:referential, organisation: workbench.organisation, workbench: workbench) }
+      let!(:field){ create(:custom_field, workgroup: workgroup) }
+      let!(:publication_api) { create(:publication_api, workgroup: workgroup) }
+      let!(:publication_setup) { create(:publication_setup, workgroup: workgroup) }
 
-      [
-        workgroup,
-        workbench,
-        new_referential,
-        field,
-        new_referential,
-        publication_api,
-        publication_setup
-      ].each do |record|
-        expect { record.reload }.to raise_error(ActiveRecord::RecordNotFound)
+      let!(:line) { create(:line, line_referential: referential.line_referential) }
+      let!(:route) { create(:route, line: line)}
+      let!(:journey_pattern) { create(:journey_pattern, route: route) }
+
+      before { subject }
+
+      it 'should cascade destroy every related object' do
+        # The schema that contains our deleted referential data should be destroyed (route, jp, timetables, etc)
+        expect(ActiveRecord::Base.connection.schema_names).not_to include(new_referential.slug)
+
+        expect(Chouette::Line.where(id: line.id).exists?).to be_truthy
+
+        [
+          workgroup,
+          workbench,
+          new_referential,
+          field,
+          new_referential,
+          publication_api,
+          publication_setup
+        ].each do |record|
+          expect { record.reload }.to raise_error(ActiveRecord::RecordNotFound)
+        end
       end
     end
   end

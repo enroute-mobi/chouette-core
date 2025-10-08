@@ -112,13 +112,13 @@ module ProcessingRule
 
     validate :exclusive_workbenches
 
-    def self.accept_worbench(workbench)
+    def self.accept_workbench(workbench)
       where(
         'target_workbench_ids && ARRAY[:workbench]::bigint[] OR ARRAY_LENGTH(target_workbench_ids, 1) IS NULL',
         workbench: workbench
       )
       .where.not(
-        '(excluded_workbench_ids && ARRAY[:workbench]::int[]) AND ARRAY_LENGTH(excluded_workbench_ids, 1) IS NOT NULL',
+        '(excluded_workbench_ids && ARRAY[:workbench]::bigint[]) AND ARRAY_LENGTH(excluded_workbench_ids, 1) IS NOT NULL',
         workbench: workbench
       )
     end

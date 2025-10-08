@@ -61,4 +61,66 @@ RSpec.describe ProcessingRule::Workgroup, type: :model do
 
     it { expect(subject).to_not be_valid }
   end
+
+  describe '.accept_workbench' do
+    subject { described_class.accept_workbench(workbench) }
+
+    let(:context) do
+      Chouette.create do
+        workgroup do
+          workbench :workbench do
+            control_list :control_list, shared: true
+          end
+          workbench :other_workbench
+          workgroup_processing_rule control_list: :control_list, operation_step: 'after_import'
+        end
+      end
+    end
+
+    let(:workgroup_processing_rule) { context.workgroup_processing_rule }
+    let(:workbench) { context.workbench(:workbench) }
+    let(:other_workbench) { context.workbench(:other_workbench) }
+
+    before do
+      workgroup_processing_rule.update(
+        target_workbench_ids: target_workbench_ids,
+        excluded_workbench_ids: excluded_workbench_ids
+      )
+    end
+
+    context 'when taget and excluded workbenchs are empty' do
+      let(:target_workbench_ids) { [] }
+      let(:excluded_workbench_ids) { [] }
+
+      it { expect(subject).to match_array [workgroup_processing_rule] }
+    end
+
+    context 'when taget contains workbench id and excluded is empty' do
+      let(:target_workbench_ids) { [workbench.id] }
+      let(:excluded_workbench_ids) { [] }
+
+      it { expect(subject).to match_array [workgroup_processing_rule] }
+    end
+
+    context 'when taget contains other workbench id and excluded is empty' do
+      let(:target_workbench_ids) { [other_workbench.id] }
+      let(:excluded_workbench_ids) { [] }
+
+      it { expect(subject).to be_empty }
+    end
+
+    context 'when taget is empty and excluded contains workbench id' do
+      let(:target_workbench_ids) { [] }
+      let(:excluded_workbench_ids) { [workbench.id] }
+
+      it { expect(subject).to be_empty }
+    end
+
+    context 'when taget is empty and excluded contains other workbench id' do
+      let(:target_workbench_ids) { [] }
+      let(:excluded_workbench_ids) { [other_workbench.id] }
+
+      it { expect(subject).to match_array [workgroup_processing_rule] }
+    end
+  end
 end

@@ -1141,7 +1141,7 @@ ActiveRecord::Schema[7.1].define(version: 2025_09_29_122802) do
     t.bigint "target_workbench_ids", default: [], array: true
     t.datetime "created_at", precision: nil, null: false
     t.datetime "updated_at", precision: nil, null: false
-    t.integer "excluded_workbench_ids", default: [], array: true
+    t.bigint "excluded_workbench_ids", default: [], array: true
     t.index ["processable_type", "processable_id"], name: "index_processing_rules_on_processable_type_and_processable_id"
     t.index ["workbench_id"], name: "index_processing_rules_on_workbench_id"
     t.index ["workgroup_id"], name: "index_processing_rules_on_workgroup_id"

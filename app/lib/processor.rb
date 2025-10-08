@@ -82,7 +82,7 @@ class Processor
     processing_rules = all_workgroup_processing_rules(operation_step)
     return processing_rules if workbench.blank?
 
-    processing_rules.accept_worbench(workbench)
+    processing_rules.accept_workbench(workbench)
   end
 
   def before_operation_step

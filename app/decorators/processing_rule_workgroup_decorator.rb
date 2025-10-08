@@ -30,4 +30,12 @@ class ProcessingRuleWorkgroupDecorator < Af83::Decorator
       object.target_workbenches.map(&:name).join(', ')
     end
   end
+
+  define_instance_method :excluded_workbench_names do
+    if object.excluded_workbenches.empty?
+      'all.masculine'.t.capitalize
+    else
+      object.excluded_workbenches.map(&:name).join(', ')
+    end
+  end
 end

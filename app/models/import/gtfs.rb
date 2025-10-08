@@ -54,28 +54,26 @@ class Import::Gtfs < Import::Base
   end
 
   def import_without_status
-    CustomFieldsSupport.without_custom_fields do
-      prepare_referential
+    prepare_referential
 
-      check_calendar_files_missing_and_create_message || import_resources(:services)
+    check_calendar_files_missing_and_create_message || import_resources(:services)
 
-      import_resources :transfers if source.entries.include?('transfers.txt')
+    import_resources :transfers if source.entries.include?('transfers.txt')
 
-      RouteJourneyPatterns.new(self).import!
+    RouteJourneyPatterns.new(self).import!
 
-      import_resources :stop_times
+    import_resources :stop_times
 
-      import_resources :attributions
+    import_resources :attributions
 
-      # TODO: why the resource statuses are not checked automaticaly ??
-      # See CHOUETTE-2747
-      resource_status = resources.map(&:status).uniq
-      Rails.logger.debug "resource_status: #{resource_status.inspect}"
-      if resource_status.include?(:ERROR)
-        @status ||= 'failed'
-      elsif resource_status.include?(:WARNING)
-        @status ||= 'warning'
-      end
+    # TODO: why the resource statuses are not checked automaticaly ??
+    # See CHOUETTE-2747
+    resource_status = resources.map(&:status).uniq
+    Rails.logger.debug "resource_status: #{resource_status.inspect}"
+    if resource_status.include?(:ERROR)
+      @status ||= 'failed'
+    elsif resource_status.include?(:WARNING)
+      @status ||= 'warning'
     end
   end
 
@@ -575,111 +573,109 @@ class Import::Gtfs < Import::Base
   def import_stops
     sorted_stops = source.stops.sort_by { |s| s.parent_station.present? ? 1 : 0 }
 
-    CustomFieldsSupport.within_workgroup(workbench.workgroup) do
-      create_resource(:stops).each(sorted_stops, slice: 100, transaction: true) do |stop, resource|
-        next if ignore_parent_stop_areas? && stop.location_type == '1'
+    create_resource(:stops).each(sorted_stops, slice: 100, transaction: true) do |stop, resource|
+      next if ignore_parent_stop_areas? && stop.location_type == '1'
 
-        stop_area = stop_areas.find_or_initialize_by(registration_number: stop.id)
-        expected_area_type = stop.location_type == '1' ? 'zdlp' : 'zdep'
+      stop_area = stop_areas.find_or_initialize_by(registration_number: stop.id)
+      expected_area_type = stop.location_type == '1' ? 'zdlp' : 'zdep'
 
-        if stop_area.new_record?
-          stop_area.area_type = expected_area_type
-        else
-          if stop_area.area_type != expected_area_type
-            create_message(
-              {
-                criticity: :error,
-                message_key: 'gtfs.stops.invalid_location_type',
-                message_attributes: {
-                  location_type: stop.location_type,
-                  stop_area_name: stop_area.name,
-                  stop_area_type: Chouette::AreaType.find(stop_area.area_type).label,
-                  registration_number: stop_area.registration_number
-                },
-                resource_attributes: {
-                  filename: "#{resource.name}.txt",
-                  line_number: resource.rows_count,
-                  column_number: 0
-                }
+      if stop_area.new_record?
+        stop_area.area_type = expected_area_type
+      else
+        if stop_area.area_type != expected_area_type
+          create_message(
+            {
+              criticity: :error,
+              message_key: 'gtfs.stops.invalid_location_type',
+              message_attributes: {
+                location_type: stop.location_type,
+                stop_area_name: stop_area.name,
+                stop_area_type: Chouette::AreaType.find(stop_area.area_type).label,
+                registration_number: stop_area.registration_number
               },
-              resource: resource, commit: true
-            )
+              resource_attributes: {
+                filename: "#{resource.name}.txt",
+                line_number: resource.rows_count,
+                column_number: 0
+              }
+            },
+            resource: resource, commit: true
+          )
 
-            next
-          end
+          next
         end
-
-        stop_area.name = stop.name
-        stop_area.public_code = stop.platform_code
-        stop_area.stop_area_provider = stop_area_provider
-        stop_area.latitude = stop.lat.presence && stop.lat.to_f
-        stop_area.longitude = stop.lon.presence && stop.lon.to_f
-        stop_area.kind = :commercial
-        stop_area.deleted_at = nil
-        stop_area.confirmed_at ||= Time.now
-        stop_area.comment = stop.desc
-
-        if stop.wheelchair_boarding.present?
-          case stop.wheelchair_boarding
-          when '0'
-            stop_area.wheelchair_accessibility = 'unknown'
-          when '1'
-            stop_area.wheelchair_accessibility = 'yes'
-          when '2'
-            stop_area.wheelchair_accessibility = 'no'
-          end
-        end
-
-        stop_area.codes.find_or_initialize_by(code_space: public_code_space).tap do |code|
-          code.value = stop.code
-          code.save unless stop_area.new_record?
-        end if stop.code.present?
-
-        if stop.parent_station.present? && !ignore_parent_stop_areas?
-          if check_parent_is_valid_or_create_message(Chouette::StopArea, stop.parent_station, resource)
-            parent = find_stop_parent_or_create_message(stop.name, stop.parent_station, resource)
-            if parent
-              stop_area.parent = parent
-              stop_area.time_zone = parent.time_zone if parent.time_zone
-            end
-          end
-        end
-
-        if stop.timezone.present?
-          time_zone = ActiveSupport::TimeZone[stop.timezone]
-          if time_zone
-            stop_area.time_zone = time_zone.tzinfo.name
-          else
-            create_message(
-              {
-                criticity: :error,
-                message_key: :invalid_time_zone,
-                message_attributes: {
-                  time_zone: stop.timezone,
-                },
-                resource_attributes: {
-                  filename: "#{resource.name}.txt",
-                  line_number: resource.rows_count,
-                  column_number: 0
-                }
-              },
-              resource: resource, commit: true
-            )
-          end
-        else
-          stop_area.time_zone = default_time_zone&.tzinfo&.name # TODO StopArea should support real TimeZone object ..
-        end
-
-        save_model stop_area, resource: resource
-        store_imported_stop_area_registration_number(stop_area)
-
-        StopAreaZone.new(
-          zone_id: stop.zone_id,
-          code_space: code_space,
-          fare_provider: fare_provider,
-          stop_area_id: stop_area.id
-        ).import!
       end
+
+      stop_area.name = stop.name
+      stop_area.public_code = stop.platform_code
+      stop_area.stop_area_provider = stop_area_provider
+      stop_area.latitude = stop.lat.presence && stop.lat.to_f
+      stop_area.longitude = stop.lon.presence && stop.lon.to_f
+      stop_area.kind = :commercial
+      stop_area.deleted_at = nil
+      stop_area.confirmed_at ||= Time.now
+      stop_area.comment = stop.desc
+
+      if stop.wheelchair_boarding.present?
+        case stop.wheelchair_boarding
+        when '0'
+          stop_area.wheelchair_accessibility = 'unknown'
+        when '1'
+          stop_area.wheelchair_accessibility = 'yes'
+        when '2'
+          stop_area.wheelchair_accessibility = 'no'
+        end
+      end
+
+      stop_area.codes.find_or_initialize_by(code_space: public_code_space).tap do |code|
+        code.value = stop.code
+        code.save unless stop_area.new_record?
+      end if stop.code.present?
+
+      if stop.parent_station.present? && !ignore_parent_stop_areas?
+        if check_parent_is_valid_or_create_message(Chouette::StopArea, stop.parent_station, resource)
+          parent = find_stop_parent_or_create_message(stop.name, stop.parent_station, resource)
+          if parent
+            stop_area.parent = parent
+            stop_area.time_zone = parent.time_zone if parent.time_zone
+          end
+        end
+      end
+
+      if stop.timezone.present?
+        time_zone = ActiveSupport::TimeZone[stop.timezone]
+        if time_zone
+          stop_area.time_zone = time_zone.tzinfo.name
+        else
+          create_message(
+            {
+              criticity: :error,
+              message_key: :invalid_time_zone,
+              message_attributes: {
+                time_zone: stop.timezone,
+              },
+              resource_attributes: {
+                filename: "#{resource.name}.txt",
+                line_number: resource.rows_count,
+                column_number: 0
+              }
+            },
+            resource: resource, commit: true
+          )
+        end
+      else
+        stop_area.time_zone = default_time_zone&.tzinfo&.name # TODO StopArea should support real TimeZone object ..
+      end
+
+      save_model stop_area, resource: resource
+      store_imported_stop_area_registration_number(stop_area)
+
+      StopAreaZone.new(
+        zone_id: stop.zone_id,
+        code_space: code_space,
+        fare_provider: fare_provider,
+        stop_area_id: stop_area.id
+      ).import!
     end
 
     if disable_missing_resources?
@@ -727,48 +723,46 @@ class Import::Gtfs < Import::Base
   def import_routes
     @lines_by_registration_number = {}
 
-    CustomFieldsSupport.within_workgroup(workbench.workgroup) do
-      create_resource(:routes).each(source.routes, transaction: true) do |route, resource|
-        if route.agency_id.present?
-          next unless check_parent_is_valid_or_create_message(Chouette::Company, route.agency_id, resource)
-        end
-        line = lines_by_registration_number(route.id)
-
-        if line_name = route.long_name.presence || route.short_name.presence
-          line.name = line_name
-        end
-
-        if line_number = route.short_name.presence
-          line.number = line_number
-        end
-
-        if line_published_name = route.long_name.presence
-          line.published_name = line_published_name
-        end
-
-        if route.agency_id.blank?
-          line.company = default_company if default_company
-        else
-          line.company_id = lookup.companies.find_id(route.agency_id)
-        end
-
-        if line_comment = route.desc.presence
-          line.comment = line_comment
-        end
-
-        if transport_mode = transport_modes[route.type]
-          line.chouette_transport_mode = transport_mode
-        end
-
-        # White is the default color in the gtfs spec
-        line.color = parse_color(route.color) if route.color
-        # Black is the default text color in the gtfs spec
-        line.text_color = parse_color(route.text_color) if route.text_color
-
-        line.url = route.url if route.url.presence
-
-        save_model line, resource: resource
+    create_resource(:routes).each(source.routes, transaction: true) do |route, resource|
+      if route.agency_id.present?
+        next unless check_parent_is_valid_or_create_message(Chouette::Company, route.agency_id, resource)
       end
+      line = lines_by_registration_number(route.id)
+
+      if line_name = route.long_name.presence || route.short_name.presence
+        line.name = line_name
+      end
+
+      if line_number = route.short_name.presence
+        line.number = line_number
+      end
+
+      if line_published_name = route.long_name.presence
+        line.published_name = line_published_name
+      end
+
+      if route.agency_id.blank?
+        line.company = default_company if default_company
+      else
+        line.company_id = lookup.companies.find_id(route.agency_id)
+      end
+
+      if line_comment = route.desc.presence
+        line.comment = line_comment
+      end
+
+      if transport_mode = transport_modes[route.type]
+        line.chouette_transport_mode = transport_mode
+      end
+
+      # White is the default color in the gtfs spec
+      line.color = parse_color(route.color) if route.color
+      # Black is the default text color in the gtfs spec
+      line.text_color = parse_color(route.text_color) if route.text_color
+
+      line.url = route.url if route.url.presence
+
+      save_model line, resource: resource
     end
 
     if disable_missing_resources?
@@ -1389,17 +1383,15 @@ class Import::Gtfs < Import::Base
   end
 
   def import_stop_times
-    CustomFieldsSupport.within_workgroup(workbench.workgroup) do
-      resource = create_resource(:stop_times)
-      source.to_enum(:each_trip_with_stop_times).each_slice(100) do |slice|
-        Chouette::VehicleJourney.transaction do
-          slice.each do |trip, stop_times|
-            process_trip(resource, trip, stop_times)
-          end
+    resource = create_resource(:stop_times)
+    source.to_enum(:each_trip_with_stop_times).each_slice(100) do |slice|
+      Chouette::VehicleJourney.transaction do
+        slice.each do |trip, stop_times|
+          process_trip(resource, trip, stop_times)
         end
       end
-      resource.update_status_from_messages
     end
+    resource.update_status_from_messages
   end
 
   def consistent_stop_times(stop_times)

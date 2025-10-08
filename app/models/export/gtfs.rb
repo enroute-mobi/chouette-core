@@ -282,8 +282,6 @@ module Export
     end
 
     class Part < Export::Part
-      callback Operation::CustomFieldIgnored
-
       delegate :index, to: :export
 
       def decorator_attributes

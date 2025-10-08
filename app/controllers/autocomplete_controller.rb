@@ -1,8 +1,6 @@
 # frozen_string_literal: true
 
 class AutocompleteController < Chouette::UserController
-  include WithinWorkgroup
-
   ##############
   # Line scope #
   ##############

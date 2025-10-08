@@ -2,7 +2,6 @@
 
 module Chouette
   class JourneyPattern < Referential::Model
-    include CustomFieldsSupport
     has_metadata
 
     include TransientSupport
@@ -87,11 +86,6 @@ module Chouette
         shape_id: item['shape'].try(:[], 'id'),
         booking_arrangement_id: item['booking_arrangement_id']
       }
-      attrs["custom_field_values"] = Hash[
-        *(item["custom_fields"] || {})
-          .map { |k, v| [k, v["value"]] }
-          .flatten
-      ]
 
       attrs
     end

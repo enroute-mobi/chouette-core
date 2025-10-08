@@ -11,8 +11,6 @@ fr:
         one: Présence d'un attribut
       control/presence_code/run:
         one: Présence d'un code
-      control/presence_custom_field/run:
-        one: Présence d'un champ personnalisé
       control/code_format/run:
         one: Format d'un code
       control/format_attribute/run:
@@ -62,9 +60,6 @@ fr:
         target_code_space_id: Espace de code cible
         target_code_space: Espace de code cible
         description: "L'espace de code sélectionné doit avoir un code dans le modèle cible"
-      control/presence_custom_field/run:
-        target_custom_field_id: Champ personnalisé cible
-        custom_field: Champ personnalisé cible
       control/code_format/run:
         target_code_space_id: Espace de code cible
         target_code_space: Espace de code cible

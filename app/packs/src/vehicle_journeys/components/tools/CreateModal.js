@@ -4,19 +4,8 @@ import actions from '../../actions'
 import MissionSelect2 from './select2s/MissionSelect2'
 import CompanySelect2 from './select2s/CompanySelect2'
 import AccessibilityAssessmentSelect2 from './select2s/AccessibilityAssessmentSelect2'
-import CustomFieldsInputs from '../../../helpers/CustomFieldsInputs'
 
 export default class CreateModal extends Component {
-  constructor(props) {
-    super(props)
-    this.custom_fields = _.assign({}, this.props.custom_fields)
-    _.map(this.custom_fields, (cf, k)=>{
-      if(cf.options && cf.options.default){
-        this.custom_fields[k]["value"] = cf.options.default
-      }
-    })
-  }
-
   handleSubmit() {
     if(!this.props.modal.modalProps.selectedJPModal){
       let field = $('#NewVehicleJourneyModal').find(".vjCreateSelectJP")
@@ -26,7 +15,7 @@ export default class CreateModal extends Component {
       return
     }
     if (actions.validateFields(this.refs, $('.vjCreateSelectJP')[0])) {
-      this.props.onAddVehicleJourney(_.assign({}, this.refs, {custom_fields: this.custom_fields}), this.props.modal.modalProps.selectedJPModal, this.props.stopPointsList, this.props.modal.modalProps.vehicleJourney && this.props.modal.modalProps.vehicleJourney.company, this.props.modal.modalProps.vehicleJourney && this.props.modal.modalProps.vehicleJourney.accessibility_assessment)
+      this.props.onAddVehicleJourney(_.assign({}, this.refs), this.props.modal.modalProps.selectedJPModal, this.props.stopPointsList, this.props.modal.modalProps.vehicleJourney && this.props.modal.modalProps.vehicleJourney.company, this.props.modal.modalProps.vehicleJourney && this.props.modal.modalProps.vehicleJourney.accessibility_assessment)
       this.props.onModalClose()
       $('#NewVehicleJourneyModal').modal('hide')
     }
@@ -116,11 +105,6 @@ export default class CreateModal extends Component {
                               />
                             </div>
                           </div>
-                          <CustomFieldsInputs
-                            values={this.props.custom_fields}
-                            onUpdate={(code, value) => this.custom_fields[code]["value"] = value}
-                            disabled={false}
-                          />
                           { this.props.modal.modalProps.selectedJPModal && this.props.modal.modalProps.selectedJPModal.full_schedule && <div className='col-lg-6 col-md-6 col-sm-6 col-xs-12'>
                               <div className='form-group'>
                               <label className='control-label'>{I18n.attribute_name('vehicle_journey', 'start_time')}</label>

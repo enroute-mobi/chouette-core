@@ -89,14 +89,6 @@ module ApplicationHelper
     "#{relative_url_root}/assets/#{source}"
   end
 
-  def permitted_custom_fields_params(custom_fields)
-    [
-      {
-        custom_field_values: custom_fields.map(&:code)
-      }
-    ]
-  end
-
   def cancel_button(cancel_path = :back)
     link_to t('cancel'), cancel_path, method: :get, class: 'btn btn-cancel formSubmitr', data: {:confirm =>  t('cancel_confirm')}
   end

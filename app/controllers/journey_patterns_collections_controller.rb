@@ -14,8 +14,6 @@ class JourneyPatternsCollectionsController < Chouette::ReferentialController
   alias_method :route, :parent
 
   def show
-    @custom_fields = Chouette::JourneyPattern.custom_fields_definitions(referential.workgroup)
-
     respond_to do |format|
       format.json do
         @journey_patterns = journey_patterns.includes(stop_points: { stop_area: :stop_area_referential })

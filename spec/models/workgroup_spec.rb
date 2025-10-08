@@ -698,7 +698,6 @@ RSpec.describe Workgroup, type: :model do
       let!(:workgroup) { create(:workgroup, deleted_at: Time.zone.now) }
       let!(:workbench) { create(:workbench, workgroup: workgroup) }
       let!(:new_referential) { create(:referential, organisation: workbench.organisation, workbench: workbench) }
-      let!(:field){ create(:custom_field, workgroup: workgroup) }
       let!(:publication_api) { create(:publication_api, workgroup: workgroup) }
       let!(:publication_setup) { create(:publication_setup, workgroup: workgroup) }
 
@@ -717,8 +716,6 @@ RSpec.describe Workgroup, type: :model do
         [
           workgroup,
           workbench,
-          new_referential,
-          field,
           new_referential,
           publication_api,
           publication_setup

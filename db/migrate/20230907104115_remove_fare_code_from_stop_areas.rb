@@ -8,26 +8,23 @@ class RemoveFareCodeFromStopAreas < ActiveRecord::Migration[5.2]
       impacted_workgroups = Workgroup.where(id: impacted_workgroup_ids)
 
       impacted_workgroups.each do |workgroup|
-        # .. to avoid Workgroup loading in loop :(
-        CustomFieldsSupport.within_workgroup(workgroup) do
-          code_space = workgroup.code_spaces.default
-          stop_areas_with_fare_code = workgroup.stop_area_referential.stop_areas
-                                        .where.not(fare_code: nil).includes(stop_area_provider: :workbench)
+        code_space = workgroup.code_spaces.default
+        stop_areas_with_fare_code = workgroup.stop_area_referential.stop_areas
+                                      .where.not(fare_code: nil).includes(stop_area_provider: :workbench)
 
-          # Migrate all Workgroup StopAreas
-          stop_areas_with_fare_code.find_each do |stop_area|
-            stop_area_provider = stop_area.stop_area_provider
-            workbench = stop_area_provider.workbench
-            fare_provider = workbench.default_fare_provider
+        # Migrate all Workgroup StopAreas
+        stop_areas_with_fare_code.find_each do |stop_area|
+          stop_area_provider = stop_area.stop_area_provider
+          workbench = stop_area_provider.workbench
+          fare_provider = workbench.default_fare_provider
 
-            value = stop_area.fare_code
+          value = stop_area.fare_code
 
-            zone = fare_provider.fare_zones.first_or_create_by_code(code_space, value) do |zone|
-              zone.name = value
-            end
-
-            stop_area.stop_area_zones.create(zone: zone)
+          zone = fare_provider.fare_zones.first_or_create_by_code(code_space, value) do |zone|
+            zone.name = value
           end
+
+          stop_area.stop_area_zones.create(zone: zone)
         end
       end
 

@@ -1,21 +1,14 @@
 import React, { Component } from 'react'
 import PropTypes from 'prop-types'
 import actions from '../actions'
-import CustomFieldsInputs from '../../helpers/CustomFieldsInputs'
 import ShapeSelector from './ShapeSelector'
 import ShapeMap from './ShapeMap'
 import _ from 'lodash'
 
 export default class CreateModal extends Component {
-  constructor(props) {
-    super(props)
-    this.custom_fields = _.assign({}, this.props.custom_fields)
-  }
-
   handleSubmit() {
     if(actions.validateFields(this.refs) == true) {
       this.props.onAddJourneyPattern(_.assign({}, this.refs, {
-        custom_fields: this.custom_fields,
         shape: this.props?.journeyPattern?.shape ? { id: this.props.journeyPattern.shape.id, name: this.props.journeyPattern.shape.name, uuid: this.props.journeyPattern.shape.uuid } : undefined
        }
      ))
@@ -100,13 +93,6 @@ export default class CreateModal extends Component {
                           </div>
                         </div>
 
-                        <div className='row'>
-                          <CustomFieldsInputs
-                            values={custom_fields}
-                            onUpdate={(code, value) => this.custom_fields[code]["value"] = value}
-                            disabled={false}
-                          />
-                        </div>
                         <div className='row'>
                           <div className='col-xs-12'>
                             <div className='form-group'>

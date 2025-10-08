@@ -30,8 +30,6 @@ en:
         one: Presence of attribute
       control/presence_code:
         one: Presence of code
-      control/presence_custom_field:
-        one: Presence of custom field
       control/code_format:
         one: Code format
       control/format_attribute:
@@ -80,8 +78,6 @@ en:
       control/presence_code:
         target_code_space_id: Target code space
         description: The specified code space must have a code in the target model
-      control/presence_custom_field:
-        target_custom_field_id: Target Custom Field
       control/code_format:
         target_code_space_id: Target code space
         expected_format: Expected format

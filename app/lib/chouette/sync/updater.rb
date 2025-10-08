@@ -35,9 +35,7 @@ module Chouette
       end
 
       def transaction(&block)
-        CustomFieldsSupport.within_workgroup(workgroup) do
-          target.class.transaction(&block)
-        end
+        target.class.transaction(&block)
       end
 
       def update_or_create
@@ -182,7 +180,6 @@ module Chouette
 
           update_providers model, resource, event
           update_codes model, resource, event
-          update_custom_fields model, resource, event
 
           model.save
 
@@ -199,7 +196,6 @@ module Chouette
 
           update_providers model, resource, event
           update_codes model, resource, event
-          update_custom_fields model, resource, event
 
           model.save
           event_handler.event event
@@ -285,30 +281,6 @@ module Chouette
             end
 
             nil
-          end
-        end
-
-        def custom_field(code)
-          workgroup.custom_fields.find_by code: code
-        end
-
-        def update_custom_fields(model, resource, event)
-          return unless resource.respond_to?(:custom_fields_attributes)
-
-          resource.custom_fields_attributes.each do |custom_field_attributes|
-            code = custom_field_attributes[:code]
-            value = custom_field_attributes[:value]
-
-            if (custom_field = custom_field(code))
-              custom_field_instance = CustomField::Instance.new model, custom_field, value
-              # The custom field validation adds error in model
-              if custom_field_instance.valid?
-                # model.initialize_custom_fields
-                model.custom_field_values = model.custom_field_values.merge(code => value)
-              end
-            else
-              (event.errors[:custom_fields] ||= []) << { error: :invalid_custom_field, value: code }
-            end
           end
         end
       end

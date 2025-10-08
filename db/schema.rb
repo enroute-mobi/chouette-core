@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2025_09_29_122802) do
+ActiveRecord::Schema[7.2].define(version: 2025_10_08_073515) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "btree_gin"
   enable_extension "hstore"
@@ -397,33 +397,6 @@ ActiveRecord::Schema[7.2].define(version: 2025_09_29_122802) do
     t.index ["relation_name", "parent_type", "parent_id", "target_referential_slug"], name: "cross_referential_index_entries_parent"
     t.index ["relation_name", "target_type", "target_id", "target_referential_slug"], name: "cross_referential_index_entries_target"
     t.index ["relation_name"], name: "index_cross_referential_index_entries_on_relation_name"
-  end
-
-  create_table "custom_field_groups", force: :cascade do |t|
-    t.bigint "workgroup_id"
-    t.string "name"
-    t.integer "position"
-    t.string "resource_type"
-    t.datetime "created_at", precision: nil, null: false
-    t.datetime "updated_at", precision: nil, null: false
-    t.index ["workgroup_id", "resource_type", "position"], name: "uniq_workgroup_id_and_resource_type_and_position", unique: true
-    t.index ["workgroup_id"], name: "index_custom_field_groups_on_workgroup_id"
-  end
-
-  create_table "custom_fields", force: :cascade do |t|
-    t.string "code"
-    t.string "resource_type"
-    t.string "name"
-    t.string "field_type"
-    t.json "options"
-    t.bigint "workgroup_id"
-    t.datetime "created_at", precision: nil, null: false
-    t.datetime "updated_at", precision: nil, null: false
-    t.integer "position", null: false
-    t.bigint "custom_field_group_id"
-    t.index ["custom_field_group_id"], name: "index_custom_fields_on_custom_field_group_id"
-    t.index ["resource_type"], name: "index_custom_fields_on_resource_type"
-    t.index ["workgroup_id", "resource_type", "custom_field_group_id", "position"], name: "uniq_workgroup_id_resource_type_custom_field_group_id_position", unique: true
   end
 
   create_table "delayed_jobs", force: :cascade do |t|
@@ -1840,7 +1813,6 @@ ActiveRecord::Schema[7.2].define(version: 2025_09_29_122802) do
   add_foreign_key "calendars", "workbenches"
   add_foreign_key "control_runs", "control_context_runs"
   add_foreign_key "controls", "control_contexts"
-  add_foreign_key "custom_fields", "custom_field_groups"
   add_foreign_key "exports", "workgroups"
   add_foreign_key "flexible_area_memberships", "stop_areas", column: "flexible_area_id"
   add_foreign_key "flexible_area_memberships", "stop_areas", column: "member_id"

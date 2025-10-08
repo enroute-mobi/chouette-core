@@ -77,39 +77,37 @@ class Merge < ApplicationModel
   def merge!
     Rails.logger.info "Start Merge##{id} merge for #{referential_ids}"
 
-    CustomFieldsSupport.within_workgroup(workgroup) do
-      Chouette::Benchmark.measure('merge', merge: id) do
-        
-        continue_after_processings = processor.before(referentials)
-        # Check processed status and stop merge if one failed
-        unless continue_after_processings
-          failed_on_processings
-          return
-        end
-        
-        Chouette::Benchmark.measure('prepare_new') do
-          prepare_new
-        end
+    Chouette::Benchmark.measure('merge', merge: id) do
 
-        referentials.each do |referential|
-          Chouette::Benchmark.measure('referential', referential: referential.id) do
-            merge_referential_method_class.new(self, referential).merge!
-          end
-        end
-
-        Chouette::Benchmark.measure('clean_new') do
-          clean_new
-        end
-
-        continue_after_processings = processor.after([new])
-        # Check processed status and stop merge if one failed
-        unless continue_after_processings
-          failed_on_processings
-          return
-        end
-
-        save_current
+      continue_after_processings = processor.before(referentials)
+      # Check processed status and stop merge if one failed
+      unless continue_after_processings
+        failed_on_processings
+        return
       end
+
+      Chouette::Benchmark.measure('prepare_new') do
+        prepare_new
+      end
+
+      referentials.each do |referential|
+        Chouette::Benchmark.measure('referential', referential: referential.id) do
+          merge_referential_method_class.new(self, referential).merge!
+        end
+      end
+
+      Chouette::Benchmark.measure('clean_new') do
+        clean_new
+      end
+
+      continue_after_processings = processor.after([new])
+      # Check processed status and stop merge if one failed
+      unless continue_after_processings
+        failed_on_processings
+        return
+      end
+
+      save_current
     end
   rescue StandardError => e
     Chouette::Safe.capture "Merge ##{id} failed", e

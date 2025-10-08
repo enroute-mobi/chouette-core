@@ -9,8 +9,6 @@ module Chouette
 
     belongs_to :referential
 
-    # set referential before calling #association_chain
-    around_action :set_current_workgroup
     # switch referential before finding resource
     # rubocop:disable Rails/LexicallyScopedActionFilter
     before_action :authorize_resource, except: %i[new create index show]

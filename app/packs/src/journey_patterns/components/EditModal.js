@@ -2,7 +2,6 @@ import _ from 'lodash'
 import React, { Component } from 'react'
 import PropTypes from 'prop-types'
 import actions from '../actions'
-import CustomFieldsInputs from '../../helpers/CustomFieldsInputs'
 import ShapeSelector from './ShapeSelector'
 import ShapeMap from './ShapeMap'
 
@@ -16,7 +15,6 @@ export default class EditModal extends Component {
     if(actions.validateFields(this.refs) == true) {
       this.props.saveModal(this.props.index,
         _.assign({}, this.refs, {
-          custom_fields: this.custom_fields,
           shape: this.props.journeyPattern.shape ? {id: this.props.journeyPattern.shape.id, name: this.props.journeyPattern.shape.name, uuid: this.props.journeyPattern.shape.uuid } : undefined
         })
       )
@@ -48,9 +46,6 @@ export default class EditModal extends Component {
       editMode, index, journeyPattern, type,
       onModalClose, onSelectShape, onUnselectShape
     } = this.props
-    if(journeyPattern){
-      this.custom_fields = _.assign({}, journeyPattern.custom_fields)
-    }
     return (
       <div className={ 'modal fade ' + ((type == 'edit') ? 'in' : '') } id='JourneyPatternModal'>
         <div className='modal-container'>
@@ -109,13 +104,6 @@ export default class EditModal extends Component {
                             />
                         </div>
                       </div>
-                    </div>
-                    <div className='row'>
-                      <CustomFieldsInputs
-                        values={journeyPattern.custom_fields}
-                        onUpdate={(code, value) => this.custom_fields[code]["value"] = value}
-                        disabled={!editMode}
-                      />
                     </div>
                     <div className='row'>
                       <div className='col-xs-12'>

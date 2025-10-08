@@ -6,28 +6,12 @@ module StopAreaReferentialSupport
   included do
     belongs_to :stop_area_referential # CHOUETTE-3247 required: true
     belongs_to :stop_area_provider # CHOUETTE-3247 required: true
+    has_one :workgroup, through: :stop_area_referential
 
     alias_method :referential, :stop_area_referential
 
     # Must be defined before ObjectidSupport
     before_validation :define_stop_area_referential, on: :create
-  end
-
-  def workgroup
-    @workgroup ||= CustomFieldsSupport.current_workgroup ||
-                   Workgroup.where(stop_area_referential_id: stop_area_referential_id).last
-  end
-
-  def stop_area_referential_id=(_)
-    r = super
-    @workgroup = nil
-    r # rubocop:disable Lint/Void
-  end
-
-  def reload(*)
-    r = super
-    @workgroup = nil
-    r
   end
 
   private

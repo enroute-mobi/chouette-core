@@ -23,7 +23,6 @@
   | window.journeyPatternsPerPage = #{@ppage};
   | window.perms = #{raw @perms};
   | window.features = #{raw @features};
-  | window.custom_fields = #{(@custom_fields.to_json).html_safe};
   | window.lineColor = "#{@route.line.color_hex}";
   | window.shape_url = "#{workbench_shape_referential_shapes_path(@workbench)}";
   | window.shapes_url = "#{shapes_workgroup_autocomplete_index_path(@referential.workgroup)}";

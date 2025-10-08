@@ -57,9 +57,6 @@ class Workgroup < ApplicationModel
 
   before_validation :create_dependencies, on: :create
 
-  has_many :custom_fields, dependent: :delete_all, inverse_of: :workgroup
-  has_many :custom_field_groups, inverse_of: :workgroup
-
   has_many :code_spaces, dependent: :destroy do
     def default
       find_or_create_by(short_name: CodeSpace::DEFAULT_SHORT_NAME)
@@ -83,10 +80,6 @@ class Workgroup < ApplicationModel
         config.resolver_classes << ReverseGeocode::Resolver::Cache
       end
     end
-  end
-
-  def custom_fields_definitions
-    Hash[*custom_fields.map{|cf| [cf.code, cf]}.flatten]
   end
 
   def has_export? export_name

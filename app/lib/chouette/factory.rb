@@ -99,13 +99,6 @@ module Chouette
           end
         end
 
-        model :custom_field do
-          attribute(:name) { |n| "Custom Field #{n}"}
-          attribute(:code) { |n| "field_#{n}" }
-          attribute(:field_type) { :string }
-          attribute(:resource_type) { "StopArea" }
-        end
-
         model :document_type do
           attribute(:name) { |n| "Document Type #{n}"}
           attribute(:short_name) { |n| "document_type_#{n}" }

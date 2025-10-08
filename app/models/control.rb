@@ -7,7 +7,6 @@ module Control
     [
       Control::PresenceAttribute,
       Control::PresenceCode,
-      Control::PresenceCustomField,
       Control::FormatAttribute,
       Control::CodeFormat,
       Control::AttributeUniqueness,

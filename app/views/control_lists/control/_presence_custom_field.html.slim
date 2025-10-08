@@ -1,7 +1,0 @@
-div[x-data = "{target_model: '#{form.object.target_model}'}"]
-  = form.input :target_model, input_html: { 'x-model': 'target_model' }
-  - form.object.candidate_custom_fields.group_by(&:resource_type).each do |resource_type, custom_fields|
-    // If the input is already disabled (read only mode), no javascript handler
-    - disabled = (form.options[:defaults] || {})[:disabled]
-    - input_html_options = disabled ? {} : { 'x-bind:disabled': "target_model != '#{resource_type}'" }
-    = form.input :target_custom_field_id, collection: custom_fields.map { |custom_field| [ custom_field.name, custom_field.id ] }, wrapper_html: { 'x-show': "target_model == '#{resource_type}'" }, input_html: input_html_options

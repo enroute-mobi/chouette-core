@@ -2,7 +2,6 @@
 
 module Chouette
   class VehicleJourney < Referential::Model
-    include CustomFieldsSupport
     include TransportModeEnumerations
 
     has_metadata
@@ -354,11 +353,6 @@ module Chouette
 
       attrs['accessibility_assessment_id'] = item['accessibility_assessment'] ? item['accessibility_assessment']['id'] : nil
 
-      attrs["custom_field_values"] = Hash[
-        *(item["custom_fields"] || {})
-          .map { |k, v| [k, v["value"]] }
-          .flatten
-      ]
       attrs
     end
 

@@ -24,8 +24,7 @@ const mapStateToProps = (state) => {
     },
     stopPointsList: state.stopPointsList,
     returnStopPointsList: state.returnStopPointsList,
-    extraHeaders: window.extra_headers,
-    customFields: window.custom_fields,
+    extraHeaders: window.extra_headers
   }
 }
 

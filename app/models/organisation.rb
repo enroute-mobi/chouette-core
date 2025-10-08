@@ -24,7 +24,6 @@ class Organisation < ApplicationModel
       where(owner_id: proxy_association.owner.id).distinct
     end
   end
-  has_many :custom_fields, through: :workgroups
   has_many :imports, through: :workbenches, class_name: "Import::Base"
   has_many :exports, through: :workbenches, class_name: "Export::Base"
   has_many :api_keys, through: :workbenches

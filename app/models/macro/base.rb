@@ -96,10 +96,8 @@ module Macro
       def around_run(&block)
         logger.tagged "#{self.class}(id:#{id || object_id})" do
           logger.info 'Started'
-          CustomFieldsSupport.without_custom_fields do
-            Chouette::Benchmark.measure(self.class.to_s, id: id) do
-              block.call
-            end
+          Chouette::Benchmark.measure(self.class.to_s, id: id) do
+            block.call
           end
           logger.info 'Done'
         end

@@ -2,7 +2,6 @@ fr:
   control_messages:
     default: "Message sur %{source|the_model_name} '%{name}'"
     presence_code: "%{source|The_model_name} '%{name}' ne possède pas d’espace de code '%{code_space_name}'"
-    presence_custom_field: "%{source|The_model_name} '%{name}' ne possède pas de champs personnalisé '%{custom_field}'"
     code_format: "%{source|The_model_name} '%{name}' ne possède pas d’espace de code '%{code_space_name}' au format attendu '%{expected_format}'"
     format_attribute: "%{source|The_model_name} '%{name}' ne possède pas d’attribut '%{target_attribute}' au format attendu '%{expected_format}'"
     model_status: "%{source|The_model_name} '%{name}' doit avoir le statut '%{expected_status}'"

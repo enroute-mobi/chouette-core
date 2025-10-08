@@ -32,15 +32,6 @@ RSpec.describe StopAreasController, type: :controller do
 
   before { @user.update(permissions: %w[stop_areas.create stop_areas.update stop_areas.destroy]) }
 
-  describe 'GET #index' do
-    subject(:request) { get :index, params: base_params }
-
-    it 'calls set_current_workgroup' do
-      expect(controller).to receive(:set_current_workgroup)
-      subject
-    end
-  end
-
   describe 'GET #new' do
     let(:request) { get :new, params: base_params }
 

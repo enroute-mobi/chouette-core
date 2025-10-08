@@ -1295,23 +1295,6 @@ RSpec.describe Export::NetexGeneric do
           end
         end
       end
-
-      describe '#netex_custom_field_identifiers' do
-        subject(:netex_custom_field_identifiers) { decorator.netex_custom_field_identifiers }
-
-        context 'when the StopArea has no custom field' do
-          it { is_expected.to be_empty }
-        end
-
-        context 'when the StopArea has a custom field key = value' do
-          before { stop_area.custom_field_values = { 'key' => 'value' } }
-
-          it do
-            is_expected.to include(Netex::KeyValue.new(key: 'key', value: 'value',
-                                                       type_of_key: 'chouette::custom-field'))
-          end
-        end
-      end
     end
   end
 

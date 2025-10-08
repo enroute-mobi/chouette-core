@@ -74,10 +74,8 @@ class RouteVehicleJourneysController < Chouette::ReferentialController
   private
 
   def load_custom_fields
-    @custom_fields = Chouette::VehicleJourney.custom_fields_definitions(referential.workgroup)
-
     @extra_headers = Rails.application.config.vehicle_journeys_extra_headers.dup.delete_if do |header|
-      header[:type] == :custom_field and not @custom_fields.has_key?(header[:name].to_s)
+      header[:type] == :custom_field
     end
   end
 

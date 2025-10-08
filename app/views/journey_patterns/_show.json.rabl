@@ -5,7 +5,6 @@
   registration_number
   comment
   checksum
-  custom_fields
   shape_id
   object_version
   created_at

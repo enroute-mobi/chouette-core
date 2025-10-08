@@ -11,8 +11,6 @@ en:
         one: Presence of attribute
       control/presence_code/run:
         one: Presence of code
-      control/presence_custom_field/run:
-        one: Presence of custom field
       control/code_format/run:
         one: Code format
       control/format_attribute/run:
@@ -62,9 +60,6 @@ en:
         target_code_space_id: Target code space
         target_code_space: Target code space
         description: The specified code space must have a code in the target model
-      control/presence_custom_field/run:
-        target_custom_field_id: Target Custom Field
-        custom_field: Target Custom Field
       control/code_format/run:
         target_code_space_id: Target code space
         target_code_space: Target code space

@@ -5,7 +5,6 @@ import CreateModal from '../components/CreateModal'
 
 const mapStateToProps = state => ({
   editMode: state.editMode,
-  custom_fields: state.custom_fields,
   status: state.status,
   type: state.modal.type,
   ...state.modal.modalProps

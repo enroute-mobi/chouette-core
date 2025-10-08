@@ -25,7 +25,7 @@ class ProcessingRuleWorkgroupDecorator < Af83::Decorator
 
   define_instance_method :target_workbench_names do
     if object.target_workbenches.empty?
-      'all.masculine'.t.capitalize
+      I18n.t('all.masculine')
     else
       object.target_workbenches.map(&:name).join(', ')
     end
@@ -33,7 +33,7 @@ class ProcessingRuleWorkgroupDecorator < Af83::Decorator
 
   define_instance_method :excluded_workbench_names do
     if object.excluded_workbenches.empty?
-      'all.masculine'.t.capitalize
+      I18n.t('none')
     else
       object.excluded_workbenches.map(&:name).join(', ')
     end

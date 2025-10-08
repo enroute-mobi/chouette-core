@@ -430,7 +430,7 @@ describe Chouette::JourneyPattern, :type => :model do
     let(:stop_area2) { context.stop_area(:stop_area2) }
 
     it 'returns only waypoints for stop areas having coordinates' do
-      is_expected.to match(
+      is_expected.to match_array(
         [
           have_attributes(
             name: stop_area1.name,

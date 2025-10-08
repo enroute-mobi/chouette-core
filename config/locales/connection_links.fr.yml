@@ -35,9 +35,9 @@ fr:
   activerecord:
     models:
       connection_link:
-        zero:  "correspondances"
-        one:   "correspondance"
-        other: "correspondances"
+        zero:  "Correspondances"
+        one:   "Correspondance"
+        other: "Correspondances"
     attributes:
       connection_link:
         both_ways: "Correspondance dans les deux sens"

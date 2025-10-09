@@ -10,6 +10,10 @@ class AutocompleteController < Chouette::UserController
     @lines = line_scope.lines.order(:name).by_text(text).limit(50)
   end
 
+  def line_groups
+    @line_groups = Query::LineGroup.new(line_scope.line_groups).text(text).scope.order(:name).limit(50)
+  end
+
   def line_notices
     @line_notices = line_scope.line_notices.order(:title).by_text(text).limit(50)
   end
@@ -62,6 +66,14 @@ class AutocompleteController < Chouette::UserController
       else
         Chouette::StopArea.none
       end
+  end
+
+  def stop_area_groups
+    @stop_area_groups = Query::StopAreaGroup.new(stop_area_scope.stop_area_groups)
+                                            .text(text)
+                                            .scope
+                                            .order(:name)
+                                            .limit(50)
   end
 
   def stop_area_providers

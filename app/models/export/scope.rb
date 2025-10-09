@@ -70,9 +70,24 @@ module Export
           companies_line_ids
         when ::Export::Setup::Scope::LineSelector::LineProviders
           line_provider_line_ids
+        when ::Export::Setup::Scope::LineSelector::LineGroups
+          line_groups_line_ids
         else
           nil
         end
+      end
+
+      def line_groups_line_ids
+        referential.line_referential
+                   .lines
+                   .joins(:group_members)
+                   .where(
+                     {
+                       ::LineGroup::Member.quoted_table_name => {
+                         group_id: setup.scope_setup.vehicle_journeys.included_lines.line_group_ids
+                       }
+                     }
+                   ).pluck(:id)
       end
 
       def line_provider_line_ids

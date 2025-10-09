@@ -12,6 +12,7 @@ Rails.application.routes.draw do # rubocop:disable Metrics/BlockLength
 
     resources :autocomplete, only: [] do
       get :lines, on: :collection, defaults: { format: 'json' }
+      get :line_groups, on: :collection, defaults: { format: 'json' }
       get :companies, on: :collection, defaults: { format: 'json' }
       get :line_providers, on: :collection, defaults: { format: 'json' }
       get :line_notices, on: :collection, defaults: { format: 'json' }
@@ -58,6 +59,7 @@ Rails.application.routes.draw do # rubocop:disable Metrics/BlockLength
       end
 
       resources :autocomplete, only: [] do
+        get :line_groups, on: :collection, defaults: { format: 'json' }
         get :line_providers, on: :collection, defaults: { format: 'json' }
         get :stop_areas, on: :collection, defaults: { format: 'json' }
         get :parent_stop_areas, on: :collection, defaults: { format: 'json' }
@@ -313,6 +315,7 @@ Rails.application.routes.draw do # rubocop:disable Metrics/BlockLength
 
     resources :autocomplete, only: [] do
       get :lines, on: :collection, defaults: { format: 'json' }
+      get :line_groups, on: :collection, defaults: { format: 'json' }
       get :companies, on: :collection, defaults: { format: 'json' }
       get :line_providers, on: :collection, defaults: { format: 'json' }
       get :stop_areas, on: :collection, defaults: { format: 'json' }

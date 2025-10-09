@@ -61,6 +61,7 @@ fr:
         control_list: Jeu de contrôles
         workgroup: Groupe de travail
         target_workbenches: Espace(s) de travail cible(s)
+        excluded_workbenches: Espace(s) de travail exclu(s)
   simple_form:
     hints:
       processing_rule:

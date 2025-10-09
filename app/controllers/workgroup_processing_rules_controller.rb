@@ -44,7 +44,8 @@ class WorkgroupProcessingRulesController < Chouette::WorkgroupController
     params.require(:processing_rule).permit(
       :control_list_id,
       :operation_step,
-      target_workbenches: []
+      target_workbenches: [],
+      excluded_workbenches: []
     ).with_defaults(processable_type: Control::List.name)
   end
 end

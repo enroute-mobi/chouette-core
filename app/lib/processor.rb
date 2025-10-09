@@ -82,9 +82,7 @@ class Processor
     processing_rules = all_workgroup_processing_rules(operation_step)
     return processing_rules if workbench.blank?
 
-    processing_rules.where(
-      'target_workbench_ids && ARRAY[?]::bigint[] OR ARRAY_LENGTH(target_workbench_ids, 1) IS NULL', workbench
-    )
+    processing_rules.accept_workbench(workbench)
   end
 
   def before_operation_step

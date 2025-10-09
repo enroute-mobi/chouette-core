@@ -125,5 +125,40 @@ RSpec.describe Macro::ForceAttributeValue::Run do
 
       end   
     end
+
+    describe 'Line' do
+      let(:target_model) { 'Line' }
+      let(:line) { context.line(:line) }
+
+      describe '#transport_mode' do
+        let(:target_attribute) { 'transport_mode' }
+        let(:expected_value) { 'bus' }
+
+        let(:context) do
+          Chouette.create do
+            line :line, transport_mode: nil
+          end
+        end
+
+        it 'should update the line with expected value' do
+          expect { subject }.to change { line.reload.transport_mode }.from(nil).to(expected_value)
+        end
+
+        it 'should create a macro message' do
+          expect { subject }.to change { macro_run.macro_messages.count }.from(0).to(1)
+
+          expected_message = an_object_having_attributes(
+            criticity: 'info',
+            message_attributes: {
+              'name' => line.name,
+              'target_attribute' => 'transport_mode'
+            },
+            source: line
+          )
+          expect(macro_run.macro_messages).to include(expected_message)
+        end
+
+      end
+    end
   end
 end

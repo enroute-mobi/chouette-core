@@ -32,6 +32,7 @@ module Macro
 
           # Line
           select Chouette::Line, :is_referent
+          select Chouette::Line, :transport_mode
 
           # Entrance
           select Entrance, :city_name
@@ -49,9 +50,21 @@ module Macro
 
       def run
         candidate_models.find_each do |model|
-          model.update(target_attribute => expected_value)
+          model.update(updated_attribute_name(model) => updated_value(model))
           create_message model, target_attribute
         end
+      end
+
+      def updated_attribute_name(model)
+        return target_attribute unless target_attribute == 'transport_mode' && model.respond_to?(:chouette_transport_mode)
+
+        :chouette_transport_mode
+      end
+
+      def updated_value(model)
+        return expected_value unless target_attribute == 'transport_mode' && model.respond_to?(:chouette_transport_mode)
+
+        Chouette::TransportMode.new(expected_value)
       end
 
       def create_message(model, target_attribute)
@@ -69,7 +82,7 @@ module Macro
       end
 
       def candidate_models
-        @candidate_models ||= models.where.not(id: models.where(target_attribute => expected_value))  
+        @candidate_models ||= models.where.not(id: models.where(target_attribute => expected_value))
       end
 
       def model_collection

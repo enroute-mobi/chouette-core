@@ -220,6 +220,7 @@ module Export
 
         def to_referential
           Referential.new.tap do |result|
+            result.parent = parent
             %i[stop_areas lines shapes point_of_interests vehicle_journeys].each do |attr|
               result.send(:"#{attr}=", send(attr)&.with_scope_setup(result))
             end

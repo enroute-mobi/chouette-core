@@ -82,7 +82,10 @@ class Publication < Operation
     delegate :referential, :workgroup, :publication_setup, to: :publication
 
     def build_export
-      ::Export::Base.new(export_attributes)
+      ::Export::Base.new(export_attributes).tap do |export|
+        export.setup = publication_setup.export_setup.dup
+        export.setup.scope_setup = export.setup.scope_setup.to_referential
+      end
     end
 
     def publication_name
@@ -94,9 +97,6 @@ class Publication < Operation
     end
 
     def export_attributes
-      export_setup = publication_setup.export_setup.dup
-      export_setup.scope_setup = export_setup.scope_setup.to_referential
-
       {
         type: publication_setup.export_type,
         referential: referential,
@@ -105,8 +105,7 @@ class Publication < Operation
         synchronous: true,
         workgroup: workgroup,
         publication: publication,
-        cache_prefix: cache_prefix,
-        setup: export_setup.as_json
+        cache_prefix: cache_prefix
       }
     end
   end

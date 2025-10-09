@@ -66,7 +66,7 @@ GIT
 
 GIT
   remote: https://bitbucket.org/enroute-mobi/netex.git
-  revision: 8099b6ebb4327f32cbc1f266099d966fcafbb761
+  revision: 013b12cc2a521af5fe547a6987c53181f3907799
   specs:
     netex (0.1.2)
       activesupport
@@ -201,7 +201,7 @@ GEM
       erubi (>= 1.0.0)
       rack (>= 0.9.0)
       rouge (>= 1.0.0)
-    bigdecimal (3.2.3)
+    bigdecimal (3.3.0)
     binding_of_caller (1.0.1)
       debug_inspector (>= 1.2.0)
     bootsnap (1.18.6)
@@ -582,7 +582,7 @@ GEM
     mini_portile2 (2.8.9)
     mini_racer (0.9.0)
       libv8-node (~> 18.19.0.0)
-    minitest (5.25.5)
+    minitest (5.26.0)
     msgpack (1.8.0)
     multi_json (1.17.0)
     multi_xml (0.7.2)

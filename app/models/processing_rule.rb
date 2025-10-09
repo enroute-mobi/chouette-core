@@ -47,13 +47,13 @@ module ProcessingRule
                                       workbench: operation_workbench,
                                       workgroup_id: workgroup_id,
                                       processed: processed
-    
+
       processing.perform
     end
 
     def processing_step
       operation_step.split('_').first if operation_step.present?
-    end 
+    end
   end
 
   # Workbench ProcessingRule managed as Workbench#processing_rules
@@ -114,11 +114,11 @@ module ProcessingRule
 
     def self.accept_workbench(workbench)
       where(
-        'target_workbench_ids && ARRAY[:workbench]::bigint[] OR ARRAY_LENGTH(target_workbench_ids, 1) IS NULL',
+        'ARRAY_LENGTH(target_workbench_ids, 1) IS NULL OR target_workbench_ids && ARRAY[:workbench]::bigint[]',
         workbench: workbench
       )
       .where.not(
-        '(excluded_workbench_ids && ARRAY[:workbench]::bigint[]) AND ARRAY_LENGTH(excluded_workbench_ids, 1) IS NOT NULL',
+        'ARRAY_LENGTH(excluded_workbench_ids, 1) IS NOT NULL AND (excluded_workbench_ids && ARRAY[:workbench]::bigint[])',
         workbench: workbench
       )
     end

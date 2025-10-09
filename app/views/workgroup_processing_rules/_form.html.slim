@@ -2,7 +2,6 @@
   .row
     .col-lg-12 x-data="{processable_type: '#{@processing_rule.processable_type}', target_workbenches: #{@processing_rule.target_workbench_ids.to_json}, excluded_workbenches: #{@processing_rule.excluded_workbench_ids.to_json} }"
       = f.input :operation_step, input_html: { 'x-on:change': 'processable_type = $event.target.value' }
-
       div x-show="processable_type != 'after_aggregate'"
         div x-show="excluded_workbenches.length == 0"
           = f.input :target_workbenches,

@@ -9,7 +9,7 @@ en:
     actions:
       create: "Create a report"
       show: "Show this report"
-      new: "Execute this report"
+      new: "Execute a control"
       destroy: "Delete this report"
       destroy_confirm: "Are you sur to delete this report ?"
   control_list_runs:

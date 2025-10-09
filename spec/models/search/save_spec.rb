@@ -22,6 +22,98 @@ RSpec.describe Search::Save, type: :model do
   it { is_expected.to validate_presence_of :name }
   it { is_expected.to validate_presence_of :search_type }
 
+  describe 'validations' do
+    describe 'name uniqueness' do
+      before { saved_search.search_type = 'Whatever' }
+
+      context 'in workgroup' do
+        it 'can have a name already used in another workgroup with the same search_type' do
+          context = Chouette.create do
+            workgroup :workgroup1
+            workgroup :workgroup2
+          end
+          Search::Save.create!(parent: context.workgroup(:workgroup2), name: 'Unique', search_type: 'Whatever')
+          saved_search.parent = context.workgroup(:workgroup1)
+          is_expected.to allow_value('Unique').for(:name)
+        end
+
+        it 'can have a name already used in a workbench inside workgroup with the same search_type' do
+          context = Chouette.create do
+            workgroup :workgroup do
+              workbench :workbench
+            end
+          end
+          Search::Save.create!(parent: context.workbench(:workbench), name: 'Unique', search_type: 'Whatever')
+          saved_search.parent = context.workgroup(:workgroup)
+          is_expected.to allow_value('Unique').for(:name)
+        end
+
+        context 'in the same workgroup' do
+          let(:context) do
+            Chouette.create do
+              workgroup :workgroup
+            end
+          end
+
+          it 'can have a name already used with another search_type' do
+            Search::Save.create!(parent: context.workgroup(:workgroup), name: 'Unique', search_type: 'Other')
+            saved_search.parent = context.workgroup(:workgroup)
+            is_expected.to allow_value('Unique').for(:name)
+          end
+
+          it 'cannot have a name already used with the same search_type' do
+            Search::Save.create!(parent: context.workgroup(:workgroup), name: 'Unique', search_type: 'Whatever')
+            saved_search.parent = context.workgroup(:workgroup)
+            is_expected.not_to allow_value('Unique').for(:name)
+          end
+        end
+      end
+
+      context 'in workbench' do
+        it 'can have a name already used in another workbench with the same search_type' do
+          context = Chouette.create do
+            workbench :workbench1
+            workbench :workbench2
+          end
+          Search::Save.create!(parent: context.workbench(:workbench2), name: 'Unique', search_type: 'Whatever')
+          saved_search.parent = context.workbench(:workbench1)
+          is_expected.to allow_value('Unique').for(:name)
+        end
+
+        it 'can have a name already used in a workgroup including its workbench with the same search_type' do
+          context = Chouette.create do
+            workgroup :workgroup do
+              workbench :workbench
+            end
+          end
+          Search::Save.create!(parent: context.workgroup(:workgroup), name: 'Unique', search_type: 'Whatever')
+          saved_search.parent = context.workbench(:workbench)
+          is_expected.to allow_value('Unique').for(:name)
+        end
+
+        context 'in the same workbench' do
+          let(:context) do
+            Chouette.create do
+              workbench :workbench
+            end
+          end
+
+          it 'can have a name already used with another search_type' do
+            Search::Save.create!(parent: context.workbench(:workbench), name: 'Unique', search_type: 'Other')
+            saved_search.parent = context.workbench(:workbench)
+            is_expected.to allow_value('Unique').for(:name)
+          end
+
+          it 'cannot have a name already used with the same search_type' do
+            Search::Save.create!(parent: context.workbench(:workbench), name: 'Unique', search_type: 'Whatever')
+            saved_search.parent = context.workbench(:workbench)
+            is_expected.not_to allow_value('Unique').for(:name)
+          end
+        end
+      end
+    end
+  end
+
   describe '#model_name' do
     subject(:model_name) { saved_search.model_name }
 

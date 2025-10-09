@@ -388,7 +388,7 @@ class Export::Ara < Export::Base
     end
 
     def stop_area_groups
-      export_scope.stop_area_groups.includes(:members).where.not(short_name: [nil, ''])
+      export_scope.stop_area_groups.with_short_name.includes(:members)
     end
 
     class Decorator < SimpleDelegator
@@ -607,7 +607,7 @@ class Export::Ara < Export::Base
     end
 
     def line_groups
-      export_scope.line_groups.includes(:members).where.not(short_name: [nil, ''])
+      export_scope.line_groups.with_short_name.includes(:members)
     end
 
     class Decorator < SimpleDelegator

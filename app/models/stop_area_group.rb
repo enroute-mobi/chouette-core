@@ -2,12 +2,21 @@
 
 class StopAreaGroup < Group
   include StopAreaReferentialSupport
+  include NilIfBlank
 
   has_many :members, class_name: 'StopAreaGroup::Member', foreign_key: :group_id, dependent: :delete_all,
                      inverse_of: :group
   has_many :stop_areas, class_name: 'Chouette::StopArea', through: :members, inverse_of: :groups
 
   validates :stop_area_ids, length: { minimum: 1 }
+
+  scope :with_short_name, -> { where.not(short_name: nil) }
+
+  def self.nullable_attributes
+    %i[
+      short_name
+    ]
+  end
 
   class Member < Group::Member
     belongs_to :stop_area, class_name: 'Chouette::StopArea' # CHOUETTE-3247 code analysis

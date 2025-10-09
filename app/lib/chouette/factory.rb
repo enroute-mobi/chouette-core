@@ -259,6 +259,7 @@ module Chouette
 
             model :line_group do
               attribute(:name) { |n| "LineGroup #{n}" }
+              attribute(:short_name) { |n| "line_group_#{n}" }
             end
 
             model :company do
@@ -385,6 +386,7 @@ module Chouette
 
             model :stop_area_group do
               attribute(:name) { |n| "StopAreaGroup #{n}" }
+              attribute(:short_name) { |n| "stop_area_group_#{n}" }
             end
 
             model :stop_area_routing_constraint do

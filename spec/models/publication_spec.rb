@@ -57,6 +57,22 @@ RSpec.describe Publication, type: :model do
       expect(publication.export).to be_present
     end
 
+    context 'when publication setup has line restrictions' do
+      let(:line_ids) { referential.lines.map(&:id) }
+
+      before do
+        publication_setup.export_setup.scope_setup.vehicle_journeys.included_lines = {
+          type: 'Export::Setup::Scope::LineSelector::Lines',
+          line_ids: line_ids
+        }
+      end
+
+      it 'should create an export' do
+        subject
+        expect(publication.export.setup.scope_setup.vehicle_journeys.included_lines.line_ids).to eq(line_ids)
+      end
+    end
+
     context 'when the export succeeds' do
       before(:each) do
         allow_any_instance_of(Export::Gtfs).to receive(:export) do |obj|

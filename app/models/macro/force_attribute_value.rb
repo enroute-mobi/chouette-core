@@ -86,9 +86,8 @@ module Macro
       end
 
       def models_with_expected_value
-        @models_with_expected_value ||= if target_attribute == 'transport_mode' && target_model == 'Line'
-          mode, sub_mode = expected_value.split('/')
-          models.where(transport_mode: mode, transport_submode: sub_mode || 'undefined')
+        @models_with_expected_value ||= if target_attribute == 'transport_mode' && models.respond_to?(:with_chouette_transport_mode)
+          models.with_chouette_transport_mode(Chouette::TransportMode.new(expected_value))
         else
           models.where(target_attribute => expected_value)
         end

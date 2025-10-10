@@ -64,7 +64,7 @@ module Macro
       def updated_value(model)
         return expected_value unless target_attribute == 'transport_mode' && model.respond_to?(:chouette_transport_mode)
 
-        Chouette::TransportMode.new(expected_value)
+        Chouette::TransportMode.from(expected_value)
       end
 
       def create_message(model, target_attribute)
@@ -82,7 +82,16 @@ module Macro
       end
 
       def candidate_models
-        @candidate_models ||= models.where.not(id: models.where(target_attribute => expected_value))
+        @candidate_models ||= models.where.not(id: models_with_expected_value)
+      end
+
+      def models_with_expected_value
+        @models_with_expected_value ||= if target_attribute == 'transport_mode' && target_model == 'Line'
+          mode, sub_mode = expected_value.split('/')
+          models.where(transport_mode: mode, transport_submode: sub_mode || 'undefined')
+        else
+          models.where(target_attribute => expected_value)
+        end
       end
 
       def model_collection

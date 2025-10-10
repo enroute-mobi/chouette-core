@@ -17,6 +17,7 @@ class ParentNotifier
           notified_parent_at: nil,
           status: @klass.finished_statuses
         )
+        .where("updated_at < ?", 1.hour.ago)
         .where.not(parent: nil)
     end
   end

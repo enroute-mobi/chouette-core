@@ -107,6 +107,8 @@ fr:
       area_type: "Type d'Arrêt"
       advanced_search: "Recherche avancée"
     map:
+      controls:
+        layers: "Couches"
       groups:
         data: "Données"
         base: "Base"

@@ -825,6 +825,14 @@ class Referential < ApplicationModel
     def data_frozen?
       data_freeze_status != 'unfrozen'
     end
+
+    def data_freeze
+      update(data_freeze_status: 'frozen', ready: false)
+    end
+
+    def data_unfreeze
+      update(data_freeze_status: 'unfrozen', ready: true)
+    end
   end
 
   private

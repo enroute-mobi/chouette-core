@@ -647,4 +647,32 @@ RSpec.describe Referential, type: :model do
       end
     end
   end
+
+  describe '#data_freeze' do
+    subject { referential.data_freeze }
+
+    it { expect { subject }.to change { referential.data_freeze_status }.from('unfrozen').to('frozen') }
+
+    it { expect { subject }.to change { referential.ready? }.from(true).to(false) }
+
+    it 'removes schema from apartment tenants' do
+      expect { subject }.to change { Apartment.tenant_names }.from(include(referential.slug))
+                                                             .to(not_include(referential.slug))
+    end
+  end
+
+  describe '#data_unfreeze' do
+    subject { referential.data_unfreeze }
+
+    before { referential.update(data_freeze_status: 'unfreeze_enqueued', ready: false) }
+
+    it { expect { subject }.to change { referential.data_freeze_status }.from('unfreeze_enqueued').to('unfrozen') }
+
+    it { expect { subject }.to change { referential.ready? }.from(false).to(true) }
+
+    it 'restores schema in apartment tenants' do
+      expect { subject }.to change { Apartment.tenant_names }.from(not_include(referential.slug))
+                                                             .to(include(referential.slug))
+    end
+  end
 end

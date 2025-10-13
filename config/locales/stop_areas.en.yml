@@ -106,6 +106,8 @@ en:
       area_type: "Area Type"
       advanced_search: "Advanced Search"
     map:
+      controls:
+        layers: "Layers"
       groups:
         data: "Data"
         base: "Base"

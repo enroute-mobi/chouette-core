@@ -163,7 +163,7 @@ async function init() {
     activationMode: 'click',
     startActive: false,
     groupSelectStyle: 'none',
-    tipLabel: i18n.t('map.controls.layers')
+    tipLabel: i18n.t('stop_areas.map.controls.layers')
   });
 
   // Hide the li element corresponding to the stop_area layer

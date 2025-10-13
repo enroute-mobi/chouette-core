@@ -132,32 +132,87 @@ RSpec.describe Macro::ForceAttributeValue::Run do
 
       describe '#transport_mode' do
         let(:target_attribute) { 'transport_mode' }
-        let(:expected_value) { 'bus' }
 
         let(:context) do
           Chouette.create do
-            line :line, transport_mode: nil
+            line :line
           end
         end
 
-        it 'should update the line with expected value' do
-          expect { subject }.to change { line.reload.transport_mode }.from(nil).to(expected_value)
+        let(:expected_message) do
+            an_object_having_attributes(
+              criticity: 'info',
+              message_attributes: {
+                'name' => line.name,
+                'target_attribute' => 'transport_mode'
+              },
+              source: line
+            )
         end
 
-        it 'should create a macro message' do
-          expect { subject }.to change { macro_run.macro_messages.count }.from(0).to(1)
+        let(:transport_submode_value) { 'undefined' }
 
-          expected_message = an_object_having_attributes(
-            criticity: 'info',
-            message_attributes: {
-              'name' => line.name,
-              'target_attribute' => 'transport_mode'
-            },
-            source: line
+        before do
+          line.update(
+            chouette_transport_mode: Chouette::TransportMode.new(
+              transport_mode_value,
+              transport_submode_value
+            )
           )
-          expect(macro_run.macro_messages).to include(expected_message)
         end
 
+        context 'when the expected value contains only mode' do
+          let(:transport_mode_value) { 'tram' }
+          let(:expected_value) { 'bus' }
+
+          it 'should update the line with expected value' do
+            expect { subject }.to change { line.reload.transport_mode }.from('tram').to(expected_value)
+          end
+
+          it 'should create a macro message' do
+            expect { subject }.to change { macro_run.macro_messages.count }.from(0).to(1)
+            expect(macro_run.macro_messages).to include(expected_message)
+          end
+        end
+
+        context 'when the expected value contains mode and submode' do
+          let(:transport_mode_value) { 'tram' }
+          let(:expected_value) { 'bus/school_bus' }
+
+          it 'should update the line with expected value' do
+            expect { subject }.to change { line.reload.transport_mode }.from('tram').to('bus')
+                              .and change { line.reload.transport_submode }.from('undefined').to('schoolBus')
+          end
+
+          it 'should create a macro message' do
+            expect { subject }.to change { macro_run.macro_messages.count }.from(0).to(1)
+            expect(macro_run.macro_messages).to include(expected_message)
+          end
+        end
+
+        context 'when the expected value is the same mode but different submode' do
+          let(:transport_mode_value) { 'bus' }
+          let(:expected_value) { 'bus/school_bus' }
+
+          it 'should update the line with expected value' do
+            expect {
+              subject
+            }.to change {
+              line.reload.attributes.slice('transport_mode', 'transport_submode')
+            }.from({
+              'transport_mode' => 'bus',
+              'transport_submode' => 'undefined'
+            }).to({
+              'transport_mode' => 'bus',
+              'transport_submode' => 'schoolBus'
+            })
+          end
+
+          it 'should create a macro message' do
+            expect { subject }.to change { macro_run.macro_messages.count }.from(0).to(1)
+            expect(macro_run.macro_messages).to include(expected_message)
+          end
+        end
       end
     end
   end

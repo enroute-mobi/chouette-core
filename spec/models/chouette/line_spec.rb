@@ -34,6 +34,32 @@ describe Chouette::Line, type: :model do
     expect(subject).to be_valid
   end
 
+  describe '.with_transport_mode' do
+    subject { described_class.with_chouette_transport_mode(transport_mode) }
+
+    let!(:context) do
+      Chouette.create do
+        line :bus, transport_mode: 'bus', transport_submode: 'undefined'
+        line :bus_night_bus, transport_mode: 'bus', transport_submode: 'nightBus'
+      end
+    end
+
+    context 'with #bus' do
+      let(:transport_mode) { Chouette::TransportMode.from('bus') }
+      it { is_expected.to contain_exactly(context.line(:bus)) }
+    end
+
+    context 'with #bus/night_bus' do
+      let(:transport_mode) { Chouette::TransportMode.from('bus/night_bus') }
+      it { is_expected.to contain_exactly(context.line(:bus_night_bus)) }
+    end
+
+    context 'with #bus/bus' do
+      let(:transport_mode) { Chouette::TransportMode.from('bus/bus') }
+      it { is_expected.to be_empty }
+    end
+  end
+
   describe '#chouette_transport_mode' do
     subject { line.chouette_transport_mode.inspect }
 

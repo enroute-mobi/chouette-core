@@ -117,6 +117,17 @@ module Chouette
       %i[registration_number published_name number comment url color text_color]
     end
 
+    scope :with_chouette_transport_mode, lambda { |transport_mode|
+      if transport_mode.nil?
+        mode = nil
+        submode = nil
+      else
+        mode = transport_mode.camelize_mode
+        submode = transport_mode.camelize_sub_mode || 'undefined'
+      end
+      where(transport_mode: mode, transport_submode: submode)
+    }
+
     def chouette_transport_mode
       submode = transport_submode == 'undefined' ? nil : transport_submode&.underscore
       Chouette::TransportMode.new(transport_mode&.underscore, submode)

@@ -428,26 +428,40 @@ RSpec.describe Export::Setup::Scope::Referential do
   describe '#candidate_line_providers' do
     subject { setup_scope_referential.candidate_line_providers }
 
-    let(:context) do
-      Chouette.create do
-        workbench :workbench do
-          line_provider :line_provider1
-          line_provider :line_provider2
-        end
-        workbench :other_workbench do
-          line_provider :out_of_workbench_line_provider
-        end
-      end
-    end
-    let(:default_line_provider) { context.workbench(:workbench).default_line_provider }
-    let(:parent) { double(:setup, parent: double(:export, workbench: context.workbench(:workbench))) }
-
     before { setup_scope_referential.parent = parent }
 
-    it 'only returns line providers in workbench' do
-      is_expected.to(
-        match_array(%i[line_provider1 line_provider2].map { |l| context.line_provider(l) } + [default_line_provider])
-      )
+    context 'when export has only a workbench' do
+      let(:context) do
+        Chouette.create do
+          workbench :workbench
+          workbench :other_workbench
+        end
+      end
+      let(:default_line_provider) { context.workbench(:workbench).default_line_provider }
+      let(:parent) { double(:setup, parent: double(:export, workgroup: nil, workbench: context.workbench(:workbench))) }
+
+      it 'only returns line providers in workbench' do
+        is_expected.to match_array([default_line_provider])
+      end
+    end
+
+    context 'when export has only a workgroup' do
+      let(:context) do
+        Chouette.create do
+          workgroup :workgroup do
+            workbench
+          end
+          workgroup :other_workbench do
+            workbench
+          end
+        end
+      end
+      let(:default_line_providers) { context.workgroup(:workgroup).workbenches.map(&:default_line_provider) }
+      let(:parent) { double(:setup, parent: double(:export, workgroup: context.workgroup(:workgroup), workbench: nil)) }
+
+      it 'only returns line providers in workgroup' do
+        is_expected.to match_array(default_line_providers)
+      end
     end
   end
 end

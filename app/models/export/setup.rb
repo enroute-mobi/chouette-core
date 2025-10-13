@@ -194,7 +194,7 @@ module Export
         end
 
         def candidate_line_providers
-          parent.parent.workbench.line_providers
+          (parent.parent.workbench || parent.parent.workgroup).line_providers
         end
       end
 

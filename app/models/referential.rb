@@ -830,8 +830,29 @@ class Referential < ApplicationModel
       update(data_freeze_status: 'frozen', ready: false)
     end
 
+    def enqueue_data_unfreeze
+      transaction do
+        return false unless update(data_freeze_status: 'unfreeze_enqueued')
+
+        Delayed::Job.enqueue(DataUnfreezeJob.new(self))
+      end
+    end
+
     def data_unfreeze
       update(data_freeze_status: 'unfrozen', ready: true)
+    end
+  end
+
+  class DataUnfreezeJob
+    def initialize(referential)
+      @referential = referential
+    end
+    attr_reader :referential
+
+    def perform
+      return unless referential.data_freeze_status == 'unfreeze_enqueued'
+
+      referential.data_unfreeze
     end
   end
 

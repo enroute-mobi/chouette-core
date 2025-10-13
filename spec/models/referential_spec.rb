@@ -661,6 +661,28 @@ RSpec.describe Referential, type: :model do
     end
   end
 
+  describe '#enqueue_data_unfreeze' do
+    subject { referential.enqueue_data_unfreeze }
+
+    before { referential.update(data_freeze_status: 'frozen', ready: false) }
+
+    it { expect { subject }.to change { referential.data_freeze_status }.from('frozen').to('unfreeze_enqueued') }
+
+    it { expect { subject }.not_to change { referential.ready? }.from(false) }
+
+    it { expect { subject }.to change { Delayed::Job.count }.by(1) }
+
+    it do
+      subject
+      expect(Delayed::Job.last.handler).to match(/Referential::DataUnfreezeJob/)
+    end
+
+    context 'when update fails' do
+      before { allow(referential).to receive(:update).and_return(false) }
+      it { expect { subject }.not_to change { Delayed::Job.count } }
+    end
+  end
+
   describe '#data_unfreeze' do
     subject { referential.data_unfreeze }
 
@@ -673,6 +695,36 @@ RSpec.describe Referential, type: :model do
     it 'restores schema in apartment tenants' do
       expect { subject }.to change { Apartment.tenant_names }.from(not_include(referential.slug))
                                                              .to(include(referential.slug))
+    end
+  end
+end
+
+RSpec.describe Referential::DataUnfreezeJob do
+  subject(:job) { described_class.new(referential) }
+
+  let(:referential) do
+    Chouette.create do
+      referential data_freeze_status: 'unfreeze_enqueued', ready: false
+    end.referential
+  end
+
+  describe '#perform' do
+    subject { job.perform }
+
+    it 'calls Referential#data_unfreeze' do
+      expect(referential).to receive(:data_unfreeze)
+      subject
+    end
+
+    %w[unfrozen freezing frozen unfreezing].each do |data_freeze_status|
+      context "when #data_freeze_status is \"#{data_freeze_status}\"" do
+        before { referential.update(data_freeze_status: data_freeze_status) }
+
+        it 'does not call Referential#data_unfreeze' do
+          expect(referential).not_to receive(:data_unfreeze)
+          subject
+        end
+      end
     end
   end
 end

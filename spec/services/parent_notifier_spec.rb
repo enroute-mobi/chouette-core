@@ -48,9 +48,11 @@ RSpec.describe ParentNotifier do
 
       Import::Base.where(id: netex_import).update_all notified_parent_at: nil
 
-      expect(
-        ParentNotifier.new(Import::Base).objects_pending_notification
-      ).to eq([netex_import])
+      Timecop.travel(2.hours.from_now) do
+        expect(
+          ParentNotifier.new(Import::Base).objects_pending_notification
+        ).to eq([netex_import])
+      end
     end
 
     it "doesn't include imports without a parent" do

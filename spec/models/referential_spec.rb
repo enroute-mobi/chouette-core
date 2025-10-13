@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 RSpec.describe Referential, type: :model do
-  let(:ref) { create :workbench_referential, metadatas: [create(:referential_metadata)] }
+  let(:referential) { Chouette.create { referential }.referential }
 
   it { should have_many(:metadatas) }
   it { is_expected.to belong_to(:workbench).optional }
@@ -144,9 +144,14 @@ RSpec.describe Referential, type: :model do
     context "with concurent referential on same lines and dates" do
       let(:other){
         metadatas = create :referential_metadata
-        metadatas.line_ids = ref.metadatas.first.line_ids
-        metadatas.periodes = ref.metadatas.first.periodes
-        build :workbench_referential, metadatas: [metadatas], workbench: ref.workbench, organisation: ref.organisation
+        metadatas.line_ids = referential.metadatas.first.line_ids
+        metadatas.periodes = referential.metadatas.first.periodes
+        build(
+          :workbench_referential,
+          metadatas: [metadatas],
+          workbench: referential.workbench,
+          organisation: referential.organisation
+        )
       }
 
       it "should not be_valid" do
@@ -154,9 +159,7 @@ RSpec.describe Referential, type: :model do
       end
 
       context "when the other is not active" do
-        before{
-          ref.failed!
-        }
+        before { referential.failed! }
 
         it "should be_valid" do
           expect(other).to be_valid
@@ -164,9 +167,7 @@ RSpec.describe Referential, type: :model do
       end
 
       context "with metadatas on a single day" do
-        before{
-          ref.metadatas.first.update periodes: [(Time.now.to_date..Time.now.to_date)]
-        }
+        before { referential.metadatas.first.update periodes: [(Time.now.to_date..Time.now.to_date)] }
 
         it "should not be_valid" do
           expect(other).to_not be_valid
@@ -268,31 +269,31 @@ RSpec.describe Referential, type: :model do
   end
 
   context "clean_routes_if_needed" do
-    before(:each){
-      3.times do create(:line, line_referential: ref.line_referential) end
-      m = ref.metadatas.last
-      m.update_column :line_ids, ref.associated_lines.map(&:id)
-      ref.switch do
-        create(:route, line: ref.lines.order(:id).last)
+    before(:each) do
+      3.times do create(:line, line_referential: referential.line_referential) end
+      m = referential.metadatas.last
+      m.update_column :line_ids, referential.associated_lines.map(&:id)
+      referential.switch do
+        create(:route, line: referential.lines.order(:id).last)
       end
-    }
+    end
     context "when the lines did not change" do
       it "should do nothing" do
         expect(CleanUp).to_not receive(:create)
-        ref.clean_routes_if_needed
+        referential.clean_routes_if_needed
       end
     end
 
     context "when the lines changed" do
       before do
-        m = ref.metadatas.last
+        m = referential.metadatas.last
         m.update_column :line_ids, m.line_ids.sort[0...-1]
-        ref.reload
+        referential.reload
       end
       it "should perform cleanup" do
-        expect(CleanUp).to receive(:create!).with({referential: ref, original_state: ref.state})
-        ref.clean_routes_if_needed
-        expect(ref.reload.state).to eq :pending
+        expect(CleanUp).to receive(:create!).with({ referential: referential, original_state: referential.state })
+        referential.clean_routes_if_needed
+        expect(referential.reload.state).to eq :pending
       end
     end
   end
@@ -393,15 +394,15 @@ RSpec.describe Referential, type: :model do
 
   context ".referential_ids_in_periode" do
     it 'should retrieve referential id in periode range' do
-      range = ref.metadatas.first.periodes.sample
+      range = referential.metadatas.first.periodes.sample
       refs  = Referential.referential_ids_in_periode(range)
-      expect(refs).to include(ref.id)
+      expect(refs).to include(referential.id)
     end
 
     it 'should not retrieve referential id not in periode range' do
       range = Date.today - 2.year..Date.today - 1.year
       refs  = Referential.referential_ids_in_periode(range)
-      expect(refs).to_not include(ref.id)
+      expect(refs).to_not include(referential.id)
     end
   end
 
@@ -416,7 +417,7 @@ RSpec.describe Referential, type: :model do
 
   context "Cloning referential" do
     let(:clone) do
-      Referential.new_from(ref, ref.workbench)
+      Referential.new_from(referential, referential.workbench)
     end
 
     let!(:workbench){ create :workbench }
@@ -431,7 +432,7 @@ RSpec.describe Referential, type: :model do
     end
 
     it 'should create a Referential' do
-      ref
+      referential
       expect { saved_clone }.to change{Referential.count}.by(1)
       expect(saved_clone.state).to eq :pending
     end
@@ -445,7 +446,7 @@ RSpec.describe Referential, type: :model do
     end
 
     xit 'should clone referential_metadatas' do
-      expect(metadatas_attributes(clone)).to eq(metadatas_attributes(ref))
+      expect(metadatas_attributes(clone)).to eq(metadatas_attributes(referential))
     end
   end
 
@@ -630,4 +631,59 @@ RSpec.describe Referential, type: :model do
 
   end
 
+  describe '#data_frozen?' do
+    subject { referential.data_frozen? }
+
+    context 'when #data_frozen_at is nil' do
+      context 'when #data_freeze_working is false' do
+        it { is_expected.to eq(false) }
+      end
+
+      context 'when #data_freeze_working is true' do
+        before { referential.data_freeze_working = true }
+        it { is_expected.to eq(true) }
+      end
+    end
+
+    context 'when #data_frozen_at is nil' do
+      before { referential.data_frozen_at = Time.zone.now }
+
+      context 'when #data_freeze_working is false' do
+        it { is_expected.to eq(true) }
+      end
+
+      context 'when #data_freeze_working is true' do
+        before { referential.data_freeze_working = true }
+        it { is_expected.to eq(true) }
+      end
+    end
+  end
+
+  describe '#data_freeze_status' do
+    subject { referential.data_freeze_status }
+
+    context 'when #data_frozen_at is nil' do
+      context 'when #data_freeze_working is false' do
+        it { is_expected.to eq(:unfrozen) }
+      end
+
+      context 'when #data_freeze_working is true' do
+        before { referential.data_freeze_working = true }
+        it { is_expected.to eq(:freezing) }
+      end
+    end
+
+    context 'when #data_frozen_at is nil' do
+      before { referential.data_frozen_at = Time.zone.now }
+
+      context 'when #data_freeze_working is false' do
+        it { is_expected.to eq(:frozen) }
+      end
+
+      context 'when #data_freeze_working is true' do
+        before { referential.data_freeze_working = true }
+        it { is_expected.to eq(:unfreezing) }
+      end
+    end
+  end
 end

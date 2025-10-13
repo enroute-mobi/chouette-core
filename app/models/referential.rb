@@ -812,9 +812,23 @@ class Referential < ApplicationModel
     update_column :vehicle_journeys_count, vehicle_journeys.count
   end
 
-  def visited!
-    touch :visited_at
-    self
+  concerning :DataFreeze do
+    def visited!
+      touch :visited_at
+      self
+    end
+
+    def data_frozen?
+      data_frozen_at.present? || data_freeze_working?
+    end
+
+    def data_freeze_status
+      if data_frozen_at
+        data_freeze_working? ? :unfreezing : :frozen
+      else
+        data_freeze_working? ? :freezing : :unfrozen
+      end
+    end
   end
 
   private

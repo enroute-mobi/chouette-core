@@ -672,7 +672,7 @@ GEM
     rabl (0.17.0)
       activesupport (>= 2.3.14)
     racc (1.8.1)
-    rack (2.2.19)
+    rack (2.2.20)
     rack-cas (0.16.1)
       addressable (~> 2.3)
       nokogiri (~> 1.5)

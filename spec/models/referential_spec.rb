@@ -631,58 +631,19 @@ RSpec.describe Referential, type: :model do
 
   end
 
+  it { is_expected.to enumerize(:data_freeze_status).in(%w[unfrozen freezing frozen unfreeze_enqueued unfreezing]) }
+
   describe '#data_frozen?' do
     subject { referential.data_frozen? }
 
-    context 'when #data_frozen_at is nil' do
-      context 'when #data_freeze_working is false' do
-        it { is_expected.to eq(false) }
-      end
-
-      context 'when #data_freeze_working is true' do
-        before { referential.data_freeze_working = true }
-        it { is_expected.to eq(true) }
-      end
+    context 'when #data_freeze_status is "unfrozen"' do
+      it { is_expected.to eq(false) }
     end
 
-    context 'when #data_frozen_at is nil' do
-      before { referential.data_frozen_at = Time.zone.now }
-
-      context 'when #data_freeze_working is false' do
+    %w[freezing frozen unfreeze_enqueued unfreezing].each do |data_freeze_status|
+      context "when #data_freeze_status is \"#{data_freeze_status}\"" do
+        before { referential.data_freeze_status = data_freeze_status }
         it { is_expected.to eq(true) }
-      end
-
-      context 'when #data_freeze_working is true' do
-        before { referential.data_freeze_working = true }
-        it { is_expected.to eq(true) }
-      end
-    end
-  end
-
-  describe '#data_freeze_status' do
-    subject { referential.data_freeze_status }
-
-    context 'when #data_frozen_at is nil' do
-      context 'when #data_freeze_working is false' do
-        it { is_expected.to eq(:unfrozen) }
-      end
-
-      context 'when #data_freeze_working is true' do
-        before { referential.data_freeze_working = true }
-        it { is_expected.to eq(:freezing) }
-      end
-    end
-
-    context 'when #data_frozen_at is nil' do
-      before { referential.data_frozen_at = Time.zone.now }
-
-      context 'when #data_freeze_working is false' do
-        it { is_expected.to eq(:frozen) }
-      end
-
-      context 'when #data_freeze_working is true' do
-        before { referential.data_freeze_working = true }
-        it { is_expected.to eq(:unfreezing) }
       end
     end
   end

@@ -813,21 +813,17 @@ class Referential < ApplicationModel
   end
 
   concerning :DataFreeze do
+    included do
+      enumerize :data_freeze_status, in: %w[unfrozen freezing frozen unfreeze_enqueued unfreezing], default: 'unfrozen'
+    end
+
     def visited!
       touch :visited_at
       self
     end
 
     def data_frozen?
-      data_frozen_at.present? || data_freeze_working?
-    end
-
-    def data_freeze_status
-      if data_frozen_at
-        data_freeze_working? ? :unfreezing : :frozen
-      else
-        data_freeze_working? ? :freezing : :unfrozen
-      end
+      data_freeze_status != 'unfrozen'
     end
   end
 

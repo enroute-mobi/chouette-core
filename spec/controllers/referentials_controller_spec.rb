@@ -417,4 +417,34 @@ describe ReferentialsController, type: :controller do
       expect(request).to have_http_status(:redirect)
     end
   end
+
+  describe 'PUT #data_unfreeze' do
+    let(:permissions) { %w[referentials.update] }
+    let(:request) { put :data_unfreeze, params: { workbench_id: workbench.id, id: referential.id } }
+
+    %w[freezing unfreeze_enqueued unfreezing unfrozen].each do |data_freeze_status|
+      context "when referential#data_freeze_status is \"#{data_freeze_status}\"" do
+        before { referential.update!(data_freeze_status: data_freeze_status) }
+
+        it { expect(request).to have_http_status(:forbidden) }
+      end
+    end
+
+    context 'when referential#data_freeze_status is "frozen"' do
+      before { referential.update!(data_freeze_status: 'frozen') }
+
+      it 'will unfreeze referential' do
+        expect { request }.to change { referential.reload.data_freeze_status }.to('unfreeze_enqueued')
+      end
+
+      it 'does not flash error' do
+        request
+        expect(flash[:error]).not_to be_present
+      end
+
+      it 'redirects' do
+        expect(request).to redirect_to(workbench_referential_path(workbench, referential))
+      end
+    end
+  end
 end

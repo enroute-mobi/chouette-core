@@ -19,6 +19,9 @@ fr:
       lines_outside_of_scope:
         one: La ligne %{lines} ne fait pas partie du périmètre fonctionnel du transporteur %{organisation}
         other: Les lignes %{lines} ne font pas partie du périmètre fonctionnel du transporteur %{organisation}
+      warnings:
+        frozen: "Ce Jeu de Données est actuellement congelé. Pour voir son contenu, décongelez-le."
+        unfreezing: "Ce Jeu de Données est actuellement est décongélation. Rafraîchissez cette page dans quelques secondes."
     counts:
       objects: "Eléments"
       count: "Qté"
@@ -36,6 +39,7 @@ fr:
       destroy: "Supprimer ce jeu de données"
       edit: "Editer ce jeu de données"
       clone: "Cloner ce jeu de données"
+      data_unfreeze: "Décongeler"
     errors:
       validity_period: "Période de validité invalide"
       pg_excluded: "ne peut pas commencer par pg_ (valeurs réservées)"
@@ -61,11 +65,8 @@ fr:
       failed:   En erreur
       active:   En édition
       archived: Archivé
-      changed:
-        pending:  Ce Jeu de Données est désormais en cours de traitement, vos modifications ne pourront pas être enregistrées
-        failed:   Ce Jeu de Données est désormais en erreur, vos modifications ne pourront pas être enregistrées
-        active:   Ce Jeu de Données est désormais en édition, rechargez la page pour pouvoir apporter vos modifications
-        archived: Ce Jeu de Données vient d'être archivé, vos modifications ne pourront pas être enregistrées
+      frozen: "Congelé"
+      unfreezing: "En décongélation"
 
   activerecord:
     errors:
@@ -153,3 +154,4 @@ fr:
       unarchived: "Le jeu de données a été correctement desarchivé"
       unarchived_failed: "Le jeu de données ne peut être desarchivé"
       deleted: "Le jeu de données a été correctement supprimé"
+      data_unfreeze_failed: "Le Jeu de Données ne peut pas être décongelé"

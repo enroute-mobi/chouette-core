@@ -14,7 +14,7 @@ class ReferentialDecorator < Af83::Decorator
       l.href { h.workbench_referential_time_tables_path(context[:workbench], object) }
     end
 
-    instance_decorator.action_link secondary: :show do |l|
+    instance_decorator.action_link secondary: :show, if: -> { !object.data_frozen? } do |l|
       l.content { I18n.t('service_counts.index.title') }
       l.href { h.workbench_referential_service_counts_path(context[:workbench], object) }
     end
@@ -38,6 +38,12 @@ class ReferentialDecorator < Af83::Decorator
     instance_decorator.action_link policy: :unarchive, secondary: :show do |l|
       l.content { I18n.t('actions.unarchive') }
       l.href { h.unarchive_workbench_referential_path(context[:workbench], object.id) }
+      l.method :put
+    end
+
+    instance_decorator.action_link policy: :data_unfreeze, secondary: :show do |l|
+      l.content { I18n.t('referentials.actions.data_unfreeze') }
+      l.href { h.data_unfreeze_workbench_referential_path(context[:workbench], object.id) }
       l.method :put
     end
 

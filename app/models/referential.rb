@@ -601,7 +601,7 @@ class Referential < ApplicationModel
     overlapped_referential_ids.present?
   end
 
-  validate :detect_overlapped_referentials, unless: -> { in_referential_suite? || archived? }
+  validate :detect_overlapped_referentials, unless: -> { in_referential_suite? || archived? || data_frozen? }
 
   def detect_overlapped_referentials
     begin
@@ -688,11 +688,6 @@ class Referential < ApplicationModel
     true
   end
 
-  # Archive
-  def archived?
-    archived_at != nil
-  end
-
   def archive!
     # self.archived = true
     touch :archived_at
@@ -744,9 +739,16 @@ class Referential < ApplicationModel
 
   def state
     return :failed if failed_at.present?
-    return :archived if archived_at.present?
-    return :pending unless ready?
-    :active
+    case data_freeze_status
+    when 'freezing', 'frozen'
+      :frozen
+    when 'unfreeze_enqueued', 'unfreezing'
+      :unfreezing
+    else
+      return :archived if archived_at.present?
+      return :pending unless ready?
+      :active
+    end
   end
 
   def light_update vals

@@ -55,6 +55,7 @@ Rails.application.routes.draw do # rubocop:disable Metrics/BlockLength
       member do
         put :archive
         put :unarchive
+        put :data_unfreeze
         get :journey_patterns
       end
 

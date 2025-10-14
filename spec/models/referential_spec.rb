@@ -298,59 +298,88 @@ RSpec.describe Referential, type: :model do
     end
   end
 
-  context ".state" do
-    it "should return the expected values" do
-      referential = build :referential
-      referential.ready = false
-      expect(referential.state).to eq :pending
-      referential.failed_at = Time.now
-      expect(referential.state).to eq :failed
-      referential.failed_at = nil
-      expect(referential.state).to eq :pending
-      referential.ready = true
-      referential.failed_at = nil
-      expect(referential.state).to eq :active
-      referential.archived_at = Time.now
-      expect(referential.state).to eq :archived
+  describe 'state' do
+    let(:pending_referential) { Chouette.create { referential }.referential.tap(&:pending!) }
+    let(:active_referential) { Chouette.create { referential }.referential.tap(&:active!) }
+    let(:failed_referential) { Chouette.create { referential }.referential.tap(&:failed!) }
+    let(:archived_referential) { Chouette.create { referential }.referential.tap(&:archived!) }
+
+    describe '#state' do
+      subject { referential.state }
+
+      context 'with pending referential' do
+        let(:referential) { pending_referential }
+        it { is_expected.to eq(:pending) }
+      end
+
+      context 'with active referential' do
+        let(:referential) { active_referential }
+        it { is_expected.to eq(:active) }
+      end
+
+      context 'with failed referential' do
+        let(:referential) { failed_referential }
+        it { is_expected.to eq(:failed) }
+      end
+
+      context 'with archived referential' do
+        let(:referential) { archived_referential }
+        it { is_expected.to eq(:archived) }
+      end
+
+      context 'with #data_freeze_status' do
+        let(:referential) { archived_referential }
+
+        context 'with freezing referential' do
+          before { referential.data_freeze_status = 'freezing' }
+          it { is_expected.to eq(:frozen) }
+        end
+
+        context 'with frozen referential' do
+          before { referential.data_freeze_status = 'frozen' }
+          it { is_expected.to eq(:frozen) }
+        end
+
+        context 'with unfreeze_enqueued referential' do
+          before { referential.data_freeze_status = 'unfreeze_enqueued' }
+          it { is_expected.to eq(:unfreezing) }
+        end
+
+        context 'with unfreezing referential' do
+          before { referential.data_freeze_status = 'unfreezing' }
+          it { is_expected.to eq(:unfreezing) }
+        end
+      end
     end
 
-    context "the scopes" do
-      it "should filter the referentials" do
-        referential = create :referential
-        referential.pending!
-        expect(Referential.pending).to include referential
-        expect(Referential.failed).to_not include referential
-        expect(Referential.active).to_not include referential
-        expect(Referential.archived).to_not include referential
+    describe 'scopes' do
+      before do
+        pending_referential
+        active_referential
+        failed_referential
+        archived_referential
+      end
 
-        referential = create :referential
-        referential.failed!
-        expect(Referential.pending).to_not include referential
-        expect(Referential.failed).to include referential
-        expect(Referential.active).to_not include referential
-        expect(Referential.archived).to_not include referential
+      it '.pending' do
+        expect(described_class.pending).to include(pending_referential)
+      end
 
-        referential = create :referential
-        referential.active!
-        expect(Referential.pending).to_not include referential
-        expect(Referential.failed).to_not include referential
-        expect(Referential.active).to include referential
-        expect(Referential.archived).to_not include referential
+      it '.active' do
+        expect(described_class.active).to include(active_referential)
+      end
 
-        referential = create :referential
-        referential.archived!
-        expect(Referential.pending).to_not include referential
-        expect(Referential.failed).to_not include referential
-        expect(Referential.active).to_not include referential
-        expect(Referential.archived).to include referential
+      it '.failed' do
+        expect(described_class.failed).to include(failed_referential)
+      end
+
+      it '.archived' do
+        expect(described_class.archived).to include(archived_referential)
       end
     end
 
     context 'pending_while' do
       it "should preserve the state" do
-        referential = create :referential
-        referential.archived!
-        expect(referential.state).to eq :archived
+        referential = archived_referential
         referential.pending_while do
           expect(referential.state).to eq :pending
         end

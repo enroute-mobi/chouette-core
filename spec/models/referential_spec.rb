@@ -697,6 +697,29 @@ RSpec.describe Referential, type: :model do
                                                              .to(include(referential.slug))
     end
   end
+
+  describe '.data_freeze_candidates' do
+    subject { context.workbench.referentials.data_freeze_candidates }
+
+    let!(:context) do
+      Chouette.create do
+        frozen_after = Chouette::Config.referentials_frozen_after
+        workbench do
+          referential :never_visited, archived_at: Time.zone.now, name: 'never visited'
+          referential :visited_recently, archived_at: Time.zone.now, visited_at: (frozen_after / 2).days.ago
+          referential :visited_formerly, archived_at: Time.zone.now, visited_at: (frozen_after * 2).days.ago
+          referential :in_a_referential_suite, archived_at: Time.zone.now
+          referential :not_archived
+        end
+      end.tap do |context|
+        context.referential(:in_a_referential_suite).update!(referential_suite: context.workbench.output)
+      end
+    end
+
+    it 'returns only freezable candidates' do
+      is_expected.to match_array(%i[never_visited visited_formerly].map { |r| context.referential(r) })
+    end
+  end
 end
 
 RSpec.describe Referential::DataUnfreezeJob do

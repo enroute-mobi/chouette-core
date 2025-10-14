@@ -63,6 +63,10 @@ module Chouette
       env.string('TOMTOM_API_KEY')
     end
 
+    def referentials_frozen_after
+      @referentials_frozen_after ||= env.integer('REFERENTIALS_FROZEN_AFTER') || 14
+    end
+
     class Subscription
       def initialize(env)
         @env = env
@@ -158,6 +162,13 @@ module Chouette
         return nil unless raw_value.present?
 
         raw_value.strip
+      end
+
+      def integer(name)
+        string_value = string(name)
+        return nil unless string_value && string_value =~ /\A-?\d+\z/
+
+        string_value.to_i
       end
 
       BOOLEAN_TRUE_VALUES = %w[true 1].freeze

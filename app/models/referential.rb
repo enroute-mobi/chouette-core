@@ -115,6 +115,14 @@ class Referential < ApplicationModel
          .where(ReferentialMetadata.quoted_table_name => { id: nil })
   }
 
+  scope :data_freeze_candidates, lambda {
+    where.not(archived_at: nil)
+         .where(referential_suite_id: nil)
+         .and(
+           where(visited_at: nil).or(where('visited_at < ?', ::Chouette::Config.referentials_frozen_after.days.ago))
+         )
+  }
+
   after_destroy :clean_cross_referential_index!
 
   def self.clean!

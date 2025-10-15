@@ -701,9 +701,10 @@ RSpec.describe Referential, type: :model do
   describe '.data_freeze_candidates' do
     subject { context.workbench.referentials.data_freeze_candidates }
 
+    let(:referentials_frozen_after) { 14 }
     let!(:context) do
       Chouette.create do
-        frozen_after = Chouette::Config.referentials_frozen_after
+        frozen_after = 14
         workbench do
           referential :never_visited, archived_at: Time.zone.now, name: 'never visited'
           referential :visited_recently, archived_at: Time.zone.now, visited_at: (frozen_after / 2).days.ago
@@ -716,8 +717,17 @@ RSpec.describe Referential, type: :model do
       end
     end
 
-    it 'returns only freezable candidates' do
-      is_expected.to match_array(%i[never_visited visited_formerly].map { |r| context.referential(r) })
+    before { allow(Chouette::Config).to receive(:referentials_frozen_after).and_return(referentials_frozen_after) }
+
+    context 'when Chouette::Config.referentials_frozen_after is set' do
+      it 'returns only freezable candidates' do
+        is_expected.to match_array(%i[never_visited visited_formerly].map { |r| context.referential(r) })
+      end
+    end
+
+    context 'when Chouette::Config.referentials_frozen_after is nil' do
+      let(:referentials_frozen_after) { nil }
+      it { is_expected.to be_empty }
     end
   end
 end

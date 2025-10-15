@@ -116,11 +116,15 @@ class Referential < ApplicationModel
   }
 
   scope :data_freeze_candidates, lambda {
-    where.not(archived_at: nil)
-         .where(referential_suite_id: nil)
-         .and(
-           where(visited_at: nil).or(where('visited_at < ?', ::Chouette::Config.referentials_frozen_after.days.ago))
-         )
+    if ::Chouette::Config.referentials_frozen_after.nil?
+      none
+    else
+      where.not(archived_at: nil)
+          .where(referential_suite_id: nil)
+          .and(
+            where(visited_at: nil).or(where('visited_at < ?', ::Chouette::Config.referentials_frozen_after.days.ago))
+          )
+    end
   }
 
   after_destroy :clean_cross_referential_index!

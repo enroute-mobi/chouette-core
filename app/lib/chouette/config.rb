@@ -64,7 +64,9 @@ module Chouette
     end
 
     def referentials_frozen_after
-      @referentials_frozen_after ||= env.integer('REFERENTIALS_FROZEN_AFTER') || 14
+      return @referentials_frozen_after if defined?(@referentials_frozen_after)
+
+      @referentials_frozen_after = env.integer('REFERENTIALS_FROZEN_AFTER')
     end
 
     class Subscription

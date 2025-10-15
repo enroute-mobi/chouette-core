@@ -116,7 +116,7 @@ RSpec.describe Chouette::Config do
   describe '#referentials_frozen_after' do
     subject { config.referentials_frozen_after }
 
-    it { is_expected.to eq(14) }
+    it { is_expected.to be_nil }
 
     with_env REFERENTIALS_FROZEN_AFTER: '42' do
       it { is_expected.to eq(42) }

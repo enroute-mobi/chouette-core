@@ -26,6 +26,20 @@ class WorkgroupImportsController < Chouette::WorkgroupController
     respond_to do |format|
       format.html do
         @workbench = default_workbench
+
+        if resource.is_a?(Import::Workbench)
+          @imported_resources = Import::Resource
+            .where(import_id: resource.children.select(:id), resource_type: 'file')
+            .includes(:import)
+            .order(:name)
+
+          @macro_list_runs = resource.macro_list_runs.order(created_at: :desc)
+
+          ids = resource.children_processings
+            .where(processed_type: 'Control::List::Run')
+            .select(:processed_id)
+          @control_list_runs = Control::List::Run.where(id: ids).distinct.order(created_at: :desc)
+        end
       end
       format.json do
         fragment = render_to_string(partial: "imports/#{@import.short_type}", formats: :html)

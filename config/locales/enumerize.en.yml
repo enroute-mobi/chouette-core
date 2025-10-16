@@ -375,7 +375,7 @@ en:
       FFFFFF: White
     profile:
       none: None
-      french: French (beta)
+      french: French
       european: European
       'idfm/publication/legacy': IdFM Publication (Legacy/Invalid)
       'idfm/publication': IdFM Publication

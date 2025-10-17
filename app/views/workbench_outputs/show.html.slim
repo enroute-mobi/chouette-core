@@ -46,9 +46,9 @@
                 sortable: false, \
               ), \
               TableBuilderHelper::Column.new( \
-                key: :created_at, \
                 name: t(".table_headers.aggregated_at"), \
-                attribute: Proc.new { |n| n.last_aggregate ? l(n.last_aggregate.ended_at, format: :short_with_time) : '-' } \
+                attribute: Proc.new { |n| n.last_aggregate ? l(n.last_aggregate.ended_at, format: :short_with_time) : '-' }, \
+                sortable: false, \
               ), \
               TableBuilderHelper::Column.new( \
                 key: :creator, \

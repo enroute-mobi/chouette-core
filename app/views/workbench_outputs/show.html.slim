@@ -30,11 +30,13 @@
               TableBuilderHelper::Column.new( \
                 name: t("merges.merged_datasets"), \
                 attribute: 'merged_datasets', \
+                sortable: false, \
                 link_to: lambda do |merge| \
                   workbench_merge_path merge.workbench, merge \
                 end \
               ), \
               TableBuilderHelper::Column.new( \
+                key: :created_at, \
                 name: t(".table_headers.ended_at"), \
                 attribute: Proc.new { |n| l(n.ended_at, format: :short_with_time) if n.ended_at }, \
               ), \
@@ -45,7 +47,8 @@
               ), \
               TableBuilderHelper::Column.new( \
                 name: t(".table_headers.aggregated_at"), \
-                attribute:  Proc.new { |n| n.last_aggregate ? l(n.last_aggregate.ended_at, format: :short_with_time) : '-' }\
+                attribute: Proc.new { |n| n.last_aggregate ? l(n.last_aggregate.ended_at, format: :short_with_time) : '-' }, \
+                sortable: false, \
               ), \
               TableBuilderHelper::Column.new( \
                 key: :creator, \

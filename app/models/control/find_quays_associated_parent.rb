@@ -57,115 +57,143 @@ module Control
       end
 
       def query
-        Chouette::StopArea
-          .select(
-            <<-SQL
-              JSON_AGG(
-                JSON_BUILD_OBJECT(
-                  'stop_area_id', stop_areas.id,
-                  'name', stop_areas.name
-                )
-              ) AS grouped_stop_areas,
-              stop_areas.cluster_id
-            SQL
-          )
-          .from("(#{clustered_stop_areas}) stop_areas")
-          .where.not('stop_areas.cluster_id IS NULL')
-          .where.not("stop_areas.id IN (#{excluded_stop_areas})")
-          .group('stop_areas.cluster_id')
-          .to_sql
+        @query ||= Query.new(
+          workbench,
+          geographical_distance,
+          lexical_distance,
+          used_by_opposite_routes
+        ).clustered_stop_areas_query
       end
 
-      # identify StopAreas used in the same Route (in the given Dataset)
-      def excluded_stop_areas
-        @stop_areas_used_same_route ||= Chouette::StopArea
-          .select('stop_areas.id')
-          .from("(#{clustered_stop_areas}) AS stop_areas")
-          .joins(
-            <<-SQL
-              INNER JOIN (#{clustered_stop_areas}) AS csa 
-              ON stop_areas.cluster_id = csa.cluster_id 
-                AND stop_areas.route_ids && csa.route_ids 
-                AND ARRAY_LENGTH(stop_areas.route_ids, 1) > 1
-                AND ARRAY_LENGTH(csa.route_ids, 1) > 1
-                AND stop_areas.id <> csa.id
-            SQL
-          )
-          .distinct
-          .to_sql
-      end
+      class Query
+        def initialize(workbench, geographical_distance, lexical_distance, used_by_opposite_routes)
+          @workbench = workbench
+          @geographical_distance = geographical_distance
+          @lexical_distance = lexical_distance
+          @used_by_opposite_routes = used_by_opposite_routes
+        end
+        attr_reader :workbench, :geographical_distance, :lexical_distance, :used_by_opposite_routes
 
-      def clustered_stop_areas
-        @clustered_stop_areas ||= Chouette::StopArea
-          .select(
-            'stop_areas.cluster_id', 'stop_areas.id AS id', 'stop_areas.name',
-            'stop_areas.area_type', 'stop_areas.transport_mode', 'stop_areas.route_ids')
-          .from("(#{base_query}) stop_areas")
-          .where('stop_areas.cluster_id IS NOT NULL')
-          .to_sql
-      end
+        def clustered_stop_areas_query
+          Chouette::StopArea
+            .select(
+              <<-SQL
+                JSON_AGG(
+                  JSON_BUILD_OBJECT(
+                    'stop_area_id', stop_areas.id,
+                    'name', stop_areas.name
+                  )
+                ) AS grouped_stop_areas,
+                stop_areas.cluster_id
+              SQL
+            )
+            .from("(#{raw_clustered_stop_areas}) stop_areas")
+            .where.not('stop_areas.cluster_id IS NULL')
+            .where.not("stop_areas.id IN (#{excluded_stop_areas})")
+            .group('stop_areas.cluster_id')
+            .to_sql
+        end
 
-      # prepare StopAreas grouped by transport_mode and geographical distance
-      def base_query
-        @base_query ||= stop_areas
-          .select(
-            <<-SQL
-              stop_areas.id, stop_areas.name, stop_areas.area_type,
-              stop_areas.transport_mode, ARRAY_AGG(routes.id) AS route_ids,
-              ST_ClusterDBSCAN(
-                ST_Transform(
-                  ST_SetSRID(
-                    ST_MakePoint(stop_areas.longitude, stop_areas.latitude),
-                    4326
-                  ), 3857), #{geographical_distance}, 2
-              ) OVER (
-                PARTITION BY stop_areas.transport_mode, (
-                                                          SELECT sa.name
-                                                          FROM public.stop_areas sa
-                                                          WHERE similarity(stop_areas.name, sa.name) >= #{threshold}
-                                                          ORDER BY sa.name
-                                                          LIMIT 1
-                                                        )
-              ) AS cluster_id
-            SQL
-          )
-          .left_joins(base_left_joins)
-          .where(base_where)
-          .group('public.stop_areas.id')
-          .to_sql
-      end
+        # identify StopAreas used in the same Route (in the given Dataset)
+        def excluded_stop_areas
+          @stop_areas_used_same_route ||= Chouette::StopArea
+            .select('stop_areas.id')
+            .from("(#{raw_clustered_stop_areas}) AS stop_areas")
+            .joins(
+              <<-SQL
+                INNER JOIN (#{raw_clustered_stop_areas}) AS csa
+                ON stop_areas.cluster_id = csa.cluster_id
+                  AND stop_areas.route_ids && csa.route_ids
+                  AND ARRAY_LENGTH(stop_areas.route_ids, 1) > 1
+                  AND ARRAY_LENGTH(csa.route_ids, 1) > 1
+                  AND stop_areas.id <> csa.id
+              SQL
+            )
+            .distinct
+            .to_sql
+        end
 
-      def threshold
-        @threshold ||= lexical_distance / 100.0
-      end
+        def raw_clustered_stop_areas
+          @clustered_stop_areas ||= Chouette::StopArea
+            .select(
+              'stop_areas.cluster_id', 'stop_areas.id AS id', 'stop_areas.name',
+              'stop_areas.area_type', 'stop_areas.transport_mode', 'stop_areas.route_ids')
+            .from("(#{base_query}) stop_areas")
+            .where('stop_areas.cluster_id IS NOT NULL')
+            .to_sql
+        end
 
-      def base_left_joins
-        @left_joins ||= used_by_opposite_routes ?  { routes: {opposite_route: :stop_areas} } : :routes
-      end
+        # prepare StopAreas grouped by transport_mode and geographical distance
+        def base_query
+          @base_query ||= stop_areas
+            .select(
+              <<-SQL
+                stop_areas.id, stop_areas.name, stop_areas.area_type,
+                stop_areas.transport_mode, ARRAY_AGG(routes.id) AS route_ids,
+                ST_ClusterDBSCAN(
+                  ST_Transform(
+                    ST_SetSRID(
+                      ST_MakePoint(stop_areas.longitude, stop_areas.latitude),
+                      4326
+                    ), 3857), #{geographical_distance}, 2
+                ) OVER (
+                  PARTITION BY #{partition_by}
+                ) AS cluster_id
+              SQL
+            )
+            .left_joins(base_left_joins)
+            .where(base_where)
+            .group('public.stop_areas.id')
+            .to_sql
+        end
 
-      def base_where
-        @base_where ||= 
-          if used_by_opposite_routes
-            <<-SQL
-              stop_areas.latitude IS NOT NULL AND 
-              stop_areas.longitude IS NOT NULL AND 
-              stop_areas.parent_id IS NULL AND
-              stop_areas.area_type = 'zdep' AND
-              stop_areas_routes.id = stop_areas.id AND
-              stop_areas_routes.id IS NOT NULL
-            SQL
-         else
-            <<-SQL
-              stop_areas.latitude IS NOT NULL AND 
-              stop_areas.longitude IS NOT NULL AND 
-              stop_areas.parent_id IS NULL AND
-              stop_areas.area_type = 'zdep'
-            SQL
-         end
-      end
+        # partition by transport_mode and group_name (lexical distance)
+        def partition_by
+          <<-SQL
+            stop_areas.transport_mode,
+            (
+              SELECT sa.name
+              FROM public.stop_areas sa
+              WHERE similarity(stop_areas.name, sa.name) >= #{threshold}
+              ORDER BY sa.name
+              LIMIT 1
+            )
+          SQL
+        end
 
-      def stop_areas
-        @stop_areas ||= workbench.stop_areas
+        # normalized lexical distance (0-1)
+        def threshold
+          @threshold ||= lexical_distance / 100.0
+        end
+
+        def base_left_joins
+          @left_joins ||= used_by_opposite_routes ?  { routes: {opposite_route: :stop_areas} } : :routes
+        end
+
+        def base_where
+          @base_where ||=
+            if used_by_opposite_routes
+              <<-SQL
+                stop_areas.latitude IS NOT NULL AND
+                stop_areas.longitude IS NOT NULL AND
+                stop_areas.parent_id IS NULL AND
+                stop_areas.area_type = 'zdep' AND
+                stop_areas_routes.id = stop_areas.id AND
+                stop_areas_routes.id IS NOT NULL
+              SQL
+           else
+              <<-SQL
+                stop_areas.latitude IS NOT NULL AND
+                stop_areas.longitude IS NOT NULL AND
+                stop_areas.parent_id IS NULL AND
+                stop_areas.area_type = 'zdep'
+              SQL
+           end
+        end
+
+        def stop_areas
+          @stop_areas ||= workbench.stop_areas
+        end
       end
     end
   end

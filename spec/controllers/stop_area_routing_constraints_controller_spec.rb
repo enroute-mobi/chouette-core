@@ -3,9 +3,18 @@
 RSpec.describe StopAreaRoutingConstraintsController, type: :controller do
   login_user
 
+  let(:features) { %w[stop_area_routing_constraints] }
+  let(:permissions) do
+    %w[
+      stop_area_routing_constraints.create
+      stop_area_routing_constraints.update
+      stop_area_routing_constraints.destroy
+    ]
+  end
+
   let(:context) do
+    organisation = self.organisation
     Chouette.create do
-      organisation = Organisation.find_by(code: 'first')
       workgroup(owner: organisation) do
         workbench(:workbench, organisation: organisation) do
           stop_area :stop_area1
@@ -38,21 +47,6 @@ RSpec.describe StopAreaRoutingConstraintsController, type: :controller do
     }
   end
   let(:stop_area_routing_constraint_attrs) { base_stop_area_routing_constraint_attrs }
-
-  before do
-    @user.organisation.update(
-      features: %i[
-        stop_area_routing_constraints
-      ]
-    )
-    @user.update(
-      permissions: %w[
-        stop_area_routing_constraints.create
-        stop_area_routing_constraints.update
-        stop_area_routing_constraints.destroy
-      ]
-    )
-  end
 
   describe 'GET #new' do
     let(:request) { get :new, params: base_params }

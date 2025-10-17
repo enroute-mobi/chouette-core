@@ -1,12 +1,9 @@
 # frozen_string_literal: true
 
 RSpec.describe ExportDecorator, type: %i[helper decorator] do
-  include Support::DecoratorHelpers
-
   let(:context) do
+    organisation = self.organisation
     Chouette.create do
-      # To match organisation used by login_user
-      organisation = Organisation.find_by(code: 'first')
       workgroup owner: organisation, export_types: ['Export::Gtfs'] do
         workbench organisation: organisation do
           referential

@@ -1,4 +1,6 @@
-describe Referential, :type => :model do
+# frozen_string_literal: true
+
+RSpec.describe Referential, type: :model do
   let(:ref) { create :workbench_referential, metadatas: [create(:referential_metadata)] }
 
   it { should have_many(:metadatas) }
@@ -198,7 +200,10 @@ describe Referential, :type => :model do
   end
 
   context ".last_operation" do
-    subject(:operation){ referential.last_operation }
+    subject(:operation) { referential.last_operation }
+
+    let(:referential) { Chouette.create { referential }.referential }
+
     it "should return nothing" do
       expect(operation).to be_nil
     end
@@ -446,9 +451,25 @@ describe Referential, :type => :model do
 
   describe "metadatas" do
     context "nested attributes support" do
+      let(:context) do
+        Chouette.create do
+          organisation :organisation
+          workgroup owner: :organisation do
+            workbench organisation: :organisation do
+              line :line1
+              line :line2
+              line :line3
+            end
+          end
+        end
+      end
+      let(:organisation) { context.organisation(:organisation) }
+      let(:workbench) { context.workbench }
+      let(:lines) { %i[line1 line2 line3].map { |l| context.line(l) } }
+
       let(:attributes) do
         {
-          "organisation_id" => first_organisation.id,
+          "organisation_id" => organisation.id,
           "name"=>"Test",
           "slug"=>"test",
           "prefix"=>"test",
@@ -471,11 +492,9 @@ describe Referential, :type => :model do
               "lines"=> [""] + lines.map { |l| l.id.to_s }
             }
           },
-          "workbench_id"=>"1",
+          "workbench_id" => workbench.id,
         }
       end
-
-      let(:lines) { create_list(:line, 3)}
 
       let(:new_referential) { Referential.new(attributes) }
       let(:first_metadata) { new_referential.metadatas.first }

@@ -219,9 +219,8 @@ RSpec.describe Chouette::Factory do
       end
 
       it "should create a Referential" do
-        expect(Referential.count).to eq(2)
+        expect(Referential.count).to eq(1)
       end
-
     end
 
     describe "{ referential name: 'Test' }" do

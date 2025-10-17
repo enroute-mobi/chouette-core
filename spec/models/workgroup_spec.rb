@@ -1,9 +1,9 @@
 # frozen_string_literal: true
 
 RSpec.describe Workgroup, type: :model do
+  subject(:workgroup) { context.workgroup(:workgroup) }
 
   let(:context) { Chouette.create { workgroup :workgroup } }
-  let(:workgroup) { context.workgroup(:workgroup) }
 
   context "associations" do
     it{ should have_many(:workbenches) }
@@ -695,28 +695,40 @@ RSpec.describe Workgroup, type: :model do
     end
 
     context 'on one workgroup' do
-      let!(:workgroup) { create(:workgroup, deleted_at: Time.zone.now) }
-      let!(:workbench) { create(:workbench, workgroup: workgroup) }
-      let!(:new_referential) { create(:referential, organisation: workbench.organisation, workbench: workbench) }
-      let!(:publication_api) { create(:publication_api, workgroup: workgroup) }
-      let!(:publication_setup) { create(:publication_setup, workgroup: workgroup) }
+      let!(:context) do
+        Chouette.create do
+          workgroup :workgroup, deleted_at: Time.zone.now do
+            publication_api
+            publication_setup
 
-      let!(:line) { create(:line, line_referential: referential.line_referential) }
-      let!(:route) { create(:route, line: line)}
-      let!(:journey_pattern) { create(:journey_pattern, route: route) }
+            workbench :workbench do
+              referential :referential
+            end
+          end
+
+          workgroup :other_workgroup do
+            line :other_line
+          end
+        end
+      end
+      let!(:workbench) { context.workbench(:workbench) }
+      let!(:referential) { context.referential(:referential) }
+      let!(:publication_api) { context.publication_api }
+      let!(:publication_setup) { context.publication_setup }
+      let!(:other_line) { context.line(:other_line) }
 
       before { subject }
 
       it 'should cascade destroy every related object' do
         # The schema that contains our deleted referential data should be destroyed (route, jp, timetables, etc)
-        expect(ActiveRecord::Base.connection.schema_names).not_to include(new_referential.slug)
+        expect(ActiveRecord::Base.connection.schema_names).not_to include(referential.slug)
 
-        expect(Chouette::Line.where(id: line.id).exists?).to be_truthy
+        expect { other_line.reload }.not_to raise_error
 
         [
           workgroup,
           workbench,
-          new_referential,
+          referential,
           publication_api,
           publication_setup
         ].each do |record|

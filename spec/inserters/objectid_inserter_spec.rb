@@ -1,7 +1,16 @@
-RSpec.describe ObjectidInserter do
+# frozen_string_literal: true
 
-  let(:referential) { double "Referential" }
+RSpec.describe ObjectidInserter do
   subject(:inserter) { ObjectidInserter.new referential }
+
+  let(:context) do
+    Chouette.create do
+      referential
+    end
+  end
+  let(:referential) { context.referential }
+
+  before { referential.switch }
 
   describe "#insert" do
 
@@ -58,7 +67,7 @@ RSpec.describe ObjectidInserter do
 
       it "create a new objectid" do
         model.id = 42
-        expect(inserter.new_objectid(model)).to eq("first:Route:local-1-test-42:LOC")
+        expect(inserter.new_objectid(model)).to eq("#{referential.prefix}:Route:local-#{referential.id}-test-42:LOC")
       end
 
     end

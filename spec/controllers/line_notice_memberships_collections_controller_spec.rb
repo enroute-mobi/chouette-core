@@ -3,9 +3,11 @@
 RSpec.describe LineNoticeMembershipsCollectionsController, type: :controller do
   login_user
 
+  let(:permissions) { %w[lines.update line_notice_memberships.create line_notice_memberships.destroy] }
+
   let(:context) do
+    organisation = self.organisation
     Chouette.create do
-      organisation = Organisation.find_by(code: 'first')
       workgroup(owner: organisation) do
         workbench(:workbench, organisation: organisation) do
           line_provider :line_provider
@@ -33,8 +35,6 @@ RSpec.describe LineNoticeMembershipsCollectionsController, type: :controller do
   let(:other_line_notice) { context.line_notice(:other_line_notice) }
 
   let(:base_params) { { 'workbench_id' => workbench.id.to_s, 'line_id' => line.id.to_s } }
-
-  before { @user.update(permissions: %w[lines.update line_notice_memberships.create line_notice_memberships.destroy]) }
 
   describe 'GET #edit' do
     let(:request) { get :edit, params: base_params }

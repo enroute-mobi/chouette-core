@@ -29,7 +29,7 @@ RSpec.describe Referential::Copy do
     let(:copy) { Referential::Copy.new(source: source, target: target) }
 
     def have_same_route_attributes(than:, named:)
-      expected_attributes = %i[line objectid name published_name wayback created_at updated_at data_source_ref]
+      expected_attributes = %i[line raw_objectid name published_name wayback created_at updated_at data_source_ref]
       have_same_attributes expected_attributes, than: than, named: named, allow_nil: false
     end
 
@@ -56,7 +56,6 @@ RSpec.describe Referential::Copy do
       it { is_expected.to_not be_nil }
       it { is_expected.to have_same_attributes(:checksum, than: route) }
 
-      let(:expected_attributes) { %i[line objectid name published_name wayback created_at updated_at data_source_ref] }
       it { is_expected.to have_same_route_attributes(than: route, named: 'source Route') }
     end
 

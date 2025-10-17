@@ -17,11 +17,12 @@ describe Chouette::WorkbenchController, type: :controller do
       login_user
 
       let(:context) do
+        organisation = self.organisation
+        current_user = self.current_user
         Chouette.create do
-          organisation = Organisation.find_by(code: 'first')
           workbench :organisation_workbench, organisation: organisation
           workbench :shared_with_user_workbench do
-            workbench_sharing recipient: organisation.users.first
+            workbench_sharing recipient: current_user
           end
           workbench :shared_with_organisation_workbench do
             workbench_sharing recipient: organisation

@@ -4,8 +4,9 @@ RSpec.describe JourneyPatternsCollectionsController, type: :controller do
   login_user
 
   let(:context) do
+    organisation = self.organisation
     Chouette.create do
-      workbench(organisation: Organisation.find_by(code: 'first')) do
+      workbench(organisation: organisation) do
         referential do
           route
         end
@@ -29,6 +30,8 @@ RSpec.describe JourneyPatternsCollectionsController, type: :controller do
 
   describe 'GET show' do
     subject { get :show, params: base_params, format: format }
+
+    let(:permissions) { %w[journey_patterns.create journey_patterns.update journey_patterns.destroy] }
 
     context 'in JSON' do
       let(:format) { 'json' }

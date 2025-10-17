@@ -1,7 +1,12 @@
-describe Chouette::RoutingConstraintZone, type: :model do
+# frozen_string_literal: true
 
+describe Chouette::RoutingConstraintZone, type: :model do
   subject { create(:routing_constraint_zone) }
+
   let(:route){ subject.route }
+  let(:referential) { Chouette.create { referential }.referential }
+
+  before { referential.switch }
 
   it { is_expected.to belong_to(:route).required }
   it { is_expected.to validate_presence_of :name }

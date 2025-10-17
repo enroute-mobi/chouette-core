@@ -36,9 +36,8 @@ RSpec.describe Merge do
   describe '#last_aggregate' do
     let(:context) do
       Chouette.create do
-        organisation = Organisation.find_by(code: 'first')
-        workgroup owner: organisation do
-          workbench organisation: organisation do
+        workgroup do
+          workbench do
             referential :referential1
             referential :referential2
             referential :other_referential

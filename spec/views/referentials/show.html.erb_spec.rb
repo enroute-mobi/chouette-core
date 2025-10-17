@@ -72,7 +72,7 @@ RSpec.describe 'referentials/show.html.slim', type: :view do
     )
   end
 
-  with_permission "referentials.update" do
+  with_permissions 'referentials.update' do
     it "should present edit button" do
       expect(rendered).to have_selector(
         "a[href=\"#{view.edit_workbench_referential_path(current_workbench, referential)}\"]"

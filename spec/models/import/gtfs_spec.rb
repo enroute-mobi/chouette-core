@@ -803,7 +803,7 @@ RSpec.describe Import::Gtfs do
         ]
 
         a = []
-        referential.vehicle_journey_at_stops.each do |vjas|
+        import.referential.vehicle_journey_at_stops.each do |vjas|
           a << [
             vjas.stop_point.registration_number,
             vjas.departure_time_of_day.to_s
@@ -828,7 +828,7 @@ RSpec.describe Import::Gtfs do
         ]
 
         a = []
-        referential.vehicle_journey_at_stops.each do |vjas|
+        import.referential.vehicle_journey_at_stops.each do |vjas|
           a << [
             vjas.stop_point.registration_number,
             vjas.departure_time_of_day.to_s
@@ -1269,7 +1269,7 @@ RSpec.describe Import::Gtfs do
         ['BEATTY_AIRPORT', 1, t('2000-01-01 19:00:00 UTC'), t('2000-01-01 19:00:00 UTC'), 0, 0]
       ]
 
-      a = referential.vehicle_journey_at_stops.map do |vjas|
+      a = import.referential.vehicle_journey_at_stops.map do |vjas|
         [
           vjas.stop_point.registration_number,
           vjas.stop_point.position,
@@ -1289,7 +1289,7 @@ RSpec.describe Import::Gtfs do
       it 'should reuse the calendars' do
         import.import_stop_times
 
-        expect(referential.time_tables.count).to eq 2
+        expect(import.referential.time_tables.count).to eq 2
       end
     end
 

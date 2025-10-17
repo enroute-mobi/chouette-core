@@ -1,7 +1,8 @@
 # frozen_string_literal: true
 
 RSpec.describe Policy::JourneyPattern, type: :policy do
-  let(:resource) { build_stubbed(:journey_pattern) }
+  let(:route) { double(:route) }
+  let(:resource) { double(:journey_pattern, class: Chouette::JourneyPattern, route: route) }
 
   describe '#create?' do
     subject { policy.create?(resource_class) }
@@ -39,7 +40,7 @@ RSpec.describe Policy::JourneyPattern, type: :policy do
     before do
       dlb = double
       expect(dlb).to receive(:create?).with(Chouette::JourneyPattern).and_return(route_policy_create_journey_pattern)
-      expect(Policy::Route).to(receive(:new).with(resource.route, context: policy_context).and_return(dlb))
+      expect(Policy::Route).to(receive(:new).with(route, context: policy_context).and_return(dlb))
     end
 
     it do

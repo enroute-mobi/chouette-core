@@ -4,8 +4,9 @@ RSpec.describe RoutesController, type: :controller do
   login_user
 
   let(:context) do
+    organisation = self.organisation
     Chouette.create do
-      workbench organisation: Organisation.find_by(code: 'first') do
+      workbench organisation: organisation do
         referential do
           route
         end
@@ -54,6 +55,8 @@ RSpec.describe RoutesController, type: :controller do
   end
 
   describe 'POST /create' do
+    let(:permissions) { %w[routes.create] }
+
     before(:each) do
       post :create, params: {
         line_id: route.line_id,
@@ -64,11 +67,12 @@ RSpec.describe RoutesController, type: :controller do
     end
     it_behaves_like 'line and referential linked'
     it 'sets metadata' do
-      expect(Chouette::Route.last.metadata.creator_username).to eq @user.username
+      expect(Chouette::Route.last.metadata.creator_username).to eq current_user.username
     end
   end
 
   describe 'PUT /update' do
+    let(:permissions) { %w[routes.update] }
     let(:request)  do
       put :update, params: {
         id: route.id, line_id: route.line_id,
@@ -81,7 +85,7 @@ RSpec.describe RoutesController, type: :controller do
       before { request }
       it_behaves_like 'route, line and referential linked'
       it 'sets metadata' do
-        expect(Chouette::Route.last.metadata.modifier_username).to eq @user.username
+        expect(Chouette::Route.last.metadata.modifier_username).to eq current_user.username
       end
     end
     it 'does not save item twice' do
@@ -110,6 +114,8 @@ RSpec.describe RoutesController, type: :controller do
   end
 
   describe 'POST /duplicate' do
+    let(:permissions) { %w[routes.create] }
+
     before do
       referential.switch # Force referential switch because spec/support/referential.rb force referential switch to use first
     end
@@ -228,7 +234,7 @@ RSpec.describe RoutesController, type: :controller do
         }
       end
 
-      with_feature :route_stop_areas_all_types do
+      with_features :route_stop_areas_all_types do
         it 'should not filter stop areas based on type' do
           request
           expect(assigns(:stop_areas)).to include(zdep)

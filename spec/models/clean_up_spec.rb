@@ -1,5 +1,7 @@
+# frozen_string_literal: true
 
-RSpec.describe CleanUp, :type => :model do
+RSpec.describe CleanUp, type: :model do
+  let(:referential) { Chouette.create { referential }.referential }
 
   # it { should validate_presence_of(:begin_date).with_message(:presence) }
   it { should belong_to(:referential) }
@@ -61,9 +63,11 @@ RSpec.describe CleanUp, :type => :model do
   end
 
   context 'timetables related cleanings' do
-    let(:cleaner) { create(:clean_up, date_type: date_type, begin_date: begin_date, end_date: end_date) }
+    let(:cleaner) { create(:clean_up, referential: referential, date_type: date_type, begin_date: begin_date, end_date: end_date) }
     let(:end_date){ nil }
     let(:begin_date) { '01/01/2010'.to_date }
+
+    before { referential.switch }
 
     context '#clean_time_tables' do
       let!(:time_table) { create(:time_table, start_date: begin_date + 1.day) }
@@ -276,7 +280,9 @@ RSpec.describe CleanUp, :type => :model do
   ########
 
   context '#clean_vehicle_journeys_without_time_table' do
-    let(:cleaner) { create(:clean_up) }
+    let(:cleaner) { create(:clean_up, referential: referential) }
+
+    before { referential.switch }
 
     it 'should destroy vehicle_journey' do
       vj = create(:vehicle_journey)
@@ -297,6 +303,8 @@ RSpec.describe CleanUp, :type => :model do
     let(:metadata) { create(:referential_metadata, lines: [line]) }
     let(:referential) { create(:workbench_referential, metadatas: [metadata]) }
     let(:cleaner) { create(:clean_up, referential: referential) }
+
+    before { referential.switch }
 
     it "destroys routes not in the the referential" do
       route = create :route
@@ -344,7 +352,10 @@ RSpec.describe CleanUp, :type => :model do
   end
 
   describe "#clean_unassociated_footnotes" do
-    let(:cleaner) { create(:clean_up) }
+    let(:cleaner) { create(:clean_up, referential: referential) }
+
+    before { referential.switch }
+
     it "should destroy all footnotes that are not associated with a vehicle joruney" do
       footnote = create(:footnote)
       expect{cleaner.clean_unassociated_footnotes
@@ -360,7 +371,10 @@ RSpec.describe CleanUp, :type => :model do
   end
 
   describe "#clean_unassociated_calendars" do
-    let(:cleaner) { create(:clean_up) }
+    let(:cleaner) { create(:clean_up, referential: referential) }
+
+    before { referential.switch }
+
     it "should destroy all time_tables that are not associated with a vehicle joruney" do
       tt = create(:time_table)
 

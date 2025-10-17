@@ -3,9 +3,12 @@
 RSpec.describe RouteVehicleJourneysController, type: :controller do
   login_user
 
+  let(:permissions) { %w[vehicle_journeys.create vehicle_journeys.update vehicle_journeys.destroy] }
+
   let(:context) do
+    organisation = self.organisation
     Chouette.create do
-      workbench(organisation: Organisation.find_by(code: 'first')) do
+      workbench(organisation: organisation) do
         referential do
           route do
             vehicle_journey

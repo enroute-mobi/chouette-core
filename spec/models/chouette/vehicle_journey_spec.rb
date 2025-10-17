@@ -126,6 +126,10 @@ end
 describe Chouette::VehicleJourney, type: :model do
   subject { create(:vehicle_journey) }
 
+  let(:referential) { Chouette.create { referential }.referential }
+
+  before { referential.switch }
+
   it "must be valid with an at-stop day offset of 1" do
     vehicle_journey = create(
       :vehicle_journey,

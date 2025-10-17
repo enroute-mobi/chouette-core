@@ -7,9 +7,8 @@ RSpec.describe WorkgroupImportsController, type: :controller do
   end
 
   let(:context) do
+    organisation = self.organisation
     Chouette.create do
-      # To match organisation used by login_user
-      organisation = Organisation.find_by(code: 'first')
       workgroup owner: organisation do
         workbench organisation: organisation do
           referential

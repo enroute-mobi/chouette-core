@@ -2,8 +2,9 @@
 
 RSpec.describe 'documents/show.html.slim', type: :view do
   let(:context) do
+    organisation = self.organisation
     Chouette.create do
-      workbench organisation: Organisation.find_by(code: 'first') do
+      workbench organisation: organisation do
         line :first
       end
     end

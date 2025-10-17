@@ -4,9 +4,8 @@ RSpec.describe ExportsController, type: :controller do
   login_user
 
   let(:context) do
+    organisation = self.organisation
     Chouette.create do
-      # To match organisation used by login_user
-      organisation = Organisation.find_by(code: 'first')
       workgroup owner: organisation, export_types: ['Export::Gtfs'] do
         workbench organisation: organisation do
           referential
@@ -59,19 +58,21 @@ RSpec.describe ExportsController, type: :controller do
   end
 
   describe 'GET #new' do
-    it 'should be successful if authorized' do
-      get :new, params: parent_params
-      expect(response).to be_successful
+    with_permissions 'exports.create' do
+      it 'should be successful if authorized' do
+        get :new, params: parent_params
+        expect(response).to be_successful
+      end
     end
 
     it 'should be unsuccessful unless authorized' do
-      remove_permissions('exports.create', from_user: @user, save: true)
       get :new, params: parent_params
       expect(response).not_to be_successful
     end
   end
 
   describe 'POST #create' do
+    let(:permissions) { %w[exports.create] }
     let(:params) { { name: 'foo' } }
     let(:request) { post :create, params: parent_params.merge({ export: params }) }
     it 'should create no objects' do
@@ -83,7 +84,7 @@ RSpec.describe ExportsController, type: :controller do
         parent_params.merge({
                               name: 'foo',
                               type: 'Export::Gtfs',
-                              referential_id: first_referential.id,
+                              referential_id: current_referential.id,
                               creator: 'Test',
                               setup: { scope_setup: { type: 'Export::Setup::Scope::Referential' } }
                             })
@@ -97,7 +98,7 @@ RSpec.describe ExportsController, type: :controller do
     context 'with missing options' do
       let(:params) do
         {
-          referential_id: first_referential.id,
+          referential_id: current_referential.id,
           type: 'Export::Gtfs'
         }
       end

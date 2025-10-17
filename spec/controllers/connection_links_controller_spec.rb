@@ -3,9 +3,12 @@
 RSpec.describe ConnectionLinksController, type: :controller do
   login_user
 
+  let(:permissions) { %w[connection_links.create connection_links.update connection_links.destroy] }
+
   let(:context) do
+    organisation = self.organisation
     Chouette.create do
-      organisation = Organisation.find_by(code: 'first')
+      organisation = organisation
       workgroup(owner: organisation) do
         workbench(:workbench, organisation: organisation) do
           stop_area_provider :stop_area_provider
@@ -39,8 +42,6 @@ RSpec.describe ConnectionLinksController, type: :controller do
     }
   end
   let(:connection_link_attrs) { base_connection_link_attrs }
-
-  before { @user.update(permissions: %w[connection_links.create connection_links.update connection_links.destroy]) }
 
   describe 'GET #new' do
     let(:request) { get :new, params: base_params }

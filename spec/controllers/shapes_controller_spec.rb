@@ -3,9 +3,11 @@
 RSpec.describe ShapesController, type: :controller do
   login_user
 
+  let(:permissions) { %w[shapes.create shapes.update shapes.destroy] }
+
   let(:context) do
+    organisation = self.organisation
     Chouette.create do
-      organisation = Organisation.find_by(code: 'first')
       workgroup(owner: organisation) do
         workbench(:workbench, organisation: organisation) do
           shape_provider :shape_provider
@@ -30,12 +32,11 @@ RSpec.describe ShapesController, type: :controller do
   let(:base_shape_attrs) { { 'name' => 'test', 'geometry' => 'LINESTRING(48.8584 2.2945,48.859 2.295)' } }
   let(:shape_attrs) { base_shape_attrs }
 
-  before { @user.update(permissions: %w[shapes.create shapes.update shapes.destroy]) }
-
   describe 'GET #index' do
     let(:context) do
+      organisation = self.organisation
       Chouette.create do
-        workbench(:workbench, organisation: Organisation.find_by(code: 'first')) do
+        workbench(:workbench, organisation: organisation) do
           shape :first
           shape :second
         end
@@ -52,8 +53,9 @@ RSpec.describe ShapesController, type: :controller do
 
   describe 'GET show' do
     let(:context) do
+      organisation = self.organisation
       Chouette.create do
-        workbench(:workbench, organisation: Organisation.find_by(code: 'first')) do
+        workbench(:workbench, organisation: organisation) do
           shape :first
         end
       end
@@ -118,8 +120,9 @@ RSpec.describe ShapesController, type: :controller do
 
   describe 'DELETE #destroy' do
     let(:context) do
+      organisation = self.organisation
       Chouette.create do
-        workbench(:workbench, organisation: Organisation.find_by(code: 'first')) do
+        workbench(:workbench, organisation: organisation) do
           shape :first
         end
       end

@@ -1,6 +1,14 @@
+# frozen_string_literal: true
 
-describe Chouette::LineNotice, :type => :model do
-  subject { create(:line_notice) }
+RSpec.describe Chouette::LineNotice, type: :model do
+  subject(:line_notice) { context.line_notice }
+
+  let(:context) do
+    Chouette.create do
+      line_notice
+    end
+  end
+
   it { should validate_presence_of :title }
 
   describe "#nullables empty" do
@@ -26,24 +34,35 @@ describe Chouette::LineNotice, :type => :model do
   end
 
   describe '#unprotected' do
-    let!(:line_notice) { create :line_notice }
-
-    it "should return unused notices" do
-      expect(Chouette::LineNotice.unprotected).to include line_notice
-      expect(line_notice).to_not be_protected
+    context 'when line notice is not used' do
+      it 'should return line notice' do
+        expect(Chouette::LineNotice.unprotected).to include(line_notice)
+        expect(line_notice).not_to be_protected
+      end
     end
 
-    it "should  not return used notices" do
-      vj = nil
-      referential.switch do
-        vj = create(:vehicle_journey)
-        vj.line_notices = [line_notice]
-        vj.save
+    context 'when line notice is used' do
+      let(:context) do
+        Chouette.create do
+          line_notice
+
+          referential do
+            vehicle_journey
+          end
+        end
+      end
+      let(:referential) { context.referential }
+      let(:vehicle_journey) { context.vehicle_journey }
+
+      before do
+        referential.switch
+        vehicle_journey.update!(line_notices: [line_notice])
       end
 
-      expect(line_notice.vehicle_journeys).to include vj
-      expect(Chouette::LineNotice.unprotected).to_not include line_notice
-      expect(line_notice).to be_protected
+      it 'should not return used notices' do
+        expect(Chouette::LineNotice.unprotected).not_to include(line_notice)
+        expect(line_notice).to be_protected
+      end
     end
   end
 end

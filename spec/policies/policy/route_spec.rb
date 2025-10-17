@@ -1,7 +1,8 @@
 # frozen_string_literal: true
 
 RSpec.describe Policy::Route, type: :policy do
-  let(:resource) { build_stubbed(:route) }
+  let(:referential) { double(:referential) }
+  let(:resource) { double(:route, class: Chouette::Route, referential: referential) }
 
   describe '#create?' do
     subject { policy.create?(resource_class) }
@@ -51,7 +52,7 @@ RSpec.describe Policy::Route, type: :policy do
     before do
       dbl = double
       expect(dbl).to receive(:create?).with(Chouette::Route).and_return(line_policy_create_route)
-      expect(Policy::Referential).to receive(:new).with(resource.referential, context: policy_context).and_return(dbl)
+      expect(Policy::Referential).to receive(:new).with(referential, context: policy_context).and_return(dbl)
     end
 
     it { applies_strategy(Policy::Strategy::Referential) }

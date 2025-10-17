@@ -17,12 +17,13 @@ describe Chouette::WorkgroupController, type: :controller do
       login_user
 
       let(:context) do
+        organisation = self.organisation
         Chouette.create do
-          workgroup(:organisation_workgroup, owner: Organisation.find_by(code: 'first')) do
-            workbench organisation: Organisation.find_by(code: 'first')
+          workgroup(:organisation_workgroup, owner: organisation) do
+            workbench organisation: organisation
           end
           workgroup :workbench_workgroup do
-            workbench organisation: Organisation.find_by(code: 'first')
+            workbench organisation: organisation
           end
           workgroup(:other_workgroup)
         end

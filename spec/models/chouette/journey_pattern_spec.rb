@@ -1,6 +1,18 @@
-describe Chouette::JourneyPattern, :type => :model do
+# frozen_string_literal: true
 
-  subject { create(:journey_pattern) }
+describe Chouette::JourneyPattern, type: :model do
+  subject(:journey_pattern) { context.journey_pattern }
+
+  let(:context) do
+    Chouette.create do
+      referential do
+        journey_pattern
+      end
+    end
+  end
+  let(:referential) { context.referential }
+
+  before { referential.switch }
 
   describe 'checksum' do
     it_behaves_like 'checksum support'
@@ -43,8 +55,16 @@ describe Chouette::JourneyPattern, :type => :model do
   end
 
   describe 'when the stop_points are modified' do
-    let(:journey_pattern) { create :journey_pattern }
-    let(:vehicle_journey) { create :vehicle_journey, journey_pattern: journey_pattern }
+    let(:context) do
+      Chouette.create do
+        referential do
+          journey_pattern do
+            vehicle_journey
+          end
+        end
+      end
+    end
+    let(:vehicle_journey) { context.vehicle_journey }
 
     describe 'when a stop_point is removed' do
       it 'should remove it from its vehicle_journeys' do
@@ -58,7 +78,18 @@ describe Chouette::JourneyPattern, :type => :model do
     end
 
     describe 'when a stop_point is added' do
-      let(:stop_point) { create :stop_point }
+      let(:context) do
+        Chouette.create do
+          stop_area
+          referential do
+            journey_pattern do
+              vehicle_journey
+            end
+          end
+        end
+      end
+      let(:stop_point) { context.route.stop_points.create!(stop_area: context.stop_area) }
+
       it 'should remove it from its vehicle_journeys' do
         expect(vehicle_journey.vehicle_journey_at_stops.count).to eq journey_pattern.stop_points.count
         journey_pattern.reload
@@ -71,8 +102,6 @@ describe Chouette::JourneyPattern, :type => :model do
   end
 
   describe 'costs' do
-    let(:journey_pattern) { create :journey_pattern }
-
     context "with a negative distance" do
       before(:each){
         journey_pattern.costs = generate_journey_pattern_costs(->(i){i == 1 ? -1 : 10}, 10)
@@ -93,8 +122,8 @@ describe Chouette::JourneyPattern, :type => :model do
   end
 
   describe "full_schedule?" do
-    let(:journey_pattern) { create :journey_pattern }
     subject{ journey_pattern.full_schedule? }
+
     context "when no time is set" do
       it { should be_falsy }
     end
@@ -131,11 +160,12 @@ describe Chouette::JourneyPattern, :type => :model do
   end
 
   describe "distance_to" do
-    let(:journey_pattern) { create :journey_pattern }
+    subject{ journey_pattern.distance_to stop}
+
     before do
       journey_pattern.costs = generate_journey_pattern_costs(10, 10)
     end
-    subject{ journey_pattern.distance_to stop}
+
     context "for the first stop" do
       let(:stop){ journey_pattern.stop_points.first }
       it { should eq 0 }
@@ -143,7 +173,7 @@ describe Chouette::JourneyPattern, :type => :model do
 
     context "for the last stop" do
       let(:stop){ journey_pattern.stop_points.last }
-      it { should eq 40 }
+      it { should eq 20 }
     end
   end
 
@@ -158,10 +188,21 @@ describe Chouette::JourneyPattern, :type => :model do
       end
     end
 
-    let(:route) { create :route, stop_points_count: 5 }
-    let(:journey_pattern) { create :journey_pattern, route: route }
+    let(:context) do
+      Chouette.create do
+        referential do
+          route stop_count: 5 do
+            journey_pattern do
+              vehicle_journey
+            end
+          end
+        end
+      end
+    end
+
+    let(:route) { context.route }
     let(:state) { journey_pattern_to_state(journey_pattern) }
-    let!(:vehicle_journey) { create :vehicle_journey, journey_pattern: journey_pattern }
+    let!(:vehicle_journey) { context.vehicle_journey }
 
     it 'should delete unchecked stop_points' do
       expect(journey_pattern.stop_points.count).to eq(5)
@@ -262,12 +303,16 @@ describe Chouette::JourneyPattern, :type => :model do
 
   describe "#stop_point_ids" do
     context "for a journey_pattern using only route's stop on odd position" do
-      let!(:journey_pattern){ create( :journey_pattern_odd)}
-      let!(:vehicle_journey){ create( :vehicle_journey_odd, :journey_pattern => journey_pattern)}
-
-      # workaroud
-      #subject { journey_pattern}
-      subject { Chouette::JourneyPattern.find(vehicle_journey.journey_pattern_id)}
+      let(:context) do
+        Chouette.create do
+          referential do
+            journey_pattern do
+              vehicle_journey
+            end
+          end
+        end
+      end
+      let(:vehicle_journey) { context.vehicle_journey }
 
       context "when a all route's stop have been removed from journey_pattern" do
         before(:each) do
@@ -302,15 +347,28 @@ describe Chouette::JourneyPattern, :type => :model do
       end
 
       context "when a route's stop has been added in journey_pattern" do
-        let!(:new_stop){ subject.route.stop_points[1]}
+        let(:context) do
+          Chouette.create do
+            stop_area
+            referential do
+              journey_pattern do
+                vehicle_journey
+              end
+            end
+          end
+        end
+        let(:new_stop) { context.route.stop_points.create!(stop_area: context.stop_area) }
+
         before(:each) do
           subject.stop_point_ids = subject.stop_point_ids + [new_stop.id]
         end
+
         it "should add a new vehicle_journey_at_stop for that stop" do
           vjas_stop_ids = Chouette::VehicleJourney.find(vehicle_journey.id).vehicle_journey_at_stops.map(&:stop_point_id)
           expect(vjas_stop_ids.count).to eq(subject.stop_point_ids.size)
           expect(vjas_stop_ids).to include( new_stop.id)
         end
+
         it "should keep departure and arrival shortcut up to date" do
           ordered = subject.stop_points.sort { |a,b| a.position <=> b.position}
 
@@ -380,17 +438,22 @@ describe Chouette::JourneyPattern, :type => :model do
   end
 
   describe '#duplicate!' do
-    let(:journey_pattern) { create(:journey_pattern) }
-    
-    before do
-      3.times do
-        FactoryBot.create(:vehicle_journey, journey_pattern: journey_pattern)
+    let(:context) do
+      Chouette.create do
+        referential do
+          journey_pattern do
+            vehicle_journey
+            vehicle_journey
+            vehicle_journey
+          end
+        end
       end
     end
 
     it 'creates an new journey pattern' do
       dup = journey_pattern.duplicate!
 
+      expect(dup).not_to eq(journey_pattern)
       expect(dup.persisted?).to be_truthy
     end
 
@@ -403,7 +466,7 @@ describe Chouette::JourneyPattern, :type => :model do
     it 'should not create vehicle journeys' do
       dup = journey_pattern.duplicate!
 
-      expect(journey_pattern.vehicle_journey_ids).to be_empty
+      expect(dup.vehicle_journey_ids).to be_empty
     end
   end
 
@@ -425,7 +488,6 @@ describe Chouette::JourneyPattern, :type => :model do
         end
       end
     end
-    let(:journey_pattern) { context.journey_pattern }
     let(:stop_area1) { context.stop_area(:stop_area1) }
     let(:stop_area2) { context.stop_area(:stop_area2) }
 

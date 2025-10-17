@@ -3,9 +3,11 @@
 RSpec.describe LineNoticesController, type: :controller do
   login_user
 
+  let(:permissions) { %w[line_notices.create line_notices.update line_notices.destroy] }
+
   let(:context) do
+    organisation = self.organisation
     Chouette.create do
-      organisation = Organisation.find_by(code: 'first')
       workgroup(owner: organisation) do
         workbench(:workbench, organisation: organisation) do
           line_provider :line_provider
@@ -32,13 +34,12 @@ RSpec.describe LineNoticesController, type: :controller do
   let(:base_line_notice_attrs) { { 'title' => 'test' } }
   let(:line_notice_attrs) { base_line_notice_attrs }
 
-  before { @user.update(permissions: %w[line_notices.create line_notices.update line_notices.destroy]) }
-
   describe 'GET #index' do
     let(:context) do
+      organisation = self.organisation
       Chouette.create do
-        workgroup(owner: Organisation.find_by(code: 'first')) do
-          workbench :workbench, organisation: Organisation.find_by(code: 'first') do
+        workgroup(owner: organisation) do
+          workbench :workbench, organisation: organisation do
             line_provider(:line_provider) do
               line :line
               line_notice :first
@@ -46,7 +47,7 @@ RSpec.describe LineNoticesController, type: :controller do
             end
           end
         end
-        workgroup(owner: Organisation.find_by(code: 'first')) do
+        workgroup(owner: organisation) do
           line_notice :other_line_notice, lines: [:line]
         end
       end

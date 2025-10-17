@@ -23,7 +23,7 @@ RSpec.describe Query::ServiceCount do
       end
     end
   end
-
+  let(:referential) { context.referential }
   let(:company) { context.company(:company) }
   let(:other_company) { context.company(:other_company) }
   let(:network) { context.network(:network) }

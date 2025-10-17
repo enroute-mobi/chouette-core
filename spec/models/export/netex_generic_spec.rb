@@ -1040,6 +1040,9 @@ RSpec.describe Export::NetexGeneric do
           lines: Chouette::Line.all
         )
       end
+      let(:referential) { Chouette.create { referential }.referential }
+
+      before { referential.switch }
 
       describe '#netex_attributes' do
         subject { decorator.netex_attributes }
@@ -1663,6 +1666,15 @@ RSpec.describe Export::NetexGeneric do
   end
 
   describe 'TimeTables export' do
+    let(:context) do
+      Chouette.create do
+        referential
+      end
+    end
+    let(:referential) { context.referential }
+
+    before { referential.switch }
+
     describe Export::NetexGeneric::TimeTables::Decorator do
       let(:decorated_tt) { Export::NetexGeneric::TimeTables::Decorator.new time_table, code_provider: code_provider }
       let(:netex_resources) { decorated_tt.netex_resources }
@@ -1682,10 +1694,6 @@ RSpec.describe Export::NetexGeneric do
       let(:time_table) { context.time_table }
       let(:many_codes) { context.code_space(:many_codes) }
       let(:one_code) { context.code_space(:one_code) }
-
-      before do
-        context.referential.switch
-      end
 
       describe '#day_type_attributes' do
         let(:day_type_attributes) { decorated_tt.day_type_attributes }
@@ -1895,13 +1903,15 @@ RSpec.describe Export::NetexGeneric do
     end
 
     describe Export::NetexGeneric::PeriodDecorator do
-      let(:time_table) { create(:time_table) }
-
-      let(:period) do
-        Chouette::TimeTablePeriod.new period_start: Date.parse('2021-01-01'),
-                                      period_end: Date.parse('2021-12-31'),
-                                      time_table: time_table
+      let(:context) do
+        Chouette.create do
+          referential do
+            time_table periods: [Date.parse('2021-01-01')..Date.parse('2021-01-04')]
+          end
+        end
       end
+      let(:time_table) { context.time_table }
+      let(:period) { time_table.periods.first }
 
       let(:decorator) { Export::NetexGeneric::PeriodDecorator.new period, nil, code_provider }
       let(:code_provider) { Export::CodeProvider.new export_scope }
@@ -1935,27 +1945,27 @@ RSpec.describe Export::NetexGeneric do
       end
 
       describe '#to_days_bit' do
-        let(:period) do
-          Chouette::TimeTablePeriod.new period_start: Date.parse('2021-01-01'),
-                                        period_end: Date.parse('2021-01-04'),
-                                        time_table: time_table
-        end
-
         it { expect(decorator.operating_period.class).to eq Netex::UicOperatingPeriod }
         it { expect(decorator.valid_day_bits).to eq '1111' }
       end
     end
 
     describe Export::NetexGeneric::DateDecorator do
-      let(:time_table) { create(:time_table) }
+      subject { decorator.day_type_assignment_attributes }
 
-      let(:date) do
-        Chouette::TimeTableDate.new date: Date.parse('2021-01-01'), time_table: time_table
+      let(:context) do
+        Chouette.create do
+          referential do
+            time_table dates_included: [Date.parse('2021-01-01')]
+          end
+        end
       end
+      let(:time_table) { context.time_table }
+      let(:date) { time_table.dates.first }
+
       let(:decorator) { Export::NetexGeneric::DateDecorator.new date, nil, code_provider }
       let(:code_provider) { Export::CodeProvider.new export_scope }
       let(:export_scope) { double('Export::Scope', time_tables: Chouette::TimeTable.all) }
-      subject { decorator.day_type_assignment_attributes }
 
       it 'has a id with the DayTypeAssignment type' do
         expect(subject[:id]).to include('DayTypeAssignment')

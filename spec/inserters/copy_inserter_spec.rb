@@ -1,11 +1,11 @@
+# frozen_string_literal: true
+
 RSpec.describe CopyInserter do
+  subject(:inserter) { CopyInserter.new(referential) }
 
-  before do
-    context.referential.switch
-  end
+  let(:referential) { context.referential }
 
-  subject { CopyInserter.new context.referential }
-  alias_method :inserter, :subject
+  before { referential.switch }
 
   def truncate_timestamps(model)
     # To avoid situations where we're saving '2020-03-05 10:33:55.56506'

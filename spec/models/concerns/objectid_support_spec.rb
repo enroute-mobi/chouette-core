@@ -1,7 +1,26 @@
+# frozen_string_literal: true
+
 RSpec.describe ObjectidSupport do
+  let(:prefix) { nil }
+  let(:context) do
+    prefix = self.prefix
+    objectid_format = self.objectid_format
+    Chouette.create do
+      workbench prefix: prefix do
+        referential objectid_format: objectid_format  do
+          time_table objectid: nil
+        end
+      end
+    end
+  end
+  let(:referential) { context.referential }
+  let(:object) { context.time_table }
+
+  before(:each) { referential.switch }
 
   context 'when referential has an objectid format of stif_netex' do
-    let(:object) { create(:time_table, objectid: nil) }
+    let(:objectid_format) { 'stif_netex' }
+    let(:prefix) { 'stif' }
 
     context "#objectid_format" do
       it "should be stif_netex" do
@@ -10,7 +29,7 @@ RSpec.describe ObjectidSupport do
     end
 
     it 'should fill __pending_id__' do
-      not_persisted = build(:time_table, objectid: nil)
+      not_persisted = referential.time_tables.new(comment: 'dummy', objectid: nil)
       not_persisted.validate
       expect(not_persisted.objectid.include?('__pending_id__')).to be_truthy
     end
@@ -76,12 +95,7 @@ RSpec.describe ObjectidSupport do
   end
 
   context 'when referential has an objectid format of netex' do
-    let(:referential){ create :referential, objectid_format: 'netex' }
-    before(:each) do
-      referential.switch
-    end
-
-    let(:object) { create(:time_table, objectid: nil) }
+    let(:objectid_format) { 'netex' }
 
     context "#objectid_format" do
       it "should be netex" do

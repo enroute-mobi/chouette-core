@@ -8,8 +8,9 @@ RSpec.describe ReferentialAutocompleteController, type: :controller do
 
   describe 'GET #lines' do
     let(:context) do
+      organisation = self.organisation
       Chouette.create do
-        workbench organisation: Organisation.find_by(code: 'first') do
+        workbench organisation: organisation do
           line :first_line, name: 'Line one', published_name: 'First Line', number: 'L1', objectid: 'line1'
           line :second_line, name: 'Line two', published_name: 'Second Line', number: 'L2', objectid: 'line2'
           line :out_of_referential_line
@@ -54,8 +55,9 @@ RSpec.describe ReferentialAutocompleteController, type: :controller do
 
   describe 'GET #companies' do
     let(:context) do
+      organisation = self.organisation
       Chouette.create do
-        workbench organisation: Organisation.find_by(code: 'first') do
+        workbench organisation: organisation do
           company :c1, name: 'Company one', short_name: 'Company 1', objectid: 'company1'
           company :other, name: 'Other', short_name: 'other', objectid: '_other_'
 
@@ -99,8 +101,9 @@ RSpec.describe ReferentialAutocompleteController, type: :controller do
 
   describe 'GET #routes' do
     let(:context) do
+      organisation = self.organisation
       Chouette.create do
-        workbench organisation: Organisation.find_by(code: 'first') do
+        workbench organisation: organisation do
           line :line
           line :other
 

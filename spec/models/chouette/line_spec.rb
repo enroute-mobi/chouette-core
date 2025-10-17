@@ -1,7 +1,13 @@
 # frozen_string_literal: true
 
 describe Chouette::Line, type: :model do
-  subject(:line) { create(:line) }
+  subject(:line) { context.line(:line) }
+
+  let(:context) do
+    Chouette.create do
+      line :line
+    end
+  end
 
   it { should belong_to(:line_referential).required }
   # it { is_expected.to validate_presence_of :network }
@@ -158,9 +164,17 @@ describe Chouette::Line, type: :model do
   end
 
   describe '#display_name' do
+    subject { line.display_name }
+
+    let(:context) do
+      Chouette.create do
+        company :company, name: 'enRoute'
+        line :line, company: :company, name: 'Line 42', number: 'L42'
+      end
+    end
+
     it 'should display local_id, number, name and company name' do
-      display_name = "#{subject.get_objectid.local_id} - #{subject.number} - #{subject.name} - #{subject.company.try(:name)}"
-      expect(subject.display_name).to eq(display_name)
+      is_expected.to eq("#{line.get_objectid.short_id} - L42 - Line 42 - enRoute")
     end
   end
 
@@ -171,9 +185,28 @@ describe Chouette::Line, type: :model do
   end
 
   describe '#stop_areas' do
-    let!(:route) { create(:route, line: subject) }
+    subject { line.stop_areas }
+
+    let(:context) do
+      Chouette.create do
+        line :line
+        stop_area :stop_area1
+        stop_area :stop_area2
+        referential lines: %i[line] do
+          route line: :line, with_stops: false do
+            stop_point stop_area: :stop_area1
+            stop_point stop_area: :stop_area2
+          end
+        end
+      end
+    end
+    let(:referential) { context.referential }
+    let(:route) { context.route }
+
+    before { referential.switch }
+
     it "should retreive route's stop_areas" do
-      expect(subject.stop_areas.count).to eq(route.stop_points.count)
+      is_expected.to match_array(%i[stop_area1 stop_area2].map { |sa| context.stop_area(sa) })
     end
   end
 

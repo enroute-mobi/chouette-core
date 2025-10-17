@@ -139,9 +139,14 @@ module Support
       extend ActiveSupport::Concern
 
       included do
-        let(:permissions) { nil }
+        let(:profile) { nil }
+        let(:permissions) { profile ? Permission::Profile.permissions_for(profile) : [] }
         let(:features) { [] }
-        let(:current_user) { create :user, permissions: permissions, organisation: organisation }
+        let(:organisation) { create(:organisation, features: features) }
+        let(:user_organisation) { organisation }
+        let(:current_user) do
+          create(:user, profile: profile, permissions: permissions, organisation: user_organisation)
+        end
 
         let(:current_workgroup) { current_workbench.workgroup }
         let(:current_workbench) { create :workbench, organisation: organisation }
@@ -156,10 +161,50 @@ module Support
       end
     end
 
+    module With
+      extend ActiveSupport::Concern
+
+      class_methods do
+        def with_permissions(*permissions, &block)
+          context "with permission#{'s' if permissions.many?} #{permissions.join(', ')}" do
+            let(:permissions) { super() + permissions }
+            instance_eval(&block)
+          end
+        end
+
+        def with_features(*features, &block)
+          context "with feature#{'s' if features.many?} #{features.join(', ')}" do
+            let(:features) { super() + features }
+            instance_eval(&block)
+          end
+        end
+      end
+    end
+
+    module Controllers
+      extend ActiveSupport::Concern
+
+      include Lets
+      include With
+      include Devise::Test::ControllerHelpers
+
+      class_methods do
+        def login_user
+          before { login_user }
+        end
+      end
+
+      def login_user
+        @request.env['devise.mapping'] = Devise.mappings[:user]
+        sign_in(current_user)
+      end
+    end
+
     module Views
       extend ActiveSupport::Concern
 
       include Lets
+      include With
 
       included do
         before do
@@ -202,6 +247,7 @@ end
 RSpec.configure do |config|
   config.include Support::Policy::Policy, type: :policy
   config.include Support::Policy::PolicyStrategy, type: :policy_strategy
+  config.include Support::Policy::Controllers, type: :controller
   config.include Support::Policy::Views, type: :view
   config.include Support::Policy::Decorators, type: :decorator
 end

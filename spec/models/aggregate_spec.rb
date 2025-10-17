@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 RSpec.describe Aggregate, type: :model do
 
   describe "aggregate!" do
@@ -232,6 +234,8 @@ RSpec.describe Aggregate, type: :model do
   end
 
   context 'an automatic aggregate' do
+    let(:referential) { Chouette.create { referential }.referential }
+
     context "without concurent aggregate" do
       let(:aggregate) do
         Aggregate.new(
@@ -362,6 +366,8 @@ RSpec.describe Aggregate, type: :model do
   end
 
   context 'a manual aggregate' do
+    let(:referential) { Chouette.create { referential }.referential }
+
     context "without concurent aggregate" do
       let(:aggregate) do
         Aggregate.new(workgroup: referential.workgroup, referentials: [referential, referential], creator: 'test')
@@ -419,6 +425,7 @@ RSpec.describe Aggregate, type: :model do
   end
 
   describe '#worker_died' do
+    let(:referential) { Chouette.create { referential }.referential }
     let(:aggregate) do
       Aggregate.create!(workgroup: referential.workgroup, referentials: [referential, referential], creator: 'test')
     end

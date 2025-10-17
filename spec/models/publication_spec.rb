@@ -15,23 +15,35 @@ RSpec.describe Publication, type: :model do
     it { is_expected.to include(Publication::ExportStatus) }
   end
 
-  let(:export_type) { 'Export::Setup::Gtfs' }
-  let(:export_setup) { { type: export_type, scope_setup: { type: 'Export::Setup::Scope::PublishedReferential' } } }
   let(:publication_setup_priority) { 1 }
-  let(:publication_setup) do
-    create(:publication_setup, priority: publication_setup_priority, export_setup: export_setup)
+  let(:export_type) { 'Export::Setup::Gtfs' }
+  let(:context) do
+    publication_setup_priority = self.publication_setup_priority
+    export_type = self.export_type
+    Chouette.create do
+      workgroup do
+        publication_setup priority: publication_setup_priority,
+                          export_setup: {
+                            type: export_type,
+                            scope_setup: { type: 'Export::Setup::Scope::PublishedReferential' }
+                          }
+        referential
+      end
+    end
   end
-  let(:referential) { first_referential }
+  let(:workgroup) { context.workgroup }
+  let(:publication_setup) { context.publication_setup }
+  let(:referential) { context.referential }
   let(:publication) do
     create(
       :publication,
-      referential: first_referential,
+      referential: referential,
       parent: operation,
       publication_setup: publication_setup,
       creator: 'test'
     )
   end
-  let(:operation) { create :aggregate, referentials: [first_referential] }
+  let(:operation) { create(:aggregate, workgroup: workgroup, referentials: [referential]) }
 
   before(:each) do
     operation.update status: :successful
@@ -176,7 +188,7 @@ RSpec.describe Publication, type: :model do
   describe '#concurrent_target' do
     subject { publication.concurrent_target }
 
-    it { is_expected.to eq("publications[referential:#{first_referential.id}]") }
+    it { is_expected.to eq("publications[referential:#{referential.id}]") }
   end
 
   context '#priority' do

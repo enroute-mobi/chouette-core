@@ -1,11 +1,12 @@
 # frozen_string_literal: true
 
 RSpec.describe FootnotesController, :type => :controller do
-  login_user permissions: []
+  login_user
 
   let(:context) do
+    organisation = self.organisation
     Chouette.create do
-      workbench organisation: Organisation.find_by(code: 'first') do
+      workbench organisation: organisation do
         line :line
         referential lines: %i[line]
       end
@@ -24,7 +25,7 @@ RSpec.describe FootnotesController, :type => :controller do
       expect(request).to have_http_status 403
     end
 
-    with_permission "footnotes.update" do
+    with_permissions 'footnotes.update' do
       it 'returns http success' do
         expect(request).to have_http_status :ok
       end
@@ -54,7 +55,7 @@ RSpec.describe FootnotesController, :type => :controller do
       expect(request).to have_http_status 403
     end
 
-    with_permission "footnotes.update" do
+    with_permissions 'footnotes.update' do
       it 'redirects' do
         expect(request).to have_http_status :redirect
       end

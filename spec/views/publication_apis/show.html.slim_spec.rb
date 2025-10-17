@@ -2,8 +2,8 @@
 
 RSpec.describe 'publication_apis/show.html.slim', type: :view do
   let(:context) do
+    organisation = self.organisation
     Chouette.create do
-      organisation = Organisation.find_by(code: 'first')
       workgroup owner: organisation, export_types: ['Export::Gtfs'] do
         workbench organisation: organisation do
           referential

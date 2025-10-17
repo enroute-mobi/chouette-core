@@ -3,9 +3,18 @@
 RSpec.describe LineRoutingConstraintZonesController, type: :controller do
   login_user
 
+  let(:permissions) do
+    %w[
+      line_routing_constraint_zones.create
+      line_routing_constraint_zones.update
+      line_routing_constraint_zones.destroy
+    ]
+  end
+
   let(:context) do
+    organisation = self.organisation
     Chouette.create do
-      organisation = Organisation.find_by(code: 'first')
+      organisation = organisation
       workgroup(owner: organisation) do
         workbench(:workbench, organisation: organisation) do
           stop_area :stop_area1
@@ -43,16 +52,6 @@ RSpec.describe LineRoutingConstraintZonesController, type: :controller do
     }
   end
   let(:line_routing_constraint_zone_attrs) { base_line_routing_constraint_zone_attrs }
-
-  before do
-    @user.update(
-      permissions: %w[
-        line_routing_constraint_zones.create
-        line_routing_constraint_zones.update
-        line_routing_constraint_zones.destroy
-      ]
-    )
-  end
 
   describe 'GET #new' do
     let(:request) { get :new, params: base_params }

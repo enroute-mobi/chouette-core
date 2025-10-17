@@ -3,9 +3,12 @@
 RSpec.describe EntrancesController, type: :controller do
   login_user
 
+  let(:permissions) { %w[entrances.create entrances.update entrances.destroy] }
+
   let(:context) do
+    organisation = self.organisation
     Chouette.create do
-      organisation = Organisation.find_by(code: 'first')
+      organisation = organisation
       workgroup(owner: organisation) do
         workbench(:workbench, organisation: organisation) do
           stop_area_provider :stop_area_provider
@@ -33,8 +36,6 @@ RSpec.describe EntrancesController, type: :controller do
     { 'name' => 'test', 'stop_area_id' => context.stop_area(:stop_area).id.to_s }
   end
   let(:entrance_attrs) { base_entrance_attrs }
-
-  before { @user.update(permissions: %w[entrances.create entrances.update entrances.destroy]) }
 
   describe 'GET #new' do
     let(:request) { get :new, params: base_params }

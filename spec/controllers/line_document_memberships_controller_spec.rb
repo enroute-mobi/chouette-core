@@ -4,11 +4,13 @@ RSpec.describe LineDocumentMembershipsController, type: :controller do
   login_user
 
   let(:context) do
+    organisation = self.organisation
+
     Chouette.create do
-      workgroup do
+      workgroup owner: organisation do
         document_type :document_type
 
-        workbench :workbench, organisation: Organisation.find_by(code: 'first') do
+        workbench :workbench, organisation: organisation do
           document_provider :document_provider
 
           line :line1, name: 'Line one', published_name: 'First Line', number: 'L1'

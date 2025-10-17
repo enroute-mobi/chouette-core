@@ -13,9 +13,8 @@ RSpec.describe Destination::Chouette, type: :model do
   describe '#transmit' do
     let(:context) do
       Chouette.create do
-        organisation = Organisation.find_by(code: 'first')
-        workgroup owner: organisation, export_types: ['Export::Gtfs'] do
-          workbench organisation: organisation do
+        workgroup export_types: ['Export::Gtfs'] do
+          workbench do
             referential
           end
         end

@@ -60,7 +60,7 @@ RSpec.describe 'workbenches/show.html.slim', type: :view do
     end
   end
 
-  with_permission "referentials.destroy" do
+  with_permissions 'referentials.destroy' do
     it "should enable the checkbox for the referential which belongs to the same organisation and disable the other one" do
       expect(rendered).to have_box_for_item same_organisation_referential, false
       expect(rendered).to have_box_for_item different_organisation_referential, true

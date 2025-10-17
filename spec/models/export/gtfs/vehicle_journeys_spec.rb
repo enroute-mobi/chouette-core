@@ -205,6 +205,7 @@ RSpec.describe Export::Gtfs::VehicleJourneys::ServiceFinder do
 end
 
 RSpec.describe Export::Gtfs::VehicleJourneys::Decorator do
+  let(:referential) { Chouette.create { referential }.referential }
   let(:vehicle_journey) { Chouette::VehicleJourney.new }
   let(:index) { Export::Gtfs::Index.new }
   let(:resource_code_space) { double }
@@ -214,6 +215,8 @@ RSpec.describe Export::Gtfs::VehicleJourneys::Decorator do
   let(:decorator) do
     described_class.new vehicle_journey, index: index # , code_provider: resource_code_space
   end
+
+  before { referential.switch }
 
   describe '#route_id' do
     subject { decorator.route_id }

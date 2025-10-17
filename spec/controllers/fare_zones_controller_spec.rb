@@ -3,9 +3,12 @@
 RSpec.describe FareZonesController, type: :controller do
   login_user
 
+  let(:permissions) { %w[fare_zones.create fare_zones.update fare_zones.destroy] }
+
   let(:context) do
+    organisation = self.organisation
     Chouette.create do
-      organisation = Organisation.find_by(code: 'first')
+      organisation = organisation
       workgroup(owner: organisation) do
         workbench(:workbench, organisation: organisation) do
           fare_provider :fare_provider
@@ -25,8 +28,6 @@ RSpec.describe FareZonesController, type: :controller do
   let(:base_params) { { 'workbench_id' => workbench.id.to_s } }
   let(:base_fare_zone_attrs) { { 'name' => 'test' } }
   let(:fare_zone_attrs) { base_fare_zone_attrs }
-
-  before { @user.update(permissions: %w[fare_zones.create fare_zones.update fare_zones.destroy]) }
 
   describe 'GET #new' do
     let(:request) { get :new, params: base_params }

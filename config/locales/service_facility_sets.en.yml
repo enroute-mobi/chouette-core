@@ -24,9 +24,18 @@ en:
   activerecord:
     models:
       service_facility_set:
-        zero:  "Service Facility Set"
+        zero:  "Service Facility Sets"
         one:   "Service Facility Set"
         other: "Service Facility Sets"
+        the:
+          one: "the Service Facility Set"
+          other: "the Service Facility Sets"
+        of:
+          one: "of Service Facility Set"
+          other: "of Service Facility Sets"
+        to:
+          one: "to Service Facility Set"
+          other: "to Service Facility Sets"
     attributes:
       service_facility_set:
         name: Name

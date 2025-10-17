@@ -23,9 +23,18 @@ en:
   activerecord:
     models:
       line_notice:
-        zero:  "line notice"
-        one:   "line notice"
-        other: "line notices"
+        zero:  "Line Notices"
+        one:   "Line Notice"
+        other: "Line Notices"
+        the:
+          one: "the Line Notice"
+          other: "the Line Notices"
+        of:
+          one: "of Line Notice"
+          other: "of Line Notices"
+        to:
+          one: "to Line Notice"
+          other: "to Line Notices"
     attributes:
       line_notice:
         registration_number: "Registration number"

@@ -84,7 +84,6 @@ RSpec.describe Macro::DefineAttributeFromParticulars::Run do
               criticity: 'info',
               message_attributes: {
                 'name' => referent.name,
-                'target_attribute' => 'time_zone',
                 'attribute_value' => 'Europe/Paris'
               },
               source: referent
@@ -171,7 +170,6 @@ RSpec.describe Macro::DefineAttributeFromParticulars::Run do
               criticity: 'info',
               message_attributes: {
                 'name' => referent.name,
-                'target_attribute' => target_attribute.to_s,
                 'attribute_value' => localized_value
               },
               source: referent
@@ -209,7 +207,6 @@ RSpec.describe Macro::DefineAttributeFromParticulars::Run do
               criticity: 'info',
               message_attributes: {
                 'name' => referent.name,
-                'target_attribute' => 'time_zone',
                 'attribute_value' => 'Europe/Paris'
               },
               source: referent

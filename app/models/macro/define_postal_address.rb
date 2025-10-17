@@ -33,7 +33,7 @@ module Macro
 
           batch.addresses.each do |key, address|
             model = models_by_ids[key]
-            Updater.new(model, address, macro_messages).update
+            Updater.new(self, model, address).update
           end
         end
       end
@@ -52,35 +52,25 @@ module Macro
 
       # Update a model with a given address with associated message
       class Updater
-        def initialize(model, address, messages = nil)
+        def initialize(macro_run, model, address)
+          @macro_run = macro_run
           @model = model
           @address = address
-          @messages = messages
         end
+        attr_reader :macro_run, :model, :address
+
+        delegate :messages, to: :macro_run
 
         def update
-          unless address
-            create_message criticity: 'warning', message_key: 'no_address'
-            return
+          success = model.update address: address if address
+
+          messages.create(source: model, address: address.to_s) do |message|
+            if !address
+              message.error!(criticity: 'warning', message_key: 'no_address')
+            elsif !success
+              message.error!
+            end
           end
-
-          if model.update address: address
-            create_message
-          else
-            create_message criticity: 'error', message_key: 'error'
-          end
-        end
-
-        attr_reader :model, :messages, :address
-
-        def create_message(attributes = {})
-          return unless messages
-
-          attributes.merge!(
-            message_attributes: { name: model.name, address: address.to_s },
-            source: model
-          )
-          messages.create!(attributes)
         end
       end
 

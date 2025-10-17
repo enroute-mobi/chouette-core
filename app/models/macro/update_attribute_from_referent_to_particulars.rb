@@ -90,29 +90,16 @@ module Macro
           previous_attribute_value = particular.send attribute_name
 
           particular.update attribute_name => value
-          create_message particular, attribute_name, value, previous_attribute_value
+
+          attribute_value = value
+          # When value is an enumerize value
+          attribute_value = attribute_value.text if attribute_value.respond_to?(:text)
+
+          messages.create(source: particular, attribute_value: attribute_value) do |message|
+            message[:message_attributes][:name] = previous_attribute_value if attribute_name == :name
+            message.error! unless particular.valid?
+          end
         end
-      end
-
-      def create_message(particular, attribute_name, attribute_value, previous_attribute_value)
-        # When value is an enumerize value
-        attribute_value = attribute_value.text if attribute_value.respond_to?(:text)
-
-        name = particular.name
-        name = previous_attribute_value if attribute_name == :name
-
-        attributes = {
-          message_attributes: {
-            name: name,
-            target_attribute: attribute_name,
-            attribute_value: attribute_value
-          },
-          source: particular
-        }
-
-        attributes.merge!(criticity: 'error', message_key: 'error') unless particular.valid?
-
-        macro_messages.create!(attributes)
       end
 
       def model_collection

@@ -433,7 +433,7 @@ RSpec.describe Control::PresenceAttribute do
         let(:company) {context.company}
         let(:vehicle_journey) { create(:vehicle_journey) }
         let(:source) { vehicle_journey }
-        let(:attribute_name) { vehicle_journey.id }
+        let(:attribute_name) { vehicle_journey.published_journey_name }
         let(:target_model) { "VehicleJourney" }
 
         describe "#transport_mode" do

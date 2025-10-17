@@ -295,7 +295,7 @@ crumb :new_publication_setup do |workgroup|
 end
 
 crumb :publications do |workgroup|
-  link Publication.model_name.human(count: 2), workgroup_publications_path(workgroup)
+  link Publication.model_name.human_plural, workgroup_publications_path(workgroup)
   parent workgroup
 end
 
@@ -426,7 +426,7 @@ crumb :organisation do |organisation|
 end
 
 crumb :users do |organisation|
-  link User.model_name.human(count: 2)
+  link User.model_name.human_plural
   parent organisation
 end
 
@@ -714,7 +714,7 @@ crumb :shape do |workbench, shape|
 end
 
 crumb :code_spaces do |workgroup|
-  link CodeSpace.model_name.human(count: 2), workgroup_code_spaces_path(workgroup)
+  link CodeSpace.model_name.human_plural, workgroup_code_spaces_path(workgroup)
   parent workgroup
 end
 
@@ -825,6 +825,6 @@ crumb :service_counts do |workbench, referential|
 end
 
 crumb :searches do |parent_resources, *args|
-  link Search::Save.model_name.human(count: 2)
+  link Search::Save.model_name.human_plural
   parent parent_resources.to_sym, *args
 end

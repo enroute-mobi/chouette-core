@@ -13,9 +13,18 @@ en:
   activerecord:
     models:
       footnote:
-        zero: "note"
-        one: "note"
-        other: "notes"
+        zero: "Notes"
+        one: "Note"
+        other: "Notes"
+        the:
+          one: "the Note"
+          other: "the Notes"
+        of:
+          one: "of Note"
+          other: "of Notes"
+        to:
+          one: "to Note"
+          other: "to Notes"
     attributes:
       footnote:
         code: "Number"

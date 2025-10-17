@@ -21,23 +21,26 @@ module Control
     class Run < Control::Base::Run
       include Options
 
+      class << self
+        def message_key
+          :speed
+        end
+      end
+
       def run
         analysis.anomalies.each do |anomaly|
-          control_messages.create({
-            message_attributes: {
-              departure_name: anomaly.departure_name,
-              departure_objectid: anomaly.departure_objectid,
-              arrival_name: anomaly.arrival_name,
-              arrival_objectid: anomaly.arrival_objectid,
-              journey_pattern_name: anomaly.journey_pattern_name,
-              position: anomaly.position,
-              speed: anomaly.speed,
-            },
-            criticity: criticity,
-            source_id: anomaly.journey_pattern_id,
-            source_type: 'Chouette::JourneyPattern',
-            message_key: :speed
-          })
+          messages.create(
+            departure_name: anomaly.departure_name,
+            departure_objectid: anomaly.departure_objectid,
+            arrival_name: anomaly.arrival_name,
+            arrival_objectid: anomaly.arrival_objectid,
+            journey_pattern_name: anomaly.journey_pattern_name,
+            position: anomaly.position,
+            speed: anomaly.speed
+          ) do |message|
+            message[:source_id] = anomaly.journey_pattern_id
+            message[:source_type] = 'Chouette::JourneyPattern'
+          end
         end
       end
 

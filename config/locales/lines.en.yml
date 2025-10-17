@@ -134,9 +134,18 @@ en:
               submode_mismatch: "does not match the choosen transport submode"
     models:
       line:
-        zero:  "line"
-        one:   "line"
-        other: "lines"
+        zero:  "Lines"
+        one:   "Line"
+        other: "Lines"
+        the:
+          one: "the Line"
+          other: "the Lines"
+        of:
+          one: "of Line"
+          other: "of Lines"
+        to:
+          one: "to Line"
+          other: "to Lines"
     attributes:
       line:
         id: "ID"

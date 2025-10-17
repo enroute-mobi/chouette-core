@@ -147,11 +147,7 @@ module Control
 
       def run
         faulty_models.find_each do |model|
-          control_messages.create!({
-            message_attributes: { name: (model.name rescue model.id) },
-            criticity: criticity,
-            source: model,
-          })
+          messages.create(source: model)
         end
       end
 

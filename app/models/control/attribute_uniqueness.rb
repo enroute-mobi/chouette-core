@@ -56,19 +56,11 @@ module Control
 
       def run
         analysis.duplicates.each do |duplicate|
-          create_message(duplicate)
+          messages.create(id: duplicate.external_id || duplicate.id, name: duplicate.name) do |message|
+            message[:source_id] = duplicate.source_id
+            message[:source_type] = duplicate.source_type
+          end
         end
-      end
-
-      def create_message(duplicate)
-        control_messages.create!(
-          message_attributes: {
-            id: duplicate.external_id || duplicate.id,
-            name: duplicate.name, target_attribute: target_attribute
-          },
-          criticity: criticity, message_key: :attribute_uniqueness,
-          source_id: duplicate.source_id, source_type: duplicate.source_type
-        )
       end
 
       def analysis

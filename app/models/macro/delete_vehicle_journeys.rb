@@ -7,11 +7,7 @@ module Macro
         vehicle_journeys.transaction do
           number_of_deleted_vehicle_journeys = vehicle_journeys.clean!
 
-          macro_messages.create(
-            message_attributes: {
-              count: number_of_deleted_vehicle_journeys
-            }
-          )
+          messages.create(count: number_of_deleted_vehicle_journeys)
         end
       end
 

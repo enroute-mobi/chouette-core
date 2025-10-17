@@ -35,9 +35,18 @@ en:
   activerecord:
     models:
       connection_link:
-        zero:  "connections"
-        one:   "connection"
-        other: "connections"
+        zero:  "Connections"
+        one:   "Connection"
+        other: "Connections"
+        the:
+          one: "the Connection"
+          other: "the Connections"
+        of:
+          one: "of Connection"
+          other: "of Connections"
+        to:
+          one: "to Connection"
+          other: "to Connections"
     attributes:
       connection_link:
         both_ways: "Connection in both ways"

@@ -23,9 +23,18 @@ en:
   activerecord:
     models:
       line_group:
-        zero:  "Line Group"
+        zero:  "Line Groups"
         one:   "Line Group"
         other: "Line Groups"
+        the:
+          one: "the Line Group"
+          other: "the Line Groups"
+        of:
+          one: "of Line Group"
+          other: "of Line Groups"
+        to:
+          one: "to Line Group"
+          other: "to Line Groups"
     attributes:
       line_group:
         name: "Name"

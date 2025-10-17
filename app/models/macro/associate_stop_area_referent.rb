@@ -10,21 +10,10 @@ module Macro
 
           stop_area = stop_areas.find(particular_id)
           stop_area.update(referent_id: closest_referent_id)
-          create_message(stop_area)
+          messages.create(source: stop_area) do |message|
+            message.error! unless stop_area.valid?
+          end
         end
-      end
-
-      # Create a message for the given StopArea
-      # If the StopArea is invalid, an error message is created.
-      def create_message(stop_area)
-        attributes = {
-          message_attributes: { name: stop_area.name },
-          source: stop_area
-        }
-
-        attributes.merge!(criticity: 'error', message_key: 'error') unless stop_area.valid?
-
-        macro_messages.create!(attributes)
       end
 
       def stop_areas

@@ -61,9 +61,18 @@ en:
   activerecord:
     models:
       accessibility_assessment:
-        zero:  "Accessibility Assessment"
+        zero:  "Accessibility Assessments"
         one:   "Accessibility Assessment"
         other: "Accessibility Assessments"
+        the:
+          one: "the Accessibility Assessment"
+          other: "the Accessibility Assessments"
+        of:
+          one: "of Accessibility Assessment"
+          other: "of Accessibility Assessments"
+        to:
+          one: "to Accessibility Assessment"
+          other: "to Accessibility Assessments"
     attributes:
       accessibility_assessment:
         name: "Name"

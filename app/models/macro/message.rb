@@ -4,40 +4,21 @@ module Macro
   class Message < ApplicationModel
     self.table_name = 'macro_messages'
 
+    include ControlMacro::Message
+
     extend Enumerize
 
     belongs_to :source, polymorphic: true, optional: true # CHOUETTE-3247
-    belongs_to :macro_run, class_name: 'Macro::Base::Run' # CHOUETTE-3247 optional: false
+    belongs_to :macro_run, class_name: 'Macro::Base::Run', inverse_of: nil # see comment in CHOUETTE-4628
 
     enumerize :criticity, in: %w[info warning error], default: 'info', scope: :shallow
 
-    def full_message
-      I18n.t i18n_key, **i18n_attributes
-    end
+    private
+
+    alias run macro_run
 
     def i18n_key
       "#{macro_run.class.name.underscore}.messages.#{message_key || 'default'}"
-    end
-
-    def model_class
-      @model_class ||= source_type&.constantize
-    end
-
-    def i18n_target_model
-      model_class.model_name.human if model_class
-    end
-
-    def i18n_target_attribute
-      if model_class && macro_run.try(:target_attribute)
-        model_class.human_attribute_name(macro_run.target_attribute, locale: I18n.locale)
-      end
-    end
-
-    def i18n_attributes
-      message_attributes.dup.tap do |attributes|
-        attributes[:target_model] = i18n_target_model
-        attributes[:target_attribute] = i18n_target_attribute
-      end.compact.symbolize_keys
     end
   end
 end

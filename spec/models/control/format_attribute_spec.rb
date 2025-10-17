@@ -68,8 +68,7 @@ RSpec.describe Control::FormatAttribute do
                                       criticity: 'warning',
                                       message_attributes: {
                                         'name' => source.try(:name) || source.id,
-                                        'expected_format' => expected_format,
-                                        'target_attribute' => target_attribute
+                                        'expected_format' => expected_format
                                       }
                                     })
       end

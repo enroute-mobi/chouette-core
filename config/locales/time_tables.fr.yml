@@ -100,9 +100,18 @@ fr:
           overlapped_periods: "La période ne peut pas être créé car elle a des dates en commun avec une autre période"
     models:
       time_table:
-        zero:  "calendrier"
-        one:   "calendrier"
-        other: "calendriers"
+        zero:  "Calendrier"
+        one:   "Calendrier"
+        other: "Calendriers"
+        the:
+          one: "le Calendrier"
+          other: "les Calendriers"
+        of:
+          one: "du Calendrier"
+          other: "des Calendriers"
+        to:
+          one: "au Calendrier"
+          other: "aux Calendriers"
     attributes:
       time_table:
         checksum: Signature métier

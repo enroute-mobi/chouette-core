@@ -1,5 +1,5 @@
 - breadcrumb :vehicle_journeys, @workbench, @referential, @route
-- content_for :page_header_resource_name, Chouette::VehicleJourney.ts.pluralize.capitalize, flush: true
+- content_for :page_header_resource_name, Chouette::VehicleJourney.model_name.human_plural, flush: true
 - content_for :page_header_title, t('vehicle_journeys.index.title', route: @route.name)
 - content_for :page_header_content do
   .row.mb-sm

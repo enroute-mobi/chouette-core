@@ -5,21 +5,24 @@ module Macro
     class Run < Macro::Base::Run
       def run
         candidate_stop_areas.find_each do |stop_area|
-          Updater.new(stop_area, macro_messages).update
+          Updater.new(self, stop_area).update
         end
       end
 
       class Updater
-        def initialize(stop_area, messages)
+        def initialize(macro_run, stop_area)
+          @macro_run = macro_run
           @stop_area = stop_area
-          @messages = messages
         end
+        attr_reader :macro_run, :stop_area
+
+        delegate :messages, to: :macro_run
 
         def update
-          if stop_area.update transport_mode: chouette_transport_mode.code
-            create_message
-          else
-            create_message criticity: 'error', message_key: 'error'
+          success = stop_area.update transport_mode: chouette_transport_mode.code
+
+          messages.create(source: stop_area, transport_mode: chouette_transport_mode.human_name) do |message|
+            message.error! unless success
           end
         end
 
@@ -34,21 +37,6 @@ module Macro
           return nil if stop_area.line_transport_submode == 'undefined'
 
           stop_area.line_transport_submode
-        end
-
-        attr_reader :stop_area, :messages
-
-        def create_message(attributes = {})
-          return unless messages
-
-          attributes.merge!(
-            message_attributes: {
-              name: stop_area.name,
-              transport_mode: chouette_transport_mode.human_name
-            },
-            source: stop_area
-          )
-          messages.create!(attributes)
         end
       end
 

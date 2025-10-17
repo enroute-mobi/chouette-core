@@ -26,9 +26,18 @@ fr:
   activerecord:
     models:
       booking_arrangement:
-        zero: "Condition de réservation"
-        one: "Condition de réservation"
-        other: "Conditions de réservation"
+        zero: "Condition de Réservation"
+        one: "Condition de Réservation"
+        other: "Conditions de Réservation"
+        the:
+          one: "la Condition de Réservation"
+          other: "les Conditions de Réservation"
+        of:
+          one: "de la Condition de Réservation"
+          other: "des Conditions de Réservation"
+        to:
+          one: "à la Condition de Réservation"
+          other: "aux Conditions de Réservation"
     attributes:
       booking_arrangement:
         uuid: ID

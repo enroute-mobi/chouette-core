@@ -27,6 +27,15 @@ fr:
         zero:  "Ensemble de Services"
         one:   "Ensemble de Services"
         other: "Ensemble de Services"
+        the:
+          one: "l’Ensemble de Services"
+          other: "les Ensembles de Services"
+        of:
+          one: "de l’Ensemble de Services"
+          other: "des Ensembles de Services"
+        to:
+          one: "à l’Ensemble de Services"
+          other: "aux Ensembles de Services"
     attributes:
       service_facility_set:
         name: "Nom"

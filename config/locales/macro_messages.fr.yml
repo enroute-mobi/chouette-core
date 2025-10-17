@@ -1,104 +1,119 @@
 fr:
   macro/associate_shape/run:
     messages:
-      default: "Le tracé %{shape_name} a été associé à la mission %{journey_pattern_name}"
-      error: "Le tracé %{shape_name} n'a pas pu être associé à la mission %{journey_pattern_name}"
+      default: "Le Tracé '%{shape_name}' a été associé à la Mission '%{journey_pattern_name}'"
+      error: "Le Tracé '%{shape_name}' n’a pas pu être associé à la Mission '%{journey_pattern_name}'"
   macro/associate_stop_area_referent/run:
     messages:
-      default: "Le référent de l'arrêt %{name} a été mis à jour"
-      error:  "Le référent de l'arrêt %{name} n'a pas pu être mis à jour"
+      default: "Le référent de l’Arrêt '%{name}' a été mis à jour"
+      error:  "Le référent de l’Arrêt '%{name}' n’a pas pu être mis à jour"
   macro/compute_journey_pattern_distances/run:
     messages:
-      default: "Les distances inter arrêt pour la mission %{name} ont été mises à jour"
-      error: "Les distances inter arrêt pour la mission %{name} n'ont pas pu être mises à jour"
+      default: "Les distances inter arrêt pour la Mission '%{name}' ont été mises à jour"
+      error: "Les distances inter arrêt pour la Mission '%{name}' n’ont pas pu être mises à jour"
   macro/compute_journey_pattern_durations/run:
     messages:
-      default: "Les durées inter arrêt pour la mission %{name} ont été mises à jour"
-      error: "Les durées inter arrêt pour la mission %{name} n'ont pas pu être mises à jour"
+      default: "Les durées inter arrêt pour la Mission '%{name}' ont été mises à jour"
+      error: "Les durées inter arrêt pour la Mission '%{name}' n’ont pas pu être mises à jour"
   macro/create_code/run:
     messages:
-      default: "Un code %{code_value} a été ajouté sur un(e) %{target_model} %{name}"
+      default: "Un code '%{code_value}' a été ajouté sur %{source|the_model_name} '%{name}'"
+      error: "Aucun code n’a pu être ajouté sur %{source|the_model_name} '%{name}'"
   macro/create_shape/run:
     messages:
-      default: "Le tracé %{shape_name} a été créé pour la mission %{journey_pattern_name}"
-      error: "Le tracé %{shape_name} n'a pas pu être créé pour la mission %{journey_pattern_name}"
+      default: "Le Tracé '%{shape_name}' a été créé pour la Mission '%{journey_pattern_name}'"
+      error: "Le Tracé '%{shape_name}' n’a pas pu être créé pour la Mission '%{journey_pattern_name}'"
   macro/create_stop_area_referents/run:
     messages:
-      default: "Le référent %{name} a été créé"
-      error:  "Le référent %{name} n'a pas pu être créé"
+      default: "Le référent '%{name}' a été créé"
+      error:  "Le référent '%{name}' n’a pas pu être créé"
   macro/define_attribute_from_particulars/run:
     messages:
-      default: "L'attribut %{target_attribute} du référent %{name} a été mis à jour avec la valeur %{attribute_value}"
-      error: "L'attribut %{target_attribute} du référent %{name} n'a pas pu être mise à jour avec la valeur %{attribute_value}"
+      default: "L’attribut '%{target_attribute}' du référent '%{name}' a été mis à jour avec la valeur '%{attribute_value}'"
+      error: "L’attribut '%{target_attribute}' du référent '%{name}' n’a pas pu être mis à jour avec la valeur '%{attribute_value}'"
   macro/define_postal_address/run:
     messages:
-      default: "L'adresse '%{address}' a été mise à jour sur un(e) %{target_model} %{name}"
-      error: "L'adresse '%{address}' n'a pas pu être mise à jour sur un(e) %{target_model} %{name}"
-      no_address: "Adresse introuvable sur un(e) %{target_model} %{name}"
+      default: "L’adresse '%{address}' a été mise à jour sur %{source|the_model_name} '%{name}'"
+      error: "L’adresse '%{address}' n’a pas pu être mise à jour sur %{source|the_model_name} '%{name}'"
+      no_address: "Adresse introuvable sur %{source|the_model_name} '%{name}'"
   macro/dummy/run:
     messages:
-      default: Simulation est en %{result} pour %{name}
+      default: "Simulation est en '%{result}' pour %{source|the_model_name} '%{name}'"
+      error: "Erreur lors de la simulation en '%{result}' pour %{source|the_model_name} '%{name}'"
   macro/update_stop_area_compass_bearing/run:
     messages:
-      default: "L'orientation de l'arrêt %{name} a été mis à jour avec la valeur %{bearing}"
-      error: "L'orientation de l'arrêt %{name} n'a pas pu être mis à jour avec la valeur %{bearing}"
+      default: "L’orientation de l’Arrêt '%{name}' a été mise à jour avec la valeur '%{bearing}'"
+      error: "L’orientation de l’Arrêt '%{name}' n’a pas pu être mise à jour avec la valeur '%{bearing}'"
   macro/associate_shape_according_waypoints/run:
     messages:
-      default: "Le tracé '%{shape}' a été associé à la Mission '%{name}'"
-      error: "Le tracé '%{shape}' n'a pas pu être associé à la Mission '%{name}'"
+      default: "Le Tracé '%{shape}' a été associé à la Mission '%{name}'"
+      error: "Le Tracé '%{shape}' n’a pas pu être associé à la Mission '%{name}'"
   macro/update_attribute_from_referent_to_particulars/run:
     messages:
-      default: "L'attribut %{target_attribute} de %{name} a été mis à jour avec la valeur %{attribute_value}"
-      error: "L'attribut %{target_attribute} de %{name} n'a pas pu être mise à jour avec la valeur %{attribute_value}"
+      default: "L’attribut '%{target_attribute}' %{source|of_model_name} '%{name}' a été mis à jour avec la valeur '%{attribute_value}'"
+      error: "L’attribut '%{target_attribute}' %{source|of_model_name} '%{name}' n’a pas pu être mise à jour avec la valeur '%{attribute_value}'"
   macro/delete_vehicle_journeys/run:
     messages:
-      default: "%{count} course(s) ont été supprimée(s)"
+      default:
+        zero: "Aucune Course n’a été supprimée"
+        one: "1 Course ont été supprimée"
+        other: "%{count} Courses ont été supprimées"
+      error: "Les Courses n’ont pas pu être supprimées"
   macro/compute_service_counts/run:
     messages:
-      default: "Les statistiques de courses de la ligne %{name} ont été définis"
+      default: "Les Statistiques de Courses de la Ligne '%{name}' ont été calculées"
+      error: "Les Statistiques de Courses de la Ligne '%{name}' n’ont pas pu être calculées"
   macro/associate_documents/run:
     messages:
-      default: "Le document '%{document_name}' a été associé à l'/la %{target_model} '%{model_name}'"
+      default: "Le Document '%{document_name}' a été associé %{source|to_model_name} '%{model_name}'"
+      error: "Le Document '%{document_name}' n'a pas pu être associé %{source|to_model_name} '%{model_name}'"
   macro/create_code_from_sequence/run:
     messages:
-      default: "Un code %{code_value} a été ajouté sur le/la/l' %{target_model} %{model_name}"
+      default: "Un code '%{code_value}' a été ajouté sur %{source|the_model_name} '%{model_name}'"
+      error: "Aucun code n’a pu être ajouté sur %{source|the_model_name} '%{model_name}'"
   macro/create_code_from_uuid/run:
     messages:
-      default: "Un code %{code_value} a été ajouté sur un(e) %{target_model} %{model_name}"
+      default: "Un code '%{code_value}' a été ajouté sur %{source|the_model_name} '%{model_name}'"
+      error: "Aucun code n’a pu être ajouté sur %{source|the_model_name} '%{model_name}'"
   macro/define_french_code_insee/run:
     messages:
-      default: "Un Code INSEE '%{postal_region}' a été défini sur un(e) %{target_model} %{name}"
-      no_insee_code: "Code INSEE introuvable sur un(e) %{target_model} %{name}"
+      default: "Un Code INSEE '%{postal_region}' a été défini sur %{source|the_model_name} '%{name}'"
+      no_insee_code: "Code INSEE introuvable sur %{source|the_model_name} '%{name}'"
   macro/define_stop_area_transport_mode/run:
     messages:
-      default: "Le mode de transport %{transport_mode} a été défini sur l'arrêt %{name}"
-      error: "Le mode de transport %{transport_mode} ne peut pas être défini sur l'arrêt %{name}"
+      default: "Le mode de transport '%{transport_mode}' a été défini sur l’Arrêt '%{name}'"
+      error: "Le mode de transport '%{transport_mode}' ne peut pas être défini sur l’Arrêt '%{name}'"
   macro/force_attribute_value/run:
     messages:
-      default: "L'attribut %{target_attribute} du/de la %{target_model} %{name} a été mis à jour"
-      error: "L'attribut %{target_attribute} du/de la %{target_model} %{name} n'a pas pu être modifié"
+      default: "L’attribut '%{target_attribute}' %{source|of_model_name} '%{name}' a été mis à jour"
+      error: "L’attribut '%{target_attribute}' %{source|of_model_name} '%{name}' n’a pas pu être modifié"
   macro/define_route_name/run:
     messages:
-      default: "L'itinéraire '%{name_before_change}' est renommé en '%{attribute_value_after_change}'"
-      error: "L'itinéraire '%{name_before_change}' ne peut pas être défini"
+      default: "L’Itinéraire '%{name_before_change}' est renommé en '%{attribute_value_after_change}'"
+      error: "L’Itinéraire '%{name_before_change}' ne peut pas être renommé"
   macro/create_codes_from_particulars/run:
     messages:
-      default: "Le code %{code_value} a été ajouté sur un(e) %{target_model} %{referent_name}"
-      error: "Le code %{code_value} ne peut pas être créé sur un(e) %{target_model} %{referent_name}"
+      default: "Le code '%{code_value}' a été ajouté sur %{source|the_model_name} '%{referent_name}'"
+      error: "Aucun code n’a pu être ajouté sur %{source|the_model_name} '%{referent_name}'"
   macro/associate_stop_area_with_fare_zone/run:
     messages:
-      default: "L'arrêt %{stop_area_name} a été associé avec la Zone tarifaire %{fare_zone_name}"
+      default: "L’Arrêt '%{stop_area_name}' a été associé avec la Zone Tarifaire '%{fare_zone_name}'"
+      error: "L’Arrêt '%{stop_area_name}' n’a pas été associé avec la Zone Tarifaire '%{fare_zone_name}'"
   macro/adjust_periods/run:
     messages:
-      default: "La fin de la Période du Calendrier %{name} a été modifiée au %{period_end}"
-      error: "La Période du Calendrier %{name} n'a pu être modifiée"
+      default: "La fin de la période du Calendrier '%{name}' a été modifiée au %{period_end}"
+      error: "La fin de la période du Calendrier '%{name}' n’a pu être modifiée"
   macro/remove_code/run:
     messages:
-      default: "%{codes_count} codes ont été retirés de le/la/l' %{target_model} '%{name}'"
-      error: "Les codes de le/la/l' %{target_model} n'ont pu être retirés"
+      default:
+        zero: "Aucun code n’a été retiré %{source|of_model_name} '%{name}'"
+        one: "1 code a été retiré %{source|of_model_name} '%{name}'"
+        other: "%{count} codes ont été retirés %{source|of_model_name} '%{name}'"
+      error: "Les codes %{source|of_model_name} '%{name}' n'ont pu être retirés"
   macro/define_journey_pattern_name_or_destination/run:
     messages:
-      default: "La mission '%{journey_pattern_name}' est renommée en '%{attribute_value_after_change}'"
+      default: "La Mission '%{journey_pattern_name}' est renommée en '%{attribute_value_after_change}'"
+      error: "La Mission '%{journey_pattern_name}' n’a pas pu être renommée"
   macro_messages:
     search_no_results_for_filter: "Aucun messages"
     no_address: "Aucune adresse"

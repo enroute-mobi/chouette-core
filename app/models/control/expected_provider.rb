@@ -26,15 +26,7 @@ module Control
 
       def run
         faulty_models.find_each do |model|
-          control_messages.create({
-            message_attributes: {
-              name: model.try(:name) || model.id,
-              expected_provider: expected_provider
-            },
-            criticity: criticity,
-            source: model,
-            message_key: :expected_provider
-          })
+          messages.create(source: model, expected_provider: expected_provider)
         end
       end
 

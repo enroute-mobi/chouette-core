@@ -26,9 +26,18 @@ en:
   activerecord:
     models:
       line_routing_constraint_zone:
-        zero:  "Line Routing Constraint Zone"
+        zero:  "Line Routing Constraint Zones"
         one:   "Line Routing Constraint Zone"
         other: "Line Routing Constraint Zones"
+        the:
+          one: "the Line Routing Constraint Zone"
+          other: "the Line Routing Constraint Zones"
+        of:
+          one: "of Line Routing Constraint Zone"
+          other: "of Line Routing Constraint Zones"
+        to:
+          one: "to Line Routing Constraint Zone"
+          other: "to Line Routing Constraint Zone"
     attributes:
       line_routing_constraint_zone:
         information: "Information"

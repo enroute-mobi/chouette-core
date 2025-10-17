@@ -55,6 +55,12 @@ module Control
       # TODO: Retrieve options definition from Conrtol class
       include OptionsSupport
 
+      class << self
+        def message_key
+          @message_key ||= name.deconstantize.demodulize.underscore.to_sym
+        end
+      end
+
       def parent
         control_list_run || control_context_run
       end
@@ -63,6 +69,7 @@ module Control
         self.class.module_parent
       end
 
+      delegate :message_key, to: :class
       delegate :referential, :workbench, to: :parent, allow_nil: true
       delegate :workgroup, to: :workbench
 
@@ -83,6 +90,10 @@ module Control
         end
       end
 
+      def messages
+        @messages ||= Messages.new(self, Control::Message, :control_run, **messages_options)
+      end
+
       protected
 
       def around_run(&block)
@@ -92,6 +103,19 @@ module Control
             block.call
           end
           logger.info 'Done'
+        end
+      end
+
+      def messages_options
+        {}
+      end
+
+      class Messages < ControlMacro::Messages
+        def create(source: nil, **message_attributes)
+          super do |message|
+            message.error!(criticity: run.criticity, message_key: run.message_key)
+            yield message if block_given?
+          end
         end
       end
     end

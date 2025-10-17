@@ -15,22 +15,12 @@ module Macro
             end
 
             journey_pattern.save
-            create_message journey_pattern
+
+            messages.create(source: journey_pattern) do |message|
+              message.error! unless journey_pattern.valid?
+            end
           end
         end
-      end
-
-      # Create a message for the given JourneyPattern
-      # If the JourneyPattern is invalid, an error message is created.
-      def create_message(journey_pattern)
-        attributes = {
-          message_attributes: { name: journey_pattern.name },
-          source: journey_pattern
-        }
-
-        attributes.merge!(criticity: 'error', message_key: 'error') unless journey_pattern.valid?
-
-        macro_messages.create!(attributes)
       end
 
       # Compute durations for given JourneyPatterns

@@ -6,16 +6,13 @@ module Control
 
       def run
         anomalies.each do |anomaly|
-          control_messages.create({
-            message_attributes: {
-              name: anomaly.name,
-              vehicle_journey_sum: anomaly.vehicle_journey_sum
-            },
-            criticity: criticity,
-            source_id: anomaly.line_id,
-            source_type: 'Chouette::Line',
-            message_key: :services_only_in_validity_period
-          })
+          messages.create(
+            name: anomaly.name,
+            vehicle_journey_sum: anomaly.vehicle_journey_sum
+          ) do |message|
+            message[:source_id] = anomaly.line_id
+            message[:source_type] = 'Chouette::Line'
+          end
         end
       end
 

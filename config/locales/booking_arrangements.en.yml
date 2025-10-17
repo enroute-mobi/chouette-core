@@ -29,6 +29,15 @@ en:
         zero: "Booking Arrangement"
         one: "Booking Arrangement"
         other: "Booking Arrangements"
+        the:
+          one: "the Booking Arrangement"
+          other: "the Booking Arrangements"
+        of:
+          one: "of Booking Arrangement"
+          other: "of Booking Arrangements"
+        to:
+          one: "to Booking Arrangement"
+          other: "to Booking Arrangements"
     attributes:
       booking_arrangement:
         uuid: ID

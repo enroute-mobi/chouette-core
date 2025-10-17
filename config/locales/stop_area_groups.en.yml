@@ -23,9 +23,18 @@ en:
   activerecord:
     models:
       stop_area_group:
-        zero:  "Stop Area Group"
+        zero:  "Stop Area Groups"
         one:   "Stop Area Group"
         other: "Stop Area Groups"
+        the:
+          one: "the Stop Area Group"
+          other: "the Stop Area Groups"
+        of:
+          one: "of Stop Area Group"
+          other: "of Stop Area Groups"
+        to:
+          one: "to Stop Area Group"
+          other: "to Stop Area Groups"
     attributes:
       stop_area_group:
         name: "Name"

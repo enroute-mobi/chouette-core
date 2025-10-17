@@ -9,7 +9,7 @@
     .row
       .col-md-6.col-sm-12
         .row
-          h4.underline= t('activerecord.models.shape.other').capitalize
+          h4.underline= Shape.model_name.human_plural
         - if @shapes.any?
           .row
             = table_builder_2 @shapes,

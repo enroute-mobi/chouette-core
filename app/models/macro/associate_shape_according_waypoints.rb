@@ -7,20 +7,11 @@ module Macro
         journey_patterns.find_each do |journey_pattern|
           if shape = Finder.new(journey_pattern, shapes).shape
             journey_pattern.update shape_id: shape.id
-            create_message(journey_pattern, shape)
+            messages.create(source: journey_pattern, shape: shape.user_name) do |message|
+              message.error! unless journey_pattern.valid?
+            end
           end
         end
-      end
-
-      def create_message(journey_pattern, shape)
-        attributes = {
-          message_attributes: { name: journey_pattern.name, shape: shape.user_name },
-          source: journey_pattern
-        }
-
-        attributes.merge!(criticity: 'error', message_key: 'error') unless journey_pattern.valid?
-
-        macro_messages.create!(attributes)
       end
 
       class Finder

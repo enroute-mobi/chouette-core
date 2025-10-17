@@ -13,9 +13,18 @@ fr:
   activerecord:
     models:
       footnote:
-        zero: "Note de bas de page"
-        one: "Note de bas de page"
-        other: "Notes de bas de page"
+        zero: "Note de Bas de Page"
+        one: "Note de Bas de Page"
+        other: "Notes de Bas de Page"
+        the:
+          one: "la Note en Bas de Page"
+          other: "les Notes en Bas de Page"
+        of:
+          one: "de la Note en Bas de Page"
+          other: "des Notes en Bas de Page"
+        to:
+          one: "à la Note de Bas de Page"
+          other: "aux Notes en Bas de Page"
     attributes:
       footnote:
         code: "Titre"

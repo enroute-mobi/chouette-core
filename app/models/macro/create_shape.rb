@@ -32,22 +32,20 @@ module Macro
             shape_cache[factory.stop_area_ids] = shape.id
             journey_pattern = factory.journey_pattern
             journey_pattern.update shape: shape
-            create_message(journey_pattern, shape.reload)
+
+            messages.create(source: journey_pattern, shape_name: shape.reload.uuid) do |message|
+              message.error! unless journey_pattern.valid?
+            end
           end
         end
       end
 
-      # Create a message for the given JourneyPattern
-      # If the JourneyPattern is invalid, an error message is created.
-      def create_message(journey_pattern, shape)
-        attributes = {
-          message_attributes: { shape_name: shape.uuid, journey_pattern_name: journey_pattern.name },
-          source: journey_pattern
+      protected
+
+      def messages_options
+        {
+          resource_name_key: :journey_pattern_name
         }
-
-        attributes.merge!(criticity: 'error', message_key: 'error') unless journey_pattern.valid?
-
-        macro_messages.create(attributes)
       end
 
       class ShapeFactory

@@ -28,13 +28,13 @@ exports[`stopPointHeader should display the city name 1`] = `
             Mission
           </div>
           <div>
-            transporteur
+            Transporteur
           </div>
           <div>
-            Description d'Accessibilité
+            Description d’Accessibilité
           </div>
           <div>
-            calendriers
+            Calendriers
           </div>
         </div>
         <div
@@ -123,13 +123,13 @@ exports[`stopPointHeader with the "long_distance_routes" feature should display 
             Mission
           </div>
           <div>
-            transporteur
+            Transporteur
           </div>
           <div>
-            Description d'Accessibilité
+            Description d’Accessibilité
           </div>
           <div>
-            calendriers
+            Calendriers
           </div>
         </div>
         <div

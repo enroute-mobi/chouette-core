@@ -42,6 +42,15 @@ fr:
         zero: "Zone Tarifaire"
         one: "Zone Tarifaire"
         other: "Zones Tarifaires"
+        the:
+          one: "la Zone Tarifaire"
+          other: "les Zones Tarifaires"
+        of:
+          one: "de la Zone Tarifaire"
+          other: "des Zones Tarifaires"
+        to:
+          one: "à la Zone Tarifaire"
+          other: "aux Zones Tarifaires"
     attributes:
       fare/zone:
         uuid: ID

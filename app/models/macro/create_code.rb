@@ -63,28 +63,14 @@ module Macro
               if source_value = source.value(model)
                 code_value = target.value(model, source_value)
                 code = model.codes.create(code_space: code_space, value: code_value)
-                create_message(model, code, source_value)
+
+                messages.create(source: model, code_value: code.value) do |message|
+                  message.error! unless code.persisted?
+                end
               end
             end
           end
         end
-      end
-
-      # Create a message for the given Model
-      # If the Model is invalid, an error message is created.
-      def create_message(model, code, source_value)
-        attributes = {
-          message_attributes: {
-            code_value: code.value,
-            name: model.try(:name) || model.try(:published_name) || source_value
-          },
-          source: model
-        }
-
-        attributes.merge!(criticity: 'error', message_key: 'error') unless code.persisted?
-
-        attributes[:macro_run_id] = self.id
-        Macro::Message.create!(attributes)
       end
 
       def source

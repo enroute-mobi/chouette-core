@@ -123,9 +123,18 @@ fr:
   activerecord:
     models:
       vehicle_journey:
-        zero:  "course"
-        one:   "course"
-        other: "courses"
+        zero:  "Course"
+        one:   "Course"
+        other: "Courses"
+        the:
+          one: "la Course"
+          other: "les Courses"
+        of:
+          one: "de la Course"
+          other: "des Courses"
+        to:
+          one: "à la Course"
+          other: "aux Courses"
     attributes:
       vehicle_journey:
         accessible: "Accessible"

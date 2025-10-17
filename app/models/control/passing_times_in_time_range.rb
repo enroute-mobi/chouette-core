@@ -50,14 +50,7 @@ module Control
         return if vehicle_journey_at_stops.blank?
 
         faulty_models.each_instance do |model|
-          control_messages.create(
-            message_attributes: {
-              name: model.try(:published_journey_name) || model.id
-            },
-            criticity: criticity,
-            source: model,
-            message_key: :passing_times_in_time_range
-          )
+          messages.create(source: model)
         end
       end
 

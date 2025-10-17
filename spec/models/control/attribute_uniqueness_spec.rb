@@ -47,8 +47,7 @@ RSpec.describe Control::AttributeUniqueness do
             source: first_duplicate_vehicle_journey,
             message_attributes: {
               'id' => 'id_1',
-              'name' => 'duplicate',
-              'target_attribute' => 'published_journey_name'
+              'name' => 'duplicate'
             },
             criticity: 'warning'
           )
@@ -59,8 +58,7 @@ RSpec.describe Control::AttributeUniqueness do
             source: second_duplicate_vehicle_journey,
             message_attributes: {
               'id' => 'id_2',
-              'name' => 'duplicate',
-              'target_attribute' => 'published_journey_name'
+              'name' => 'duplicate'
             },
             criticity: 'warning'
           )

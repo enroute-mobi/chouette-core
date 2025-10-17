@@ -16,7 +16,7 @@
           .list-group
             - @line_referential.lines.order("updated_at desc").limit(5).each do |line|
               .list-group-item
-                = link_to "#{Chouette::Line.ts.capitalize} #{line.name}", workbench_line_referential_line_path(@workbench, line)
+                = link_to "#{Chouette::Line.model_name.human} #{line.name}", workbench_line_referential_line_path(@workbench, line)
                 =< t('date.updated', distance_in_time: time_ago_in_words(line.updated_at))
             - unless @line_referential.lines.any?
               = replacement_msg t('no_result_text')

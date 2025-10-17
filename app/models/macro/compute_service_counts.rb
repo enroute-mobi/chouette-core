@@ -4,17 +4,9 @@ module Macro
   class ComputeServiceCounts < Macro::Base
     class Run < Macro::Base::Run
       def run
-        lines.find_each { |line| create_message(line) }
-      end
-
-      # Create a message for the given line from Service Counts
-      def create_message(line)
-        attributes = {
-          message_attributes: { name: line.name },
-          source: line
-        }
-
-        macro_messages.create!(attributes)
+        lines.find_each do |line|
+          messages.create(source: line)
+        end
       end
 
       private

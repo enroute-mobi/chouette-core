@@ -8,7 +8,6 @@ ActiveSupport::Inflector.inflections(:fr) do |inflect|
 #   inflect.singular /^(ox)en/i, "\\1"
 #   inflect.irregular "person", "people"
 #   inflect.uncountable %w( fish sheep )
-  inflect.plural 'réseau', 'réseaux'
   inflect.plural 'Zone de contrainte', 'Zones de contrainte'
 end
 

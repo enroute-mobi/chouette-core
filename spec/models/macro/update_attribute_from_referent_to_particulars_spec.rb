@@ -67,7 +67,6 @@ RSpec.describe Macro::UpdateAttributeFromReferentToParticulars::Run do
         criticity: 'info',
         message_attributes: {
           'name' => first_particular.name,
-          'target_attribute' => 'time_zone',
           'attribute_value' => 'Europe/Paris'
         },
         source: first_particular
@@ -77,7 +76,6 @@ RSpec.describe Macro::UpdateAttributeFromReferentToParticulars::Run do
         criticity: 'info',
         message_attributes: {
           'name' => second_particular.name,
-          'target_attribute' => 'time_zone',
           'attribute_value' => 'Europe/Paris'
         },
         source: second_particular

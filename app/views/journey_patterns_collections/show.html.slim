@@ -1,6 +1,6 @@
 - breadcrumb :journey_patterns, @workbench, @referential, @route
 - page_header_content_for @route
-- content_for :page_header_resource_name, Chouette::JourneyPattern.ts.pluralize.capitalize, flush: true
+- content_for :page_header_resource_name, Chouette::JourneyPattern.model_name.human_plural, flush: true
 - content_for :page_header_title, t('journey_patterns.index.title', route: @route.name), flush: true
 
 - @journey_patterns.each do |jp|

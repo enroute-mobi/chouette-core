@@ -47,22 +47,10 @@ module Macro
       def run
         models_with_code.find_each do |model|
           codes_count = model.codes.where(code_space_id: code_space_id).delete_all
-          create_message(model, codes_count)
+          messages.create(source: model, count: codes_count) do |message|
+            message.error! if codes_count.zero?
+          end
         end
-      end
-
-      def create_message(model, codes_count)
-        model_name = model.try(:name) || model.try(:published_journey_name) ||
-                     model.try(:comment) || model.try(:uuid) || model.try(:get_objectid)&.local_id
-
-        attributes = {
-          message_attributes: { name: model_name, codes_count: codes_count },
-          source: model
-        }
-
-        attributes.merge!(criticity: 'error', message_key: 'error') if codes_count.zero?
-
-        macro_messages.create!(attributes)
       end
 
       def models_with_code

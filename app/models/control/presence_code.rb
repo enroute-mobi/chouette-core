@@ -52,15 +52,7 @@ module Control
 
       def run
         faulty_models.find_each do |model|
-          control_messages.create({
-            message_attributes: {
-              name: model.try(:name) || model.try(:published_journey_name) || model.try(:comment),
-              code_space_name: target_code_space.short_name
-            },
-            criticity: criticity,
-            source: model,
-            message_key: :presence_code
-          })
+          messages.create(source: model, code_space_name: target_code_space.short_name)
         end
       end
 

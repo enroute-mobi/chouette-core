@@ -99,29 +99,16 @@ module Macro
           value = particular_values[referent.id]
 
           referent.update(attribute_name => value)
-          create_message referent, attribute_name
+
+          attribute_value = referent.send(attribute_name)
+          # When value is an enumerize value
+          attribute_value = attribute_value.text if attribute_value.respond_to?(:text)
+          attribute_value = attribute_value.human_name if attribute_value.is_a?(Chouette::TransportMode)
+
+          messages.create(source: referent, attribute_value: attribute_value) do |message|
+            message.error! unless referent.valid?
+          end
         end
-      end
-
-      def create_message(referent, attribute_name)
-        attribute_value = referent.send(attribute_name)
-
-        # When value is an enumerize value
-        attribute_value = attribute_value.text if attribute_value.respond_to?(:text)
-        attribute_value = attribute_value.human_name if attribute_value.is_a?(Chouette::TransportMode)
-
-        attributes = {
-          message_attributes: {
-            name: referent.name,
-            target_attribute: attribute_name,
-            attribute_value: attribute_value
-          },
-          source: referent
-        }
-
-        attributes.merge!(criticity: 'error', message_key: 'error') unless referent.valid?
-
-        macro_messages.create!(attributes)
       end
 
       # Retrieve referents without target attribute in the macro scope

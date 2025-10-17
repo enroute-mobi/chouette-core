@@ -2,9 +2,18 @@ fr:
   activerecord:
     models:
       routing_constraint_zone:
-        zero: ITL
-        one: ITL
-        other: ITLs
+        zero: "ITL"
+        one: "ITL"
+        other: "ITLs"
+        the:
+          one: "l’ITL"
+          other: "les ITLS"
+        of:
+          one: "de l’ITL"
+          other: "des ITLs"
+        to:
+          one: "à l’ITL"
+          other: "aux ITLs"
     attributes:
       routing_constraint_zone:
         checksum: Signature métier

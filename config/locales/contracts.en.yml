@@ -35,6 +35,15 @@ en:
         zero:  "Contracts"
         one: "Contract"
         other: "Contracts"
+        the:
+          one: "the Contract"
+          other: "the Contracts"
+        of:
+          one: "of Contract"
+          other: "of Contracts"
+        to:
+          one: "to Contract"
+          other: "to Contracts"
     attributes:
       contract:
         name: Name

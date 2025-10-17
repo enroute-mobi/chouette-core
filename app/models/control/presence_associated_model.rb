@@ -62,13 +62,7 @@ module Control
 
       def run
         faulty_models.find_each do |model|
-          count = faulty_counts[model.id]
-          human_name = model.try(:name) || model.try(:get_object)&.short_id
-
-          control_messages.create(message_attributes: { name: human_name, count: count },
-                                  criticity: criticity,
-                                  source: model,
-                                  message_key: :presence_associated_model)
+          messages.create(source: model, count: faulty_counts[model.id])
         end
       end
 

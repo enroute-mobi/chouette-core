@@ -39,9 +39,18 @@ en:
   activerecord:
     models:
       fare/zone:
-        zero:  "Fare Zone"
+        zero:  "Fare Zones"
         one: "Fare Zone"
         other: "Fare Zones"
+        the:
+          one: "the Fare Zone"
+          other: "the Fare Zones"
+        of:
+          one: "of Fare Zone"
+          other: "of Fare Zones"
+        to:
+          one: "to Fare Zone"
+          other: "to Fare Zones"
     attributes:
       fare/zone:
         uuid: ID

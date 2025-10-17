@@ -13,7 +13,7 @@
           .row.merge-referentials-selector
             .col
               .head
-                h4= Chouette::LineNotice.t.capitalize
+                h4= Chouette::LineNotice.model_name.human_plural
                 .input-group
                   input.form-control.search type='text' placeholder=I18n.t('actions.search') data={searchUrl: line_notices_workbench_autocomplete_index_path(@workbench, {format: 'json'})}
                   .input-group-btn.clear-group

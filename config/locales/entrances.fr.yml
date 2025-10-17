@@ -24,9 +24,18 @@ fr:
   activerecord:
     models:
       entrance:
-        zero:  "Point d'accès"
-        one:   "Point d'accès"
-        other: "Points d'accès"
+        zero:  "Point d’Accès"
+        one:   "Point d’Accès"
+        other: "Points d’Accès"
+        the:
+          one: "le Point d’Accès"
+          other: "le Point d’Accès"
+        of:
+          one: "du Point d’Accès"
+          other: "des Points d’Accès"
+        to:
+          one: "au Point d’Accès"
+          other: "aux Points d’Accès"
     attributes:
       entrance:
         name: "Nom"

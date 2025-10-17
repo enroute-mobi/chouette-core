@@ -27,7 +27,6 @@ module Control
       JourneyPattern
       VehicleJourney
       TimeTable
-      ServiceCount
     ], default: 'Line'
 
     class Run < Control::Base::Run
@@ -37,12 +36,7 @@ module Control
         raise 'Raise error as expected' if options[:expected_result] == 'fail'
 
         models.find_each do |model|
-          control_messages.create(
-            message_attributes: { name: model.try(:name) || model.try(:published_journey_name) || model.try(:comment) },
-            message_key: :dummy,
-            criticity: criticity,
-            source: model
-          )
+          messages.create(source: model)
         end
       end
 

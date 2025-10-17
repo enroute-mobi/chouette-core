@@ -46,13 +46,7 @@ module Control
         return unless custom_field
 
         faulty_models.find_each do |model|
-          attributes = {
-            message_attributes: {
-              name: model.try(:name) || model.id, custom_field: custom_field.code
-            },
-            criticity: criticity, source: model, message_key: :presence_custom_field
-          }
-          control_messages.create(attributes)
+          messages.create(source: model, custom_field: custom_field.code)
         end
       end
 

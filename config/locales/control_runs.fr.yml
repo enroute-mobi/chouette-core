@@ -1,7 +1,7 @@
 fr:
   activerecord:
     models:
-      control/run:
+      control/base/run:
         zero:  "rapport de contrôles"
         one:   "rapport de contrôles"
         other: "rapports de contrôles"

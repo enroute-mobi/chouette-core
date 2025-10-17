@@ -27,7 +27,7 @@ class LineDecorator < Af83::Decorator
     end
 
     instance_decorator.action_link secondary: :show do |l|
-      l.content  { Chouette::LineNotice.t.capitalize }
+      l.content  { Chouette::LineNotice.model_name.human_plural }
       l.href     { [scope, object, :line_notice_memberships] }
     end
   end

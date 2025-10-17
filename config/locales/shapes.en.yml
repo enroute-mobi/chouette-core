@@ -27,9 +27,18 @@ en:
   activerecord:
     models:
       shape:
-        zero: shape
-        one: shape
-        other: shapes
+        zero: "Shapes"
+        one: "Shape"
+        other: "Shapes"
+        the:
+          one: "the Shape"
+          other: "the Shapes"
+        of:
+          one: "of Shape"
+          other: "of Shapes"
+        to:
+          one: "to Shape"
+          other: "to Shapes"
     attributes:
       shape:
         name: name

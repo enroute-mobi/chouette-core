@@ -38,6 +38,15 @@ fr:
         zero:  "Correspondances"
         one:   "Correspondance"
         other: "Correspondances"
+        the:
+          one: "la Correspondance"
+          other: "les Correspondances"
+        of:
+          one: "de la Correspondance"
+          other: "des Correspondances"
+        to:
+          one: "à la Correspondance"
+          other: "aux Correspondances"
     attributes:
       connection_link:
         both_ways: "Correspondance dans les deux sens"

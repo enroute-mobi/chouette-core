@@ -24,9 +24,18 @@ fr:
   activerecord:
     models:
       line_notice:
-        zero: "note de ligne"
-        one: "note de ligne"
-        other: "notes de lignes"
+        zero: "Note de Ligne"
+        one: "Note de Ligne"
+        other: "Notes de Lignes"
+        the:
+          one: "la Note de Ligne"
+          other: "les Notes de Lignes"
+        of:
+          one: "de la Note de Ligne"
+          other: "des Notes de Lignes"
+        to:
+          one: "à la Note de Ligne"
+          other: "aux Notes de Lignes"
     attributes:
       line_notice:
         registration_number: "Numéro d'enregistrement"

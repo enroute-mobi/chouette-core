@@ -121,9 +121,18 @@ en:
   activerecord:
     models:
       vehicle_journey:
-        zero:  "vehicle journey"
-        one:   "vehicle journey"
-        other: "vehicle journeys"
+        zero:  "Vehicle Journeys"
+        one:   "Vehicle Journey"
+        other: "Vehicle Journeys"
+        the:
+          one: "the Vehicle Journey"
+          other: "the Vehicle Journeys"
+        of:
+          one: "of Vehicle Journey"
+          other: "of Vehicle Journeys"
+        to:
+          one: "to Vehicle Journey"
+          other: "to Vehicle Journeys"
     attributes:
       vehicle_journey:
         accessible: "Accessible"

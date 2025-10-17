@@ -20,6 +20,7 @@ en:
     presence_attribute: "The attribute '%{target_attribute}' %{source|of_model_name} %{name} is not defined"
     transport_mode_compatibility: "The Stop Area '%{stop_area_name}' has a transport mode incompatible with the Line '%{line_name}'"
     travel_time: "The travel time is longer than expected on %{date}"
+    find_quays_associated_parent: "The Quay '%{short_id} - %{stop_area_name}' should have a parent (cluster %{cluster_id})"
     search_no_results_for_filter: "No messages found"
 
   activerecord:

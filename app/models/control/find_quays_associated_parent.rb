@@ -26,6 +26,7 @@ module Control
             control_messages.create({
               message_attributes: {
                 stop_area_name: stop_area['name'],
+                short_id: Chouette::ObjectidFormatter::Netex.new.get_objectid(stop_area['objectid']).short_id,
                 cluster_id: anomaly.cluster_id
               },
               criticity: criticity,
@@ -81,7 +82,8 @@ module Control
                 JSON_AGG(
                   JSON_BUILD_OBJECT(
                     'stop_area_id', stop_areas.id,
-                    'name', stop_areas.name
+                    'name', stop_areas.name,
+                    'objectid', stop_areas.objectid
                   )
                 ) AS grouped_stop_areas,
                 stop_areas.cluster_id
@@ -115,9 +117,7 @@ module Control
 
         def raw_clustered_stop_areas
           @clustered_stop_areas ||= Chouette::StopArea
-            .select(
-              'stop_areas.cluster_id', 'stop_areas.id AS id', 'stop_areas.name',
-              'stop_areas.area_type', 'stop_areas.transport_mode', 'stop_areas.route_ids')
+            .select('stop_areas.*')
             .from("(#{base_query}) stop_areas")
             .where('stop_areas.cluster_id IS NOT NULL')
             .to_sql
@@ -128,8 +128,7 @@ module Control
           @base_query ||= stop_areas
             .select(
               <<-SQL
-                stop_areas.id, stop_areas.name, stop_areas.area_type,
-                stop_areas.transport_mode, ARRAY_AGG(routes.id) AS route_ids,
+                stop_areas.id, stop_areas.objectid, stop_areas.name, ARRAY_AGG(routes.id) AS route_ids,
                 ST_ClusterDBSCAN(
                   ST_Transform(
                     ST_SetSRID(

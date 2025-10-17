@@ -70,7 +70,8 @@ RSpec.describe Control::FindQuaysAssociatedParent do
                                     criticity: 'warning',
                                     message_attributes: {
                                       'stop_area_name' => 'In cluster I',
-                                      'cluster_id' => 0
+                                      'cluster_id' => 0,
+                                      'short_id' => first_in_first_cluster.get_objectid.short_id
                                     }
                                   }),
       an_object_having_attributes({
@@ -78,7 +79,8 @@ RSpec.describe Control::FindQuaysAssociatedParent do
                                     criticity: 'warning',
                                     message_attributes: {
                                       'stop_area_name' => 'In cluster II',
-                                      'cluster_id' => 0
+                                      'cluster_id' => 0,
+                                      'short_id' => second_in_first_cluster.get_objectid.short_id
                                     }
                                   }),
       an_object_having_attributes({
@@ -86,7 +88,8 @@ RSpec.describe Control::FindQuaysAssociatedParent do
                                     criticity: 'warning',
                                     message_attributes: {
                                       'stop_area_name' => 'In cluster III',
-                                      'cluster_id' => 1
+                                      'cluster_id' => 1,
+                                      'short_id' => first_in_second_cluster.get_objectid.short_id
                                     }
                                   }),
       an_object_having_attributes({
@@ -94,7 +97,8 @@ RSpec.describe Control::FindQuaysAssociatedParent do
                                     criticity: 'warning',
                                     message_attributes: {
                                       'stop_area_name' => 'In cluster IV',
-                                      'cluster_id' => 1
+                                      'cluster_id' => 1,
+                                      'short_id' => second_in_second_cluster.get_objectid.short_id
                                     }
                                   }),
       an_object_having_attributes({
@@ -102,7 +106,8 @@ RSpec.describe Control::FindQuaysAssociatedParent do
                                     criticity: 'warning',
                                     message_attributes: {
                                       'stop_area_name' => 'In cluster V',
-                                      'cluster_id' => 1
+                                      'cluster_id' => 1,
+                                      'short_id' => third_in_second_cluster.get_objectid.short_id
                                     }
                                   })
       ]

@@ -2,18 +2,18 @@
 
 = simple_form_for @search, url: request.path, method: "GET", html: { class: 'form form-filter' }  do |f|
   .ffg-row
-    .input-group.search_bar class=filter_item_class(params[:search], :name)
+    .input-group.search_bar
       = f.input :name, label: false, class: 'form-control', placeholder: I18n.t('exports.filters.name_or_creator_cont')
       span.input-group-btn
         button.btn.btn-default#search_btn type='submit'
           span.fa.fa-search
 
   .ffg-row
-    .form-group.togglable class=filter_item_class(params[:search], :statuses)
+    .form-group.togglable
       = f.label :statuses, required: false, class: 'control-label'
       = f.input :statuses, as: :check_boxes, collection: @search.candidate_statuses.map(&:slug), label: false, label_method: lambda{|slug| ("<span>" + operation_status(slug, verbose: true) + "</span>").html_safe}, wrapper_html: { class: "checkbox_list"}
     - if @parent.is_a?(Workgroup)
-      .form-group.togglable class=filter_item_class(params[:search], :workbench_ids)
+      .form-group.togglable
         = f.label :workbench_ids, class: 'control-label'
         = f.input :workbench_ids, as: :check_boxes, collection: @search.candidate_workbenches.order('name'), label: false, label_method: lambda{|workbench| ("<span>" + workbench.name + "</span>").html_safe}, value_method: lambda{|workbench| workbench.id.to_s}, wrapper_html: { class: "checkbox_list"}
     = f.input :start_date, as: :date_picker

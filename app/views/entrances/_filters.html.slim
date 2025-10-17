@@ -4,7 +4,7 @@
       = form_order.input attribute, as: :hidden
 
   .ffg-row
-    .input-group.search_bar class=filter_item_class(params[:search], :name_or_short_name)
+    .input-group.search_bar
       = f.input :text, label: false, class: 'form-control'
       span.input-group-btn
         button.btn.btn-default#search_btn type='submit'
@@ -22,11 +22,11 @@
   .ffg-row
     = f.input :entrance_type, label: false, include_blank: Entrance.tmf(:entrance_type)
 
-    .form-group.togglable  class=filter_item_class(params[:search], :entry_flag)
+    .form-group.togglable
       = f.label Entrance.tmf(:entry_flag), required: false, class: 'control-label'
       = f.input :entry_flag, as: :check_boxes, label: false, label_method: lambda { |w| ("<span>#{w.first}</span>").html_safe }, include_blank: false, wrapper_html: { class: 'checkbox_list' }
 
-    .form-group.togglable  class=filter_item_class(params[:search], :exit_flag)
+    .form-group.togglable
       = f.label Entrance.tmf(:exit_flag), required: false, class: 'control-label'
       = f.input :exit_flag, as: :check_boxes, label: false, label_method: lambda { |w| ("<span>#{w.first}</span>").html_safe }, include_blank: false, wrapper_html: { class: 'checkbox_list' }
 

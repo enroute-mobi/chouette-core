@@ -3,18 +3,18 @@
     - form_order.object.attributes.keys.each do |attribute|
       = form_order.input attribute, as: :hidden
   .ffg-row
-    .input-group.search_bar class=filter_item_class(params[:search], :email)
+    .input-group.search_bar
       = f.input :email, label: false, class: 'form-control', placeholder: 'Email'
       span.input-group-btn
         button.btn.btn-default#search_btn type='submit'
           span.fa.fa-search
 
   .ffg-row
-    .form-group.togglable  class=filter_item_class(params[:search], :rule_type)
+    .form-group.togglable
       = f.label NotificationRule.tmf(:rule_type), required: false, class: 'control-label'
       = f.input :rule_type, as: :check_boxes, label: false, label_method: lambda { |w| ("<span>#{w.first}</span>").html_safe }, include_hidden: false, wrapper_html: { class: 'checkbox_list' }
 
-    .form-group.togglable  class=filter_item_class(params[:search], :operation_statuses)
+    .form-group.togglable
       = f.label NotificationRule.tmf(:operation_statuses), required: false, class: 'control-label'
       = f.input :operation_statuses, as: :check_boxes, collection: operation_statuses_options, label: false, value_method: Proc.new { |w| w[:id] }, label_method: lambda { |w| ("<span>#{w[:text]}</span>").html_safe }, include_hidden: false, wrapper_html: { class: 'checkbox_list' }
 

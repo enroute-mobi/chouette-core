@@ -48,21 +48,4 @@ module SearchHelper
       url_for([saved_search.parent, saved_search, { parent_resources: parent_resources }])
     end
   end
-
-  def filter_item_class q, key
-    Rails.application.deprecators[:chouette].warn('#filter_item_class should be replaced by smart Search inputs')
-
-    active = false
-    if q.present? && q[key].present?
-      val = q[key]
-      if val.is_a?(Array)
-        active = val.any? &:present?
-      elsif val.respond_to?(:values)
-        active = val.values.any? {|v| v.present? && v != "false" && v != "0" }
-      else
-        active = true
-      end
-    end
-    active ? 'active' : 'inactive'
-  end
 end

@@ -274,7 +274,7 @@ GEM
       libddwaf (~> 1.25.1.1.0)
       logger
       msgpack
-    datadog-ci (1.23.0)
+    datadog-ci (1.23.1)
       datadog (~> 2.4)
       drb
       msgpack

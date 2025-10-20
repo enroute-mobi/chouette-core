@@ -22,6 +22,7 @@ module Export
         Companies,
 
         StopAreas,
+        LocationGroups,
 
         Lines,
 
@@ -316,6 +317,40 @@ module Export
 
     def default_timezone
       @default_timezone ||= default_company&.time_zone || DEFAULT_TIMEZONE
+    end
+
+    class LocationGroups < Part
+      delegate :flexible_stop_areas, to: :export_scope
+
+      def perform
+        flexible_stop_areas.includes(:flexible_area_memberships).find_each do |flexible_stop_area|
+          decorated_flexible_stop_area = Decorator.new(flexible_stop_area)
+          target.location_groups << decorated_flexible_stop_area.gtfs_attributes
+
+          flexible_stop_area.flexible_area_memberships.find_each do |flexible_area_membership|
+            decorated_flexible_area_membership = LocationGroupStopDecorator.new(flexible_area_membership)
+            target.location_group_stops << decorated_flexible_area_membership.gtfs_attributes
+          end
+        end
+      end
+
+      class Decorator < SimpleDelegator
+        def gtfs_attributes
+          {
+            id: registration_number,
+            name: name,
+          }
+        end
+      end
+
+      class LocationGroupStopDecorator < SimpleDelegator
+        def gtfs_attributes
+          {
+            location_group_id: flexible_area.registration_number,
+            stop_id: member.registration_number,
+          }
+        end
+      end
     end
 
     class StopAreas < Part

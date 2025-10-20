@@ -233,7 +233,7 @@ GEM
       activesupport (>= 4.0.0)
       mime-types (>= 1.16)
       ssrf_filter (~> 1.0, < 1.1.0)
-    chartkick (5.2.0)
+    chartkick (5.2.1)
     childprocess (5.1.0)
       logger (~> 1.5)
     cliver (0.3.2)
@@ -268,13 +268,13 @@ GEM
       activerecord (>= 5.a)
       database_cleaner-core (~> 2.0)
     database_cleaner-core (2.0.1)
-    datadog (2.21.0)
+    datadog (2.22.0)
       datadog-ruby_core_source (~> 3.4, >= 3.4.1)
-      libdatadog (~> 18.1.0.1.0)
-      libddwaf (~> 1.24.1.2.1)
+      libdatadog (~> 22.0.1.1.0)
+      libddwaf (~> 1.25.1.1.0)
       logger
       msgpack
-    datadog-ci (1.23.0)
+    datadog-ci (1.23.1)
       datadog (~> 2.4)
       drb
       msgpack
@@ -445,13 +445,13 @@ GEM
       googleauth (~> 1.9)
       mini_mime (~> 1.0)
     google-logging-utils (0.2.0)
-    google-protobuf (4.32.1)
+    google-protobuf (4.33.0)
       bigdecimal
       rake (>= 13)
-    google-protobuf (4.32.1-x86_64-darwin)
+    google-protobuf (4.33.0-x86_64-darwin)
       bigdecimal
       rake (>= 13)
-    google-protobuf (4.32.1-x86_64-linux-gnu)
+    google-protobuf (4.33.0-x86_64-linux-gnu)
       bigdecimal
       rake (>= 13)
     googleauth (1.15.0)
@@ -535,13 +535,13 @@ GEM
       letter_opener (~> 1.9)
       railties (>= 6.1)
       rexml
-    libdatadog (18.1.0.1.0)
-    libdatadog (18.1.0.1.0-x86_64-linux)
-    libddwaf (1.24.1.2.1)
+    libdatadog (22.0.1.1.0)
+    libdatadog (22.0.1.1.0-x86_64-linux)
+    libddwaf (1.25.1.1.0)
       ffi (~> 1.0)
-    libddwaf (1.24.1.2.1-x86_64-darwin)
+    libddwaf (1.25.1.1.0-x86_64-darwin)
       ffi (~> 1.0)
-    libddwaf (1.24.1.2.1-x86_64-linux)
+    libddwaf (1.25.1.1.0-x86_64-linux)
       ffi (~> 1.0)
     libv8-node (18.19.0.0)
     libv8-node (18.19.0.0-x86_64-darwin)
@@ -666,7 +666,7 @@ GEM
       date
       stringio
     public_suffix (6.0.1)
-    puma (7.0.4)
+    puma (7.1.0)
       nio4r (~> 2.0)
     raabro (1.4.0)
     rabl (0.17.0)

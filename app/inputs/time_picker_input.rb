@@ -1,7 +1,7 @@
 class TimePickerInput < SimpleForm::Inputs::Base
   delegate :content_tag, :concat, :javascript_additional_packs, to: :template
 
-  def input
+  def input(_wrapper_options = nil)
     javascript_additional_packs 'inputs/date_picker'
 
     # Never update the code before read https://flatpickr.js.org/examples/#flatpickr--external-elements

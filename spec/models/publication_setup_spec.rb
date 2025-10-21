@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-RSpec.describe PublicationSetup, type: :model, use_chouette_factory: true do
+RSpec.describe PublicationSetup, type: :model do
   it { is_expected.to belong_to(:workgroup).required }
   it { should have_many :destinations }
   it { should have_many :publications }

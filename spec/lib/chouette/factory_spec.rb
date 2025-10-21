@@ -1,5 +1,6 @@
-RSpec.describe Chouette::Factory do
+# frozen_string_literal: true
 
+RSpec.describe Chouette::Factory do
   it "should raise error when type isn't known" do
     expect {
       Chouette::Factory.create { dummy }

@@ -1,5 +1,8 @@
 module Types
   class LineType < Types::BaseObject
+    include Types::WithCodes
+    include Types::WithReferent
+
     description "A Chouette Line"
 
     field :objectid, String, null: false
@@ -67,5 +70,10 @@ module Types
       LazyLoading::ServiceCountTotal.new(context, object.id, from, to)
     end
 
+    protected
+
+    def referential_lazy_loading_relation_class
+      LazyLoading::LineRelation
+    end
   end
 end

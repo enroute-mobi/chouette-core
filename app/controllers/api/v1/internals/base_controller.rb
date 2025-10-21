@@ -21,7 +21,7 @@ module Api
 
         def authenticate_token
           authenticate_with_http_token do |token|
-            return true if Rails.application.secrets.api_token == token
+            return true if ::Chouette::Config.api_token == token
           end
         end
       end

@@ -30,9 +30,8 @@ RUN build.sh yarn::install
 # Install application file
 COPY . ./
 
-# Override database.yml and secrets.yml files
+# Override database.yml
 COPY config/database.yml.docker config/database.yml
-COPY config/secrets.yml.docker config/secrets.yml
 RUN build.sh docker::env::production
 
 # Run assets:precompile
@@ -45,9 +44,8 @@ FROM base AS final
 # Install application file
 COPY . ./
 
-# Override database.yml and secrets.yml files
+# Override database.yml
 COPY config/database.yml.docker config/database.yml
-COPY config/secrets.yml.docker config/secrets.yml
 RUN build.sh docker::env::production
 
 COPY --from=assets-builder /app/public/assets/ public/assets/

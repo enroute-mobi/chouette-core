@@ -96,6 +96,22 @@ RSpec.describe Chouette::Config do
       end
     end
   end
+
+  describe '#api_token' do
+    subject { config.api_token }
+
+    it { is_expected.to eq('VFHir2GWWjuRNZnHHnQD5Hn+ubRMQ1kNLnu7oCLf+4KR8+PmYqb1EzKZmmuRfVP/yxS0aQ3NklfNbbgUatTtly5540oo4L6ePdbYkwDzrBXF9xgYekOlTCwIGSl430mluv3wcXNEbrRLu2CevIBULtiRZriAEYVOpp9G+lQI+t8=') } # rubocop:disable Layout/LineLength
+
+    with_env IEV_API_TOKEN: 'SECRET' do
+      it { is_expected.to eq('SECRET') }
+    end
+  end
+
+  describe '#tomtom_api_key' do
+    subject { config.tomtom_api_key }
+
+    it { is_expected.to eq('mock_tomtom_api_key') }
+  end
 end
 
 RSpec.describe Chouette::Config::Environment do

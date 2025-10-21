@@ -36,7 +36,7 @@ end
 
 
 shared_context 'iboo authenticated internal api' do
-  let(:api_key) { Rails.application.secrets.api_token }
+  let(:api_key) { ::Chouette::Config.api_token }
 
   before do
     request.env['HTTP_AUTHORIZATION'] = ActionController::HttpAuthentication::Token.encode_credentials(api_key)

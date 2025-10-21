@@ -31,7 +31,7 @@ class WorkbenchImportService
       host: export_host,
       path: export_path,
       params: params(eg_file, eg_name),
-      token: Rails.application.secrets.api_token)
+      token: ::Chouette::Config.api_token)
   end
 
   def handle_corrupt_zip_file

@@ -2,7 +2,7 @@ module TomTom
   # Given some coordinates, call the TomTom Routing API to calculate a route
   # From the returned coordinates we build a geojson feature object (line string)
   class BuildLineStringFeature < ApplicationService
-    TOMTOM_API_KEY = Rails.application.secrets.tomtom_api_key
+    TOMTOM_API_KEY = ::Chouette::Config.tomtom_api_key
 
     def initialize coordinates, name = ''
       @coordinates = coordinates

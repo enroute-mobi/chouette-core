@@ -9,6 +9,8 @@ fr:
         label: Quand le mode de transport est
       lines:
         label: Quand les lignes sont
+      saved_search:
+        label: Quand la recherche enregistrée est
 
   activerecord:
     models:
@@ -22,6 +24,8 @@ fr:
         one: Prochains jours de fonctionnement
       control/context/lines:
         one: Lignes
+      control/context/saved_search:
+        one: Recherche sauvegardée
 
     attributes:
       control/context: &control_context
@@ -33,6 +37,8 @@ fr:
         next_days: Prochains jours
       control/context/lines: &lines
         line_ids: Lignes
+      control/context/saved_search: &saved_search
+        saved_search_id: Recherche sauvegardée
       control/context/run:
         <<: *control_context
       control/context/transport_mode/run:
@@ -41,3 +47,5 @@ fr:
         <<: *operating_period
       control/context/lines/run:
         <<: *lines
+      control/context/saved_search/run:
+        <<: *saved_search

@@ -26,7 +26,8 @@ module Control
       [
         Control::Context::TransportMode,
         Control::Context::OperatingPeriod,
-        Control::Context::Lines
+        Control::Context::Lines,
+        Control::Context::SavedSearch
       ]
     end
 

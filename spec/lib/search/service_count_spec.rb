@@ -103,7 +103,8 @@ RSpec.describe Search::ServiceCount, type: :model do
   describe '#chart' do
     subject(:chart) { search.chart(scope) }
 
-    let(:date) { Time.zone.parse('2024-08-20T00:00:00') }
+    let(:year) { Time.zone.today.year + 2 }
+    let(:date) { Time.zone.parse("#{year}-08-20T00:00:00") }
     let(:context) do # rubocop:disable Metrics/BlockLength
       context = Chouette.create do # rubocop:disable Metrics/BlockLength
         workbench do
@@ -203,37 +204,36 @@ RSpec.describe Search::ServiceCount, type: :model do
         let(:group_by_attribute) { 'date' }
 
         it 'returns correct data' do
-          Timecop.travel(date + 1.day)
-          is_expected.to eq(
-            {
-              Date.parse('2024-08-11') => 0,
-              Date.parse('2024-08-12') => 0,
-              Date.parse('2024-08-13') => 0,
-              Date.parse('2024-08-14') => 0,
-              Date.parse('2024-08-15') => 0,
-              Date.parse('2024-08-16') => 0,
-              Date.parse('2024-08-17') => 0,
-              Date.parse('2024-08-18') => 16,
-              Date.parse('2024-08-19') => 12,
-              Date.parse('2024-08-20') => 3
-            }
-          )
-        ensure
-          Timecop.return
+          Timecop.travel(date + 1.day) do
+            is_expected.to eq(
+              {
+                Date.parse("#{year}-08-11") => 0,
+                Date.parse("#{year}-08-12") => 0,
+                Date.parse("#{year}-08-13") => 0,
+                Date.parse("#{year}-08-14") => 0,
+                Date.parse("#{year}-08-15") => 0,
+                Date.parse("#{year}-08-16") => 0,
+                Date.parse("#{year}-08-17") => 0,
+                Date.parse("#{year}-08-18") => 16,
+                Date.parse("#{year}-08-19") => 12,
+                Date.parse("#{year}-08-20") => 3
+              }
+            )
+          end
         end
 
         context 'with filter on period' do
           before do
-            search.start_date = Date.parse('2024-08-18')
-            search.end_date = Date.parse('2024-08-20')
+            search.start_date = Date.parse("#{year}-08-18")
+            search.end_date = Date.parse("#{year}-08-20")
           end
 
           it 'returns correct data' do
             is_expected.to eq(
               {
-                Date.parse('2024-08-18') => 16,
-                Date.parse('2024-08-19') => 12,
-                Date.parse('2024-08-20') => 3
+                Date.parse("#{year}-08-18") => 16,
+                Date.parse("#{year}-08-19") => 12,
+                Date.parse("#{year}-08-20") => 3
               }
             )
           end

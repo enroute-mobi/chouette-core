@@ -24,7 +24,7 @@ class Document < ApplicationModel
   validate :validate_document_type_in_document_provider_workbench
 
   scope :with_type, ->(document_type) { where(document_type: document_type) }
-  scope :valid_on, -> (date) { where('validity_period is null or validity_period @> DATE ?', date) }
+  scope :valid_on, -> (date) { where('validity_period is null or validity_period @> DATE(?)', date) }
 
   def self.most_updated
     order(updated_at: :desc).first

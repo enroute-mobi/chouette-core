@@ -39,14 +39,14 @@ module Query
 
 		def operation_statuses(value)
 			change_scope(if: value.present?) do |scope|
-				scope.where(operation_statuses: []).or(scope.where('operation_statuses::text[] && ARRAY[?]', value))
+				scope.where(operation_statuses: []).or(scope.where('operation_statuses::text[] && ARRAY[?]::text[]', value))
 			end
 		end
 
 		def lines(value)
 			value = (value || []).reject(&:blank?).map(&:to_i)
 			change_scope(if: value.present?) do |scope|
-				scope.where(line_ids: []).or(scope.where('line_ids::integer[] && ARRAY[?]', value))
+				scope.where(line_ids: []).or(scope.where('line_ids::integer[] && ARRAY[?]::integer[]', value))
 			end
 		end
   end

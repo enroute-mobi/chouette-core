@@ -21,68 +21,63 @@ RSpec.describe Export::Base, type: :model do
     let(:other_workbench) { create(:workbench) }
 
     it "removes files from exports older than 60 days" do
-      file_purgeable = Timecop.freeze(60.days.ago) do
-        export = create(
-          :gtfs_export,
-          workbench: workbench,
-          file: file_fixture('terminated_job.json').open
-        )
+      file_purgeable = create(
+        :gtfs_export,
+        workbench: workbench,
+        file: file_fixture('terminated_job.json').open
+      )
+
+      other_file_purgeable = create(
+        :gtfs_export,
+        workbench: other_workbench,
+        file: file_fixture('terminated_job.json').open
+      )
+
+      Timecop.travel(60.days.from_now) do
+        Export::Gtfs.new(workbench: workbench).purge_exports
+
+        expect(file_purgeable.reload.file_url).to be_nil
+        expect(other_file_purgeable.reload.file_url).not_to be_nil
       end
-
-      other_file_purgeable = Timecop.freeze(60.days.ago) do
-        export = create(
-          :gtfs_export,
-          workbench: other_workbench,
-          file: file_fixture('terminated_job.json').open
-        )
-      end
-
-      Export::Gtfs.new(workbench: workbench).purge_exports
-
-      expect(file_purgeable.reload.file_url).to be_nil
-      expect(other_file_purgeable.reload.file_url).not_to be_nil
     end
 
     it "removes exports older than 90 days" do
-      old_export = Timecop.freeze(90.days.ago) do
-        create(:gtfs_export, workbench: workbench)
+      old_export = create(:gtfs_export, workbench: workbench)
+      create(:gtfs_export, workbench: other_workbench)
+
+      Timecop.travel(90.days.from_now) do
+        expect { Export::Gtfs.new(workbench: workbench).purge_exports }.to change {
+          old_export.workbench.exports.purgeable.count
+        }.from(1).to(0)
+
+        expect { Export::Gtfs.new(workbench: workbench).purge_exports }.not_to change {
+          old_export.workbench.exports.purgeable.count
+        }
       end
-
-      other_old_export = Timecop.freeze(90.days.ago) do
-        create(:gtfs_export, workbench: other_workbench)
-      end
-
-      expect { Export::Gtfs.new(workbench: workbench).purge_exports }.to change {
-        old_export.workbench.exports.purgeable.count
-      }.from(1).to(0)
-
-      expect { Export::Gtfs.new(workbench: workbench).purge_exports }.not_to change {
-        old_export.workbench.exports.purgeable.count
-      }
     end
 
     it 'keeps files used in Publication Apis' do
-      old_export = Timecop.freeze(90.days.ago) do
-        # We create TWO exports
-        create(:gtfs_export, workbench: workbench)
-        create(:gtfs_export, workbench: workbench)
-      end
+      # We create TWO exports
+      old_export = create(:gtfs_export, workbench: workbench)
+      create(:gtfs_export, workbench: workbench)
 
-      context = Chouette.create do
-        publication_api
-        referential :referential
-        publication referential: :referential
-      end
-      context.publication_api.publication_api_sources.create!(
-        publication: context.publication, export: old_export, key: 'foo'
-      )
-      context.publication_api.publication_api_sources.create!(
-        publication: context.publication, export: old_export, key: 'foo2'
-      )
+      Timecop.travel(90.days.from_now) do
+        context = Chouette.create do
+          publication_api
+          referential :referential
+          publication referential: :referential
+        end
+        context.publication_api.publication_api_sources.create!(
+          publication: context.publication, export: old_export, key: 'foo'
+        )
+        context.publication_api.publication_api_sources.create!(
+          publication: context.publication, export: old_export, key: 'foo2'
+        )
 
-      expect { Export::Gtfs.new(workbench: workbench).purge_exports }.to change {
-        workbench.exports.count
-      }.by -1
+        expect { Export::Gtfs.new(workbench: workbench).purge_exports }.to change {
+          workbench.exports.count
+        }.by -1
+      end
     end
   end
 

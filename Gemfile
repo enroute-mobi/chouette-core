@@ -5,7 +5,7 @@ git_source(:github) { |name| "https://github.com/#{name}.git" }
 git_source(:en_route) { |name| "https://bitbucket.org/enroute-mobi/#{name}.git" }
 
 # Bundle edge Rails instead: gem 'rails', github: 'rails/rails'
-gem 'rails', '~> 7.1.0'
+gem 'rails', '~> 7.2.0'
 gem 'bootsnap', require: false
 
 group :production do
@@ -222,5 +222,3 @@ gem 'curb'
 
 gem 'chartkick' # check the corresponding Chart.js version to change in package.json
 gem 'groupdate'
-
-gem 'drb' # see CHOUETTE-4753

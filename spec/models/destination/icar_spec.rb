@@ -79,12 +79,13 @@ RSpec.describe Destination::Icar, type: :model do
       end
 
       it 'should send file to ICAR' do
-        Timecop.freeze(Time.new(2025, 6, 16, 11, 13, 15, '+02:00')) do
+        year = Time.zone.today.year + 2
+        Timecop.freeze(Time.new(year, 6, 16, 11, 13, 15, '+02:00')) do
           subject
           expect(a_request(:post, destination.icar_import_url)).to have_been_made.once
           expect(JSON.parse(@request_body)).to eq(
             {
-              'nomFichier' => 'ARRET_42_TEST_SITE_T_20250616T091315Z.zip',
+              'nomFichier' => "ARRET_42_TEST_SITE_T_#{year}0616T091315Z.zip",
               'content' => Base64.encode64(file_fixture(export_file_fixture).read)
             }
           )

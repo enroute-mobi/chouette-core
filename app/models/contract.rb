@@ -15,7 +15,7 @@ class Contract < ApplicationModel
     if lines.empty?
       self.class.none
     else
-      where('line_ids::integer[] && ARRAY[?]', lines.map(&:id))
+      where('line_ids::integer[] && ARRAY[?]::integer[]', lines.map(&:id))
     end
   end
 end

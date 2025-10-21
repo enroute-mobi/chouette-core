@@ -2,7 +2,11 @@ module Query
   class Base
     def initialize(scope)
       @scope = scope
-      # TODO: CHOUETTE-4721 (rails 7.2): we may have to simply do scope.order(order_hash) in Search::Base
+      # TODO: We may be able to simplify this by completely removing this code if future Rails version allows relation
+      # names in order clause like it does in where. To sum up, when all these request will work:
+      #   - Chouette::ConnectionLink.joins(:departure, :arrival).where(departure: { name: 'toto' }, arrival: { name: 'titi' })
+      #   - Chouette::ConnectionLink.joins(:departure, :arrival).order(departure: { name: :asc }, arrival: { name: :asc })
+      #   - Chouette::ConnectionLink.joins(:departure, :arrival).where(departure: { name: 'toto' }, arrival: { name: 'titi' }).order(departure: { name: :asc }, arrival: { name: :asc })
       scope_to_extend = if @scope.is_a?(::ActiveRecord::Associations::CollectionProxy)
                           @scope.proxy_association.scope
                         else

@@ -50,7 +50,7 @@ module Chouette
     scope :with_stop_area_ids, ->(ids){
       _ids = ids.select(&:present?).map(&:to_i)
       if _ids.present?
-        where("array(SELECT stop_points.stop_area_id::integer FROM stop_points INNER JOIN journey_patterns_stop_points ON journey_patterns_stop_points.stop_point_id = stop_points.id WHERE journey_patterns_stop_points.journey_pattern_id = vehicle_journeys.journey_pattern_id) @> array[?]", _ids)
+        where("array(SELECT stop_points.stop_area_id::integer FROM stop_points INNER JOIN journey_patterns_stop_points ON journey_patterns_stop_points.stop_point_id = stop_points.id WHERE journey_patterns_stop_points.journey_pattern_id = vehicle_journeys.journey_pattern_id) @> array[?]::integer[]", _ids)
       else
         all
       end

@@ -8,9 +8,9 @@ RSpec.describe Macro::ComputeJourneyPatternDistances do
   describe Macro::ComputeJourneyPatternDistances::Run do
     subject(:macro_run) { described_class.create!(macro_list_run: macro_list_run, position: 0) }
 
-    let(:context) do
-      Chouette.create do
-        workbench do
+    let(:context) do # rubocop:disable Metrics/BlockLength
+      Chouette.create do # rubocop:disable Metrics/BlockLength
+        workbench do # rubocop:disable Metrics/BlockLength
           stop_area :stop_area1, latitude: 43.574325, longitude: 7.091888
           stop_area :stop_area2, latitude: 43.575067, longitude: 7.095608
           stop_area :stop_area3, latitude: 43.574477, longitude: 7.099041
@@ -92,7 +92,7 @@ RSpec.describe Macro::ComputeJourneyPatternDistances do
   describe Macro::ComputeJourneyPatternDistances::Run::Batch do
     subject { JSON.parse batch.query.distances.to_h[second_journey_pattern.id] }
 
-    let(:context) do
+    let(:context) do # rubocop:disable Metrics/BlockLength
       Chouette.create do
         stop_area :first, latitude: 43.574325, longitude: 7.091888
         stop_area :middle, latitude: 43.575067, longitude: 7.095608

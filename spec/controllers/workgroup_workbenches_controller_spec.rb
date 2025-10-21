@@ -101,7 +101,7 @@ RSpec.describe WorkgroupWorkbenchesController, type: :controller do
       end
     end
 
-    with_permissions 'workbenches.update' do
+    with_permissions 'workbenches.update' do # rubocop:disable Metrics/BlockLength
       context "when user is the workgroup's owner" do
         it 'returns HTTP success' do
           expect(request).to redirect_to [workbench.workgroup, workbench]

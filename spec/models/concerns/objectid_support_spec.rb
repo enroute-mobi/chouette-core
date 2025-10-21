@@ -7,7 +7,7 @@ RSpec.describe ObjectidSupport do
     objectid_format = self.objectid_format
     Chouette.create do
       workbench prefix: prefix do
-        referential objectid_format: objectid_format  do
+        referential objectid_format: objectid_format do
           time_table objectid: nil
         end
       end

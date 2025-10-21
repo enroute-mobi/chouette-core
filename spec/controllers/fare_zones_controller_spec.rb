@@ -8,7 +8,6 @@ RSpec.describe FareZonesController, type: :controller do
   let(:context) do
     organisation = self.organisation
     Chouette.create do
-      organisation = organisation
       workgroup(owner: organisation) do
         workbench(:workbench, organisation: organisation) do
           fare_provider :fare_provider

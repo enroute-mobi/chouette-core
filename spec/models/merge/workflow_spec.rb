@@ -308,7 +308,7 @@ describe Merge do
   end
 
   context "#prepare_new" do
-    context "when some lines are no longer available", truncation: true do
+    context 'when some lines are no longer available' do
       let(:merge) { Merge.create(workbench: workbench, referentials: [referential, referential], creator: 'test') }
 
       before do
@@ -318,11 +318,6 @@ describe Merge do
         workbench.output.update current: ref.reload
 
         allow(workbench).to receive(:lines){ Chouette::Line.where(id: line_referential.lines.last.id) }
-      end
-
-      after(:each) do
-        Apartment::Tenant.drop(workbench.output.current.slug)
-        Apartment::Tenant.drop(referential.slug)
       end
 
       it "should work" do
@@ -340,7 +335,7 @@ describe Merge do
       end
     end
 
-    context 'with previously urgent output', truncation: true do
+    context 'with previously urgent output' do
       let(:merge) { Merge.create(workbench: workbench, referentials: [referential], creator: 'test') }
       let(:output) do
         output = create :workbench_referential, workbench: workbench
@@ -349,11 +344,6 @@ describe Merge do
         metadata.update flagged_urgent_at: 1.hour.ago
         expect(output.reload.contains_urgent_offer?).to be_truthy
         output
-      end
-
-      after(:each) do
-        Apartment::Tenant.drop(output.slug)
-        Apartment::Tenant.drop(referential.slug)
       end
 
       it "should remove the urgent flag" do
@@ -365,10 +355,10 @@ describe Merge do
         merge.prepare_new
 
         merge.referentials.each do |referential|
-          merge.merge_referential_metadata(referential)
+          Merge::Referential::Legacy.new(merge, referential).merge_metadata
         end
 
-        new_referential = workbench.output.new
+        new_referential = workbench.output.reload.new
         expect(new_referential.contains_urgent_offer?).to be_falsy
       end
     end

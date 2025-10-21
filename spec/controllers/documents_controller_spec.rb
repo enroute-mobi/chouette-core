@@ -8,7 +8,6 @@ RSpec.describe DocumentsController, type: :controller do
   let(:context) do
     organisation = self.organisation
     Chouette.create do
-      organisation = organisation
       workgroup(owner: organisation) do
         document_type :document_type
         workbench(:workbench, organisation: organisation) do

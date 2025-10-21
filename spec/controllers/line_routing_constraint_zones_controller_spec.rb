@@ -14,7 +14,6 @@ RSpec.describe LineRoutingConstraintZonesController, type: :controller do
   let(:context) do
     organisation = self.organisation
     Chouette.create do
-      organisation = organisation
       workgroup(owner: organisation) do
         workbench(:workbench, organisation: organisation) do
           stop_area :stop_area1

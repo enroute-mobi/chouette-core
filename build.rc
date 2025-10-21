@@ -5,7 +5,7 @@ export RUN_PACKAGES="libpq5 libxml2 zlib1g libmagic1 imagemagick libproj25 libge
 
 function docker_assets_precompile() {
     (
-        export RAILS_DB_ADAPTER=nulldb RAILS_DB_PASSWORD=none RAILS_ENV=production RUBYOPT="-W0"
+        export RAILS_DB_ADAPTER=nulldb RAILS_DB_PASSWORD=none RAILS_ENV=production RUBYOPT="-W0" SECRET_KEY_BASE_DUMMY=1
         bundle exec i18n export
         bundle exec rake ci:disable_yarn_install assets:precompile NODE_OPTIONS=--openssl-legacy-provider
     )

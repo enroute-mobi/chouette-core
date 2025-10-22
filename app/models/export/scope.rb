@@ -160,6 +160,10 @@ module Export
         (workbench || stop_area_referential).stop_areas
       end
 
+      def flexible_stop_areas
+        stop_areas.where(area_type: Chouette::AreaType::FLEXIBLE_STOP_PLACE)
+      end
+
       def lines
         (workbench || line_referential).lines
       end

@@ -1462,19 +1462,35 @@ module Export
         def gtfs_attributes
           {
             booking_rule_id: gtfs_identifier,
-            booking_type: book_when,
-            prior_notice_duration_min: minimum_booking_period,
-            prior_notice_last_time: latest_booking_time,
-            prior_notice_last_day: gtfs_prior_notice_last_day,
+            booking_type: booking_type,
             message: booking_notes,
             phone_number: phone,
             info_url: url,
-            booking_url: booking_url
-          }
+            booking_url: booking_url,
+            prior_notice_duration_max: '-',
+            prior_notice_start_day: '-',
+            prior_notice_start_time: '-',
+            prior_notice_service_id: '-'
+          }.tap do |attributes|
+            attributes[:prior_notice_duration_min] = minimum_booking_period if booking_type == 1
+            attributes[:prior_notice_last_time] = prior_notice_last_time if minimum_booking_period.present?
+            attributes[:prior_notice_last_day] = 1 if prior_notice_last_time.present?
+          end
         end
 
-        def gtfs_prior_notice_last_day
-          latest_booking_time.present? ? 1 : nil
+        def prior_notice_last_time
+          @prior_notice_last_time ||= latest_booking_time.to_hms
+        end
+
+        def booking_type
+          case book_when
+          when 'time_of_travel_only'
+            0
+          when 'advance_and_day_of_travel'
+            1
+          when 'until_previous_day'
+            2
+          end
         end
 
       end

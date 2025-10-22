@@ -1,14 +1,18 @@
+# frozen_string_literal: true
+
 module Queries
   class StopArea < Queries::BaseQuery
-    description 'Find a stop area'
+    include ByObjectidOrRegistrationNumber
+    include ByCode
 
-    argument :objectid, String, required: false
-    argument :registration_number, String, required: false
+    description 'Find a stop area'
 
     type Types::StopAreaType, null: true
 
-    def resolve(objectid: nil, registration_number: nil)
-      context[:target_referential].stop_areas.find_by({objectid: objectid, registration_number: registration_number}.compact)
+    scope :stop_areas
+
+    def resolve(**kwargs)
+      super.take
     end
   end
 end

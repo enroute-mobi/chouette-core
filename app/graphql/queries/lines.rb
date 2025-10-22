@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Queries
   class Lines < Queries::BaseQuery
     description 'Find all lines'
@@ -14,7 +16,11 @@ module Queries
 
     type Types::LineType.connection_type, null: false
 
-    def resolve(transport_mode: nil,
+    scope :lines
+
+    protected
+
+    def scope(transport_mode: nil,
       transport_modes: [],
       company: nil,
       companies: [],
@@ -22,7 +28,7 @@ module Queries
       not_transport_modes: [],
       not_company: nil,
       not_companies: [])
-      scope = context[:target_referential].lines
+      scope = super
 
       companies_table = ::Chouette::Company.quoted_table_name
       if company || companies.length > 0

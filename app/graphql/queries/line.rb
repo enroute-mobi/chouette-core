@@ -1,17 +1,18 @@
+# frozen_string_literal: true
+
 module Queries
   class Line < Queries::BaseQuery
-    description 'Find a line'
+    include ByObjectidOrRegistrationNumber
+    include ByCode
 
-    argument :objectid, String, required: false
-    argument :registration_number, String, required: false
+    description 'Find a line'
 
     type Types::LineType, null: true
 
-    def resolve(objectid: nil, registration_number: nil)
-      context[:target_referential].lines.find_by({
-        objectid: objectid,
-        registration_number: registration_number
-      }.compact)
+    scope :lines
+
+    def resolve(**kwargs)
+      super.take
     end
   end
 end

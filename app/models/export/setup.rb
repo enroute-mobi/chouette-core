@@ -94,6 +94,19 @@ module Export
           end
         end
 
+        class LineGroups < Base
+          attribute :line_group_ids, IntegerArrayType.new
+
+          validates :line_group_ids, presence: true,
+                                     inclusion: { in: ->(r) { r.parent.parent.candidate_line_groups.pluck(:id) } }
+
+          def with_scope_setup(scope_setup)
+            self.class.new(
+              line_group_ids: scope_setup.candidate_line_groups.where(id: line_group_ids).pluck(:id)
+            )
+          end
+        end
+
         class All < Base
         end
       end
@@ -196,6 +209,10 @@ module Export
         def candidate_line_providers
           (parent.parent.workbench || parent.parent.workgroup).line_providers
         end
+
+        def candidate_line_groups
+          (parent.parent.workbench || parent.parent.workgroup).line_groups
+        end
       end
 
       class Referential < AbstractReferential
@@ -216,6 +233,10 @@ module Export
 
         def candidate_line_providers
           parent.parent.workgroup.line_providers
+        end
+
+        def candidate_line_groups
+          parent.parent.workgroup.line_groups
         end
 
         def to_referential

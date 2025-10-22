@@ -36,6 +36,7 @@ fr:
       export/setup/scope/line_selector/lines: "Lignes suivantes"
       export/setup/scope/line_selector/companies: "Associées aux transporteurs"
       export/setup/scope/line_selector/line_providers: "Associées aux fournisseurs de lignes"
+      export/setup/scope/line_selector/line_groups: "Associées aux groupes de lignes"
       export/setup/scope/line_selector/all: "Toutes les lignes"
     errors:
       export/setup/scope/period_selector/static:
@@ -51,3 +52,4 @@ fr:
             line_ids: "Recherche par nom de ligne"
             company_ids: "Recherche par nom du transporteur"
             line_provider_ids: "Recherche par nom de fournisseur de ligne"
+            line_group_ids: "Recherche par nom de groupe de lignes"

@@ -36,6 +36,7 @@ en:
       export/setup/scope/line_selector/lines: "Specific lines"
       export/setup/scope/line_selector/companies: "Associated companies"
       export/setup/scope/line_selector/line_providers: "Associated line providers"
+      export/setup/scope/line_selector/line_groups: "Associated line groups"
       export/setup/scope/line_selector/all: "All available lines"
     errors:
       export/setup/scope/period_selector/static:
@@ -51,3 +52,4 @@ en:
             line_ids: "Search by line name"
             company_ids: "Search by company name"
             line_provider_ids: "Search by line provider name"
+            line_group_ids: "Search by line group name"

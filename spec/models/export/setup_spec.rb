@@ -228,6 +228,63 @@ RSpec.describe Export::Setup::Scope::LineSelector::LineProviders do
   end
 end
 
+RSpec.describe Export::Setup::Scope::LineSelector::LineGroups do
+  subject(:line_groups) { described_class.new }
+
+  describe 'validations' do
+    describe '#line_group_ids' do
+      let(:candidate_line_group_ids) { [1, 2, 3] }
+      let(:candidate_line_groups) do
+        double(:candidate_line_groups).tap do |candidate_line_groups|
+          allow(candidate_line_groups).to receive(:pluck).and_return(candidate_line_group_ids)
+        end
+      end
+      let(:parent) do
+        double(:vehicle_journeys, parent: double(:scope_setup, candidate_line_groups: candidate_line_groups))
+      end
+
+      before { line_groups.parent = parent }
+
+      it { is_expected.not_to allow_value([]).for(:line_group_ids) }
+      it { is_expected.to allow_value([3, 1]).for(:line_group_ids) }
+      it { is_expected.to allow_value(%w[1 3]).for(:line_group_ids) }
+      it { is_expected.not_to allow_value([2, 4]).for(:line_group_ids) }
+    end
+  end
+
+  describe '#with_scope_setup' do
+    subject { line_groups.with_scope_setup(scope_setup) }
+
+    let(:context) do
+      Chouette.create do
+        line :line
+
+        line_group :line_group1, lines: %i[line]
+        line_group :line_group2, lines: %i[line]
+        line_group :line_group3, lines: %i[line]
+      end
+    end
+    let(:scope_setup) do
+      double(
+        :scope_setup,
+        candidate_line_groups: LineGroup.where(
+          id: %i[line_group1 line_group2].map { |lp| context.line_group(lp) }
+        )
+      )
+    end
+
+    before do
+      line_groups.line_group_ids = %i[line_group2 line_group3].map { |lp| context.line_group(lp).id }
+    end
+
+    it { is_expected.to be_a(described_class) }
+
+    it 'removes unauthorized line group ids' do
+      is_expected.to have_attributes(line_group_ids: [context.line_group(:line_group2).id])
+    end
+  end
+end
+
 RSpec.describe Export::Setup::Scope::LineSelector::All do
   subject(:lines_scheduled) { described_class.new }
 
@@ -357,7 +414,7 @@ RSpec.describe Export::Setup::Scope::Referential do
           end
         end
         workgroup :other_workgroup do
-          company :other_company_workgroup
+          company :other_workgroup_company
         end
       end
     end
@@ -464,6 +521,54 @@ RSpec.describe Export::Setup::Scope::Referential do
       end
     end
   end
+
+  describe '#candidate_line_groups' do
+    subject { setup_scope_referential.candidate_line_groups }
+
+    let(:context) do
+      Chouette.create do
+        workgroup :workgroup do
+          workbench :workbench do
+            line :line
+            line_group :line_group1, lines: %i[line]
+            line_group :line_group2, lines: %i[line]
+          end
+          workbench :other_workbench do
+            line_group :other_workbench_line_group, lines: %i[line]
+          end
+        end
+        workgroup :other_workgroup do
+          line :other_line
+          line_group :other_workgroup_line_group, lines: %i[other_line]
+        end
+      end
+    end
+    let(:export_workgroup) { context.workgroup(:workgroup) }
+    let(:export_workbench) { context.workbench(:workbench) }
+    let(:parent) { double(:setup, parent: double(:export, workgroup: export_workgroup, workbench: export_workbench)) }
+
+    before { setup_scope_referential.parent = parent }
+
+    context 'when export only has a workbench' do
+      let(:export_workgroup) { nil }
+
+      it 'only returns line groups in referential' do
+        is_expected.to(
+          match_array(%i[line_group1 line_group2 other_workbench_line_group].map { |l| context.line_group(l) })
+        )
+      end
+    end
+
+    context 'when export only has a workgroup' do
+      let(:export_workbench) { nil }
+
+      it 'only returns line groups in referential' do
+        is_expected.to(
+          match_array(%i[line_group1 line_group2 other_workbench_line_group].map { |l| context.line_group(l) })
+        )
+      end
+    end
+  end
 end
 
 RSpec.describe Export::Setup::Scope::PublishedReferential do
@@ -562,6 +667,35 @@ RSpec.describe Export::Setup::Scope::PublishedReferential do
     it 'only returns line providers in workgroup' do
       is_expected.to(
         match_array(%i[line_provider1 line_provider2].map { |l| context.line_provider(l) } + [default_line_provider])
+      )
+    end
+  end
+
+  describe '#candidate_line_groups' do
+    subject { setup_scope_published_referential.candidate_line_groups }
+
+    let(:context) do
+      Chouette.create do
+        workgroup :workgroup do
+          workbench :workbench do
+            line :line
+            line_group :line_group1, lines: %i[line]
+            line_group :line_group2, lines: %i[line]
+          end
+        end
+        workgroup :other_workgroup do
+          line :other_line
+          line_group :out_of_workbench_line_group, lines: %i[other_line]
+        end
+      end
+    end
+    let(:parent) { double(:setup, parent: double(:export, workgroup: context.workgroup(:workgroup))) }
+
+    before { setup_scope_published_referential.parent = parent }
+
+    it 'only returns line groups in workgroup' do
+      is_expected.to(
+        match_array(%i[line_group1 line_group2].map { |l| context.line_group(l) })
       )
     end
   end

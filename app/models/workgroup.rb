@@ -41,9 +41,11 @@ class Workgroup < ApplicationModel
   has_many :saved_searches, class_name: 'Search::Save', as: :parent, dependent: :destroy
   has_many :line_providers, through: :line_referential
   has_many :lines, through: :line_referential
+  has_many :line_groups, through: :line_referential
   has_many :companies, through: :line_referential
   has_many :networks, through: :line_referential
   has_many :stop_areas, through: :stop_area_referential
+  has_many :stop_area_groups, through: :stop_area_referential
   has_many :fare_zones, through: :fare_referential
 
   validates :name, presence: true, uniqueness: true

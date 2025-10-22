@@ -8,8 +8,9 @@ module OptionsHelper
 
     value = record.try(attr).nil? ? option_def[:default_value] : record.try(attr)
 
+    input_html = options[:input_html] || {}
     opts = {
-      input_html: { value: value },
+      input_html: { value: value, **input_html },
       as: option_def[:type],
       selected: value
     }

@@ -1,6 +1,10 @@
 = simple_block_for destination, title: Destination.ts do |d|
   = d.attribute :type, value: destination.human_type
   = d.attribute :name
+  - if has_feature?(:destination_icar_custom)
+    = d.attribute :icar_type, value: t(destination.icar_type, scope: 'enumerize.destination/icar.icar_type')
+    - if destination.custom_type?
+      = d.attribute :custom_icar_url
   = d.attribute :site_id
   = d.attribute :site_name
   = d.attribute :file_type, value: t(destination.file_type, scope: 'enumerize.destination/icar.file_type')

@@ -1,6 +1,6 @@
 - destination = local_assigns.fetch(:destination, Destination.new)
 
-div[x-data="{ destinationType: '#{destination.type}', host_type: '#{f.object.options['host_type'] || 'chouette'}'}"]
+div[x-data="{ destinationType: '#{destination.type}', host_type: '#{f.object.options['host_type'] || 'chouette'}', icarType: '#{destination.is_a?(Destination::Icar) ? destination.icar_type : 'production'}'}"]
   .destination
     = f.input :name
     .fields
@@ -21,6 +21,15 @@ div[x-data="{ destinationType: '#{destination.type}', host_type: '#{f.object.opt
                   template[x-if="host_type == 'custom'"]
                     div
                       = option_input f, attr, klass: child
+              - elsif attr == :icar_type && child.name == 'Destination::Icar'
+                  - if has_feature?(:destination_icar_custom)
+                    div
+                      = option_input f, attr, klass: child, input_html: { 'x-model': 'icarType' }
+              - elsif attr == :custom_icar_url && child.name == 'Destination::Icar'
+                  - if has_feature?(:destination_icar_custom)
+                    template[x-if="icarType === 'custom'"]
+                      div
+                        = option_input f, attr, klass: child
               - else
                 = option_input f, attr, klass: child
 

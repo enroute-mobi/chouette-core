@@ -22,22 +22,26 @@
     = table_builder_2 @imported_resources,
       [ \
         TableBuilderHelper::Column.new( \
-          name: t('imports.show.gtfs.filename'), \
+          key: :name,
+          name: "", \
           attribute: :name ,\
           sortable: false \
         ), \
         TableBuilderHelper::Column.new( \
-          key: :status, \
+          key: :status,
+          name: "", \
           attribute: Proc.new { |n| operation_status(n.status, verbose: true, default_status: :pending) }, \
           sortable: false \
         ),\
         TableBuilderHelper::Column.new( \
-          name: t('imports.show.table.test_results') , \
+          key: :metrics,
+          name: "" , \
           attribute: Proc.new { |n| I18n.t('import_resources.index.metrics', **n.metrics.deep_symbolize_keys) }, \
           sortable: false, \
         ), \
         TableBuilderHelper::Column.new( \
-          name: t('imports.show.table.download') , \
+          key: :download,
+          name: "" , \
           attribute: Proc.new { |n| '<i class="fa fa-download" aria-hidden="true"></i>'.html_safe }, \
           sortable: false, \
           link_to: lambda do |import_resource| \

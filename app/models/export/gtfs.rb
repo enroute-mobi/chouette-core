@@ -43,7 +43,9 @@ module Export
         FeedInfo,
 
         FareProducts,
-        FareValidities
+        FareValidities,
+
+        BookingRules
       ].each do |part_class|
         part_class.new(self).perform
       end
@@ -1444,6 +1446,37 @@ module Export
             min_transfer_time: gtfs_min_transfer_time
           }
         end
+      end
+    end
+
+    class BookingRules < Part
+      delegate :booking_arrangements, to: :export_scope
+
+      def perform
+        booking_arrangements.find_each do |booking_arrangement|
+          target.booking_rules << decorate(booking_arrangement).gtfs_attributes
+        end
+      end
+
+      class Decorator < ModelDecorator
+        def gtfs_attributes
+          {
+            booking_rule_id: gtfs_identifier,
+            booking_type: book_when,
+            prior_notice_duration_min: minimum_booking_period,
+            prior_notice_last_time: latest_booking_time,
+            prior_notice_last_day: gtfs_prior_notice_last_day,
+            message: booking_notes,
+            phone_number: phone,
+            info_url: url,
+            booking_url: booking_url
+          }
+        end
+
+        def gtfs_prior_notice_last_day
+          latest_booking_time.present? ? 1 : nil
+        end
+
       end
     end
   end

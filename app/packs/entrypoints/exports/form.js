@@ -60,7 +60,7 @@ class Store {
 
 	handleProfileOptions() {
 		return {
-			fields: Object.entries(this.profileOptions ? JSON.parse(this.profileOptions) : {}).map((kv) => { return { key: kv[0], value: kv[1] } } ),
+			fields: Object.entries(this.profileOptions || {}).map((kv) => { return { key: kv[0], value: kv[1] } } ),
 			addNewField() {
 					this.fields.push({
 							key: '',

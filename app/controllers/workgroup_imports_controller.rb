@@ -26,6 +26,12 @@ class WorkgroupImportsController < Chouette::WorkgroupController
     respond_to do |format|
       format.html do
         @workbench = default_workbench
+
+        if resource.is_a?(Import::Workbench)
+          @imported_resources = resource.children.first.resources
+          @macro_list_runs = resource.macro_list_runs
+          @control_list_runs = resource.control_list_runs
+        end
       end
       format.json do
         fragment = render_to_string(partial: "imports/#{@import.short_type}", formats: :html)

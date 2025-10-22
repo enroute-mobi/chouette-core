@@ -16,43 +16,105 @@
     - messages = @import.messages + @import.resources.flat_map(&:messages)
     = render 'shared/iev_interfaces/messages', messages: messages
 
-- if @import.children.any?
+- if @imported_resources.present?
   .col-lg-12
-    = table_builder_2 @import.children,
+    h2.mb-2 = t('imports.show.imported_resources')
+    = table_builder_2 @imported_resources,
       [ \
         TableBuilderHelper::Column.new( \
-          name: t('imports.show.referential_name'),
-          attribute: -> (import) { link_to_if(@workbench, import.name, [@workbench, import.referential]) },
-          if: -> (import) { import.referential },
-          sortable: false,
-        ),
+          key: :name,
+          name: "", \
+          attribute: :name ,\
+          sortable: false \
+        ), \
         TableBuilderHelper::Column.new( \
           key: :status,
-          attribute: lambda do |n| \
-            link_to(operation_status(n.status, verbose: true, default_status: :pending), [@parent, n]) \
-          end,
-          sortable: false,
-        ),
+          name: "", \
+          attribute: Proc.new { |n| operation_status(n.status, verbose: true, default_status: :pending) }, \
+          sortable: false \
+        ),\
         TableBuilderHelper::Column.new( \
-          name: I18n.t('imports.index.workbench_macro_list_run'),
-          attribute: lambda do |n| \
-            n.workbench_macro_list_run ? link_to_if(@parent.is_a?(Workbench), operation_status(n.workbench_macro_list_run.processed.user_status, verbose: true), [@workbench, n.workbench_macro_list_run.processed]) : '-' \
-          end,
-          sortable: false,
-        ),
+          key: :metrics,
+          name: "" , \
+          attribute: Proc.new { |n| I18n.t('import_resources.index.metrics', **n.metrics.deep_symbolize_keys) }, \
+          sortable: false, \
+        ), \
         TableBuilderHelper::Column.new( \
-          name: I18n.t('imports.index.workbench_control_list_run'),
-          attribute: lambda do |n| \
-            n.workbench_control_list_run ? link_to_if(@parent.is_a?(Workbench), operation_status(n.workbench_control_list_run.processed.user_status, verbose: true), [@workbench, n.workbench_control_list_run.processed]) : '-' \
-          end,
-          sortable: false,
-        ),
+          key: :download,
+          name: "" , \
+          attribute: Proc.new { |n| '<i class="fa fa-download" aria-hidden="true"></i>'.html_safe }, \
+          sortable: false, \
+          link_to: lambda do |import_resource| \
+            url_for([@parent, import_resource.import, import_resource, :import_messages, format: 'csv']) \
+          end \
+        ), \
+      ],
+      cls: 'table'
+
+- if @macro_list_runs.present?
+  .col-lg-12
+    h2.mb-2 = t('imports.index.workbench_macro_list_run')
+    = table_builder_2 @macro_list_runs,
+      [ \
         TableBuilderHelper::Column.new( \
-          name: I18n.t('imports.index.workgroup_control_list_run'),
-          attribute: lambda do |n| \
-            n.workgroup_control_list_run ? link_to_if(@parent.is_a?(Workbench), operation_status(n.workgroup_control_list_run.processed.user_status, verbose: true), [@workbench, n.workgroup_control_list_run.processed]) : '-' \
-          end,
-          sortable: false,
-        ),
+          key: :user_status, \
+          attribute: Proc.new { |run| operation_user_status(run) }, \
+        ), \
+        TableBuilderHelper::Column.new( \
+          key: :name, \
+          attribute: :name, \
+          link_to: lambda do |run| \
+            workbench_macro_list_run_path(@workbench, run) \
+          end \
+        ), \
+        TableBuilderHelper::Column.new( \
+          key: :started_at, \
+          attribute: Proc.new { |n| l(n.started_at, format: :short_with_time) if n.started_at }, \
+        ), \
+        TableBuilderHelper::Column.new( \
+          key: :duration, \
+          attribute: Proc.new { |object| object.ended_at.presence && object.started_at.presence && duration_in_words(object.ended_at - object.started_at)}, \
+          sortable: false, \
+        ), \
+        TableBuilderHelper::Column.new( \
+          key: :created_by, \
+          attribute: :creator, \
+          sortable: false, \
+        ) \
+      ],
+      cls: 'table'
+
+- if @control_list_runs.present?
+  .col-lg-12
+    h2.mb-2 = t('imports.index.workbench_control_list_run')
+    = table_builder_2 @control_list_runs,
+      [ \
+        TableBuilderHelper::Column.new( \
+          key: :user_status, \
+          attribute: Proc.new { |run| operation_user_status(run) }, \
+        ), \
+        TableBuilderHelper::Column.new( \
+          key: :name, \
+          attribute: Proc.new { |run| base = (run.name.presence || run.model_name.human); run.original_control_list&.shared? ? "#{base} (#{I18n.t('activerecord.models.workgroup.one')})" : base }, \
+          link_to: lambda do |run| \
+            (run.original_control_list&.shared?) ? \
+              workgroup_control_list_run_path(@workbench.workgroup, run) : \
+              workbench_control_list_run_path(@workbench, run) \
+          end \
+        ), \
+        TableBuilderHelper::Column.new( \
+          key: :started_at, \
+          attribute: Proc.new { |n| l(n.started_at, format: :short_with_time) if n.started_at }, \
+        ), \
+        TableBuilderHelper::Column.new( \
+          key: :duration, \
+          attribute: Proc.new { |object| object.ended_at.presence && object.started_at.presence && duration_in_words(object.ended_at - object.started_at)}, \
+          sortable: false, \
+        ), \
+        TableBuilderHelper::Column.new( \
+          key: :created_by, \
+          attribute: :creator, \
+          sortable: false, \
+        ) \
       ],
       cls: 'table'

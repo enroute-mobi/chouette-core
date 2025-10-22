@@ -42,6 +42,8 @@ fr:
       netex:
         table_title: "État des fichiers analysés"
         table_explanation: "Dans le cas ou le(s) fichiers calendriers.xml et/ou commun.xml sont dans un état non importé, alors tous les fichiers lignes sont automatiquement dans un état non traité."
+      imported_resources: "Ressources importées"
+      resource: "Ressource"
       table:
         test_results: Résultats des tests
         download: Téléchargement

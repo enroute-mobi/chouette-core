@@ -42,6 +42,8 @@ en:
       netex:
         table_title: "Status of analyzed files"
         table_explanation: "When calendriers.xml and/or commun.xml are not imported, then all lines file are not processed."
+      imported_resources: "Imported Resources"
+      resource: "Resource"
       table:
         test_results: Test results
         download: Download

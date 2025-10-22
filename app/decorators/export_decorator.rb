@@ -50,6 +50,8 @@ class ExportDecorator < Af83::Decorator
   end
 
   define_instance_method :display_selected_lines_to_export do
+    return '-' unless referential
+
     object.workgroup.line_referential.lines.where(
       id: Export::Scope::Options.new(referential, setup, id).line_ids
     ).limit(15).pluck(:name).join(', ')

@@ -1016,7 +1016,7 @@ module Export
           return position unless stop_sequence_from_one
 
           position + 1
-        end 
+        end
 
         def shape_dist_traveled
           return unless journey_pattern_id && stop_point_id
@@ -1083,16 +1083,18 @@ module Export
           code_provider.stop_areas.code stop_area_id
         end
 
-        def flexible?
-          is_flexible
-        end
-
         def drop_off_type
-          for_alighting == 'normal' ? 2 : 0
+          return 1 if for_alighting == 'forbidden'
+          if for_alighting == 'normal'
+            is_flexible ? 2 : 0
+          end
         end
 
         def pickup_type
-          for_boarding == 'normal' ? 2 : 0
+          return 1 if for_boarding == 'forbidden'
+          if for_boarding == 'normal'
+            is_flexible ? 2 : 0
+          end
         end
 
         def gtfs_attributes
@@ -1105,7 +1107,7 @@ module Export
             drop_off_type: drop_off_type,
             shape_dist_traveled: shape_dist_traveled
           }.tap do |attributes|
-            if flexible?
+            if is_flexible
               attributes[:start_pickup_drop_off_window] = stop_time_start_pickup_drop_off_window
               attributes[:end_pickup_drop_off_window] = stop_time_end_pickup_drop_off_window
               attributes[:location_group_id] = location_group_id

@@ -22,4 +22,6 @@ class ChouetteSchema < GraphQL::Schema
   lazy_resolve(LazyLoading::Children, :children)
   lazy_resolve(LazyLoading::Company, :company)
   lazy_resolve(LazyLoading::Network, :network)
+  lazy_resolve(LazyLoading::Documents, :documents)
+  lazy_resolve(LazyLoading::DocumentType, :document_type)
 end

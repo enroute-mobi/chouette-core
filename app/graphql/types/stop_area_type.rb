@@ -2,6 +2,7 @@ module Types
   class StopAreaType < Types::BaseObject
     include Types::WithCodes
     include Types::WithReferent
+    include Types::WithDocuments
 
     description "A Chouette StopArea"
 

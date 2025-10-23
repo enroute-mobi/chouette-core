@@ -235,7 +235,7 @@ module Chouette
         attr_accessor :id, :vehicle_journey_id, :stop_point_id, :stop_area_id
         attr_accessor :arrival_time, :departure_time, :departure_day_offset, :arrival_day_offset
         attr_accessor :earliest_departure_time_of_day, :latest_arrival_time_of_day
-        attr_accessor :checksum, :checksum_source, :is_flexible, :location_group_id
+        attr_accessor :checksum, :checksum_source
         attr_accessor :time_zone, :position
 
         def initialize(attributes = {})
@@ -253,8 +253,6 @@ module Chouette
           @stop_area_id = attributes['stop_area_id']
           @checksum = attributes['checksum']
           @checksum_source = attributes['checksum_source']
-          @is_flexible = attributes['is_flexible']
-          @location_group_id = attributes['location_group_id']
           @time_zone = attributes['time_zone']
           @earliest_departure_time_of_day_seconds = attributes['earliest_departure_time_of_day']
           @latest_arrival_time_of_day_seconds = attributes['latest_arrival_time_of_day']

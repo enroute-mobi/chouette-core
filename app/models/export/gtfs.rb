@@ -1023,16 +1023,20 @@ module Export
           :departure_day_offset,
           :arrival_day_offset,
           :vehicle_journey_id,
+          :earliest_departure_time_of_day,
+          :latest_arrival_time_of_day,
           'vehicle_journey_at_stops.stop_area_id AS stop_area_id',
           'stop_points.stop_area_id AS parent_stop_area_id',
           'stop_points.position AS position',
           'stop_points.for_boarding AS for_boarding',
           'stop_points.for_alighting AS for_alighting',
           'stop_points.id AS stop_point_id',
+          'stop_points.flexible AS is_flexible',
+          'stop_areas.registration_number AS location_group_id',
           'vehicle_journeys.journey_pattern_id AS journey_pattern_id'
         ]
 
-        export_scope.vehicle_journey_at_stops.joins(:stop_point, :vehicle_journey).select(*attributes)
+        export_scope.vehicle_journey_at_stops.joins(:vehicle_journey, stop_point: :stop_area).select(*attributes)
       end
 
       def decorator_attributes
@@ -1049,7 +1053,7 @@ module Export
           return position unless stop_sequence_from_one
 
           position + 1
-        end 
+        end
 
         def shape_dist_traveled
           return unless journey_pattern_id && stop_point_id
@@ -1088,6 +1092,26 @@ module Export
           GTFS::Time.create(arrival_local_time_of_day).to_s if arrival_local_time_of_day
         end
 
+        def earliest_departure_local_time_of_day
+          @earliest_departure_local_time_of_day ||= earliest_departure_time_of_day&.with_zone(time_zone)
+        end
+
+        def latest_arrival_local_time_of_day
+          @latest_arrival_local_time_of_day ||= latest_arrival_time_of_day&.with_zone(time_zone)
+        end
+
+        def stop_time_start_pickup_drop_off_window
+          @stop_time_start_pickup_drop_off_window ||= if earliest_departure_local_time_of_day
+            GTFS::Time.create(earliest_departure_local_time_of_day).to_s
+          end
+        end
+
+        def stop_time_end_pickup_drop_off_window
+          @stop_time_end_pickup_drop_off_window ||= if latest_arrival_local_time_of_day
+            GTFS::Time.create(latest_arrival_local_time_of_day).to_s
+          end
+        end
+
         def stop_area_id
           super || parent_stop_area_id
         end
@@ -1096,29 +1120,36 @@ module Export
           code_provider.stop_areas.code stop_area_id
         end
 
-        def flexible?
-          index&.flexible?(vehicle_journey_id)
-        end
-
         def drop_off_type
           return 1 if for_alighting == 'forbidden'
-          flexible? ? 2 : 0
+          if for_alighting == 'normal'
+            is_flexible ? 2 : 0
+          end
         end
 
         def pickup_type
           return 1 if for_boarding == 'forbidden'
-          flexible? ? 2 : 0
+          if for_boarding == 'normal'
+            is_flexible ? 2 : 0
+          end
         end
 
         def gtfs_attributes
-          { departure_time: stop_time_departure_time,
+          {
+            departure_time: stop_time_departure_time,
             arrival_time: stop_time_arrival_time,
             stop_id: stop_time_stop_id,
             stop_sequence: gtfs_stop_sequence,
             pickup_type: pickup_type,
             drop_off_type: drop_off_type,
             shape_dist_traveled: shape_dist_traveled
-          }
+          }.tap do |attributes|
+            if is_flexible
+              attributes[:start_pickup_drop_off_window] = stop_time_start_pickup_drop_off_window
+              attributes[:end_pickup_drop_off_window] = stop_time_end_pickup_drop_off_window
+              attributes[:location_group_id] = location_group_id
+            end
+          end
         end
       end
     end

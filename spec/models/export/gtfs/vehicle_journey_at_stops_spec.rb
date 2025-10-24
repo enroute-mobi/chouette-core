@@ -169,13 +169,13 @@ RSpec.describe Export::Gtfs::VehicleJourneyAtStops::Decorator do
     end
 
     context 'when for_alighting is not forbidden' do
-      before { allow(light_vehicle_journey_at_stop).to receive(:for_alighting).and_return(nil) }
+      before { allow(light_vehicle_journey_at_stop).to receive(:for_alighting).and_return("normal") }
+      before { allow(decorator).to receive(:is_flexible).and_return(false) }
 
       it { is_expected.to be_zero }
 
       context 'when the associated Line is flexible' do
-        before { allow(decorator).to receive(:flexible?).and_return(true) }
-
+        before { allow(decorator).to receive(:is_flexible).and_return(true) }
         it { is_expected.to eq(2) }
       end
     end
@@ -191,12 +191,13 @@ RSpec.describe Export::Gtfs::VehicleJourneyAtStops::Decorator do
     end
 
     context 'when for_boarding is not forbidden' do
-      before { allow(light_vehicle_journey_at_stop).to receive(:for_boarding).and_return(nil) }
+      before { allow(light_vehicle_journey_at_stop).to receive(:for_boarding).and_return('normal') }
+      before { allow(decorator).to receive(:is_flexible).and_return(false) }
 
       it { is_expected.to be_zero }
 
       context 'when the associated Line is flexible' do
-        before { allow(decorator).to receive(:flexible?).and_return(true) }
+        before { allow(decorator).to receive(:is_flexible).and_return(true) }
 
         it { is_expected.to eq(2) }
       end
@@ -224,6 +225,7 @@ RSpec.describe Export::Gtfs::VehicleJourneyAtStops::Decorator do
       allow(decorator).to receive(:pickup_type).and_return(0)
       allow(decorator).to receive(:drop_off_type).and_return(0)
       allow(decorator).to receive(:shape_dist_traveled).and_return(100)
+      allow(decorator).to receive(:is_flexible).and_return(false)
     end
 
     %i[departure_time arrival_time stop_id].each do |stop_time_attribute|

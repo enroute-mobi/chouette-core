@@ -52,6 +52,8 @@ en:
         processable_type: Processing Type
         processable_id: Processing
         operation_step: Operation Step
+        required_tag_ids: Required tags
+        excluded_tag_ids: Excluded tags
       processing_rule/workgroup:
         processable_type: Processing Type
         processable_id: Processing
@@ -61,6 +63,15 @@ en:
         workgroup: Workgroup
         target_workbenches: Target workbench(es)
         excluded_workbenches: Excluded workbench(es)
+    errors:
+      models:
+        processing_rule/workbench:
+          attributes:
+            required_tag_ids:
+              required_and_excluded_tags_cannot_overlap: "Required and excluded tags cannot overlap"
+            excluded_tag_ids:
+              required_and_excluded_tags_cannot_overlap: "Required and excluded tags cannot overlap"
+
   simple_form:
     hints:
       processing_rule:

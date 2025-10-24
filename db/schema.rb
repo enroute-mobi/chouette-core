@@ -1604,6 +1604,7 @@ ActiveRecord::Schema[7.2].define(version: 2025_09_29_122802) do
     t.bigint "taggable_id", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.string "for_association"
     t.index ["tag_id"], name: "index_taggings_on_tag_id"
     t.index ["taggable_type", "taggable_id", "tag_id"], name: "index_taggings_on_taggable_type_and_taggable_id_and_tag_id", unique: true
   end

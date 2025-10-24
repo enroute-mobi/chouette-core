@@ -44,7 +44,9 @@ class ProcessingRulesController < Chouette::WorkbenchController
       :processable_type,
       :control_list_id,
       :macro_list_id,
-      :operation_step
+      :operation_step,
+      required_tag_ids: [],
+      excluded_tag_ids: []
     )
   end
 end

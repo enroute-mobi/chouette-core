@@ -53,8 +53,8 @@ fr:
         processable_type: Type de traitement
         processable_id: Traitement
         operation_step: Étape
-        required_tags: Tags requis
-        excluded_tags: Tags exclus
+        required_tag_ids: Tags requis
+        excluded_tag_ids: Tags exclus
       processing_rule/workgroup:
         processable_type: Type de traitement
         processable_id: Traitement
@@ -68,9 +68,9 @@ fr:
       models:
         processing_rule/workbench:
           attributes:
-            required_tags:
+            required_tag_ids:
               required_and_excluded_tags_cannot_overlap: "Les tags requis et les tags exclus ne peuvent pas se chevaucher"
-            excluded_tags:
+            excluded_tag_ids:
               required_and_excluded_tags_cannot_overlap: "Les tags requis et les tags exclus ne peuvent pas se chevaucher"
   simple_form:
     hints:

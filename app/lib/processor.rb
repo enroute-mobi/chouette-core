@@ -71,7 +71,7 @@ class Processor
   def workbench_processing_rules(operation_step)
     return [] unless workbench.present?
 
-    workbench.processing_rules.compatible_with_operation_via_tags(workbench, operation_step, tag_ids)
+    workbench.processing_rules.compatible_with_operation_via_tags(operation_step, tag_ids)
   end
 
   # Retrieve all processing rules for a workgroup

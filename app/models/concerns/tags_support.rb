@@ -4,7 +4,7 @@ module TagsSupport
   extend ActiveSupport::Concern
 
   included do
-    has_many :taggings, as: :taggable, class_name: 'Tagging', dependent: :destroy
+    has_many :taggings, as: :taggable, dependent: :destroy
     has_many :tags, through: :taggings
 
     accepts_nested_attributes_for :taggings, allow_destroy: true
@@ -26,7 +26,7 @@ module TagsSupport
     private
 
     def association_name_taggings(name)
-      [name, 'taggings'].compact.join('_').to_sym
+      :"#{name}_taggings"
     end
   end
 end

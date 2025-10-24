@@ -16,14 +16,14 @@
               = f.label :processable_type_macrolist, ProcessingRule::Workbench.processable_type.find_value("Macro::List").text, class: 'ml-4 mb-0'
             = f.input :macro_list_id, as: :select, label: false, wrapper: false, collection: @processing_rule.candidate_macro_lists.order(:name), input_html: { "x-bind:disabled" => "processable_type != 'Macro::List' || isShowing == 'after_merge'" }
 
-          = f.input :required_tags,
+          = f.input :required_tag_ids,
             as: :tom_select,
             collection: @processing_rule.candidate_tags.order(:name).map { |tag| { id: tag.id, text: tag.name } },
             input_html: { multiple: true },
             selected: @processing_rule.required_tags.pluck(:id),
             allow_blank: false
 
-          = f.input :excluded_tags,
+          = f.input :excluded_tag_ids,
             as: :tom_select,
             collection: @processing_rule.candidate_tags.order(:name).map { |tag| { id: tag.id, text: tag.name } },
             input_html: { multiple: true },

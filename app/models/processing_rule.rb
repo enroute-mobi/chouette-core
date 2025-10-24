@@ -103,21 +103,20 @@ module ProcessingRule
       workbench.tags
     end
 
-    def self.compatible_with_operation_via_tags(workbench, operation_step, tag_ids)
-      CompatibleWithOperationViaTags.new(workbench, operation_step, tag_ids).query
+    def self.compatible_with_operation_via_tags(operation_step, tag_ids)
+      CompatibleWithOperationViaTags.new(self, operation_step, tag_ids).query
     end
 
     class CompatibleWithOperationViaTags < ActiveRecord::Relation
-      def initialize(workbench, operation_step, tag_ids)
-        @workbench = workbench
+      def initialize(scope, operation_step, tag_ids)
+        @scope = scope
         @operation_step = operation_step
         @tag_ids = tag_ids
       end
-      attr_reader :workbench, :operation_step, :tag_ids
+      attr_reader :scope, :operation_step, :tag_ids
 
       def query
-        workbench
-          .processing_rules
+        scope
           .left_joins(:taggings)
           .where(operation_step: operation_step)
           .order(processable_type: :desc)
@@ -128,17 +127,17 @@ module ProcessingRule
 
       def required_tags_condition
         <<~SQL
-          ((array_agg(taggings.tag_id) FILTER (WHERE taggings.for_association = 'required_tags'))::int[] && ARRAY[?]::int[])
-          OR ((array_agg(taggings.tag_id) FILTER (WHERE taggings.for_association = 'required_tags')) IS NULL)
+          ((array_agg(taggings.tag_id) FILTER (WHERE taggings.for_association = 'required_tag_ids'))::int[] && ARRAY[?]::int[])
+          OR ((array_agg(taggings.tag_id) FILTER (WHERE taggings.for_association = 'required_tag_ids')) IS NULL)
         SQL
       end
 
       def excluded_tags_condition
         <<~SQL
           NOT(
-            (array_agg(taggings.tag_id) FILTER (WHERE taggings.for_association = 'excluded_tags'))::int[] && ARRAY[?]::int[]
+            (array_agg(taggings.tag_id) FILTER (WHERE taggings.for_association = 'excluded_tag_ids'))::int[] && ARRAY[?]::int[]
           )
-          OR ((array_agg(taggings.tag_id) FILTER (WHERE taggings.for_association = 'excluded_tags')) IS NULL)
+          OR ((array_agg(taggings.tag_id) FILTER (WHERE taggings.for_association = 'excluded_tag_ids')) IS NULL)
         SQL
       end
     end
@@ -147,8 +146,8 @@ module ProcessingRule
 
     def no_tag_overlap
       return unless (required_tags_taggings.map(&:tag_id) & excluded_tags_taggings.map(&:tag_id)).any?
-
-      errors.add(:excluded_tags, :required_and_excluded_tags_cannot_overlap)
+      errors.add(:required_tag_ids, :required_and_excluded_tags_cannot_overlap)
+      errors.add(:excluded_tag_ids, :required_and_excluded_tags_cannot_overlap)
     end
 
     %i[excluded_tags required_tags].each do |association|

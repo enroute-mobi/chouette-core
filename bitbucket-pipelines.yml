@@ -3,6 +3,9 @@ definitions:
   services:
     docker:
       memory: 512
+    docker-medium:
+      memory: 2048
+      type: docker
     docker-large:
       memory: 15360
       type: docker
@@ -110,8 +113,7 @@ definitions:
         artifacts:
           - parallel_tests/*
         services:
-          - docker
-          - postgres
+          - docker-medium
           - datadog-agent
 
     - step: &rspec-tests-1
@@ -288,27 +290,6 @@ pipelines:
             - postgres
 
   default:
-    - step:
-        name: Test docker
-        image:
-          name: us-east1-docker.pkg.dev/enroute-interne/enroute-interne/enroute-cloud-sdk:latest
-          username: _json_key
-          password: "$GCLOUD_API_KEYFILE"
-        runs-on:
-          - self.hosted
-          - build
-        script:
-          - printenv
-          - docker -H tcp://172.17.0.1 ps
-
-          - RUNNER_UUID=$(echo "${BITBUCKET_SSH_KEY_FILE}" | sed 's@/var/lib/runner/\(.*\)/ssh/id_rsa@\1@')
-          - RAW_BITBUCKET_STEP_UUID=$(echo "${BITBUCKET_STEP_UUID}" | sed -e 's/{//' -e 's/}//')
-          - DOCKER_CONTAINER_NAME="${RUNNER_UUID}_${RAW_BITBUCKET_STEP_UUID}_build"
-
-          - docker -H tcp://172.17.0.1 inspect ${DOCKER_CONTAINER_NAME}
-          - docker -H tcp://172.17.0.1 update --cpu-quota=-1 ${DOCKER_CONTAINER_NAME}
-          - docker -H tcp://172.17.0.1 inspect ${DOCKER_CONTAINER_NAME}
-
     - step: *setup
     - step: *build-assets
     - step: *rspec-tests

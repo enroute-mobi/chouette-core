@@ -83,10 +83,20 @@ definitions:
           - build
         max-time: 30
         script:
+          - RUNNER_UUID=$(echo "${BITBUCKET_SSH_KEY_FILE}" | sed 's@/var/lib/runner/\(.*\)/ssh/id_rsa@\1@')
+          - RAW_BITBUCKET_STEP_UUID=$(echo "${BITBUCKET_STEP_UUID}" | sed -e 's/{//' -e 's/}//')
+          - DOCKER_CONTAINER_NAME="${RUNNER_UUID}_${RAW_BITBUCKET_STEP_UUID}_build"
+
+          - docker -H tcp://172.17.0.1 inspect ${DOCKER_CONTAINER_NAME}
+          - docker -H tcp://172.17.0.1 update --cpu-quota=-1 ${DOCKER_CONTAINER_NAME}
+          - docker -H tcp://172.17.0.1 inspect ${DOCKER_CONTAINER_NAME}
+          - export PARALLEL_TEST_PROCESSORS=8
+
           - eval "$(build.sh bitbucket::env)"
           - build.sh bundler::dependencies
           - sed -i -n '/^spec/ p' cache/runtime.log
-          - docker run --name postgres -e POSTGRES_PASSWORD=chouette -e  -v /opt/atlassian/pipelines/agent/build/postgresql:/var/run/postgresql -d postgres
+          # - docker run --name postgres -e POSTGRES_PASSWORD=chouette -e  -v /opt/atlassian/pipelines/agent/build/postgresql:/var/run/postgresql -d postgres
+
           - bundle exec rake ci:setup ci:spec
           - build.sh codacy::report::partial
         caches:
@@ -95,6 +105,7 @@ definitions:
           - parallel_tests/*
         services:
           - docker
+          - postgres
           - datadog-agent
 
     - step: &rspec-tests-1
@@ -288,21 +299,13 @@ pipelines:
           - RAW_BITBUCKET_STEP_UUID=$(echo "${BITBUCKET_STEP_UUID}" | sed -e 's/{//' -e 's/}//')
           - DOCKER_CONTAINER_NAME="${RUNNER_UUID}_${RAW_BITBUCKET_STEP_UUID}_build"
 
-          - nproc
           - docker -H tcp://172.17.0.1 inspect ${DOCKER_CONTAINER_NAME}
           - docker -H tcp://172.17.0.1 update --cpu-quota=-1 ${DOCKER_CONTAINER_NAME}
           - docker -H tcp://172.17.0.1 inspect ${DOCKER_CONTAINER_NAME}
-          - nproc
-
-          - sleep 300
 
     - step: *setup
     - step: *build-assets
-    - parallel:
-        - step: *rspec-tests
-        - step: *rspec-tests
-        - step: *rspec-tests
-        - step: *rspec-tests
+    - step: *rspec-tests
     - step: *rebuild-runtime-log
     - parallel:
         - step: *jest-tests

@@ -24,7 +24,7 @@ module LazyLoading
       else
         # The record hasn't been loaded yet, so hit the database with all pending IDs
         pending_ids = @lazy_state[:pending_ids].flat_map { |type, ids| ids.map { |id| [type, id] } }
-        document_memberships = ::DocumentMembership.where([:documentable_type, :documentable_id] => pending_ids)
+        document_memberships = ::DocumentMembership.where(%i[documentable_type documentable_id] => pending_ids)
                                                    .includes(:document)
         @lazy_state[:loaded_ids] = document_memberships.group_by(&:documentable_type)
                                                        .transform_values do |dms|

@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class ChouetteSchema < GraphQL::Schema
   trace_with(
     GraphQL::Tracing::DataDogTrace,

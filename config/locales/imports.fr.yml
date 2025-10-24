@@ -48,7 +48,7 @@ fr:
         test_results: Résultats des tests
         download: Téléchargement
       gtfs:
-        filename: Fichier
+        filename: Ressource
     severities:
       info: "Information"
       uncheck: "Non testé"

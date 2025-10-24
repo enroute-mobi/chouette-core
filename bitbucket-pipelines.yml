@@ -95,10 +95,16 @@ definitions:
           - eval "$(build.sh bitbucket::env)"
           - build.sh bundler::dependencies
           - sed -i -n '/^spec/ p' cache/runtime.log
-          # - docker run --name postgres -e POSTGRES_PASSWORD=chouette -e  -v /opt/atlassian/pipelines/agent/build/postgresql:/var/run/postgresql -d postgres
+          - echo -n $GCLOUD_API_KEYFILE | docker login -u _json_key --password-stdin us-east1-docker.pkg.dev
+          - docker run -e POSTGRES_PASSWORD=dummy -v /opt/atlassian/pipelines/agent/build/postgresql:/var/run/postgresql -d us-east1-docker.pkg.dev/enroute-interne/enroute-interne/enroute-postgresql:dev
+          - export RAILS_TEST_DB_HOST=/opt/atlassian/pipelines/agent/build/postgresql
+          - export RAILS_DB_USER=postgres
+          - export RAILS_DB_PASSWORD=
 
           - bundle exec rake ci:setup ci:spec
-          - build.sh codacy::report::partial
+          - build.sh codacy::report
+
+          - grep ^spec/ parallel_tests/runtime*.log > cache/runtime.log
         caches:
           - build-cache
         artifacts:
@@ -306,7 +312,6 @@ pipelines:
     - step: *setup
     - step: *build-assets
     - step: *rspec-tests
-    - step: *rebuild-runtime-log
     - parallel:
         - step: *jest-tests
         - step: *bundle-audit

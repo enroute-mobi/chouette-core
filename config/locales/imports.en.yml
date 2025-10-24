@@ -48,7 +48,7 @@ en:
         test_results: Test results
         download: Download
       gtfs:
-        filename: File
+        filename: Resource
     severities:
       info: "Information"
       uncheck: "Unchecked"

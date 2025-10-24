@@ -22,26 +22,22 @@
     = table_builder_2 @imported_resources,
       [ \
         TableBuilderHelper::Column.new( \
-          key: :name,
-          name: "", \
+          name: t('imports.show.gtfs.filename'), \
           attribute: :name ,\
           sortable: false \
         ), \
         TableBuilderHelper::Column.new( \
-          key: :status,
-          name: "", \
+          key: :status, \
           attribute: Proc.new { |n| operation_status(n.status, verbose: true, default_status: :pending) }, \
           sortable: false \
         ),\
         TableBuilderHelper::Column.new( \
-          key: :metrics,
-          name: "" , \
+          name: t('imports.show.table.test_results') , \
           attribute: Proc.new { |n| I18n.t('import_resources.index.metrics', **n.metrics.deep_symbolize_keys) }, \
           sortable: false, \
         ), \
         TableBuilderHelper::Column.new( \
-          key: :download,
-          name: "" , \
+          name: t('imports.show.table.download') , \
           attribute: Proc.new { |n| '<i class="fa fa-download" aria-hidden="true"></i>'.html_safe }, \
           sortable: false, \
           link_to: lambda do |import_resource| \
@@ -63,9 +59,9 @@
         TableBuilderHelper::Column.new( \
           key: :name, \
           attribute: :name, \
-          link_to: lambda do |run| \
+          link_to: @parent.is_a?(Workbench) ? lambda do |run| \
             workbench_macro_list_run_path(@workbench, run) \
-          end \
+          end : nil \
         ), \
         TableBuilderHelper::Column.new( \
           key: :started_at, \

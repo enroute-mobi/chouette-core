@@ -1,3 +1,5 @@
+- candidate_tags = @processing_rule.candidate_tags.order(:name).map { |tag| { id: tag.id, text: tag.name } }
+
 = simple_form_for [@workbench, @processing_rule], as: 'processing_rule', html: { class: 'tailwind-form', id: 'processing_rule_form' }, wrapper: :horizontal_form_tailwind  do |f|
   .row
     .col-lg-12 x-data="{ processable_type: '#{@processing_rule.processable_type}', isShowing: true }"
@@ -18,16 +20,14 @@
 
           = f.input :required_tag_ids,
             as: :tom_select,
-            collection: @processing_rule.candidate_tags.order(:name).map { |tag| { id: tag.id, text: tag.name } },
+            collection: candidate_tags,
             input_html: { multiple: true },
-            selected: @processing_rule.required_tags.pluck(:id),
             allow_blank: false
 
           = f.input :excluded_tag_ids,
             as: :tom_select,
-            collection: @processing_rule.candidate_tags.order(:name).map { |tag| { id: tag.id, text: tag.name } },
+            collection: candidate_tags,
             input_html: { multiple: true },
-            selected: @processing_rule.excluded_tags.pluck(:id),
             allow_blank: false
 
   = cancel_button

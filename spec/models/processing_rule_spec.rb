@@ -55,8 +55,8 @@ RSpec.describe ProcessingRule::Workbench, type: :model do
         workbench.processing_rules.build(
           operation_step: 'after_import',
           processable: macro_list,
-          required_tags_taggings_attributes: [{ tag_id: tag_1.id }, { tag_id: tag_2.id }],
-          excluded_tags_taggings_attributes: [{ tag_id: tag_1.id }]
+          required_tag_ids: [tag_1.id, tag_2.id],
+          excluded_tag_ids: [tag_1.id]
         )
       end
 
@@ -75,8 +75,8 @@ RSpec.describe ProcessingRule::Workbench, type: :model do
         workbench.processing_rules.build(
           operation_step: 'after_import',
           processable: macro_list,
-          required_tags_taggings_attributes: [{ tag_id: tag_1.id }, { tag_id: tag_2.id }],
-          excluded_tags_taggings_attributes: [{ tag_id: tag_3.id }]
+          required_tag_ids: [tag_1.id, tag_2.id],
+          excluded_tag_ids: [tag_3.id]
         )
       end
 

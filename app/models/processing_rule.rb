@@ -145,7 +145,8 @@ module ProcessingRule
     private
 
     def no_tag_overlap
-      return unless (required_tags_taggings.map(&:tag_id) & excluded_tags_taggings.map(&:tag_id)).any?
+      return unless (required_tag_ids & excluded_tag_ids).any?
+
       errors.add(:required_tag_ids, :required_and_excluded_tags_cannot_overlap)
       errors.add(:excluded_tag_ids, :required_and_excluded_tags_cannot_overlap)
     end

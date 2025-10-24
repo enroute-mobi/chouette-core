@@ -85,6 +85,7 @@ definitions:
         script:
           - eval "$(build.sh bitbucket::env)"
           - build.sh bundler::dependencies
+          - cat cache/runtime.log
           - bundle exec rake ci:setup ci:spec
           - build.sh codacy::report::partial
         caches:

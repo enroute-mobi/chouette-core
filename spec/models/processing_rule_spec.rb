@@ -64,7 +64,8 @@ RSpec.describe ProcessingRule::Workbench, type: :model do
         expect(subject).to be_invalid
 
         I18n.with_locale(:en) do
-          expect(subject.errors[:excluded_tags]).to include('Required and excluded tags cannot overlap')
+          expect(subject.errors[:excluded_tag_ids]).to include('Required and excluded tags cannot overlap')
+          expect(subject.errors[:required_tag_ids]).to include('Required and excluded tags cannot overlap')
         end
       end
     end

@@ -198,7 +198,7 @@ definitions:
           username: _json_key
           password: "$GCLOUD_API_KEYFILE"
         script:
-          - cat parallel_tests/runtime*.log > cache/runtime.log
+          - grep spec/ parallel_tests/runtime*.log > cache/runtime.log
           - build.sh codacy::report::final
         caches:
           - build-cache

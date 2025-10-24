@@ -1,3 +1,4 @@
+---
 definitions:
   services:
     docker:
@@ -54,6 +55,9 @@ definitions:
           name: us-east1-docker.pkg.dev/enroute-interne/enroute-interne/enroute-ruby:3.4-dev
           username: _json_key
           password: "$GCLOUD_API_KEYFILE"
+        runs-on:
+          - self.hosted
+          - build
         caches:
           - assets
           - assets-cache
@@ -74,6 +78,9 @@ definitions:
           username: _json_key
           password: "$GCLOUD_API_KEYFILE"
         size: 4x
+        runs-on:
+          - self.hosted
+          - build
         max-time: 30
         script:
           - eval "$(build.sh bitbucket::env)"
@@ -95,6 +102,9 @@ definitions:
           username: _json_key
           password: "$GCLOUD_API_KEYFILE"
         size: 4x
+        runs-on:
+          - self.hosted
+          - build
         max-time: 30
         script:
           - eval "$(build.sh bitbucket::env)"
@@ -116,6 +126,9 @@ definitions:
           username: _json_key
           password: "$GCLOUD_API_KEYFILE"
         size: 4x
+        runs-on:
+          - self.hosted
+          - build
         max-time: 30
         script:
           - eval "$(build.sh bitbucket::env)"
@@ -137,6 +150,9 @@ definitions:
           username: _json_key
           password: "$GCLOUD_API_KEYFILE"
         size: 4x
+        runs-on:
+          - self.hosted
+          - build
         max-time: 30
         script:
           - eval "$(build.sh bitbucket::env)"
@@ -158,6 +174,9 @@ definitions:
           username: _json_key
           password: "$GCLOUD_API_KEYFILE"
         size: 4x
+        runs-on:
+          - self.hosted
+          - build
         max-time: 30
         script:
           - eval "$(build.sh bitbucket::env)"
@@ -211,6 +230,9 @@ definitions:
 
     - step: &build-docker
         name: Build Docker
+        runs-on:
+          - self.hosted
+          - build
         size: 4x
         image:
           name: us-east1-docker.pkg.dev/enroute-interne/enroute-interne/enroute-cloud-sdk:latest
@@ -226,7 +248,7 @@ definitions:
 
 pipelines:
   custom:
-    gems-update: # Merge ci-master from chouette-core
+    gems-update:  # Merge ci-master from chouette-core
       - step:
           name: Update gems
           image:
@@ -250,14 +272,14 @@ pipelines:
     - step: *setup
     - step: *build-assets
     - parallel:
-      - step: *rspec-tests
-      - step: *rspec-tests
-      - step: *rspec-tests
-      - step: *rspec-tests
+        - step: *rspec-tests
+        - step: *rspec-tests
+        - step: *rspec-tests
+        - step: *rspec-tests
     - step: *rebuild-runtime-log
     - parallel:
-      - step: *jest-tests
-      - step: *bundle-audit
+        - step: *jest-tests
+        - step: *bundle-audit
 
   branches:
     master:
@@ -305,9 +327,9 @@ pipelines:
           artifacts:
             download: false
           image:
-              name: europe-west1-docker.pkg.dev/enroute-interne/enroute-interne/enroute-cloud-sdk:latest
-              username: _json_key
-              password: "$GCLOUD_API_KEYFILE"
+            name: europe-west1-docker.pkg.dev/enroute-interne/enroute-interne/enroute-cloud-sdk:latest
+            username: _json_key
+            password: "$GCLOUD_API_KEYFILE"
           deployment: test
           runs-on:
             - self.hosted

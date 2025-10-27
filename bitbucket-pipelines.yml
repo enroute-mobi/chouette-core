@@ -4,7 +4,7 @@ definitions:
     docker:
       memory: 512
     docker-medium:
-      memory: 2048
+      memory: 4096
       type: docker
     docker-large:
       memory: 15360

@@ -98,7 +98,9 @@ definitions:
           - build.sh bundler::dependencies
           - sed -i -n '/^spec/ p' cache/runtime.log
           - echo -n $GCLOUD_API_KEYFILE | docker login -u _json_key --password-stdin us-east1-docker.pkg.dev
-          - docker run -e POSTGRES_PASSWORD=dummy -v /opt/atlassian/pipelines/agent/build/postgresql:/var/run/postgresql -d us-east1-docker.pkg.dev/enroute-interne/enroute-interne/enroute-postgresql:dev
+
+          - docker run -e POSTGRES_PASSWORD=dummy --mount type=tmpfs,destination=/var/lib/postgresql,tmpfs-size=34359738368 -v /opt/atlassian/pipelines/agent/build/postgresql:/var/run/postgresql -d us-east1-docker.pkg.dev/enroute-interne/enroute-interne/enroute-postgresql:dev -c effective_cache_size=8092MB -c autovacuum=off -c max_wal_size=20GB -c max_locks_per_transaction=2048
+
           - export RAILS_TEST_DB_HOST=/opt/atlassian/pipelines/agent/build/postgresql
           - export RAILS_DB_USER=postgres
           - export RAILS_DB_PASSWORD=

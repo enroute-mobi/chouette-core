@@ -19,7 +19,8 @@ namespace :ci do
   task :setup do
     if parallel_tests?
       command = use_schema? ? "parallel:setup" : "parallel:create parallel:migrate"
-      sh "RAILS_ENV=test rake #{command}"
+      redirect = " > /dev/null" if quiet?
+      sh "RAILS_ENV=test rake #{command}#{redirect}"
     else
       sh "RAILS_ENV=test rake db:drop db:create db:migrate"
     end
@@ -97,7 +98,7 @@ namespace :ci do
 
       parallel_specs_command = "parallel_test spec -t rspec"
 
-      runtime_log = 'parallel_tests/runtime.log'
+      runtime_log = ENV.fetch('PARALLEL_RUNTIME_LOG', 'parallel_tests/runtime.log') 
 
       if ENV['BITBUCKET_PARALLEL_STEP_COUNT']
         step_count = ENV['BITBUCKET_PARALLEL_STEP_COUNT'].to_i
@@ -118,7 +119,8 @@ namespace :ci do
         parallel_specs_command += " -n #{group_count} --only-group #{group_selection.join(',')}"
       end
 
-      parallel_specs_command += ' --runtime-log cache/runtime.log' if File.exist? 'cache/runtime.log'
+      read_runtime_log = ENV.fetch('PARALLEL_RUNTIME_LOG', 'cache/runtime.log')
+      parallel_specs_command += " --runtime-log #{read_runtime_log}" if File.exist?(read_runtime_log) 
 
       parallel_test_options = '-r spec_helper '
       parallel_test_options += test_options(xml_output: 'parallel-tests<%= ENV["TEST_ENV_NUMBER"] %>')
@@ -134,8 +136,10 @@ namespace :ci do
       begin
         sh parallel_specs_command
       ensure
-        sh "cat #{runtime_log} | grep '^spec' | sort -t: -k2 -n -r -" if File.exist?(runtime_log)
-        sh "cat #{summary_log}" if File.exist?(summary_log)
+        unless quiet?
+          sh "cat #{runtime_log} | grep '^spec' | sort -t: -k2 -n -r -" if File.exist?(runtime_log)
+          sh "cat #{summary_log}" if File.exist?(summary_log)
+        end
       end
     else
       sh "bundle exec rspec #{test_options()}"

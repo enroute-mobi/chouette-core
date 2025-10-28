@@ -18,8 +18,8 @@
         = d.attribute :profile, as: :enumerize, object: @export.setup
         = d.attribute :participant_ref, object: @export.setup
         = d.attribute :profile_options, object: @export.setup, value: @export.display_profile_options
-        = d.attribute :skip_line_resources, as: :boolean, object: @export.setup
-        = d.attribute :skip_stop_area_resources, as: :boolean, object: @export.setup
+        = d.attribute :scope_setup_lines, label: Export::Setup::Scope::Lines::Base.human_attribute_name('type'), value: @export.setup.scope_setup.lines.class.model_name.human
+        = d.attribute :scope_setup_stop_area, label: Export::Setup::Scope::StopAreas::Base.human_attribute_name('type'), value: @export.setup.scope_setup.stop_areas.class.model_name.human
       - if @export.type == "Export::Ara"
         = d.attribute :include_stop_visits, as: :boolean, object: @export.setup
 

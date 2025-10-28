@@ -10,12 +10,8 @@
         = form.input :force_daily_publishing, as: :switchable_checkbox
         = form.input :enable_cache, as: :switchable_checkbox
         = form.input :priority, input_html: { min: 1, max: 1000 }
-    .separator.section_separator
 
-    h2.mb-lg= t('publication_setups.form.sections.export')
-    .form-group
-      .col-lg-12
-        = render'export_setups/form', form: form, export_type_attribute: :export_type, export_setup_attribute: :export_setup, workgroup: @workgroup
+    = render'export_setups/form', form: form, export_type_attribute: :export_type, export_setup_attribute: :export_setup, workgroup: @workgroup
 
     .separator.section_separator
 

@@ -8,6 +8,8 @@ class Store {
 		period,
 		referentialId,
 		profileOptions,
+		scopeStopAreasType,
+		scopeLinesType,
 		isExport
 	} = {}) {
 		this.type = type
@@ -15,6 +17,8 @@ class Store {
 		this.period = period
 		this.referentialId = referentialId
 		this.profileOptions = profileOptions
+		this.scopeStopAreasType = scopeStopAreasType
+		this.scopeLinesType = scopeLinesType
 		this.isExport = isExport
 		this.workbenchOrWorkgroupId = location.pathname.match(/(\d+)/)[0]
 

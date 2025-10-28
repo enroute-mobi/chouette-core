@@ -25,7 +25,9 @@ module ExportSetupDecorator
         type: export_type || 'Export::Gtfs',
         exportedLines: form_export_setup.scope_setup.vehicle_journeys.included_lines.type,
         period: form_export_setup.scope_setup.vehicle_journeys.period.type,
-        profileOptions: form_export_setup.try(:profile_options)
+        profileOptions: form_export_setup.try(:profile_options),
+        scopeStopAreasType: form_export_setup.scope_setup.stop_areas.type,
+        scopeLinesType: form_export_setup.scope_setup.lines.type
       }
     end
 

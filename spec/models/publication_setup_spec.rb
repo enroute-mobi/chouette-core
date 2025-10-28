@@ -49,27 +49,27 @@ RSpec.describe PublicationSetup, type: :model do
   describe '#assign_attributes' do
     context 'instantiation of correct Export::Setup' do
       [
-        ['Export::Gtfs', :ignore_extended_route_types, Export::Setup::Gtfs],
-        ['Export::NetexGeneric', :skip_line_resources, Export::Setup::Netex],
-        ['Export::Ara', :include_stop_visits, Export::Setup::Ara]
-      ].each do |export_type, export_setup_attribute, export_setup_type|
+        ['Export::Gtfs', :ignore_extended_route_types, true, Export::Setup::Gtfs],
+        ['Export::NetexGeneric', :participant_ref, 'plop', Export::Setup::Netex],
+        ['Export::Ara', :include_stop_visits, true, Export::Setup::Ara]
+      ].each do |export_type, export_setup_attribute, export_setup_attribute_value, export_setup_type|
         context "with '#{export_type}' as #export_type" do
           it 'when setting #export_type before #export_setup attribute' do
             publication_setup = described_class.new(
               export_type: export_type,
-              export_setup: { export_setup_attribute => true }
+              export_setup: { export_setup_attribute => export_setup_attribute_value }
             )
             expect(publication_setup.export_setup).to be_a(export_setup_type)
-            expect(publication_setup.export_setup.send(export_setup_attribute)).to eq(true)
+            expect(publication_setup.export_setup.send(export_setup_attribute)).to eq(export_setup_attribute_value)
           end
 
           it 'when setting #export_setup attribute before #export_type' do
             publication_setup = described_class.new(
-              export_setup: { export_setup_attribute => true },
+              export_setup: { export_setup_attribute => export_setup_attribute_value },
               export_type: export_type
             )
             expect(publication_setup.export_setup).to be_a(export_setup_type)
-            expect(publication_setup.export_setup.send(export_setup_attribute)).to eq(true)
+            expect(publication_setup.export_setup.send(export_setup_attribute)).to eq(export_setup_attribute_value)
           end
         end
       end

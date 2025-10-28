@@ -6,18 +6,16 @@
     .col-lg-12
       = form.input :name
 
-    .col-lg-12
-      div
-        = form.input :referential_id,
-          as: :tom_select,
-          collection: @referential_options,
-          label_method: :name,
-          input_html: { 'x-model': 'referentialId', class: "w-full" }
-
-        = render 'export_setups/form', form: form, export_type_attribute: :type, export_setup_attribute: :setup, workgroup: @workbench.workgroup
+      = form.input :referential_id,
+        as: :tom_select,
+        collection: @referential_options,
+        label_method: :name,
+        input_html: { 'x-model': 'referentialId', class: "w-full" }
 
     .col-lg-12
       = form.input :notification_target, collection: Export::Base.notification_target_options, selected: :user
+
+    = render 'export_setups/form', form: form, export_type_attribute: :type, export_setup_attribute: :setup, workgroup: @workbench.workgroup
 
   = cancel_button
   = form.button :submit, t('actions.submit'), class: 'btn btn-default formSubmitr', form: 'wb_export_form'

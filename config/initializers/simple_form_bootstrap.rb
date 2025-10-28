@@ -95,6 +95,22 @@ SimpleForm.setup do |config|
     end
   end
 
+  config.wrappers :inline, tag: 'div', class: 'flex items-center mr-4', error_class: 'has-error', html5: true do |b|
+    b.use :html5
+    b.use :placeholder
+    b.optional :maxlength
+    b.optional :pattern
+    b.optional :min_max
+    b.optional :readonly
+    b.use :label, class: 'control-label mr-4'
+
+    b.wrapper tag: 'div', class: '' do |ba|
+      ba.use :input, class: 'form-control html5'
+      ba.use :error, wrap_with: { tag: 'span', class: 'help-block small' }
+      ba.use :hint,  wrap_with: { tag: 'p', class: 'help-block small' }
+    end
+  end
+
   config.wrappers :horizontal_file_input, tag: 'div', class: 'form-group', error_class: 'has-error' do |b|
     b.use :html5
     b.use :placeholder
@@ -227,6 +243,24 @@ SimpleForm.setup do |config|
 
     b.wrapper tag: 'div', class: 'w-4/6 flex items-center relative' do |ba|
       ba.use :input, class: 'form-control'
+      ba.use :error, wrap_with: { tag: 'span', class: 'help-block small absolute top-14 ml-2' }
+      ba.use :hint,  wrap_with: { tag: 'p', class: 'help-block small absolute top-14 ml-2' }
+    end
+  end
+
+  config.wrappers :horizontal_form_tailwind_right_label, tag: 'div', class: 'flex items-center mb-6', error_class: 'has-error' do |b|
+    b.use :html5
+    b.use :placeholder
+    b.optional :maxlength
+    b.optional :pattern
+    b.optional :min_max
+    b.optional :readonly
+
+    b.wrapper(tag: 'div', class: 'flex w-2/6 mr-4 mb-0 pt-0') {}
+
+    b.wrapper tag: 'div', class: 'w-4/6 flex items-center relative' do |ba|
+      ba.use :input, class: 'form-control'
+      ba.use :label, class: 'control-label ml-4 pt-0'
       ba.use :error, wrap_with: { tag: 'span', class: 'help-block small absolute top-14 ml-2' }
       ba.use :hint,  wrap_with: { tag: 'p', class: 'help-block small absolute top-14 ml-2' }
     end

@@ -1,4 +1,11 @@
 fr:
+  export_setups:
+    form:
+      sections:
+        format: "Format"
+        codes: "Codes"
+        vehicle_journeys: "Courses"
+        associated_models: "Modèles Associés"
   activemodel:
     attributes:
       export/setup/scope/period_selector/duration:
@@ -6,10 +13,14 @@ fr:
       export/setup/scope/period_selector/static:
         from: "De"
         to: "Vers"
+      export/setup/scope/stop_areas/base:
+        type: "Arrêts sélectionnés"
       export/setup/scope/stop_areas/scheduled:
         prefer_referent_stop_areas: "Préférer les arrêts Référents"
         ignore_parent_stop_areas: "Ignorer les arrêts Parents"
         ignore_referent_stop_areas: "Ignorer les zones d'arrêt référentes"
+      export/setup/scope/lines/base:
+        type: "Lignes sélectionnées"
       export/setup/scope/lines/scheduled:
         prefer_referent_lines: "Préférer les lignes Référentes"
         prefer_referent_companies: "Préférer les transporteurs Référents"
@@ -24,11 +35,9 @@ fr:
         ignore_extended_route_types: "Ignorer les types de route étendus"
         stop_sequence_from_one: "Utiliser la séquence d’arrêt à partir de 1"
       export/setup/netex:
-        profile: "Profil"
-        profile_options: "Paramètres du profil Netex"
-        participant_ref: "Netex Participant Ref"
-        skip_line_resources: "Ignorer les ressources de lignes"
-        skip_stop_area_resources: "Ignorer les ressources d'arrêts"
+        profile: "Profil NeTEx"
+        profile_options: "Paramètres du profil NeTEx "
+        participant_ref: "NeTEx Participant Ref"
     models:
       export/setup/scope/period_selector/all: "Toute la période disponible"
       export/setup/scope/period_selector/duration: "Seulement les jours suivants"
@@ -38,6 +47,10 @@ fr:
       export/setup/scope/line_selector/line_providers: "Associées aux fournisseurs de lignes"
       export/setup/scope/line_selector/line_groups: "Associées aux groupes de lignes"
       export/setup/scope/line_selector/all: "Toutes les lignes"
+      export/setup/scope/lines/scheduled: "Associées aux courses sélectionnées"
+      export/setup/scope/lines/none: "Aucune ligne"
+      export/setup/scope/stop_areas/scheduled: "Associés aux courses sélectionnées"
+      export/setup/scope/stop_areas/none: "Aucun arrêt"
     errors:
       export/setup/scope/period_selector/static:
         from:

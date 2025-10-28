@@ -1,4 +1,11 @@
 en:
+  export_setups:
+    form:
+      sections:
+        format: "Format"
+        codes: "Codes"
+        vehicle_journeys: "Vehicle Journeys"
+        associated_models: "Associated Models"
   activemodel:
     attributes:
       export/setup/scope/period_selector/duration:
@@ -6,10 +13,14 @@ en:
       export/setup/scope/period_selector/static:
         from: "From"
         to: "To"
+      export/setup/scope/stop_areas/base:
+        type: "Scoped stop areas"
       export/setup/scope/stop_areas/scheduled:
         prefer_referent_stop_areas: "Prefer Referent Stop Areas"
         ignore_parent_stop_areas: "Ignore parent Stop Places"
         ignore_referent_stop_areas: "Ignore referent Stop Areas"
+      export/setup/scope/lines/base:
+        type: "Scoped lines"
       export/setup/scope/lines/scheduled:
         prefer_referent_lines: "Prefer Referent Lines"
         prefer_referent_companies: "Prefer Referent Companies"
@@ -24,11 +35,9 @@ en:
         ignore_extended_route_types: "Ignore extended route types"
         stop_sequence_from_one: "Use Stop Sequence from 1"
       export/setup/netex:
-        profile: "Profile"
-        profile_options: "Netex Profile Settings"
-        participant_ref: "Netex Participant Ref"
-        skip_line_resources: "Skip Line Resources"
-        skip_stop_area_resources: "Skip Stop Area Resources"
+        profile: "NeTEx Profile"
+        profile_options: "NeTEx Profile Settings"
+        participant_ref: "NeTEx Participant Ref"
     models:
       export/setup/scope/period_selector/all: "All available periods"
       export/setup/scope/period_selector/duration: "Only upcoming days"
@@ -38,6 +47,10 @@ en:
       export/setup/scope/line_selector/line_providers: "Associated line providers"
       export/setup/scope/line_selector/line_groups: "Associated line groups"
       export/setup/scope/line_selector/all: "All available lines"
+      export/setup/scope/lines/scheduled: "Associated to the scoped Vehicle Journeys"
+      export/setup/scope/lines/none: "No line"
+      export/setup/scope/stop_areas/scheduled: "Associated to the scoped Vehicle Journeys"
+      export/setup/scope/stop_areas/none: "No stop area"
     errors:
       export/setup/scope/period_selector/static:
         from:

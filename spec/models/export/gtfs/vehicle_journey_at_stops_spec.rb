@@ -3,7 +3,7 @@
 RSpec.describe Export::Gtfs::VehicleJourneyAtStops do
   subject(:part) { Export::Gtfs::VehicleJourneyAtStops.new(export) }
   let(:export) do
-    Export::Gtfs.new(export_scope: export_scope, setup: { scope_setup: { type: 'Export::Scope::Setup::Referential' } })
+    Export::Gtfs.new(export_scope: export_scope, setup: { scope_setup: { type: 'Export::Setup::Scope::Referential' } })
   end
   let(:export_scope) { double }
 

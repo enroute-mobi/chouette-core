@@ -4,5 +4,5 @@
   = d.attribute :participant_ref
   = d.attribute :profile_options, value: resource.display_profile_options
   = d.attribute :period, object: @publication_setup.export_setup.scope_setup.vehicle_journeys, value: resource.display_period
-  = d.attribute :skip_line_resources, as: :boolean
-  = d.attribute :skip_stop_area_resources, as: :boolean
+  = d.attribute :scope_setup_lines, label: Export::Setup::Scope::Lines::Base.human_attribute_name('type'), value: @publication_setup.export_setup.scope_setup.lines.class.model_name.human
+  = d.attribute :scope_setup_stop_area, label: Export::Setup::Scope::StopAreas::Base.human_attribute_name('type'), value: @publication_setup.export_setup.scope_setup.stop_areas.class.model_name.human

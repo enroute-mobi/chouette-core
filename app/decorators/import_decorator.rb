@@ -1,7 +1,15 @@
+# frozen_string_literal: true
+
 class ImportDecorator < Af83::Decorator
   decorates Import::Base
 
   set_scope { context[:parent] }
+
+  define_instance_method :first_child do
+    return @first_child if defined?(@first_child)
+
+    @first_child ||= object.children.first
+  end
 
   define_instance_method :import_status_css_class do
     cls =''
@@ -25,5 +33,4 @@ class ImportDecorator < Af83::Decorator
       l.target :blank
     end
   end
-  
 end

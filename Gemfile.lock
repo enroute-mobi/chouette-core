@@ -23,13 +23,13 @@ GIT
 
 GIT
   remote: https://bitbucket.org/enroute-mobi/gtfs.git
-  revision: 099b446b55bd410b34027069b14fa61505d73578
+  revision: 4c5dcf6876ed3b69e9bd09bcf022e9a24ba8d26f
   specs:
     gtfs (0.3.6)
       csv
       msgpack
       offline-sort
-      rubyzip
+      rubyzip (< 3)
 
 GIT
   remote: https://bitbucket.org/enroute-mobi/has_array_of.git

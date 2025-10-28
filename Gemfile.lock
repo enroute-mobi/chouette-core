@@ -23,8 +23,7 @@ GIT
 
 GIT
   remote: https://bitbucket.org/enroute-mobi/gtfs.git
-  revision: a1f05e68b966e993ca3a5852c3a5bfb9e1be1fd2
-  branch: DATA-49-make-optional-booking-rule-priors
+  revision: 4c5dcf6876ed3b69e9bd09bcf022e9a24ba8d26f
   specs:
     gtfs (0.3.6)
       csv

@@ -1532,11 +1532,7 @@ module Export
             message: booking_notes,
             phone_number: phone,
             info_url: url,
-            booking_url: booking_url,
-            prior_notice_duration_max: '-',
-            prior_notice_start_day: '-',
-            prior_notice_start_time: '-',
-            prior_notice_service_id: '-'
+            booking_url: booking_url
           }.tap do |attributes|
             attributes[:prior_notice_duration_min] = minimum_booking_period if booking_type == 1
             attributes[:prior_notice_last_time] = prior_notice_last_time if minimum_booking_period.present?
@@ -1558,7 +1554,6 @@ module Export
             2
           end
         end
-
       end
     end
   end

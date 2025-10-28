@@ -101,9 +101,8 @@ definitions:
 
           - docker run -e POSTGRES_PASSWORD=dummy -v /opt/atlassian/pipelines/agent/build/postgresql:/var/run/postgresql -d us-east1-docker.pkg.dev/enroute-interne/enroute-interne/enroute-postgresql:dev -c effective_cache_size=8092MB -c max_wal_size=20GB -c max_locks_per_transaction=2048
 
-          - export RAILS_TEST_DB_HOST=/opt/atlassian/pipelines/agent/build/postgresql
-          - export RAILS_DB_USER=postgres
-          - export RAILS_DB_PASSWORD=
+          - export RAILS_TEST_DB_HOST=/opt/atlassian/pipelines/agent/build/postgresql RAILS_DB_USER=postgres RAILS_DB_PASSWORD=
+          - sleep 15
 
           - bundle exec rake ci:setup ci:spec
           - build.sh codacy::report

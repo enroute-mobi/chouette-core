@@ -127,17 +127,17 @@ module ProcessingRule
 
       def required_tags_condition
         <<~SQL
-          ((array_agg(taggings.tag_id) FILTER (WHERE taggings.for_association = 'required_tag_ids'))::int[] && ARRAY[?]::int[])
-          OR ((array_agg(taggings.tag_id) FILTER (WHERE taggings.for_association = 'required_tag_ids')) IS NULL)
+          ((array_agg(taggings.tag_id) FILTER (WHERE taggings.for_association = 'required_tags'))::int[] && ARRAY[?]::int[])
+          OR ((array_agg(taggings.tag_id) FILTER (WHERE taggings.for_association = 'required_tags')) IS NULL)
         SQL
       end
 
       def excluded_tags_condition
         <<~SQL
           NOT(
-            (array_agg(taggings.tag_id) FILTER (WHERE taggings.for_association = 'excluded_tag_ids'))::int[] && ARRAY[?]::int[]
+            (array_agg(taggings.tag_id) FILTER (WHERE taggings.for_association = 'excluded_tags'))::int[] && ARRAY[?]::int[]
           )
-          OR ((array_agg(taggings.tag_id) FILTER (WHERE taggings.for_association = 'excluded_tag_ids')) IS NULL)
+          OR ((array_agg(taggings.tag_id) FILTER (WHERE taggings.for_association = 'excluded_tags')) IS NULL)
         SQL
       end
     end

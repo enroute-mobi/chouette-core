@@ -59,7 +59,7 @@
         TableBuilderHelper::Column.new( \
           key: :name, \
           attribute: :name, \
-          link_to: @parent.is_a?(Workbench) ? lambda do |run| \
+          link_to: @workbench ? lambda do |run| \
             workbench_macro_list_run_path(@workbench, run) \
           end : nil \
         ), \
@@ -91,9 +91,9 @@
         ), \
         TableBuilderHelper::Column.new( \
           key: :name, \
-          attribute: Proc.new { |run| base = (run.name.presence || run.model_name.human); run.original_control_list&.shared? ? "#{base} (#{I18n.t('activerecord.models.workgroup.one')})" : base }, \
-          link_to: @parent.is_a?(Workbench) ? lambda do |run| \
-           (run.original_control_list&.shared?) ? \
+          attribute: Proc.new { |run| base = (run.name.presence || run.model_name.human); run.processing.processing_rule.is_a?(ProcessingRule::Workgroup) ? "#{base} (#{Workgroup.model_name.human})" : base }, \
+          link_to: workgroup_context? ? lambda do |run| \
+           workgroup_context? ? \
               workgroup_control_list_run_path(current_workgroup, run) : \
               workbench_control_list_run_path(@workbench, run) \
           end : nil \

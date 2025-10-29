@@ -1,9 +1,12 @@
+# frozen_string_literal: true
+
 module Types
   class LineType < Types::BaseObject
     include Types::WithCodes
     include Types::WithReferent
+    include Types::WithDocuments
 
-    description "A Chouette Line"
+    description 'A Chouette Line'
 
     field :objectid, String, null: false
     field :name, String, null: true
@@ -42,13 +45,13 @@ module Types
     end
 
     field :routes, Types::RouteType.connection_type, null: true,
-    description: "The Line's Routes"
+                                                     description: "The Line's Routes"
     def routes
       LazyLoading::Routes.new(context, object.id)
     end
 
     field :stop_areas, Types::StopAreaType.connection_type, null: true,
-    description: "The Line's StopAreas"
+                                                            description: "The Line's StopAreas"
     def stop_areas
       LazyLoading::LineStopAreas.new(context, object.id)
     end

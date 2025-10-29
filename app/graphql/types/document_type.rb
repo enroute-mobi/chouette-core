@@ -17,7 +17,7 @@ module Types
 
     field :document_type, String, null: false
     def document_type
-      LazyLoading::DocumentType.new(context, object.id)
+      LazyLoading::DocumentType.new(context, object.document_type_id) if object.document_type_id
     end
   end
 end

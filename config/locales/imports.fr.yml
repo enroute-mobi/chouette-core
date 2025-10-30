@@ -14,7 +14,6 @@ fr:
       destroy_confirm: "Etes vous sûr de supprimer cet import ?"
     index:
       title: "Imports"
-      warning: ""
       workgroup_control_list_run: "Jeu de contrôles (Groupe de travail)"
       workbench_control_list_run: "Jeu de contrôles"
       workbench_macro_list_run: "Jeu d'instructions"

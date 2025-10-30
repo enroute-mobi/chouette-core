@@ -32,9 +32,9 @@ class ImportsController < Chouette::WorkbenchController
     @import = resource.decorate(context: { parent: parent })
 
     if resource.is_a?(Import::Workbench)
-        @imported_resources = resource.children.first.resources
-        @macro_list_runs = resource.macro_list_runs
-        @control_list_runs = resource.control_list_runs
+      @imported_resources = resource.first_child&.resources || []
+      @macro_list_runs = resource.macro_list_runs
+      @control_list_runs = resource.control_list_runs.includes(processing: :processing_rule)
     end
 
     respond_to do |format|

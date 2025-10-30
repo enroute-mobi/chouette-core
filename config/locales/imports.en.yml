@@ -14,7 +14,6 @@ en:
       destroy_confirm: "Are you sure you want destroy this import?"
     index:
       title: "Imports"
-      warning: ""
       workgroup_control_list_run: "Control list (Workgroup)"
       workbench_control_list_run: "Control list"
       workbench_macro_list_run: "Macro list"

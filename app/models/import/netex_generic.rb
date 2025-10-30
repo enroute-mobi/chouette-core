@@ -643,7 +643,7 @@ module Import
           end
 
           decorator.chouette_model.each do |chouette_route|
-            route_inserter << chouette_route
+            route_inserter.insert chouette_route
           end
         end
 
@@ -1346,33 +1346,21 @@ module Import
             next
           end
 
-          vehicle_journey = decorator.chouette_model
-          unless vehicle_journey.valid?(:inserter)
-            Rails.logger.info { "Invalid Vehicle Journey: #{vehicle_journey.errors.inspect}" }
-            create_message :vehicle_journey_invalid
-
-            next
-          end
-
-          referential_inserter.vehicle_journeys << vehicle_journey
-
-          vehicle_journey.vehicle_journey_at_stops.each do |vehicle_journey_at_stop|
-            vehicle_journey_at_stop.vehicle_journey = vehicle_journey
-            referential_inserter.vehicle_journey_at_stops << vehicle_journey_at_stop
-          end
-
-          vehicle_journey.vehicle_journey_time_table_relationships.each do |vehicle_journey_time_table|
-            vehicle_journey_time_table.vehicle_journey = vehicle_journey
-            referential_inserter.vehicle_journey_time_table_relationships << vehicle_journey_time_table
-          end
-
-          vehicle_journey.codes.each do |code|
-            code.resource = vehicle_journey
-            referential_inserter.codes << code
-          end
+          vehicle_journey_inserter.insert decorator.chouette_model
         end
 
         referential_inserter.flush
+      end
+
+      def vehicle_journey_inserter
+        @vehicle_journey_inserter ||= VehicleJourneyInserter.new(referential_inserter, on_invalid: on_invalid)
+      end
+
+      def on_invalid
+        lambda do |vehicle_journey|
+          Rails.logger.info { "Invalid Vehicle Journey: #{vehicle_journey.errors.inspect}" }
+          create_message :vehicle_journey_invalid
+        end
       end
 
       class Decorator < ResourceDecorator

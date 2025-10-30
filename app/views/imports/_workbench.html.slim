@@ -59,9 +59,7 @@
         TableBuilderHelper::Column.new( \
           key: :name, \
           attribute: :name, \
-          link_to: @workbench ? lambda do |run| \
-            workbench_macro_list_run_path(@workbench, run) \
-          end : nil \
+          link_to: !workgroup_context? ? ->(run) { workbench_macro_list_run_path(@workbench, run) } : nil \
         ), \
         TableBuilderHelper::Column.new( \
           key: :started_at, \
@@ -92,11 +90,11 @@
         TableBuilderHelper::Column.new( \
           key: :name, \
           attribute: Proc.new { |run| base = (run.name.presence || run.model_name.human); run.processing.processing_rule.is_a?(ProcessingRule::Workgroup) ? "#{base} (#{Workgroup.model_name.human})" : base }, \
-          link_to: workgroup_context? ? lambda do |run| \
+          link_to: lambda do |run| \
            workgroup_context? ? \
               workgroup_control_list_run_path(current_workgroup, run) : \
               workbench_control_list_run_path(@workbench, run) \
-          end : nil \
+          end \
         ), \
         TableBuilderHelper::Column.new( \
           key: :started_at, \

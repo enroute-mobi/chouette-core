@@ -1145,7 +1145,7 @@ RSpec.describe Import::Gtfs do
     end
   end
 
-  describe '#import_import_services' do
+  describe '#import_services' do
     subject do
       [].tap do |codes|
         referential.time_tables.map do |time_table|
@@ -1892,9 +1892,9 @@ end
 
 # rubocop:disable Style/WordArray
 RSpec.describe Import::Gtfs::TripDecorator do
-  subject(:trip_decorator) { described_class.new(trip, stop_times) }
+  subject(:trip_decorator) { described_class.new(trip) }
   let(:trip) do
-    GTFS::Trip.new(id: 'AAMV1', route_id: 'AAMV', service_id: 'WE', direction_id: '0', headsign: 'to Amargosa Valley')
+    GTFS::Trip.new(id: 'AAMV1', route_id: 'AAMV', service_id: 'WE', direction_id: '0', headsign: 'to Amargosa Valley', stop_times: stop_times)
   end
   let(:stop_time_1_pickup) { nil }
   let(:stop_time_1_drop_off) { nil }

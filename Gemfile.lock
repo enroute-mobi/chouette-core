@@ -23,7 +23,8 @@ GIT
 
 GIT
   remote: https://bitbucket.org/enroute-mobi/gtfs.git
-  revision: 4c5dcf6876ed3b69e9bd09bcf022e9a24ba8d26f
+  revision: d72835525346a7cc193a193820d6d6c920a6435b
+  branch: DATA-50-trips-with-stop-times
   specs:
     gtfs (0.3.6)
       csv

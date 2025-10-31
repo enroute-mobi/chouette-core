@@ -916,12 +916,12 @@ class Import::Gtfs < Import::Base
   end
   private :accessibility_assessment
 
-  def process_trip(resource, trip, stop_times)
+  def process_trip(resource, trip)
     begin
-      raise InvalidTripSingleStopTime unless stop_times.many?
-      raise InvalidTripTimesError unless consistent_stop_times(stop_times)
+      raise InvalidTripSingleStopTime unless trip.stop_times.many?
+      raise InvalidTripTimesError unless consistent_stop_times(trip.stop_times)
 
-      journey_pattern = find_or_create_journey_pattern(trip, stop_times)
+      journey_pattern = find_or_create_journey_pattern(trip)
       vehicle_journey = journey_pattern.vehicle_journeys.build route: journey_pattern.route
       vehicle_journey.published_journey_name = trip.short_name.presence || trip.id
       vehicle_journey.codes.build code_space: code_space, value: trip.id
@@ -935,7 +935,7 @@ class Import::Gtfs < Import::Base
         save_model vehicle_journey, resource: resource
       end
 
-      starting_day_offset = GtfsTime.parse(stop_times.first.departure_time || stop_times.first.start_pickup_drop_off_window).day_offset
+      starting_day_offset = GtfsTime.parse(trip.stop_times.first.departure_time || trip.stop_times.first.start_pickup_drop_off_window).day_offset
       time_table_id = handle_timetable_with_offset(resource, trip, starting_day_offset)
 
       if time_table_id
@@ -959,7 +959,7 @@ class Import::Gtfs < Import::Base
 
       Chouette::VehicleJourneyAtStop.bulk_insert do |worker|
         journey_pattern.stop_points.each_with_index do |stop_point, i|
-          add_stop_point stop_times[i], i, starting_day_offset, stop_point, vehicle_journey, worker
+          add_stop_point trip.stop_times[i], i, starting_day_offset, stop_point, vehicle_journey, worker
         end
       end
 
@@ -1032,8 +1032,8 @@ class Import::Gtfs < Import::Base
     @journey_pattern_ids ||= {}
   end
 
-  def find_or_create_journey_pattern(trip, stop_times)
-    decorator = TripDecorator.new(trip, stop_times)
+  def find_or_create_journey_pattern(trip)
+    decorator = TripDecorator.new(trip)
     journey_pattern_id = journey_pattern_ids[decorator.journey_pattern_signature]
     return nil unless journey_pattern_id
 
@@ -1050,13 +1050,6 @@ class Import::Gtfs < Import::Base
 
   # Add helper methods on GTFS Trip
   class TripDecorator < SimpleDelegator
-    def initialize(trip, stop_times)
-      super trip
-      @stop_times = stop_times
-    end
-
-    attr_reader :stop_times
-
     delegate :each, :length, :[], to: :stop_ids
 
     def route_signature
@@ -1168,8 +1161,8 @@ class Import::Gtfs < Import::Base
     def journey_pattern_descriptions
       decorators = {}
 
-      source.each_trip_with_stop_times do |trip, stop_times|
-        decorator = TripDecorator.new(trip, stop_times)
+      source.trips(with_stop_times: true).each do |trip|
+        decorator = TripDecorator.new(trip)
         next unless decorator.valid?
 
         decorators[decorator.journey_pattern_signature] ||= decorator
@@ -1384,10 +1377,10 @@ class Import::Gtfs < Import::Base
 
   def import_stop_times
     resource = create_resource(:stop_times)
-    source.to_enum(:each_trip_with_stop_times).each_slice(100) do |slice|
+    source.trips(with_stop_times: true).each_slice(100) do |slice|
       Chouette::VehicleJourney.transaction do
-        slice.each do |trip, stop_times|
-          process_trip(resource, trip, stop_times)
+        slice.each do |trip|
+          process_trip(resource, trip)
         end
       end
     end

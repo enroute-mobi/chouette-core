@@ -11,7 +11,7 @@ RSpec.describe Export::Gtfs::BookingArrangements::Decorator do
         booking_arrangement.minimum_booking_period = 60
       end
 
-      it { is_expected.to eq(1) }
+      it { is_expected.to eq(60) }
     end
 
     context 'when BookingArrangement#book_when is "time_of_travel_only"' do

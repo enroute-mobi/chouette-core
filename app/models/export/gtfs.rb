@@ -1533,15 +1533,14 @@ module Export
             phone_number: phone,
             info_url: url,
             booking_url: booking_url,
-            prior_notice_duration_min: minimum_booking_period,
+            prior_notice_duration_min: prior_notice_duration_min,
             prior_notice_last_time: prior_notice_last_time,
             prior_notice_last_day: prior_notice_last_day
           }
         end
 
-        # minimum_booking_period is in seconds and prior_notice_duration_min is in minutes
         def prior_notice_duration_min
-          minimum_booking_period&.seconds&.in_minutes&.round if booking_type == 1
+          minimum_booking_period if booking_type == 1
         end
 
         def prior_notice_last_day

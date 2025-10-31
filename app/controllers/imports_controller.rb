@@ -32,7 +32,10 @@ class ImportsController < Chouette::WorkbenchController
     @import = resource.decorate(context: { parent: parent })
 
     if resource.is_a?(Import::Workbench)
-      @imported_resources = resource.first_child&.resources || []
+      @imported_resources = resource.first_child&.resources || Import::Resource.none
+      if resource.first_child.is_a?(Import::Netex)
+        @imported_resources = @imported_resources.where(resource_type: 'file')
+      end
       @macro_list_runs = resource.macro_list_runs
       @control_list_runs = resource.control_list_runs.includes(processing: :processing_rule)
     end

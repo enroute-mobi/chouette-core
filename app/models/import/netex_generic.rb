@@ -643,7 +643,7 @@ module Import
           end
 
           decorator.chouette_model.each do |chouette_route|
-            route_inserter.insert chouette_route
+            route_inserter.insert chouette_route # rubocop:disable Rails/SkipsModelValidations
           end
         end
 
@@ -1346,7 +1346,7 @@ module Import
             next
           end
 
-          vehicle_journey_inserter.insert decorator.chouette_model
+          vehicle_journey_inserter.insert decorator.chouette_model # rubocop:disable Rails/SkipsModelValidations
         end
 
         referential_inserter.flush

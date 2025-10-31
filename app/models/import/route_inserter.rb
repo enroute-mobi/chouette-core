@@ -3,7 +3,7 @@
 module Import
   # Insert Routes and their Journey Patterns into a Referential (via ReferentialInserter).
   class RouteInserter < Inserter
-    def insert(route) # rubocop:disable Metrics/MethodLength
+    def insert(route)
       referential_inserter.routes << route
 
       route.stop_points.each do |stop_point|
@@ -13,7 +13,7 @@ module Import
 
       route.journey_patterns.each do |journey_pattern|
         journey_pattern.route = route
-        journey_pattern_inserter.insert journey_pattern
+        journey_pattern_inserter.insert journey_pattern # rubocop:disable Rails/SkipsModelValidations
       end
     end
 

@@ -1,5 +1,6 @@
-RSpec.describe Import::RouteInserter do
+# frozen_string_literal: true
 
+RSpec.describe Import::RouteInserter do
   let(:context) do
     Chouette.create do
       code_space
@@ -29,8 +30,8 @@ RSpec.describe Import::RouteInserter do
     Import::RouteInserter.new referential_inserter, on_invalid: on_invalid, on_save: on_save
   end
 
-  let(:on_invalid) { Proc.new {} }
-  let(:on_save) { Proc.new {} }
+  let(:on_invalid) { proc {} }
+  let(:on_save) { proc {} }
 
   let(:route) do
     Chouette::Route.new(name: 'Test', line: referential.lines.first).tap do |route|
@@ -48,21 +49,21 @@ RSpec.describe Import::RouteInserter do
     context 'when Route is invalid' do
       before { route.name = nil }
 
-      it "invokes the on_invalid callback" do
+      it 'invokes the on_invalid callback' do
         expect(on_invalid).to receive(:call).with(route)
         subject
       end
     end
 
-    it "saves the Route in database" do
+    it 'saves the Route in database' do
       expect { subject }.to change { Chouette::Route.count }.from(0).to(1)
     end
 
-    it "saves the Route Stop Points in database" do
+    it 'saves the Route Stop Points in database' do
       expect { subject }.to change { Chouette::StopPoint.count }.from(0).to(2)
     end
 
-    it "invokes the on_save callback" do
+    it 'invokes the on_save callback' do
       expect(on_save).to receive(:call).with(route)
       subject
     end
@@ -76,7 +77,7 @@ RSpec.describe Import::RouteInserter do
         end
       end
 
-      it "saves the ReferentialCodes in database" do
+      it 'saves the ReferentialCodes in database' do
         expect { subject }.to change { ReferentialCode.count }.from(0).to(2)
       end
     end
@@ -90,15 +91,15 @@ RSpec.describe Import::RouteInserter do
         end
       end
 
-      it "saves the Journey Pattern in database" do
+      it 'saves the Journey Pattern in database' do
         expect { subject }.to change { Chouette::JourneyPattern.count }.from(0).to(1)
       end
 
-      it "saves the Journey Pattern Stop Points in database" do
+      it 'saves the Journey Pattern Stop Points in database' do
         expect { subject }.to change { Chouette::JourneyPatternStopPoint.count }.from(0).to(2)
       end
 
-      it "invokes the on_save callback" do
+      it 'invokes the on_save callback' do
         expect(on_save).to receive(:call).with(route)
         expect(on_save).to receive(:call).with(journey_pattern)
         subject
@@ -107,7 +108,7 @@ RSpec.describe Import::RouteInserter do
       context 'when JourneyPattern is invalid' do
         before { journey_pattern.name = nil }
 
-        it "invokes the on_invalid callback" do
+        it 'invokes the on_invalid callback' do
           expect(on_invalid).to receive(:call).with(journey_pattern)
           subject
         end
@@ -122,7 +123,7 @@ RSpec.describe Import::RouteInserter do
           end
         end
 
-        it "saves the ReferentialCodes in database" do
+        it 'saves the ReferentialCodes in database' do
           expect { subject }.to change { ReferentialCode.count }.from(0).to(2)
         end
       end

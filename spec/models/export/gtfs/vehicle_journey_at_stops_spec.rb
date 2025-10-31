@@ -175,6 +175,11 @@ RSpec.describe Export::Gtfs::VehicleJourneyAtStops::Decorator do
       it { is_expected.to be_zero }
 
       context 'when the associated Line is flexible' do
+        before { allow(decorator).to receive(:flexible_line?).and_return(true) }
+        it { is_expected.to eq(2) }
+      end
+
+      context 'when the associated StopPoint is flexible' do
         before { allow(decorator).to receive(:is_flexible).and_return(true) }
         it { is_expected.to eq(2) }
       end
@@ -195,6 +200,11 @@ RSpec.describe Export::Gtfs::VehicleJourneyAtStops::Decorator do
       before { allow(decorator).to receive(:is_flexible).and_return(false) }
 
       it { is_expected.to be_zero }
+
+      context 'when the associated Line is flexible' do
+        before { allow(decorator).to receive(:flexible_line?).and_return(true) }
+        it { is_expected.to eq(2) }
+      end
 
       context 'when the associated Line is flexible' do
         before { allow(decorator).to receive(:is_flexible).and_return(true) }

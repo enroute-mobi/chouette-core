@@ -1120,18 +1120,24 @@ module Export
           code_provider.stop_areas.code stop_area_id
         end
 
+        def flexible_line?
+          index&.flexible?(vehicle_journey_id)
+        end
+
+        def flexible?
+          is_flexible || flexible_line?
+        end
+
         def drop_off_type
           return 1 if for_alighting == 'forbidden'
-          if for_alighting == 'normal'
-            is_flexible ? 2 : 0
-          end
+
+          flexible? ? 2 : 0
         end
 
         def pickup_type
           return 1 if for_boarding == 'forbidden'
-          if for_boarding == 'normal'
-            is_flexible ? 2 : 0
-          end
+
+          flexible? ? 2 : 0
         end
 
         def gtfs_attributes
@@ -1144,7 +1150,7 @@ module Export
             drop_off_type: drop_off_type,
             shape_dist_traveled: shape_dist_traveled
           }.tap do |attributes|
-            if is_flexible
+            if flexible?
               attributes[:start_pickup_drop_off_window] = stop_time_start_pickup_drop_off_window
               attributes[:end_pickup_drop_off_window] = stop_time_end_pickup_drop_off_window
               attributes[:location_group_id] = location_group_id

@@ -46,7 +46,7 @@ module Export
         FareProducts,
         FareValidities,
 
-        BookingRules
+        BookingArrangements
       ].each do |part_class|
         part_class.new(self).perform
       end
@@ -1515,7 +1515,7 @@ module Export
       end
     end
 
-    class BookingRules < Part
+    class BookingArrangements < Part
       delegate :booking_arrangements, to: :export_scope
 
       def perform
@@ -1532,16 +1532,23 @@ module Export
             message: booking_notes,
             phone_number: phone,
             info_url: url,
-            booking_url: booking_url
-          }.tap do |attributes|
-            attributes[:prior_notice_duration_min] = minimum_booking_period if booking_type == 1
-            attributes[:prior_notice_last_time] = prior_notice_last_time if minimum_booking_period.present?
-            attributes[:prior_notice_last_day] = 1 if prior_notice_last_time.present?
-          end
+            booking_url: booking_url,
+            prior_notice_duration_min: prior_notice_duration_min,
+            prior_notice_last_time: prior_notice_last_time,
+            prior_notice_last_day: prior_notice_last_day
+          }
+        end
+
+        def prior_notice_duration_min
+          minimum_booking_period if booking_type == 1
+        end
+
+        def prior_notice_last_day
+          1 if latest_booking_time.present?
         end
 
         def prior_notice_last_time
-          @prior_notice_last_time ||= latest_booking_time.to_hms
+          latest_booking_time.to_hms if prior_notice_last_day.present?
         end
 
         def booking_type

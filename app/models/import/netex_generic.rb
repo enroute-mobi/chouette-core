@@ -411,6 +411,7 @@ module Import
         Chouette::Sync::Referential.new(target).tap do |sync|
           sync.synchronize_with Chouette::Sync::StopArea::Netex
           sync.synchronize_with Chouette::Sync::Entrance::Netex
+          sync.synchronize_with Chouette::Sync::StopAreaGroup::Netex
 
           sync.model_id_attribute = :objectid if import.override_internal_identifiers?
         end

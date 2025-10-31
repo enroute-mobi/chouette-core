@@ -1140,6 +1140,11 @@ module Export
           flexible? ? 2 : 0
         end
 
+        # Return location_group_id only if stop point is flexible
+        def location_group
+          location_group_id if is_flexible
+        end
+
         def gtfs_attributes
           {
             departure_time: stop_time_departure_time,
@@ -1148,14 +1153,11 @@ module Export
             stop_sequence: gtfs_stop_sequence,
             pickup_type: pickup_type,
             drop_off_type: drop_off_type,
-            shape_dist_traveled: shape_dist_traveled
-          }.tap do |attributes|
-            if flexible?
-              attributes[:start_pickup_drop_off_window] = stop_time_start_pickup_drop_off_window
-              attributes[:end_pickup_drop_off_window] = stop_time_end_pickup_drop_off_window
-              attributes[:location_group_id] = location_group_id
-            end
-          end
+            shape_dist_traveled: shape_dist_traveled,
+            start_pickup_drop_off_window: stop_time_start_pickup_drop_off_window,
+            end_pickup_drop_off_window: stop_time_end_pickup_drop_off_window,
+            location_group_id: location_group
+          }
         end
       end
     end

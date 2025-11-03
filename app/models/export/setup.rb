@@ -207,11 +207,11 @@ module Export
         end
 
         def candidate_line_providers
-          (parent.parent.workbench || parent.parent.workgroup).line_providers
+          parent.parent.referential&.line_providers || ::LineProvider.none
         end
 
         def candidate_line_groups
-          (parent.parent.workbench || parent.parent.workgroup).line_groups
+          parent.parent.referential&.line_groups || ::LineGroup.none
         end
       end
 

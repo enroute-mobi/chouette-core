@@ -399,19 +399,10 @@ RSpec.describe Export::Setup::Scope::Referential do
     let(:context) do
       Chouette.create do
         workgroup :workgroup do
-          workbench :workbench do
-            company :company1
-            company :company2
-            company :out_of_referential_company
-            line :line1, company: :company1
-            line :line2, company: :company2
-            line :out_of_referential_line, company: :out_of_referential_company
+          company :company1
+          company :company2
 
-            referential lines: %i[line1 line2]
-          end
-          workbench :other_workbench do
-            company :other_workbench_company
-          end
+          referential
         end
         workgroup :other_workgroup do
           company :other_workgroup_company
@@ -426,7 +417,7 @@ RSpec.describe Export::Setup::Scope::Referential do
     it 'only returns companies in referential' do
       is_expected.to(
         match_array(
-          %i[company1 company2 out_of_referential_company other_workbench_company].map { |l| context.company(l) }
+          %i[company1 company2].map { |l| context.company(l) }
         )
       )
     end
@@ -446,16 +437,8 @@ RSpec.describe Export::Setup::Scope::Referential do
           workbench :workbench do
             network :network1
             network :network2
-            network :out_of_referential_network
-            line :line1, network: :network1
-            line :line2, network: :network2
-            line :out_of_referential_line, network: :out_of_referential_network
 
-
-            referential lines: %i[line1 line2]
-          end
-          workbench :other_workbench do
-            network :other_workbench_network
+            referential
           end
         end
         workgroup :other_workgroup do
@@ -471,7 +454,7 @@ RSpec.describe Export::Setup::Scope::Referential do
     it 'only returns networks in referential' do
       is_expected.to(
         match_array(
-          %i[network1 network2 out_of_referential_network other_workbench_network].map { |l| context.network(l) }
+          %i[network1 network2].map { |l| context.network(l) }
         )
       )
     end
@@ -487,38 +470,29 @@ RSpec.describe Export::Setup::Scope::Referential do
 
     before { setup_scope_referential.parent = parent }
 
-    context 'when export has only a workbench' do
-      let(:context) do
-        Chouette.create do
+    let(:context) do
+      Chouette.create do
+        workgroup :workgroup do
           workbench :workbench
+
+          referential
+        end
+        workgroup :other_workgroup do
           workbench :other_workbench
         end
       end
-      let(:default_line_provider) { context.workbench(:workbench).default_line_provider }
-      let(:parent) { double(:setup, parent: double(:export, workgroup: nil, workbench: context.workbench(:workbench))) }
+    end
+    let(:default_line_provider) { context.workbench(:workbench).default_line_provider }
+    let(:referential) { context.referential }
+    let(:parent) { double(:setup, parent: double(:export, referential: referential)) }
 
-      it 'only returns line providers in workbench' do
-        is_expected.to match_array([default_line_provider])
-      end
+    it 'only returns line providers in workgroup' do
+      is_expected.to match_array([default_line_provider])
     end
 
-    context 'when export has only a workgroup' do
-      let(:context) do
-        Chouette.create do
-          workgroup :workgroup do
-            workbench
-          end
-          workgroup :other_workbench do
-            workbench
-          end
-        end
-      end
-      let(:default_line_providers) { context.workgroup(:workgroup).workbenches.map(&:default_line_provider) }
-      let(:parent) { double(:setup, parent: double(:export, workgroup: context.workgroup(:workgroup), workbench: nil)) }
-
-      it 'only returns line providers in workgroup' do
-        is_expected.to match_array(default_line_providers)
-      end
+    context 'when referential is nil' do
+      let(:referential) { nil }
+      it { is_expected.to be_empty }
     end
   end
 
@@ -533,9 +507,8 @@ RSpec.describe Export::Setup::Scope::Referential do
             line_group :line_group1, lines: %i[line]
             line_group :line_group2, lines: %i[line]
           end
-          workbench :other_workbench do
-            line_group :other_workbench_line_group, lines: %i[line]
-          end
+
+          referential lines: %i[line]
         end
         workgroup :other_workgroup do
           line :other_line
@@ -543,30 +516,20 @@ RSpec.describe Export::Setup::Scope::Referential do
         end
       end
     end
-    let(:export_workgroup) { context.workgroup(:workgroup) }
-    let(:export_workbench) { context.workbench(:workbench) }
-    let(:parent) { double(:setup, parent: double(:export, workgroup: export_workgroup, workbench: export_workbench)) }
+    let(:referential) { context.referential }
+    let(:parent) { double(:setup, parent: double(:export, referential: referential)) }
 
     before { setup_scope_referential.parent = parent }
 
-    context 'when export only has a workbench' do
-      let(:export_workgroup) { nil }
-
-      it 'only returns line groups in referential' do
-        is_expected.to(
-          match_array(%i[line_group1 line_group2 other_workbench_line_group].map { |l| context.line_group(l) })
-        )
-      end
+    it 'only returns line groups in referential' do
+      is_expected.to(
+        match_array(%i[line_group1 line_group2].map { |l| context.line_group(l) })
+      )
     end
 
-    context 'when export only has a workgroup' do
-      let(:export_workbench) { nil }
-
-      it 'only returns line groups in referential' do
-        is_expected.to(
-          match_array(%i[line_group1 line_group2 other_workbench_line_group].map { |l| context.line_group(l) })
-        )
-      end
+    context 'when referential is nil' do
+      let(:referential) { nil }
+      it { is_expected.to be_empty }
     end
   end
 end

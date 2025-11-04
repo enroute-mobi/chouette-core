@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+require 'apartment/adapters/postgresql_adapter'
+
 class Referential
   class Schema
     include ::Measurable
@@ -133,6 +135,21 @@ class Referential
     def current_value(sequence)
       full_name = "\"#{name}\".#{sequence}"
       connection.select_value "SELECT last_value from #{full_name}"
+    end
+
+    def dump(file)
+      DumpRestore.new(name).dump(file)
+    end
+
+    class DumpRestore < ::Apartment::Adapters::PostgresqlSchemaFromSqlAdapter
+      def initialize(name)
+        super(::Apartment.connection_config)
+        @name = name
+      end
+
+      def dump(file)
+        with_pg_env { `pg_dump -d #{@config[:database]} -n #{@name} -f #{file.path} --compress=gzip` }
+      end
     end
 
     class Table

@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 RSpec.describe Referential::Schema do
   let(:context) { Chouette.create { referential } }
   let(:referential) { context.referential }
@@ -175,6 +177,123 @@ RSpec.describe Referential::Schema do
       target.switch { Chouette::VehicleJourney.create!(journey_pattern: context.journey_pattern, route: context.route) }
     end
   end
+
+  describe '#dump', truncation: true do
+    subject { referential_schema.dump(file) }
+
+    let(:file) { Tempfile.new }
+    let(:file_content) { Zlib::GzipReader.open(file.path).read }
+
+    let(:context) do # rubocop:disable Metrics/BlockLength
+      Chouette.create do
+        code_space short_name: 'some_code_space'
+        line :line
+
+        referential lines: %i[line] do
+          footnote :footnote, code: 'some_footnote'
+
+          time_table :time_table,
+                     comment: 'some_time_table',
+                     codes: { 'some_code_space' => 'time_table_code' },
+                     dates_included: [Date.parse('2024-12-13')],
+                     dates_excluded: [Date.parse('2025-06-23')],
+                     periods: [Period.parse('2030-01-07..2030-01-20')]
+
+          route name: 'some_route', codes: { 'some_code_space' => 'route_code' }, with_stops: false, line: :line do
+            stop_point metadata: { name: 'stop_point1' }
+            stop_point metadata: { name: 'stop_point2' }
+            stop_point metadata: { name: 'stop_point3' }
+
+            journey_pattern name: 'some_journey_pattern', codes: { 'some_code_space' => 'journey_pattern_code' } do
+              vehicle_journey published_journey_name: 'some_vehicle_journey',
+                              codes: { 'some_code_space' => 'vehicle_journey_code' },
+                              footnotes: %i[footnote],
+                              time_tables: %i[time_table]
+            end
+
+            routing_constraint_zone name: 'some_routing_constraint_zone'
+          end
+        end
+      end.tap do |context|
+        context.referential.switch do
+          ServiceCount.create!(
+            line_id: context.line(:line).id,
+            route_id: context.route.id,
+            journey_pattern_id: context.journey_pattern.id,
+            date: '2025-02-04'
+          )
+        end
+      end
+    end
+
+    before { subject }
+    after(:each) { file.close! }
+
+    it 'creates schema' do
+      expect(file_content).to include("CREATE SCHEMA \"#{referential.slug}\"")
+    end
+
+    it 'creates schema migrations table' do
+      expect(file_content).to include("CREATE TABLE \"#{referential.slug}\".schema_migrations")
+    end
+
+    describe 'tables creation' do
+      [
+        ['referential_codes', true],
+        ['footnotes', true],
+        ['time_tables', true],
+        ['time_table_dates', true],
+        ['time_table_periods', true],
+        ['routes', true],
+        ['stop_points', true],
+        ['journey_patterns', true],
+        ['journey_patterns_stop_points', false],
+        ['vehicle_journeys', true],
+        ['vehicle_journey_at_stops', true],
+        ['footnotes_vehicle_journeys', false],
+        ['time_tables_vehicle_journeys', false],
+        ['routing_constraint_zones', true],
+        ['service_counts', true]
+      ].each do |table_name, has_id|
+        it { expect(file_content).to include("CREATE TABLE \"#{referential.slug}\".#{table_name}") }
+        if has_id
+          it { expect(file_content).to include("CREATE SEQUENCE \"#{referential.slug}\".#{table_name}_id_seq") }
+          it { expect(file_content).to include("ALTER SEQUENCE \"#{referential.slug}\".#{table_name}_id_seq OWNED BY \"#{referential.slug}\".#{table_name}.id") } # rubocop:disable Layout/LineLength
+          it { expect(file_content).to include("ALTER TABLE ONLY \"#{referential.slug}\".#{table_name} ALTER COLUMN id SET DEFAULT nextval('\"#{referential.slug}\".#{table_name}_id_seq'::regclass)") } # rubocop:disable Layout/LineLength
+        end
+      end
+    end
+
+    describe 'data' do
+      it 'contains current migration version' do
+        expect(file_content).to include(ActiveRecord::Migrator.current_version.to_s)
+      end
+
+      %w[
+        some_footnote
+        some_time_table
+        time_table_code
+        2024-12-13
+        2025-06-23
+        2030-01-07
+        some_route
+        route_code
+        stop_point1
+        stop_point2
+        stop_point3
+        some_journey_pattern
+        journey_pattern_code
+        some_vehicle_journey
+        vehicle_journey_code
+        some_routing_constraint_zone
+        2025-02-04
+      ].each do |data|
+        it { expect(file_content).to include(data) }
+      end
+    end
+  end
+
+  # TODO drop check tenants metadata, check database
 end
 
 RSpec.describe Referential::Schema::Table do

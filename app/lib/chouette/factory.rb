@@ -655,8 +655,17 @@ module Chouette
               model :journey_pattern do
                 attribute(:name) { |n| "JourneyPattern #{n}" }
 
+                transient :codes, {}
+
                 after do |journey_pattern|
                   journey_pattern.stop_points = journey_pattern.route.stop_points
+
+                  transient(:codes).each do |code_space_short_name, values|
+                    Array(values).each do |value|
+                      code_space = new_instance.workgroup.code_spaces.find_by!(short_name: code_space_short_name)
+                      new_instance.codes.build(code_space: code_space, value: value)
+                    end
+                  end
                 end
 
                 model :vehicle_journey do

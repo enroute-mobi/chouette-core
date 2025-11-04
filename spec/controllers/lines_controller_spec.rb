@@ -3,9 +3,11 @@
 RSpec.describe LinesController, type: :controller do
   login_user
 
+  let(:permissions) { %w[lines.create lines.update lines.destroy] }
+
   let(:context) do
+    organisation = self.organisation
     Chouette.create do
-      organisation = Organisation.find_by(code: 'first')
       workgroup(owner: organisation) do
         workbench(:workbench, organisation: organisation) do
           line_provider :line_provider
@@ -29,8 +31,6 @@ RSpec.describe LinesController, type: :controller do
   let(:base_params) { { 'workbench_id' => workbench.id.to_s } }
   let(:base_line_attrs) { { 'name' => 'test', 'transport_mode' => 'bus', 'transport_submode' => 'undefined' } }
   let(:line_attrs) { base_line_attrs }
-
-  before { @user.update(permissions: %w[lines.create lines.update lines.destroy]) }
 
   describe 'GET #new' do
     let(:request) { get :new, params: base_params }

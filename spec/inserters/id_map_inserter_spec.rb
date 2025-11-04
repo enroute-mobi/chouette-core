@@ -1,13 +1,16 @@
+# frozen_string_literal: true
+
 RSpec.describe IdMapInserter do
+  subject(:inserter) { IdMapInserter.new(referential, strict: true) }
 
   let(:context) do
     Chouette.create do
       referential
     end
   end
+  let(:referential) { context.referential }
 
-  subject { IdMapInserter.new context.referential, strict: true }
-  alias_method :inserter, :subject
+  before { referential.switch }
 
   describe "mapped_model_class?" do
 
@@ -29,7 +32,6 @@ RSpec.describe IdMapInserter do
   end
 
   describe "Vehicle Journey" do
-
     let(:vehicle_journey) { Chouette::VehicleJourney.new id: 42 }
 
     it "define a new primary key" do

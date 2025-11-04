@@ -1,5 +1,6 @@
-RSpec.describe Export::Scope, use_chouette_factory: true do
+# frozen_string_literal: true
 
+RSpec.describe Export::Scope do
   let!(:context) do
     Chouette.create do
       line :first

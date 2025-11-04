@@ -1,22 +1,20 @@
+# frozen_string_literal: true
 
-RSpec.describe WorkbenchesController, :type => :controller do
+RSpec.describe WorkbenchesController, type: :controller do
   login_user
-
-  let(:workgroup) { create :workgroup, owner: @user.organisation }
-  let(:workbench) { create :workbench, organisation: @user.organisation, workgroup: workgroup }
-  let(:merge_id) { 2**64/2 - 1 } # Let's check we support Bigint
 
   describe "GET show" do
     it "returns http success" do
-      get :show, params: { id: workbench.id }
+      get :show, params: { id: current_workbench.id }
       expect(response).to have_http_status(200)
     end
   end
 
   describe 'DELETE delete_referentials' do
-    let(:referential) { create(:referential, workbench: workbench, organisation: workbench.organisation) }
+    let(:permissions) { %w[referentials.destroy] }
+    let(:referential) { create(:referential, workbench: current_workbench, organisation: organisation) }
     let(:request) do
-      delete :delete_referentials, params: { id: workbench.id, referentials: [referential.id] }
+      delete :delete_referentials, params: { id: current_workbench.id, referentials: [referential.id] }
     end
 
     context 'with an active referential' do

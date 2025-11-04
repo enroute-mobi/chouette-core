@@ -1,4 +1,4 @@
-RSpec.describe WorkbenchImportService, type: [:request, :zip] do
+RSpec.describe WorkbenchImportService, type: [:request] do
 
   let(:context) do
     Chouette.create do

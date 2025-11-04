@@ -44,11 +44,15 @@ end
 
 # DEPRECATED. Complete modern specs above
 
-include Support::TimeTableHelper
-
 RSpec.describe Chouette::TimeTable, :type => :model do
+  include Support::TimeTableHelper
+
   subject(:time_table) { create(:time_table) }
+
+  let(:referential) { Chouette.create { referential }.referential }
   let(:subject_periods_to_range) { subject.periods.map{|p| p.period_start..p.period_end } }
+
+  before { referential.switch }
 
   it { is_expected.to validate_presence_of :comment }
   it { is_expected.to validate_uniqueness_of :objectid }

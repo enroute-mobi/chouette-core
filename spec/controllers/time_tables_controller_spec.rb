@@ -6,8 +6,9 @@ RSpec.describe TimeTablesController, :type => :controller do
   login_user
 
   let(:context) do
+    organisation = self.organisation
     Chouette.create do
-      workbench organisation: Organisation.find_by(code: 'first') do
+      workbench organisation: organisation do
         referential
       end
     end
@@ -16,6 +17,7 @@ RSpec.describe TimeTablesController, :type => :controller do
   let(:referential) { context.referential }
 
   describe 'POST create' do
+    let(:permissions) { %w[time_tables.create] }
     let(:request) do
       post :create, params: {
         workbench_id: workbench.id,

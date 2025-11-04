@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 RSpec.describe Policy::Referential, type: :policy do
-  let(:resource) { referential }
+  let(:resource) { Referential.new(ready: true) }
   let(:policy_context_class) { Policy::Context::Referential }
 
   describe '#create?' do
@@ -31,17 +31,17 @@ RSpec.describe Policy::Referential, type: :policy do
     it { is_expected.to be_truthy }
 
     context 'when the referential is not ready' do
-      before { referential.ready = false }
+      before { resource.ready = false }
       it { is_expected.to be_falsy }
     end
 
     context 'when the referential is finalised' do
-      before { referential.referential_suite_id = random_int }
+      before { resource.referential_suite_id = random_int }
       it { is_expected.to be_falsy }
     end
 
     context 'when the referential is archived' do
-      before { referential.archived_at = 42.seconds.ago }
+      before { resource.archived_at = 42.seconds.ago }
       it { is_expected.to be_falsy }
     end
   end
@@ -56,17 +56,17 @@ RSpec.describe Policy::Referential, type: :policy do
     it { is_expected.to be_truthy }
 
     context 'when the referential is not ready' do
-      before { referential.ready = false }
+      before { resource.ready = false }
       it { is_expected.to be_falsy }
     end
 
     context 'when the referential is finalised' do
-      before { referential.referential_suite_id = random_int }
+      before { resource.referential_suite_id = random_int }
       it { is_expected.to be_falsy }
     end
 
     context 'when the referential is merged' do
-      before { referential.merged_at = 42.seconds.ago }
+      before { resource.merged_at = 42.seconds.ago }
       it { is_expected.to be_falsy }
     end
   end
@@ -84,11 +84,11 @@ RSpec.describe Policy::Referential, type: :policy do
     end
 
     context 'when the referential is not ready' do
-      before { referential.ready = false }
+      before { resource.ready = false }
       it { is_expected.to be_falsy }
 
       context 'but archived' do
-        before { referential.archived_at = 42.seconds.ago }
+        before { resource.archived_at = 42.seconds.ago }
         it { is_expected.to be_truthy }
       end
     end
@@ -102,7 +102,7 @@ RSpec.describe Policy::Referential, type: :policy do
     before do
       dbl = double
       allow(dbl).to receive(:create?).with(Referential).and_return(workbench_policy_create_referential)
-      allow(Policy::Workbench).to receive(:new).with(referential.workbench, context: policy_context).and_return(dbl)
+      allow(Policy::Workbench).to receive(:new).with(resource.workbench, context: policy_context).and_return(dbl)
     end
 
     it { does_not_apply_strategy(Policy::Strategy::Referential) }
@@ -115,12 +115,12 @@ RSpec.describe Policy::Referential, type: :policy do
     end
 
     context 'when the referential is not ready' do
-      before { referential.ready = false }
+      before { resource.ready = false }
       it { is_expected.to be_falsy }
     end
 
     context 'when the referential is finalised' do
-      before { referential.referential_suite_id = random_int }
+      before { resource.referential_suite_id = random_int }
       it { is_expected.to be_falsy }
     end
 
@@ -143,7 +143,7 @@ RSpec.describe Policy::Referential, type: :policy do
     end
 
     context 'when the referential is not ready' do
-      before { referential.ready = false }
+      before { resource.ready = false }
       it { is_expected.to be_falsy }
     end
   end
@@ -163,17 +163,17 @@ RSpec.describe Policy::Referential, type: :policy do
     end
 
     context 'when the referential is not ready' do
-      before { referential.ready = false }
+      before { resource.ready = false }
       it { is_expected.to be_falsy }
     end
 
     context 'when the referential is finalised' do
-      before { referential.referential_suite_id = random_int }
+      before { resource.referential_suite_id = random_int }
       it { is_expected.to be_falsy }
     end
 
     context 'when the referential is archived' do
-      before { referential.archived_at = 42.seconds.ago }
+      before { resource.archived_at = 42.seconds.ago }
       it { is_expected.to be_falsy }
     end
 
@@ -186,7 +186,7 @@ RSpec.describe Policy::Referential, type: :policy do
   describe '#unarchive?' do
     subject { policy.unarchive? }
 
-    before { referential.archived_at = 42.seconds.ago }
+    before { resource.archived_at = 42.seconds.ago }
 
     it { does_not_apply_strategy(Policy::Strategy::Referential) }
     it { applies_strategy(Policy::Strategy::Workbench) }
@@ -200,17 +200,17 @@ RSpec.describe Policy::Referential, type: :policy do
     end
 
     context 'when the referential is not ready' do
-      before { referential.ready = false }
+      before { resource.ready = false }
       it { is_expected.to be_falsy }
     end
 
     context 'when the referential is archived' do
-      before { referential.archived_at = nil }
+      before { resource.archived_at = nil }
       it { is_expected.to be_falsy }
     end
 
     context 'when the referential is merged' do
-      before { referential.merged_at = 42.seconds.ago }
+      before { resource.merged_at = 42.seconds.ago }
       it { is_expected.to be_falsy }
     end
 

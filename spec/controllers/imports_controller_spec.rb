@@ -2,9 +2,8 @@
 
 RSpec.describe ImportsController, type: :controller do
   let(:context) do
+    organisation = self.organisation
     Chouette.create do
-      # To match organisation used by login_user
-      organisation = Organisation.find_by(code: 'first')
       workgroup owner: organisation do
         workbench organisation: organisation do
           referential
@@ -37,19 +36,25 @@ RSpec.describe ImportsController, type: :controller do
     end
 
     describe 'GET #new' do
+      let(:permissions) { %w[imports.create] }
+
       it 'should be successful if authorized' do
         get :new, params: { workbench_id: workbench.id }
         expect(response).to be_successful
       end
 
-      it 'should be unsuccessful unless authorized' do
-        remove_permissions('imports.create', from_user: @user, save: true)
-        get :new, params: { workbench_id: workbench.id }
-        expect(response).not_to be_successful
+      context 'with permission' do
+        let(:permissions) { [] }
+
+        it 'should be unsuccessful unless authorized' do
+          get :new, params: { workbench_id: workbench.id }
+          expect(response).not_to be_successful
+        end
       end
     end
 
     describe 'POST #create' do
+      let(:permissions) { %w[imports.create] }
       let(:request) do
         post :create, params: {
           workbench_id: workbench.id,
@@ -74,9 +79,7 @@ RSpec.describe ImportsController, type: :controller do
           expect(Import::Base.last.override_internal_identifiers).to eq(false)
         end
 
-        context 'with feature "import_netex_force_override_objectid"' do
-          before { @user.organisation.update(features: ['import_netex_force_override_objectid']) }
-
+        with_features 'import_netex_force_override_objectid' do
           it 'is true' do
             request
             expect(Import::Base.last.override_internal_identifiers).to eq(true)

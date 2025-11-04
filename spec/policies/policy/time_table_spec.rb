@@ -1,7 +1,8 @@
 # frozen_string_literal: true
 
 RSpec.describe Policy::TimeTable, type: :policy do
-  let(:resource) { build_stubbed(:time_table) }
+  let(:referential) { double(:referential) }
+  let(:resource) { double(:time_table, class: Chouette::TimeTable, referential: referential) }
 
   describe '#update?' do
     subject { policy.update? }
@@ -32,9 +33,7 @@ RSpec.describe Policy::TimeTable, type: :policy do
     before do
       fk_policy = double
       expect(fk_policy).to receive(:create?).with(Chouette::TimeTable).and_return(referential_policy_create_time_table)
-      expect(Policy::Referential).to(
-        receive(:new).with(resource.referential, context: policy_context).and_return(fk_policy)
-      )
+      expect(Policy::Referential).to receive(:new).with(referential, context: policy_context).and_return(fk_policy)
     end
 
     it do

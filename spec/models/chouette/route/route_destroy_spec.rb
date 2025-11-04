@@ -1,7 +1,11 @@
-RSpec.describe Chouette::Route, :type => :model do
+# frozen_string_literal: true
 
+RSpec.describe Chouette::Route, type: :model do
   subject { create( :route_with_journey_patterns ) }
 
+  let(:referential) { Chouette.create { referential }.referential }
+
+  before { referential.switch }
 
   context "delete a route" do
     let( :vehicle_journey ){ create :vehicle_journey }

@@ -6,7 +6,7 @@ RSpec.describe Query::Document, use_fixtures: true do
 
     let(:context) do
       Chouette.create do
-        workbench organisation: Organisation.find_by_code('first') do
+        workbench do
           line :first
         end
       end

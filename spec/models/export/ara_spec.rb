@@ -736,21 +736,24 @@ RSpec.describe Export::Ara do
   end
 
   describe 'StopVisit export' do
+    let(:context) do
+      Chouette.create { referential }
+    end
+    let(:referential) { context.referential }
+
+    before { referential.switch }
+
     context 'when Stop Visits are exported' do
       let(:context) do
         Chouette.create { vehicle_journey }
       end
       let(:target) { [] }
-      let(:referential) { context.referential }
       let(:vehicle_journey) { context.vehicle_journey }
       let(:day) { Time.new(2022, 6, 30, 2, 2, 2, '+02:00') }
 
       let(:part) { Export::Ara::StopVisits.new export_scope: referential, target: target }
 
-      before do
-        referential.switch
-        allow(referential).to receive(:day) { day }
-      end
+      before { allow(referential).to receive(:day) { day } }
 
       describe 'the Ara File target' do
         subject do

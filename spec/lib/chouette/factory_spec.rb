@@ -1,5 +1,6 @@
-RSpec.describe Chouette::Factory do
+# frozen_string_literal: true
 
+RSpec.describe Chouette::Factory do
   it "should raise error when type isn't known" do
     expect {
       Chouette::Factory.create { dummy }
@@ -219,9 +220,8 @@ RSpec.describe Chouette::Factory do
       end
 
       it "should create a Referential" do
-        expect(Referential.count).to eq(2)
+        expect(Referential.count).to eq(1)
       end
-
     end
 
     describe "{ referential name: 'Test' }" do

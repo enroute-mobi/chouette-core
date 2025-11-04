@@ -2,9 +2,10 @@
 
 RSpec.describe 'aggregates/show.html.slim', type: :view do
   let(:context) do
+    organisation = self.organisation
     Chouette.create do
-      workgroup owner: Organisation.find_by(code: 'first') do
-        workbench organisation: Organisation.find_by(code: 'first') do
+      workgroup owner: organisation do
+        workbench organisation: organisation do
           referential :referential1
           referential :referential2
 

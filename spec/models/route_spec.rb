@@ -1,6 +1,14 @@
-RSpec.describe Chouette::Route, :type => :model do
-  it { should have_many(:routing_constraint_zones).dependent(:destroy) }
+# frozen_string_literal: true
+
+RSpec.describe Chouette::Route, type: :model do
   subject(:route){ create :route }
+
+  let(:referential) { Chouette.create { referential }.referential }
+
+  before { referential.switch }
+
+  it { should have_many(:routing_constraint_zones).dependent(:destroy) }
+
   context "the checksum" do
     around { |example| Chouette::ChecksumManager.inline{ example.run }}
 

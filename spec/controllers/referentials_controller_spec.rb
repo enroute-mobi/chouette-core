@@ -4,8 +4,9 @@ describe ReferentialsController, type: :controller do
   login_user
 
   let(:context) do
+    organisation = self.organisation
     Chouette.create do
-      workbench :workbench, organisation: Organisation.find_by(code: 'first') do
+      workbench :workbench, organisation: organisation do
         referential :referential
       end
     end
@@ -14,6 +15,7 @@ describe ReferentialsController, type: :controller do
   let(:referential) { context.referential(:referential) }
 
   describe "GET new" do
+    let(:permissions) { %w[referentials.create] }
     let(:request){ get :new, params: { workbench_id: workbench.id }}
 
     it 'returns http success' do
@@ -41,9 +43,10 @@ describe ReferentialsController, type: :controller do
 
       context "when the referential is in another organisation but accessible by the user" do
         let(:context) do
+          organisation = self.organisation
           Chouette.create do
-            workgroup do
-              workbench(:workbench, organisation: Organisation.find_by(code: 'first'))
+            workgroup owner: organisation do
+              workbench(:workbench, organisation: organisation)
               workbench do
                 referential :referential
               end
@@ -66,9 +69,10 @@ describe ReferentialsController, type: :controller do
 
       context "when the referential is not accessible by the user" do
         let(:context) do
+          organisation = self.organisation
           Chouette.create do
-            workgroup do
-              workbench(:workbench, organisation: Organisation.find_by(code: 'first'))
+            workgroup owner: organisation do
+              workbench(:workbench, organisation: organisation)
             end
             workgroup do
               workbench do
@@ -86,6 +90,7 @@ describe ReferentialsController, type: :controller do
   end
 
   describe "POST #create" do
+    let(:permissions) { %w[referentials.create] }
     let(:from_current_offer) { '0' }
     let(:urgent) { '0' }
     let(:metadatas_attributes){
@@ -135,12 +140,8 @@ describe ReferentialsController, type: :controller do
           request
           expect(Referential.last.contains_urgent_offer?).to be_falsy
         end
-      end
 
-      with_permission 'referentials.flag_urgent' do
-        context "urgent" do
-          let(:urgent) { 'true' }
-
+        with_permissions 'referentials.flag_urgent' do
           it "marks the referential as urgent" do
             request
             expect(Referential.last.contains_urgent_offer?).to be_truthy
@@ -206,12 +207,8 @@ describe ReferentialsController, type: :controller do
           request
           expect(Referential.last.contains_urgent_offer?).to be_falsy
         end
-      end
 
-      with_permission 'referentials.flag_urgent' do
-        context "urgent" do
-          let(:urgent) { 'true' }
-
+        with_permissions 'referentials.flag_urgent' do
           it "marks the referential as urgent" do
             request
             expect(Referential.last.contains_urgent_offer?).to be_truthy
@@ -224,9 +221,10 @@ describe ReferentialsController, type: :controller do
 
         context 'when the created_from referential is in another organisation but accessible by the user' do
           let(:context) do
+            organisation = self.organisation
             Chouette.create do
-              workgroup do
-                workbench(:workbench, organisation: Organisation.find_by(code: 'first'))
+              workgroup owner: organisation do
+                workbench(:workbench, organisation: organisation)
                 workbench do
                   referential :referential
                 end
@@ -249,9 +247,10 @@ describe ReferentialsController, type: :controller do
 
         context 'when the created_from referential is not accessible by the user' do
           let(:context) do
+            organisation = self.organisation
             Chouette.create do
-              workgroup do
-                workbench(:workbench, organisation: Organisation.find_by(code: 'first'))
+              workgroup owner: organisation do
+                workbench(:workbench, organisation: organisation)
               end
               workgroup do
                 workbench do
@@ -271,9 +270,10 @@ describe ReferentialsController, type: :controller do
 
   describe 'GET show' do
     let(:context) do
+      organisation = self.organisation
       Chouette.create do
-        workgroup do
-          workbench(:workbench, organisation: Organisation.find_by(code: 'first')) do
+        workgroup owner: organisation do
+          workbench(:workbench, organisation: organisation) do
             referential :referential
           end
           workbench(:other_workbench) do
@@ -345,6 +345,7 @@ describe ReferentialsController, type: :controller do
   end
 
   describe 'PUT #update' do
+    let(:permissions) { %w[referentials.update] }
     let(:referential_params) { { name: 'changed' } }
     let(:request) do
       put :update, params: { workbench_id: workbench.id, id: referential.id, referential: referential_params }
@@ -360,9 +361,10 @@ describe ReferentialsController, type: :controller do
 
     context 'when the referential workbench has a different organisation from user' do
       let(:context) do
+        organisation = self.organisation
         Chouette.create do
-          workgroup do
-            workbench :expected_workbench, organisation: Organisation.find_by(code: 'first')
+          workgroup owner: organisation do
+            workbench :expected_workbench, organisation: organisation
             workbench :other_workbench do
               referential :through_workgroup_referential
             end
@@ -387,8 +389,9 @@ describe ReferentialsController, type: :controller do
 
     context 'with created_from' do
       let(:context) do
+        organisation = self.organisation
         Chouette.create do
-          workbench :workbench, organisation: Organisation.find_by(code: 'first') do
+          workbench :workbench, organisation: organisation do
             referential :referential
             referential :other_referential
           end
@@ -407,6 +410,7 @@ describe ReferentialsController, type: :controller do
   end
 
   describe 'PUT #archive' do
+    let(:permissions) { %w[referentials.update] }
     let(:request) { put :archive, params: { workbench_id: workbench.id, id: referential.id } }
 
     it 'redirects' do

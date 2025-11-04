@@ -4,9 +4,10 @@ RSpec.describe WorkgroupWorkbenchesController, type: :controller do
   login_user
 
   let(:context) do
+    organisation = self.organisation
     Chouette.create do
-      workgroup owner: Organisation.find_by(code: 'first') do
-        workbench organisation: Organisation.find_by(code: 'first')
+      workgroup owner: organisation do
+        workbench organisation: organisation
       end
     end
   end
@@ -22,9 +23,10 @@ RSpec.describe WorkgroupWorkbenchesController, type: :controller do
 
     context 'when user is in the workgroup organisations list' do
       let(:context) do
+        organisation = self.organisation
         Chouette.create do
           workgroup do
-            workbench organisation: Organisation.find_by(code: 'first')
+            workbench organisation: organisation
           end
         end
       end
@@ -37,6 +39,8 @@ RSpec.describe WorkgroupWorkbenchesController, type: :controller do
   end
 
   describe 'POST create' do
+    let(:permissions) { %w[workbenches.create] }
+
     let(:workbench_params) do
       {
         name: 'new workbench name',
@@ -70,7 +74,7 @@ RSpec.describe WorkgroupWorkbenchesController, type: :controller do
         expect { request }.to change { Workbench.count }.by(1)
         expect(Workbench.last).to have_attributes(
           name: 'new workbench name',
-          organisation_id: Organisation.find_by(code: 'first').id
+          organisation_id: organisation.id
         )
       end
     end
@@ -91,19 +95,14 @@ RSpec.describe WorkgroupWorkbenchesController, type: :controller do
       }
     end
 
-    without_permission 'workbenches.update' do
+    context 'without permission' do
       it 'should respond with forbidden' do
         expect(request).to have_http_status(:forbidden)
       end
     end
 
-    with_permission 'workbenches.update' do
+    with_permissions 'workbenches.update' do # rubocop:disable Metrics/BlockLength
       context "when user is the workgroup's owner" do
-        before do
-          workbench.workgroup.owner = @user.organisation
-          workbench.workgroup.save!
-        end
-
         it 'returns HTTP success' do
           expect(request).to redirect_to [workbench.workgroup, workbench]
           expect(workbench.reload.name).to eq 'new workbench name'
@@ -121,9 +120,10 @@ RSpec.describe WorkgroupWorkbenchesController, type: :controller do
 
       context 'when user is in the workgroup organisations list' do
         let(:context) do
+          organisation = self.organisation
           Chouette.create do
             workgroup do
-              workbench organisation: Organisation.find_by(code: 'first')
+              workbench organisation: organisation
             end
           end
         end

@@ -1,12 +1,10 @@
-describe Organisation, :type => :model do
+# frozen_string_literal: true
+
+RSpec.describe Organisation, type: :model do
+  subject(:organisation) { Chouette.create { organisation code: 'some_code_42' }.organisation }
+
   it { should validate_presence_of(:name) }
   it { should validate_uniqueness_of(:code) }
-
-  subject { build_stubbed :organisation }
-
-  it 'has a valid factory' do
-    expect_it.to be_valid
-  end
 
   context 'lines_set' do
     it 'has no lines' do
@@ -18,7 +16,6 @@ describe Organisation, :type => :model do
   end
 
   describe "#has_feature?" do
-
     let(:organisation) { Organisation.new }
 
     it 'return false if Organisation features is nil' do
@@ -35,13 +32,9 @@ describe Organisation, :type => :model do
       organisation.features = %w{other}
       expect(organisation.has_feature?(:absent)).to be_falsy
     end
-
   end
 
   describe "#api_keys" do
-
-    let(:organisation) { create :organisation }
-
     it "regroups api keys of all organisation's workbenches" do
       api_keys = []
       3.times do |n|
@@ -50,6 +43,5 @@ describe Organisation, :type => :model do
       end
       expect(organisation.api_keys.to_a).to eq(api_keys)
     end
-
   end
 end

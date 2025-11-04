@@ -3,9 +3,11 @@
 RSpec.describe StopAreasController, type: :controller do
   login_user
 
+  let(:permissions) { %w[stop_areas.create stop_areas.update stop_areas.destroy] }
+
   let(:context) do
+    organisation = self.organisation
     Chouette.create do
-      organisation = Organisation.find_by(code: 'first')
       workgroup(owner: organisation) do
         workbench(:workbench, organisation: organisation) do
           stop_area_provider :stop_area_provider
@@ -29,8 +31,6 @@ RSpec.describe StopAreasController, type: :controller do
   let(:base_params) { { 'workbench_id' => workbench.id.to_s } }
   let(:base_stop_area_attrs) { { 'name' => 'test' } }
   let(:stop_area_attrs) { base_stop_area_attrs }
-
-  before { @user.update(permissions: %w[stop_areas.create stop_areas.update stop_areas.destroy]) }
 
   describe 'GET #new' do
     let(:request) { get :new, params: base_params }

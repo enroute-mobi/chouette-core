@@ -4,8 +4,8 @@ RSpec.describe SearchesController, type: :controller do
   login_user
 
   let(:context) do
+    organisation = self.organisation
     Chouette.create do
-      organisation = Organisation.find_by(code: 'first')
       workgroup(:workgroup, owner: organisation) do
         workbench(:workbench, organisation: organisation)
       end

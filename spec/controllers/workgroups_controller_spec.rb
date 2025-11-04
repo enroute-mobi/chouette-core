@@ -4,9 +4,8 @@ RSpec.describe WorkgroupsController, type: :controller do
   login_user
 
   let(:context) do
+    organisation = self.organisation
     Chouette.create do
-      # To match organisation used by login_user
-      organisation = Organisation.find_by_code('first')
       workgroup owner: organisation do
         workbench organisation: organisation
       end
@@ -44,6 +43,8 @@ RSpec.describe WorkgroupsController, type: :controller do
   describe 'PUT #setup_deletion' do
     subject(:request) { put :setup_deletion, params: { id: workgroup } }
 
+    let(:permissions) { %w[workgroups.destroy] }
+
     it { is_expected.to redirect_to(workgroup_path(workgroup)) }
 
     it { expect { subject }.to change { workgroup.reload.deleted_at }.from(be_nil).to(be_present) }
@@ -51,6 +52,8 @@ RSpec.describe WorkgroupsController, type: :controller do
 
   describe 'PUT #remove_deletion' do
     subject(:request) { put :remove_deletion, params: { id: workgroup } }
+
+    let(:permissions) { %w[workgroups.destroy] }
 
     before { workgroup.setup_deletion! }
 

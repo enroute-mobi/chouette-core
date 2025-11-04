@@ -4,11 +4,12 @@ RSpec.describe CompanyDocumentMembershipsController, type: :controller do
   login_user
 
   let(:context) do
+    organisation = self.organisation
     Chouette.create do
       workgroup do
         document_type :document_type
 
-        workbench organisation: Organisation.find_by(code: 'first') do
+        workbench organisation: organisation do
           document_provider :document_provider
 
           company :c1, name: 'Company one', short_name: 'c1'

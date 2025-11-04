@@ -3,9 +3,11 @@
 RSpec.describe NetworksController, type: :controller do
   login_user
 
+  let(:permissions) { %w[networks.create networks.update networks.destroy] }
+
   let(:context) do
+    organisation = self.organisation
     Chouette.create do
-      organisation = Organisation.find_by(code: 'first')
       workgroup(owner: organisation) do
         workbench(:workbench, organisation: organisation) do
           line_provider :line_provider
@@ -29,8 +31,6 @@ RSpec.describe NetworksController, type: :controller do
   let(:base_params) { { 'workbench_id' => workbench.id.to_s } }
   let(:base_network_attrs) { { 'name' => 'test' } }
   let(:network_attrs) { base_network_attrs }
-
-  before { @user.update(permissions: %w[networks.create networks.update networks.destroy]) }
 
   describe 'GET #new' do
     let(:request) { get :new, params: base_params }

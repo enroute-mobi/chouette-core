@@ -34,6 +34,7 @@ RSpec.describe Export::Gtfs::JourneyPatternDistances do
       end
     end
 
+    let(:referential) { context.referential }
     let(:vehicle_journey_at_stops) { referential.vehicle_journey_at_stops }
     let(:journey_pattern) { context.vehicle_journey.journey_pattern }
     let(:journey_pattern_without_costs) { context.journey_pattern(:journey_pattern_without_costs) }

@@ -89,7 +89,7 @@ RSpec.describe Workbench, type: :model do
       end
 
       it 'should log a warning if the referential does not exist anymore' do
-        workbench.update_column :locked_referential_to_aggregate_id, Referential.last.id.next
+        workbench.update_column(:locked_referential_to_aggregate_id, Referential.maximum(:id)&.next || 1)
         expect(Rails.logger).to receive(:warn)
         expect(workbench.locked_referential_to_aggregate).to be_nil
       end

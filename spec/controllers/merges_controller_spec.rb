@@ -4,9 +4,10 @@ RSpec.describe MergesController, type: :controller do
   login_user
 
   let(:context) do
+    organisation = self.organisation
     Chouette.create do
       workgroup do
-        workbench organisation: Organisation.find_by(code: 'first') do
+        workbench organisation: organisation do
           referential :referential1
           referential :referential2
 

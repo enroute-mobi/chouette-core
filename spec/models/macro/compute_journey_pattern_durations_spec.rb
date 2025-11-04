@@ -6,54 +6,58 @@ RSpec.describe Macro::ComputeJourneyPatternDurations do
   end
 
   describe Macro::ComputeJourneyPatternDurations::Run do
-    let(:macro_run) { Macro::ComputeJourneyPatternDurations::Run.create macro_list_run: macro_list_run, position: 0 }
+    subject(:macro_run) { described_class.create!(macro_list_run: macro_list_run, position: 0) }
 
-    let(:macro_list_run) do
-      Macro::List::Run.create referential: referential, workbench: referential.workbench
+    let(:context) do
+      Chouette.create do
+        workbench do
+          stop_area :stop_area1
+          stop_area :stop_area2
+          stop_area :stop_area3
+          stop_area :stop_area4
+          stop_area :stop_area5
+          stop_area :stop_area6
+
+          referential do
+            route with_stops: false do
+              stop_point stop_area: :stop_area1
+              stop_point stop_area: :stop_area2
+              stop_point stop_area: :stop_area3
+              stop_point stop_area: :stop_area4
+              stop_point stop_area: :stop_area5
+              stop_point stop_area: :stop_area6
+
+              journey_pattern name: 'journey pattern name 1', costs: {} do
+                vehicle_journey
+              end
+            end
+          end
+        end
+      end
     end
-
-    let!(:at_stop) { create(:vehicle_journey_at_stop) }
-    let!(:vehicle_journey) { at_stop.vehicle_journey }
-    let!(:journey_pattern) { vehicle_journey.journey_pattern }
-    let!(:referential) { journey_pattern.referential }
-
-    let!(:first_at_stop) { journey_pattern.vehicle_journey_at_stops.first }
-    let!(:second_at_stop) { journey_pattern.vehicle_journey_at_stops.second }
-    let!(:third_at_stop) { journey_pattern.vehicle_journey_at_stops.third }
-    let!(:fourth_at_stop) { journey_pattern.vehicle_journey_at_stops.fourth }
-    let!(:fifth_at_stop) { journey_pattern.vehicle_journey_at_stops.fifth }
-    let!(:sixth_at_stop) { journey_pattern.vehicle_journey_at_stops.last }
-
-    let!(:first_stop) { first_at_stop.stop_point.stop_area }
-    let!(:second_stop) { second_at_stop.stop_point.stop_area }
-    let!(:third_stop) { third_at_stop.stop_point.stop_area }
-    let!(:fourth_stop) { fourth_at_stop.stop_point.stop_area }
-    let!(:fifth_stop) { fifth_at_stop.stop_point.stop_area }
-    let!(:sixth_stop) { sixth_at_stop.stop_point.stop_area }
-
-    let(:time) { Time.now }
+    let(:workbench) { context.workbench }
+    let(:referential) { context.referential }
+    let(:journey_pattern) { context.journey_pattern }
+    let(:first_stop) { context.stop_area(:stop_area1) }
+    let(:second_stop) { context.stop_area(:stop_area2) }
+    let(:third_stop) { context.stop_area(:stop_area3) }
+    let(:fourth_stop) { context.stop_area(:stop_area4) }
+    let(:fifth_stop) { context.stop_area(:stop_area5) }
+    let(:sixth_stop) { context.stop_area(:stop_area6) }
+    let(:macro_list_run) { workbench.macro_list_runs.new(referential: referential) }
 
     describe '#run' do
       subject { macro_run.run }
 
-      before do
-        journey_pattern.update name: 'journey pattern name 1', costs: {}
-
-        first_at_stop.update arrival_time: time, departure_time: time
-        second_at_stop.update arrival_time: time + 5.minutes, departure_time: time + 5.minutes
-        third_at_stop.update arrival_time: time + 10.minutes, departure_time: time + 10.minutes
-        fourth_at_stop.update arrival_time: time + 15.minutes, departure_time: time + 15.minutes
-        fifth_at_stop.update arrival_time: time + 20.minutes, departure_time: time + 20.minutes
-        sixth_at_stop.update arrival_time: time + 25.minutes, departure_time: time + 25.minutes
-      end
+      before { referential.switch }
 
       it 'should compute and update Journey Pattern costs' do
         exported_costs = {
-          "#{first_stop.id}-#{second_stop.id}" => { 'time' => 300 },
-          "#{second_stop.id}-#{third_stop.id}" => { 'time' => 300 },
-          "#{third_stop.id}-#{fourth_stop.id}" => { 'time' => 300 },
-          "#{fourth_stop.id}-#{fifth_stop.id}" => { 'time' => 300 },
-          "#{fifth_stop.id}-#{sixth_stop.id}" => { 'time' => 300 }
+          "#{first_stop.id}-#{second_stop.id}" => { 'time' => 240 },
+          "#{second_stop.id}-#{third_stop.id}" => { 'time' => 240 },
+          "#{third_stop.id}-#{fourth_stop.id}" => { 'time' => 240 },
+          "#{fourth_stop.id}-#{fifth_stop.id}" => { 'time' => 240 },
+          "#{fifth_stop.id}-#{sixth_stop.id}" => { 'time' => 240 }
         }
         expect { subject }.to change { journey_pattern.reload.costs }.to(exported_costs)
       end

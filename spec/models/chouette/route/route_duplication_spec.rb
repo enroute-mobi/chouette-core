@@ -1,6 +1,17 @@
-RSpec.describe Chouette::Route do
+# frozen_string_literal: true
 
-  let!( :route ){ create :route }
+RSpec.describe Chouette::Route do
+  subject(:route) { context.route }
+
+  let(:context) do
+    Chouette.create do
+      referential do
+        route
+      end
+    end
+  end
+
+  before { context.referential.switch }
 
   context '#duplicate' do
     describe 'properties' do

@@ -3,9 +3,11 @@
 RSpec.describe CompaniesController, type: :controller do
   login_user
 
+  let(:permissions) { %w[companies.create companies.update companies.destroy] }
+
   let(:context) do
+    organisation = self.organisation
     Chouette.create do
-      organisation = Organisation.find_by(code: 'first')
       workgroup(owner: organisation) do
         workbench(:workbench, organisation: organisation) do
           line_provider :line_provider
@@ -29,8 +31,6 @@ RSpec.describe CompaniesController, type: :controller do
   let(:base_params) { { 'workbench_id' => workbench.id.to_s } }
   let(:base_company_attrs) { { 'name' => 'test' } }
   let(:company_attrs) { base_company_attrs }
-
-  before { @user.update(permissions: %w[companies.create companies.update companies.destroy]) }
 
   describe 'GET #new' do
     let(:request) { get :new, params: base_params }

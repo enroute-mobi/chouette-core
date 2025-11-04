@@ -1,8 +1,6 @@
 # frozen_string_literal: true
 
-RSpec.describe UsersController, :type => :controller do
-  let(:organisation) { @user.organisation }
-
+RSpec.describe UsersController, type: :controller do
   [
     [:get, :edit],
     [:post, :update, nil, user: { foo: :bar }],
@@ -11,9 +9,7 @@ RSpec.describe UsersController, :type => :controller do
     [:put, :unblock, ->{ target_user.lock_access! }],
     [:put, :reset_password, ->{ target_user.update(confirmed_at: Time.now) }],
     [:put, :reinvite, ->{ target_user.update(invitation_sent_at: Time.now) }]
-  ].each do |verb, action, before, extra_params|
-    extra_params ||= {}
-
+  ].each do |verb, action, before = nil, extra_params = {}|
     describe "#{verb.to_s.upcase} #{action}" do
       let(:do_request) { send verb, action, params: { id: target_user.id }.update(extra_params) }
       let(:target_user) { create :user }
@@ -24,12 +20,9 @@ RSpec.describe UsersController, :type => :controller do
       end
 
       context 'logged in' do
-        before(:each) do
-          @request.env["devise.mapping"] = Devise.mappings[:user]
-          user_organisation = Organisation.where(:code => "first").first_or_create(attributes_for(:organisation))
-          @user = create(:user, organisation: user_organisation, profile: profile)
-          sign_in @user
+        login_user
 
+        before(:each) do
           controller.request.env["HTTP_REFERER"] = "/organisation/users/#{target_user.id}"
           instance_exec &before if before
         end
@@ -101,25 +94,20 @@ RSpec.describe UsersController, :type => :controller do
     [:post, :update, nil, user: { foo: :bar }],
     [:delete, :destroy],
     [:put, :block]
-  ].each do |verb, action, before, extra_params|
-    extra_params ||= {}
-
+  ].each do |verb, action, before = nil, extra_params = {}|
     describe "#{verb.to_s.upcase} #{action}" do
+      login_user
+
       let(:do_request){ send verb, action, params: { id: target_user.id }.update(extra_params) }
 
       before(:each) do
-        @request.env["devise.mapping"] = Devise.mappings[:user]
-        user_organisation = Organisation.where(:code => "first").first_or_create(attributes_for(:organisation))
-        @user = create(:user, organisation: user_organisation, profile: profile)
-        sign_in @user
-
         controller.request.env["HTTP_REFERER"] = "/organisation/users/#{target_user.id}"
         instance_exec &before if before
       end
       let(:target_user)  { create :user, organisation: organisation }
 
       context 'on self' do
-        let(:target_user)  { @user }
+        let(:target_user) { current_user }
 
         Permission::Profile.each do |user_profile|
           context "as #{user_profile}" do

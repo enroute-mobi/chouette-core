@@ -1,5 +1,11 @@
+# frozen_string_literal: true
+
 RSpec.describe Chouette::VehicleJourneyAtStop, type: :model do
   subject(:vehicle_journey_at_stop) { described_class.new }
+
+  let(:referential) { Chouette.create { referential }.referential }
+
+  before { referential.switch }
 
   it { is_expected.to_not validate_presence_of(:earliest_departure_time_of_day) }
 

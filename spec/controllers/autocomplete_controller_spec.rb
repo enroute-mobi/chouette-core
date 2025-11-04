@@ -5,8 +5,9 @@ RSpec.describe AutocompleteController, type: :controller do
 
   describe 'GET #lines' do
     let(:context) do
+      organisation = self.organisation
       Chouette.create do
-        workbench organisation: Organisation.find_by(code: 'first') do
+        workbench organisation: organisation do
           line :first_line, name: 'Line one', published_name: 'First Line', number: 'L1'
           line :second_line, name: 'Line two', published_name: 'Second Line', number: 'L2'
         end
@@ -46,8 +47,8 @@ RSpec.describe AutocompleteController, type: :controller do
 
   describe 'GET #line_groups' do
     let(:context) do
+      organisation = self.organisation
       Chouette.create do
-        organisation = Organisation.find_by(code: 'first')
         workgroup :workgroup, owner: organisation do
           workbench :workbench, organisation: organisation do
             line :line1
@@ -66,6 +67,7 @@ RSpec.describe AutocompleteController, type: :controller do
     end
 
     let(:workbench) { context.workbench(:workbench) }
+    let(:referential) { context.referential }
     let(:first_line_group) { context.line_group(:first_line_group) }
     let(:second_line_group) { context.line_group(:second_line_group) }
     let(:other_line_group) { context.line_group(:other_line_group) }
@@ -107,8 +109,9 @@ RSpec.describe AutocompleteController, type: :controller do
 
   describe 'GET #companies' do
     let(:context) do
+      organisation = self.organisation
       Chouette.create do
-        workbench organisation: Organisation.find_by(code: 'first') do
+        workbench organisation: organisation do
           company :c1, name: 'Company one', short_name: 'C1'
         end
       end
@@ -140,8 +143,9 @@ RSpec.describe AutocompleteController, type: :controller do
 
   describe 'GET #line_providers' do
     let(:context) do
+      organisation = self.organisation
       Chouette.create do
-        workbench organisation: Organisation.find_by(code: 'first') do
+        workbench organisation: organisation do
           line_provider :lp1, short_name: 'LP1'
 
           referential
@@ -186,8 +190,9 @@ RSpec.describe AutocompleteController, type: :controller do
 
   describe 'GET #line_notices' do
     let(:context) do
+      organisation = self.organisation
       Chouette.create do
-        workbench organisation: Organisation.find_by(code: 'first') do
+        workbench organisation: organisation do
           line_notice :ln1, title: 'LN1'
         end
       end
@@ -213,8 +218,9 @@ RSpec.describe AutocompleteController, type: :controller do
 
   describe 'GET #stop_areas' do
     let(:context) do
+      organisation = self.organisation
       Chouette.create do
-        workbench organisation: Organisation.find_by(code: 'first') do
+        workbench organisation: organisation do
           stop_area :sa1, name: 'Stop Area 1'
 
           referential
@@ -273,8 +279,9 @@ RSpec.describe AutocompleteController, type: :controller do
 
   describe 'GET #stop_area_providers' do
     let(:context) do
+      organisation = self.organisation
       Chouette.create do
-        workbench organisation: Organisation.find_by(code: 'first') do
+        workbench organisation: organisation do
           stop_area_provider :sap1, name: 'Stop Area Provider 1'
 
           referential
@@ -339,8 +346,9 @@ RSpec.describe AutocompleteController, type: :controller do
 
   describe 'GET #shapes' do
     let(:context) do
+      organisation = self.organisation
       Chouette.create do
-        workbench organisation: Organisation.find_by(code: 'first') do
+        workbench organisation: organisation do
           shape :first, name: 'Shape one'
           shape :second, name: 'Shape two'
         end

@@ -4,8 +4,9 @@ describe ReferentialLinesController, :type => :controller do
   login_user
 
   let(:context) do
+    organisation = self.organisation
     Chouette.create do
-      workbench organisation: Organisation.find_by(code: 'first') do
+      workbench organisation: organisation do
         line :line
         referential lines: %i[line]
       end

@@ -29,7 +29,7 @@ RSpec.describe Macro::AssociateDocuments do
           code_space :stop_area_code_space, short_name: 'stop_area_code_space'
           code_space :line_code_space, short_name: 'line_code_space'
 
-          workbench organisation: Organisation.find_by(code: 'first') do
+          workbench do
             stop_area :first, name: 'Stop Area Name', codes: { stop_area_code_space: 'dummy' }
             stop_area :middle, codes: { stop_area_code_space: 'other dummy' }
             stop_area :last

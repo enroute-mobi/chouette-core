@@ -1,6 +1,11 @@
-RSpec.describe Chouette::Route, type: :model do
+# frozen_string_literal: true
 
+RSpec.describe Chouette::Route, type: :model do
   subject { create(:route) }
+
+  let(:referential) { Chouette.create { referential }.referential }
+
+  before { referential.switch }
 
   describe "#stop_points_attributes=" do
     let(:journey_pattern) { create(:journey_pattern, route: subject) }

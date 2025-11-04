@@ -4,8 +4,9 @@ RSpec.describe DocumentDecorator, type: %i[helper decorator] do
   include Support::DecoratorHelpers
 
   let(:context) do
+    organisation = self.organisation
     Chouette.create do
-      workbench organisation: Organisation.find_by(code: 'first') do
+      workbench organisation: organisation do
         line :first
       end
     end

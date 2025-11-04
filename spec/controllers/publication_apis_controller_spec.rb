@@ -27,7 +27,7 @@ RSpec.describe PublicationApisController, type: :controller do
       expect(response).not_to be_successful
     end
 
-    with_permission "publication_apis.create" do
+    with_permissions 'publication_apis.create' do
       it "should be ok" do
         request
         expect(response).to be_successful
@@ -41,7 +41,7 @@ RSpec.describe PublicationApisController, type: :controller do
         expect(response).not_to be_successful
       end
 
-      with_permission "publication_apis.create" do
+      with_permissions 'publication_apis.create' do
         it "should be ok" do
           request
           expect(response).to be_redirect
@@ -56,7 +56,7 @@ RSpec.describe PublicationApisController, type: :controller do
         expect(response).not_to be_successful
       end
 
-      with_permission "publication_apis.update" do
+      with_permissions 'publication_apis.update' do
         it "should be ok" do
           request
           expect(response).to be_successful
@@ -71,7 +71,7 @@ RSpec.describe PublicationApisController, type: :controller do
         expect(response).not_to be_successful
       end
 
-      with_permission "publication_apis.update" do
+      with_permissions 'publication_apis.update' do
         it "should be ok" do
           request
           expect(response).to be_redirect

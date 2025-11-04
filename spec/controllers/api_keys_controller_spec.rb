@@ -1,22 +1,19 @@
-RSpec.describe ApiKeysController, :type => :controller do
-  let(:workbench){ create :workbench, organisation: organisation }
+# frozen_string_literal: true
+
+RSpec.describe ApiKeysController, type: :controller do
+  login_user
 
   describe "GET index" do
-    let(:request) { get :index, params: { workbench_id: workbench.id }}
+    let(:request) { get :index, params: { workbench_id: current_workbench.id } }
 
-    context "with permission api_keys.index" do
-      login_user permissions: %w{api_keys.index}
-
+    with_permissions 'api_keys.index' do
       it_behaves_like 'checks current_organisation'
     end
 
-    context "without permission api_keys.index" do
-      login_user permissions: []
-
-      it "avoid access" do
-        expect(request).to have_http_status 403
+    context 'without permission' do
+      it 'avoid access' do
+        expect(request).to have_http_status(:forbidden)
       end
     end
   end
-
 end

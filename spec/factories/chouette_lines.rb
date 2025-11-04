@@ -12,10 +12,6 @@ FactoryBot.define do
     transport_mode { "bus" }
     transport_submode { "undefined" }
 
-    before(:create) do |line|
-      line.line_referential ||= LineReferential.find_by! name: "first"
-    end
-
     sequence(:registration_number) { |n| "test-#{n}" }
 
     url { Faker::Internet.url }

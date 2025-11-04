@@ -28,7 +28,11 @@ describe 'route_vehicle_journeys/show.html.slim', type: :view do
   end
 
   context "with an opposite_route" do
-    let!(:route) { assign :route, create(:route, :with_opposite, line: line) }
+    let!(:route) do
+      referential.switch do
+        assign :route, create(:route, :with_opposite, line: line)
+      end
+    end
 
     it "should have an 'opposite route timetable' button" do
       href = view.workbench_referential_route_vehicle_journeys_path(

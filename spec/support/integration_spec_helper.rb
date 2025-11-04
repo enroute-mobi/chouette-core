@@ -1,24 +1,6 @@
 # frozen_string_literal: true
 
 module IntegrationSpecHelper
-  extend ActiveSupport::Concern
-
-  class_methods do
-    def with_permission(permission, &block)
-      context "with permission #{permission}" do
-        let(:permissions) { [permission] }
-        context('', &block) if block_given?
-      end
-    end
-
-    def with_feature(feature, &block)
-      context "with feature #{feature}" do
-        let(:features) { [feature] }
-        context('', &block) if block_given?
-      end
-    end
-  end
-
   def paginate_collection(klass, decorator, page = 1, context = {})
     collection = klass.page(page)
     if decorator

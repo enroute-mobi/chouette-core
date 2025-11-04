@@ -1,5 +1,15 @@
+# frozen_string_literal: true
+
 RSpec.describe StopAreaRoutingConstraint, type: :model do
-  subject { create(:stop_area_routing_constraint, stop_area_provider: first_workbench.default_stop_area_provider) }
+  subject(:stop_area_routing_constraint) { context.stop_area_routing_constraint }
+
+  let(:context) do
+    Chouette.create do
+      stop_area :from
+      stop_area :to
+      stop_area_routing_constraint from: :from, to: :to
+    end
+  end
 
   it 'should validate that both stops are in the same referential and different' do
     stop_1 = create :stop_area, stop_area_provider: subject.stop_area_provider

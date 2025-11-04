@@ -44,7 +44,7 @@ RSpec.describe Document, type: :model do
 
   let(:context) do
     Chouette.create do
-      workbench organisation: Organisation.find_by(code: 'first')
+      workbench
     end
   end
 

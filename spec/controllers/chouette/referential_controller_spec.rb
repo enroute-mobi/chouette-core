@@ -17,9 +17,10 @@ describe Chouette::ReferentialController, type: :controller do
       login_user
 
       let(:context) do
+        organisation = self.organisation
         Chouette.create do
           workgroup do
-            workbench(:organisation_workbench, organisation: Organisation.find_by(code: 'first')) do
+            workbench(:organisation_workbench, organisation: organisation) do
               referential :organisation_workbench_referential
             end
             workbench(:other_workbench) do
@@ -54,12 +55,11 @@ describe Chouette::ReferentialController, type: :controller do
 
       let(:expected_workbench) { context.workbench(:organisation_workbench) }
       let(:workbench) { expected_workbench }
+      let(:referential) { context.referential(:organisation_workbench_referential) }
 
       before { get :index, params: { workbench_id: workbench.id, referential_id: referential.id } }
 
       context 'when the referential workbench has the same organisation as user' do
-        let(:referential) { context.referential(:organisation_workbench_referential) }
-
         it 'should return the id of the workbench having the same organisation as the user' do
           expect(response.body).to eq("#{referential.id} #{expected_workbench.id}")
         end

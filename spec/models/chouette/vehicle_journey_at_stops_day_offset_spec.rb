@@ -1,6 +1,11 @@
-describe Chouette::VehicleJourneyAtStopsDayOffset do
-  describe "#calculate" do
+# frozen_string_literal: true
 
+RSpec.describe Chouette::VehicleJourneyAtStopsDayOffset do
+  let(:referential) { Chouette.create { referential }.referential }
+
+  before { referential.switch }
+
+  describe "#calculate" do
     context 'when vehicle journey at stops departure and arrival >= 23  <= 1' do
       it "increments day offset" do
         at_stops = []

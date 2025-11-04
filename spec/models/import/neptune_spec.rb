@@ -377,8 +377,18 @@ RSpec.describe Import::Neptune do
   end
 
   describe '#add_time_table_dates' do
+    let(:context) do
+      Chouette.create do
+        referential do
+          time_table
+        end
+      end
+    end
+    let(:referential) { context.referential }
+    let(:timetable) { context.time_table }
     let(:import) { build_import }
-    let(:timetable) { create(:time_table) }
+
+    before { referential.switch }
 
     it 'should add the new dates' do
       expect{ import.send(:add_time_table_dates, timetable, '2018-10-22') }.to change{ timetable.dates.count }.by 1
@@ -391,8 +401,18 @@ RSpec.describe Import::Neptune do
   end
 
   describe '#add_time_table_periods' do
+    let(:context) do
+      Chouette.create do
+        referential do
+          time_table
+        end
+      end
+    end
+    let(:referential) { context.referential }
+    let(:timetable) { context.time_table }
     let(:import) { build_import }
-    let(:timetable) { create(:time_table) }
+
+    before { referential.switch }
 
     it 'should add the new periods' do
       expect{

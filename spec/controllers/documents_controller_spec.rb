@@ -3,9 +3,11 @@
 RSpec.describe DocumentsController, type: :controller do
   login_user
 
+  let(:permissions) { %w[documents.create documents.update documents.destroy] }
+
   let(:context) do
+    organisation = self.organisation
     Chouette.create do
-      organisation = Organisation.find_by(code: 'first')
       workgroup(owner: organisation) do
         document_type :document_type
         workbench(:workbench, organisation: organisation) do
@@ -40,8 +42,6 @@ RSpec.describe DocumentsController, type: :controller do
     }
   end
   let(:document_attrs) { base_document_attrs }
-
-  before { @user.update(permissions: %w[documents.create documents.update documents.destroy]) }
 
   describe 'GET #new' do
     let(:request) { get :new, params: base_params }

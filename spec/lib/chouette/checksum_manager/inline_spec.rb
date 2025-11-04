@@ -1,6 +1,19 @@
+# frozen_string_literal: true
+
 RSpec.describe Chouette::ChecksumManager::Inline do
-  let(:manager){ Chouette::ChecksumManager::Inline.new }
-  let(:route){ create(:route) }
+  subject(:manager) { described_class.new }
+
+  let(:context) do
+    Chouette.create do
+      referential do
+        route
+      end
+    end
+  end
+  let(:referential) { context.referential }
+  let(:route) { context.route }
+
+  before { referential.switch }
 
   context "#watch" do
     let(:object){ route }

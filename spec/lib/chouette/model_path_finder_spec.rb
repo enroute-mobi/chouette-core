@@ -3,11 +3,12 @@
 RSpec.describe Chouette::ModelPathFinder do
   describe '#path' do
     subject { model_path_finder.path }
+
     let(:model_path_finder) { Chouette::ModelPathFinder.new(model.class, model.id, workbench, referential) }
 
     context 'when Workbench is 42' do
-      let(:model_path_finder) { Chouette::ModelPathFinder.new(model.class, model.id, workbench) }
       let(:workbench) { Workbench.new(id: 42) }
+      let(:referential) { nil }
 
       describe 'for Line 1' do
         let(:model) { Chouette::Line.new(id: 1) }
@@ -79,56 +80,53 @@ RSpec.describe Chouette::ModelPathFinder do
       #   it { is_expected.to eq('/workbenches/42/document_types/1') }
       # end
 
-      context 'and Referential is 21' do
-        let(:model_path_finder) do
-          Chouette::ModelPathFinder.new(model.class, model.id, workbench, referential)
-        end
-        let(:referential) { Referential.new(id: 21) }
+      context 'with referential models' do
+        before { Chouette.create { referential }.referential.switch }
 
-        describe 'for Route 1' do
-          let(:model) { Chouette::Route.new(id: 1) }
-          it { is_expected.to eq('/workbenches/42/referentials/21/routes/1') }
-        end
+        context 'and Referential is 21' do
+          let(:referential) { Referential.new(id: 21) }
 
-        describe 'for Journey Pattern 1' do
-          let(:model) { Chouette::JourneyPattern.new(id: 1) }
-          it { is_expected.to eq('/workbenches/42/referentials/21/journey_patterns/1') }
-        end
+          describe 'for Route 1' do
+            let(:model) { Chouette::Route.new(id: 1) }
+            it { is_expected.to eq('/workbenches/42/referentials/21/routes/1') }
+          end
 
-        describe 'for Vehicle Journey 1' do
-          let(:model) { Chouette::VehicleJourney.new(id: 1) }
-          it { is_expected.to eq('/workbenches/42/referentials/21/vehicle_journeys/1') }
-        end
+          describe 'for Journey Pattern 1' do
+            let(:model) { Chouette::JourneyPattern.new(id: 1) }
+            it { is_expected.to eq('/workbenches/42/referentials/21/journey_patterns/1') }
+          end
 
-        describe 'for Time Table 1' do
-          let(:model) { Chouette::TimeTable.new(id: 1) }
-          it { is_expected.to eq('/workbenches/42/referentials/21/time_tables/1') }
-        end
-      end
+          describe 'for Vehicle Journey 1' do
+            let(:model) { Chouette::VehicleJourney.new(id: 1) }
+            it { is_expected.to eq('/workbenches/42/referentials/21/vehicle_journeys/1') }
+          end
 
-      context 'and Referential is nil' do
-        let(:model_path_finder) do
-          Chouette::ModelPathFinder.new(model.class, model.id, workbench, nil)
+          describe 'for Time Table 1' do
+            let(:model) { Chouette::TimeTable.new(id: 1) }
+            it { is_expected.to eq('/workbenches/42/referentials/21/time_tables/1') }
+          end
         end
 
-        describe 'for Route 1' do
-          let(:model) { Chouette::Route.new(id: 1) }
-          it { is_expected.to be_nil }
-        end
+        context 'and Referential is nil' do
+          describe 'for Route 1' do
+            let(:model) { Chouette::Route.new(id: 1) }
+            it { is_expected.to be_nil }
+          end
 
-        describe 'for Journey Pattern 1' do
-          let(:model) { Chouette::JourneyPattern.new(id: 1) }
-          it { is_expected.to be_nil }
-        end
+          describe 'for Journey Pattern 1' do
+            let(:model) { Chouette::JourneyPattern.new(id: 1) }
+            it { is_expected.to be_nil }
+          end
 
-        describe 'for Vehicle Journey 1' do
-          let(:model) { Chouette::VehicleJourney.new(id: 1) }
-          it { is_expected.to be_nil }
-        end
+          describe 'for Vehicle Journey 1' do
+            let(:model) { Chouette::VehicleJourney.new(id: 1) }
+            it { is_expected.to be_nil }
+          end
 
-        describe 'for Time Table 1' do
-          let(:model) { Chouette::TimeTable.new(id: 1) }
-          it { is_expected.to be_nil }
+          describe 'for Time Table 1' do
+            let(:model) { Chouette::TimeTable.new(id: 1) }
+            it { is_expected.to be_nil }
+          end
         end
       end
     end

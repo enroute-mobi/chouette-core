@@ -3,9 +3,11 @@
 RSpec.describe PointOfInterestsController, type: :controller do
   login_user
 
+  let(:permissions) { %w[point_of_interests.create point_of_interests.update point_of_interests.destroy] }
+
   let(:context) do
+    organisation = self.organisation
     Chouette.create do
-      organisation = Organisation.find_by(code: 'first')
       workgroup(owner: organisation) do
         workbench(:workbench, organisation: organisation) do
           shape_provider :shape_provider
@@ -36,10 +38,6 @@ RSpec.describe PointOfInterestsController, type: :controller do
     { 'name' => 'test', 'point_of_interest_category_id' => point_of_interest_category.id.to_s }
   end
   let(:point_of_interest_attrs) { base_point_of_interest_attrs }
-
-  before do
-    @user.update(permissions: %w[point_of_interests.create point_of_interests.update point_of_interests.destroy])
-  end
 
   describe 'GET #new' do
     let(:request) { get :new, params: base_params }

@@ -1,5 +1,17 @@
+# frozen_string_literal: true
+
 describe Chouette::Route, type: :model do
-  subject(:route) { create(:route) }
+  subject(:route) { context.route }
+
+  let(:context) do
+    Chouette.create do
+      referential do
+        route
+      end
+    end
+  end
+
+  before { context.referential.switch }
 
   describe 'checksum' do
     it_behaves_like 'checksum support'

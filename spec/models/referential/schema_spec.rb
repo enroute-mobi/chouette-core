@@ -311,6 +311,95 @@ RSpec.describe Referential::Schema do
                                                                                    .to(not_include(referential.slug))
     end
   end
+
+  describe '#restore', truncation: true do
+    subject { referential_schema.restore(dump) }
+
+    let(:dump) { file_fixture('referential_dump.sql.gz').open }
+
+    let(:context) { Chouette.create { referential(slug: '9eb5427c-9a67-40da-a9da-f04b8a2aa38b') } }
+
+    before { referential_schema.destroy! }
+
+    it 'recreates schema' do
+      expect { subject }.to change { ::ActiveRecord::Base.connection.schema_names }.from(not_include(referential.slug))
+                                                                                   .to(include(referential.slug))
+    end
+
+    context 'in referential' do
+      before do
+        subject
+        referential.switch
+      end
+
+      it 'restores migration data' do
+        expect(ActiveRecord::Migrator.current_version).to eq(20251013075038) # rubocop:disable Style/NumericLiterals
+      end
+
+      it 'restores footnotes' do
+        expect(Chouette::Footnote.all).to contain_exactly(have_attributes(code: 'some_footnote'))
+      end
+
+      it 'restores timetables' do
+        expect(Chouette::TimeTable.all).to contain_exactly(have_attributes(comment: 'some_time_table'))
+        time_table = Chouette::TimeTable.first
+        expect(time_table.codes).to(contain_exactly(have_attributes(code_space_id: 1, value: 'time_table_code')))
+        expect(time_table.dates).to contain_exactly(
+          have_attributes(date: Date.parse('2024-12-13'), in_out: true),
+          have_attributes(date: Date.parse('2025-06-23'), in_out: false)
+        )
+        expect(time_table.periods).to(
+          contain_exactly(have_attributes(period_start: Date.parse('2030-01-07'), period_end: Date.parse('2030-01-20')))
+        )
+      end
+
+      it 'restores routes' do
+        expect(Chouette::Route.all).to contain_exactly(have_attributes(name: 'some_route', line_id: 1))
+        route = Chouette::Route.first
+        expect(route.stop_points).to contain_exactly(
+          have_attributes(metadata: have_attributes(name: 'stop_point1')),
+          have_attributes(metadata: have_attributes(name: 'stop_point2')),
+          have_attributes(metadata: have_attributes(name: 'stop_point3'))
+        )
+      end
+
+      it 'restores journey patterns' do
+        expect(Chouette::JourneyPattern.all).to contain_exactly(have_attributes(name: 'some_journey_pattern'))
+        journey_pattern = Chouette::JourneyPattern.first
+        expect(journey_pattern.route).to be_present
+        expect(journey_pattern.stop_points.count).to eq(3)
+      end
+
+      it 'restores vehicle journeys' do
+        expect(Chouette::VehicleJourney.all).to(
+          contain_exactly(have_attributes(published_journey_name: 'some_vehicle_journey'))
+        )
+        vehicle_journey = Chouette::VehicleJourney.first
+        expect(vehicle_journey.journey_pattern).to be_present
+        expect(vehicle_journey.codes).to(
+          contain_exactly(have_attributes(code_space_id: 1, value: 'vehicle_journey_code'))
+        )
+        expect(vehicle_journey.vehicle_journey_at_stops.count).to eq(3)
+        expect(vehicle_journey.footnotes.count).to eq(1)
+        expect(vehicle_journey.time_tables.count).to eq(1)
+      end
+
+      it 'restores routing constraint zones' do
+        expect(Chouette::RoutingConstraintZone.all).to(
+          contain_exactly(have_attributes(name: 'some_routing_constraint_zone'))
+        )
+        expect(Chouette::RoutingConstraintZone.first.route).to be_present
+      end
+
+      it 'restores service counts' do
+        expect(ServiceCount.all).to contain_exactly(have_attributes(date: Date.parse('2025-02-04')))
+        service_count = ServiceCount.first
+        expect(service_count.line).to be_present
+        expect(service_count.route).to be_present
+        expect(service_count.journey_pattern).to be_present
+      end
+    end
+  end
 end
 
 RSpec.describe Referential::Schema::Table do

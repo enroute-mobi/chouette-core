@@ -145,6 +145,10 @@ class Referential
       ::Apartment::Tenant.drop(@name)
     end
 
+    def restore(file)
+      DumpRestore.new(name).restore(file)
+    end
+
     class DumpRestore < ::Apartment::Adapters::PostgresqlSchemaFromSqlAdapter
       def initialize(name)
         super(::Apartment.connection_config)
@@ -153,6 +157,10 @@ class Referential
 
       def dump(file)
         with_pg_env { `pg_dump -d #{@config[:database]} -n #{@name} -f #{file.path} --compress=gzip` }
+      end
+
+      def restore(file)
+        with_pg_env { `gunzip -kf < #{file.path} | psql -d #{@config[:database]} -1` }
       end
     end
 

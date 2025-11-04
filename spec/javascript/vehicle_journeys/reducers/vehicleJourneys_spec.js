@@ -93,8 +93,7 @@ describe('vehicleJourneys reducer', () => {
         footnotes: fakeFootnotes,
         time_tables: fakeTimeTables,
         vehicle_journey_at_stops: fakeVJAS,
-        index: 0,
-        custom_fields: {foo: {value: 1}}
+        index: 0
       },
       {
         journey_pattern_id: 2,
@@ -106,8 +105,7 @@ describe('vehicleJourneys reducer', () => {
         footnotes: fakeFootnotes,
         time_tables: fakeTimeTables,
         vehicle_journey_at_stops: fakeVJAS,
-        index: 1,
-        custom_fields: {foo: {value: 1}}
+        index: 1
       }
     ]
   })
@@ -139,12 +137,7 @@ describe('vehicleJourneys reducer', () => {
     }]
     let fakeData = {
       published_journey_name: {value: 'test'},
-      published_journey_identifier: {value : ''},
-      custom_fields: {
-        foo: {
-          value: 12
-        }
-      }
+      published_journey_identifier: {value : ''}
     }
     let fakeSelectedJourneyPattern = { id: "1", stop_areas: [{stop_area_short_description: { object_id: '001', position: 0}}]}
     let fakeSelectedCompany = {name: "ALBATRANS"}
@@ -171,12 +164,7 @@ describe('vehicleJourneys reducer', () => {
       selected: false,
       deletable: false,
       transport_mode: 'undefined',
-      transport_submode: 'undefined',
-      custom_fields: {
-        foo: {
-          value: 12
-        }
-      }
+      transport_submode: 'undefined'
     }, ...state])
   })
 
@@ -259,12 +247,7 @@ describe('vehicleJourneys reducer', () => {
     }]
     let fakeData = {
       published_journey_name: {value: 'test'},
-      published_journey_identifier: {value : ''},
-      custom_fields: {
-        foo: {
-          value: 12
-        }
-      }
+      published_journey_identifier: {value : ''}
     }
     let fakeSelectedJourneyPattern = {
       id: "1",
@@ -321,12 +304,7 @@ describe('vehicleJourneys reducer', () => {
       selected: false,
       deletable: false,
       transport_mode: 'undefined',
-      transport_submode: 'undefined',
-      custom_fields: {
-        foo: {
-          value: 12
-        }
-      }
+      transport_submode: 'undefined'
     }, ...state])
   })
 
@@ -459,7 +437,6 @@ describe('vehicleJourneys reducer', () => {
       line_notices: [],
       vehicle_journey_at_stops: pristineVjasList,
       selected: false,
-      custom_fields: undefined,
       deletable: false,
       transport_mode: 'undefined',
       transport_submode: 'undefined'
@@ -590,7 +567,6 @@ describe('vehicleJourneys reducer', () => {
       line_notices: [],
       vehicle_journey_at_stops: pristineVjasList,
       selected: false,
-      custom_fields: undefined,
       deletable: false,
       transport_mode: 'undefined',
       transport_submode: 'undefined'
@@ -727,7 +703,6 @@ describe('vehicleJourneys reducer', () => {
       line_notices: [],
       vehicle_journey_at_stops: pristineVjasList,
       selected: false,
-      custom_fields: undefined,
       deletable: false,
       transport_mode: 'undefined',
       transport_submode: 'undefined'
@@ -818,7 +793,6 @@ describe('vehicleJourneys reducer', () => {
       line_notices: [],
       vehicle_journey_at_stops: pristineVjasList,
       selected: false,
-      custom_fields: undefined,
       deletable: false,
       transport_mode: 'undefined',
       transport_submode: 'undefined'
@@ -909,7 +883,6 @@ describe('vehicleJourneys reducer', () => {
       line_notices: [],
       vehicle_journey_at_stops: pristineVjasList,
       selected: false,
-      custom_fields: undefined,
       deletable: false,
       transport_mode: 'undefined',
       transport_submode: 'undefined'
@@ -1143,23 +1116,15 @@ describe('vehicleJourneys reducer', () => {
         departureDelta
       })
     ).toEqual([state[0], newVJ, state[1]])
-    newState[1].custom_fields.foo.value = 2
-    expect(newState[0].custom_fields.foo.value).toEqual(1)
   })
 
   it('should handle EDIT_VEHICLEJOURNEY', () => {
-    let custom_fields = {
-      foo: {
-        value: 12
-      }
-    }
     let fakeSelectedCompany = {name : 'ALBATRANS'}
     let fakeData = {
       published_journey_name: {value : 'test'},
-      published_journey_identifier: {value: 'test'},
-      custom_fields: {foo: {value: 12}}
+      published_journey_identifier: {value: 'test'}
     }
-    let newVJ = Object.assign({}, state[0], {company: fakeSelectedCompany, published_journey_name: fakeData.published_journey_name.value, published_journey_identifier: fakeData.published_journey_identifier.value, custom_fields})
+    let newVJ = Object.assign({}, state[0], {company: fakeSelectedCompany, published_journey_name: fakeData.published_journey_name.value, published_journey_identifier: fakeData.published_journey_identifier.value})
     expect(
       vjReducer(state, {
         type: 'EDIT_VEHICLEJOURNEY',

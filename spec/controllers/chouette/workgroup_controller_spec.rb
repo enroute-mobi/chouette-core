@@ -8,7 +8,7 @@ describe Chouette::WorkgroupController, type: :controller do
     # rubocop:disable Lint/ConstantDefinitionInBlock,Style/ClassAndModuleChildren
     class self::DummysController < described_class
       def index
-        head :ok
+        render plain: workgroup.id.to_s
       end
     end
     # rubocop:enable Lint/ConstantDefinitionInBlock,Style/ClassAndModuleChildren

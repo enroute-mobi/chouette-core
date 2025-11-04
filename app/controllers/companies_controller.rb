@@ -101,7 +101,6 @@ class CompaniesController < Chouette::LineReferentialController
                  customer_service_contact].product(%w[name email phone url more]).map do |k|
       k.join('_')
     end
-    fields += permitted_custom_fields_params(Chouette::Company.custom_fields(line_referential.workgroup))
     @company_params = params.require(:company).permit(fields)
   end
 end

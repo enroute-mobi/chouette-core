@@ -91,12 +91,7 @@ export default class VehicleJourneysList extends Component {
   }
 
   extraHeaderLabel(header) {
-    if (header["type"] == "custom_field") {
-      return this.props.customFields[header["name"]]["name"]
-    }
-    else {
-      return I18n.attribute_name("vehicle_journey", header)
-    }
+    return I18n.attribute_name("vehicle_journey", header)
   }
 
   bubbleKeyEvent(event) {
@@ -293,7 +288,6 @@ VehicleJourneysList.propTypes = {
   status: PropTypes.object.isRequired,
   filters: PropTypes.object.isRequired,
   extraHeaders: PropTypes.array.isRequired,
-  customFields: PropTypes.object.isRequired,
   stopPointsList: PropTypes.array.isRequired,
   onLoadFirstPage: PropTypes.func.isRequired,
   onUpdateTime: PropTypes.func.isRequired,

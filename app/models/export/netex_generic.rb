@@ -360,25 +360,6 @@ class Export::NetexGeneric < Export::Base
     end
   end
 
-  class CustomFieldExtractor
-
-    def initialize(model)
-      @model = model
-    end
-    attr_reader :model
-
-    delegate :custom_field_values, to: :model, allow_nil: true
-
-    def custom_field_identifiers
-      return [] unless custom_field_values.present?
-
-      custom_field_values.map do |key, value|
-        Netex::KeyValue.new key: key, value: value, type_of_key: "chouette::custom-field"
-      end
-    end
-
-  end
-
   module Accessibility
     def accessibility_assessment
       return unless accessibility_assessment?
@@ -515,7 +496,7 @@ class Export::NetexGeneric < Export::Base
             private_code: private_code,
             centroid: centroid,
             raw_xml: import_xml,
-            key_list: key_list,
+            key_list: netex_alternate_identifiers,
             accessibility_assessment: accessibility_assessment,
             postal_address: postal_address,
             url: url,
@@ -552,14 +533,6 @@ class Export::NetexGeneric < Export::Base
 
       def derived_from_object_ref
         code_provider.stop_areas.code(referent_id)
-      end
-
-      def key_list
-        netex_alternate_identifiers + netex_custom_field_identifiers
-      end
-
-      def netex_custom_field_identifiers
-        CustomFieldExtractor.new(self).custom_field_identifiers
       end
 
       def centroid
@@ -665,7 +638,7 @@ class Export::NetexGeneric < Export::Base
             private_code: private_code,
             centroid: centroid,
             raw_xml: import_xml,
-            key_list: key_list,
+            key_list: netex_alternate_identifiers,
             place_types: place_types,
             areas: areas
           }
@@ -692,14 +665,6 @@ class Export::NetexGeneric < Export::Base
 
       def derived_from_object_ref
         code_provider.stop_areas.code(referent_id)
-      end
-
-      def key_list
-        netex_alternate_identifiers + netex_custom_field_identifiers
-      end
-
-      def netex_custom_field_identifiers
-        CustomFieldExtractor.new(self).custom_field_identifiers
       end
 
       def centroid
@@ -957,8 +922,6 @@ class Export::NetexGeneric < Export::Base
   end
 
   class Lines < Part
-    callback Operation::CustomFieldIgnored
-
     delegate :lines, to: :export_scope
 
     def perform
@@ -1156,8 +1119,6 @@ class Export::NetexGeneric < Export::Base
   end
 
   class Companies < Part
-    callback Operation::CustomFieldIgnored
-
     delegate :companies, to: :export_scope
 
     def perform
@@ -1763,8 +1724,6 @@ class Export::NetexGeneric < Export::Base
   end
 
   class JourneyPatterns < Part
-    callback Operation::CustomFieldIgnored
-
     delegate :journey_patterns, to: :export_scope
 
     def perform
@@ -1831,8 +1790,6 @@ class Export::NetexGeneric < Export::Base
   end
 
   class VehicleJourneysCache < Part
-    callback Operation::CustomFieldIgnored
-
     delegate :cache, to: :export
 
     def perform
@@ -2092,9 +2049,6 @@ class Export::NetexGeneric < Export::Base
   end
 
   class VehicleJourneys < Part
-    # For the moment, no CustomField is used in VehicleJourney. See CHOUETTE-3939
-    callback Operation::CustomFieldIgnored
-
     def perform
       vehicle_journeys.each_instance do |vehicle_journey|
         tags = resource_tagger.tags_for(vehicle_journey.line_id)

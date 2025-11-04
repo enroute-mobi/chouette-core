@@ -18,7 +18,6 @@ const journeyPattern = (state = {}, action) =>{
         registration_number: action.data.registration_number.value,
         stop_points: stopPoints,
         costs: {},
-        custom_fields: action.data.custom_fields,
         deletable: false,
         shape: action.data.shape,
         booking_arrangement_id: action.data.booking_arrangement_id.value
@@ -107,7 +106,6 @@ export default function journeyPatterns (state = [], action)  {
             name: action.data.name.value,
             published_name: action.data.published_name.value,
             registration_number: action.data.registration_number.value,
-            custom_fields: action.data.custom_fields,
             shape: action.data.shape
           })
         } else {

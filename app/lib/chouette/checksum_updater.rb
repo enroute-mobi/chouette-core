@@ -29,7 +29,7 @@ module Chouette
 
     def journey_patterns
       measure "journey_patterns" do
-        update_in_batches scope.journey_patterns.select(:id, :custom_field_values, :name, :published_name, :registration_number, :costs, :shape_id).includes(:stop_points)
+        update_in_batches scope.journey_patterns.select(:id, :name, :published_name, :registration_number, :costs, :shape_id).includes(:stop_points)
       end
     end
 
@@ -40,7 +40,7 @@ module Chouette
           scope
             .vehicle_journeys
             .select(
-              :id, :custom_field_values, :published_journey_name, :published_journey_identifier,
+              :id, :published_journey_name, :published_journey_identifier,
               :company_id, :line_notice_ids, :service_facility_set_ids, :accessibility_assessment_id
             ).includes(:company_light, :footnotes, :vehicle_journey_at_stops)
         )
@@ -79,10 +79,8 @@ module Chouette
       delegate :workgroup, :referential, to: :context
 
       def call(collection)
-        CustomFieldsSupport.within_workgroup(workgroup) do
-          referential.switch do
-            Chouette::ChecksumManager.update_checkum_in_batches(collection, referential)
-          end
+        referential.switch do
+          Chouette::ChecksumManager.update_checkum_in_batches(collection, referential)
         end
       end
     end

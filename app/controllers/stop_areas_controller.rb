@@ -51,7 +51,7 @@ class StopAreasController < Chouette::StopAreaReferentialController
 
       format.json do
         attributes = stop_area.attributes.slice(:id, :name, :objectid, :comment, :area_type, :registration_number,
-                                                :longitude, :latitude, :country_code, :time_zone, :street_name, :kind, :custom_field_values, :metadata)
+                                                :longitude, :latitude, :country_code, :time_zone, :street_name, :kind, :metadata)
         area_type_label = I18n.t("area_types.label.#{stop_area.area_type}")
         attributes[:text] = "<span class='small label label-info'>#{area_type_label}</span>#{stop_area.full_name}"
         render json: attributes
@@ -143,7 +143,7 @@ class StopAreasController < Chouette::StopAreaReferentialController
         fare_zone_ids: [],
         codes_attributes: %i[id code_space_id value _destroy],
         localized_names: stop_area_referential.locales.map { |l| l[:code] } }
-    ] + permitted_custom_fields_params(Chouette::StopArea.custom_fields(stop_area_referential.workgroup))
+    ]
     fields += [:area_type] if params[:action] == 'create' || params[:action] == 'new'
 
     @stop_area_params = params.require(:stop_area).permit(fields)

@@ -205,19 +205,6 @@ class Operation < ApplicationModel
     end
   end
 
-  class CustomFieldIgnored < Callback
-    def around(&block)
-      CustomFieldsSupport.without_custom_fields(&block)
-    end
-  end
-
-  class CustomFieldLoader < Callback
-    delegate :workgroup, to: :operation
-    def around(&block)
-      CustomFieldsSupport.within_workgroup(workgroup, &block)
-    end
-  end
-
   class LogTagger < Callback
     delegate :internal_description, to: :operation
     def around(&block)
@@ -367,7 +354,6 @@ class Operation < ApplicationModel
 
   # Define logics to be performed before and after Operation#perform
   callback LogTagger
-  callback CustomFieldLoader
   callback PerformedSkipper
   callback Bullet if defined?(::Bullet)
   callback Benchmarker

@@ -7,7 +7,6 @@ const mapStateToProps = (state) => {
   return {
     editMode: state.editMode,
     status: state.status,
-    custom_fields: state.custom_fields,
     status: state.status,
     type: state.modal.type,
     ...state.modal.modalProps

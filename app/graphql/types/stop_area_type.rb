@@ -30,14 +30,27 @@ module Types
 
     field :localized_names, Types::PrettyJson, null: true
 
-    field :created_at, GraphQL::Types::ISO8601DateTime, null: true
-    field :updated_at, GraphQL::Types::ISO8601DateTime, null: true
-    field :confirmed_at, GraphQL::Types::ISO8601DateTime, null: true
-    field :deleted_at, GraphQL::Types::ISO8601DateTime, null: true
+    field :created_at, GraphQL::Types::ISO8601DateTime, null:true
+    field :updated_at, GraphQL::Types::ISO8601DateTime, null:true
+    field :confirmed_at, GraphQL::Types::ISO8601DateTime, null:true
+    field :deleted_at, GraphQL::Types::ISO8601DateTime, null:true
 
-    field :custom_fields, GraphQL::Types::JSON, null: true
-    def custom_fields
-      object.custom_field_values.delete_if { |_k, v| v.presence.nil? }
+    field :codes, GraphQL::Types::JSON, null: true
+    def codes
+      object.codes.group_by { |c| c.code_space.short_name }.transform_values do |codes|
+        code_values = codes.map(&:value).sort
+
+        if code_values.many?
+          code_values
+        else
+          code_values.first
+        end
+      end
+    end
+
+    field :referent, Types::StopAreaType, null: true
+    def referent
+      LazyLoading::StopRelation.new(context, object.referent_id) if object.referent_id
     end
 
     field :parent, Types::StopAreaType, null: true

@@ -5,8 +5,6 @@ module Chouette
     # To prevent a "chouette_" to be added to all its chidren
     resources_configuration[:self].delete(:route_prefix)
 
-    include WithinWorkgroup
-
     belongs_to :workgroup, collection_name: :owned_workgroups
 
     def policy_context_class

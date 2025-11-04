@@ -65,9 +65,7 @@ class Api::V1::DatasController < Api::V1::BaseController
       return
     end
     published_referential.switch do
-      CustomFieldsSupport.within_workgroup(workgroup) do
-        yield
-      end
+      yield
     end
   end
 

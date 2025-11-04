@@ -12,8 +12,7 @@ const journeyPatternsApp = combineReducers({
   journeyPatterns,
   pagination,
   stopPointsList,
-  modal,
-  custom_fields: (state = [], action) => state
+  modal
 })
 
 export default journeyPatternsApp

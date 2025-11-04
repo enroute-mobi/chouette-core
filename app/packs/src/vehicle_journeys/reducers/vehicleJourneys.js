@@ -118,7 +118,6 @@ const vehicleJourney= (state = {}, action, keep) => {
         deletable: false,
         transport_mode: window.transportMode ? window.transportMode : 'undefined',
         transport_submode: window.transportSubmode ? window.transportSubmode : 'undefined',
-        custom_fields: action.data.custom_fields,
         referential_codes: []
       }
     case 'DUPLICATE_VEHICLEJOURNEY':
@@ -142,8 +141,7 @@ const vehicleJourney= (state = {}, action, keep) => {
         }
       })
 
-      let custom_fields = JSON.parse(JSON.stringify(state.custom_fields))
-      return _.assign({}, state, {vehicle_journey_at_stops: shiftedArray, custom_fields: custom_fields})
+      return _.assign({}, state, {vehicle_journey_at_stops: shiftedArray})
     case 'SELECT_SPECIFIC_STOP':
       let specific_stop_area_map = action.specific_stop_area_map
       let vjasList = state.vehicle_journey_at_stops.map((vjas, i) => {
@@ -232,8 +230,7 @@ export default function vehicleJourneys(state = [], action) {
             accessibility_assessment: action.selectedAccessibilityAssessment,
             published_journey_name: action.data.published_journey_name.value,
             published_journey_identifier: action.data.published_journey_identifier.value,
-            custom_fields: action.data.custom_fields,
-            referential_codes: action.data.referential_codes
+              referential_codes: action.data.referential_codes
           })
         }else{
           return vj

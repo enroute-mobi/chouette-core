@@ -10,7 +10,6 @@ import editMode from './editMode'
 import selection from './selection'
 import stopPointsList from './stopPointsList'
 import missions from './missions'
-import custom_fields from './custom_fields'
 
 var selectedJP = []
 
@@ -75,7 +74,6 @@ const initialState = {
     confirmModal: {}
   },
   missions: window.all_missions,
-  custom_fields: window.custom_fields,
   selection: {
     active: false,
     width: 0,
@@ -119,7 +117,6 @@ const combinedReducers = combineReducers({
   stopPointsList,
   returnStopPointsList: stopPointsList,
   missions,
-  custom_fields,
   selection: (state = {}, action) => state
 })
 

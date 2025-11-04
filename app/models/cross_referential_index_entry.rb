@@ -40,9 +40,7 @@ class CrossReferentialIndexEntry < ActiveRecord::Base
     def rebuild_index_for_relation_in_referential(rel, referential)
       CrossReferentialIndexEntry.bulk_insert do |worker|
         begin
-          CustomFieldsSupport.within_workgroup(referential.workgroup) do
-            do_rebuild_index_for_relation_in_referential rel, referential, worker
-          end
+          do_rebuild_index_for_relation_in_referential rel, referential, worker
         rescue => e
           Chouette::Safe.capture "Unable to rebuild index for relation #{rel.klass.name}##{rel.name} in referential #{referential.slug}", e
         end

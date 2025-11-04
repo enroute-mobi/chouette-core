@@ -3,7 +3,6 @@ en:
     waiting_time_format: "%{value} minutes"
     search_no_results: "No Stop Area matching your query"
     no_specific_stops: "This Stop Area don't have any specific stop"
-    no_custom_fields: "This Stop Area does not have any custom fields"
     errors:
       empty: Aucun stop_area_id
       parent_area_type: can not be of type %{area_type}
@@ -21,7 +20,6 @@ en:
       lines: "Lines"
       address: "Address"
       accessibility: "Accessibility"
-      custom_fields: "Custom fields"
     actions:
       new: "Add a Stop Area"
       new_flexible: "Add a Flexible Stop Area"
@@ -66,7 +64,6 @@ en:
         usage: "Usage"
         fare: "Fare"
         accessibility: "Accessibility"
-        custom_fields: "Custom fields"
         flexible_area: "Flexible Stop Area"
       address: "246 Boulevard Saint-Germain, 75007 Paris"
       geolocalize: "Pinpoint "

@@ -3,7 +3,6 @@ import PropTypes from 'prop-types'
 import actions from '../../actions'
 import CompanySelect2 from './select2s/CompanySelect2'
 import AccessibilityAssessmentSelect2 from './select2s/AccessibilityAssessmentSelect2'
-import CustomFieldsInputs from '../../../helpers/CustomFieldsInputs'
 import CodesInputs from './CodesInputs'
 import _ from 'lodash'
 
@@ -30,7 +29,7 @@ export default class EditVehicleJourney extends Component {
         accessibility_assessment = this.props.modal.modalProps.vehicleJourney.accessibility_assessment
       }
 
-      this.props.onEditVehicleJourney(_.assign({}, this.refs, {custom_fields: this.props.modal.modalProps.vehicleJourney.custom_fields, referential_codes: this.props.modal.modalProps.vehicleJourney.referential_codes}), company, accessibility_assessment)
+      this.props.onEditVehicleJourney(_.assign({}, this.refs, {referential_codes: this.props.modal.modalProps.vehicleJourney.referential_codes}), company, accessibility_assessment)
       this.props.onModalClose()
       $('#EditVehicleJourneyModal').modal('hide')
     }
@@ -174,13 +173,6 @@ export default class EditVehicleJourney extends Component {
                               onSelect2AccessibilityAssessment = {(e) => this.props.onSelect2AccessibilityAssessment(e)}
                               onUnselect2AccessibilityAssessment = {() => this.props.onUnselect2AccessibilityAssessment()}
                             />
-                        </div>
-                        <div className='row'>
-                          <CustomFieldsInputs
-                            values={this.props.modal.modalProps.vehicleJourney.custom_fields}
-                            onUpdate={(code, value) => this.custom_fields[code]["value"] = value}
-                            disabled={!this.editMode()}
-                          />
                         </div>
                         { !(_.isEmpty(window.available_code_spaces)) &&
                           <React.Fragment>

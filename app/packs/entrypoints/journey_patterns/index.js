@@ -26,8 +26,7 @@ const initialState = {
     type: '',
     modalProps: {},
     confirmModal: {}
-  },
-  custom_fields: window.custom_fields
+  }
 }
 
 const store = createStore(

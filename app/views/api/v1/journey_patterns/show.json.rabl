@@ -1,6 +1,6 @@
 object @journey_pattern
 extends "api/v1/trident_objects/show"
-[:id, :name, :published_name, :registration_number, :comment, :checksum, :custom_fields, :shape_id].each do |attr|
+[:id, :name, :published_name, :registration_number, :comment, :checksum, :shape_id].each do |attr|
   attributes attr, :unless => lambda { |m| m.send( attr).nil?}
 end
 node :full_schedule do |journey_pattern|

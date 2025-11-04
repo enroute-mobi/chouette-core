@@ -29,7 +29,6 @@ describe('stopPointHeader', () => {
       onSelectVehicleJourney: ()=>{},
       stopPointsList: [stop_point, same_city_stop_point, other_country_stop_point],
 			vehicleJourneys: [],
-			customFields: {},
 			extraHeaders: [],
       selection: {},
       selectionMode: false
@@ -44,7 +43,6 @@ describe('stopPointHeader', () => {
         onSelectVehicleJourney={props.onSelectVehicleJourney}
         stopPointsList={props.stopPointsList}
         vehicleJourneys={props.vehicleJourneys}
-				customFields={props.customFields}
         extraHeaders={props.extraHeaders}
         selection={props.selection}
         selectionMode={props.selectionMode}

@@ -23,17 +23,15 @@ class ReferentialCopy
 
   def copy(raise_error: false)
     measure "copy", source: source.id, target: target.id do
-      CustomFieldsSupport.within_workgroup(workgroup) do
-        copy_resource(:metadatas) unless skip_metadatas?
-        source.switch do
-          lines.includes(:footnotes, :routes).find_each do |line|
-            @new_routes = nil
-            copy_resource(:footnotes, line)
-            copy_resource(:routes, line)
-          end
+      copy_resource(:metadatas) unless skip_metadatas?
+      source.switch do
+        lines.includes(:footnotes, :routes).find_each do |line|
+          @new_routes = nil
+          copy_resource(:footnotes, line)
+          copy_resource(:routes, line)
         end
-        @status = :successful
       end
+      @status = :successful
 
       copy_with_inserters
     end
@@ -67,10 +65,8 @@ class ReferentialCopy
       end
 
       measure "vehicle_journeys" do
-        CustomFieldsSupport.within_workgroup(workgroup) do
-          vehicle_journeys.find_each do |vehicle_journey|
-            referential_inserter.vehicle_journeys << vehicle_journey
-          end
+        vehicle_journeys.find_each do |vehicle_journey|
+          referential_inserter.vehicle_journeys << vehicle_journey
         end
       end
 

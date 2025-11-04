@@ -3,7 +3,6 @@ fr:
     waiting_time_format: "%{value} minutes"
     search_no_results: "Aucun arrêt ne correspond à votre recherche"
     no_specific_stops: "Cet Arrêt n'a aucun Arrêt particulier"
-    no_custom_fields: "Cet Arrêt n'a pas de Champs personnalisés"
     errors:
       empty: Aucun stop_area_id
       parent_area_type: ne peut être de type %{area_type}
@@ -22,7 +21,6 @@ fr:
       lines: "Lignes"
       address: "Adresse"
       accessibility: "Accessibilité"
-      custom_fields: "Champs personnalisés"
     actions:
       new: "Ajouter un Arrêt"
       new_flexible: "Ajouter un arrêt à la demande"
@@ -67,7 +65,6 @@ fr:
         usage: "Utilisation"
         fare: "Tarification"
         accessibility: "Accessibilité"
-        custom_fields: "Champs personnalisés"
         flexible_area: "Zone d'arrêt à la demande"
       address: "246 Boulevard Saint-Germain, 75007 Paris"
       geolocalize: "Géolocalisez "

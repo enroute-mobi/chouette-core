@@ -6,6 +6,7 @@ module ShapeReferentialSupport
   included do
     belongs_to :shape_referential # CHOUETTE-3247 required: true
     belongs_to :shape_provider # CHOUETTE-3247 required: true
+    has_one :workgroup, through: :shape_referential
 
     alias_method :referential, :shape_referential
 

@@ -57,37 +57,35 @@ RSpec.describe Chouette::VehicleJourney do
     end
 
     def self.vehicle_journey(*values)
-      CustomFieldsSupport.without_custom_fields do
-        Chouette::VehicleJourney.new.tap do |vehicle_journey|
-          values.each do |value|
-            # To support both "22:55" and ["22:50", "22:55"]
-            value = [value] * 2 unless value.is_a?(Array)
+      Chouette::VehicleJourney.new.tap do |vehicle_journey|
+        values.each do |value|
+          # To support both "22:55" and ["22:50", "22:55"]
+          value = [value] * 2 unless value.is_a?(Array)
 
-            # Create TimeOfDays
-            if value[0]&.start_with?('f')
-              value[0] = value[0][1..]
-              first_attribute = :earliest_departure_time_of_day
-            else
-              first_attribute = :arrival_time_of_day
-            end
-            if value[1]&.start_with?('f')
-              value[1] = value[1][1..]
-              second_attribute = :latest_arrival_time_of_day
-            else
-              second_attribute = :departure_time_of_day
-            end
-
-            first, second = value.map { |definition| time_of_day(definition) }
-
-            # Transmit TimeOfDays to Vehicle Journey At Stop only if it's not nil
-            vehicle_journey_at_stops_attributes = {}
-            vehicle_journey_at_stops_attributes[first_attribute] = first if first
-            vehicle_journey_at_stops_attributes[second_attribute] = second if second
-
-            vehicle_journey_at_stop = Chouette::VehicleJourneyAtStop.new(vehicle_journey_at_stops_attributes)
-
-            vehicle_journey.vehicle_journey_at_stops << vehicle_journey_at_stop
+          # Create TimeOfDays
+          if value[0]&.start_with?('f')
+            value[0] = value[0][1..]
+            first_attribute = :earliest_departure_time_of_day
+          else
+            first_attribute = :arrival_time_of_day
           end
+          if value[1]&.start_with?('f')
+            value[1] = value[1][1..]
+            second_attribute = :latest_arrival_time_of_day
+          else
+            second_attribute = :departure_time_of_day
+          end
+
+          first, second = value.map { |definition| time_of_day(definition) }
+
+          # Transmit TimeOfDays to Vehicle Journey At Stop only if it's not nil
+          vehicle_journey_at_stops_attributes = {}
+          vehicle_journey_at_stops_attributes[first_attribute] = first if first
+          vehicle_journey_at_stops_attributes[second_attribute] = second if second
+
+          vehicle_journey_at_stop = Chouette::VehicleJourneyAtStop.new(vehicle_journey_at_stops_attributes)
+
+          vehicle_journey.vehicle_journey_at_stops << vehicle_journey_at_stop
         end
       end
     end
@@ -127,9 +125,6 @@ end
 
 describe Chouette::VehicleJourney, type: :model do
   subject { create(:vehicle_journey) }
-  before(:each){
-    Chouette::VehicleJourney.reset_custom_fields
-  }
 
   it "must be valid with an at-stop day offset of 1" do
     vehicle_journey = create(
@@ -218,56 +213,6 @@ describe Chouette::VehicleJourney, type: :model do
                     reload: true do
         let(:line_notice){ create :line_notice }
         before { checksum_owner.update line_notices: [line_notice] }
-    end
-
-    context "when a custom_field is added" do
-      # CustomField don't trigger an automoatic checksum calcultation, we need to force it
-
-      let(:checksum_owner){ create(:vehicle_journey, custom_field_values: {}) }
-      context "when the custom_field has the :ignore_empty_value_in_checksums option enabled" do
-        let(:custom_field) do
-           create :custom_field,
-                  field_type: :string,
-                  code: :energy_ignored,
-                  name: :energy,
-                  resource_type: "VehicleJourney",
-                  options: { ignore_empty_value_in_checksums: true }
-         end
-
-         it_behaves_like 'it works with both checksums modes',
-                        "should not change the checksum",
-                        -> { custom_field; Chouette::ChecksumManager.watch(checksum_owner); checksum_owner.save },
-                        change: false
-      end
-
-      context "when the custom_field hasn't the :ignore_empty_value_in_checksums option enabled" do
-        let(:custom_field) do
-           create :custom_field,
-                  field_type: :string,
-                  code: :energy,
-                  name: :energy,
-                  resource_type: "VehicleJourney"
-         end
-
-         it_behaves_like 'it works with both checksums modes',
-                        "should change the checksum",
-                        -> { custom_field; Chouette::ChecksumManager.watch(checksum_owner); checksum_owner.save }
-
-      end
-    end
-
-    context "when custom_field_values change" do
-      let(:checksum_owner){ create(:vehicle_journey, custom_field_values: {custom_field.code.to_s => former_value}) }
-      let(:custom_field){ create :custom_field, field_type: :string, code: :energy, name: :energy, resource_type: "VehicleJourney" }
-      let(:former_value){ "foo" }
-      let(:value){ "bar" }
-
-      it_behaves_like 'it works with both checksums modes',
-                     "should change the checksum",
-                     -> {
-                       checksum_owner.custom_field_values = {custom_field.code.to_s => value}
-                       checksum_owner.save
-                     }
     end
   end
 
@@ -416,7 +361,6 @@ describe Chouette::VehicleJourney, type: :model do
         item['footnotes']                = []
         item['line_notices']             = [] if line_notices
         item['referential_codes']        = []
-        item['custom_fields']            = vj.custom_fields.to_hash
 
         vj.vehicle_journey_at_stops.each do |vjas|
           item['vehicle_journey_at_stops'] << vehicle_journey_at_stop_to_state(vjas)
@@ -432,8 +376,7 @@ describe Chouette::VehicleJourney, type: :model do
     let(:collection)      { [state.dup] }
 
     it 'should create new vj from state' do
-      create(:custom_field, code: :energy)
-      new_vj = build(:vehicle_journey, objectid: nil, published_journey_name: 'dummy', route: route, journey_pattern: journey_pattern, custom_field_values: {energy: 99})
+      new_vj = build(:vehicle_journey, objectid: nil, published_journey_name: 'dummy', route: route, journey_pattern: journey_pattern)
       collection << vehicle_journey_to_state(new_vj)
       expect {
         Chouette::VehicleJourney.state_update(route, collection)
@@ -447,7 +390,6 @@ describe Chouette::VehicleJourney, type: :model do
 
       expect(collection.last['objectid']).to eq obj.objectid
       expect(obj.published_journey_name).to eq 'dummy'
-      expect(obj.custom_fields["energy"].value).to eq 99
     end
 
     it 'should expect local times' do
@@ -608,16 +550,11 @@ describe Chouette::VehicleJourney, type: :model do
     it 'should update vj attributes from state' do
       state['published_journey_name']       = 'edited_name'
       state['published_journey_identifier'] = 'edited_identifier'
-      state['custom_fields'] = {energy: {value: 99}}
-      create :custom_field, field_type: :integer, code: :energy, name: :energy
-      Chouette::VehicleJourney.reset_custom_fields
 
       Chouette::VehicleJourney.state_update(route, collection)
       expect(state['errors']).to be_nil
       expect(vehicle_journey.reload.published_journey_name).to eq state['published_journey_name']
       expect(vehicle_journey.reload.published_journey_identifier).to eq state['published_journey_identifier']
-
-      expect(vehicle_journey.reload.custom_field_value("energy")).to eq 99
     end
 
     it 'should return errors when validation failed' do

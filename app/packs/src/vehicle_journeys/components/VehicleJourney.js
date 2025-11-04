@@ -52,18 +52,7 @@ export default class VehicleJourney extends Component {
   }
 
   extraHeaderValue(header) {
-    if(header.type == "custom_field"){
-      let field = this.props.value.custom_fields[header["name"]]
-      if(field.field_type == "list"){
-        return field.options.list_values[field.value]
-      }
-      else{
-        return field.value
-      }
-    }
-    else{
-      return this.props.value[header["name"]]
-    }
+    return this.props.value[header["name"]]
   }
 
   formatDistance = distance => {

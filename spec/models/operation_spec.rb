@@ -389,18 +389,6 @@ RSpec.describe Operation::Callback::Invoker do
   end
 end
 
-RSpec.describe Operation::CustomFieldLoader do
-  subject(:callback) { described_class.new(operation) }
-  let(:operation) { double workgroup: workgroup }
-  let(:workgroup) { double(id: 'test') }
-
-  describe '#around' do
-    it 'invokes the given block by changing current workgroup (CustomFieldsSupport.within_workgroup)' do
-      expect(callback.around { CustomFieldsSupport.current_workgroup }).to eq(workgroup)
-    end
-  end
-end
-
 RSpec.describe Operation::LogTagger do
   subject(:callback) { described_class.new(operation) }
   let(:operation) { double internal_description: 'internal_description', logger: logger }

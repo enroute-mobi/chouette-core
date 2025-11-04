@@ -4,7 +4,6 @@ module Chouette
 
     has_metadata
     include ObjectidSupport
-    include CustomFieldsSupport
     include CodeSupport
     include ReferentSupport
     include Documentable

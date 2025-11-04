@@ -6,7 +6,6 @@ module Chouette
 
     include LineReferentialSupport
     include ObjectidSupport
-    include CustomFieldsSupport
     include ReferentSupport
     include CodeSupport
     include Documentable

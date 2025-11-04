@@ -325,9 +325,7 @@ module Import
 
       def around_import!(&block)
         run_callbacks :import do
-          CustomFieldsSupport.within_workgroup(import.workgroup) do
-            block.call
-          end
+          block.call
         end
       end
 

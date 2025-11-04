@@ -43,8 +43,6 @@ Apartment.configure do |config|
     'Code',
     'CodeSpace',
     'CrossReferentialIndexEntry',
-    'CustomField',
-    'CustomFieldGroup',
     'Contract',
     'Document',
     'DocumentMembership',

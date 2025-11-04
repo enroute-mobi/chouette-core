@@ -293,7 +293,24 @@ RSpec.describe Referential::Schema do
     end
   end
 
-  # TODO drop check tenants metadata, check database
+  describe '#destroy!' do
+    subject { referential_schema.destroy! }
+
+    let(:context) do
+      Chouette.create do
+        line_notice :line_notice
+        referential do
+          vehicle_journey line_notices: %i[line_notice]
+        end
+      end
+    end
+    let(:line_notice) { context.line_notice(:line_notice) }
+
+    it 'destroys schema' do
+      expect { subject }.to change { ::ActiveRecord::Base.connection.schema_names }.from(include(referential.slug))
+                                                                                   .to(not_include(referential.slug))
+    end
+  end
 end
 
 RSpec.describe Referential::Schema::Table do

@@ -141,6 +141,10 @@ class Referential
       DumpRestore.new(name).dump(file)
     end
 
+    def destroy!
+      ::Apartment::Tenant.drop(@name)
+    end
+
     class DumpRestore < ::Apartment::Adapters::PostgresqlSchemaFromSqlAdapter
       def initialize(name)
         super(::Apartment.connection_config)

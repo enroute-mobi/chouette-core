@@ -37,9 +37,11 @@ module Chouette
     belongs_to :line # CHOUETTE-3247 validates presence
     belongs_to :opposite_route, :class_name => 'Chouette::Route', :foreign_key => :opposite_route_id, optional: true # CHOUETTE-3247 failling specs
 
-    has_many :routing_constraint_zones, :dependent => :destroy
-    has_many :journey_patterns, :dependent => :destroy
-    has_many :vehicle_journeys, :dependent => :destroy do
+    has_many :routing_constraint_zones, dependent: :destroy
+    # Validation is disabled to avoid wrong error on Route when one of the Journey Patterns is invalid
+    # Could be disabled only when the validation_context is :inserter
+    has_many :journey_patterns, dependent: :destroy, validate: false
+    has_many :vehicle_journeys, dependent: :destroy do
       def timeless
         Chouette::Route.vehicle_journeys_timeless(proxy_association.owner.journey_patterns.pluck( :departure_stop_point_id))
       end
@@ -86,7 +88,7 @@ module Chouette
 
     accepts_nested_attributes_for :stop_points, :allow_destroy => :true
 
-    validates_presence_of :name
+    validates :name, presence: true
     validates :wayback, inclusion: { in: self.wayback.values }
 
     scope :with_at_least_three_stop_points, -> { joins(:stop_points).group('routes.id').having("COUNT(stop_points.id) >= 3") }
@@ -186,7 +188,7 @@ module Chouette
     end
 
     delegate :in_referential_suite?, to: :referential
-    validate :check_opposite_route, unless: :in_referential_suite?
+    validate :check_opposite_route, unless: :in_referential_suite?, if: -> { validation_context != :inserter }
     def check_opposite_route
       return unless opposite_route && opposite_wayback
       unless opposite_route_candidates.include?(opposite_route)

@@ -182,7 +182,10 @@ RSpec.describe Referential::Schema do
     subject { referential_schema.dump(file) }
 
     let(:file) { Tempfile.new }
-    let(:file_content) { Zlib::GzipReader.open(file.path).read }
+    let(:file_content) do
+      subject
+      Zlib::GzipReader.open(file.path).read
+    end
 
     let(:context) do # rubocop:disable Metrics/BlockLength
       Chouette.create do
@@ -226,7 +229,6 @@ RSpec.describe Referential::Schema do
       end
     end
 
-    before { subject }
     after(:each) { file.close! }
 
     it 'creates schema' do
@@ -291,6 +293,42 @@ RSpec.describe Referential::Schema do
         it { expect(file_content).to include(data) }
       end
     end
+
+    context 'with error' do
+      context 'with unsuccessful status' do
+        before do
+          allow(Open3).to(
+            receive(:pipeline) do |*_, **options|
+              options[:err].puts 'Unexpected error'
+              [instance_double(Process::Status, 'success?': false, to_i: 42)]
+            end
+          )
+        end
+
+        it do
+          expect { subject }.to(
+            raise_error(Referential::Schema::DumpRestore::Error, %(pg_dump returned 42: "Unexpected error\n"))
+          )
+        end
+      end
+
+      context 'with error output only' do
+        before do
+          allow(Open3).to(
+            receive(:pipeline) do |*_, **options|
+              options[:err].puts 'Unexpected error'
+              [instance_double(Process::Status, 'success?': true, to_i: 0)]
+            end
+          )
+        end
+
+        it do
+          referential_schema
+          expect(Rails.logger).to receive(:warn).with("Unexpected error\n")
+          expect { subject }.not_to raise_error
+        end
+      end
+    end
   end
 
   describe '#destroy!' do
@@ -317,7 +355,7 @@ RSpec.describe Referential::Schema do
 
     let(:dump) { file_fixture('referential_dump.sql.gz').open }
 
-    let(:context) { Chouette.create { referential(slug: '9eb5427c-9a67-40da-a9da-f04b8a2aa38b') } }
+    let(:context) { Chouette.create { referential(slug: '5c630290-96ff-4186-afb5-8bc5be256e3a') } }
 
     before { referential_schema.destroy! }
 
@@ -397,6 +435,68 @@ RSpec.describe Referential::Schema do
         expect(service_count.line).to be_present
         expect(service_count.route).to be_present
         expect(service_count.journey_pattern).to be_present
+      end
+    end
+
+    context 'with error' do
+      context 'with unsuccessful status in gunzip' do
+        before do
+          allow(Open3).to(
+            receive(:pipeline) do |*_, **options|
+              options[:err].puts 'Unexpected error'
+              [
+                instance_double(Process::Status, 'success?': false, to_i: 42),
+                instance_double(Process::Status, 'success?': true, to_i: 0)
+              ]
+            end
+          )
+        end
+
+        it do
+          expect { subject }.to(
+            raise_error(Referential::Schema::DumpRestore::Error, %(gunzip, psql returned 42, 0: "Unexpected error\n"))
+          )
+        end
+      end
+
+      context 'with unsuccessful status in psql' do
+        before do
+          allow(Open3).to(
+            receive(:pipeline) do |*_, **options|
+              options[:err].puts 'Unexpected error'
+              [
+                instance_double(Process::Status, 'success?': true, to_i: 0),
+                instance_double(Process::Status, 'success?': false, to_i: 42)
+              ]
+            end
+          )
+        end
+
+        it do
+          expect { subject }.to(
+            raise_error(Referential::Schema::DumpRestore::Error, %(gunzip, psql returned 0, 42: "Unexpected error\n"))
+          )
+        end
+      end
+
+      context 'with error output only' do
+        before do
+          allow(Open3).to(
+            receive(:pipeline) do |*_, **options|
+              options[:err].puts 'Unexpected error'
+              [
+                instance_double(Process::Status, 'success?': true, to_i: 0),
+                instance_double(Process::Status, 'success?': true, to_i: 0)
+              ]
+            end
+          )
+        end
+
+        it do
+          referential_schema
+          expect(Rails.logger).to receive(:warn).with("Unexpected error\n")
+          expect { subject }.not_to raise_error
+        end
       end
     end
   end

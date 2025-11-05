@@ -14,8 +14,8 @@ RSpec.configure do |config|
     # Reset tenant back to `public`
     Apartment::Tenant.reset
     if self.class.metadata[:truncation]
-      Apartment::Tenant.each do |tenant|
-        Apartment::Tenant.drop(tenant)
+      Apartment.tenant_names.each do |tenant|
+        Apartment::Tenant.drop(tenant) rescue Apartment::TenantNotFound # rubocop:disable Style/RescueModifier
       end
     end
     # Rollback transaction

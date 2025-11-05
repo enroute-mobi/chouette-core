@@ -156,11 +156,43 @@ class Referential
       end
 
       def dump(file)
-        with_pg_env { `pg_dump -d #{@config[:database]} -n #{@name} -f #{file.path} --compress=gzip` }
+        run_commands(
+          "pg_dump -d #{@config[:database]} -n #{@name} -f #{file.path} --no-comments --no-owner --compress=gzip"
+        )
       end
 
       def restore(file)
-        with_pg_env { `gunzip -kf < #{file.path} | psql -d #{@config[:database]} -1` }
+        run_commands(
+          "gunzip -kf < #{file.path}",
+          "psql -d #{@config[:database]} --quiet -v ON_ERROR_STOP=1 -1"
+        )
+      end
+
+      private
+
+      def run_commands(*commands)
+        err_r, err_w = IO.pipe
+        statuses = with_pg_env { Open3.pipeline(*commands, out: File::NULL, err: err_w) }
+        err_w.close
+
+        errors = err_r.read
+        unless statuses.all?(&:success?)
+          raise Error.new(commands.map { |c| c.split(' ', 2).first }, statuses.map(&:to_i), errors)
+        end
+
+        Rails.logger.warn(errors) if errors.present?
+
+        statuses
+      end
+
+      class Error < StandardError
+        def initialize(commands, statuses, err)
+          @commands = commands
+          @statuses = statuses
+          @err = err
+          super(%(#{commands.join(', ')} returned #{statuses.join(', ')}: "#{err}"))
+        end
+        attr_reader :commands, :statuses, :err
       end
     end
 

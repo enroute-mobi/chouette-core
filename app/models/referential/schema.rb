@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require 'apartment/adapters/postgresql_adapter'
+require 'apartment/migrator'
 
 class Referential
   class Schema
@@ -188,6 +189,10 @@ class Referential
         end
         attr_reader :command, :status, :err
       end
+    end
+
+    def migrate
+      ::Apartment::Migrator.migrate(@name)
     end
 
     class Table

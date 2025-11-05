@@ -489,6 +489,25 @@ RSpec.describe Referential::Schema do
       end
     end
   end
+
+  describe '#migrate' do
+    subject { referential_schema.migrate }
+
+    let!(:public_current_version) { ActiveRecord::Migrator.current_version }
+
+    before do
+      referential.switch do
+        ActiveRecord::Base.connection.execute("DELETE FROM schema_migrations WHERE version > '20251013075038'")
+      end
+    end
+
+    it do
+      expect { subject }.to(
+        change { referential.switch { ActiveRecord::Migrator.current_version } }.from(20251013075038) # rubocop:disable Style/NumericLiterals
+                                                                                .to(public_current_version)
+      )
+    end
+  end
 end
 
 RSpec.describe Referential::Schema::Table do

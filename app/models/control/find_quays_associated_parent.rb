@@ -98,7 +98,7 @@ module Control
 
         # identify StopAreas used in the same Route (in the given Dataset)
         def excluded_stop_areas
-          @stop_areas_used_same_route ||= Chouette::StopArea
+          Chouette::StopArea
             .select('stop_areas.id')
             .from("(#{raw_clustered_stop_areas}) AS stop_areas")
             .joins(
@@ -116,7 +116,7 @@ module Control
         end
 
         def raw_clustered_stop_areas
-          @clustered_stop_areas ||= Chouette::StopArea
+          @raw_clustered_stop_areas ||= Chouette::StopArea
             .select('stop_areas.*')
             .from("(#{base_query}) stop_areas")
             .where('stop_areas.cluster_id IS NOT NULL')
@@ -166,7 +166,7 @@ module Control
         end
 
         def base_left_joins
-          @left_joins ||= used_by_opposite_routes ?  { routes: {opposite_route: :stop_areas} } : :routes
+          @base_left_joins ||= used_by_opposite_routes ?  { routes: {opposite_route: :stop_areas} } : :routes
         end
 
         def base_where

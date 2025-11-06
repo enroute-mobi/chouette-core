@@ -1241,42 +1241,40 @@ RSpec.describe Import::Gtfs do
     it "should create a VehicleJourneyAtStop for each stop_time" do
       import.import_stop_times
 
-      def t(value)
-        Time.parse(value)
+      def t(value, **options)
+        ::TimeOfDay.parse(value, **options)
       end
 
       expected_attributes = [
-        ['EMSI', 0, t('2000-01-01 14:30:00 UTC'), t('2000-01-01 14:30:00 UTC'), 0, 0],
-        ['DADAN', 1, t('2000-01-01 14:37:00 UTC'), t('2000-01-01 14:35:00 UTC'), 0, 0],
-        ['NADAV', 2, t('2000-01-01 14:44:00 UTC'), t('2000-01-01 14:42:00 UTC'), 0, 0],
-        ['NANAA', 3, t('2000-01-01 14:51:00 UTC'), t('2000-01-01 14:49:00 UTC'), 0, 0],
-        ['STAGECOACH', 4, t('2000-01-01 14:58:00 UTC'), t('2000-01-01 14:56:00 UTC'), 0, 0],
-        ['BEATTY_AIRPORT', 0, t('2000-01-01 23:00:00 UTC'), t('2000-01-01 23:00:00 UTC'), 0, 0],
-        ['BULLFROG', 1, t('2000-01-01 00:05:00 UTC'), t('2000-01-01 00:00:00 UTC'), 1, 1],
-        ['BULLFROG', 0, t('2000-01-01 20:05:00 UTC'), t('2000-01-01 20:05:00 UTC'), 0, 0],
-        ['BEATTY_AIRPORT', 1, t('2000-01-01 20:15:00 UTC'), t('2000-01-01 20:15:00 UTC'), 0, 0],
-        ['BULLFROG', 0, t('2000-01-01 16:20:00 UTC'), t('2000-01-01 16:20:00 UTC'), 0, 0],
-        ['FUR_CREEK_RES', 1, t('2000-01-01 17:20:00 UTC'), t('2000-01-01 17:20:00 UTC'), 0, 0],
-        ['FUR_CREEK_RES', 0, t('2000-01-01 19:00:00 UTC'), t('2000-01-01 19:00:00 UTC'), 0, 0],
-        ['BULLFROG', 1, t('2000-01-01 20:00:00 UTC'), t('2000-01-01 20:00:00 UTC'), 0, 0],
-        ['BEATTY_AIRPORT', 0, t('2000-01-01 16:00:00 UTC'), t('2000-01-01 16:00:00 UTC'), 0, 0],
-        ['AMV', 1, t('2000-01-01 17:00:00 UTC'), t('2000-01-01 17:00:00 UTC'), 0, 0],
-        ['BEATTY_AIRPORT', 0, t('2000-01-01 21:00:00 UTC'), t('2000-01-01 21:00:00 UTC'), 0, 0],
-        ['AMV', 1, t('2000-01-01 22:00:00 UTC'), t('2000-01-01 22:00:00 UTC'), 1, 1],
-        ['AMV', 0, t('2000-01-01 07:30:00 UTC'), t('2000-01-01 07:30:00 UTC'), 1, 1],
-        ['BEATTY_AIRPORT', 1, t('2000-01-01 09:00:00 UTC'), t('2000-01-01 09:00:00 UTC'), 1, 1],
-        ['AMV', 0, t('2000-01-01 18:00:00 UTC'), t('2000-01-01 18:00:00 UTC'), 0, 0],
-        ['BEATTY_AIRPORT', 1, t('2000-01-01 19:00:00 UTC'), t('2000-01-01 19:00:00 UTC'), 0, 0]
+        ['EMSI', 0, t('14:30'), t('14:28')],
+        ['DADAN', 1, t('14:37'), t('14:35')],
+        ['NADAV', 2, t('14:44'), t('14:42')],
+        ['NANAA', 3, t('14:51'), t('14:49')],
+        ['STAGECOACH', 4, t('14:58'), t('14:56')],
+        ['BEATTY_AIRPORT', 0, t('23:00'), t('23:00')],
+        ['BULLFROG', 1, t('00:05', day_offset: 1), t('00:00', day_offset: 1)],
+        ['BULLFROG', 0, t('20:05'), t('20:05')],
+        ['BEATTY_AIRPORT', 1, t('20:15'), t('20:15')],
+        ['BULLFROG', 0, t('16:20'), t('16:20')],
+        ['FUR_CREEK_RES', 1, t('17:20'), t('17:20')],
+        ['FUR_CREEK_RES', 0, t('19:00'), t('19:00')],
+        ['BULLFROG', 1, t('20:00'), t('20:00')],
+        ['BEATTY_AIRPORT', 0, t('16:00'), t('16:00')],
+        ['AMV', 1, t('17:00'), t('17:00')],
+        ['BEATTY_AIRPORT', 0, t('21:00'), t('21:00')],
+        ['AMV', 1, t('22:00', day_offset: 1), t('22:00', day_offset: 1)],
+        ['AMV', 0, t('07:30', day_offset: 1), t('07:30', day_offset: 1)],
+        ['BEATTY_AIRPORT', 1, t('09:00', day_offset: 1), t('09:00', day_offset: 1)],
+        ['AMV', 0, t('18:00'), t('18:00')],
+        ['BEATTY_AIRPORT', 1, t('19:00'), t('19:00')]
       ]
 
       a = import.referential.vehicle_journey_at_stops.map do |vjas|
         [
           vjas.stop_point.registration_number,
           vjas.stop_point.position,
-          vjas.departure_time_of_day.to_vehicle_journey_at_stop_time,
-          vjas.arrival_time_of_day.to_vehicle_journey_at_stop_time,
-          vjas.departure_time_of_day.day_offset,
-          vjas.arrival_time_of_day.day_offset
+          vjas.departure_time_of_day,
+          vjas.arrival_time_of_day
         ]
       end
 
@@ -1890,97 +1888,7 @@ RSpec.describe Import::Gtfs do
   end
 end
 
-# rubocop:disable Style/WordArray
-RSpec.describe Import::Gtfs::TripDecorator do
-  subject(:trip_decorator) { described_class.new(trip) }
-  let(:trip) do
-    GTFS::Trip.new(id: 'AAMV1', route_id: 'AAMV', service_id: 'WE', direction_id: '0', headsign: 'to Amargosa Valley', stop_times: stop_times)
-  end
-  let(:stop_time_1_pickup) { nil }
-  let(:stop_time_1_drop_off) { nil }
-  let(:stop_time_2_pickup) { nil }
-  let(:stop_time_2_drop_off) { nil }
-  let(:stop_times) do
-    [
-      GTFS::StopTime.new(
-        trip_id: 'AAMV1',
-        stop_id: 'BEATTY_AIRPORT',
-        arrival_time: '8:00:00',
-        departure_time: '8:00:00',
-        stop_sequence: '1',
-        pickup_type: stop_time_1_pickup,
-        drop_off_type: stop_time_1_drop_off
-      ),
-      GTFS::StopTime.new(
-        trip_id: 'AAMV1',
-        stop_id: 'AMV',
-        arrival_time: '9:00:00',
-        departure_time: '9:00:00',
-        stop_sequence: '2',
-        pickup_type: stop_time_2_pickup,
-        drop_off_type: stop_time_2_drop_off
-      )
-    ]
-  end
-
-  describe '#route_signature' do
-    subject { trip_decorator.route_signature }
-
-    context 'without pickup/dropoff' do
-      it { is_expected.to eq(['AAMV', '0', []]) }
-    end
-
-    context 'with pickup/drop_off' do
-      let(:stop_time_1_pickup) { '1' }
-      let(:stop_time_2_drop_off) { '1' }
-
-      it { is_expected.to eq(['AAMV', '0', [['AMV', '0', '1', false], ['BEATTY_AIRPORT', '1', '0', false]]]) }
-
-      context 'but not on the last stop' do
-        let(:stop_time_2_drop_off) { nil }
-
-        it { is_expected.to eq(['AAMV', '0', [['BEATTY_AIRPORT', '1', '0', false]]]) }
-      end
-
-      context 'with location_group_id' do
-        let(:stop_times) do
-          [
-            GTFS::StopTime.new(
-              trip_id: 'AAMV1',
-              stop_id: nil,
-              location_group_id: 'FLEXIBLE',
-              arrival_time: '8:00:00',
-              departure_time: '8:00:00',
-              stop_sequence: '1',
-              pickup_type: stop_time_1_pickup,
-              drop_off_type: stop_time_1_drop_off
-            ),
-            GTFS::StopTime.new(
-              trip_id: 'AAMV1',
-              stop_id: 'AMV',
-              arrival_time: '9:00:00',
-              departure_time: '9:00:00',
-              stop_sequence: '2',
-              pickup_type: stop_time_2_pickup,
-              drop_off_type: stop_time_2_drop_off
-            )
-          ]
-        end
-
-        it { is_expected.to eq(['AAMV', '0', [['AMV', '0', '1', false], ['FLEXIBLE', '1', '0', false]]]) }
-      end
-    end
-  end
-
-  describe '#journey_pattern_signature' do
-    subject { trip_decorator.journey_pattern_signature }
-
-    it { is_expected.to eq(['AAMV', '0', [], 'to Amargosa Valley', nil, 'BEATTY_AIRPORT', 'AMV']) }
-  end
-end
-# rubocop:enable Style/WordArray
-
-describe Import::Gtfs::RouteJourneyPatterns::RouteDecorator do
+RSpec.describe Import::Gtfs::RouteJourneyPatterns::RouteDecorator do
   subject(:route_decorator) do
     described_class.new(route_description, journey_pattern_descriptions, lookup: lookup)
   end

@@ -826,9 +826,11 @@ class Referential < ApplicationModel
     update_column :vehicle_journeys_count, vehicle_journeys.count
   end
 
-  concerning :DataFreeze do
+  concerning :DataFreeze do # rubocop:disable Metrics/BlockLength
     included do
       enumerize :data_freeze_status, in: %w[unfrozen freezing frozen unfreeze_enqueued unfreezing], default: 'unfrozen'
+
+      has_one_attached :frozen_dump
     end
 
     def visited!
@@ -840,8 +842,22 @@ class Referential < ApplicationModel
       data_freeze_status != 'unfrozen'
     end
 
-    def data_freeze
-      update(data_freeze_status: 'frozen', ready: false)
+    def data_freeze # rubocop:disable Metrics/MethodLength
+      Tempfile.open(['', '.sql.gz']) do |dump_file|
+        schema.dump(dump_file)
+        return if File.zero?(dump_file)
+
+        frozen_dump.attach(io: dump_file, filename: File.basename(dump_file.path), content_type: 'application/gzip')
+      end
+
+      transaction do
+        update!(data_freeze_status: 'freezing', ready: false)
+        schema.destroy!
+        update!(data_freeze_status: 'frozen')
+      rescue StandardError => e
+        Chouette::Safe.capture("Referential##{id}.data_freeze failed", e)
+        raise ::ActiveRecord::Rollback
+      end
     end
 
     def enqueue_data_unfreeze
@@ -852,8 +868,21 @@ class Referential < ApplicationModel
       end
     end
 
-    def data_unfreeze
-      update(data_freeze_status: 'unfrozen', ready: true)
+    def data_unfreeze # rubocop:disable Metrics/MethodLength
+      update!(data_freeze_status: 'unfreezing')
+
+      frozen_dump.open do |dump_file|
+        schema.restore(dump_file)
+      end
+      schema.migrate
+
+      transaction do
+        update!(data_freeze_status: 'unfrozen', ready: true)
+        frozen_dump.purge
+      rescue StandardError => e
+        Chouette::Safe.capture("Referential##{id}.data_freeze failed", e)
+        raise ::ActiveRecord::Rollback
+      end
     end
   end
 

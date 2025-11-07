@@ -206,7 +206,7 @@ module Export
       # This condition accept several codes in the same Code Space to take one in the method with_code_query
       class Older < Default
         def with_code_query
-          code_query = ReferentialCode.order(id: :asc).limit(1)
+          code_query = ReferentialCode.order(created_at: :asc).limit(1)
                                       .where("referential_codes.resource_id = #{model_class.quoted_table_name}.id")
                                       .where(resource_type: model_class.base_class.name, code_space: code_space)
                                       .select(:value)

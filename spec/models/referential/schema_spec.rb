@@ -297,27 +297,33 @@ RSpec.describe Referential::Schema do
     context 'with error' do
       context 'with unsuccessful status' do
         before do
-          allow(Open3).to(
-            receive(:pipeline) do |*_, **options|
-              options[:err].puts 'Unexpected error'
-              [instance_double(Process::Status, 'success?': false, to_i: 42)]
+          allow(Kernel).to(
+            receive(:system) do |command|
+              output_path = command.split(' ').last
+              File.open(output_path, 'w') do |output|
+                output.puts('Unexpected error')
+              end
+              false
             end
           )
         end
 
         it do
           expect { subject }.to(
-            raise_error(Referential::Schema::DumpRestore::Error, %(pg_dump returned 42: "Unexpected error\n"))
+            raise_error(Referential::Schema::DumpRestore::Error, /\Apg_dump returned \d+: "Unexpected error\n"\z/)
           )
         end
       end
 
       context 'with error output only' do
         before do
-          allow(Open3).to(
-            receive(:pipeline) do |*_, **options|
-              options[:err].puts 'Unexpected error'
-              [instance_double(Process::Status, 'success?': true, to_i: 0)]
+          allow(Kernel).to(
+            receive(:system) do |command|
+              output_path = command.split(' ').last
+              File.open(output_path, 'w') do |output|
+                output.puts('Unexpected error')
+              end
+              true
             end
           )
         end
@@ -439,55 +445,38 @@ RSpec.describe Referential::Schema do
     end
 
     context 'with error' do
-      context 'with unsuccessful status in gunzip' do
+      context 'with unsuccessful status' do
         before do
-          allow(Open3).to(
-            receive(:pipeline) do |*_, **options|
-              options[:err].puts 'Unexpected error'
-              [
-                instance_double(Process::Status, 'success?': false, to_i: 42),
-                instance_double(Process::Status, 'success?': true, to_i: 0)
-              ]
+          allow(Kernel).to(
+            receive(:system) do |command|
+              output_path = command.split(' ').last
+              File.open(output_path, 'w') do |output|
+                output.puts('Unexpected error')
+              end
+              false
             end
           )
         end
 
         it do
           expect { subject }.to(
-            raise_error(Referential::Schema::DumpRestore::Error, %(gunzip, psql returned 42, 0: "Unexpected error\n"))
-          )
-        end
-      end
-
-      context 'with unsuccessful status in psql' do
-        before do
-          allow(Open3).to(
-            receive(:pipeline) do |*_, **options|
-              options[:err].puts 'Unexpected error'
-              [
-                instance_double(Process::Status, 'success?': true, to_i: 0),
-                instance_double(Process::Status, 'success?': false, to_i: 42)
-              ]
-            end
-          )
-        end
-
-        it do
-          expect { subject }.to(
-            raise_error(Referential::Schema::DumpRestore::Error, %(gunzip, psql returned 0, 42: "Unexpected error\n"))
+            raise_error(
+              Referential::Schema::DumpRestore::Error,
+              /\A#{Rails.root.join('script/pg_gz_restore.sh')} returned \d+: "Unexpected error\n"\z/
+            )
           )
         end
       end
 
       context 'with error output only' do
         before do
-          allow(Open3).to(
-            receive(:pipeline) do |*_, **options|
-              options[:err].puts 'Unexpected error'
-              [
-                instance_double(Process::Status, 'success?': true, to_i: 0),
-                instance_double(Process::Status, 'success?': true, to_i: 0)
-              ]
+          allow(Kernel).to(
+            receive(:system) do |command|
+              output_path = command.split(' ').last
+              File.open(output_path, 'w') do |output|
+                output.puts('Unexpected error')
+              end
+              true
             end
           )
         end

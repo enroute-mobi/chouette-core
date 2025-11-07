@@ -1,7 +1,12 @@
 # frozen_string_literal: true
 
 RSpec.describe Referential, type: :model do
-  let(:referential) { Chouette.create { referential }.referential }
+  let(:context) do
+    Chouette.create do
+      referential
+    end
+  end
+  let(:referential) { context.referential }
 
   it { should have_many(:metadatas) }
   it { is_expected.to belong_to(:workbench).optional }
@@ -202,8 +207,6 @@ RSpec.describe Referential, type: :model do
 
   context ".last_operation" do
     subject(:operation) { referential.last_operation }
-
-    let(:referential) { Chouette.create { referential }.referential }
 
     it "should return nothing" do
       expect(operation).to be_nil
@@ -598,9 +601,7 @@ RSpec.describe Referential, type: :model do
     around { |example| Timecop.freeze(Time.now.round) { example.run } }
 
     context "with a persisted Referential" do
-
-      let(:context) { Chouette.create { referential } }
-      let(:referential) { context.referential.reload }
+      before { referential.reload }
 
       def metadatas_flagged_urgent_at
         referential.metadatas.map(&:flagged_urgent_at)
@@ -662,6 +663,22 @@ RSpec.describe Referential, type: :model do
 
   it { is_expected.to enumerize(:data_freeze_status).in(%w[unfrozen freezing frozen unfreeze_enqueued unfreezing]) }
 
+  describe '.data_unfrozen' do
+    subject { described_class.data_unfrozen }
+
+    context 'when #data_freeze_status is "unfrozen"' do
+      before { referential }
+        it { is_expected.to include(referential) }
+    end
+
+    %w[freezing frozen unfreeze_enqueued unfreezing].each do |data_freeze_status|
+      context "when #data_freeze_status is \"#{data_freeze_status}\"" do
+        before { referential.update!(data_freeze_status: data_freeze_status) }
+        it { is_expected.to be_empty }
+      end
+    end
+  end
+
   describe '#data_frozen?' do
     subject { referential.data_frozen? }
 
@@ -697,6 +714,30 @@ RSpec.describe Referential, type: :model do
     it 'removes schema from apartment tenants' do
       expect { subject }.to change { Apartment.tenant_names }.from(include(referential.slug))
                                                              .to(not_include(referential.slug))
+    end
+
+    context 'with CrossReferentialIndexEntry' do
+      let(:context) do
+        Chouette.create do
+          line_notice :line_notice
+          referential do
+            vehicle_journey line_notices: %i[line_notice]
+          end
+        end
+      end
+      let(:line_notice) { context.line_notice(:line_notice) }
+
+      it 'does not crash when rebuilding all CrossReferentialIndexEntry' do
+        subject
+        expect(Chouette::Safe).not_to receive(:capture)
+        CrossReferentialIndexEntry.rebuild_index!
+      end
+
+      it 'does not crash when line_notice retrieves its vehicle journeys' do
+        expect(line_notice.reload.vehicle_journeys.count).to eq(1)
+        subject
+        expect(line_notice.reload.vehicle_journeys.count).to eq(0)
+      end
     end
 
     context 'with errors' do
@@ -783,11 +824,11 @@ RSpec.describe Referential, type: :model do
 
     let!(:public_current_version) { ActiveRecord::Migrator.current_version }
 
-    let(:referential) do
+    let(:context) do
       frozen_dump = file_fixture('referential_dump.sql.gz').open
       Chouette.create do
         referential(slug: '5c630290-96ff-4186-afb5-8bc5be256e3a', frozen_dump: frozen_dump)
-      end.referential
+      end
     end
 
     before do
@@ -921,6 +962,7 @@ RSpec.describe Referential, type: :model do
     let(:context) do
       Chouette.create do
         line :line
+        line_notice :line_notice
 
         referential lines: %i[line] do
           footnote :footnote
@@ -933,7 +975,10 @@ RSpec.describe Referential, type: :model do
             stop_point
 
             journey_pattern :journey_pattern do
-              vehicle_journey :vehicle_journey, footnotes: %i[footnote], time_tables: %i[time_table]
+              vehicle_journey :vehicle_journey,
+                              footnotes: %i[footnote],
+                              time_tables: %i[time_table],
+                              line_notices: %i[line_notice]
             end
 
             routing_constraint_zone :routing_constraint_zone
@@ -950,7 +995,6 @@ RSpec.describe Referential, type: :model do
         end
       end
     end
-    let(:referential) { context.referential }
     let(:models) do
       %i[
         footnote
@@ -962,6 +1006,7 @@ RSpec.describe Referential, type: :model do
         routing_constraint_zone
       ].map { |i| context.send(i, i) } + [ServiceCount.first]
     end
+    let(:line_notice) { context.line_notice(:line_notice) }
 
     it 'restores all models as if nothing happened' do
       referential.switch { models }
@@ -969,6 +1014,20 @@ RSpec.describe Referential, type: :model do
       referential.switch
       models.each do |model|
         expect { model.reload }.not_to raise_error
+      end
+    end
+
+    context 'with CrossReferentialIndexEntry' do
+      it 'does not crash when rebuilding all CrossReferentialIndexEntry' do
+        subject
+        expect(Chouette::Safe).not_to receive(:capture)
+        CrossReferentialIndexEntry.rebuild_index!
+      end
+
+      it 'line_notice finds back its vehicle journeys' do
+        expect(line_notice.reload.vehicle_journeys.count).to eq(1)
+        subject
+        expect(line_notice.reload.vehicle_journeys.count).to eq(1)
       end
     end
   end

@@ -76,6 +76,10 @@ class Referential < ApplicationModel
 
   has_many :publications, dependent: :destroy
 
+  has_many :cross_referential_index_entries, foreign_key: :target_referential_slug, primary_key: :slug,
+                                             inverse_of: :target_referential,
+                                             dependent: :delete_all
+
   scope :pending, -> { where(ready: false, failed_at: nil, archived_at: nil) }
   scope :active, -> { where(ready: true, failed_at: nil, archived_at: nil) }
   scope :failed, -> { where.not(failed_at: nil) }
@@ -126,8 +130,6 @@ class Referential < ApplicationModel
           )
     end
   }
-
-  after_destroy :clean_cross_referential_index!
 
   def self.clean!
     Rails.logger.info "Cleaning Referentials (cooldown: #{TIME_BEFORE_CLEANING} days)"
@@ -818,10 +820,6 @@ class Referential < ApplicationModel
     CrossReferentialIndexEntry.rebuild_index_for_referential!(self)
   end
 
-  def clean_cross_referential_index!
-    CrossReferentialIndexEntry.clean_index_for_referential!(self)
-  end
-
   def update_counters
     update_column :vehicle_journeys_count, vehicle_journeys.count
   end
@@ -829,6 +827,8 @@ class Referential < ApplicationModel
   concerning :DataFreeze do # rubocop:disable Metrics/BlockLength
     included do
       enumerize :data_freeze_status, in: %w[unfrozen freezing frozen unfreeze_enqueued unfreezing], default: 'unfrozen'
+
+      scope :data_unfrozen, -> { where(data_freeze_status: 'unfrozen') }
 
       has_one_attached :frozen_dump
     end

@@ -1,6 +1,9 @@
 class CrossReferentialIndexEntry < ActiveRecord::Base
   belongs_to :parent, polymorphic: true # TODO: CHOUETTE-3247 optional: true?
   belongs_to :target, polymorphic: true # TODO: CHOUETTE-3247 optional: true?
+  belongs_to :target_referential, class_name: 'Referential',
+                                  foreign_key: :target_referential_slug, primary_key: :slug,
+                                  inverse_of: :cross_referential_index_entries
 
   scope :for_target, ->(target){ where(target: target, target_referential_slug: target.referential.slug) }
 
@@ -11,14 +14,9 @@ class CrossReferentialIndexEntry < ActiveRecord::Base
       end
     end
 
-    def clean_index_for_referential!(referential)
-      Rails.logger.info "Clean CrossReferentialIndex for referential #{referential.slug}"
-      CrossReferentialIndexEntry.where(target_referential_slug: referential.slug).delete_all
-    end
-
     def rebuild_index_for_referential!(referential)
       Rails.logger.info "Rebuild CrossReferentialIndex for referential #{referential.slug}"
-      clean_index_for_referential!(referential)
+      referential.cross_referential_index_entries.delete_all
 
       ReferentialIndexSupport.target_relations.each do |rel|
         ActiveRecord::Base.cache do
@@ -31,7 +29,7 @@ class CrossReferentialIndexEntry < ActiveRecord::Base
       CrossReferentialIndexEntry.where(relation_name: rel.name).delete_all
 
       ActiveRecord::Base.cache do
-        Referential.find_each do |referential|
+        Referential.data_unfrozen.find_each do |referential|
           rebuild_index_for_relation_in_referential rel, referential
         end
       end
@@ -89,13 +87,21 @@ class CrossReferentialIndexEntry < ActiveRecord::Base
       CrossReferentialIndexEntry.where(parent: parent).delete_all
     end
 
-    def in_each_referential_for(relation, parent)
-      CrossReferentialIndexEntry.where(relation_name: relation.ascending.name, parent: parent).pluck(:target_referential_slug).uniq.each do |slug|
-        Referential.find_by(slug: slug).tap do |referential|
-          referential.switch do
-            yield referential
-          end
-        end
+    def in_each_referential_for(relation, parent, &block) # rubocop:disable Metrics/MethodLength
+      ::Referential.data_unfrozen
+                   .joins(:cross_referential_index_entries)
+                   .where(
+                     {
+                       cross_referential_index_entries: {
+                         relation_name: relation.reciproque.ascending.name,
+                         parent: parent
+                       }
+                     }
+                   )
+                   .group("#{Referential.quoted_table_name}.id")
+                   .distinct
+                   .find_each do |referential|
+        referential.switch(&block)
       end
     end
 

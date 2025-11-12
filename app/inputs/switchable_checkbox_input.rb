@@ -8,12 +8,18 @@ class SwitchableCheckboxInput < SimpleForm::Inputs::BooleanInput
 
   def input_id
     # There must be a cleaner way, I just cannot find it
+    # Either we inherit from ActionView::Helpers::Tags::Base or we copy from its initializer:
+    #   @object_name.sub!(/\[\]$/, "") || @object_name.sub!(/\[\]\]$/, "]")
     key = @builder.object_name.to_s.gsub(/[\]\[]/, '_').squeeze('_')
     "#{key}_#{reflection_or_attribute_name}"
   end
 
   def input_html_options
     super.merge(class: 'onoffswitch-checkbox', id: input_id)
+  end
+
+  def label_html_options
+    super.merge(for: input_id)
   end
 
   def span_inner

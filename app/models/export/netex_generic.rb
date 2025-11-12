@@ -64,7 +64,7 @@ class Export::NetexGeneric < Export::Base
     end
 
     def ignore_referent_stop_areas?
-      export.setup.scope_setup.stop_areas.ignore_referent_stop_areas
+      export.setup.scope_setup.stop_areas.try(:ignore_referent_stop_areas)
     end
 
     def entrances
@@ -149,7 +149,7 @@ class Export::NetexGeneric < Export::Base
     end
 
     def prefer_referent_lines?
-      export.setup.scope_setup.lines.prefer_referent_lines
+      export.setup.scope_setup.lines.try(:prefer_referent_lines)
     end
 
     def referenced_lines

@@ -46,7 +46,7 @@ class Export::Ara < Export::Base
 
   def generate_export_file
     period.each do |day|
-      # For each day, a scope selects models to be exported
+      # For each day, a scgitope selects models to be exported
       daily_scope = DailyScope.new self, day
 
       Rails.logger.tagged(day) do
@@ -721,7 +721,8 @@ class Export::Ara < Export::Base
           direction_type: route.wayback,
           attributes: {
             "VehicleMode": line.transport_mode
-          }
+          },
+          aimed_stop_visit_count: aimed_stop_visit_count
         }
       end
 
@@ -737,6 +738,10 @@ class Export::Ara < Export::Base
       # TODO: To be shared
       def ara_codes
         code_provider.unique_codes __getobj__
+      end
+
+      def aimed_stop_visit_count
+        vehicle_journey_at_stops.count
       end
     end
   end

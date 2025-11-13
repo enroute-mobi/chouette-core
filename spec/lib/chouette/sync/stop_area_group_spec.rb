@@ -40,7 +40,7 @@ RSpec.describe Chouette::Sync::StopAreaGroup do
           <members>
             <StopPlaceRef ref="first"/>
             <StopPlaceRef ref="second"/>
-          </members>  
+          </members>
         </GroupOfStopPlaces>
       XML
     end
@@ -109,16 +109,16 @@ RSpec.describe Chouette::Sync::StopAreaGroup do
     context 'when stop area group exists' do
       let!(:stop_area_group) do
         target.stop_area_groups.create!({
-                                   name: 'test',
-                                   stop_area_provider: stop_area_provider,
-                                   stop_area_ids: [first_stop_area.id, second_stop_area.id],
-                                   codes_attributes: [
-                                     {
-                                       code_space: code_space,
-                                       value: 'sample'
-                                     }
-                                   ]
-                                 })
+                                          name: 'test',
+                                          stop_area_provider: stop_area_provider,
+                                          stop_area_ids: [first_stop_area.id, second_stop_area.id],
+                                          codes_attributes: [
+                                            {
+                                              code_space: code_space,
+                                              value: 'sample'
+                                            }
+                                          ]
+                                        })
       end
 
       it 'should update stop area group' do

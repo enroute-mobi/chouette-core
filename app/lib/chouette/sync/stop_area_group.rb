@@ -3,7 +3,8 @@ module Chouette::Sync
     class Netex < Chouette::Sync::Base
       def initialize(options = {})
         default_options = {
-          resource_type: :group_of_stop_place,
+          resource_type: :group_of_stop_places,
+          resource_collection: :groups_of_stop_places,
           resource_id_attribute: :id,
           resource_decorator: Decorator,
           model_type: :stop_area_group,

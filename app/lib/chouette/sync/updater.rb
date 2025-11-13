@@ -13,6 +13,8 @@ module Chouette
       attr_accessor :source, :target, :update_batch_size, :default_provider, :resource_type, :resource_id_attribute,
                     :resource_decorator, :model_type, :model_id_attribute, :code_space, :strict_mode, :ignore_particulars
 
+      attr_writer :resource_collection
+
       alias strict_mode? strict_mode
       alias ignore_particulars? ignore_particulars
 
@@ -20,8 +22,12 @@ module Chouette
 
       delegate :workgroup, to: :target
 
+      def resource_collection
+        @resource_collection ||= resource_type.to_s.pluralize
+      end
+
       def resources
-        @resources ||= source.send(resource_type.to_s.pluralize)
+        @resources ||= source.send(resource_collection)
       end
 
       def use_code?

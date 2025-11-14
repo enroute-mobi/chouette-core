@@ -2,7 +2,7 @@ module Chouette
   module Sync
     class Base
       attr_accessor :source, :target, :default_provider, :delete_batch_size, :update_batch_size,
-                    :resource_type, :resource_id_attribute, :resource_decorator, :model_type,
+                    :resource_type, :resource_collection, :resource_id_attribute, :resource_decorator, :model_type,
                     :model_id_attribute, :code_space, :strict_mode, :ignore_particulars
 
       alias strict_mode? strict_mode
@@ -67,7 +67,9 @@ module Chouette
         default_options = {
           source: source, target: target,
           update_batch_size: update_batch_size,
-          resource_type: resource_type, resource_id_attribute: resource_id_attribute,
+          resource_type: resource_type,
+          resource_collection: resource_collection,
+          resource_id_attribute: resource_id_attribute,
           resource_decorator: resource_decorator,
           model_type: model_type, model_id_attribute: model_id_attribute,
           event_handler: event_handler,

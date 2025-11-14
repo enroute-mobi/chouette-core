@@ -135,8 +135,15 @@ class Export::Base < ApplicationModel
     joins('LEFT JOIN public.publication_api_sources ON publication_api_sources.export_id = exports.id')
       .where('publication_api_sources.id IS NULL')
   }
+  class << self
+    alias old_file_purgeable file_purgeable
+    alias old_purgeable purgeable
+  end
+  scope :file_purgeable, lambda {
+    not_used_by_publication_apis.old_file_purgeable
+  }
   scope :purgeable, lambda {
-    not_used_by_publication_apis.where('exports.created_at <= ?', clean_after.days.ago)
+    not_used_by_publication_apis.old_purgeable
   }
   scope :started_at_after, lambda { |date|
     where('started_at > ?', date)

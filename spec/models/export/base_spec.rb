@@ -56,9 +56,9 @@ RSpec.describe Export::Base, type: :model do
       end
     end
 
-    it 'keeps files used in Publication Apis' do
-      # We create TWO exports
+    it 'keeps exports and files used in Publication Apis' do
       old_export = create(:gtfs_export, workbench: workbench)
+      # We create TWO exports
       create(:gtfs_export, workbench: workbench)
 
       Timecop.travel(90.days.from_now) do
@@ -76,7 +76,9 @@ RSpec.describe Export::Base, type: :model do
 
         expect { Export::Gtfs.new(workbench: workbench).purge_exports }.to change {
           workbench.exports.count
-        }.by -1
+        }.by(-1)
+
+        expect(Export::Gtfs.first.file).to be_present
       end
     end
   end

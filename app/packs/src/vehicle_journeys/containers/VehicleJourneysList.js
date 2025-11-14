@@ -23,8 +23,7 @@ const mapStateToProps = (state) => {
       toggleArrivals,
     },
     stopPointsList: state.stopPointsList,
-    returnStopPointsList: state.returnStopPointsList,
-    extraHeaders: window.extra_headers
+    returnStopPointsList: state.returnStopPointsList
   }
 }
 

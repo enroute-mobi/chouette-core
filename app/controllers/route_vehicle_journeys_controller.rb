@@ -21,7 +21,6 @@ class RouteVehicleJourneysController < Chouette::ReferentialController
         load_missions
         load_footnotes
         load_matrix
-        load_custom_fields
         @stop_points_list = map_stop_points(route.stop_points)
         @return_stop_points_list = map_stop_points(route.opposite_route&.stop_points) if has_feature?(:vehicle_journeys_return_route)
         @transport_mode = route.line['transport_mode']
@@ -72,12 +71,6 @@ class RouteVehicleJourneysController < Chouette::ReferentialController
   end
 
   private
-
-  def load_custom_fields
-    @extra_headers = Rails.application.config.vehicle_journeys_extra_headers.dup.delete_if do |header|
-      header[:type] == :custom_field
-    end
-  end
 
   def map_stop_points points
     (points&.includes(:stop_area) || []).map do |sp|

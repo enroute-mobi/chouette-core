@@ -51,10 +51,6 @@ export default class VehicleJourney extends Component {
     return found
   }
 
-  extraHeaderValue(header) {
-    return this.props.value[header["name"]]
-  }
-
   formatDistance = distance => {
     if (distance < 1000) {
       return distance + " m"
@@ -106,11 +102,6 @@ export default class VehicleJourney extends Component {
           <div>{this.props.value.journey_pattern.short_id || '-'}</div>
           <div>{this.props.value.company ? this.props.value.company.name : '-'}</div>
           <div>{this.props.value.accessibility_assessment ? truncate(this.props.value.accessibility_assessment.name, 20) : '-'}</div>
-          {
-            this.props.extraHeaders.map((header, i) =>
-              <div key={i}>{this.extraHeaderValue(header)}</div>
-            )
-          }
           { this.hasFeature('journey_length_in_vehicle_journeys') &&
             <div>
               {this.journey_length()}
@@ -182,6 +173,5 @@ VehicleJourney.propTypes = {
   onSelectVehicleJourney: PropTypes.func.isRequired,
   vehicleJourneys: PropTypes.object.isRequired,
   allTimeTables: PropTypes.array.isRequired,
-  extraHeaders: PropTypes.array.isRequired,
   selection: PropTypes.object.isRequired,
 }

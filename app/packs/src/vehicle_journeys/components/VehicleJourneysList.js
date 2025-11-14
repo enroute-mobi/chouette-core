@@ -90,10 +90,6 @@ export default class VehicleJourneysList extends Component {
     )
   }
 
-  extraHeaderLabel(header) {
-    return I18n.attribute_name("vehicle_journey", header)
-  }
-
   bubbleKeyEvent(event) {
     const { key, metaKey, ctrlKey } = event
     return (
@@ -210,11 +206,6 @@ export default class VehicleJourneysList extends Component {
                   <div>{I18n.attribute_name("vehicle_journey", "journey_pattern_id")}</div>
                   <div>{I18n.model_name("company")}</div>
                   <div>{I18n.model_name("accessibility_assessment")}</div>
-                  {
-                    this.props.extraHeaders.map((header, i) =>
-                      <div key={i}>{this.extraHeaderLabel(header)}</div>
-                    )
-                  }
                   { this.hasFeature('journey_length_in_vehicle_journeys') &&
                     <div>
                     {I18n.attribute_name("vehicle_journey", "journey_length")}
@@ -269,7 +260,6 @@ export default class VehicleJourneysList extends Component {
                         vehicleJourneys={this}
                         disabled={this.isReturn}
                         allTimeTables={this.allTimeTables}
-                        extraHeaders={this.props.extraHeaders}
                         onSelectCell={this.onSelectCell}
                       />
                     )}
@@ -287,7 +277,6 @@ export default class VehicleJourneysList extends Component {
 VehicleJourneysList.propTypes = {
   status: PropTypes.object.isRequired,
   filters: PropTypes.object.isRequired,
-  extraHeaders: PropTypes.array.isRequired,
   stopPointsList: PropTypes.array.isRequired,
   onLoadFirstPage: PropTypes.func.isRequired,
   onUpdateTime: PropTypes.func.isRequired,

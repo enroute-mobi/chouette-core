@@ -138,9 +138,11 @@ RSpec.describe Import::Base, type: :model do
 
       it "must update the :notified_parent_at field of the child import" do
         allow(workbench_import).to receive(:child_change)
-        netex_import.notify_parent
-        expect(netex_import.notified_parent_at.utc.strftime('%Y-%m-%d %H:%M')).to eq Time.now.utc.strftime('%Y-%m-%d %H:%M')
-        expect(netex_import.reload.notified_parent_at.utc.strftime('%Y-%m-%d %H:%M')).to eq Time.now.utc.strftime('%Y-%m-%d %H:%M')
+        Timecop.freeze do
+          netex_import.notify_parent
+          expect(netex_import.notified_parent_at).to be_within(1e-3).of(Time.zone.now)
+          expect(netex_import.reload.notified_parent_at).to be_within(1e-3).of(Time.zone.now)
+        end
       end
     end
 
@@ -267,8 +269,10 @@ RSpec.describe Import::Base, type: :model do
         status: 'failed'
       )
 
-      workbench_import.update_status
-      expect(workbench_import.ended_at.utc.strftime('%Y-%m-%d %H:%M')).to eq Time.now.utc.strftime('%Y-%m-%d %H:%M')
+      Timecop.freeze do
+        workbench_import.update_status
+        expect(workbench_import.ended_at).to be_within(1e-3).of(Time.zone.now)
+      end
     end
   end
 end

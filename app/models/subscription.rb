@@ -76,7 +76,7 @@ class Subscription
       password_confirmation: password_confirmation,
       profile: :admin
     }
-    if organisation.has_feature?('create_workgroup_permission_on_subscription')
+    if organisation.has_feature?('create_workgroup')
       user_params[:profile] = :custom
       user_params[:permissions] = Permission::Profile.permissions_for(:admin) + ['workgroups.create']
     end

@@ -51,9 +51,9 @@ RSpec.describe Subscription do
       is_expected.to have_attributes(organisation: subscription.organisation)
     end
 
-    context 'when organisation has feature create_workgroup_permission_on_subscription' do
+    context 'when organisation has feature create_workgroup' do
       before(:each) do
-        expect(Feature).to receive(:all).and_return(Feature.base + %w[create_workgroup_permission_on_subscription])
+        expect(Feature).to receive(:all).and_return(Feature.base + %w[create_workgroup])
       end
 
       it 'adds workgroups.create permission' do

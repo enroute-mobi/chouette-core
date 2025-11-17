@@ -1,9 +1,13 @@
 - kinds = %w[Lines Companies LineProviders LineGroups All]
 
 = form.simple_fields_for(:scope_setup, form.object.scope_setup) do |scope_setup_form|
+  - needs_referential = scope_setup_form.object.is_a?(Export::Setup::Scope::Referential)
+  - type_input_html = { 'x-model': 'exportedLines' }
+  - type_input_html['x-bind:disabled'] = '!Boolean(referentialId)' if needs_referential
+
   = scope_setup_form.simple_fields_for(:vehicle_journeys, scope_setup_form.object.vehicle_journeys) do |vehicle_journeys_form|
     = vehicle_journeys_form.simple_fields_for(:included_lines, vehicle_journeys_form.object.included_lines) do |included_lines_form|
-      = included_lines_form.input :type, label: vehicle_journeys_form.object.class.human_attribute_name('included_lines'), as: :select, collection: kinds.map { |k| klass = Export::Setup::Scope::LineSelector.const_get(k); [klass.model_name.human, klass.name] }, required: true, input_html: { 'x-model': 'exportedLines', 'x-bind:disabled': 'isExport && !Boolean(referentialId)' }
+      = included_lines_form.input :type, label: vehicle_journeys_form.object.class.human_attribute_name('included_lines'), as: :select, collection: kinds.map { |k| klass = Export::Setup::Scope::LineSelector.const_get(k); [klass.model_name.human, klass.name] }, required: true, input_html: type_input_html
 
     - kinds.each do |k|
       - next if k == 'All'
@@ -19,7 +23,15 @@
           = included_lines_form.input attribute,
                                       as: :tom_select,
                                       collection: Rabl::Renderer.new("autocomplete/#{underscore}", collection, format: :hash, view_path: 'app/views').render,
-                                      input_html: { multiple: true, style: 'width: 100%', 'x-bind:data-url': "getExportedLinesSelectURL()", 'x-ref': 'exportedLinesSelect' },
+                                      input_html: { \
+                                        multiple: true, \
+                                        style: 'width: 100%', \
+                                        'data-base-url': needs_referential ? \
+                                                           send(:"#{underscore}_workbench_referential_autocomplete_index_path", current_workbench, 'REFERENTIAL_ID') : \
+                                                           send(:"#{underscore}_workgroup_autocomplete_index_path", current_workgroup), \
+                                        'x-bind:data-url': 'setExportedLinesSelectURL($el)', \
+                                        'class': 'exported_lines_select' \
+                                      },
                                       label_html: { class: 'invisible' },
                                       include_hidden: false,
                                       config: { type: 'ajax' }

@@ -1,5 +1,5 @@
 import Alpine from 'alpinejs'
-import { snakeCase, tap } from 'lodash'
+import { tap } from 'lodash'
 
 Alpine.data('exportForm', state => ({
   type: state.type,
@@ -9,13 +9,9 @@ Alpine.data('exportForm', state => ({
   profileOptions: state.profileOptions,
   scopeStopAreasType: state.scopeStopAreasType,
   scopeLinesType: state.scopeLinesType,
-  isExport: state.isExport,
-  workbenchOrWorkgroupId: location.pathname.match(/(\d+)/)[0],
 
   init() {
-    if (this.export) {
-      this.$watch('referentialId', () => this.handleReferentialIdUpdate())
-    }
+    this.$watch('referentialId', () => this.setExportedLinesSelectURLs())
 
     this.$watch('type', () => this.updateScopeStopAreasType())
     this.$watch('type', () => this.updateScopeLinesType())
@@ -31,33 +27,27 @@ Alpine.data('exportForm', state => ({
     this.scopeLinesType = this.$refs[scopeLinesTypeRef].value
   },
 
-  /* Used in app/views/export_setups/options/_exported_lines.html.slim as x-bind:data-url
-    on all exported lines related select inputs
-  */
-  getExportedLinesSelectURL() {
-    if (this.exportedLines === 'Export::Setup::Scope::LineSelector::All') return null
-
-    let prefix
-    const suffix = snakeCase(this.exportedLines.split('::')[4])
-
-    if (this.isExport) {
-      prefix = (this.exportedLines === 'line_provider_ids') ? `/workbenches/${this.workbenchOrWorkgroupId}` : `/workbenches/${this.workbenchOrWorkgroupId}/referentials/${this.referentialId}`
-    } else {
-      prefix = `/workgroups/${this.workbenchOrWorkgroupId}`
+  setExportedLinesSelectURLs() {
+    for (let select of this.$root.getElementsByClassName('exported_lines_select')) {
+      this.setExportedLinesSelectURL(select)
     }
-
-    return `${prefix}/autocomplete/${suffix}`
   },
 
-  // Event handlers
-  handleReferentialIdUpdate(_referentialId) {
-    if (this.exportedLines === 'Export::Setup::Scope::LineSelector::All') return
+  /* also used in app/views/export_setups/options/_exported_lines.html.slim as x-bind:data-url
+    on all exported lines related select inputs
+  */
+  setExportedLinesSelectURL(select) {
+    select.dataset['url'] = select.dataset['baseUrl'].replace('REFERENTIAL_ID', this.referentialId)
 
-    tap(this.$refs.exportedLinesSelect.tomselect, tomselect => {
-      tomselect.clear()
-      tomselect.clearOptions()
-      tomselect.load('')
-    })
+    if (select.tomselect) {
+      tap(select.tomselect, tomselect => {
+        tomselect.clear()
+        tomselect.clearOptions()
+        tomselect.load('')
+      })
+    }
+
+    return select.dataset['url']
   },
 
   handleProfileOptions() {

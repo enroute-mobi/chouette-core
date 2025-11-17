@@ -2,16 +2,16 @@ import React, { useMemo, useEffect, useCallback, useState, useRef } from 'react'
 import { PropTypes } from 'prop-types'
 import { Map, View } from 'ol'
 import { Tile as TileLayer, Vector as VectorLayer } from 'ol/layer'
-import { OSM, Vector as VectorSource } from 'ol/source'
+import { OSM, XYZ, Vector as VectorSource } from 'ol/source'
 import { ScaleLine, Zoom, ZoomSlider } from 'ol/control'
 import { toStringXY } from 'ol/coordinate'
 
 import { toWgs84 } from '@turf/turf'
 
 import { usePrevious } from '../helpers/hooks'
-
 function MapWrapper({ features, onInit, style, height, width }) {
-  const [ selectedCoord , setSelectedCoord ] = useState()
+  const [selectedCoord, setSelectedCoord] = useState()
+  const [showSatellite, setShowSatellite] = useState(false)
   const previousFeatures = usePrevious(features)
 
   const featuresLayer = useMemo(
@@ -24,6 +24,15 @@ function MapWrapper({ features, onInit, style, height, width }) {
       layers: [
         // OSM Topo
         new TileLayer({ source: new OSM({ attributions: '&copy; OpenStreetMap contributors' }) }),
+        new TileLayer({
+          title: 'Satellite',
+          type: 'base',
+          visible: false,
+          source: new XYZ({
+            url: 'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
+            attributions: 'Tiles &copy; Esri &mdash; Source: Esri, i-cubed, USDA, USGS, AEX, GeoEye, Getmapping, Aerogrid, IGN, IGP, UPR-EGP, and the GIS User Community'
+          })
+        }),
         featuresLayer
       ],
       view: new View({ center: [0, 0], zoom: 2 }),
@@ -76,12 +85,50 @@ function MapWrapper({ features, onInit, style, height, width }) {
     }
   },[features])
 
+  // Switch between layers
+  const toggleLayer = useCallback((e) => {
+    const isSatellite = e.target.checked
+    setShowSatellite(isSatellite)
+    map.getLayers().item(0).setVisible(!isSatellite)
+    map.getLayers().item(1).setVisible(isSatellite)
+  }, [map])
+
   // render component
   return (
-    <div>
+    <div style={{ position: 'relative' }}>
       <div ref={mapRef} className="map-container" style={{ width, height }}></div>
       <div className="clicked-coord-label">
-        <p>{ (selectedCoord) ? toStringXY(selectedCoord, 5) : '' }</p>
+        <p>{selectedCoord ? toStringXY(selectedCoord, 5) : ''}</p>
+      </div>
+      <div style={{
+        position: 'absolute',
+        bottom: '10px',
+        left: '10px',
+        zIndex: 1000,
+        backgroundColor: 'white',
+        padding: '5px 10px',
+        borderRadius: '4px',
+        boxShadow: '0 2px 4px rgba(0,0,0,0.2)'
+      }}>
+        <label style={{ 
+          display: 'flex', 
+          alignItems: 'center',
+          cursor: 'pointer',
+          transition: 'background-color 0.2s',
+          padding: '2px 5px',
+          borderRadius: '3px',
+          ':hover': {
+            backgroundColor: '#f5f5f5'
+          }
+        }}>
+          <input
+            type="checkbox"
+            checked={showSatellite}
+            onChange={toggleLayer}
+            style={{ marginRight: '5px' }}
+          />
+          {window.I18n.t('maps.satellite_view')}
+        </label>
       </div>
     </div>
   )

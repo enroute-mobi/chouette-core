@@ -18,9 +18,9 @@ en:
   activerecord:
     models:
       publication_setup:
-        zero:  "Publication"
-        one:   "Publications"
-        other: "Publications"
+        zero:  "Publication Setup"
+        one:   "Publication Setup"
+        other: "Publication Setups"
     attributes:
       publication_setup:
         name: "Name"

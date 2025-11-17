@@ -2,14 +2,23 @@
 
 class Destination
   class Icar < ::Destination
+    option :icar_type, enumerize: %w[production custom], default_value: 'production'
+    option :custom_icar_url, type: :string
     option :site_id, type: :string
     option :site_name, type: :string
     option :file_type, enumerize: %w[T P]
     option :icar_token, type: :password
 
     validates :icar_token, presence: true
+    validates :custom_icar_url, presence: true, if: :custom_type?
+
+    def custom_type?
+      icar_type == 'custom'
+    end
 
     def icar_import_url
+      return custom_icar_url if custom_type? && custom_icar_url.present?
+
       @icar_import_url ||= ENV['ICAR_IMPORT_URL'] || 'https://icar.iledefrance-mobilites.fr/api/v1/imports'
     end
 

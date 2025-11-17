@@ -80,6 +80,8 @@ fr:
         site_name: Nom du site
         file_type: Type de fichier
         icar_token: Token ICAR
+        icar_type: "Type ICAR"
+        custom_icar_url: "URL ICAR"
       destination/mail:
         email_title: Titre du mail
         email_text: Texte du mail
@@ -115,3 +117,6 @@ fr:
       file_type:
         T: Complet
         P: Partiel
+      icar_type:
+        production: Production ICAR
+        custom: Personnalisé

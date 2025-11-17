@@ -79,8 +79,7 @@ async function init() {
   })
 
   // Satellite layer
-  /*
-
+  
   const satelliteLayer = new TileLayer({
     title: 'Satellite',
     type: 'base',
@@ -90,14 +89,11 @@ async function init() {
       attributions: 'Tiles &copy; Esri &mdash; Source: Esri, i-cubed, USDA, USGS, AEX, GeoEye, Getmapping, Aerogrid, IGN, IGP, UPR-EGP, and the GIS User Community'
     })
   })
-  */
-
-
+  
   const baseGroup = new Group({
     title: getBaseGroupTitle(),
     fold: 'open',
-    layers: [osmLayer]
-    // layers: [osmLayer, satelliteLayer]
+    layers: [osmLayer, satelliteLayer]
   })
 
   // Create view with reasonable default values

@@ -438,23 +438,15 @@ class Export::Ara < Export::Base
       attr_accessor :day
 
       def vehicle_journey_at_stop
-        __getobj__
+        @vehicle_journey_at_stop ||= __getobj__
       end
 
       def arrival?
-        if vehicle_journey_at_stop.respond_to?(:arrival?)
-          vehicle_journey_at_stop.arrival?
-        else
-          vehicle_journey&.vehicle_journey_at_stops&.last == vehicle_journey_at_stop
-        end
+        vehicle_journey_at_stop.attributes['arrival']
       end
 
       def departure?
-        if vehicle_journey_at_stop.respond_to?(:departure?)
-          vehicle_journey_at_stop.departure?
-        else
-          vehicle_journey&.vehicle_journey_at_stops&.first == vehicle_journey_at_stop
-        end
+        vehicle_journey_at_stop.attributes['departure']
       end
 
       def arrival_time

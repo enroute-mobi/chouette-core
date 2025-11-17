@@ -46,6 +46,7 @@ en:
       table:
         test_results: Test results
         download: Download
+      import_options: "Import Options"
       gtfs:
         filename: Resource
     severities:

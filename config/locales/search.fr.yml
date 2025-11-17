@@ -71,6 +71,7 @@ fr:
         contains_date: "Inclut date"
         route_id: "Itinéraire"
         publication_setup_id: "Publications Automatiques"
+        export_type: "Type d'export"
         chart:
           group_by_attribute:
             sub_type:

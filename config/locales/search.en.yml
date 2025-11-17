@@ -70,6 +70,7 @@ en:
         contains_date: "Contains date"
         route_id: "Route"
         publication_setup_id: "Publication Setup"
+        export_type: "Export Type"
         chart:
           group_by_attribute:
             sub_type:

@@ -1,8 +1,8 @@
 - context_type = macro_context_run.class.name.split('::')[-2].underscore
 
-.flex.w-full.rounded.border-4.border-light-grey
+.flex.w-full.rounded.border-4.border-light-grey.mb-3
     .w-full
-      .flex.context-header.bg-light-grey.font-semibold.p-5.text-3xl
+      .flex.context-header.bg-light-grey.font-semibold.p-2
         .ml-5 = macro_context_run.model_name.human
         .mx-4 = ':'
         div = render "macro_list_runs/macro/context/#{context_type}", macro_context_run: macro_context_run

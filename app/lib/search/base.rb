@@ -90,11 +90,15 @@ module Search
         end
       end
 
+      def attributes_from_params(params, **options)
+        FromParamsBuilder.new(params, **options).attributes
+      end
+
       def from_params(params, attributes = {})
         Rails.logger.debug "[Search] Raw params: #{params.inspect}"
 
         new(attributes).tap do |search|
-          search.attributes = FromParamsBuilder.new(params, param_key: attributes[:param_key]).attributes
+          search.attributes = attributes_from_params(params, param_key: attributes[:param_key])
           Rails.logger.debug "[Search] #{search.inspect}"
         end
       end

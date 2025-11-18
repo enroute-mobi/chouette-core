@@ -1,5 +1,5 @@
-= form.label :transport_mode, class: 'flex mr-4 pt-0 control-label', required: true
+= form.label :transport_mode, class: 'flex mr-4 control-label'
 = form.input :transport_mode,
   collection: Chouette::TransportMode.sorted_modes,
   label: false,
-  wrapper_html: { class: 'mb-0 mx-0 ml-12 flex items-center w-4/6 ml-auto', style: 'padding:10px;'}
+  wrapper_html: { class: 'mb-0 mx-0 ml-12 flex items-center w-4/6 ml-auto' }

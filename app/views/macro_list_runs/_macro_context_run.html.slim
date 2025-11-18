@@ -3,7 +3,9 @@
 .flex.w-full.rounded.border-4.border-light-grey
     .w-full
       .flex.context-header.bg-light-grey.font-semibold.p-5.text-3xl
-        = render "macro_context_#{context_type}", macro_context_run: macro_context_run
+        .ml-5 = macro_context_run.model_name.human
+        .mx-4 = ':'
+        div = render "macro_list_runs/macro/context/#{context_type}", macro_context_run: macro_context_run
 
       .flex.flex-col.context-body.p-5
         - macro_context_run.macro_runs.each do |macro_run|

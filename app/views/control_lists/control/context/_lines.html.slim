@@ -1,9 +1,9 @@
-= form.label :line_ids, class: 'flex mr-4 pt-0 control-label', required: true
+= form.label :line_ids, class: 'flex mr-4 control-label'
 = form.input :line_ids,
   as: :ajax_select,
-	collection: form.object.selected_lines,
+  collection: form.object.selected_lines,
   label_method: :display_name,
   placeholder: I18n.t('line_routing_constraint_zones.form.line_placeholder'),
-	input_html: { 'data-url': lines_workbench_autocomplete_index_url(form.object.workbench), multiple: true, style: 'width: 100%;' },
-	label: false,
-	wrapper_html: { class: 'mb-0 mx-0 ml-12 flex items-center w-4/6 ml-auto', style: 'padding:10px;' }
+  input_html: { 'data-url': lines_workbench_autocomplete_index_url(form.object.workbench), multiple: true },
+  label: false,
+  wrapper_html: { class: 'mb-0 mx-0 ml-12 flex items-center w-4/6 ml-auto' }

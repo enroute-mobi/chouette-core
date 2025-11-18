@@ -18,14 +18,14 @@ fr:
         zero:  "Contexte d'instructions"
         one:   "Contexte d'instructions"
         other: "Contexte d'instructions"
-      control/context/transport_mode:
-        one: Mode de transport
-      control/context/operating_period:
-        one: Prochains jours de fonctionnement
-      control/context/lines:
-        one: Lignes
-      control/context/saved_search:
-        one: Recherche sauvegardée
+      control/context/transport_mode/run:  Mode de transport
+      control/context/transport_mode:  Mode de transport
+      control/context/operating_period/run: Prochains jours de fonctionnement
+      control/context/operating_period: Prochains jours de fonctionnement
+      control/context/lines/run: Lignes
+      control/context/lines: Lignes
+      control/context/saved_search/run: Recherche sauvegardée
+      control/context/saved_search: Recherche sauvegardée
 
     attributes:
       control/context: &control_context

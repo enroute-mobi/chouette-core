@@ -1,4 +1,4 @@
-div[class="flex items-center"]
-	= form.label :next_days, I18n.t('control_contexts.form.operating_period.label.start'), class: 'flex mr-4 pt-0 control-label'
-	= form.input :next_days, as: :numeric, class:"form-control", label: false, wrapper_html: { class: 'w-2/6 mb-0' }
-	= form.label I18n.t('control_contexts.form.operating_period.label.end'), class: 'flex mr-4 pt-0 control-label'
+= form.label :next_days, label: t('control_contexts.form.operating_period.label.start'), class: 'flex mr-4 control-label'
+div.flex.items-center.w-4/6
+  = form.input :next_days, as: :numeric, class: 'form-control', label: false, wrapper: false
+  = form.label t('control_contexts.form.operating_period.label.end'), class: 'ml-4'

@@ -18,14 +18,14 @@ en:
         zero:  "Control Contexts"
         one:   "Control Context"
         other: "Control Contexts"
-      control/context/transport_mode:
-        one: Transport mode
-      control/context/operating_period:
-        one: Operating period
-      control/context/lines:
-        one: Lines
-      control/context/saved_search:
-        one: Saved search
+      control/context/transport_mode/run: Transport mode
+      control/context/transport_mode: Transport mode
+      control/context/operating_period/run: Operating period
+      control/context/operating_period: Operating period
+      control/context/lines/run: Lines
+      control/context/lines: Lines
+      control/context/saved_search/run: Saved search
+      control/context/saved_search: Saved search
 
     attributes:
       control/context: &control_context

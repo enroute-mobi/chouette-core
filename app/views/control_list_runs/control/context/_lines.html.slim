@@ -1,0 +1,3 @@
+- lines = control_context_run.lines.includes(:company_light)
+
+= lines.map(&:display_name).join(', ')

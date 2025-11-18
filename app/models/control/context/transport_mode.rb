@@ -4,6 +4,10 @@ class Control::Context::TransportMode < Control::Context
   validates_presence_of :transport_mode
 
   class Run < Control::Context::Run
+    def transport_mode
+      Chouette::TransportMode.new(options[:transport_mode])
+    end
+
     def lines
       context.lines.where(transport_mode: options[:transport_mode])
     end

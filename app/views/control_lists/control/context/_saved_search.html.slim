@@ -1,4 +1,4 @@
-= form.label :saved_search_id, class: 'flex justify-end w-2/6 mr-8 mb-0 control-label pt-0 select required', required: true
+= form.label :saved_search_id, class: 'flex mr-4 control-label'
 = form.input :saved_search_id,
   as: :grouped_select,
   required: true,
@@ -6,4 +6,4 @@
   collection: form.object.candidate_saved_searches,
   group_method: :last,
   input_html: { class: 'w-full'},
-  wrapper_html: { class: 'mb-0 mx-0 ml-12 flex items-center w-full', style: 'padding:10px;'}
+  wrapper_html: { class: 'mb-0 flex-auto' }

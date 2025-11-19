@@ -5,6 +5,15 @@ class LineNoticeMembershipsCollectionsController < Chouette::LineReferentialCont
 
   belongs_to :line, parent_class: Chouette::Line
 
+  class Responder < ::InheritedResources::Responder
+    protected
+
+    def resource_name
+      ::Chouette::LineNotice.model_name.human
+    end
+  end
+  self.responder = Responder
+
   protected
 
   def resource_url

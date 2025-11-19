@@ -53,7 +53,9 @@ en:
         processable_id: Processing
         operation_step: Operation Step
         required_tag_ids: Required tags
+        required_tags: Required tags
         excluded_tag_ids: Excluded tags
+        excluded_tags: Excluded tags
       processing_rule/workgroup:
         processable_type: Processing Type
         processable_id: Processing

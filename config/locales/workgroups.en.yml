@@ -52,7 +52,7 @@ en:
         created_at: Created at
         updated_at: Updated at
 
-  formtastic:
+  simple_form:
     hints:
       workgroup:
         maximum_data_age: (in days) Maximum days of a past TimeTable

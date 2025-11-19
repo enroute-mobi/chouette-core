@@ -227,7 +227,7 @@ fr:
         associated_notices: Notes de ligne associées
         codes: Codes
         routes: Itinéraires
-  formtastic:
+  simple_form:
     titles:
       line:
         name: ""

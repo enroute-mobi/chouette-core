@@ -232,7 +232,7 @@ en:
               active_from_less_than_active_until: "The 'from' date must begin before the 'to' date."
             active_until:
               active_from_less_than_active_until: "The 'until' date must end after the 'from' date."
-  formtastic:
+  simple_form:
     titles:
       line:
         name: ""

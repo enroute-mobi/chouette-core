@@ -190,7 +190,7 @@ fr:
           attributes:
             vehicle_journey_at_stops:
               invalid_chronology: "n'est pas dans un ordre chronologique"
-  formtastic:
+  simple_form:
     titles:
       vehicle_journey:
         objectid: "[prefixe]:VehicleJourney:[clé_unique]  caractères autorisés : alphanumériques et 'souligné' pour le préfixe, la clé unique accepte en plus le 'moins'"

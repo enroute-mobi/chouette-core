@@ -244,7 +244,7 @@ fr:
         is_referent:
           referent: Référent
           particular: Particulier
-  formtastic:
+  simple_form:
     titles:
       stop_area:
         public_code: ""

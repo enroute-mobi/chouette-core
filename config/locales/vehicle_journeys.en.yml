@@ -187,7 +187,7 @@ en:
           attributes:
             vehicle_journey_at_stops:
               invalid_chronology: "is not in chronological order"
-  formtastic:
+  simple_form:
     titles:
       vehicle_journey:
         objectid: "[prefix]:VehicleJourney:[unique_key] : prefix contains only alphanumerical or underscore characters, unique_key accepts also minus character"

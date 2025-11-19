@@ -29,7 +29,7 @@ fr:
         public: "API publique"
         prefer_referent_documents: "Préférer les documents des référents"
         code_space: "Codes"
-  formtastic:
+  simple_form:
     hints:
       publication_api:
         slug: caractères alphanumériques et "_" seulement

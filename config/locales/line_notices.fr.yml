@@ -46,7 +46,7 @@ fr:
         created_at: "Créé le"
         updated_at: "Edité le"
         lines: "Lignes associées"
-  formtastic:
+  simple_form:
     titles:
       line_notice:
         name: ""

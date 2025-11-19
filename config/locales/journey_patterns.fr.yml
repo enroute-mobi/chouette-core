@@ -80,7 +80,7 @@ fr:
         shape: Tracé
         vehicle_journeys: Courses
         booking_arrangement: "Condition de réservation"
-  formtastic:
+  simple_form:
     titles:
       journey_pattern:
         name: ""

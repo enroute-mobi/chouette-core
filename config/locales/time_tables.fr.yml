@@ -145,7 +145,7 @@ fr:
         period_start: "Du"
         period_end: "au"
         associated_vehicle_journeys: Nombre de courses associées
-  formtastic:
+  simple_form:
     titles:
       time_table:
         objectid: "[prefixe]:Timetable:[clé_unique]  caractères autorisés : alphanumériques et 'souligné' pour le préfixe, la clé unique accepte en plus le 'moins'"

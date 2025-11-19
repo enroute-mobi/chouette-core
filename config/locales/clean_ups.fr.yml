@@ -19,7 +19,7 @@ fr:
       begin_date: "Date de début du nettoyage"
       end_date: "Date de fin du nettoyage"
       method_type: Supprimer les données inutilisées
-  formtastic:
+  simple_form:
     titles:
       <<: *titles
   activerecord:

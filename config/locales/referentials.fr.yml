@@ -121,7 +121,7 @@ fr:
         from_current_offer: "Utiliser l'offre finalisée courante"
         urgent: Contient de l'offre urgente
         workbench: Espace de Travail
-  formtastic:
+  simple_form:
     titles:
       referential:
         slug: "caractères autorisés : alphanumériques minuscules et 'souligné' et doit commencer par une lettre"

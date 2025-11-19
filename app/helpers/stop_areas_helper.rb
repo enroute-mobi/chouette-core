@@ -21,9 +21,9 @@ module StopAreasHelper
 
   def stop_area_registration_number_title stop_area
     if stop_area&.stop_area_referential&.registration_number_format.present?
-      return t("formtastic.titles.stop_area.registration_number_format", registration_number_format: stop_area.stop_area_referential.registration_number_format)
+      return t("simple_form.hints.stop_area.registration_number_format", registration_number_format: stop_area.stop_area_referential.registration_number_format)
     end
-    t "formtastic.titles#{format_restriction_for_locales(@referential)}.stop_area.registration_number"
+    t "simple_form.hints#{format_restriction_for_locales(@referential)}.stop_area.registration_number"
   end
 
   def stop_area_registration_number_is_required stop_area
@@ -35,7 +35,7 @@ module StopAreasHelper
   end
 
   def stop_area_registration_number_hint
-    t "formtastic.hints.stop_area.registration_number"
+    t "simple_form.hints.stop_area.registration_number"
   end
 
   def stop_area_status(status)

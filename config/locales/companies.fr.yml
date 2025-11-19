@@ -103,7 +103,7 @@ fr:
               cannot_be_its_own_referent: "Un Transporteur ne peut pas être son propre référent"
             is_referent:
               the_particulars_collection_should_be_empty: "Un transporteur non-référent ne peut avoir des transporteurs particuliers"
-  formtastic:
+  simple_form:
     titles:
       company:
         registration_number: "caractères autorisés : alphanumériques et 'souligné'"
@@ -120,7 +120,6 @@ fr:
         company:
           registration_number: "caractères autorisés : alphanumériques et 'souligné'"
           objectid: "[prefixe]:Company:[clé_unique]  caractères autorisés : alphanumériques et 'souligné' pour le préfixe, la clé unique accepte en plus le 'moins'"
-  simple_form:
     hints:
       company:
         default_language: "Privilégier un code à deux lettres (fr, en, ...)"

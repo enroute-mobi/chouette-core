@@ -52,7 +52,7 @@ fr:
         created_at: Créé le
         updated_at: Modifié le
 
-  formtastic:
+  simple_form:
     hints:
       workgroup:
         maximum_data_age: (en jours) Nombre de jours maximum d'un Calendrier passé

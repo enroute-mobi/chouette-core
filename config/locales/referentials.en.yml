@@ -121,7 +121,7 @@ en:
         from_current_offer: "Use current offer"
         urgent: 'Contains urgent data'
         workbench: Workbench
-  formtastic:
+  simple_form:
     titles:
       referential:
         slug: "only lowercase alphanumerical or underscore characters, first character must be a letter"

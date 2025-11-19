@@ -146,7 +146,7 @@ en:
         period_start: "From"
         period_end: "to"
         associated_vehicle_journeys: Number of associated vehicle journeys
-  formtastic:
+  simple_form:
     titles:
       time_table:
         objectid: "[prefix]:Timetable:[unique_key] : prefix contains only alphanumerical or underscore characters, unique_key accepts also minus character"

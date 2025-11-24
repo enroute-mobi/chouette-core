@@ -12,14 +12,14 @@ module Macro
 
         enumerize :target_model, in: %w[Line Company StopArea]
 
-        validates :target_model, :particular_code_space_id, :referent_code_space_id, presence: true
+        validates :target_model, :particular_code_space, :referent_code_space, presence: true
 
         def particular_code_space
-          @particular_code_space ||= workgroup.code_spaces.find_by(id: particular_code_space_id)
+          @particular_code_space ||= workgroup&.code_spaces&.find_by(id: particular_code_space_id)
         end
 
         def referent_code_space
-          @referent_code_space ||= workgroup.code_spaces.find_by(id: referent_code_space_id)
+          @referent_code_space ||= workgroup&.code_spaces&.find_by(id: referent_code_space_id)
         end
       end
     end

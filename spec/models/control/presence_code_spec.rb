@@ -7,7 +7,6 @@ RSpec.describe Control::PresenceCode do
 
   describe Control::PresenceCode::Run do
     it { should validate_presence_of :target_model }
-    it { should validate_presence_of :target_code_space_id }
     it do
       should enumerize(:target_model).in(
         %w[

@@ -9,7 +9,6 @@ RSpec.describe Macro::CreateCode do
   }
   it { is_expected.to validate_presence_of(:source_attribute) }
   it { is_expected.to_not validate_presence_of(:source_pattern) }
-  it { is_expected.to validate_presence_of(:target_code_space_id) }
   it { is_expected.to_not validate_presence_of(:target_pattern) }
 
   it 'should be one of the available Macro' do

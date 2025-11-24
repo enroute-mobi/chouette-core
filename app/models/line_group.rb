@@ -4,6 +4,7 @@ class LineGroup < Group
   include LineReferentialSupport
   include NilIfBlank
 
+  belongs_to :network, class_name: 'Chouette::Network', optional: true
   has_many :members, class_name: 'LineGroup::Member', foreign_key: :group_id, dependent: :delete_all, inverse_of: :group
   has_many :lines, class_name: 'Chouette::Line', through: :members, inverse_of: :groups
 

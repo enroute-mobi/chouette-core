@@ -56,6 +56,7 @@ class LineGroupsController < Chouette::LineReferentialController
       :name,
       :short_name,
       :description,
+      :network_id,
       line_ids: [],
       codes_attributes: %i[id code_space_id value _destroy]
     )

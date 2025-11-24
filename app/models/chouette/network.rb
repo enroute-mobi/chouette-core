@@ -9,6 +9,7 @@ module Chouette
     extend Enumerize
 
     has_many :lines, dependent: :nullify
+    has_many :line_groups, class_name: '::LineGroup', dependent: :nullify
 
     attr_accessor :source_type_name
 

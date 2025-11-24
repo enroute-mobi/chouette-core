@@ -5,6 +5,11 @@
       = f.input :name
       = f.input :short_name
       = f.input :description, as: :text
+      = f.input :network_id, as: :autocomplete_select,
+                collection: @line_referential.networks,
+                label_method: :name,
+                include_blank: true,
+                input_html: { class: "w-full" }
       = f.input :line_ids, as: :ajax_select, collection: f.object.lines, label_method: :display_name, input_html: { 'data-url': lines_workbench_autocomplete_index_path(@workbench, format: :json), multiple: true, class: "w-full" }, include_blank: true
       = f.input :line_provider_id, as: :autocomplete_select, collection: @workbench.line_providers, include_blank: false, input_html: {class: "w-full"}
   .separator.section_separator

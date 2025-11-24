@@ -43,6 +43,8 @@ en:
         line_ids: "Lines"
         line_provider: "Line Provider"
         line_provider_id: "Line Provider"
+        network: "Network"
+        network_id: "Network"
         count: "Count"
         description: "Description"
         created_at: "Created at"

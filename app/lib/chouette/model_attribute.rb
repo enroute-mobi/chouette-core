@@ -209,7 +209,6 @@ module Chouette
       define Chouette::VehicleJourney, :transport_mode
       define Chouette::VehicleJourney, :published_journey_identifier
       define Chouette::VehicleJourney, :time_tables
-      define Chouette::VehicleJourney, :transport_mode
 
       # Chouette::TimeTable
       define Chouette::TimeTable, :dates

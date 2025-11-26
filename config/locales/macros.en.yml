@@ -68,6 +68,8 @@ en:
         one: Remove codes
       macro/define_journey_pattern_name_or_destination:
         one: Define Journey Pattern name or destination display
+      macro/remove_attribute_value:
+        one: Remove attribute value
     attributes:
       macro/base:
         name: Name
@@ -117,6 +119,9 @@ en:
         end_correction: Period End Correction
       macro/define_journey_pattern_name_or_destination:
         target_format: Format
+        target_attribute: Attribute
+      macro/remove_attribute_value:
+        target_model: Target Model
         target_attribute: Attribute
   simple_form:
     placeholders:

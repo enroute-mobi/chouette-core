@@ -68,6 +68,8 @@ fr:
         one: Supprimer des codes
       macro/define_journey_pattern_name_or_destination:
         one: Définir le nom ou la destination de la Mission
+      macro/remove_attribute_value:
+        one: Retirer la valeur de l'attribut
     attributes:
       macro/base:
         name: Nom
@@ -118,6 +120,9 @@ fr:
       macro/define_journey_pattern_name_or_destination:
         target_attribute: Attribut
         target_format: Format
+      macro/remove_attribute_value:
+        target_model: Modèle cible
+        target_attribute: Attribut
   simple_form:
     placeholders:
       macro_base:

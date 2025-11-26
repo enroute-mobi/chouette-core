@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 if ENV['DD_AGENT_HOST']
+  require 'datadog'
   Datadog.configure do |c| # rubocop:disable Metrics/BlockLength(RuboCop)
     app_name = ENV.fetch('DD_AGENT_APP', 'chouette-core')
     service_context = ENV.fetch('DD_TRACE_CONTEXT', 'front')

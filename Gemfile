@@ -132,9 +132,9 @@ gem 'ara', '>= 3.0.0', en_route: 'ara-ruby'
 gem 'neptune', en_route: 'neptune'
 
 # Monitoring
-gem 'datadog'
+gem 'datadog', require: false
 gem 'google-protobuf'
-gem 'dogstatsd-ruby'
+gem 'dogstatsd-ruby', require: false
 gem 'prometheus-client'
 
 gem 'sentry-delayed_job'
@@ -185,7 +185,7 @@ group :test do
   gem 'rspec_junit_formatter'
   gem 'simplecov', require: false
   gem 'simplecov-cobertura', require: false
-  gem 'datadog-ci'
+  gem 'datadog-ci', require: false
 end
 
 group :test, :development do

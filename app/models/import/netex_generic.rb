@@ -267,6 +267,14 @@ module Import
       end
 
       def codes
+        [ code, *alternate_codes ].compact
+      end
+
+      def code
+        ReferentialCode.new(code_space: code_space, value: id)
+      end
+
+      def alternate_codes
         return [] unless code_builder
 
         code_builder.decorate(key_list).tap do |decorator|
@@ -312,7 +320,7 @@ module Import
       end
       attr_reader :import
 
-      delegate :override_internal_identifiers?, to: :import
+      delegate :override_internal_identifiers?, :code_space, to: :import
 
       include Decorate
 
@@ -1469,7 +1477,7 @@ module Import
     end
 
     class ScheduledStopPoints < WithResourcePart
-      delegate :netex_source, :code_space, :stop_area_provider, :scheduled_stop_points, :lookup, to: :import
+      delegate :netex_source, :stop_area_provider, :scheduled_stop_points, :lookup, to: :import
 
       def import!
         %i[passenger_stop_assignments flexible_stop_assignments].each do |assignment_type|

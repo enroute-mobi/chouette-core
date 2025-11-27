@@ -691,7 +691,11 @@ class Export::Ara < Export::Base
     delegate :vehicle_journeys, to: :export_scope
 
     def export!
-      vehicle_journeys.includes(codes: :code_space, route: :line).find_each do |vehicle_journey|
+      vehicle_journeys.joins(:vehicle_journey_at_stops)
+                      .includes(codes: :code_space, route: :line)
+                      .select('vehicle_journeys.*', 'COUNT(vehicle_journey_at_stops.id) AS aimed_stop_visit_count')
+                      .group('vehicle_journeys.id')
+                      .find_each do |vehicle_journey|
         target << Decorator.new(vehicle_journey, code_provider: code_provider).ara_model
       end
     end
@@ -738,10 +742,6 @@ class Export::Ara < Export::Base
       # TODO: To be shared
       def ara_codes
         code_provider.unique_codes __getobj__
-      end
-
-      def aimed_stop_visit_count
-        vehicle_journey_at_stops.count
       end
     end
   end

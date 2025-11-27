@@ -46,7 +46,7 @@ class Export::Ara < Export::Base
 
   def generate_export_file
     period.each do |day|
-      # For each day, a scgitope selects models to be exported
+      # For each day, a scope selects models to be exported
       daily_scope = DailyScope.new self, day
 
       Rails.logger.tagged(day) do

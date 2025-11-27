@@ -1,7 +1,6 @@
 GIT
   remote: https://bitbucket.org/enroute-mobi/ara-ruby.git
-  revision: c2ba7528503dc3c79805b940f77061c8e7c041dc
-  branch: ARA-1808-support-vehicle-journey-aimed-s
+  revision: 5117614f12525eb9dce9f9b6fda748d7d4cd0427
   specs:
     ara (3.5.5)
       faraday

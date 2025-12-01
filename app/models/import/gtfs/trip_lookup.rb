@@ -36,11 +36,18 @@ class Import::Gtfs
         @journey_pattern_ids_by_signature ||= {}
       end
 
-      def find_by(signature:)
-        journey_pattern_id = find_id_by(signature: signature)
-        return nil unless journey_pattern_id
+      def journey_patterns_by_signature
+        @journey_patterns_by_signature ||= {}
+      end
 
-        referential.journey_patterns.includes(:stop_points).find(journey_pattern_id)
+      def find_by(signature:)
+        journey_patterns_by_signature[signature] ||=
+          begin
+            journey_pattern_id = find_id_by(signature: signature)
+            return nil unless journey_pattern_id
+
+            referential.journey_patterns.includes(:stop_points).find(journey_pattern_id)
+          end
       end
     end
 

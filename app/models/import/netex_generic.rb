@@ -314,28 +314,10 @@ module Import
       part_class.new self
     end
 
-    class Part
-      def initialize(import)
-        @import = import
-      end
-      attr_reader :import
-
-      delegate :override_internal_identifiers?, :code_space, to: :import
+    class Part < Import::Part
+      delegate :override_internal_identifiers?, to: :import
 
       include Decorate
-
-      # To define callback in import!
-      include AroundMethod
-      around_method :import!
-
-      extend ActiveModel::Callbacks
-      define_model_callbacks :import
-
-      def around_import!(&block)
-        run_callbacks :import do
-          block.call
-        end
-      end
 
       # Save all resources after Part import
       after_import :update_resources
@@ -353,9 +335,6 @@ module Import
       # def save_import
       #   import.save
       # end
-
-      include Measurable
-      measure :import!, as: ->(part) { part.class.name.demodulize }
 
       def code_builder
         @code_builder ||= CodeBuilder.new(import.workgroup.code_spaces)
@@ -389,8 +368,6 @@ module Import
     end
 
     class SynchronizedPart < Part
-      include Measurable
-
       delegate :netex_source, :event_handler, :code_space, :disable_missing_resources?, :strict_mode?,
                :ignore_particulars?, to: :import
 

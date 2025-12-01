@@ -2,6 +2,7 @@
 
 class Import::Gtfs < Import::Base
   include LocalImportSupport
+  include Measurable
 
   after_commit :update_main_resource_status, on:  [:create, :update]
 
@@ -84,13 +85,8 @@ class Import::Gtfs < Import::Base
     Attributions.new(self).import!
   end
 
-  class Base
-    def initialize(import)
-      @import = import
-    end
-
-    attr_reader :import
-    delegate :source, :lookup, :create_message, :workbench, :referential, :referential_inserter, :code_space, :save_model, to: :import
+  class Part < Import::Part
+    delegate :source, :lookup, :create_message, :workbench, :referential, :referential_inserter, :save_model, to: :import
   end
 
   def referential_lookup
@@ -101,7 +97,7 @@ class Import::Gtfs < Import::Base
     @trip_lookup ||= TripLookup.new(referential:, lookup: referential_lookup, shape_provider:, code_space:)
   end
 
-  class Attributions < Base
+  class Attributions < Part
     def import!
       source.attributions.each do |attribution|
         decorator = Decorator.for(attribution)&.new(
@@ -189,7 +185,7 @@ class Import::Gtfs < Import::Base
     end
   end
 
-  class BookingArrangements < Base
+  class BookingArrangements < Part
     delegate :booking_arrangements, to: :import
 
     def import!
@@ -276,7 +272,7 @@ class Import::Gtfs < Import::Base
     resource.update_status_from_messages
   end
 
-  class LocationGroups < Base
+  class LocationGroups < Part
     delegate :stop_areas, to: :import
 
     def import!
@@ -430,7 +426,7 @@ class Import::Gtfs < Import::Base
     @specific_default_company ||= parent.candidate_companies.find_by(id: parent_options['specific_default_company_id'])
   end
 
-  class Agencies < Base
+  class Agencies < Part
     attr_reader :import
     delegate :companies, :specific_default_company,
              :default_company=, :default_time_zone, :default_time_zone=, to: :import
@@ -690,6 +686,7 @@ class Import::Gtfs < Import::Base
       unknown_stop_areas.update_all deleted_at: Time.current
     end
   end
+  measure :import_stops, as: :stops
 
   def lines_by_registration_number(registration_number)
     @lines_by_registration_number ||= {}
@@ -776,10 +773,9 @@ class Import::Gtfs < Import::Base
       unknown_lines.update_all deactivated: true
     end
   end
+  measure :import_routes, as: :routes
 
   def import_transfers
-    @trips = {}
-
     with_warning_lookup = lookup.on_response(on: :stop_areas) do |response, arguments|
       if response.source == :workgroup
         resource = arguments[:resource]
@@ -882,6 +878,7 @@ class Import::Gtfs < Import::Base
       save_model connection, resource: resource
     end
   end
+  measure :import_transfers, as: :transfers
 
   # def service_facility_set(bikes_allowed)
   #   case bikes_allowed
@@ -1051,7 +1048,7 @@ class Import::Gtfs < Import::Base
   end
 
   # Import Routes and JourneyPatterns according to GTFS Trips
-  class RouteJourneyPatterns < Base
+  class RouteJourneyPatterns < Part
     delegate :trip_lookup, to: :import
 
     def route_inserter
@@ -1346,7 +1343,7 @@ class Import::Gtfs < Import::Base
     resource.update_status_from_messages
   end
 
-  class Trips < Base
+  class Trips < Part
     delegate :default_time_zone, to: :import
     
     def lookup
@@ -1547,7 +1544,7 @@ class Import::Gtfs < Import::Base
     resource.update_status_from_messages
   end
 
-  class Shapes < Base
+  class Shapes < Part
     delegate :shape_provider, to: :import
 
     def import!
@@ -1642,7 +1639,7 @@ class Import::Gtfs < Import::Base
     resource.update_status_from_messages
   end
 
-  class FareProducts < Base
+  class FareProducts < Part
     delegate :fare_provider, :index, :default_company, to: :import
 
     def import!
@@ -1723,7 +1720,7 @@ class Import::Gtfs < Import::Base
     resource.update_status_from_messages
   end
 
-  class FareValidities < Base
+  class FareValidities < Part
     delegate :fare_provider, :index, to: :import
 
     def import!
@@ -1933,7 +1930,7 @@ class Import::Gtfs < Import::Base
     @status = 'failed' if resource.status == :ERROR
   end
 
-  class Services < Base
+  class Services < Part
     def import!
       # Retrieve both calendar and associated calendar_dates into a single GTFS::Service model
       source.services.each do |service|

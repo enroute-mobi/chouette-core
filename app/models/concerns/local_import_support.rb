@@ -59,9 +59,7 @@ module LocalImportSupport
 
   def import_resources(*resources)
     resources.each do |resource|
-      Chouette::Benchmark.measure resource do
-        send "import_#{resource}"
-      end
+      send "import_#{resource}"
     end
   end
 

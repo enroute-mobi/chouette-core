@@ -642,7 +642,8 @@ RSpec.describe Import::Gtfs do
   describe '#import_transfers' do
     let(:import) { build_import 'google-sample-feed.zip' }
     it 'should create a ConnectionLink for each type 2 transfer' do
-      import.prepare_referential
+      import.import_stops
+
       expect { import.import_transfers }.to change { Chouette::ConnectionLink.count }.by 1
       link = Chouette::ConnectionLink.last
       expect(link.departure.registration_number).to eq 'BEATTY_AIRPORT'

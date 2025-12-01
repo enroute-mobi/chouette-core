@@ -47,7 +47,7 @@ class Import::Gtfs < Import::Base
   end
 
   def prepare_referential
-    import_resources :agencies, :stops, :routes, :shapes, :fare_products, :fare_validities, :booking_arrangements, :location_groups
+    import_resources :agencies, :stops, :routes, :shapes, :transfers, :fare_products, :fare_validities, :booking_arrangements, :location_groups
 
     create_referential
     referential.switch
@@ -57,8 +57,6 @@ class Import::Gtfs < Import::Base
     prepare_referential
 
     check_calendar_files_missing_and_create_message || import_resources(:services)
-
-    import_resources :transfers if source.entries.include?('transfers.txt')
 
     RouteJourneyPatterns.new(self).import!
 

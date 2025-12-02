@@ -38,9 +38,10 @@ module Import
 
       # Very basic mechanism
       def on_response(on:, &block)
-        collections[on] = ExternalCollection.new(send("internal_#{on}"), on_response: block)
+        on_collection = ExternalCollection.new(send("internal_#{on}"), on_response: block)
+        override_collections = collections.merge(on => on_collection)
 
-        Composite.new(**collections)
+        Composite.new(**override_collections)
       end
 
       protected
@@ -51,7 +52,7 @@ module Import
           lines: lines,
           companies: companies,
           shapes: shapes,
-          booking_arrangements: booking_arrangements,
+          booking_arrangements: booking_arrangements
         }
       end
 

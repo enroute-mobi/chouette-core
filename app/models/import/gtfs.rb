@@ -400,7 +400,7 @@ class Import::Gtfs < Import::Base
 
     def create_message(attributes_or_error)
       attributes =
-        if attributes_or_error.is_a?(Import::Gtfs::Decorator::Error)
+        if attributes_or_error.is_a?(Import::Decorator::Error)
           error = attributes_or_error
           {
             criticity: (error.criticity || :error),
@@ -1882,39 +1882,8 @@ class Import::Gtfs < Import::Base
     end
   end
 
-  class Decorator < SimpleDelegator
-    def validate
-      errors.clear
-    end
-
-    def valid?
-      validate
-      errors.empty?
-    end
-
-    def errors
-      @errors ||= Errors.new
-    end
-
-    class Errors < SimpleDelegator
-      def initialize
-        @errors = []
-        super @errors
-      end
-
-      def add(message_key, **attributes)
-        @errors << Import::Gtfs::Decorator::Error.new(message_key, **attributes)
-      end
-    end
-
-    class Error
-      attr_accessor :message_key, :message_attributes, :criticity
-
-      def initialize(message_key, **attributes)
-        @message_key = message_key
-        attributes.each { |k,v| send "#{k}=", v }
-      end
-    end
+  class Decorator < Import::Decorator
+    # TODO: Could share more code
   end
 
   def import_services
@@ -1948,14 +1917,7 @@ class Import::Gtfs < Import::Base
     end
 
     class Decorator < Import::Gtfs::Decorator
-      def initialize(service, index: nil, code_space: nil)
-        super service
-
-        @index = index
-        @code_space = code_space
-      end
-
-      attr_accessor :index, :code_space
+      attr_accessor :index
 
       # Returns a Cuckoo::Timetable::DaysOfWeek according to GTFS Service monday?/.../sunday?
       def days_of_week
@@ -2016,9 +1978,10 @@ class Import::Gtfs < Import::Base
         super
 
         errors.add :service_without_id if service_id.blank?
-        if index&.service_id?(service_id)
-          errors.add :duplicated_service_id, message_attributes: { service_id: service_id }
-        end
+        # TODO: Unused code ?
+        # if index&.service_id?(service_id)
+        #   errors.add :duplicated_service_id, message_attributes: { service_id: service_id }
+        # end
         if memory_timetable.empty?
           errors.add :empty_service, message_attributes: { service_id: service_id }, criticity: :warning
         end

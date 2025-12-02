@@ -42,10 +42,23 @@ class WorkgroupProcessingRulesController < Chouette::WorkgroupController
 
   def workgroup_processing_rule_params
     params.require(:processing_rule).permit(
-      :control_list_id,
+      :processing_manager_class_name,
       :operation_step,
+      :control_list_id,
+      processing_setup: [
+        :type,
+        :ruleset, :include_schema, :schema_version, :token # FlamingoValidation
+      ],
       target_workbenches: [],
       excluded_workbenches: []
-    ).with_defaults(processable_type: Control::List.name)
+    ).tap do |params|
+      processing_manager_class_name = params.delete(:processing_manager_class_name)
+      if processing_manager_class_name.in?(ProcessingRule::Workgroup.processable_type.values)
+        params[:processable_type] = processing_manager_class_name
+      else
+        params[:processing_setup] ||= ActionController::Parameters.new.permit!
+        params[:processing_setup][:type] = processing_manager_class_name
+      end
+    end
   end
 end

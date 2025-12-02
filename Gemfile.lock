@@ -75,6 +75,14 @@ GIT
       rubyzip
 
 GIT
+  remote: https://bitbucket.org/enroute-mobi/secretary-ruby.git
+  revision: 82f6e5c29d91541623d6be5bdd5ef1615b59ea38
+  branch: SECRETARY-140-publish-a-shareable-validation-report
+  specs:
+    secretary (0.1.0)
+      activesupport
+
+GIT
   remote: https://github.com/metaware/carrierwave-google-storage.git
   revision: 2b55cb40a602177242d09e5a65744982d568d2d8
   specs:
@@ -1100,6 +1108,7 @@ DEPENDENCIES
   rspec_junit_formatter
   rubocop-rails (>= 2.34.3)
   rubyzip
+  secretary!
   seedbank
   select2-rails (~> 4.0, >= 4.0.3)
   sentry-delayed_job

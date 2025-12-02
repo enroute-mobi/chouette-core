@@ -3,6 +3,9 @@ fr:
     attributes:
       operation:
         user_status: "Statut"
+        started_at: "Début"
+        ended_at: "Fin"
+        creator: "Créé par"
   enumerize:
     operation:
       user_status:
@@ -16,6 +19,9 @@ en:
     attributes:
       operation:
         user_status: "Status"
+        started_at: "Started at"
+        ended_at: "Ended at"
+        creator: "Created by"
   enumerize:
     operation:
       user_status:

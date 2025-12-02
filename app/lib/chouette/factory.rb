@@ -111,9 +111,14 @@ module Chouette
           transient :macro_list
 
           after do
-            processable = transient(:macro_list, resolve_instances: true) ||
-              transient(:control_list, resolve_instances: true) ||
-              new_instance.workbench.control_lists.create!(name: 'Default')
+            unless new_instance.processing_setup.present?
+              processable = transient(:macro_list, resolve_instances: true) ||
+                            transient(:control_list, resolve_instances: true) ||
+                            new_instance.workgroup.workbenches.first.control_lists.create!(
+                              name: 'Default',
+                              shared: true
+                            )
+            end
 
             new_instance.processable = processable
           end
@@ -211,8 +216,8 @@ module Chouette
 
             after do
               processable = transient(:macro_list, resolve_instances: true) ||
-                transient(:control_list, resolve_instances: true) ||
-                new_instance.workbench.control_lists.create!(name: 'Default')
+                            transient(:control_list, resolve_instances: true) ||
+                            new_instance.workbench.control_lists.create!(name: 'Default')
 
               new_instance.processable = processable
             end

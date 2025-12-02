@@ -23,10 +23,10 @@
                 sortable: false \
               ), \
               TableBuilderHelper::Column.new( \
-                key: :control_list, \
-                attribute: -> (pr) { pr.processable.name }, \
+                key: :processing_manager_class_name, \
+                attribute: -> (pr) { pr.display_processing_manager  }, \
                 sortable: false,\
-              ), \
+              ) \
             ],
             cls: 'table has-filter has-search'
 

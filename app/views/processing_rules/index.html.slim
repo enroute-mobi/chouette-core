@@ -14,7 +14,7 @@
               ), \
               TableBuilderHelper::Column.new( \
                 key: :processable_type, \
-                attribute: -> (pr) { pr.processable_type.text }, \
+                attribute: -> (pr) { pr.processable.class.model_name.human }, \
                 sortable: false,\
               ), \
               TableBuilderHelper::Column.new( \

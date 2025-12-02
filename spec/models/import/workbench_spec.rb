@@ -152,53 +152,67 @@ RSpec.describe Import::Workbench do
       Chouette.create do
         workbench :workbench do
           referential :referential
+          control_list
+          macro_list
           workbench_processing_rule
         end
       end
     end
+    let(:workbench_processing_rule) { context.workbench_processing_rule }
     let(:netex_import) do
       create(:netex_import, parent: import_workbench, workbench: workbench, status: 'failed',
                             notified_parent_at: Date.today)
     end
-    let(:control_list) { Control::List.create name: 'Control List 1', workbench: workbench }
-    let(:macro_list) { Macro::List.create name: 'Macro List 1', workbench: workbench }
     let(:control_list_run) do
       Control::List::Run.create referential: referential, workbench: workbench, name: 'Control',
-                                original_control_list: control_list, creator: 'Webservice'
+                                original_control_list: context.control_list, creator: 'Webservice'
     end
     let(:macro_list_run) do
       Macro::List::Run.create referential: referential, workbench: workbench, name: 'Macro',
-                              original_macro_list: macro_list, creator: 'Webservice'
+                              original_macro_list: context.macro_list, creator: 'Webservice'
+    end
+    let(:flamingo_validation) do
+      workbench.flamingo_validations.create!(
+        processing_rule: workbench_processing_rule,
+        operation: netex_import,
+        creator: 'Webservice'
+      )
     end
 
     before(:each) do
-      netex_import.processings.create(processed: control_list_run, processing_rule: context.workbench_processing_rule,
+      netex_import.processings.create(processed: control_list_run, processing_rule: workbench_processing_rule,
                                       workbench: workbench)
-      netex_import.processings.create(processed: macro_list_run, processing_rule: context.workbench_processing_rule,
+      netex_import.processings.create(processed: macro_list_run, processing_rule: workbench_processing_rule,
+                                      workbench: workbench)
+      netex_import.processings.create(processed: flamingo_validation, processing_rule: workbench_processing_rule,
                                       workbench: workbench)
     end
 
-    it 'should return failed if a macro_list_run or a control_list_run has a failed status' do
+    it 'should return failed if a child processing has a failed status' do
       control_list_run.update_attribute(:user_status, 'failed')
       macro_list_run.update_attribute(:user_status, 'warning')
+      flamingo_validation.update_attribute(:user_status, 'successful')
       expect(import_workbench.processed_status).to eq 'failed'
     end
 
-    it 'should return warning if a macro_list_run or a control_list_run has a warning and not failed status' do
-      control_list_run.update_attribute(:user_status, 'warning')
-      macro_list_run.update_attribute(:user_status, 'successful')
+    it 'should return warning if a child processing has a warning and not failed status' do
+      control_list_run.update_attribute(:user_status, 'successful')
+      macro_list_run.update_attribute(:user_status, 'warning')
+      flamingo_validation.update_attribute(:user_status, 'successful')
       expect(import_workbench.processed_status).to eq 'warning'
     end
 
-    it 'should return successful if a macro_list_run or a control_list_run have successful statuses' do
+    it 'should return successful if all child processings have successful statuses' do
       control_list_run.update_attribute(:user_status, 'successful')
       macro_list_run.update_attribute(:user_status, 'successful')
+      flamingo_validation.update_attribute(:user_status, 'successful')
       expect(import_workbench.processed_status).to eq 'successful'
     end
 
-    it 'should return running if a macro_list_run or a control_list_run have not finished' do
-      control_list_run.update_attribute(:user_status, 'pending')
-      macro_list_run.update_attribute(:user_status, 'pending')
+    it 'should return running if a child processing has not finished' do
+      control_list_run.update_attribute(:user_status, 'failed')
+      macro_list_run.update_attribute(:user_status, 'warning')
+      flamingo_validation.update_attribute(:user_status, 'pending')
       expect(import_workbench.processed_status).to eq 'running'
     end
   end

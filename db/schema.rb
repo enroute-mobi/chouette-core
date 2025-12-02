@@ -691,6 +691,26 @@ ActiveRecord::Schema[7.2].define(version: 2025_12_08_151052) do
     t.index ["fare_provider_id"], name: "index_fare_zones_on_fare_provider_id"
   end
 
+  create_table "flamingo_validations", force: :cascade do |t|
+    t.bigint "workbench_id", null: false
+    t.bigint "processing_rule_id", null: false
+    t.string "operation_type", null: false
+    t.bigint "operation_id", null: false
+    t.string "status", null: false
+    t.string "user_status", null: false
+    t.string "error_uuid"
+    t.datetime "started_at"
+    t.datetime "ended_at"
+    t.string "creator", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.string "validation_id"
+    t.string "validation_report_url"
+    t.index ["operation_type", "operation_id"], name: "index_flamingo_validations_on_operation"
+    t.index ["processing_rule_id"], name: "index_flamingo_validations_on_processing_rule_id"
+    t.index ["workbench_id"], name: "index_flamingo_validations_on_workbench_id"
+  end
+
   create_table "flexible_area_memberships", force: :cascade do |t|
     t.bigint "flexible_area_id", null: false
     t.bigint "member_id", null: false
@@ -1152,6 +1172,7 @@ ActiveRecord::Schema[7.2].define(version: 2025_12_08_151052) do
     t.datetime "created_at", precision: nil, null: false
     t.datetime "updated_at", precision: nil, null: false
     t.bigint "excluded_workbench_ids", default: [], array: true
+    t.jsonb "processing_setup"
     t.index ["processable_type", "processable_id"], name: "index_processing_rules_on_processable_type_and_processable_id"
     t.index ["workbench_id"], name: "index_processing_rules_on_workbench_id"
     t.index ["workgroup_id"], name: "index_processing_rules_on_workgroup_id"
@@ -1866,6 +1887,8 @@ ActiveRecord::Schema[7.2].define(version: 2025_12_08_151052) do
   add_foreign_key "controls", "control_contexts"
   add_foreign_key "dashboards", "workbenches"
   add_foreign_key "exports", "workgroups"
+  add_foreign_key "flamingo_validations", "processing_rules"
+  add_foreign_key "flamingo_validations", "workbenches"
   add_foreign_key "flexible_area_memberships", "stop_areas", column: "flexible_area_id"
   add_foreign_key "flexible_area_memberships", "stop_areas", column: "member_id"
   add_foreign_key "journey_patterns", "routes", name: "jp_route_fkey", on_delete: :cascade

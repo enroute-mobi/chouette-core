@@ -47,6 +47,7 @@ class Workbench < ApplicationModel
   has_many :saved_searches, class_name: 'Search::Save', as: :parent, dependent: :destroy
   has_many :calendars, dependent: :destroy
   has_many :tags, dependent: :destroy
+  has_many :flamingo_validations, class_name: 'Flamingo::Validation', dependent: :destroy
 
   validates :name, presence: true, uniqueness: { scope: :workgroup_id }
   validates :organisation, presence: true, unless: :pending?

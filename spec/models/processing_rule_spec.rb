@@ -1,34 +1,109 @@
 # frozen_string_literal: true
 
 RSpec.shared_examples 'ProcessingRule validations' do
-  it { is_expected.to belong_to(:processable).required }
+  it { is_expected.to belong_to(:processable).required(false) }
 
   it { is_expected.to validate_presence_of(:operation_step) }
+
+  describe 'processable' do
+    let(:control_list) { Chouette.create { control_list }.control_list }
+
+    context 'without processable' do
+      context 'without processable setup' do
+        it 'has blank error on processable and processing_setup' do
+          subject.valid?
+          expect(subject.errors.where(:processable_type).map(&:type)).to include(:blank).and not_include(:present)
+          expect(subject.errors.where(:processable_id).map(&:type)).to include(:blank).and not_include(:present)
+          expect(subject.errors.where(:processing_setup).map(&:type)).to include(:blank).and not_include(:present)
+        end
+      end
+
+      context 'with processable setup' do
+        before { subject.processing_setup = ProcessingRule::ProcessingSetup.new }
+
+        it 'has no error on processable nor processing_setup' do
+          subject.valid?
+          expect(subject.errors.where(:processable_type).map(&:type)).to not_include(:blank).and not_include(:present)
+          expect(subject.errors.where(:processable_id).map(&:type)).to not_include(:blank).and not_include(:present)
+          expect(subject.errors.where(:processing_setup).map(&:type)).to not_include(:blank).and not_include(:present)
+        end
+      end
+    end
+
+    context 'with processable' do
+      before { subject.processable = control_list }
+
+      context 'without processable setup' do
+        it 'has no error on processable nor processing_setup' do
+          subject.valid?
+          expect(subject.errors.where(:processable_type).map(&:type)).to not_include(:blank).and not_include(:present)
+          expect(subject.errors.where(:processable_id).map(&:type)).to not_include(:blank).and not_include(:present)
+          expect(subject.errors.where(:processing_setup).map(&:type)).to not_include(:blank).and not_include(:present)
+        end
+      end
+
+      context 'with processable setup' do
+        before { subject.processing_setup = ProcessingRule::ProcessingSetup.new }
+
+        it 'has present error on processable and processing_setup' do
+          subject.valid?
+          expect(subject.errors.where(:processable_type).map(&:type)).to not_include(:blank).and include(:present)
+          expect(subject.errors.where(:processable_id).map(&:type)).to not_include(:blank).and include(:present)
+          expect(subject.errors.where(:processing_setup).map(&:type)).to not_include(:blank).and include(:present)
+        end
+      end
+    end
+  end
 end
 
 RSpec.describe ProcessingRule::Workbench, type: :model do
+  let(:context) do
+    Chouette.create do
+      workbench do
+        control_list
+        macro_list
+      end
+    end
+  end
+  let(:workbench) { context.workbench }
+  let(:control_list) { context.control_list }
+  let(:macro_list) { context.macro_list }
+
   include_examples 'ProcessingRule validations'
+
   it { is_expected.to belong_to(:workbench).required }
 
   it { is_expected.to enumerize(:processable_type).in('Macro::List', 'Control::List') }
+
   it { is_expected.to enumerize(:operation_step).in('after_import', 'before_merge', 'after_merge') }
 
   it { is_expected.to_not allow_value('after_aggregate').for(:operation_step) }
 
   context 'using a Control List' do
-    before { subject.processable_type = Control::List }
+    before { subject.processable = control_list }
+
     it { is_expected.to validate_presence_of(:control_list_id) }
+
+    it { is_expected.to validate_inclusion_of(:operation_step).in_array(%w[after_import before_merge after_merge]) }
   end
 
   context 'using a Macro List' do
-    before { subject.processable_type = Macro::List }
+    before { subject.processable = macro_list }
+
     it { is_expected.to validate_presence_of(:macro_list_id) }
+
+    it { is_expected.to validate_inclusion_of(:operation_step).in_array(%w[after_import before_merge]) }
+  end
+
+  context 'using a processing setup' do
+    before { subject.processing_setup = ProcessingRule::ProcessingSetup.new }
+
+    it { expect(subject.processing_setup).to validate_inclusion_of(:type).in_array(%w[]) }
   end
 
   context 'when another ProcessingRule exists' do
     let(:context) { Chouette.create { workbench_processing_rule } }
     let(:processing_rule) { context.workbench_processing_rule }
-    let(:workbench) { context.workbench }
 
     describe 'a new ProcessingRule in the same Workbench with the same operation step and processable type' do
       subject do
@@ -43,9 +118,6 @@ RSpec.describe ProcessingRule::Workbench, type: :model do
   end
 
   describe '#no_tag_overlap' do
-    let(:context) { Chouette.create { workbench } }
-    let(:workbench) { context.workbench }
-    let(:macro_list) { Macro::List.create!(name: 'Macro List', workbench: workbench) }
     let(:tag_1) { Tag.create!(name: 'Tag 1', workbench: workbench) }
     let(:tag_2) { Tag.create!(name: 'Tag 2', workbench: workbench) }
     let(:tag_3) { Tag.create!(name: 'Tag 3', workbench: workbench) }
@@ -86,19 +158,70 @@ RSpec.describe ProcessingRule::Workbench, type: :model do
 end
 
 RSpec.describe ProcessingRule::Workgroup, type: :model do
-  include_examples 'ProcessingRule validations'
-  it { is_expected.to enumerize(:processable_type).in('Control::List') }
-  it { is_expected.to enumerize(:operation_step).in('after_import', 'before_merge', 'after_merge', 'after_aggregate') }
+  let(:context) do
+    Chouette.create do
+      workbench :workbench do
+        control_list shared: true
+      end
+    end
+  end
+  let(:workbench) { context.workbench(:workbench) }
+  let(:control_list) { context.control_list }
 
-  it { is_expected.to validate_presence_of(:control_list_id) }
+  include_examples 'ProcessingRule validations'
+
+  it { is_expected.to belong_to(:workgroup).required }
+
+  it { is_expected.to enumerize(:processable_type).in('Control::List') }
+
+  it do
+    is_expected.to(
+      enumerize(:operation_step).in('before_import', 'after_import', 'before_merge', 'after_merge', 'after_aggregate')
+    )
+  end
+
+  context 'using a Control List' do
+    before { subject.processable = control_list }
+
+    it { is_expected.to validate_presence_of(:control_list_id) }
+
+    it do
+      is_expected.to(
+        validate_inclusion_of(:operation_step).in_array(%w[after_import before_merge after_merge after_aggregate])
+      )
+    end
+  end
+
+  context 'using a processing setup' do
+    before { subject.processing_setup = ProcessingRule::ProcessingSetup.new }
+
+    it do
+      expect(subject.processing_setup).to(
+        validate_inclusion_of(:type).in_array(%w[ProcessingRule::FlamingoValidationProcessingSetup])
+      )
+    end
+
+    context 'when FlamingoValidationProcessingSetup' do
+      before { subject.processing_setup = ProcessingRule::FlamingoValidationProcessingSetup.new }
+
+      it { is_expected.to validate_inclusion_of(:operation_step).in_array(%w[before_import]) }
+    end
+  end
 
   context 'when target_workbench_ids and excluded_workbench_ids are both present' do
-    subject do
-      ProcessingRule::Workgroup.new(
-        operation_step: 'after_import',
-        target_workbench_ids: [1],
-        excluded_workbench_ids: [1]
-      )
+    subject { context.workgroup_processing_rule }
+
+    let(:context) do
+      Chouette.create do
+        workbench
+
+        workgroup_processing_rule
+      end
+    end
+
+    before do
+      subject.target_workbench_ids = [1]
+      subject.excluded_workbench_ids = [1]
     end
 
     it { expect(subject).to_not be_valid }
@@ -118,9 +241,7 @@ RSpec.describe ProcessingRule::Workgroup, type: :model do
         end
       end
     end
-
     let(:workgroup_processing_rule) { context.workgroup_processing_rule }
-    let(:workbench) { context.workbench(:workbench) }
     let(:other_workbench) { context.workbench(:other_workbench) }
 
     before do

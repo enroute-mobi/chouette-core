@@ -31,6 +31,26 @@ module Control
     #   render ...
     # end
 
+    concerning :ProcessingManager do
+      include ::ProcessingRule::ProcessingManager
+
+      class_methods do
+        def candidate_operation_steps
+          %w[after_import before_merge after_merge after_aggregate]
+        end
+      end
+    end
+
+    class ProcessingBuilder < ::ControlMacro::ProcessingBuilder
+      protected
+
+      def build_processed
+        processable.control_list_runs.new(processed_attributes).tap do |processed|
+          processed.build_with_original_control_list
+        end
+      end
+    end
+
     class Run < Operation
       # The Workbench where controls are executed
       self.table_name = 'control_list_runs'

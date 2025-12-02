@@ -12,15 +12,15 @@ class ProcessingRuleWorkgroupDecorator < Af83::Decorator
   with_instance_decorator(&:crud)
 
   define_instance_method :name do
-    return unless processable
+    "#{operation_step.text} #{display_processing_manager}"
+  end
 
-    I18n.t(
-      'processing_rule/workgroups.name',
-      processable_type: processable_type.text,
-      operation_step: operation_step.text,
-      processable_name: processable.name,
-      target_workbenches: target_workbench_names
-    )
+  define_instance_method :display_processing_manager do
+    "#{processing_manager.class.model_name.human}#{" (#{processable.name})" if processable}"
+  end
+
+  define_instance_method :processing_manager_class_name do
+    processing_manager&.class&.name
   end
 
   define_instance_method :target_workbench_names do

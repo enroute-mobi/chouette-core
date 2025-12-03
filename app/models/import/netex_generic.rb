@@ -271,7 +271,7 @@ module Import
       end
 
       def code
-        ReferentialCode.new(code_space: code_space, value: id)
+        ReferentialCode.new(code_space: code_space, value: id) if id
       end
 
       def alternate_codes

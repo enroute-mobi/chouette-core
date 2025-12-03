@@ -8,6 +8,7 @@ module Imports
         update status: 'running', started_at: Time.zone.now
 
         import_without_status
+        processor.after([referential]) if referential
 
         self.status = 'successful' if status == 'running'
         self.ended_at = Time.zone.now

@@ -1,5 +1,4 @@
 # frozen_string_literal: true
-
 class ImportDecorator < Af83::Decorator
   decorates Import::Base
 
@@ -17,6 +16,10 @@ class ImportDecorator < Af83::Decorator
     cls = 'overheaded-warning' if object.status == 'warning'
     cls = 'overheaded-danger' if %w[failed aborted canceled].include? object.status
     cls
+  end
+
+  define_instance_method :permitted_options do
+    object.visible_options.select { |k, _v| h.policy(object).option?(k) }
   end
 
   create_action_link if: -> { context[:parent].is_a? (Workbench) }

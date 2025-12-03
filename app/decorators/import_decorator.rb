@@ -19,6 +19,10 @@ class ImportDecorator < Af83::Decorator
     cls
   end
 
+  define_instance_method :permitted_options do
+    object.visible_options.select { |k, v| h.policy(object).option?(k) }
+  end
+
   create_action_link if: -> { context[:parent].is_a? (Workbench) }
 
   with_instance_decorator do |instance_decorator|
@@ -33,4 +37,6 @@ class ImportDecorator < Af83::Decorator
       l.target :blank
     end
   end
+
+
 end

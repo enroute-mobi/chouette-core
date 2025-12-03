@@ -9,9 +9,7 @@
       - else
         = b.attribute :tags, as: :tags
 
-- visible_options = import.visible_options.select { |k, v| resource_policy.option?(k) }
-- if visible_options.any?
+- if import.permitted_options.any?
   = simple_block_for import, title: t('imports.show.import_options') do |b|
-    - visible_options.each do |k, v|
-      - if resource_policy.option?(k)
-        = option_attribute(b, k)
+    - import.permitted_options.each do |k, v|
+      = option_attribute(b, k)

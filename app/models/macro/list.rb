@@ -7,13 +7,13 @@ module Macro
     belongs_to :workbench # CHOUETTE-3247 optional: false
     validates :name, presence: true
 
-    has_many :macros, lambda {
-                        order(position: :asc)
-                      }, class_name: 'Macro::Base', dependent: :delete_all, foreign_key: 'macro_list_id', inverse_of: :macro_list
-    has_many :macro_list_runs, class_name: 'Macro::List::Run', foreign_key: :original_macro_list_id
-    has_many :macro_contexts, class_name: 'Macro::Context', foreign_key: 'macro_list_id', inverse_of: :macro_list
+    with_options(inverse_of: :macro_list, foreign_key: 'macro_list_id') do
+      has_many :macros, -> { order(position: :asc) }, class_name: 'Macro::Base', dependent: :delete_all
+      has_many :macro_contexts, class_name: 'Macro::Context', dependent: :destroy
+    end
 
     has_many :processing_rules, class_name: 'ProcessingRule::Base', as: :processable
+    has_many :macro_list_runs, class_name: 'Macro::List::Run', foreign_key: :original_macro_list_id
 
     accepts_nested_attributes_for :macros, allow_destroy: true, reject_if: :all_blank
     accepts_nested_attributes_for :macro_contexts, allow_destroy: true, reject_if: :all_blank

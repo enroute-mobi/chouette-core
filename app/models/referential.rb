@@ -669,7 +669,7 @@ class Referential < ApplicationModel
   end
 
   def schema
-    @schema ||= ReferentialSchema.new slug
+    @schema ||= Referential::Schema.new slug
   end
 
   def destroy_jobs

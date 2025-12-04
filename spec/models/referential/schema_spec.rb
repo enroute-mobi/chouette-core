@@ -1,4 +1,4 @@
-RSpec.describe ReferentialSchema do
+RSpec.describe Referential::Schema do
   let(:context) { Chouette.create { referential } }
   let(:referential) { context.referential }
   let(:referential_schema) { referential.schema }
@@ -22,7 +22,7 @@ RSpec.describe ReferentialSchema do
     subject { referential_schema.table_names_with_schema }
 
     context 'when schema name is "test"' do
-      let(:referential_schema) { ReferentialSchema.new('test') }
+      let(:referential_schema) { Referential::Schema.new('test') }
 
       context 'and table_names is [routes, journey_patterns]' do
         before { allow(referential_schema).to receive(:table_names).and_return(%w[routes journey_patterns]) }
@@ -55,12 +55,12 @@ RSpec.describe ReferentialSchema do
       table_name = 'dummy'
       allow(referential_schema).to receive(:table_names).and_return([table_name])
 
-      is_expected.to eq([ReferentialSchema::Table.new(referential_schema, table_name)])
+      is_expected.to eq([Referential::Schema::Table.new(referential_schema, table_name)])
     end
   end
 
   describe '.apartment_excluded_table_names' do
-    subject { ReferentialSchema.apartment_excluded_table_names }
+    subject { Referential::Schema.apartment_excluded_table_names }
 
     it 'returns names of all tables used by Apartment excluded models' do
       allow(Apartment).to receive(:excluded_models).and_return(%w[Chouette::StopArea Chouette::Line])
@@ -78,10 +78,10 @@ RSpec.describe ReferentialSchema do
   end
 
   describe '.excluded_table_names' do
-    subject { ReferentialSchema.excluded_table_names }
+    subject { Referential::Schema.excluded_table_names }
 
     it 'returns all tables used by Apartment excluded models (apartment_excluded_table_names)' do
-      is_expected.to include(*ReferentialSchema.apartment_excluded_table_names)
+      is_expected.to include(*Referential::Schema.apartment_excluded_table_names)
     end
   end
 
@@ -97,7 +97,7 @@ RSpec.describe ReferentialSchema do
   end
 
   describe '#reduce_tables' do
-    let(:referential_schema) { ReferentialSchema.new 'test_reduce_tables' }
+    let(:referential_schema) { Referential::Schema.new 'test_reduce_tables' }
     before { referential_schema.create skip_reduce_tables: true }
 
     let(:reduced_tables) { referential_schema.excluded_table_names }
@@ -113,7 +113,7 @@ RSpec.describe ReferentialSchema do
 
   describe '#table' do
     it 'returns the Table instance with the given name' do
-      expect(referential_schema.table('routes')).to eq(ReferentialSchema::Table.new(referential_schema, 'routes'))
+      expect(referential_schema.table('routes')).to eq(Referential::Schema::Table.new(referential_schema, 'routes'))
     end
 
     it "returns nil when the table doesn't exist" do
@@ -125,7 +125,7 @@ RSpec.describe ReferentialSchema do
     let(:table) { double name: 'routes' }
 
     it 'returns the table in the referential schema with the same name than the given one' do
-      expect(referential_schema.associated_table(table)).to eq(ReferentialSchema::Table.new(referential_schema,
+      expect(referential_schema.associated_table(table)).to eq(Referential::Schema::Table.new(referential_schema,
                                                                                             table.name))
     end
   end
@@ -175,46 +175,46 @@ RSpec.describe ReferentialSchema do
       target.switch { Chouette::VehicleJourney.create!(journey_pattern: context.journey_pattern, route: context.route) }
     end
   end
+end
 
-  describe ReferentialSchema::Table do
-    let(:context) do
-      Chouette.create do
-        referential do
-          3.times { vehicle_journey }
-        end
+RSpec.describe Referential::Schema::Table do
+  let(:context) do
+    Chouette.create do
+      referential do
+        3.times { vehicle_journey }
       end
     end
+  end
 
-    let(:referential) { context.referential }
-    let(:table) { referential.schema.table('vehicle_journeys') }
+  let(:referential) { context.referential }
+  let(:table) { referential.schema.table('vehicle_journeys') }
 
-    def truncate_table
-      referential.switch { referential.vehicle_journeys.delete_all }
+  def truncate_table
+    referential.switch { referential.vehicle_journeys.delete_all }
+  end
+
+  describe '#empty?' do
+    it 'returns false when the table has records, true if the table is empty' do
+      expect { truncate_table }.to change(table, :empty?).from(false).to(true)
     end
+  end
 
-    describe '#empty?' do
-      it 'returns false when the table has records, true if the table is empty' do
-        expect { truncate_table }.to change(table, :empty?).from(false).to(true)
-      end
+  describe '#count' do
+    it 'returns the number of records in the table' do
+      expect { truncate_table }.to change(table, :count).from(3).to(0)
     end
+  end
 
-    describe '#count' do
-      it 'returns the number of records in the table' do
-        expect { truncate_table }.to change(table, :count).from(3).to(0)
-      end
-    end
+  describe 'columns' do
+    it 'returns an array with ordered column names for the table' do
+      expected = %w[
+        id route_id journey_pattern_id company_id objectid published_journey_identifier
+        object_version transport_mode published_journey_name custom_field_values
+        created_at updated_at checksum checksum_source data_source_ref metadata
+        line_notice_ids accessibility_assessment_id service_facility_set_ids
+      ]
 
-    describe 'columns' do
-      it 'returns an array with ordered column names for the table' do
-        expected = %w[
-          id route_id journey_pattern_id company_id objectid published_journey_identifier
-          object_version transport_mode published_journey_name custom_field_values
-          created_at updated_at checksum checksum_source data_source_ref metadata
-          line_notice_ids accessibility_assessment_id service_facility_set_ids
-        ]
-
-        expect(table.columns).to match_array(expected)
-      end
+      expect(table.columns).to match_array(expected)
     end
   end
 end

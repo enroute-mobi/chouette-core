@@ -4,6 +4,18 @@ RSpec.describe Policy::Referential, type: :policy do
   let(:resource) { Referential.new(ready: true) }
   let(:policy_context_class) { Policy::Context::Referential }
 
+  describe '.permission_exceptions' do
+    subject { described_class.permission_exceptions }
+
+    it do
+      is_expected.to eq(
+        {
+          data_unfreeze: 'referentials.update'
+        }
+      )
+    end
+  end
+
   describe '#create?' do
     subject { policy.create?(resource_class) }
 
@@ -230,6 +242,28 @@ RSpec.describe Policy::Referential, type: :policy do
     it do
       expect(policy).to receive(:around_can).with(:flag_urgent).and_call_original
       is_expected.to be_truthy
+    end
+  end
+
+  describe '#data_unfreeze?' do
+    subject { policy.data_unfreeze? }
+
+    let(:referential_data_freeze_status) { 'frozen' }
+
+    before { expect(resource).to receive(:data_freeze_status).and_return(referential_data_freeze_status) }
+
+    it { does_not_apply_strategy(Policy::Strategy::Referential) }
+    it { applies_strategy(Policy::Strategy::Workbench) }
+    it { applies_strategy(Policy::Strategy::Permission, :data_unfreeze) }
+
+    it do
+      expect(policy).to receive(:around_can).with(:data_unfreeze).and_call_original
+      is_expected.to be_truthy
+    end
+
+    context 'when referential#data_freeze_status is something other than "frozen"' do
+      let(:referential_data_freeze_status) { double }
+      it { is_expected.to be_falsy }
     end
   end
 end

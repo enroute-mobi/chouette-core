@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 RSpec.describe Referential, type: :model do
-  let(:ref) { create :workbench_referential, metadatas: [create(:referential_metadata)] }
+  let(:referential) { Chouette.create { referential }.referential }
 
   it { should have_many(:metadatas) }
   it { is_expected.to belong_to(:workbench).optional }
@@ -144,9 +144,14 @@ RSpec.describe Referential, type: :model do
     context "with concurent referential on same lines and dates" do
       let(:other){
         metadatas = create :referential_metadata
-        metadatas.line_ids = ref.metadatas.first.line_ids
-        metadatas.periodes = ref.metadatas.first.periodes
-        build :workbench_referential, metadatas: [metadatas], workbench: ref.workbench, organisation: ref.organisation
+        metadatas.line_ids = referential.metadatas.first.line_ids
+        metadatas.periodes = referential.metadatas.first.periodes
+        build(
+          :workbench_referential,
+          metadatas: [metadatas],
+          workbench: referential.workbench,
+          organisation: referential.organisation
+        )
       }
 
       it "should not be_valid" do
@@ -154,9 +159,7 @@ RSpec.describe Referential, type: :model do
       end
 
       context "when the other is not active" do
-        before{
-          ref.failed!
-        }
+        before { referential.failed! }
 
         it "should be_valid" do
           expect(other).to be_valid
@@ -164,9 +167,7 @@ RSpec.describe Referential, type: :model do
       end
 
       context "with metadatas on a single day" do
-        before{
-          ref.metadatas.first.update periodes: [(Time.now.to_date..Time.now.to_date)]
-        }
+        before { referential.metadatas.first.update periodes: [(Time.now.to_date..Time.now.to_date)] }
 
         it "should not be_valid" do
           expect(other).to_not be_valid
@@ -268,88 +269,117 @@ RSpec.describe Referential, type: :model do
   end
 
   context "clean_routes_if_needed" do
-    before(:each){
-      3.times do create(:line, line_referential: ref.line_referential) end
-      m = ref.metadatas.last
-      m.update_column :line_ids, ref.associated_lines.map(&:id)
-      ref.switch do
-        create(:route, line: ref.lines.order(:id).last)
+    before(:each) do
+      3.times do create(:line, line_referential: referential.line_referential) end
+      m = referential.metadatas.last
+      m.update_column :line_ids, referential.associated_lines.map(&:id)
+      referential.switch do
+        create(:route, line: referential.lines.order(:id).last)
       end
-    }
+    end
     context "when the lines did not change" do
       it "should do nothing" do
         expect(CleanUp).to_not receive(:create)
-        ref.clean_routes_if_needed
+        referential.clean_routes_if_needed
       end
     end
 
     context "when the lines changed" do
       before do
-        m = ref.metadatas.last
+        m = referential.metadatas.last
         m.update_column :line_ids, m.line_ids.sort[0...-1]
-        ref.reload
+        referential.reload
       end
       it "should perform cleanup" do
-        expect(CleanUp).to receive(:create!).with({referential: ref, original_state: ref.state})
-        ref.clean_routes_if_needed
-        expect(ref.reload.state).to eq :pending
+        expect(CleanUp).to receive(:create!).with({ referential: referential, original_state: referential.state })
+        referential.clean_routes_if_needed
+        expect(referential.reload.state).to eq :pending
       end
     end
   end
 
-  context ".state" do
-    it "should return the expected values" do
-      referential = build :referential
-      referential.ready = false
-      expect(referential.state).to eq :pending
-      referential.failed_at = Time.now
-      expect(referential.state).to eq :failed
-      referential.failed_at = nil
-      expect(referential.state).to eq :pending
-      referential.ready = true
-      referential.failed_at = nil
-      expect(referential.state).to eq :active
-      referential.archived_at = Time.now
-      expect(referential.state).to eq :archived
+  describe 'state' do
+    let(:pending_referential) { Chouette.create { referential }.referential.tap(&:pending!) }
+    let(:active_referential) { Chouette.create { referential }.referential.tap(&:active!) }
+    let(:failed_referential) { Chouette.create { referential }.referential.tap(&:failed!) }
+    let(:archived_referential) { Chouette.create { referential }.referential.tap(&:archived!) }
+
+    describe '#state' do
+      subject { referential.state }
+
+      context 'with pending referential' do
+        let(:referential) { pending_referential }
+        it { is_expected.to eq(:pending) }
+      end
+
+      context 'with active referential' do
+        let(:referential) { active_referential }
+        it { is_expected.to eq(:active) }
+      end
+
+      context 'with failed referential' do
+        let(:referential) { failed_referential }
+        it { is_expected.to eq(:failed) }
+      end
+
+      context 'with archived referential' do
+        let(:referential) { archived_referential }
+        it { is_expected.to eq(:archived) }
+      end
+
+      context 'with #data_freeze_status' do
+        let(:referential) { archived_referential }
+
+        context 'with freezing referential' do
+          before { referential.data_freeze_status = 'freezing' }
+          it { is_expected.to eq(:frozen) }
+        end
+
+        context 'with frozen referential' do
+          before { referential.data_freeze_status = 'frozen' }
+          it { is_expected.to eq(:frozen) }
+        end
+
+        context 'with unfreeze_enqueued referential' do
+          before { referential.data_freeze_status = 'unfreeze_enqueued' }
+          it { is_expected.to eq(:unfreezing) }
+        end
+
+        context 'with unfreezing referential' do
+          before { referential.data_freeze_status = 'unfreezing' }
+          it { is_expected.to eq(:unfreezing) }
+        end
+      end
     end
 
-    context "the scopes" do
-      it "should filter the referentials" do
-        referential = create :referential
-        referential.pending!
-        expect(Referential.pending).to include referential
-        expect(Referential.failed).to_not include referential
-        expect(Referential.active).to_not include referential
-        expect(Referential.archived).to_not include referential
+    describe 'scopes' do
+      before do
+        pending_referential
+        active_referential
+        failed_referential
+        archived_referential
+      end
 
-        referential = create :referential
-        referential.failed!
-        expect(Referential.pending).to_not include referential
-        expect(Referential.failed).to include referential
-        expect(Referential.active).to_not include referential
-        expect(Referential.archived).to_not include referential
+      it '.pending' do
+        expect(described_class.pending).to include(pending_referential)
+      end
 
-        referential = create :referential
-        referential.active!
-        expect(Referential.pending).to_not include referential
-        expect(Referential.failed).to_not include referential
-        expect(Referential.active).to include referential
-        expect(Referential.archived).to_not include referential
+      it '.active' do
+        expect(described_class.active).to include(active_referential)
+      end
 
-        referential = create :referential
-        referential.archived!
-        expect(Referential.pending).to_not include referential
-        expect(Referential.failed).to_not include referential
-        expect(Referential.active).to_not include referential
-        expect(Referential.archived).to include referential
+      it '.failed' do
+        expect(described_class.failed).to include(failed_referential)
+      end
+
+      it '.archived' do
+        expect(described_class.archived).to include(archived_referential)
       end
     end
 
     context 'pending_while' do
       it "should preserve the state" do
-        referential = create :referential
-        referential.archived!
-        expect(referential.state).to eq :archived
+        referential = archived_referential
         referential.pending_while do
           expect(referential.state).to eq :pending
         end
@@ -393,15 +423,15 @@ RSpec.describe Referential, type: :model do
 
   context ".referential_ids_in_periode" do
     it 'should retrieve referential id in periode range' do
-      range = ref.metadatas.first.periodes.sample
+      range = referential.metadatas.first.periodes.sample
       refs  = Referential.referential_ids_in_periode(range)
-      expect(refs).to include(ref.id)
+      expect(refs).to include(referential.id)
     end
 
     it 'should not retrieve referential id not in periode range' do
       range = Date.today - 2.year..Date.today - 1.year
       refs  = Referential.referential_ids_in_periode(range)
-      expect(refs).to_not include(ref.id)
+      expect(refs).to_not include(referential.id)
     end
   end
 
@@ -416,7 +446,7 @@ RSpec.describe Referential, type: :model do
 
   context "Cloning referential" do
     let(:clone) do
-      Referential.new_from(ref, ref.workbench)
+      Referential.new_from(referential, referential.workbench)
     end
 
     let!(:workbench){ create :workbench }
@@ -431,7 +461,7 @@ RSpec.describe Referential, type: :model do
     end
 
     it 'should create a Referential' do
-      ref
+      referential
       expect { saved_clone }.to change{Referential.count}.by(1)
       expect(saved_clone.state).to eq :pending
     end
@@ -445,7 +475,7 @@ RSpec.describe Referential, type: :model do
     end
 
     xit 'should clone referential_metadatas' do
-      expect(metadatas_attributes(clone)).to eq(metadatas_attributes(ref))
+      expect(metadatas_attributes(clone)).to eq(metadatas_attributes(referential))
     end
   end
 
@@ -630,4 +660,133 @@ RSpec.describe Referential, type: :model do
 
   end
 
+  it { is_expected.to enumerize(:data_freeze_status).in(%w[unfrozen freezing frozen unfreeze_enqueued unfreezing]) }
+
+  describe '#data_frozen?' do
+    subject { referential.data_frozen? }
+
+    context 'when #data_freeze_status is "unfrozen"' do
+      it { is_expected.to eq(false) }
+    end
+
+    %w[freezing frozen unfreeze_enqueued unfreezing].each do |data_freeze_status|
+      context "when #data_freeze_status is \"#{data_freeze_status}\"" do
+        before { referential.data_freeze_status = data_freeze_status }
+        it { is_expected.to eq(true) }
+      end
+    end
+  end
+
+  describe '#data_freeze' do
+    subject { referential.data_freeze }
+
+    it { expect { subject }.to change { referential.data_freeze_status }.from('unfrozen').to('frozen') }
+
+    it { expect { subject }.to change { referential.ready? }.from(true).to(false) }
+
+    it 'removes schema from apartment tenants' do
+      expect { subject }.to change { Apartment.tenant_names }.from(include(referential.slug))
+                                                             .to(not_include(referential.slug))
+    end
+  end
+
+  describe '#enqueue_data_unfreeze' do
+    subject { referential.enqueue_data_unfreeze }
+
+    before { referential.update(data_freeze_status: 'frozen', ready: false) }
+
+    it { expect { subject }.to change { referential.data_freeze_status }.from('frozen').to('unfreeze_enqueued') }
+
+    it { expect { subject }.not_to change { referential.ready? }.from(false) }
+
+    it { expect { subject }.to change { Delayed::Job.count }.by(1) }
+
+    it do
+      subject
+      expect(Delayed::Job.last.handler).to match(/Referential::DataUnfreezeJob/)
+    end
+
+    context 'when update fails' do
+      before { allow(referential).to receive(:update).and_return(false) }
+      it { expect { subject }.not_to change { Delayed::Job.count } }
+    end
+  end
+
+  describe '#data_unfreeze' do
+    subject { referential.data_unfreeze }
+
+    before { referential.update(data_freeze_status: 'unfreeze_enqueued', ready: false) }
+
+    it { expect { subject }.to change { referential.data_freeze_status }.from('unfreeze_enqueued').to('unfrozen') }
+
+    it { expect { subject }.to change { referential.ready? }.from(false).to(true) }
+
+    it 'restores schema in apartment tenants' do
+      expect { subject }.to change { Apartment.tenant_names }.from(not_include(referential.slug))
+                                                             .to(include(referential.slug))
+    end
+  end
+
+  describe '.data_freeze_candidates' do
+    subject { context.workbench.referentials.data_freeze_candidates }
+
+    let(:referentials_frozen_after) { 14 }
+    let!(:context) do
+      Chouette.create do
+        frozen_after = 14
+        workbench do
+          referential :never_visited, archived_at: Time.zone.now, name: 'never visited'
+          referential :visited_recently, archived_at: Time.zone.now, visited_at: (frozen_after / 2).days.ago
+          referential :visited_formerly, archived_at: Time.zone.now, visited_at: (frozen_after * 2).days.ago
+          referential :in_a_referential_suite, archived_at: Time.zone.now
+          referential :not_archived
+        end
+      end.tap do |context|
+        context.referential(:in_a_referential_suite).update!(referential_suite: context.workbench.output)
+      end
+    end
+
+    before { allow(Chouette::Config).to receive(:referentials_frozen_after).and_return(referentials_frozen_after) }
+
+    context 'when Chouette::Config.referentials_frozen_after is set' do
+      it 'returns only freezable candidates' do
+        is_expected.to match_array(%i[never_visited visited_formerly].map { |r| context.referential(r) })
+      end
+    end
+
+    context 'when Chouette::Config.referentials_frozen_after is nil' do
+      let(:referentials_frozen_after) { nil }
+      it { is_expected.to be_empty }
+    end
+  end
+end
+
+RSpec.describe Referential::DataUnfreezeJob do
+  subject(:job) { described_class.new(referential) }
+
+  let(:referential) do
+    Chouette.create do
+      referential data_freeze_status: 'unfreeze_enqueued', ready: false
+    end.referential
+  end
+
+  describe '#perform' do
+    subject { job.perform }
+
+    it 'calls Referential#data_unfreeze' do
+      expect(referential).to receive(:data_unfreeze)
+      subject
+    end
+
+    %w[unfrozen freezing frozen unfreezing].each do |data_freeze_status|
+      context "when #data_freeze_status is \"#{data_freeze_status}\"" do
+        before { referential.update(data_freeze_status: data_freeze_status) }
+
+        it 'does not call Referential#data_unfreeze' do
+          expect(referential).not_to receive(:data_unfreeze)
+          subject
+        end
+      end
+    end
+  end
 end

@@ -19,6 +19,9 @@ en:
       lines_outside_of_scope:
         one: The %{lines} line is outside of %{organisation} functional scope
         other: The lines %{lines} are outside of %{organisation} functional scope
+      warnings:
+        frozen: "This Dataset is currently frozen. To view its content, unfreeze it."
+        unfreezing: "This Dataset is currently unfreezing. Refresh this page in a few seconds."
     counts:
       objects: "Data set elements"
       count: "count"
@@ -36,6 +39,7 @@ en:
       destroy: "Destroy this data set"
       edit: "Edit this data set"
       clone: "Clone this data set"
+      data_unfreeze: "Unfreeze"
     errors:
       validity_period: "Invalid validity periode"
       pg_excluded: "can't begins with pg_"
@@ -61,11 +65,8 @@ en:
       failed:   Failed
       active:   Ready
       archived: Archived
-      changed:
-        pending:  This data space is currently undergoing an operation, you may not be able to save your changes
-        failed:   This data space est désormais en erreur, vos modifications ne pourront pas être enregistrées
-        active:   This data space est désormais en édition, rechargez la page pour pouvoir apporter vos modifications
-        archived: This data space vient d'être archivé, vos modifications ne pourront pas être enregistrées
+      frozen: "Frozen"
+      unfreezing: "Unfreezing"
 
   activerecord:
     errors:
@@ -153,3 +154,4 @@ en:
       unarchived: "The data set has been successfully unarchived"
       unarchived_failed: "The data set cannot be unarchived"
       deleted: "The data set has been successfully destroyed"
+      data_unfreeze_failed: "The Dataset cannot be unfrozen"

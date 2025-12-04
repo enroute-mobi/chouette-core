@@ -23,6 +23,9 @@
             = operation_status(operation.status)
             span= "#{operation.class.ts}"
             span= (operation.try(:name) || operation.created_at.l(format: :short))
+      - if @referential.data_frozen?
+        .alert.alert-warning
+          = t(".warnings.#{@referential.state}")
 
     - else
       .row
@@ -78,4 +81,4 @@
             = replacement_msg t('referential_lines.search_no_results')
 
 
-      = referential_overview(resource) if @referential.service_counts.any?
+      = referential_overview(resource) if !@referential.frozen? && @referential.service_counts.any?

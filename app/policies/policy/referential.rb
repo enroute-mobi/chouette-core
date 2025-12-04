@@ -7,8 +7,9 @@ module Policy
     # we also cannot apply strategy Referential for archive
     # since this policy is sometimes checked in contexts without referential
     authorize_by Strategy::Referential, only: %i[create]
-    authorize_by Strategy::Workbench, only: %i[update destroy validate flag_urgent]
-    authorize_by Strategy::Permission, only: %i[create update destroy flag_urgent]
+    authorize_by Strategy::Workbench, only: %i[update destroy validate flag_urgent data_unfreeze]
+    authorize_by Strategy::Permission, only: %i[create update destroy flag_urgent data_unfreeze]
+    permission_exception :data_unfreeze, 'referentials.update'
 
     def browse?
       around_can(:browse) { resource.browse? }
@@ -42,6 +43,10 @@ module Policy
 
     def flag_urgent?
       around_can(:flag_urgent) { true }
+    end
+
+    def data_unfreeze?
+      around_can(:data_unfreeze) { resource.data_freeze_status == 'frozen' }
     end
 
     protected

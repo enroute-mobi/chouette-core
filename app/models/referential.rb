@@ -115,6 +115,18 @@ class Referential < ApplicationModel
          .where(ReferentialMetadata.quoted_table_name => { id: nil })
   }
 
+  scope :data_freeze_candidates, lambda {
+    if ::Chouette::Config.referentials_frozen_after.nil?
+      none
+    else
+      where.not(archived_at: nil)
+          .where(referential_suite_id: nil)
+          .and(
+            where(visited_at: nil).or(where('visited_at < ?', ::Chouette::Config.referentials_frozen_after.days.ago))
+          )
+    end
+  }
+
   after_destroy :clean_cross_referential_index!
 
   def self.clean!
@@ -589,7 +601,7 @@ class Referential < ApplicationModel
     overlapped_referential_ids.present?
   end
 
-  validate :detect_overlapped_referentials, unless: -> { in_referential_suite? || archived? }
+  validate :detect_overlapped_referentials, unless: -> { in_referential_suite? || archived? || data_frozen? }
 
   def detect_overlapped_referentials
     begin
@@ -676,11 +688,6 @@ class Referential < ApplicationModel
     true
   end
 
-  # Archive
-  def archived?
-    archived_at != nil
-  end
-
   def archive!
     # self.archived = true
     touch :archived_at
@@ -732,9 +739,16 @@ class Referential < ApplicationModel
 
   def state
     return :failed if failed_at.present?
-    return :archived if archived_at.present?
-    return :pending unless ready?
-    :active
+    case data_freeze_status
+    when 'freezing', 'frozen'
+      :frozen
+    when 'unfreeze_enqueued', 'unfreezing'
+      :unfreezing
+    else
+      return :archived if archived_at.present?
+      return :pending unless ready?
+      :active
+    end
   end
 
   def light_update vals
@@ -812,9 +826,48 @@ class Referential < ApplicationModel
     update_column :vehicle_journeys_count, vehicle_journeys.count
   end
 
-  def visited!
-    touch :visited_at
-    self
+  concerning :DataFreeze do
+    included do
+      enumerize :data_freeze_status, in: %w[unfrozen freezing frozen unfreeze_enqueued unfreezing], default: 'unfrozen'
+    end
+
+    def visited!
+      touch :visited_at
+      self
+    end
+
+    def data_frozen?
+      data_freeze_status != 'unfrozen'
+    end
+
+    def data_freeze
+      update(data_freeze_status: 'frozen', ready: false)
+    end
+
+    def enqueue_data_unfreeze
+      transaction do
+        return false unless update(data_freeze_status: 'unfreeze_enqueued')
+
+        Delayed::Job.enqueue(DataUnfreezeJob.new(self))
+      end
+    end
+
+    def data_unfreeze
+      update(data_freeze_status: 'unfrozen', ready: true)
+    end
+  end
+
+  class DataUnfreezeJob
+    def initialize(referential)
+      @referential = referential
+    end
+    attr_reader :referential
+
+    def perform
+      return unless referential.data_freeze_status == 'unfreeze_enqueued'
+
+      referential.data_unfreeze
+    end
   end
 
   private

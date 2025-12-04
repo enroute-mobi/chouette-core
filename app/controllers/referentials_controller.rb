@@ -92,6 +92,12 @@ class ReferentialsController < Chouette::WorkbenchController
     redirect_back fallback_location: root_path
   end
 
+  def data_unfreeze
+    referential.enqueue_data_unfreeze
+
+    redirect_to workbench_referential_path(workbench, referential)
+  end
+
   def journey_patterns
     referential.switch
     jp = Chouette::JourneyPattern.find(params[:journey_pattern_id])

@@ -22,16 +22,20 @@ module ReferentialsHelper
   end
 
   def icon_for_referential_state state
-    klass = case state.to_s
-    when "pending"
-      'fa fa-clock'
-    when "failed"
-      'fa fa-times'
-    when "archived"
-      'fa fa-archive'
-    else
-      'sb sb-lg sb-preparing'
-    end
+    klass = case state
+            when :pending
+              'fa fa-clock'
+            when :failed
+              'fa fa-times'
+            when :archived
+              'fa fa-archive'
+            when :frozen
+              'fa fa-download'
+            when :unfreezing
+              'fa fa-upload'
+            else
+              'sb sb-lg sb-preparing'
+            end
     render_icon klass, nil
   end
 

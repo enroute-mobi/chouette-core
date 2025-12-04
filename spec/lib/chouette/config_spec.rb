@@ -112,6 +112,16 @@ RSpec.describe Chouette::Config do
 
     it { is_expected.to eq('mock_tomtom_api_key') }
   end
+
+  describe '#referentials_frozen_after' do
+    subject { config.referentials_frozen_after }
+
+    it { is_expected.to be_nil }
+
+    with_env REFERENTIALS_FROZEN_AFTER: '42' do
+      it { is_expected.to eq(42) }
+    end
+  end
 end
 
 RSpec.describe Chouette::Config::Environment do
@@ -124,6 +134,34 @@ RSpec.describe Chouette::Config::Environment do
     context "when #{description}" do
       before { env.each { |k, v| raw_env[k.to_s] = v.to_s } }
       class_exec(&block)
+    end
+  end
+
+  describe '.integer' do
+    context 'for name "DUMMY" without default' do
+      subject { environment.integer('DUMMY') }
+
+      it { is_expected.to be_nil }
+
+      with_env CHOUETTE_DUMMY: '' do
+        it { is_expected.to be_nil }
+      end
+
+      with_env CHOUETTE_DUMMY: '42' do
+        it { is_expected.to eq(42) }
+      end
+
+      with_env CHOUETTE_DUMMY: '-42' do
+        it { is_expected.to eq(-42) }
+      end
+
+      with_env CHOUETTE_DUMMY: 'abc' do
+        it { is_expected.to be_nil }
+      end
+
+      with_env CHOUETTE_DUMMY: 'ab42cd' do
+        it { is_expected.to be_nil }
+      end
     end
   end
 

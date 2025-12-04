@@ -225,6 +225,10 @@ module Export
         current_scope.lines.where(id: routes.select(:line_id).distinct)
       end
 
+      def booking_arrangements
+        current_scope.booking_arrangements.joins(:lines).where(lines: { id: lines.select(:id).distinct })
+      end
+
       def line_groups
         current_scope.line_groups.where(
           id: ::LineGroup::Member.where(line_id: lines.select(:id).distinct).select(:group_id).distinct

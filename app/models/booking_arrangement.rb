@@ -5,7 +5,7 @@ class BookingArrangement < ApplicationModel
   include CodeSupport
   include LineReferentialSupport
 
-  has_many :lines
+  has_many :lines, class_name: 'Chouette::Line'
 
   validates :name, presence: true
   validates :minimum_booking_period, numericality: { only_integer: true, greater_than: 0, allow_nil: true }

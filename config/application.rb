@@ -126,6 +126,8 @@ module Chouette
         SmartEnv[:OCCASIONAL_TRAVELLER_CONNECTION_SPEED]
     ]
 
+    config.active_storage.service = SmartEnv[:STORAGE].to_sym
+
     if Chouette::Config.loaded?
       config.to_prepare do
         WelcomePhoto.unsplash_credential = Chouette::Config.unsplash.credential
@@ -173,6 +175,8 @@ module Chouette
         config.rack_cas.server_url = config.chouette_authentication_settings[:cas_server]
       end
     end
+
+    config.active_storage.variant_processor = :mini_magick
 
     once = Rails.root.join('app/once')
     Rails.autoloaders.main.ignore(once)

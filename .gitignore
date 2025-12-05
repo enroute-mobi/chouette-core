@@ -11,6 +11,12 @@
 # Ignore local files
 /public/uploads
 
+# Ignore storage (uploaded files in development and any SQLite databases).
+/storage/*
+!/storage/.keep
+/tmp/storage/*
+!/tmp/storage/.keep
+
 # Local config (see .env.sample)
 /.env
 

@@ -58,13 +58,9 @@ fr:
     for_boarding:
       normal: "Montée autorisée"
       forbidden: "Montée interdite"
-      request_stop: "Montée sur demande au conducteur"
-      is_flexible: "Montée sur réservation"
     for_alighting:
       normal: "Descente autorisée"
       forbidden: "Descente interdite"
-      request_stop: "Descente sur demande au conducteur"
-      is_flexible: "Descente sur réservation"
     references_type:
       network: "Réseaux"
       line: "Lignes"

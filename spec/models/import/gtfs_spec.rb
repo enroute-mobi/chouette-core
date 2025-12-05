@@ -2048,31 +2048,5 @@ describe Import::Gtfs::RouteJourneyPatterns::RouteDecorator do
         )
       end
     end
-
-    xcontext 'when pickup/drop_off is 2' do
-      let(:stop_time_pickup) { '2' }
-      let(:stop_time_drop_off) { '2' }
-
-      it do
-        is_expected.to match_array(
-          [
-            have_attributes(stop_area_id: 42, position: 0, for_boarding: 'request_stop', for_alighting: 'request_stop')
-          ]
-        )
-      end
-    end
-
-    xcontext 'when pickup/drop_off is 3' do
-      let(:stop_time_pickup) { '3' }
-      let(:stop_time_drop_off) { '3' }
-
-      it do
-        is_expected.to match_array(
-          [
-            have_attributes(stop_area_id: 42, position: 0, for_boarding: 'is_flexible', for_alighting: 'is_flexible')
-          ]
-        )
-      end
-    end
   end
 end

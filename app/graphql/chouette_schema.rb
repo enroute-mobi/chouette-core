@@ -1,10 +1,12 @@
 # frozen_string_literal: true
 
 class ChouetteSchema < GraphQL::Schema
-  trace_with(
-    GraphQL::Tracing::DataDogTrace,
-    service: "#{ENV.fetch('DD_AGENT_APP', 'chouette-core')}-front"
-  )
+  if ENV['DD_AGENT_HOST']
+    trace_with(
+      GraphQL::Tracing::DataDogTrace,
+      service: "#{ENV.fetch('DD_AGENT_APP', 'chouette-core')}-front"
+    )
+  end
 
   default_max_page_size 50
 

@@ -842,7 +842,7 @@ class Referential < ApplicationModel
       data_freeze_status != 'unfrozen'
     end
 
-    def data_freeze # rubocop:disable Metrics/MethodLength
+    def data_freeze
       Tempfile.open(['', '.sql.gz']) do |dump_file|
         schema.dump(dump_file)
         return if File.zero?(dump_file)
@@ -854,9 +854,6 @@ class Referential < ApplicationModel
         update!(data_freeze_status: 'freezing', ready: false)
         schema.destroy!
         update!(data_freeze_status: 'frozen')
-      rescue StandardError => e
-        Chouette::Safe.capture("Referential##{id}.data_freeze failed", e)
-        raise ::ActiveRecord::Rollback
       end
     end
 
@@ -868,7 +865,7 @@ class Referential < ApplicationModel
       end
     end
 
-    def data_unfreeze # rubocop:disable Metrics/MethodLength
+    def data_unfreeze
       update!(data_freeze_status: 'unfreezing')
 
       frozen_dump.open do |dump_file|
@@ -879,9 +876,6 @@ class Referential < ApplicationModel
       transaction do
         update!(data_freeze_status: 'unfrozen', ready: true)
         frozen_dump.purge
-      rescue StandardError => e
-        Chouette::Safe.capture("Referential##{id}.data_freeze failed", e)
-        raise ::ActiveRecord::Rollback
       end
     end
   end

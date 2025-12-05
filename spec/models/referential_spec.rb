@@ -763,18 +763,13 @@ RSpec.describe Referential, type: :model do
       end
 
       context 'when schema could not be destroyed' do
+        subject { super() rescue nil } # rubocop:disable Style/RescueModifier
+
         before do
           allow(referential.schema).to receive(:destroy!).and_wrap_original do |m, *args|
             m.call(*args)
             raise StandardError, 'Oops'
           end
-        end
-
-        it 'captures error' do
-          expect(Chouette::Safe).to(
-            receive(:capture).with("Referential##{referential.id}.data_freeze failed", StandardError)
-          )
-          subject
         end
 
         it 'attaches dump file' do
@@ -923,14 +918,9 @@ RSpec.describe Referential, type: :model do
       end
 
       context 'when dump file could not be purged' do
-        before { allow(referential.frozen_dump).to receive(:purge).and_raise(StandardError.new('Oops')) }
+        subject { super() rescue nil } # rubocop:disable Style/RescueModifier
 
-        it 'captures error' do
-          expect(Chouette::Safe).to(
-            receive(:capture).with("Referential##{referential.id}.data_freeze failed", StandardError)
-          )
-          subject
-        end
+        before { allow(referential.frozen_dump).to receive(:purge).and_raise(StandardError.new('Oops')) }
 
         it 'restores data and applies migrations' do
           subject

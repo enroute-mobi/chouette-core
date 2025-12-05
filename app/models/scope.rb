@@ -445,7 +445,7 @@ module Scope
 
         class_eval <<-RUBY, __FILE__, __LINE__ + 1
           def #{model}
-            search.without_pagination.search(initial_scope.#{model})
+            search.dup.without_order.without_pagination.search(initial_scope.#{model})
           end
         RUBY
       end

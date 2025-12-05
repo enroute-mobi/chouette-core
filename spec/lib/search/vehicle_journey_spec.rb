@@ -75,8 +75,6 @@ RSpec.describe Search::VehicleJourney do
       end
 
       context 'with default order' do
-        before { search.order.use_defaults }
-
         it 'returns all matching vehicle journeys ordered by #published_journey_name' do
           is_expected.to eq(%i[vj1 vj2 vj3].map { |vj| context.vehicle_journey(vj) })
         end

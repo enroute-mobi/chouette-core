@@ -23,7 +23,7 @@ class StopAreasController < Chouette::StopAreaReferentialController
 
   def index # rubocop:disable Metrics/MethodLength
     if (saved_search = saved_searches.find_by(id: params[:search_id]))
-      @search = saved_search.search
+      @search = saved_search.search(Search::StopArea.attributes_from_params(params))
     end
 
     @per_page = 25

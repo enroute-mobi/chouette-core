@@ -13,7 +13,7 @@ class ConnectionLinksController < Chouette::StopAreaReferentialController
 
   def index
     if (saved_search = saved_searches.find_by(id: params[:search_id]))
-      @search = saved_search.search
+      @search = saved_search.search(Search::ConnectionLink.attributes_from_params(params))
     end
 
     index! do

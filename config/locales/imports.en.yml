@@ -132,6 +132,7 @@ en:
   errors:
     messages:
       extension_whitelist_error: "You are not allowed to upload %{extension} files, allowed types: %{allowed_types}"
+      default_company_not_found: "Default company not found"
   enumerize:
     import/workbench:
       import_category:

@@ -132,6 +132,7 @@ fr:
   errors:
     messages:
       extension_whitelist_error: "Vous n'êtes pas autorisé à uploader des fichiers %{extension}, types autorisés: %{allowed_types}"
+      default_company_not_found: "Transporteur par défaut non trouvé"
   enumerize:
     import/workbench:
       import_category:

@@ -6,6 +6,7 @@ class BookingArrangement < ApplicationModel
   include LineReferentialSupport
 
   has_many :lines, class_name: 'Chouette::Line'
+  has_many :journey_patterns, class_name: 'Chouette::JourneyPattern'
 
   validates :name, presence: true
   validates :minimum_booking_period, numericality: { only_integer: true, greater_than: 0, allow_nil: true }

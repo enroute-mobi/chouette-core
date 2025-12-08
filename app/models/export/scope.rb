@@ -226,7 +226,9 @@ module Export
       end
 
       def booking_arrangements
-        current_scope.booking_arrangements.joins(:lines).where(lines: { id: lines.select(:id).distinct })
+        current_scope.booking_arrangements.where(id: line_booking_arrangement_ids).or(
+          current_scope.booking_arrangements.where(id: journey_pattern_booking_arrangement_ids)
+        ).distinct
       end
 
       def line_groups
@@ -349,6 +351,22 @@ module Export
       # Returns all flexible Stop Areas members
       def flexible_stop_area_member_ids
         flexible_stop_areas.select('flexible_area_memberships.member_id').joins(:flexible_area_memberships).distinct
+      end
+
+      def line_booking_arrangement_ids
+        current_scope
+          .booking_arrangements
+          .joins(:lines)
+          .where(lines: { id: lines.select(:id).distinct })
+          .select(:id)
+      end
+
+      def journey_pattern_booking_arrangement_ids
+        current_scope
+          .booking_arrangements
+          .joins(:journey_patterns)
+          .where(journey_patterns: { id: journey_patterns.select(:id).distinct })
+          .select(:id)
       end
     end
 

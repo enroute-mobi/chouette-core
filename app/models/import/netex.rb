@@ -50,7 +50,7 @@ class Import::Netex < Import::Base
 
     # Launch Control::List or Macro::List asynchronously
     Rails.logger.info "#{self.class.name} ##{id}: invoke async_processable"
-    processor.after([referential])
+    processor.after
 
     parent&.child_change
 

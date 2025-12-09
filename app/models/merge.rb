@@ -79,28 +79,22 @@ class Merge < ApplicationModel
 
     Chouette::Benchmark.measure('merge', merge: id) do
 
-      continue_after_processings = processor.before(referentials)
-      # Check processed status and stop merge if one failed
-      unless continue_after_processings
-        failed_on_processings
-        return
-      end
+      continue_after_processings = processor.around do
+        Chouette::Benchmark.measure('prepare_new') do
+          prepare_new
+        end
 
-      Chouette::Benchmark.measure('prepare_new') do
-        prepare_new
-      end
+        referentials.each do |referential|
+          Chouette::Benchmark.measure('referential', referential: referential.id) do
+            merge_referential_method_class.new(self, referential).merge!
+          end
+        end
 
-      referentials.each do |referential|
-        Chouette::Benchmark.measure('referential', referential: referential.id) do
-          merge_referential_method_class.new(self, referential).merge!
+        Chouette::Benchmark.measure('clean_new') do
+          clean_new
         end
       end
 
-      Chouette::Benchmark.measure('clean_new') do
-        clean_new
-      end
-
-      continue_after_processings = processor.after([new])
       # Check processed status and stop merge if one failed
       unless continue_after_processings
         failed_on_processings
@@ -233,9 +227,5 @@ class Merge < ApplicationModel
     return Merge.none unless parent
 
     parent.merges.where.not(id: id)
-  end
-
-  def processor
-    @processor ||= Processor.new(self)
   end
 end

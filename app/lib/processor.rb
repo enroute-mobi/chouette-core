@@ -19,35 +19,21 @@ class Processor
     @operation_workbench ||= workbench.blank? && workgroup.present? ? workgroup.owner_workbench : workbench
   end
 
-  def before(referentials)
-    return true unless before_processing_rules.any?
-
-    referentials.each do |referential|
-      before_processing_rules.each do |processing_rule|
-        return false unless processing_rule.perform operation: operation, referential: referential,
-                                                    operation_workbench: workbench
-      end
-    end
-
-    true
+  def before
+    perform_processing_rules(before_processing_rules, before_referentials)
   end
 
-  def after(referentials) # rubocop:disable Metrics/MethodLength
-    return true unless after_processing_rules.any?
+  def after
+    perform_processing_rules(after_processing_rules, after_referentials)
+  end
 
-    unless operation_workbench
-      Rails.logger.warn('Could not find a workbench to run after processings')
-      return false
-    end
+  def around
+    failure = before
+    return failure unless failure
 
-    referentials.each do |referential|
-      after_processing_rules.each do |processing_rule|
-        return false unless processing_rule.perform operation: operation, referential: referential,
-                                                    operation_workbench: operation_workbench
-      end
-    end
+    yield
 
-    true
+    after
   end
 
   def before_processing_rules
@@ -95,9 +81,41 @@ class Processor
     "after_#{operation.model_name.singular}"
   end
 
+  protected
+
+  # XXX_referentials: nil to perform processing rules without referential, [] to not perform processing rules
+
+  def before_referentials
+    nil
+  end
+
+  def after_referentials
+    nil
+  end
+
   private
 
   def tag_ids
     @tag_ids ||= parent.try(:tags).try(:pluck, :id) || []
+  end
+
+  def perform_processing_rules(processing_rules, referentials)
+    return true unless processing_rules.any?
+
+    if referentials
+      referentials.all? do |referential|
+        processing_rules.all? do |processing_rule|
+          processing_rule.perform(referential: referential, **perform_arguments)
+        end
+      end
+    else
+      processing_rules.all? do |processing_rule|
+        processing_rule.perform(**perform_arguments)
+      end
+    end
+  end
+
+  def perform_arguments
+    { operation: operation, operation_workbench: operation_workbench }
   end
 end

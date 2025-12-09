@@ -22,11 +22,11 @@ module LocalImportSupport
     Chouette::Benchmark.measure "import_#{import_type}", id: id do
       update status: 'running', started_at: Time.now
 
-      ActiveRecord::Base.cache do
-        import_without_status
+      processor.around do
+        ActiveRecord::Base.cache do
+          import_without_status
+        end
       end
-
-      processor.after([referential])
 
       @status ||= 'successful'
       referential&.active!
@@ -47,7 +47,7 @@ module LocalImportSupport
   end
 
   def processor
-    @processor ||= Processor.new(self)
+    @processor ||= Import::Processor.new(self)
   end
 
   def worker_died

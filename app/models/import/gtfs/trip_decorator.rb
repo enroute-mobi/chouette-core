@@ -58,15 +58,16 @@ class Import::Gtfs
       end
 
       [].tap do |vehicle_journey_at_stops|
+        previous = nil
         journey_pattern.stop_points.each_with_index do |stop_point, position|
           stop_time = stop_times[position]
-
 
           decorator = StopTimeDecorator.new(
             stop_time,
             stop_point: stop_point,
             starting_day_offset: starting_day_offset,
-            default_time_zone: default_time_zone
+            default_time_zone: default_time_zone,
+            previous: previous
           )
 
           unless decorator.valid?
@@ -77,13 +78,14 @@ class Import::Gtfs
             # TODO: we could skip the model creation
           end
 
+          previous = decorator
           vehicle_journey_at_stops << decorator.chouette_model
         end
       end
     end
 
     class StopTimeDecorator < Import::Gtfs::Decorator
-      attr_accessor :starting_day_offset, :default_time_zone, :stop_point
+      attr_accessor :starting_day_offset, :default_time_zone, :stop_point, :previous
 
       def self.time_of_day(name, as:)
         define_method as do
@@ -151,6 +153,10 @@ class Import::Gtfs
             errors.add :missing_start_pickup_drop_off_window if earliest_departure_time_of_day.nil?
             errors.add :missing_end_pickup_drop_off_window if latest_arrival_time_of_day.nil?
           end
+        end
+
+        if arrival_time_of_day && previous&.departure_time_of_day
+          errors.add :non_chronological if previous.departure_time_of_day > arrival_time_of_day
         end
       end
 

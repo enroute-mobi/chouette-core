@@ -54,6 +54,8 @@ en:
         invalid_pickup_drop_off_window: The GTFS Trip %{trip_id} contains an flexible Stop Time with invalid pickup/drop_off window
         missing_start_pickup_drop_off_window: The GTFS Trip %{trip_id} contains an flexible Stop Time without pickup/drop_off window start
         missing_end_pickup_drop_off_window: The GTFS Trip %{trip_id} contains an flexible Stop Time without pickup/drop_off window end
+        non_chronological: The GTFS Trip %{trip_id} contains a Stop Time non chronological with previous one
+
         # TODO: to be moved into trips messages
         journey_pattern_invalid: The GTFS Trip %{resource_id} has no valid associated Journey Pattern
         stop_times_many_required: The GTFS Trip %{resource_id} hasn't two required Stop Times

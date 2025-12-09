@@ -103,6 +103,14 @@ class Export::Ara < Export::Base
       @lines ||= ::Query::Line.new(line_referential.lines)
                               .self_and_referents(current_scope.lines)
     end
+
+    def stop_area_groups
+      @stop_area_groups ||= stop_area_referential.stop_area_groups.with_short_name
+    end
+
+    def line_groups
+      @line_groups ||= __getobj__.line_groups.with_short_name
+    end
   end
 
   # TODO: To be shared
@@ -388,7 +396,7 @@ class Export::Ara < Export::Base
     end
 
     def stop_area_groups
-      export_scope.stop_area_groups.with_short_name.includes(:members)
+      export_scope.stop_area_groups.includes(:members)
     end
 
     class Decorator < SimpleDelegator
@@ -607,7 +615,7 @@ class Export::Ara < Export::Base
     end
 
     def line_groups
-      export_scope.line_groups.with_short_name.includes(:members)
+      export_scope.line_groups.includes(:members)
     end
 
     class Decorator < SimpleDelegator

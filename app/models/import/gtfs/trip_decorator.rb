@@ -1,14 +1,7 @@
 class Import::Gtfs
   # Add helper methods on GTFS Trip
-  class TripDecorator < SimpleDelegator
-    def initialize(trip, lookup: nil, code_space: nil, default_time_zone: nil)
-      super trip
-      @lookup = lookup
-      @code_space = code_space
-      @default_time_zone = default_time_zone
-    end
-
-    attr_accessor :lookup, :code_space, :default_time_zone
+  class TripDecorator < Import::Gtfs::Decorator
+    attr_accessor :default_time_zone
 
     delegate :each, :length, :[], to: :stop_ids
 
@@ -25,6 +18,9 @@ class Import::Gtfs
     end
 
     def journey_pattern_signature
+      # TODO: manage more invalid cases ?
+      return nil unless stop_times.many?
+
       @journey_pattern_signature ||= [
         *route_signature,
         headsign,
@@ -34,7 +30,7 @@ class Import::Gtfs
     end
 
     def journey_pattern
-      return unless lookup
+      return unless lookup && journey_pattern_signature
       @journey_pattern ||= lookup.journey_patterns.find_by(signature: journey_pattern_signature)
     end
 
@@ -51,56 +47,68 @@ class Import::Gtfs
     end
 
     def vehicle_journey_at_stops
+      unless journey_pattern
+        errors.add :journey_pattern_invalid
+        return []
+      end
+
+      unless stop_times.many?
+        errors.add :stop_times_many_required
+        return []
+      end
+
       [].tap do |vehicle_journey_at_stops|
         journey_pattern.stop_points.each_with_index do |stop_point, position|
           stop_time = stop_times[position]
+
+
           decorator = StopTimeDecorator.new(
             stop_time,
             stop_point: stop_point,
             starting_day_offset: starting_day_offset,
             default_time_zone: default_time_zone
           )
+
+          unless decorator.valid?
+            decorator.errors.each do |stop_time_error|
+              stop_time_error.message_attributes[:trip_id] = id
+              errors << stop_time_error
+            end
+            # TODO: we could skip the model creation
+          end
+
           vehicle_journey_at_stops << decorator.chouette_model
         end
       end
     end
 
-    class StopTimeDecorator < SimpleDelegator
-      def initialize(stop_time, stop_point: nil, starting_day_offset: nil, default_time_zone: nil)
-        super stop_time
-
-        @stop_point = stop_point
-        @starting_day_offset = starting_day_offset
-        @default_time_zone = default_time_zone
-      end
-
+    class StopTimeDecorator < Import::Gtfs::Decorator
       attr_accessor :starting_day_offset, :default_time_zone, :stop_point
 
-      def departure_time_of_day
-        time_of_day(departure_time)
+      def self.time_of_day(name, as:)
+        define_method as do
+          cached_value = instance_variable_get("@#{as}")
+          return cached_value if cached_value
+
+          value = try(name)
+          return if value.blank?
+
+          time_of_day(value).tap do |cached_value|
+            instance_variable_set "@#{as}", cached_value
+          end
+        end
       end
 
-      def arrival_time_of_day
-        time_of_day(arrival_time)
-      end
-
-      def earliest_departure_time_of_day
-        time_of_day(start_pickup_drop_off_window)
-      end
-
-      def latest_arrival_time_of_day
-        time_of_day(end_pickup_drop_off_window)
-      end
+      time_of_day :departure_time, as: :departure_time_of_day
+      time_of_day :arrival_time, as: :arrival_time_of_day
+      time_of_day :start_pickup_drop_off_window, as: :earliest_departure_time_of_day
+      time_of_day :end_pickup_drop_off_window, as: :latest_arrival_time_of_day
 
       def time_of_day(raw_gtfs_time, offset: starting_day_offset)
-        return unless raw_gtfs_time.present?
-
-        # TODO
-        # raise InvalidTimeError.new(gtfs_time) unless gtfs_time
+        return if raw_gtfs_time.blank?
 
         gtfs_time = GTFS::Time.parse(raw_gtfs_time).from_day_offset(offset)
-        # TODO
-        # raise InvalidTimeError.new(gtfs_time) unless t.present?
+        return if gtfs_time.blank?
 
         TimeOfDay.create(gtfs_time, time_zone: default_time_zone).without_utc_offset
       end
@@ -115,34 +123,54 @@ class Import::Gtfs
         }.compact
       end
 
+      def flexible?
+        return false if [ try(:departure_time), try(:arrival_time) ].any?
+
+        [
+          try(:start_pickup_drop_off_window),
+          try(:end_pickup_drop_off_window),
+          try(:location_group_id),
+          # try(:location_id)
+        ].any?
+      end
+
+      def validate
+        super
+
+        unless flexible?
+          if departure_time_of_day && arrival_time_of_day
+            errors.add :arrival_after_departure if arrival_time_of_day > departure_time_of_day
+          else
+            errors.add :missing_departure_time if departure_time_of_day.nil?
+            errors.add :missing_arrival_time if arrival_time_of_day.nil?
+          end
+        else
+          if earliest_departure_time_of_day && latest_arrival_time_of_day
+            errors.add :invalid_pickup_drop_off_window unless earliest_departure_time_of_day < latest_arrival_time_of_day
+          else
+            errors.add :missing_start_pickup_drop_off_window if earliest_departure_time_of_day.nil?
+            errors.add :missing_end_pickup_drop_off_window if latest_arrival_time_of_day.nil?
+          end
+        end
+      end
+
       def chouette_model
         Chouette::VehicleJourneyAtStop.new(stop_attributes)
       end
     end
 
     def time_table_id
-      return unless lookup
+      unless service_id
+        errors.add :service_undefined
+      end
+
+      return unless lookup && starting_day_offset
       lookup.time_tables.find_id(service_id, starting_day_offset: starting_day_offset)
     end
 
     def vehicle_journey_time_table_relationships
       unless time_table_id
-        # TODO add error
-        # errors << :time_table_not_found
-        # create_message(
-        #   {
-        #     criticity: :warning,
-        #     message_key: 'gtfs.trips.unknown_service_id',
-        #     message_attributes: { service_id: trip.service_id },
-        #     resource_attributes: {
-        #       filename: "#{resource.name}.txt",
-        #       line_number: resource.rows_count,
-        #       column_number: 0
-        #     }
-        #   },
-        #   resource: resource,
-        #   commit: true
-        # )
+        errors.add :service_unknown, message_attributes: { service_id: service_id }
         return []
       end
       [ Chouette::TimeTablesVehicleJourney.new(time_table_id: time_table_id) ]
@@ -163,7 +191,12 @@ class Import::Gtfs
     end
 
     def chouette_model
-      Chouette::VehicleJourney.new(vehicle_journey_attributes)
+      @chouette_model ||= Chouette::VehicleJourney.new(vehicle_journey_attributes)
+    end
+
+    def validate
+      super
+      chouette_model
     end
 
     def code
@@ -179,11 +212,13 @@ class Import::Gtfs
     end
 
     def starting_day_offset
-      GtfsTime.parse(stop_times.first.departure_time || stop_times.first.start_pickup_drop_off_window).day_offset
-    end
+      return 0 if stop_times.empty?
 
-    def valid?
-      stop_times.many?
+      first_stop_time = stop_times.first
+      first_time = first_stop_time.departure_time || first_stop_time.start_pickup_drop_off_window
+      return 0 if first_time.blank?
+
+      @starting_day_offset ||= GtfsTime.parse(first_time).day_offset
     end
 
     private
@@ -191,6 +226,7 @@ class Import::Gtfs
     def stop_times_signature
       skip = true
       stop_times.reverse_each.filter_map do |stop_time|
+        # FIXME when pickup_type/drop_off_typeare not defined in the file, the signature is empty
         next if skip && stop_time.pickup_type.nil? && stop_time.drop_off_type.nil?
 
         skip = false

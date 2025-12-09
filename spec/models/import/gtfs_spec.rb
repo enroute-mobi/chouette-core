@@ -846,13 +846,7 @@ RSpec.describe Import::Gtfs do
       let(:resource) { import.resources.find_by(name: 'stop_times') }
 
       let(:expected_message) {
-        an_object_having_attributes(
-          message_key: 'invalid_stop_time',
-          message_attributes: {
-            'time' => nil,
-            'trip_id' => 'T01'
-          }
-        )
+        
       }
 
       before do
@@ -863,7 +857,20 @@ RSpec.describe Import::Gtfs do
       end
 
       it 'should create an error message for stop_times' do
-        is_expected.to include(expected_message)
+        is_expected.to include(
+                         an_object_having_attributes(
+                           message_key: 'gtfs.stop_times.missing_departure_time',
+                           message_attributes: {
+                             'trip_id' => 'T01'
+                           }
+                         ),
+                         an_object_having_attributes(
+                           message_key: 'gtfs.stop_times.missing_arrival_time',
+                           message_attributes: {
+                             'trip_id' => 'T01'
+                           }
+                         )
+                       )
       end
     end
   end

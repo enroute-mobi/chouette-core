@@ -28,7 +28,7 @@ class Import::Gtfs
       end
 
       def find_id_by(signature:)
-        Rails.logger.debug { "Find Journey Pattern by signature #{signature.inspect}"}
+        Rails.logger.debug { "Find Journey Pattern id by signature #{signature.inspect}"}
         journey_pattern_ids_by_signature[signature]
       end
 
@@ -41,6 +41,7 @@ class Import::Gtfs
       end
 
       def find_by(signature:)
+        Rails.logger.debug { "Find Journey Pattern by signature #{signature.inspect}"}
         journey_patterns_by_signature[signature] ||=
           begin
             journey_pattern_id = find_id_by(signature: signature)

@@ -402,9 +402,10 @@ class Import::Gtfs < Import::Base
       attributes =
         if attributes_or_error.is_a?(Import::Decorator::Error)
           error = attributes_or_error
+          # TODO use the Error resource instead of the Import resource
           {
             criticity: (error.criticity || :error),
-            message_key: "gtfs.services.#{error.message_key}",
+            message_key: "gtfs.#{resource.name}.#{error.message_key}",
             message_attributes: error.message_attributes
           }
         else
@@ -1120,7 +1121,7 @@ class Import::Gtfs < Import::Base
 
       source.trips(with_stop_times: true).each do |trip|
         decorator = TripDecorator.new(trip)
-        next unless decorator.valid?
+        next unless decorator.journey_pattern_signature
 
         decorators[decorator.journey_pattern_signature] ||= decorator
       end
@@ -1374,8 +1375,8 @@ class Import::Gtfs < Import::Base
         # TODO ensure a message is created
         create_message(
           criticity: :error,
-          message_key: 'invalid_vehicle_journey',
-          message_attributes: { trip_id: model.published_journey_name }
+          message_key: 'gtfs.trips.invalid_vehicle_journey',
+          message_attributes: { trip_id: model.published_journey_identifier }
         )
       end
     end

@@ -402,20 +402,27 @@ class Import::Gtfs < Import::Base
       attributes =
         if attributes_or_error.is_a?(Import::Decorator::Error)
           error = attributes_or_error
-          # TODO use the Error resource instead of the Import resource
+
+          gtfs_resource = error.resource
+          resource_collection = gtfs_resource.filename.sub('.txt','')
+
           {
             criticity: (error.criticity || :error),
-            message_key: "gtfs.#{resource.name}.#{error.message_key}",
-            message_attributes: error.message_attributes
+            message_key: "gtfs.#{resource_collection}.#{error.message_key}",
+            message_attributes: error.message_attributes,
+            resource_attributes: {
+              filename: gtfs_resource.filename,
+              line_number: gtfs_resource.line_number
+            }
           }
         else
+          attributes_or_error[:resource_attributes] = {
+            filename: "#{resource.name}.txt",
+            line_number: resource.rows_count
+          }
           attributes_or_error
         end
 
-      attributes[:resource_attributes] = {
-        filename: "#{resource.name}.txt",
-        line_number: resource.rows_count
-      }
       import.create_message attributes, resource: resource, commit: true
     end
 
@@ -1187,7 +1194,7 @@ class Import::Gtfs < Import::Base
 
   class Trips < Part
     delegate :default_time_zone, to: :import
-    
+
     def lookup
       import.trip_lookup
     end

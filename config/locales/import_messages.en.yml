@@ -47,6 +47,10 @@ en:
       trips:
         imported: "%{count} trip(s) imported"
         invalid_vehicle_journey: The GTFS Trip %{trip_id} can't be used to create a valid Vehicle Journey
+        journey_pattern_invalid: The GTFS Trip %{resource_id} has no valid associated Journey Pattern
+        stop_times_many_required: The GTFS Trip %{resource_id} hasn't two required Stop Times
+        service_undefined: The GTFS Trip %{resource_id} has no servicea
+        service_unknown: The GTFS Trip %{resource_id} is associated to an unknown %{service_id} Service
       stop_times:
         arrival_after_departure: The GTFS Trip %{trip_id} contains an Stop Time with invalid passing time
         missing_departure_time: The GTFS Trip %{trip_id} contains an Stop Time without departure time
@@ -55,12 +59,6 @@ en:
         missing_start_pickup_drop_off_window: The GTFS Trip %{trip_id} contains an flexible Stop Time without pickup/drop_off window start
         missing_end_pickup_drop_off_window: The GTFS Trip %{trip_id} contains an flexible Stop Time without pickup/drop_off window end
         non_chronological: The GTFS Trip %{trip_id} contains a Stop Time non chronological with previous one
-
-        # TODO: to be moved into trips messages
-        journey_pattern_invalid: The GTFS Trip %{resource_id} has no valid associated Journey Pattern
-        stop_times_many_required: The GTFS Trip %{resource_id} hasn't two required Stop Times
-        service_undefined: The GTFS Trip %{resource_id} has no servicea
-        service_unknown: The GTFS Trip %{resource_id} is associated to an unknown %{service_id} Service
       calendars:
         imported: "%{count} calendar(s) imported"
       services:

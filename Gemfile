@@ -125,7 +125,7 @@ gem 'premailer-rails', '>= 1.11.1'
 # Redis session management
 gem 'redis-actionpack', '>= 5.3.0'
 
-gem 'gtfs', en_route: 'gtfs', branch: 'DATA-50-trips-with-stop-times'
+gem 'gtfs', en_route: 'gtfs', branch: 'DATA-55-line-number-and-file-name'
 gem 'netex', en_route: 'netex'
 gem 'rgeo-shapefile'
 gem 'ara', '>= 3.0.0', en_route: 'ara-ruby'

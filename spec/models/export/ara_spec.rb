@@ -101,6 +101,7 @@ RSpec.describe Export::Ara do
 
         before do
           allow(export).to receive(:stop_area_referential) { context.stop_area_referential }
+          allow(export).to receive(:workbench) { context.workbench }
           allow(original_scope).to receive(:stop_areas) do
             context.stop_area_referential.stop_areas.where(id: stop_area.id)
           end

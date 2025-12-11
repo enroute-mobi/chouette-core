@@ -797,8 +797,7 @@ class Export::NetexGeneric < Export::Base
     class Decorator < ModelDecorator
 
       def netex_attributes
-        {
-          id: uuid,
+        super.merge(
           name: name,
           url: url,
           description: description,
@@ -808,7 +807,7 @@ class Export::NetexGeneric < Export::Base
           operating_organisation_view: operating_organisation_view,
           classifications: classifications,
           validity_conditions: validity_conditions,
-        }
+        )
       end
 
       def netex_resource

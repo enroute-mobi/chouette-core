@@ -1,109 +1,22 @@
-- workbenches = @dashboard.current_user.workbenches.with_active_workgroup.includes(:workgroup, :output)
-- many_workbenches = @dashboard.current_user.workbenches.many?
-- owned_workgroups = workbenches.map(&:workgroup).select { |workgroup| workgroup.owner_id == current_organisation.id }.uniq
+- dashboard ||= @dashboard
+- workbench ||= @workbench
+- editable = local_assigns.fetch(:editable, true)
 
-- workgroup_aggregate_counts = Aggregate.where(workgroup_id: owned_workgroups.map(&:id)).group(:workgroup_id).count
-- workgroup_aggregate_last_5s = owned_workgroups.map do |workgroup| \
-                           [ \
-                             workgroup.id, \
-                             workgroup.aggregates.order("created_at desc").limit(5) \
-                           ] \
-                         end.to_h
+.grid.grid-cols-1.md:grid-cols-2.lg:grid-cols-3.gap-6
+  - if dashboard.widgets.any?
+    - dashboard.widgets.ordered.each do |widget|
+      .bg-white.overflow-hidden.rounded-xl.border-2.border-dashed.border-gray-400.hover:border-enroute-chouette-primary.hover:border-solid.hover:bg-light-blue.transition-all.duration-150.ease-out
+        .px-4.py-5.sm:p-6
+          h3.text-base.font-semibold.text-light-grey-2.mb-3.uppercase.tracking-wide= widget.name
+          = render_widget(widget)
+  - else
+    .col-span-full.text-center.py-12
+      .bg-gray-50.p-8.rounded-lg
+        svg.mx-auto.h-12.w-12.text-gray-400[xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"]
+          path[stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"]
+        h3.mt-2.text-sm.font-medium.text-gray-900= t('.no_widgets')
+        p.mt-1.text-sm.text-gray-500= t('.get_started')
 
-- workbenches.each do |workbench|
-  .row
-    - if many_workbenches
-      .col-lg-12
-        h2 = workbench.workgroup.name
-    .col-sm-6.col-xs-12
-      - unless many_workbenches
-        - referentials_count = workbench.output.referentials.count
-        .panel.panel-default
-          .panel-heading
-            h3.panel-title.with_actions
-              div
-                = link_to t('dashboards.workbench_output.title', name: workbench.name), workbench_output_path(workbench)
-                span.badge.ml-xs = referentials_count if referentials_count.positive?
-
-              div
-                = link_to '', workbench_output_path(workbench), class: ' fa fa-chevron-right pull-right', title: t('workbenches.index.offers.see')
-
-          - if referentials_count.positive?
-            .list-group
-              - workbench.output.referentials.limit(5).each do |referential|
-                = link_to referential.name, workbench_referential_path(workbench, referential), class: 'list-group-item'
-          - else
-            .panel-body
-              em.small.text-muted = t('dashboards.workbench_output.none')
-
-      - all_referentials_count = workbench.all_referentials.count
-      .panel.panel-default
-        .panel-heading
-          h3.panel-title.with_actions
-            div
-              - if many_workbenches
-                = link_to t('dashboards.workbench.title', name: workbench.name), workbench_path(workbench)
-              - else
-                = link_to Workbench.model_name.human.capitalize, workbench_path(workbench)
-              span.badge.ml-xs = all_referentials_count if all_referentials_count.positive?
-
-            div
-              = link_to '', workbench_path(workbench), class: ' fa fa-chevron-right pull-right', title: t('workbenches.index.offers.see')
-
-        - if all_referentials_count.positive?
-          .list-group
-            - workbench.all_referentials.order(created_at: :desc).limit(5).each do |referential|
-              = link_to referential.name, workbench_referential_path(workbench, referential), class: 'list-group-item'
-        - else
-          .panel-body
-            em.small.text-muted = t('workbenches.index.offers.no_content')
-
-      - imports_count = workbench.imports.workbench.count
-      - if imports_count.positive?
-        .panel.panel-default
-          .panel-heading
-            h3.panel-title.with_actions
-              div
-                = link_to Import::Base.model_name.human(count: imports_count), workbench_imports_path(workbench)
-                span.badge.ml-xs = imports_count if imports_count.positive?
-              div
-                = link_to '', workbench_imports_path(workbench), class: ' fa fa-chevron-right pull-right'
-          .list-group
-            - workbench.imports.workbench.order("updated_at desc").limit(5).each do |import|
-              = link_to import.name, workbench_import_path(workbench, import), class: 'list-group-item'
-
-    .col-sm-6.col-xs-12
-      .panel.panel-default
-        .panel-heading
-          h3.panel-title
-            = t('dashboards.stop_area_referentials.title')
-        .list-group
-          = link_to Chouette::StopArea.model_name.human_plural, workbench_stop_area_referential_stop_areas_path(workbench), class: 'list-group-item'
-
-      .panel.panel-default
-        .panel-heading
-          h3.panel-title
-            = t('dashboards.line_referentials.title')
-        .list-group
-            = link_to Chouette::Line.model_name.human_plural, workbench_line_referential_lines_path(workbench), class: 'list-group-item'
-            = link_to Chouette::Company.model_name.human_plural, workbench_line_referential_companies_path(workbench), class: 'list-group-item'
-            = link_to Chouette::Network.model_name.human_plural, workbench_line_referential_networks_path(workbench), class: 'list-group-item'
-
-      - workgroup_aggregate_count = workgroup_aggregate_counts[workbench.workgroup_id]
-      - if workgroup_aggregate_count
-        .panel.panel-default
-          .panel-heading
-            h3.panel-title.with_actions
-              div
-                = link_to I18n.t("dashboards.aggregates.title", count: workgroup_aggregate_count), workgroup_output_path(workbench.workgroup)
-                span.badge.ml-xs = workgroup_aggregate_count if workgroup_aggregate_count.positive?
-              div
-                = link_to '', workgroup_output_path(workbench.workgroup), class: ' fa fa-chevron-right pull-right'
-
-          - if workgroup_aggregate_count.positive?
-            .list-group
-              - workgroup_aggregate_last_5s[workbench.workgroup_id].each do |aggregate|
-                = link_to t("aggregates.show.title", name: aggregate.name.capitalize).html_safe, workgroup_aggregate_path(aggregate.workgroup, aggregate), class: 'list-group-item'
-          - else
-            .panel-body
-              em.small.text-muted = t('dashboards.aggregates.none')
+- if editable && workbench
+  .mt-4
+    = link_to t('dashboards.actions.edit'), edit_workbench_dashboard_path(workbench, dashboard), class: 'btn btn-primary'

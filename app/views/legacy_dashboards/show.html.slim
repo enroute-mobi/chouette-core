@@ -1,0 +1,6 @@
+- breadcrumb :root
+- content_for :page_header_title, t('.title', organisation: current_organisation.name)
+
+.page_content
+  .container-fluid
+    = render 'dashboard'

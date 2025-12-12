@@ -40,6 +40,8 @@
           span = Sequence.model_name.human_plural
         = link_to workbench_tags_path(workbench), class: 'list-group-item' do
           span = Tag.model_name.human_plural
+        = link_to workbench_dashboards_path(workbench), class: 'list-group-item' do
+          span = Dashboard.model_name.human_plural
 
       = main_nav_menu_item StopAreaReferential.model_name.human do
         = link_to workbench_stop_area_referential_stop_areas_path(workbench), class: 'list-group-item' do
@@ -138,7 +140,7 @@
       .panel-heading
         h4.panel-title
           = link_to root_path do
-            span = Dashboard.model_name.human
+            span = LegacyDashboard.model_name.human
 
     - current_user_workbenches = current_user.workbenches.includes(workgroup: :owner)
     - if current_user_workbenches.any?

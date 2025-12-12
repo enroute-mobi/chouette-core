@@ -1,30 +1,14 @@
-#
-# The default Dashboard implementation can be customized in an initializer :
-#
-#   Rails.application.config.to_prepare do
-#     Dashboard.default_class = Custom::Dashboard
-#   end
-#
-class Dashboard
-  extend ActiveModel::Translation
-  include ActiveModel::Conversion
+# frozen_string_literal: true
 
-  @@default_class = self
-  mattr_accessor :default_class
+class Dashboard < ApplicationModel
+  belongs_to :workbench
+  has_many :widgets, dependent: :destroy
 
-  attr_reader :context
-  def initialize(context)
-    @context = context
-  end
+  accepts_nested_attributes_for :widgets, allow_destroy: true
 
-  delegate :current_user, to: :context
+  validates :name, presence: true
+  validates :workbench, presence: true
 
-  def self.create(context)
-    default_class.new context
-  end
-
-  def current_organisation
-    context.send(:current_organisation)
-  end
-
+  WIDGET_TYPES = %w[default chart counter list numbers static_text table].freeze
+  DATA_SOURCES = %w[referentials lines stop_areas].freeze
 end

@@ -1,0 +1,5 @@
+.card.mb-3
+  .card-body.text-center
+    h5.card-title= widget.name
+    .display-4= widget.options['value'] || '0'
+    p.text-muted= widget.options['label'] if widget.options['label'].present?

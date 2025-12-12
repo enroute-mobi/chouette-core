@@ -23,6 +23,7 @@ class Permission
         control_list_runs
         contracts
         sequences
+        dashboards
         documents
         document_providers
         document_types

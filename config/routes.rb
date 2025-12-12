@@ -3,7 +3,7 @@
 Rails.application.routes.draw do # rubocop:disable Metrics/BlockLength
   get 'healthz' => 'rails/health#show', as: :rails_health_check
 
-  resource :dashboard, only: :show
+  resource :legacy_dashboards, only: :show
   resource :subscriptions, only: :create
 
   resources :workbenches, only: %i[show] do # rubocop:disable Metrics/BlockLength
@@ -232,6 +232,10 @@ Rails.application.routes.draw do # rubocop:disable Metrics/BlockLength
       end
     end
 
+    resources :dashboards do
+      resources :widgets
+    end
+
     resources :contracts
 
     resources :sequences
@@ -357,7 +361,7 @@ Rails.application.routes.draw do # rubocop:disable Metrics/BlockLength
 
   devise_scope :user do
     authenticated :user do
-      root to: 'dashboards#show', as: 'authenticated_root'
+      root to: 'legacy_dashboards#show', as: 'authenticated_root'
     end
 
     unauthenticated :user do

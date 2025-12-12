@@ -1,14 +1,52 @@
 # frozen_string_literal: true
 
-# If you changed the default Dashboard implementation (see Dashboard),
-# this controller will use a custom partial like
-# custom/dashboards/_dashboard.html.slim for Custom::Dashboard
-#
-class DashboardsController < Chouette::UserController
-  respond_to :html, only: [:show]
+class DashboardsController < Chouette::WorkbenchController
+  include DashboardsHelper
 
-  def show
-    @dashboard = Dashboard.create self
-    @workbenches = current_user.workbenches
+  defaults resource_class: Dashboard
+
+  def index
+    index! do |format|
+      format.html do
+        @dashboards = DashboardDecorator.decorate(
+          collection,
+          context: {
+            workbench: workbench
+          }
+        )
+      end
+    end
+  end
+
+  private
+
+  alias dashboard resource
+
+  def scope
+    @scope ||= workbench.dashboards
+  end
+
+  def collection
+    @tags = scope.paginate(page: params[:page], per_page: 30)
+  end
+
+  def resource
+    get_resource_ivar || set_resource_ivar(super.decorate(context: { workbench: workbench, dashboard: dashboard }))
+  end
+
+  def dashboard_params
+    params.require(:dashboard).permit(
+      :name, 
+      :description,
+      widgets_attributes: [
+        :id, 
+        :name, 
+        :widget_type, 
+        :data_source, 
+        :position, 
+        :_destroy,
+        { options: {} }
+      ]
+    )
   end
 end

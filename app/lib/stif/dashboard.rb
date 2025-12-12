@@ -1,5 +1,5 @@
 module Stif
-  class Dashboard < ::Dashboard
+  class Dashboard < ::LegacyDashboard
     def workbench
       if current_user.workbenches.length > 1
         Rails.logger.error("Organisation #{current_organisation.name} should have only one workbench")

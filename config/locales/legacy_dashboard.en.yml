@@ -1,5 +1,5 @@
 en:
-  dashboards:
+  legacy_dashboards:
     main_nav_left: Dashboard
     show:
       title: "Dashboard %{organisation}"
@@ -22,6 +22,6 @@ en:
       none: No aggregation
   activemodel:
     models:
-      dashboard:
+      legacy_dashboard:
         one: "Dashboard"
         other: "Dashboards"

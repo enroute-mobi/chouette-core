@@ -1,5 +1,5 @@
 fr:
-  dashboards:
+  legacy_dashboards:
     main_nav_left: Tableau de bord
     show:
       title: "Tableau de bord %{organisation}"
@@ -25,6 +25,6 @@ fr:
       none: Aucune agrégation
   activemodel:
     models:
-      dashboard:
+      legacy_dashboard:
         one: "Tableau de bord"
         other: "Tableaux de bord"

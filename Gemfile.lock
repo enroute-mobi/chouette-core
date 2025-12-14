@@ -229,7 +229,7 @@ GEM
       activesupport (>= 4.0.0)
       mime-types (>= 1.16)
       ssrf_filter (~> 1.0, < 1.1.0)
-    cgi (0.5.0)
+    cgi (0.5.1)
     chartkick (5.2.1)
     childprocess (5.1.0)
       logger (~> 1.5)
@@ -277,7 +277,7 @@ GEM
       drb
       msgpack
     datadog-ruby_core_source (3.4.2)
-    date (3.5.0)
+    date (3.5.1)
     dbf (4.3.2)
       csv
     debug_inspector (1.2.0)
@@ -337,9 +337,9 @@ GEM
       rake (>= 12.0.0, < 14.0.0)
     docile (1.4.1)
     dogstatsd-ruby (5.7.1)
-    dotenv (3.1.8)
-    dotenv-rails (3.1.8)
-      dotenv (= 3.1.8)
+    dotenv (3.2.0)
+    dotenv-rails (3.2.0)
+      dotenv (= 3.2.0)
       railties (>= 6.1)
     draper (4.0.6)
       actionpack (>= 5.0)
@@ -512,7 +512,7 @@ GEM
       has_scope (>= 0.6)
       railties (>= 7.0)
       responders (>= 2)
-    io-console (0.8.1)
+    io-console (0.8.2)
     irb (1.15.3)
       pp (>= 0.6.0)
       rdoc (>= 4.0.0)
@@ -671,7 +671,7 @@ GEM
     prism (1.6.0)
     prometheus-client (4.2.5)
       base64
-    psych (5.2.6)
+    psych (5.3.0)
       date
       stringio
     public_suffix (6.0.2)
@@ -745,7 +745,7 @@ GEM
     rb-inotify (0.11.1)
       ffi (~> 1.0)
     rbtree (0.4.6)
-    rdoc (6.16.1)
+    rdoc (6.17.0)
       erb
       psych (>= 4.0.0)
       tsort
@@ -917,7 +917,7 @@ GEM
     stackprof (0.2.27)
     store_model (4.3.0)
       activerecord (>= 7.0)
-    stringio (3.1.8)
+    stringio (3.1.9)
     syntax_suggest (2.0.2)
     teaspoon (1.4.0)
       railties (>= 5.0)

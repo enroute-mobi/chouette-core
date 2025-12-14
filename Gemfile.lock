@@ -725,7 +725,7 @@ GEM
       railties (>= 6.0.0, < 8)
     rails-observers (0.1.5)
       activemodel (>= 4.0)
-    rails_semantic_logger (4.18.0)
+    rails_semantic_logger (4.19.0)
       rack
       railties (>= 5.1)
       semantic_logger (~> 4.16)

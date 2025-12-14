@@ -915,7 +915,7 @@ GEM
       sprockets (>= 3.0.0)
     ssrf_filter (1.0.8)
     stackprof (0.2.27)
-    store_model (4.3.0)
+    store_model (4.4.0)
       activerecord (>= 7.0)
     stringio (3.1.9)
     syntax_suggest (2.0.2)

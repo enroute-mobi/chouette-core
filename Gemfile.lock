@@ -468,7 +468,7 @@ GEM
       base64
       fiber-storage
       logger
-    gretel (5.0.1)
+    gretel (5.1.0)
       actionview (>= 6.1)
       railties (>= 6.1)
     groupdate (6.7.0)

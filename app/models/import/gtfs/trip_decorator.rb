@@ -93,7 +93,12 @@ module Import
       end
 
       class StopTimeDecorator < Import::Gtfs::Decorator
-        attr_accessor :starting_day_offset, :default_time_zone, :stop_point, :previous
+        attr_accessor :default_time_zone, :stop_point, :previous
+        attr_writer :starting_day_offset
+
+        def starting_day_offset
+          @starting_day_offset ||= 0
+        end
 
         def self.time_of_day(name, as:)
           define_method as do
@@ -117,7 +122,7 @@ module Import
         def time_of_day(raw_gtfs_time, offset: starting_day_offset)
           return if raw_gtfs_time.blank?
 
-          gtfs_time = GTFS::Time.parse(raw_gtfs_time).from_day_offset(offset)
+          gtfs_time = GTFS::Time.parse(raw_gtfs_time)&.from_day_offset(offset)
           return if gtfs_time.blank?
 
           TimeOfDay.create(gtfs_time, time_zone: default_time_zone).without_utc_offset

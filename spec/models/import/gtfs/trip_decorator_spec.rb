@@ -365,3 +365,308 @@ RSpec.describe Import::Gtfs::TripDecorator do
     end
   end
 end
+
+RSpec.describe Import::Gtfs::TripDecorator::StopTimeDecorator do
+  subject(:decorator) { described_class.new(stop_time) }
+
+  let(:stop_time) do
+    GTFS::StopTime.new(
+      trip_id: 'AAMV1',
+      stop_id: 'BEATTY_AIRPORT',
+      arrival_time: '8:00:00',
+      departure_time: '8:00:00',
+      stop_sequence: '1'
+    )
+  end
+
+  describe '#departure_time_of_day' do
+    subject { decorator.departure_time_of_day }
+
+    context 'when departure_time is 12:00:00, starting_day_offset 0' do
+      before do
+        stop_time.departure_time = '12:00:00'
+        decorator.starting_day_offset = 0
+      end
+
+      context 'default_time_zone "UTC"' do
+        before do
+          decorator.default_time_zone = ActiveSupport::TimeZone['UTC']
+        end
+
+        it { is_expected.to eq(TimeOfDay.parse('12:00')) }
+      end
+
+      context 'default_time_zone "Asia/Tokyo" (UTC +9)' do
+        before do
+          decorator.default_time_zone = ActiveSupport::TimeZone['Asia/Tokyo']
+        end
+
+        it { is_expected.to eq(TimeOfDay.parse('3:00')) }
+      end
+
+      context 'default_time_zone "America/Los_Angeles" (UTC -8)' do
+        before do
+          decorator.default_time_zone = ActiveSupport::TimeZone['America/Los_Angeles']
+        end
+
+        it { is_expected.to eq(TimeOfDay.parse('20:00')) }
+      end
+    end
+
+    context 'when departure_time is 24:00:00, starting_day_offset 1' do
+      before do
+        stop_time.departure_time = '24:00:00'
+        decorator.starting_day_offset = 1
+      end
+
+      it { is_expected.to eq(TimeOfDay.parse('00:00')) }
+    end
+
+    context 'when departure_time is not defined' do
+      before do
+        stop_time.departure_time = nil
+      end
+
+      it { is_expected.to be_nil }
+    end
+
+    context 'when departure_time is "dummy"' do
+      before do
+        stop_time.departure_time = 'dummy'
+      end
+
+      it { is_expected.to be_nil }
+    end
+  end
+
+  describe '#arrival_time_of_day' do
+    subject { decorator.arrival_time_of_day }
+
+    context 'when arrival_time is 12:00:00, starting_day_offset 0 and default_time_zone "UTC"' do
+      before do
+        stop_time.arrival_time = '12:00:00'
+        decorator.starting_day_offset = 0
+        decorator.default_time_zone = ActiveSupport::TimeZone['UTC']
+      end
+
+      it { is_expected.to eq(TimeOfDay.parse('12:00')) }
+    end
+
+    context 'when arrival_time is not defined' do
+      before do
+        stop_time.arrival_time = nil
+      end
+
+      it { is_expected.to be_nil }
+    end
+  end
+
+  describe '#earliest_departure_time_of_day' do
+    subject { decorator.earliest_departure_time_of_day }
+
+    context 'when start_pickup_drop_off_window is 12:00:00, starting_day_offset 0 and default_time_zone "UTC"' do
+      before do
+        stop_time.start_pickup_drop_off_window = '12:00:00'
+        decorator.starting_day_offset = 0
+        decorator.default_time_zone = ActiveSupport::TimeZone['UTC']
+      end
+
+      it { is_expected.to eq(TimeOfDay.parse('12:00')) }
+    end
+
+    context 'when start_pickup_drop_off_window is not defined' do
+      before do
+        stop_time.start_pickup_drop_off_window = nil
+      end
+
+      it { is_expected.to be_nil }
+    end
+  end
+
+  describe '#latest_arrival_time_of_day' do
+    subject { decorator.latest_arrival_time_of_day }
+
+    context 'when end_pickup_drop_off_window is 12:00:00, starting_day_offset 0 and default_time_zone "UTC"' do
+      before do
+        stop_time.end_pickup_drop_off_window = '12:00:00'
+        decorator.starting_day_offset = 0
+        decorator.default_time_zone = ActiveSupport::TimeZone['UTC']
+      end
+
+      it { is_expected.to eq(TimeOfDay.parse('12:00')) }
+    end
+
+    context 'when end_pickup_drop_off_window is not defined' do
+      before do
+        stop_time.end_pickup_drop_off_window = nil
+      end
+
+      it { is_expected.to be_nil }
+    end
+  end
+
+  describe '#flexible?' do
+    subject { decorator.flexible? }
+
+    context 'when departure_time is defined' do
+      before { stop_time.departure_time = '12:00:00' }
+
+      it { is_expected.to be_falsy }
+    end
+
+    context 'when arrival_time is defined' do
+      before { stop_time.arrival_time = '12:00:00' }
+
+      it { is_expected.to be_falsy }
+    end
+
+    context 'when departure_time and arrival_time are not defined' do
+      before { stop_time.departure_time = stop_time.arrival_time = nil }
+
+      it { is_expected.to be_falsy }
+
+      context 'when start_pickup_drop_off_window is defined' do
+        before { stop_time.start_pickup_drop_off_window = '12:00:00' }
+
+        it { is_expected.to be_truthy }
+      end
+
+      context 'when end_pickup_drop_off_window is defined' do
+        before { stop_time.end_pickup_drop_off_window = '12:00:00' }
+
+        it { is_expected.to be_truthy }
+      end
+
+      context 'when location_group_id is defined' do
+        before { stop_time.location_group_id = 'dummy' }
+
+        it { is_expected.to be_truthy }
+      end
+    end
+  end
+
+  describe '#validate' do
+    subject { decorator.validate }
+
+    context 'when StopTime contains all required information' do
+      it { is_expected_to_not change(decorator, :errors).from(be_empty) }
+    end
+
+    context 'when departure_time_of_day is not defined' do
+      before { allow(decorator).to receive(:departure_time_of_day) }
+
+      it {
+        is_expected_to change(decorator,
+                              :errors).from(be_empty).to(include(an_object_having_attributes(message_key: :missing_departure_time)))
+      }
+    end
+
+    context 'when arrival_time_of_day is not defined' do
+      before { allow(decorator).to receive(:arrival_time_of_day) }
+
+      it {
+        is_expected_to change(decorator,
+                              :errors).from(be_empty).to(include(an_object_having_attributes(message_key: :missing_arrival_time)))
+      }
+    end
+
+    context 'when arrival_time_of_day is equal to departure_time_of_day' do
+      before { stop_time.arrival_time = stop_time.departure_time = '12:00:00' }
+
+      it { is_expected_to_not change(decorator, :errors).from(be_empty) }
+    end
+
+    context 'when arrival_time_of_day is after departure_time_of_day' do
+      before do
+        stop_time.arrival_time = '12:00:01'
+        stop_time.departure_time = '12:00:00'
+      end
+
+      it {
+        is_expected_to change(decorator,
+                              :errors).from(be_empty).to(include(an_object_having_attributes(message_key: :arrival_after_departure)))
+      }
+    end
+
+    context 'when flexible?' do
+      before { allow(decorator).to receive(:flexible?).and_return(true) }
+
+      context 'when earliest_departure_time_of_day is not defined' do
+        before { allow(decorator).to receive(:earliest_departure_time_of_day) }
+
+        it {
+          is_expected_to change(decorator,
+                                :errors).from(be_empty).to(include(an_object_having_attributes(message_key: :missing_start_pickup_drop_off_window)))
+        }
+      end
+
+      context 'when latest_arrival_time_of_day is not defined' do
+        before { allow(decorator).to receive(:latest_arrival_time_of_day) }
+
+        it {
+          is_expected_to change(decorator,
+                                :errors).from(be_empty).to(include(an_object_having_attributes(message_key: :missing_end_pickup_drop_off_window)))
+        }
+      end
+
+      context 'when start_pickup_drop_off_window is equal to end_pickup_drop_off_window' do
+        before { stop_time.start_pickup_drop_off_window = stop_time.end_pickup_drop_off_window = '12:00:00' }
+
+        it {
+          is_expected_to change(decorator,
+                                :errors).from(be_empty).to(include(an_object_having_attributes(message_key: :invalid_pickup_drop_off_window)))
+        }
+      end
+
+      context 'when start_pickup_drop_off_window is after end_pickup_drop_off_window' do
+        before do
+          stop_time.start_pickup_drop_off_window = '12:00:01'
+          stop_time.end_pickup_drop_off_window = '12:00:00'
+        end
+
+        it {
+          is_expected_to change(decorator,
+                                :errors).from(be_empty).to(include(an_object_having_attributes(message_key: :invalid_pickup_drop_off_window)))
+        }
+      end
+    end
+
+    context 'when previous is defined' do
+      before { decorator.previous = previous }
+      let(:previous) { double }
+
+      context 'when arrival_time_of_day is not defined' do
+        before { allow(decorator).to receive(:arrival_time_of_day) }
+
+        it { is_expected_to_not raise_error }
+      end
+
+      context 'when previous.departure_time_of_day is not defined' do
+        before { allow(previous).to receive(:departure_time_of_day) }
+
+        it { is_expected_to_not raise_error }
+      end
+
+      context 'when previous.departure_time_of_day is equal arrival_time_of_day' do
+        before do
+          allow(previous).to receive(:departure_time_of_day).and_return(TimeOfDay.parse('08:00'))
+          allow(decorator).to receive(:arrival_time_of_day).and_return(TimeOfDay.parse('08:00'))
+        end
+
+        it { is_expected_to_not change(decorator, :errors).from(be_empty) }
+      end
+
+      context 'when previous.departure_time_of_day is after arrival_time_of_day' do
+        before do
+          allow(previous).to receive(:departure_time_of_day).and_return(TimeOfDay.parse('12:00:01'))
+          allow(decorator).to receive(:arrival_time_of_day).and_return(TimeOfDay.parse('12:00'))
+        end
+
+        it {
+          is_expected_to change(decorator,
+                                :errors).from(be_empty).to(include(an_object_having_attributes(message_key: :non_chronological)))
+        }
+      end
+    end
+  end
+end

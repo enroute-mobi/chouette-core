@@ -1,20 +1,25 @@
-.nested-fields.widgets.mb-4.border.rounded-lg.overflow-hidden.-px-5
-  .bg-gray-50.px-4.py-3.border-b
+.nested-fields.widgets.mb-4.border.rounded-r-lg.overflow-hidden[x-data="{}" x-ref="widget" class="#{widget_type_color(f.object&.widget_type)}"]
+  .px-4.py-3.border-b
     .flex.justify-between.items-center
       h3.text-sm.font-medium.text-gray-700
+        = widget_icon(f.object.widget_type)
         = f.object.widget_type.present? ? t("dashboards.widgets.types.#{f.object.widget_type}") : t('dashboards.widgets.new_widget')
-      = link_to_remove_association f, class: 'text-red-600 hover:text-red-800' do
-        i.fa.fa-trash
+      .flex.items-center.space-x-2
+        - if f.object.persisted?
+          a.cursor-pointer.text-gray-500.hover:text-gray-700[@click="const c=$refs.widgets;const w=$refs.widget;let p=w.previousElementSibling;while(p&&!p.classList.contains('nested-fields')){p=p.previousElementSibling}if(p){c.insertBefore(w,p);reorderForm(c);}"]
+            i.fa.fa-arrow-up
+          a.cursor-pointer.text-gray-500.hover:text-gray-700.ml-2[@click="const c=$refs.widgets;const w=$refs.widget;let n=w.nextElementSibling;while(n&&!n.classList.contains('nested-fields')){n=n.nextElementSibling}if(n){c.insertBefore(n,w);reorderForm(c);}"]
+            i.fa.fa-arrow-down
+        = link_to_remove_association f, class: 'text-red-600 hover:text-red-800 ml-2' do
+          i.fa.fa-trash
 
-  .p-4
+  .p-4.bg-white.rounded-br-lg
     .grid.grid-cols-1.md:grid-cols-2.gap-4
       = f.input :name, label: t('dashboards.widgets.name'), wrapper_html: { class: 'mb-4' }
-
       = f.input :widget_type, collection: Widget.types.map { |t| [t("dashboards.widgets.types.#{t}"), t] }, include_blank: false, label: t('dashboards.widgets.type'), wrapper_html: { class: 'mb-4' }
-
       = f.input :data_source, collection: Widget.data_sources.map { |ds| [t("dashboards.widgets.data_sources.#{ds}"), ds] }, include_blank: false, label: t('dashboards.widgets.data_source'), wrapper_html: { class: 'mb-4' }
 
-    .mt-4
-      = f.input :options, as: :text, label: t('dashboards.widgets.options'), input_html: { class: 'font-mono text-sm', rows: 5, value: f.object.options.to_json }, hint: t('dashboards.widgets.options_hint')
+    / .mt-4
+    /   = f.input :options, as: :text, label: t('dashboards.widgets.options'), input_html: { class: 'font-mono text-sm', rows: 5, value: f.object.options.to_json }, hint: t('dashboards.widgets.options_hint')
 
-    = f.input :position, as: :hidden
+    = f.hidden_field :position, 'data-position': true

@@ -31,6 +31,7 @@ fr:
         add: "Ajouter un widget"
         remove: "Supprimer"
       types:
+        default: "Widget par défaut"
         chart: "Graphique"
         counter: "Compteur"
         list: "Liste"

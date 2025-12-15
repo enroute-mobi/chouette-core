@@ -90,6 +90,38 @@ RSpec.describe Export::Ara do
     describe '#stop_areas' do
       subject { scope.stop_areas }
 
+      context 'when stop areas are used in groups' do
+        let(:context) do
+          Chouette.create do
+            stop_area :first_stop_area
+            stop_area :second_stop_area
+            stop_area :third_stop_area
+
+            stop_area_group :stop_area_group, short_name: 'sample', stop_areas: %i[first_stop_area]
+          end
+        end
+
+        let(:first_stop_area) { context.stop_area(:first_stop_area) }
+        let(:second_stop_area) { context.stop_area(:second_stop_area) }
+        let(:third_stop_area) { context.stop_area(:third_stop_area) }
+
+        before do
+          allow(export).to receive(:stop_area_referential) { context.stop_area_referential }
+          allow(export).to receive(:workbench) { context.workbench }
+          allow(original_scope).to receive(:stop_areas) do
+            context.stop_area_referential.stop_areas.where(id: second_stop_area.id)
+          end
+        end
+
+        it 'includes first, second and third stop area' do
+          is_expected.to include(first_stop_area, second_stop_area)
+        end
+
+        it 'not include third stop area' do
+          is_expected.to_not include(third_stop_area)
+        end
+      end
+
       context 'when a Stop Area has a Parent and a Referent' do
         let(:context) do
           Chouette.create do

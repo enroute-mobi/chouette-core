@@ -112,7 +112,7 @@ class Export::Ara < Export::Base
     end
 
     def line_groups
-      @line_groups ||= __getobj__.line_groups.with_short_name
+      @line_groups ||= current_scope.line_groups.with_short_name
     end
   end
 

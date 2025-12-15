@@ -141,6 +141,68 @@ RSpec.describe Export::Ara do
         end
       end
     end
+
+    describe '#line_groups' do
+      subject { scope.line_groups }
+
+      let(:context) do
+        Chouette.create do
+          line :line
+
+          line_group :selected_line_group, short_name: 'selected_stop_area_group', lines: %i[line]
+          line_group :ignored_line_group, short_name: nil,  lines: %i[line]
+        end
+      end
+
+      before do
+        allow(export).to receive(:workbench) { context.workbench }
+        allow(original_scope).to receive(:line_groups) do
+          context.line_referential.line_groups
+        end
+      end
+
+      let(:selected_line_group) { context.line_group(:selected_line_group) }
+      let(:ignored_line_group) { context.line_group(:ignored_line_group) }
+
+      it 'includes selected line group' do
+        is_expected.to include(selected_line_group)
+      end
+
+      it 'not include ignored line group' do
+        is_expected.not_to include(ignored_line_group)
+      end
+    end
+
+    describe '#stop_area_groups' do
+      subject { scope.stop_area_groups }
+
+      let(:context) do
+        Chouette.create do
+          stop_area :stop_area
+
+          stop_area_group :selected_stop_area_group, short_name: 'selected_stop_area_group', stop_areas: %i[stop_area]
+          stop_area_group :ignored_stop_area_group, short_name: nil,  stop_areas: %i[stop_area]
+        end
+      end
+
+      before do
+        allow(export).to receive(:workbench) { context.workbench }
+        allow(scope).to receive(:stop_area_referential) do
+          context.stop_area_referential
+        end
+      end
+
+      let(:selected_stop_area_group) { context.stop_area_group(:selected_stop_area_group) }
+      let(:ignored_stop_area_group) { context.stop_area_group(:ignored_stop_area_group) }
+
+      it 'includes selected stop_area group' do
+        is_expected.to include(selected_stop_area_group)
+      end
+
+      it 'not include ignored stop_area group' do
+        is_expected.not_to include(ignored_stop_area_group)
+      end
+    end
   end
 
   describe 'Stops export' do

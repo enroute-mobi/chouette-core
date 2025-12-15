@@ -18,7 +18,7 @@ module Search
     attribute :subgroup_first, type: Boolean, default: true
     attribute :subgroup_top_count, type: Integer, default: 30
 
-    attr_accessor :saved_name, :saved_description, :param_key
+    attr_accessor :saved_name, :saved_description
 
     enumerize :chart_type, in: %w[line pie column]
     enumerize :sort_by, in: %w[value label]
@@ -119,18 +119,6 @@ module Search
 
     def candidate_aggregate_attributes
       chart_klass.aggregate_attributes
-    end
-
-    alias old_model_name model_name
-    private :old_model_name
-    def model_name
-      if param_key
-        @_model_name ||= old_model_name.dup.tap do |model_name|
-          model_name.instance_variable_set(:@param_key, param_key.to_s)
-        end
-      else
-        old_model_name
-      end
     end
 
     # Could be useful for i18n .. but change the params root key

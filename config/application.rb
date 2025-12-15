@@ -179,6 +179,7 @@ module Chouette
 
     config.nest.parent_application_record = 'ApplicationModel'
     config.nest.simple_block_for_builder = 'Chouette::SimpleBlockFor::Builder'
+    config.nest.search.form_builder = 'Chouette::Search::FormBuilder'
 
     once = Rails.root.join('app/once')
     Rails.autoloaders.main.ignore(once)

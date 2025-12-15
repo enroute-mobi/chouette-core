@@ -1,6 +1,17 @@
-// Use by SimpleSearchForHelper#simple_search_for helper
+- save_search = local_assigns.fetch(:save_search, true)
+- graph_panel = local_assigns[:graph_panel] || :never
+
+- simple_form_html_option = { id: 'new_search', class: 'flex items-stretch tailwind-filters bg-grey relative' }
 
 - if save_search && @saved_searches
+  - if search.saved_search&.persisted?
+      - save_path = saved_search_path(search.saved_search)
+      - save_method = :patch
+  - else
+      - save_path = "#{local_assigns[:parent_resources_path] || index_path}/searches"
+      - save_method = :post
+  - simple_form_html_option['x-data'] = "{ save_path: '#{save_path}', save_method: '#{save_method}'}"
+
   .flex.justify-end.mb-3
     .flex.items-center.w-1/6
       = button_tag t("searchs.actions.open_save_search_panel"),
@@ -21,11 +32,7 @@
           "x-on:change": "$refs.searchForm.submit()",
           include_blank: true
 
-= simple_form_for search, options do |f|
-  = f.simple_fields_for :order, search.order, defaults: { wrapper: false } do |form_order|
-    - search.order.attributes.keys.each do |attribute|
-      = form_order.input attribute, as: :hidden
-
+= simple_form_for search, simple_form_options.deep_merge({ wrapper: :filters_form_tailwind, html: simple_form_html_option }) do |f|
   .flex.flex-col.w-full
     = yield f
     - if save_search
@@ -58,7 +65,7 @@
   .flex.flex-col.justify-center.items-center.actions.ml-auto.w-56.border-white.border-t.border-l.h-max
     .flex.items-center.mb-2.ml-3
       = f.label :per_page, class: 'control-label'
-      = f.input :per_page, as: :select, collection: [ 30, 50, 100 ], include_blank: false, label: false, width: 2, wrapper_html: {class: "border-none"}
+      = f.per_page_input label: false, width: false, wrapper_html: { class: 'border-none' }
     .flex.items-center
-      = link_to t('actions.erase'), index_path, class: 'btn btn-link'
-      = f.submit t('actions.filter'), class: 'btn btn-default', id: 'filter'
+      = f.erase index_path, class: 'btn btn-link'
+      = f.filter class: 'btn btn-default', id: 'filter'

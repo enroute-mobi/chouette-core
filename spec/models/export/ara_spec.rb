@@ -90,6 +90,38 @@ RSpec.describe Export::Ara do
     describe '#stop_areas' do
       subject { scope.stop_areas }
 
+      context 'when stop areas are used in groups' do
+        let(:context) do
+          Chouette.create do
+            stop_area :first_stop_area
+            stop_area :second_stop_area
+            stop_area :third_stop_area
+
+            stop_area_group :stop_area_group, short_name: 'sample', stop_areas: %i[first_stop_area]
+          end
+        end
+
+        let(:first_stop_area) { context.stop_area(:first_stop_area) }
+        let(:second_stop_area) { context.stop_area(:second_stop_area) }
+        let(:third_stop_area) { context.stop_area(:third_stop_area) }
+
+        before do
+          allow(export).to receive(:stop_area_referential) { context.stop_area_referential }
+          allow(export).to receive(:workbench) { context.workbench }
+          allow(original_scope).to receive(:stop_areas) do
+            context.stop_area_referential.stop_areas.where(id: second_stop_area.id)
+          end
+        end
+
+        it 'includes first, second and third stop area' do
+          is_expected.to include(first_stop_area, second_stop_area)
+        end
+
+        it 'not include third stop area' do
+          is_expected.to_not include(third_stop_area)
+        end
+      end
+
       context 'when a Stop Area has a Parent and a Referent' do
         let(:context) do
           Chouette.create do
@@ -101,6 +133,7 @@ RSpec.describe Export::Ara do
 
         before do
           allow(export).to receive(:stop_area_referential) { context.stop_area_referential }
+          allow(export).to receive(:workbench) { context.workbench }
           allow(original_scope).to receive(:stop_areas) do
             context.stop_area_referential.stop_areas.where(id: stop_area.id)
           end
@@ -138,6 +171,68 @@ RSpec.describe Export::Ara do
         it 'includes both Line and its parent' do
           is_expected.to include(line, referent)
         end
+      end
+    end
+
+    describe '#line_groups' do
+      subject { scope.line_groups }
+
+      let(:context) do
+        Chouette.create do
+          line :line
+
+          line_group :selected_line_group, short_name: 'selected_stop_area_group', lines: %i[line]
+          line_group :ignored_line_group, short_name: nil,  lines: %i[line]
+        end
+      end
+
+      before do
+        allow(export).to receive(:workbench) { context.workbench }
+        allow(original_scope).to receive(:line_groups) do
+          context.line_referential.line_groups
+        end
+      end
+
+      let(:selected_line_group) { context.line_group(:selected_line_group) }
+      let(:ignored_line_group) { context.line_group(:ignored_line_group) }
+
+      it 'includes selected line group' do
+        is_expected.to include(selected_line_group)
+      end
+
+      it 'not include ignored line group' do
+        is_expected.not_to include(ignored_line_group)
+      end
+    end
+
+    describe '#stop_area_groups' do
+      subject { scope.stop_area_groups }
+
+      let(:context) do
+        Chouette.create do
+          stop_area :stop_area
+
+          stop_area_group :selected_stop_area_group, short_name: 'selected_stop_area_group', stop_areas: %i[stop_area]
+          stop_area_group :ignored_stop_area_group, short_name: nil,  stop_areas: %i[stop_area]
+        end
+      end
+
+      before do
+        allow(export).to receive(:workbench) { context.workbench }
+        allow(scope).to receive(:stop_area_referential) do
+          context.stop_area_referential
+        end
+      end
+
+      let(:selected_stop_area_group) { context.stop_area_group(:selected_stop_area_group) }
+      let(:ignored_stop_area_group) { context.stop_area_group(:ignored_stop_area_group) }
+
+      it 'includes selected stop_area group' do
+        is_expected.to include(selected_stop_area_group)
+      end
+
+      it 'not include ignored stop_area group' do
+        is_expected.not_to include(ignored_stop_area_group)
       end
     end
   end

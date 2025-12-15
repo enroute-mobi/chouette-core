@@ -7,7 +7,7 @@ fr:
       destroy_confirm: "Etes vous sûr de vouloir supprimer ce Tableau de bord ?"
     index:
       title: Tableaux de bord
-      preview: "Prévisualisation du Tableaux de bord"
+      preview: "Prévisualisation du Tableau de bord"
     show:
       title: Tableau de bord %{name}
     edit:

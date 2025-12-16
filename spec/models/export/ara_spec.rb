@@ -218,7 +218,6 @@ RSpec.describe Export::Ara do
       end
 
       before do
-        allow(export).to receive(:workbench) { context.workbench }
         allow(scope).to receive(:stop_area_referential) do
           context.stop_area_referential
         end

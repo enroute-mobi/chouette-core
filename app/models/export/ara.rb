@@ -88,7 +88,7 @@ class Export::Ara < Export::Base
 
     attr_reader :export, :day
 
-    delegate :stop_area_referential, :line_referential, :workbench, to: :export
+    delegate :stop_area_referential, :line_referential, to: :export
 
     def vehicle_journeys
       @vehicle_journeys ||= current_scope.vehicle_journeys.scheduled_on(day)
@@ -96,10 +96,9 @@ class Export::Ara < Export::Base
 
     def stop_areas
       @stop_areas ||=
-        workbench.stop_areas.where(id: stop_area_groups.joins(:stop_areas).select('stop_areas.id')).or(
-          workbench.stop_areas.where(id: ::Query::StopArea.new(stop_area_referential.stop_areas)
+        stop_area_referential.stop_areas.where(id: stop_area_groups.joins(:stop_areas).select('stop_areas.id'))
+          .or(::Query::StopArea.new(stop_area_referential.stop_areas)
                           .self_referents_and_ancestors(current_scope.stop_areas))
-        )
     end
 
     def lines

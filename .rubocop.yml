@@ -1,3 +1,4 @@
+---
 require:
   - rubocop-rails
 
@@ -13,3 +14,6 @@ Rails/SkipsModelValidations:
 
 Style/Documentation:
   Enabled: false
+
+AllCops:
+  TargetRubyVersion: 3.4

@@ -1,37 +1,38 @@
+# frozen_string_literal: true
+
 # TODO: Should be a Operation::Part subclass in the future
-class Import::Part
+module Import
+  class Part
+    def initialize(import)
+      @import = import
+    end
 
-  def initialize(import)
-    @import = import
-  end
+    attr_reader :import
 
-  attr_reader :import
-  
-  delegate :code_space, to: :import
+    delegate :code_space, to: :import
 
-  def logger
-    Rails.logger
-  end
-  
-  # To define callback in import!
-  include AroundMethod
-  around_method :import!
+    delegate :logger, to: :Rails
 
-  extend ActiveModel::Callbacks
-  define_model_callbacks :import
+    # To define callback in import!
+    include AroundMethod
+    around_method :import!
 
-  def around_import!(&block)
-    run_callbacks :import do
-      ::Bullet.profile do      
-        logger.tagged(internal_description, &block)
+    extend ActiveModel::Callbacks
+    define_model_callbacks :import
+
+    def around_import!(&block)
+      run_callbacks :import do
+        ::Bullet.profile do
+          logger.tagged(internal_description, &block)
+        end
       end
     end
-  end
 
-  def internal_description
-    @internal_description ||= self.class.name.demodulize.underscore
-  end
+    def internal_description
+      @internal_description ||= self.class.name.demodulize.underscore
+    end
 
-  include Measurable
-  measure :import!, as: ->(part) { part.internal_description }
+    include Measurable
+    measure :import!, as: ->(part) { part.internal_description }
+  end
 end

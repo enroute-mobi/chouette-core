@@ -95,18 +95,18 @@ RSpec.describe Import::VehicleJourneyInserter do
     context 'when Vehicle Journey has service_facility_sets' do
       let(:service_facility_set) do
         referential.workbench.default_shape_provider.service_facility_sets.create!(
-            name: 'Test',
-            associated_services: ['luggage_carriage/cycles_allowed']
+          name: 'Test',
+          associated_services: ['luggage_carriage/cycles_allowed']
         )
       end
 
-      before { vehicle_journey.service_facility_sets = [ service_facility_set ] }
+      before { vehicle_journey.service_facility_sets = [service_facility_set] }
 
       describe 'saved Vehicle Journey' do
         subject { Chouette::VehicleJourney.first }
 
         before { insert }
-      
+
         it { is_expected.to have_attributes(service_facility_sets: containing_exactly(service_facility_set)) }
       end
     end

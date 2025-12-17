@@ -8,9 +8,9 @@
     = simple_block_for @import, title: t("simple_block_for.title.processing") do |d|
       = d.attribute :created_at, as: :datetime
       = d.attribute :creator if @import.respond_to?(:creator)
-      = d.attribute :started_at, value: @import.children.first.started_at, as: :datetime
-      = d.attribute :ended_at, value: @import.children.first.ended_at, as: :datetime
-      = d.attribute :duration, value: @import.children.first.ended_at.presence && @import.children.first.started_at.presence && @import.children.first.ended_at - @import.children.first.started_at, as: :duration
+      = d.attribute :started_at, value: @import&.children&.first&.started_at, as: :datetime
+      = d.attribute :ended_at, value: @import&.children&.first&.ended_at, as: :datetime
+      = d.attribute :duration, value: @import&.children&.first&.ended_at&.presence && @import&.children&.first&.started_at&.presence && @import&.children&.first&.ended_at - @import&.children&.first&.started_at, as: :duration
       = d.attribute(:notification_target, as: :enumerize) if @import.respond_to?(:notification_target)
 
 - if @import.overlapping_referentials.any?

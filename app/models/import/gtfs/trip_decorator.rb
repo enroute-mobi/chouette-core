@@ -212,7 +212,7 @@ module Import
       end
 
       def chouette_model
-        @chouette_model ||= Chouette::VehicleJourney.new(vehicle_journey_attributes).skipping_presence_of(:route)
+        @chouette_model ||= Chouette::VehicleJourney.new(vehicle_journey_attributes).skipping_presence_of(:route, :journey_pattern)
       end
 
       def validate

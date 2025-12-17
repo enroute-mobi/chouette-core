@@ -20,7 +20,7 @@ en:
       end_date: "End date of clean up"
       method_type: Delete the useless datas
   simple_form:
-    titles:
+    hints:
       <<: *titles
   activerecord:
     models:
@@ -38,7 +38,3 @@ en:
               presence: "A clean up must have a begin date"
             end_date:
               presence: "A clean up must have a end date"
-  simple_form:
-    labels:
-      clean_up:
-        title: "Clean Up the referential"

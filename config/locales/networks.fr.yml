@@ -47,20 +47,6 @@ fr:
         created_at: "Créé le"
         updated_at: "Edité le"
         creator_id: "Créé par"
-  simple_form:
-    titles:
-      network:
-        objectid: "[prefixe]:PTNetwork:[clé_unique]  caractères autorisés : alphanumériques et 'souligné' pour le préfixe, la clé unique accepte en plus le 'moins'"
-      neptune:
-        network:
-          objectid: "[prefixe]:PTNetwork:[clé_unique]  caractères autorisés : alphanumériques et 'souligné' pour le préfixe, la clé unique accepte en plus le 'moins'"
-      netex:
-        network:
-          objectid: "[prefixe]:PTNetwork:[clé_unique]  caractères autorisés : alphanumériques et 'souligné' pour le préfixe, la clé unique accepte en plus le 'moins'"
-      gtfs:
-        network:
-          objectid: "[prefixe]:PTNetwork:[clé_unique]  caractères autorisés : alphanumériques et 'souligné' pour le préfixe, la clé unique accepte en plus le 'moins'"
-
   table:
     show: Voir
     edit: Editer

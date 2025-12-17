@@ -113,16 +113,3 @@ fr:
             stop_points:
               not_enough_stop_points: "Un itinéraire doit comporter au moins deux arrêts"
               empty_stop_point: Aucun arrêt défini
-  simple_form:
-    titles:
-      route:
-        objectid: "[prefixe]:Route:[clé_unique]  caractères autorisés : alphanumériques et 'souligné' pour le préfixe, la clé unique accepte en plus le 'moins'"
-      neptune:
-        route:
-          objectid: "[prefixe]:Route:[clé_unique]  caractères autorisés : alphanumériques et 'souligné' pour le préfixe, la clé unique accepte en plus le 'moins'"
-      netex:
-        route:
-          objectid: "[prefixe]:Route:[clé_unique]  caractères autorisés : alphanumériques et 'souligné' pour le préfixe, la clé unique accepte en plus le 'moins'"
-      gtfs:
-        route:
-          objectid: "[prefixe]:Route:[clé_unique]  caractères autorisés : alphanumériques et 'souligné' pour le préfixe, la clé unique accepte en plus le 'moins'"

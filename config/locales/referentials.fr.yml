@@ -122,14 +122,6 @@ fr:
         urgent: Contient de l'offre urgente
         workbench: Espace de Travail
   simple_form:
-    titles:
-      referential:
-        slug: "caractères autorisés : alphanumériques minuscules et 'souligné' et doit commencer par une lettre"
-        prefix: "caractères autorisés : alphanumériques et 'souligné'"
-        upper_corner: "latitude,longitude dans le jeu de données WGS84, le séparateur de décimales est 'point'"
-        lower_corner: "latitude,longitude dans le jeu de données WGS84, le séparateur de décimales est 'point'"
-
-  simple_form:
     labels:
       referential:
         metadatas:

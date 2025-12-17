@@ -187,19 +187,6 @@ en:
           attributes:
             vehicle_journey_at_stops:
               invalid_chronology: "is not in chronological order"
-  simple_form:
-    titles:
-      vehicle_journey:
-        objectid: "[prefix]:VehicleJourney:[unique_key] : prefix contains only alphanumerical or underscore characters, unique_key accepts also minus character"
-      neptune:
-        vehicle_journey:
-          objectid: "[prefix]:VehicleJourney:[unique_key] : prefix contains only alphanumerical or underscore characters, unique_key accepts also minus character"
-      netex:
-        vehicle_journey:
-          objectid: "[prefix]:VehicleJourney:[unique_key] : prefix contains only alphanumerical or underscore characters, unique_key accepts also minus character"
-      gtfs:
-        vehicle_journey:
-          objectid: "[prefix]:VehicleJourney:[unique_key] : prefix contains only alphanumerical or underscore characters, unique_key accepts also minus character"
   referential_vehicle_journeys:
     index:
       title: "Vehicle Journeys"

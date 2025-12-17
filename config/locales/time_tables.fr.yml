@@ -146,18 +146,6 @@ fr:
         period_end: "au"
         associated_vehicle_journeys: Nombre de courses associées
   simple_form:
-    titles:
-      time_table:
-        objectid: "[prefixe]:Timetable:[clé_unique]  caractères autorisés : alphanumériques et 'souligné' pour le préfixe, la clé unique accepte en plus le 'moins'"
-      neptune:
-        time_table:
-          objectid: "[prefixe]:Timetable:[clé_unique]  caractères autorisés : alphanumériques et 'souligné' pour le préfixe, la clé unique accepte en plus le 'moins'"
-      netex:
-        time_table:
-          objectid: "[prefixe]:Timetable:[clé_unique]  caractères autorisés : alphanumériques et 'souligné' pour le préfixe, la clé unique accepte en plus le 'moins'"
-      gtfs:
-        time_table:
-          objectid: "[prefixe]:Timetable:[clé_unique]  caractères autorisés : alphanumériques et 'souligné' pour le préfixe, la clé unique accepte en plus le 'moins'"
     placeholders:
       time_table:
         tag_search: "ex: Jours fériés,Vacances scolaires"

@@ -104,22 +104,6 @@ en:
             is_referent:
               the_particulars_collection_should_be_empty: "A non-referent company can't have particular companies"
   simple_form:
-    titles:
-      company:
-        registration_number: "only alphanumerical or underscore characters"
-        objectid: "[prefix]:Company:[unique_key] : prefix contains only alphanumerical or underscore characters, unique_key accepts also minus character"
-      neptune:
-        company:
-          registration_number: "only alphanumerical or underscore characters"
-          objectid: "[prefix]:Company:[unique_key] : prefix contains only alphanumerical or underscore characters, unique_key accepts also minus character"
-      netex:
-        company:
-          registration_number: "only alphanumerical or underscore characters"
-          objectid: "[prefix]:Company:[unique_key] : prefix contains only alphanumerical or underscore characters, unique_key accepts also minus character"
-      gtfs:
-        company:
-          registration_number: "only alphanumerical or underscore characters"
-          objectid: "[prefix]:Company:[unique_key] : prefix contains only alphanumerical or underscore characters, unique_key accepts also minus character"
     hints:
       company:
         default_language: "Use a two letters code (en, fr ...)"

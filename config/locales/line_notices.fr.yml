@@ -46,28 +46,6 @@ fr:
         created_at: "Créé le"
         updated_at: "Edité le"
         lines: "Lignes associées"
-  simple_form:
-    titles:
-      line_notice:
-        name: ""
-        registration_number: "caractères autorisés : alphanumériques et 'souligné'"
-        objectid: "[prefixe]:PTNetwork:[clé_unique]  caractères autorisés : alphanumériques et 'souligné' pour le préfixe, la clé unique accepte en plus le 'moins'"
-      neptune:
-        line_notice:
-          name: ""
-          registration_number: "caractères autorisés : alphanumériques et 'souligné'"
-          objectid: "[prefixe]:PTNetwork:[clé_unique]  caractères autorisés : alphanumériques et 'souligné' pour le préfixe, la clé unique accepte en plus le 'moins'"
-      netex:
-        line_notice:
-          name: ""
-          registration_number: "caractères autorisés : alphanumériques et 'souligné'"
-          objectid: "[prefixe]:PTNetwork:[clé_unique]  caractères autorisés : alphanumériques et 'souligné' pour le préfixe, la clé unique accepte en plus le 'moins'"
-      gtfs:
-        line_notice:
-          name: ""
-          registration_number: "caractères autorisés : alphanumériques et 'souligné'"
-          objectid: "[prefixe]:PTNetwork:[clé_unique]  caractères autorisés : alphanumériques et 'souligné' pour le préfixe, la clé unique accepte en plus le 'moins'"
-
   table:
     show: Voir
     edit: Editer

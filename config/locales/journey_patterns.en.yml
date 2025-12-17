@@ -79,24 +79,3 @@ en:
         checksum: Checksum
         shape: Shape
         booking_arrangement: "Booking arrangement"
-  simple_form:
-    titles:
-      journey_pattern:
-        name: ""
-        registration_number: "Positif integer."
-        objectid: "[prefix]:JourneyPattern:[unique_key] : prefix contains only alphanumerical or underscore characters, unique_key accepts also minus character"
-      neptune:
-        journey_pattern:
-          name: ""
-          registration_number: "Positif integer."
-          objectid: "[prefix]:JourneyPattern:[unique_key] : prefix contains only alphanumerical or underscore characters, unique_key accepts also minus character"
-      netex:
-        journey_pattern:
-          name: ""
-          registration_number: "Positif integer."
-          objectid: "[prefix]:JourneyPattern:[unique_key] : prefix contains only alphanumerical or underscore characters, unique_key accepts also minus character"
-      gtfs:
-        journey_pattern:
-          name: ""
-          registration_number: "Positif integer."
-          objectid: "[prefix]:JourneyPattern:[unique_key] : prefix contains only alphanumerical or underscore characters, unique_key accepts also minus character"

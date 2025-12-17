@@ -174,7 +174,7 @@ module Import
         end
 
         def chouette_model
-          Chouette::VehicleJourneyAtStop.new(stop_attributes)
+          Chouette::VehicleJourneyAtStop.new(stop_attributes).skipping_presence_of(:stop_point)
         end
       end
 
@@ -194,7 +194,7 @@ module Import
           errors.add :service_unknown, message_attributes: { service_id: service_id }
           return []
         end
-        [Chouette::TimeTablesVehicleJourney.new(time_table_id: time_table_id)]
+        [Chouette::TimeTablesVehicleJourney.new(time_table_id: time_table_id).skipping_presence_of(:time_table)]
       end
 
       def vehicle_journey_attributes
@@ -212,7 +212,7 @@ module Import
       end
 
       def chouette_model
-        @chouette_model ||= Chouette::VehicleJourney.new(vehicle_journey_attributes)
+        @chouette_model ||= Chouette::VehicleJourney.new(vehicle_journey_attributes).skipping_presence_of(:route)
       end
 
       def validate

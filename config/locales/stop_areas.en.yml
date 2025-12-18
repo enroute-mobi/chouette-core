@@ -198,6 +198,7 @@ en:
         created_at: Created at
         updated_at: Updated at
         creator_id: "Created by"
+        children: "Children"
         children_ids: "Children"
         parent: "Parent"
         parent_id: "Parent"

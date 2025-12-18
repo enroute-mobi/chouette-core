@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2025_11_03_115348) do
+ActiveRecord::Schema[7.2].define(version: 2025_11_13_145315) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "btree_gin"
   enable_extension "hstore"
@@ -1608,7 +1608,8 @@ ActiveRecord::Schema[7.2].define(version: 2025_11_03_115348) do
     t.datetime "updated_at", null: false
     t.string "for_association"
     t.index ["tag_id"], name: "index_taggings_on_tag_id"
-    t.index ["taggable_type", "taggable_id", "tag_id"], name: "index_taggings_on_taggable_type_and_taggable_id_and_tag_id", unique: true
+    t.index ["taggable_type", "taggable_id", "tag_id", "for_association"], name: "index_taggings_on_taggable_and_tag_id_and_for_association", unique: true
+    t.index ["taggable_type", "taggable_id", "tag_id"], name: "index_taggings_on_taggable_type_and_taggable_id_and_tag_id", unique: true, where: "(for_association IS NULL)"
   end
 
   create_table "tags", force: :cascade do |t|

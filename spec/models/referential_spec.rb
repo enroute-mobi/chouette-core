@@ -1,7 +1,12 @@
 # frozen_string_literal: true
 
 RSpec.describe Referential, type: :model do
-  let(:referential) { Chouette.create { referential }.referential }
+  let(:context) do
+    Chouette.create do
+      referential
+    end
+  end
+  let(:referential) { context.referential }
 
   it { should have_many(:metadatas) }
   it { is_expected.to belong_to(:workbench).optional }
@@ -202,8 +207,6 @@ RSpec.describe Referential, type: :model do
 
   context ".last_operation" do
     subject(:operation) { referential.last_operation }
-
-    let(:referential) { Chouette.create { referential }.referential }
 
     it "should return nothing" do
       expect(operation).to be_nil
@@ -598,9 +601,7 @@ RSpec.describe Referential, type: :model do
     around { |example| Timecop.freeze(Time.now.round) { example.run } }
 
     context "with a persisted Referential" do
-
-      let(:context) { Chouette.create { referential } }
-      let(:referential) { context.referential.reload }
+      before { referential.reload }
 
       def metadatas_flagged_urgent_at
         referential.metadatas.map(&:flagged_urgent_at)
@@ -662,6 +663,22 @@ RSpec.describe Referential, type: :model do
 
   it { is_expected.to enumerize(:data_freeze_status).in(%w[unfrozen freezing frozen unfreeze_enqueued unfreezing]) }
 
+  describe '.data_unfrozen' do
+    subject { described_class.data_unfrozen }
+
+    context 'when #data_freeze_status is "unfrozen"' do
+      before { referential }
+        it { is_expected.to include(referential) }
+    end
+
+    %w[freezing frozen unfreeze_enqueued unfreezing].each do |data_freeze_status|
+      context "when #data_freeze_status is \"#{data_freeze_status}\"" do
+        before { referential.update!(data_freeze_status: data_freeze_status) }
+        it { is_expected.to be_empty }
+      end
+    end
+  end
+
   describe '#data_frozen?' do
     subject { referential.data_frozen? }
 
@@ -677,16 +694,101 @@ RSpec.describe Referential, type: :model do
     end
   end
 
-  describe '#data_freeze' do
+  describe '#data_freeze', truncation: true do
     subject { referential.data_freeze }
 
-    it { expect { subject }.to change { referential.data_freeze_status }.from('unfrozen').to('frozen') }
+    it 'attaches dump file' do
+      subject
+      expect(referential.frozen_dump).to be_attached
+    end
 
-    it { expect { subject }.to change { referential.ready? }.from(true).to(false) }
+    it 'destroys schema' do
+      subject
+      expect { referential.switch }.to raise_error(Apartment::TenantNotFound)
+    end
+
+    it { expect { subject }.to change { referential.reload.data_freeze_status }.from('unfrozen').to('frozen') }
+
+    it { expect { subject }.to change { referential.reload.ready? }.from(true).to(false) }
 
     it 'removes schema from apartment tenants' do
       expect { subject }.to change { Apartment.tenant_names }.from(include(referential.slug))
                                                              .to(not_include(referential.slug))
+    end
+
+    context 'with CrossReferentialIndexEntry' do
+      let(:context) do
+        Chouette.create do
+          line_notice :line_notice
+          referential do
+            vehicle_journey line_notices: %i[line_notice]
+          end
+        end
+      end
+      let(:line_notice) { context.line_notice(:line_notice) }
+
+      it 'does not crash when rebuilding all CrossReferentialIndexEntry' do
+        subject
+        expect(Chouette::Safe).not_to receive(:capture)
+        CrossReferentialIndexEntry.rebuild_index!
+      end
+
+      it 'does not crash when line_notice retrieves its vehicle journeys' do
+        expect(line_notice.reload.vehicle_journeys.count).to eq(1)
+        subject
+        expect(line_notice.reload.vehicle_journeys.count).to eq(0)
+      end
+    end
+
+    context 'with errors' do
+      context 'when dump file is empty' do
+        before { allow(referential.schema).to receive(:dump) }
+
+        it 'does not attach dump file' do
+          subject
+          expect(referential.frozen_dump).not_to be_attached
+        end
+
+        it 'does not destroy schema' do
+          expect { referential.switch }.not_to raise_error
+        end
+
+        it { expect { subject }.not_to change { referential.reload.data_freeze_status }.from('unfrozen') }
+
+        it { expect { subject }.not_to change { referential.reload.ready? }.from(true) }
+
+        it 'does not remove schema from apartment tenants' do
+          expect { subject }.not_to change { Apartment.tenant_names }.from(include(referential.slug))
+        end
+      end
+
+      context 'when schema could not be destroyed' do
+        subject { super() rescue nil } # rubocop:disable Style/RescueModifier
+
+        before do
+          allow(referential.schema).to receive(:destroy!).and_wrap_original do |m, *args|
+            m.call(*args)
+            raise StandardError, 'Oops'
+          end
+        end
+
+        it 'attaches dump file' do
+          subject
+          expect(referential.frozen_dump).to be_attached
+        end
+
+        it 'does not destroy schema' do
+          expect { referential.switch }.not_to raise_error
+        end
+
+        it { expect { subject }.not_to change { referential.reload.data_freeze_status }.from('unfrozen') }
+
+        it { expect { subject }.not_to change { referential.reload.ready? }.from(true) }
+
+        it 'does not remove schema from apartment tenants' do
+          expect { subject }.not_to change { Apartment.tenant_names }.from(include(referential.slug))
+        end
+      end
     end
   end
 
@@ -695,9 +797,9 @@ RSpec.describe Referential, type: :model do
 
     before { referential.update(data_freeze_status: 'frozen', ready: false) }
 
-    it { expect { subject }.to change { referential.data_freeze_status }.from('frozen').to('unfreeze_enqueued') }
+    it { expect { subject }.to change { referential.reload.data_freeze_status }.from('frozen').to('unfreeze_enqueued') }
 
-    it { expect { subject }.not_to change { referential.ready? }.from(false) }
+    it { expect { subject }.not_to change { referential.reload.ready? }.from(false) }
 
     it { expect { subject }.to change { Delayed::Job.count }.by(1) }
 
@@ -712,18 +814,211 @@ RSpec.describe Referential, type: :model do
     end
   end
 
-  describe '#data_unfreeze' do
+  describe '#data_unfreeze', truncation: true do
     subject { referential.data_unfreeze }
 
-    before { referential.update(data_freeze_status: 'unfreeze_enqueued', ready: false) }
+    let!(:public_current_version) { ActiveRecord::Migrator.current_version }
 
-    it { expect { subject }.to change { referential.data_freeze_status }.from('unfreeze_enqueued').to('unfrozen') }
+    let(:context) do
+      frozen_dump = file_fixture('referential_dump.sql.gz').open
+      Chouette.create do
+        referential(slug: '5c630290-96ff-4186-afb5-8bc5be256e3a', frozen_dump: frozen_dump)
+      end
+    end
 
-    it { expect { subject }.to change { referential.ready? }.from(false).to(true) }
+    before do
+      referential.schema.destroy!
+      referential.update(data_freeze_status: 'unfreeze_enqueued', ready: false)
+    end
+
+    after { Apartment::Tenant.drop('5c630290-96ff-4186-afb5-8bc5be256e3a') rescue nil } # rubocop:disable Style/RescueModifier
+
+    it 'restores data' do
+      subject
+      expect { referential.switch }.not_to raise_error
+      expect(Chouette::Route).to be_exists
+    end
+
+    it 'applies migrations' do
+      subject
+      referential.switch
+      expect(ActiveRecord::Migrator.current_version).to eq(public_current_version)
+    end
+
+    it 'removes dump file' do
+      subject
+      expect(referential.frozen_dump).not_to be_attached
+    end
+
+    it do
+      expect { subject }.to change { referential.reload.data_freeze_status }.from('unfreeze_enqueued').to('unfrozen')
+    end
+
+    it { expect { subject }.to change { referential.reload.ready? }.from(false).to(true) }
 
     it 'restores schema in apartment tenants' do
       expect { subject }.to change { Apartment.tenant_names }.from(not_include(referential.slug))
                                                              .to(include(referential.slug))
+    end
+
+    context 'with errors' do
+      context 'when data could not be restored' do
+        subject { super() rescue nil } # rubocop:disable Style/RescueModifier
+
+        before do
+          allow(referential.schema).to(
+            receive(:restore).and_raise(Referential::Schema::DumpRestore::Error.new(%w[:], [42], 'error'))
+          )
+        end
+
+        it 'does not remove dump file' do
+          subject
+          expect(referential.frozen_dump).to be_attached
+        end
+
+        it do
+          expect { subject }.to(
+            change { referential.reload.data_freeze_status }.from('unfreeze_enqueued').to('unfreezing')
+          )
+        end
+
+        it { expect { subject }.not_to change { referential.reload.ready? }.from(false) }
+
+        it 'does not restore schema in apartment tenants' do
+          expect { subject }.not_to change { Apartment.tenant_names }.from(not_include(referential.slug))
+        end
+      end
+
+      context 'when migration fails' do
+        subject { super() rescue nil } # rubocop:disable Style/RescueModifier
+
+        before { allow(referential.schema).to receive(:migrate).and_raise(StandardError.new('Oops')) }
+
+        it 'restores data' do
+          subject
+          expect { referential.switch }.not_to raise_error
+        end
+
+        it 'does not remove dump file' do
+          subject
+          expect(referential.frozen_dump).to be_attached
+        end
+
+        it do
+          expect { subject }.to(
+            change { referential.reload.data_freeze_status }.from('unfreeze_enqueued').to('unfreezing')
+          )
+        end
+
+        it { expect { subject }.not_to change { referential.reload.ready? }.from(false) }
+
+        it 'does not restore schema in apartment tenants' do
+          expect { subject }.not_to change { Apartment.tenant_names }.from(not_include(referential.slug))
+        end
+      end
+
+      context 'when dump file could not be purged' do
+        subject { super() rescue nil } # rubocop:disable Style/RescueModifier
+
+        before { allow(referential.frozen_dump).to receive(:purge).and_raise(StandardError.new('Oops')) }
+
+        it 'restores data and applies migrations' do
+          subject
+          expect { referential.switch }.not_to raise_error
+          expect(ActiveRecord::Migrator.current_version).to eq(public_current_version)
+        end
+
+        it do
+          expect { subject }.to(
+            change { referential.reload.data_freeze_status }.from('unfreeze_enqueued').to('unfreezing')
+          )
+        end
+
+        it { expect { subject }.not_to change { referential.reload.ready? }.from(false) }
+
+        it 'does not restore schema in apartment tenants' do
+          expect { subject }.not_to change { Apartment.tenant_names }.from(not_include(referential.slug))
+        end
+      end
+    end
+  end
+
+  describe '#data_freeze + #data_unfreeze', truncation: true do
+    subject do
+      referential.data_freeze
+      referential.data_unfreeze
+    end
+
+    let(:context) do
+      Chouette.create do
+        line :line
+        line_notice :line_notice
+
+        referential lines: %i[line] do
+          footnote :footnote
+
+          time_table :time_table
+
+          route :route, line: :line, with_stops: false do
+            stop_point :stop_point
+            stop_point
+            stop_point
+
+            journey_pattern :journey_pattern do
+              vehicle_journey :vehicle_journey,
+                              footnotes: %i[footnote],
+                              time_tables: %i[time_table],
+                              line_notices: %i[line_notice]
+            end
+
+            routing_constraint_zone :routing_constraint_zone
+          end
+        end
+      end.tap do |context|
+        context.referential.switch do
+          ServiceCount.create!(
+            line_id: context.line(:line).id,
+            route_id: context.route(:route).id,
+            journey_pattern_id: context.journey_pattern(:journey_pattern).id,
+            date: '2025-02-04'
+          )
+        end
+      end
+    end
+    let(:models) do
+      %i[
+        footnote
+        time_table
+        route
+        stop_point
+        journey_pattern
+        vehicle_journey
+        routing_constraint_zone
+      ].map { |i| context.send(i, i) } + [ServiceCount.first]
+    end
+    let(:line_notice) { context.line_notice(:line_notice) }
+
+    it 'restores all models as if nothing happened' do
+      referential.switch { models }
+      subject
+      referential.switch
+      models.each do |model|
+        expect { model.reload }.not_to raise_error
+      end
+    end
+
+    context 'with CrossReferentialIndexEntry' do
+      it 'does not crash when rebuilding all CrossReferentialIndexEntry' do
+        subject
+        expect(Chouette::Safe).not_to receive(:capture)
+        CrossReferentialIndexEntry.rebuild_index!
+      end
+
+      it 'line_notice finds back its vehicle journeys' do
+        expect(line_notice.reload.vehicle_journeys.count).to eq(1)
+        subject
+        expect(line_notice.reload.vehicle_journeys.count).to eq(1)
+      end
     end
   end
 

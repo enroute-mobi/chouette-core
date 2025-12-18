@@ -76,6 +76,10 @@ class Referential < ApplicationModel
 
   has_many :publications, dependent: :destroy
 
+  has_many :cross_referential_index_entries, foreign_key: :target_referential_slug, primary_key: :slug,
+                                             inverse_of: :target_referential,
+                                             dependent: :delete_all
+
   scope :pending, -> { where(ready: false, failed_at: nil, archived_at: nil) }
   scope :active, -> { where(ready: true, failed_at: nil, archived_at: nil) }
   scope :failed, -> { where.not(failed_at: nil) }
@@ -126,8 +130,6 @@ class Referential < ApplicationModel
           )
     end
   }
-
-  after_destroy :clean_cross_referential_index!
 
   def self.clean!
     Rails.logger.info "Cleaning Referentials (cooldown: #{TIME_BEFORE_CLEANING} days)"
@@ -818,17 +820,17 @@ class Referential < ApplicationModel
     CrossReferentialIndexEntry.rebuild_index_for_referential!(self)
   end
 
-  def clean_cross_referential_index!
-    CrossReferentialIndexEntry.clean_index_for_referential!(self)
-  end
-
   def update_counters
     update_column :vehicle_journeys_count, vehicle_journeys.count
   end
 
-  concerning :DataFreeze do
+  concerning :DataFreeze do # rubocop:disable Metrics/BlockLength
     included do
       enumerize :data_freeze_status, in: %w[unfrozen freezing frozen unfreeze_enqueued unfreezing], default: 'unfrozen'
+
+      scope :data_unfrozen, -> { where(data_freeze_status: 'unfrozen') }
+
+      has_one_attached :frozen_dump
     end
 
     def visited!
@@ -841,7 +843,18 @@ class Referential < ApplicationModel
     end
 
     def data_freeze
-      update(data_freeze_status: 'frozen', ready: false)
+      Tempfile.open(['', '.sql.gz']) do |dump_file|
+        schema.dump(dump_file)
+        return if File.zero?(dump_file)
+
+        frozen_dump.attach(io: dump_file, filename: File.basename(dump_file.path), content_type: 'application/gzip')
+      end
+
+      transaction do
+        update!(data_freeze_status: 'freezing', ready: false)
+        schema.destroy!
+        update!(data_freeze_status: 'frozen')
+      end
     end
 
     def enqueue_data_unfreeze
@@ -853,7 +866,17 @@ class Referential < ApplicationModel
     end
 
     def data_unfreeze
-      update(data_freeze_status: 'unfrozen', ready: true)
+      update!(data_freeze_status: 'unfreezing')
+
+      frozen_dump.open do |dump_file|
+        schema.restore(dump_file)
+      end
+      schema.migrate
+
+      transaction do
+        update!(data_freeze_status: 'unfrozen', ready: true)
+        frozen_dump.purge
+      end
     end
   end
 

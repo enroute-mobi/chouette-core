@@ -1,5 +1,8 @@
 # frozen_string_literal: true
 
+require 'apartment/adapters/postgresql_adapter'
+require 'apartment/migrator'
+
 class Referential
   class Schema
     include ::Measurable
@@ -133,6 +136,63 @@ class Referential
     def current_value(sequence)
       full_name = "\"#{name}\".#{sequence}"
       connection.select_value "SELECT last_value from #{full_name}"
+    end
+
+    def dump(file)
+      DumpRestore.new(name).dump(file)
+    end
+
+    def destroy!
+      ::Apartment::Tenant.drop(@name)
+    end
+
+    def restore(file)
+      DumpRestore.new(name).restore(file)
+    end
+
+    class DumpRestore < ::Apartment::Adapters::PostgresqlSchemaFromSqlAdapter
+      def initialize(name)
+        super(::Apartment.connection_config)
+        @name = name
+      end
+
+      def dump(file)
+        run_command(
+          "pg_dump -d #{@config[:database]} -n #{@name} -f #{file.path} --no-comments --no-owner --compress=gzip"
+        )
+      end
+
+      def restore(file)
+        run_command("#{Rails.root.join('script/pg_gz_restore.sh')} #{@config[:database]} #{file.path}")
+      end
+
+      private
+
+      def run_command(command)
+        Tempfile.open do |output|
+          success = with_pg_env { Kernel.system("#{command} > /dev/null 2> #{output.path}") }
+          errors = output.read
+          raise Error.new(command.split(' ', 2).first, $?.exitstatus, errors) unless success
+
+          Rails.logger.warn(errors) if errors.present?
+
+          success
+        end
+      end
+
+      class Error < StandardError
+        def initialize(command, status, err)
+          @command = command
+          @status = status
+          @err = err
+          super(%(#{command} returned #{status}: "#{err}"))
+        end
+        attr_reader :command, :status, :err
+      end
+    end
+
+    def migrate
+      ::Apartment::Migrator.migrate(@name)
     end
 
     class Table

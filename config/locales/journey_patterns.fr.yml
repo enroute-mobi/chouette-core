@@ -80,24 +80,3 @@ fr:
         shape: Tracé
         vehicle_journeys: Courses
         booking_arrangement: "Condition de réservation"
-  formtastic:
-    titles:
-      journey_pattern:
-        name: ""
-        registration_number: "Entier positif."
-        objectid: "[prefixe]:JourneyPattern:[clé_unique]  caractères autorisés : alphanumériques et 'souligné' pour le préfixe, la clé unique accepte en plus le 'moins'"
-      neptune:
-        journey_pattern:
-          name: ""
-          registration_number: "Entier positif."
-          objectid: "[prefixe]:JourneyPattern:[clé_unique]  caractères autorisés : alphanumériques et 'souligné' pour le préfixe, la clé unique accepte en plus le 'moins'"
-      netex:
-        journey_pattern:
-          name: ""
-          registration_number: "Entier positif."
-          objectid: "[prefixe]:JourneyPattern:[clé_unique]  caractères autorisés : alphanumériques et 'souligné' pour le préfixe, la clé unique accepte en plus le 'moins'"
-      gtfs:
-        journey_pattern:
-          name: ""
-          registration_number: "Entier positif."
-          objectid: "[prefixe]:JourneyPattern:[clé_unique]  caractères autorisés : alphanumériques et 'souligné' pour le préfixe, la clé unique accepte en plus le 'moins'"

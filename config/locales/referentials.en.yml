@@ -122,14 +122,6 @@ en:
         from_current_offer: "Use current offer"
         urgent: 'Contains urgent data'
         workbench: Workbench
-  formtastic:
-    titles:
-      referential:
-        slug: "only lowercase alphanumerical or underscore characters, first character must be a letter"
-        prefix: "only alphanumerical or underscore characters"
-        upper_corner: "latitude,longitude in WGS84 referential, dot for decimal separator"
-        lower_corner: "latitude,longitude in WGS84 referential, dot for decimal separator"
-
   simple_form:
     labels:
       referential:

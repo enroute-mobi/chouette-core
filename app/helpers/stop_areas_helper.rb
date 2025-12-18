@@ -9,35 +9,6 @@ module StopAreasHelper
     "#{txt} <span title='#{ISO3166::Country[country]&.translation(I18n.locale)}' class='flag-icon flag-icon-#{country.downcase} mr-xs'></span>".html_safe
   end
 
-  def manage_itl
-    @stop_area.stop_area_type == 'itl'
-  end
-  def manage_parent
-    @stop_area.stop_area_type != 'itl'
-  end
-  def manage_children
-    @stop_area.stop_area_type == 'stop_place' || @stop_area.stop_area_type == 'commercial_stop_point'
-  end
-
-  def stop_area_registration_number_title stop_area
-    if stop_area&.stop_area_referential&.registration_number_format.present?
-      return t("formtastic.titles.stop_area.registration_number_format", registration_number_format: stop_area.stop_area_referential.registration_number_format)
-    end
-    t "formtastic.titles#{format_restriction_for_locales(@referential)}.stop_area.registration_number"
-  end
-
-  def stop_area_registration_number_is_required stop_area
-    stop_area&.stop_area_referential&.registration_number_format.present?
-  end
-
-  def stop_area_registration_number_value stop_area
-    stop_area&.registration_number
-  end
-
-  def stop_area_registration_number_hint
-    t "formtastic.hints.stop_area.registration_number"
-  end
-
   def stop_area_status(status)
     case status
       when :confirmed

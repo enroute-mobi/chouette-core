@@ -19,8 +19,8 @@ fr:
       begin_date: "Date de début du nettoyage"
       end_date: "Date de fin du nettoyage"
       method_type: Supprimer les données inutilisées
-  formtastic:
-    titles:
+  simple_form:
+    hints:
       <<: *titles
   activerecord:
     models:
@@ -38,7 +38,3 @@ fr:
               presence: "Un nettoyage doit avoir une date de début"
             end_date:
               presence: "Un nettoyage doit avoir une date de fin"
-  simple_form:
-    labels:
-      clean_up:
-        title: "Nettoyer le JDD"

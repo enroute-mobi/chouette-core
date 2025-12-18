@@ -232,30 +232,5 @@ en:
               active_from_less_than_active_until: "The 'from' date must begin before the 'to' date."
             active_until:
               active_from_less_than_active_until: "The 'until' date must end after the 'from' date."
-  formtastic:
-    titles:
-      line:
-        name: ""
-        registration_number: "only alphanumerical or underscore characters"
-        objectid: "[prefix]:Line:[unique_key] : prefix contains only alphanumerical or underscore characters, unique_key accepts also minus character"
-        number: ""
-      neptune:
-        line:
-          name: ""
-          registration_number: "only alphanumerical or underscore characters"
-          objectid: "[prefix]:Line:[unique_key] : prefix contains only alphanumerical or underscore characters, unique_key accepts also minus character"
-          number: ""
-      netex:
-        line:
-          name: ""
-          registration_number: "only alphanumerical or underscore characters"
-          objectid: "[prefix]:Line:[unique_key] : prefix contains only alphanumerical or underscore characters, unique_key accepts also minus character"
-          number: ""
-      gtfs:
-        line:
-          name: ""
-          registration_number: "only alphanumerical or underscore characters"
-          objectid: "[prefix]:Line:[unique_key] : prefix contains only alphanumerical or underscore characters, unique_key accepts also minus character"
-          number: ""
   referential_lines:
     <<: *en_lines

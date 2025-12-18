@@ -45,28 +45,6 @@ en:
         created_at: Created at
         updated_at: Updated at
         lines: "Associated Lines"
-  formtastic:
-    titles:
-      line_notice:
-        name: ""
-        registration_number: "only alphanumerical or underscore characters"
-        objectid: "[prefix]:PTNetwork:[unique_key] : prefix contains only alphanumerical or underscore characters, unique_key accepts also minus character"
-      neptune:
-        line_notice:
-          name: ""
-          registration_number: "only alphanumerical or underscore characters"
-          objectid: "[prefix]:PTNetwork:[unique_key] : prefix contains only alphanumerical or underscore characters, unique_key accepts also minus character"
-      netex:
-        line_notice:
-          name: ""
-          registration_number: "only alphanumerical or underscore characters"
-          objectid: "[prefix]:PTNetwork:[unique_key] : prefix contains only alphanumerical or underscore characters, unique_key accepts also minus character"
-      gtfs:
-        line_notice:
-          name: ""
-          registration_number: "only alphanumerical or underscore characters"
-          objectid: "[prefix]:PTNetwork:[unique_key] : prefix contains only alphanumerical or underscore characters, unique_key accepts also minus character"
-
   table:
     show: Show
     edit: Edit

@@ -75,7 +75,7 @@
     .col-lg-12
       h2.mb-lg= t("stop_areas.form.sections.location")
 
-      = f.input :coordinates, input_html: { title: t("formtastic.titles#{format_restriction_for_locales(@referential)}.stop_area.coordinates") }
+      = f.input :coordinates
       = f.input :compass_bearing
       = f.input :street_name
       = f.input :zip_code

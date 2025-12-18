@@ -47,20 +47,6 @@ en:
         created_at: Created at
         updated_at: Updated at
         creator_id: "Created by "
-  formtastic:
-    titles:
-      network:
-        objectid: "[prefix]:PTNetwork:[unique_key] : prefix contains only alphanumerical or underscore characters, unique_key accepts also minus character"
-      neptune:
-        network:
-          objectid: "[prefix]:PTNetwork:[unique_key] : prefix contains only alphanumerical or underscore characters, unique_key accepts also minus character"
-      netex:
-        network:
-          objectid: "[prefix]:PTNetwork:[unique_key] : prefix contains only alphanumerical or underscore characters, unique_key accepts also minus character"
-      gtfs:
-        network:
-          objectid: "[prefix]:PTNetwork:[unique_key] : prefix contains only alphanumerical or underscore characters, unique_key accepts also minus character"
-
   table:
     show: Show
     edit: Edit

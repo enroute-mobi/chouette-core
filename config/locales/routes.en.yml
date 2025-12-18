@@ -107,16 +107,3 @@ en:
             stop_points:
               not_enough_stop_points: "A route must have at least two stop points"
               empty_stop_point: No stop point defined
-  formtastic:
-    titles:
-      route:
-        objectid: "[prefix]:Route:[unique_key] : prefix contains only alphanumerical or underscore characters, unique_key accepts also minus character"
-      neptune:
-        route:
-          objectid: "[prefix]:Route:[unique_key] : prefix contains only alphanumerical or underscore characters, unique_key accepts also minus character"
-      netex:
-        route:
-          objectid: "[prefix]:Route:[unique_key] : prefix contains only alphanumerical or underscore characters, unique_key accepts also minus character"
-      gtfs:
-        route:
-          objectid: "[prefix]:Route:[unique_key] : prefix contains only alphanumerical or underscore characters, unique_key accepts also minus character"

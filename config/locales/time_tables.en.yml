@@ -146,19 +146,7 @@ en:
         period_start: "From"
         period_end: "to"
         associated_vehicle_journeys: Number of associated vehicle journeys
-  formtastic:
-    titles:
-      time_table:
-        objectid: "[prefix]:Timetable:[unique_key] : prefix contains only alphanumerical or underscore characters, unique_key accepts also minus character"
-      neptune:
-        time_table:
-          objectid: "[prefix]:Timetable:[unique_key] : prefix contains only alphanumerical or underscore characters, unique_key accepts also minus character"
-      netex:
-        time_table:
-          objectid: "[prefix]:Timetable:[unique_key] : prefix contains only alphanumerical or underscore characters, unique_key accepts also minus character"
-      gtfs:
-        time_table:
-          objectid: "[prefix]:Timetable:[unique_key] : prefix contains only alphanumerical or underscore characters, unique_key accepts also minus character"
+  simple_form:
     placeholders:
       time_table:
         tag_search: "ex: Public hollidays,School holidays"

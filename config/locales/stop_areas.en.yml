@@ -241,32 +241,7 @@ en:
         is_referent:
           referent: Referent
           particular: Particular
-  formtastic:
-    titles:
-      stop_area:
-        public_code: ""
-        registration_number: "only alphanumerical or underscore characters"
-        registration_number_format: "authorized format : %{registration_number_format}"
-        objectid: "[prefix]:StopArea:[unique_key] : prefix contains only alphanumerical or underscore characters, unique_key accepts also minus character"
-        city_name: ""
-        zip_code: ""
-        comment: ""
-        coordinates: "latitude,longitude in WGS84 referential, dot for decimal separator"
-      neptune:
-        stop_area:
-          registration_number: "only alphanumerical or underscore characters"
-          objectid: "[prefix]:StopArea:[unique_key] : prefix contains only alphanumerical or underscore characters, unique_key accepts also minus character"
-          coordinates: "latitude,longitude in WGS84 referential, dot for decimal separator"
-      netex:
-        stop_area:
-          registration_number: "only alphanumerical or underscore characters"
-          objectid: "[prefix]:StopArea:[unique_key] : prefix contains only alphanumerical or underscore characters, unique_key accepts also minus character"
-          coordinates: "latitude,longitude in WGS84 referential, dot for decimal separator"
-      gtfs:
-        stop_area:
-          registration_number: "only alphanumerical or underscore characters"
-          objectid: "[prefix]:StopArea:[unique_key] : prefix contains only alphanumerical or underscore characters, unique_key accepts also minus character"
-          coordinates: "latitude,longitude in WGS84 referential, dot for decimal separator"
+  simple_form:
     hints:
       stop_area:
-        registration_number: Leave empty for automatic value.
+        coordinates: "latitude,longitude in WGS84 referential, dot for decimal separator"

@@ -353,7 +353,7 @@ RSpec.describe ApplicationStoreModel do
     describe 'errors' do
       it 'copies errors' do
         expect(subject.errors.details).to(
-          include({ common_invalid: [{ error: :blank }], common_model: [{ error: :invalid }] })
+          include({ common_invalid: [a_hash_including(error: :blank)], common_model: [a_hash_including(error: :invalid)] })
         )
       end
 

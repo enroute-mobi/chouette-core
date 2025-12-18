@@ -27,7 +27,7 @@ class DashboardsController < Chouette::WorkbenchController
   end
 
   def collection
-    @tags = scope.paginate(page: params[:page], per_page: 30)
+    @collection = scope.paginate(page: params[:page], per_page: 30)
   end
 
   def resource
@@ -41,9 +41,7 @@ class DashboardsController < Chouette::WorkbenchController
       widgets_attributes: [
         :id, 
         :name, 
-        :widget_type, 
-        :data_source, 
-        :position, 
+        :widget_type,  
         :_destroy,
         { options: {} }
       ]

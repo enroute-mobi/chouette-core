@@ -824,8 +824,10 @@ ActiveRecord::Schema[7.2].define(version: 2025_12_08_151052) do
     t.datetime "updated_at", precision: nil, null: false
     t.string "short_name"
     t.uuid "uuid", default: -> { "gen_random_uuid()" }, null: false
+    t.bigint "network_id"
     t.index ["line_provider_id"], name: "index_line_groups_on_line_provider_id"
     t.index ["line_referential_id"], name: "index_line_groups_on_line_referential_id"
+    t.index ["network_id"], name: "index_line_groups_on_network_id"
   end
 
   create_table "line_notices", force: :cascade do |t|
@@ -1790,9 +1792,7 @@ ActiveRecord::Schema[7.2].define(version: 2025_12_08_151052) do
   create_table "widgets", force: :cascade do |t|
     t.string "name"
     t.string "widget_type"
-    t.string "data_source"
     t.jsonb "options", default: {}
-    t.integer "position", default: 0
     t.bigint "dashboard_id", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false

@@ -25,23 +25,19 @@ en:
       name: "Name"
       type: "Type"
       unknown_type: "Unknown widget type: %{widget_type}"
-      data_source: "Data source"
       options: "Options"
+      new_widget: "New widget"
       actions:
         add: "Add widget"
         remove: "Remove"
       types:
-        default: "Default"
+        image: "Image"
         chart: "Chart"
         counter: "Counter"
         list: "List"
         numbers: "Numbers"
         static_text: "Static text"
         table: "Table"
-      data_sources:
-        referentials: "Referentials"
-        lines: "Lines"
-        stop_areas: "Stop areas"
   activemodel:
     models:
       dashboard:

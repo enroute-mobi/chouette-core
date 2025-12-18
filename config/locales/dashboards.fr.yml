@@ -25,23 +25,19 @@ fr:
       name: "Nom"
       type: "Type"
       unknown_type: "Type de widget non reconnu : %{widget_type}"
-      data_source: "Source de données"
       options: "Options"
+      new_widget: "Nouveau widget"
       actions:
         add: "Ajouter un widget"
         remove: "Supprimer"
       types:
-        default: "Widget par défaut"
+        image: "Image"
         chart: "Graphique"
         counter: "Compteur"
         list: "Liste"
         numbers: "Nombre"
         static_text: "Texte statique"
         table: "Tableau"
-      data_sources:
-        referentials: "Référentiels"
-        lines: "Lignes"
-        stop_areas: "Arrêts"
     search_no_results: "Aucun Tableau de bord ne correspond à votre recherche"
   activemodel:
     models:

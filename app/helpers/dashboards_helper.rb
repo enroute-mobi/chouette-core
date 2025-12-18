@@ -1,8 +1,8 @@
 module DashboardsHelper
   def render_widget(widget)
     case widget.widget_type
-    when 'default'
-      render 'dashboards/widgets/default', widget: widget
+    when 'image'
+      render 'dashboards/widgets/image', widget: widget
     when 'chart'
       render 'dashboards/widgets/chart', widget: widget
     when 'counter'
@@ -27,10 +27,10 @@ module DashboardsHelper
       'chart' => "#{base_classes} bg-gradient-to-r from-blue-50 to-white border-l-4 border-blue-400",
       'counter' => "#{base_classes} bg-gradient-to-r from-green-50 to-white border-l-4 border-green-400",
       'list' => "#{base_classes} bg-gradient-to-r from-purple-50 to-white border-l-4 border-purple-400",
-      'numbers' => "#{base_classes} bg-gradient-to-r from-yellow-50 to-white border-l-4 border-yellow-400",  # Jaune
+      'numbers' => "#{base_classes} bg-gradient-to-r from-yellow-50 to-white border-l-4 border-yellow-400",
       'static_text' => "#{base_classes} bg-gradient-to-r from-pink-50 to-white border-l-4 border-pink-400",
       'table' => "#{base_classes} bg-gradient-to-r from-indigo-50 to-white border-l-4 border-indigo-400",
-      'default' => "#{base_classes} bg-gradient-to-r from-cyan-50 to-white border-l-4 border-cyan-400"  # Cyan
+      'image' => "#{base_classes} bg-gradient-to-r from-red-50 to-white border-l-4 border-red-400"
     }
     
     colors[widget_type] || colors['default']
@@ -41,10 +41,10 @@ module DashboardsHelper
               when 'chart' then 'fa-chart-line text-blue-500'
               when 'counter' then 'fa-hashtag text-green-500'
               when 'list' then 'fa-list-ul text-purple-500'
-              when 'numbers' then 'fa-calculator text-yellow-600'  # Jaune plus foncé
+              when 'numbers' then 'fa-calculator text-yellow-600'
               when 'static_text' then 'fa-paragraph text-pink-500'
               when 'table' then 'fa-table text-indigo-500'
-              else 'fa-cat text-cyan-500'
+              else 'fa-image text-cyan-500'
               end
     content_tag(:i, '', class: "fa #{icon_class} mr-2 text-xl")
   end

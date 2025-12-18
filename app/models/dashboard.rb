@@ -2,12 +2,11 @@
 
 class Dashboard < ApplicationModel
   belongs_to :workbench
-  has_many :widgets, -> { order(position: :asc) }, dependent: :destroy
+  has_many :widgets, dependent: :destroy
   accepts_nested_attributes_for :widgets, allow_destroy: true
 
   validates :name, presence: true
   validates :workbench, presence: true
 
-  WIDGET_TYPES = %w[default chart counter list numbers static_text table].freeze
-  DATA_SOURCES = %w[referentials lines stop_areas].freeze
+  WIDGET_TYPES = %w[image chart counter list numbers static_text table].freeze
 end

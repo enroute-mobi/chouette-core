@@ -404,7 +404,7 @@ class Import::Gtfs < Import::Base
           error = attributes_or_error
 
           gtfs_resource = error.resource
-          resource_collection = gtfs_resource.filename.sub('.txt','')
+          resource_collection = gtfs_resource.class.name.demodulize.tableize
 
           {
             criticity: (error.criticity || :error),

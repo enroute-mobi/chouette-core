@@ -2,12 +2,8 @@
 
 module Query
   class StopAreaRoutingConstraint < Base
-    module CustomJoins
-      extend ::Query::Base::CustomJoins
-
-      define :from, 'INNER JOIN "public"."stop_areas" "from" ON "from"."id" = "public"."stop_area_routing_constraints"."from_id"' # rubocop:disable Layout/LineLength
-      define :to, 'INNER JOIN "public"."stop_areas" "to" ON "to"."id" = "public"."stop_area_routing_constraints"."to_id"' # rubocop:disable Layout/LineLength
-    end
+    custom_join :from, 'INNER JOIN "public"."stop_areas" "from" ON "from"."id" = "public"."stop_area_routing_constraints"."from_id"' # rubocop:disable Layout/LineLength
+    custom_join :to, 'INNER JOIN "public"."stop_areas" "to" ON "to"."id" = "public"."stop_area_routing_constraints"."to_id"' # rubocop:disable Layout/LineLength
 
     def text(value) # rubocop:disable Metrics/AbcSize
       change_scope(if: value.present?) do |scope|

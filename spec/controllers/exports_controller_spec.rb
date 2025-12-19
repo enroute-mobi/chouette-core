@@ -191,7 +191,7 @@ RSpec.describe ExportsController::Search, type: :model do
   describe '#query' do
     describe 'build' do
       let(:scope) { double }
-      let(:query) { Query::Mock.new(scope) }
+      let(:query) { Nest::Query::Mock.new(scope) }
 
       before do
         allow(Query::Export).to receive(:new).and_return(query)

@@ -177,6 +177,14 @@ module Search
       self.class.chart_periods[chart_klass.group_by_attributes[attribute].name]&.chart_period(self)
     end
 
+    def paginate(scope)
+      scope.paginate(paginate_attributes)
+    end
+
+    def paginate_attributes
+      { per_page: per_page, page: page }
+    end
+
     class Chart
       class GroupByAttribute
         class << self

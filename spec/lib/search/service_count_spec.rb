@@ -23,7 +23,7 @@ RSpec.describe Search::ServiceCount, type: :model do
   describe '#query' do
     describe 'build' do
       let(:scope) { double }
-      let(:query) { Query::Mock.new(scope) }
+      let(:query) { Nest::Query::Mock.new(scope) }
       let(:context) do
         Chouette.create do
           workgroup do

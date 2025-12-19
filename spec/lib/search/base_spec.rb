@@ -488,6 +488,20 @@ RSpec.describe Search::Base, type: :model do
     end
   end
 
+  describe '#paginate' do
+    subject { search.paginate(scope) }
+
+    context 'when #paginate_attributes returns { page: 2, per_page: 30 }' do
+      before { allow(search).to receive(:paginate_attributes).and_return({ page: 2, per_page: 30 }) }
+
+      it 'calls will_paginate methods' do
+        expect(scope).to receive(:paginate).with({ page: 2, per_page: 30 }).and_return(scope)
+
+        subject
+      end
+    end
+  end
+
   describe '#scope' do
     subject(:scope) { search.scope(initial_scope) }
 

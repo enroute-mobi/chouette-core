@@ -25,6 +25,8 @@ module Import
       @save_handler&.call model
     end
 
+    delegate :flush, to: :referential_inserter
+
     include AroundMethod
 
     around_method :insert

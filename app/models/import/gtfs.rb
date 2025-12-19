@@ -889,7 +889,7 @@ class Import::Gtfs < Import::Base
   measure :import_transfers, as: :transfers
 
   def referential_inserter
-    @referential_inserter ||= ReferentialInserter.new(referential) do |config|
+    ReferentialInserter.new(referential) do |config|
       config.add IdInserter
       config.add TimestampsInserter
       config.add CopyInserter
@@ -959,7 +959,7 @@ class Import::Gtfs < Import::Base
         route_inserter.insert route_decorator.route
       end
 
-      referential_inserter.flush
+      route_inserter.flush
     end
 
     # Regroups GTFS Trips by Journey Pattern signature
@@ -1210,7 +1210,7 @@ class Import::Gtfs < Import::Base
         vehicle_journey_inserter.insert decorator.chouette_model
       end
 
-      referential_inserter.flush
+      vehicle_journey_inserter.flush
     end
 
     def vehicle_journey_inserter

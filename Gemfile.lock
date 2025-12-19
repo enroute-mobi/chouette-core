@@ -23,7 +23,7 @@ GIT
 
 GIT
   remote: https://bitbucket.org/enroute-mobi/gtfs.git
-  revision: 89cc239f1e570d533bb84c0aa1b06ac5b9050d24
+  revision: 3e7ca67508ab50b530c1edbd8f8e55bb38facfac
   specs:
     gtfs (0.3.6)
       csv

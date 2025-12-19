@@ -65,6 +65,18 @@ const actions = {
     type: 'UPDATE_ROUTE_FORM_INPUT',
     attributes
   }),
+  addCode: (code) => ({
+    type: 'ADD_CODE',
+    code
+  }),
+  updateCode: (attributes) => ({
+    type: 'UPDATE_CODE',
+    attributes
+  }),
+  deleteCode: (index) => ({
+    type: 'DELETE_CODE',
+    index
+  }),
   fetchWrapper: dispatch => fetchUrl => async resourceName => {
     const response = await fetch(fetchUrl)
     if (!response.ok) {

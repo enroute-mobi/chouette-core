@@ -197,6 +197,7 @@ class RoutesController < Chouette::ReferentialController
       :opposite_route_id,
       :published_name,
       :wayback,
+      codes_attributes: %i[id code_space_id value _destroy],
       stop_points_attributes: %i[id _destroy position stop_area_id for_boarding for_alighting flexible]
     )
   end

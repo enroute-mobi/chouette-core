@@ -5,13 +5,14 @@ import { getStopPointsAttributes } from '../reducers/route'
 import actions from '../actions'
 
 const mapStateToProps = (state) => {
-  const { name, published_name, wayback, opposite_route_id, line_id } = state.route
+  const { name, published_name, wayback, opposite_route_id, line_id, code_values } = state.route
   const routeToSubmit = {
     name,
     published_name,
     wayback,
     opposite_route_id,
     line_id,
+    codes_attributes: code_values,
     stop_points_attributes: getStopPointsAttributes(state)
   }
 

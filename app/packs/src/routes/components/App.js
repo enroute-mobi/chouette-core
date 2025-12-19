@@ -5,6 +5,7 @@ import AddStopPoint from '../containers/AddStopPoint'
 import VisibleStopPoints from'../containers/VisibleStopPoints'
 import SaveRoute from'../containers/SaveRoute'
 import CancelRoute from'../containers/CancelRoute'
+import CodesList from '../containers/CodesList'
 
 import SubmitMover from '../../helpers/SubmitMover'
 
@@ -34,6 +35,7 @@ export default class App extends Component {
           <div className="separator"></div>
           <VisibleStopPoints />
           <AddStopPoint />
+          <CodesList />
           <CancelRoute />
           <SaveRoute />
         </div>

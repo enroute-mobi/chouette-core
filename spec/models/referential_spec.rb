@@ -1035,6 +1035,9 @@ RSpec.describe Referential, type: :model do
           referential :visited_formerly, archived_at: Time.zone.now, visited_at: (frozen_after * 2).days.ago
           referential :in_a_referential_suite, archived_at: Time.zone.now
           referential :not_archived
+          %w[freezing frozen unfreeze_enqueued unfreezing].each do |status|
+            referential :"data_#{status}", archived_at: Time.zone.now, data_freeze_status: status.to_s
+          end
         end
       end.tap do |context|
         context.referential(:in_a_referential_suite).update!(referential_suite: context.workbench.output)

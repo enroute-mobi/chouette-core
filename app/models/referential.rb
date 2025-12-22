@@ -124,10 +124,10 @@ class Referential < ApplicationModel
       none
     else
       where.not(archived_at: nil)
-          .where(referential_suite_id: nil)
-          .and(
-            where(visited_at: nil).or(where('visited_at < ?', ::Chouette::Config.referentials_frozen_after.days.ago))
-          )
+           .where(referential_suite_id: nil, data_freeze_status: 'unfrozen')
+           .and(
+             where(visited_at: nil).or(where('visited_at < ?', ::Chouette::Config.referentials_frozen_after.days.ago))
+           )
     end
   }
 

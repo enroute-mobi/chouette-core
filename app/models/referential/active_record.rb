@@ -67,14 +67,5 @@ class Referential
     def skip_presence_of?(attribute)
       skipped_presence_of_attributes.include?(attribute.to_sym)
     end
-
-    def method_missing(name, **arguments)
-      if name =~ /^skip_presence_of_(.*)\?$/
-        attribute = ::Regexp.last_match(1)
-        return skip_presence_of? attribute
-      end
-
-      super
-    end
   end
 end

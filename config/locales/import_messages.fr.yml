@@ -1,3 +1,4 @@
+---
 fr:
   import_messages:
     corrupt_zip_file: "Le fichier zip est corrompu, et ne peut être lu"
@@ -45,7 +46,19 @@ fr:
         imported: "%{count} itinéraire(s) importé(s)"
       trips:
         imported: "%{count} course(s) importée(s)"
-        unknown_service_id: Identifiant du service inconnu
+        invalid_vehicle_journey: La course GTFS %{trip_id} ne peut être utilisée pour créer une course valide
+        journey_pattern_invalid: La course GTFS %{resource_id} n'a pas de mission valide associée
+        stop_times_many_required: La course GTFS %{resource_id} n'a pas deux passages minimums requis
+        service_undefined: La course GTFS %{resource_id} n'a pas de service
+        service_unknown: La course GTFS %{resource_id} est associé à un Service %{service_id} inconnu
+      stop_times:
+        arrival_after_departure: La course GTFS %{trip_id} contient un passage aux horaires invalides
+        missing_departure_time: La course GTFS %{trip_id} contient un passage sans horaire de départ
+        missing_arrival_time: La course GTFS %{trip_id} contient un passage sans horaire d'arrivée
+        invalid_pickup_drop_off_window: La course GTFS %{trip_id} contient un passage TAD sans intervalle
+        missing_start_pickup_drop_off_window: La course GTFS %{trip_id} contient un passage TAD sans début d'intervalle
+        missing_end_pickup_drop_off_window: La course GTFS %{trip_id} contient un passage TAD sans fin d'intervalle
+        non_chronological: La course GTFS %{trip_id} contient un passage non chronologique avec le précédent
       calendars:
         imported: "%{count} calendrier(s) importé(s)"
       services:

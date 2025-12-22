@@ -1,3 +1,4 @@
+---
 en:
   import_messages:
     corrupt_zip_file: "The zip file %{source_filename} is corrupted and cannot be read"
@@ -45,7 +46,19 @@ en:
         imported: "%{count} route(s) imported"
       trips:
         imported: "%{count} trip(s) imported"
-        unknown_service_id: Identifiant du service inconnu
+        invalid_vehicle_journey: The GTFS Trip %{trip_id} can't be used to create a valid Vehicle Journey
+        journey_pattern_invalid: The GTFS Trip %{resource_id} has no valid associated Journey Pattern
+        stop_times_many_required: The GTFS Trip %{resource_id} hasn't two required Stop Times
+        service_undefined: The GTFS Trip %{resource_id} has no servicea
+        service_unknown: The GTFS Trip %{resource_id} is associated to an unknown %{service_id} Service
+      stop_times:
+        arrival_after_departure: The GTFS Trip %{trip_id} contains an Stop Time with invalid passing time
+        missing_departure_time: The GTFS Trip %{trip_id} contains an Stop Time without departure time
+        missing_arrival_time: The GTFS Trip %{trip_id} contains an Stop Time without arrival time
+        invalid_pickup_drop_off_window: The GTFS Trip %{trip_id} contains an flexible Stop Time with invalid pickup/drop_off window
+        missing_start_pickup_drop_off_window: The GTFS Trip %{trip_id} contains an flexible Stop Time without pickup/drop_off window start
+        missing_end_pickup_drop_off_window: The GTFS Trip %{trip_id} contains an flexible Stop Time without pickup/drop_off window end
+        non_chronological: The GTFS Trip %{trip_id} contains a Stop Time non chronological with previous one
       calendars:
         imported: "%{count} calendar(s) imported"
       services:

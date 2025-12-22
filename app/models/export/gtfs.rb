@@ -815,7 +815,7 @@ module Export
         end
 
         def for_service_facility_set(service_facility_set)
-          for_associated_services(service_facility_set.associated_services)
+          for_associated_services(service_facility_set&.associated_services || [])
         end
 
         def for_service_facility_sets(service_facility_sets)
@@ -824,7 +824,7 @@ module Export
 
         def for_service_facility_set_id(service_facility_set_id)
           cache[service_facility_set_id] ||= for_service_facility_set(
-            service_facility_sets.find(service_facility_set_id)
+            service_facility_sets.find_by(id: service_facility_set_id)
           )
         end
 

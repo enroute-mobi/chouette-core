@@ -7,6 +7,10 @@ module Import
       Default.new import
     end
 
+    def self.referential(import)
+      Referential.new import
+    end
+
     class Default
       def initialize(import)
         @import = import
@@ -34,17 +38,22 @@ module Import
 
       # Very basic mechanism
       def on_response(on:, &block)
-        collections = {
+        on_collection = ExternalCollection.new(send("internal_#{on}"), on_response: block)
+        override_collections = collections.merge(on => on_collection)
+
+        Composite.new(**override_collections)
+      end
+
+      protected
+
+      def collections
+        {
           stop_areas: stop_areas,
           lines: lines,
           companies: companies,
           shapes: shapes,
-          booking_arrangements: booking_arrangements,
+          booking_arrangements: booking_arrangements
         }
-
-        collections[on] = ExternalCollection.new(send("internal_#{on}"), on_response: block)
-
-        Composite.new(**collections)
       end
 
       private
@@ -98,6 +107,26 @@ module Import
 
       def finder_class
         import.override_internal_identifiers? ? Finder::Objectid : Finder::RegistrationNumber
+      end
+    end
+
+    class Referential < Default
+      def time_tables
+        @time_tables ||= ExternalCollection.new(internal_time_tables)
+      end
+
+      protected
+
+      delegate :referential, to: :import
+
+      def collections
+        super.merge(time_tables: time_tables)
+      end
+
+      private
+
+      def internal_time_tables
+        @internal_time_tables ||= Collection.new.add(Finder::Code.new(referential.time_tables, code_space: code_space, source: :referential))
       end
     end
 

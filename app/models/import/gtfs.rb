@@ -2,6 +2,7 @@
 
 class Import::Gtfs < Import::Base
   include LocalImportSupport
+  include Measurable
 
   after_commit :update_main_resource_status, on:  [:create, :update]
 
@@ -47,7 +48,7 @@ class Import::Gtfs < Import::Base
   end
 
   def prepare_referential
-    import_resources :agencies, :stops, :routes, :shapes, :fare_products, :fare_validities, :booking_arrangements, :location_groups
+    import_resources :agencies, :stops, :routes, :shapes, :transfers, :fare_products, :fare_validities, :booking_arrangements, :location_groups
 
     create_referential
     referential.switch
@@ -57,8 +58,6 @@ class Import::Gtfs < Import::Base
     prepare_referential
 
     check_calendar_files_missing_and_create_message || import_resources(:services)
-
-    import_resources :transfers if source.entries.include?('transfers.txt')
 
     RouteJourneyPatterns.new(self).import!
 
@@ -86,25 +85,28 @@ class Import::Gtfs < Import::Base
     Attributions.new(self).import!
   end
 
-  class Base
-    def initialize(import)
-      @import = import
-    end
-
-    attr_reader :import
-    delegate :source, :lookup, :create_message, :workbench, :referential, :code_space, :save_model, to: :import
+  class Part < Import::Part
+    delegate :source, :lookup, :create_message, :workbench, :referential, :referential_inserter, :save_model, to: :import
   end
 
-  class Attributions < Base
+  def referential_lookup
+    @referential_lookup ||= Import::Lookup.referential(self)
+  end
+
+  def trip_lookup
+    @trip_lookup ||= TripLookup.new(referential:, lookup: referential_lookup, shape_provider:, code_space:)
+  end
+
+  class Attributions < Part
     def import!
       source.attributions.each do |attribution|
         decorator = Decorator.for(attribution)&.new(
-          attribution,
-          referential: referential,
-          code_space: code_space,
-          workbench: workbench,
-          lookup: lookup
-        )
+                                                   attribution,
+                                                   referential: referential,
+                                                   code_space: code_space,
+                                                   workbench: workbench,
+                                                   lookup: lookup
+                                                 )
 
         decorator.attribute! if decorator
       end
@@ -156,8 +158,8 @@ class Import::Gtfs < Import::Base
     class ContractDecorator < Decorator
       def self.matches?(gtfs_attribution)
         gtfs_attribution.producer? && !gtfs_attribution.trip_id &&
-        gtfs_attribution.organization_name && !gtfs_attribution.operator? &&
-        gtfs_attribution.route_id && !gtfs_attribution.authority?
+          gtfs_attribution.organization_name && !gtfs_attribution.operator? &&
+          gtfs_attribution.route_id && !gtfs_attribution.authority?
       end
 
       def contract
@@ -183,7 +185,7 @@ class Import::Gtfs < Import::Base
     end
   end
 
-  class BookingArrangements < Base
+  class BookingArrangements < Part
     delegate :booking_arrangements, to: :import
 
     def import!
@@ -270,7 +272,7 @@ class Import::Gtfs < Import::Base
     resource.update_status_from_messages
   end
 
-  class LocationGroups < Base
+  class LocationGroups < Part
     delegate :stop_areas, to: :import
 
     def import!
@@ -398,21 +400,29 @@ class Import::Gtfs < Import::Base
 
     def create_message(attributes_or_error)
       attributes =
-        if attributes_or_error.is_a?(Import::Gtfs::Decorator::Error)
+        if attributes_or_error.is_a?(Import::Decorator::Error)
           error = attributes_or_error
+
+          gtfs_resource = error.resource
+          resource_collection = gtfs_resource.class.name.to_s.demodulize.tableize
+
           {
             criticity: (error.criticity || :error),
-            message_key: "gtfs.services.#{error.message_key}",
-            message_attributes: error.message_attributes
+            message_key: "gtfs.#{resource_collection}.#{error.message_key}",
+            message_attributes: error.message_attributes,
+            resource_attributes: {
+              filename: gtfs_resource.filename,
+              line_number: gtfs_resource.line_number
+            }
           }
         else
+          attributes_or_error[:resource_attributes] = {
+            filename: "#{resource.name}.txt",
+            line_number: resource.rows_count
+          }
           attributes_or_error
         end
 
-      attributes[:resource_attributes] = {
-        filename: "#{resource.name}.txt",
-        line_number: resource.rows_count
-      }
       import.create_message attributes, resource: resource, commit: true
     end
 
@@ -424,20 +434,20 @@ class Import::Gtfs < Import::Base
     @specific_default_company ||= parent.candidate_companies.find_by(id: parent_options['specific_default_company_id'])
   end
 
-  class Agencies < Base
+  class Agencies < Part
     attr_reader :import
     delegate :companies, :specific_default_company,
              :default_company=, :default_time_zone, :default_time_zone=, to: :import
 
     def import!
       if specific_default_company
-          self.default_company = specific_default_company
+        self.default_company = specific_default_company
 
-          if specific_default_company&.time_zone
-            self.default_time_zone = ActiveSupport::TimeZone[specific_default_company.time_zone]
-          end
+        if specific_default_company&.time_zone
+          self.default_time_zone = ActiveSupport::TimeZone[specific_default_company.time_zone]
+        end
 
-          return
+        return
       end
 
       source.agencies.each do |agency|
@@ -684,6 +694,7 @@ class Import::Gtfs < Import::Base
       unknown_stop_areas.update_all deleted_at: Time.current
     end
   end
+  measure :import_stops, as: :stops
 
   def lines_by_registration_number(registration_number)
     @lines_by_registration_number ||= {}
@@ -770,14 +781,9 @@ class Import::Gtfs < Import::Base
       unknown_lines.update_all deactivated: true
     end
   end
-
-  def vehicle_journey_by_trip_id
-    @vehicle_journey_by_trip_id ||= {}
-  end
+  measure :import_routes, as: :routes
 
   def import_transfers
-    @trips = {}
-
     with_warning_lookup = lookup.on_response(on: :stop_areas) do |response, arguments|
       if response.source == :workgroup
         resource = arguments[:resource]
@@ -860,7 +866,7 @@ class Import::Gtfs < Import::Base
       if transfer.min_transfer_time.present?
         connection.default_duration = transfer.min_transfer_time
         if [:frequent_traveller_duration, :occasional_traveller_duration,
-          :mobility_restricted_traveller_duration].any? { |k| connection.send(k).present? }
+            :mobility_restricted_traveller_duration].any? { |k| connection.send(k).present? }
           create_message(
             {
               criticity: :warning,
@@ -880,236 +886,23 @@ class Import::Gtfs < Import::Base
       save_model connection, resource: resource
     end
   end
-
-  def service_facility_set(bikes_allowed)
-    case bikes_allowed
-    when '1'
-      @service_facility_set_cycles_allowed ||= shape_provider.service_facility_sets.first_or_create_by_code(code_space, 'gtfs-bikes-allowed') do |s|
-        s.name = 'GTFS - Bikes allowed'
-        s.associated_services = ['luggage_carriage/cycles_allowed']
-      end
-    when '2'
-      @service_facility_set_no_cycle ||= shape_provider.service_facility_sets.first_or_create_by_code(code_space, 'gtfs-bikes-not-allowed') do |s|
-        s.name = 'GTFS - Bikes not allowed'
-        s.associated_services = ['luggage_carriage/no_cycles']
-      end
-    end
-  end
-
-  private :service_facility_set
-
-  def accessibility_assessment(wheelchair_accessible)
-    case wheelchair_accessible
-    when '1'
-      @accessibility_assessment_wheelchair_accessible ||=
-        shape_provider.accessibility_assessments.first_or_initialize_by_code(code_space, 'gtfs-wheelchair-accessible') do |a|
-          a.name = 'GTFS - Mobility reduced passenger suitable'
-          a.wheelchair_accessibility = 'yes'
-        end
-    when '2'
-      @accessibility_assessment_wheelchair_not_accessible ||=
-        shape_provider.accessibility_assessments.first_or_initialize_by_code(code_space, 'gtfs-wheelchair-not-accessible') do |a|
-          a.name = 'GTFS - Mobility reduced passenger not suitable'
-          a.wheelchair_accessibility = 'no'
-        end
-    end
-  end
-  private :accessibility_assessment
-
-  def process_trip(resource, trip, stop_times)
-    begin
-      raise InvalidTripSingleStopTime unless stop_times.many?
-      raise InvalidTripTimesError unless consistent_stop_times(stop_times)
-
-      journey_pattern = find_or_create_journey_pattern(trip, stop_times)
-      vehicle_journey = journey_pattern.vehicle_journeys.build route: journey_pattern.route
-      vehicle_journey.published_journey_name = trip.short_name.presence || trip.id
-      vehicle_journey.codes.build code_space: code_space, value: trip.id
-      vehicle_journey.accessibility_assessment = accessibility_assessment(trip.wheelchair_accessible)
-
-      if service_facility_set = service_facility_set(trip.bikes_allowed)
-        vehicle_journey.service_facility_sets << service_facility_set
-      end
-
-      ApplicationModel.skipping_objectid_uniqueness do
-        save_model vehicle_journey, resource: resource
-      end
-
-      starting_day_offset = GtfsTime.parse(stop_times.first.departure_time || stop_times.first.start_pickup_drop_off_window).day_offset
-      time_table_id = handle_timetable_with_offset(resource, trip, starting_day_offset)
-
-      if time_table_id
-        Chouette::TimeTablesVehicleJourney.create!(time_table_id: time_table_id, vehicle_journey_id: vehicle_journey.id)
-      else
-        create_message(
-          {
-            criticity: :warning,
-            message_key: 'gtfs.trips.unknown_service_id',
-            message_attributes: { service_id: trip.service_id },
-            resource_attributes: {
-              filename: "#{resource.name}.txt",
-              line_number: resource.rows_count,
-              column_number: 0
-            }
-          },
-          resource: resource,
-          commit: true
-        )
-      end
-
-      Chouette::VehicleJourneyAtStop.bulk_insert do |worker|
-        journey_pattern.stop_points.each_with_index do |stop_point, i|
-          add_stop_point stop_times[i], i, starting_day_offset, stop_point, vehicle_journey, worker
-        end
-      end
-
-    rescue Import::Gtfs::InvalidTripTimesError, Import::Gtfs::InvalidTripSingleStopTime, Import::Gtfs::InvalidStopAreaError => e
-      message_key = case e
-        when Import::Gtfs::InvalidTripTimesError
-          'trip_with_inconsistent_stop_times'
-        when Import::Gtfs::InvalidTripSingleStopTime
-          'trip_with_single_stop_time'
-        when Import::Gtfs::InvalidStopAreaError
-          'no_specified_stop'
-        end
-      create_message(
-        {
-          criticity: :error,
-          message_key: message_key,
-          message_attributes: {
-            trip_id: trip.id
-          },
-          resource_attributes: {
-            filename: "#{resource.name}.txt",
-            line_number: resource.rows_count,
-            column_number: 0
-          }
-        },
-        resource: resource, commit: true
-      )
-      @status = 'failed'
-    rescue Import::Gtfs::InvalidTimeError => e
-      create_message(
-        {
-          criticity: :error,
-          message_key: 'invalid_stop_time',
-          message_attributes: {
-            time: e.time,
-            trip_id: vehicle_journey.published_journey_name
-          },
-          resource_attributes: {
-            filename: "#{resource.name}.txt",
-            line_number: resource.rows_count,
-            column_number: 0
-          }
-        },
-        resource: resource, commit: true
-      )
-      @status = 'failed'
-    end
-  end
-
-  def handle_timetable_with_offset(resource, trip, offset)
-    return nil if time_tables_by_service_id[trip.service_id].nil?
-    return time_tables_by_service_id[trip.service_id][offset] if time_tables_by_service_id[trip.service_id][offset]
-
-    original_tt_id = time_tables_by_service_id[trip.service_id].first
-    original_tt = referential.time_tables.find(original_tt_id)
-
-    tmp_tt = original_tt.to_timetable
-    tmp_tt.shift offset
-
-    shifted_tt = referential.time_tables.build comment: trip.service_id
-    shifted_tt.apply(tmp_tt)
-    shifted_tt.shortcuts_update
-    shifted_tt.skip_save_shortcuts = true
-    save_model shifted_tt, resource: resource
-
-    time_tables_by_service_id[trip.service_id][offset] = shifted_tt.id
-  end
-
-  def journey_pattern_ids
-    @journey_pattern_ids ||= {}
-  end
-
-  def find_or_create_journey_pattern(trip, stop_times)
-    decorator = TripDecorator.new(trip, stop_times)
-    journey_pattern_id = journey_pattern_ids[decorator.journey_pattern_signature]
-    return nil unless journey_pattern_id
-
-    referential.journey_patterns.includes(:route, :stop_points).find(journey_pattern_id)
-  end
+  measure :import_transfers, as: :transfers
 
   def referential_inserter
-    @referential_inserter ||= ReferentialInserter.new(referential) do |config|
+    ReferentialInserter.new(referential) do |config|
       config.add IdInserter
       config.add TimestampsInserter
       config.add CopyInserter
     end
   end
 
-  # Add helper methods on GTFS Trip
-  class TripDecorator < SimpleDelegator
-    def initialize(trip, stop_times)
-      super trip
-      @stop_times = stop_times
-    end
-
-    attr_reader :stop_times
-
-    delegate :each, :length, :[], to: :stop_ids
-
-    def route_signature
-      @route_signature ||= [
-        route_id,
-        direction_id,
-        stop_times_signature
-      ].freeze
-    end
-
-    def stop_ids
-      @stop_ids ||= stop_times.map(&:stop_id)
-    end
-
-    def journey_pattern_signature
-      @journey_pattern_signature ||= [
-        *route_signature,
-        headsign,
-        shape_id,
-        *stop_ids
-      ].freeze
-    end
-
-    def valid?
-      stop_times.many?
-    end
-
-    private
-
-    def stop_times_signature
-      skip = true
-      stop_times.reverse_each.filter_map do |stop_time|
-        next if skip && stop_time.pickup_type.nil? && stop_time.drop_off_type.nil?
-
-        skip = false
-        flexible = stop_time.start_pickup_drop_off_window.present? && stop_time.end_pickup_drop_off_window.present?
-        [
-          stop_time.stop_id.presence || stop_time.location_group_id,
-          stop_time.pickup_type || '0',
-          stop_time.drop_off_type || '0',
-          flexible
-        ]
-      end.to_a
-    end
-  end
-
   # Import Routes and JourneyPatterns according to GTFS Trips
-  class RouteJourneyPatterns < Base
-    delegate :referential_inserter, :journey_pattern_ids, :lookup, to: :import
+  class RouteJourneyPatterns < Part
+    delegate :trip_lookup, to: :import
 
     def route_inserter
       @route_inserter ||= Import::RouteInserter.new(
-        referential_inserter, on_save: on_save # TODO: , on_invalid: on_invalid
+        referential_inserter, on_save: on_save, on_invalid: on_invalid
       )
     end
 
@@ -1122,8 +915,14 @@ class Import::Gtfs < Import::Base
       }
     end
 
+    def on_invalid
+      lambda do |model|
+        Rails.logger.info { "Invalid Model: #{model.inspect} #{model.errors.inspect}" }
+      end
+    end
+
     def register_journey_pattern(journey_pattern)
-      journey_pattern_ids[journey_pattern.transient(:signature)] = journey_pattern.id
+      trip_lookup.journey_patterns.register journey_pattern, signature: journey_pattern.transient(:signature)
     end
 
     def improved_shape_ids
@@ -1160,7 +959,7 @@ class Import::Gtfs < Import::Base
         route_inserter.insert route_decorator.route
       end
 
-      referential_inserter.flush
+      route_inserter.flush
     end
 
     # Regroups GTFS Trips by Journey Pattern signature
@@ -1168,9 +967,9 @@ class Import::Gtfs < Import::Base
     def journey_pattern_descriptions
       decorators = {}
 
-      source.each_trip_with_stop_times do |trip, stop_times|
-        decorator = TripDecorator.new(trip, stop_times)
-        next unless decorator.valid?
+      source.trips(with_stop_times: true).each do |trip|
+        decorator = TripDecorator.new(trip)
+        next unless decorator.journey_pattern_signature
 
         decorators[decorator.journey_pattern_signature] ||= decorator
       end
@@ -1382,59 +1181,53 @@ class Import::Gtfs < Import::Base
     end
   end
 
+  # DEPRECATED: Use Trips part
   def import_stop_times
     resource = create_resource(:stop_times)
-    source.to_enum(:each_trip_with_stop_times).each_slice(100) do |slice|
-      Chouette::VehicleJourney.transaction do
-        slice.each do |trip, stop_times|
-          process_trip(resource, trip, stop_times)
-        end
-      end
-    end
+    resource.rows_count = source.stop_times.count
+    resource.save!
+
+    Trips.new(WithResource.new(self, resource)).import!
+
     resource.update_status_from_messages
   end
 
-  def consistent_stop_times(stop_times)
-    times = stop_times.flat_map { |s| [ s.arrival_time, s.departure_time ] }.compact.map { |t| GTFS::Time.parse(t) }
-    times.sorted?
-  end
+  class Trips < Part
+    delegate :default_time_zone, to: :import
 
-  def add_stop_point(stop_time, position, starting_day_offset, stop_point, vehicle_journey, worker)
-    # JourneyPattern#vjas_add creates automaticaly VehicleJourneyAtStop
-    vehicle_journey_at_stop = vehicle_journey.vehicle_journey_at_stops.build(stop_point_id: stop_point.id)
-
-    flexible_attributes = {}
-    if stop_time.start_pickup_drop_off_window.present? || stop_time.end_pickup_drop_off_window.present?
-      flexible_attributes['earliest_departure_time_of_day'] =
-        time_of_day(stop_time.start_pickup_drop_off_window, starting_day_offset).second_offset
-      flexible_attributes['latest_arrival_time_of_day'] =
-        time_of_day(stop_time.end_pickup_drop_off_window, starting_day_offset).second_offset
-    else
-      departure_time_of_day = time_of_day stop_time.departure_time, starting_day_offset
-      vehicle_journey_at_stop.departure_time_of_day = departure_time_of_day
-
-      if position == 0
-        vehicle_journey_at_stop.arrival_time_of_day = departure_time_of_day
-      else
-        vehicle_journey_at_stop.arrival_time_of_day = time_of_day stop_time.arrival_time, starting_day_offset
-      end
+    def lookup
+      import.trip_lookup
     end
 
-    worker.add vehicle_journey_at_stop.attributes.merge(flexible_attributes)
-  end
+    def import!
+      source.trips(with_stop_times: true).each do |trip|
+        decorator = TripDecorator.new(trip, lookup: lookup, code_space: code_space, default_time_zone: default_time_zone)
+        unless decorator.valid?
+          decorator.errors.each { |error| create_message error }
+          next
+        end
 
-  def time_of_day gtfs_time, offset
-    raise InvalidTimeError.new(gtfs_time) unless gtfs_time
+        vehicle_journey_inserter.insert decorator.chouette_model
+      end
 
-    t = GTFS::Time.parse(gtfs_time).from_day_offset(offset)
-    raise InvalidTimeError.new(gtfs_time) unless t.present?
+      vehicle_journey_inserter.flush
+    end
 
-    TimeOfDay.create(t, time_zone: default_time_zone).without_utc_offset
-  end
+    def vehicle_journey_inserter
+      @vehicle_journey_inserter ||= Import::VehicleJourneyInserter.new(referential_inserter, on_invalid: on_invalid)
+    end
 
-  # for each service_id we store an array of TimeTables for each needed starting day offset
-  def time_tables_by_service_id
-    @time_tables_by_service_id ||= {}
+    def on_invalid
+      lambda do |model|
+        Rails.logger.warn { "Invalid Model: #{model.errors.inspect}" }
+        # TODO ensure a message is created
+        create_message(
+          criticity: :error,
+          message_key: 'gtfs.trips.invalid_vehicle_journey',
+          message_attributes: { trip_id: model.published_journey_identifier }
+        )
+      end
+    end
   end
 
   def find_stop_parent_or_create_message(stop_area_name, parent_station, resource)
@@ -1501,19 +1294,6 @@ class Import::Gtfs < Import::Base
     /\A[\dA-F]{6}\Z/.match(value.upcase).try(:string)
   end
 
-  class InvalidTripTimesError < StandardError; end
-  class InvalidTripSingleStopTime < StandardError; end
-  class InvalidStopAreaError < StandardError; end
-  class InvalidTimeError < StandardError
-    attr_reader :time
-
-    def initialize(time)
-      super()
-
-      @time = time
-    end
-  end
-
   def shape_referential
     workgroup.shape_referential
   end
@@ -1557,7 +1337,7 @@ class Import::Gtfs < Import::Base
     resource.update_status_from_messages
   end
 
-  class Shapes < Base
+  class Shapes < Part
     delegate :shape_provider, to: :import
 
     def import!
@@ -1652,13 +1432,13 @@ class Import::Gtfs < Import::Base
     resource.update_status_from_messages
   end
 
-  class FareProducts < Base
+  class FareProducts < Part
     delegate :fare_provider, :index, :default_company, to: :import
 
     def import!
       source.fare_attributes.each do |fare_atribute|
         decorator = Decorator.new(fare_atribute, code_space: code_space, companies: lookup.companies,
-                                                 default_company: default_company, fare_provider: fare_provider)
+                                  default_company: default_company, fare_provider: fare_provider)
 
         product = decorator.build_or_update
         unless product.save
@@ -1733,7 +1513,7 @@ class Import::Gtfs < Import::Base
     resource.update_status_from_messages
   end
 
-  class FareValidities < Base
+  class FareValidities < Part
     delegate :fare_provider, :index, to: :import
 
     def import!
@@ -1895,39 +1675,8 @@ class Import::Gtfs < Import::Base
     end
   end
 
-  class Decorator < SimpleDelegator
-    def validate
-      errors.clear
-    end
-
-    def valid?
-      validate
-      errors.empty?
-    end
-
-    def errors
-      @errors ||= Errors.new
-    end
-
-    class Errors < SimpleDelegator
-      def initialize
-        @errors = []
-        super @errors
-      end
-
-      def add(message_key, **attributes)
-        @errors << Import::Gtfs::Decorator::Error.new(message_key, **attributes)
-      end
-    end
-
-    class Error
-      attr_accessor :message_key, :message_attributes, :criticity
-
-      def initialize(message_key, **attributes)
-        @message_key = message_key
-        attributes.each { |k,v| send "#{k}=", v }
-      end
-    end
+  class Decorator < Import::Decorator
+    # TODO: Could share more code
   end
 
   def import_services
@@ -1943,9 +1692,7 @@ class Import::Gtfs < Import::Base
     @status = 'failed' if resource.status == :ERROR
   end
 
-  class Services < Base
-    delegate :time_tables_by_service_id, to: :import
-
+  class Services < Part
     def import!
       # Retrieve both calendar and associated calendar_dates into a single GTFS::Service model
       source.services.each do |service|
@@ -1959,25 +1706,11 @@ class Import::Gtfs < Import::Base
 
         # TODO: use inserter
         time_table.save!
-
-        index.register_service_id decorator.service_id, time_table
       end
-    end
-
-    def index
-      # TODO: replace by a real index
-      @index ||= Index.new time_tables_by_service_id
     end
 
     class Decorator < Import::Gtfs::Decorator
-      def initialize(service, index: nil, code_space: nil)
-        super service
-
-        @index = index
-        @code_space = code_space
-      end
-
-      attr_accessor :index, :code_space
+      attr_accessor :index
 
       # Returns a Cuckoo::Timetable::DaysOfWeek according to GTFS Service monday?/.../sunday?
       def days_of_week
@@ -2038,31 +1771,16 @@ class Import::Gtfs < Import::Base
         super
 
         errors.add :service_without_id if service_id.blank?
-        if index&.service_id?(service_id)
-          errors.add :duplicated_service_id, message_attributes: { service_id: service_id }
-        end
+        # TODO: Unused code ?
+        # if index&.service_id?(service_id)
+        #   errors.add :duplicated_service_id, message_attributes: { service_id: service_id }
+        # end
         if memory_timetable.empty?
           errors.add :empty_service, message_attributes: { service_id: service_id }, criticity: :warning
         end
         if !time_table&.valid?
           errors.add :invalid_service, message_attributes: { service_id: service_id }
         end
-      end
-    end
-
-    class Index
-      def initialize(time_tables_by_service_id)
-        @time_tables_by_service_id = time_tables_by_service_id
-      end
-
-      attr_reader :time_tables_by_service_id
-
-      def register_service_id(service_id, time_table)
-        time_tables_by_service_id[service_id] = [time_table.id]
-      end
-
-      def service_id?(service_id)
-        time_tables_by_service_id.key? service_id
       end
     end
   end

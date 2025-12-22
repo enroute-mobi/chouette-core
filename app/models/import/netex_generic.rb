@@ -237,21 +237,13 @@ module Import
       end
     end
 
-    class ResourceDecorator < SimpleDelegator
+    class ResourceDecorator < Import::Decorator
       include Decorate
 
-      def initialize(resource, **attributes)
-        super(resource)
-        attributes.each do |k, v|
-          send("#{k}=", v)
-        end
-      end
-
-      attr_accessor :lookup, :code_space, :code_builder, :scheduled_stop_points,
+      attr_accessor :code_builder, :scheduled_stop_points,
                     :override_internal_identifiers,
                     :line_provider, :stop_area_provider # TODO: waiting for lookup whole integration
 
-      alias resource __getobj__
       alias override_internal_identifiers? override_internal_identifiers
 
       def chouette_name
@@ -282,17 +274,9 @@ module Import
         end.codes
       end
 
-      def add_error(message_key)
-        errors << message_key
-      end
-
-      def errors
-        @errors ||= []
-      end
-
-      def valid?
+      def validate
+        super
         chouette_model
-        errors.empty?
       end
     end
 
@@ -314,28 +298,10 @@ module Import
       part_class.new self
     end
 
-    class Part
-      def initialize(import)
-        @import = import
-      end
-      attr_reader :import
-
-      delegate :override_internal_identifiers?, :code_space, to: :import
+    class Part < Import::Part
+      delegate :override_internal_identifiers?, to: :import
 
       include Decorate
-
-      # To define callback in import!
-      include AroundMethod
-      around_method :import!
-
-      extend ActiveModel::Callbacks
-      define_model_callbacks :import
-
-      def around_import!(&block)
-        run_callbacks :import do
-          block.call
-        end
-      end
 
       # Save all resources after Part import
       after_import :update_resources
@@ -354,9 +320,6 @@ module Import
       #   import.save
       # end
 
-      include Measurable
-      measure :import!, as: ->(part) { part.class.name.demodulize }
-
       def code_builder
         @code_builder ||= CodeBuilder.new(import.workgroup.code_spaces)
       end
@@ -370,10 +333,26 @@ module Import
       end
 
       # TODO: manage a given NeTEx resource to save tags
-      def create_message(message_key, message_attributes = {})
-        attributes = { criticity: :error, message_key: message_key, message_attributes: message_attributes }
+      def create_message(message_key_or_error, message_attributes = {})
+        attributes =
+          if message_key_or_error.is_a?(Import::Decorator::Error)
+            error = message_key_or_error
+            {
+              criticity: (error.criticity || :error),
+              message_key: error.message_key,
+              message_attributes: error.message_attributes
+            }
+          else
+            message_key = message_key_or_error
+            {
+              criticity: :error,
+              message_key: message_key,
+              message_attributes: message_attributes
+            }
+          end
+
         import_resource.messages.build attributes
-        import_resource.status = 'ERROR'
+        import_resource.status = attributes[:criticity].upcase
       end
 
       def import_resource_name
@@ -389,8 +368,6 @@ module Import
     end
 
     class SynchronizedPart < Part
-      include Measurable
-
       delegate :netex_source, :event_handler, :code_space, :disable_missing_resources?, :strict_mode?,
                :ignore_particulars?, to: :import
 
@@ -679,7 +656,7 @@ module Import
 
         def chouette_line
           line = lookup.lines.find(line_ref.ref) if lookup
-          add_error :line_not_found unless line
+          errors.add :line_not_found unless line
 
           line
         end
@@ -735,7 +712,7 @@ module Import
             direction_type
           else
             # Should be a warning
-            # add_error :direction_type_not_found
+            # errors.add :direction_type_not_found
             :outbound
           end
         end
@@ -745,7 +722,7 @@ module Import
           return unless direction_id
 
           direction = directions.find direction_id
-          add_error :direction_not_found_in_netex_source unless direction
+          errors.add :direction_not_found_in_netex_source unless direction
 
           direction
         end
@@ -769,7 +746,7 @@ module Import
         def route_scheduled_point_ref(route_point_ref)
           route_point = route_points.find route_point_ref
           unless route_point
-            add_error :direction_not_found_in_netex_source
+            errors.add :direction_not_found_in_netex_source
             return nil
           end
 
@@ -844,7 +821,7 @@ module Import
                   journey_pattern_stop_points_by_scheduled_stop_point_id[step.journey_pattern_stop_points_key] =
                     by_scheduled_stop_point_id[step.route_stop_points_key]
                 else
-                  add_error :stop_area_not_found_in_scheduled_stop_points
+                  errors.add :stop_area_not_found_in_scheduled_stop_points
                 end
               end
             end

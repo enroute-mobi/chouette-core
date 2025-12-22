@@ -35,7 +35,6 @@
   | window.perms = #{raw @perms};
   | window.features = #{raw @features};
   | window.all_missions = #{(@all_missions.to_json).html_safe};
-  | window.extra_headers = #{(@extra_headers.to_json).html_safe};
   | window.constraint_zones_routes = "#{url_for([@workbench, @referential, @route.line, :routing_constraint_zones]).html_safe}";
   | window.companies_path = "#{workbench_line_referential_companies_path(@workbench)}";
   | window.available_specific_stop_places_path = "#{(url_for([@workbench, @referential, @route.line, @route, :journey_patterns])+"/:journey_pattern_id:/available_specific_stop_places").html_safe}";

@@ -15,8 +15,10 @@ module Chouette
     belongs_to :company, optional: true # CHOUETTE-3247 failing specs
     belongs_to :accessibility_assessment, class_name: '::AccessibilityAssessment', optional: true # CHOUETTE-3247 optional: true
     belongs_to :company_light, -> {select(:id, :objectid, :line_referential_id)}, class_name: "Chouette::Company", foreign_key: :company_id, optional: true # CHOUETTE-3247 failing specs
-    belongs_to :route # CHOUETTE-3247 failing specs
-    belongs_to :journey_pattern # CHOUETTE-3247 failing specs
+
+    belongs_to :route, skippable: true, optional_on: :inserter
+    belongs_to :journey_pattern, skippable: true, optional_on: :inserter
+
     has_one :line, through: :journey_pattern
     has_array_of :service_facility_sets, class_name: '::ServiceFacilitySet'
 
@@ -31,8 +33,6 @@ module Chouette
     has_and_belongs_to_many :footnotes, :class_name => 'Chouette::Footnote'
 
     with_options(if: -> { validation_context != :inserter }) do |except_in_inserter_context|
-      except_in_inserter_context.validates :route, presence: true
-      except_in_inserter_context.validates :journey_pattern, presence: true
       except_in_inserter_context.before_validation :calculate_vehicle_journey_at_stop_day_offset
     end
     validate :validate_passing_times_chronology

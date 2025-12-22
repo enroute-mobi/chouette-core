@@ -62,7 +62,7 @@ export default class CodesList extends Component {
               </div>
 
               {this.state.codeValues.map((codeData, index) => (
-                <div key={codeData.id || codeData.fallback_id} className="row mb-2">
+                <div key={codeData.id || codeData.fallback_id} className="row mb-2" style={{ display: codeData._destroy ? 'none' : 'flex' }}>
                   <div className="col-sm-4">
                     <select
                       className="form-control"

@@ -22,7 +22,7 @@ module Import
 
     def around_import!(&block)
       run_callbacks :import do
-        ::Bullet.profile do
+        bullet_profile do
           logger.tagged(internal_description, &block)
         end
       end
@@ -34,5 +34,17 @@ module Import
 
     include Measurable
     measure :import!, as: ->(part) { part.internal_description }
+
+    private
+
+    if defined?(::Bullet) && false
+      def bullet_profile(&block)
+        ::Bullet.profile(&block)
+      end
+    else
+      def bullet_profile
+        yield
+      end
+    end
   end
 end

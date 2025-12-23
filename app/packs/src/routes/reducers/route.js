@@ -10,6 +10,7 @@ export const SUBMIT_ROUTE_ERROR = 'SUBMIT_ROUTE_ERROR'
 export const ADD_CODE = 'ADD_CODE'
 export const UPDATE_CODE = 'UPDATE_CODE'
 export const DELETE_CODE = 'DELETE_CODE'
+export const RECEIVE_ERRORS = 'RECEIVE_ERRORS'
 
 export const initialState = {
   name: '',
@@ -50,6 +51,11 @@ const route = (state = initialState, action) => {
         _destroy: true
       }
       return { ...state, code_values: newCodeValues }
+    case RECEIVE_ERRORS:
+      return {
+        ...state,
+        errors: action.json.errors
+      }
     default:
       return state
   }

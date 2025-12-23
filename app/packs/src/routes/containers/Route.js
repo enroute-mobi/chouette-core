@@ -14,6 +14,8 @@ const mapStateToProps = ({ route, oppositeRoutes, formErrors, status }) => ({
   route,
   isOutbound: route.wayback === 'outbound',
   errors: formErrors.route,
+  submitError: status.submitError,
+  serverErrors: route.errors,
   oppositeRoutesOptions: oppositeRoutes[route.wayback] || []
 })
 

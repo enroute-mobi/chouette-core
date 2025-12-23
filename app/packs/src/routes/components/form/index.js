@@ -14,6 +14,8 @@ export default class RouteForm extends Component {
       route,
       isOutbound,
       errors,
+      submitError = false,
+      serverErrors = [],
       onUpdateName,
       onUpdatePublishedName,
       onUpdateWayback,
@@ -22,6 +24,23 @@ export default class RouteForm extends Component {
     } = this.props
     return (
       <div>
+        <div>
+          {submitError && Array.isArray(serverErrors) && serverErrors.length > 0 && (
+            <div className='row'>
+              <div className='col-lg-12'>
+                <div className="alert alert-danger mt-sm mb-sm">
+                  <strong> {I18n.t('error')} : </strong>
+                  {serverErrors.map((error, i) => (
+                    <ul key={i}>
+                      <li>{error}</li>
+                      <br />
+                    </ul>
+                  ))}
+                </div>
+              </div>
+            </div>
+          )}
+        </div>
         <form className='form-horizontal' id='route_form'>
           <div className='row'>
             <div className='col-lg-12'>
@@ -69,5 +88,7 @@ RouteForm.propTypes = {
   route: PropTypes.object,
   isOutbound: PropTypes.bool.isRequired,
   errors: PropTypes.object.isRequired,
+  submitError: PropTypes.bool.isRequired,
+  serverErrors: PropTypes.array.isRequired,
   oppositeRoutesOptions: PropTypes.array.isRequired
 }

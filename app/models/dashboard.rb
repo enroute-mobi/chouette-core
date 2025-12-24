@@ -7,6 +7,4 @@ class Dashboard < ApplicationModel
 
   validates :name, presence: true
   validates :workbench, presence: true
-
-  WIDGET_TYPES = %w[image chart counter list numbers static_text table].freeze
 end

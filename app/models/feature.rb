@@ -18,7 +18,6 @@ class Feature
       stop_area_routing_constraints
       stop_area_waiting_time
       vehicle_journeys_return_route
-      manage_dashboards
     ]
   end
 

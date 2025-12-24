@@ -1,14 +1,15 @@
 # frozen_string_literal: true
 
 class Widget < ActiveRecord::Base
+  extend Enumerize
   belongs_to :dashboard, touch: true
 
   validates :name, :widget_type, presence: true
-  validates :widget_type, inclusion: { in: Dashboard::WIDGET_TYPES }
+  enumerize :widget_type, in: %w[image chart counter list numbers static_text table]
 
   attribute :options, :jsonb, default: -> { {}}
 
   def self.types
-    Dashboard::WIDGET_TYPES
+    widget_type.values
   end
 end

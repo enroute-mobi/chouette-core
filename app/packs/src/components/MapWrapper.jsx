@@ -19,26 +19,33 @@ function MapWrapper({ features, onInit, style, height, width }) {
     []
   )
 
+  // Create layer references to avoid index issues
+  const osmLayer = useMemo(() => new TileLayer({ 
+    source: new OSM({ attributions: '&copy; OpenStreetMap contributors' }) 
+  }), [])
+  
+  const satelliteLayer = useMemo(() => new TileLayer({
+    title: 'Satellite',
+    type: 'base',
+    visible: false,
+    source: new XYZ({
+      url: 'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
+      attributions: 'Tiles &copy; Esri &mdash; Source: Esri, i-cubed, USDA, USGS, AEX, GeoEye, Getmapping, Aerogrid, IGN, IGP, UPR-EGP, and the GIS User Community'
+    })
+  }), [])
+
   const map = useMemo(
     () => new Map({
       layers: [
         // OSM Topo
-        new TileLayer({ source: new OSM({ attributions: '&copy; OpenStreetMap contributors' }) }),
-        new TileLayer({
-          title: 'Satellite',
-          type: 'base',
-          visible: false,
-          source: new XYZ({
-            url: 'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
-            attributions: 'Tiles &copy; Esri &mdash; Source: Esri, i-cubed, USDA, USGS, AEX, GeoEye, Getmapping, Aerogrid, IGN, IGP, UPR-EGP, and the GIS User Community'
-          })
-        }),
+        osmLayer,
+        satelliteLayer,
         featuresLayer
       ],
       view: new View({ center: [0, 0], zoom: 2 }),
       controls: [new ScaleLine(), new Zoom(), new ZoomSlider()]
     }),
-    []
+    [osmLayer, satelliteLayer, featuresLayer]
   )
 
   // pull refs
@@ -89,9 +96,9 @@ function MapWrapper({ features, onInit, style, height, width }) {
   const toggleLayer = useCallback((e) => {
     const isSatellite = e.target.checked
     setShowSatellite(isSatellite)
-    map.getLayers().item(0).setVisible(!isSatellite)
-    map.getLayers().item(1).setVisible(isSatellite)
-  }, [map])
+    osmLayer.setVisible(!isSatellite)
+    satelliteLayer.setVisible(isSatellite)
+  }, [osmLayer, satelliteLayer])
 
   // render component
   return (

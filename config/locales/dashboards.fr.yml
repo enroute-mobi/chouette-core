@@ -27,6 +27,8 @@ fr:
       unknown_type: "Type de widget non reconnu : %{widget_type}"
       options: "Options"
       new_widget: "Nouveau widget"
+      no_widgets: "Aucun widget pour le moment"
+      get_started: "Commencez par ajouter votre premier widget"
       actions:
         add: "Ajouter un widget"
         remove: "Supprimer"

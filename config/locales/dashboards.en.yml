@@ -27,6 +27,8 @@ en:
       unknown_type: "Unknown widget type: %{widget_type}"
       options: "Options"
       new_widget: "New widget"
+      no_widgets: "No widgets yet"
+      get_started: "Get started by adding your first widget"
       actions:
         add: "Add widget"
         remove: "Remove"
@@ -38,6 +40,7 @@ en:
         numbers: "Numbers"
         static_text: "Static text"
         table: "Table"
+    search_no_results: "No dashboards found"
   activemodel:
     models:
       dashboard:

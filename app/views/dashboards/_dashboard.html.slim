@@ -8,10 +8,9 @@
   - else
     .col-span-full.text-center.py-12
       .bg-gray-50.p-8.rounded-lg
-        svg.mx-auto.h-12.w-12.text-gray-400[xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"]
-          path[stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"]
-        h3.mt-2.text-sm.font-medium.text-gray-900= t('.no_widgets')
-        p.mt-1.text-sm.text-gray-500= t('.get_started')
+        i.fas.fa-chart-bar.mx-auto.fa-2x.text-gray-400
+        h3.mt-2.text-sm.font-medium.text-gray-900= t('dashboards.widgets.no_widgets')
+        p.mt-1.text-sm.text-gray-500= t('dashboards.widgets.get_started')
 
 / - if editable && workbench
 /   .mt-4

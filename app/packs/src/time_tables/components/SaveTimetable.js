@@ -15,7 +15,7 @@ export default class SaveTimetable extends Component{
         <div className='col-lg-12 text-right'>
           <form className='time_tables formSubmitr ml-xs' onSubmit={e => {e.preventDefault()}}>
             <button
-              className='btn btn-default'
+              className='btn btn-confirm'
               type='button'
               onClick={e => {
                 e.preventDefault()

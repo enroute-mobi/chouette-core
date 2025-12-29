@@ -13,7 +13,7 @@ export default class SaveButton extends Component{
   }
 
   btnClass(){
-    let className = ['btn btn-default']
+    let className = ['btn btn-confirm']
     if(this.btnDisabled()){
       className.push('disabled')
     }

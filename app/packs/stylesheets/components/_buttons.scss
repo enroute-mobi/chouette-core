@@ -67,6 +67,23 @@
       background-color: darken($brand-color-secondary, 2.5%);
     }
   }
+  &.btn-confirm {
+    background-color: $orange;
+    color: #fff;
+    border: 0;
+
+    .text-danger {
+      color: #fff;
+    }
+    &:hover,
+    &:focus,
+    &.focus,
+    &:active,
+    &.active,
+    .open > .btn-primary.dropdown-toggle {
+      background-color: darken($orange, 2.5%);
+    }
+  }
   &.btn-primary {
     background-color: $brand-color-primary;
     color: #fff;

@@ -43,7 +43,7 @@
 
         - if @stop_area.flexible_area_members.any?
           = simple_block_for @stop_area, title: t("stop_areas.form.sections.flexible_area") do |d|
-            = d.attribute :flexible_area_members, as: :associations, value: @stop_area.flexible_area_members.sort_by(&:name), link: ->(member) { workbench_stop_area_referential_stop_areas_path(@workbench, member) }
+            = d.attribute :flexible_area_members, as: :associations, value: @stop_area.flexible_area_members.sort_by(&:name), link: ->(member) { workbench_stop_area_referential_stop_area_path(@workbench, member) }
 
         = simple_block_for @stop_area, title: Chouette::StopArea.tmf('referent') do |d|
           - if @stop_area.is_referent

@@ -138,7 +138,7 @@ module SimpleBlockForHelper
               content_tag :ul do
                 raw_value.collect do |single_raw_value|
                   if link.respond_to?(:call)
-                    link_li = link.call(single_raw_value).gsub('.', '/')
+                    link_li = link.call(single_raw_value)
                   end
 
                   displayed_value_li = [single_raw_value.name,  single_raw_value.try(:get_objectid).try(:short_id)].join(' ')

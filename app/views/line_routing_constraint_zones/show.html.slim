@@ -13,8 +13,8 @@
 
       .col-lg-6.col-md-6.col-sm-12.col-xs-12
         = simple_block_for @line_routing_constraint_zone, title: LineRoutingConstraintZone.tmf(:coverage) do |d|
-          = d.attribute :lines, as: :associations, value: @line_routing_constraint_zone.lines.sort_by(&:name), link: ->(child) { workbench_line_referential_lines_path(@workbench, child) }
-          = d.attribute :stop_areas, as: :associations, value: @line_routing_constraint_zone.stop_areas.sort_by(&:name), link: ->(child) { workbench_stop_area_referential_stop_areas_path(@workbench, child) }
+          = d.attribute :lines, as: :associations, value: @line_routing_constraint_zone.lines.sort_by(&:name), link: ->(child) { workbench_line_referential_line_path(@workbench, child) }
+          = d.attribute :stop_areas, as: :associations, value: @line_routing_constraint_zone.stop_areas.sort_by(&:name), link: ->(child) { workbench_stop_area_referential_stop_area_path(@workbench, child) }
 
       .col-lg-6.col-md-6.col-sm-12.col-xs-12
         = render 'codes/block', model: @line_routing_constraint_zone

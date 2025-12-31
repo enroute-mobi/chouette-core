@@ -46,6 +46,10 @@ class Import::Base < ApplicationModel
     workbench&.workgroup
   end
 
+  def duration
+    ended_at - started_at if ended_at && started_at
+  end
+
   def public_code_space
     @public_code_space ||= workgroup.code_spaces.public if workgroup
   end

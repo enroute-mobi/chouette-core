@@ -3,7 +3,7 @@
 .row
   .col-lg-6.col-md-6.col-sm-12.col-xs-12
     = render 'metadatas', import: @import
-  / TODO : Use processing_helper after import refactoring (See CHOUETTE-5147)
+  / TODO : Use operation_processing_helper after import refactoring (See CHOUETTE-5147)
   .col-lg-6.col-md-6.col-sm-12.col-xs-12
     = simple_block_for @import, title: t("simple_block_for.title.processing") do |d|
       = d.attribute :created_at, as: :datetime
@@ -44,7 +44,7 @@
       [ \
         TableBuilderHelper::Column.new( \
           key: :user_status, \
-          attribute: Proc.new { |run| operation_user_status(run) }, \
+          attribute: Proc.new { |run| operation_user_status(run.user_status) }, \
         ), \
         TableBuilderHelper::Column.new( \
           key: :name, \
@@ -75,7 +75,7 @@
       [ \
         TableBuilderHelper::Column.new( \
           key: :user_status, \
-          attribute: Proc.new { |run| operation_user_status(run) }, \
+          attribute: Proc.new { |run| operation_user_status(run.user_status) }, \
         ), \
         TableBuilderHelper::Column.new( \
           key: :name, \
@@ -111,7 +111,7 @@
         TableBuilderHelper::Column.new( \
           name: Operation.human_attribute_name('status'), \
           key: :user_status, \
-          attribute: Proc.new { |fv| operation_user_status(fv) }, \
+          attribute: Proc.new { |fv| operation_user_status(fv.user_status) }, \
           sortable: false \
         ), \
         TableBuilderHelper::Column.new( \

@@ -177,6 +177,7 @@ module Chouette
 
     config.active_storage.variant_processor = :mini_magick
 
+    config.nest.parent_application_record = 'ApplicationModel'
     config.nest.simple_block_for_builder = 'Chouette::SimpleBlockFor::Builder'
 
     once = Rails.root.join('app/once')

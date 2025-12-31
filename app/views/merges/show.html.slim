@@ -11,7 +11,8 @@
             = b.attribute(:last_aggregated_at, as: :datetime, label: t('.last_aggregated_at'), value: @merge.last_aggregate.ended_at)
             = b.attribute(:last_aggregated_referential, as: :association, label: t('.last_aggregated_referential'), value: @merge.last_aggregate.new, link: url_for([@workbench, @merge.last_aggregate.new]))
           end
-      = processing_helper(@merge)
+      .col-lg-6.col-md-6.col-sm-12.col-xs-12
+        = operation_processing_helper(@merge)
     .row
       - if @merge.referentials.any?
         .col-lg-12

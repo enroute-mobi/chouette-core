@@ -13,7 +13,7 @@
             [ \
 							TableBuilderHelper::Column.new( \
                 key: :user_status, \
-                attribute: Proc.new { |macro_list_run| operation_user_status(macro_list_run) }, \
+                attribute: Proc.new { |macro_list_run| operation_user_status(macro_list_run.user_status) }, \
               ), \
               TableBuilderHelper::Column.new( \
                 key: :name, \

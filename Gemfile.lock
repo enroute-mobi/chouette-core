@@ -58,10 +58,15 @@ GIT
 
 GIT
   remote: https://bitbucket.org/enroute-mobi/nest.git
-  revision: e0be3af4b1ff399c93ea0db4f311ac172c397fb1
+  revision: 5976bc194255b52d84ac6dcc7896aad363649850
   specs:
     nest (0.1)
-      activesupport
+      active_attr
+      enumerize
+      ostruct
+      rails (>= 7)
+      sentry-rails
+      simple_form
       unsplash
 
 GIT

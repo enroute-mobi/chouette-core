@@ -9,7 +9,7 @@
         - if @merge.last_aggregate
           = simple_block_for @merge, title: t('.last_aggregate') do |b|
             = b.attribute(:last_aggregated_at, as: :datetime, label: t('.last_aggregated_at'), value: @merge.last_aggregate.ended_at)
-            = b.attribute(:last_aggregated_referential, label: t('.last_aggregated_referential'), value: link_to(@merge.last_aggregate.new.name, [@workbench, @merge.last_aggregate.new]))
+            = b.attribute(:last_aggregated_referential, as: :association, label: t('.last_aggregated_referential'), value: @merge.last_aggregate.new, link: url_for([@workbench, @merge.last_aggregate.new]))
           end
       = processing_helper(@merge)
     .row

@@ -25,7 +25,7 @@ class Destination::Mail < ::Destination
   validates :attached_export_filename, format: { with: /\A[A-Za-z0-9%{:}_-]+\.(xml|zip)\z/i, message: :filename, allow_blank: true }
 
   def display_link_to_api
-    @display_link_to_api ||= publication_setup.workgroup.publication_apis.find_by(id: link_to_api)
+    @display_link_to_api ||= publication_setup.workgroup.publication_apis.find_by(id: link_to_api) if link_to_api
   end
 
   def transmit_export(publication, _report)

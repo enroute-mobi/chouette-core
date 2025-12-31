@@ -31,8 +31,6 @@ module SimpleBlockForHelper
   #   the #text method is invoked on the value
   # boolean::
   #   the value is displayed as Yes/No, Oui/Non, etc
-  # objectid::
-  #   the #short_id method is invoked on the value
   # association::
   #   the #name method is invoked on the value. If the value has an objectid,
   #   its short_id is prefixed
@@ -89,12 +87,7 @@ module SimpleBlockForHelper
       elsif options.key?(:value_method)
         raw_value = resource.send(options[:value_method])
       else
-        attribute_method = attribute_name
-        if attribute_name == :objectid
-          attribute_method = :get_objectid
-        end
-
-        raw_value = resource.send(attribute_method)
+        raw_value = resource.send(attribute_name)
       end
 
       label = options[:label] || resource.class.human_attribute_name(attribute_name)
@@ -126,12 +119,6 @@ module SimpleBlockForHelper
               boolean_icon(raw_value)
             else
               t(raw_value)
-            end
-          when :objectid
-            if raw_value.respond_to?(:short_id)
-              raw_value.short_id
-            else
-              raw_value
             end
           when :country
             ISO3166::Country[raw_value]&.translation(I18n.locale) || raw_value

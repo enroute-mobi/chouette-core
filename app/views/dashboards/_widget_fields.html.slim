@@ -15,4 +15,7 @@
   .p-4.bg-white.rounded-br-lg
     .grid.grid-cols-1.md:grid-cols-2.gap-4
       = f.input :name, label: t('dashboards.widgets.name'), wrapper_html: { class: 'mb-4' }
-      = f.input :widget_type, collection: Widget.types.map { |t| [t("dashboards.widgets.types.#{t}"), t] }, include_blank: false, label: t('dashboards.widgets.type'), wrapper_html: { class: 'mb-4' }
+      = f.input :widget_type, collection: Widget.types.map { |t| [t("dashboards.widgets.types.#{t}"), t] }, include_blank: false, label: t('dashboards.widgets.type'), wrapper_html: { class: 'mb-4' }, input_html: { 'x-on:change': '$el.closest(".nested-fields").querySelector(".widget-content-field").style.display = $el.value === "static_text" ? "block" : "none"' }
+    
+    .widget-content-field.mt-4[x-cloak style="display: #{f.object.widget_type == 'static_text' ? 'block' : 'none'}"]
+      = f.input :content, as: :text, label: t('dashboards.widgets.content'), input_html: { rows: 6, placeholder: t('dashboards.widgets.content_placeholder'), name: "#{f.object_name}[options][content]", value: f.object.options['content'] }, wrapper_html: { class: 'mb-4' }

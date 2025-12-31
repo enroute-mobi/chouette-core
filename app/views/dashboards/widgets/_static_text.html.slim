@@ -1,0 +1,5 @@
+.card.mb-3
+  .card-body
+    h5.card-title= widget.name
+    .markdown-content
+      = raw Kramdown::Document.new(widget.options['content'] || '').to_html

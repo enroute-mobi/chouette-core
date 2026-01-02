@@ -506,7 +506,7 @@ class Referential < ApplicationModel
     query = "select min(lower), max(upper) from (select lower(unnest(periodes)) as lower, upper(unnest(periodes)) as upper from public.referential_metadata where public.referential_metadata.referential_id = #{id}) bounds;"
 
     row = self.class.connection.select_one(query)
-    lower, upper = row["min"], row["max"]
+    lower, upper = row['min']&.to_date, row['max']&.to_date
 
     if lower and upper
       Range.new(lower, upper-1)

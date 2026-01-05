@@ -2009,10 +2009,13 @@ RSpec.describe Export::NetexGeneric do
 
     let!(:context) do
       Chouette.create do
+        code_space :code_space, short_name: 'external'
+
         point_of_interest_category do
           point_of_interest(url: 'http://www.test.fr', position_input: '2.292 48.858',
                             address_line_1: '78 rue des chantiers', zip_code: '78000', city_name: 'Versailles',
-                            postal_region: 'Dummy', country: 'France', email: 'hello@yopmail.com', phone: '0129349878') do
+                            postal_region: 'Dummy', country: 'France', email: 'hello@yopmail.com', phone: '0129349878',
+                            codes: { external: 'code_value' }) do
             point_of_interest_hours opening_time_of_day: TimeOfDay.new(14), closing_time_of_day: TimeOfDay.new(18)
           end
         end
@@ -2024,15 +2027,15 @@ RSpec.describe Export::NetexGeneric do
     let(:decorator) do
       Export::NetexGeneric::PointOfInterests::Decorator.new point_of_interest, code_provider: code_provider
     end
-    let(:code_provider) { Export::CodeProvider.new export_scope }
+    let(:code_provider) { Export::CodeProvider.new export_scope, code_space: context.code_space(:code_space) }
 
     describe Export::NetexGeneric::PointOfInterests::Decorator do
       subject { decorator.netex_attributes }
 
       describe 'netex_resource' do
         describe '#id' do
-          it 'uses Point of interest\'s uuid' do
-            is_expected.to include(id: point_of_interest.uuid)
+          it 'uses Point of interest\'s code' do
+            is_expected.to include(id: 'code_value')
           end
         end
 

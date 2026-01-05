@@ -1,6 +1,6 @@
 - javascript_additional_packs 'exports/form', 'publication_setups/form'
 
-= simple_form_for resource, url: [@workgroup, resource], html: {class: 'form-horizontal', id: 'publication_setup_form', 'x-data': "exportForm(#{ resource.alpine_state.to_json })" }, wrapper: :horizontal_form do |form|
+= simple_form_for resource, url: [@workgroup, resource], html: {class: 'form-horizontal', id: 'publication_setup_form', 'x-data': "exportForm(#{ resource.alpine_state.to_json })" }, wrapper: :horizontal_form_tailwind do |form|
   .row
     .form-group
       .col-lg-12
@@ -10,24 +10,19 @@
         = form.input :force_daily_publishing, as: :switchable_checkbox
         = form.input :enable_cache, as: :switchable_checkbox
         = form.input :priority, input_html: { min: 1, max: 1000 }
-    .separator.section_separator
 
-    h2.mb-lg= t('publication_setups.form.sections.export')
-    .form-group
-      .col-lg-12
-        = render'export_setups/form', form: form, export_type_attribute: :export_type, export_setup_attribute: :export_setup, workgroup: @workgroup
+    = render'export_setups/form', form: form, export_type_attribute: :export_type, export_setup_attribute: :export_setup, workgroup: @workgroup
 
     .separator.section_separator
-
-    h2.mb-lg= t('publication_setups.form.sections.destinations')
+    h3.mb-lg= t('publication_setups.form.sections.destinations')
     .form-group
       .col-lg-12
         - form.object.destinations.build unless form.object.destinations.size > 0
         = form.simple_fields_for(:destinations) do |destination_form|
           = render 'destination_fields', f: destination_form, destination: destination_form.object
 
-        .links.nested-linker
-          = link_to_add_association t('publication_setups.form.add_destination'), form, :destinations, class: 'btn btn-primary'
+    .links.nested-linker
+      = link_to_add_association t('publication_setups.form.add_destination'), form, :destinations, class: 'btn btn-primary'
 
   = cancel_button
 

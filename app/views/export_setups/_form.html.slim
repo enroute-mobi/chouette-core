@@ -1,18 +1,59 @@
-= form.input export_type_attribute,
-             as: :select,
-             collection:  workgroup_exports(workgroup),
-             include_blank: false,
-             label_method: :human_name,
-             input_html: { 'x-model': 'type' }
+.separator.section_separator
 
-template[x-if="type == 'Export::Gtfs'"]
-  div
-    = render 'export_setups/types/gtfs', form: form, export_setup_attribute: export_setup_attribute
+h3.mb-lg= t('export_setups.form.sections.format')
+.form-group
+  .col-lg-12
+    = form.input export_type_attribute,
+                as: :select,
+                collection:  workgroup_exports(workgroup),
+                include_blank: false,
+                label_method: :human_name,
+                input_html: { 'x-model': 'type' }
+    template[x-if="type == 'Export::Gtfs'"]
+      div
+        = render 'export_setups/types/gtfs', form: form, export_setup_attribute: export_setup_attribute
+    template[x-if="type == 'Export::NetexGeneric'"]
+      div
+        = render 'export_setups/types/netex', form: form, export_setup_attribute: export_setup_attribute
+    template[x-if="type == 'Export::Ara'"]
+      div
+        = render 'export_setups/types/ara', form: form, export_setup_attribute: export_setup_attribute
 
-template[x-if="type == 'Export::NetexGeneric'"]
-  div
-    = render 'export_setups/types/netex', form: form, export_setup_attribute: export_setup_attribute
+.separator.section_separator
 
-template[x-if="type == 'Export::Ara'"]
-  div
-    = render 'export_setups/types/ara', form: form, export_setup_attribute: export_setup_attribute
+h3.mb-lg= t('export_setups.form.sections.codes')
+.form-group
+  .col-lg-12
+    = form.simple_fields_for(export_setup_attribute, form.object.form_export_setup) do |sub_form|
+      = sub_form.input :code_space_id, collection: current_workgroup.code_spaces, include_blank: true
+
+.separator.section_separator
+
+h3.mb-lg= t('export_setups.form.sections.vehicle_journeys')
+.form-group
+  .col-lg-12
+    = form.simple_fields_for(export_setup_attribute, form.object.form_export_setup) do |sub_form|
+      = render 'export_setups/options/period', form: sub_form
+      = render 'export_setups/options/exported_lines', form: sub_form
+
+.separator.section_separator
+
+h3.mb-lg= t('export_setups.form.sections.associated_models')
+.form-group
+  .col-lg-12
+    = form.simple_fields_for(export_setup_attribute, form.object.form_export_setup) do |sub_form|
+      = sub_form.simple_fields_for(:scope_setup, sub_form.object.scope_setup) do |scope_setup_form|
+          = scope_setup_form.hidden_field :type
+          = scope_setup_form.simple_fields_for(:stop_areas, scope_setup_form.object.stop_areas) do |stop_areas_form|
+            = stop_areas_form.input :type, collection: [Export::Setup::Scope::StopAreas::Scheduled, Export::Setup::Scope::StopAreas::None].map { |k| [k.model_name.human, k.name] }, required: true, input_html: { 'x-ref': 'netexScopeStopAreasType', 'x-on:change': 'updateScopeStopAreasType()', 'x-bind:disabled': "type != 'Export::NetexGeneric'" }, wrapper_html: { 'x-show': "type == 'Export::NetexGeneric'" }
+            = stop_areas_form.input :type, collection: [Export::Setup::Scope::StopAreas::Scheduled].map { |k| [k.model_name.human, k.name] }, include_blank: false, input_html: { 'x-ref': 'scopeStopAreasType', 'x-on:change': 'updateScopeStopAreasType()', 'x-bind:disabled': "type == 'Export::NetexGeneric'" }, wrapper_html: { 'x-show': "type != 'Export::NetexGeneric'" }
+            div[x-show="scopeStopAreasType == 'Export::Setup::Scope::StopAreas::Scheduled'" ]
+              = stop_areas_form.input :prefer_referent_stop_areas, as: :switchable_checkbox, wrapper: :horizontal_form_tailwind_right_label, input_html: { 'x-bind:disabled': "scopeStopAreasType != 'Export::Setup::Scope::StopAreas::Scheduled' || type != 'Export::Gtfs'" }, wrapper_html: { 'x-show': "type == 'Export::Gtfs'" }
+              = stop_areas_form.input :ignore_parent_stop_areas, as: :switchable_checkbox, wrapper: :horizontal_form_tailwind_right_label, input_html: { 'x-bind:disabled': "scopeStopAreasType != 'Export::Setup::Scope::StopAreas::Scheduled' || type != 'Export::Gtfs'" }, wrapper_html: { 'x-show': "type == 'Export::Gtfs'" }
+              = stop_areas_form.input :ignore_referent_stop_areas, as: :switchable_checkbox, wrapper: :horizontal_form_tailwind_right_label, input_html: { 'x-bind:disabled': "scopeStopAreasType != 'Export::Setup::Scope::StopAreas::Scheduled' || type != 'Export::NetexGeneric'" }, wrapper_html: { 'x-show': "type == 'Export::NetexGeneric'" }
+          = scope_setup_form.simple_fields_for(:lines, scope_setup_form.object.lines) do |lines_form|
+            = lines_form.input :type, collection: [Export::Setup::Scope::Lines::Scheduled, Export::Setup::Scope::Lines::None].map { |k| [k.model_name.human, k.name] }, required: true, input_html: { 'x-ref': 'netexScopeLinesType', 'x-on:change': 'updateScopeLinesType()', 'x-bind:disabled': "type != 'Export::NetexGeneric'" }, wrapper_html: { 'x-show': "type == 'Export::NetexGeneric'" }
+            = lines_form.input :type, collection: [Export::Setup::Scope::Lines::Scheduled].map { |k| [k.model_name.human, k.name] }, include_blank: false, input_html: { 'x-ref': 'scopeLinesType', 'x-on:change': 'updateScopeLinesType()', 'x-bind:disabled': "type == 'Export::NetexGeneric'" }, wrapper_html: { 'x-show': "type != 'Export::NetexGeneric'" }
+            div[x-show="scopeLinesType == 'Export::Setup::Scope::Lines::Scheduled'" ]
+              = lines_form.input :prefer_referent_companies, as: :switchable_checkbox, wrapper: :horizontal_form_tailwind_right_label, input_html: { 'x-bind:disabled': "scopeLinesType != 'Export::Setup::Scope::Lines::Scheduled' || type != 'Export::Gtfs'" }, wrapper_html: { 'x-show': "type == 'Export::Gtfs'" }
+              = lines_form.input :prefer_referent_lines, as: :switchable_checkbox, wrapper: :horizontal_form_tailwind_right_label, input_html: { 'x-bind:disabled': "scopeLinesType != 'Export::Setup::Scope::Lines::Scheduled' || type == 'Export::Ara'" }, wrapper_html: { 'x-show': "type != 'Export::Ara'" }

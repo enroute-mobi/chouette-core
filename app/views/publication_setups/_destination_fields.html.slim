@@ -1,38 +1,40 @@
 - destination = local_assigns.fetch(:destination, Destination.new)
 
 div[x-data="{ destinationType: '#{destination.type}', host_type: '#{f.object.options['host_type'] || 'chouette'}', icarType: '#{destination.is_a?(Destination::Icar) ? destination.icar_type : 'production'}'}"]
-  .destination
+  .nested-fields.destination
     = f.input :name
-    .fields
-      = f.hidden_field :id
-      = f.input :type,
-        collection: Destination.descendants.map{|k| [k.human_type, k.name]},
-        selected: destination.type,
-        include_blank: true,
-        input_html: { disabled: !f.object.new_record?, 'x-model': 'destinationType' }
-      template[x-if="destinationType == 'Destination::PublicationApi'"]
+    = f.input :id, as: :hidden, wrapper: false
+    = f.input :type,
+      collection: Destination.descendants.map{|k| [k.human_type, k.name]},
+      selected: destination.type,
+      include_blank: true,
+      input_html: { disabled: !f.object.new_record?, 'x-model': 'destinationType' }
+    template[x-if="destinationType == 'Destination::PublicationApi'"]
+      div
+        = f.input :publication_api_id, collection: @workgroup.publication_apis, required: true, selected: destination.publication_api_id
+    - Destination.descendants.each do |child|
+      template[x-if="destinationType == '#{child.name}'"]
         div
-          = f.input :publication_api_id, collection: @workgroup.publication_apis, required: true, selected: destination.publication_api_id
-      - Destination.descendants.each do |child|
-        template[x-if="destinationType == '#{child.name}'"]
-          div
-            - child.options.each do |attr, option_def|
-              - if attr == :custom_url
-                  template[x-if="host_type == 'custom'"]
+          - child.options.each do |attr, option_def|
+            - if attr == :custom_url
+                template[x-if="host_type == 'custom'"]
+                  div
+                    = option_input f, attr, klass: child
+            - elsif attr == :icar_type && child.name == 'Destination::Icar'
+                - if has_feature?(:destination_icar_custom)
+                  div
+                    = option_input f, attr, klass: child, input_html: { 'x-model': 'icarType' }
+            - elsif attr == :custom_icar_url && child.name == 'Destination::Icar'
+                - if has_feature?(:destination_icar_custom)
+                  template[x-if="icarType === 'custom'"]
                     div
                       = option_input f, attr, klass: child
-              - elsif attr == :icar_type && child.name == 'Destination::Icar'
-                  - if has_feature?(:destination_icar_custom)
-                    div
-                      = option_input f, attr, klass: child, input_html: { 'x-model': 'icarType' }
-              - elsif attr == :custom_icar_url && child.name == 'Destination::Icar'
-                  - if has_feature?(:destination_icar_custom)
-                    template[x-if="icarType === 'custom'"]
-                      div
-                        = option_input f, attr, klass: child
-              - else
-                = option_input f, attr, klass: child
+            - else
+              = option_input f, attr, klass: child
 
-            = f.input :secret_file, wrapper: :inline_file_input, required: true if child.secret_file_required?
+          = f.input :secret_file, wrapper: :inline_file_input, required: true if child.secret_file_required?
 
-    = f.input :_destroy, as: :switchable_checkbox
+    .text-right
+      = link_to_remove_association f, class: 'btn btn-danger' do
+        span.fa.fa-trash
+        =< I18n.t('actions.delete')

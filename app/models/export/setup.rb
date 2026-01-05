@@ -181,8 +181,8 @@ module Export
       end
 
       class Setup < ApplicationStoreModel
-        attribute :stop_areas, StopAreas::Base.one_of_descendants.to_type, default: -> { StopAreas::All.new }
-        attribute :lines, Lines::Base.one_of_descendants.to_type, default: -> { Lines::All.new }
+        attribute :stop_areas, StopAreas::Base.one_of_descendants.to_type, default: -> { StopAreas::Scheduled.new }
+        attribute :lines, Lines::Base.one_of_descendants.to_type, default: -> { Lines::Scheduled.new }
         attribute :shapes, Shapes.to_type, default: -> { Shapes.new }
         attribute :point_of_interests, PointOfInterests.to_type, default: -> { PointOfInterests.new }
 
@@ -305,8 +305,6 @@ module Export
       attribute :profile, :string, default: 'none'
       attribute :profile_options, default: -> { {} }
       attribute :participant_ref, :string, default: 'enRoute'
-      attribute :skip_line_resources, :boolean, default: false
-      attribute :skip_stop_area_resources, :boolean, default: false
 
       enumerize :profile, in: %w[none french european idfm/iboo idfm/icar idfm/publication idfm/publication/legacy]
       validates :profile, presence: true

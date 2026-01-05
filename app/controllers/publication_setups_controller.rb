@@ -22,7 +22,13 @@ class PublicationSetupsController < Chouette::WorkgroupController
 
   protected
 
-  alias resource workgroup
+  def resource
+    @publication_setup ||= super.decorate(context: { workgroup: workgroup }) # rubocop:disable Naming/MemoizedInstanceVariableName
+  end
+
+  def build_resource
+    @publication_setup ||= super.decorate(context: { workgroup: workgroup }) # rubocop:disable Naming/MemoizedInstanceVariableName
+  end
 
   private
 
@@ -48,10 +54,6 @@ class PublicationSetupsController < Chouette::WorkgroupController
     ).tap do |publication_setup_params|
       parse_export_setup_netex_profile_options!(publication_setup_params, :export_type, :export_setup)
     end
-  end
-
-  def resource
-    super.decorate(context: { workgroup: workgroup })
   end
 
   def collection

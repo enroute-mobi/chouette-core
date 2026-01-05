@@ -1,20 +1,7 @@
 - export_setup = form.object.form_export_setup.becomes(Export::Setup::Netex)
 
 = form.simple_fields_for(export_setup_attribute, export_setup) do |sub_form|
-  = render 'export_setups/options/period', form: sub_form
   = sub_form.input :profile, as: :select, include_blank: false
-  = render 'export_setups/options/exported_lines', form: sub_form
-  = sub_form.simple_fields_for(:scope_setup, sub_form.object.scope_setup) do |scope_setup_form|
-    = scope_setup_form.hidden_field :type
-    = scope_setup_form.simple_fields_for(:lines, scope_setup_form.object.lines) do |lines_form|
-      = lines_form.hidden_field :type, value: 'Export::Setup::Scope::Lines::Scheduled'
-      = lines_form.input :prefer_referent_lines, as: :switchable_checkbox
-    = scope_setup_form.simple_fields_for(:stop_areas, scope_setup_form.object.stop_areas) do |stop_areas_form|
-      = stop_areas_form.hidden_field :type, value: 'Export::Setup::Scope::StopAreas::Scheduled'
-      = stop_areas_form.input :ignore_referent_stop_areas, as: :switchable_checkbox
-  = sub_form.input :skip_line_resources, as: :switchable_checkbox
-  = sub_form.input :skip_stop_area_resources, as: :switchable_checkbox
-  = render 'export_setups/options/exported_code_space', form: sub_form
   = sub_form.input :participant_ref
   = render 'export_setups/options/profile_options', form: sub_form
 

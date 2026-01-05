@@ -64,7 +64,7 @@ class Export::NetexGeneric < Export::Base
     end
 
     def ignore_referent_stop_areas?
-      export.setup.scope_setup.stop_areas.ignore_referent_stop_areas
+      export.setup.scope_setup.stop_areas.try(:ignore_referent_stop_areas)
     end
 
     def entrances
@@ -149,7 +149,7 @@ class Export::NetexGeneric < Export::Base
     end
 
     def prefer_referent_lines?
-      export.setup.scope_setup.lines.prefer_referent_lines
+      export.setup.scope_setup.lines.try(:prefer_referent_lines)
     end
 
     def referenced_lines
@@ -175,8 +175,12 @@ class Export::NetexGeneric < Export::Base
 
   def part_classes
     [].tap do |part_classes|
-      part_classes.push(Entrances, StopAreas, FlexibleStopAreas) unless setup.skip_stop_area_resources
-      part_classes.push(Companies, Networks, LineNotices, BookingArrangements, Lines) unless setup.skip_line_resources
+      unless setup.scope_setup.stop_areas.is_a?(Export::Setup::Scope::StopAreas::None)
+        part_classes.push(Entrances, StopAreas, FlexibleStopAreas)
+      end
+      unless setup.scope_setup.lines.is_a?(Export::Setup::Scope::Lines::None)
+        part_classes.push(Companies, Networks, LineNotices, BookingArrangements, Lines)
+      end
 
       # Export StopPoints before Routes to detect local references
       part_classes.push(StopPoints, Routes, RoutingConstraintZones, JourneyPatterns, TimeTables, VehicleJourneyStopAssignments, Organisations, PointOfInterests)

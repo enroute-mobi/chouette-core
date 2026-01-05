@@ -13,7 +13,7 @@ class LineGroupsController < Chouette::LineReferentialController
     index! do |format|
       format.html do
         @line_groups = LineGroupDecorator.decorate(
-          collection,
+          collection.includes(:network),
           context: {
             workbench: workbench
           }

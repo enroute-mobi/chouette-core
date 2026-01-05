@@ -21,6 +21,14 @@ const status = (state = initialState, action) => {
       return Object.assign({}, state, { isFetching: false, fetchSuccess: true, fetchError: false })
     case 'FETCH_ERROR':
       return Object.assign({}, state, { isFetching: false, fetchSuccess: false, fetchError: true })
+    case 'SUBMIT_ROUTE_START':
+      return { ...state, isSubmitting: true, submitSuccess: false, submitError: false }
+    case 'SUBMIT_ROUTE_SUCCESS':
+      return { ...state, isSubmitting: false, submitSuccess: true, submitError: false }
+    case 'SUBMIT_ROUTE_ERROR':
+      return { ...state, isSubmitting: false, submitSuccess: false, submitError: true }
+    case 'RECEIVE_ERRORS':
+      return { ...state, isSubmitting: false, submitError: true }
     default:
       return state
   }

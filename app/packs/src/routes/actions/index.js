@@ -65,6 +65,18 @@ const actions = {
     type: 'UPDATE_ROUTE_FORM_INPUT',
     attributes
   }),
+  addCode: (code) => ({
+    type: 'ADD_CODE',
+    code
+  }),
+  updateCode: (attributes) => ({
+    type: 'UPDATE_CODE',
+    attributes
+  }),
+  deleteCode: (index) => ({
+    type: 'DELETE_CODE',
+    index
+  }),
   fetchWrapper: dispatch => fetchUrl => async resourceName => {
     const response = await fetch(fetchUrl)
     if (!response.ok) {
@@ -94,22 +106,27 @@ const actions = {
     value
   }),
   submitRoute: dispatch => requestMethod => async route => {
+    dispatch({ type: 'SUBMIT_ROUTE_START' })
     try {
-      dispatch({ type: 'SUBMIT_ROUTE_START' })
       const response = await fetch(window.routeSubmitUrl, {
         credentials: 'same-origin',
         method: requestMethod,
         headers: {
           'Accept': 'application/json',
-          'Content-Type': 'application/json;  charset=utf-8',
+          'Content-Type': 'application/json; charset=utf-8',
           'X-CSRF-Token': $('meta[name="csrf-token"]').attr('content')
-          },
+        },
         body: JSON.stringify({route: route})
-        }
-      )
+      })
+      
       const json = await response.json()
-      dispatch({ type: 'SUBMIT_ROUTE_SUCCESS', json })
-      window.location.assign(window.redirectUrl)
+      
+      if (!response.ok) {
+        dispatch({ type: 'RECEIVE_ERRORS', json })
+      } else {
+        dispatch({ type: 'SUBMIT_ROUTE_SUCCESS', json })
+        window.location.assign(window.redirectUrl)
+      }
     } catch(error) {
       dispatch({ type: 'SUBMIT_ROUTE_ERROR', error })
     }

@@ -105,12 +105,13 @@ class RoutesController < Chouette::ReferentialController
   def create
     create! do |success, failure|
       failure.json do
-        render json: { message: t('flash.actions.create.error', resource_name: Chouette::Route.model_name.human),
-                       status: 422 }
+        render json: {
+          message: t('flash.actions.create.error', resource_name: Chouette::Route.model_name.human),
+          errors: resource.errors.full_messages
+        }, status: 422
       end
       success.json do
-        render json: { message: t('flash.actions.create.notice', resource_name: Chouette::Route.model_name.human),
-                       status: 200 }
+        render json: { message: t('flash.actions.create.notice', resource_name: Chouette::Route.model_name.human) }
       end
     end
   end
@@ -118,12 +119,13 @@ class RoutesController < Chouette::ReferentialController
   def update
     update! do |success, failure|
       failure.json do
-        render json: { message: t('flash.actions.update.error', resource_name: Chouette::Route.model_name.human),
-                       status: 422 }
+        render json: {
+          message: t('flash.actions.update.error', resource_name: Chouette::Route.model_name.human),
+          errors: resource.errors.full_messages
+        }, status: 422
       end
       success.json do
-        render json: { message: t('flash.actions.update.notice', resource_name: Chouette::Route.model_name.human) },
-               status: :ok
+        render json: { message: t('flash.actions.update.notice', resource_name: Chouette::Route.model_name.human) }
       end
     end
   end
@@ -197,6 +199,7 @@ class RoutesController < Chouette::ReferentialController
       :opposite_route_id,
       :published_name,
       :wayback,
+      codes_attributes: %i[id code_space_id value _destroy],
       stop_points_attributes: %i[id _destroy position stop_area_id for_boarding for_alighting flexible]
     )
   end

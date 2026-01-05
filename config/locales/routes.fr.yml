@@ -98,6 +98,7 @@ fr:
         journey_patterns: "Missions"
         opposite_route: "Itinéraire associé"
         opposite_route_id: "Itinéraire associé"
+        codes: "Codes"
         objectid: "Identifiant Neptune"
         object_version: "Version"
         created_at: "Créé le"

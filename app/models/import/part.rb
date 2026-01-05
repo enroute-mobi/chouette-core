@@ -22,8 +22,10 @@ module Import
 
     def around_import!(&block)
       run_callbacks :import do
-        bullet_profile do
-          logger.tagged(internal_description, &block)
+        Chouette::Benchmark.measure(internal_description) do
+          bullet_profile do
+            logger.tagged(internal_description, &block)
+          end
         end
       end
     end
@@ -31,9 +33,6 @@ module Import
     def internal_description
       @internal_description ||= self.class.name.demodulize.underscore
     end
-
-    include Measurable
-    measure :import!, as: ->(part) { part.internal_description }
 
     private
 

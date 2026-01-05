@@ -44,7 +44,7 @@ class Referential
         options[:optional] = true
 
         unless_condition = proc do
-          skippable && skip_presence_of(name) ||
+          skippable && skip_presence_of?(name) ||
             optional_on && validation_context == optional_on
         end
 

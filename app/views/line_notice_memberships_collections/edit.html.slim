@@ -8,7 +8,7 @@
         = simple_form_for @line, url: workbench_line_referential_line_line_notice_memberships_path(@workbench, @line), html: {class: 'form-horizontal', id: 'attach_form'}, wrapper: :horizontal_form do |form|
           .row
             .col-lg-12
-              = form.hidden_field :line_notice_ids
+              = form.hidden_field :line_notice_ids, value: form.object.line_notice_ids.join(',')
 
           .row.merge-referentials-selector
             .col

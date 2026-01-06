@@ -156,6 +156,7 @@ module Chouette
       define Chouette::Company, :time_zone
       define Chouette::Company, :town
       define Chouette::Company, :is_referent
+      define Chouette::Company, :referent_id
 
       # Chouette::StopArea
       define Chouette::StopArea, :name

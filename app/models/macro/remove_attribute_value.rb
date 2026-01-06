@@ -77,6 +77,7 @@ module Macro
           select Chouette::Company, :street
           select Chouette::Company, :time_zone
           select Chouette::Company, :town
+          select Chouette::Company, :referent_id
           # select Chouette::Company, :is_referent
 
           # Chouette::StopArea
@@ -152,24 +153,17 @@ module Macro
       include Options
 
       def run
-        candidate_models.find_each do |model|
-          messages.create(source: model) do |message|
-            message.error! unless update_all_success?
+        candidate_models.in_batches(of: 10000) do |batch|
+          updated_models = batch.to_a
+
+          if batch.update_all(updated_attributes.merge(updated_at: Time.zone.now)).positive?
+            updated_models.each { |model| messages.create(source: model) }
           end
         end
       end
 
-      def update_all_success?
-        @update_all_success ||= begin
-          candidate_models.update_all(updated_attributes)
-          true
-        rescue
-          false
-        end
-      end
-
       def candidate_models
-        @candidate_models ||= models.where.not(updated_attributes)
+        models.where.not(updated_attributes)
       end
 
       def updated_attributes
@@ -186,6 +180,8 @@ module Macro
       end
 
       def default_attribute_value
+        return @default_attribute_value if defined?(@default_attribute_value)
+
         @default_attribute_value ||= models.column_for_attribute(target_attribute).default
       end
 

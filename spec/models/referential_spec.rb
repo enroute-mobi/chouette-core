@@ -559,6 +559,75 @@ RSpec.describe Referential, type: :model do
     end
   end
 
+  context '#metadatas_period' do
+    subject { referential.metadatas_period }
+
+    context 'when referential has no metadata' do
+      let(:context) do
+        Chouette.create do
+          referential with_metadatas: false
+        end
+      end
+
+      it { is_expected.to be_nil }
+    end
+
+    context 'when referential has 1 metadata' do
+      context 'with including range' do
+        let(:context) do
+          Chouette.create do
+            referential periods: [Date.parse('2026-01-01')..Date.parse('2026-01-31')]
+          end
+        end
+
+        it 'is the period of the metadata' do
+          is_expected.to eq(Date.parse('2026-01-01')..Date.parse('2026-01-31'))
+        end
+      end
+
+      context 'with excluding range' do
+        let(:context) do
+          Chouette.create do
+            referential periods: [Date.parse('2026-01-01')...Date.parse('2026-02-01')]
+          end
+        end
+
+        it 'is the period of the metadata as an inclusive range' do
+          is_expected.to eq(Date.parse('2026-01-01')..Date.parse('2026-01-31'))
+        end
+      end
+
+      context 'when a period has a date after 9999' do
+        let(:context) do
+          Chouette.create do
+            referential periods: [Date.parse('2026-01-01')..Date.parse('10000-01-31')]
+          end
+        end
+
+        it 'is successfully parses the date' do
+          is_expected.to eq(Date.parse('2026-01-01')..Date.parse('10000-01-31'))
+        end
+      end
+    end
+
+    context 'when referential has many metadata' do
+      let(:context) do
+        Chouette.create do
+          referential periods: [
+            Date.parse('2026-01-01')..Date.parse('2026-01-31'),
+            Date.parse('2027-01-01')..Date.parse('2027-01-31'),
+            Date.parse('2024-01-01')..Date.parse('2024-01-31'),
+            Date.parse('2025-01-01')..Date.parse('2025-01-31'),
+          ]
+        end
+      end
+
+      it 'builds a range from the minimum date and the maximum date' do
+        is_expected.to eq(Date.parse('2024-01-01')..Date.parse('2027-01-31'))
+      end
+    end
+  end
+
   context "to be referential_read_only or not to be referential_read_only" do
     let( :referential ){ build( :referential ) }
 

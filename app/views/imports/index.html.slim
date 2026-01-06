@@ -12,6 +12,7 @@
     - if @chart && !@chart.empty?
       = @chart.to_chartkick(self, download: true)
     - elsif @imports&.any?
+
       .row
         .col-lg-12
           = table_builder_2 @imports,
@@ -29,11 +30,13 @@
               ), \
               TableBuilderHelper::Column.new( \
                 key: :started_at, \
-                attribute: Proc.new { |n| l(n.started_at, format: :short_with_time) if n.started_at }, \
+                attribute: Proc.new { |object| child = object.children.first; \
+                  child.started_at.present? ? l(child.started_at, format: :short_with_time) : '-' }, \
               ), \
               TableBuilderHelper::Column.new( \
                 key: :duration, \
-                attribute: Proc.new { |object| object.ended_at.presence && object.started_at.presence && duration_in_words(object.ended_at - object.started_at)}, \
+                attribute: Proc.new { |object| child = object.children.first; \
+                  (child.present? && child&.ended_at&.present? && child&.started_at&.present?) ? duration_in_words(child.ended_at - child.started_at) : '-' }, \
                 sortable: false, \
               ), \
               *@contextual_cols \

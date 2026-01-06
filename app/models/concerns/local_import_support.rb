@@ -25,13 +25,12 @@ module LocalImportSupport
       ActiveRecord::Base.cache do
         import_without_status
       end
-      update_column :ended_at, Time.zone.now
 
       processor.after([referential])
 
       @status ||= 'successful'
       referential&.active!
-      update status: @status
+      update status: @status, ended_at: Time.now
     end
   rescue InvalidReferential
     update status: 'failed', ended_at: Time.now

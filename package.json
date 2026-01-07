@@ -32,7 +32,7 @@
     "es6-symbol": "^3.1.1",
     "flag-icon-css": "^4.0.0",
     "flatpickr": "^4.6.9",
-    "gridstack": "^7.2.0",
+    "gridstack": "^7.3.0",
     "hoek": "~> 4.2.1",
     "i18n-js": "^4.5.1",
     "jquery": "3.5.0",

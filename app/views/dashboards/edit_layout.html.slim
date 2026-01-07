@@ -1,0 +1,40 @@
+- breadcrumb :dashboard_layout, @workbench, @dashboard
+- page_header_content_for @dashboard
+
+- content_for :page_header_content do
+  .row.mb-sm
+    .col-lg-12.text-right
+      = link_to t('dashboards.actions.back_to_dashboard'), workbench_dashboard_path(@workbench, @dashboard), class: 'btn btn-default'
+
+.page_content
+  .container-fluid
+    .bg-blue-50.border-l-4.border-blue-400.p-4.mb-6
+      .flex
+        .flex-shrink-0
+          i.fas.fa-info-circle.h-5.w-5.text-blue-400
+        .ml-3
+          p.text-sm.text-blue-700= t('.drag_and_drop_instructions')
+
+    .grid-stack[
+      data-dashboard-id=@dashboard.id
+      data-workbench-id=@workbench.id
+    ]
+      - @dashboard.widgets.each_with_index do |widget, index|
+        - x_pos = widget.x ? widget.x : (index % 3)
+        - y_pos = widget.y ? widget.y : (index / 3)
+        - widget_width = widget.width ? widget.width : 1
+        - widget_height = widget.height ? widget.height : 2
+        .grid-stack-item[
+          gs-x=x_pos
+          gs-y=y_pos
+          gs-w=widget_width
+          gs-h=widget_height
+          data-widget-id=widget.id
+        ]
+          .grid-stack-item-content
+            .widget-drag-handle
+              h3= widget.name
+            .widget-content
+              = render_widget(widget)
+
+= javascript_pack_tag 'dashboards-edit', defer: true

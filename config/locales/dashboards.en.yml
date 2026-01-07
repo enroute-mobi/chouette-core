@@ -3,6 +3,8 @@ en:
     actions:
       new: Add a Dashboard
       edit: Edit the Dashboard
+      edit_layout: Edit the layout
+      back_to_dashboard: "Back to dashboard"
       destroy: Delete the Dashboard
       destroy_confirm: "Are you sure you want to delete this Dashboard ?"
     index:
@@ -12,6 +14,11 @@ en:
       title: Dashboard %{name}
     edit:
       title: Edit the Dashboard %{name}
+    edit_layout:
+      title: "Edit the layout - %{name}"
+      back_to_dashboard: "Back to dashboard"
+      edit_layout: "Edit the layout"
+      drag_and_drop_instructions: "Drag and drop widgets to rearrange your dashboard"
     new:
       title: Add a Dashboard
     create:

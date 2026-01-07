@@ -1826,6 +1826,10 @@ ActiveRecord::Schema[7.2].define(version: 2026_01_12_113154) do
     t.bigint "dashboard_id", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.integer "x", default: 0
+    t.integer "y", default: 0
+    t.integer "width", default: 1
+    t.integer "height", default: 2
     t.index ["dashboard_id"], name: "index_widgets_on_dashboard_id"
   end
 

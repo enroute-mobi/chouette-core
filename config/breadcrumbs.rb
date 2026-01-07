@@ -144,6 +144,11 @@ crumb :dashboard do |workbench, dashboard|
   parent :dashboards, workbench
 end
 
+crumb :dashboard_layout do |workbench, dashboard|
+  link I18n.t('dashboards.actions.edit_layout')
+  parent :dashboard, workbench, dashboard
+end
+
 crumb :new_dashboard do |workbench|
   link I18n.t('dashboards.new.title')
   parent :dashboards, workbench

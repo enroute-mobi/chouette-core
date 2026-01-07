@@ -7,7 +7,15 @@ module Policy
 
     protected
 
+    def _show?
+      true
+    end
+
     def _update?
+      true
+    end
+
+    def _edit_layout?
       true
     end
 

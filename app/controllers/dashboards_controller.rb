@@ -3,6 +3,8 @@
 class DashboardsController < Chouette::WorkbenchController
   defaults resource_class: Dashboard
 
+  skip_before_action :authorize_resource, only: [:edit_layout]
+
   def index
     index! do |format|
       format.html do
@@ -14,6 +16,23 @@ class DashboardsController < Chouette::WorkbenchController
         )
       end
     end
+  end
+
+  def show
+    show! do |format|
+      format.html
+      format.json { render json: @dashboard.widgets.select(:id, :x, :y, :width, :height) }
+    end
+  end
+
+  def edit_layout
+  @dashboard = Dashboard.find(params[:id])
+  @workbench = Workbench.find(params[:workbench_id])
+  render 'edit_layout'
+  end
+
+  def widget_positions
+    render json: @dashboard.widgets.select(:id, :x, :y, :width, :height)
   end
 
   private
@@ -39,7 +58,11 @@ class DashboardsController < Chouette::WorkbenchController
       widgets_attributes: [
         :id, 
         :name, 
-        :widget_type,  
+        :widget_type,
+        :x,
+        :y, 
+        :width,
+        :height,
         :_destroy,
         { options: {} }
       ]

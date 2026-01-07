@@ -1,10 +1,16 @@
-.grid.grid-cols-1.md:grid-cols-2.lg:grid-cols-3.gap-6
+.grid-stack data-dashboard-id=@dashboard.id data-workbench-id=@dashboard.workbench_id
   - if @dashboard.widgets.any?
-    - @dashboard.widgets.each do |widget|
-      .bg-white.overflow-hidden.rounded-xl.border-2.border-dashed.border-gray-400.hover:border-enroute-chouette-primary.hover:border-solid.hover:bg-light-blue.transition-all.duration-150.ease-out
-        .px-4.py-5.sm:p-6
-          h3.text-base.font-semibold.text-light-grey-2.mb-3.uppercase.tracking-wide= widget.name
-          = render_widget(widget)
+    - @dashboard.widgets.each_with_index do |widget, index|
+      - x_pos = widget.x || (index % 3)
+      - y_pos = widget.y || (index / 3)
+      - w_pos = widget.width || 1
+      - h_pos = widget.height || 2
+      .grid-stack-item data-widget-id=widget.id gs-x=x_pos gs-y=y_pos gs-w=w_pos gs-h=h_pos
+        .grid-stack-item-content
+          .widget-drag-handle
+            h3= widget.name
+          .widget-content
+            = render_widget(widget)
   - else
     .col-span-full.text-center.py-12
       .bg-gray-50.p-8.rounded-lg

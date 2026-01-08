@@ -7,7 +7,7 @@ class Widget < ActiveRecord::Base
   validates :name, :widget_type, presence: true
   enumerize :widget_type, in: %w[image chart counter list numbers static_text table]
 
-  attribute :options, :jsonb, default: -> { {}}
+  attribute :options, :jsonb, default: -> { {} }
 
   def self.types
     widget_type.values

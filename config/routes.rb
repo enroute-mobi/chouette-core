@@ -232,9 +232,7 @@ Rails.application.routes.draw do # rubocop:disable Metrics/BlockLength
       end
     end
 
-    resources :dashboards do
-      resources :widgets
-    end
+    resources :dashboards
 
     resources :contracts
 

@@ -22,7 +22,7 @@
           .panel-heading
             h3.panel-title.with_actions
               div
-                = link_to t('dashboards.workbench_output.title', name: workbench.name), workbench_output_path(workbench)
+                = link_to t('legacy_dashboards.workbench_output.title', name: workbench.name), workbench_output_path(workbench)
                 span.badge.ml-xs = referentials_count if referentials_count.positive?
 
               div
@@ -34,7 +34,7 @@
                 = link_to referential.name, workbench_referential_path(workbench, referential), class: 'list-group-item'
           - else
             .panel-body
-              em.small.text-muted = t('dashboards.workbench_output.none')
+              em.small.text-muted = t('legacy_dashboards.workbench_output.none')
 
       - all_referentials_count = workbench.all_referentials.count
       .panel.panel-default
@@ -42,7 +42,7 @@
           h3.panel-title.with_actions
             div
               - if many_workbenches
-                = link_to t('dashboards.workbench.title', name: workbench.name), workbench_path(workbench)
+                = link_to t('legacy_dashboards.workbench.title', name: workbench.name), workbench_path(workbench)
               - else
                 = link_to Workbench.model_name.human.capitalize, workbench_path(workbench)
               span.badge.ml-xs = all_referentials_count if all_referentials_count.positive?
@@ -76,14 +76,14 @@
       .panel.panel-default
         .panel-heading
           h3.panel-title
-            = t('dashboards.stop_area_referentials.title')
+            = t('legacy_dashboards.stop_area_referentials.title')
         .list-group
           = link_to Chouette::StopArea.model_name.human_plural, workbench_stop_area_referential_stop_areas_path(workbench), class: 'list-group-item'
 
       .panel.panel-default
         .panel-heading
           h3.panel-title
-            = t('dashboards.line_referentials.title')
+            = t('legacy_dashboards.line_referentials.title')
         .list-group
             = link_to Chouette::Line.model_name.human_plural, workbench_line_referential_lines_path(workbench), class: 'list-group-item'
             = link_to Chouette::Company.model_name.human_plural, workbench_line_referential_companies_path(workbench), class: 'list-group-item'
@@ -106,4 +106,4 @@
                 = link_to t("aggregates.show.title", name: aggregate.name.capitalize).html_safe, workgroup_aggregate_path(aggregate.workgroup, aggregate), class: 'list-group-item'
           - else
             .panel-body
-              em.small.text-muted = t('dashboards.aggregates.none')
+              em.small.text-muted = t('legacy_dashboards.aggregates.none')

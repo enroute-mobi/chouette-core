@@ -6,5 +6,4 @@ class Dashboard < ApplicationModel
   accepts_nested_attributes_for :widgets, allow_destroy: true
 
   validates :name, presence: true
-  validates :workbench, presence: true
 end

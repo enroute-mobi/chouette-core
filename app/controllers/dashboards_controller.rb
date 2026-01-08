@@ -1,8 +1,6 @@
 # frozen_string_literal: true
 
 class DashboardsController < Chouette::WorkbenchController
-  include DashboardsHelper
-
   defaults resource_class: Dashboard
 
   def index

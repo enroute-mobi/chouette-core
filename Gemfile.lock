@@ -76,8 +76,7 @@ GIT
 
 GIT
   remote: https://bitbucket.org/enroute-mobi/secretary-ruby.git
-  revision: 82f6e5c29d91541623d6be5bdd5ef1615b59ea38
-  branch: SECRETARY-140-publish-a-shareable-validation-report
+  revision: c56ccade57ffed5906fa38031abf9b523aa6dcd0
   specs:
     secretary (0.1.0)
       activesupport

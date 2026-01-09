@@ -12,23 +12,18 @@ module ProcessingRule
       end
     end
 
+    def build_processed(attributes)
+      processed_klass.create!(processed_attributes(attributes))
+    end
+
+    protected
+
     def processed_klass
       raise NotImplementedError
     end
 
-    class ProcessingBuilder < ::ProcessingRule::ProcessingBuilder
-      delegate :processing_setup, to: :processing_rule
-
-      protected
-
-      def build_processed
-        processing_setup.processed_klass.create!(
-          workbench: operation_workbench,
-          processing_rule: processing_rule,
-          operation: operation,
-          creator: 'Webservice'
-        )
-      end
+    def processed_attributes(attributes)
+      attributes
     end
   end
 end

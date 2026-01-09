@@ -39,13 +39,9 @@ module Control
           %w[after_import before_merge after_merge after_aggregate]
         end
       end
-    end
 
-    class ProcessingBuilder < ::ControlMacro::ProcessingBuilder
-      protected
-
-      def build_processed
-        processable.control_list_runs.new(processed_attributes).tap do |processed|
+      def build_processed(attributes)
+        control_list_runs.new(processed_attributes(attributes)).tap do |processed|
           processed.build_with_original_control_list
         end
       end

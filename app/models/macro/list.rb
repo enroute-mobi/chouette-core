@@ -40,13 +40,9 @@ module Macro
           %w[after_import before_merge]
         end
       end
-    end
 
-    class ProcessingBuilder < ::ControlMacro::ProcessingBuilder
-      protected
-
-      def build_processed
-        processable.macro_list_runs.new(processed_attributes).tap do |processed|
+      def build_processed(attributes)
+        macro_list_runs.new(processed_attributes(attributes)).tap do |processed|
           processed.build_with_original_macro_list
         end
       end

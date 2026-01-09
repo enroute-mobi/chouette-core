@@ -16,8 +16,14 @@ module ProcessingRule
       end
     end
 
+    protected
+
     def processed_klass
       ::Flamingo::Validation
+    end
+
+    def processed_attributes(attributes)
+      attributes.slice(:workbench, :processing_rule, :operation, :creator)
     end
   end
 end

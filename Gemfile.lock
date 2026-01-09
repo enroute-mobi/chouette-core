@@ -66,8 +66,7 @@ GIT
 
 GIT
   remote: https://bitbucket.org/enroute-mobi/netex.git
-  revision: 094fb261480d858ec5287ab285083fdbc2993355
-  branch: DATA-62-skip-publiccode-trainnumber-transformer
+  revision: 45b5e04d7eccc8f5225cfddf6177b84704aa2229
   specs:
     netex (0.1.2)
       activesupport

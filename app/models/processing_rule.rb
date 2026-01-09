@@ -24,7 +24,7 @@ module ProcessingRule
     validates :processing_setup, store_model: true, if: :use_processing_setup?
     validates :operation_step, inclusion: { in: ->(rule) { rule.candidate_operation_steps } }
 
-    validate :validate_presence_of_processing_manager
+    validate :validate_presence_of_processable
 
     class << self
       def candidate_manager_classes
@@ -45,15 +45,15 @@ module ProcessingRule
     end
 
     def perform(**options)
-      processing_manager.create_processing(self, **options).perform
+      working_processable.create_processing(self, **options).perform
     end
 
-    def processing_manager
+    def working_processable
       processable || processing_setup
     end
 
     def candidate_operation_steps
-      (processing_manager&.class&.candidate_operation_steps || []) & self.class.operation_step.values
+      (working_processable&.class&.candidate_operation_steps || []) & self.class.operation_step.values
     end
 
     def candidate_processing_setup_types
@@ -66,7 +66,7 @@ module ProcessingRule
       !processing_setup.nil?
     end
 
-    def validate_presence_of_processing_manager
+    def validate_presence_of_processable
       if processing_setup && processable
         errors.add(:processable_type, :present)
         errors.add(:processable_id, :present)

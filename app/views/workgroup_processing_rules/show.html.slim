@@ -10,9 +10,9 @@
         = simple_block_for @processing_rule, title: 'Information' do |d|
           = d.attribute :operation_step, value: @processing_rule.operation_step.text
           = d.attribute :target_workbenches, value: @processing_rule.target_workbench_names
-          = d.attribute :processing_manager_class_name, value: @processing_rule.display_processing_manager
+          = d.attribute :processable_class_name, value: @processing_rule.display_processable
           - if @processing_rule.processable
-            = d.attribute :processable, as: :association, label: @processing_rule.processing_manager.class.model_name.human
+            = d.attribute :processable, as: :association, label: @processing_rule.processable.class.model_name.human
           - else
             = render partial: "workgroup_processing_rules/processing_setups/#{@processing_rule.processing_setup.class.name.demodulize.underscore}", locals: { d: d }
           = d.attribute :created_at, as: :datetime

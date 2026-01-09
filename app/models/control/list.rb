@@ -31,8 +31,8 @@ module Control
     #   render ...
     # end
 
-    concerning :ProcessingManager do
-      include ::ProcessingRule::ProcessingManager
+    concerning :Processable do
+      include ::ControlMacro::Processable
 
       class_methods do
         def candidate_operation_steps

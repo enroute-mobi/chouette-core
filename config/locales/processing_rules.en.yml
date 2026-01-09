@@ -49,7 +49,7 @@ en:
         other: Processing rules
     attributes:
       processing_rule/base:
-        processing_manager_class_name: Processing Type
+        processable_class_name: Processing Type
         processable_type: Processing Type
         processable_id: Processing
         operation_step: Operation Step

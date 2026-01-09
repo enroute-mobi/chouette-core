@@ -2,7 +2,7 @@
 
 module ProcessingRule
   class ProcessingSetup < ApplicationStoreModel
-    include ProcessingManager
+    include ::Processable
 
     validates :type, inclusion: { in: ->(r) { r.parent&.candidate_processing_setup_types || [] } }
 

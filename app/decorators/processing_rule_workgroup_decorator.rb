@@ -12,15 +12,15 @@ class ProcessingRuleWorkgroupDecorator < Af83::Decorator
   with_instance_decorator(&:crud)
 
   define_instance_method :name do
-    "#{operation_step.text} #{display_processing_manager}"
+    "#{operation_step.text} #{display_processable}"
   end
 
-  define_instance_method :display_processing_manager do
-    "#{processing_manager.class.model_name.human}#{" (#{processable.name})" if processable}"
+  define_instance_method :display_processable do
+    "#{working_processable.class.model_name.human}#{" (#{processable.name})" if processable}"
   end
 
-  define_instance_method :processing_manager_class_name do
-    processing_manager&.class&.name
+  define_instance_method :processable_class_name do
+    working_processable&.class&.name
   end
 
   define_instance_method :target_workbench_names do

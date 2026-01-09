@@ -49,7 +49,7 @@ fr:
         other: Règles de traitement
     attributes:
       processing_rule/base:
-        processing_manager_class_name: Type de traitement
+        processable_class_name: Type de traitement
         processable_type: Type de traitement
         processable_id: Traitement
         operation_step: Étape

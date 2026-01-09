@@ -1,14 +1,14 @@
 = simple_form_for [@workgroup, @processing_rule], as: 'processing_rule', html: { class: 'form-horizontal', id: 'processing_rule_form' }, wrapper: :horizontal_form  do |f|
   .row
-    .col-lg-12 x-data="#{{ processing_manager_class_name: @processing_rule.processing_manager&.class&.name, operation_step: @processing_rule.operation_step, target_workbenches: @processing_rule.target_workbench_ids, excluded_workbenches: @processing_rule.excluded_workbench_ids }.to_json}"
-      = f.input :processing_manager_class_name, collection: @processing_rule.class.candidate_manager_classes.map { |k| [k.model_name.human, k.name] }, value: @processing_rule.processing_manager&.class&.name, input_html: { 'x-on:change': 'processing_manager_class_name = $event.target.value' }
+    .col-lg-12 x-data="#{{ processable_class_name: @processing_rule.working_processable&.class&.name, operation_step: @processing_rule.operation_step, target_workbenches: @processing_rule.target_workbench_ids, excluded_workbenches: @processing_rule.excluded_workbench_ids }.to_json}"
+      = f.input :processable_class_name, collection: @processing_rule.class.candidate_manager_classes.map { |k| [k.model_name.human, k.name] }, value: @processing_rule.working_processable&.class&.name, input_html: { 'x-on:change': 'processable_class_name = $event.target.value' }
 
-      template[x-if="processing_manager_class_name == 'Control::List'"]
+      template[x-if="processable_class_name == 'Control::List'"]
         div
           = f.input :control_list_id, as: :select, collection: @processing_rule.candidate_control_lists
           = f.input :operation_step, collection: ProcessingRule::Workgroup.operation_step.options.select { |_,v| v.in?(Control::List.candidate_operation_steps) }, input_html: { 'x-on:change': 'operation_step = $event.target.value' }
 
-      template[x-if="processing_manager_class_name == 'ProcessingRule::FlamingoValidationProcessingSetup'"]
+      template[x-if="processable_class_name == 'ProcessingRule::FlamingoValidationProcessingSetup'"]
         div
           = f.simple_fields_for(:processing_setup, @processing_rule.processing_setup.is_a?(ProcessingRule::FlamingoValidationProcessingSetup) ? @processing_rule.processing_setup : ProcessingRule::FlamingoValidationProcessingSetup.new) do |sub_form|
             = sub_form.input :ruleset, input_html: { autocomplete: 'new-password' }

@@ -52,8 +52,8 @@ en:
         from_stop_area_id: "From"
         to_stop_area_id: "To"
         document_type: "Document type"
-        valid_before_date: Valide before
-        valid_after_date: Valide after
+        valid_before_date: Valid before
+        valid_after_date: Valid after
         referential_name: Target
         time_table_id: Timetable
         days_of_week: "Days"

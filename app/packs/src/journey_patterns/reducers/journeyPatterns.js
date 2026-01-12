@@ -20,7 +20,8 @@ const journeyPattern = (state = {}, action) =>{
         costs: {},
         deletable: false,
         shape: action.data.shape,
-        booking_arrangement_id: action.data.booking_arrangement_id.value
+        booking_arrangement_id: action.data.booking_arrangement_id.value,
+        code_values: []
       }
     case 'UPDATE_CHECKBOX_VALUE':
       var updatedStopPoints = state.stop_points.map((s) => {
@@ -31,6 +32,28 @@ const journeyPattern = (state = {}, action) =>{
         }
       })
       return _.assign({}, state, {stop_points: updatedStopPoints})
+    case 'ADD_CODE':
+      const newCodes = [...(state.code_values || []), action.code]
+      return _.assign({}, state, {code_values: newCodes})
+    case 'UPDATE_CODE':
+      const updatedCodes = (state.code_values || []).map((code, index) => {
+        if (index === action.code.index) {
+          return _.assign({}, code, {
+            code_space_id: action.code.code_space_id,
+            value: action.code.value
+          })
+        }
+        return code
+      })
+      return _.assign({}, state, {code_values: updatedCodes})
+    case 'DELETE_CODE':
+      const codesAfterDelete = (state.code_values || []).map((code, index) => {
+        if (index === action.codeIndex) {
+          return _.assign({}, code, {_destroy: true})
+        }
+        return code
+      })
+      return _.assign({}, state, {code_values: codesAfterDelete})
     default:
       return state
   }
@@ -66,6 +89,16 @@ export default function journeyPatterns (state = [], action)  {
       }
       return state
     case 'UPDATE_CHECKBOX_VALUE':
+      return state.map((j, i) =>{
+        if(i == action.index) {
+          return journeyPattern(j, action)
+        } else {
+          return j
+        }
+      })
+    case 'ADD_CODE':
+    case 'UPDATE_CODE':
+    case 'DELETE_CODE':
       return state.map((j, i) =>{
         if(i == action.index) {
           return journeyPattern(j, action)

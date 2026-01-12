@@ -192,22 +192,22 @@ const actions = {
     }
     let urlJSON = window.location.pathname + str
     let hasError = false
-
+    
     return fetch(urlJSON, {
       credentials: 'same-origin',
     }).then(response => {
-        if(response.status == 500) {
-          hasError = true
-        }
-        return response.json()
-      }).then((json) => {
-        if(hasError == true) {
-          dispatch(actions.unavailableServer())
-        } else {
-          if(json.length != 0){
-            let j = 0
-            while(j < json.length){
-              let val = json[j]
+      if(response.status == 500) {
+        hasError = true
+      }
+      return response.json()
+    }).then((json) => {
+      if(hasError == true) {
+        dispatch(actions.unavailableServer())
+      } else {
+        if(json.length != 0){
+          let j = 0
+          while(j < json.length){
+            let val = json[j]
               let i = 0
               while(i < val.route_short_description.stop_points.length){
                 let stop_point = val.route_short_description.stop_points[i]
@@ -223,7 +223,8 @@ const actions = {
                 _.assign({}, val, {
                   stop_points: val.route_short_description.stop_points,
                   costs: val.costs || {},
-                  deletable: false
+                  deletable: false,
+                  code_values: val.code_values || []
                 })
               )
               j ++
@@ -238,7 +239,22 @@ const actions = {
     return jp.filter((obj) => {
       return obj.checked
     })
-  }
+  },
+  addCode: (index, code) => ({
+    type: 'ADD_CODE',
+    index,
+    code
+  }),
+  updateCode: (index, code) => ({
+    type: 'UPDATE_CODE',
+    index,
+    code
+  }),
+  deleteCode: (index, codeIndex) => ({
+    type: 'DELETE_CODE',
+    index,
+    codeIndex
+  })
 }
 
 export default actions

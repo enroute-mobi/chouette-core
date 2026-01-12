@@ -23,6 +23,15 @@ const mapDispatchToProps = (dispatch) => {
     },
     onUnselectShape: () => {
       dispatch(actions.unselectShape())
+    },
+    onAddCode: (index, code) => {
+      dispatch(actions.addCode(index, code))
+    },
+    onUpdateCode: (index, code) => {
+      dispatch(actions.updateCode(index, code))
+    },
+    onDeleteCode: (index, codeIndex) => {
+      dispatch(actions.deleteCode(index, codeIndex))
     }
   }
 }

@@ -26,3 +26,4 @@
   | window.lineColor = "#{@route.line.color_hex}";
   | window.shape_url = "#{workbench_shape_referential_shapes_path(@workbench)}";
   | window.shapes_url = "#{shapes_workgroup_autocomplete_index_path(@referential.workgroup)}";
+  | window.available_code_spaces = #{(@referential.workgroup&.code_spaces.to_json)&.html_safe};

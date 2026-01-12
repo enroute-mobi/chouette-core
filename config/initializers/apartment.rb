@@ -22,6 +22,7 @@ Apartment.configure do |config|
     'ActiveStorage::VariantRecord',
     'ActiveStorage::Blob',
     'TimeZone',
+    'Widget',
     'Aggregate',
     'Aggregate::Resource',
     'AggregateScheduling',

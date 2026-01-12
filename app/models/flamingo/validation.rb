@@ -4,14 +4,12 @@ module Flamingo
   class Validation < Operation
     self.table_name = :flamingo_validations
 
+    belongs_to :setup, class_name: 'Flamingo::ValidationSetup'
     belongs_to :workbench, inverse_of: :flamingo_validations
-    belongs_to :processing_rule, class_name: 'ProcessingRule::Base', inverse_of: :flamingo_validations
     belongs_to :operation, polymorphic: true
 
-    delegate :processing_setup, to: :processing_rule
-
     def flamingo_server
-      @flamingo_server ||= ::Secretary::Server.create(token: processing_setup.token)
+      @flamingo_server ||= ::Secretary::Server.create(token: setup.token)
     end
 
     def perform
@@ -32,9 +30,9 @@ module Flamingo
       operation.file.cache!
       flamingo_server.validate(
         operation.file.path,
-        ruleset: processing_setup.ruleset,
-        include_schema: processing_setup.include_schema,
-        schema_version: processing_setup.schema_version,
+        ruleset: setup.ruleset,
+        include_schema: setup.include_schema,
+        schema_version: setup.schema_version,
         publish: true
       )
     end

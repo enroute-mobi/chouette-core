@@ -1,21 +1,17 @@
 = simple_form_for [@workgroup, @processing_rule], as: 'processing_rule', html: { class: 'form-horizontal', id: 'processing_rule_form' }, wrapper: :horizontal_form  do |f|
   .row
-    .col-lg-12 x-data="#{{ processable_class_name: @processing_rule.working_processable&.class&.name, operation_step: @processing_rule.operation_step, target_workbenches: @processing_rule.target_workbench_ids, excluded_workbenches: @processing_rule.excluded_workbench_ids }.to_json}"
-      = f.input :processable_class_name, collection: @processing_rule.class.candidate_manager_classes.map { |k| [k.model_name.human, k.name] }, value: @processing_rule.working_processable&.class&.name, input_html: { 'x-on:change': 'processable_class_name = $event.target.value' }
+    .col-lg-12 x-data="#{{ processable_type: @processing_rule.processable_type, operation_step: @processing_rule.operation_step, target_workbenches: @processing_rule.target_workbench_ids, excluded_workbenches: @processing_rule.excluded_workbench_ids }.to_json}"
+      = f.input :processable_type, as: :select, collection: @processing_rule.class.processable_type.values.map { |v| [v.constantize.model_name.human, v] }, value: @processing_rule.processable_type, input_html: { 'x-on:change': 'processable_type = $event.target.value' }
 
-      template[x-if="processable_class_name == 'Control::List'"]
+      template[x-if="processable_type == 'Control::List'"]
         div
-          = f.input :control_list_id, as: :select, collection: @processing_rule.candidate_control_lists
+          = f.input :processable_id, as: :select, collection: @processing_rule.candidate_control_lists, label: Control::List.model_name.human
           = f.input :operation_step, collection: ProcessingRule::Workgroup.operation_step.options.select { |_,v| v.in?(Control::List.candidate_operation_steps) }, input_html: { 'x-on:change': 'operation_step = $event.target.value' }
 
-      template[x-if="processable_class_name == 'ProcessingRule::FlamingoValidationProcessingSetup'"]
+      template[x-if="processable_type == 'Flamingo::ValidationSetup'"]
         div
-          = f.simple_fields_for(:processing_setup, @processing_rule.processing_setup.is_a?(ProcessingRule::FlamingoValidationProcessingSetup) ? @processing_rule.processing_setup : ProcessingRule::FlamingoValidationProcessingSetup.new) do |sub_form|
-            = sub_form.input :ruleset, input_html: { autocomplete: 'new-password' }
-            = sub_form.input :include_schema, as: :switchable_checkbox
-            = sub_form.input :schema_version, collection: ::Secretary::Validation::SCHEMA_VERSIONS
-            = sub_form.input :token, as: :toggable_password, input_html: { value: sub_form.object.token, autocomplete: 'new-password' }
-          = f.input :operation_step, collection: ProcessingRule::Workgroup.operation_step.options.select { |_,v| v.in?(ProcessingRule::FlamingoValidationProcessingSetup.candidate_operation_steps) }, input_html: { 'x-on:change': 'operation_step = $event.target.value' }
+          = f.input :processable_id, as: :select, collection: @processing_rule.candidate_flamingo_validation_setups, label: Flamingo::ValidationSetup.model_name.human
+          = f.input :operation_step, collection: ProcessingRule::Workgroup.operation_step.options.select { |_,v| v.in?(Flamingo::ValidationSetup.candidate_operation_steps) }, input_html: { 'x-on:change': 'operation_step = $event.target.value' }
 
       div x-show="operation_step != 'after_aggregate'"
         div x-show="excluded_workbenches.length == 0"

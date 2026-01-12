@@ -2,36 +2,28 @@
 
 RSpec.describe Flamingo::Validation do
   subject(:flamingo_validation) do
-    described_class.create!(workbench: workbench, processing_rule: processing_rule, operation: import, creator: 'test')
+    flamingo_validation_setup.validations.create!(workbench: context.workbench, operation: import, creator: 'test')
   end
 
   let(:context) do
-    processing_setup = self.processing_setup
     Chouette.create do
       workgroup do
+        flamingo_validation_setup ruleset: 'some_ruleset',
+                                  include_schema: false,
+                                  schema_version: 'next',
+                                  token: 'some_token'
         workbench
-
-        workgroup_processing_rule operation_step: 'before_import', processing_setup: processing_setup
       end
     end
   end
-  let(:processing_setup) do
-    {
-      type: 'ProcessingRule::FlamingoValidationProcessingSetup',
-      ruleset: 'some_ruleset',
-      include_schema: false,
-      schema_version: 'next',
-      token: 'some_token'
-    }
+  let(:flamingo_validation_setup) { context.flamingo_validation_setup }
+  let(:file) { file_fixture('google-sample-feed.zip').open }
+  let(:import) do
+    context.workbench.imports.create!(type: 'Import::Workbench', name: 'Test', creator: 'test', file: file)
   end
 
-  let(:workbench) { context.workbench }
-  let(:processing_rule) { context.workgroup_processing_rule }
-  let(:file) { file_fixture('google-sample-feed.zip').open }
-  let(:import) { workbench.imports.create!(type: 'Import::Workbench', name: 'Test', creator: 'test', file: file) }
-
+  it { is_expected.to belong_to(:setup) }
   it { is_expected.to belong_to(:workbench) }
-  it { is_expected.to belong_to(:processing_rule) }
   it { is_expected.to belong_to(:operation) }
 
   describe '#flamingo_server' do

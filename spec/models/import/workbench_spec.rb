@@ -150,11 +150,15 @@ RSpec.describe Import::Workbench do
   context '#processed_status' do
     let(:context) do
       Chouette.create do
-        workbench :workbench do
-          referential :referential
-          control_list
-          macro_list
-          workbench_processing_rule
+        workgroup do
+          flamingo_validation_setup
+
+          workbench :workbench do
+            referential :referential
+            control_list
+            macro_list
+            workbench_processing_rule
+          end
         end
       end
     end
@@ -172,8 +176,8 @@ RSpec.describe Import::Workbench do
                               original_macro_list: context.macro_list, creator: 'Webservice'
     end
     let(:flamingo_validation) do
-      workbench.flamingo_validations.create!(
-        processing_rule: workbench_processing_rule,
+      context.flamingo_validation_setup.validations.create!(
+        workbench: workbench,
         operation: netex_import,
         creator: 'Webservice'
       )

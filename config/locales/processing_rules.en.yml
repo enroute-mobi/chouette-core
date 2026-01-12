@@ -49,7 +49,6 @@ en:
         other: Processing rules
     attributes:
       processing_rule/base:
-        processable_class_name: Processing Type
         processable_type: Processing Type
         processable_id: Processing
         operation_step: Operation Step
@@ -72,16 +71,6 @@ en:
               required_and_excluded_tags_cannot_overlap: "Required and excluded tags cannot overlap"
             excluded_tag_ids:
               required_and_excluded_tags_cannot_overlap: "Required and excluded tags cannot overlap"
-
-  activemodel:
-    models:
-      processing_rule/flamingo_validation_processing_setup: "Flamingo Validation"
-    attributes:
-      processing_rule/flamingo_validation_processing_setup:
-        ruleset: "Ruleset"
-        include_schema: "Include schema"
-        schema_version: "Schema version"
-        token: "Connection token"
 
   enumerize:
     processing_rule/base:

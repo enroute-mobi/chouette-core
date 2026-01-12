@@ -20,6 +20,5 @@ unless Rails.application.config.eager_load
     Rails.autoloaders.main.eager_load_dir(Rails.root.join('app/models/macro'))
     Rails.autoloaders.main.eager_load_dir(Rails.root.join('app/models/macro/context'))
     Rails.autoloaders.main.eager_load_dir(Rails.root.join('app/models/point_of_interest'))
-    Rails.autoloaders.main.eager_load_dir(Rails.root.join('app/models/processing_rule'))
   end
 end

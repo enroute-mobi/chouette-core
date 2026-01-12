@@ -1,0 +1,20 @@
+= simple_form_for [@workgroup, @flamingo_validation_setup], html: { class: 'form-horizontal', id: 'flamingo_validation_setup_form' }, wrapper: :horizontal_form do |f|
+  .row
+    .col-lg-12
+      h2.mb-lg= t('flamingo/validation_setups.form.sections.identification')
+      = f.input :name, input_html: { autocomplete: 'new-password' }
+
+  .separator.section_separator
+
+  .row
+    .col-lg-12
+      h2.mb-lg= t('flamingo/validation_setups.form.sections.setup')
+      = f.input :ruleset, input_html: { autocomplete: 'new-password' }
+      = f.input :include_schema, as: :switchable_checkbox
+      = f.input :schema_version, collection: ::Secretary::Validation::SCHEMA_VERSIONS
+      = f.input :token, as: :toggable_password, input_html: { value: f.object.token, autocomplete: 'new-password' }
+
+  .separator
+
+  = cancel_button
+  = f.button :submit, t('actions.submit'), class: 'btn btn-default formSubmitr', form: 'flamingo_validation_setup_form'

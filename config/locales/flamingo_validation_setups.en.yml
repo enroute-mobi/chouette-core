@@ -1,0 +1,27 @@
+en:
+  flamingo/validation_setups:
+    actions:
+      new: "Add a Flamingo Validation Setup"
+      destroy_confirm: "Are you sure you want destroy this Flamingo Validation Setup?"
+    index:
+      title: "Flamingo Validation Setups"
+    show:
+      title: "%{name}"
+    form:
+      sections:
+        identification: "Identification"
+        setup: "Setup"
+    search_no_results: "No Flamingo Validation Setup matches your query"
+  activerecord:
+    models:
+      flamingo/validation_setup:
+        zero: "Flamingo Validation Setup"
+        one: "Flamingo Validation Setup"
+        other: "Flamingo Validation Setups"
+    attributes:
+      flamingo/validation_setup:
+        name: "Name"
+        ruleset: "Ruleset"
+        include_schema: "Include schema"
+        schema_version: "Schema version"
+        token: "Connection token"

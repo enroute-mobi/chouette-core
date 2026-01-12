@@ -134,9 +134,9 @@
           sortable: false \
         ), \
         TableBuilderHelper::Column.new( \
-          name: ProcessingRule::FlamingoValidationProcessingSetup.human_attribute_name('ruleset'), \
+          name: Flamingo::ValidationSetup.human_attribute_name('ruleset'), \
           key: :ruleset, \
-          attribute: Proc.new { |fv| fv.processing_rule.processing_setup.ruleset }, \
+          attribute: Proc.new { |fv| fv.setup.ruleset }, \
           link_to: :validation_report_url.to_proc, \
           sortable: false \
         ), \

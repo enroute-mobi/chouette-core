@@ -29,7 +29,8 @@ module Policy
           ::Workbench,
           ::ProcessingRule::Workgroup,
           ::PublicationApi,
-          ::CodeSpace
+          ::CodeSpace,
+          ::Flamingo::ValidationSetup
         ].include?(resource_class)
       end
     end

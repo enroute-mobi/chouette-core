@@ -316,6 +316,8 @@ Rails.application.routes.draw do # rubocop:disable Metrics/BlockLength
       end
     end
 
+    resources :flamingo_validation_setups, controller: 'flamingo/validation_setups'
+
     resources :autocomplete, only: [] do
       get :lines, on: :collection, defaults: { format: 'json' }
       get :line_groups, on: :collection, defaults: { format: 'json' }

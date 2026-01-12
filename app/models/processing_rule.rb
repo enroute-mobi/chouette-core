@@ -8,29 +8,17 @@ module ProcessingRule
     extend Enumerize
     include TagsSupport
 
-    attribute :processing_setup, ProcessingSetup.one_of_descendants.to_type
-
     # Macro::List or Control::List to be started
     belongs_to :processable, polymorphic: true, optional: true
     has_many :processings, foreign_key: 'processing_rule_id'
-    has_many :flamingo_validations, class_name: 'Flamingo::Validation', dependent: :destroy
 
     has_tags :required_tags
     has_tags :excluded_tags
 
-    validates :operation_step, presence: true
+    validates :operation_step, :processable_type, :processable_id, presence: true
     validates :control_list_id, presence: true, if: :use_control_list?
     validates :processable, inclusion: { in: ->(rule) { rule.candidate_control_lists } }, if: :use_control_list?
-    validates :processing_setup, store_model: true, if: :use_processing_setup?
     validates :operation_step, inclusion: { in: ->(rule) { rule.candidate_operation_steps } }
-
-    validate :validate_presence_of_processable
-
-    class << self
-      def candidate_manager_classes
-        raise NotImplementedError
-      end
-    end
 
     def use_control_list?
       processable_type == Control::List.name
@@ -45,37 +33,11 @@ module ProcessingRule
     end
 
     def perform(**options)
-      working_processable.create_processing(self, **options).perform
-    end
-
-    def working_processable
-      processable || processing_setup
+      processable.create_processing(self, **options).perform
     end
 
     def candidate_operation_steps
-      (working_processable&.class&.candidate_operation_steps || []) & self.class.operation_step.values
-    end
-
-    def candidate_processing_setup_types
-      %w[]
-    end
-
-    private
-
-    def use_processing_setup?
-      !processing_setup.nil?
-    end
-
-    def validate_presence_of_processable
-      if processing_setup && processable
-        errors.add(:processable_type, :present)
-        errors.add(:processable_id, :present)
-        errors.add(:processing_setup, :present)
-      elsif processing_setup.nil? && processable.nil?
-        errors.add(:processable_type, :blank)
-        errors.add(:processable_id, :blank)
-        errors.add(:processing_setup, :blank)
-      end
+      (processable&.class&.candidate_operation_steps || []) & self.class.operation_step.values
     end
   end
 
@@ -93,12 +55,6 @@ module ProcessingRule
     validate :required_tags_must_be_in_candidates
     validate :excluded_tags_must_be_in_candidates
     validate :no_tag_overlap
-
-    class << self
-      def candidate_manager_classes
-        @candidate_manager_classes ||= [Macro::List, Control::List].freeze
-      end
-    end
 
     def use_macro_list?
       processable_type == Macro::List.name
@@ -192,7 +148,7 @@ module ProcessingRule
     has_array_of :target_workbenches, class_name: 'Workbench'
     has_array_of :excluded_workbenches, class_name: 'Workbench'
 
-    enumerize :processable_type, in: %w[Control::List]
+    enumerize :processable_type, in: %w[Control::List Flamingo::ValidationSetup]
     enumerize :operation_step, in: %w[before_import after_import before_merge after_merge after_aggregate],
                                scope: :shallow,
                                i18n_scope: 'enumerize.processing_rule/base.operation_step'
@@ -201,18 +157,12 @@ module ProcessingRule
 
     validate :exclusive_workbenches
 
-    class << self
-      def candidate_manager_classes
-        @candidate_manager_classes ||= [Control::List, ::ProcessingRule::FlamingoValidationProcessingSetup].freeze
-      end
-    end
-
     def candidate_control_lists
       workgroup ? workgroup.control_lists.shared : Control::List.none
     end
 
-    def candidate_processing_setup_types
-      %w[ProcessingRule::FlamingoValidationProcessingSetup]
+    def candidate_flamingo_validation_setups
+      workgroup.flamingo_validation_setups
     end
 
     def candidate_target_workbenches

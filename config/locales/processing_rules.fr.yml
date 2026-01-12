@@ -49,7 +49,6 @@ fr:
         other: Règles de traitement
     attributes:
       processing_rule/base:
-        processable_class_name: Type de traitement
         processable_type: Type de traitement
         processable_id: Traitement
         operation_step: Étape
@@ -72,16 +71,6 @@ fr:
               required_and_excluded_tags_cannot_overlap: "Les tags requis et les tags exclus ne peuvent pas se chevaucher"
             excluded_tag_ids:
               required_and_excluded_tags_cannot_overlap: "Les tags requis et les tags exclus ne peuvent pas se chevaucher"
-
-  activemodel:
-    models:
-      processing_rule/flamingo_validation_processing_setup: "Validation Flamingo"
-    attributes:
-      processing_rule/flamingo_validation_processing_setup:
-        ruleset: "Jeu de règles"
-        include_schema: "Inclure le schéma"
-        schema_version: "Version du schéma"
-        token: "Jeton de connexion"
 
   enumerize:
     processing_rule/base:

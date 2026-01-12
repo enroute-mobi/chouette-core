@@ -23,10 +23,15 @@
                 sortable: false \
               ), \
               TableBuilderHelper::Column.new( \
-                key: :processable_class_name, \
-                attribute: -> (pr) { pr.display_processable }, \
+                key: :processable_type, \
+                attribute: -> (pr) { pr.processable.class.model_name.human }, \
                 sortable: false,\
-              ) \
+              ), \
+              TableBuilderHelper::Column.new( \
+                key: :processable_id, \
+                attribute: -> (pr) { pr.processable.name }, \
+                sortable: false,\
+              ), \
             ],
             cls: 'table has-filter has-search'
 

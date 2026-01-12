@@ -1126,15 +1126,16 @@ $grp-cbx-size: 34px;
 
 // Nested fields
 .nested-fields {
-  padding: 0 5px;
-
-  &:first-child {
-    border-top: none;
-  }
   &[class*="col"] {
     border: none;
     padding: 0 15px;
     margin: 0;
+  }
+  .widgets {
+    transition: transform 0.2s ease, background-color 0.5s ease;
+    &:hover {
+      transform: translateX(2px);
+    }
   }
   .wrapper {
     display: table;

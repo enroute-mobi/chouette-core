@@ -85,6 +85,7 @@ class Workbench < ApplicationModel
   has_many :shapes, through: :shape_providers
 
   has_many :sequences
+  has_many :dashboards, dependent: :destroy
 
   before_validation :create_dependencies, on: :create
   before_validation :create_default_prefix

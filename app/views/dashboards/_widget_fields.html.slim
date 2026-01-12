@@ -1,0 +1,18 @@
+.nested-fields.widgets.mb-4.border.rounded-r-lg.overflow-hidden[x-data="{}" x-ref="widget" class="#{widget_type_color(f.object&.widget_type)}"]
+  .px-4.py-3.border-b
+    .flex.justify-between.items-center
+      .flex.items-center.space-x-2
+        - if f.object.widget_type.blank?
+          i.fa.fa-question-circle.text-gray-500.text-xl.mr-2
+        - else
+          = widget_icon(f.object.widget_type)
+        h3.text-sm.font-bold.text-gray-700.my-0
+          = f.object.widget_type.present? ? t("dashboards.widgets.types.#{f.object.widget_type}") : t('dashboards.widgets.new_widget')
+      .flex.items-center.space-x-2
+        = link_to_remove_association f, class: 'text-red-600 hover:text-red-800 ml-2' do
+          i.fa.fa-trash
+
+  .p-4.bg-white.rounded-br-lg
+    .grid.grid-cols-1.md:grid-cols-2.gap-4
+      = f.input :name, label: t('dashboards.widgets.name'), wrapper_html: { class: 'mb-4' }
+      = f.input :widget_type, collection: Widget.types.map { |t| [t("dashboards.widgets.types.#{t}"), t] }, include_blank: false, label: t('dashboards.widgets.type'), wrapper_html: { class: 'mb-4' }

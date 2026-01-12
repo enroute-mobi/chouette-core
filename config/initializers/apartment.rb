@@ -47,6 +47,7 @@ Apartment.configure do |config|
     'CodeSpace',
     'CrossReferentialIndexEntry',
     'Contract',
+    'Dashboard',
     'Document',
     'DocumentMembership',
     'DocumentProvider',

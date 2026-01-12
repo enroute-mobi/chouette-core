@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2025_11_13_145315) do
+ActiveRecord::Schema[7.2].define(version: 2025_12_08_151052) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "btree_gin"
   enable_extension "hstore"
@@ -425,6 +425,15 @@ ActiveRecord::Schema[7.2].define(version: 2025_11_13_145315) do
     t.index ["relation_name", "parent_type", "parent_id", "target_referential_slug"], name: "cross_referential_index_entries_parent"
     t.index ["relation_name", "target_type", "target_id", "target_referential_slug"], name: "cross_referential_index_entries_target"
     t.index ["relation_name"], name: "index_cross_referential_index_entries_on_relation_name"
+  end
+
+  create_table "dashboards", force: :cascade do |t|
+    t.bigint "workbench_id", null: false
+    t.string "name", null: false
+    t.text "description"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["workbench_id"], name: "index_dashboards_on_workbench_id"
   end
 
   create_table "delayed_jobs", force: :cascade do |t|
@@ -1778,6 +1787,16 @@ ActiveRecord::Schema[7.2].define(version: 2025_11_13_145315) do
     t.index ["stop_area_id"], name: "index_waypoints_on_stop_area_id"
   end
 
+  create_table "widgets", force: :cascade do |t|
+    t.string "name"
+    t.string "widget_type"
+    t.jsonb "options", default: {}
+    t.bigint "dashboard_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["dashboard_id"], name: "index_widgets_on_dashboard_id"
+  end
+
   create_table "workbench_sharings", force: :cascade do |t|
     t.string "name", null: false
     t.bigint "workbench_id", null: false
@@ -1845,6 +1864,7 @@ ActiveRecord::Schema[7.2].define(version: 2025_11_13_145315) do
   add_foreign_key "calendars", "workbenches"
   add_foreign_key "control_runs", "control_context_runs"
   add_foreign_key "controls", "control_contexts"
+  add_foreign_key "dashboards", "workbenches"
   add_foreign_key "exports", "workgroups"
   add_foreign_key "flexible_area_memberships", "stop_areas", column: "flexible_area_id"
   add_foreign_key "flexible_area_memberships", "stop_areas", column: "member_id"
@@ -1873,5 +1893,6 @@ ActiveRecord::Schema[7.2].define(version: 2025_11_13_145315) do
   add_foreign_key "vehicle_journey_at_stops", "vehicle_journeys", name: "vjas_vj_fkey", on_delete: :cascade
   add_foreign_key "vehicle_journeys", "journey_patterns", name: "vj_jp_fkey", on_delete: :cascade
   add_foreign_key "vehicle_journeys", "routes", name: "vj_route_fkey", on_delete: :cascade
+  add_foreign_key "widgets", "dashboards"
   add_foreign_key "workbench_sharings", "workbenches"
 end

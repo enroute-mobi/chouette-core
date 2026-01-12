@@ -1,0 +1,54 @@
+fr:
+  dashboards:
+    actions:
+      new: Ajouter un Tableau de bord
+      edit: Modifier le Tableau de bord
+      destroy: Supprimer le Tableau de bord
+      destroy_confirm: "Etes vous sûr de vouloir supprimer ce Tableau de bord ?"
+    index:
+      title: Tableaux de bord
+      preview: "Prévisualisation du Tableau de bord"
+    show:
+      title: Tableau de bord %{name}
+    edit:
+      title: Modifier le Tableau de bord %{name}
+    new:
+      title: Ajouter un Tableau de bord
+    create:
+      title: Ajouter un Tableau de bord
+    form:
+      sections:
+        identification: "Identification"
+    widgets:
+      title: "Widgets"
+      description: "Configurez les widgets de votre tableau de bord"
+      name: "Nom"
+      type: "Type"
+      unknown_type: "Type de widget non reconnu : %{widget_type}"
+      options: "Options"
+      new_widget: "Nouveau widget"
+      no_widgets: "Aucun widget pour le moment"
+      get_started: "Commencez par ajouter votre premier widget"
+      actions:
+        add: "Ajouter un widget"
+        remove: "Supprimer"
+      types:
+        image: "Image"
+        chart: "Graphique"
+        counter: "Compteur"
+        list: "Liste"
+        numbers: "Nombre"
+        static_text: "Texte statique"
+        table: "Tableau"
+    search_no_results: "Aucun Tableau de bord ne correspond à votre recherche"
+  activemodel:
+    models:
+      dashboard:
+        one: "Tableau de bord"
+        other: "Tableaux de bord"
+  activerecord:
+    models:
+      dashboard:
+        zero: Tableau de bord
+        one: Tableau de bord
+        other: Tableaux de bord

@@ -243,8 +243,8 @@ SimpleForm.setup do |config|
 
     b.wrapper tag: 'div', class: 'w-4/6 flex items-center relative' do |ba|
       ba.use :input, class: 'form-control'
-      ba.use :error, wrap_with: { tag: 'span', class: 'help-block small absolute top-14 ml-2' }
-      ba.use :hint,  wrap_with: { tag: 'p', class: 'help-block small absolute top-14 ml-2' }
+      ba.use :error, wrap_with: { tag: 'span', class: 'help-block small absolute top-10 ml-2' }
+      ba.use :hint,  wrap_with: { tag: 'p', class: 'help-block small absolute top-10 ml-2' }
     end
   end
 
@@ -273,8 +273,8 @@ SimpleForm.setup do |config|
 
     b.wrapper tag: 'div', class: 'w-4/6 flex flex-col relative' do |ba|
       ba.use :input, class: 'cursor-pointer'
-      ba.use :error, wrap_with: { tag: 'span', class: 'help-block small absolute top-14 ml-2' }
-      ba.use :hint,  wrap_with: { tag: 'p', class: 'help-block small absolute top-14 ml-2' }
+      ba.use :error, wrap_with: { tag: 'span', class: 'help-block small absolute top-10 ml-2' }
+      ba.use :hint,  wrap_with: { tag: 'p', class: 'help-block small absolute top-10 ml-2' }
     end
   end
 
@@ -311,8 +311,8 @@ SimpleForm.setup do |config|
 
     b.wrapper tag: 'div', class: 'w-4/6 flex items-center relative' do |ba|
       ba.use :input, class: ''
-      ba.use :error, wrap_with: { tag: 'span', class: 'help-block small absolute top-14 ml-2' }
-      ba.use :hint,  wrap_with: { tag: 'p', class: 'help-block small absolute top-14 ml-2' }
+      ba.use :error, wrap_with: { tag: 'span', class: 'help-block small absolute top-10 ml-2' }
+      ba.use :hint,  wrap_with: { tag: 'p', class: 'help-block small absolute top-10 ml-2' }
     end
   end
 

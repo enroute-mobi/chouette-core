@@ -134,6 +134,21 @@ crumb :new_point_of_interest_category do |workbench|
   parent :point_of_interest_categories, workbench
 end
 
+crumb :dashboards do |workbench|
+  link I18n.t('dashboards.index.title'), workbench_dashboards_path(workbench)
+  parent :workbench, workbench
+end
+
+crumb :dashboard do |workbench, dashboard|
+  link breadcrumb_name(dashboard), workbench_dashboard_path(workbench, dashboard)
+  parent :dashboards, workbench
+end
+
+crumb :new_dashboard do |workbench|
+  link I18n.t('dashboards.new.title')
+  parent :dashboards, workbench
+end
+
 crumb :document_types do |workgroup|
   link I18n.t('document_types.index.title'), workgroup_document_types_path(workgroup)
   parent :workgroup, workgroup

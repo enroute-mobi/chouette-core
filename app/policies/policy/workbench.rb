@@ -12,6 +12,7 @@ module Policy
       else
         [
           ::Referential,
+          ::Dashboard,
           ::DocumentProvider,
           ::Calendar,
           ::Control::List,

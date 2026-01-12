@@ -1,0 +1,54 @@
+en:
+  dashboards:
+    actions:
+      new: Add a Dashboard
+      edit: Edit the Dashboard
+      destroy: Delete the Dashboard
+      destroy_confirm: "Are you sure you want to delete this Dashboard ?"
+    index:
+      title: Dashboards
+      preview: "Dashboard preview"
+    show:
+      title: Dashboard %{name}
+    edit:
+      title: Edit the Dashboard %{name}
+    new:
+      title: Add a Dashboard
+    create:
+      title: Add a Dashboard
+    form:
+      sections:
+        identification: "Identification"
+    widgets:
+      title: "Widgets"
+      description: "Configure your widgets"
+      name: "Name"
+      type: "Type"
+      unknown_type: "Unknown widget type: %{widget_type}"
+      options: "Options"
+      new_widget: "New widget"
+      no_widgets: "No widgets yet"
+      get_started: "Get started by adding your first widget"
+      actions:
+        add: "Add widget"
+        remove: "Remove"
+      types:
+        image: "Image"
+        chart: "Chart"
+        counter: "Counter"
+        list: "List"
+        numbers: "Numbers"
+        static_text: "Static text"
+        table: "Table"
+    search_no_results: "No dashboards found"
+  activemodel:
+    models:
+      dashboard:
+        one: "Dashboard"
+        other: "Dashboards"
+  activerecord:
+    models:
+      dashboard:
+        zero: Dashboard
+        one: Dashboard
+        other: Dashboards

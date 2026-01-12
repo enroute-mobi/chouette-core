@@ -206,7 +206,7 @@ end
 gem 'rails-i18n', '>= 5.1.3'
 gem 'devise-i18n', '>= 1.10.2'
 
-gem 'activerecord-nulldb-adapter', require: (ENV['RAILS_DB_ADAPTER'] == 'nulldb')
+gem 'activerecord-nulldb-adapter', '~> 1.1.1', require: (ENV['RAILS_DB_ADAPTER'] == 'nulldb')
 
 gem 'google-cloud-storage', '>= 1.19.0'
 gem 'net-sftp'

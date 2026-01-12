@@ -73,10 +73,10 @@ gem 'mimemagic', '>= 0.4.3'
 gem 'bootstrap-sass', '3.4.1'
 gem 'language_engine', en_route: 'language_engine'
 gem 'cocoon'
-gem 'slim-rails', '>= 3.3.0'
+gem 'slim-rails', '>= 4.0.0'
 gem 'simple_form', '~> 5.1.0'
 gem 'will_paginate-bootstrap'
-gem 'gretel', '>= 4.4.0'
+gem 'gretel', '>= 5.1.0'
 gem 'country_select', '< 9' # TODO: until simple_form is updated to 5.3 (CHOUETTE-3166)
 gem 'i18n-js'
 gem 'font_awesome5_rails', '>= 1.5.0'
@@ -89,7 +89,7 @@ gem 'rubyzip'
 gem 'inherited_resources', '>= 1.13.1'
 gem 'responders', '>= 3.1.1'
 
-gem 'rails_semantic_logger'
+gem 'rails_semantic_logger', '>= 4.19.0'
 
 # Model
 gem 'will_paginate'
@@ -139,7 +139,7 @@ gem 'prometheus-client'
 
 gem 'sentry-delayed_job'
 gem 'sentry-ruby'
-gem 'sentry-rails'
+gem 'sentry-rails', '>= 6.1.0'
 
 gem 'coverband', require: false
 
@@ -153,9 +153,9 @@ group :development do
   gem 'derailed_benchmarks'
   gem 'syntax_suggest' # TODO: remove after update to ruby 3.2 (silent dependency of derailed_benchmarks)
 
-  gem 'i18n-tasks'
+  gem 'i18n-tasks', '>= 1.1.0'
   gem 'listen' # dependency of i18n-js
-  gem 'rubocop-rails', '>= 2.24.0', require: false
+  gem 'rubocop-rails', '>= 2.34.3', require: false
 end
 
 group :test do

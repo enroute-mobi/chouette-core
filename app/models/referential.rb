@@ -833,6 +833,8 @@ class Referential < ApplicationModel
       has_one_attached :frozen_dump
     end
 
+    include Measurable
+
     def visited!
       touch :visited_at
       self
@@ -843,17 +845,23 @@ class Referential < ApplicationModel
     end
 
     def data_freeze
-      Tempfile.open(['', '.sql.gz']) do |dump_file|
-        schema.dump(dump_file)
-        return if File.zero?(dump_file)
+      Rails.logger.info "Freeze #{slug}"
+      measure("data_freeze") do
+        measure("dump") do
+          Tempfile.open(['', '.sql.gz']) do |dump_file|
+            schema.dump(dump_file)
+            return if File.zero?(dump_file)
 
-        frozen_dump.attach(io: dump_file, filename: File.basename(dump_file.path), content_type: 'application/gzip')
-      end
-
-      transaction do
-        update!(data_freeze_status: 'freezing', ready: false)
-        schema.destroy!
-        update!(data_freeze_status: 'frozen')
+            frozen_dump.attach(io: dump_file, filename: File.basename(dump_file.path), content_type: 'application/gzip')
+          end
+        end
+        measure("schema_destroy") do
+          transaction do
+            update!(data_freeze_status: 'freezing', ready: false)
+            schema.destroy!
+            update!(data_freeze_status: 'frozen')
+          end
+        end
       end
     end
 

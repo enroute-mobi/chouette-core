@@ -33,10 +33,10 @@ module Macro
           TimeTable
         ]
 
-        validates :target_model, :code_space_id, :format, presence: true
+        validates :target_model, :code_space, :format, presence: true
 
         def code_space
-          @code_space ||= workgroup.code_spaces.find_by(id: code_space_id)
+          @code_space ||= workgroup&.code_spaces&.find_by(id: code_space_id)
         end
       end
     end

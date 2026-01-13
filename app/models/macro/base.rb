@@ -30,6 +30,12 @@ module Macro
       @run_class ||= self.class.const_get('Run')
     end
 
+    def workbench
+      @workbench ||= (macro_list || macro_context)&.workbench
+    end
+
+    delegate :workgroup, to: :workbench, allow_nil: true
+
     class Run < ApplicationModel
       self.table_name = 'macro_runs'
 
@@ -55,7 +61,7 @@ module Macro
       end
 
       delegate :referential, :workbench, to: :parent, allow_nil: true
-      delegate :workgroup, to: :workbench
+      delegate :workgroup, to: :workbench, allow_nil: true
 
       include AroundMethod
       around_method :run

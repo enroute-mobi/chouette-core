@@ -8,7 +8,6 @@ RSpec.describe Control::CodeFormat do
   describe Control::CodeFormat::Run do
     let(:expected_format) { '[BFHJ][0-9]{4,6}-[A-Z]{3}' }
     it { should validate_presence_of :target_model }
-    it { should validate_presence_of :target_code_space_id }
     it { should validate_presence_of :expected_format }
     it do
       should enumerize(:target_model).in(

@@ -33,11 +33,11 @@ module Control
     end
 
     def workbench
-      @workbench ||= (control_list || control_context).workbench
+      @workbench ||= (control_list || control_context)&.workbench
     end
     attr_writer :workbench
 
-    delegate :workgroup, to: :workbench
+    delegate :workgroup, to: :workbench, allow_nil: true
 
     class Run < ApplicationModel
       self.table_name = 'control_runs'
@@ -71,7 +71,7 @@ module Control
 
       delegate :message_key, to: :class
       delegate :referential, :workbench, to: :parent, allow_nil: true
-      delegate :workgroup, to: :workbench
+      delegate :workgroup, to: :workbench, allow_nil: true
 
       include AroundMethod
       around_method :run

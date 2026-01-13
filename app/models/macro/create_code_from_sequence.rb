@@ -31,14 +31,14 @@ module Macro
           Contract
         ]
 
-        validates :target_model, :code_space_id, :sequence_id, :format, presence: true
+        validates :target_model, :code_space, :sequence, :format, presence: true
 
         def code_space
-          @code_space ||= workgroup.code_spaces.find_by(id: code_space_id)
+          @code_space ||= workgroup&.code_spaces&.find_by(id: code_space_id)
         end
 
         def sequence
-          @sequence ||= workbench.sequences.find_by(id: sequence_id)
+          @sequence ||= workbench&.sequences&.find_by(id: sequence_id)
         end
       end
     end

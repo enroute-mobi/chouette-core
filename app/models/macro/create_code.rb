@@ -35,10 +35,10 @@ module Macro
           TimeTable
         ]
 
-        validates :target_model, :source_attribute, :target_code_space_id, presence: true
+        validates :target_model, :source_attribute, :code_space, presence: true
 
         def code_space
-          @code_space ||= workgroup.code_spaces.find_by(id: code_space_id)
+          @code_space ||= workgroup&.code_spaces&.find_by(id: target_code_space_id)
         end
       end
     end
@@ -83,10 +83,6 @@ module Macro
 
       def target
         @target ||= Target.new(target_pattern)
-      end
-
-      def code_space
-        @code_space ||= workgroup.code_spaces.find_by(id: target_code_space_id)
       end
 
       def model_collection

@@ -40,7 +40,7 @@ module Control
         enumerize :target_model, in: MODELS
         enumerize :uniqueness_scope, in: %w[workgroup workbench provider referential]
 
-        validates :target_model, :target_code_space_id, presence: true
+        validates :target_model, :target_code_space, presence: true
 
         def provider_target_model?
           target_model.in?(PROVIDER_MODELS)
@@ -59,11 +59,11 @@ module Control
         validates :uniqueness_scope, inclusion: { in: %w[referential] }, if: :referential_target_model?
 
         def target_code_space
-          @target_code_space ||= code_space_scope.find_by(id: target_code_space_id)
+          @target_code_space ||= code_space_scope&.find_by(id: target_code_space_id)
         end
 
         def code_space_scope
-          return workgroup.code_spaces unless uniqueness_scope == 'workgroup'
+          return workgroup&.code_spaces unless uniqueness_scope == 'workgroup'
 
           CodeSpace
         end

@@ -32,10 +32,10 @@ module Control
           TimeTable
         ]
 
-        validates :target_model, :target_code_space_id, :expected_format, presence: true
+        validates :target_model, :target_code_space, :expected_format, presence: true
 
         def target_code_space
-          @target_code_space ||= workgroup.code_spaces.find_by_id(target_code_space_id)
+          @target_code_space ||= workgroup&.code_spaces&.find_by_id(target_code_space_id)
         end
       end
     end

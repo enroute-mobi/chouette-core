@@ -26,12 +26,12 @@ module Import
         end
 
         def register(journey_pattern, signature:)
-          Rails.logger.debug { "Register #{journey_pattern.id} with signature #{signature.inspect}" }
+          # Rails.logger.debug { "Register #{journey_pattern.id} with signature #{signature.inspect}" }
           journey_pattern_ids_by_signature[signature] = journey_pattern.id
         end
 
         def find_id_by(signature:)
-          Rails.logger.debug { "Find Journey Pattern id by signature #{signature.inspect}" }
+          # Rails.logger.debug { "Find Journey Pattern id by signature #{signature.inspect}" }
           journey_pattern_ids_by_signature[signature]
         end
 
@@ -44,7 +44,7 @@ module Import
         end
 
         def find_by(signature:)
-          Rails.logger.debug { "Find Journey Pattern by signature #{signature.inspect}" }
+          # Rails.logger.debug { "Find Journey Pattern by signature #{signature.inspect}" }
           journey_patterns_by_signature[signature] ||=
             begin
               journey_pattern_id = find_id_by(signature: signature)
@@ -78,6 +78,8 @@ module Import
         end
 
         def create_shifted(code, starting_day_offset:)
+          Rails.logger.debug { "Create shifted timetable #{code} +#{starting_day_offset}" }
+
           original = lookup.time_tables.find(code)
 
           shifted_timetable = original.to_timetable

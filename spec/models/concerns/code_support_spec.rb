@@ -1,6 +1,102 @@
 # frozen_string_literal: true
 
 RSpec.describe CodeSupport do
+  with_model :model do
+    model do
+      include ::CodeSupport
+    end
+  end
+
+  let(:context) do
+    Chouette.create do
+      code_space :test, short_name: 'test'
+      code_space :other, short_name: 'other'
+    end
+  end
+
+  let(:test_value) do
+    Model.create!(codes_attributes: { '0' => { code_space_id: context.code_space(:test).id, value: 'value' } })
+  end
+  let(:test_other) do
+    Model.create!(codes_attributes: { '0' => { code_space_id: context.code_space(:test).id, value: 'other' } })
+  end
+  let(:other_value) do
+    Model.create!(codes_attributes: { '0' => { code_space_id: context.code_space(:other).id, value: 'value' } })
+  end
+  let(:without) { Model.create! }
+
+  describe '.by_code' do
+    subject { Model.by_code(code_space, 'value') }
+
+    before { [test_value, test_other, other_value, without] }
+
+    context 'with a code space' do
+      let(:code_space) { context.code_space(:test) }
+
+      it { is_expected.to contain_exactly(test_value) }
+    end
+
+    context 'with a code space id' do
+      let(:code_space) { context.code_space(:test).id }
+
+      it { is_expected.to contain_exactly(test_value) }
+    end
+
+    context 'with nil' do
+      let(:code_space) { nil }
+
+      it { is_expected.to be_empty }
+    end
+  end
+
+  describe '.with_code' do
+    subject { Model.with_code(code_space) }
+
+    before { [test_value, test_other, other_value, without] }
+
+    context 'with a code space' do
+      let(:code_space) { context.code_space(:test) }
+
+      it { is_expected.to contain_exactly(test_value, test_other) }
+    end
+
+    context 'with a code space id' do
+      let(:code_space) { context.code_space(:test).id }
+
+      it { is_expected.to contain_exactly(test_value, test_other) }
+    end
+
+    context 'with nil' do
+      let(:code_space) { nil }
+
+      it { is_expected.to be_empty }
+    end
+  end
+
+  describe '.without_code' do
+    subject { Model.without_code(code_space) }
+
+    before { [test_value, test_other, other_value, without] }
+
+    context 'with a code space' do
+      let(:code_space) { context.code_space(:test) }
+
+      it { is_expected.to contain_exactly(other_value, without) }
+    end
+
+    context 'with a code space id' do
+      let(:code_space) { context.code_space(:test).id }
+
+      it { is_expected.to contain_exactly(other_value, without) }
+    end
+
+    context 'with nil' do
+      let(:code_space) { nil }
+
+      it { is_expected.to match_array(Model.all) }
+    end
+  end
+
   describe CodeSupport::Validator::CodeSpaceUniqueness do
     subject(:validator) { described_class.new(codes) }
     let(:codes) { [] }

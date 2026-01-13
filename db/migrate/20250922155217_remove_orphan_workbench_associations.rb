@@ -12,7 +12,6 @@ class RemoveOrphanWorkbenchAssociations < ActiveRecord::Migration[7.0]
       end
 
       Contract.left_outer_joins(:workbench).where(workbenches: { id: nil }).find_each(&:destroy)
-      Contract.where(company_id: nil).find_each(&:destroy)
 
       Sequence.left_outer_joins(:workbench).where(workbenches: { id: nil }).find_each(&:destroy)
     end

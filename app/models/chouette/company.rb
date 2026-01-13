@@ -11,7 +11,7 @@ module Chouette
     include Documentable
 
     has_many :lines, dependent: :nullify
-    has_many :contracts, dependent: :destroy
+    has_many :contracts, dependent: :nullify
 
     # validates_format_of :registration_number, :with => %r{\A[0-9A-Za-z_-]+\Z}, :allow_nil => true, :allow_blank => true
     validates_presence_of :name

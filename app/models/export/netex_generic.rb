@@ -716,7 +716,7 @@ class Export::NetexGeneric < Export::Base
       end
 
       def netex_resource
-        Netex::StopPlaceEntrance.new(netex_attributes).with_tag(parent_id: parent_objectid)
+        Netex::StopPlaceEntrance.new(netex_attributes).with_tag(parent_id: parent_code)
       end
 
       def centroid
@@ -739,8 +739,8 @@ class Export::NetexGeneric < Export::Base
         )
       end
 
-      def parent_objectid
-        stop_area&.objectid
+      def parent_code
+        code_provider.stop_areas.code(stop_area.id)
       end
 
       def raw_xml

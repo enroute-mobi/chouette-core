@@ -133,6 +133,11 @@ en:
     messages:
       extension_whitelist_error: "You are not allowed to upload %{extension} files, allowed types: %{allowed_types}"
       default_company_not_found: "Default company not found"
+    models:
+      import/workbench:
+        attributes:
+          specific_default_company_id:
+            must_exist: "Specific default company must exist"
   enumerize:
     import/workbench:
       import_category:

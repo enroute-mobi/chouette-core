@@ -18,14 +18,14 @@ module Api
           @import.flag_urgent = false
         end
 
-        unless @default_company_not_found
-          if @import.save
-            render json: import_json(@import), status: :created
-          else
-            render json: { status: 'error', messages: @import.errors.full_messages }, status: :unprocessable_entity
-          end
+        if default_company.present? && @import.specific_default_company.nil?
+          @import.errors.add(:specific_default_company_id, :must_exist)
+        end
+
+        if @import.errors.empty? && @import.save
+          render json: import_json(@import), status: :created
         else
-          render json: { status: 'error', messages: I18n.t('errors.messages.default_company_not_found') }, status: :unprocessable_entity
+          render json: { status: 'error', messages: @import.errors.full_messages }, status: :unprocessable_entity
         end
       end
 
@@ -56,7 +56,7 @@ module Api
             automatic_merge: import.automatic_merge,
             archive_on_fail: import.archive_on_fail,
             flag_urgent: import.flag_urgent,
-            default_company: import.specific_default_company_id
+            default_company: default_company
           }
         }
       end
@@ -73,6 +73,10 @@ module Api
         params.require(:workbench_import).permit(permitted_keys)
       end
 
+      def default_company
+        @default_company ||= workbench_import_params['options']['default_company']
+      end
+
       def import_attributes
         @import_attributes ||= workbench_import_params.tap do |import_attributes|
           import_attributes.merge!(creator: 'Webservice')
@@ -86,13 +90,9 @@ module Api
             import_attributes['options'][:import_category] = IMPORT_CATEGORY_ALIASES.fetch(file_type, file_type)
           end
 
-          if (default_company = import_attributes['options']&.delete('default_company'))
-            specific_default_company_id = current_workbench.companies.find_by(registration_number: default_company)&.id
-            if specific_default_company_id
-              import_attributes['options'][:specific_default_company_id] = specific_default_company_id
-            else
-              @default_company_not_found = true
-            end
+          if default_company
+            import_attributes['options'][:specific_default_company_id] =
+              current_workbench.companies.find_by(registration_number: default_company)&.id
           end
         end
       end

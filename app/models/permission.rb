@@ -59,6 +59,7 @@ class Permission
         vehicle_journeys
         workbenches
         notification_rules
+        flamingo_validation_setups
       ]
     end
 

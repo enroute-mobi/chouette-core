@@ -69,6 +69,8 @@ Apartment.configure do |config|
     'Fare::Zone',
     'Fare::StopAreaZone',
     'Fare::GeographicReference',
+    'Flamingo::Validation',
+    'Flamingo::ValidationSetup',
     'Import::Base',
     'Import::Gtfs',
     'Import::Message',

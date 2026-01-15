@@ -1,0 +1,46 @@
+- breadcrumb :flamingo_validation_setups, @workgroup
+
+.page_content
+  .container-fluid
+    - if @flamingo_validation_setups.any?
+      .row
+        .col-lg-12
+          = table_builder_2 @flamingo_validation_setups,
+            [ \
+              TableBuilderHelper::Column.new( \
+                key: :name, \
+                attribute: 'name', \
+                sortable: false, \
+                link_to: lambda do |flamingo_validation_setup| \
+                  workgroup_flamingo_validation_setup_path(@workgroup, flamingo_validation_setup) \
+                end \
+              ), \
+              TableBuilderHelper::Column.new( \
+                key: :ruleset, \
+                attribute: Proc.new { |flamingo_validation_setup| flamingo_validation_setup.ruleset }, \
+                sortable: false \
+              ), \
+              TableBuilderHelper::Column.new( \
+                key: :include_schema, \
+                attribute: Proc.new { |flamingo_validation_setup| boolean_icon(flamingo_validation_setup.include_schema) }, \
+                sortable: false \
+              ), \
+              TableBuilderHelper::Column.new( \
+                key: :schema_version, \
+                attribute: Proc.new { |flamingo_validation_setup| flamingo_validation_setup.schema_version }, \
+                sortable: false \
+              ), \
+              TableBuilderHelper::Column.new( \
+                key: :created_at, \
+                attribute: Proc.new { |flamingo_validation_setup| l(flamingo_validation_setup.created_at, format: :short_with_time) }, \
+                sortable: false, \
+              ), \
+            ],\
+            cls: 'table has-filter has-search'
+
+          = new_pagination @flamingo_validation_setups, 'pull-right'
+
+    - if @flamingo_validation_setups.blank?
+      .row.mt-xs
+        .col-lg-12
+          = replacement_msg t('flamingo/validation_setups.search_no_results')

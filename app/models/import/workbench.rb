@@ -37,6 +37,8 @@ module Import
     has_many :children_processings, through: :children, source: :processings
     has_many :control_list_runs, through: :children_processings, source: :processed, source_type: 'Control::List::Run'
     has_many :macro_list_runs, through: :children_processings, source: :processed, source_type: 'Macro::List::Run'
+    has_many :flamingo_validations, through: :children_processings,
+                                    source: :processed, source_type: 'Flamingo::Validation'
 
     has_many :referentials, through: :children
 
@@ -154,8 +156,12 @@ module Import
     end
 
     # Compute processed status (Macro::List::Run and Control::List::Run)
-    def processed_status
-      statuses = (control_list_runs.pluck(:user_status) + macro_list_runs.pluck(:user_status)).uniq
+    def processed_status # rubocop:disable Metrics/MethodLength
+      statuses = (
+        control_list_runs.pluck(:user_status) +
+        macro_list_runs.pluck(:user_status) +
+        flamingo_validations.pluck(:user_status)
+      ).uniq
       if statuses.include?('pending')
         'running'
       elsif statuses.include?('failed')
@@ -168,7 +174,9 @@ module Import
     end
 
     def compute_new_status
-      return children_status unless control_list_runs.present? || macro_list_runs.present?
+      return children_status unless control_list_runs.present? ||
+                                    macro_list_runs.present? ||
+                                    flamingo_validations.present?
 
       if children_status == 'running' || processed_status == 'running'
         'running'

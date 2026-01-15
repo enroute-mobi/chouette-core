@@ -38,6 +38,7 @@ class ImportsController < Chouette::WorkbenchController
       end
       @macro_list_runs = resource.macro_list_runs
       @control_list_runs = resource.control_list_runs.includes(processing: :processing_rule)
+      @flamingo_validations = resource.flamingo_validations.includes(:setup)
     end
 
     respond_to do |format|

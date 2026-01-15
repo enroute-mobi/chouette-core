@@ -463,19 +463,3 @@ en:
         warning: Avertissement
         error: Erreur
         failed: Echec
-    processing_rule/workbench:
-      processable_type:
-        "Macro::List": "Macro List"
-        "Control::List": Control List
-      operation_step:
-        after_import: After import
-        before_merge: Before merge
-        after_merge: After merge
-    processing_rule/workgroup:
-      processable_type:
-        "Control::List": Control List
-      operation_step:
-        after_import: After import
-        before_merge: Before merge
-        after_merge: After merge
-        after_aggregate: After aggregate

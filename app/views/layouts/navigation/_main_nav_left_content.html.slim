@@ -126,6 +126,8 @@
           span = CodeSpace.model_name.human_plural
         = link_to workgroup_document_types_path(workgroup), class: 'list-group-item' do
           span = DocumentType.model_name.human_plural
+        = link_to workgroup_flamingo_validation_setups_path(workgroup), class: 'list-group-item' do
+          span = Flamingo::ValidationSetup.model_name.human_plural
         = link_to workgroup_processing_rule_workgroups_path(workgroup), class: 'list-group-item' do
           span = ProcessingRule::Workgroup.model_name.human_plural
 

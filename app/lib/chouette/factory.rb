@@ -55,6 +55,14 @@ module Chouette
           attribute(:short_name) { |n| "code_space_#{n}" }
         end
 
+        model :flamingo_validation_setup do
+          attribute(:name) { |n| "Flamingo Validation Setup #{n}" }
+          attribute :ruleset, 'some_ruleset'
+          attribute(:include_schema) { false }
+          attribute :schema_version, 'master'
+          attribute :token, 'SOME_TOKEN'
+        end
+
         model :publication_api do
           attribute(:slug) { |n| "slug_#{n}" }
           attribute(:name) { |n| "Publication API #{n}" }
@@ -112,8 +120,11 @@ module Chouette
 
           after do
             processable = transient(:macro_list, resolve_instances: true) ||
-              transient(:control_list, resolve_instances: true) ||
-              new_instance.workbench.control_lists.create!(name: 'Default')
+                          transient(:control_list, resolve_instances: true) ||
+                          new_instance.workgroup.workbenches.first.control_lists.create!(
+                            name: 'Default',
+                            shared: true
+                          )
 
             new_instance.processable = processable
           end
@@ -211,8 +222,8 @@ module Chouette
 
             after do
               processable = transient(:macro_list, resolve_instances: true) ||
-                transient(:control_list, resolve_instances: true) ||
-                new_instance.workbench.control_lists.create!(name: 'Default')
+                            transient(:control_list, resolve_instances: true) ||
+                            new_instance.workbench.control_lists.create!(name: 'Default')
 
               new_instance.processable = processable
             end

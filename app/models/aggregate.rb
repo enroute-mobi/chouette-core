@@ -137,7 +137,7 @@ class Aggregate < ApplicationModel
           ServiceCount.compute_for_referential(new)
         end
 
-        continue_after_processings = processor.after([new])
+        continue_after_processings = processor.after
         # Check processed status and stop aggregate if one failed
         unless continue_after_processings
           failed_on_processings
@@ -151,10 +151,6 @@ class Aggregate < ApplicationModel
     Chouette::Safe.capture "Aggregate ##{id} failed", e
     failed!
     raise e if Rails.env.test?
-  end
-
-  def processor
-    @processor ||= Processor.new(self)
   end
 
   def workbench_for_notifications

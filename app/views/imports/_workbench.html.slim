@@ -121,3 +121,41 @@
         ) \
       ],
       cls: 'table'
+
+- if @flamingo_validations.present?
+  .col-lg-12
+    h2.mb-2 = t('imports.index.flamingo_validations')
+    = table_builder_2 @flamingo_validations,
+      [ \
+        TableBuilderHelper::Column.new( \
+          name: Operation.human_attribute_name('status'), \
+          key: :user_status, \
+          attribute: Proc.new { |fv| operation_user_status(fv) }, \
+          sortable: false \
+        ), \
+        TableBuilderHelper::Column.new( \
+          name: Flamingo::ValidationSetup.human_attribute_name('ruleset'), \
+          key: :ruleset, \
+          attribute: Proc.new { |fv| fv.setup.ruleset }, \
+          link_to: :validation_report_url.to_proc, \
+          sortable: false \
+        ), \
+        TableBuilderHelper::Column.new( \
+          name: Operation.human_attribute_name('started_at'), \
+          key: :started_at, \
+          attribute: Proc.new { |fv| l(fv.started_at, format: :short_with_time) if fv.started_at }, \
+          sortable: false \
+        ), \
+        TableBuilderHelper::Column.new( \
+          name: Operation.human_attribute_name('duration'), \
+          key: :duration, \
+          attribute: Proc.new { |fv| fv.ended_at.presence && fv.started_at.presence && duration_in_words(fv.ended_at - fv.started_at)}, \
+          sortable: false, \
+        ), \
+        TableBuilderHelper::Column.new( \
+          name: Operation.human_attribute_name('creator'), \
+          attribute: :creator, \
+          sortable: false, \
+        ) \
+      ],
+      cls: 'table'

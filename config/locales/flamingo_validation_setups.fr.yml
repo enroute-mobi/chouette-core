@@ -1,0 +1,27 @@
+fr:
+  flamingo/validation_setups:
+    actions:
+      new: "Ajouter un Paramétrage de Validation Flamingo"
+      destroy_confirm: "Etes vous sûr de supprimer ce Paramétrage de Validation Flamingo ?"
+    index:
+      title: "Paramétrages de Validations Flamingo"
+    show:
+      title: "%{name}"
+    form:
+      sections:
+        identification: "Identification"
+        setup: "Paramétrage"
+    search_no_results: "Aucun Paramétrage de Validation Flamingo ne correspond à votre recherche"
+  activerecord:
+    models:
+      flamingo/validation_setup:
+        zero: "Paramétrage de Validation Flamingo"
+        one: "Paramétrage de Validation Flamingo"
+        other: "Paramétrages de Validations Flamingo"
+    attributes:
+      flamingo/validation_setup:
+        name: "Nom"
+        ruleset: "Jeu de règles"
+        include_schema: "Inclure le schéma"
+        schema_version: "Version du schéma"
+        token: "Jeton de connexion"

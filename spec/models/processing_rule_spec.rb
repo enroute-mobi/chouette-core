@@ -1,34 +1,55 @@
 # frozen_string_literal: true
 
 RSpec.shared_examples 'ProcessingRule validations' do
-  it { is_expected.to belong_to(:processable).required }
+  it { is_expected.to belong_to(:processable).required(false) }
 
+  it { is_expected.to validate_presence_of(:processable_type) }
+  it { is_expected.to validate_presence_of(:processable_id) }
   it { is_expected.to validate_presence_of(:operation_step) }
 end
 
 RSpec.describe ProcessingRule::Workbench, type: :model do
+  let(:context) do
+    Chouette.create do
+      workbench do
+        control_list
+        macro_list
+      end
+    end
+  end
+  let(:workbench) { context.workbench }
+  let(:control_list) { context.control_list }
+  let(:macro_list) { context.macro_list }
+
   include_examples 'ProcessingRule validations'
+
   it { is_expected.to belong_to(:workbench).required }
 
   it { is_expected.to enumerize(:processable_type).in('Macro::List', 'Control::List') }
+
   it { is_expected.to enumerize(:operation_step).in('after_import', 'before_merge', 'after_merge') }
 
   it { is_expected.to_not allow_value('after_aggregate').for(:operation_step) }
 
   context 'using a Control List' do
-    before { subject.processable_type = Control::List }
+    before { subject.processable = control_list }
+
     it { is_expected.to validate_presence_of(:control_list_id) }
+
+    it { is_expected.to validate_inclusion_of(:operation_step).in_array(%w[after_import before_merge after_merge]) }
   end
 
   context 'using a Macro List' do
-    before { subject.processable_type = Macro::List }
+    before { subject.processable = macro_list }
+
     it { is_expected.to validate_presence_of(:macro_list_id) }
+
+    it { is_expected.to validate_inclusion_of(:operation_step).in_array(%w[after_import before_merge]) }
   end
 
   context 'when another ProcessingRule exists' do
     let(:context) { Chouette.create { workbench_processing_rule } }
     let(:processing_rule) { context.workbench_processing_rule }
-    let(:workbench) { context.workbench }
 
     describe 'a new ProcessingRule in the same Workbench with the same operation step and processable type' do
       subject do
@@ -43,9 +64,6 @@ RSpec.describe ProcessingRule::Workbench, type: :model do
   end
 
   describe '#no_tag_overlap' do
-    let(:context) { Chouette.create { workbench } }
-    let(:workbench) { context.workbench }
-    let(:macro_list) { Macro::List.create!(name: 'Macro List', workbench: workbench) }
     let(:tag_1) { Tag.create!(name: 'Tag 1', workbench: workbench) }
     let(:tag_2) { Tag.create!(name: 'Tag 2', workbench: workbench) }
     let(:tag_3) { Tag.create!(name: 'Tag 3', workbench: workbench) }
@@ -86,19 +104,65 @@ RSpec.describe ProcessingRule::Workbench, type: :model do
 end
 
 RSpec.describe ProcessingRule::Workgroup, type: :model do
-  include_examples 'ProcessingRule validations'
-  it { is_expected.to enumerize(:processable_type).in('Control::List') }
-  it { is_expected.to enumerize(:operation_step).in('after_import', 'before_merge', 'after_merge', 'after_aggregate') }
+  let(:context) do
+    Chouette.create do
+      workgroup do
+        flamingo_validation_setup
 
-  it { is_expected.to validate_presence_of(:control_list_id) }
+        workbench :workbench do
+          control_list shared: true
+        end
+      end
+    end
+  end
+  let(:workbench) { context.workbench(:workbench) }
+  let(:control_list) { context.control_list }
+  let(:flamingo_validation_setup) { context.flamingo_validation_setup }
+
+  include_examples 'ProcessingRule validations'
+
+  it { is_expected.to belong_to(:workgroup).required }
+
+  it { is_expected.to enumerize(:processable_type).in('Control::List', 'Flamingo::ValidationSetup') }
+
+  it do
+    is_expected.to(
+      enumerize(:operation_step).in('before_import', 'after_import', 'before_merge', 'after_merge', 'after_aggregate')
+    )
+  end
+
+  context 'using a Control List' do
+    before { subject.processable = control_list }
+
+    it { is_expected.to validate_presence_of(:control_list_id) }
+
+    it do
+      is_expected.to(
+        validate_inclusion_of(:operation_step).in_array(%w[after_import before_merge after_merge after_aggregate])
+      )
+    end
+  end
+
+  context 'using a flamingo validation setup' do
+    before { subject.processable = flamingo_validation_setup }
+
+    it { is_expected.to validate_inclusion_of(:operation_step).in_array(%w[before_import]) }
+  end
 
   context 'when target_workbench_ids and excluded_workbench_ids are both present' do
-    subject do
-      ProcessingRule::Workgroup.new(
-        operation_step: 'after_import',
-        target_workbench_ids: [1],
-        excluded_workbench_ids: [1]
-      )
+    subject { context.workgroup_processing_rule }
+
+    let(:context) do
+      Chouette.create do
+        workbench
+
+        workgroup_processing_rule
+      end
+    end
+
+    before do
+      subject.target_workbench_ids = [1]
+      subject.excluded_workbench_ids = [1]
     end
 
     it { expect(subject).to_not be_valid }
@@ -118,9 +182,7 @@ RSpec.describe ProcessingRule::Workgroup, type: :model do
         end
       end
     end
-
     let(:workgroup_processing_rule) { context.workgroup_processing_rule }
-    let(:workbench) { context.workbench(:workbench) }
     let(:other_workbench) { context.workbench(:other_workbench) }
 
     before do

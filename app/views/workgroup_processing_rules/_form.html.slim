@@ -1,15 +1,25 @@
 = simple_form_for [@workgroup, @processing_rule], as: 'processing_rule', html: { class: 'form-horizontal', id: 'processing_rule_form' }, wrapper: :horizontal_form  do |f|
   .row
-    .col-lg-12 x-data="{processable_type: '#{@processing_rule.processable_type}', target_workbenches: #{@processing_rule.target_workbench_ids.to_json}, excluded_workbenches: #{@processing_rule.excluded_workbench_ids.to_json} }"
-      = f.input :operation_step, input_html: { 'x-on:change': 'processable_type = $event.target.value' }
-      div x-show="processable_type != 'after_aggregate'"
+    .col-lg-12 x-data="#{{ processable_type: @processing_rule.processable_type, operation_step: @processing_rule.operation_step, target_workbenches: @processing_rule.target_workbench_ids, excluded_workbenches: @processing_rule.excluded_workbench_ids }.to_json}"
+      = f.input :processable_type, as: :select, collection: @processing_rule.class.processable_type.values.map { |v| [v.constantize.model_name.human, v] }, value: @processing_rule.processable_type, input_html: { 'x-on:change': 'processable_type = $event.target.value' }
+
+      template[x-if="processable_type == 'Control::List'"]
+        div
+          = f.input :processable_id, as: :select, collection: @processing_rule.candidate_control_lists, label: Control::List.model_name.human
+          = f.input :operation_step, collection: ProcessingRule::Workgroup.operation_step.options.select { |_,v| v.in?(Control::List.candidate_operation_steps) }, input_html: { 'x-on:change': 'operation_step = $event.target.value' }
+
+      template[x-if="processable_type == 'Flamingo::ValidationSetup'"]
+        div
+          = f.input :processable_id, as: :select, collection: @processing_rule.candidate_flamingo_validation_setups, label: Flamingo::ValidationSetup.model_name.human
+          = f.input :operation_step, collection: ProcessingRule::Workgroup.operation_step.options.select { |_,v| v.in?(Flamingo::ValidationSetup.candidate_operation_steps) }, input_html: { 'x-on:change': 'operation_step = $event.target.value' }
+
+      div x-show="operation_step != 'after_aggregate'"
         div x-show="excluded_workbenches.length == 0"
           = f.input :target_workbenches,
             as: :tom_select,
             collection: @processing_rule.candidate_target_workbenches.map { |w| { id: w.id, text: w.name } },
-            input_html: { multiple: true, "x-bind:disabled" => "processable_type == 'after_merge'", "x-on:change" => "target_workbenches = $event.target.value" },
+            input_html: { multiple: true, "x-bind:disabled" => "operation_step == 'after_merge'", "x-on:change" => "target_workbenches = $event.target.value" },
             selected: @processing_rule.target_workbench_ids
-
         div x-show="target_workbenches.length == 0"
           = f.input :excluded_workbenches,
             as: :tom_select,
@@ -17,7 +27,6 @@
             input_html: { multiple: true, "x-on:change" => "excluded_workbenches = $event.target.value" },
             selected: @processing_rule.excluded_workbench_ids
 
-      = f.input :control_list_id, as: :select, collection: @processing_rule.candidate_control_lists
 
   = cancel_button
   = f.button :submit, t('actions.submit'), class: 'btn btn-default formSubmitr', form: 'processing_rule_form'

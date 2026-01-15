@@ -47,6 +47,10 @@ class Workgroup < ApplicationModel
   has_many :stop_areas, through: :stop_area_referential
   has_many :stop_area_groups, through: :stop_area_referential
   has_many :fare_zones, through: :fare_referential
+  has_many :flamingo_validation_setups, class_name: 'Flamingo::ValidationSetup',
+                                        inverse_of: :workgroup, dependent: :destroy
+  has_many :flamingo_validations, class_name: 'Flamingo::Validation',
+                                  through: :flamingo_validation_setups, source: :validations
 
   validates :name, presence: true, uniqueness: true
   validates_uniqueness_of :stop_area_referential_id

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2025_12_08_151052) do
+ActiveRecord::Schema[7.2].define(version: 2026_01_12_113154) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "btree_gin"
   enable_extension "hstore"
@@ -689,6 +689,38 @@ ActiveRecord::Schema[7.2].define(version: 2025_12_08_151052) do
     t.datetime "created_at", precision: nil, null: false
     t.datetime "updated_at", precision: nil, null: false
     t.index ["fare_provider_id"], name: "index_fare_zones_on_fare_provider_id"
+  end
+
+  create_table "flamingo_validation_setups", force: :cascade do |t|
+    t.bigint "workgroup_id", null: false
+    t.string "name", null: false
+    t.string "ruleset", null: false
+    t.boolean "include_schema", default: false, null: false
+    t.string "schema_version", null: false
+    t.string "token", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["workgroup_id", "name"], name: "index_flamingo_validation_setups_on_workgroup_id_and_name", unique: true
+  end
+
+  create_table "flamingo_validations", force: :cascade do |t|
+    t.bigint "workbench_id", null: false
+    t.string "operation_type", null: false
+    t.bigint "operation_id", null: false
+    t.string "status", null: false
+    t.string "user_status", null: false
+    t.string "error_uuid"
+    t.datetime "started_at"
+    t.datetime "ended_at"
+    t.string "creator", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.string "validation_id"
+    t.string "validation_report_url"
+    t.bigint "setup_id", null: false
+    t.index ["operation_type", "operation_id"], name: "index_flamingo_validations_on_operation"
+    t.index ["setup_id"], name: "index_flamingo_validations_on_setup_id"
+    t.index ["workbench_id"], name: "index_flamingo_validations_on_workbench_id"
   end
 
   create_table "flexible_area_memberships", force: :cascade do |t|
@@ -1866,6 +1898,9 @@ ActiveRecord::Schema[7.2].define(version: 2025_12_08_151052) do
   add_foreign_key "controls", "control_contexts"
   add_foreign_key "dashboards", "workbenches"
   add_foreign_key "exports", "workgroups"
+  add_foreign_key "flamingo_validation_setups", "workgroups"
+  add_foreign_key "flamingo_validations", "flamingo_validation_setups", column: "setup_id"
+  add_foreign_key "flamingo_validations", "workbenches"
   add_foreign_key "flexible_area_memberships", "stop_areas", column: "flexible_area_id"
   add_foreign_key "flexible_area_memberships", "stop_areas", column: "member_id"
   add_foreign_key "journey_patterns", "routes", name: "jp_route_fkey", on_delete: :cascade

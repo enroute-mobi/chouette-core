@@ -32,7 +32,6 @@ fr:
       new: "Créer une Règle de traitement"
       edit: "Editer cette Règle de traitement"
       destroy: "Supprimer cette Règle de traitement"
-    name: "%{operation_step} %{processable_type} %{processable_name}"
 
   activerecord:
     models:
@@ -49,18 +48,16 @@ fr:
         one: Règle de traitement
         other: Règles de traitement
     attributes:
-      processing_rule/workbench:
+      processing_rule/base:
         processable_type: Type de traitement
         processable_id: Traitement
         operation_step: Étape
+      processing_rule/workbench:
         required_tag_ids: Tags requis
         required_tags: Tags requis
         excluded_tag_ids: Tags exclus
         excluded_tags: Tags exclus
       processing_rule/workgroup:
-        processable_type: Type de traitement
-        processable_id: Traitement
-        operation_step: Étape
         control_list_id: Jeu de contrôles
         control_list: Jeu de contrôles
         workgroup: Groupe de travail
@@ -74,6 +71,19 @@ fr:
               required_and_excluded_tags_cannot_overlap: "Les tags requis et les tags exclus ne peuvent pas se chevaucher"
             excluded_tag_ids:
               required_and_excluded_tags_cannot_overlap: "Les tags requis et les tags exclus ne peuvent pas se chevaucher"
+
+  enumerize:
+    processing_rule/base:
+      processable_type:
+        "Macro::List": "Jeu d'instructions"
+        "Control::List": Jeu de contrôles
+      operation_step:
+        before_import: Avant import
+        after_import: Après import
+        before_merge: Avant finalisation
+        after_merge: Après finalisation
+        after_aggregate: Après agrégation
+
   simple_form:
     hints:
       processing_rule:

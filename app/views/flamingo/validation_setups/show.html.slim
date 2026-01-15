@@ -1,0 +1,18 @@
+- breadcrumb :flamingo_validation_setup, @flamingo_validation_setup
+- page_header_content_for @flamingo_validation_setup
+
+/ PageContent
+.page_content
+  .container-fluid
+    .row
+      .col-lg-6.col-md-6.col-sm-12.col-xs-12
+        = simple_block_for @flamingo_validation_setup, title: t('flamingo/validation_setups.form.sections.identification') do |d|
+          = d.attribute :name
+          = d.attribute :created_at, as: :datetime
+          = d.attribute :updated_at, as: :datetime
+
+      .col-lg-6.col-md-6.col-sm-12.col-xs-12
+        = simple_block_for @flamingo_validation_setup, title: t('flamingo/validation_setups.form.sections.setup') do |d|
+          = d.attribute :ruleset
+          = d.attribute :include_schema, as: :boolean
+          = d.attribute :schema_version

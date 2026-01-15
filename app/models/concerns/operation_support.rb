@@ -203,6 +203,22 @@ module OperationSupport
     output.current == new
   end
 
+  def processor
+    @processor ||= self.class::Processor.new(self)
+  end
+
+  class Processor < ::Processor
+    protected
+
+    def before_referentials
+      operation.referentials
+    end
+
+    def after_referentials
+      [operation.new]
+    end
+  end
+
   protected
 
   def referential_for_publication

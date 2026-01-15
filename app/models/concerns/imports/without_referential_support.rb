@@ -7,9 +7,10 @@ module Imports
       Chouette::Benchmark.measure "import_#{import_type}", id: id do
         update status: 'running', started_at: Time.zone.now
 
-        import_without_status
+        processor.around do
+          import_without_status
+        end
 
-        processor.after([referential]) if referential
         self.status = 'successful' if status == 'running'
         self.ended_at = Time.zone.now
       end

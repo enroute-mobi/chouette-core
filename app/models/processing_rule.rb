@@ -9,15 +9,16 @@ module ProcessingRule
     include TagsSupport
 
     # Macro::List or Control::List to be started
-    belongs_to :processable, polymorphic: true # CHOUETTE-3247 required: true
+    belongs_to :processable, polymorphic: true, optional: true
     has_many :processings, foreign_key: 'processing_rule_id'
 
     has_tags :required_tags
     has_tags :excluded_tags
 
-    validates :operation_step, presence: true
+    validates :operation_step, :processable_type, :processable_id, presence: true
     validates :control_list_id, presence: true, if: :use_control_list?
     validates :processable, inclusion: { in: ->(rule) { rule.candidate_control_lists } }, if: :use_control_list?
+    validates :operation_step, inclusion: { in: ->(rule) { rule.candidate_operation_steps } }
 
     def use_control_list?
       processable_type == Control::List.name
@@ -31,32 +32,12 @@ module ProcessingRule
       self.processable_id = control_list_id
     end
 
-    def perform(operation: nil, referential: nil, operation_workbench: nil)
-      if use_control_list?
-        processed = processable.control_list_runs.new(name: processable.name,
-                                                      creator: 'Webservice',
-                                                      referential: referential,
-                                                      workbench: operation_workbench)
-        processed.build_with_original_control_list
-      else
-        processed = processable.macro_list_runs.new(name: processable.name,
-                                                    creator: 'Webservice',
-                                                    referential: referential,
-                                                    workbench: operation_workbench)
-        processed.build_with_original_macro_list
-      end
-
-      processing = processings.create step: processing_step,
-                                      operation: operation,
-                                      workbench: operation_workbench,
-                                      workgroup_id: workgroup_id,
-                                      processed: processed
-
-      processing.perform
+    def perform(**options)
+      processable.create_processing(self, **options).perform
     end
 
-    def processing_step
-      operation_step.split('_').first if operation_step.present?
+    def candidate_operation_steps
+      (processable&.class&.candidate_operation_steps || []) & self.class.operation_step.values
     end
   end
 
@@ -65,9 +46,10 @@ module ProcessingRule
     belongs_to :workbench # CHOUETTE-3247 required: true
 
     enumerize :processable_type, in: %w[Macro::List Control::List]
-    enumerize :operation_step, in: %w[after_import before_merge after_merge], scope: :shallow
+    enumerize :operation_step, in: %w[after_import before_merge after_merge],
+                               scope: :shallow,
+                               i18n_scope: 'enumerize.processing_rule/base.operation_step'
 
-    validates :operation_step, inclusion: { in: %w[after_import before_merge] }, if: :use_macro_list?
     validates :operation_step, uniqueness: { scope: %i[processable_type workbench] }
 
     validate :required_tags_must_be_in_candidates
@@ -166,21 +148,26 @@ module ProcessingRule
     has_array_of :target_workbenches, class_name: 'Workbench'
     has_array_of :excluded_workbenches, class_name: 'Workbench'
 
-    enumerize :processable_type, in: %w[Control::List]
-    enumerize :operation_step, in: %w[after_import before_merge after_merge after_aggregate], scope: :shallow
+    enumerize :processable_type, in: %w[Control::List Flamingo::ValidationSetup]
+    enumerize :operation_step, in: %w[before_import after_import before_merge after_merge after_aggregate],
+                               scope: :shallow,
+                               i18n_scope: 'enumerize.processing_rule/base.operation_step'
+
+    validates :operation_step, uniqueness: { scope: %i[processable_type workgroup] }
+
+    validate :exclusive_workbenches
 
     def candidate_control_lists
       workgroup ? workgroup.control_lists.shared : Control::List.none
     end
 
+    def candidate_flamingo_validation_setups
+      workgroup.flamingo_validation_setups
+    end
+
     def candidate_target_workbenches
       workgroup.workbenches
     end
-
-    validates :operation_step, uniqueness: { scope: %i[processable_type workgroup] }
-    validates :control_list_id, presence: true
-
-    validate :exclusive_workbenches
 
     def self.accept_workbench(workbench)
       where(

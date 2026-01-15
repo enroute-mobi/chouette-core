@@ -32,6 +32,22 @@ module Macro
     #   render ...
     # end
 
+    concerning :Processable do
+      include ::ControlMacro::Processable
+
+      class_methods do
+        def candidate_operation_steps
+          %w[after_import before_merge]
+        end
+      end
+
+      def build_processed(attributes)
+        macro_list_runs.new(processed_attributes(attributes)).tap do |processed|
+          processed.build_with_original_macro_list
+        end
+      end
+    end
+
     class Run < Operation
       # The Workbench where macros are executed
       self.table_name = 'macro_list_runs'

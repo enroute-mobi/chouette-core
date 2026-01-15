@@ -328,6 +328,21 @@ crumb :aggregate do |aggregate|
   parent :aggregates, aggregate.workgroup
 end
 
+crumb :flamingo_validation_setups do |workgroup|
+  link Flamingo::ValidationSetup.model_name.human_plural, workgroup_flamingo_validation_setups_path(workgroup)
+  parent workgroup
+end
+
+crumb :flamingo_validation_setup do |flamingo_validation_setup|
+  link flamingo_validation_setup.name, [flamingo_validation_setup.workgroup, flamingo_validation_setup]
+  parent :flamingo_validation_setups, flamingo_validation_setup.workgroup
+end
+
+crumb :new_flamingo_validation_setup do |workgroup|
+  link I18n.t('flamingo/validation_setups.actions.new')
+  parent :flamingo_validation_setups, workgroup
+end
+
 crumb :referential do |workbench, referential|
   link breadcrumb_name(referential), workbench_referential_path(workbench, referential)
   parent :workbench, workbench

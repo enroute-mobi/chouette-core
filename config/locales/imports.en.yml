@@ -17,6 +17,7 @@ en:
       workgroup_control_list_run: "Control list (Workgroup)"
       workbench_control_list_run: "Control list"
       workbench_macro_list_run: "Macro list"
+      flamingo_validations: "Pre-analysis"
     workgroup_index:
       title: "Workgroup's Imports"
     new:

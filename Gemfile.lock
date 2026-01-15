@@ -1011,6 +1011,7 @@ DEPENDENCIES
   chartkick
   cocoon
   coffee-rails (>= 5.0.0)
+  connection_pool (< 3.0)
   country_select (< 9)
   coverband
   cuckoo!

@@ -94,13 +94,6 @@ RSpec.describe Flamingo::Validation do
 
       it { expect { subject }.to change(flamingo_validation, :error_uuid).to(be_present) }
 
-      it 'captures error' do
-        expect(Chouette::Safe).to(
-          receive(:capture).with("Flamingo Validation #{validation_id} failed", be_a(Flamingo::Validation::Error))
-        )
-        subject
-      end
-
       it { expect { subject }.to change(flamingo_validation, :validation_report_url).to('https://some/path') }
     end
 
@@ -116,13 +109,6 @@ RSpec.describe Flamingo::Validation do
       it { expect { subject }.to change(flamingo_validation, :validation_id).to(validation_id) }
 
       it { expect { subject }.to change(flamingo_validation, :error_uuid).to(be_present) }
-
-      it 'captures error' do
-        expect(Chouette::Safe).to(
-          receive(:capture).with("Flamingo Validation #{validation_id} failed", be_a(Flamingo::Validation::Error))
-        )
-        subject
-      end
 
       it { expect { subject }.not_to change(flamingo_validation, :validation_report_url).from(be_blank) }
     end

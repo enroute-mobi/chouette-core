@@ -17,10 +17,7 @@ module Flamingo
 
       self.validation_id = validation.id
       self.validation_report_url = validation.report_url
-      raise Error unless validation.successful?
-    rescue Error => e
-      self.error_uuid = Chouette::Safe.capture("Flamingo Validation #{validation.id} failed", e)
-    ensure
+      self.error_uuid = SecureRandom.uuid unless validation.successful?
       save!
     end
 
@@ -36,7 +33,5 @@ module Flamingo
         publish: true
       )
     end
-
-    class Error < StandardError; end
   end
 end

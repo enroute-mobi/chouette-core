@@ -117,7 +117,6 @@ fr:
   macro/remove_attribute_value/run:
     messages:
       default: "L’attribut '%{target_attribute}' %{source|of_model_name} '%{name}' a été retiré"
-      error: "L’attribut '%{target_attribute}' %{source|of_model_name} '%{name}' n’a pas pu être retiré"
   macro_messages:
     search_no_results_for_filter: "Aucun messages"
     no_address: "Aucune adresse"

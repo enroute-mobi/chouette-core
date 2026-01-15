@@ -106,7 +106,6 @@ en:
   macro/remove_attribute_value/run:
     messages:
       default: "The attribute '%{target_attribute}' %{source|of_model_name} '%{name}' has been removed"
-      error: "The attribute '%{target_attribute}' %{source|of_model_name} '%{name}' can’t be removed"
   macro/remove_code/run:
     messages:
       default:

@@ -147,7 +147,7 @@
           sortable: false \
         ), \
         TableBuilderHelper::Column.new( \
-          name: Operation.human_attribute_name('ended_at'), \
+          name: Operation.human_attribute_name('duration'), \
           key: :duration, \
           attribute: Proc.new { |fv| fv.ended_at.presence && fv.started_at.presence && duration_in_words(fv.ended_at - fv.started_at)}, \
           sortable: false, \

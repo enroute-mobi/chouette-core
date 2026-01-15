@@ -5,6 +5,7 @@ fr:
         user_status: "Statut"
         started_at: "Début"
         ended_at: "Fin"
+        duration: "Durée"
         creator: "Créé par"
   enumerize:
     operation:
@@ -21,6 +22,7 @@ en:
         user_status: "Status"
         started_at: "Started at"
         ended_at: "Ended at"
+        duration: "Duration"
         creator: "Created by"
   enumerize:
     operation:

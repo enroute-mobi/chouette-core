@@ -74,7 +74,7 @@ module Api
       end
 
       def default_company
-        @default_company ||= workbench_import_params['options']['default_company']
+        @default_company ||= workbench_import_params['options']['default_company'] if workbench_import_params['options']
       end
 
       def import_attributes

@@ -22,6 +22,30 @@ RSpec.describe Api::V1::ImportsController, type: :controller do
       end
     end
 
+    describe 'GET #show' do
+      let(:import) do
+        workbench.imports.create!(
+          type: 'Import::Workbench',
+          name: 'Test',
+          creator: 'test',
+          file: file_fixture('google-sample-feed.zip').open
+        )
+      end
+
+      it 'returns import as JSON' do
+        get :show, params: { workbench_id: workbench.id, id: import.id, àformat: :json }
+        expect(JSON.parse(response.body)).to include(
+          {
+            'id' => import.id,
+            'name' => 'Test',
+            'status' => 'running',
+            'file_type' => 'automatic',
+            'options' => be_present
+          }
+        )
+      end
+    end
+
     describe 'POST #create' do
       let(:file) { fixture_file_upload('google-sample-feed.zip') }
 

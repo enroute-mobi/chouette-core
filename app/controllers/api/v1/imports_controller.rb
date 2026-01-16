@@ -56,7 +56,7 @@ module Api
             automatic_merge: import.automatic_merge,
             archive_on_fail: import.archive_on_fail,
             flag_urgent: import.flag_urgent,
-            default_company: default_company
+            default_company: import.specific_default_company&.registration_number
           }
         }
       end

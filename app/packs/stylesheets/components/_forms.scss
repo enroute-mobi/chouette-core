@@ -1126,6 +1126,7 @@ $grp-cbx-size: 34px;
 
 // Nested fields
 .nested-fields {
+  padding: 0 5px;
   &[class*="col"] {
     border: none;
     padding: 0 15px;

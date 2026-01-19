@@ -59,6 +59,8 @@ en:
         one: Remove codes
       macro/define_journey_pattern_name_or_destination/run:
         one: Define Journey Pattern name or destination display
+      macro/remove_attribute_value/run:
+        one: Remove attribute value
     attributes:
       macro/base/run:
         name: Name
@@ -102,3 +104,6 @@ en:
       macro/define_journey_pattern_name_or_destination/run:
         target_attribute: Attribute
         target_format: Format
+      macro/remove_attribute_value/run:
+        target_model: Target Model
+        target_attribute: Attribute

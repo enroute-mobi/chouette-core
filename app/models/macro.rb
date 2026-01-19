@@ -31,6 +31,7 @@ module Macro
       Macro::AdjustPeriods,
       Macro::RemoveCode,
       Macro::DefineJourneyPatternNameOrDestination,
+      Macro::RemoveAttributeValue,
       Macro::Dummy # Keep this dummy last
     ]
   end

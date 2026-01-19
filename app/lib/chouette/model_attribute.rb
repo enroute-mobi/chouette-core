@@ -156,6 +156,7 @@ module Chouette
       define Chouette::Company, :time_zone
       define Chouette::Company, :town
       define Chouette::Company, :is_referent
+      define Chouette::Company, :referent_id
 
       # Chouette::StopArea
       define Chouette::StopArea, :name
@@ -209,7 +210,6 @@ module Chouette
       define Chouette::VehicleJourney, :transport_mode
       define Chouette::VehicleJourney, :published_journey_identifier
       define Chouette::VehicleJourney, :time_tables
-      define Chouette::VehicleJourney, :transport_mode
 
       # Chouette::TimeTable
       define Chouette::TimeTable, :dates

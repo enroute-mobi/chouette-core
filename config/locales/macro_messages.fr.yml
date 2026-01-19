@@ -114,6 +114,9 @@ fr:
     messages:
       default: "La Mission '%{journey_pattern_name}' est renommée en '%{attribute_value_after_change}'"
       error: "La Mission '%{journey_pattern_name}' n’a pas pu être renommée"
+  macro/remove_attribute_value/run:
+    messages:
+      default: "L’attribut '%{target_attribute}' %{source|of_model_name} '%{name}' a été retiré"
   macro_messages:
     search_no_results_for_filter: "Aucun messages"
     no_address: "Aucune adresse"

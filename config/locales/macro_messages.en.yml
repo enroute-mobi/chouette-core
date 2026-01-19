@@ -103,6 +103,9 @@ en:
     messages:
       default: "The end period of the Timetable '%{name}' has been changed to '%{period_end}'"
       error: "The end period of the Timetable '%{name}' can’t be changed"
+  macro/remove_attribute_value/run:
+    messages:
+      default: "The attribute '%{target_attribute}' %{source|of_model_name} '%{name}' has been removed"
   macro/remove_code/run:
     messages:
       default:

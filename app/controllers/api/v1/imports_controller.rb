@@ -18,10 +18,14 @@ module Api
           @import.flag_urgent = false
         end
 
-        if @import.save
+        if default_company.present? && @import.specific_default_company.nil?
+          @import.errors.add(:specific_default_company_id, :must_exist)
+        end
+
+        if @import.errors.empty? && @import.save
           render json: import_json(@import), status: :created
         else
-          render json: { status: 'error', messages: @import.errors.full_messages }
+          render json: { status: 'error', messages: @import.errors.full_messages }, status: :unprocessable_entity
         end
       end
 
@@ -51,7 +55,8 @@ module Api
           options: {
             automatic_merge: import.automatic_merge,
             archive_on_fail: import.archive_on_fail,
-            flag_urgent: import.flag_urgent
+            flag_urgent: import.flag_urgent,
+            default_company: import.specific_default_company&.registration_number
           }
         }
       end
@@ -64,12 +69,16 @@ module Api
 
       def workbench_import_params
         permitted_keys = %i[name file]
-        permitted_keys << { options: %w[automatic_merge archive_on_fail flag_urgent file_type] }
+        permitted_keys << { options: %w[automatic_merge archive_on_fail flag_urgent file_type default_company] }
         params.require(:workbench_import).permit(permitted_keys)
       end
 
+      def default_company
+        @default_company ||= workbench_import_params['options']['default_company'] if workbench_import_params['options']
+      end
+
       def import_attributes
-        workbench_import_params.tap do |import_attributes|
+        @import_attributes ||= workbench_import_params.tap do |import_attributes|
           import_attributes.merge!(creator: 'Webservice')
 
           if current_workbench.organisation.has_feature?('import_netex_force_override_objectid')
@@ -79,6 +88,11 @@ module Api
 
           if (file_type = import_attributes['options']&.delete('file_type'))
             import_attributes['options'][:import_category] = IMPORT_CATEGORY_ALIASES.fetch(file_type, file_type)
+          end
+
+          if default_company
+            import_attributes['options'][:specific_default_company_id] =
+              current_workbench.companies.find_by(registration_number: default_company)&.id
           end
         end
       end

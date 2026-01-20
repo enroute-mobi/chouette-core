@@ -16,3 +16,14 @@ function docker_env_production() {
         cp config/environments/production.rb.sample config/environments/production.rb
     fi
 }
+
+function docker_custom_pgclient {
+    if [ -z "${DEBIAN_PG_API_USERNAME}" ]; then
+      echo "Skip custom postgresql-client installation (no authentication information)"
+      return
+    fi
+    apt_install curl
+    curl -Lfs --user "${DEBIAN_PG_API_USERNAME}:${DEBIAN_PG_API_TOKEN}" -o /tmp/postgresql-client.deb "https://api.bitbucket.org/2.0/repositories/enroute-mobi/debian-postgresql/downloads/postgresql-client-17_17.7-0deb13u1_amd64.deb"
+    dpkg -i /tmp/postgresql-client.deb || true
+    apt install -fy
+}

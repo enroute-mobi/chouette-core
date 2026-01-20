@@ -244,6 +244,10 @@ class Import::Base < ApplicationModel
     @lookup ||= Import::Lookup.default(self)
   end
 
+  def referential_lookup
+    @referential_lookup ||= Import::Lookup.referential(self)
+  end
+
   protected
 
   # Expected and used file extension

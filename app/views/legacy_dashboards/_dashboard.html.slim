@@ -95,7 +95,7 @@
           .panel-heading
             h3.panel-title.with_actions
               div
-                = link_to I18n.t("dashboards.aggregates.title", count: workgroup_aggregate_count), workgroup_output_path(workbench.workgroup)
+                = link_to I18n.t("legacy_dashboards.aggregates.title", count: workgroup_aggregate_count), workgroup_output_path(workbench.workgroup)
                 span.badge.ml-xs = workgroup_aggregate_count if workgroup_aggregate_count.positive?
               div
                 = link_to '', workgroup_output_path(workbench.workgroup), class: ' fa fa-chevron-right pull-right'

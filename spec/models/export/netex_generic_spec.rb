@@ -340,6 +340,51 @@ RSpec.describe Export::NetexGeneric do
         end
       end
     end
+
+    describe '#booking_arrangements' do
+      let(:original_export_scope) do
+        double(
+          'Export::Scope',
+          lines: context.line_referential.lines.where(id: exported_line.id),
+          booking_arrangements: BookingArrangement.none
+        )
+      end
+      let(:export) do
+        Export::NetexGeneric.new(
+          export_scope: original_export_scope,
+          workgroup: context.workgroup,
+          setup: { scope_setup: { type: 'Export::Setup::Scope::Referential' } }
+        )
+      end
+
+      subject { export.export_scope.booking_arrangements }
+
+      context 'when the Export scope contains BookingArrangements linked with a line exported line referent' do
+        let(:context) do
+          Chouette.create do
+            booking_arrangement :exported_booking_arangement
+            booking_arrangement :ignored_booking_arangement
+
+            line :exported_line_referent, booking_arrangement: :exported_booking_arangement, is_referent: true
+            line :exported_line, referent: :exported_line_referent
+
+            line :ignored_line, booking_arrangement: :ignored_booking_arangement
+
+            referential
+          end
+        end
+
+        let(:exported_booking_arangement) { context.booking_arrangement(:exported_booking_arangement) }
+        let(:ignored_booking_arangement) { context.booking_arrangement(:ignored_booking_arangement) }
+        let(:exported_line_referent) { context.line(:exported_line_referent) }
+        let(:exported_line) { context.line(:exported_line) }
+        let(:ignored_line) { context.line(:ignored_line) }
+
+        it 'includes only the exported BookingArrangement' do
+          is_expected.to contain_exactly(exported_booking_arangement)
+        end
+      end
+    end
   end
 
   describe '#netex_identifier' do

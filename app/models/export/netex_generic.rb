@@ -79,7 +79,20 @@ class Export::NetexGeneric < Export::Base
 
     def lines
       @lines ||= lines_class.new(self).lines
-      #  prefer_referent_lines? ? lines_or_referents : lines_and_referents
+    end
+
+    concerning :BookingArrangement do
+      def booking_arrangements
+        line_referential.booking_arrangements.where(id: referent_line_booking_arrangement_ids).or(
+          line_referential.booking_arrangements.where(id: super.select(:id))
+        ).distinct
+      end
+
+      private
+
+      def referent_line_booking_arrangement_ids
+        lines.select(:booking_arrangement_id).where(is_referent: true).distinct
+      end
     end
 
     concerning :Company do

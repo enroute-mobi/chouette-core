@@ -220,7 +220,7 @@ definitions:
           - docker
         script:
           - build.sh gcloud::setup
-          - build.sh bitbucket::docker::build
+          - DOCKER_BUILD_OPTIONS="--build-arg DEBIAN_PG_API_USERNAME=${DEBIAN_PG_API_USERNAME} --build-arg DEBIAN_PG_API_TOKEN=${DEBIAN_PG_API_TOKEN}" build.sh bitbucket::docker::build
         services:
           - docker-large
 

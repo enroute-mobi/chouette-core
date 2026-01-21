@@ -17,6 +17,11 @@ WORKDIR /app
 
 # Install bundler packages
 COPY build.rc Gemfile Gemfile.lock ./
+
+# See CHOUETTE-5208
+ARG DEBIAN_PG_API_USERNAME DEBIAN_PG_API_TOKEN
+RUN build.sh docker::custom::pgclient
+
 RUN build.sh docker::bundler::install
 
 FROM base AS assets-builder

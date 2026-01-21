@@ -21,7 +21,7 @@ fr:
         other: Les lignes %{lines} ne font pas partie du périmètre fonctionnel du transporteur %{organisation}
       warnings:
         frozen: "Ce Jeu de Données est actuellement congelé. Pour voir son contenu, décongelez-le."
-        unfreezing: "Ce Jeu de Données est actuellement est décongélation. Rafraîchissez cette page dans quelques secondes."
+        unfreezing: "Ce Jeu de Données est actuellement en décongélation. Rafraîchissez cette page dans quelques secondes."
     counts:
       objects: "Eléments"
       count: "Qté"

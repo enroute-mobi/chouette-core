@@ -32,9 +32,10 @@
           data-widget-id=widget.id
         ]
           .grid-stack-item-content
-            .widget-drag-handle
-              h3= widget.name
-            .widget-content
-              = render_widget(widget)
+            .content-container
+              .widget-drag-handle
+                h3= widget.name
+              .widget-content
+                = render_widget(widget)
 
 = javascript_pack_tag 'dashboards-edit', defer: true

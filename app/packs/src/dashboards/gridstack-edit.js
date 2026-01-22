@@ -26,6 +26,7 @@ function initGridstack() {
   let grid = GridStack.init({
     float: true,
     cellHeight: 70,        // Cell height
+    margin: 8,
     resizable: {
       handles: 'e, se, s, sw, w'
     },

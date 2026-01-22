@@ -7,17 +7,14 @@
       - h_pos = widget.height || 2
       .grid-stack-item data-widget-id=widget.id gs-x=x_pos gs-y=y_pos gs-w=w_pos gs-h=h_pos
         .grid-stack-item-content
-          .widget-drag-handle
-            h3= widget.name
-          .widget-content
-            = render_widget(widget)
+          .content-container
+            .widget-drag-handle
+              h3= widget.name
+            .widget-content
+              = render_widget(widget)
   - else
     .col-span-full.text-center.py-12
       .bg-gray-50.p-8.rounded-lg
         i.fas.fa-chart-bar.mx-auto.fa-2x.text-gray-400
         h3.mt-2.text-sm.font-medium.text-gray-900= t('dashboards.widgets.no_widgets')
         p.mt-1.text-sm.text-gray-500= t('dashboards.widgets.get_started')
-
-/ - if editable && workbench
-/   .mt-4
-/     = link_to t('dashboards.actions.edit'), edit_workbench_dashboard_path(workbench, dashboard), class: 'btn btn-primary'

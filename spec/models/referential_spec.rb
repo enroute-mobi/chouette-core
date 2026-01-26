@@ -1096,24 +1096,33 @@ RSpec.describe Referential, type: :model do
 
     let(:referentials_frozen_after) { 14 }
     let!(:context) do
+      now = Time.zone.now
+      frozen_after = 14
+
       Chouette.create do
-        frozen_after = 14
         workbench do
-          referential :never_visited, archived_at: Time.zone.now, name: 'never visited'
-          referential :visited_recently, archived_at: Time.zone.now, visited_at: (frozen_after / 2).days.ago
-          referential :visited_formerly, archived_at: Time.zone.now, visited_at: (frozen_after * 2).days.ago
-          referential :in_a_referential_suite, archived_at: Time.zone.now
+          referential :never_visited, archived_at: now, name: 'never visited'
+          referential :visited_recently, archived_at: now, visited_at: (frozen_after / 2).days.from_now
+          referential :visited_formerly, archived_at: now, visited_at: frozen_after.days.ago
+          referential :created_recently, archived_at: (frozen_after / 2).days.from_now, name: 'created recentrly'
+          referential :in_a_referential_suite, archived_at: now
           referential :not_archived
           %w[freezing frozen unfreeze_enqueued unfreezing].each do |status|
-            referential :"data_#{status}", archived_at: Time.zone.now, data_freeze_status: status.to_s
+            referential :"data_#{status}", archived_at: now, data_freeze_status: status.to_s
           end
         end
       end.tap do |context|
+        context.referential(:created_recently).update_column(:created_at, (frozen_after / 2).days.from_now)
         context.referential(:in_a_referential_suite).update!(referential_suite: context.workbench.output)
       end
     end
 
-    before { allow(Chouette::Config).to receive(:referentials_frozen_after).and_return(referentials_frozen_after) }
+    before do
+      allow(Chouette::Config).to receive(:referentials_frozen_after).and_return(referentials_frozen_after)
+      Timecop.travel((14 + 1).days.from_now)
+    end
+
+    after { Timecop.return }
 
     context 'when Chouette::Config.referentials_frozen_after is set' do
       it 'returns only freezable candidates' do
@@ -1123,6 +1132,7 @@ RSpec.describe Referential, type: :model do
 
     context 'when Chouette::Config.referentials_frozen_after is nil' do
       let(:referentials_frozen_after) { nil }
+
       it { is_expected.to be_empty }
     end
   end

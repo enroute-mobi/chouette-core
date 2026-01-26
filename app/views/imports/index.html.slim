@@ -31,12 +31,11 @@
               TableBuilderHelper::Column.new( \
                 key: :started_at, \
                 attribute: Proc.new { |object| child = object.children.first; \
-                  child&.started_at&.present? ? l(child.started_at, format: :short_with_time) : '-' }, \
+                  child&.started_at&.present? ? l(child.started_at, format: :short_with_time) : l(object.started_at, format: :short_with_time) }, \
               ), \
               TableBuilderHelper::Column.new( \
                 key: :duration, \
-                attribute: Proc.new { |object| child = object.children.first; \
-                  (child&.ended_at&.present? && child&.started_at&.present?) ? duration_in_words(child.ended_at - child.started_at) : '-' }, \
+                attribute: Proc.new { |object| duration_in_words(object.duration) }, \
                 sortable: false, \
               ), \
               *@contextual_cols \

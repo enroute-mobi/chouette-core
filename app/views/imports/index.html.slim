@@ -35,15 +35,7 @@
               ), \
               TableBuilderHelper::Column.new( \
                 key: :duration, \
-                attribute: Proc.new { |object| child = object.children.first; \
-                  if(child&.ended_at&.present? && child&.started_at&.present?); \
-                    duration_in_words(child.ended_at - child.started_at); \
-                  elsif (object&.ended_at&.present? && object&.started_at&.present?); \
-                    duration_in_words(object.ended_at - object.started_at); \
-                  else; \
-                    '-'; \
-                  end; \
-                }, \
+                attribute: Proc.new { |object| duration_in_words(object.duration) }, \
                 sortable: false, \
               ), \
               *@contextual_cols \

@@ -22,6 +22,18 @@ class ImportDecorator < Af83::Decorator
     object.visible_options.select { |k, _v| h.policy(object).option?(k) }
   end
 
+  define_instance_method :duration do
+    child = object.children.first
+
+    if child&.ended_at&.present? && child&.started_at&.present?
+      child.ended_at - child.started_at
+    elsif ended_at.present? && started_at.present?
+      ended_at - started_at
+    else
+      nil
+    end
+  end
+
   create_action_link if: -> { context[:parent].is_a? (Workbench) }
 
   with_instance_decorator do |instance_decorator|

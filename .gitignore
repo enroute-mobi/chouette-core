@@ -73,3 +73,6 @@
 
 # For byebug users
 /.byebug_history
+
+# licenses cache
+/.licenses

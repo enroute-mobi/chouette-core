@@ -122,7 +122,7 @@ export default class CodesList extends Component {
                   onClick={this.handleAddCode}
                   disabled={!this.props.editMode}
                 >
-                  <i className='fa fa-plus'></i> {I18n.t('actions.add')}
+                  <i className='fa fa-plus'></i> {I18n.t('actions.add_code')}
                 </button>
               </div>
             </div>

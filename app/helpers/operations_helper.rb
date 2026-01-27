@@ -91,6 +91,7 @@ module OperationsHelper
   end
 
   def duration_in_words(seconds)
+    return "-" if seconds.blank?
     seconds > 60 ? "#{(seconds /  1.minute).round} min" : "#{seconds.round} sec"
   end
 end

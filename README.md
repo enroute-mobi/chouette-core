@@ -51,4 +51,4 @@ The [Chouette SaaS User Manual](https://enroute.atlassian.net/wiki/spaces/PUBLIC
 
 ## Support
 
-Contact [enRoute Chouette team](mailto:dev@enroute.mobi) to know how to contribute to the Chouette project.
+Contact [enRoute Chouette team](mailto:contact@enroute.mobi) to know how to contribute to the Chouette project.

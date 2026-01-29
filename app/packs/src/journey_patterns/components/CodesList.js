@@ -24,8 +24,7 @@ export default class CodesList extends Component {
       id: null,
       code_space_id: window.available_code_spaces[0].id,
       value: "",
-      fallback_id: shortid.generate(),
-      _destroy: false
+      fallback_id: shortid.generate()
     })
   }
 
@@ -66,7 +65,7 @@ export default class CodesList extends Component {
             <label className='control-label'>{ I18n.t('activerecord.attributes.journey_pattern.codes') }</label>
             
             {this.state.codeValues.map((codeData, index) => (
-              <div key={codeData.id || codeData.fallback_id} className="row mb-2" style={{ display: codeData._destroy ? 'none' : 'flex' }}>
+              <div key={codeData.id || codeData.fallback_id} className="row mb-2">
                 <div className="col-sm-4">
                   <select
                     className="form-control"

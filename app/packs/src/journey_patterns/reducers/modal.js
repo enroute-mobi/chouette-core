@@ -54,18 +54,9 @@ export default function modal(state = {}, action) {
       }
       return state
     case 'DELETE_CODE':
-      if (state.modalProps.journeyPattern && (state.modalProps.index === action.index || (state.modalProps.index === undefined && action.index === null))) {
-        const codesAfterDelete = (state.modalProps.journeyPattern.code_values || []).map((code, index) => {
-          if (index === action.codeIndex) {
-            return _.assign({}, code, {_destroy: true})
-          }
-          return code
-        })
-        journeyPattern = _.assign({}, state.modalProps.journeyPattern, {code_values: codesAfterDelete})
-        newModalProps = _.assign({}, state.modalProps, {journeyPattern})
-        return _.assign({}, state, {modalProps: newModalProps})
-      }
-      return state
+      const codesAfterDelete = state.code_values
+      codesAfterDelete.splice(action.index, 1)
+      return _.assign({}, state, {code_values: codesAfterDelete})
     case 'CREATE_JOURNEYPATTERN_MODAL':
       return {
         type: 'create',

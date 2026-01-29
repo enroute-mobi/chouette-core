@@ -118,11 +118,7 @@ module CodeSupport
         value: value
       }
       if id = code['id']
-        if code['_destroy']
-          codes_by_id.delete(id)&.mark_for_destruction
-        else
-          codes_by_id.delete(id)&.attributes = attributes
-        end
+        codes_by_id.delete(id)&.attributes = attributes
       else
         codes.new(attributes)
       end

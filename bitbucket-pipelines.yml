@@ -3,9 +3,6 @@ definitions:
   services:
     docker:
       memory: 512
-    docker-medium:
-      memory: 4096
-      type: docker
     docker-large:
       memory: 15360
       type: docker
@@ -83,7 +80,7 @@ definitions:
           name: us-east1-docker.pkg.dev/enroute-interne/enroute-interne/enroute-ruby:3.4-dev
           username: _json_key
           password: "$GCLOUD_API_KEYFILE"
-        size: 4x
+        size: 8x
         runs-on:
           - self.hosted
           - build
@@ -110,7 +107,7 @@ definitions:
         artifacts:
           - parallel_tests/*
         services:
-          - docker-medium
+          - docker-large
           - datadog-agent
 
     - step: &rspec-tests-1

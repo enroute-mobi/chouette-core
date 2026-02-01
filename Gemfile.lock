@@ -256,7 +256,7 @@ GEM
       unaccent (~> 0.3)
     country_select (8.0.3)
       countries (~> 5.0)
-    coverband (6.1.6)
+    coverband (6.1.7)
       base64
       redis (>= 3.0)
     crack (1.0.1)
@@ -764,7 +764,7 @@ GEM
       actionpack (>= 5)
       redis-rack (>= 2.1.0, < 4)
       redis-store (>= 1.1.0, < 2)
-    redis-client (0.26.1)
+    redis-client (0.26.4)
       connection_pool
     redis-rack (3.0.0)
       rack-session (>= 0.2.0)

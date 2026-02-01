@@ -273,10 +273,10 @@ GEM
       activerecord (>= 5.a)
       database_cleaner-core (~> 2.0)
     database_cleaner-core (2.0.1)
-    datadog (2.24.0)
+    datadog (2.27.0)
       cgi
-      datadog-ruby_core_source (~> 3.4, >= 3.4.2)
-      libdatadog (~> 24.0.1.1.0)
+      datadog-ruby_core_source (~> 3.5, >= 3.5.1)
+      libdatadog (~> 25.0.0.1.0)
       libddwaf (~> 1.30.0.0.0)
       logger
       msgpack
@@ -284,7 +284,7 @@ GEM
       datadog (~> 2.4)
       drb
       msgpack
-    datadog-ruby_core_source (3.5.0)
+    datadog-ruby_core_source (3.5.2)
     date (3.5.1)
     dbf (4.3.2)
       csv
@@ -546,8 +546,8 @@ GEM
       letter_opener (~> 1.9)
       railties (>= 6.1)
       rexml
-    libdatadog (24.0.1.1.0)
-    libdatadog (24.0.1.1.0-x86_64-linux)
+    libdatadog (25.0.0.1.0)
+    libdatadog (25.0.0.1.0-x86_64-linux)
     libddwaf (1.30.0.0.0)
       ffi (~> 1.0)
     libddwaf (1.30.0.0.0-arm64-darwin)

@@ -774,7 +774,7 @@ RSpec.describe Export::Setup::Netex do
       it do
         is_expected.to(
           validate_inclusion_of(:profile).in_array(
-            %w[none french european idfm/iboo idfm/icar idfm/publication idfm/publication/legacy]
+            %w[none french european idfm/iboo idfm/icar idfm/publication]
           )
         )
       end

@@ -306,7 +306,7 @@ module Export
       attribute :profile_options, default: -> { {} }
       attribute :participant_ref, :string, default: 'enRoute'
 
-      enumerize :profile, in: %w[none french european idfm/iboo idfm/icar idfm/publication idfm/publication/legacy]
+      enumerize :profile, in: %w[none french european idfm/iboo idfm/icar idfm/publication]
       validates :profile, presence: true
     end
 

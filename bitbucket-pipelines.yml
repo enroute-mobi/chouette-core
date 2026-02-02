@@ -4,7 +4,7 @@ definitions:
     docker:
       memory: 512
     docker-large:
-      memory: 24576
+      memory: 30720
       type: docker
     postgres:
       image:

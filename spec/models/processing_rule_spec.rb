@@ -101,6 +101,79 @@ RSpec.describe ProcessingRule::Workbench, type: :model do
       it { expect(subject).to be_valid }
     end
   end
+
+  describe 'Operation step validation' do
+    let(:context) { Chouette.create { workbench } }
+    let(:workbench) { context.workbench }
+    let(:first_macro_list) { Macro::List.create!(name: 'First Macro List', workbench: workbench) }
+    let(:second_macro_list) { Macro::List.create!(name: 'Second Macro List', workbench: workbench) }
+
+    context 'when operation_step is after_import' do
+      before do
+        workbench.processing_rules.create!(
+          operation_step: operation_step,
+          processable: first_macro_list
+        )
+      end
+
+      let(:operation_step) { 'after_import' }
+
+      context 'when a processing rule is created with a processable that is used in another after_import processing rule' do
+        subject do
+          workbench.processing_rules.build(
+            operation_step: operation_step,
+            processable: first_macro_list
+          )
+        end
+
+        it { is_expected.to be_invalid }
+      end
+
+      context 'when a processing rule is created with a new processable' do
+        subject do
+          workbench.processing_rules.build(
+            operation_step: operation_step,
+            processable: second_macro_list
+          )
+        end
+
+        it { is_expected.to be_valid }
+      end
+    end
+
+    context 'when operation_step is not after_import' do
+      let(:operation_step) { 'before_merge' }
+
+      before do
+        workbench.processing_rules.create!(
+          operation_step: operation_step,
+          processable: first_macro_list
+        )
+      end
+
+      context 'when a processing rule is created with a processable that is used in another processing rule' do
+        subject do
+          workbench.processing_rules.build(
+            operation_step: operation_step,
+            processable: first_macro_list
+          )
+        end
+
+        it { is_expected.to be_invalid }
+      end
+
+      context 'when a processing rule is created with a new processable' do
+        subject do
+          workbench.processing_rules.build(
+            operation_step: operation_step,
+            processable: second_macro_list
+          )
+        end
+
+        it { is_expected.to be_invalid }
+      end
+    end
+  end
 end
 
 RSpec.describe ProcessingRule::Workgroup, type: :model do
@@ -225,6 +298,91 @@ RSpec.describe ProcessingRule::Workgroup, type: :model do
       let(:excluded_workbench_ids) { [other_workbench.id] }
 
       it { expect(subject).to match_array [workgroup_processing_rule] }
+    end
+  end
+
+  describe 'Operation step validation' do
+    let(:workgroup) { context.workgroup }
+    let(:processing_rule) { context.workgroup_processing_rule }
+    let(:second_control_list) { context.control_list(:second_control_list) }
+    let(:first_control_list) { context.control_list(:first_control_list) }
+
+    context 'when operation_step is after_import' do
+      let(:context) do
+        Chouette.create do
+          workgroup do
+            workbench :workbench do
+              control_list :first_control_list, shared: true
+              control_list :second_control_list, shared: true
+            end
+
+            workgroup_processing_rule control_list: :first_control_list, operation_step: 'after_import'
+          end
+        end
+      end
+
+      let(:operation_step) { 'after_import' }
+
+      context 'when a processing rule is created with a processable that is used in another after_import processing rule' do
+        subject do
+          workgroup.processing_rules.build(
+            operation_step: operation_step,
+            processable: first_control_list
+          )
+        end
+
+        it { is_expected.to be_invalid }
+      end
+
+      context 'when a processing rule is created with a new processable' do
+        subject do
+          workgroup.processing_rules.build(
+            operation_step: operation_step,
+            processable: second_control_list
+          )
+        end
+
+        it { is_expected.to be_valid }
+      end
+    end
+
+    context 'when operation_step is not after_import' do
+      let(:context) do
+        Chouette.create do
+          workgroup do
+            workbench :workbench do
+              control_list :first_control_list, shared: true
+              control_list :second_control_list, shared: true
+            end
+
+            workgroup_processing_rule control_list: :first_control_list, operation_step: 'before_merge'
+          end
+        end
+      end
+
+      let(:operation_step) { 'before_merge' }
+
+      context 'when a processing rule is created with a processable that is used in another processing rule' do
+        subject do
+          workgroup.processing_rules.build(
+            operation_step: operation_step,
+            processable: first_control_list
+          )
+        end
+
+        it { is_expected.to be_invalid }
+      end
+
+      context 'when a processing rule is created with a new processable' do
+        subject do
+          workgroup.processing_rules.build(
+            operation_step: operation_step,
+            processable: second_control_list
+          )
+        end
+
+        it { is_expected.to be_invalid }
+      end
     end
   end
 end

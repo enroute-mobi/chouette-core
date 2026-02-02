@@ -18,7 +18,8 @@ export const receivedRoute = {
     { id: 2 },
     { id: 3 },
     { id: 4 }
-  ]
+  ],
+  code_values: []
 }
 
 export const receivedOppositeRoutes = {

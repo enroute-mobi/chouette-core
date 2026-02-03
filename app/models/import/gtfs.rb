@@ -86,8 +86,7 @@ class Import::Gtfs < Import::Base
   end
 
   class Part < Import::Part
-    delegate :source, :lookup, :create_message, :workbench, :referential,
-             :referential_inserter, :save_model, :referential_lookup, to: :import
+    delegate :source, :lookup, :create_message, :workbench, :referential, :referential_inserter, :save_model, to: :import
   end
 
   def trip_lookup

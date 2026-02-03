@@ -35,6 +35,7 @@ fr:
     stop_area_not_found: "Arrêt inconnu: '%{code}'"
     overlaping_period_for_timetable: "L'objet DayType d'identifiant %{timetable_objectid} contient des DayTypeAssignment avec des OperatingPeriod se chevauchant."
     several_datasets: "Le fichier NeTEx ne peut pas définir plusieurs jeux de données"
+    inverted_route_not_found: "L'itinéraire '%{route_code}' ne peut pas être associé à un itinéraire opposé '%{opposite_route_code}'"
     gtfs:
       agencies:
         imported: "%{count} agence(s) importée(s)"

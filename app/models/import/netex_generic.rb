@@ -666,8 +666,11 @@ module Import
       def save_inverted_routes
         cached_inverted_routes.each do |code, opposite_route_code|
           route = referential_lookup.routes.find(code)
-          opposite_route_id = referential_lookup.routes.find_id(opposite_route_code)
-          route.update(opposite_route_id: opposite_route_id)
+          if opposite_route_id = referential_lookup.routes.find_id(opposite_route_code)
+            route.update(opposite_route_id: opposite_route_id)
+          else
+            create_message :inverted_route_not_found, { route_code: code, opposite_route_code: opposite_route_code }
+          end
         end
       end
 

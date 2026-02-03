@@ -54,7 +54,7 @@ export default function modal(state = {}, action) {
       }
       return state
     case 'DELETE_CODE':
-      const codesAfterDelete = state.code_values
+      const codesAfterDelete = state.modalProps.journeyPattern.code_values
       codesAfterDelete.splice(action.index, 1)
       return _.assign({}, state, {code_values: codesAfterDelete})
     case 'CREATE_JOURNEYPATTERN_MODAL':

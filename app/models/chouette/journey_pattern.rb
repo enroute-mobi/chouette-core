@@ -56,7 +56,7 @@ module Chouette
               # Update attributes and stop_points associations
               jp.assign_attributes(state_permited_attributes(item)) unless item['new_record']
               jp.state_stop_points_update(item) if jp.persisted?
-              jp.assign_state_codes(item['code_values']) if item.key?('code_values') && jp.respond_to?(:assign_state_codes)
+              jp.assign_state_codes(item['code_values']) if item.key?('code_values')
               jp.save!
             end
           rescue => e

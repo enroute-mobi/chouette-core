@@ -7,6 +7,8 @@ fr:
       title: "Paramétrages de Validations Flamingo"
     show:
       title: "%{name}"
+    edit:
+      title: "Editer %{name}"
     form:
       sections:
         identification: "Identification"

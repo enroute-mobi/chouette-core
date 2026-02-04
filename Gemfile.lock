@@ -403,7 +403,6 @@ GEM
     faraday-retry (1.0.3)
     faraday_middleware (1.2.1)
       faraday (~> 1.0)
-    ffi (1.17.3)
     ffi (1.17.3-arm64-darwin)
     ffi (1.17.3-x86_64-darwin)
     ffi (1.17.3-x86_64-linux-gnu)
@@ -536,6 +535,8 @@ GEM
     json (2.18.0)
     jwt (3.1.2)
       base64
+    kramdown (2.5.2)
+      rexml (>= 3.4.4)
     language_server-protocol (3.17.0.5)
     launchy (3.1.1)
       addressable (~> 2.8)
@@ -558,7 +559,6 @@ GEM
       ffi (~> 1.0)
     libddwaf (1.30.0.0.0-x86_64-linux)
       ffi (~> 1.0)
-    libv8-node (18.19.0.0)
     libv8-node (18.19.0.0-arm64-darwin)
     libv8-node (18.19.0.0-x86_64-darwin)
     libv8-node (18.19.0.0-x86_64-linux)
@@ -597,7 +597,6 @@ GEM
       rake
     mini_histogram (0.3.1)
     mini_mime (1.1.5)
-    mini_portile2 (2.8.9)
     mini_racer (0.9.0)
       libv8-node (~> 18.19.0.0)
     minitest (6.0.1)
@@ -621,9 +620,6 @@ GEM
       net-protocol
     net-ssh (7.3.0)
     nio4r (2.7.5)
-    nokogiri (1.19.0)
-      mini_portile2 (~> 2.8.2)
-      racc (~> 1.4)
     nokogiri (1.19.0-arm64-darwin)
       racc (~> 1.4)
     nokogiri (1.19.0-x86_64-darwin)
@@ -993,7 +989,6 @@ GEM
 
 PLATFORMS
   arm64-darwin
-  ruby
   x86_64-darwin-20
   x86_64-linux
 
@@ -1069,6 +1064,7 @@ DEPENDENCIES
   jquery-rails (>= 4.6.0)
   jquery-ui-rails (>= 6.0.1)
   json
+  kramdown (>= 2.5)
   language_engine!
   letter_opener
   letter_opener_web

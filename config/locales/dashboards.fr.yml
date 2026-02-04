@@ -24,6 +24,8 @@ fr:
       description: "Configurez les widgets de votre tableau de bord"
       name: "Nom"
       type: "Type"
+      content: "Contenu Markdown"
+      content_placeholder: "Entrez votre contenu en Markdown ici..."
       unknown_type: "Type de widget non reconnu : %{widget_type}"
       options: "Options"
       new_widget: "Nouveau widget"

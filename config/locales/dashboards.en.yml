@@ -24,6 +24,8 @@ en:
       description: "Configure your widgets"
       name: "Name"
       type: "Type"
+      content: "Markdown Content"
+      content_placeholder: "Enter your Markdown content here..."
       unknown_type: "Unknown widget type: %{widget_type}"
       options: "Options"
       new_widget: "New widget"

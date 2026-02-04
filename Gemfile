@@ -225,3 +225,4 @@ gem 'chartkick' # check the corresponding Chart.js version to change in package.
 gem 'groupdate'
 
 gem 'connection_pool', '< 3.0' # TODO: CHOUETTE-5199 keep until Rails 8.1 (see CHOUETTE-5195)
+gem 'kramdown', '>= 2.5'

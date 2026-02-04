@@ -1670,6 +1670,7 @@ module Import
         source.transformers << ::Netex::Transformer::LocationFromCoordinates.new
         source.transformers << ::Netex::Transformer::Indexer.new(::Netex::JourneyPattern, by: :route_ref)
         source.transformers << ::Netex::Transformer::Indexer.new(::Netex::DayTypeAssignment, by: :day_type_ref)
+        source.transformers << ::Netex::Transformer::FakeArrivalDayOffset.new
 
         source.read(local_file.path, type: file_extension)
       end

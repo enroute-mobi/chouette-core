@@ -8,7 +8,7 @@ en:
     show:
       title: "%{name}"
     edit:
-      title: "Editer %{name}"
+      title: "Edit %{name}"
     form:
       sections:
         identification: "Identification"

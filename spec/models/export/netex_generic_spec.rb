@@ -1614,7 +1614,7 @@ RSpec.describe Export::NetexGeneric do
 
     before { referential.switch }
 
-    it "create Netex resources with line_id tag" do
+    it 'create Netex resources with line_id tag' do
       context.routes.each { |route| export.resource_tagger.register_tags_for(route.line) }
       part.perform
       expect(target.resources).to all(have_tag(:line_id))
@@ -1693,7 +1693,7 @@ RSpec.describe Export::NetexGeneric do
         let(:first_footnote) do
           referential.footnotes.create(label: 'First footnote', line: line, data_source_ref: 'test')
         end
-        let(:second_footnote)  do
+        let(:second_footnote) do
           referential.footnotes.create(label: 'Second footnote', line: line, data_source_ref: 'test')
         end
 
@@ -1720,17 +1720,29 @@ RSpec.describe Export::NetexGeneric do
 
         it do
           notice_assignments_attributes =
-            vehicle_journey.notice_assignments_attributes.map{ |attr| attr.except('created_at', 'updated_at') }
+            vehicle_journey.notice_assignments_attributes.map { |attr| attr.except('created_at', 'updated_at') }
           expected_attributes = [
-            {"id" => first_footnote.id, "label" => "First footnote", "line_id" => line.id, "data_source_ref" => "test"},
-            {"id" => second_footnote.id, "label" => "Second footnote", "line_id" => line.id, "data_source_ref" => "test"}
+            {
+              "id" => first_footnote.id,
+              "label" => "First footnote",
+              "line_id" => line.id,
+              "data_source_ref" => "test"
+            },
+            {
+              "id" => second_footnote.id,
+              "label" => "Second footnote",
+              "line_id" => line.id,
+              "data_source_ref" => "test"
+            }
           ]
 
           expect(notice_assignments_attributes).to match_array(expected_attributes)
         end
 
         describe Export::NetexGeneric::VehicleJourneys::Decorator do
-          let(:notice_assignments) { described_class.new(vehicle_journey, code_provider: code_provider).notice_assignments }
+          let(:notice_assignments) do
+            described_class.new(vehicle_journey, code_provider: code_provider).notice_assignments
+          end
           let(:vehicle_journey) { part.vehicle_journeys.find_by(id: vehicle_journey_with_footnotes.id) }
           let(:vehicle_journey_technical) { Netex::ObjectId.parse(vehicle_journey.objectid).technical }
 

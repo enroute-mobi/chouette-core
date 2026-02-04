@@ -66,8 +66,7 @@ GIT
 
 GIT
   remote: https://bitbucket.org/enroute-mobi/netex.git
-  revision: d97ae3f1e3e0854247b63f5c00d71a2cb584ae1b
-  branch: DATA-76-create-a-transformer-to-define-a
+  revision: 81545a73e91ad65f2eb75dbde506397fdc222f2f
   specs:
     netex (0.1.2)
       activesupport

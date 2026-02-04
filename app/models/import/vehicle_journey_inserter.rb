@@ -15,6 +15,11 @@ module Import
         vehicle_journey_time_table.vehicle_journey = vehicle_journey
         referential_inserter.vehicle_journey_time_table_relationships << vehicle_journey_time_table
       end
+
+      vehicle_journey.vehicle_journey_footnote_relationships.each do |vehicle_journey_footnote|
+        vehicle_journey_footnote.vehicle_journey = vehicle_journey
+        referential_inserter.vehicle_journey_footnote_relationships << vehicle_journey_footnote
+      end
     end
   end
 end

@@ -61,8 +61,9 @@ module Import
         [
           RouteJourneyPatterns,
           TimeTables,
-          VehicleJourneys,
-          VehicleJourneyStopAssignments
+          ReferentialNotices,
+          VehicleJourneyStopAssignments,
+          VehicleJourneys
         ].each do |part_class|
           part = part(part_class)
           # TODO: could be manage by Import::Part constructor .. but requires several changes
@@ -1348,16 +1349,83 @@ module Import
       @index_time_tables ||= {}
     end
 
+    def index_footnotes
+      @index_footnotes ||= {}
+    end
+
+    class ReferentialNotices < WithResourcePart
+      include ReferentialPart
+
+      delegate :netex_source, :index_footnotes, to: :import
+
+      def import!
+        each_service_journey_notice do |notice|
+          decorator = decorate(notice)
+
+          unless decorator.valid?
+            decorator.errors.each { |error| create_message error }
+            Rails.logger.debug { "Errors found by Decorator for #{notice.inspect}: #{decorator.errors.inspect}" }
+
+            next
+          end
+
+          footnote = decorator.chouette_model
+          unless footnote&.valid?(:inserter)
+            Rails.logger.debug { "Invalid Footnote: #{footnote.errors.inspect}" }
+            next
+          end
+
+          save(footnote)
+
+          index_footnotes[notice.id] = footnote.id
+        end
+
+        referential_inserter.flush
+      end
+
+      def each_service_journey_notice
+        netex_source.notices.each do |notice|
+          next unless notice.type_of_notice_ref.ref == 'ServiceJourneyNotice'
+
+          yield notice
+        end
+      end
+
+      def save(footnote)
+        referential_inserter.footnotes << footnote
+
+        footnote.codes.each do |code|
+          code.resource = footnote
+          referential_inserter.codes << code
+        end
+      end
+
+      class Decorator < ResourceDecorator
+        def chouette_model
+          @chouette_model ||= Chouette::Footnote.new(footnote_attributes)
+        end
+
+        def footnote_attributes
+          {
+            code: public_code,
+            label: text,
+            codes: codes
+          }.merge(chouette_attributes)
+        end
+      end
+    end
+
     class VehicleJourneys < WithResourcePart
       include ReferentialPart
-      delegate :netex_source, :index_route_journey_patterns, :index_time_tables, to: :import
+      delegate :netex_source, :index_route_journey_patterns, :index_time_tables, :index_footnotes, :lookup, to: :import
 
       def import!
         netex_source.service_journeys.each do |service_journey|
           decorator = decorate(
             service_journey,
             index_route_journey_patterns: index_route_journey_patterns,
-            index_time_tables: index_time_tables
+            index_time_tables: index_time_tables,
+            index_footnotes: index_footnotes
           )
 
           unless decorator.valid?
@@ -1387,7 +1455,7 @@ module Import
       end
 
       class Decorator < ResourceDecorator
-        attr_accessor :index_route_journey_patterns, :index_time_tables
+        attr_accessor :index_route_journey_patterns, :index_time_tables, :index_footnotes
 
         def route_id
           @route_id ||= begin
@@ -1414,14 +1482,26 @@ module Import
           end
         end
 
+        def line_notice_ids
+          manage_netex_notice_assignments
+          @line_notice_ids
+        end
+
+        def vehicle_journey_footnote_relationships
+          manage_netex_notice_assignments
+          @vehicle_journey_footnote_relationships
+        end
+
         def vehicle_journey_attributes
           {
             route_id: route_id,
             journey_pattern_id: journey_pattern_id,
             published_journey_name: name,
             published_journey_identifier: id,
+            line_notice_ids: line_notice_ids,
             vehicle_journey_at_stops: vehicle_journey_at_stops,
-            vehicle_journey_time_table_relationships: vehicle_journey_time_table_relationships
+            vehicle_journey_time_table_relationships: vehicle_journey_time_table_relationships,
+            vehicle_journey_footnote_relationships: vehicle_journey_footnote_relationships
           }.merge(chouette_attributes)
         end
 
@@ -1578,6 +1658,34 @@ module Import
           referential.vehicle_journey_at_stops.joins(:vehicle_journey)
             .merge(referential.vehicle_journeys.by_code(code_space, vehicle_journey_codes))
             .where(stop_point_id: scheduled_stop_point.stop_point_ids)
+        end
+
+        def manage_netex_notice_assignments
+          return if @line_notice_ids && @vehicle_journey_footnote_relationships
+
+          line_notice_ids = []
+          vehicle_journey_footnote_relationships = []
+          notice_refs.each do |notice_ref|
+            ref = notice_ref.ref
+            next unless ref
+
+            footnote_id = index_footnotes[ref]
+            if footnote_id
+              vehicle_journey_footnote_relationships << Chouette::VehicleJourneyFootnoteRelationship.new(
+                footnote_id: footnote_id
+              )
+            else
+              line_notice = lookup.line_notices.find(ref) if lookup
+              if line_notice
+                line_notice_ids << line_notice.id
+              else
+                errors.add :notice_not_found
+              end
+            end
+          end
+
+          @line_notice_ids = line_notice_ids
+          @vehicle_journey_footnote_relationships = vehicle_journey_footnote_relationships
         end
       end
     end

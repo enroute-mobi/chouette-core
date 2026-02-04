@@ -35,5 +35,10 @@ module Chouette::Sync
 
     end
 
+    class Updater < Chouette::Sync::Updater
+      def resources
+        @resources ||= source.notices.lazy.select { |n| n.type_of_notice_ref&.ref.in?(%w[Line LineNotice]) }
+      end
+    end
   end
 end

@@ -31,6 +31,7 @@ module Chouette
     delegate :line, to: :route, allow_nil: true
 
     has_and_belongs_to_many :footnotes, :class_name => 'Chouette::Footnote'
+    has_many :vehicle_journey_footnote_relationships, class_name: 'Chouette::VehicleJourneyFootnoteRelationship'
 
     with_options(if: -> { validation_context != :inserter }) do |except_in_inserter_context|
       except_in_inserter_context.before_validation :calculate_vehicle_journey_at_stop_day_offset

@@ -69,19 +69,12 @@ module Chouette::Sync
           resolve :network, represented_by_group_ref&.ref
         end
 
-        def line_notice_refs
-          return [] unless notice_assignments
-          notice_assignments.map do |notice_assignment|
-            notice_assignment&.notice_ref&.ref
-          end
-        end
-
         def booking_arrangement_id
           resolve :booking_arrangement, booking_arrangements&.first&.ref
         end
 
         def line_notice_ids
-          resolve :line_notice, line_notice_refs
+          resolve :line_notice, notice_refs.map(&:ref).compact
         end
 
         def line_transport_mode

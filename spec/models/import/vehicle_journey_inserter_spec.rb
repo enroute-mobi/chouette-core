@@ -3,14 +3,8 @@
 RSpec.describe Import::VehicleJourneyInserter do
   let(:context) do
     Chouette.create do
-      code_space
-      stop_area :departure
-      stop_area :arrival
-
       referential do
         journey_pattern
-
-        2.times { time_table }
       end
     end
   end
@@ -79,6 +73,14 @@ RSpec.describe Import::VehicleJourneyInserter do
     end
 
     context 'when Vehicle Journey has codes' do
+      let(:context) do
+        Chouette.create do
+          code_space
+          referential do
+            journey_pattern
+          end
+        end
+      end
       let(:code_space) { context.code_space }
 
       before do
@@ -93,12 +95,15 @@ RSpec.describe Import::VehicleJourneyInserter do
     end
 
     context 'when Vehicle Journey has service_facility_sets' do
-      let(:service_facility_set) do
-        referential.workbench.default_shape_provider.service_facility_sets.create!(
-          name: 'Test',
-          associated_services: ['luggage_carriage/cycles_allowed']
-        )
+      let(:context) do
+        Chouette.create do
+          service_facility_set
+          referential do
+            journey_pattern
+          end
+        end
       end
+      let(:service_facility_set) { context.service_facility_set }
 
       before { vehicle_journey.service_facility_sets = [service_facility_set] }
 
@@ -112,6 +117,14 @@ RSpec.describe Import::VehicleJourneyInserter do
     end
 
     context 'when Vehicle Journey is associated to Timetables' do
+      let(:context) do
+        Chouette.create do
+          referential do
+            journey_pattern
+            2.times { time_table }
+          end
+        end
+      end
       let(:timetables) { context.time_tables }
 
       before do
@@ -122,6 +135,30 @@ RSpec.describe Import::VehicleJourneyInserter do
 
       it 'saves the Chouette::TimeTablesVehicleJourney in database' do
         expect { subject }.to change { Chouette::TimeTablesVehicleJourney.count }.from(0).to(2)
+      end
+    end
+
+    context 'when Vehicle Journey is associated to Footnotes' do
+      let(:context) do
+        Chouette.create do
+          referential do
+            journey_pattern
+            2.times { footnote }
+          end
+        end
+      end
+      let(:footnotes) { context.footnotes }
+
+      before do
+        footnotes.each do |footnote|
+          vehicle_journey.vehicle_journey_footnote_relationships.build(footnote_id: footnote.id)
+        end
+      end
+
+      it 'saves footnotes_vehicle_journeys in database' do
+        expect { subject }.to(
+          change { Chouette::Footnote.all.map { |f| f.vehicle_journeys.count } }.from([0, 0]).to([1, 1])
+        )
       end
     end
   end

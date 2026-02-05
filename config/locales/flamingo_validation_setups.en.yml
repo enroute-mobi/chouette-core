@@ -7,6 +7,8 @@ en:
       title: "Flamingo Validation Setups"
     show:
       title: "%{name}"
+    edit:
+      title: "Edit %{name}"
     form:
       sections:
         identification: "Identification"

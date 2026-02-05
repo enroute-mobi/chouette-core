@@ -46,10 +46,6 @@ module LocalImportSupport
     notify_parent
   end
 
-  def processor
-    @processor ||= Import::Processor.new(self)
-  end
-
   def worker_died
     force_failure!
 

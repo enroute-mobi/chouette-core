@@ -1612,8 +1612,6 @@ RSpec.describe Export::NetexGeneric do
     let(:second_vehicle_journey) { referential.vehicle_journeys.second }
     let(:third_vehicle_journey) { referential.vehicle_journeys.third }
 
-    before { referential.switch }
-
     it 'create Netex resources with line_id tag' do
       context.routes.each { |route| export.resource_tagger.register_tags_for(route.line) }
       part.perform
@@ -1621,6 +1619,8 @@ RSpec.describe Export::NetexGeneric do
     end
 
     describe Export::NetexGeneric::VehicleJourneys do
+      before { referential.switch }
+
       let(:export_scope) do
         Export::Scope::Builder.new(
           double(vehicle_journeys: referential.vehicle_journeys, time_tables: selected_time_tables)

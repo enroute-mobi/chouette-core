@@ -244,6 +244,10 @@ class Import::Base < ApplicationModel
     @lookup ||= Import::Lookup.default(self)
   end
 
+  def processor
+    @processor ||= Import::Processor.new(self)
+  end
+
   def referential_lookup
     @referential_lookup ||= Import::Lookup.referential(self)
   end

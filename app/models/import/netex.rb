@@ -66,10 +66,6 @@ class Import::Netex < Import::Base
     referential.time_tables.where(id: periods.select(:time_table_id).distinct)
   end
 
-  def processor
-    @processor ||= Processor.new(self)
-  end
-
   def line_ids
     referential_metadata.line_ids
   end

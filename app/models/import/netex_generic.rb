@@ -580,7 +580,7 @@ module Import
     class RouteJourneyPatterns < WithResourcePart
       include ReferentialPart
       delegate :netex_source, :scheduled_stop_points, :index_route_journey_patterns,
-               :line_provider, :code_space, :lookup, to: :import
+               :line_provider, :code_space, :lookup, :referential_lookup, to: :import
 
       def route_inserter
         @route_inserter ||= RouteInserter.new(
@@ -626,12 +626,18 @@ module Import
             next
           end
 
+          if opposite_route_code = netex_route.inverse_route_ref&.ref
+            cache_inverted_route netex_route.id, opposite_route_code
+          end
+
           decorator.chouette_model.each do |chouette_route|
             route_inserter.insert chouette_route # rubocop:disable Rails/SkipsModelValidations
           end
         end
 
         referential_inserter.flush
+
+        save_inverted_routes
       end
 
       def cache_journey_pattern(journey_pattern)
@@ -642,10 +648,29 @@ module Import
         }
       end
 
+      def cache_inverted_route(route_id, inverted_route_ref)
+        cached_inverted_routes[route_id] = inverted_route_ref
+      end
+
+      def cached_inverted_routes
+        @cached_inverted_routes ||= {}
+      end
+
       def each_route_with_journey_patterns(&block)
         netex_source.routes.each do |route|
           journey_patterns = netex_source.journey_patterns.find_by(route_ref: route.id)
           block.call route, journey_patterns
+        end
+      end
+
+      def save_inverted_routes
+        cached_inverted_routes.each do |code, opposite_route_code|
+          route = referential_lookup.routes.find(code)
+          if opposite_route_id = referential_lookup.routes.find_id(opposite_route_code)
+            route.update(opposite_route_id: opposite_route_id)
+          else
+            create_message :inverted_route_not_found, { route_code: code, opposite_route_code: opposite_route_code }
+          end
         end
       end
 

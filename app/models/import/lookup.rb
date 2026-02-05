@@ -115,6 +115,10 @@ module Import
         @time_tables ||= ExternalCollection.new(internal_time_tables)
       end
 
+      def routes
+        @routes ||= ExternalCollection.new(internal_routes)
+      end
+
       protected
 
       delegate :referential, to: :import
@@ -127,6 +131,10 @@ module Import
 
       def internal_time_tables
         @internal_time_tables ||= Collection.new.add(Finder::Code.new(referential.time_tables, code_space: code_space, source: :referential))
+      end
+
+      def internal_routes
+        @internal_routes ||= Collection.new.add(Finder::Code.new(referential.routes, code_space: code_space, source: :referential))
       end
     end
 

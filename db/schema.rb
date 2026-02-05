@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2026_01_12_113154) do
+ActiveRecord::Schema[7.2].define(version: 2026_02_05_100244) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "btree_gin"
   enable_extension "hstore"
@@ -734,7 +734,7 @@ ActiveRecord::Schema[7.2].define(version: 2026_01_12_113154) do
   end
 
   create_table "footnotes", force: :cascade do |t|
-    t.bigint "line_id", null: false
+    t.bigint "line_id"
     t.string "code"
     t.string "label"
     t.datetime "created_at", precision: nil

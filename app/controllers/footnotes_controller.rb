@@ -3,28 +3,53 @@
 class FootnotesController < Chouette::ReferentialController
   defaults resource_class: Chouette::Footnote
 
-  belongs_to :line, parent_class: Chouette::Line
+  belongs_to :line, parent_class: Chouette::Line, optional: true
 
-  def edit_all
-    @footnotes = footnotes
-    @line = line
-  end
-
-  def update_all
-    line.update(line_params)
-    redirect_to workbench_referential_line_footnotes_path(current_workbench, @referential, @line)
+  def index
+    index! do |format|
+      format.html
+      format.json {}
+    end
   end
 
   protected
 
-  alias_method :footnotes, :collection
-  alias_method :line, :parent
-  alias resource collection
+  def resource
+    get_resource_ivar || set_resource_ivar(super.decorate(context: decorator_context))
+  end
+
+  def collection
+    return @footnotes if @footnotes
+
+    footnotes = (parent || @referential).footnotes
+    footnotes = footnotes.includes(line: :company_light) unless parent
+    @footnotes = FootnoteDecorator.decorate(
+      footnotes.paginate(page: params[:page], per_page: params[:per_page]),
+      context: decorator_context
+    )
+  end
+
+  def parent_for_parent_policy
+    @referential
+  end
 
   private
 
-  def line_params
-    params.require(:line).permit(
-      { footnotes_attributes: [ :code, :label, :_destroy, :id ] } )
+  def footnote_params
+    params.require(:footnote).permit(
+      :code,
+      :label,
+      :line_id,
+      codes_attributes: %i[id code_space_id value _destroy]
+    )
+  end
+
+  def decorator_context
+    {
+      workbench: @workbench,
+      referential: @referential
+    }.tap do |context|
+      context[:line] = parent if parent
+    end
   end
 end

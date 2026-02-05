@@ -27,7 +27,6 @@ class ReferentialCopy
       source.switch do
         lines.includes(:footnotes, :routes).find_each do |line|
           @new_routes = nil
-          copy_resource(:footnotes, line)
           copy_resource(:routes, line)
         end
       end
@@ -45,6 +44,7 @@ class ReferentialCopy
     source.switch do
       vehicle_journeys = source.vehicle_journeys.joins(:route).where("routes.line_id" => lines)
       time_tables = source.time_tables.joins(:vehicle_journeys).where('vehicle_journeys.id' => vehicle_journeys).distinct
+      footnotes = source.footnotes.joins(:vehicle_journeys).where('vehicle_journeys.id' => vehicle_journeys).distinct
 
       measure "time_tables" do
         time_tables.find_each do |time_table|
@@ -61,6 +61,12 @@ class ReferentialCopy
           source.time_table_periods.where(time_table: time_tables).find_each do |time_table_period|
             referential_inserter.time_table_periods << time_table_period
           end
+        end
+      end
+
+      measure "footnotes" do
+        footnotes.find_each do |footnote|
+          referential_inserter.footnotes << footnote
         end
       end
 
@@ -86,8 +92,18 @@ class ReferentialCopy
         end
       end
 
+      measure 'footnotes_vehicle_journeys' do
+        footnotes_vehicle_journeys = Chouette::VehicleJourneyFootnoteRelationship.where(vehicle_journey: vehicle_journeys)
+
+        footnotes_vehicle_journeys.find_each_without_primary_key do |model|
+          referential_inserter.vehicle_journey_footnote_relationships << model
+        end
+      end
+
       measure "referential_codes" do
-        referential_codes = source.codes.where(resource: vehicle_journeys)
+        referential_codes = source.codes.where(resource: vehicle_journeys).or(
+          source.codes.where(resource: footnotes)
+        )
 
         referential_codes.find_each do |code|
           referential_inserter.codes << code
@@ -162,14 +178,6 @@ class ReferentialCopy
       target.time_table_periods.where(time_table_id: target_time_tables)
     end
 
-  end
-
-  # FOOTNOTES
-
-  def copy_footnotes line
-    line.footnotes.find_each do |footnote|
-      copy_item_to_target_collection footnote, line.footnotes
-    end
   end
 
   # ROUTES

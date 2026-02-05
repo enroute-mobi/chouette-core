@@ -1,32 +1,35 @@
 fr:
-  notice:
-    footnotes:
-      updated: 'Note de bas de page mise à jour'
   footnotes:
     actions:
-      add_footnote: "Ajouter une note"
-      edit_all: "Editer les notes de bas de page"
-      update_all: "Editer les notes de bas de page"
+      create: "Créer une Note de bas de page"
       destroy_confirm: Etes vous sûr de supprimer cette note ?
+    form:
+      sections:
+        informations: "informations"
     index:
       title: "Notes de bas de page"
+      search_no_results: "Aucune Note de bas de page"
+    show:
+      title: "%{name}"
   activerecord:
     models:
       footnote:
-        zero: "Note de Bas de Page"
-        one: "Note de Bas de Page"
+        zero: "Note de bas de page"
+        one: "Note de bas de page"
         other: "Notes de Bas de Page"
         the:
-          one: "la Note en Bas de Page"
-          other: "les Notes en Bas de Page"
+          one: "la Note de bas de page"
+          other: "les Notes de bas de page"
         of:
-          one: "de la Note en Bas de Page"
-          other: "des Notes en Bas de Page"
+          one: "de la Note de bas de page"
+          other: "des Notes de bas de page"
         to:
-          one: "à la Note de Bas de Page"
-          other: "aux Notes en Bas de Page"
+          one: "à la Note de bas de page"
+          other: "aux Notes de bas de page"
     attributes:
       footnote:
         code: "Titre"
         checksum: Signature métier
         label: "Texte"
+        line: "Ligne"
+        line_id: "Ligne"

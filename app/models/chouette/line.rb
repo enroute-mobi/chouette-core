@@ -64,7 +64,6 @@ module Chouette
     has_many :groups, through: :group_members, inverse_of: :lines
 
     has_many :footnotes, inverse_of: :line, validate: true
-    accepts_nested_attributes_for :footnotes, reject_if: :all_blank, allow_destroy: true
 
     validates :name, presence: true
     validate :transport_mode_and_submode_match

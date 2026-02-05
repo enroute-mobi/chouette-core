@@ -1,26 +1,39 @@
 - breadcrumb :footnotes, @workbench, @referential, @line
 
-- content_for :page_header_actions do
-  - if resource_policy.edit_all?
-    = link_to(t('actions.edit'), edit_all_workbench_referential_line_footnotes_path(@workbench, @referential, @line), class: 'btn btn-primary')
-
 .page_content
   .container-fluid
-    .row
-      - if @footnotes.any?
-        - @footnotes.each do |footnote|
-          .col-lg-4.col-md-4.col-sm-6.col-xs-12
-            .panel.panel-default
-              .panel-heading = footnote.code
-              .panel-body
-                p = footnote.label
+    - if @footnotes.any?
+      .row
+        .col-lg-12
+          - columns = [ \
+            TableBuilderHelper::Column.new( \
+              key: :code, \
+              attribute: :code, \
+              link_to: ->(footnote) { [@workbench, @referential, @line, footnote].compact }, \
+              sortable: false \
+            ), \
+            TableBuilderHelper::Column.new( \
+              key: :label, \
+              attribute: :label.to_proc, \
+              sortable: false, \
+              cls: '' \
+            ) \
+          ]
+          - unless @line
+            - columns.unshift( \
+                TableBuilderHelper::Column.new( \
+                  key: :line, \
+                  attribute: ->(footnote) { footnote.line&.full_display_name }, \
+                  link_to: ->(footnote) { footnote.line ? [@workbench, @referential, footnote.line] : nil }, \
+                  sortable: false \
+                ) \
+              )
 
-              .panel-footer.text-right
-                div
-                  p.text-muted.small = Chouette::Footnote.human_attribute_name(:checksum)
-                  p.text-muted.small = footnote.checksum
-                p.text-muted
-                  em.small = "Dernière mise à jour le #{l(footnote.updated_at)}"
+          = table_builder_2 @footnotes, columns, cls: 'table has-filter'
 
-      - else
-        = replacement_msg 'Aucune note ne correspond à votre recherche'
+          = new_pagination @footnotes, 'pull-right'
+
+    - else
+      .row.mt-xs
+        .col-lg-12
+          = replacement_msg t('.search_no_results')

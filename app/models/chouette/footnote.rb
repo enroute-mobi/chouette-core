@@ -3,8 +3,9 @@
 module Chouette
   class Footnote < Referential::ActiveRecord
     include ChecksumSupport
+    include ReferentialCodeSupport
 
-    belongs_to :line, inverse_of: :footnotes # CHOUETTE-3247 validates presence
+    belongs_to :line, inverse_of: :footnotes, optional: true
     has_and_belongs_to_many :vehicle_journeys, class_name: 'Chouette::VehicleJourney'
 
     scope :associated, lambda {
@@ -20,8 +21,10 @@ module Chouette
       joins('INNER JOIN "footnotes_vehicle_journeys" ON footnotes_vehicle_journeys.footnote_id = footnotes.id').where('footnotes_vehicle_journeys.vehicle_journey_id = ?', vehicle_journey.id)
     }
 
+    alias_attribute :name, :code
+
     def checksum_attributes(_db_lookup = true)
-      attrs = %w[code label]
+      attrs = %w[code label line_id]
       slice(*attrs).values
     end
   end

@@ -1,15 +1,16 @@
 en:
-  notice:
-    footnotes:
-      updated: 'Footnotes has been updated'
   footnotes:
     actions:
-      add_footnote: "add footnote"
-      edit_all: "Edit footnotes"
-      update_all: "Edit footnotes"
+      create: "Create a footnote"
       destroy_confirm: Are you sure you want to delete this footnote ?
+    form:
+      sections:
+        informations: "informations"
     index:
       title: "Footnotes"
+      search_no_results: "No footnote"
+    show:
+      title: "%{name}"
   activerecord:
     models:
       footnote:
@@ -27,6 +28,8 @@ en:
           other: "to Notes"
     attributes:
       footnote:
-        code: "Number"
+        code: "Title"
         checksum: Checksum
-        label: "Line text"
+        label: "Text"
+        line: "Line"
+        line_id: "Line"

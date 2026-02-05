@@ -303,7 +303,7 @@ class Merge::Referential::Legacy < Merge::Referential::Base
         new.switch do
           referential_footnotes.each do |footnote|
             # If no footnote already exists in the same line with the same checksum
-            existing_footnote = new.footnotes.find_by line_id: footnote.line_id, checksum: footnote.checksum
+            existing_footnote = new.footnotes.find_by checksum: footnote.checksum
             if existing_footnote
               existing_footnote.merge_metadata_from footnote
             else
@@ -534,7 +534,7 @@ class Merge::Referential::Legacy < Merge::Referential::Base
 
             # Associate Footnotes
             referential_vehicle_journey_footnote_checksums[vehicle_journey.id].each do |footnote_checksum|
-              associated_footnote = new.footnotes.find_by(line_id: associated_line_id, checksum: footnote_checksum)
+              associated_footnote = new.footnotes.find_by(checksum: footnote_checksum)
               new_vehicle_journey.footnotes << associated_footnote
             end
 

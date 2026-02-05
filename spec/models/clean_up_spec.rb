@@ -332,8 +332,6 @@ RSpec.describe CleanUp, type: :model do
     end
 
     it "removes join tables rows" do
-      class FootnotesVehicleJourney < ActiveRecord::Base; end
-
       vehicle_journey = create(:vehicle_journey)
       footnote  = create(:footnote)
       time_table  = create(:time_table)
@@ -341,12 +339,12 @@ RSpec.describe CleanUp, type: :model do
       vehicle_journey.footnotes << footnote
 
       expect(Chouette::TimeTablesVehicleJourney.where(vehicle_journey_id: vehicle_journey.id)).to be_exists
-      expect(FootnotesVehicleJourney.where(vehicle_journey_id: vehicle_journey.id)).to be_exists
+      expect(Chouette::VehicleJourneyFootnoteRelationship.where(vehicle_journey_id: vehicle_journey.id)).to be_exists
       expect(Chouette::JourneyPatternStopPoint.where(journey_pattern_id: vehicle_journey.journey_pattern_id)).to be_exists
 
       cleaner.clean_routes_outside_referential
       expect(Chouette::TimeTablesVehicleJourney.where(vehicle_journey_id: vehicle_journey.id)).to_not be_exists
-      expect(FootnotesVehicleJourney.where(vehicle_journey_id: vehicle_journey.id)).to_not be_exists
+      expect(Chouette::VehicleJourneyFootnoteRelationship.where(vehicle_journey_id: vehicle_journey.id)).to_not be_exists
       expect(Chouette::JourneyPatternStopPoint.where(journey_pattern_id: vehicle_journey.journey_pattern_id)).to_not be_exists
     end
   end

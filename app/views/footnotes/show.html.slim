@@ -1,0 +1,19 @@
+- breadcrumb :footnote, @workbench, @referential, @line, @footnote
+- page_header_content_for @footnote
+
+.page_content
+  .container-fluid
+    .row
+      .col-md-6.col-sm-12
+        = simple_block_for @footnote, title: t('foonotes.form.sections.informations') do |d|
+          = d.attribute :code
+          - unless @line
+            = d.attribute :line, as: :association, value: @footnote.line&.full_display_name, link: @footnote.line ? url_for([@workbench, @referential, @footnote.line]) : nil
+
+      .col-md-6.col-sm-12
+        = render 'codes/block', model: @footnote
+
+      .col-lg-12.col-md-12.col-sm-12.col-xs-12.definition-list
+        .dl-head= @footnote.human_attribute_name(:label)
+        .dl-body
+          = simple_format(@footnote.label.presence || '-')

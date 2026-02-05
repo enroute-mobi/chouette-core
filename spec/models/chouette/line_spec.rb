@@ -210,18 +210,6 @@ describe Chouette::Line, type: :model do
     end
   end
 
-  describe '#update footnotes_attributes' do
-    context 'instanciate 2 footnotes without line' do
-      let!(:footnote_first) { build(:footnote, line_id: nil) }
-      let!(:footnote_second) { build(:footnote, line_id: nil) }
-      it 'should add 2 footnotes to the line' do
-        subject.update footnotes_attributes: { Time.now.to_i => footnote_first.attributes,
-                                               (Time.now.to_i - 5) => footnote_second.attributes }
-        expect(Chouette::Line.find(subject.id).footnotes.size).to eq(2)
-      end
-    end
-  end
-
   describe '#registration_number' do
     let(:first_line) { context.line(:first) }
     let(:second_line) { context.line(:second) }

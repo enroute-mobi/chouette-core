@@ -333,24 +333,20 @@ RSpec.describe ReferentialCopy do
     end
 
     describe "the TimeTable in target referential" do
-
-      subject { target.switch { target.time_tables.first } }
-
-      let(:source_time_table) { source.switch { source.time_tables.first } }
-
       before { referential_copy.copy }
-      around { |example| target.switch { example.run } }
 
       it "has the same period(s)" do
-        expect(subject.periods.map(&:range)).to eq(source_time_table.periods.map(&:range))
+        expect(target.switch { target.time_tables.first.periods.map(&:range) }).to(
+          eq(source.switch { source.time_tables.first.periods.map(&:range) })
+        )
       end
 
       it "has the same date(s)" do
-        expect(subject.dates.map(&:date)).to eq(source_time_table.dates.map(&:date))
+        expect(target.switch { target.time_tables.first.dates.map(&:date) }).to(
+          eq(source.switch { source.time_tables.first.dates.map(&:date) })
+        )
       end
-
     end
-
   end
 
   describe 'ServiceCount copy' do
@@ -381,13 +377,10 @@ RSpec.describe ReferentialCopy do
     end
 
     describe 'the ServiceCount in target referential' do
-
       subject { target.switch { target.service_counts.first } }
 
       before { referential_copy.copy }
-      around { |example| target.switch { example.run } }
 
-      let(:source_journey_pattern) { source.switch { source.journey_patterns.first } }
       let(:target_journey_pattern) { target.switch { target.journey_patterns.first } }
 
       it { is_expected.to_not be_nil }

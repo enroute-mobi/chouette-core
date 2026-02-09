@@ -79,8 +79,6 @@ definitions:
           - build.sh bundler::dependencies
           - build.sh bitbucket::postgresql::local
           - eval "$(build.sh bitbucket::postgresql::local::env)"
-          - echo $RAILS_TEST_DB_HOST $RAILS_DB_USER $RAILS_DB_PASSWORD
-          - docker ps
           - PARALLEL_TEST_PROCESSORS=12 bundle exec rake ci:setup ci:spec
           - build.sh codacy::report
           - grep ^spec/ parallel_tests/runtime*.log | tee cache/runtime.log

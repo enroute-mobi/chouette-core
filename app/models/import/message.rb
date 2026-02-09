@@ -12,4 +12,16 @@ class Import::Message < ApplicationModel
     "import_message"
   end
 
+  def full_message
+    I18n.t(i18n_key, **i18n_attributes)
+  end
+
+  def i18n_key
+    "import_messages.#{message_key || 'default'}"
+  end
+
+  def i18n_attributes
+    message_attributes.symbolize_keys
+  end
+
 end

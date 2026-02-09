@@ -67,6 +67,7 @@ fr:
     passing_time_without_arrival_time: "Le NeTEx ServiceJourney '%{resource_id}' contient un passage sans ArrivalTime"
     passing_time_without_departure_time: "Le NeTEx ServiceJourney '%{resource_id}' contient un passage sans DepatureTime"
     passing_times_non_chronological: "Le NeTEx ServiceJourney '%{resource_id}' contient des passages non chronologiques"
+    search_no_results_for_filter: "Aucun message trouvé pour ce filtre"
     gtfs:
       agencies:
         imported: "%{count} agence(s) importée(s)"
@@ -161,10 +162,11 @@ fr:
     import_errors: erreurs_import
   activerecord:
     attributes:
-      import_message:
+      import/message:
         criticity: Criticité
         message_key: Code du contrôle
         message: Message
+        source: Ressource
         filename: Nom du fichier
         line: Ligne
         column: Colonne

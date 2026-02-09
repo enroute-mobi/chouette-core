@@ -41,20 +41,28 @@ class OperationRunFacade
       TableBuilderHelper::Column.new(
         key: :source,
         attribute: lambda do |message|
-          source_link = source_link(message)
-          link_to_if_table(source_link.present?, '<span class="fa fa-link"></span>'.html_safe, source_link)
+          if message.is_a?(Import::Message)
+            '-'
+          else
+            source_link = source_link(message)
+            link_to_if_table(source_link.present?, '<span class="fa fa-link"></span>'.html_safe, source_link)
+          end
         end,
         sortable: false
       )
     ]
 
-    columns.unshift(criticity) if resource.is_a?(Macro::List::Run)
+    columns.unshift(criticity) if resource.is_a?(Macro::List::Run) || resource.is_a?(Import::Base)
 
     [columns, { cls: 'table' }]
   end
 
   def source_link(message)
     return nil unless display_referential_links? && message.source_type && message.source_id
+
+    if message.is_a?(Import::Message)
+      return nil
+    end
 
     source_class = message.source_type&.constantize
     Chouette::ModelPathFinder.new(source_class, message.source_id, current_workbench, resource.referential).path

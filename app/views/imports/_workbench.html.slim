@@ -25,35 +25,11 @@
     = render 'shared/iev_interfaces/messages', messages: messages
 
 - if @imported_resources.present?
-  .col-lg-12
-    h2.mb-2 = t('imports.show.imported_resources')
-    = table_builder_2 @imported_resources,
-      [ \
-        TableBuilderHelper::Column.new( \
-          name: t('imports.show.gtfs.filename'), \
-          attribute: :name ,\
-          sortable: false \
-        ), \
-        TableBuilderHelper::Column.new( \
-          key: :status, \
-          attribute: Proc.new { |n| operation_status(n.status, verbose: true, default_status: :pending) }, \
-          sortable: false \
-        ),\
-        TableBuilderHelper::Column.new( \
-          name: t('imports.show.table.test_results') , \
-          attribute: Proc.new { |n| I18n.t('import_resources.index.metrics', **n.metrics.deep_symbolize_keys) }, \
-          sortable: false, \
-        ), \
-        TableBuilderHelper::Column.new( \
-          name: t('imports.show.table.download') , \
-          attribute: Proc.new { |n| '<i class="fa fa-download" aria-hidden="true"></i>'.html_safe }, \
-          sortable: false, \
-          link_to: lambda do |import_resource| \
-            url_for([@parent, import_resource.import, import_resource, :import_messages, format: 'csv']) \
-          end \
-        ), \
-      ],
-      cls: 'table'
+    .definition-list.w-full
+      .dl-head
+        = t('imports.show.imported_resources')
+    - @imported_resources.each do |import_resource|
+      = render 'imports/import_resource', import_resource: import_resource, messages_base_url: "/workbenches/#{@workbench.id}/imports/#{@import.id}/import_resources/#{import_resource.id}/messages"
 
 - if @macro_list_runs.present?
   .col-lg-12

@@ -1,0 +1,23 @@
+- javascript_additional_packs 'imports/import_resource'
+
+.w-full.mt-md.import_resource x-data="importResource('#{messages_base_url}')"
+  .flex.items-center.w-full.mb-3
+    .grow.flex.items-center
+      = operation_status(import_resource.status, verbose: false, default_status: :pending)
+      span.name.font-medium.text-gray-800.ml-2 = import_resource.name.titleize
+      
+    .flex.items-center.ml-auto
+      - if import_resource.messages.warning.size > 0
+        a.count.warning.flex.justify-center.rounded.mx-3.px-4.py-1.font-bold.border.border-black.text-black.bg-enroute-chouette-gold.cursor-pointer.no-underline.hover:no-underline.transition-all.duration-200.hover:opacity-80 style="min-width: 50px;" x-bind="statusFilter('warning')"
+          = import_resource.messages.warning.size
+      - if import_resource.messages.error.size > 0
+        a.count.error.flex.justify-center.rounded.mx-3.px-4.py-1.font-bold.border.border-black.text-white.bg-enroute-chouette-red.cursor-pointer.no-underline.hover:no-underline.transition-all.duration-200.hover:opacity-80 style="min-width: 50px;" x-bind="statusFilter('error')"
+          = import_resource.messages.error.size
+
+      - if import_resource.messages.warning.size > 0 || import_resource.messages.error.size > 0
+        button @click="showMessages = ! showMessages" type="button" class="showMessages flex items-center px-4 py-2 ml-xs font-bold text-white rounded cursor-pointer bg-enroute-chouette-primary hover:text-indigo-100 transition-all duration-200 hover:opacity-90"
+          .span.fa.fa-caret-down.mx-1 x-show="showMessages"
+          .span.fa.fa-caret-up.mx-1 x-show="!showMessages"
+
+  .import_messages x-show="showMessages" x-transition.delay.50ms=""
+    = render 'imports/import_resource_messages', messages: import_resource.messages.order(:id).paginate(page: 1, per_page: 15), facade: facade

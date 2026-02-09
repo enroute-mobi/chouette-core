@@ -43,6 +43,6 @@ function bitbucket_postgresql_local {
 }
 
 function bitbucket_postgresql_local_env {
-    echo RAILS_TEST_DB_HOST=/opt/atlassian/pipelines/agent/build/postgresql
-    echo RAILS_DB_USER=postgres RAILS_DB_PASSWORD=
+    echo export RAILS_TEST_DB_HOST=/opt/atlassian/pipelines/agent/build/postgresql
+    echo export RAILS_DB_USER=postgres RAILS_DB_PASSWORD=
 }

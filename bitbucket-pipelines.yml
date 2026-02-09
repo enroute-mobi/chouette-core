@@ -72,23 +72,14 @@ definitions:
           - self.hosted
           - build
           - big
-        max-time: 30
+        max-time: 20
         script:
-          - RUNNER_UUID=$(echo "${BITBUCKET_SSH_KEY_FILE}" | sed 's@/var/lib/runner/\(.*\)/ssh/id_rsa@\1@')
-          - RAW_BITBUCKET_STEP_UUID=$(echo "${BITBUCKET_STEP_UUID}" | sed -e 's/{//' -e 's/}//')
-          - DOCKER_CONTAINER_NAME="${RUNNER_UUID}_${RAW_BITBUCKET_STEP_UUID}_build"
-          - docker -H tcp://172.17.0.1 update --cpu-quota=-1 --memory=16g --memory-swap=16g ${DOCKER_CONTAINER_NAME}
-          - docker -H tcp://172.17.0.1 inspect ${DOCKER_CONTAINER_NAME}
-          - export PARALLEL_TEST_PROCESSORS=12
+          - build.sh bitbucket::runner::quotas
           - eval "$(build.sh bitbucket::env)"
           - build.sh bundler::dependencies
-          - sh -c "[ -f 'cache/runtime.log' ] && sed -i -n '/^spec/ p' cache/runtime.log || true"
-          - echo -n $GCLOUD_API_KEYFILE | docker login -u _json_key --password-stdin us-east1-docker.pkg.dev
-          - docker run -e POSTGRES_PASSWORD=dummy -v /opt/atlassian/pipelines/agent/build/postgresql:/var/run/postgresql -d us-east1-docker.pkg.dev/enroute-interne/enroute-interne/enroute-postgresql:dev -c effective_cache_size=8092MB -c max_wal_size=20GB -c max_locks_per_transaction=2048 -c fsync=off -c full_page_writes=off -c synchronous_commit=off
-          - export RAILS_TEST_DB_HOST=/opt/atlassian/pipelines/agent/build/postgresql RAILS_DB_USER=postgres RAILS_DB_PASSWORD=
-          - sleep 15
-          - bundle exec rake ci:setup ci:spec
-          - build.sh codacy::report
+          - build.sh bitbucket::postgres::local
+          - eval "$(build.sh bitbucket::postgres::local::env)"
+          - PARALLEL_TEST_PROCESSORS=12 bundle exec rake ci:setup ci:spec codacy::report
           - grep ^spec/ parallel_tests/runtime*.log | tee cache/runtime.log
         caches:
           - build-cache

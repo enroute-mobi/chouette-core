@@ -77,8 +77,8 @@ definitions:
           - build.sh bitbucket::runner::quotas
           - eval "$(build.sh bitbucket::env)"
           - build.sh bundler::dependencies
-          - build.sh bitbucket::postgres::local
-          - eval "$(build.sh bitbucket::postgres::local::env)"
+          - build.sh bitbucket::postgresql::local
+          - eval "$(build.sh bitbucket::postgresql::local::env)"
           - PARALLEL_TEST_PROCESSORS=12 bundle exec rake ci:setup ci:spec codacy::report
           - grep ^spec/ parallel_tests/runtime*.log | tee cache/runtime.log
         caches:

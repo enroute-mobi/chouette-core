@@ -1,55 +1,56 @@
+# frozen_string_literal: true
+
 namespace :ci do
   def parallel_tests?
-    ENV["PARALLEL_TESTS"] == "true"
+    ENV['PARALLEL_TESTS'] == 'true'
   end
 
   def use_schema?
-    ENV["USE_SCHEMA"] != "false"
+    ENV['USE_SCHEMA'] != 'false'
   end
 
   def quiet?
-    ENV["QUIET"] != "false"
+    ENV['QUIET'] != 'false'
   end
 
   def fail_fast?
-    ENV["FAIL_FAST"] == "true"
+    ENV['FAIL_FAST'] == 'true'
   end
 
-  desc "Prepare CI build"
-  task :setup do
+  desc 'Prepare CI build'
+  task setup: :environment do
     if parallel_tests?
-      command = use_schema? ? "parallel:setup" : "parallel:create parallel:migrate"
-      redirect = " > /dev/null" if quiet?
+      command = use_schema? ? 'parallel:setup' : 'parallel:create parallel:migrate'
+      redirect = ' > /dev/null' if quiet?
       sh "RAILS_ENV=test rake #{command}#{redirect}"
     else
-      sh "RAILS_ENV=test rake db:drop db:create db:migrate"
+      sh 'RAILS_ENV=test rake db:drop db:create db:migrate'
     end
   end
 
-  task :disable_yarn_install do
+  task disable_yarn_install: :environment do
     # Redefine yarn:install to avoid --production
     # in CI process
-    Rake::Task["yarn:install"].clear
-    Rake::Task.define_task "yarn:install" do
+    Rake::Task['yarn:install'].clear
+    Rake::Task.define_task 'yarn:install' do
       puts "Don't run yarn"
     end
   end
 
-  desc "Check security aspects"
-  task :check_security do
-    unless ENV["CI_CHECKSECURITY_DISABLED"]
-      command = "bundle exec bundle-audit check --update"
+  desc 'Check security aspects'
+  task check_security: :environment do
+    unless ENV['CI_CHECKSECURITY_DISABLED']
+      command = 'bundle exec bundle-audit check --update'
       ignoring_lapse = 1.month
       if File.exist? '.bundle-audit-ignore'
         ignored = []
         File.open('.bundle-audit-ignore').each_line do |line|
-          next unless line.present?
+          next if line.blank?
+
           id, date = line.split('#').map(&:strip)
           date = date.to_date
           puts "Found vulnerability #{id}, ignored until #{date + ignoring_lapse}"
-          if date > ignoring_lapse.ago
-            ignored << id
-          end
+          ignored << id if date > ignoring_lapse.ago
         end
         command += " --ignore #{ignored.join(' ')}" if ignored.present?
       end
@@ -57,48 +58,40 @@ namespace :ci do
     end
   end
 
-  task :add_temporary_security_check_ignore, [:id] do |t, args|
-    `echo "#{args[:id]} # #{Time.now}" >> .bundle-audit-ignore`
+  task :add_temporary_security_check_ignore, [:id] => :environment do |_t, args|
+    `echo "#{args[:id]} # #{Time.zone.now}" >> .bundle-audit-ignore`
   end
 
-  task :assets do
-    sh "RAILS_ENV=test bundle exec i18n export"
-    sh "RAILS_ENV=test NODE_OPTIONS=--openssl-legacy-provider bundle exec rake ci:disable_yarn_install assets:precompile"
+  task assets: :environment do
+    sh 'RAILS_ENV=test bundle exec i18n export'
+    sh 'RAILS_ENV=test NODE_OPTIONS=--openssl-legacy-provider bundle exec rake ci:disable_yarn_install assets:precompile'
   end
 
-  task :jest do
-    unless ENV["CHOUETTE_JEST_DISABLED"]
-      sh "PATH=node_modules/.bin:$PATH jest --coverage"
-    end
+  task jest: :environment do
+    sh 'PATH=node_modules/.bin:$PATH jest --coverage' unless ENV['CHOUETTE_JEST_DISABLED']
   end
 
-  def test_options(xml_output: "rspec")
-    test_options = ""
+  def test_options(xml_output: 'rspec')
+    test_options = ''
 
-    unless xml_output == :none
-      test_options += "--format RspecJunitFormatter --out test-results/#{xml_output}.xml"
-    end
+    test_options += "--format RspecJunitFormatter --out test-results/#{xml_output}.xml" unless xml_output == :none
 
-    if fail_fast?
-      test_options += " --fail-fast"
-    end
+    test_options += ' --fail-fast' if fail_fast?
 
-    unless quiet?
-      test_options += " --format progress"
-    end
+    test_options += ' --format progress' unless quiet?
 
     test_options
   end
 
-  task :spec do
+  task spec: :environment do
     if parallel_tests?
       # parallel tasks invokes this task ..
       # but development db isn't available during ci tasks
-      Rake::Task["db:abort_if_pending_migrations"].clear
+      Rake::Task['db:abort_if_pending_migrations'].clear
 
-      parallel_specs_command = "parallel_test spec -t rspec"
+      parallel_specs_command = 'parallel_test spec -t rspec'
 
-      runtime_log = ENV.fetch('PARALLEL_RUNTIME_LOG', 'parallel_tests/runtime.log') 
+      runtime_log = ENV.fetch('PARALLEL_RUNTIME_LOG', 'parallel_tests/runtime.log')
 
       if ENV['BITBUCKET_PARALLEL_STEP_COUNT']
         step_count = ENV['BITBUCKET_PARALLEL_STEP_COUNT'].to_i
@@ -120,18 +113,18 @@ namespace :ci do
       end
 
       read_runtime_log = ENV.fetch('PARALLEL_RUNTIME_LOG', 'cache/runtime.log')
-      parallel_specs_command += " --runtime-log #{read_runtime_log}" if File.exist?(read_runtime_log) 
+      parallel_specs_command += " --runtime-log #{read_runtime_log}" if File.exist?(read_runtime_log)
 
       parallel_test_options = '-r spec_helper '
       parallel_test_options += test_options(xml_output: 'parallel-tests<%= ENV["TEST_ENV_NUMBER"] %>')
 
       parallel_test_options += " --format ParallelTests::RSpec::RuntimeLogger --out #{runtime_log}"
 
-      summary_log = "log/summary_specs.log"
+      summary_log = 'log/summary_specs.log'
       parallel_test_options += " --format ParallelTests::RSpec::SummaryLogger --out #{summary_log}"
 
       # We're using .rspec_parallel to provide an unique file to each parallel test process
-      File.write ".rspec_parallel", parallel_test_options
+      File.write '.rspec_parallel', parallel_test_options
 
       begin
         sh parallel_specs_command
@@ -142,7 +135,7 @@ namespace :ci do
         end
       end
     else
-      sh "bundle exec rspec #{test_options()}"
+      sh "bundle exec rspec #{test_options}"
     end
   end
 
@@ -159,7 +152,7 @@ namespace :ci do
   #   end
   # end
 
-  task :performance do
+  task performance: :environment do
     sh "bundle exec rspec --tag performance #{test_options(xml_output: 'performance')}"
   end
 end

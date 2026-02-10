@@ -340,32 +340,136 @@ RSpec.describe Export::CodeProvider do
   end
 
   describe Export::CodeProvider::Indexer::Footnotes do
-    describe '#index' do
-      subject { described_class.new(context.referential.footnotes, code_provider: code_provider).index }
+    subject(:indexer) do
+      described_class.new(referential.footnotes, code_space: code_space, code_provider: code_provider)
+    end
 
-      let(:code_provider) do
-        Export::CodeProvider.new(double(footnotes: context.referential.footnotes, lines: referential.lines))
-      end
-      let(:context) do
-        Chouette.create do
-          footnote :footnote, data_source_ref: 'dummy'
+    let(:referential) { context.referential }
+    let(:code_space) { context.code_space(:code_space) }
+    let(:code_provider) { Export::CodeProvider.new(double(footnotes: referential.footnotes, lines: referential.lines)) }
+
+    describe '#index' do
+      subject { indexer.index }
+
+      let(:footnote) { context.footnote(:footnote) }
+      let(:line_technical) { Netex::ObjectId.parse(footnote.line.objectid).technical }
+
+      before { referential.switch }
+
+      context 'when foonote has no code' do
+        context 'when footnote has no line' do
+          context 'without data_source_ref' do
+            let(:context) do
+              Chouette.create do
+                code_space :code_space
+                footnote :footnote, line: nil
+              end
+            end
+
+            it do
+              is_expected.to eq(
+                { footnote.id => Netex::ObjectId.parse("chouette:Notice:#{footnote.id}:LOC") }
+              )
+            end
+          end
+
+          context 'with data_source_ref' do
+            let(:context) do
+              Chouette.create do
+                code_space :code_space
+                footnote :footnote, line: nil, data_source_ref: 'some_data_souce_ref'
+              end
+            end
+
+            it do
+              is_expected.to eq(
+                { footnote.id => Netex::ObjectId.parse("some_data_souce_ref:Notice:#{footnote.id}:LOC") }
+              )
+            end
+          end
+        end
+
+        context 'when footnote has line' do
+          context 'without data_source_ref' do
+            let(:context) do
+              Chouette.create do
+                code_space :code_space
+                footnote :footnote
+              end
+            end
+
+            it do
+              is_expected.to eq(
+                { footnote.id => Netex::ObjectId.parse("chouette:Notice:#{line_technical}-#{footnote.id}:LOC") }
+              )
+            end
+          end
+
+          context 'with data_source_ref' do
+            let(:context) do
+              Chouette.create do
+                code_space :code_space
+                footnote :footnote, data_source_ref: 'some_data_souce_ref'
+              end
+            end
+
+            it do
+              is_expected.to eq(
+                { footnote.id => Netex::ObjectId.parse("some_data_souce_ref:Notice:#{line_technical}-#{footnote.id}:LOC") }
+              )
+            end
+          end
         end
       end
-      let(:referential) { context.referential }
-      let(:line_technical) { Netex::ObjectId.parse(footnote.line.objectid).technical }
-      let(:footnote) { context.footnote(:footnote) }
 
-      before do
-        referential.switch
-      end
+      context 'when footnote has code' do
+        context 'with the same code space' do
+          context 'with count = 1' do
+            let(:context) do
+              Chouette.create do
+                code_space :code_space, short_name: 'code_space'
+                footnote :footnote, codes: { 'code_space' => 'some_code' }
+              end
+            end
 
-      it do
-        expected_codes = {
-          footnote.id =>
-            Netex::ObjectId.parse("chouette:Notice:#{line_technical}-#{footnote.id}:dummy")
-        }
+            it do
+              is_expected.to eq(
+                { footnote.id => 'some_code' }
+              )
+            end
+          end
 
-        is_expected.to include(expected_codes)
+          context 'with count = 2' do
+            let(:context) do
+              Chouette.create do
+                code_space :code_space, short_name: 'code_space'
+                footnote :footnote, codes: { 'code_space' => %w[some_code1 some_code2] }
+              end
+            end
+
+            it do
+              is_expected.to eq(
+                { footnote.id => Netex::ObjectId.parse("chouette:Notice:#{line_technical}-#{footnote.id}:LOC") }
+              )
+            end
+          end
+        end
+
+        context 'with another code space' do
+          let(:context) do
+            Chouette.create do
+              code_space :code_space, short_name: 'code_space'
+              code_space :other_code_space, short_name: 'other_code_space'
+              footnote :footnote, codes: { 'other_code_space' => 'some_code' }
+            end
+          end
+
+          it do
+            is_expected.to eq(
+              { footnote.id => Netex::ObjectId.parse("chouette:Notice:#{line_technical}-#{footnote.id}:LOC") }
+            )
+          end
+        end
       end
     end
   end

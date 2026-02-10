@@ -196,7 +196,7 @@ class Export::NetexGeneric < Export::Base
       end
 
       # Export StopPoints before Routes to detect local references
-      part_classes.push(StopPoints, Routes, RoutingConstraintZones, JourneyPatterns, TimeTables, VehicleJourneyStopAssignments, Organisations, PointOfInterests)
+      part_classes.push(StopPoints, Routes, RoutingConstraintZones, JourneyPatterns, TimeTables, VehicleJourneyStopAssignments, Organisations, PointOfInterests, Notices)
 
       # Because of Exportable#processed side-effects, these 4 parts are the last ones
       part_classes.push(VehicleJourneysCache, VehicleJourneyAtStops, VehicleJourneys, FareZones)
@@ -1042,11 +1042,11 @@ class Export::NetexGeneric < Export::Base
     end
   end
 
-  class NoticeAssignments < Part
+  class Notices < Part
     delegate :footnotes, to: :export_scope
 
-    def export_part
-      footnotes.find_each do |footnote|
+    def perform
+      footnotes.includes(:codes).find_each do |footnote|
         target << decorate(footnote).netex_resource
       end
     end
@@ -1054,7 +1054,7 @@ class Export::NetexGeneric < Export::Base
     class Decorator < ModelDecorator
       def netex_attributes
         super.merge(
-          name: label,
+          text: label,
           public_code: code,
           type_of_notice_ref: Netex::Reference.new('ServiceJourneyNotice', type: String),
           key_list: netex_alternate_identifiers
@@ -2192,10 +2192,9 @@ class Export::NetexGeneric < Export::Base
           journey_pattern_ref: journey_pattern_ref,
           public_code: published_journey_identifier,
           day_types: day_types,
-          key_list: netex_alternate_identifiers
-        ).tap do |netex_attributes|
-          netex_attributes[:notice_assignments] if notice_assignments
-        end
+          key_list: netex_alternate_identifiers,
+          notice_assignments: notice_assignments
+        )
       end
 
       def netex_resource

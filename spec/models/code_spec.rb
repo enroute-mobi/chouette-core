@@ -65,51 +65,83 @@ RSpec.describe Code do
     end
 
     describe '#change' do
-      subject { value.change(type: type, provider: provider) }
+      subject { value.change(**changes) }
 
       let(:value) { Code::Value.new('1') }
+      let(:changes) { {} }
 
-      context 'when there is no provider' do
-        let(:provider) { nil }
-
-        context 'with type "Type"' do
-          let(:type) { 'Type' }
-
-          it { is_expected.to eq('Type:1') }
-        end
+      context 'without changes' do
+        it { is_expected.to be(value) }
       end
 
-      context 'when provider is "Provider"' do
-        let(:provider) { 'Provider' }
+      context 'with country "FR"' do
+        let(:changes) { { country: 'FR' } }
 
-        context 'with type "Type"' do
-          let(:type) { 'Type' }
+        it { is_expected.to eq('FR:1') }
+      end
 
-          it { is_expected.to eq('Type:1:Provider') }
-        end
+      context 'with local "Local"' do
+        let(:changes) { { local: 'Local' } }
+
+        it { is_expected.to eq('Local:1') }
+      end
+
+      context 'with type "Type"' do
+        let(:changes) { { type: 'Type' } }
+
+        it { is_expected.to eq('Type:1') }
+      end
+
+      context 'with provider "Provider"' do
+        let(:changes) { { provider: 'Provider' } }
+
+        it { is_expected.to eq('1:Provider') }
+      end
+
+      context 'with country "FR", local "Local", type "Type" and provider "Provider"' do
+        let(:changes) { { country: 'FR', local: 'Local', type: 'Type', provider: 'Provider' } }
+
+        it { is_expected.to eq('FR:Local:Type:1:Provider') }
       end
     end
 
     describe '#merge' do
-      subject { value.merge(other, type: type, provider: provider) }
+      subject { value.merge(other, **options) }
+
+      let(:options) { {} }
 
       context 'when value is "1"' do
         let(:value) { Code::Value.new('1') }
+        let(:other) { 'dummy' }
+
+        context 'with other "dummy" and country "FR"' do
+          let(:options) { { country: 'FR' } }
+
+          it { is_expected.to eq('FR:1-dummy') }
+        end
+
+        context 'with other "dummy" and local "Local"' do
+          let(:options) { { local: 'Local' } }
+
+          it { is_expected.to eq('Local:1-dummy') }
+        end
 
         context 'with other "dummy" and type "Example"' do
-          let(:other) { 'dummy' }
-          let(:type) { 'Example' }
-          let(:provider) { nil }
+          let(:options) { { type: 'Example' } }
 
           it { is_expected.to eq('Example:1-dummy') }
         end
 
-        context 'with other "dummy", provider "Provider" and type "Example"' do
-          let(:other) { 'dummy' }
-          let(:type) { 'Example' }
-          let(:provider) { 'Provider' }
+        context 'with other "dummy" and provider "Provider"' do
+          let(:options) { { provider: 'Provider' } }
 
-          it { is_expected.to eq('Example:1-dummy:Provider') }
+          it { is_expected.to eq('1-dummy:Provider') }
+        end
+
+        context 'with other "dummy", country "FR", local "Local", type "Example" and provider "Provider"' do
+          let(:options) { { country: 'FR', local: 'Local', type: 'Example', provider: 'Provider' } }
+
+          it { is_expected.to eq('FR:Local:Example:1-dummy:Provider') }
         end
       end
     end

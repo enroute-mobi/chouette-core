@@ -68,7 +68,7 @@ module Export
           if code_space && collection.model == Chouette::StopPoint
             StopPoints.new(collection, code_provider: code_provider)
           elsif collection.model == Chouette::Footnote
-            Footnotes.new(collection, code_provider: code_provider)
+            Footnotes.new(collection, code_space: code_space, code_provider: code_provider)
           elsif code_space && collection.model.in?(older_models)
             Older.new(collection, code_space: code_space)
           else
@@ -205,21 +205,46 @@ module Export
         end
       end
 
-      class Footnotes
-        def initialize(footnotes, code_provider:)
-          @footnotes = footnotes
+      class Footnotes < Default
+        def initialize(footnotes, code_space:, code_provider:)
+          super(footnotes, code_space:)
           @code_provider = code_provider
         end
-
-        attr_reader :footnotes, :code_provider
+        attr_reader :code_provider
 
         def index
-          footnotes.select(:id, :line_id, :data_source_ref).each_row.map do |attributes|
-            line_code = code_provider.lines.code(attributes['line_id'])
-            footnote_code = Code::Value.merge(line_code, attributes['id'], type: 'Notice',
-                                                                           provider: attributes['data_source_ref'])
-            [attributes['id'], footnote_code]
+          footnotes_with_codes = super
+
+          footnotes_without_codes = collection.where.not(id: footnotes_with_codes.keys)
+                                              .select(:id, :line_id, :data_source_ref).each_row.map do |attributes|
+            [attributes['id'], footnote_code(attributes)]
           end.to_h
+
+          footnotes_without_codes.merge(footnotes_with_codes)
+        end
+
+        def index_without_codes
+          {}
+        end
+
+        def query_with_code
+          with_code_query
+        end
+
+        private
+
+        def footnote_code(attributes)
+          line_code = code_provider.lines.code(attributes['line_id'])
+
+          if line_code
+            Code::Value.merge(line_code, attributes['id'].to_s, type: 'Notice', local: objectid_local(attributes))
+          else
+            Netex::ObjectId.new(nil, objectid_local(attributes), 'Notice', attributes['id'].to_s, 'LOC')
+          end
+        end
+
+        def objectid_local(attributes)
+          attributes['data_source_ref'] || 'chouette'
         end
       end
 

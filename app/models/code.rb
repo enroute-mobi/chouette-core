@@ -23,12 +23,12 @@ class Code < AbstractCode
       other && definition == other.to_s
     end
 
-    def merge(other, type: nil, provider: nil)
-      self.class.new("#{definition}-#{other}").change(type: type, provider: provider)
+    def merge(other, **changes)
+      self.class.new("#{definition}-#{other}").change(**changes)
     end
 
-    def self.merge(definition, other, type: nil, provider: nil)
-      parse(definition).merge(other, type: type, provider: provider)
+    def self.merge(definition, other, **changes)
+      parse(definition).merge(other, **changes)
     end
 
     def initialize(definition)
@@ -36,9 +36,9 @@ class Code < AbstractCode
       freeze
     end
 
-    def change(type: nil, provider: nil)
-      if type.present? || provider.present?
-        self.class.new [type, definition, provider].compact.join(':')
+    def change(country: nil, local: nil, type: nil, provider: nil)
+      if country.present? || local.present? || type.present? || provider.present?
+        self.class.new [country, local, type, definition, provider].compact.join(':')
       else
         self
       end

@@ -37,7 +37,7 @@ namespace :ci do
   desc "Check security aspects"
   task :check_security do
     unless ENV["CI_CHECKSECURITY_DISABLED"]
-      command = "bundle-audit check --update"
+      command = "bundle exec bundle-audit check --update"
       ignoring_lapse = 1.month
       if File.exist? '.bundle-audit-ignore'
         ignored = []

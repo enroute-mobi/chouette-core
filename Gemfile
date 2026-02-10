@@ -147,6 +147,7 @@ gem 'coverband', require: false
 gem 'nest', en_route: 'nest'
 
 group :development do
+  gem 'bundler-audit'
   gem 'licensed'
   gem 'better_errors'
   gem 'binding_of_caller' # optional dependency of better_errors

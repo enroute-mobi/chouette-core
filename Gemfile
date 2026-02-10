@@ -147,12 +147,11 @@ gem 'coverband', require: false
 gem 'nest', en_route: 'nest'
 
 group :development do
-  gem 'license_finder'
   gem 'bundler-audit'
+  gem 'licensed'
   gem 'better_errors'
   gem 'binding_of_caller' # optional dependency of better_errors
   gem 'derailed_benchmarks'
-  gem 'syntax_suggest' # TODO: remove after update to ruby 3.2 (silent dependency of derailed_benchmarks)
 
   gem 'i18n-tasks', '>= 1.1.0'
   gem 'listen' # dependency of i18n-js

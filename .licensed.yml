@@ -1,0 +1,57 @@
+---
+name: 'Chouette'
+
+licensee:
+  # the confidence threshold is an integer between 1 and 100. the value represents
+  # the minimum percentage confidence that Licensee must have to report a matched license
+  # https://github.com/licensee/licensee/blob/main/docs/customizing.md#adjusting-the-confidence-threshold
+  confidence_threshold: 90
+
+sources:
+  bundler: true
+
+allowed:
+  - mit
+  - apache-2.0
+  - bsd-2-clause
+  - bsd-3-clause
+
+reviewed:
+  bundler:
+    # mit
+    - activerecord-nulldb-adapter
+    - activerecord
+    - acts_as_tree
+    # ruby license
+    - base64
+    - benchmark
+    - bigdecimal
+    - cgi
+    - csv
+    - datadog
+    - datadog-ruby_core_source
+    - date
+    - drb
+    - erb
+    - io-console
+    - irb
+    - json
+    - logger
+    - mutex_m
+    - net-imap
+    - net-pop
+    - net-protocol
+    - observer
+    - pg
+    - pp
+    - prettyprint
+    - racc
+    - reline
+    - rexml
+    - securerandom
+    - stringio
+    - timeout
+    - tsort
+    - webrick
+    # lgpl
+    - pkg-config

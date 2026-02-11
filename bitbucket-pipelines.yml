@@ -72,7 +72,7 @@ definitions:
           - self.hosted
           - build
           - big
-        max-time: 20
+        max-time: 30
         script:
           - build.sh bitbucket::runner::quotas
           - eval "$(build.sh bitbucket::env)"

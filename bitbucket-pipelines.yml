@@ -4,7 +4,7 @@ definitions:
     docker:
       memory: 512
     docker-large:
-      memory: 30720
+      memory: 15360
       type: docker
     docker-postgresql:
       memory: 30720
@@ -116,9 +116,6 @@ definitions:
 
     - step: &build-docker
         name: Build Docker
-        runs-on:
-          - self.hosted
-          - build
         size: 4x
         image:
           name: us-east1-docker.pkg.dev/enroute-interne/enroute-interne/enroute-cloud-sdk:latest

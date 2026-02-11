@@ -203,10 +203,6 @@ module Export
         @vehicle_journeys ||= current_scope.vehicle_journeys
       end
 
-      def footnotes
-        @footnotes ||= current_scope.footnotes.joins(:vehicle_journeys).where('vehicle_journeys.id' => vehicle_journeys)
-      end
-
       def inspect
         "#<#{self.class}:#{object_id} @current_scope=#{current_scope.inspect}>"
       end
@@ -221,6 +217,10 @@ module Export
 
       def vehicle_journeys
         current_scope.vehicle_journeys.scheduled(final_scope.time_tables)
+      end
+
+      def footnotes
+        current_scope.footnotes.joins(:vehicle_journeys).where('vehicle_journeys.id' => vehicle_journeys)
       end
 
       delegate :vehicle_journeys, to: :final_scope, prefix: true
@@ -331,7 +331,9 @@ module Export
       end
 
       def line_notices
-        current_scope.line_notices.with_lines(lines)
+        current_scope.line_notices.with_lines(lines).or(
+          current_scope.line_notices.with_vehicle_journeys(vehicle_journeys)
+        )
       end
 
       private

@@ -1718,26 +1718,7 @@ RSpec.describe Export::NetexGeneric do
 
         let(:vehicle_journey) { part.vehicle_journeys.find_by(id: vehicle_journey_with_footnotes.id) }
 
-        it do
-          notice_assignments_attributes =
-            vehicle_journey.notice_assignments_attributes.map { |attr| attr.except('created_at', 'updated_at') }
-          expected_attributes = [
-            {
-              "id" => first_footnote.id,
-              "label" => "First footnote",
-              "line_id" => line.id,
-              "data_source_ref" => "test"
-            },
-            {
-              "id" => second_footnote.id,
-              "label" => "Second footnote",
-              "line_id" => line.id,
-              "data_source_ref" => "test"
-            }
-          ]
-
-          expect(notice_assignments_attributes).to match_array(expected_attributes)
-        end
+        it { expect(vehicle_journey.footnote_ids).to match_array([first_footnote.id, second_footnote.id]) }
 
         describe Export::NetexGeneric::VehicleJourneys::Decorator do
           let(:notice_assignments) do

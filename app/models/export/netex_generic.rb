@@ -2125,7 +2125,7 @@ class Export::NetexGeneric < Export::Base
 
         scope = scope.left_joins(:codes).select(vehicle_journey_codes).group(group_by)
         scope = scope.joins(:vehicle_journey_time_table_relationships).select(time_table_ids)
-        scope.left_joins(:footnotes).select(notice_assignments_attributes)
+        scope.left_joins(:footnotes).select(footnote_ids)
       end
 
       private
@@ -2157,19 +2157,9 @@ class Export::NetexGeneric < Export::Base
         SQL
       end
 
-      def notice_assignments_attributes
+      def footnote_ids
         <<~SQL
-          array_agg(
-            DISTINCT
-            jsonb_build_object(
-              'id', footnotes.id,
-              'label', footnotes.label,
-              'data_source_ref', footnotes.data_source_ref,
-              'line_id', footnotes.line_id,
-              'updated_at', footnotes.updated_at,
-              'created_at', footnotes.created_at
-            )
-          ) AS notice_assignments_attributes
+          array_agg(DISTINCT footnotes.id) AS footnote_ids
         SQL
       end
 
@@ -2240,20 +2230,21 @@ class Export::NetexGeneric < Export::Base
       end
 
       def notice_assignments
-        return unless self.respond_to? :notice_assignments_attributes
-
-        notice_assignments_attributes.map.with_index do |notice_assignment_attributes, order|
-          notice_code = code_provider.footnotes.code(notice_assignment_attributes['id'])
-          reference = Netex::Reference.new(notice_code, type: 'Notice')
-
-          notice_assignment_id =
-            Netex::ObjectId.merge(netex_identifier.to_s, notice_assignment_attributes['id'], type: 'NoticeAssignment').to_s
-          Netex::NoticeAssignment.new(id: notice_assignment_id, notice_ref: reference, order: order)
+        line_notice_assignments = line_notice_ids.map.with_index do |line_notice_id, order|
+          notice_assignment(code_provider.line_notices.code(line_notice_id), order)
         end
+
+        footnote_notice_assignments = footnote_ids.map.with_index do |footnote_id, order|
+          notice_assignment(code_provider.footnotes.code(footnote_id), order + line_notice_ids.size)
+        end
+
+        line_notice_assignments + footnote_notice_assignments
       end
 
-      def notice_assignments_attributes
-        __getobj__.try(:notice_assignments_attributes) || []
+      def notice_assignment(code, order)
+        reference = Netex::Reference.new(code, type: 'Notice')
+        notice_assignment_id = netex_identifier.merge((order + 1).to_s, type: 'NoticeAssignment').to_s
+        Netex::NoticeAssignment.new(id: notice_assignment_id, notice_ref: reference, order: order)
       end
     end
   end

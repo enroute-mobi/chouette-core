@@ -25,7 +25,13 @@ module Chouette
     scope :by_provider, ->(line_provider) { where(line_provider_id: line_provider.id) }
 
     scope :with_lines, lambda { |lines|
-      joins(:line_notice_memberships).where(::Chouette::LineNoticeMembership.quoted_table_name => { line_id: lines })
+      left_joins(:line_notice_memberships).where(
+        ::Chouette::LineNoticeMembership.quoted_table_name => { line_id: lines }
+      )
+    }
+
+    scope :with_vehicle_journeys, lambda { |vehicle_journeys|
+      where(id: vehicle_journeys.select('UNNEST(line_notice_ids)'))
     }
 
     has_many :line_notice_memberships, inverse_of: :line_notice, dependent: :destroy

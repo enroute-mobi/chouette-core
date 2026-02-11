@@ -26,6 +26,12 @@ export default class CreateModal extends Component {
     this.props.onDeleteCode(null, index)
   }
 
+  updateValue(attribute, e) {
+    actions.resetValidation(e.currentTarget)
+    this.props.journeyPattern[attribute] = e.target.value
+    this.forceUpdate()
+  }
+
   handleSubmit() {
     if(actions.validateFields(this.refs) == true) {
       this.props.onAddJourneyPattern(_.assign({}, this.refs, {
@@ -56,7 +62,7 @@ export default class CreateModal extends Component {
                 <button
                   type='button'
                   data-toggle='modal'
-                  data-target='#JourneyPatternModal'
+                  data-target='#NewJourneyPatternModal'
                   onClick={onOpenCreateModal}
                   >
                   <span className="fa fa-plus"></span>
@@ -83,6 +89,8 @@ export default class CreateModal extends Component {
                                 type='text'
                                 ref='name'
                                 className='form-control'
+                                value={journeyPattern.name}
+                                onChange={(e) => this.updateValue('name', e)}
                                 onKeyDown={(e) => actions.resetValidation(e.currentTarget)}
                                 required
                                 />
@@ -97,6 +105,8 @@ export default class CreateModal extends Component {
                                 type='text'
                                 ref='published_name'
                                 className='form-control'
+                                value={journeyPattern.published_name}
+                                onChange={(e) => this.updateValue('published_name', e)}
                                 onKeyDown={(e) => actions.resetValidation(e.currentTarget)}
                                 />
                             </div>
@@ -108,6 +118,8 @@ export default class CreateModal extends Component {
                                 type='text'
                                 ref='registration_number'
                                 className='form-control'
+                                value={journeyPattern.registration_number}
+                                onChange={(e) => this.updateValue('registration_number', e)}
                                 onKeyDown={(e) => actions.resetValidation(e.currentTarget)}
                                 />
                             </div>
@@ -155,7 +167,8 @@ export default class CreateModal extends Component {
                                       ref='booking_arrangement_id'
                                       className='form-control'
                                       disabled={!editMode}
-                                      onChange={(e) => actions.resetValidation(e.currentTarget)}
+                                      value={journeyPattern.booking_arrangement_id || ''}
+                                      onChange={(e) => this.updateValue('booking_arrangement_id', e)}
                                     >
                                       <option value=''>{I18n.t('journey_patterns.form.booking_arrangement_placeholder')}</option>
                                       {

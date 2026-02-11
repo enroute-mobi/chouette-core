@@ -21,7 +21,7 @@ const journeyPattern = (state = {}, action) =>{
         deletable: false,
         shape: action.data.shape,
         booking_arrangement_id: action.data.booking_arrangement_id.value,
-        code_values: []
+        code_values: action.data.code_values || []
       }
     case 'UPDATE_CHECKBOX_VALUE':
       var updatedStopPoints = state.stop_points.map((s) => {

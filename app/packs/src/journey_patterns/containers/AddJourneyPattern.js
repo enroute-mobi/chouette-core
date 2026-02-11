@@ -20,27 +20,8 @@ const mapDispatchToProps = (dispatch) => {
     onAddJourneyPattern: (data) =>{
       dispatch(actions.addJourneyPattern(data))
     },
-    onOpenCreateModal: () =>{
-      // Créer un journeyPattern vide avec la bonne structure pour le reducer
-      const emptyJourneyPatternForReducer = {
-        name: { value: '' },
-        published_name: { value: '' },
-        registration_number: { value: '' },
-        booking_arrangement_id: { value: '' },
-        code_values: []
-      }
-      
-      // Créer un journeyPattern avec les bonnes valeurs pour EditModal
-      const emptyJourneyPatternForModal = {
-        name: '',
-        published_name: '',
-        registration_number: '',
-        code_values: []
-      }
-      
-      dispatch(actions.addJourneyPattern(emptyJourneyPatternForReducer))
-      // Puis ouvrir la modal d'édition sur ce nouveau journeyPattern (index 0)
-      dispatch(actions.openEditModal(0, emptyJourneyPatternForModal))
+    onOpenCreateModal: () =>{      
+      dispatch(actions.openCreateModal())
     },
     onSelectShape: selectedShape => {
       dispatch(actions.selectShape(selectedShape))

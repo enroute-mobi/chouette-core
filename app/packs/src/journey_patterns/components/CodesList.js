@@ -30,17 +30,14 @@ export default class CodesList extends Component {
 
   handleUpdateCodeSpace(e, code, index) {
     this.props.onUpdateCode({ code_space_id: e.target.value, value: code.value,  index: index })
-    this.setState({codeValues: this.props.codeValues})
   }
 
   handleUpdateCodeValue(e, code, index) {
     this.props.onUpdateCode({ code_space_id: code.code_space_id, value: e.target.value,  index: index })
-    this.setState({codeValues: this.props.codeValues})
   }
 
   handleRemoveCode(index) {
     this.props.onDeleteCode(index)
-    this.setState({codeValues: this.props.codeValues})
   }
 
   handleDuplicateCodes(codeData) {

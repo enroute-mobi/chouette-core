@@ -98,31 +98,10 @@ namespace :ci do
 
       parallel_specs_command = "parallel_test spec -t rspec"
 
-      runtime_log = ENV.fetch('PARALLEL_RUNTIME_LOG', 'parallel_tests/runtime.log') 
+      runtime_log = ENV.fetch('PARALLEL_RUNTIME_LOG', 'cache/runtime.log')
+      parallel_specs_command += " --runtime-log #{runtime_log}" if File.exist?(runtime_log)
 
-      if ENV['BITBUCKET_PARALLEL_STEP_COUNT']
-        step_count = ENV['BITBUCKET_PARALLEL_STEP_COUNT'].to_i
-        step = ENV['BITBUCKET_PARALLEL_STEP'].to_i
-
-        runtime_log = "parallel_tests/runtime-#{step}.log"
-
-        cpu_count =
-          if ENV['PARALLEL_TEST_PROCESSORS']
-            ENV['PARALLEL_TEST_PROCESSORS'].to_i
-          else
-            ParallelTests.determine_number_of_processes(nil)
-          end
-
-        group_count = cpu_count * step_count
-        group_selection = Range.new(step * cpu_count, (step + 1) * cpu_count, true).to_a
-
-        parallel_specs_command += " -n #{group_count} --only-group #{group_selection.join(',')}"
-      end
-
-      read_runtime_log = ENV.fetch('PARALLEL_RUNTIME_LOG', 'cache/runtime.log')
-      parallel_specs_command += " --runtime-log #{read_runtime_log}" if File.exist?(read_runtime_log) 
-
-      parallel_test_options = '-r spec_helper '
+      parallel_test_options = ' -r spec_helper '
       parallel_test_options += test_options(xml_output: 'parallel-tests<%= ENV["TEST_ENV_NUMBER"] %>')
 
       parallel_test_options += " --format ParallelTests::RSpec::RuntimeLogger --out #{runtime_log}"

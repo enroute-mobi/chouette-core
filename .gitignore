@@ -45,6 +45,9 @@
 # Directory for RspecJunitFormatter output
 /test-results/
 
+# Use by ci:spec
+/.rspec_parallel
+
 # Coverage results
 /coverage
 

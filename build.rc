@@ -27,3 +27,22 @@ function docker_custom_pgclient {
     dpkg -i /tmp/postgresql-client.deb || true
     apt install -fy
 }
+
+function bitbucket_runner_quotas {
+    RUNNER_UUID=$(echo "${BITBUCKET_SSH_KEY_FILE}" | sed 's@/var/lib/runner/\(.*\)/ssh/id_rsa@\1@')
+    RAW_BITBUCKET_STEP_UUID=$(echo "${BITBUCKET_STEP_UUID}" | sed -e 's/{//' -e 's/}//')
+    DOCKER_CONTAINER_NAME="${RUNNER_UUID}_${RAW_BITBUCKET_STEP_UUID}_build"
+    docker -H tcp://172.17.0.1 update --cpu-quota=-1 --memory=16g --memory-swap=16g ${DOCKER_CONTAINER_NAME}
+    # docker -H tcp://172.17.0.1 inspect ${DOCKER_CONTAINER_NAME}
+}
+
+function bitbucket_postgresql_local {
+    echo -n $GCLOUD_API_KEYFILE | docker login -u _json_key --password-stdin us-east1-docker.pkg.dev
+    docker run -e POSTGRES_PASSWORD=dummy -v /opt/atlassian/pipelines/agent/build/postgresql:/var/run/postgresql -d us-east1-docker.pkg.dev/enroute-interne/enroute-interne/enroute-postgresql:dev -c effective_cache_size=8092MB -c max_wal_size=20GB -c max_locks_per_transaction=2048 -c fsync=off -c full_page_writes=off -c synchronous_commit=off
+    sleep 15
+}
+
+function bitbucket_postgresql_local_env {
+    echo export RAILS_TEST_DB_HOST=/opt/atlassian/pipelines/agent/build/postgresql
+    echo export RAILS_DB_USER=postgres RAILS_DB_PASSWORD=
+}

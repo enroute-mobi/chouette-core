@@ -1,3 +1,4 @@
+---
 definitions:
   services:
     docker:
@@ -5,16 +6,9 @@ definitions:
     docker-large:
       memory: 15360
       type: docker
-    postgres:
-      image:
-        name: us-east1-docker.pkg.dev/enroute-interne/enroute-interne/enroute-postgresql:dev
-        username: _json_key
-        password: "$GCLOUD_API_KEYFILE"
-      environment:
-        POSTGRES_DB: chouette
-        POSTGRES_USER: chouette
-        POSTGRES_PASSWORD: chouette
-      memory: 2048
+    docker-postgresql:
+      memory: 30720
+      type: docker
     datadog-agent:
       image:
         name: datadog/agent:latest
@@ -73,116 +67,27 @@ definitions:
           name: us-east1-docker.pkg.dev/enroute-interne/enroute-interne/enroute-ruby:3.4-dev
           username: _json_key
           password: "$GCLOUD_API_KEYFILE"
-        size: 4x
-        max-time: 30
+        size: 8x
+        runs-on:
+          - self.hosted
+          - build
+          - big
+        max-time: 20
         script:
+          - build.sh bitbucket::runner::quotas
           - eval "$(build.sh bitbucket::env)"
           - build.sh bundler::dependencies
-          - bundle exec rake ci:setup ci:spec
-          - build.sh codacy::report::partial
+          - build.sh bitbucket::postgresql::local
+          - eval "$(build.sh bitbucket::postgresql::local::env)"
+          - PARALLEL_TEST_PROCESSORS=12 bundle exec rake ci:setup ci:spec
+          - build.sh codacy::report
+          - grep ^spec/ parallel_tests/runtime*.log | tee cache/runtime.log
         caches:
           - build-cache
-        artifacts:
-          - parallel_tests/*
+          - docker
         services:
-          - postgres
+          - docker-postgresql
           - datadog-agent
-
-    - step: &rspec-tests-1
-        name: Ruby Unit tests
-        image:
-          name: us-east1-docker.pkg.dev/enroute-interne/enroute-interne/enroute-ruby:3.4-dev
-          username: _json_key
-          password: "$GCLOUD_API_KEYFILE"
-        size: 4x
-        max-time: 30
-        script:
-          - eval "$(build.sh bitbucket::env)"
-          - build.sh bundler::dependencies
-          - BITBUCKET_PARALLEL_STEP_COUNT=4 BITBUCKET_PARALLEL_STEP=0 FAIL_FAST=true bundle exec rake ci:setup ci:spec
-          - build.sh codacy::report::partial
-        caches:
-          - build-cache
-        artifacts:
-          - parallel_tests/*
-        services:
-          - postgres
-          - datadog-agent
-
-    - step: &rspec-tests-2
-        name: Ruby Unit tests
-        image:
-          name: us-east1-docker.pkg.dev/enroute-interne/enroute-interne/enroute-ruby:3.4-dev
-          username: _json_key
-          password: "$GCLOUD_API_KEYFILE"
-        size: 4x
-        max-time: 30
-        script:
-          - eval "$(build.sh bitbucket::env)"
-          - build.sh bundler::dependencies
-          - BITBUCKET_PARALLEL_STEP_COUNT=4 BITBUCKET_PARALLEL_STEP=1 FAIL_FAST=true bundle exec rake ci:setup ci:spec
-          - build.sh codacy::report::partial
-        caches:
-          - build-cache
-        artifacts:
-          - parallel_tests/*
-        services:
-          - postgres
-          - datadog-agent
-
-    - step: &rspec-tests-3
-        name: Ruby Unit tests
-        image:
-          name: us-east1-docker.pkg.dev/enroute-interne/enroute-interne/enroute-ruby:3.4-dev
-          username: _json_key
-          password: "$GCLOUD_API_KEYFILE"
-        size: 4x
-        max-time: 30
-        script:
-          - eval "$(build.sh bitbucket::env)"
-          - build.sh bundler::dependencies
-          - BITBUCKET_PARALLEL_STEP_COUNT=4 BITBUCKET_PARALLEL_STEP=2 FAIL_FAST=true bundle exec rake ci:setup ci:spec
-          - build.sh codacy::report::partial
-        caches:
-          - build-cache
-        artifacts:
-          - parallel_tests/*
-        services:
-          - postgres
-          - datadog-agent
-
-    - step: &rspec-tests-4
-        name: Ruby Unit tests
-        image:
-          name: us-east1-docker.pkg.dev/enroute-interne/enroute-interne/enroute-ruby:3.4-dev
-          username: _json_key
-          password: "$GCLOUD_API_KEYFILE"
-        size: 4x
-        max-time: 30
-        script:
-          - eval "$(build.sh bitbucket::env)"
-          - build.sh bundler::dependencies
-          - BITBUCKET_PARALLEL_STEP_COUNT=4 BITBUCKET_PARALLEL_STEP=3 FAIL_FAST=true bundle exec rake ci:setup ci:spec
-          - build.sh codacy::report::partial
-        caches:
-          - build-cache
-        artifacts:
-          - parallel_tests/*
-        services:
-          - postgres
-          - datadog-agent
-
-    - step: &rebuild-runtime-log
-        name: Rebuild runtime log
-        image:
-          name: us-east1-docker.pkg.dev/enroute-interne/enroute-interne/enroute-ruby:3.4-dev
-          username: _json_key
-          password: "$GCLOUD_API_KEYFILE"
-        script:
-          - cat parallel_tests/runtime*.log > cache/runtime.log
-          - build.sh codacy::report::final
-        caches:
-          - build-cache
 
     - step: &jest-tests
         name: Javascript Unit tests
@@ -226,7 +131,7 @@ definitions:
 
 pipelines:
   custom:
-    gems-update: # Merge ci-master from chouette-core
+    gems-update:  # Merge ci-master from chouette-core
       - step:
           name: Update gems
           image:
@@ -249,15 +154,10 @@ pipelines:
   default:
     - step: *setup
     - step: *build-assets
+    - step: *rspec-tests
     - parallel:
-      - step: *rspec-tests
-      - step: *rspec-tests
-      - step: *rspec-tests
-      - step: *rspec-tests
-    - step: *rebuild-runtime-log
-    - parallel:
-      - step: *jest-tests
-      - step: *bundle-audit
+        - step: *jest-tests
+        - step: *bundle-audit
 
   branches:
     master:
@@ -269,11 +169,7 @@ pipelines:
             - step: *build-docker
             - step: *bundle-audit
             - step: *jest-tests
-            - step: *rspec-tests-1
-            - step: *rspec-tests-2
-            - step: *rspec-tests-3
-            - step: *rspec-tests-4
-      - step: *rebuild-runtime-log
+            - step: *rspec-tests
       - step:
           name: Tag
           artifacts:
@@ -305,9 +201,9 @@ pipelines:
           artifacts:
             download: false
           image:
-              name: europe-west1-docker.pkg.dev/enroute-interne/enroute-interne/enroute-cloud-sdk:latest
-              username: _json_key
-              password: "$GCLOUD_API_KEYFILE"
+            name: europe-west1-docker.pkg.dev/enroute-interne/enroute-interne/enroute-cloud-sdk:latest
+            username: _json_key
+            password: "$GCLOUD_API_KEYFILE"
           deployment: test
           runs-on:
             - self.hosted

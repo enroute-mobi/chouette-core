@@ -1,11 +1,7 @@
 .grid-stack data-dashboard-id=@dashboard.id data-workbench-id=@dashboard.workbench_id
   - if @dashboard.widgets.any?
-    - @dashboard.widgets.each_with_index do |widget, index|
-      - x_pos = widget.x || (index % 3)
-      - y_pos = widget.y || (index / 3)
-      - w_pos = widget.width || 1
-      - h_pos = widget.height || 2
-      .grid-stack-item data-widget-id=widget.id gs-x=x_pos gs-y=y_pos gs-w=w_pos gs-h=h_pos
+    - @dashboard.widgets.each do |widget|
+      .grid-stack-item data-widget-id=widget.id gs-x=widget.x gs-y=widget.y gs-w=widget.width gs-h=widget.height
         .grid-stack-item-content
           .content-container
             .widget-drag-handle

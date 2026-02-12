@@ -16,19 +16,14 @@
           p.text-sm.text-blue-700= t('.drag_and_drop_instructions')
 
     .grid-stack[
-      data-dashboard-id=@dashboard.id
-      data-workbench-id=@workbench.id
+      data-dashboard-path=workbench_dashboard_path(@workbench, @dashboard)
     ]
-      - @dashboard.widgets.each_with_index do |widget, index|
-        - x_pos = widget.x ? widget.x : (index % 3)
-        - y_pos = widget.y ? widget.y : (index / 3)
-        - widget_width = widget.width ? widget.width : 1
-        - widget_height = widget.height ? widget.height : 2
+      - @dashboard.widgets.each do |widget|
         .grid-stack-item[
-          gs-x=x_pos
-          gs-y=y_pos
-          gs-w=widget_width
-          gs-h=widget_height
+          gs-x=widget.x
+          gs-y=widget.y
+          gs-w=widget.width
+          gs-h=widget.height
           data-widget-id=widget.id
         ]
           .grid-stack-item-content

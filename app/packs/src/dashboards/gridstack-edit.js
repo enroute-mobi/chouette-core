@@ -87,7 +87,7 @@ function initGridstack() {
       };
       
       // console.log('Saving position for widget', widgetId, position);
-      saveWidgetPosition(widgetId, position);
+      saveWidgetPosition(gridElement, widgetId, position);
     });
   });
 
@@ -96,25 +96,12 @@ function initGridstack() {
 // Listen for page load events
 document.addEventListener('DOMContentLoaded', initGridstack);
 
-function saveWidgetPosition(widgetId, position) {
-  const dashboardElement = document.querySelector('[data-dashboard-id]');
-  if (!dashboardElement) {
-    Sentry.captureMessage('Dashboard element not found', "warning");
-    return;
-  }
-  
-  const workbenchId = dashboardElement.getAttribute('data-workbench-id');
-  const dashboardId = dashboardElement.getAttribute('data-dashboard-id');
+function saveWidgetPosition(gridElement, widgetId, position) {
   const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
   
-  if (!workbenchId || !dashboardId || !csrfToken) {
-    Sentry.captureMessage("Missing required data for saving position", "error"); 
-    return;
-  }
+  const dashboardPath = gridElement.getAttribute('data-dashboard-path');
   
-  const widgetUrl = `/workbenches/${workbenchId}/dashboards/${dashboardId}.json`;
-  
-  fetch(widgetUrl, {
+  fetch(dashboardPath, {
     method: 'PATCH',
     headers: {
       'Content-Type': 'application/json',

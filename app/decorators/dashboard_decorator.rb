@@ -13,7 +13,7 @@ class DashboardDecorator < Af83::Decorator
     instance_decorator.set_scope { [context[:workbench]] }
 
     instance_decorator.action_link(
-      secondary: true
+      secondary: :show
     ) do |l|
       l.content { I18n.t('dashboards.actions.edit_layout') }
       l.href { h.edit_layout_workbench_dashboard_path(context[:workbench], object) }

@@ -5,17 +5,11 @@ module Policy
     authorize_by Strategy::Workbench
     authorize_by Strategy::Permission
 
+    alias edit_layout? update?
+
     protected
 
-    def _show?
-      true
-    end
-
     def _update?
-      true
-    end
-
-    def _edit_layout?
       true
     end
 

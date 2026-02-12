@@ -1,24 +1,22 @@
 import { GridStack } from 'gridstack';
+import * as Sentry from "@sentry/browser";
 
 // Version for editing with drag & drop enabled
-function initGridstack() {
-  console.log('DOM loaded, looking for gridstack element...');
-  
+function initGridstack() {  
   const gridElement = document.querySelector('.grid-stack');
   
   if (!gridElement) {
-    console.error('Gridstack element not found');
+    Sentry.captureMessage('Gridstack element not found', "warning"); 
     return;
   }
-  
-  console.log('Found gridstack element:', gridElement);
+  // console.log('Found gridstack element:', gridElement);
   
   // Check that widgets are present
   const widgetItems = gridElement.querySelectorAll('.grid-stack-item');
-  console.log('Found widget items:', widgetItems.length);
+  // console.log('Found widget items:', widgetItems.length);
   
   if (widgetItems.length === 0) {
-    console.warn('No widget items found, aborting gridstack initialization');
+    Sentry.captureMessage('No widget items found, aborting gridstack initialization', "warning"); 
     return;
   }
   
@@ -38,43 +36,46 @@ function initGridstack() {
     }
   }, gridElement);
 
-  console.log('Gridstack initialized successfully for editing');
-  console.log('Gridstack engine nodes:', grid.engine.nodes.length);
+  // console.log('Gridstack initialized successfully for editing');
+  // console.log('Gridstack engine nodes:', grid.engine.nodes.length);
 
   // Check positions after initialization
-  setTimeout(() => {
-    const nodes = grid.engine.nodes;
-    console.log('Gridstack nodes after delay:', nodes.length);
-    nodes.forEach((node, index) => {
-      console.log(`Node ${index}:`, {
-        id: node.el?.getAttribute('data-widget-id'),
-        x: node.x,
-        y: node.y,
-        w: node.w,
-        h: node.h,
-        hasEl: !!node.el
-      });
-    });
-  }, 200);
+  // setTimeout(() => {
+  //   const nodes = grid.engine.nodes;
+  //   console.log('Gridstack nodes after delay:', nodes.length);
+  //   nodes.forEach((node, index) => {
+  //     console.log(`Node ${index}:`, {
+  //       id: node.el?.getAttribute('data-widget-id'),
+  //       x: node.x,
+  //       y: node.y,
+  //       w: node.w,
+  //       h: node.h,
+  //       hasEl: !!node.el
+  //     });
+  //   });
+  // }, 200);
 
   // Save widget positions on change
   grid.on('change', function(event, items) {
     console.log('Grid change event:', items);
     
     if (!items || !Array.isArray(items)) {
-      console.warn('Invalid items in change event:', items);
+      // console.warn('Invalid items in change event:', items);
+      Sentry.captureMessage(`Invalid items in change event: ${items}`, "warning");
       return;
     }
     
     items.forEach(function(item, index) {
       if (!item || !item.el) {
-        console.warn(`Invalid item ${index}:`, item);
+        // console.warn('Invalid item', index, item);
+        Sentry.captureMessage(`Invalid item ${index}: ${item}`, "warning"); 
         return;
       }
       
       const widgetId = item.el.getAttribute('data-widget-id');
       if (!widgetId) {
-        console.warn(`Item ${index} has no widget-id:`, item.el);
+        // console.warn('Item', index, 'has no widget-id:', item.el);
+        Sentry.captureMessage(`Item ${index} has no widget-id: ${item.el}`, "warning"); 
         return;
       }
       
@@ -85,7 +86,7 @@ function initGridstack() {
         height: item.h || 1
       };
       
-      console.log('Saving position for widget', widgetId, position);
+      // console.log('Saving position for widget', widgetId, position);
       saveWidgetPosition(widgetId, position);
     });
   });
@@ -95,16 +96,10 @@ function initGridstack() {
 // Listen for page load events
 document.addEventListener('DOMContentLoaded', initGridstack);
 
-// For Turbolinks if used
-document.addEventListener('turbolinks:load', initGridstack);
-
-// For Turbo if used (Rails 7)
-document.addEventListener('turbo:load', initGridstack);
-
 function saveWidgetPosition(widgetId, position) {
   const dashboardElement = document.querySelector('[data-dashboard-id]');
   if (!dashboardElement) {
-    console.error('Dashboard element not found');
+    Sentry.captureMessage('Dashboard element not found', "warning");
     return;
   }
   
@@ -113,28 +108,23 @@ function saveWidgetPosition(widgetId, position) {
   const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
   
   if (!workbenchId || !dashboardId || !csrfToken) {
-    console.error('Missing required data for saving position');
+    Sentry.captureMessage("Missing required data for saving position", "error"); 
     return;
   }
   
-  fetch(`/workbenches/${workbenchId}/dashboards/${dashboardId}/widgets/${widgetId}`, {
+  const widgetUrl = `/workbenches/${workbenchId}/dashboards/${dashboardId}.json`;
+  
+  fetch(widgetUrl, {
     method: 'PATCH',
     headers: {
       'Content-Type': 'application/json',
       'X-CSRF-Token': csrfToken
     },
-    body: JSON.stringify({ widget: { x: position.x, y: position.y, width: position.width, height: position.height } })
+    body: JSON.stringify({ widgets_attributes: { '0': { ...position, id: widgetId }}})
   })
   .then(response => {
     if (!response.ok) {
       throw new Error(`HTTP error! status: ${response.status}`);
     }
-    return response.json();
   })
-  .then(data => {
-    console.log('Widget position saved successfully:', data);
-  })
-  .catch(error => {
-    console.error('Error saving widget position:', error);
-  });
 }

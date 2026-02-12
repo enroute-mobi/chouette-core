@@ -1427,17 +1427,66 @@ module Import
 
           [].tap do |vehicle_journey_at_stops|
             chouette_stop_point_ids.each_with_index do |stop_point_id, index|
-              passing_time = passing_times[index]
-              vehicle_journey_at_stops << Chouette::VehicleJourneyAtStop.new(
-                stop_point_id: stop_point_id,
-                arrival_time: passing_time.arrival_time,
-                departure_time: passing_time.departure_time,
-                latest_arrival_time_of_day: second_offset(passing_time.latest_arrival_time, passing_time.latest_arrival_day_offset),
-                earliest_departure_time_of_day: second_offset(passing_time.earliest_departure_time, passing_time.earliest_departure_day_offset),
-                arrival_day_offset: passing_time.arrival_day_offset || 0,
-                departure_day_offset: passing_time.departure_day_offset || 0
-              )
+              decorated_passing_time = PassingTimeDecorator.new(passing_times[index], stop_point_id: stop_point_id)
+              unless decorated_passing_time.valid?
+                errors << :passing_time_without_departure_time
+                return []
+              end
+
+              vehicle_journey_at_stops << decorated_passing_time.chouette_model
             end
+          end
+        end
+
+        class PassingTimeDecorator < SimpleDelegator
+          def initialize(passing_time, stop_point_id: nil)
+            super(passing_time)
+            @stop_point_id = stop_point_id
+          end
+          attr_reader :stop_point_id
+
+          def valid?
+            departure_time.present?
+          end
+
+          def arrival_time_of_day
+            if arrival_time
+              time_of_day arrival_time, arrival_day_offset
+            else
+              departure_time_of_day
+            end
+          end
+
+          def departure_time_of_day
+            time_of_day departure_time, departure_day_offset
+          end
+
+          def latest_arrival_time_of_day
+            time_of_day(latest_arrival_time, latest_arrival_day_offset)&.second_offset
+          end
+
+          def earliest_departure_time_of_day
+            time_of_day(earliest_departure_time, earliest_departure_day_offset)&.second_offset
+          end
+
+          def chouette_model
+            return unless valid?
+
+            Chouette::VehicleJourneyAtStop.new(
+              stop_point_id: stop_point_id,
+              arrival_time_of_day: arrival_time_of_day,
+              departure_time_of_day: departure_time_of_day,
+              latest_arrival_time_of_day: latest_arrival_time_of_day,
+              earliest_departure_time_of_day: earliest_departure_time_of_day
+            )
+          end
+
+          private
+
+          def time_of_day(time, day_offset)
+            return if time.blank?
+
+            TimeOfDay.parse(time, day_offset: day_offset)
           end
         end
 
@@ -1452,14 +1501,6 @@ module Import
               end
             end
           end
-        end
-
-        private
-
-        def second_offset(time, day_offset)
-          return if time.blank?
-
-          TimeOfDay.parse(time, day_offset: day_offset).second_offset
         end
       end
     end

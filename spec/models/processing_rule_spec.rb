@@ -103,74 +103,78 @@ RSpec.describe ProcessingRule::Workbench, type: :model do
   end
 
   describe 'Operation step validation' do
-    let(:context) { Chouette.create { workbench } }
-    let(:workbench) { context.workbench }
-    let(:first_macro_list) { Macro::List.create!(name: 'First Macro List', workbench: workbench) }
-    let(:second_macro_list) { Macro::List.create!(name: 'Second Macro List', workbench: workbench) }
+    [Macro::List, Control::List].each do |processable_class|
+      describe processable_class do
+        let(:context) { Chouette.create { workbench } }
+        let(:workbench) { context.workbench }
+        let(:first) { described_class.create!(name: 'First', workbench: workbench) }
+        let(:second) { described_class.create!(name: 'Second', workbench: workbench) }
 
-    context 'when operation_step is after_import' do
-      before do
-        workbench.processing_rules.create!(
-          operation_step: operation_step,
-          processable: first_macro_list
-        )
-      end
+        context 'when operation_step is after_import' do
+          before do
+            workbench.processing_rules.create!(
+              operation_step: operation_step,
+              processable: first
+            )
+          end
 
-      let(:operation_step) { 'after_import' }
+          let(:operation_step) { 'after_import' }
 
-      context 'when a processing rule is created with a processable that is used in another after_import processing rule' do
-        subject do
-          workbench.processing_rules.build(
-            operation_step: operation_step,
-            processable: first_macro_list
-          )
+          context 'when a processing rule is created with a processable that is used in another after_import processing rule' do
+            subject do
+              workbench.processing_rules.build(
+                operation_step: operation_step,
+                processable: first
+              )
+            end
+
+            it { is_expected.to be_invalid }
+          end
+
+          context 'when a processing rule is created with a new processable' do
+            subject do
+              workbench.processing_rules.build(
+                operation_step: operation_step,
+                processable: second
+              )
+            end
+
+            it { is_expected.to be_valid }
+          end
         end
 
-        it { is_expected.to be_invalid }
-      end
+        context 'when operation_step is not after_import' do
+          let(:operation_step) { 'before_merge' }
 
-      context 'when a processing rule is created with a new processable' do
-        subject do
-          workbench.processing_rules.build(
-            operation_step: operation_step,
-            processable: second_macro_list
-          )
+          before do
+            workbench.processing_rules.create!(
+              operation_step: operation_step,
+              processable: first
+            )
+          end
+
+          context 'when a processing rule is created with a processable that is used in another processing rule' do
+            subject do
+              workbench.processing_rules.build(
+                operation_step: operation_step,
+                processable: first
+              )
+            end
+
+            it { is_expected.to be_invalid }
+          end
+
+          context 'when a processing rule is created with a new processable' do
+            subject do
+              workbench.processing_rules.build(
+                operation_step: operation_step,
+                processable: second
+              )
+            end
+
+            it { is_expected.to be_invalid }
+          end
         end
-
-        it { is_expected.to be_valid }
-      end
-    end
-
-    context 'when operation_step is not after_import' do
-      let(:operation_step) { 'before_merge' }
-
-      before do
-        workbench.processing_rules.create!(
-          operation_step: operation_step,
-          processable: first_macro_list
-        )
-      end
-
-      context 'when a processing rule is created with a processable that is used in another processing rule' do
-        subject do
-          workbench.processing_rules.build(
-            operation_step: operation_step,
-            processable: first_macro_list
-          )
-        end
-
-        it { is_expected.to be_invalid }
-      end
-
-      context 'when a processing rule is created with a new processable' do
-        subject do
-          workbench.processing_rules.build(
-            operation_step: operation_step,
-            processable: second_macro_list
-          )
-        end
-
-        it { is_expected.to be_invalid }
       end
     end
   end

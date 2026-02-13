@@ -2,6 +2,10 @@
 
 module Import
   class Processor < ::Processor
+    def after
+      perform_processing_rules(after_processing_rules, after_referentials) unless skip_after_import?
+    end
+
     protected
 
     def before_referentials
@@ -10,10 +14,6 @@ module Import
 
     def after_referentials
       [operation.referential].compact
-    end
-
-    def after
-      perform_processing_rules(after_processing_rules, after_referentials) unless skip_after_import?
     end
 
     def skip_after_import?

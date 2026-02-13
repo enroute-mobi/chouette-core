@@ -67,7 +67,6 @@ class Import::Gtfs < Import::Base
 
     # TODO: why the resource statuses are not checked automaticaly ??
     # See CHOUETTE-2747
-    resource_status = resources.map(&:status).uniq
     Rails.logger.debug "resource_status: #{resource_status.inspect}"
     if resource_status.include?(:ERROR)
       @status ||= 'failed'

@@ -40,8 +40,8 @@ gem 'rails-observers'
 # Use SeedBank for spliting seeds in IBOO
 gem 'seedbank'
 
-gem 'faraday_middleware'
 gem 'faraday'
+gem 'faraday-multipart'
 
 gem 'pg', '< 1.6' # See CHOUETTE-4843
 

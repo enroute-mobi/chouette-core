@@ -71,6 +71,7 @@ en:
     messages:
       default: "A code '%{code_value}' has been added for %{source|the_model_name} '%{model_name}'"
       error: "A code can’t be added for %{source|the_model_name} '%{model_name}'"
+      sequence_exhausted: "The selected sequence no longer has any available values"
   macro/define_french_code_insee/run:
     messages:
       default: "An INSEE code '%{postal_region}' has been defined for %{source|the_model_name} '%{model_name}'"

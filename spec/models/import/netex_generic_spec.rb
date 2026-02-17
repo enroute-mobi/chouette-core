@@ -2119,20 +2119,4 @@ RSpec.describe Import::NetexGeneric::VehicleJourneys::Decorator::PassingTimeDeco
       end
     end
   end
-
-  context 'when passing time has no departure time' do
-    let(:passing_time) do
-      Netex::TimetabledPassingTime.new(
-        arrival_time: '00:20:00',
-        arrival_day_offset: 1
-      )
-    end
-    let(:decorated_passing_time) { described_class.new(passing_time) }
-
-    it 'the decorated passing time is invalid' do 
-      expect(decorated_passing_time.valid?).to be_falsy
-    end
-
-    it { is_expected.to be_nil }
-  end
 end

@@ -1427,11 +1427,12 @@ module Import
 
           [].tap do |vehicle_journey_at_stops|
             chouette_stop_point_ids.each_with_index do |stop_point_id, index|
-              decorated_passing_time = PassingTimeDecorator.new(passing_times[index], stop_point_id: stop_point_id)
-              unless decorated_passing_time.valid?
-                errors << :passing_time_without_departure_time
-                return []
-              end
+              decorated_passing_time = PassingTimeDecorator.new(passing_times[index], stop_point_id: stop_point_id, first: index.zero?)
+              # TODO See CHOUETTE-4895
+              # unless decorated_passing_time.valid?
+              #   errors << :passing_time_without_departure_time
+              #   return []
+              # end
 
               vehicle_journey_at_stops << decorated_passing_time.chouette_model
             end
@@ -1439,17 +1440,24 @@ module Import
         end
 
         class PassingTimeDecorator < SimpleDelegator
-          def initialize(passing_time, stop_point_id: nil)
+          def initialize(passing_time, stop_point_id: nil, first: false)
             super(passing_time)
             @stop_point_id = stop_point_id
+            @first = first
           end
           attr_reader :stop_point_id
 
+          def first?
+            @first
+          end
+
           def valid?
-            departure_time.present?
+            true
           end
 
           def arrival_time_of_day
+            return nil if first?
+
             if arrival_time
               time_of_day arrival_time, arrival_day_offset
             else

@@ -5,7 +5,7 @@ module Import
     def self.create(*elements)
       links = []
       elements.flatten.each_cons(2) do |from, to|
-        links << Link.new(from[:element], to[:element])
+        links << Link.new(from, to)
       end
       new links, raw_elements: elements
     end
@@ -28,100 +28,6 @@ module Import
       end
     end
 
-    def enriched_sequences
-      groups.map.with_index do |group, group_index|
-        group.map do |raw_sequence|
-          raw_sequence.map do |raw_element|
-            position = merged_stop_point_ids.index(raw_element[:element])
-
-            Step.new(
-              raw_element[:element],
-              raw_element[:enriched_elements],
-              position,
-              group_index,
-              raw_element[:journey_pattern_id]
-            )
-          end
-        end
-      end
-    end
-
-    def groups
-      [].tap do |groups|
-        raw_elements.each do |raw_sequence|
-          raw_sequence_set = except_journey_pattern_id(raw_sequence)
-
-          group = groups.find do |inserted_group|
-            inserted_group.any? do |inserted_raw_sequence|
-              inserted_raw_sequence_without_journey_pattern_id = except_journey_pattern_id(inserted_raw_sequence)
-              raw_sequence_set.subset?(inserted_raw_sequence_without_journey_pattern_id) ||
-                inserted_raw_sequence_without_journey_pattern_id.subset?(raw_sequence_set)
-            end
-          end
-
-          if group
-            group << raw_sequence
-          else
-            groups << [raw_sequence]
-          end
-        end
-      end
-    end
-
-    def except_journey_pattern_id(array)
-      array.map do |hash|
-        hash.except(:journey_pattern_id)
-      end.to_set
-    end
-
-    class Step
-      def initialize(element, enriched_elements, position, route_index, journey_pattern_id)
-        @element = element
-        @enriched_elements = enriched_elements
-        @position = position
-        @route_index = route_index
-        @journey_pattern_id = journey_pattern_id
-      end
-      attr_reader :element, :enriched_elements, :position, :route_index, :journey_pattern_id
-
-      alias scheduled_stop_point_id element
-
-      def journey_pattern_stop_points_key
-        [
-          journey_pattern_id,
-          route_index,
-          element,
-          enriched_elements[:for_boarding] || 'true',
-          enriched_elements[:for_alighting] || 'true'
-        ].join('-')
-      end
-
-      def route_stop_points_key
-        [
-          route_index,
-          element,
-          enriched_elements[:for_boarding] || 'true',
-          enriched_elements[:for_alighting] || 'true'
-        ].join('-')
-      end
-
-      def for_alighting
-        @for_alighting ||= convert_for_boarding_and_for_alighting(enriched_elements[:for_alighting])
-      end
-
-      def for_boarding
-        @for_boarding ||= convert_for_boarding_and_for_alighting(enriched_elements[:for_boarding])
-      end
-
-      private
-
-      def convert_for_boarding_and_for_alighting(value)
-        return :forbidden if value == 'false'
-
-        :normal
-      end
-    end
-
     def to_s
       to_a.join(',')
     end
@@ -131,8 +37,6 @@ module Import
 
       links.map(&:from) + [last.to]
     end
-
-    alias merged_stop_point_ids to_a
 
     def cover?(from, to)
       from_found = false
@@ -192,10 +96,7 @@ module Import
       alias << add
 
       def merge
-        @merge ||= begin
-          solution = Path.new(Sequence.new(raw_elements: raw_elements.to_a), links.dup).complete
-          solution&.sequence
-        end
+        @merge ||= Path.new(Sequence.new(raw_elements: raw_elements.to_a), links.dup).complete&.sequence&.to_a
       end
 
       class Path
@@ -258,6 +159,124 @@ module Import
         def to_s
           "[#{sequence}] ? #{pending_links.to_a.join(',')}"
         end
+      end
+    end
+
+    class Cluster
+      def initialize(sequence)
+        @sequence = sequence
+        @patterns = []
+        @solutions = []
+      end
+      attr_reader :sequence, :patterns, :solutions
+
+      class Pattern
+        def initialize(object)
+          @object = object
+          @steps = []
+        end
+        attr_reader :object, :steps
+
+        delegate :[], :size, to: :steps
+
+        def step(object, attributes = {})
+          steps << Step.new(object, attributes)
+          self
+        end
+      end
+
+      class Step
+        def initialize(object, attributes = nil)
+          @object = object
+          @attributes = attributes
+        end
+        attr_reader :object
+
+        def attributes
+          @attributes || {}
+        end
+
+        def wraps?(step)
+          return false unless object == step.object
+
+          !specialized? || @attributes == step.attributes
+        end
+
+        def specialized?
+          !@attributes.nil?
+        end
+
+        def specialize(step)
+          @attributes = step.attributes
+        end
+      end
+
+      class Solution
+        def initialize(steps)
+          @steps = steps
+          @patterns = {}
+        end
+        attr_reader :steps, :patterns
+      end
+
+      def clusterize
+        patterns.each do |pattern|
+          solution_for_pattern(pattern)
+        end
+        solutions
+      end
+
+      private
+
+      def solution_for_pattern(pattern)
+        solution = find_solution_for_pattern(pattern)
+        return solution if solution
+
+        generate_solution_for_pattern(pattern)
+      end
+
+      def find_solution_for_pattern(pattern)
+        solutions.find do |solution|
+          steps = steps_for_pattern_in_solution(solution, pattern)
+          next false unless steps
+
+          solution.patterns[pattern.object] = steps
+          true
+        end
+      end
+
+      def steps_for_pattern_in_solution(solution, pattern)
+        pattern_steps = []
+
+        solution.steps.each do |solution_step|
+          next unless solution_step.wraps?(pattern[pattern_steps.size])
+
+          solution_step.specialize(pattern[pattern_steps.size]) unless solution_step.specialized?
+          pattern_steps << solution_step
+
+          return pattern_steps if pattern_steps.size == pattern.size
+        end
+
+        nil
+      end
+
+      def generate_solution_for_pattern(pattern)
+        pattern_steps = []
+
+        solution_steps = sequence.map do |object|
+          if (pattern_steps.size < pattern.size) && (pattern[pattern_steps.size].object == object)
+            step = Step.new(object, pattern[pattern_steps.size].attributes)
+            pattern_steps << step
+            step
+          else
+            Step.new(object)
+          end
+        end
+
+        solution = Solution.new(solution_steps)
+        solution.patterns[pattern.object] = pattern_steps
+        solutions << solution
+        solution
       end
     end
   end

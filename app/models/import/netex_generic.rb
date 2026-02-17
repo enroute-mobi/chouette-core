@@ -645,7 +645,7 @@ module Import
             cache_inverted_route netex_route.id, opposite_route_code
           end
 
-          decorator.chouette_model.each do |chouette_route|
+          decorator.chouette_models.each do |chouette_route|
             route_inserter.insert chouette_route # rubocop:disable Rails/SkipsModelValidations
           end
         end
@@ -695,55 +695,162 @@ module Import
         attr_accessor :journey_patterns, :route_points, :directions, :destination_displays
 
         def chouette_line
+          return @chouette_line if @chouette_line
+
           line = lookup.lines.find(line_ref.ref) if lookup
           errors.add :line_not_found unless line
 
-          line
+          @chouette_line = line
         end
 
-        def chouette_model
-          return unless chouette_line
+        def chouette_models
+          return [] unless chouette_line
 
-          @chouette_model ||= routes_attributes.map.with_index do |route_attributes, route_index|
-            chouette_line.routes.build(route_attributes).tap do |chouette_route|
-              chouette_route.journey_patterns = chouette_journey_patterns[route_index]
+          @chouette_models ||= clusterized_stops.map do |stops_cluster|
+            decorate(
+              __getobj__,
+              RouteDecorator,
+              stops_cluster: stops_cluster,
+              chouette_line: chouette_line,
+              directions: directions,
+              destination_displays: destination_displays,
+              lookup: lookup
+            ).chouette_model
+          end
+        end
+        alias chouette_model chouette_models # so that #validate works
+
+        def route_point_refs
+          points_in_sequence
+            .sort_by { |point_on_route| point_on_route.order.to_i }
+            .map { |point_on_route| point_on_route.route_point_ref&.ref }
+        end
+
+        def route_scheduled_point_refs
+          route_point_refs.map do |route_point_ref|
+            route_scheduled_point_ref(route_point_ref)
+          end.compact
+        end
+
+        def route_scheduled_point_ref(route_point_ref)
+          route_point = route_points.find route_point_ref
+          unless route_point
+            errors.add :direction_not_found_in_netex_source
+            return nil
+          end
+
+          route_point.projections.first&.project_to_point_ref&.ref
+        end
+
+        def sequence_merger
+          return @sequence_merger if defined?(@sequence_merger)
+
+          @sequence_merger = build_sequence_merger
+        end
+
+        def build_sequence_merger
+          Sequence::Merger.new.tap do |merger|
+            netex_journey_pattern_ordered_points.each do |_, jp_points|
+              merger << jp_points.map { |jp_point| jp_point[:stop_area_id] }
+            end
+
+            route_stop_area_ids = route_scheduled_point_refs.map do |route_scheduled_point_ref|
+              stop_area_id = scheduled_stop_points[route_scheduled_point_ref].stop_area_id
+              unless stop_area_id
+                errors.add :stop_area_not_found_in_scheduled_stop_points
+                return nil
+              end
+              stop_area_id
+            end
+            merger << route_stop_area_ids
+          end
+        end
+
+        def stop_sequence
+          return @stop_sequence if defined?(@stop_sequence)
+          return nil unless sequence_merger
+
+          stop_sequence = sequence_merger.merge
+          unless stop_sequence
+            errors.add :cannot_compute_stop_sequence # TODO
+            return nil
+          end
+
+          @stop_sequence = stop_sequence
+        end
+
+        def sequence_cluster
+          return @sequence_cluster if defined?(@sequence_cluster)
+          return nil unless stop_sequence
+
+          @sequence_cluster ||= Sequence::Cluster.new(stop_sequence).tap do |cluster|
+            netex_journey_pattern_ordered_points.each do |netex_journey_pattern, jp_points|
+              pattern = Sequence::Cluster::Pattern.new(netex_journey_pattern)
+
+              jp_points.each do |jp_point|
+                pattern.step(
+                  jp_point[:stop_area_id],
+                  flexible: jp_point[:scheduled_stop_point].flexible,
+                  for_boarding: jp_point[:stop_point_in_journey_pattern].for_boarding || 'true',
+                  for_alighting: jp_point[:stop_point_in_journey_pattern].for_alighting || 'true'
+                )
+              end
+              cluster.patterns << pattern
             end
           end
         end
 
-        def chouette_journey_patterns
-          @chouette_journey_patterns ||=
-            Hash.new { |h, k| h[k] = [] }.tap do |chouette_journey_patterns|
-              next unless journey_patterns.any?
+        def clusterized_stops
+          return @clusterized_stops if defined?(@clusterized_stops)
+          return nil unless sequence_cluster
 
-              complete_scheduled_stop_points.each.with_index do |route_steps, route_index|
-                route_steps.each do |steps|
-                  netex_journey_pattern = journey_patterns.find { |jp| jp.id == steps.first.journey_pattern_id }
-                  journey_pattern_decorator = decorate(
-                    netex_journey_pattern,
-                    JourneyPatternDecorator,
-                    route_decorator: self,
-                    route_index: route_index
-                  )
-                  chouette_journey_pattern = journey_pattern_decorator.chouette_model
-                  chouette_journey_patterns[route_index] << chouette_journey_pattern
+          @clusterized_stops = sequence_cluster.clusterize
+        end
+
+        def netex_journey_pattern_ordered_points
+          return @netex_journey_pattern_ordered_points if defined?(@netex_journey_pattern_ordered_points)
+
+          @netex_journey_pattern_ordered_points = nil
+          @netex_journey_pattern_ordered_points = journey_patterns.map do |netex_journey_pattern|
+            [
+              netex_journey_pattern,
+              netex_journey_pattern.points_in_sequence.sort_by { |sp| sp.order.to_i }.map do |sp_in_jp|
+                scheduled_stop_point_id = sp_in_jp.scheduled_stop_point_ref&.ref
+                scheduled_stop_point = scheduled_stop_points[scheduled_stop_point_id]
+                # TODO: Message for CHOUETTE-4895
+                # If stop_area_id is missing, the Route / Journey Patterns import is not possible
+                stop_area_id = scheduled_stop_point&.stop_area_id
+
+                unless stop_area_id
+                  errors.add :stop_area_not_found_in_scheduled_stop_points
+                  return nil
                 end
+
+                {
+                  stop_point_in_journey_pattern: sp_in_jp,
+                  scheduled_stop_point: scheduled_stop_point,
+                  stop_area_id: stop_area_id
+                }
               end
-            end
+            ]
+          end
+        end
+      end
+
+      class RouteDecorator < ResourceDecorator
+        attr_accessor :routes_decorator, :stops_cluster, :chouette_line, :directions, :destination_displays, :lookup
+
+        def chouette_model
+          @chouette_model ||= chouette_line.routes.build(route_attributes)
         end
 
-        def routes_attributes
-          return [route_attributes] if routes_stop_points.blank?
-
-          routes_stop_points.map { |stop_points| route_attributes(stop_points) }
-        end
-
-        def route_attributes(stop_points = [])
+        def route_attributes
           {
             name: chouette_name,
             wayback: wayback,
             published_name: direction_name,
-            stop_points: stop_points
+            stop_points: stop_points,
+            journey_patterns: journey_patterns
           }.merge(chouette_attributes)
         end
 
@@ -771,118 +878,42 @@ module Import
           direction&.name
         end
 
-        def route_point_refs
-          points_in_sequence
-            .sort_by { |point_on_route| point_on_route.order.to_i }
-            .map { |point_on_route| point_on_route.route_point_ref&.ref }
-        end
-
-        def route_scheduled_point_refs
-          route_point_refs.map do |route_point_ref|
-            route_scheduled_point_ref(route_point_ref)
-          end.compact
-        end
-
-        def route_scheduled_point_ref(route_point_ref)
-          route_point = route_points.find route_point_ref
-          unless route_point
-            errors.add :direction_not_found_in_netex_source
-            return nil
-          end
-
-          route_point.projections.first&.project_to_point_ref&.ref
-        end
-
-        def sequence_merger
-          @sequence_merger ||= Sequence::Merger.new.tap do |merger|
-            journey_patterns.each do |netex_journey_pattern|
-              scheduled_point_ids =
-                netex_journey_pattern
-                  .points_in_sequence
-                  .sort_by { |stop_point_in_journey_pattern| stop_point_in_journey_pattern.order.to_i }
-                  .map do |stop_point_in_journey_pattern|
-                {
-                  element: stop_point_in_journey_pattern.scheduled_stop_point_ref&.ref,
-                  enriched_elements: {
-                    for_boarding: stop_point_in_journey_pattern.for_boarding || 'true',
-                    for_alighting: stop_point_in_journey_pattern.for_alighting || 'true'
-                  },
-                  journey_pattern_id: netex_journey_pattern.id
-                }
-              end
-
-              merger << scheduled_point_ids
-            end
-
-            if merger.empty?
-              route_scheduled_point_refs.map do |route_scheduled_point_ref|
-                {
-                  element: route_scheduled_point_ref,
-                  enriched_elements: { for_boarding: nil, for_alighting: nil }
-                }
-              end.tap do |route_scheduled_point_ids|
-                merger << route_scheduled_point_ids if route_scheduled_point_ids.present?
-              end
-            end
+        def stop_points
+          @stop_points ||= stops_cluster.steps.map.with_index do |step, index|
+            Chouette::StopPoint.new(
+              stop_area_id: step.object,
+              position: index,
+              flexible: step.attributes[:flexible],
+              for_boarding: convert_for_boarding_and_for_alighting(step.attributes[:for_boarding]),
+              for_alighting: convert_for_boarding_and_for_alighting(step.attributes[:for_alighting])
+            ).with_transient(sequence_cluster_step: step)
           end
         end
 
-        def complete_scheduled_stop_points
-          sequence_merger.merge.enriched_sequences
+        def stop_points_by_sequence_cluster_step
+          @stop_points_by_sequence_cluster_step ||= stop_points.index_by { |sp| sp.transient(:sequence_cluster_step) }
         end
 
-        # Route Stop Points ordered by #complete_scheduled_stop_points
-        def routes_stop_points
-          complete_scheduled_stop_points.map do |steps|
-            steps.flatten.map do |step|
-              route_stop_point_for_scheduled_stop_point_id(step.route_stop_points_key)
-            end.uniq
+        def journey_patterns
+          @journey_patterns ||= stops_cluster.patterns.map do |netex_journey_pattern, steps|
+            decorate(
+              netex_journey_pattern,
+              JourneyPatternDecorator,
+              route_decorator: self,
+              sequence_cluster_steps: steps
+            ).chouette_model
           end
         end
 
-        def route_stop_points_by_scheduled_stop_point_id
-          @route_stop_points_by_scheduled_stop_point_id ||= {}.tap do |by_scheduled_stop_point_id|
-            complete_scheduled_stop_points.each do |steps|
-              steps.flatten.each do |step|
-                scheduled_stop_point = scheduled_stop_points[step.scheduled_stop_point_id]
+        def convert_for_boarding_and_for_alighting(value)
+          return :forbidden if value == 'false'
 
-                if (stop_area_id = scheduled_stop_point&.stop_area_id)
-                  unless by_scheduled_stop_point_id[step.route_stop_points_key]
-                    stop_point = Chouette::StopPoint.new(
-                      stop_area_id: stop_area_id,
-                      position: step.position,
-                      for_boarding: step.for_boarding,
-                      for_alighting: step.for_alighting,
-                      flexible: scheduled_stop_point.flexible
-                    ).with_transient(scheduled_stop_point: scheduled_stop_point)
-                    by_scheduled_stop_point_id[step.route_stop_points_key] = stop_point
-                  end
-
-                  journey_pattern_stop_points_by_scheduled_stop_point_id[step.journey_pattern_stop_points_key] =
-                    by_scheduled_stop_point_id[step.route_stop_points_key]
-                else
-                  errors.add :stop_area_not_found_in_scheduled_stop_points
-                end
-              end
-            end
-          end
-        end
-
-        def route_stop_point_for_scheduled_stop_point_id(route_scheduled_stop_point_id)
-          route_stop_points_by_scheduled_stop_point_id[route_scheduled_stop_point_id]
-        end
-
-        def journey_pattern_stop_points_by_scheduled_stop_point_id
-          @journey_pattern_stop_points_by_scheduled_stop_point_id ||= {}
-        end
-
-        def journey_pattern_stop_point_for_scheduled_stop_point_id(jp_scheduled_stop_point_id)
-          journey_pattern_stop_points_by_scheduled_stop_point_id[jp_scheduled_stop_point_id]
+          :normal
         end
       end
 
       class JourneyPatternDecorator < ResourceDecorator
-        attr_accessor :route_decorator, :route_index
+        attr_accessor :route_decorator, :sequence_cluster_steps
 
         delegate :destination_displays, :lookup, to: :route_decorator
 
@@ -914,25 +945,11 @@ module Import
           destination_displays.find(destination_display_ref&.ref)
         end
 
-        def scheduled_point_ids
-          @scheduled_point_ids ||=
-            points_in_sequence
-            .sort_by { |stop_point_in_journey_pattern| stop_point_in_journey_pattern.order.to_i }
-            .map do |stop_point_in_journey_pattern|
-              [
-                id,
-                route_index,
-                stop_point_in_journey_pattern.scheduled_stop_point_ref&.ref,
-                stop_point_in_journey_pattern&.for_boarding || 'true',
-                stop_point_in_journey_pattern&.for_alighting || 'true'
-              ].join('-')
-            end
-        end
-
         def journey_pattern_stop_points
-          scheduled_point_ids.map do |scheduled_point_id|
-            stop_point = route_decorator.journey_pattern_stop_point_for_scheduled_stop_point_id(scheduled_point_id)
-            Chouette::JourneyPatternStopPoint.new stop_point: stop_point
+          sequence_cluster_steps.map do |sequence_cluster_step|
+            Chouette::JourneyPatternStopPoint.new(
+              stop_point: route_decorator.stop_points_by_sequence_cluster_step[sequence_cluster_step]
+            )
           end
         end
       end

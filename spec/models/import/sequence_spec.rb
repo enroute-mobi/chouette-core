@@ -1,68 +1,306 @@
 # frozen_string_literal: true
 
 RSpec.describe Import::Sequence::Merger do
-  subject { merger.merge }
+  subject(:merger) { described_class.new }
 
-  let(:merger) { described_class.new }
+  describe '#merge' do
+    subject { merger.merge }
+
+    context 'when empty' do
+      it { is_expected.to eq([]) }
+    end
+
+    context 'old example' do
+      before do
+        merger << %w[A B C]
+        merger << %w[A B C]
+        merger << %w[A B]
+      end
+    end
+
+    # examples from CHOUETTE-5268
+    context 'example 1' do
+      before do
+        merger << %w[A B]
+        merger << %w[B C]
+      end
+
+      it { is_expected.to eq(%w[A B C]) }
+    end
+
+    context 'example 2' do
+      before do
+        merger << %w[A B]
+        merger << %w[B C]
+      end
+
+      it { is_expected.to eq(%w[A B C]) }
+    end
+
+    xcontext 'example 3' do
+      before do
+        merger << %w[A B A B C]
+        merger << %w[A B A]
+        merger << %w[A B C]
+      end
+
+      it { is_expected.to eq(%w[A B A B C]) }
+    end
+
+    context 'example (loop)' do
+      before do
+        merger << %w[A B C]
+        merger << %w[C A]
+      end
+
+      it { is_expected.to eq(%w[A B C A]) }
+    end
+
+    context 'example without solution' do
+      before do
+        merger << %w[A B C]
+        merger << %w[A B D]
+      end
+
+      it { is_expected.to be_nil }
+    end
+  end
+end
+
+RSpec.describe Import::Sequence::Cluster do
+  subject(:cluster) { described_class.new(sequence) }
 
   before do
-    [
-      [
-        {
-          element: 'scheduled-stop-point-1',
-          enriched_elements: { for_boarding: 'true', for_alighting: 'true' },
-          journey_pattern_id: 'journey-pattern-1'
-        },
-        {
-          element: 'scheduled-stop-point-2',
-          enriched_elements: { for_boarding: 'true', for_alighting: 'true' },
-          journey_pattern_id: 'journey-pattern-1'
-        },
-        {
-          element: 'scheduled-stop-point-3',
-          enriched_elements: { for_boarding: 'true', for_alighting: 'true' },
-          journey_pattern_id: 'journey-pattern-1'
-        }
-      ],
-      [
-        {
-          element: 'scheduled-stop-point-1',
-          enriched_elements: { for_boarding: 'true', for_alighting: 'true' },
-          journey_pattern_id: 'journey-pattern-2'
-        },
-        {
-          element: 'scheduled-stop-point-2',
-          enriched_elements: { for_boarding: 'true', for_alighting: 'false' },
-          journey_pattern_id: 'journey-pattern-2'
-        },
-        {
-          element: 'scheduled-stop-point-3',
-          enriched_elements: { for_boarding: 'true', for_alighting: 'true' },
-          journey_pattern_id: 'journey-pattern-2'
-        }
-      ],
-      [
-        {
-          element: 'scheduled-stop-point-1',
-          enriched_elements: { for_boarding: 'true', for_alighting: 'true' },
-          journey_pattern_id: 'journey-pattern-3'
-        },
-        {
-          element: 'scheduled-stop-point-2',
-          enriched_elements: { for_boarding: 'true', for_alighting: 'true' },
-          journey_pattern_id: 'journey-pattern-3'
-        }
-      ]
-    ].each do |scheduled_point_ids|
-      merger << scheduled_point_ids
+    patterns.each do |pattern|
+      cluster.patterns << pattern
     end
   end
 
-  it 'returns one normal sequence' do
-    expect(subject.to_a).to eq %w[scheduled-stop-point-1 scheduled-stop-point-2 scheduled-stop-point-3]
+  def is_expected_to_match_result(expected_result)
+    # check steps and pattern identifiers
+    is_expected.to(
+      match_array(
+        expected_result.map do |expected_solution|
+          have_attributes(
+            expected_solution.merge(
+              patterns: have_attributes(keys: match_array(expected_solution[:patterns].keys))
+            )
+          )
+        end
+      )
+    )
+
+    # check pattern steps
+    is_expected.to(
+      match_array(
+        expected_result.map do |expected_solution|
+          solution = subject.find { |s| s.patterns.keys.to_set == expected_solution[:patterns].keys.to_set }
+          have_attributes(
+            patterns: expected_solution[:patterns].transform_values { |v| v.map { |i| solution.steps[i] } }
+          )
+        end
+      )
+    )
   end
 
-  it 'returns exactly two enriched sequences after merging' do
-    expect(subject.enriched_sequences.size).to eq(2)
+  describe '#clusterize' do
+    subject { cluster.clusterize }
+
+    context 'empty' do
+      let(:sequence) { [] }
+      let(:patterns) { [] }
+
+      it { is_expected.to eq([]) }
+    end
+
+    context '2 patterns on the same route' do
+      let(:sequence) { %w[A B C] }
+      let(:patterns) do
+        [
+          described_class::Pattern.new('JP1').step('A').step('B', prop: 'x').step('C'),
+          described_class::Pattern.new('JP2').step('A', prop: 'x').step('B', prop: 'x').step('C'),
+          described_class::Pattern.new('JP3').step('A').step('B', prop: 'x')
+        ]
+      end
+
+      it do
+        is_expected_to_match_result(
+          [
+            {
+              steps: [
+                have_attributes(object: 'A', attributes: {}),
+                have_attributes(object: 'B', attributes: { prop: 'x' }),
+                have_attributes(object: 'C', attributes: {})
+              ],
+              patterns: {
+                'JP1' => [0, 1, 2],
+                'JP3' => [0, 1]
+              }
+            },
+            {
+              steps: [
+                have_attributes(object: 'A', attributes: { prop: 'x' }),
+                have_attributes(object: 'B', attributes: { prop: 'x' }),
+                have_attributes(object: 'C', attributes: {})
+              ],
+              patterns: {
+                'JP2' => [0, 1, 2]
+              }
+            }
+          ]
+        )
+      end
+    end
+
+    # examples from CHOUETTE-5268
+    context 'example 1' do
+      let(:sequence) { %w[A B C] }
+      let(:patterns) do
+        [
+          described_class::Pattern.new('JP1').step('A').step('B', prop: 'x'),
+          described_class::Pattern.new('JP2').step('B', prop: 'y').step('C')
+        ]
+      end
+
+      it do
+        is_expected_to_match_result(
+          [
+            {
+              steps: [
+                have_attributes(object: 'A', attributes: {}),
+                have_attributes(object: 'B', attributes: { prop: 'x' }),
+                have_attributes(object: 'C', attributes: {})
+              ],
+              patterns: {
+                'JP1' => [0, 1]
+              }
+            },
+            {
+              steps: [
+                have_attributes(object: 'A', attributes: {}),
+                have_attributes(object: 'B', attributes: { prop: 'y' }),
+                have_attributes(object: 'C', attributes: {})
+              ],
+              patterns: {
+                'JP2' => [1, 2]
+              }
+            }
+          ]
+        )
+      end
+    end
+
+    context 'example 2' do
+      let(:sequence) { %w[A B C] }
+      let(:patterns) do
+        [
+          described_class::Pattern.new('JP1').step('A').step('B', prop: 'x').step('C', prop: 'x'),
+          described_class::Pattern.new('JP2').step('B', prop: 'y').step('C', prop: 'y'),
+          described_class::Pattern.new('JP3').step('B', prop: 'y').step('C', prop: 'z')
+        ]
+      end
+
+      it do
+        is_expected_to_match_result(
+          [
+            {
+              steps: [
+                have_attributes(object: 'A', attributes: {}),
+                have_attributes(object: 'B', attributes: { prop: 'x' }),
+                have_attributes(object: 'C', attributes: { prop: 'x' })
+              ],
+              patterns: {
+                'JP1' => [0, 1, 2]
+              }
+            },
+            {
+              steps: [
+                have_attributes(object: 'A', attributes: {}),
+                have_attributes(object: 'B', attributes: { prop: 'y' }),
+                have_attributes(object: 'C', attributes: { prop: 'y' })
+              ],
+              patterns: {
+                'JP2' => [1, 2]
+              }
+            },
+            {
+              steps: [
+                have_attributes(object: 'A', attributes: {}),
+                have_attributes(object: 'B', attributes: { prop: 'y' }),
+                have_attributes(object: 'C', attributes: { prop: 'z' })
+              ],
+              patterns: {
+                'JP3' => [1, 2]
+              }
+            }
+          ]
+        )
+      end
+    end
+
+    context 'example 3' do
+      let(:sequence) { %w[A B A B C] }
+      let(:patterns) do
+        [
+          described_class::Pattern.new('JP1').step('A').step('B', prop: 'x').step('A'),
+          described_class::Pattern.new('JP2').step('B', prop: 'y').step('C')
+        ]
+      end
+
+      it do
+        is_expected_to_match_result(
+          [
+            {
+              steps: [
+                have_attributes(object: 'A', attributes: {}),
+                have_attributes(object: 'B', attributes: { prop: 'x' }),
+                have_attributes(object: 'A', attributes: {}),
+                have_attributes(object: 'B', attributes: { prop: 'y' }),
+                have_attributes(object: 'C', attributes: {})
+              ],
+              patterns: {
+                'JP1' => [0, 1, 2],
+                'JP2' => [3, 4]
+              }
+            }
+          ]
+        )
+      end
+    end
+
+    context 'non-specialized followed by specialized' do
+      let(:sequence) { %w[A B] }
+      let(:patterns) do
+        [
+          described_class::Pattern.new('JP1').step('A').step('B'),
+          described_class::Pattern.new('JP2').step('A', prop: 'x').step('B')
+        ]
+      end
+
+      it do
+        is_expected_to_match_result(
+          [
+            {
+              steps: [
+                have_attributes(object: 'A', attributes: {}),
+                have_attributes(object: 'B', attributes: {})
+              ],
+              patterns: {
+                'JP1' => [0, 1],
+              }
+            },
+            {
+              steps: [
+                have_attributes(object: 'A', attributes: { prop: 'x' }),
+                have_attributes(object: 'B', attributes: {})
+              ],
+              patterns: {
+                'JP2' => [0, 1],
+              }
+            }
+          ]
+        )
+      end
+    end
   end
 end

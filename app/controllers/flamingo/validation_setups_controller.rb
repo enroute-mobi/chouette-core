@@ -28,7 +28,7 @@ module Flamingo
     end
 
     def flamingo_validation_setup_params
-      params.require(:flamingo_validation_setup).permit(:name, :ruleset, :include_schema, :schema_version, :token)
+      params.require(:flamingo_validation_setup).permit(:name, :ruleset, :include_schema, :schema_version, :ignored_schema_rules, :token)
     end
 
     def resource_url

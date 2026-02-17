@@ -13,6 +13,8 @@ en:
       sections:
         identification: "Identification"
         setup: "Setup"
+      hints:
+        ignored_schema_rules: "Comma-separated list of XSD rule identifiers to ignore during validation (e.g., xsd-1824,xsd-1877)"
     search_no_results: "No Flamingo Validation Setup matches your query"
   activerecord:
     models:
@@ -26,4 +28,5 @@ en:
         ruleset: "Ruleset"
         include_schema: "Include schema"
         schema_version: "Schema version"
+        ignored_schema_rules: "Ignored Schema Rules"
         token: "Connection token"

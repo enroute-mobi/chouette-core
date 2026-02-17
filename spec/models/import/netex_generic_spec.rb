@@ -2044,3 +2044,79 @@ RSpec.describe Import::NetexGeneric::RouteJourneyPatterns::Sequence::Merger do
     expect(subject.enriched_sequences.size).to eq(2)
   end
 end
+
+RSpec.describe Import::NetexGeneric::VehicleJourneys::Decorator::PassingTimeDecorator do
+  subject { described_class.new(passing_time).chouette_model }
+
+  context 'when passing time has arrival and departure time' do
+    let(:passing_time) do
+      Netex::TimetabledPassingTime.new(
+        arrival_time: '10:00:00',
+        departure_time: '10:05:00'
+      )
+    end
+
+    it do
+      is_expected.to(
+        have_attributes(
+          arrival_time_of_day: TimeOfDay.parse('10:00:00'),
+          departure_time_of_day: TimeOfDay.parse('10:05:00')
+        )
+      )
+    end
+
+    context 'with departure day offset' do
+      let(:passing_time) do
+        Netex::TimetabledPassingTime.new(
+          arrival_time: '23:55:00',
+          departure_time: '00:05:00',
+          departure_day_offset: '1'
+        )
+      end
+
+      it do
+        is_expected.to(
+          have_attributes(
+            arrival_time_of_day: TimeOfDay.parse('23:55:00'),
+            departure_time_of_day: TimeOfDay.parse('00:05:00', day_offset: 1)
+          )
+        )
+      end
+    end
+  end
+
+  context 'when passing time has only departure time' do
+    let(:passing_time) do
+      Netex::TimetabledPassingTime.new(
+        departure_time: '23:40:00'
+      )
+    end
+
+    it do
+      is_expected.to(
+        have_attributes(
+          arrival_time_of_day: TimeOfDay.parse('23:40:00'),
+          departure_time_of_day: TimeOfDay.parse('23:40:00')
+        )
+      )
+    end
+
+    context 'with departure day offset' do
+      let(:passing_time) do
+        Netex::TimetabledPassingTime.new(
+          departure_time: '00:05:00',
+          departure_day_offset: 1
+        )
+      end
+
+      it do
+        is_expected.to(
+          have_attributes(
+            arrival_time_of_day: TimeOfDay.parse('00:05:00', day_offset: 1),
+            departure_time_of_day: TimeOfDay.parse('00:05:00', day_offset: 1)
+          )
+        )
+      end
+    end
+  end
+end

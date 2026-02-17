@@ -2049,7 +2049,7 @@ RSpec.describe Import::NetexGeneric::VehicleJourneys::Decorator::PassingTimeDeco
   subject { described_class.new(passing_time).chouette_model }
 
   context 'when passing time has arrival and departure time' do
-    let(:passing_time) do 
+    let(:passing_time) do
       Netex::TimetabledPassingTime.new(
         arrival_time: '10:00:00',
         departure_time: '10:05:00'

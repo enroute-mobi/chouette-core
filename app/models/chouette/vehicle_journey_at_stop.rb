@@ -86,8 +86,10 @@ module Chouette
       @departure_time_of_day = time_of_day
       @departure_local_time_of_day = nil
 
-      self.departure_time = time_of_day&.to_hms
-      self.departure_day_offset = time_of_day&.day_offset
+      return unless time_of_day
+
+      self.departure_time = time_of_day.to_hms
+      self.departure_day_offset = time_of_day.day_offset
     end
 
     def arrival_time_of_day
@@ -103,8 +105,10 @@ module Chouette
       @arrival_time_of_day = time_of_day
       @arrival_local_time_of_day = nil
 
-      self.arrival_time = time_of_day&.to_hms
-      self.arrival_day_offset = time_of_day&.day_offset
+      return unless time_of_day
+
+      self.arrival_time = time_of_day.to_hms
+      self.arrival_day_offset = time_of_day.day_offset
     end
 
     attribute :earliest_departure_time_of_day, TimeOfDay::Type::SecondOffset.new

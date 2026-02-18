@@ -62,8 +62,8 @@ module Import
           RouteJourneyPatterns,
           TimeTables,
           ReferentialNotices,
-          VehicleJourneyStopAssignments,
-          VehicleJourneys
+          VehicleJourneys,
+          VehicleJourneyStopAssignments
         ].each do |part_class|
           part = part(part_class)
           # TODO: could be manage by Import::Part constructor .. but requires several changes
@@ -1490,6 +1490,34 @@ module Import
         def vehicle_journey_footnote_relationships
           manage_netex_notice_assignments
           @vehicle_journey_footnote_relationships
+        end
+
+        def manage_netex_notice_assignments
+          return if @line_notice_ids && @vehicle_journey_footnote_relationships
+
+          line_notice_ids = []
+          vehicle_journey_footnote_relationships = []
+          notice_refs.each do |notice_ref|
+            ref = notice_ref.ref
+            next unless ref
+
+            footnote_id = index_footnotes[ref]
+            if footnote_id
+              vehicle_journey_footnote_relationships << Chouette::VehicleJourneyFootnoteRelationship.new(
+                footnote_id: footnote_id
+              )
+            else
+              line_notice = lookup.line_notices.find(ref) if lookup
+              if line_notice
+                line_notice_ids << line_notice.id
+              else
+                errors.add :notice_not_found
+              end
+            end
+          end
+
+          @line_notice_ids = line_notice_ids
+          @vehicle_journey_footnote_relationships = vehicle_journey_footnote_relationships
         end
 
         def vehicle_journey_attributes

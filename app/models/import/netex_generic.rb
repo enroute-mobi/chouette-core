@@ -64,7 +64,10 @@ module Import
           VehicleJourneys,
           VehicleJourneyStopAssignments
         ].each do |part_class|
-          part(part_class).import!
+          part = part(part_class)
+          # TODO: could be manage by Import::Part constructor .. but requires several changes
+          part.referential = referential
+          part.import!
         end
 
         referential.ready!
@@ -573,6 +576,8 @@ module Import
     module ReferentialPart
       extend ActiveSupport::Concern
 
+      attr_accessor :referential
+
       included do
         delegate :referential_inserter, to: :import
       end
@@ -591,7 +596,15 @@ module Import
 
       def on_save
         lambda do |model|
-          cache_journey_pattern model if model.is_a?(Chouette::JourneyPattern)
+          case model
+          when Chouette::Route
+            model.stop_points.each do |stop_point|
+              scheduled_stop_point = stop_point.transient(:scheduled_stop_point)
+              scheduled_stop_point.stop_point_ids << stop_point.id
+            end
+          when Chouette::JourneyPattern
+            cache_journey_pattern model
+          end
         end
       end
 
@@ -840,7 +853,7 @@ module Import
                       for_boarding: step.for_boarding,
                       for_alighting: step.for_alighting,
                       flexible: scheduled_stop_point.flexible
-                    )
+                    ).with_transient(scheduled_stop_point: scheduled_stop_point)
                     by_scheduled_stop_point_id[step.route_stop_points_key] = stop_point
                   end
 
@@ -1521,7 +1534,7 @@ module Import
 
       def import!
         netex_source.vehicle_journey_stop_assignments.each do |stop_assignment|
-          decorated_assignment = Decorator.new(stop_assignment, scheduled_stop_points, stop_areas: lookup.stop_areas)
+          decorated_assignment = decorate(stop_assignment, referential: referential)
 
           unless decorated_assignment.valid?
             create_message :ancestor_associated_route_not_found
@@ -1530,26 +1543,20 @@ module Import
           end
 
           decorated_assignment.vehicle_journey_at_stops.find_each do |vehicle_journey_at_stop|
-            vehicle_journey_at_stop.update stop_area_id: decorated_assignment.stop_area&.id
+            vehicle_journey_at_stop.update stop_area_id: decorated_assignment.stop_area.id
           end
         end
       end
 
-      class Decorator < SimpleDelegator
-        def initialize(stop_assignment, scheduled_stop_points, stop_areas: nil)
-          super stop_assignment
-
-          @scheduled_stop_points = scheduled_stop_points
-          @stop_areas = stop_areas
-        end
-        attr_reader :scheduled_stop_points, :stop_areas
+      class Decorator < ResourceDecorator
+        attr_accessor :referential
 
         def stop_area_code
           (quay_ref || stop_splace_ref)&.ref
         end
 
         def stop_area
-          stop_areas.find(stop_area_code)
+          lookup.stop_areas.find(stop_area_code)
         end
 
         def scheduled_stop_point
@@ -1559,18 +1566,18 @@ module Import
         end
 
         def valid?
-          stop_area.parent_id == scheduled_stop_point.stop_area_id
+          scheduled_stop_point.present? &&
+            stop_area.parent_id == scheduled_stop_point.stop_area_id
         end
 
-        def vehicle_journey_ids
+        def vehicle_journey_codes
           vehicle_journey_refs.map(&:ref)
         end
 
         def vehicle_journey_at_stops
-          Chouette::VehicleJourneyAtStop.joins(:vehicle_journey).where(
-            'stop_point_id' => scheduled_stop_point.stop_point_id,
-            'vehicle_journeys.published_journey_identifier' => vehicle_journey_ids
-          )
+          referential.vehicle_journey_at_stops.joins(:vehicle_journey)
+            .merge(referential.vehicle_journeys.by_code(code_space, vehicle_journey_codes))
+            .where(stop_point_id: scheduled_stop_point.stop_point_ids)
         end
       end
     end
@@ -1584,6 +1591,10 @@ module Import
         @id = id
         @stop_area_id = stop_area_id
         @flexible = flexible
+      end
+
+      def stop_point_ids
+        @stop_point_ids ||= []
       end
 
       attr_accessor :id, :stop_area_id, :flexible

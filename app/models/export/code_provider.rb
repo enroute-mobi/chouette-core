@@ -13,7 +13,7 @@ module Export
     COLLECTIONS = %w[
       stop_areas flexible_stop_areas point_of_interests vehicle_journeys lines companies entrances contracts
       vehicle_journey_at_stops journey_patterns routes time_tables fare_validities booking_arrangements
-      routing_constraint_zones networks fare_zones fare_products stop_points shapes line_notices
+      contracts footnotes routing_constraint_zones networks fare_zones fare_products stop_points shapes line_notices
     ].freeze
 
     # Returns unique code for the given model (StopArea, etc)
@@ -67,6 +67,8 @@ module Export
         def create(collection, code_provider:, code_space: nil)
           if code_space && collection.model == Chouette::StopPoint
             StopPoints.new(collection, code_provider: code_provider)
+          elsif collection.model == Chouette::Footnote
+            Footnotes.new(collection, code_space: code_space, code_provider: code_provider)
           elsif code_space && collection.model.in?(older_models)
             Older.new(collection, code_space: code_space)
           else
@@ -127,13 +129,13 @@ module Export
 
         def query_with_code
           <<~SQL
-          select id_with_default_attribute.id, COALESCE(code, default_attribute) as code
-          from (#{unique_collection.select(:id, "#{model_class.table_name}.#{default_attribute}::varchar as default_attribute").to_sql}) id_with_default_attribute
-          left join (
-            select distinct on (code) id, code from (#{code_query.to_sql}) id_with_code
-          ) id_with_uniq_code
-          on (id_with_uniq_code.id = id_with_default_attribute.id)
-        SQL
+            select id_with_default_attribute.id, COALESCE(code, default_attribute) as code
+            from (#{unique_collection.select(:id, "#{model_class.table_name}.#{default_attribute}::varchar as default_attribute").to_sql}) id_with_default_attribute
+            left join (
+              select distinct on (code) id, code from (#{code_query.to_sql}) id_with_code
+            ) id_with_uniq_code
+            on (id_with_uniq_code.id = id_with_default_attribute.id)
+          SQL
         end
 
         def index_with_codes
@@ -162,14 +164,14 @@ module Export
         end
 
         def with_registration_number_query
-          collection.select(:id, "registration_number as code")
+          collection.select(:id, 'registration_number as code')
         end
 
         def code_query
-          unless default_code_space? && model_with_registration_number?
-            with_code_query
-          else
+          if default_code_space? && model_with_registration_number?
             with_registration_number_query
+          else
+            with_code_query
           end
         end
 
@@ -178,7 +180,7 @@ module Export
         end
 
         def model_with_registration_number?
-          model_class.column_names.include?("registration_number")
+          model_class.column_names.include?('registration_number')
         end
 
         def default_code_space?
@@ -196,10 +198,53 @@ module Export
 
         def index
           stop_points.select(:id, :route_id, :position).each_row.map do |attributes|
-            route_code = code_provider.routes.code(attributes["route_id"])
-            stop_point_code = Code::Value.merge(route_code, attributes["position"], type: 'StopPoint')
-            [ attributes["id"], stop_point_code ]
+            route_code = code_provider.routes.code(attributes['route_id'])
+            stop_point_code = Code::Value.merge(route_code, attributes['position'], type: 'StopPoint')
+            [attributes['id'], stop_point_code]
           end.to_h
+        end
+      end
+
+      class Footnotes < Default
+        def initialize(footnotes, code_space:, code_provider:)
+          super(footnotes, code_space:)
+          @code_provider = code_provider
+        end
+        attr_reader :code_provider
+
+        def index
+          footnotes_with_codes = super
+
+          footnotes_without_codes = collection.where.not(id: footnotes_with_codes.keys)
+                                              .select(:id, :line_id, :data_source_ref).each_row.map do |attributes|
+            [attributes['id'], footnote_code(attributes)]
+          end.to_h
+
+          footnotes_without_codes.merge(footnotes_with_codes)
+        end
+
+        def index_without_codes
+          {}
+        end
+
+        def query_with_code
+          with_code_query
+        end
+
+        private
+
+        def footnote_code(attributes)
+          line_code = code_provider.lines.code(attributes['line_id'])
+
+          if line_code
+            Code::Value.merge(line_code, attributes['id'].to_s, type: 'Notice', local: objectid_local(attributes))
+          else
+            Netex::ObjectId.new(nil, objectid_local(attributes), 'Notice', attributes['id'].to_s, 'LOC')
+          end
+        end
+
+        def objectid_local(attributes)
+          attributes['data_source_ref'] || 'chouette'
         end
       end
 

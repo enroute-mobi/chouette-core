@@ -28,6 +28,7 @@ RSpec.describe ReferentialDecorator, type: %i[helper decorator] do
             [
               [current_workbench, object],
               workbench_referential_time_tables_path(context[:workbench], object),
+              workbench_referential_footnotes_path(context[:workbench], object),
               workbench_referential_service_counts_path(current_workbench, object)
             ]
           )
@@ -38,11 +39,20 @@ RSpec.describe ReferentialDecorator, type: %i[helper decorator] do
         let(:current_user) { build_stubbed :allmighty_user }
 
         it 'has only default actions' do
-          expect_action_link_elements.to match_array(["Consulter", "Calendriers", "Courses quotidiennes", "Dupliquer"])
+          expect_action_link_elements.to match_array(
+            [
+              'Consulter',
+              'Calendriers',
+              'Notes de bas de page',
+              'Courses quotidiennes',
+              'Dupliquer'
+            ]
+          )
           expect_action_link_hrefs.to match_array(
             [
               [current_workbench, object],
               workbench_referential_time_tables_path(current_workbench, object),
+              workbench_referential_footnotes_path(context[:workbench], object),
               workbench_referential_service_counts_path(current_workbench, object),
               new_workbench_referential_path(current_workbench, from: object.id)
             ]
@@ -62,6 +72,7 @@ RSpec.describe ReferentialDecorator, type: %i[helper decorator] do
                 'Consulter',
                 'Editer ce jeu de données',
                 'Calendriers',
+                'Notes de bas de page',
                 'Courses quotidiennes',
                 'Dupliquer',
                 'Contrôler',
@@ -74,6 +85,7 @@ RSpec.describe ReferentialDecorator, type: %i[helper decorator] do
                 [current_workbench, object],
                 [:edit, current_workbench, object],
                 workbench_referential_time_tables_path(current_workbench, object),
+                workbench_referential_footnotes_path(context[:workbench], object),
                 workbench_referential_service_counts_path(current_workbench, object),
                 new_workbench_referential_path(current_workbench, from: object.id),
                 new_workbench_control_list_run_path(current_workbench, referential_id: object.id),
@@ -92,6 +104,7 @@ RSpec.describe ReferentialDecorator, type: %i[helper decorator] do
                 'Courses',
                 'Editer ce jeu de données',
                 'Calendriers',
+                'Notes de bas de page',
                 'Courses quotidiennes',
                 'Dupliquer',
                 'Contrôler',
@@ -105,6 +118,7 @@ RSpec.describe ReferentialDecorator, type: %i[helper decorator] do
                 [:edit, current_workbench, object],
                 workbench_referential_vehicle_journeys_path(current_workbench, object),
                 workbench_referential_time_tables_path(current_workbench, object),
+                workbench_referential_footnotes_path(context[:workbench], object),
                 workbench_referential_service_counts_path(current_workbench, object),
                 new_workbench_referential_path(current_workbench, from: object.id),
                 new_workbench_control_list_run_path(current_workbench, referential_id: object.id),
@@ -175,6 +189,7 @@ RSpec.describe ReferentialDecorator, type: %i[helper decorator] do
             [
               [current_workbench, object],
               workbench_referential_time_tables_path(current_workbench, object),
+              workbench_referential_footnotes_path(context[:workbench], object),
               workbench_referential_service_counts_path(current_workbench, object)
             ]
           )
@@ -185,11 +200,20 @@ RSpec.describe ReferentialDecorator, type: %i[helper decorator] do
         let(:current_user) { build_stubbed :allmighty_user }
 
         it 'has only default actions' do
-          expect_action_link_elements.to match_array(["Consulter", "Calendriers", "Courses quotidiennes", "Dupliquer"])
+          expect_action_link_elements.to match_array(
+            [
+              'Consulter',
+              'Calendriers',
+              'Notes de bas de page',
+              'Courses quotidiennes',
+              'Dupliquer'
+            ]
+          )
           expect_action_link_hrefs.to match_array(
             [
               [current_workbench, object],
               workbench_referential_time_tables_path(current_workbench, object),
+              workbench_referential_footnotes_path(context[:workbench], object),
               workbench_referential_service_counts_path(current_workbench, object),
               new_workbench_referential_path(current_workbench, from: object.id)
             ]
@@ -206,6 +230,7 @@ RSpec.describe ReferentialDecorator, type: %i[helper decorator] do
             [
               'Consulter',
               'Calendriers',
+              'Notes de bas de page',
               'Courses quotidiennes',
               'Dupliquer',
               'Désarchiver',
@@ -216,6 +241,7 @@ RSpec.describe ReferentialDecorator, type: %i[helper decorator] do
             [
               [current_workbench, object],
               workbench_referential_time_tables_path(current_workbench, object),
+              workbench_referential_footnotes_path(context[:workbench], object),
               workbench_referential_service_counts_path(current_workbench, object),
               new_workbench_referential_path(current_workbench, from: object.id),
               unarchive_workbench_referential_path(current_workbench, object),
@@ -239,6 +265,7 @@ RSpec.describe ReferentialDecorator, type: %i[helper decorator] do
             [
               [current_workbench, object],
               workbench_referential_time_tables_path(current_workbench, object),
+              workbench_referential_footnotes_path(context[:workbench], object),
               workbench_referential_service_counts_path(current_workbench, object)
             ]
           )
@@ -249,11 +276,19 @@ RSpec.describe ReferentialDecorator, type: %i[helper decorator] do
         let(:current_user) { build_stubbed :allmighty_user }
 
         it 'has only default actions' do
-          expect_action_link_elements.to match_array(["Consulter", "Calendriers", "Courses quotidiennes"])
+          expect_action_link_elements.to match_array(
+            [
+              'Consulter',
+              'Calendriers',
+              'Notes de bas de page',
+              'Courses quotidiennes'
+            ]
+          )
           expect_action_link_hrefs.to match_array(
             [
               [current_workbench, object],
               workbench_referential_time_tables_path(current_workbench, object),
+              workbench_referential_footnotes_path(context[:workbench], object),
               workbench_referential_service_counts_path(current_workbench, object)
             ]
           )
@@ -265,11 +300,20 @@ RSpec.describe ReferentialDecorator, type: %i[helper decorator] do
         let(:current_workbench) { referential_workbench }
 
         it 'has only default actions' do
-          expect_action_link_elements.to match_array(["Consulter", "Calendriers", "Courses quotidiennes", "Contrôler"])
+          expect_action_link_elements.to match_array(
+            [
+              'Consulter',
+              'Calendriers',
+              'Notes de bas de page',
+              'Courses quotidiennes',
+              'Contrôler'
+            ]
+          )
           expect_action_link_hrefs.to match_array(
             [
               [current_workbench, object],
               workbench_referential_time_tables_path(current_workbench, object),
+              workbench_referential_footnotes_path(context[:workbench], object),
               workbench_referential_service_counts_path(current_workbench, object),
               new_workbench_control_list_run_path(current_workbench, referential_id: object.id)
             ]

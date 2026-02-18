@@ -147,7 +147,7 @@ class RouteVehicleJourneysController < Chouette::ReferentialController
 
   def load_footnotes
     @footnotes =
-      route.line.footnotes.map { |f| f.attributes.slice(*%w[label id code]) } + \
+      (@referential.footnotes.where(line_id: nil) + route.line.footnotes).map { |f| f.attributes.slice(*%w[label id code]) } + \
       route.line.line_notices.map do |line_notice|
         {
           code: line_notice.title,

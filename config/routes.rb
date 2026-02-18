@@ -68,12 +68,7 @@ Rails.application.routes.draw do # rubocop:disable Metrics/BlockLength
       end
 
       resources :lines, controller: 'referential_lines', only: %i[show] do # rubocop:disable Metrics/BlockLength
-        resources :footnotes do
-          collection do
-            get 'edit_all'
-            patch 'update_all'
-          end
-        end
+        resources :footnotes
 
         resources :routes do # rubocop:disable Metrics/BlockLength
           member do
@@ -121,6 +116,9 @@ Rails.application.routes.draw do # rubocop:disable Metrics/BlockLength
           get 'month', defaults: { format: :json }
         end
       end
+
+      resources :footnotes
+
       resources :clean_ups
 
       scope module: 'redirect', only: :show do

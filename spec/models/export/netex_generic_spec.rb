@@ -1604,6 +1604,7 @@ RSpec.describe Export::NetexGeneric do
     let(:vehicle_journey_at_stops) { vehicle_journeys.flat_map(&:vehicle_journey_at_stops) }
 
     let(:referential) { context.referential }
+
     let(:first_time_table) { context.time_table(:first) }
     let(:second_time_table) { context.time_table(:second) }
 
@@ -1618,6 +1619,8 @@ RSpec.describe Export::NetexGeneric do
     end
 
     describe Export::NetexGeneric::VehicleJourneys do
+      before { referential.switch }
+
       let(:export_scope) do
         Export::Scope::Builder.new(
           double(vehicle_journeys: referential.vehicle_journeys, time_tables: selected_time_tables)
@@ -1631,8 +1634,6 @@ RSpec.describe Export::NetexGeneric do
           .where(id: [first_vehicle_journey.id, second_vehicle_journey.id, third_vehicle_journey.id])
       end
       let(:expected_time_table_ids) { selected_time_tables.map(&:id) }
-
-      before { referential.switch }
 
       context 'when there are 2 selected time tables (first, second) in export scope' do
         let(:selected_time_tables) do
@@ -1682,6 +1683,65 @@ RSpec.describe Export::NetexGeneric do
           scoped_vehicle_journeys.each do |vj|
             expect(vj.timetable_ids.count).to eq 3
             expect(vj.timetable_ids).to match_array(expected_time_table_ids)
+          end
+        end
+      end
+
+      context 'When a Vehicle Journey has footnotes' do
+        let(:vehicle_journey_with_footnotes) { vehicle_journeys.first }
+        let(:line) { referential.lines.first }
+        let(:first_footnote) do
+          referential.footnotes.create(label: 'First footnote', line: line, data_source_ref: 'test')
+        end
+        let(:second_footnote) do
+          referential.footnotes.create(label: 'Second footnote', line: line, data_source_ref: 'test')
+        end
+
+        let(:selected_time_tables) do
+          referential.time_tables.where(id: [first_time_table.id, second_time_table.id])
+        end
+
+        before do
+          referential.vehicle_journey_footnote_relationships.create(
+            [
+              {
+                vehicle_journey: vehicle_journey_with_footnotes,
+                footnote: first_footnote
+              },
+              {
+                vehicle_journey: vehicle_journey_with_footnotes,
+                footnote: second_footnote
+              }
+            ]
+          )
+        end
+
+        let(:vehicle_journey) { part.vehicle_journeys.find_by(id: vehicle_journey_with_footnotes.id) }
+
+        it { expect(vehicle_journey.footnote_ids).to match_array([first_footnote.id, second_footnote.id]) }
+
+        describe Export::NetexGeneric::VehicleJourneys::Decorator do
+          let(:notice_assignments) do
+            described_class.new(vehicle_journey, code_provider: code_provider).notice_assignments
+          end
+          let(:vehicle_journey) { part.vehicle_journeys.find_by(id: vehicle_journey_with_footnotes.id) }
+          let(:vehicle_journey_technical) { Netex::ObjectId.parse(vehicle_journey.objectid).technical }
+
+          let(:code_provider) { Export::CodeProvider.new referential }
+
+          it 'should create notice assignments' do
+            notice_assignment_ids = notice_assignments.map(&:id)
+            expected_notice_assignment_ids = vehicle_journey.footnotes.map do |footnote|
+              "chouette:NoticeAssignment:#{vehicle_journey_technical}-#{footnote.id}:LOC"
+            end
+
+            notice_refs = notice_assignments.map { |n| n.notice_ref.ref.to_s }
+            expected_notice_refs = vehicle_journey.footnotes.map do |footnote|
+              code_provider.footnotes.code(footnote.id).to_s
+            end
+
+            expect(notice_assignment_ids).to match_array expected_notice_assignment_ids
+            expect(notice_refs).to match_array expected_notice_refs
           end
         end
       end

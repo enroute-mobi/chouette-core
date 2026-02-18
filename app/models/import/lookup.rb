@@ -28,6 +28,10 @@ module Import
         @companies ||= ExternalCollection.new(internal_companies)
       end
 
+      def line_notices
+        @line_notices ||= ExternalCollection.new(internal_line_notices)
+      end
+
       def booking_arrangements
         @booking_arrangements ||= ExternalCollection.new(internal_booking_arrangements)
       end
@@ -83,6 +87,13 @@ module Import
           Collection.new
                     .add(finder_class.new(line_provider.companies, source: :provider))
                     .add(finder_class.new(line_referential.companies, source: :workgroup))
+      end
+
+      def internal_line_notices
+        @internal_line_notices ||=
+          Collection.new
+                    .add(finder_class.new(line_provider.line_notices, source: :provider))
+                    .add(finder_class.new(line_referential.line_notices, source: :workgroup))
       end
 
       def internal_booking_arrangements

@@ -1,0 +1,13 @@
+= simple_form_for([@workbench, @referential, @line, @footnote].compact, html: { class: 'form-horizontal', id: 'footnote_form' }, wrapper: :horizontal_form) do |f|
+  .row
+    .col-lg-12
+      = f.input :code
+      = f.input :label, as: :text
+      - unless @line
+        = f.input :line_id, as: :ajax_select, collection: [f.object.line].compact, include_blank: true, label_method: :display_name, label: Chouette::Line.model_name.human, input_html: { 'data-url': lines_workbench_referential_autocomplete_index_path(@workbench, @referential, format: :json), class: 'w-full' }
+
+  .separator.section_separator
+  = render 'codes/form', form: f
+
+  = cancel_button
+  = f.button :submit, t('actions.submit'), class: 'btn btn-default formSubmitr', form: 'footnote_form'

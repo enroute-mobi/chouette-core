@@ -155,7 +155,7 @@ module Export
 
       delegate :codes, :contracts, to: :workgroup
 
-      delegate :vehicle_journeys, :vehicle_journey_at_stops, :journey_patterns, :stop_points,
+      delegate :vehicle_journeys, :vehicle_journey_at_stops, :journey_patterns, :stop_points, :footnotes,
                :time_tables, :routes, :referential_codes, :routing_constraint_zones, to: :referential
 
       def organisations
@@ -217,6 +217,10 @@ module Export
 
       def vehicle_journeys
         current_scope.vehicle_journeys.scheduled(final_scope.time_tables)
+      end
+
+      def footnotes
+        current_scope.footnotes.joins(:vehicle_journeys).where('vehicle_journeys.id' => vehicle_journeys)
       end
 
       delegate :vehicle_journeys, to: :final_scope, prefix: true
@@ -327,7 +331,9 @@ module Export
       end
 
       def line_notices
-        current_scope.line_notices.with_lines(lines)
+        current_scope.line_notices.with_lines(lines).or(
+          current_scope.line_notices.with_vehicle_journeys(vehicle_journeys)
+        )
       end
 
       private

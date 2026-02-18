@@ -82,6 +82,10 @@ RSpec.describe Merge do
             end
           end
 
+          3.times do
+            FactoryBot.create(:footnote, line: nil)
+          end
+
           shared_time_table = FactoryBot.create :time_table
 
           distant_future_table = FactoryBot.create :time_table, dates_count: 0, periods_count: 0, comment: "distant_future_table"

@@ -17,7 +17,7 @@
       .col-lg-12.col-md-12.col-sm-12.col-xs-12.definition-list
         .dl-head= @line_notice.human_attribute_name(:content)
         .dl-body
-          p= @line_notice.content.presence || '-'
+          = simple_format(@line_notice.content.presence || '-')
 
     .row
       .col-lg-12.definition-list

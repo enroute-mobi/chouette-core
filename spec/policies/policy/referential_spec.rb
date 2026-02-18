@@ -27,8 +27,43 @@ RSpec.describe Policy::Referential, type: :policy do
 
     it { is_expected.to be_falsy }
 
+    context 'with Chouette::Route' do
+      let(:resource_class) { Chouette::Route }
+
+      it { applies_strategy(Policy::Strategy::Referential) }
+      it { does_not_apply_strategy(Policy::Strategy::Workbench) }
+      it { applies_strategy(Policy::Strategy::Permission, :create, Chouette::Route) }
+
+      it { is_expected.to be_truthy }
+    end
+
+    context 'with Chouette::RoutingConstraintZone' do
+      let(:resource_class) { Chouette::RoutingConstraintZone }
+
+      it { applies_strategy(Policy::Strategy::Referential) }
+      it { does_not_apply_strategy(Policy::Strategy::Workbench) }
+      it { applies_strategy(Policy::Strategy::Permission, :create, Chouette::RoutingConstraintZone) }
+
+      it { is_expected.to be_truthy }
+    end
+
     context 'Chouette::TimeTable' do
       let(:resource_class) { Chouette::TimeTable }
+
+      it { applies_strategy(Policy::Strategy::Referential) }
+      it { does_not_apply_strategy(Policy::Strategy::Workbench) }
+      it { applies_strategy(Policy::Strategy::Permission, :create, Chouette::TimeTable) }
+
+      it { is_expected.to be_truthy }
+    end
+
+    context 'Chouette::Footnote' do
+      let(:resource_class) { Chouette::Footnote }
+
+      it { applies_strategy(Policy::Strategy::Referential) }
+      it { does_not_apply_strategy(Policy::Strategy::Workbench) }
+      it { applies_strategy(Policy::Strategy::Permission, :create, Chouette::Footnote) }
+
       it { is_expected.to be_truthy }
     end
   end

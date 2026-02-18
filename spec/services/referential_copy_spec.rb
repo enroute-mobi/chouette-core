@@ -111,21 +111,6 @@ RSpec.describe ReferentialCopy do
     end
   end
 
-  context "#copy_footnotes" do
-    let!(:footnote){
-      referential.switch do
-        create(:footnote, line: line_referential.lines.first)
-      end
-    }
-
-    it "should copy the footnotes" do
-      referential.switch
-      expect{ referential_copy.send(:copy_footnotes, footnote.line.reload) }.to change{ target.switch{ Chouette::Footnote.count } }.by 1
-      new_footnote = target.switch{ Chouette::Footnote.last }
-      expect(referential_copy.send(:clean_attributes_for_copy, footnote)).to eq referential_copy.send(:clean_attributes_for_copy, new_footnote)
-    end
-  end
-
   context "#copy_route" do
     let!(:route) do
       referential.switch do
@@ -298,6 +283,47 @@ RSpec.describe ReferentialCopy do
 
   end
 
+  describe 'Footnote copy' do
+    let(:context) do
+      Chouette.create do
+        line :line
+
+        referential :source, lines: %i[line] do
+          route line: :line do
+            vehicle_journey :vehicle_journey
+          end
+          footnote :with_line_and_vehicle_journey, line: :line, vehicle_journeys: %i[vehicle_journey]
+          footnote :without_line_with_vehicle_journey, line: nil, vehicle_journeys: %i[vehicle_journey]
+          footnote :with_line_without_vehicle_journey, line: :line
+          footnote :without_line_and_vehicle_journey, line: nil
+        end
+
+        referential :target, with_metadatas: false, archived_at: Time.now
+      end
+    end
+
+    it 'copies only footnotes associated to vehicle journeys' do
+      expect { referential_copy.copy }.to change { target.switch { target.footnotes.count } }.from(0).to(2)
+
+      target.switch
+      target_vehicle_journey = Chouette::VehicleJourney.first
+      expect(Chouette::Footnote.all).to contain_exactly(
+        have_attributes(
+          code: context.footnote(:with_line_and_vehicle_journey).code,
+          label: context.footnote(:with_line_and_vehicle_journey).label,
+          line_id: context.line(:line).id,
+          vehicle_journeys: [target_vehicle_journey]
+        ),
+        have_attributes(
+          code: context.footnote(:without_line_with_vehicle_journey).code,
+          label: context.footnote(:without_line_with_vehicle_journey).label,
+          line_id: nil,
+          vehicle_journeys: [target_vehicle_journey]
+        )
+      )
+    end
+  end
+
   describe "TimeTable copy" do
 
     let(:context) do
@@ -333,24 +359,20 @@ RSpec.describe ReferentialCopy do
     end
 
     describe "the TimeTable in target referential" do
-
-      subject { target.switch { target.time_tables.first } }
-
-      let(:source_time_table) { source.switch { source.time_tables.first } }
-
       before { referential_copy.copy }
-      around { |example| target.switch { example.run } }
 
       it "has the same period(s)" do
-        expect(subject.periods.map(&:range)).to eq(source_time_table.periods.map(&:range))
+        expect(target.switch { target.time_tables.first.periods.map(&:range) }).to(
+          eq(source.switch { source.time_tables.first.periods.map(&:range) })
+        )
       end
 
       it "has the same date(s)" do
-        expect(subject.dates.map(&:date)).to eq(source_time_table.dates.map(&:date))
+        expect(target.switch { target.time_tables.first.dates.map(&:date) }).to(
+          eq(source.switch { source.time_tables.first.dates.map(&:date) })
+        )
       end
-
     end
-
   end
 
   describe 'ServiceCount copy' do
@@ -381,13 +403,10 @@ RSpec.describe ReferentialCopy do
     end
 
     describe 'the ServiceCount in target referential' do
-
       subject { target.switch { target.service_counts.first } }
 
       before { referential_copy.copy }
-      around { |example| target.switch { example.run } }
 
-      let(:source_journey_pattern) { source.switch { source.journey_patterns.first } }
       let(:target_journey_pattern) { target.switch { target.journey_patterns.first } }
 
       it { is_expected.to_not be_nil }

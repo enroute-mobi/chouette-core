@@ -679,8 +679,17 @@ crumb :referential_line do |workbench, referential, line|
 end
 
 crumb :footnotes do |workbench, referential, line|
-  link I18n.t('footnotes.index.title'), workbench_referential_line_footnotes_path(workbench, referential, line)
-  parent :referential_line, workbench, referential, line
+  link I18n.t('footnotes.index.title'), [workbench, referential, line, :footnotes].compact
+  if line
+    parent :referential_line, workbench, referential, line
+  else
+    parent :referential, workbench, referential
+  end
+end
+
+crumb :footnote do |workbench, referential, line, footnote|
+  link footnote.code, [workbench, referential, line, footnote].compact
+  parent :footnotes, workbench, referential, line
 end
 
 crumb :routing_constraint_zones do |workbench, referential, line|

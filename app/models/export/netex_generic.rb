@@ -196,7 +196,7 @@ class Export::NetexGeneric < Export::Base
       end
 
       # Export StopPoints before Routes to detect local references
-      part_classes.push(StopPoints, Routes, RoutingConstraintZones, JourneyPatterns, TimeTables, VehicleJourneyStopAssignments, Organisations, PointOfInterests)
+      part_classes.push(StopPoints, Routes, RoutingConstraintZones, JourneyPatterns, TimeTables, VehicleJourneyStopAssignments, Organisations, PointOfInterests, Notices)
 
       # Because of Exportable#processed side-effects, these 4 parts are the last ones
       part_classes.push(VehicleJourneysCache, VehicleJourneyAtStops, VehicleJourneys, FareZones)
@@ -1039,6 +1039,31 @@ class Export::NetexGeneric < Export::Base
         Netex::Reference.new(network_code, type: 'NetworkRef') if network_code
       end
 
+    end
+  end
+
+  class Notices < Part
+    delegate :footnotes, to: :export_scope
+
+    def perform
+      footnotes.includes(:codes).find_each do |footnote|
+        target << decorate(footnote).netex_resource
+      end
+    end
+
+    class Decorator < ModelDecorator
+      def netex_attributes
+        super.merge(
+          text: label,
+          public_code: code,
+          type_of_notice_ref: Netex::Reference.new('ServiceJourneyNotice', type: String),
+          key_list: netex_alternate_identifiers
+        )
+      end
+
+      def netex_resource
+        Netex::Notice.new netex_attributes
+      end
     end
   end
 
@@ -2099,7 +2124,8 @@ class Export::NetexGeneric < Export::Base
         scope = vehicle_journeys.joins(:route).select(selected)
 
         scope = scope.left_joins(:codes).select(vehicle_journey_codes).group(group_by)
-        scope.joins(:vehicle_journey_time_table_relationships).select(time_table_ids)
+        scope = scope.joins(:vehicle_journey_time_table_relationships).select(time_table_ids)
+        scope.left_joins(:footnotes).select(footnote_ids)
       end
 
       private
@@ -2131,6 +2157,12 @@ class Export::NetexGeneric < Export::Base
         SQL
       end
 
+      def footnote_ids
+        <<~SQL
+          array_agg(DISTINCT footnotes.id) AS footnote_ids
+        SQL
+      end
+
       def group_by
         <<~SQL
           vehicle_journeys.id,
@@ -2150,7 +2182,8 @@ class Export::NetexGeneric < Export::Base
           journey_pattern_ref: journey_pattern_ref,
           public_code: published_journey_identifier,
           day_types: day_types,
-          key_list: netex_alternate_identifiers
+          key_list: netex_alternate_identifiers,
+          notice_assignments: notice_assignments
         )
       end
 
@@ -2194,6 +2227,24 @@ class Export::NetexGeneric < Export::Base
         timetable_codes.map do |code|
           Netex::Reference.new(code, type: 'DayTypeRef')
         end
+      end
+
+      def notice_assignments
+        line_notice_assignments = line_notice_ids.map.with_index do |line_notice_id, order|
+          notice_assignment(code_provider.line_notices.code(line_notice_id), order)
+        end
+
+        footnote_notice_assignments = footnote_ids.map.with_index do |footnote_id, order|
+          notice_assignment(code_provider.footnotes.code(footnote_id), order + line_notice_ids.size)
+        end
+
+        line_notice_assignments + footnote_notice_assignments
+      end
+
+      def notice_assignment(code, order)
+        reference = Netex::Reference.new(code, type: 'Notice')
+        notice_assignment_id = netex_identifier.merge((order + 1).to_s, type: 'NoticeAssignment').to_s
+        Netex::NoticeAssignment.new(id: notice_assignment_id, notice_ref: reference, order: order)
       end
     end
   end

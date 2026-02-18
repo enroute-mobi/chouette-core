@@ -70,6 +70,8 @@ class ReferentialInserter
     journey_patterns
     stop_points
     journey_pattern_stop_points
+    footnotes
+    vehicle_journey_footnote_relationships
   }.freeze
 
   COLLECTION_ALIASES.each do |method_name|

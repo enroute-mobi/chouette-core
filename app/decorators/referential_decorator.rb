@@ -14,6 +14,11 @@ class ReferentialDecorator < Af83::Decorator
       l.href { h.workbench_referential_time_tables_path(context[:workbench], object) }
     end
 
+    instance_decorator.action_link secondary: :show, policy: :browse do |l|
+      l.content { I18n.t('footnotes.index.title') }
+      l.href { h.workbench_referential_footnotes_path(context[:workbench], object) }
+    end
+
     instance_decorator.action_link secondary: :show, if: -> { !object.data_frozen? } do |l|
       l.content { I18n.t('service_counts.index.title') }
       l.href { h.workbench_referential_service_counts_path(context[:workbench], object) }

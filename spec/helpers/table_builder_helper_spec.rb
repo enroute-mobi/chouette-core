@@ -74,6 +74,7 @@ describe TableBuilderHelper, type: :helper do
                         </ul>
                         <ul class="other">
                             <li class=""><a href="/workbenches/#{workbench.id}/referentials/#{referential.id}/time_tables">Calendriers</a></li>
+                            <li class=""><a href="/workbenches/#{workbench.id}/referentials/#{referential.id}/footnotes">Notes de bas de page</a></li>
                             <li class=""><a href="/workbenches/#{workbench.id}/referentials/#{referential.id}/service_counts">Courses quotidiennes</a></li>
                             <li class=""><a href="/workbenches/#{workbench.id}/referentials/new?from=#{referential.id}">Dupliquer</a></li>
                             <li class=""><a href="/workbenches/#{workbench.id}/control_list_runs/new?referential_id=#{referential.id}">Contrôler</a></li>

@@ -4,7 +4,7 @@ describe Chouette::Footnote, type: :model do
 
   before { context.referential.switch }
 
-  it { is_expected.to belong_to(:line).required }
+  it { is_expected.to belong_to(:line).required(false) }
 
   describe '#data_source_ref' do
     subject { footnote.data_source_ref }
@@ -22,7 +22,7 @@ describe Chouette::Footnote, type: :model do
 
     context '#checksum_attributes' do
       it 'should return code and label' do
-        expected = [subject.code, subject.label]
+        expected = [subject.code, subject.label, subject.line_id]
         expect(subject.checksum_attributes).to include(*expected)
       end
 

@@ -1,6 +1,3 @@
-.card.mb-3
-  .card-body
-    h5.card-title= widget.name
-    ul.list-group
-      - (widget.options['items'] || []).each do |item|
-        li.list-group-item= item
+ul.list-group
+  - (widget.options['items'] || []).each do |item|
+    li.list-group-item= item

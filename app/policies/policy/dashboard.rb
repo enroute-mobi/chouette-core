@@ -5,6 +5,8 @@ module Policy
     authorize_by Strategy::Workbench
     authorize_by Strategy::Permission
 
+    alias edit_layout? update?
+
     protected
 
     def _update?

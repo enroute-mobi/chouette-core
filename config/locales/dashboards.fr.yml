@@ -3,6 +3,8 @@ fr:
     actions:
       new: Ajouter un Tableau de bord
       edit: Modifier le Tableau de bord
+      edit_layout: Modifier la disposition
+      back_to_dashboard: "Retour au tableau de bord"
       destroy: Supprimer le Tableau de bord
       destroy_confirm: "Etes vous sûr de vouloir supprimer ce Tableau de bord ?"
     index:
@@ -10,6 +12,11 @@ fr:
       preview: "Prévisualisation du Tableau de bord"
     show:
       title: Tableau de bord %{name}
+    edit_layout:
+      title: "Modifier la disposition - %{name}"
+      back_to_dashboard: "Retour au tableau de bord"
+      edit_layout: "Modifier la disposition"
+      drag_and_drop_instructions: "Glissez-déposez les widgets pour réorganiser votre tableau de bord"
     edit:
       title: Modifier le Tableau de bord %{name}
     new:

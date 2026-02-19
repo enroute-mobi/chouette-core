@@ -1,10 +1,13 @@
-.grid.grid-cols-1.md:grid-cols-2.lg:grid-cols-3.gap-6
+.grid-stack data-dashboard-id=@dashboard.id data-workbench-id=@dashboard.workbench_id
   - if @dashboard.widgets.any?
     - @dashboard.widgets.each do |widget|
-      .bg-white.overflow-hidden.rounded-xl.border-2.border-dashed.border-gray-400.hover:border-enroute-chouette-primary.hover:border-solid.hover:bg-light-blue.transition-all.duration-150.ease-out
-        .px-4.py-5.sm:p-6
-          h3.text-base.font-semibold.text-light-grey-2.mb-3.uppercase.tracking-wide= widget.name
-          = render_widget(widget)
+      .grid-stack-item data-widget-id=widget.id gs-x=widget.x gs-y=widget.y gs-w=widget.width gs-h=widget.height
+        .grid-stack-item-content
+          .content-container
+            .widget-drag-handle
+              h3= widget.name
+            .widget-content
+              = render_widget(widget)
   - else
     .col-span-full.text-center.py-12
       .bg-gray-50.p-8.rounded-lg
@@ -12,6 +15,4 @@
         h3.mt-2.text-sm.font-medium.text-gray-900= t('dashboards.widgets.no_widgets')
         p.mt-1.text-sm.text-gray-500= t('dashboards.widgets.get_started')
 
-/ - if editable && workbench
-/   .mt-4
-/     = link_to t('dashboards.actions.edit'), edit_workbench_dashboard_path(workbench, dashboard), class: 'btn btn-primary'
+- javascript_additional_packs 'dashboards/view'

@@ -2,6 +2,9 @@
 
 class DashboardsController < Chouette::WorkbenchController
   defaults resource_class: Dashboard
+  respond_to :json, only: :update
+
+  custom_actions resource: :edit_layout
 
   def index
     index! do |format|
@@ -39,7 +42,11 @@ class DashboardsController < Chouette::WorkbenchController
       widgets_attributes: [
         :id, 
         :name, 
-        :widget_type,  
+        :widget_type,
+        :x,
+        :y, 
+        :width,
+        :height,
         :_destroy,
         { options: {} }
       ]

@@ -39,6 +39,7 @@ en:
       status: State
       overlapping: Overlapping
       overlapping_tips: You can archive or delete these DataSets before restarting a new import
+      all_messages: "All messages"
       netex:
         table_title: "Status of analyzed files"
         table_explanation: "When calendriers.xml and/or commun.xml are not imported, then all lines file are not processed."

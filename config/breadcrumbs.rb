@@ -406,6 +406,11 @@ crumb :import do |imports_parent, import|
   parent :imports, imports_parent
 end
 
+crumb :import_messages do |imports_parent, import|
+  link I18n.t('import_messages.index.title'), [imports_parent, import, :messages]
+  parent :import, imports_parent, import
+end
+
 crumb :exports do |export_parent|
   link I18n.t('exports.index.title'),[export_parent, :exports]
   parent export_parent

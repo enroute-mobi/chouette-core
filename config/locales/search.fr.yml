@@ -72,6 +72,8 @@ fr:
         route_id: "Itinéraire"
         publication_setup_id: "Publications Automatiques"
         export_type: "Type d'export"
+        file: "Nom du fichier"
+        criticity: "Criticité"
         chart:
           group_by_attribute:
             sub_type:

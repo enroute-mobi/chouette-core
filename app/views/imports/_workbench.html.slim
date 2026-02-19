@@ -26,8 +26,10 @@
 
 - if @imported_resources.present?
     .definition-list.w-full
-      .dl-head
-        = t('imports.show.imported_resources')
+      .dl-head.w-full.mb-2
+        .flex.justify-between.items-center
+          = t('imports.show.imported_resources')
+          = link_to t('imports.show.all_messages'), workbench_import_messages_path(@workbench, @import.children.first), class: 'btn btn-sm btn-primary'
     - @imported_resources.each do |import_resource|
       = render 'imports/import_resource', import_resource: import_resource, messages_base_url: workgroup_context? ? workgroup_import_import_resource_import_messages_path(@workgroup, @import, import_resource) : workbench_import_import_resource_import_messages_path(@workbench, @import, import_resource)
 

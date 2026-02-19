@@ -1,0 +1,6 @@
+= simple_search_for @search, workbench_import_messages_path(@parent, resource) do |f|
+  = f.row
+    = f.text
+  = f.row
+    = f.input :criticity, as: :autocomplete_select, collection: @search.candidate_criticities.map { |c| [t("import_messages.#{c}"), c] }, input_html: { multiple: true, width: 2 }
+    = f.input :file

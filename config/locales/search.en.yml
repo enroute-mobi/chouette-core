@@ -71,6 +71,8 @@ en:
         route_id: "Route"
         publication_setup_id: "Publication Setup"
         export_type: "Export Type"
+        file: "Filename"
+        criticity: "Criticity"
         chart:
           group_by_attribute:
             sub_type:

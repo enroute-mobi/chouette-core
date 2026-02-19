@@ -864,7 +864,6 @@ module Import
           def journey_pattern_stop_points
             points_in_sequence.map do |stop_point_in_journey_pattern|
               stop_point = stop_point(order: stop_point_in_journey_pattern.order.to_i)
-              Rails.logger.debug "Add StopPoint #{stop_point.inspect}"
               Chouette::JourneyPatternStopPoint.new stop_point: stop_point
             end
           end
@@ -1591,6 +1590,7 @@ module Import
           decorated_assignment = decorate(stop_assignment, referential: referential)
 
           unless decorated_assignment.valid?
+            Rails.logger.info { "Invalid VehicleJourneyStopAssignment: #{decorated_assignment.inspect} "}
             create_message :ancestor_associated_route_not_found
 
             next

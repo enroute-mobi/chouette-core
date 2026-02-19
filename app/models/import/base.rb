@@ -252,6 +252,10 @@ class Import::Base < ApplicationModel
     @referential_lookup ||= Import::Lookup.referential(self)
   end
 
+  def resource_status
+    resources.map(&:status).uniq
+  end
+
   protected
 
   # Expected and used file extension

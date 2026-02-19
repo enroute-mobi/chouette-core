@@ -1675,9 +1675,13 @@ module Import
           @scheduled_stop_point ||= scheduled_stop_points[scheduled_stop_point_ref.ref]
         end
 
+        def candidate_scheduled_stop_point_targets
+          [ stop_area.parent_id, stop_area.referent&.parent_id ].compact
+        end
+
         def valid?
           scheduled_stop_point.present? &&
-            stop_area.parent_id == scheduled_stop_point.stop_area_id
+            candidate_scheduled_stop_point_targets.include?(scheduled_stop_point.stop_area_id)
         end
 
         def vehicle_journey_codes

@@ -29,7 +29,8 @@ RSpec.describe TimeOfDay do
       ['17:00:00', TimeOfDay.new(17)],
       ['00:00:00', TimeOfDay.new(0)],
       ['23:59:59', TimeOfDay.new(23,59,59)],
-      ['08:05:02', TimeOfDay.new(8,5,2)]
+      ['08:05:02', TimeOfDay.new(8,5,2)],
+      ['08:05:02.123456', TimeOfDay.new(8,5,2)]
     ].each do |definition, expected|
       it "creates #{expected.inspect} from '#{definition}'" do
         expect(TimeOfDay.parse(definition)).to eq(expected)

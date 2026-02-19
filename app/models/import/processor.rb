@@ -3,7 +3,7 @@
 module Import
   class Processor < ::Processor
     def after
-      perform_processing_rules(after_processing_rules, after_referentials) unless skip_after_import?
+      super unless skip_after_import?
     end
 
     protected
@@ -17,6 +17,8 @@ module Import
     end
 
     def skip_after_import?
+      # We should check operation for Import::NetexGeneric and resources for Import::Gtfs and Import::Neptune
+      # Import::Gtfs and Import::Neptune don't update their statuses before processor begin
       operation.failed? || operation.resource_status.include?(:ERROR)
     end
 

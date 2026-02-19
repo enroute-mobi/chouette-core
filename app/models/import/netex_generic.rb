@@ -600,8 +600,9 @@ module Import
           case model
           when Chouette::Route
             model.stop_points.each do |stop_point|
-              scheduled_stop_point = stop_point.transient(:scheduled_stop_point)
-              scheduled_stop_point.stop_point_ids << stop_point.id
+              stop_point.transient(:scheduled_stop_point).each do |scheduled_stop_point|
+                scheduled_stop_point.stop_point_ids << stop_point.id
+              end
             end
           when Chouette::JourneyPattern
             cache_journey_pattern model
@@ -793,7 +794,9 @@ module Import
                   flexible: jp_point[:scheduled_stop_point].flexible,
                   for_boarding: jp_point[:stop_point_in_journey_pattern].for_boarding || 'true',
                   for_alighting: jp_point[:stop_point_in_journey_pattern].for_alighting || 'true'
-                )
+                ) do |step|
+                  step.transient(:scheduled_stop_point, jp_point[:scheduled_stop_point])
+                end
               end
               cluster.patterns << pattern
             end
@@ -886,7 +889,7 @@ module Import
               flexible: step.attributes[:flexible],
               for_boarding: convert_for_boarding_and_for_alighting(step.attributes[:for_boarding]),
               for_alighting: convert_for_boarding_and_for_alighting(step.attributes[:for_alighting])
-            ).with_transient(sequence_cluster_step: step)
+            ).with_transient(step.transients.merge(sequence_cluster_step: step))
           end
         end
 

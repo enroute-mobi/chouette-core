@@ -150,6 +150,50 @@ RSpec.describe Import::Sequence::Cluster do
           ]
         )
       end
+
+      context 'with transients' do
+        let(:sequence) { %w[A B C] }
+        let(:patterns) do
+          [
+            described_class::Pattern.new('JP1').step('A') { |s| s.transient(:opt1, 'v1'); s.transient(:opt2, 'v1') }
+                                               .step('C'),
+            described_class::Pattern.new('JP3').step('A') { |s| s.transient(:opt1, 'v1'); s.transient(:opt2, 'v2') }
+                                               .step('B') { |s| s.transient(:opt3, 'v1') }
+                                               .step('C')
+          ]
+        end
+
+        it do
+          is_expected_to_match_result(
+            [
+              {
+                steps: [
+                  have_attributes(
+                    object: 'A',
+                    attributes: {},
+                    transients: {
+                      opt1: match_array(%w[v1]),
+                      opt2: match_array(%w[v1 v2])
+                    }
+                  ),
+                  have_attributes(
+                    object: 'B',
+                    attributes: {},
+                    transients: {
+                      opt3: match_array(%w[v1])
+                    }
+                  ),
+                  have_attributes(object: 'C', attributes: {}, transients: {})
+                ],
+                patterns: {
+                  'JP1' => [0, 2],
+                  'JP3' => [0, 1, 2]
+                }
+              }
+            ]
+          )
+        end
+      end
     end
 
     # examples from CHOUETTE-5268

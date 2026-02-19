@@ -180,7 +180,9 @@ module Import
         delegate :[], :size, to: :steps
 
         def step(object, attributes = {})
-          steps << Step.new(object, attributes)
+          step = Step.new(object, attributes)
+          yield step if block_given?
+          steps << step
           self
         end
       end
@@ -189,25 +191,39 @@ module Import
         def initialize(object, attributes = nil)
           @object = object
           @attributes = attributes
+          @transients = Hash.new { |h, k| h[k] = Set.new }
         end
-        attr_reader :object
+        attr_reader :object, :transients
 
         def attributes
           @attributes || {}
         end
 
+        def transient(name, value)
+          transients[name] << value
+        end
+
         def wraps?(step)
           return false unless object == step.object
 
-          !specialized? || @attributes == step.attributes
+          @attributes.nil? || @attributes == step.attributes
         end
 
-        def specialized?
-          !@attributes.nil?
+        def wrap!(step)
+          @attributes = step.attributes.dup if @attributes.nil?
+          step.transients.each do |k, vv|
+            if transients[k]
+              transients[k].merge(vv)
+            else
+              transients[k] = vv.dup
+            end
+          end
         end
 
-        def specialize(step)
-          @attributes = step.attributes
+        def specialized_dup
+          self.class.new(object, @attributes&.dup || {}).tap do |step|
+            step.instance_variable_set(:@transients, @transients.transform_values(&:dup))
+          end
         end
       end
 
@@ -251,7 +267,7 @@ module Import
         solution.steps.each do |solution_step|
           next unless solution_step.wraps?(pattern[pattern_steps.size])
 
-          solution_step.specialize(pattern[pattern_steps.size]) unless solution_step.specialized?
+          solution_step.wrap!(pattern[pattern_steps.size])
           pattern_steps << solution_step
 
           return pattern_steps if pattern_steps.size == pattern.size
@@ -265,7 +281,7 @@ module Import
 
         solution_steps = sequence.map do |object|
           if (pattern_steps.size < pattern.size) && (pattern[pattern_steps.size].object == object)
-            step = Step.new(object, pattern[pattern_steps.size].attributes)
+            step = pattern[pattern_steps.size].specialized_dup
             pattern_steps << step
             step
           else

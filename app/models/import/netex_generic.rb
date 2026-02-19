@@ -715,11 +715,6 @@ module Import
           points_in_sequence.empty? && !stop_points.empty?
         end
 
-        def validate
-          chouette_model
-          super
-        end
-
         def chouette_line
           line = lookup.lines.find(line_ref.ref) if lookup
           errors.add :line_not_found unless line
@@ -884,7 +879,7 @@ module Import
 
           super
         end
-        
+
         def chouette_line
           return @chouette_line if @chouette_line
 

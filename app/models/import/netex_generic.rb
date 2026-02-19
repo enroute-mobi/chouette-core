@@ -890,7 +890,7 @@ module Import
         end
 
         def chouette_models
-          return [] unless chouette_line
+          return [] unless chouette_line && clusterized_stops
 
           @chouette_models ||= clusterized_stops.map do |stops_cluster|
             decorate(

@@ -636,6 +636,21 @@ module Import
           )
 
           unless decorator.valid?
+            hacked_decorator = decorate(
+              netex_route,
+              HackedOrderDecorator,
+              journey_patterns: netex_journey_patterns,
+              route_points: route_points,
+              directions: directions,
+              destination_displays: destination_displays
+            )
+            if hacked_decorator.enabled?
+              Rails.logger.info "HackedOrderDecorator enabled for Route #{netex_route.id}"
+              decorator = hacked_decorator
+            end
+          end
+
+          unless decorator.valid?
             decorator.errors.each { |error| create_message error }
             Rails.logger.debug { "Errors found by Decorator for #{netex_route.inspect}: #{decorator.errors.inspect}" }
 
@@ -692,8 +707,178 @@ module Import
 
       delegate :route_points, :directions, :destination_displays, to: :netex_source
 
+      class HackedOrderDecorator < ResourceDecorator
+        attr_accessor :journey_patterns, :route_points, :directions, :destination_displays
+
+        def enabled?
+          ## TODO Could test order presence
+          points_in_sequence.empty? && !stop_points.empty?
+        end
+
+        def chouette_line
+          line = lookup.lines.find(line_ref.ref) if lookup
+          errors.add :line_not_found unless line
+
+          line
+        end
+
+        def chouette_models
+          [ chouette_model ]
+        end
+
+        def chouette_model
+          return unless chouette_line
+
+          @chouette_model ||= chouette_line.routes.build(route_attributes).tap do |chouette_route|
+            chouette_route.journey_patterns = chouette_journey_patterns
+          end
+        end
+
+        def route_attributes
+          {
+            name: chouette_name,
+            wayback: wayback,
+            published_name: direction_name,
+            stop_points: stop_points
+          }.merge(chouette_attributes)
+        end
+
+        def wayback
+          if Chouette::Route.wayback.values.include?(direction_type)
+            direction_type
+          else
+            # Should be a warning
+            # errors.add :direction_type_not_found
+            :outbound
+          end
+        end
+
+        def direction
+          direction_id = direction_ref&.ref
+          return unless direction_id
+
+          direction = directions.find direction_id
+          errors.add :direction_not_found_in_netex_source unless direction
+
+          direction
+        end
+
+        def direction_name
+          direction&.name
+        end
+
+        def stop_points
+          @stop_points ||= compute_stop_points
+        end
+
+        def stop_point(order:)
+          stop_points.find { |s| s.position == order }
+        end
+
+        def for_boarding_for_alighting(raw_value, default: "normal")
+          return default if raw_value.blank?
+          raw_value == 'true' ? 'normal' : 'forbidden'
+        end
+
+        def compute_stop_points
+          stop_points = []
+
+          journey_patterns.each do |netex_journey_pattern|
+            netex_journey_pattern.points_in_sequence.each do |stop_point_in_journey_pattern|
+              order = stop_point_in_journey_pattern.order.to_i
+
+              scheduled_stop_point_ref = stop_point_in_journey_pattern.scheduled_stop_point_ref&.ref
+              scheduled_stop_point = scheduled_stop_points[scheduled_stop_point_ref]
+
+              stop_point_attributes = {
+                'stop_area_id' => scheduled_stop_point.stop_area_id,
+                'position' => order,
+                'for_boarding' => for_boarding_for_alighting(stop_point_in_journey_pattern.for_boarding),
+                'for_alighting' => for_boarding_for_alighting(stop_point_in_journey_pattern.for_alighting),
+                'flexible' => scheduled_stop_point.flexible
+              }
+
+              if existing_stop_point = stop_points[order]
+                unless existing_stop_point.attributes >= stop_point_attributes
+                  Rails.logger.debug "Invalid StopPoint: #{[existing_stop_point.attributes, stop_point_attributes].inspect}"
+                  errors.add :invalid_stop_point_in_journey_pattern
+                  return []
+                end
+
+                existing_stop_point.transient(:scheduled_stop_point) << scheduled_stop_point
+              else
+                stop_point = Chouette::StopPoint.new(stop_point_attributes).with_transient(scheduled_stop_point: [scheduled_stop_point])
+                stop_points[order] = stop_point
+              end
+            end
+          end
+
+          stop_points.compact!
+
+          stop_points
+        end
+
+        def chouette_journey_patterns
+          @chouette_journey_patterns ||= journey_patterns.map do |netex_journey_pattern|
+            decorate(
+              netex_journey_pattern,
+              JourneyPatternDecorator,
+              route_decorator: self
+            ).chouette_model
+          end
+        end
+
+        class JourneyPatternDecorator < ResourceDecorator
+          attr_accessor :route_decorator
+
+          delegate :destination_displays, :lookup, :stop_point, to: :route_decorator
+
+          def chouette_model
+            @chouette_model ||= Chouette::JourneyPattern.new journey_pattern_attributes
+          end
+
+          def journey_pattern_attributes
+            {
+              # TODO: We should not use the JourneyPattern#registration_number
+              registration_number: id,
+              name: chouette_name,
+              published_name: published_name,
+              journey_pattern_stop_points: journey_pattern_stop_points,
+              booking_arrangement_id: booking_arrangement_id
+            }.merge(chouette_attributes)
+          end
+
+          def booking_arrangement_id
+            netex_booking_arrangement_id = booking_arrangements&.first&.ref
+            lookup.booking_arrangements.find_id netex_booking_arrangement_id
+          end
+
+          def published_name
+            destination_display&.front_text
+          end
+
+          def destination_display
+            destination_displays.find(destination_display_ref&.ref)
+          end
+
+          def journey_pattern_stop_points
+            points_in_sequence.map do |stop_point_in_journey_pattern|
+              stop_point = stop_point(order: stop_point_in_journey_pattern.order.to_i)
+              Rails.logger.debug "Add StopPoint #{stop_point.inspect}"
+              Chouette::JourneyPatternStopPoint.new stop_point: stop_point
+            end
+          end
+        end
+      end
+
       class Decorator < ResourceDecorator
         attr_accessor :journey_patterns, :route_points, :directions, :destination_displays
+
+        def validate
+          stop_sequence
+
+          super
+        end
 
         def chouette_line
           return @chouette_line if @chouette_line
@@ -705,7 +890,7 @@ module Import
         end
 
         def chouette_models
-          return [] unless chouette_line
+          return [] unless chouette_line && clusterized_stops
 
           @chouette_models ||= clusterized_stops.map do |stops_cluster|
             decorate(

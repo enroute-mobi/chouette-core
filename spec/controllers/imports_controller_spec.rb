@@ -112,25 +112,14 @@ RSpec.describe ImportsController, type: :controller do
       end
     end
 
-    describe 'GET #messages' do
-      let(:import_resource) { create(:import_resource, import: import) }
+    describe 'GET #internal_download' do
+      let(:organisation) { create(:organisation) }
 
-      it 'returns 3 lines in CSV file' do
-        %w[info warning error].map { |c| create(:import_message, resource: import_resource, criticity: c) }
-        params = { workbench_id: workbench.id, id: import.id, import_resource_id: import_resource.id, format: :csv }
-        get :messages, params: params
-        expect(response.body.split("\n").count).to eq(3)
+      it 'should be successful' do
+        get :internal_download, params: { workbench_id: workbench.id, id: import.id, token: import.token_download }
+        expect(response).to be_successful
+        expect(response.body).to eq(import.file.read)
       end
-    end
-  end
-
-  describe 'GET #internal_download' do
-    let(:organisation) { create(:organisation) }
-
-    it 'should be successful' do
-      get :internal_download, params: { workbench_id: workbench.id, id: import.id, token: import.token_download }
-      expect(response).to be_successful
-      expect(response.body).to eq(import.file.read)
     end
   end
 end

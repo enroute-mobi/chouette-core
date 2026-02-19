@@ -13,7 +13,7 @@ class OperationRunFacade
   def criticity_span(criticity)
     color_map = {
       info: 'green',
-      warning: 'gold',
+      warning: 'orange',
       error: 'red'
     }
 
@@ -37,24 +37,51 @@ class OperationRunFacade
     )
 
     columns = [
-      TableBuilderHelper::Column.new(key: :message, attribute: :full_message, sortable: false),
-      TableBuilderHelper::Column.new(
-        key: :source,
-        attribute: lambda do |message|
-          if message.is_a?(Import::Message)
-            '-'
-          else
-            source_link = source_link(message)
-            link_to_if_table(source_link.present?, '<span class="fa fa-link"></span>'.html_safe, source_link)
-          end
-        end,
-        sortable: false
-      )
+      TableBuilderHelper::Column.new(key: :message, attribute: :full_message, sortable: false)
     ]
 
+    columns.concat(import_columns) if resource.is_a?(Import::Base)
+    columns << source_column unless resource.is_a?(Import::Base)
     columns.unshift(criticity) if resource.is_a?(Macro::List::Run) || resource.is_a?(Import::Base)
 
     [columns, { cls: 'table' }]
+  end
+
+  private
+
+  def import_columns
+    [
+      TableBuilderHelper::Column.new(
+        key: :filename,
+        attribute: ->(message) { message.is_a?(Import::Message) && message.resource_attributes&.dig('filename') || '-' },
+        sortable: false
+      ),
+      TableBuilderHelper::Column.new(
+        key: :line,
+        attribute: ->(message) { message.is_a?(Import::Message) && message.resource_attributes&.dig('line_number') || '-' },
+        sortable: false
+      ),
+      TableBuilderHelper::Column.new(
+        key: :column,
+        attribute: ->(message) { message.is_a?(Import::Message) && message.resource_attributes&.dig('column_number') || '-' },
+        sortable: false
+      )
+    ]
+  end
+
+  def source_column
+    TableBuilderHelper::Column.new(
+      key: :source,
+      attribute: lambda do |message|
+        if message.is_a?(Import::Message)
+          '-'
+        else
+          source_link = source_link(message)
+          link_to_if_table(source_link.present?, '<span class="fa fa-link"></span>'.html_safe, source_link)
+        end
+      end,
+      sortable: false
+    )
   end
 
   def source_link(message)

@@ -1520,13 +1520,17 @@ module Import
           @vehicle_journey_footnote_relationships = vehicle_journey_footnote_relationships
         end
 
+        def published_journey_identifier
+          public_code || id
+        end
+
         def vehicle_journey_attributes
           {
             route_id: route_id,
             journey_pattern_id: journey_pattern_id,
             published_journey_name: name,
-            published_journey_identifier: id,
             line_notice_ids: line_notice_ids,
+            published_journey_identifier: published_journey_identifier,
             vehicle_journey_at_stops: vehicle_journey_at_stops,
             vehicle_journey_time_table_relationships: vehicle_journey_time_table_relationships,
             vehicle_journey_footnote_relationships: vehicle_journey_footnote_relationships
@@ -1952,6 +1956,7 @@ module Import
         source.transformers << ::Netex::Transformer::Indexer.new(::Netex::JourneyPattern, by: :route_ref)
         source.transformers << ::Netex::Transformer::Indexer.new(::Netex::DayTypeAssignment, by: :day_type_ref)
         source.transformers << ::Netex::Transformer::FakeArrivalDayOffset.new
+        source.transformers << ::Netex::Transformer::DefinePublicCodeFromTrainNumber.new
 
         source.read(local_file.path, type: file_extension)
       end

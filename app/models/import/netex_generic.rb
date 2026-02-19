@@ -1578,8 +1578,6 @@ module Import
           end
 
           def arrival_time_of_day
-            return nil if first?
-
             if arrival_time
               time_of_day arrival_time, arrival_day_offset
             else

@@ -1648,7 +1648,7 @@ RSpec.describe Import::NetexGeneric do
 
       let(:expected_attributes) do
         [
-          { stop_area: 'Quay 1', arrival_time: nil, departure_time: '23:50' },
+          { stop_area: 'Quay 1', arrival_time: '23:50', departure_time: '23:50' },
           { stop_area: 'Quay 2', arrival_time: '23:55', departure_time: '00:05' },
           { stop_area: 'Quay 3', arrival_time: '00:15', departure_time: nil }
         ]

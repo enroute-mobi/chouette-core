@@ -758,7 +758,7 @@ module Import
           return unless direction_id
 
           direction = directions.find direction_id
-          errors.add :direction_not_found_in_netex_source unless direction
+          errors.add :direction_not_found unless direction
 
           direction
         end
@@ -920,7 +920,8 @@ module Import
         def route_scheduled_point_ref(route_point_ref)
           route_point = route_points.find route_point_ref
           unless route_point
-            errors.add :direction_not_found_in_netex_source
+            # TODO Should be warning for the moment, see CHOUETTE-5282
+            # errors.add :route_point_not_found
             return nil
           end
 
@@ -1056,7 +1057,7 @@ module Import
           return unless direction_id
 
           direction = directions.find direction_id
-          errors.add :direction_not_found_in_netex_source unless direction
+          errors.add :direction_not_found unless direction
 
           direction
         end

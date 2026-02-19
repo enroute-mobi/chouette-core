@@ -47,8 +47,6 @@ class OperationRunFacade
     [columns, { cls: 'table' }]
   end
 
-  private
-
   def import_columns
     [
       TableBuilderHelper::Column.new(

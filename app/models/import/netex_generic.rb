@@ -600,7 +600,7 @@ module Import
           case model
           when Chouette::Route
             model.stop_points.each do |stop_point|
-              stop_point.transient(:scheduled_stop_point).each do |scheduled_stop_point|
+              (stop_point.transient(:scheduled_stop_point) || []).each do |scheduled_stop_point|
                 scheduled_stop_point.stop_point_ids << stop_point.id
               end
             end
@@ -1071,7 +1071,7 @@ module Import
             Chouette::StopPoint.new(
               stop_area_id: step.object,
               position: index,
-              flexible: step.attributes[:flexible],
+              flexible: step.attributes[:flexible] || false,
               for_boarding: convert_for_boarding_and_for_alighting(step.attributes[:for_boarding]),
               for_alighting: convert_for_boarding_and_for_alighting(step.attributes[:for_alighting])
             ).with_transient(step.transients.merge(sequence_cluster_step: step))

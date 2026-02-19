@@ -1385,7 +1385,7 @@ module Import
 
       def each_service_journey_notice
         netex_source.notices.each do |notice|
-          next unless notice.type_of_notice_ref.ref == 'ServiceJourneyNotice'
+          next unless notice.type_of_notice_ref&.ref == 'ServiceJourneyNotice'
 
           yield notice
         end

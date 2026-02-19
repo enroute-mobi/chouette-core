@@ -66,7 +66,7 @@ GIT
 
 GIT
   remote: https://bitbucket.org/enroute-mobi/netex.git
-  revision: d6eff5d3ae3c39af8d27e673c09a5c619e688463
+  revision: eabccf0ee6d5e3f4f5d13f44b9e9da235aa589e7
   branch: DATA-96-define-publiccode-from-trainnumb
   specs:
     netex (0.1.2)

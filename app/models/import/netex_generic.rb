@@ -1620,13 +1620,24 @@ module Import
           @scheduled_stop_point ||= scheduled_stop_points[scheduled_stop_point_ref.ref]
         end
 
-        def candidate_scheduled_stop_point_targets
-          [ stop_area.parent_id, stop_area.referent&.parent_id ].compact
+        def scheduled_stop_point_stop_area
+          lookup.stop_areas.find_by_id(scheduled_stop_point&.stop_area_id) # rubocop:disable Rails/DynamicFindBy
         end
 
         def valid?
-          scheduled_stop_point.present? &&
-            candidate_scheduled_stop_point_targets.include?(scheduled_stop_point.stop_area_id)
+          scheduled_stop_point.present? && stop_area.present? && (in_simple_hierarchy? || in_full_hierarchy?)
+        end
+
+        def in_simple_hierarchy?
+          candidate_scheduled_stop_point_targets = [stop_area.referent&.parent_id, stop_area.parent_id].compact
+          candidate_scheduled_stop_point_targets.include?(scheduled_stop_point.stop_area_id)
+        end
+
+        def in_full_hierarchy?
+          return false unless scheduled_stop_point_stop_area
+
+          (scheduled_stop_point_stop_area.ancestors & Array(stop_area.referent&.ancestors)).present? ||
+            (scheduled_stop_point_stop_area.ancestors & stop_area.ancestors).present?
         end
 
         def vehicle_journey_codes

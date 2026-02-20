@@ -96,7 +96,29 @@ module Import
       alias << add
 
       def merge
-        @merge ||= Path.new(Sequence.new(raw_elements: raw_elements.to_a), links.dup).complete&.sequence&.to_a
+        @merge ||= build_solution
+      end
+
+      def build_solution
+        solution = Path.new(Sequence.new(raw_elements: raw_elements.to_a), links.dup).complete&.sequence&.to_a
+        return nil unless valid_solution?(solution)
+
+        solution
+      end
+
+      def valid_solution?(solution)
+        return false unless solution
+
+        raw_elements.all? do |sequence|
+          solution_i = 0
+          sequence.all? do |object|
+            while (solution_i < solution.size) && (solution[solution_i] != object)
+              solution_i += 1
+            end
+
+            solution_i < solution.size
+          end
+        end
       end
 
       class Path
@@ -166,7 +188,7 @@ module Import
       def initialize(sequence)
         @sequence = sequence
         @patterns = []
-        @solutions = []
+        @solutions = nil
       end
       attr_reader :sequence, :patterns, :solutions
 
@@ -236,22 +258,24 @@ module Import
       end
 
       def clusterize
+        solutions = []
+
         patterns.each do |pattern|
-          solution_for_pattern(pattern)
+          solution = find_solution_for_pattern(solutions, pattern)
+          next if solution
+
+          solution = generate_solution_for_pattern(pattern)
+          return nil unless solution
+
+          solutions << solution
         end
-        solutions
+
+        @solutions = solutions
       end
 
       private
 
-      def solution_for_pattern(pattern)
-        solution = find_solution_for_pattern(pattern)
-        return solution if solution
-
-        generate_solution_for_pattern(pattern)
-      end
-
-      def find_solution_for_pattern(pattern)
+      def find_solution_for_pattern(solutions, pattern)
         solutions.find do |solution|
           steps = steps_for_pattern_in_solution(solution, pattern)
           next false unless steps
@@ -288,10 +312,10 @@ module Import
             Step.new(object)
           end
         end
+        return nil unless pattern_steps.size == pattern.size
 
         solution = Solution.new(solution_steps)
         solution.patterns[pattern.object] = pattern_steps
-        solutions << solution
         solution
       end
     end

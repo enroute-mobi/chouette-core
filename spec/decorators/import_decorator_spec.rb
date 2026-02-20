@@ -29,12 +29,12 @@ RSpec.describe ImportDecorator, type: %i[helper decorator] do
   let(:object) { import.decorate }
 
   describe 'action_links' do
-    describe 'secondary' do
+    describe 'primary' do
       describe 'show' do
         describe '#disabled' do
           context 'when file is attached' do
             it 'should not be disabled' do
-              expect(subject.action_links(:show).map(&:disabled?)).to eq([false])
+              expect(subject.action_links(:show, group: :primary).map(&:disabled?)).to eq([false])
             end
           end
 
@@ -42,7 +42,35 @@ RSpec.describe ImportDecorator, type: %i[helper decorator] do
             let(:file) { nil }
 
             it 'should be disabled' do
-              expect(subject.action_links(:show).map(&:disabled?)).to eq([true])
+              expect(subject.action_links(:show, group: :primary).map(&:disabled?)).to eq([true])
+            end
+          end
+        end
+      end
+    end
+
+    describe 'secondary' do
+      describe 'show' do
+        describe '#disabled' do
+          context 'when messages are present' do
+            it 'should not be disabled' do
+              expect(subject.action_links(:show, group: :secondary).map(&:disabled?)).to eq([false])
+            end
+          end
+
+          context 'when no messages are present' do
+            let(:import) do
+              Import::Workbench.create(
+                name: 'Test',
+                creator: 'test',
+                file: file,
+                workbench: workbench,
+                children: []
+              )
+            end
+
+            it 'should be disabled' do
+              expect(subject.action_links(:show, group: :secondary).map(&:disabled?)).to eq([true])
             end
           end
         end

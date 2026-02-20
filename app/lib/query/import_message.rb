@@ -26,7 +26,7 @@ module Query
 
     def file(value)
       change_scope(if: value.present?) do |scope|
-        scope.joins(:resource).where('import_resources.name ILIKE ?', "%#{value}%")
+        scope.where("resource_attributes->'filename' ILIKE ?", "%#{value}%")
       end
     end
   end

@@ -13,9 +13,11 @@ en:
       sections:
         identification: "Identification"
         setup: "Setup"
-      hints:
-        ignored_schema_rules: "Comma-separated list of XSD rule identifiers to ignore during validation (e.g., xsd-1824,xsd-1877)"
     search_no_results: "No Flamingo Validation Setup matches your query"
+  simple_form:
+    hints:
+      flamingo_validation_setup:
+        ignored_schema_rules: "Comma-separated list of XSD rule identifiers to ignore during validation (e.g., xsd-1824,xsd-1877)"
   activerecord:
     models:
       flamingo/validation_setup:

@@ -12,7 +12,7 @@
       = f.input :ruleset, input_html: { autocomplete: 'new-password' }
       = f.input :include_schema, as: :switchable_checkbox
       = f.input :schema_version, collection: ::Secretary::Validation::SCHEMA_VERSIONS
-      = f.input :ignored_schema_rules, input_html: { autocomplete: 'new-password', placeholder: 'xsd-1824,xsd-1877' }, hint: t('flamingo/validation_setups.form.hints.ignored_schema_rules')
+      = f.input :ignored_schema_rules, input_html: { placeholder: 'xsd-1824,xsd-1877' }
       = f.input :token, as: :toggable_password, input_html: { value: f.object.token, autocomplete: 'new-password' }
 
   .separator

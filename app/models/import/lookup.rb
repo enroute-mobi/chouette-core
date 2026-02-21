@@ -195,6 +195,14 @@ module Import
         codes.map { |code| find_id code }.compact.uniq
       end
 
+      def find_by_id(id, **arguments)
+        return nil if id.blank?
+
+        response = internal_collection.find_by_id(id) # rubocop:disable Rails/DynamicFindBy
+        on_response response, **arguments
+        response.model
+      end
+
       private
 
       attr_reader :internal_collection, :callback
@@ -235,14 +243,23 @@ module Import
           end.find(&:present?)
         end
       end
+
+      def find_by_id(id)
+        cache.fetch_model_by_id(id) do
+          finders.lazy.map do |finder|
+            model = finder.find_by_id(id) # rubocop:disable Rails/DynamicFindBy
+            Response.new(model: model, source: finder.source) if model
+          end.find(&:present?)
+        end
+      end
     end
 
     class Response
       attr_accessor :code, :model, :model_id, :source
 
-      def initialize(code:, source:, model_id: nil, model: nil)
-        @code = code
+      def initialize(source:, code: nil, model_id: nil, model: nil)
         @source = source
+        @code = code
         @model_id = model_id
         @model = model
       end
@@ -255,6 +272,10 @@ module Import
 
       def by_models
         @by_models ||= {}
+      end
+
+      def id_by_models
+        @id_by_models ||= {}
       end
 
       def fetch_id(code, &block)
@@ -278,6 +299,17 @@ module Import
         by_models[code] = response
         response
       end
+
+      def fetch_model_by_id(id, &block)
+        response = id_by_models[id]
+        return response if response || !block_given?
+
+        response = block.call(id)
+        response ||= Response.new(model: nil, source: :none)
+
+        id_by_models[id] = response
+        response
+      end
     end
 
     module Finder
@@ -295,6 +327,10 @@ module Import
 
         def find(code)
           by_code(code).first
+        end
+
+        def find_by_id(id)
+          scope.find_by(id: id)
         end
       end
 

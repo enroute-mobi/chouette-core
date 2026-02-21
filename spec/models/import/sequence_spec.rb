@@ -64,6 +64,15 @@ RSpec.describe Import::Sequence::Merger do
 
       it { is_expected.to be_nil }
     end
+
+    context 'example without loop without solution (for now)' do
+      before do
+        merger << %w[A B C]
+        merger << %w[A B A]
+      end
+
+      it { is_expected.to be_nil }
+    end
   end
 end
 
@@ -330,7 +339,7 @@ RSpec.describe Import::Sequence::Cluster do
                 have_attributes(object: 'B', attributes: {})
               ],
               patterns: {
-                'JP1' => [0, 1],
+                'JP1' => [0, 1]
               }
             },
             {
@@ -339,12 +348,24 @@ RSpec.describe Import::Sequence::Cluster do
                 have_attributes(object: 'B', attributes: {})
               ],
               patterns: {
-                'JP2' => [0, 1],
+                'JP2' => [0, 1]
               }
             }
           ]
         )
       end
+    end
+
+    context 'example with wrong sequence' do
+      let(:sequence) { %w[B A B C] }
+      let(:patterns) do
+        [
+          described_class::Pattern.new('JP1').step('A').step('B').step('C'),
+          described_class::Pattern.new('JP2').step('A').step('B').step('A')
+        ]
+      end
+
+      it { is_expected.to be_nil }
     end
   end
 end

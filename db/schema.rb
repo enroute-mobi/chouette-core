@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2026_02_17_092522) do
+ActiveRecord::Schema[7.2].define(version: 2026_02_23_132231) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "btree_gin"
   enable_extension "hstore"
@@ -216,8 +216,7 @@ ActiveRecord::Schema[7.2].define(version: 2026_02_17_092522) do
     t.datetime "created_at", precision: nil, null: false
     t.datetime "updated_at", precision: nil, null: false
     t.index ["code_space_id", "resource_type", "resource_id", "value"], name: "index_codes_on_space_resource_and_value", unique: true
-    t.index ["code_space_id", "resource_type", "resource_id"], name: "index_codes_on_space_and_resource"
-    t.index ["code_space_id"], name: "index_codes_on_code_space_id"
+    t.index ["code_space_id", "resource_type", "value"], name: "index_codes_on_code_space_id_and_resource_type_and_value"
     t.index ["resource_type", "resource_id"], name: "index_codes_on_resource_type_and_resource_id"
   end
 
@@ -1302,8 +1301,7 @@ ActiveRecord::Schema[7.2].define(version: 2026_02_17_092522) do
     t.datetime "created_at", precision: nil, null: false
     t.datetime "updated_at", precision: nil, null: false
     t.index ["code_space_id", "resource_type", "resource_id", "value"], name: "index_referential_codes_on_space_resource_and_value", unique: true
-    t.index ["code_space_id", "resource_type", "resource_id"], name: "index_referential_codes_on_space_and_resource"
-    t.index ["code_space_id"], name: "index_referential_codes_on_code_space_id"
+    t.index ["code_space_id", "resource_type", "value"], name: "idx_on_code_space_id_resource_type_value"
     t.index ["resource_type", "resource_id"], name: "index_referential_codes_on_resource_type_and_resource_id"
   end
 

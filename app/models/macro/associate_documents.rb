@@ -23,6 +23,7 @@ module Macro
       def run
         each_element_in_document_memberships do |document_membership, document_name|
           document_membership.save
+
           messages.create(source: document_membership.documentable, document_name: document_name) do |message|
             message.error! unless document_membership.valid?
           end
@@ -38,62 +39,61 @@ module Macro
         end
       end
 
+      def query
+        models
+          .joins(model_codes)
+          .joins(document_codes)
+          .joins(documents)
+          .joins(outer_join_document_memberships)
+          .where(document_memberships: { id: nil })
+          .select(select)
+          .to_sql
+      end
+
+      def select
+        <<-SQL
+          document_codes.resource_id AS document_id,
+          documents.name AS document_name,
+          #{model_collection}.id AS documentable_id,
+          model_codes.resource_type AS documentable_type
+        SQL
+      end
+
+      def documents
+        <<-SQL
+          INNER JOIN public.documents ON public.documents.id = document_codes.resource_id
+        SQL
+      end
+
+      def model_codes
+        <<-SQL
+          INNER JOIN public.codes model_codes
+          ON model_codes.resource_type = #{documentable_type}
+          AND model_codes.resource_id = #{model_collection}.id
+          AND model_codes.code_space_id = #{model_code_space}
+        SQL
+      end
+
+      def document_codes
+        <<-SQL
+          INNER JOIN public.codes document_codes
+          ON document_codes.resource_type = 'Document'
+          AND document_codes.code_space_id = #{document_code_space}
+          AND document_codes.value = model_codes.value
+        SQL
+      end
+
+      def outer_join_document_memberships
+        <<-SQL
+          LEFT OUTER JOIN public.document_memberships
+          ON documentable_type = #{documentable_type}
+          AND documentable_id = #{model_collection}.id
+          AND document_id = document_codes.resource_id
+        SQL
+      end
+
       def documentable_type
         @documentable_type ||= "'Chouette::#{target_model}'"
-      end
-
-      def query
-        <<~SQL
-          SELECT
-            documents_models_by_codes.document_id AS document_id,
-            documents_models_by_codes.document_name AS document_name,
-            documents_models_by_codes.model_id AS documentable_id,
-            #{documentable_type} AS documentable_type
-          FROM (#{documents_models_by_codes}) AS documents_models_by_codes
-          LEFT JOIN (#{customized_document_memberships}) AS customized_document_memberships
-          ON documents_models_by_codes.document_model_id = customized_document_memberships.document_model_id
-          WHERE customized_document_memberships.document_model_id IS NULL
-        SQL
-      end
-
-      def customized_document_memberships
-        document_memberships.select('*', "CONCAT(document_id, '-', documentable_id) AS document_model_id").to_sql
-      end
-
-      def documents_models_by_codes
-        <<~SQL
-          SELECT
-            documents_with_codes.document_id AS document_id,
-            documents_with_codes.document_name AS document_name,
-            models_with_codes.model_id AS model_id,
-            CONCAT(documents_with_codes.document_id, '-', models_with_codes.model_id) AS document_model_id
-          FROM  (#{documents_with_codes}) AS documents_with_codes
-          INNER JOIN (#{models_with_codes}) AS models_with_codes
-          ON documents_with_codes.document_code_value = models_with_codes.model_code_value
-        SQL
-      end
-
-      def documents_with_codes
-        documents
-          .select(
-            'documents.id AS document_id',
-            'documents.name AS document_name',
-            'codes.value AS document_code_value'
-          )
-          .joins(codes: :code_space)
-          .where(::CodeSpace.quoted_table_name => { id: document_code_space })
-          .to_sql
-      end
-
-      def models_with_codes
-        models
-          .select(
-            "#{model_collection}.id AS model_id",
-            'codes.value AS model_code_value'
-          )
-          .joins(codes: :code_space)
-          .where(::CodeSpace.quoted_table_name => { id: model_code_space })
-          .to_sql
       end
 
       def models
@@ -102,14 +102,6 @@ module Macro
 
       def model_collection
         @model_collection ||= target_model.underscore.pluralize
-      end
-
-      def document_memberships
-        @document_memberships ||= workbench.document_memberships
-      end
-
-      def documents
-        @documents ||= workbench.documents
       end
 
       protected

@@ -935,20 +935,17 @@ module Import
         end
 
         def build_sequence_merger
+          return unless netex_journey_pattern_ordered_points
+
           Sequence::Merger.new.tap do |merger|
             netex_journey_pattern_ordered_points.each do |_, jp_points|
               merger << jp_points.map { |jp_point| jp_point[:stop_area_id] }
             end
 
             route_stop_area_ids = route_scheduled_point_refs.map do |route_scheduled_point_ref|
-              stop_area_id = scheduled_stop_points[route_scheduled_point_ref].stop_area_id
-              unless stop_area_id
-                errors.add :stop_area_not_found_in_scheduled_stop_points
-                return nil
-              end
-              stop_area_id
+              scheduled_stop_points[route_scheduled_point_ref].stop_area_id
             end
-            merger << route_stop_area_ids
+            merger << route_stop_area_ids if route_stop_area_ids.any?
           end
         end
 

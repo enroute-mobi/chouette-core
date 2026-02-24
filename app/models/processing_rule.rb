@@ -20,6 +20,10 @@ module ProcessingRule
     validates :processable, inclusion: { in: ->(rule) { rule.candidate_control_lists } }, if: :use_control_list?
     validates :operation_step, inclusion: { in: ->(rule) { rule.candidate_operation_steps } }
 
+    validate :required_tags_must_be_in_candidates
+    validate :excluded_tags_must_be_in_candidates
+    validate :no_tag_overlap
+
     def use_control_list?
       processable_type == Control::List.name
     end
@@ -39,50 +43,9 @@ module ProcessingRule
     def candidate_operation_steps
       (processable&.class&.candidate_operation_steps || []) & self.class.operation_step.values
     end
-  end
-
-  # Workbench ProcessingRule managed as Workbench#processing_rules
-  class Workbench < Base
-    belongs_to :workbench # CHOUETTE-3247 required: true
-
-    enumerize :processable_type, in: %w[Macro::List Control::List]
-    enumerize :operation_step, in: %w[after_import before_merge after_merge],
-                               scope: :shallow,
-                               i18n_scope: 'enumerize.processing_rule/base.operation_step'
-
-    validates :operation_step, uniqueness: { scope: %i[processable_type workbench] }
-
-    validate :required_tags_must_be_in_candidates
-    validate :excluded_tags_must_be_in_candidates
-    validate :no_tag_overlap
-
-    def use_macro_list?
-      processable_type == Macro::List.name
-    end
-
-    def macro_list_id
-      processable_id if use_macro_list?
-    end
-
-    def macro_list_id=(macro_list_id)
-      self.processable_id = macro_list_id
-    end
-
-    def candidate_macro_lists
-      workbench&.macro_lists || Macro::List.none
-    end
-
-    validates :macro_list_id, presence: true, if: :use_macro_list?
-    validates :processable, inclusion: { in: ->(rule) { rule.candidate_macro_lists } }, if: :use_macro_list?
-
-    def candidate_control_lists
-      workbench&.control_lists_shared_with_workgroup || Control::List.none
-    end
 
     def candidate_tags
-      return Tag.none unless workbench
-
-      workbench.tags
+      raise NotImplementedError
     end
 
     def self.compatible_with_operation_via_tags(operation_step, tag_ids)
@@ -142,6 +105,47 @@ module ProcessingRule
     end
   end
 
+  # Workbench ProcessingRule managed as Workbench#processing_rules
+  class Workbench < Base
+    belongs_to :workbench # CHOUETTE-3247 required: true
+
+    enumerize :processable_type, in: %w[Macro::List Control::List]
+    enumerize :operation_step, in: %w[after_import before_merge after_merge],
+                               scope: :shallow,
+                               i18n_scope: 'enumerize.processing_rule/base.operation_step'
+
+    validates :operation_step, uniqueness: { scope: %i[processable_type workbench] }
+
+    def use_macro_list?
+      processable_type == Macro::List.name
+    end
+
+    def macro_list_id
+      processable_id if use_macro_list?
+    end
+
+    def macro_list_id=(macro_list_id)
+      self.processable_id = macro_list_id
+    end
+
+    def candidate_macro_lists
+      workbench&.macro_lists || Macro::List.none
+    end
+
+    validates :macro_list_id, presence: true, if: :use_macro_list?
+    validates :processable, inclusion: { in: ->(rule) { rule.candidate_macro_lists } }, if: :use_macro_list?
+
+    def candidate_control_lists
+      workbench&.control_lists_shared_with_workgroup || Control::List.none
+    end
+
+    def candidate_tags
+      return Tag.none unless workbench
+
+      workbench.tags
+    end
+  end
+
   # Workgroup ProcessingRule managed as Workgroup#processing_rules
   class Workgroup < Base
     belongs_to :workgroup # CHOUETTE-3247 required: true
@@ -167,6 +171,10 @@ module ProcessingRule
 
     def candidate_target_workbenches
       workgroup.workbenches
+    end
+
+    def candidate_tags
+      workgroup.tags
     end
 
     def self.accept_workbench(workbench)

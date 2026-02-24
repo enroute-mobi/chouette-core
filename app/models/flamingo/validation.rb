@@ -30,7 +30,7 @@ module Flamingo
         ruleset: setup.ruleset,
         include_schema: setup.include_schema,
         schema_version: setup.schema_version,
-        ignored_schema_rules: setup.ignored_schema_rules_list,
+        schema_ignore: setup.ignored_schema_rules_list,
         publish: true
       )
     end

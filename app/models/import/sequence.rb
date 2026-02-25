@@ -1,5 +1,87 @@
 # frozen_string_literal: true
 
+## Import::Sequence::Merger
+#
+# Tries to compute a sequence of objects that includes all the sequences of a given set.
+#
+# Usage:
+#   merger = Import::Sequence::Merge.new
+#   merger << [1, 2, 3]
+#   merger << [2, 3, 4]
+#   merger << [1, 4]
+#   merger.merge
+#   => [1, 2, 3, 4]
+#
+# If it cannot find a solution, returns nil.
+#   merger = Import::Sequence::Merge.new
+#   merger << [1, 2, 3]
+#   merger << [1, 2, 4]
+#   merger.merge
+#   => nil
+#
+#
+## Import::Sequence::Cluster
+#
+# Regroups sequences that share the some properties for their objects. A cluster is defined with a master sequence and a
+# set of patterns that represent the sequences. A pattern is initialized with an object and a list of a steps.
+# A step is defined as an object and some attributes. This object and these attributes identifies the step.
+#
+# The algorithm starts with the first pattern and creates a solution sequence with each of its steps. It then iterates
+# on each patttern and checks if one of the solution sequences can include its steps. If not, a new sequence is created.
+#
+# Usage:
+#   cluster = Import::Sequence::Cluster.new([1, 2, 3])
+#   pattern_a = Import::Sequence::Cluster::Pattern.new('A').step(1).step(2, prop: 'x').step(3)
+#   pattern_b = Import::Sequence::Cluster::Pattern.new('B').step(1, prop: 'x').step(2, prop: 'x').step(3)
+#   pattern_c = Import::Sequence::Cluster::Pattern.new('C').step(1).step(2, prop: 'x')
+#   cluster.patterns.concat([pattern1, pattern_b, pattern_c])
+#   cluster.clusterize
+#   => [
+#     {
+#       steps: [<Step object=1, attributes={}>, <Step object=2, attributes={ prox: 'x' }>, <Step object=3, attributes={}>],
+#       patterns: { pattern_a => [...], pattern_c => [...] }
+#     },
+#     {
+#       steps: [<Step object=1, attributes={ prop: 'x' }>, <Step object=2, attributes={}>, <Step object=3, attributes={}>],
+#       patterns: { pattern_b => [...] }
+#     }
+#   ]
+# Each solution is a list of steps and the patterns that match this list. For each pattern, we give it the steps of the
+# solution that are used. This is useful if there are loops:
+#   cluster = Import::Sequence::Cluster.new([1, 2, 1])
+#   pattern_a = Import::Sequence::Cluster::Pattern.new('A').step(1, prop: 'x').step(2).step(1, prop: 'y')
+#   pattern_b = Import::Sequence::Cluster::Pattern.new('B').step(1, prop: 'x')
+#   pattern_c = Import::Sequence::Cluster::Pattern.new('C').step(1, prop: 'y')
+#   cluster.patterns.concat([pattern_a, pattern_b, pattern_c])
+#   cluster.clusterize
+#   => [
+#     {
+#       steps: [<Step@0 object=1, attributes={ prop: 'x' }>, <Step@1 object=2>, <Step@2 object=1, attributes={ prox: 'y' }>],
+#       patterns: {
+#         pattern_a => [<Step@0>, <Step@1>, <Step@2>],
+#         pattern_b => [<Step@0>],
+#         pattern_c => [<Step@2>]
+#       }
+#     }
+#   ]
+#
+# Note that some properties, called transients, can be added to a step without changing its identity. These properties
+# are merged in the solution:
+#   cluster = Import::Sequence::Cluster.new([1, 2])
+#   pattern_a = Import::Sequence::Cluster::Pattern.new('A').step(1) { |s| s.transient(:a, 'x') }.step(2)
+#   pattern_b = Import::Sequence::Cluster::Pattern.new('B').step(1) { |s| s.transient(:a, 'y') }.step(2)
+#   cluster.patterns.concat([pattern_a, pattern_b])
+#   cluster.clusterize
+#   => [
+#     {
+#       steps: [<Step object=1, transients={a: ['x', 'y']}>, <Step object=2>],
+#       patterns: { pattern_a => [...], pattern_b => [...] }
+#     }
+#   ]
+#
+# Finally, note that if the cluster is initialized with an invalid sequence that does not contain all the patterns, it
+# returns nil.
+
 module Import
   class Sequence
     def self.create(*elements)
@@ -106,6 +188,7 @@ module Import
         solution
       end
 
+      # Some computed solutions are actually not valid. We need to check that the solution covers all given sequences.
       def valid_solution?(solution)
         return false unless solution
 
@@ -210,6 +293,10 @@ module Import
       end
 
       class Step
+        # A Step is either a step in a solution or a step in a pattern.
+        # If attributes is {}, it means that the step does not have any attribute. If attributes is nil, then we are in
+        # a solution step that can accept any set of attributes. When a step has attributes, we say that it is
+        # specialized.
         def initialize(object, attributes = nil)
           @object = object
           @attributes = attributes
@@ -217,6 +304,7 @@ module Import
         end
         attr_reader :object, :transients
 
+        # If this solution step was never specialized, then we return an empty hash.
         def attributes
           @attributes || {}
         end
@@ -225,12 +313,18 @@ module Import
           transients[name] << value
         end
 
+        # Returns true if this solution step can represent the given pattern step.
+        #   - the step objects must match
+        #   - if the step is specialized, the attributes must match
         def wraps?(step)
           return false unless object == step.object
 
           @attributes.nil? || @attributes == step.attributes
         end
 
+        # Make this solution step represent the given pattern step.
+        #   - if the step is not specialized, the attributes are copied
+        #   - the transient attributes are merged
         def wrap!(step)
           @attributes = step.attributes.dup if @attributes.nil?
           step.transients.each do |k, vv|
@@ -242,6 +336,7 @@ module Import
           end
         end
 
+        # Transforms this pattern step as a solution step.
         def specialized_dup
           self.class.new(object, @attributes&.dup || {}).tap do |step|
             step.instance_variable_set(:@transients, @transients.transform_values(&:dup))
@@ -265,6 +360,7 @@ module Import
           next if solution
 
           solution = generate_solution_for_pattern(pattern)
+          # we could not generate the solution because the master sequence is invalid
           return nil unless solution
 
           solutions << solution
@@ -285,6 +381,8 @@ module Import
         end
       end
 
+      # Returns a sequence of steps in the given solution that match the sequence of steps of the given pattern.
+      # If we cannot find this sequence, then the given solution cannot represent the pattern and nil is returned.
       def steps_for_pattern_in_solution(solution, pattern)
         pattern_steps = []
 
@@ -305,13 +403,18 @@ module Import
 
         solution_steps = sequence.map do |object|
           if (pattern_steps.size < pattern.size) && (pattern[pattern_steps.size].object == object)
+            # the object of the master sequence is the same as the current step of the pattern,
+            # we create a solution step from the pattern step
             step = pattern[pattern_steps.size].specialized_dup
             pattern_steps << step
             step
           else
+            # the object is not the same as the current step or the pattern has already found all its steps,
+            # we create a non-specialized solution step
             Step.new(object)
           end
         end
+        # if we did not find all the steps of the pattern, then the master sequence is invalid
         return nil unless pattern_steps.size == pattern.size
 
         solution = Solution.new(solution_steps)

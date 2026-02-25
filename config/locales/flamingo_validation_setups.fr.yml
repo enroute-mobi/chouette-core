@@ -14,6 +14,10 @@ fr:
         identification: "Identification"
         setup: "Paramétrage"
     search_no_results: "Aucun Paramétrage de Validation Flamingo ne correspond à votre recherche"
+  simple_form:
+    hints:
+      flamingo_validation_setup:
+        ignored_schema_rules: "Liste des identifiants de règles XSD à ignorer lors de la validation, séparés par des virgules (ex: xsd-1824,xsd-1877)"
   activerecord:
     models:
       flamingo/validation_setup:
@@ -26,4 +30,5 @@ fr:
         ruleset: "Jeu de règles"
         include_schema: "Inclure le schéma"
         schema_version: "Version du schéma"
+        ignored_schema_rules: "Règles de schéma ignorées"
         token: "Jeton de connexion"

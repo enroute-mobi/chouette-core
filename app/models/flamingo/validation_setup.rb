@@ -13,6 +13,10 @@ module Flamingo
     validates :name, uniqueness: { scope: %i[workgroup_id] }
     validates :schema_version, inclusion: { in: ::Secretary::Validation::SCHEMA_VERSIONS }
 
+    def ignored_schema_rules_list
+      ignored_schema_rules&.split(',')&.map(&:strip)&.reject(&:blank?) || []
+    end
+
     class << self
       def candidate_operation_steps
         %w[before_import]

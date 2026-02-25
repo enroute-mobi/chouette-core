@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2026_02_05_100244) do
+ActiveRecord::Schema[7.2].define(version: 2026_02_17_092522) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "btree_gin"
   enable_extension "hstore"
@@ -700,6 +700,7 @@ ActiveRecord::Schema[7.2].define(version: 2026_02_05_100244) do
     t.string "token", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.string "ignored_schema_rules"
     t.index ["workgroup_id", "name"], name: "index_flamingo_validation_setups_on_workgroup_id_and_name", unique: true
   end
 

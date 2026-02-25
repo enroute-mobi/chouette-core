@@ -60,17 +60,11 @@ class Processor
     workbench.processing_rules.compatible_with_operation_via_tags(operation_step, tag_ids)
   end
 
-  # Retrieve all processing rules for a workgroup
-  def all_workgroup_processing_rules(operation_step)
-    workgroup.processing_rules.where(operation_step: operation_step)
-  end
-
   # Retrieve processing rules for a workgroup and filter by workbench if needed
   def workgroup_processing_rules(operation_step)
-    processing_rules = all_workgroup_processing_rules(operation_step)
-    return processing_rules if workbench.blank?
-
-    processing_rules.accept_workbench(workbench)
+    processing_rules = workgroup.processing_rules.compatible_with_operation_via_tags(operation_step, tag_ids)
+    processing_rules = processing_rules.accept_workbench(workbench) if workbench
+    processing_rules
   end
 
   def before_operation_step

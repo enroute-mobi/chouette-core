@@ -119,8 +119,7 @@ module Chouette
           transient :macro_list
 
           after do
-            processable = transient(:macro_list, resolve_instances: true) ||
-                          transient(:control_list, resolve_instances: true) ||
+            processable = transient(:control_list, resolve_instances: true) ||
                           new_instance.workgroup.workbenches.first.control_lists.create!(
                             name: 'Default',
                             shared: true
@@ -144,6 +143,10 @@ module Chouette
             after do
               new_instance.recipient = transient(:recipient) if new_instance.recipient_type.nil?
             end
+          end
+
+          model :tag do
+            attribute(:name) { |n| "Tag #{n}" }
           end
 
           model :notification_rule do

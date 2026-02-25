@@ -88,7 +88,13 @@ RSpec.describe Processor do
   end
 
   context '#workbench_processing_rules' do
-    context 'returns no processing rules' do
+    subject { processor.workbench_processing_rules(operation_step) }
+
+    let(:workbench) { context.workbench }
+    let(:operation) { create(:gtfs_import, workbench: workbench) }
+    let(:operation_step) { 'after_import' }
+
+    context 'when workbench has no processing rules' do
       let(:context) do
         Chouette.create do
           workbench :without_processing_rules
@@ -98,16 +104,12 @@ RSpec.describe Processor do
           end
         end
       end
+      let(:workbench) { context.workbench(:without_processing_rules) }
 
-      let(:import) { create :gtfs_import, workbench: context.workbench(:without_processing_rules) }
-      let(:processor) { Processor.new import }
-
-      it 'if workbench has no processing rules' do
-        expect(processor.workbench_processing_rules('after_import')).to be_empty
-      end
+      it { is_expected.to be_empty }
     end
 
-    context 'return processing rules' do
+    context 'when workbench has processing rules' do
       let(:context) do
         Chouette.create do
           workbench do
@@ -118,112 +120,490 @@ RSpec.describe Processor do
           end
         end
       end
-
       let(:control_processing_rule) { context.workbench_processing_rule(:control_processing_rule) }
       let(:macro_processing_rule) { context.workbench_processing_rule(:macro_processing_rule) }
-      let(:import) { create :gtfs_import, workbench: context.workbench }
-      let(:processor) { Processor.new import }
 
-      it 'if workbench has processing rules' do
-        expect(processor.workbench_processing_rules('after_import')).to eq([macro_processing_rule,
-                                                                            control_processing_rule])
-      end
-    end
-  end
-
-  context '#all_workgroup_processing_rules' do
-    context 'when a processing rule exists with operation_step after_import' do
-      let(:context) do
-        Chouette.create do
-          workgroup do
-            control_list :control_list, shared: true
-            workgroup_processing_rule operation_step: 'after_import', control_list: :control_list
-          end
+      context 'when operation_step matches processing rules' do
+        it 'returns processing rules' do
+          is_expected.to contain_exactly(macro_processing_rule, control_processing_rule)
         end
       end
 
-      let(:workgroup) { context.workgroup }
-      let(:control_list) { context.control_list }
-      let(:import) { create :gtfs_import, workbench: workgroup.workbenches.first }
-      let(:processor) { Processor.new import }
-      let(:processing_rule) { context.workgroup_processing_rule }
-      subject { processor.all_workgroup_processing_rules('after_import') }
+      context 'when operation_step does not match processing rules' do
+        let(:operation_step) { 'before_step' }
 
-      it { is_expected.to contain_exactly processing_rule }
+        it { is_expected.to be_empty }
+      end
+
+      context 'with tags' do
+        let(:operation) do
+          create(:gtfs_import, workbench: workbench, parent_tags: %i[required optional].map { |t| context.tag(t) })
+        end
+
+        context 'when import has no tag' do
+          let(:context) do
+            Chouette.create do
+              workbench do
+                tag :required
+                workbench_processing_rule operation_step: 'after_import', required_tags: %i[required]
+              end
+            end
+          end
+          let(:operation) { create(:gtfs_import, workbench: workbench, parent_tags: []) }
+
+          it { is_expected.to be_empty }
+        end
+
+        context 'when processing rule has no tag' do
+          let(:context) do
+            Chouette.create do
+              workbench do
+                tag :required
+                tag :optional
+                workbench_processing_rule operation_step: 'after_import'
+              end
+            end
+          end
+
+          it { is_expected.to contain_exactly(context.workbench_processing_rule) }
+        end
+
+        context 'when processing rule includes 1 tag of the operation' do
+          let(:context) do
+            Chouette.create do
+              workbench do
+                tag :required
+                tag :optional
+                workbench_processing_rule operation_step: 'after_import', required_tags: %i[required]
+              end
+            end
+          end
+
+          it { is_expected.to contain_exactly(context.workbench_processing_rule) }
+        end
+
+        context 'when processing rule includes exactly the tags of the operation' do
+          let(:context) do
+            Chouette.create do
+              workbench do
+                tag :required
+                tag :optional
+                workbench_processing_rule operation_step: 'after_import', required_tags: %i[required optional]
+              end
+            end
+          end
+
+          it { is_expected.to contain_exactly(context.workbench_processing_rule) }
+        end
+
+        context 'when processing rule includes only tags unrelated to the operation' do
+          let(:context) do
+            Chouette.create do
+              workbench do
+                tag :required
+                tag :optional
+                tag :other
+                workbench_processing_rule operation_step: 'after_import', required_tags: %i[other]
+              end
+            end
+          end
+
+          it { is_expected.to be_empty }
+        end
+
+        context 'when processing rule includes 1 tag of the operation and 1 unrelated tag' do
+          let(:context) do
+            Chouette.create do
+              workbench do
+                tag :required
+                tag :optional
+                tag :other
+                workbench_processing_rule operation_step: 'after_import', required_tags: %i[required other]
+              end
+            end
+          end
+
+          it { is_expected.to contain_exactly(context.workbench_processing_rule) }
+        end
+
+        context 'when processing rule excludes tags unrelated to the operation' do
+          let(:context) do
+            Chouette.create do
+              workbench do
+                tag :required
+                tag :optional
+                tag :other
+                workbench_processing_rule operation_step: 'after_import', excluded_tags: %i[other]
+              end
+            end
+          end
+
+          it { is_expected.to contain_exactly(context.workbench_processing_rule) }
+        end
+
+        context 'when processing rule excludes 1 tag of the operation' do
+          let(:context) do
+            Chouette.create do
+              workbench do
+                tag :required
+                tag :optional
+                workbench_processing_rule operation_step: 'after_import', excluded_tags: %i[required]
+              end
+            end
+          end
+
+          it { is_expected.to be_empty }
+        end
+
+        context 'when processing rule excludes 1 tag of the operation and 1 unrelated tag' do
+          let(:context) do
+            Chouette.create do
+              workbench do
+                tag :required
+                tag :optional
+                tag :other
+                workbench_processing_rule operation_step: 'after_import', excluded_tags: %i[required other]
+              end
+            end
+          end
+
+          it { is_expected.to be_empty }
+        end
+
+        context 'when processing rule includes exactly the tags of the operation and excluded unrelated tag' do
+          let(:context) do
+            Chouette.create do
+              workbench do
+                tag :required
+                tag :optional
+                tag :other
+                workbench_processing_rule operation_step: 'after_import',
+                                          required_tags: %i[required optional],
+                                          excluded_tags: %i[other]
+              end
+            end
+          end
+
+          it { is_expected.to contain_exactly(context.workbench_processing_rule) }
+        end
+      end
+    end
+
+    context 'when operation has no workbench' do
+      let(:context) do
+        Chouette.create do
+          workbench do
+            workbench_processing_rule operation_step: 'after_import'
+            referential
+          end
+        end
+      end
+      let(:operation) { workgroup.aggregates.create!(referential_ids: [referential.id], creator: 'Test') }
+
+      it { is_expected.to be_empty }
     end
   end
 
   context '#workgroup_processing_rules' do
-    context 'when a processing rule exist without target workbench' do
+    subject { processor.workgroup_processing_rules(operation_step) }
+
+    let(:workbench) { context.workbench }
+    let(:operation) { create(:gtfs_import, workbench: workbench) }
+    let(:operation_step) { 'after_import' }
+
+    context 'when workgroup has no processing rules' do
       let(:context) do
         Chouette.create do
           workgroup do
-            control_list shared: true
+            workbench :without_processing_rules
+          end
+
+          workgroup do
+            workbench
+            workgroup_processing_rule operation_step: 'after_import'
+          end
+        end
+      end
+      let(:workbench) { context.workbench(:without_processing_rules) }
+
+      it { is_expected.to be_empty }
+    end
+
+    context 'when workbench has processing rules' do
+      let(:context) do
+        Chouette.create do
+          workgroup do
+            workbench
+            workgroup_processing_rule operation_step: 'after_import'
           end
         end
       end
 
-      let(:workgroup) { context.workgroup }
-      let(:control_list) { context.control_list }
-      let(:import) { create :gtfs_import, workbench: workgroup.workbenches.first }
-      let(:processor) { Processor.new import }
-      let!(:processing_rule) do
-        workgroup.processing_rules.create operation_step: 'after_import', processable: control_list
+      context 'when operation_step matches processing rules' do
+        it 'returns processing rules' do
+          is_expected.to contain_exactly(context.workgroup_processing_rule)
+        end
       end
-      subject { processor.workgroup_processing_rules('after_import') }
 
-      it { is_expected.to contain_exactly processing_rule }
+      context 'when operation_step does not match processing rules' do
+        let(:operation_step) { 'before_step' }
+
+        it { is_expected.to be_empty }
+      end
+
+      context 'with tags' do
+        let(:operation) do
+          create(:gtfs_import, workbench: workbench, parent_tags: %i[required optional].map { |t| context.tag(t) })
+        end
+
+        context 'when import has no tag' do
+          let(:context) do
+            Chouette.create do
+              workgroup do
+                workbench do
+                  tag :required
+                end
+                workgroup_processing_rule operation_step: 'after_import', required_tags: %i[required]
+              end
+            end
+          end
+          let(:operation) { create(:gtfs_import, workbench: workbench, parent_tags: []) }
+
+          it { is_expected.to be_empty }
+        end
+
+        context 'when processing rule has no tag' do
+          let(:context) do
+            Chouette.create do
+              workgroup do
+                workbench do
+                  tag :required
+                  tag :optional
+                end
+                workgroup_processing_rule operation_step: 'after_import'
+              end
+            end
+          end
+
+          it { is_expected.to contain_exactly(context.workgroup_processing_rule) }
+        end
+
+        context 'when processing rule includes 1 tag of the operation' do
+          let(:context) do
+            Chouette.create do
+              workgroup do
+                workbench do
+                  tag :required
+                  tag :optional
+                end
+                workgroup_processing_rule operation_step: 'after_import', required_tags: %i[required]
+              end
+            end
+          end
+
+          it { is_expected.to contain_exactly(context.workgroup_processing_rule) }
+        end
+
+        context 'when processing rule includes exactly the tags of the operation' do
+          let(:context) do
+            Chouette.create do
+              workgroup do
+                workbench do
+                  tag :required
+                  tag :optional
+                end
+                workgroup_processing_rule operation_step: 'after_import', required_tags: %i[required optional]
+              end
+            end
+          end
+
+          it { is_expected.to contain_exactly(context.workgroup_processing_rule) }
+        end
+
+        context 'when processing rule includes only tags unrelated to the operation' do
+          let(:context) do
+            Chouette.create do
+              workgroup do
+                workbench do
+                  tag :required
+                  tag :optional
+                  tag :other
+                end
+                workgroup_processing_rule operation_step: 'after_import', required_tags: %i[other]
+              end
+            end
+          end
+
+          it { is_expected.to be_empty }
+        end
+
+        context 'when processing rule includes 1 tag of the operation and 1 unrelated tag' do
+          let(:context) do
+            Chouette.create do
+              workgroup do
+                workbench do
+                  tag :required
+                  tag :optional
+                  tag :other
+                end
+                workgroup_processing_rule operation_step: 'after_import', required_tags: %i[required other]
+              end
+            end
+          end
+
+          it { is_expected.to contain_exactly(context.workgroup_processing_rule) }
+        end
+
+        context 'when processing rule excludes tags unrelated to the operation' do
+          let(:context) do
+            Chouette.create do
+              workgroup do
+                workbench do
+                  tag :required
+                  tag :optional
+                  tag :other
+                end
+                workgroup_processing_rule operation_step: 'after_import', excluded_tags: %i[other]
+              end
+            end
+          end
+
+          it { is_expected.to contain_exactly(context.workgroup_processing_rule) }
+        end
+
+        context 'when processing rule excludes 1 tag of the operation' do
+          let(:context) do
+            Chouette.create do
+              workgroup do
+                workbench do
+                  tag :required
+                  tag :optional
+                end
+                workgroup_processing_rule operation_step: 'after_import', excluded_tags: %i[required]
+              end
+            end
+          end
+
+          it { is_expected.to be_empty }
+        end
+
+        context 'when processing rule excludes 1 tag of the operation and 1 unrelated tag' do
+          let(:context) do
+            Chouette.create do
+              workgroup do
+                workbench do
+                  tag :required
+                  tag :optional
+                  tag :other
+                end
+                workgroup_processing_rule operation_step: 'after_import', excluded_tags: %i[required other]
+              end
+            end
+          end
+
+          it { is_expected.to be_empty }
+        end
+
+        context 'when processing rule includes exactly the tags of the operation and excluded unrelated tag' do
+          let(:context) do
+            Chouette.create do
+              workgroup do
+                workbench do
+                  tag :required
+                  tag :optional
+                  tag :other
+                end
+                workgroup_processing_rule operation_step: 'after_import',
+                                          required_tags: %i[required optional],
+                                          excluded_tags: %i[other]
+              end
+            end
+          end
+
+          it { is_expected.to contain_exactly(context.workgroup_processing_rule) }
+        end
+      end
+
+      context 'with target workbenches' do
+        let(:import_workbench) { context.workbench :import_workbench }
+        let(:operation) { create(:gtfs_import, workbench: import_workbench) }
+
+        context 'when processing rule targets workbench of the operation' do
+          let(:context) do
+            Chouette.create do
+              workgroup do
+                workbench :import_workbench
+                workbench :other_workbench
+                workgroup_processing_rule operation_step: 'after_import',
+                                          target_workbenches: %i[import_workbench other_workbench]
+              end
+            end
+          end
+
+          it { is_expected.to contain_exactly(context.workgroup_processing_rule) }
+        end
+
+        context 'when processing rule does not target the workbench of the operation' do
+          let(:context) do
+            Chouette.create do
+              workgroup do
+                workbench :import_workbench
+                workbench :other_workbench
+                workgroup_processing_rule operation_step: 'after_import', target_workbenches: %i[other_workbench]
+              end
+            end
+          end
+
+          it { is_expected.to be_empty }
+        end
+
+        context 'when processing rule excludes workbenches other than the workbench of the operation' do
+          let(:context) do
+            Chouette.create do
+              workgroup do
+                workbench :import_workbench
+                workbench :other_workbench
+                workgroup_processing_rule operation_step: 'after_import', excluded_workbenches: %i[other_workbench]
+              end
+            end
+          end
+
+          it { is_expected.to contain_exactly(context.workgroup_processing_rule) }
+        end
+
+        context 'when processing rule excludes the workbench of the operation' do
+          let(:context) do
+            Chouette.create do
+              workgroup do
+                workbench :import_workbench
+                workbench :other_workbench1
+                workbench :other_workbench2
+                workgroup_processing_rule operation_step: 'after_import',
+                                          excluded_workbenches: %i[import_workbench other_workbench1]
+              end
+            end
+          end
+
+          it { is_expected.to be_empty }
+        end
+      end
     end
 
-    context 'when a processing rule exist with target workbench 1 equals to processor workbench' do
+    context 'when operation has no workbench' do
       let(:context) do
         Chouette.create do
           workgroup do
             workbench do
-              control_list shared: true
+              referential
             end
+            workgroup_processing_rule operation_step: 'after_aggregate'
           end
         end
       end
+      let(:operation) { workgroup.aggregates.create!(referential_ids: [referential.id], creator: 'Test') }
+      let(:operation_step) { 'after_aggregate' }
 
-      let(:workgroup) { context.workgroup }
-      let(:control_list) { context.control_list }
-      let(:import) { create :gtfs_import, workbench: workgroup.workbenches.first }
-      let(:processor) { Processor.new import }
-      let!(:processing_rule) do
-        workgroup.processing_rules.create operation_step: 'after_import', processable: control_list,
-                                          target_workbench_ids: []
-      end
-      subject { processor.workgroup_processing_rules('after_import') }
-
-      it { is_expected.to contain_exactly processing_rule }
-    end
-
-    context 'when a processing rule exist with target workbench 1 not equals to processor workbench' do
-      let(:context) do
-        Chouette.create do
-          workgroup do
-            workbench :import_workbench do
-              control_list shared: true
-            end
-            workbench :other_workbench
-          end
-        end
-      end
-
-      let(:workgroup) { context.workgroup }
-      let(:import_workbench) { context.workbench :import_workbench }
-      let(:other_workbench) { context.workbench :other_workbench }
-      let(:control_list) { context.control_list }
-      let(:import) { create :gtfs_import, workbench: import_workbench }
-      let(:processor) { Processor.new import }
-      let!(:processing_rule) do
-        workgroup.processing_rules.create operation_step: 'after_import', processable: control_list,
-                                          target_workbench_ids: [other_workbench]
-      end
-      subject { processor.workgroup_processing_rules('after_import') }
-
-      it { is_expected.to be_empty }
+      it { is_expected.to contain_exactly(context.workgroup_processing_rule) }
     end
   end
 

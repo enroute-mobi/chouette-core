@@ -13,12 +13,23 @@ module Flamingo
     end
 
     def perform
-      validation = create_validation
+      @flamingo_server_validation = create_validation
 
-      self.validation_id = validation.id
-      self.validation_report_url = validation.report_url
-      self.error_uuid = SecureRandom.uuid unless validation.successful?
+      self.validation_id = @flamingo_server_validation.id
+      self.validation_report_url = @flamingo_server_validation.report_url
       save!
+    end
+
+    def final_user_status
+      if @flamingo_server_validation
+        if @flamingo_server_validation.user_status == 'pending'
+          Operation.user_status.failed
+        else
+          @flamingo_server_validation.user_status
+        end
+      else
+        super
+      end
     end
 
     private

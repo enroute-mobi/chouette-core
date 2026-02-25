@@ -92,15 +92,31 @@ RSpec.describe Flamingo::Validation do
 
       it { expect { subject }.to change(flamingo_validation, :validation_id).to(validation_id) }
 
-      it { expect { subject }.to change(flamingo_validation, :error_uuid).to(be_present) }
+      it { expect { subject }.not_to change(flamingo_validation, :error_uuid).from(be_blank) }
 
       it { expect { subject }.to change(flamingo_validation, :validation_report_url).to('https://some/path') }
     end
 
-    context 'on running validation' do
+    context 'on warning validation' do
       before do
         allow(flamingo_server).to receive(:validate).and_return(
-          Secretary::Validation.new(id: validation_id, user_status: 'running')
+          Secretary::Validation.new(id: validation_id, user_status: 'warning', report_url: 'https://some/path')
+        )
+      end
+
+      it { expect { subject }.to change(flamingo_validation, :user_status).to('warning') }
+
+      it { expect { subject }.to change(flamingo_validation, :validation_id).to(validation_id) }
+
+      it { expect { subject }.not_to change(flamingo_validation, :error_uuid).from(be_blank) }
+
+      it { expect { subject }.to change(flamingo_validation, :validation_report_url).to('https://some/path') }
+    end
+
+    context 'on pending validation' do
+      before do
+        allow(flamingo_server).to receive(:validate).and_return(
+          Secretary::Validation.new(id: validation_id, user_status: 'pending')
         )
       end
 
@@ -108,7 +124,7 @@ RSpec.describe Flamingo::Validation do
 
       it { expect { subject }.to change(flamingo_validation, :validation_id).to(validation_id) }
 
-      it { expect { subject }.to change(flamingo_validation, :error_uuid).to(be_present) }
+      it { expect { subject }.not_to change(flamingo_validation, :error_uuid).from(be_blank) }
 
       it { expect { subject }.not_to change(flamingo_validation, :validation_report_url).from(be_blank) }
     end

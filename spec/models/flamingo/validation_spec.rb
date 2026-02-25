@@ -50,6 +50,7 @@ RSpec.describe Flamingo::Validation do
         ruleset: 'some_ruleset',
         include_schema: false,
         schema_version: 'next',
+        schema_ignore: [],
         publish: true
       )
       subject

@@ -955,7 +955,7 @@ module Import
 
           stop_sequence = sequence_merger.merge
           unless stop_sequence
-            errors.add :cannot_compute_stop_sequence # TODO
+            errors.add :cannot_compute_stop_sequence, message_attributes: { route_id: id }
             return nil
           end
 

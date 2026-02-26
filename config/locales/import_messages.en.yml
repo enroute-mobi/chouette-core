@@ -36,6 +36,7 @@ en:
     overlaping_period_for_timetable: "The DayType with identifier %{timetable_objectid} contains DayTypeAssignment with interesecting OperatingPeriod."
     several_datasets: "The NeTex file can’t define several datasets"
     inverted_route_not_found: "The Route '%{route_code}' can’t be associated to an inverse route '%{opposite_route_code}'"
+    cannot_compute_stop_sequence: "NeTEx JourneyPatterns associated to the Route %{route_id} don't allow to create a valid stop sequence"
     gtfs:
       agencies:
         imported: "%{count} agency(ies) imported"

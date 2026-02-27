@@ -1916,29 +1916,29 @@ RSpec.describe Import::NetexGeneric::RouteJourneyPatterns::Decorator do
   subject(:decorator) do
     described_class.new(
       netex_route,
+      override_internal_identifiers: override_internal_identifiers,
+      code_space: code_space,
       journey_patterns: netex_journey_patterns,
-      scheduled_stop_points: scheduled_stop_points
+      scheduled_stop_points: scheduled_stop_points,
+      destination_displays: destination_displays
     )
   end
 
-  let(:netex_route) { Netex::Route.new }
+  let(:netex_route) { Netex::Route.new(id: 'route-1', name: 'Route 1') }
+  let(:override_internal_identifiers) { false }
+  let(:code_space) { nil }
   let(:netex_journey_patterns) do
     [
-      instance_double(
-        Netex::JourneyPattern,
+      Netex::JourneyPattern.new(
+        id: 'jp-1',
+        name: 'Journey Pattern 1',
         points_in_sequence: [
-          instance_double(
-            Netex::StopPointInJourneyPattern,
+          Netex::StopPointInJourneyPattern.new(
             scheduled_stop_point_ref: Netex::Reference.new('ssp-1', type: Netex::ScheduledStopPoint),
-            for_boarding: 'true',
-            for_alighting: 'true',
             order: '0'
           ),
-          instance_double(
-            Netex::StopPointInJourneyPattern,
+          Netex::StopPointInJourneyPattern.new(
             scheduled_stop_point_ref: Netex::Reference.new('ssp-2', type: Netex::ScheduledStopPoint),
-            for_boarding: 'true',
-            for_alighting: 'true',
             order: '1'
           )
         ]
@@ -1951,6 +1951,7 @@ RSpec.describe Import::NetexGeneric::RouteJourneyPatterns::Decorator do
       'ssp-2' => Import::NetexGeneric::ScheduledStopPoint.new(id: 'ssp-2', stop_area_id: 42)
     }
   end
+  let(:destination_displays) { instance_double(Netex::Source::Tagger::Line::Collection, find: nil) }
 
   describe '#valid?' do
     context 'when there is no line' do
@@ -2072,6 +2073,139 @@ RSpec.describe Import::NetexGeneric::RouteJourneyPatterns::Decorator do
         let(:scheduled_stop_points) { super().except('ssp-2') }
 
         it { is_expected.to be_nil }
+      end
+    end
+  end
+
+  describe '#chouette_models' do
+    subject { decorator.chouette_models }
+
+    let(:context) do
+      Chouette.create do
+        code_space
+        workbench do
+          line :line
+          stop_area :stop_area1
+          stop_area :stop_area2
+          referential lines: %i[line]
+        end
+      end
+    end
+    let(:code_space) { context.code_space }
+    let(:scheduled_stop_points) do
+      {
+        'ssp-1' => Import::NetexGeneric::ScheduledStopPoint.new(
+          id: 'ssp-1', stop_area_id: context.stop_area(:stop_area1).id
+        ),
+        'ssp-2' => Import::NetexGeneric::ScheduledStopPoint.new(
+          id: 'ssp-2', stop_area_id: context.stop_area(:stop_area2).id
+        )
+      }
+    end
+
+    before do
+      allow(decorator).to receive(:chouette_line).and_return(context.line(:line))
+      context.referential.switch
+    end
+
+    it 'returns 1 route' do
+      is_expected.to contain_exactly(
+        have_attributes(
+          class: Chouette::Route,
+          objectid: nil,
+          name: 'Route 1',
+          codes: contain_exactly(have_attributes(code_space_id: context.code_space.id, value: 'route-1'))
+        )
+      )
+    end
+
+    context 'when override_internal_identifiers is true' do
+      let(:override_internal_identifiers) { true }
+
+      it 'returns 1 route with objectid' do
+        is_expected.to contain_exactly(
+          have_attributes(
+            class: Chouette::Route,
+            objectid: 'route-1:::LOC',
+            name: 'Route 1',
+            codes: contain_exactly(have_attributes(code_space_id: context.code_space.id, value: 'route-1'))
+          )
+        )
+      end
+    end
+
+    context 'when cluster returns 2 solutions' do
+      let(:netex_journey_patterns) do
+        [
+          Netex::JourneyPattern.new(
+            id: 'jp-1',
+            name: 'Journey Pattern 1',
+            points_in_sequence: [
+              Netex::StopPointInJourneyPattern.new(
+                scheduled_stop_point_ref: Netex::Reference.new('ssp-1', type: Netex::ScheduledStopPoint),
+                order: '0'
+              ),
+              Netex::StopPointInJourneyPattern.new(
+                scheduled_stop_point_ref: Netex::Reference.new('ssp-2', type: Netex::ScheduledStopPoint),
+                for_boarding: 'true',
+                order: '1'
+              )
+            ]
+          ),
+          Netex::JourneyPattern.new(
+            id: 'jp-2',
+            name: 'Journey Pattern 2',
+            points_in_sequence: [
+              Netex::StopPointInJourneyPattern.new(
+                scheduled_stop_point_ref: Netex::Reference.new('ssp-1', type: Netex::ScheduledStopPoint),
+                order: '0'
+              ),
+              Netex::StopPointInJourneyPattern.new(
+                scheduled_stop_point_ref: Netex::Reference.new('ssp-2', type: Netex::ScheduledStopPoint),
+                for_boarding: 'false',
+                order: '1'
+              )
+            ]
+          )
+        ]
+      end
+
+      it 'returns 2 routes' do
+        is_expected.to contain_exactly(
+          have_attributes(
+            class: Chouette::Route,
+            objectid: nil,
+            name: 'Route 1',
+            codes: contain_exactly(have_attributes(code_space_id: context.code_space.id, value: 'route-1'))
+          ),
+          have_attributes(
+            class: Chouette::Route,
+            objectid: nil,
+            name: 'Route 1',
+            codes: contain_exactly(have_attributes(code_space_id: context.code_space.id, value: 'route-1'))
+          )
+        )
+      end
+
+      context 'when override_internal_identifiers is true' do
+        let(:override_internal_identifiers) { true }
+
+        it 'returns 2 route without objectid' do
+          is_expected.to contain_exactly(
+            have_attributes(
+              class: Chouette::Route,
+              objectid: nil,
+              name: 'Route 1',
+              codes: contain_exactly(have_attributes(code_space_id: context.code_space.id, value: 'route-1'))
+            ),
+            have_attributes(
+              class: Chouette::Route,
+              objectid: nil,
+              name: 'Route 1',
+              codes: contain_exactly(have_attributes(code_space_id: context.code_space.id, value: 'route-1'))
+            )
+          )
+        end
       end
     end
   end

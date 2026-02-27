@@ -1791,10 +1791,6 @@ module Import
           member_scheduled_stop_points.map(&:stop_area_id)
         end
 
-        def stop_areas
-          stop_area_provider.stop_areas.where(id: stop_area_ids)
-        end
-
         def valid?
           code_value.present? && line_codes.present? && scheduled_stop_point_ids.present?
         end

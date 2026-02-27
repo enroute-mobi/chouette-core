@@ -891,15 +891,17 @@ module Import
         def chouette_models
           return [] unless chouette_line && clusterized_stops
 
+          many_routes = clusterized_stops.many?
           @chouette_models ||= clusterized_stops.map do |stops_cluster|
             decorate(
               __getobj__,
               RouteDecorator,
+              lookup: lookup,
               stops_cluster: stops_cluster,
               chouette_line: chouette_line,
               directions: directions,
               destination_displays: destination_displays,
-              lookup: lookup
+              many_routes: many_routes
             ).chouette_model
           end
         end
@@ -1023,7 +1025,12 @@ module Import
       end
 
       class RouteDecorator < ResourceDecorator
-        attr_accessor :routes_decorator, :stops_cluster, :chouette_line, :directions, :destination_displays, :lookup
+        attr_accessor :routes_decorator,
+                      :stops_cluster,
+                      :chouette_line,
+                      :directions,
+                      :destination_displays,
+                      :many_routes
 
         def chouette_model
           @chouette_model ||= chouette_line.routes.build(route_attributes)
@@ -1036,7 +1043,9 @@ module Import
             published_name: direction_name,
             stop_points: stop_points,
             journey_patterns: journey_patterns
-          }.merge(chouette_attributes)
+          }.merge(chouette_attributes).tap do |attrs|
+            attrs.delete(:objectid) if many_routes
+          end
         end
 
         def wayback
@@ -1119,7 +1128,7 @@ module Import
 
         def booking_arrangement_id
           netex_booking_arrangement_id = booking_arrangements&.first&.ref
-          lookup.booking_arrangements.find_id netex_booking_arrangement_id
+          lookup.booking_arrangements.find_id netex_booking_arrangement_id if netex_booking_arrangement_id
         end
 
         def published_name

@@ -9,7 +9,7 @@ fr:
     speed: "Vitesse non conforme de %{speed} km/h dans la Mission '%{journey_pattern_name}' entre '%{departure_name}' et '%{arrival_name}' (%{position})"
     presence_associated_model: "Nombre invalide (%{count}) pour %{source|the_model_name} '%{name}'"
     geographical_zone: "%{source|The_model_name} '%{name}' ne se situe pas dans la zone géographique indiquée"
-    expected_provider: "%{source|The_model_name} %{name} n’a pas le fournisseur attendu"
+    expected_provider: "%{source|The_model_name} %{name} n’est pas disponible dans le fournisseur sélectionné"
     passing_times_in_time_range: "La Course '%{name}' contient des horaires non inclus dans la période attendue"
     services_only_in_validity_period: "%{vehicle_journey_sum} passages sont définis pour la Ligne '%{name}' en dehors de sa période de validité"
     code_uniqueness: "%{source|The_model_name} '%{name}' n’a pas une unique valeur '%{code_value}' dans l’espace de code '%{code_space}'"

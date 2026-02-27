@@ -9,12 +9,12 @@ module Control
         option :target_model
         enumerize :target_model, in: %w[
           StopArea ConnectionLink Entrance
-          StopArea RoutingConstraint Company
+          RoutingConstraint Company
           Line LineNotice Network
           Document PointOfInterest Shape
         ]
         option :expected_provider
-        enumerize :expected_provider, in: %w[all_workbench_provider], default: 'all_workbench_provider'
+        enumerize :expected_provider, in: %w[all_workbench_provider workbench], default: 'all_workbench_provider'
 
         validates :target_model, :expected_provider, presence: true
       end
@@ -26,7 +26,7 @@ module Control
 
       def run
         faulty_models.find_each do |model|
-          messages.create(source: model, expected_provider: expected_provider)
+          messages.create(source: model)
         end
       end
 
@@ -41,7 +41,7 @@ module Control
           line_provider
           shape_provider
           document_provider
-        ].find { |provier| model_class.reflections[provier] }
+        ].find { |provider| model_class.reflections[provider] }
       end
 
       def provider_collection
@@ -53,7 +53,11 @@ module Control
       end
 
       def faulty_models
-        models.where.not(provider_attribute => expected_providers)
+        if expected_provider == 'all_workbench_provider'
+          models.where.not(provider_attribute => expected_providers)
+        elsif expected_provider == 'workbench'
+          models.where.not(id: workbench.send(model_collection))
+        end
       end
 
       def model_collection

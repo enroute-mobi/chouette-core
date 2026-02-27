@@ -437,6 +437,7 @@ en:
       french_ban: French National Address Base
     expected_provider:
       all_workbench_provider: Any Workbench Provider
+      workbench: Workbench
       stop_area_provider: Stop Area Provider
       line_provider: Line Provider
       shape_provider: Shape Provider

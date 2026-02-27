@@ -437,6 +437,7 @@ fr:
       french_ban: Base Adresse Nationale française
     expected_provider:
       all_workbench_provider: Tous les fournisseurs de l’Espace de Travail
+      workbench: Espace de travail
       stop_area_provider: Fournisseur d’arrêts
       line_provider: Fournisseur de lignes
       shape_provider: Fournisseur Topologique

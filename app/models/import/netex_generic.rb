@@ -1355,6 +1355,10 @@ module Import
           @chouette_model ||= Chouette::Footnote.new(footnote_attributes)
         end
 
+        def chouette_attributes
+          super.except(:objectid)
+        end
+
         def footnote_attributes
           {
             code: public_code,

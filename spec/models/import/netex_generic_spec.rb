@@ -1912,6 +1912,44 @@ RSpec.describe Import::NetexGeneric::TimeTables::Decorator do
   end
 end
 
+RSpec.describe Import::NetexGeneric::ReferentialNotices::Decorator do
+  subject(:decorator) do
+    described_class.new(
+      netex_footnote,
+      override_internal_identifiers: override_internal_identifiers
+    )
+  end
+
+  let(:netex_footnote) do
+    Netex::Notice.new(id: 'notice-1', public_code: 'Title', text: 'Content...', data_source_ref: 'ServiceJourneyNotice')
+  end
+  let(:override_internal_identifiers) { false }
+
+  describe '#chouette_model' do
+    subject { decorator.chouette_model }
+
+    it do
+      is_expected.to have_attributes(
+        class: Chouette::Footnote,
+        code: 'Title',
+        label: 'Content...',
+        codes: contain_exactly(have_attributes(value: 'notice-1'))
+      )
+    end
+
+    context 'when #override_internal_identifiers is true' do
+      let(:override_internal_identifiers) { true }
+
+      it do
+        is_expected.to have_attributes(
+          class: Chouette::Footnote,
+          codes: contain_exactly(have_attributes(value: 'notice-1'))
+        )
+      end
+    end
+  end
+end
+
 RSpec.describe Import::NetexGeneric::RouteJourneyPatterns::Decorator do
   subject(:decorator) do
     described_class.new(

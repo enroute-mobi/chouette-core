@@ -2194,7 +2194,7 @@ RSpec.describe Import::NetexGeneric::RouteJourneyPatterns::Decorator do
           is_expected.to contain_exactly(
             have_attributes(
               class: Chouette::Route,
-              objectid: nil,
+              objectid: 'route-1:::LOC',
               name: 'Route 1',
               codes: contain_exactly(have_attributes(code_space_id: context.code_space.id, value: 'route-1'))
             ),

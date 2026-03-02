@@ -891,8 +891,7 @@ module Import
         def chouette_models
           return [] unless chouette_line && clusterized_stops
 
-          many_routes = clusterized_stops.many?
-          @chouette_models ||= clusterized_stops.map do |stops_cluster|
+          @chouette_models ||= clusterized_stops.map.with_index do |stops_cluster, index|
             decorate(
               __getobj__,
               RouteDecorator,
@@ -901,7 +900,7 @@ module Import
               chouette_line: chouette_line,
               directions: directions,
               destination_displays: destination_displays,
-              many_routes: many_routes
+              index: index
             ).chouette_model
           end
         end
@@ -1030,7 +1029,7 @@ module Import
                       :chouette_line,
                       :directions,
                       :destination_displays,
-                      :many_routes
+                      :index
 
         def chouette_model
           @chouette_model ||= chouette_line.routes.build(route_attributes)
@@ -1044,7 +1043,7 @@ module Import
             stop_points: stop_points,
             journey_patterns: journey_patterns
           }.merge(chouette_attributes).tap do |attrs|
-            attrs.delete(:objectid) if many_routes
+            attrs.delete(:objectid) unless index.zero?
           end
         end
 

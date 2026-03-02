@@ -1736,7 +1736,7 @@ module Import
 
     class RoutingConstraintZones < WithResourcePart
       delegate :netex_source, :code_space, :scheduled_stop_points, :line_provider,
-               :stop_area_provider, :event_handler, to: :import
+               :stop_area_provider, :event_handler, :lookup, to: :import
 
       def import!
         netex_source.routing_constraint_zones.each do |zone|
@@ -1775,8 +1775,8 @@ module Import
           lines.map(&:ref)
         end
 
-        def chouette_lines
-          line_provider.lines.where(registration_number: line_codes)
+        def line_ids
+          lookup.lines.find_ids(line_codes)
         end
 
         def scheduled_stop_point_ids
@@ -1791,10 +1791,6 @@ module Import
           member_scheduled_stop_points.map(&:stop_area_id)
         end
 
-        def stop_areas
-          stop_area_provider.stop_areas.where(id: stop_area_ids)
-        end
-
         def valid?
           code_value.present? && line_codes.present? && scheduled_stop_point_ids.present?
         end
@@ -1802,8 +1798,8 @@ module Import
         def attributes
           {
             name: name,
-            stop_areas: stop_areas,
-            lines: chouette_lines,
+            stop_area_ids: stop_area_ids,
+            line_ids: line_ids,
             line_referential: line_referential,
             line_provider: line_provider
           }

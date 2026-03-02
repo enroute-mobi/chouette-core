@@ -334,7 +334,7 @@ module Import
       after_import :save_resource
 
       def save_resource
-        @import_resource&.save
+        import_resource.save!
       end
 
       # TODO: manage a given NeTEx resource to save tags

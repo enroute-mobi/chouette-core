@@ -83,12 +83,15 @@ module LocalImportSupport
     end
 
     def referential
-      @referential ||= workbench.referentials.create(
-        name: name,
-        organisation: organisation,
-        metadatas: [metadata],
-        ready: false
-      )
+      @referential ||=
+        Chouette::Benchmark.measure "create_referential" do
+          workbench.referentials.create(
+            name: name,
+            organisation: organisation,
+            metadatas: [metadata],
+            ready: false
+          )
+        end
     end
 
     def valid?

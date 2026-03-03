@@ -1563,7 +1563,7 @@ module Import
               departure_time_of_day: departure_time_of_day,
               latest_arrival_time_of_day: latest_arrival_time_of_day,
               earliest_departure_time_of_day: earliest_departure_time_of_day
-            )
+            ).skipping_presence_of(:stop_point)
           end
 
           private
@@ -1580,7 +1580,7 @@ module Import
             day_types.map do |day_type|
               time_table_id = index_time_tables[day_type.ref]
               if time_table_id
-                vehicle_journey_time_tables << Chouette::TimeTablesVehicleJourney.new(time_table_id: time_table_id)
+                vehicle_journey_time_tables << Chouette::TimeTablesVehicleJourney.new(time_table_id: time_table_id).skipping_presence_of(:time_table)
               else
                 errors << :time_table_not_found
               end

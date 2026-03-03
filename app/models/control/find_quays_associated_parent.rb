@@ -6,12 +6,12 @@ module Control
       extend ActiveSupport::Concern
 
       included do # rubocop:disable Metrics/BlockLength
-        option :geographical_distance, serialize: ActiveModel::Type::Integer
-        option :used_by_opposite_routes, serialize: ActiveModel::Type::Boolean, default: false
-        option :lexical_distance, serialize: ActiveModel::Type::Integer, default: 0
+        option :geographical_distance, default_value: 100
+        option :used_by_opposite_routes, default_value: false
+        option :lexical_distance, default_value: 0
 
-        validates :geographical_distance, numericality: { greater_than_or_equal_to: 50, less_than_or_equal_to: 1000 }
-        validates :lexical_distance, numericality: { greater_than_or_equal_to: 0, less_than_or_equal_to: 100 }
+        validates :geographical_distance, numericality: { greater_than_or_equal_to: 50, less_than_or_equal_to: 1000, allow_nil: false }
+        validates :lexical_distance, numericality: { greater_than_or_equal_to: 0, less_than_or_equal_to: 100, allow_nil: false }
       end
     end
 
@@ -23,17 +23,14 @@ module Control
       def run
         anomalies.each do |anomaly|
           anomaly.grouped_stop_areas.each do |stop_area|
-            control_messages.create({
-              message_attributes: {
-                stop_area_name: stop_area['name'],
-                short_id: Chouette::ObjectidFormatter::Netex.new.get_objectid(stop_area['objectid']).short_id,
-                cluster_id: anomaly.cluster_id
-              },
-              criticity: criticity,
-              source_id: stop_area['stop_area_id'],
-              source_type: 'Chouette::StopArea',
-              message_key: :find_quays_associated_parent
-            })
+            messages.create(
+              stop_area_name: stop_area['name'],
+              short_id: Chouette::ObjectidFormatter::Netex.new.get_objectid(stop_area['objectid']).short_id,
+              cluster_id: anomaly.cluster_id
+            ) do |message|
+              message.source_id = stop_area['stop_area_id']
+              message.source_type = 'Chouette::StopArea'
+            end
           end
         end
       end
@@ -197,6 +194,3 @@ module Control
     end
   end
 end
-
-
-

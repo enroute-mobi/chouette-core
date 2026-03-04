@@ -28,8 +28,8 @@ module Control
               short_id: Chouette::ObjectidFormatter::Netex.new.get_objectid(stop_area['objectid']).short_id,
               cluster_id: anomaly.cluster_id
             ) do |message|
-              message.source_id = stop_area['stop_area_id']
-              message.source_type = 'Chouette::StopArea'
+              message[:source_id] = stop_area['stop_area_id']
+              message[:source_type] = 'Chouette::StopArea'
             end
           end
         end
@@ -56,7 +56,7 @@ module Control
 
       def query
         @query ||= Query.new(
-          workbench,
+          context,
           geographical_distance,
           lexical_distance,
           used_by_opposite_routes
@@ -64,13 +64,13 @@ module Control
       end
 
       class Query
-        def initialize(workbench, geographical_distance, lexical_distance, used_by_opposite_routes)
-          @workbench = workbench
+        def initialize(context, geographical_distance, lexical_distance, used_by_opposite_routes)
+          @context = context
           @geographical_distance = geographical_distance
           @lexical_distance = lexical_distance
           @used_by_opposite_routes = used_by_opposite_routes
         end
-        attr_reader :workbench, :geographical_distance, :lexical_distance, :used_by_opposite_routes
+        attr_reader :context, :geographical_distance, :lexical_distance, :used_by_opposite_routes
 
         def clustered_stop_areas_query
           Chouette::StopArea
@@ -188,7 +188,7 @@ module Control
         end
 
         def stop_areas
-          @stop_areas ||= workbench.stop_areas
+          @stop_areas ||= context.stop_areas
         end
       end
     end

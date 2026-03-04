@@ -87,7 +87,7 @@ RSpec.describe Control::FindQuaysAssociatedParent do
       let(:first) { context.stop_area(:first) }
       let(:second) { context.stop_area(:second) }
 
-      context 'When similarity is required to be exactly the same' do
+      context 'when similarity is required to be exactly the same' do
         let(:lexical_distance) { 100 }
 
         let(:context) do
@@ -138,8 +138,8 @@ RSpec.describe Control::FindQuaysAssociatedParent do
         end
       end
 
-      context 'when similarity is required about 60%' do
-        let(:lexical_distance) { 60 }
+      context 'when similarity is required about 50%' do
+        let(:lexical_distance) { 50 }
 
         let(:context) do
           Chouette.create do
@@ -191,63 +191,91 @@ RSpec.describe Control::FindQuaysAssociatedParent do
 
       context 'when similarity is not required' do
         let(:lexical_distance) { 0 }
+        let(:geographical_distance) { 100 }
 
-        let(:context) do
-          Chouette.create do
-            workbench do
-              line :first_line, name: 'Line', transport_mode: 'bus'
+        context 'and the stop areas inside geographical distance' do
+          let(:context) do
+            Chouette.create do
+              workbench do
+                line :first_line, name: 'Line', transport_mode: 'bus'
 
-              stop_area :first, name: 'First sample', transport_mode: 'bus', longitude: 5.823483, latitude: 46.109425, area_type: 'zdep'
-              stop_area :second, name: 'Second sample', transport_mode: 'bus', longitude: 5.823483, latitude: 46.109425, area_type: 'zdep'
-              stop_area :other, name: 'Other', transport_mode: 'bus', longitude: 5.823483, latitude: 46.109425, area_type: 'zdep'
+                stop_area :first, name: 'First sample', transport_mode: 'bus', longitude: 5.823483, latitude: 46.109425, area_type: 'zdep'
+                stop_area :second, name: 'Second sample', transport_mode: 'bus', longitude: 5.823483, latitude: 46.109425, area_type: 'zdep'
+                stop_area :other, name: 'Other', transport_mode: 'bus', longitude: 5.823483, latitude: 46.109425, area_type: 'zdep'
 
-              referential do
-                route(line: :first_line, stop_areas: %i[first second other]) do
-                  journey_pattern :journey_pattern
+                referential do
+                  route(line: :first_line, stop_areas: %i[first second other]) do
+                    journey_pattern :journey_pattern
+                  end
                 end
               end
             end
           end
-        end
 
-        let(:other) { context.stop_area(:other) }
+          let(:other) { context.stop_area(:other) }
 
-        let(:expected_messages) do
-          [
+          let(:expected_messages) do
+            [
+              an_object_having_attributes({
+                                          source: first,
+                                          criticity: 'warning',
+                                          message_attributes: {
+                                            'stop_area_name' => 'First sample',
+                                            'cluster_id' => 0,
+                                            'short_id' => first.get_objectid.short_id
+                                          }
+                                        }),
             an_object_having_attributes({
-                                        source: first,
-                                        criticity: 'warning',
-                                        message_attributes: {
-                                          'stop_area_name' => 'First sample',
-                                          'cluster_id' => 0,
-                                          'short_id' => first.get_objectid.short_id
-                                        }
-                                      }),
-          an_object_having_attributes({
-                                        source: second,
-                                        criticity: 'warning',
-                                        message_attributes: {
-                                          'stop_area_name' => 'Second sample',
-                                          'cluster_id' => 0,
-                                          'short_id' => second.get_objectid.short_id
-                                        }
-                                      }),
-          an_object_having_attributes({
-                                        source: other,
-                                        criticity: 'warning',
-                                        message_attributes: {
-                                          'stop_area_name' => 'Other',
-                                          'cluster_id' => 0,
-                                          'short_id' => other.get_objectid.short_id
-                                        }
-                                      })
-          ]
+                                          source: second,
+                                          criticity: 'warning',
+                                          message_attributes: {
+                                            'stop_area_name' => 'Second sample',
+                                            'cluster_id' => 0,
+                                            'short_id' => second.get_objectid.short_id
+                                          }
+                                        }),
+            an_object_having_attributes({
+                                          source: other,
+                                          criticity: 'warning',
+                                          message_attributes: {
+                                            'stop_area_name' => 'Other',
+                                            'cluster_id' => 0,
+                                            'short_id' => other.get_objectid.short_id
+                                          }
+                                        })
+            ]
+          end
+
+          it 'should contain first, second and other in the same cluster' do
+            control_run.run
+
+            expect(control_run.control_messages).to match_array(expected_messages)
+          end
         end
 
-        it 'should contain first, second and other in the same cluster' do
-          control_run.run
+        context 'and the stop areas outside geographical distance' do
+          let(:context) do
+            Chouette.create do
+              workbench do
+                line :first_line, name: 'Line', transport_mode: 'bus'
 
-          expect(control_run.control_messages).to match_array(expected_messages)
+                stop_area :first, name: 'Jussieu', transport_mode: 'bus', longitude: 2.54966927, latitude: 48.95321476, area_type: 'zdep'
+                stop_area :second, name: 'Charles Michels', transport_mode: 'bus', longitude: 2.28562434, latitude: 48.84636172, area_type: 'zdep'
+
+                referential do
+                  route(line: :first_line, stop_areas: %i[first second]) do
+                    journey_pattern :journey_pattern
+                  end
+                end
+              end
+            end
+          end
+
+          it 'should not find any clusters' do
+            control_run.run
+
+            expect(control_run.control_messages).to be_empty
+          end
         end
       end
     end
@@ -275,7 +303,7 @@ RSpec.describe Control::FindQuaysAssociatedParent do
         let(:second) { context.stop_area(:second) }
 
         context 'when the control uses geographical distance of 100 meters' do
-          let(:geographical_distance) { 100}
+          let(:geographical_distance) { 100 }
 
           let(:expected_messages) do
             [
@@ -332,15 +360,15 @@ RSpec.describe Control::FindQuaysAssociatedParent do
               stop_area :third, name: 'Sample', transport_mode: 'bus', longitude: -1.536317, latitude: 47.212535, area_type: 'zdep'
               stop_area :fourth, name: 'Sample', transport_mode: 'bus', longitude: -1.535978, latitude: 47.211809, area_type: 'zdep'
 
-              # The distance between the two points you provided is approximately 280 meters
+              # The distance between the two points (first and third) is approximately 280 meters
               # Both locations are situated in Nantes, France. Here are the details for your route:
-              # Point A: 47.214722, -1.537587 (Near 3 Rue Marcel Paul)
-              # Point B: 47.212535, -1.536317 (Near 16 Allée Jacques Berque)
+              # first: 47.214722, -1.537587 (Near 3 Rue Marcel Paul)
+              # third: 47.212535, -1.536317 (Near 16 Allée Jacques Berque)
 
-              # The distance between these two points in Nantes, France, is approximately 350 meters.
+              # The distance between these two points (first and fourth) is approximately 350 meters.
               # Here are the trip details for the coordinates provided:
-              # Point A (Origin): 47.214722, -1.537587 (near 3 Rue Marcel Paul)
-              # Point B (Destination): 47.211809, -1.535978 (near Pont Willy-Brandt)
+              # first: (Origin): 47.214722, -1.537587 (near 3 Rue Marcel Paul)
+              # fourth: (Destination): 47.211809, -1.535978 (near Pont Willy-Brandt)
 
               referential do
                 route(line: :first_line, stop_areas: %i[first second third fourth]) do
@@ -357,7 +385,7 @@ RSpec.describe Control::FindQuaysAssociatedParent do
         let(:fourth) { context.stop_area(:fourth) }
 
         context 'when the control uses geographical distance of 150 meters' do
-          let(:geographical_distance) { 150}
+          let(:geographical_distance) { 150 }
 
           let(:expected_messages) do
             [

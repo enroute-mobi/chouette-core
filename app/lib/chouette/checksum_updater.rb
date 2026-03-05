@@ -11,7 +11,7 @@ module Chouette
 
     attr_reader :referential, :scope
 
-    ALL = %i{routes journey_patterns vehicle_journeys time_tables}
+    ALL = %i[routes journey_patterns footnotes vehicle_journeys time_tables]
     def update(only: [], except: [])
       Rails.logger.debug "Compute checksums in referential #{referential.id}"
       targets = (only.presence || ALL) - except
@@ -52,6 +52,12 @@ module Chouette
         update_in_batches scope.time_table_dates.select(:id, :date, :in_out)
         update_in_batches scope.time_table_periods.select(:id, :period_start, :period_end)
         update_in_batches scope.time_tables.select(:id, :int_day_types).includes(:dates, :periods)
+      end
+    end
+
+    def footnotes
+      measure 'footnotes' do
+        update_in_batches scope.footnotes.select(:id, :code, :label, :line_id)
       end
     end
 

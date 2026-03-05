@@ -51,8 +51,14 @@
         > div {
           margin: 0 3px 0 0;
         }
+        &.has-items {
+          padding: 5px !important;
+        }
       }
     }
+  }
+  .ts-control.multi .ts-input.has-items {
+    padding: 5px !important;
   }
 }
 

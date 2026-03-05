@@ -36,7 +36,12 @@ en:
     overlaping_period_for_timetable: "The DayType with identifier %{timetable_objectid} contains DayTypeAssignment with interesecting OperatingPeriod."
     several_datasets: "The NeTex file can’t define several datasets"
     inverted_route_not_found: "The Route '%{route_code}' can’t be associated to an inverse route '%{opposite_route_code}'"
-    cannot_compute_stop_sequence: "NeTEx JourneyPatterns associated to the Route %{route_id} don't allow to create a valid stop sequence"
+    cannot_compute_stop_sequence: "NeTEx JourneyPatterns associated to the Route %{resource_id} don't allow to create a valid stop sequence"
+    route_without_id: "The NeTEx Route has no identifier"
+    route_with_line_ref_undefined: "The NeTEx Route '%{resource_id}' has no Line"
+    route_with_line_unknown: "The NeTEx Route '%{resource_id}' references an unknown NeTEx Line '%{line_ref}'"
+    route_with_direction_type_unsupported: "The NeTEx Route '%{resource_id}' uses an unsupported DirectionType '%{direction_type}'"
+    route_with_direction_unknown: "The NeTEx Route '%{resource_id}' references an unknown Direction '%{direction_id}'"
     gtfs:
       agencies:
         imported: "%{count} agency(ies) imported"

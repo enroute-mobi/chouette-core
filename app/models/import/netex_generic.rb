@@ -893,8 +893,12 @@ module Import
         def chouette_line
           return @chouette_line if @chouette_line
 
-          line = lookup.lines.find(line_ref.ref) if lookup
-          errors.add :line_not_found unless line
+          unless line_ref
+            errors.add :line_ref_undefined
+          else
+            line = lookup.lines.find(line_ref.ref) if lookup
+            errors.add :line_unknown, value: line_ref unless line
+          end
 
           @chouette_line = line
         end
@@ -1067,12 +1071,15 @@ module Import
         end
 
         def wayback
+          if direction_type.blank?
+            :outbound
+          end
+
           if Chouette::Route.wayback.values.include?(direction_type)
             direction_type
           else
-            # Should be a warning
-            # errors.add :direction_type_not_found
-            :outbound
+            errors.add :direction_type_unsupported, value: direction_type
+            nil
           end
         end
 
@@ -1081,7 +1088,7 @@ module Import
           return unless direction_id
 
           direction = directions.find direction_id
-          errors.add :direction_not_found unless direction
+          errors.add :direction_unknown, value: direction_id unless direction
 
           direction
         end

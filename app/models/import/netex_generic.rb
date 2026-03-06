@@ -643,7 +643,8 @@ module Import
             destination_displays: destination_displays
           )
 
-          unless decorator.valid?
+          valid = decorator.valid?
+          unless valid
             hacked_decorator = decorate(
               netex_route,
               HackedOrderDecorator,
@@ -655,10 +656,11 @@ module Import
             if hacked_decorator.enabled?
               Rails.logger.info "HackedOrderDecorator enabled for Route #{netex_route.id}"
               decorator = hacked_decorator
+              valid = decorator.valid?
             end
           end
 
-          unless decorator.valid?
+          unless valid
             decorator.errors.each { |error| create_message error }
             Rails.logger.debug { "Errors found by Decorator for #{netex_route.inspect}: #{decorator.errors.inspect}" }
 
@@ -798,6 +800,14 @@ module Import
               scheduled_stop_point_ref = stop_point_in_journey_pattern.scheduled_stop_point_ref&.ref
               scheduled_stop_point = scheduled_stop_points[scheduled_stop_point_ref]
 
+              # TODO: Message for CHOUETTE-4895
+              # If stop_area_id is missing, the Route / Journey Patterns import is not possible
+              stop_area_id = scheduled_stop_point&.stop_area_id
+              unless stop_area_id
+                errors.add :stop_area_not_found_in_scheduled_stop_points
+                return []
+              end
+
               stop_point_attributes = {
                 'stop_area_id' => scheduled_stop_point.stop_area_id,
                 'position' => order,
@@ -879,12 +889,6 @@ module Import
       class Decorator < ResourceDecorator
         attr_accessor :journey_patterns, :route_points, :directions, :destination_displays
 
-        def validate
-          stop_sequence
-
-          super
-        end
-
         def chouette_line
           return @chouette_line if @chouette_line
 
@@ -942,7 +946,7 @@ module Import
         end
 
         def build_sequence_merger
-          return unless netex_journey_pattern_ordered_points
+          return nil unless netex_journey_pattern_ordered_points
 
           Sequence::Merger.new.tap do |merger|
             netex_journey_pattern_ordered_points.each do |_, jp_points|
@@ -958,6 +962,11 @@ module Import
 
         def stop_sequence
           return @stop_sequence if defined?(@stop_sequence)
+
+          @stop_sequence = build_stop_sequence
+        end
+
+        def build_stop_sequence
           return nil unless sequence_merger
 
           stop_sequence = sequence_merger.merge
@@ -965,15 +974,19 @@ module Import
             errors.add :cannot_compute_stop_sequence, message_attributes: { route_id: id }
             return nil
           end
-
-          @stop_sequence = stop_sequence
+          stop_sequence
         end
 
         def sequence_cluster
           return @sequence_cluster if defined?(@sequence_cluster)
+
+          @sequence_cluster = build_sequence_cluster
+        end
+
+        def build_sequence_cluster
           return nil unless stop_sequence
 
-          @sequence_cluster ||= Sequence::Cluster.new(stop_sequence).tap do |cluster|
+          Sequence::Cluster.new(stop_sequence).tap do |cluster|
             netex_journey_pattern_ordered_points.each do |netex_journey_pattern, jp_points|
               pattern = Sequence::Cluster::Pattern.new(netex_journey_pattern)
 
@@ -994,9 +1007,8 @@ module Import
 
         def clusterized_stops
           return @clusterized_stops if defined?(@clusterized_stops)
-          return nil unless sequence_cluster
 
-          @clusterized_stops = sequence_cluster.clusterize
+          @clusterized_stops = sequence_cluster&.clusterize
         end
 
         def netex_journey_pattern_ordered_points

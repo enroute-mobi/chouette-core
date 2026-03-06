@@ -5,6 +5,7 @@ module Import
   class VehicleJourneyInserter < Inserter
     def insert(vehicle_journey)
       referential_inserter.vehicle_journeys.insert vehicle_journey, before_copy: before_copy
+      return unless vehicle_journey.valid?
 
       vehicle_journey.vehicle_journey_at_stops.each do |vehicle_journey_at_stop|
         vehicle_journey_at_stop.vehicle_journey = vehicle_journey

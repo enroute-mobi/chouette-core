@@ -40,6 +40,10 @@ class CopyInserter < ByClassInserter
     end
 
     def insert(model, options = {})
+      if before_copy = options[:before_copy]
+        return unless before_copy.call model
+      end
+
       csv << csv_values(model)
     end
 

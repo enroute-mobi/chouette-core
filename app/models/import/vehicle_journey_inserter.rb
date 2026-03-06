@@ -4,7 +4,7 @@ module Import
   # Insert Vehicle Journey and inner models into a Referential (via ReferentialInserter).
   class VehicleJourneyInserter < Inserter
     def insert(vehicle_journey)
-      referential_inserter.vehicle_journeys << vehicle_journey
+      referential_inserter.vehicle_journeys.insert vehicle_journey, before_copy: before_copy
 
       vehicle_journey.vehicle_journey_at_stops.each do |vehicle_journey_at_stop|
         vehicle_journey_at_stop.vehicle_journey = vehicle_journey

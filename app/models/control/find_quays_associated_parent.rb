@@ -21,6 +21,8 @@ module Control
       include Options
 
       def run
+        return unless referential
+
         anomalies.each do |anomaly|
           anomaly.grouped_stop_areas.each do |stop_area|
             messages.create(

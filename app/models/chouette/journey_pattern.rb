@@ -4,8 +4,6 @@ module Chouette
   class JourneyPattern < Referential::Model
     has_metadata
 
-    include TransientSupport
-
     belongs_to :route # CHOUETTE-3247 validates presence
     has_one :line, through: :route
     has_many :vehicle_journeys, :dependent => :destroy

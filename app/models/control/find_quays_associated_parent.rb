@@ -10,7 +10,7 @@ module Control
         option :used_by_opposite_routes, default_value: false
         option :lexical_distance, default_value: 0
 
-        validates :geographical_distance, numericality: { greater_than_or_equal_to: 50, less_than_or_equal_to: 1000, allow_nil: false }
+        validates :geographical_distance, numericality: { greater_than_or_equal_to: 50, less_than_or_equal_to: 150, allow_nil: false }
         validates :lexical_distance, numericality: { greater_than_or_equal_to: 0, less_than_or_equal_to: 100, allow_nil: false }
       end
     end

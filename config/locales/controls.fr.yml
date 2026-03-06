@@ -18,6 +18,10 @@ fr:
     form:
       sections:
         controls: "Contrôles"
+  simple_form:
+    hints:
+      control_find_quays_associated_parent:
+        lexical_distance: "O signifie aucune similarité et 100 signifie complètement identique"
   activerecord:
     models:
       control/base:

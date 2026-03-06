@@ -18,6 +18,10 @@ en:
     form:
       sections:
         controls: "Controls"
+  simple_form:
+    hints:
+      control_find_quays_associated_parent:
+        lexical_distance: 0 means not similar at all, while 100 means completely identical.
   activerecord:
     models:
       control/base:

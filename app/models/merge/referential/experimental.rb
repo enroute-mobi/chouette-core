@@ -117,6 +117,9 @@ module Merge::Referential
 
             merge.existing_objectid = existing_objectid?(vehicle_journey.id)
             merge.existing_route_id = existing_route_id(vehicle_journey.route_id)
+            unless merge.existing_route_id
+              raise "Unable to find existing route_id for #{vehicle_journey.route_id} of VehicleJourney (#{vehicle_journey.id}, #{vehicle_journey.checksum}) in referential #{source.id}"
+            end
             merge.existing_journey_pattern_id = existing_journey_pattern_id(vehicle_journey.journey_pattern_id)
 
             yield merge
@@ -142,6 +145,9 @@ module Merge::Referential
           return if @loaded
           @loaded = true
           rows.each do |journey_pattern_id, route_id, existing_journey_pattern_id, existing_route_id|
+            unless existing_journey_pattern_id && existing_route_id
+              raise "Missing existing_journey_pattern_id or existing_journey_pattern_id (#{journey_pattern_id}, #{route_id}, #{existing_journey_pattern_id}, #{existing_route_id}) in referential #{source.id}"
+            end
             existing_route_ids[route_id] = existing_route_id
             existing_journey_pattern_ids[journey_pattern_id] = existing_journey_pattern_id
           end

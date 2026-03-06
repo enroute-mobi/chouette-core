@@ -87,9 +87,9 @@ module Control
               SQL
             )
             .from("(#{raw_clustered_stop_areas}) stop_areas")
-            .where.not('stop_areas.cluster_id IS NULL')
             .where.not("stop_areas.id IN (#{excluded_stop_areas})")
             .group('stop_areas.cluster_id')
+            .having('count(*) > 1')
             .to_sql
         end
 
@@ -103,8 +103,6 @@ module Control
                 INNER JOIN (#{raw_clustered_stop_areas}) AS csa
                 ON stop_areas.cluster_id = csa.cluster_id
                   AND stop_areas.route_ids && csa.route_ids
-                  AND ARRAY_LENGTH(stop_areas.route_ids, 1) > 1
-                  AND ARRAY_LENGTH(csa.route_ids, 1) > 1
                   AND stop_areas.id <> csa.id
               SQL
             )
@@ -125,11 +123,11 @@ module Control
           @base_query ||= stop_areas
             .select(
               <<-SQL
-                stop_areas.id, stop_areas.objectid, stop_areas.name, ARRAY_AGG(routes.id) AS route_ids,
+                public.stop_areas.id, public.stop_areas.objectid, public.stop_areas.name, ARRAY_AGG(routes.id) AS route_ids,
                 ST_ClusterDBSCAN(
                   ST_Transform(
                     ST_SetSRID(
-                      ST_MakePoint(stop_areas.longitude, stop_areas.latitude),
+                      ST_MakePoint(public.stop_areas.longitude, public.stop_areas.latitude),
                       4326
                     ), 3857), #{geographical_distance}, 2
                 ) OVER (
@@ -139,18 +137,18 @@ module Control
             )
             .left_joins(base_left_joins)
             .where(base_where)
-            .group('public.stop_areas.id')
+            .group('public.stop_areas.id, public.stop_areas.objectid, public.stop_areas.name')
             .to_sql
         end
 
         # partition by transport_mode and group_name (lexical distance)
         def partition_by
           <<-SQL
-            stop_areas.transport_mode,
+            public.stop_areas.transport_mode,
             (
               SELECT sa.name
               FROM public.stop_areas sa
-              WHERE similarity(stop_areas.name, sa.name) >= #{threshold}
+              WHERE similarity(public.stop_areas.name, sa.name) >= #{threshold}
               ORDER BY sa.name
               LIMIT 1
             )
@@ -170,19 +168,19 @@ module Control
           @base_where ||=
             if used_by_opposite_routes
               <<-SQL
-                stop_areas.latitude IS NOT NULL AND
-                stop_areas.longitude IS NOT NULL AND
-                stop_areas.parent_id IS NULL AND
-                stop_areas.area_type = 'zdep' AND
-                stop_areas_routes.id = stop_areas.id AND
-                stop_areas_routes.id IS NOT NULL
+                public.stop_areas.latitude IS NOT NULL AND
+                public.stop_areas.longitude IS NOT NULL AND
+                public.stop_areas.parent_id IS NULL AND
+                public.stop_areas.area_type = 'zdep' AND
+                public.stop_areas_routes.id = public.stop_areas.id AND
+                public.stop_areas_routes.id IS NOT NULL
               SQL
            else
               <<-SQL
-                stop_areas.latitude IS NOT NULL AND
-                stop_areas.longitude IS NOT NULL AND
-                stop_areas.parent_id IS NULL AND
-                stop_areas.area_type = 'zdep'
+                public.stop_areas.latitude IS NOT NULL AND
+                public.stop_areas.longitude IS NOT NULL AND
+                public.stop_areas.parent_id IS NULL AND
+                public.stop_areas.area_type = 'zdep'
               SQL
            end
         end

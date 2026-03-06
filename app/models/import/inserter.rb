@@ -27,11 +27,17 @@ module Import
 
     delegate :flush, to: :referential_inserter
 
+    def before_copy
+      @before_copy ||= Proc.new do |model|
+        valid?(model)
+      end
+    end
+
     include AroundMethod
 
     around_method :insert
-    def around_insert(model, &block)
-      return unless valid?(model)
+    def around_insert(model, options = {}, &block)
+      # Validation is performed explicitly with before_copy option
 
       block.call
       insert_codes model

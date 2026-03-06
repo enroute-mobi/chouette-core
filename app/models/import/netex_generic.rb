@@ -569,6 +569,10 @@ module Import
     def referential_inserter
       @referential_inserter ||= ReferentialInserter.new(referential) do |config|
         config.add IdInserter
+
+        config.add LegacyObjectidLoaderInserter
+        config.add ObjectidInserter
+
         config.add TimestampsInserter
         config.add CopyInserter
       end

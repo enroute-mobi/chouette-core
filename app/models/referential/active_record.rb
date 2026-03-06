@@ -3,6 +3,8 @@
 # Base class for ActiveRecord stored into a Referential
 class Referential
   class ActiveRecord < Chouette::ActiveRecord
+    include TransientSupport
+
     acts_as_copy_target
 
     self.abstract_class = true

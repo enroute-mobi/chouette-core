@@ -676,7 +676,7 @@ module Import
       end
 
       def cache_journey_pattern(journey_pattern)
-        index_route_journey_patterns[journey_pattern.registration_number] = {
+        index_route_journey_patterns[journey_pattern.transient(:netex_id)] = {
           journey_pattern_id: journey_pattern.id,
           route_id: journey_pattern.route_id,
           stop_point_ids: journey_pattern.journey_pattern_stop_points.map(&:stop_point_id)
@@ -838,13 +838,11 @@ module Import
           delegate :destination_displays, :lookup, :stop_point, to: :route_decorator
 
           def chouette_model
-            @chouette_model ||= Chouette::JourneyPattern.new journey_pattern_attributes
+            @chouette_model ||= Chouette::JourneyPattern.new(journey_pattern_attributes).with_transient(netex_id: id)
           end
 
           def journey_pattern_attributes
             {
-              # TODO: We should not use the JourneyPattern#registration_number
-              registration_number: id,
               name: chouette_name,
               published_name: published_name,
               journey_pattern_stop_points: journey_pattern_stop_points,
@@ -1115,13 +1113,11 @@ module Import
         delegate :destination_displays, :lookup, to: :route_decorator
 
         def chouette_model
-          @chouette_model ||= Chouette::JourneyPattern.new journey_pattern_attributes
+          @chouette_model ||= Chouette::JourneyPattern.new(journey_pattern_attributes).with_transient(netex_id: id)
         end
 
         def journey_pattern_attributes
           {
-            # TODO: We should not use the JourneyPattern#registration_number
-            registration_number: id,
             name: chouette_name,
             published_name: published_name,
             journey_pattern_stop_points: journey_pattern_stop_points,

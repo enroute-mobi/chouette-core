@@ -14,7 +14,7 @@ RSpec.describe Control::FindQuaysAssociatedParent do
       described_class.create(
         control_list_run: control_list_run,
         geographical_distance: geographical_distance,
-        used_by_opposite_routes: false,
+        used_by_opposite_routes: used_by_opposite_routes,
         lexical_distance: lexical_distance,
         criticity: 'warning',
         position: 0
@@ -23,6 +23,7 @@ RSpec.describe Control::FindQuaysAssociatedParent do
 
     let(:lexical_distance) { 0 }
     let(:geographical_distance) { 50 }
+    let(:used_by_opposite_routes) { false }
 
     context 'when there is no target referential in the control list' do
       let(:referential) { nil }
@@ -81,13 +82,8 @@ RSpec.describe Control::FindQuaysAssociatedParent do
               stop_area :second_in_route2, name: 'Second in route2', transport_mode: 'tramway', longitude: 5.823483, latitude: 46.109435, area_type: 'zdep'
 
               referential do
-                route(line: :first_line, stop_areas: %i[first_in_route1 second_in_route1]) do
-                  journey_pattern :journey_pattern
-                end
-
-                route(line: :first_line, stop_areas: %i[first_in_route2 second_in_route2]) do
-                  journey_pattern :journey_pattern
-                end
+                route(line: :first_line, stop_areas: %i[first_in_route1 second_in_route1])
+                route(line: :first_line, stop_areas: %i[first_in_route2 second_in_route2])
               end
             end
           end
@@ -237,13 +233,8 @@ RSpec.describe Control::FindQuaysAssociatedParent do
               stop_area :second_in_route2, name: 'Sample', transport_mode: 'bus', longitude: -1.535978, latitude: 47.211809, area_type: 'zdep'
 
               referential do
-                route(line: :first_line, stop_areas: %i[first_in_route1 second_in_route1]) do
-                  journey_pattern :journey_pattern
-                end
-
-                route(line: :first_line, stop_areas: %i[first_in_route2 second_in_route2]) do
-                  journey_pattern :journey_pattern
-                end
+                route(line: :first_line, stop_areas: %i[first_in_route1 second_in_route1])
+                route(line: :first_line, stop_areas: %i[first_in_route2 second_in_route2])
               end
             end
           end
@@ -314,6 +305,102 @@ RSpec.describe Control::FindQuaysAssociatedParent do
             expect(control_run.control_messages).to be_empty
           end
         end
+      end
+
+      describe 'Used by opposite route' do
+        let(:used_by_opposite_routes) { true }
+
+        let(:context) do
+          Chouette.create do
+            workbench do
+              line :first_line, name: 'Line 1', transport_mode: 'bus'
+              line :second_line, name: 'Line 2', transport_mode: 'bus'
+
+              stop_area :first_in_route1, name: 'A R1', transport_mode: 'bus', longitude: -1.537587, latitude: 47.214722, area_type: 'zdep'
+              stop_area :second_in_route1, name: 'B R1', transport_mode: 'bus', longitude: -1.536317, latitude: 47.212535, area_type: 'zdep'
+
+              stop_area :first_in_route2, name: 'A R2', transport_mode: 'bus', longitude: -1.536317, latitude: 47.212535, area_type: 'zdep'
+              stop_area :second_in_route2, name: 'B R2', transport_mode: 'bus', longitude: -1.537587, latitude: 47.214722, area_type: 'zdep'
+
+              stop_area :first_in_route3, name: 'A R3', transport_mode: 'bus', longitude: -1.536317, latitude: 47.212535, area_type: 'zdep'
+              stop_area :second_in_route3, name: 'B R3', transport_mode: 'bus', longitude: -1.537587, latitude: 47.214722, area_type: 'zdep'
+
+              referential do
+                route(:route, line: :first_line, stop_areas: %i[first_in_route1 second_in_route1])
+                route(:opposite_route, line: :first_line, stop_areas: %i[first_in_route2 second_in_route2])
+                route(:other_route, line: :second_line, stop_areas: %i[first_in_route3 second_in_route3])
+              end
+            end
+          end
+        end
+
+        let(:source) { context.referential }
+        let(:route) { context.route(:route) }
+        let(:opposite_route) { context.route(:opposite_route) }
+
+        let(:first_in_route1) { context.stop_area(:first_in_route1) }
+        let(:second_in_route1) { context.stop_area(:second_in_route1) }
+        let(:first_in_route2) { context.stop_area(:first_in_route2) }
+        let(:second_in_route2) { context.stop_area(:second_in_route2) }
+
+        before do
+          source.switch do
+            opposite_route.update wayback: route.opposite_wayback
+            route.update opposite_route_id: opposite_route.id
+          end
+        end
+
+        context 'when the control uses geographical distance of 150 meters' do
+          let(:geographical_distance) { 150 }
+
+          let(:expected_messages) do
+            [
+              an_object_having_attributes({
+                                          source: first_in_route1,
+                                          criticity: 'warning',
+                                          message_attributes: {
+                                            'stop_area_name' => 'Sample',
+                                            'cluster_id' => 0,
+                                            'short_id' => first_in_route1.get_objectid.short_id
+                                          }
+                                        }),
+            an_object_having_attributes({
+                                          source: second_in_route1,
+                                          criticity: 'warning',
+                                          message_attributes: {
+                                            'stop_area_name' => 'Sample',
+                                            'cluster_id' => 1,
+                                            'short_id' => second_in_route1.get_objectid.short_id
+                                          }
+                                        }),
+              an_object_having_attributes({
+                                          source: first_in_route2,
+                                          criticity: 'warning',
+                                          message_attributes: {
+                                            'stop_area_name' => 'Sample',
+                                            'cluster_id' => 1,
+                                            'short_id' => first_in_route2.get_objectid.short_id
+                                          }
+                                        }),
+              an_object_having_attributes({
+                                          source: second_in_route2,
+                                          criticity: 'warning',
+                                          message_attributes: {
+                                            'stop_area_name' => 'Sample',
+                                            'cluster_id' => 0,
+                                            'short_id' => second_in_route2.get_objectid.short_id
+                                          }
+                                        })
+            ]
+          end
+
+          it 'should two clusters with cluster 0 (first_in_route1 and first_in_route2) and cluster 1 (second_in_route1 and second_in_route2)' do
+            control_run.run
+
+            expect(control_run.control_messages).to match_array(expected_messages)
+          end
+        end
+
       end
     end
   end

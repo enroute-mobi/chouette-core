@@ -50,9 +50,8 @@ module Control
 
         def grouped_stop_areas
           return [] unless @grouped_stop_areas.present?
+
           JSON.parse(@grouped_stop_areas)
-        rescue JSON::ParserError
-          []
         end
       end
 

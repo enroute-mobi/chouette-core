@@ -29,7 +29,7 @@ RSpec.describe Macro::DefineRouteName do
           stop_area :last, name: 'Last'
 
           referential do
-            route :first, name: 'Route', stop_areas: %i[first middle last]
+            route :first, name: 'Default', stop_areas: %i[first middle last]
           end
         end
       end
@@ -40,7 +40,7 @@ RSpec.describe Macro::DefineRouteName do
       let(:last_stop_area) { context.stop_area(:last) }
       let(:route) { context.route(:first) }
       let(:attribute_value) { 'Test Aller - First > Last' }
-      let(:name_before_change) { 'Route' }
+      let(:name_before_change) { 'Default' }
 
       let(:expected_message) do
         an_object_having_attributes(
@@ -58,7 +58,7 @@ RSpec.describe Macro::DefineRouteName do
         let(:target_attribute) { :name }
 
         it 'should update route name' do
-          expect { subject }.to change { route.reload.name }.from('Route').to(attribute_value)
+          expect { subject }.to change { route.reload.name }.from(name_before_change).to(attribute_value)
           expect(macro_run.macro_messages).to include(expected_message)
         end
       end

@@ -38,7 +38,7 @@ module Macro
       end
 
       def routes
-        @routes ||= Query.new(scope).routes_with_departure_and_arrival_names
+        @routes ||= Query.new(scope, target_attribute).routes_with_departure_and_arrival_names
       end
 
       protected
@@ -82,10 +82,11 @@ module Macro
       end
 
       class Query
-        def initialize(scope)
+        def initialize(scope, attribute)
           @scope = scope
+          @attribute = attribute
         end
-        attr_reader :scope
+        attr_reader :scope, :attribute
 
         def routes_with_departure_and_arrival_names
           sql = routes
@@ -105,6 +106,7 @@ module Macro
             .select(route_column_names, stop_area_names)
             .from(base_query)
             .where('departure OR arrival')
+            .where(attribute => blank_values)
             .group(route_column_names)
         end
 
@@ -131,6 +133,15 @@ module Macro
 
         def routes
           @routes ||= scope.routes
+        end
+
+        def blank_values
+          @blank_values = [nil, ''].tap do |values|
+            if attribute == 'name'
+              values << ::Import::NetexGeneric::ResourceDecorator::DEFAULT_NAME
+              values.concat(::Chouette::Route.wayback.values.map(&:capitalize))
+            end
+          end
         end
       end
     end

@@ -122,7 +122,7 @@ module Control
 
         # prepare StopAreas grouped by transport_mode and geographical distance
         def base_query
-          @base_query ||= stop_areas
+          stop_areas
             .select(
               <<-SQL
                 public.stop_areas.id, public.stop_areas.objectid, public.stop_areas.name, ARRAY_AGG(routes.id) AS route_ids,
@@ -137,7 +137,7 @@ module Control
                 ) AS cluster_id
               SQL
             )
-            .left_joins(base_left_joins)
+            .joins(base_joins)
             .where(base_where)
             .group('public.stop_areas.id, public.stop_areas.objectid, public.stop_areas.name')
             .to_sql
@@ -159,32 +159,22 @@ module Control
 
         # normalized lexical distance (0-1)
         def threshold
-          @threshold ||= lexical_distance / 100.0
+          lexical_distance / 100.0
         end
 
-        def base_left_joins
-          @base_left_joins ||= used_by_opposite_routes ?  { routes: {opposite_route: :stop_areas} } : :routes
+        def base_joins
+          return :routes unless used_by_opposite_routes
+
+          { routes: { opposite_route: :stop_areas } }
         end
 
         def base_where
-          @base_where ||=
-            if used_by_opposite_routes
-              <<-SQL
-                public.stop_areas.latitude IS NOT NULL AND
-                public.stop_areas.longitude IS NOT NULL AND
-                public.stop_areas.parent_id IS NULL AND
-                public.stop_areas.area_type = 'zdep' AND
-                public.stop_areas_routes.id = public.stop_areas.id AND
-                public.stop_areas_routes.id IS NOT NULL
-              SQL
-           else
-              <<-SQL
-                public.stop_areas.latitude IS NOT NULL AND
-                public.stop_areas.longitude IS NOT NULL AND
-                public.stop_areas.parent_id IS NULL AND
-                public.stop_areas.area_type = 'zdep'
-              SQL
-           end
+          <<-SQL
+            public.stop_areas.latitude IS NOT NULL AND
+            public.stop_areas.longitude IS NOT NULL AND
+            public.stop_areas.parent_id IS NULL AND
+            public.stop_areas.area_type = 'zdep'
+          SQL
         end
 
         def stop_areas

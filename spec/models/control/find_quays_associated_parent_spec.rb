@@ -319,8 +319,8 @@ RSpec.describe Control::FindQuaysAssociatedParent do
               stop_area :first_in_route1, name: 'A R1', transport_mode: 'bus', longitude: -1.537587, latitude: 47.214722, area_type: 'zdep'
               stop_area :second_in_route1, name: 'B R1', transport_mode: 'bus', longitude: -1.536317, latitude: 47.212535, area_type: 'zdep'
 
-              stop_area :first_in_route2, name: 'A R2', transport_mode: 'bus', longitude: -1.536317, latitude: 47.212535, area_type: 'zdep'
-              stop_area :second_in_route2, name: 'B R2', transport_mode: 'bus', longitude: -1.537587, latitude: 47.214722, area_type: 'zdep'
+              stop_area :first_in_route2, name: 'B R2', transport_mode: 'bus', longitude: -1.536317, latitude: 47.212535, area_type: 'zdep'
+              stop_area :second_in_route2, name: 'A R2', transport_mode: 'bus', longitude: -1.537587, latitude: 47.214722, area_type: 'zdep'
 
               stop_area :first_in_route3, name: 'A R3', transport_mode: 'bus', longitude: -1.536317, latitude: 47.212535, area_type: 'zdep'
               stop_area :second_in_route3, name: 'B R3', transport_mode: 'bus', longitude: -1.537587, latitude: 47.214722, area_type: 'zdep'
@@ -328,6 +328,7 @@ RSpec.describe Control::FindQuaysAssociatedParent do
               referential do
                 route(:route, line: :first_line, stop_areas: %i[first_in_route1 second_in_route1])
                 route(:opposite_route, line: :first_line, stop_areas: %i[first_in_route2 second_in_route2])
+
                 route(:other_route, line: :second_line, stop_areas: %i[first_in_route3 second_in_route3])
               end
             end
@@ -359,7 +360,7 @@ RSpec.describe Control::FindQuaysAssociatedParent do
                                           source: first_in_route1,
                                           criticity: 'warning',
                                           message_attributes: {
-                                            'stop_area_name' => 'Sample',
+                                            'stop_area_name' => 'A R1',
                                             'cluster_id' => 0,
                                             'short_id' => first_in_route1.get_objectid.short_id
                                           }
@@ -368,7 +369,7 @@ RSpec.describe Control::FindQuaysAssociatedParent do
                                           source: second_in_route1,
                                           criticity: 'warning',
                                           message_attributes: {
-                                            'stop_area_name' => 'Sample',
+                                            'stop_area_name' => 'B R1',
                                             'cluster_id' => 1,
                                             'short_id' => second_in_route1.get_objectid.short_id
                                           }
@@ -377,7 +378,7 @@ RSpec.describe Control::FindQuaysAssociatedParent do
                                           source: first_in_route2,
                                           criticity: 'warning',
                                           message_attributes: {
-                                            'stop_area_name' => 'Sample',
+                                            'stop_area_name' => 'B R2',
                                             'cluster_id' => 1,
                                             'short_id' => first_in_route2.get_objectid.short_id
                                           }
@@ -386,7 +387,7 @@ RSpec.describe Control::FindQuaysAssociatedParent do
                                           source: second_in_route2,
                                           criticity: 'warning',
                                           message_attributes: {
-                                            'stop_area_name' => 'Sample',
+                                            'stop_area_name' => 'A R2',
                                             'cluster_id' => 0,
                                             'short_id' => second_in_route2.get_objectid.short_id
                                           }

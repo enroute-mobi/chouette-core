@@ -377,7 +377,8 @@ module Import
                :ignore_particulars?, to: :import
 
       def import!
-        return unless target
+        return unless default_provider
+
         synchronization.tap do |sync|
           sync.source = netex_source
           sync.event_handler = event_handler
@@ -451,6 +452,8 @@ module Import
       end
 
       def import!
+        return unless default_provider
+
         super
 
         target

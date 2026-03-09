@@ -163,7 +163,7 @@ module Search
     end
 
     def attributes
-      super.delete_if { |_k, v| v.blank? }
+      super.delete_if { |_k, v| v.blank? && v != false }
     end
 
     def searched_class

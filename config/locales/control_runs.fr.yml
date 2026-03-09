@@ -43,6 +43,8 @@ fr:
         one: Compatibilité des modes de transport
       control/travel_time/run:
         one: Temps de Parcours
+      control/find_quays_associated_parent/run:
+        one: Trouver les Quais associés au parent
 
     attributes:
       control/base/run:
@@ -103,3 +105,8 @@ fr:
         to_stop_area: Destination
         departure_time_of_day: Horaire de départ
         maximum_travel_time_in_minutes: Temps de Parcours maximum (en minutes)
+      control/find_quays_associated_parent/run:
+        geographical_distance: Distance géographique
+        lexical_distance: Distance lexicale
+        used_by_opposite_routes: Utilisé par les routes opposées
+

@@ -20,6 +20,7 @@ fr:
     presence_attribute: "L’attribut '%{target_attribute}' %{source|of_model_name} '%{name}' n’est pas défini"
     transport_mode_compatibility: "L’Arrêt '%{stop_area_name}' n’a pas un mode de transport compatible avec la Ligne '%{line_name}'"
     travel_time: "Le temps de parcours est supérieur à celui attendu le '%{date}'"
+    find_quays_associated_parent: "Le Quai '%{short_id} - %{stop_area_name}' devrait avoir un parent (cluster %{cluster_id})"
     search_no_results_for_filter: "Aucun message"
 
   activerecord:

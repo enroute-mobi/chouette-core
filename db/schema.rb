@@ -14,6 +14,7 @@ ActiveRecord::Schema[7.2].define(version: 2026_02_17_092522) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "btree_gin"
   enable_extension "hstore"
+  enable_extension "pg_trgm"
   enable_extension "pgcrypto"
   enable_extension "plpgsql"
   enable_extension "postgis"

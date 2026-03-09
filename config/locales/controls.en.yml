@@ -18,6 +18,10 @@ en:
     form:
       sections:
         controls: "Controls"
+  simple_form:
+    hints:
+      control_find_quays_associated_parent:
+        lexical_distance: 0 means not similar at all, while 100 means completely identical.
   activerecord:
     models:
       control/base:
@@ -62,6 +66,8 @@ en:
         one: Stop Area & Line transport mode compatibility
       control/travel_time:
         one: Travel Time
+      control/find_quays_associated_parent:
+        one: Find Quays Associated Parent
 
     attributes:
       control/base:
@@ -124,3 +130,7 @@ en:
         to_stop_area_id: Destination
         departure_time_of_day: Departure Time
         maximum_travel_time_in_minutes: Maximum Travel Duration (in minutes)
+      control/find_quays_associated_parent:
+        geographical_distance: Geographical Distance
+        lexical_distance: Lexical Distance
+        used_by_opposite_routes: Used by opposite routes

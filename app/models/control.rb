@@ -23,6 +23,7 @@ module Control
       Control::AbsenceAttribute,
       Control::TransportModeCompatibility,
       Control::TravelTime,
+      Control::FindQuaysAssociatedParent,
       Control::Dummy
     ]
   end

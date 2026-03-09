@@ -377,6 +377,7 @@ module Import
                :ignore_particulars?, to: :import
 
       def import!
+        return unless target
         synchronization.tap do |sync|
           sync.source = netex_source
           sync.event_handler = event_handler

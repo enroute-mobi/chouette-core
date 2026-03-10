@@ -65,35 +65,35 @@ module Import
       attr_accessor :import
 
       delegate :stop_area_provider, :line_provider, :shape_provider, :code_space, to: :import
-      delegate :stop_area_referential, to: :stop_area_provider
-      delegate :line_referential, to: :line_provider
+      delegate :workbench, to: :import
+      delegate :stop_area_referential, :line_referential, to: :workbench
 
       def internal_stop_areas
-        @internal_stop_areas ||=
-          Collection.new
-                    .add(finder_class.new(stop_area_provider.stop_areas, source: :provider))
-                    .add(finder_class.new(stop_area_referential.stop_areas, source: :workgroup))
+        @internal_stop_areas ||= Collection.new.tap do |collection|
+          collection.add(finder_class.new(stop_area_provider.stop_areas, source: :provider)) if stop_area_provider
+          collection.add(finder_class.new(stop_area_referential.stop_areas, source: :workgroup))
+        end
       end
 
       def internal_lines
-        @internal_lines ||=
-          Collection.new
-                    .add(finder_class.new(line_provider.lines, source: :provider))
-                    .add(finder_class.new(line_referential.lines, source: :workgroup))
+        @internal_lines ||= Collection.new.tap do |collection|
+          collection.add(finder_class.new(line_provider.lines, source: :provider)) if line_provider
+          collection.add(finder_class.new(line_referential.lines, source: :workgroup))
+        end
       end
 
       def internal_companies
-        @internal_companies ||=
-          Collection.new
-                    .add(finder_class.new(line_provider.companies, source: :provider))
-                    .add(finder_class.new(line_referential.companies, source: :workgroup))
+        @internal_companies ||= Collection.new.tap do |collection|
+          collection.add(finder_class.new(line_provider.companies, source: :provider)) if line_provider
+          collection.add(finder_class.new(line_referential.companies, source: :workgroup))
+        end
       end
 
       def internal_line_notices
-        @internal_line_notices ||=
-          Collection.new
-                    .add(finder_class.new(line_provider.line_notices, source: :provider))
-                    .add(finder_class.new(line_referential.line_notices, source: :workgroup))
+        @internal_line_notices ||= Collection.new.tap do |collection|
+          collection.add(finder_class.new(line_provider.line_notices, source: :provider)) if line_provider
+          collection.add(finder_class.new(line_referential.line_notices, source: :workgroup))
+        end
       end
 
       def internal_booking_arrangements

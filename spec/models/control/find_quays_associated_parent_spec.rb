@@ -403,6 +403,91 @@ RSpec.describe Control::FindQuaysAssociatedParent do
         end
 
       end
+
+      describe 'Geographical distance clustering with clusters (Orly, Bel-Air, Anna)' do
+        let(:orly_1) { context.stop_area(:orly_1) }
+        let(:orly_2) { context.stop_area(:orly_2) }
+        let(:ba_1) { context.stop_area(:ba_1) }
+        let(:ba_2) { context.stop_area(:ba_2) }
+        let(:an_1) { context.stop_area(:an_1) }
+        let(:an_2) { context.stop_area(:an_2) }
+
+        let(:context) do
+          Chouette.create do
+            workbench do
+              line :l_orly, name: 'Orly Line', transport_mode: 'bus'
+              line :l_belair, name: 'Bel-Air Line', transport_mode: 'bus'
+              line :l_anna, name: 'Anna Line', transport_mode: 'bus'
+
+              # Cluster Orly 1-2-3 (Distance ~3m)
+              stop_area :orly_1, id: 675326, name: 'Orly 1-2-3', longitude: 2.3595536, latitude: 48.72956086, area_type: 'zdep'
+              stop_area :orly_2, id: 675327, name: 'Orly 1-2-3', longitude: 2.35952663, latitude: 48.72954272, area_type: 'zdep'
+
+              # cluster Bel-Air (Distance 0m)
+              stop_area :ba_1, id: 682842, name: 'Bel-Air', longitude: 2.40086713, latitude: 48.84142733, area_type: 'zdep'
+              stop_area :ba_2, id: 682473, name: 'Bel-Air', longitude: 2.40086713, latitude: 48.84142733, area_type: 'zdep'
+
+              # cluster Anna de Noailles (Distance ~30m)
+              stop_area :an_1, id: 8149568, name: 'Anna de Noailles', longitude: 2.27791812, latitude: 48.87441132, area_type: 'zdep'
+              stop_area :an_2, id: 8149569, name: 'Anna de Noailles', longitude: 2.27816464, latitude: 48.87433186, area_type: 'zdep'
+
+              # extra stop to ensure each route has at least 2 stop areas
+              stop_area :extra, name: 'Extra Stop', longitude: 2.5, latitude: 48.9, area_type: 'zdep'
+
+              referential do
+                route line: :l_orly, stop_areas: %i[orly_1 extra]
+                route line: :l_orly, stop_areas: %i[orly_2 extra]
+
+                route line: :l_belair, stop_areas: %i[ba_1 extra]
+                route line: :l_belair, stop_areas: %i[ba_2 extra]
+
+                route line: :l_anna, stop_areas: %i[an_1 extra]
+                route line: :l_anna, stop_areas: %i[an_2 extra]
+              end
+            end
+          end
+        end
+
+        let(:expected_messages) do
+          [
+            # Cluster 0: Orly group
+            an_object_having_attributes({
+              source: orly_1,
+              message_attributes: hash_including({ 'stop_area_name' => 'Orly 1-2-3', 'cluster_id' => 0 })
+            }),
+            an_object_having_attributes({
+              source: orly_2,
+              message_attributes: hash_including({ 'stop_area_name' => 'Orly 1-2-3', 'cluster_id' => 0 })
+            }),
+
+            # Cluster 1: Bel-Air group
+            an_object_having_attributes({
+              source: ba_1,
+              message_attributes: hash_including({ 'stop_area_name' => 'Bel-Air', 'cluster_id' => 1 })
+            }),
+            an_object_having_attributes({
+              source: ba_2,
+              message_attributes: hash_including({ 'stop_area_name' => 'Bel-Air', 'cluster_id' => 1 })
+            }),
+
+            # Cluster 2: Anna group
+            an_object_having_attributes({
+              source: an_1,
+              message_attributes: hash_including({ 'stop_area_name' => 'Anna de Noailles', 'cluster_id' => 2 })
+            }),
+            an_object_having_attributes({
+              source: an_2,
+              message_attributes: hash_including({ 'stop_area_name' => 'Anna de Noailles', 'cluster_id' => 2 })
+            })
+          ]
+        end
+
+        it 'should identify 3 distinct clusters' do
+          control_run.run
+
+          expect(control_run.control_messages).to match_array(expected_messages)
+        end
+      end
     end
   end
 end

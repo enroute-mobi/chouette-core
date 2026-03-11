@@ -361,6 +361,10 @@ module Import
         import_resource.status = attributes[:criticity].upcase
       end
 
+      def add_resource_error(netex_resource, message_key, **attributes)
+        create_message(Import::Decorator::Error.new(message_key, resource: netex_resource, **attributes))
+      end
+
       def import_resource_name
         @import_resource_name ||= self.class.name.demodulize
       end
@@ -667,6 +671,7 @@ module Import
 
             next
           end
+          decorator.journey_pattern_errors.each { |error| create_message error }
 
           if opposite_route_code = netex_route.inverse_route_ref&.ref
             cache_inverted_route netex_route.id, opposite_route_code
@@ -680,6 +685,8 @@ module Import
         referential_inserter.flush
 
         save_inverted_routes
+
+        detect_orphan_journey_patterns
       end
 
       def cache_journey_pattern(journey_pattern)
@@ -716,9 +723,44 @@ module Import
         end
       end
 
+      def detect_orphan_journey_patterns
+        netex_source.journey_patterns.each do |netex_journey_pattern|
+          route_ref = netex_journey_pattern.route_ref&.ref
+          unless route_ref.present?
+            add_resource_error(netex_journey_pattern, :journey_pattern_without_route_ref)
+            next
+          end
+
+          unless netex_source.routes.find(route_ref)
+            add_resource_error(
+              netex_journey_pattern,
+              :journey_pattern_with_unknown_route_ref,
+              message_attributes: { route_id: route_ref }
+            )
+            next
+          end
+        end
+      end
+
       delegate :route_points, :directions, :destination_displays, to: :netex_source
 
+      module RouteJourneyPatternErrorsSupport
+        def journey_pattern_errors
+          @journey_pattern_errors ||= []
+        end
+
+        def add_journey_pattern_error(netex_journey_pattern, message_key, **attributes)
+          journey_pattern_errors << Import::Decorator::Error.new(
+            message_key,
+            resource: netex_journey_pattern,
+            **attributes
+          )
+        end
+      end
+
       module RouteDecoratorSupport
+        include RouteJourneyPatternErrorsSupport
+
         def validate
           super
           errors.add :route_without_id unless id.present?
@@ -761,10 +803,101 @@ module Import
         def direction_name
           direction&.name
         end
+
+        def stop_point_in_journey_pattern_scheduled_stop_point(netex_journey_pattern, stop_point_in_journey_pattern)
+          scheduled_stop_point_ref = stop_point_in_journey_pattern.scheduled_stop_point_ref&.ref
+          unless scheduled_stop_point_ref
+            add_journey_pattern_error(
+              netex_journey_pattern,
+              :journey_pattern_without_scheduled_stop_point,
+              resource: stop_point_in_journey_pattern,
+              message_attributes: { journey_pattern_id: netex_journey_pattern.id }
+            )
+            return nil
+          end
+
+          scheduled_stop_point = scheduled_stop_points[scheduled_stop_point_ref]
+          unless scheduled_stop_point
+            add_journey_pattern_error(
+              netex_journey_pattern,
+              :journey_pattern_unknown_scheduled_stop_point,
+              resource: stop_point_in_journey_pattern,
+              message_attributes: { journey_pattern_id: netex_journey_pattern.id }
+            )
+            return nil
+          end
+
+          scheduled_stop_point
+        end
+      end
+
+      module RouteWithJourneyPatternDecoratorsSupport
+        include RouteJourneyPatternErrorsSupport
+
+        def validate
+          super
+          journey_pattern_decorators.each do |journey_pattern_decorator|
+            journey_pattern_decorator.valid?
+            journey_pattern_errors.concat(journey_pattern_decorator.errors)
+          end
+        end
+
+        def journey_pattern_decorators
+          raise NotImplementedError
+        end
+
+        def chouette_journey_patterns
+          @chouette_journey_patterns ||= journey_pattern_decorators.map(&:chouette_model)
+        end
+      end
+
+      class AbstractJourneyPatternDecorator < ResourceDecorator
+        attr_accessor :route_decorator
+
+        delegate :destination_displays, :lookup, to: :route_decorator
+
+        def validate
+          super
+
+          errors.add :journey_pattern_without_id unless id.present?
+
+          errors.add :journey_pattern_less_than_2_stop_points unless journey_pattern_stop_points.many?
+        end
+
+        def chouette_model
+          @chouette_model ||= Chouette::JourneyPattern.new(journey_pattern_attributes).with_transient(netex_id: id)
+        end
+
+        def journey_pattern_attributes
+          {
+            name: chouette_name,
+            published_name: published_name,
+            journey_pattern_stop_points: journey_pattern_stop_points,
+            booking_arrangement_id: booking_arrangement_id
+          }.merge(chouette_attributes)
+        end
+
+        def booking_arrangement_id
+          netex_booking_arrangement_id = booking_arrangements&.first&.ref
+          lookup.booking_arrangements.find_id netex_booking_arrangement_id
+        end
+
+        def published_name
+          destination_display&.front_text
+        end
+
+        def destination_display
+          destination_displays.find(destination_display_ref&.ref)
+        end
+
+        def journey_pattern_stop_points
+          raise NotImplementedError
+        end
       end
 
       class HackedOrderDecorator < ResourceDecorator
         include RouteDecoratorSupport
+        include RouteWithJourneyPatternDecoratorsSupport
 
         attr_accessor :journey_patterns, :route_points, :directions, :destination_displays
 
@@ -814,15 +947,16 @@ module Import
             netex_journey_pattern.points_in_sequence.each do |stop_point_in_journey_pattern|
               order = stop_point_in_journey_pattern.order.to_i
 
-              scheduled_stop_point_ref = stop_point_in_journey_pattern.scheduled_stop_point_ref&.ref
-              scheduled_stop_point = scheduled_stop_points[scheduled_stop_point_ref]
+              scheduled_stop_point = stop_point_in_journey_pattern_scheduled_stop_point(
+                netex_journey_pattern, stop_point_in_journey_pattern
+              )
 
               # TODO: Message for CHOUETTE-4895
               # If stop_area_id is missing, the Route / Journey Patterns import is not possible
               stop_area_id = scheduled_stop_point&.stop_area_id
               unless stop_area_id
-                errors.add :stop_area_not_found_in_scheduled_stop_points
-                return []
+                add_journey_pattern_error(netex_journey_pattern, :stop_area_not_found_in_scheduled_stop_points)
+                break
               end
 
               stop_point_attributes = {
@@ -853,49 +987,21 @@ module Import
           stop_points
         end
 
-        def chouette_journey_patterns
-          @chouette_journey_patterns ||= journey_patterns.map do |netex_journey_pattern|
+        def journey_pattern_decorators
+          @journey_pattern_decorators ||= journey_patterns.map do |netex_journey_pattern|
             decorate(
               netex_journey_pattern,
               JourneyPatternDecorator,
               route_decorator: self
-            ).chouette_model
+            )
           end
         end
 
-        class JourneyPatternDecorator < ResourceDecorator
-          attr_accessor :route_decorator
-
-          delegate :destination_displays, :lookup, :stop_point, to: :route_decorator
-
-          def chouette_model
-            @chouette_model ||= Chouette::JourneyPattern.new(journey_pattern_attributes).with_transient(netex_id: id)
-          end
-
-          def journey_pattern_attributes
-            {
-              name: chouette_name,
-              published_name: published_name,
-              journey_pattern_stop_points: journey_pattern_stop_points,
-              booking_arrangement_id: booking_arrangement_id
-            }.merge(chouette_attributes)
-          end
-
-          def booking_arrangement_id
-            netex_booking_arrangement_id = booking_arrangements&.first&.ref
-            lookup.booking_arrangements.find_id netex_booking_arrangement_id
-          end
-
-          def published_name
-            destination_display&.front_text
-          end
-
-          def destination_display
-            destination_displays.find(destination_display_ref&.ref)
-          end
+        class JourneyPatternDecorator < AbstractJourneyPatternDecorator
+          delegate :stop_point, to: :route_decorator
 
           def journey_pattern_stop_points
-            points_in_sequence.map do |stop_point_in_journey_pattern|
+            @journey_pattern_stop_points ||= points_in_sequence.map do |stop_point_in_journey_pattern|
               stop_point = stop_point(order: stop_point_in_journey_pattern.order.to_i)
               Chouette::JourneyPatternStopPoint.new stop_point: stop_point
             end
@@ -931,6 +1037,7 @@ module Import
           clusterized_decorators.each do |route|
             result &= route.valid?
             errors.concat(route.errors)
+            journey_pattern_errors.concat(route.journey_pattern_errors)
           end
           result
         end
@@ -964,15 +1071,7 @@ module Import
         end
 
         def sequence_merger
-          return @sequence_merger if defined?(@sequence_merger)
-
-          @sequence_merger = build_sequence_merger
-        end
-
-        def build_sequence_merger
-          return nil unless netex_journey_pattern_ordered_points
-
-          Sequence::Merger.new.tap do |merger|
+          @sequence_merger ||= Sequence::Merger.new.tap do |merger|
             netex_journey_pattern_ordered_points.each do |_, jp_points|
               merger << jp_points.map { |jp_point| jp_point[:stop_area_id] }
             end
@@ -991,8 +1090,6 @@ module Import
         end
 
         def build_stop_sequence
-          return nil unless sequence_merger
-
           stop_sequence = sequence_merger.merge
           unless stop_sequence
             errors.add :cannot_compute_stop_sequence
@@ -1036,36 +1133,29 @@ module Import
         end
 
         def netex_journey_pattern_ordered_points
-          return @netex_journey_pattern_ordered_points if defined?(@netex_journey_pattern_ordered_points)
+          @netex_journey_pattern_ordered_points ||= journey_patterns.filter_map do |netex_journey_pattern|
+            ordered_points = netex_journey_pattern.points_in_sequence.sort_by { |sp| sp.order.to_i }.map do |sp_in_jp|
+              scheduled_stop_point = stop_point_in_journey_pattern_scheduled_stop_point(
+                netex_journey_pattern, sp_in_jp
+              )
+              break nil unless scheduled_stop_point
 
-          @netex_journey_pattern_ordered_points = nil
-          @netex_journey_pattern_ordered_points = journey_patterns.map do |netex_journey_pattern|
-            [
-              netex_journey_pattern,
-              netex_journey_pattern.points_in_sequence.sort_by { |sp| sp.order.to_i }.map do |sp_in_jp|
-                scheduled_stop_point_id = sp_in_jp.scheduled_stop_point_ref&.ref
-                scheduled_stop_point = scheduled_stop_points[scheduled_stop_point_id]
-                # TODO: Message for CHOUETTE-4895
-                # If stop_area_id is missing, the Route / Journey Patterns import is not possible
-                stop_area_id = scheduled_stop_point&.stop_area_id
+              {
+                stop_point_in_journey_pattern: sp_in_jp,
+                scheduled_stop_point: scheduled_stop_point,
+                stop_area_id: scheduled_stop_point.stop_area_id
+              }
+            end
+            next nil unless ordered_points
 
-                unless stop_area_id
-                  errors.add :stop_area_not_found_in_scheduled_stop_points
-                  return nil
-                end
-
-                {
-                  stop_point_in_journey_pattern: sp_in_jp,
-                  scheduled_stop_point: scheduled_stop_point,
-                  stop_area_id: stop_area_id
-                }
-              end
-            ]
+            [netex_journey_pattern, ordered_points]
           end
         end
       end
 
       class RouteDecorator < ResourceDecorator
+        include RouteWithJourneyPatternDecoratorsSupport
+
         attr_accessor :routes_decorator,
                       :stops_cluster,
                       :chouette_line,
@@ -1084,7 +1174,7 @@ module Import
             wayback: wayback,
             published_name: published_name,
             stop_points: stop_points,
-            journey_patterns: journey_patterns
+            journey_patterns: chouette_journey_patterns
           }.merge(chouette_attributes).tap do |attrs|
             attrs.delete(:objectid) unless index.zero?
           end
@@ -1106,14 +1196,14 @@ module Import
           @stop_points_by_sequence_cluster_step ||= stop_points.index_by { |sp| sp.transient(:sequence_cluster_step) }
         end
 
-        def journey_patterns
-          @journey_patterns ||= stops_cluster.patterns.map do |netex_journey_pattern, steps|
+        def journey_pattern_decorators
+          @journey_pattern_decorators ||= stops_cluster.patterns.map do |netex_journey_pattern, steps|
             decorate(
               netex_journey_pattern,
               JourneyPatternDecorator,
               route_decorator: self,
               sequence_cluster_steps: steps
-            ).chouette_model
+            )
           end
         end
 
@@ -1124,39 +1214,11 @@ module Import
         end
       end
 
-      class JourneyPatternDecorator < ResourceDecorator
-        attr_accessor :route_decorator, :sequence_cluster_steps
-
-        delegate :destination_displays, :lookup, to: :route_decorator
-
-        def chouette_model
-          @chouette_model ||= Chouette::JourneyPattern.new(journey_pattern_attributes).with_transient(netex_id: id)
-        end
-
-        def journey_pattern_attributes
-          {
-            name: chouette_name,
-            published_name: published_name,
-            journey_pattern_stop_points: journey_pattern_stop_points,
-            booking_arrangement_id: booking_arrangement_id
-          }.merge(chouette_attributes)
-        end
-
-        def booking_arrangement_id
-          netex_booking_arrangement_id = booking_arrangements&.first&.ref
-          lookup.booking_arrangements.find_id netex_booking_arrangement_id if netex_booking_arrangement_id
-        end
-
-        def published_name
-          destination_display&.front_text
-        end
-
-        def destination_display
-          destination_displays.find(destination_display_ref&.ref)
-        end
+      class JourneyPatternDecorator < AbstractJourneyPatternDecorator
+        attr_accessor :sequence_cluster_steps
 
         def journey_pattern_stop_points
-          sequence_cluster_steps.map do |sequence_cluster_step|
+          @journey_pattern_stop_points ||= sequence_cluster_steps.map do |sequence_cluster_step|
             Chouette::JourneyPatternStopPoint.new(
               stop_point: route_decorator.stop_points_by_sequence_cluster_step[sequence_cluster_step]
             )

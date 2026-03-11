@@ -29,11 +29,7 @@ module Import
       end
 
       def add(message_key, **attributes)
-        error = Import::Decorator::Error.new(message_key, **attributes)
-        error.resource = @resource
-        error.message_attributes[:resource_id] = @resource.id if @resource.respond_to?(:id)
-
-        @errors << error
+        @errors << Import::Decorator::Error.new(message_key, resource: @resource, **attributes)
       end
     end
 
@@ -53,6 +49,7 @@ module Import
         @message_key = message_key
         attributes.each { |k, v| send "#{k}=", v }
         @message_attributes ||= {}
+        message_attributes[:resource_id] ||= resource.id if resource.respond_to?(:id)
       end
     end
   end

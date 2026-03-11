@@ -356,6 +356,35 @@ RSpec.describe Import::Sequence::Cluster do
       end
     end
 
+    context 'with 2 empty patterns' do
+      let(:sequence) { %w[A B] }
+      let(:patterns) do
+        [
+          described_class::Pattern.new('empty-1'),
+          described_class::Pattern.new('empty-2'),
+          described_class::Pattern.new('JP1').step('A').step('B')
+        ]
+      end
+
+      it do
+        is_expected_to_match_result(
+          [
+            {
+              steps: [
+                have_attributes(object: 'A', attributes: {}),
+                have_attributes(object: 'B', attributes: {})
+              ],
+              patterns: {
+                'empty-1' => [],
+                'empty-2' => [],
+                'JP1' => [0, 1]
+              }
+            }
+          ]
+        )
+      end
+    end
+
     context 'example with wrong sequence' do
       let(:sequence) { %w[B A B C] }
       let(:patterns) do

@@ -1503,6 +1503,7 @@ ActiveRecord::Schema[7.2].define(version: 2026_03_24_165302) do
     t.bigint "scheduled_job_id"
     t.string "retrieval_frequency"
     t.bit "retrieval_days_of_week", limit: 7, default: "1111111"
+    t.boolean "use_standard_authorization_header", default: true, null: false
     t.index ["scheduled_job_id"], name: "index_sources_on_scheduled_job_id"
     t.index ["workbench_id"], name: "index_sources_on_workbench_id"
   end

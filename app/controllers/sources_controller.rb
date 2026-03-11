@@ -84,6 +84,8 @@ class SourcesController < Chouette::WorkbenchController
       :downloader_option_username,
       :downloader_option_password,
       :downloader_option_raw_authorization,
+      :downloader_option_custom_header_name,
+      :use_standard_authorization_header,
       :retrieval_time_of_day,
       :retrieval_frequency,
       retrieval_days_of_week_attributes: %i[monday tuesday wednesday thursday friday saturday sunday],

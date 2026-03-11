@@ -68,6 +68,34 @@ RSpec.describe Source do
 
     it { is_expected.to_not allow_value('http://localhost').for(:url) }
     it { is_expected.to_not allow_value('http://wrong').for(:url) }
+
+    describe '#handle_authorization_header_options' do
+      let(:source) { Source.new(downloader_type: 'authorization') }
+
+      context 'when use_standard_authorization_header is true' do
+        before do
+          source.use_standard_authorization_header = true
+          source.downloader_option_custom_header_name = 'X-Custom-Auth'
+          source.send(:handle_authorization_header_options)
+        end
+
+        it 'removes custom_header_name from downloader_options' do
+          expect(source.downloader_options).not_to have_key('custom_header_name')
+        end
+      end
+
+      context 'when use_standard_authorization_header is false' do
+        before do
+          source.use_standard_authorization_header = false
+          source.downloader_option_custom_header_name = 'X-Custom-Auth'
+          source.send(:handle_authorization_header_options)
+        end
+
+        it 'keeps custom_header_name in downloader_options' do
+          expect(source.downloader_options).to have_key('custom_header_name')
+        end
+      end
+    end
   end
 
   describe 'with french_nap downloader' do
@@ -217,6 +245,38 @@ RSpec.describe Source do
 
     it 'should include all stop_area providers of workbench with order' do
       is_expected.to eq('Default, first, second')
+    end
+  end
+end
+
+RSpec.describe Source::Downloader::Authorization do
+  let(:url) { 'https://example.com/data' }
+  let(:authorization_value) { 'Bearer token123' }
+
+  describe '#headers' do
+    context 'with standard authorization header' do
+      let(:downloader) { described_class.new(url, raw_authorization: authorization_value) }
+
+      it 'returns Authorization header with the provided value' do
+        expect(downloader.send(:headers)).to eq({ 'Authorization' => authorization_value })
+      end
+    end
+
+    context 'with custom header name' do
+      let(:custom_header_name) { 'X-API-Key' }
+      let(:downloader) { described_class.new(url, raw_authorization: authorization_value, custom_header_name: custom_header_name) }
+
+      it 'returns custom header with the provided value' do
+        expect(downloader.send(:headers)).to eq({ custom_header_name => authorization_value })
+      end
+    end
+
+    context 'without raw_authorization' do
+      let(:downloader) { described_class.new(url) }
+
+      it 'returns empty hash' do
+        expect(downloader.send(:headers)).to eq({})
+      end
     end
   end
 end

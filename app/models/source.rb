@@ -40,6 +40,7 @@ class Source < ApplicationModel
   scope :enabled, -> { where.not(retrieval_frequency: 'none') }
 
   before_validation :clean, on: :update
+  before_validation :handle_authorization_header_options
 
   attribute :retrieval_time_of_day, TimeOfDay::Type::TimeWithoutZone.new
   attribute :retrieval_days_of_week, Cuckoo::DaysOfWeek::Type.new
@@ -158,7 +159,15 @@ class Source < ApplicationModel
 
   def clean
     unless downloader_type == "authorization"
-      self.downloader_options = self.downloader_options.except("raw_authorization")
+      self.downloader_options = self.downloader_options.except("raw_authorization", "custom_header_name")
+    end
+  end
+
+  def handle_authorization_header_options
+    if downloader_type_authorization?
+      if use_standard_authorization_header?
+        self.downloader_options = self.downloader_options.except("custom_header_name")
+      end
     end
   end
 
@@ -345,7 +354,7 @@ class Source < ApplicationModel
     end
 
     class Authorization < URL
-      attr_accessor :raw_authorization
+      attr_accessor :raw_authorization, :custom_header_name
       #validates_presence_of :raw_authorization
 
       def download(path)
@@ -357,7 +366,8 @@ class Source < ApplicationModel
       def headers
         return {} unless raw_authorization
 
-        { 'Authorization' => raw_authorization }
+        header_name = custom_header_name.present? ? custom_header_name : 'Authorization'
+        { header_name => raw_authorization }
       end
     end
   end

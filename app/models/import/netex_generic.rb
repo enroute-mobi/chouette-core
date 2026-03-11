@@ -1787,41 +1787,106 @@ module Import
       delegate :netex_source, :stop_area_provider, :scheduled_stop_points, :lookup, to: :import
 
       def import!
-        %i[passenger_stop_assignments flexible_stop_assignments].each do |assignment_type|
-          netex_source.send(assignment_type).each do |stop_assignment|
-            scheduled_stop_point_id = stop_assignment.scheduled_stop_point_ref&.ref
-            stop_area_code = find_stop_area_code(stop_assignment)
-
-            unless stop_area_code
-              create_message :stop_area_code_empty
-              next
-            end
-
-            if (stop_area_id = lookup.stop_areas.find_id(stop_area_code))
-              scheduled_stop_point = ScheduledStopPoint.new(
-                id: scheduled_stop_point_id,
-                stop_area_id: stop_area_id,
-                flexible: flexible?(stop_assignment)
-              )
-              scheduled_stop_points[scheduled_stop_point.id] = scheduled_stop_point
-            else
-              create_message :stop_area_not_found, code: stop_area_code
-              next
-            end
-          end
-        end
+        import_stop_assignemnts(netex_source.passenger_stop_assignments, PassengerStopAssignmentDecorator)
+        import_stop_assignemnts(netex_source.flexible_stop_assignments, FlexibleStopAssignmentDecorator)
+        detect_orphans
       end
 
       private
 
-      def find_stop_area_code(stop_assignment)
-        return stop_assignment.flexible_stop_place_ref&.ref if flexible?(stop_assignment)
-
-        stop_assignment.quay_ref&.ref || stop_assignment.stop_place_ref&.ref
+      def import_stop_assignemnts(stop_assignments, decorator_class)
+        stop_assignments.each do |stop_assignment|
+          decorator = decorate(stop_assignment, decorator_class)
+          decorator.errors.each { |error| create_message(error) } unless decorator.valid?
+        end
       end
 
-      def flexible?(stop_assignment)
-        stop_assignment.is_a?(::Netex::FlexibleStopAssignment)
+      def detect_orphans
+        netex_source.scheduled_stop_points.each do |scheduled_stop_point|
+          next if scheduled_stop_points.key?(scheduled_stop_point.id)
+
+          add_resource_error(scheduled_stop_point, :scheduled_stop_point_without_assignment)
+        end
+      end
+
+      class StopAssignmentDecorator < ResourceDecorator
+        def chouette_model
+          return unless scheduled_stop_point
+
+          if scheduled_stop_points.key?(scheduled_stop_point.id)
+            errors.add(
+              :scheduled_stop_point_alreay_associated,
+              message_attributes: { scheduled_stop_point_id: scheduled_stop_point.id }
+            )
+            return
+          end
+
+          scheduled_stop_points[scheduled_stop_point.id] = scheduled_stop_point
+        end
+
+        def scheduled_stop_point
+          return unless scheduled_stop_point_id && stop_area_id
+
+          ScheduledStopPoint.new(
+            id: scheduled_stop_point_id,
+            stop_area_id: stop_area_id,
+            flexible: flexible?
+          )
+        end
+
+        def scheduled_stop_point_id
+          scheduled_stop_point_ref&.ref
+        end
+
+        def stop_area_id
+          return @stop_area_id if defined?(@stop_area_id)
+
+          @stop_area_id = find_stop_area_id
+        end
+
+        def find_stop_area_id
+          stop_area_code = find_stop_area_code
+          unless stop_area_code
+            errors.add(:stop_area_code_empty)
+            return
+          end
+
+          stop_area_id = lookup.stop_areas.find_id(stop_area_code)
+          unless stop_area_id
+            errors.add(:stop_area_not_found, message_attributes: { code: stop_area_code })
+            return
+          end
+
+          stop_area_id
+        end
+
+        def find_stop_area_code
+          raise NotImplementedError
+        end
+
+        def flexible?
+          raise NotImplementedError
+        end
+      end
+
+      class PassengerStopAssignmentDecorator < StopAssignmentDecorator
+        def find_stop_area_code
+          quay_ref&.ref || stop_place_ref&.ref
+        end
+
+        def flexible?
+          false
+        end
+      end
+
+      class FlexibleStopAssignmentDecorator < StopAssignmentDecorator
+        def find_stop_area_code
+          flexible_stop_place_ref&.ref
+        end
+
+        def flexible?
+          true
+        end
       end
     end
 

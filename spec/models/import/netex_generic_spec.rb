@@ -1013,9 +1013,11 @@ RSpec.describe Import::NetexGeneric do
         an_object_having_attributes(
           criticity: 'error',
           message_key: 'stop_area_not_found',
-          message_attributes: {
-            'code' => '123456'
-          }
+          message_attributes: include(
+            {
+              'code' => '123456'
+            }
+          )
         )
       end
 

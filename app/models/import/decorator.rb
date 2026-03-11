@@ -50,6 +50,8 @@ module Import
         attributes.each { |k, v| send "#{k}=", v }
         @message_attributes ||= {}
         message_attributes[:resource_id] ||= resource.id if resource.respond_to?(:id)
+        resource_class = resource.class.name
+        message_attributes[:resource_class] ||= resource_class.demodulize if resource_class.respond_to?(:demodulize)
       end
     end
   end

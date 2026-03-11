@@ -2004,8 +2004,6 @@ RSpec.describe Import::NetexGeneric::RouteJourneyPatterns::Decorator do
     end
 
     context 'when line is not empty' do
-      let(:netex_journey_patterns) { [] }
-
       before { allow(decorator).to receive(:chouette_line).and_return(Chouette::Line.new) }
 
       it { expect(decorator.valid?).to be_truthy }

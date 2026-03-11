@@ -17,9 +17,9 @@ module ImportMessages
         )
       end
       format.json do
-        @facade = OperationRunFacade.new(import_resource.import, current_workbench)
+        facade = OperationRunFacade.new(import_resource.import, current_workbench)
         messages = import_messages.order(:id).paginate(page: params[:page], per_page: 15)
-        html = render_to_string(partial: 'imports/import_resource_messages', locals: { messages: messages, facade: @facade }, formats: :html)
+        html = render_to_string(partial: 'imports/import_resource_messages', locals: { messages: messages, facade: facade }, formats: :html)
         render json: { html: html }
       end
     end
@@ -32,7 +32,7 @@ module ImportMessages
     @import_resource ||= if resource.is_a?(Import::Workbench)
       resource.children.first&.resources&.find(params[:import_resource_id])
     else
-      resource.resources&.find(params[:import_resource_id])
+      resource.resources.find(params[:import_resource_id])
     end
   end
 
@@ -40,7 +40,7 @@ module ImportMessages
     @import_messages ||= begin
       messages = import_resource.messages
       
-      if params[:search]&.dig(:criticity).present?
+      if params.dig(:search, :criticity).present?
         criticities = params[:search][:criticity].reject(&:blank?)
         messages = messages.where(criticity: criticities) if criticities.any?
       end

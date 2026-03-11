@@ -13,7 +13,7 @@ class OperationRunFacade
   def criticity_span(criticity)
     color_map = {
       info: 'green',
-      warning: 'orange',
+      warning: 'gold',
       error: 'red'
     }
 
@@ -29,7 +29,7 @@ class OperationRunFacade
     link_to_if(condition, label, url)
   end
 
-  def message_table_params
+  def message_table_params(options = {})
     criticity = TableBuilderHelper::Column.new(
       key: :criticity,
       attribute: ->(m) { criticity_span(m.criticity) },
@@ -40,9 +40,9 @@ class OperationRunFacade
       TableBuilderHelper::Column.new(key: :message, attribute: :full_message, sortable: false)
     ]
 
-    columns.concat(import_columns) if resource.is_a?(Import::Base)
-    columns << source_column unless resource.is_a?(Import::Base)
-    columns.unshift(criticity) if resource.is_a?(Macro::List::Run) || resource.is_a?(Import::Base)
+    columns.concat(import_columns) if options[:include_import_columns]
+    columns << source_column unless options[:exclude_source_column]
+    columns.unshift(criticity) if options[:include_criticity]
 
     [columns, { cls: 'table' }]
   end
@@ -71,12 +71,8 @@ class OperationRunFacade
     TableBuilderHelper::Column.new(
       key: :source,
       attribute: lambda do |message|
-        if message.is_a?(Import::Message)
-          '-'
-        else
-          source_link = source_link(message)
-          link_to_if_table(source_link.present?, '<span class="fa fa-link"></span>'.html_safe, source_link)
-        end
+        source_link = source_link(message)
+        link_to_if_table(source_link.present?, '<span class="fa fa-link"></span>'.html_safe, source_link)
       end,
       sortable: false
     )
@@ -84,10 +80,6 @@ class OperationRunFacade
 
   def source_link(message)
     return nil unless display_referential_links? && message.source_type && message.source_id
-
-    if message.is_a?(Import::Message)
-      return nil
-    end
 
     source_class = message.source_type&.constantize
     Chouette::ModelPathFinder.new(source_class, message.source_id, current_workbench, resource.referential).path

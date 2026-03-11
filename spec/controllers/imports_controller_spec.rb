@@ -112,14 +112,15 @@ RSpec.describe ImportsController, type: :controller do
       end
     end
 
-    describe 'GET #internal_download' do
-      let(:organisation) { create(:organisation) }
+    end
 
-      it 'should be successful' do
-        get :internal_download, params: { workbench_id: workbench.id, id: import.id, token: import.token_download }
-        expect(response).to be_successful
-        expect(response.body).to eq(import.file.read)
-      end
+  describe 'GET #internal_download' do
+    let(:organisation) { create(:organisation) }
+
+    it 'should be successful' do
+      get :internal_download, params: { workbench_id: workbench.id, id: import.id, token: import.token_download }
+      expect(response).to be_successful
+      expect(response.body).to eq(import.file.read)
     end
   end
 end

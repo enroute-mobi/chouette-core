@@ -18,7 +18,7 @@ RSpec.describe OperationRunFacade do
       let(:facade) { OperationRunFacade.new(macro_list_run, workbench) }
 
       it 'should display 3 columns' do
-        columns, options = facade.message_table_params
+        columns, options = facade.message_table_params(include_criticity: true)
         expect(columns.length).to eq(3)
       end
     end

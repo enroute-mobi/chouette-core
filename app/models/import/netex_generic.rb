@@ -1617,7 +1617,15 @@ module Import
         end
 
         def netex_journey_pattern_ref
-          journey_pattern_ref&.ref
+          return @netex_journey_pattern_ref if defined?(@netex_journey_pattern_ref)
+
+          netex_journey_pattern_ref = journey_pattern_ref&.ref
+          unless netex_journey_pattern_ref
+            errors.add(:service_journey_without_journey_pattern)
+            return nil
+          end
+
+          @netex_journey_pattern_ref = netex_journey_pattern_ref
         end
 
         def route_journey_pattern(attribute)
@@ -1626,11 +1634,15 @@ module Import
         end
 
         def journey_pattern_id
-          @journey_pattern_id ||= begin
-            journey_pattern_id = route_journey_pattern(:journey_pattern_id)
-            errors << :journey_pattern_not_found unless journey_pattern_id
-            journey_pattern_id
+          return @journey_pattern_id if defined?(@journey_pattern_id)
+
+          journey_pattern_id = route_journey_pattern(:journey_pattern_id)
+          unless journey_pattern_id
+            errors.add(:journey_pattern_not_found, message_attributes: { journey_pattern_id: netex_journey_pattern_ref })
+            return nil
           end
+
+          @journey_pattern_id = journey_pattern_id
         end
 
         def line_notice_ids
@@ -1696,52 +1708,91 @@ module Import
           @chouette_stop_point_ids ||= route_journey_pattern(:stop_point_ids) || []
         end
 
-        def vehicle_journey_at_stops
+        def passing_time_decorators
           unless chouette_stop_point_ids.count == passing_times.count
-            errors << :number_passing_times_incoherent
+            errors.add(
+              :number_passing_times_incoherent,
+              message_attributes: {
+                passing_times_count: passing_times.count,
+                stop_points_count: chouette_stop_point_ids.count
+              }
+            )
             return []
           end
 
-          [].tap do |vehicle_journey_at_stops|
-            chouette_stop_point_ids.each_with_index do |stop_point_id, index|
-              decorated_passing_time = PassingTimeDecorator.new(passing_times[index], stop_point_id: stop_point_id, first: index.zero?)
-              # TODO See CHOUETTE-4895
-              # unless decorated_passing_time.valid?
-              #   errors << :passing_time_without_departure_time
-              #   return []
-              # end
-
-              vehicle_journey_at_stops << decorated_passing_time.chouette_model
+          chouette_stop_point_ids.map.with_index do |stop_point_id, index|
+            decorated_passing_time = decorate(
+              passing_times[index],
+              PassingTimeDecorator,
+              netex_service_journey_id: id,
+              stop_point_id: stop_point_id,
+              first: index.zero?,
+              last: index == chouette_stop_point_ids.count - 1
+            )
+            unless decorated_passing_time.valid?
+              errors.concat(decorated_passing_time.errors)
+              return []
             end
+
+            decorated_passing_time
           end
         end
 
-        class PassingTimeDecorator < SimpleDelegator
-          def initialize(passing_time, stop_point_id: nil, first: false)
-            super(passing_time)
-            @stop_point_id = stop_point_id
-            @first = first
-          end
-          attr_reader :stop_point_id
+        def vehicle_journey_at_stops
+          last_passing_time = nil
 
-          def first?
-            @first
+          passing_time_decorators.each do |pt|
+            if pt.arrival_time_of_day && last_passing_time && pt.arrival_time_of_day < last_passing_time
+              errors.add(:passing_times_non_chronological)
+              return []
+            end
+
+            if pt.arrival_time_of_day && pt.departure_time_of_day && pt.arrival_time_of_day > pt.departure_time_of_day
+              errors.add(:passing_times_non_chronological)
+              return []
+            end
+
+            last_passing_time = pt.departure_time_of_day if pt.departure_time_of_day
           end
 
-          def valid?
-            true
-          end
+          passing_time_decorators.map(&:chouette_model)
+        end
+
+        class PassingTimeDecorator < ResourceDecorator
+          attr_accessor :netex_service_journey_id, :stop_point_id, :first, :last
 
           def arrival_time_of_day
-            if arrival_time
-              time_of_day arrival_time, arrival_day_offset
-            else
-              departure_time_of_day
+            return @arrival_time_of_day if defined?(@arrival_time_of_day)
+
+            arrival_time_of_day = if arrival_time
+                                    time_of_day(arrival_time, arrival_day_offset)
+                                  else
+                                    departure_time_of_day
+                                  end
+            if !first && arrival_time_of_day.nil?
+              errors.add(
+                :passing_time_without_arrival_time,
+                message_attributes: { resource_id: netex_service_journey_id }
+              )
+              return nil
             end
+
+            @arrival_time_of_day = arrival_time_of_day
           end
 
           def departure_time_of_day
-            time_of_day departure_time, departure_day_offset
+            return @departure_time_of_day if defined?(@departure_time_of_day)
+
+            departure_time_of_day = time_of_day(departure_time, departure_day_offset)
+            if !last && departure_time_of_day.nil?
+              errors.add(
+                :passing_time_without_departure_time,
+                message_attributes: { resource_id: netex_service_journey_id }
+              )
+              return nil
+            end
+
+            @departure_time_of_day = departure_time_of_day
           end
 
           def latest_arrival_time_of_day
@@ -1753,9 +1804,7 @@ module Import
           end
 
           def chouette_model
-            return unless valid?
-
-            Chouette::VehicleJourneyAtStop.new(
+            @chouette_model ||= Chouette::VehicleJourneyAtStop.new(
               stop_point_id: stop_point_id,
               arrival_time_of_day: arrival_time_of_day,
               departure_time_of_day: departure_time_of_day,
@@ -1774,15 +1823,19 @@ module Import
         end
 
         def vehicle_journey_time_table_relationships
-          @vehicle_journey_time_table_relationships ||= [].tap do |vehicle_journey_time_tables|
-            day_types.map do |day_type|
-              time_table_id = index_time_tables[day_type.ref]
-              if time_table_id
-                vehicle_journey_time_tables << Chouette::TimeTablesVehicleJourney.new(time_table_id: time_table_id).skipping_presence_of(:time_table)
-              else
-                errors << :time_table_not_found
-              end
+          unless day_types.any?
+            errors.add(:service_journey_without_day_type)
+            return []
+          end
+
+          @vehicle_journey_time_table_relationships ||= day_types.filter_map do |day_type|
+            time_table_id = index_time_tables[day_type.ref]
+            unless time_table_id
+              errors.add(:time_table_not_found, message_attributes: { day_type_id: day_type.ref })
+              next nil
             end
+
+            Chouette::TimeTablesVehicleJourney.new(time_table_id: time_table_id).skipping_presence_of(:time_table)
           end
         end
       end

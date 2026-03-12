@@ -41,7 +41,7 @@ class OperationRunFacade
     ]
 
     columns.concat(import_columns) if options[:include_import_columns]
-    columns << source_column unless options[:exclude_source_column]
+    columns << source_column if options.fetch(:include_source_column, true)
     columns.unshift(criticity) if options[:include_criticity]
 
     [columns, { cls: 'table' }]
@@ -51,17 +51,17 @@ class OperationRunFacade
     [
       TableBuilderHelper::Column.new(
         key: :filename,
-        attribute: ->(message) { message.is_a?(Import::Message) && message.resource_attributes&.dig('filename') || '-' },
+        attribute: ->(message) { message.resource_attributes&.dig('filename') || '-' },
         sortable: false
       ),
       TableBuilderHelper::Column.new(
         key: :line,
-        attribute: ->(message) { message.is_a?(Import::Message) && message.resource_attributes&.dig('line_number') || '-' },
+        attribute: ->(message) { message.resource_attributes&.dig('line_number') || '-' },
         sortable: false
       ),
       TableBuilderHelper::Column.new(
         key: :column,
-        attribute: ->(message) { message.is_a?(Import::Message) && message.resource_attributes&.dig('column_number') || '-' },
+        attribute: ->(message) { message.resource_attributes&.dig('column_number') || '-' },
         sortable: false
       )
     ]

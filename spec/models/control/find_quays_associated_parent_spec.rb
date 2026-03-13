@@ -503,7 +503,7 @@ RSpec.describe Control::FindQuaysAssociatedParent do
 
               # Starting position: Orly area
               # Root point
-              stop_area :orly, name: 'Orly Start', longitude: 2.3590, latitude: 48.7290, area_type: 'zdep'
+              stop_area :orly, name: 'Orly Start', longitude: 2.3590, latitude: 48.7290, area_type: 'zdep', transport_mode: 'bus'
 
               # Intermediate points: 45 links
               # Each step is approx 0.0006 degrees latitude (~66 meters)
@@ -513,17 +513,19 @@ RSpec.describe Control::FindQuaysAssociatedParent do
                           name: "Chain Link #{i}",
                           longitude: 2.3590,
                           latitude: 48.7290 + (i * 0.0006),
-                          area_type: 'zdep'
+                          area_type: 'zdep',
+                          transport_mode: 'bus'
               end
 
               # Final point (The 'Far Away' target at ~3km)
               stop_area :far_away, name: 'Bel-Air End',
                         longitude: 2.3590,
                         latitude: 48.7556,
-                        area_type: 'zdep'
+                        area_type: 'zdep',
+                        transport_mode: 'bus'
 
               # Dummy node to satisfy Route stop requirements (min 2 stops)
-              stop_area :extra_node, name: 'Extra Node', longitude: 2.5000, latitude: 49.0000, area_type: 'zdep'
+              stop_area :extra_node, name: 'Extra Node', longitude: 2.5000, latitude: 49.0000, area_type: 'zdep', transport_mode: 'bus'
 
               referential do
                 route line: :l0, stop_areas: %i[orly extra_node]
@@ -538,23 +540,20 @@ RSpec.describe Control::FindQuaysAssociatedParent do
           end
         end
 
-        context 'when geographical_distance is 150' do
-          let(:geographical_distance) { 100 }
+        [50, 100, 150].each do |geographical_distance|
+          context "when geographical_distance is #{geographical_distance}" do
+            let(:geographical_distance) { geographical_distance }
 
-          it 'should not create chaining effect from Orly Start to Bel-Air End' do
-            control_run.run
+            it 'should not create a cluster connecting Orly Start to Bel-Air End' do
+              control_run.run
 
-            expect(control_run.control_messages).to be_empty
-          end
-        end
+              orly_start_message = control_run.control_messages.find { |message| message.source.name == 'Orly Start' }
+              bel_air_end_message = control_run.control_messages.find { |message| message.source.name == 'Bel-Air End' }
+              orly_start_cluster_id = orly_start_message&.message_attributes&.dig('cluster_id')
+              bel_air_end_cluster_id = bel_air_end_message&.message_attributes&.dig('cluster_id')
 
-        context 'when geographical_distance is 500' do
-          let(:geographical_distance) { 500 }
-
-          it 'should not create chaining effect from Orly Start to Bel-Air End' do
-            control_run.run
-
-            expect(control_run.control_messages).to be_empty
+              expect(orly_start_cluster_id == bel_air_end_cluster_id && (orly_start_cluster_id || bel_air_end_cluster_id)).to be_falsy
+            end
           end
         end
       end

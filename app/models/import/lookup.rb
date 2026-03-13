@@ -231,6 +231,8 @@ module Import
       end
 
       def find_id(code, **_arguments)
+        return nil unless code.present?
+
         cache.fetch_id(code) do
           finders.lazy.map do |finder|
             id = finder.find_id(code)
@@ -240,6 +242,8 @@ module Import
       end
 
       def find(code, **_arguments)
+        return nil unless code.present?
+
         cache.fetch_model(code) do
           finders.lazy.map do |finder|
             model = finder.find(code)
@@ -249,6 +253,8 @@ module Import
       end
 
       def find_by_id(id)
+        return nil unless id.present?
+
         cache.fetch_model_by_id(id) do
           finders.lazy.map do |finder|
             model = finder.find_by_id(id) # rubocop:disable Rails/DynamicFindBy

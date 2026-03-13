@@ -329,6 +329,7 @@ module Control
           <<-SQL.squish
             public.stop_areas.latitude IS NOT NULL AND
             public.stop_areas.longitude IS NOT NULL AND
+            public.stop_areas.transport_mode IS NOT NULL AND
             public.stop_areas.parent_id IS NULL AND
             public.stop_areas.area_type = 'zdep'
           SQL

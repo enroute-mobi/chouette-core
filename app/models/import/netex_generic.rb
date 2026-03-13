@@ -1242,20 +1242,16 @@ module Import
       delegate :netex_source, :index_time_tables, to: :import
 
       def import!
-        each_day_type_with_assignements_and_periods do |day_type, day_type_assignments, operating_periods|
-          decorator = decorate(
-            day_type,
-            day_type_assignments: day_type_assignments,
-            raw_operating_periods: operating_periods
-          )
+        netex_source.day_types.each do |day_type|
+          day_type_refs << day_type.id
+
+          decorator = decorate(day_type, netex_source: netex_source)
 
           unless decorator.valid?
             decorator.errors.each { |error| create_message error }
             Rails.logger.debug do
-              "Errors found by Decorator for #{[day_type, day_type_assignments,
-                                                operating_periods].inspect}: #{decorator.errors.inspect}"
+              "Errors found by Decorator for #{day_type.inspect}: #{decorator.errors.inspect}"
             end
-
             next
           end
 
@@ -1270,18 +1266,9 @@ module Import
           index_time_tables[day_type.id] = time_table.id
         end
 
+        detect_orphan_day_type_assignments
+
         referential_inserter.flush
-      end
-
-      def each_day_type_with_assignements_and_periods(&block)
-        netex_source.day_types.each do |day_type|
-          day_type_assignments = netex_source.day_type_assignments.find_by(day_type_ref: day_type.id)
-
-          operating_period_ids = day_type_assignments.map { |a| a.operating_period_ref&.ref }
-          operating_periods = operating_period_ids.map { |id| netex_source.operating_periods.find id }.reject(&:blank?)
-
-          block.call day_type, day_type_assignments, operating_periods
-        end
       end
 
       def save(time_table, referential_inserter)
@@ -1303,15 +1290,91 @@ module Import
         end
       end
 
+      def detect_orphan_day_type_assignments
+        netex_source.day_type_assignments.each do |day_type_assignment|
+          day_type_ref = day_type_assignment.day_type_ref&.ref
+          next if day_type_ref && day_type_refs.include?(day_type_ref)
+
+          add_resource_error(
+            day_type_assignment,
+            :day_type_assignment_unknown_day_type,
+            message_attributes: { day_type_ref: day_type_ref }
+          )
+        end
+      end
+
+      def day_type_refs
+        @day_type_refs ||= Set.new
+      end
+
       class Decorator < ResourceDecorator
-        attr_accessor :day_type_assignments, :raw_operating_periods
+        attr_accessor :netex_source
+
+        def day_type_assignments
+          @day_type_assignments ||= netex_source.day_type_assignments.find_by(day_type_ref: id)
+        end
+
+        def partition_day_type_assignments
+          return if @operating_periods && @uic_operating_periods && @included_dates && @excluded_dates
+
+          @operating_periods = []
+          @uic_operating_periods = []
+          @included_dates = []
+          @excluded_dates = []
+
+          day_type_assignments.each do |day_type_assignment|
+            date = day_type_assignment.date
+            # TODO: date parse error
+
+            if date
+              if day_type_assignment.available?
+                @included_dates << date
+              else
+                @excluded_dates << date
+              end
+            else
+              operating_period_id = day_type_assignment.operating_period_ref&.ref
+              if operating_period_id
+                operating_period = netex_source.operating_periods.find(operating_period_id)
+                unless operating_period
+                  errors.add(
+                    :day_type_assignment_unknown_operation_period,
+                    resource: day_type_assignment,
+                    message_attributes: { operating_period_id: operating_period_id }
+                  )
+                  next
+                end
+
+                if operating_period.respond_to?(:valid_day_bits)
+                  @uic_operating_periods << operating_period
+                else
+                  @operating_periods << operating_period
+                end
+              else
+                errors.add(:day_type_assignment_without_date_or_operation_period, resource: day_type_assignment)
+              end
+            end
+          end
+        end
 
         def operating_periods
-          raw_operating_periods.reject { |o| o.respond_to? :valid_day_bits }
+          partition_day_type_assignments
+          @operating_periods
         end
 
         def uic_operating_periods
-          raw_operating_periods.select { |o| o.respond_to? :valid_day_bits }
+          partition_day_type_assignments
+          @uic_operating_periods
+        end
+
+        def included_dates
+          partition_day_type_assignments
+          @included_dates
+        end
+
+        def excluded_dates
+          partition_day_type_assignments
+          @excluded_dates
         end
 
         def days_of_week
@@ -1322,35 +1385,16 @@ module Import
           end
         end
 
-        def day_type_assignments_with_date
-          @day_type_assignments_with_date ||= day_type_assignments.select(&:date)
-        end
-
-        def included_dates
-          day_type_assignments_with_date.select(&:available?).map(&:date)
-        end
-
-        def excluded_dates
-          day_type_assignments_with_date.reject(&:available?).map(&:date)
-        end
-
         def timetable_periods
-          operating_periods.map do |operating_period|
-            Cuckoo::Timetable::Period.from(operating_period.date_range, days_of_week)
-          end
-        end
-
-        def uic_days_bits
-          uic_operating_periods.map do |operating_period|
-            Cuckoo::DaysBit.new(
-              from: operating_period.date_range.min,
-              bitset: Bitset.from_s(operating_period.valid_day_bits)
-            )
+          operating_periods_chouette_models(operating_periods) do |operating_period|
+            decorate(operating_period, OperatingPeriodDecorator, days_of_week: days_of_week)
           end
         end
 
         def uic_timetables
-          uic_days_bits.map(&:to_timetable)
+          operating_periods_chouette_models(uic_operating_periods) do |operating_period|
+            decorate(operating_period, UicOperatingPeriodDecorator)
+          end
         end
 
         def chouette_model
@@ -1374,6 +1418,72 @@ module Import
         def memory_timetable
           @memory_timetable ||=
             Cuckoo::Timetable.merge(base_timetable, *uic_timetables).with_uniq_days_of_week.normalize!
+        end
+
+        private
+
+        def operating_periods_chouette_models(operation_periods)
+          operation_periods.filter_map do |operating_period|
+            decorator = yield operating_period
+            unless decorator.valid?
+              errors.concat(decorator.errors)
+              next nil
+            end
+
+            decorator.chouette_model
+          end
+        end
+      end
+
+      class AbstractOperatingPeriodDecorator < ResourceDecorator
+        def chouette_model
+          unless from_date
+            errors.add(:operating_period_without_from_date)
+            return nil
+          end
+
+          unless to_date
+            errors.add(:operating_period_without_to_date)
+            return nil
+          end
+
+          chouette_model_without_validation
+        end
+
+        protected
+
+        def chouette_model_without_validation
+          raise NotImplementedError
+        end
+      end
+
+      class OperatingPeriodDecorator < AbstractOperatingPeriodDecorator
+        attr_accessor :days_of_week
+
+        protected
+
+        def chouette_model_without_validation
+          Cuckoo::Timetable::Period.from(date_range, days_of_week)
+        end
+      end
+
+      class UicOperatingPeriodDecorator < AbstractOperatingPeriodDecorator
+        def chouette_model
+          unless valid_day_bits
+            errors.add(:uic_operating_period_without_valid_day_bits)
+            return nil
+          end
+
+          super
+        end
+
+        protected
+
+        def chouette_model_without_validation
+          Cuckoo::DaysBit.new(
+            from: date_range.min,
+            bitset: Bitset.from_s(valid_day_bits)
+          ).to_timetable
         end
       end
     end

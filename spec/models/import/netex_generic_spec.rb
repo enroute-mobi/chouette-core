@@ -1819,13 +1819,20 @@ RSpec.describe Import::NetexGeneric::VehicleJourneys::Decorator do
 end
 
 RSpec.describe Import::NetexGeneric::TimeTables::Decorator do
-  subject(:decorator) do
-    described_class.new(day_type, day_type_assignments: day_type_assignments, raw_operating_periods: operating_periods)
-  end
+  subject(:decorator) { described_class.new(day_type) }
 
   let(:day_type) { Netex::DayType.new }
-  let(:day_type_assignments) { [] }
+  let(:included_dates) { [] }
+  let(:excluded_dates) { [] }
   let(:operating_periods) { [] }
+  let(:uic_operating_periods) { [] }
+
+  before do
+    allow(decorator).to receive(:included_dates).and_return(included_dates)
+    allow(decorator).to receive(:excluded_dates).and_return(excluded_dates)
+    allow(decorator).to receive(:operating_periods).and_return(operating_periods)
+    allow(decorator).to receive(:uic_operating_periods).and_return(uic_operating_periods)
+  end
 
   describe '#timetable_periods' do
     subject { decorator.timetable_periods }
@@ -1851,24 +1858,13 @@ RSpec.describe Import::NetexGeneric::TimeTables::Decorator do
 
       it { is_expected.to contain_exactly(expected_period) }
     end
-
-    context 'when an Operating Period and an UicOperatingPeriod are present' do
-      let(:operating_periods) do
-        [
-          Netex::OperatingPeriod.new(time_range: Time.zone.parse('2030-01-01')..Time.zone.parse('2030-01-10')),
-          Netex::UicOperatingPeriod.new
-        ]
-      end
-
-      it { is_expected.to have_attributes(size: 1) }
-    end
   end
 
-  describe '#uic_days_bits' do
-    subject { decorator.uic_days_bits }
+  describe '#uic_timetables' do
+    subject { decorator.uic_timetables }
 
     context 'when an UicOperatingPeriod is present from 2030-01-01 to 2030-01-10 with 1010110101' do
-      let(:operating_periods) do
+      let(:uic_operating_periods) do
         [
           Netex::UicOperatingPeriod.new(
             time_range: Time.zone.parse('2030-01-01')..Time.zone.parse('2030-01-10'),
@@ -1877,15 +1873,9 @@ RSpec.describe Import::NetexGeneric::TimeTables::Decorator do
         ]
       end
 
-      let(:expected_days_bit) do
-        an_object_having_attributes(
-          from: Date.parse('2030-01-01'),
-          to: Date.parse('2030-01-10'),
-          bitset: Bitset.from_s('1010110101')
-        )
-      end
+      let(:expected_dates) { %w[01 03 05 06 08 10].map { |d| Date.parse("2030-01-#{d}") } }
 
-      it { is_expected.to contain_exactly(expected_days_bit) }
+      it { expect(subject.map { |t| t.enumerator.to_a }).to contain_exactly(match_array(expected_dates)) }
     end
   end
 
@@ -1899,7 +1889,11 @@ RSpec.describe Import::NetexGeneric::TimeTables::Decorator do
 
       let(:operating_periods) do
         [
-          Netex::OperatingPeriod.new(time_range: Time.zone.parse('2030-01-01')..Time.zone.parse('2030-01-10')),
+          Netex::OperatingPeriod.new(time_range: Time.zone.parse('2030-01-01')..Time.zone.parse('2030-01-10'))
+        ]
+      end
+      let(:uic_operating_periods) do
+        [
           Netex::UicOperatingPeriod.new(
             time_range: Time.zone.parse('2030-01-10')..Time.zone.parse('2030-01-20'),
             valid_day_bits: '10000000001'

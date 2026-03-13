@@ -52,6 +52,9 @@ module Control
 
       def build_sub_clusters(anomaly)
         stop_names = anomaly.grouped_stop_areas.map { |s| s['name'] }
+        # return only one sub cluster if threshold is 0
+        return [stop_names] if threshold.zero?
+
         StopNameClustering.new(stop_names, threshold: threshold).perform
       end
 
@@ -64,7 +67,7 @@ module Control
       end
 
       def threshold
-        lexical_distance / 100.0
+        @threshold ||= lexical_distance / 100.0
       end
 
       class StopNameClustering

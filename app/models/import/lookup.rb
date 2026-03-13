@@ -99,21 +99,25 @@ module Import
       def internal_booking_arrangements
         @internal_booking_arrangements ||= begin
           params = { source: :provider }
-          booking_arrangement_finder_class = if import.override_internal_identifiers?
+          finder_class = if import.override_internal_identifiers?
             Finder::Objectid
           else
             params.merge!(code_space: code_space)
             Finder::Code
           end
 
-          Collection.new.add(booking_arrangement_finder_class.new(line_provider.booking_arrangements, **params))
+          Collection.new.tap do |collection|
+            collection.add(finder_class.new(line_provider.booking_arrangements, **params)) if line_provider
+          end
         end
       end
 
       def internal_shapes
-        @internal_shapes ||=
-          Collection.new
-                    .add(Finder::Code.new(shape_provider.shapes, code_space: code_space, source: :provider))
+        @internal_shapes ||= Collection.new.tap do |collection|
+          if shape_provider
+            collection.add(Finder::Code.new(shape_provider.shapes, code_space: code_space, source: :provider))
+          end
+        end
       end
 
       def finder_class

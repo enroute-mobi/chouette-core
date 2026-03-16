@@ -345,7 +345,8 @@ module Import
             {
               criticity: (error.criticity || :error),
               message_key: error.message_key,
-              message_attributes: error.message_attributes
+              message_attributes: error.message_attributes,
+              resource_attributes: error.resource.tags
             }
           else
             message_key = message_key_or_error

@@ -17,9 +17,8 @@ module ImportMessages
         )
       end
       format.json do
-        facade = OperationRunFacade.new(import_resource.import, current_workbench)
         messages = import_messages.order(:id).paginate(page: params[:page], per_page: 15)
-        html = render_to_string(partial: 'imports/import_resource_messages', locals: { messages: messages, facade: facade }, formats: :html)
+        html = render_to_string(partial: 'imports/import_resource_messages', locals: { messages: messages, facade: @facade }, formats: :html)
         render json: { html: html }
       end
     end

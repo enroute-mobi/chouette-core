@@ -1,5 +1,5 @@
 - if messages.any?
-  - *message_table_params_args, message_table_params_options = facade.message_table_params(include_criticity: true, include_import_columns: true, exclude_source_column: true)
+  - *message_table_params_args, message_table_params_options = facade.message_table_params(include_criticity: true, include_import_columns: true, include_source_column: false)
   = table_builder_2 messages, *message_table_params_args, **message_table_params_options
 
   = new_pagination messages, 'pull-right', model: Import::Message

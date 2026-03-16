@@ -47,8 +47,7 @@ const journeyPattern = (state = {}, action) =>{
       })
       return _.assign({}, state, {code_values: updatedCodes})
     case 'DELETE_CODE':
-      const codesAfterDelete = state.code_values
-      codesAfterDelete.splice(action.index, 1)
+      const codesAfterDelete = state.code_values.filter((_, index) => index !== action.codeIndex)
       return _.assign({}, state, {code_values: codesAfterDelete})
     default:
       return state

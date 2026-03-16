@@ -52,7 +52,17 @@ module Macro
         return unless sequence
 
         models_without_code.find_each do |model|
-          code = model.codes.create(code_space: code_space, value: code_generator.value)
+          value = code_generator.value
+
+          if value.nil?
+            messages.create(source: model) do |message|
+              message.error! message_key: :sequence_exhausted
+            end
+
+            break # Stop processing further models if sequence is exhausted
+          end
+
+          code = model.codes.create(code_space: code_space, value: value)
 
           messages.create(source: model, code_value: code.value) do |message|
             message.error! unless code.valid?
@@ -108,9 +118,13 @@ module Macro
         BATCH_SIZE = 1000
 
         def value
-          unless code_values.any?
+          # If no more code values, try to fetch a new batch
+          if code_values.empty?
             @code_values = possible_code_values(offset, BATCH_SIZE)
             @offset += BATCH_SIZE
+
+            # If still no values after fetching, return nil to indicate sequence is exhausted
+            return nil if @code_values.empty?
           end
 
           @code_values.shift

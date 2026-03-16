@@ -89,7 +89,9 @@ module ProcessingRule
     end
 
     def candidate_tags
-      raise NotImplementedError
+      return Tag.none unless workbench
+
+      workbench.tags
     end
 
     def self.compatible_with_operation_via_tags(operation_step, tag_ids)

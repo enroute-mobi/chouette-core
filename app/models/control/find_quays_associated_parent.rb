@@ -262,60 +262,54 @@ module Control
 
         # prepare StopAreas grouped by transport_mode and geographical distance
         def base_query
-          stop_areas
-            .select(
-              <<-SQL.squish
-                public.stop_areas.id,
-                public.stop_areas.objectid,
-                public.stop_areas.name,
-                ARRAY_AGG(routes.id) AS route_ids,
-                #{cluster_id_sql}
-              SQL
-            )
+          # 1. Step 2: Grouping route_ids
+          # We also get the coordinates here to use in the next step
+          pre_grouped = stop_areas
+            .select(base_columns, 'ARRAY_AGG(routes.id) AS route_ids')
             .joins(base_joins)
             .where(base_where)
-            .group('public.stop_areas.id, public.stop_areas.objectid, public.stop_areas.name')
+            .group(base_columns)
             .to_sql
-        end
 
-        # partition by transport_mode and group_name (lexical distance)
-        def partition_by
+          # 2. Step 2 (Clustering): Run on the grouped results
+          # Use LATERAL to calculate geom only once
+          # cluster_id is a combination of transport_mode, x and y coordinates and ST_ClusterDBSCAN
+          # the method ST_Transform is calculated only one time using LATERAL to avoid recalculating 3 times for each row
           <<-SQL.squish
-            public.stop_areas.transport_mode
+            WITH grouped_data AS (#{pre_grouped})
+            SELECT
+              gd.*,
+              (
+                gd.transport_mode || '_' ||
+                floor(ST_X(projected.geom) / #{grid_size})::text || '_' ||
+                floor(ST_Y(projected.geom) / #{grid_size})::text || '_' ||
+                ST_ClusterDBSCAN(projected.geom, #{geographical_distance}, 2)
+                  OVER (PARTITION BY gd.transport_mode)
+              ) AS cluster_id
+            FROM grouped_data gd,
+            LATERAL (
+              SELECT ST_Transform(ST_SetSRID(ST_MakePoint(gd.longitude, gd.latitude), 4326), 3857) AS geom
+            ) AS projected
           SQL
         end
 
-        # cluster_id is a combination of transport_mode, x and y coordinates and ST_ClusterDBSCAN
-        def cluster_id_sql
-          <<-SQL.squish
-            public.stop_areas.transport_mode || '_' ||
-            (floor(
-              ST_X(
-                ST_Transform(
-                  ST_SetSRID(
-                    ST_MakePoint(public.stop_areas.longitude, public.stop_areas.latitude),
-                    4326
-                  ),
-                  3857
-                )
-              ) / #{geographical_distance * 3}
-            ))::text || '_' ||
-            (floor(
-              ST_Y(
-                ST_Transform(
-                  ST_SetSRID(
-                    ST_MakePoint(public.stop_areas.longitude, public.stop_areas.latitude),
-                    4326
-                  ),
-                  3857
-                )
-              ) / #{geographical_distance * 3}
-            ))::text || '_' ||
-            (ST_ClusterDBSCAN(
-              ST_Transform(ST_SetSRID(ST_MakePoint(public.stop_areas.longitude, public.stop_areas.latitude), 4326), 3857),
-              #{geographical_distance}, 2
-            ) OVER (PARTITION BY #{partition_by}))::text
-            AS cluster_id
+        # grid size is 3 times the geographical distance
+        # this is to ensure that we don't miss any StopAreas that are close to each other
+        # This value was chosen through several tests; it may not be the best,
+        # but it has demonstrated a certain level of effectiveness.
+        # Todo: Further observation is needed on a larger dataset.
+        def grid_size
+          @grid_size ||= geographical_distance * 3
+        end
+
+        def base_columns
+          @base_columns ||= <<-SQL.squish
+            public.stop_areas.id,
+            public.stop_areas.objectid,
+            public.stop_areas.name,
+            public.stop_areas.transport_mode,
+            public.stop_areas.longitude,
+            public.stop_areas.latitude
           SQL
         end
 

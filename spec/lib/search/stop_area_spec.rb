@@ -73,8 +73,8 @@ RSpec.describe Search::StopArea do
     subject(:scope) { search.scope(initial_scope) }
 
     let(:search) { described_class.new(zip_code: '44300', per_page: 1, page: 1) }
-    let(:workbench_scope) { Scope::Workbench.new(context.workbench) }
-    let(:referential_scope) { Scope::Referential.new(context.workbench, context.referential) }
+    let(:workbench_scope) { LegacyScope::Workbench.new(context.workbench) }
+    let(:referential_scope) { LegacyScope::Referential.new(context.workbench, context.referential) }
     let(:initial_scope) { referential_scope }
 
     before { context.referential.switch }

@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
-RSpec.describe Scope::Referential do
-  subject(:scope) { Scope::Referential.new(workbench, referential) }
+RSpec.describe LegacyScope::Referential do
+  subject(:scope) { described_class.new(workbench, referential) }
 
   let(:workbench) { context.workbench(:workbench) }
   let(:referential) { context.referential(:referential) }

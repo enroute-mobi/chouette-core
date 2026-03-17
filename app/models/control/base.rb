@@ -84,9 +84,9 @@ module Control
         if control_context_run
           control_context_run
         elsif referential
-          Scope::Referential.new(workbench, referential)
+          LegacyScope::Referential.new(workbench, referential)
         else
-          Scope::Owned.new(Scope::Workbench.new(workbench), workbench)
+          LegacyScope::Owned.new(LegacyScope::Workbench.new(workbench), workbench)
         end
       end
 

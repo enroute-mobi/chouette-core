@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
-RSpec.describe Scope::Workbench do
-  subject(:scope) { Scope::Workbench.new(workbench) }
+RSpec.describe LegacyScope::Workbench do
+  subject(:scope) { described_class.new(workbench) }
 
   let(:workbench) { context.workbench(:workbench) }
   let(:referential) { context.referential(:referential) rescue nil } # rubocop:disable Style/RescueModifier

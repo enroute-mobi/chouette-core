@@ -3,7 +3,7 @@
 # Provides proper models according an initial Scope (like Workbench, Referential, etc)
 #
 # Used by Controls and Macros to restrict the operated models
-module Scope
+module LegacyScope
   class CenteredOnModel
     class_attribute :links, instance_accessor: false, default: {}
 
@@ -438,7 +438,7 @@ module Scope
     attr_accessor :scope, :workbench
   end
 
-  class Search < ::Scope::CenteredOnModel
+  class Search < ::LegacyScope::CenteredOnModel
     class << self
       def search_on(model)
         scope_centered_on(model)

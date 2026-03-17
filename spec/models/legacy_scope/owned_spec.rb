@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
-RSpec.describe Scope::Owned do
-  subject(:scope) { Scope::Owned.new(parent_scope, workbench) }
+RSpec.describe LegacyScope::Owned do
+  subject(:scope) { described_class.new(parent_scope, workbench) }
 
   let(:workbench) { context.workbench(:workbench) }
   let(:referential) { context.referential(:referential) rescue nil } # rubocop:disable Style/RescueModifier
@@ -9,7 +9,7 @@ RSpec.describe Scope::Owned do
   before { referential&.switch }
 
   context 'of Scope::Workbench' do
-    let(:parent_scope) { Scope::Workbench.new(context.workbench(:workbench)) }
+    let(:parent_scope) { LegacyScope::Workbench.new(context.workbench(:workbench)) }
 
     describe '#lines' do
       subject { scope.lines }
@@ -525,7 +525,9 @@ RSpec.describe Scope::Owned do
   end
 
   context 'of Scope::Referential' do
-    let(:parent_scope) { Scope::Referential.new(context.workbench(:workbench), context.referential(:referential)) }
+    let(:parent_scope) do
+      LegacyScope::Referential.new(context.workbench(:workbench), context.referential(:referential))
+    end
 
     describe '#lines' do
       subject { scope.lines }

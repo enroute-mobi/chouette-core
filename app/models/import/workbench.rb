@@ -138,6 +138,10 @@ module Import
       referentials.each(&:archive!)
     end
 
+    def overlapping_referential_ids
+      children.flat_map(&:overlapping_referential_ids)
+    end
+
     def overlapping_referentials
       children.flat_map(&:overlapping_referentials)
     end

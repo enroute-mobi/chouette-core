@@ -117,10 +117,6 @@ module ProcessingRule
     validates :operation_step, uniqueness: { scope: %i[processable_type workbench] }, unless: :after_import?
     validates :operation_step, uniqueness: { scope: %i[processable_type processable_id workbench] }, if: :after_import?
 
-    validate :required_tags_must_be_in_candidates
-    validate :excluded_tags_must_be_in_candidates
-    validate :no_tag_overlap
-
     def use_macro_list?
       processable_type == Macro::List.name
     end

@@ -13,6 +13,8 @@ class Import::Message < ApplicationModel
   end
 
   def full_message
+    return unless i18n_attributes
+
     I18n.t(i18n_key, **i18n_attributes)
   end
 
@@ -21,7 +23,7 @@ class Import::Message < ApplicationModel
   end
 
   def i18n_attributes
-    message_attributes.symbolize_keys
+    message_attributes&.symbolize_keys
   end
 
 end

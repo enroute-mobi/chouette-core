@@ -1,21 +1,9 @@
-= simple_form_for @search, url: request.path, method: "GET", html: { class: 'flex items-center tailwind-filters bg-grey relative' }, wrapper: :filters_form_tailwind  do |f|
-  = f.simple_fields_for :order, @search.order, defaults: { wrapper: false } do |form_order|
-    - form_order.object.attributes.keys.each do |attribute|
-      = form_order.input attribute, as: :hidden
-
-  .flex.flex-col.w-full
-    .flex.items-center.border-r.border-white
-      = f.input :name, label: false, wrapper_html: {class: "w-2/5"}, placeholder: I18n.t('simple_form.placeholders.search.document_id')
-    .flex.items-center.border-t.border-r.border-white
-      = f.input :zip_code, required: false, wrapper_html: {class: "w-1/5"}
-      = f.input :city_name, required: false, wrapper_html: {class: "w-1/5"}
-      = f.input :category, as: :tom_select, collection: @search.candidate_categories.map { |l| {id: l.id, text: l.name } }, wrapper_html: {class: "w-2/6"}
-      = f.input :shape_provider_id, as: :autocomplete_select, collection: @search.candidate_shape_providers, wrapper_html: {class: "w-2/5"}
-
-  .flex.flex-col.justify-center.items-center.actions.ml-auto.w-56
-    .flex.items-center.mb-2.ml-3
-      = render partial: 'shared/per_page', locals: {f:f}
-    .flex.items-center
-      = link_to t('actions.erase'), workbench_shape_referential_point_of_interests_path(@workbench), class: 'btn btn-link'
-      = f.submit t('actions.filter'), class: 'btn btn-default'
+= simple_search_for @search, workbench_shape_referential_point_of_interests_path(@workbench) do |f|
+  = f.row
+    = f.name
+  = f.row
+    = f.input :zip_code, width: 1
+    = f.input :city_name, width: 1
+    = f.input :category, as: :tom_select, collection: @search.candidate_categories.map { |l| {id: l.id, text: l.name } }, width: 2
+    = f.input :shape_provider_id, as: :autocomplete_select, collection: @search.candidate_shape_providers, width: 2
 

@@ -41,9 +41,7 @@ class Referential < ApplicationModel
   attr_accessor :upper_corner
   attr_accessor :lower_corner
 
-  attr_accessor :from_current_offer
   attr_accessor :urgent
-  attr_accessor :bare #this is used in specs to skip schema creation
 
   has_one :user
   has_many :import_resources, class_name: 'Import::Resource', dependent: :destroy
@@ -468,13 +466,6 @@ class Referential < ApplicationModel
   before_validation :assign_slug, on: :create
   before_validation :assign_prefix, on: :create
 
-  before_create :create_schema
-
-  # Don't use after_commit because of inline_clone (cf created_from)
-  after_create :clone_schema, if: :created_from
-  after_create :create_from_current_offer, if: :from_current_offer
-
-  before_destroy :destroy_schema
   before_destroy :destroy_jobs
 
   def referential_read_only?
@@ -622,39 +613,64 @@ class Referential < ApplicationModel
     end
   end
 
-  def create_from_current_offer
-    pending!
+  concerning :SchemaSupport do
+    included do
+      attr_accessor :bare # this is used in specs to skip schema creation
+      attr_accessor :from_current_offer
+      attr_accessor :inline_clone
 
-    enqueue_job :fill_from_current_offer
-  end
+      before_create :create_schema
 
-  # Create referential from current workbench output
-  def fill_from_current_offer
-    current_offer = workbench.output.current
+      after_create :create_from_current_offer, if: :from_current_offer
+      after_create :enqueue_clone_schema, if: :enqueue_clone_schema?
+      after_commit :directly_clone_schema, if: :directly_clone_schema?, on: :create
 
-    lines = metadatas_lines
-    copy = ReferentialCopy.new source: current_offer, target: self, skip_metadatas: true, lines: lines
-    copy.copy!
-
-    active!
-  end
-
-  attr_accessor :inline_clone
-  def clone_schema
-    cloning = ReferentialCloning.new source_referential: created_from, target_referential: self
-
-    if inline_clone
-      cloning.clone!
-    else
-      cloning.save!
+      before_destroy :destroy_schema
     end
-  end
 
-  def create_schema
-    return if bare
+    def create_schema
+      return if bare
 
-    Chouette::Benchmark.measure("referential.create", referential: id) do
-      schema.create
+      Chouette::Benchmark.measure("referential.create", referential: id) do
+        schema.create
+      end
+    end
+
+    def create_from_current_offer
+      pending!
+
+      enqueue_job :fill_from_current_offer
+    end
+
+    # Create referential from current workbench output
+    def fill_from_current_offer
+      current_offer = workbench.output.current
+
+      lines = metadatas_lines
+      copy = ReferentialCopy.new source: current_offer, target: self, skip_metadatas: true, lines: lines
+      copy.copy!
+
+      active!
+    end
+
+    def referential_cloning
+      @referential_cloning ||= ReferentialCloning.new(source_referential: created_from, target_referential: self)
+    end
+
+    def enqueue_clone_schema?
+      created_from_id && !inline_clone
+    end
+
+    def enqueue_clone_schema
+      referential_cloning.save!
+    end
+
+    def directly_clone_schema?
+      created_from_id && inline_clone
+    end
+
+    def directly_clone_schema
+      referential_cloning.clone!
     end
   end
 

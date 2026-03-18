@@ -718,19 +718,59 @@ module Import
 
       delegate :route_points, :directions, :destination_displays, to: :netex_source
 
+      module RouteDecoratorSupport
+        def validate
+          super
+          errors.add :route_without_id unless id.present?
+        end
+
+        def chouette_line
+          return @chouette_line if defined?(@chouette_line)
+
+          if line_ref&.ref
+            line = lookup.lines.find(line_ref.ref) if lookup
+            errors.add :route_with_line_unknown, message_attributes: { line_ref: line_ref.ref } unless line
+          else
+            errors.add :route_with_line_ref_undefined
+          end
+
+          @chouette_line = line
+        end
+
+        def wayback
+          if direction_type.blank?
+            :outbound
+          elsif Chouette::Route.wayback.values.include?(direction_type)
+            direction_type
+          else
+            errors.add :route_with_direction_type_unsupported, message_attributes: { direction_type: direction_type }
+            nil
+          end
+        end
+
+        def direction
+          direction_id = direction_ref&.ref
+          return unless direction_id
+
+          direction = directions.find direction_id
+          errors.add :route_with_direction_unknown, message_attributes: { direction_id: direction_id } unless direction
+
+          direction
+        end
+
+        def direction_name
+          direction&.name
+        end
+      end
+
       class HackedOrderDecorator < ResourceDecorator
+        include RouteDecoratorSupport
+
         attr_accessor :journey_patterns, :route_points, :directions, :destination_displays
 
         def enabled?
           ## TODO Could test order presence
           points_in_sequence.empty? && !stop_points.empty?
-        end
-
-        def chouette_line
-          line = lookup.lines.find(line_ref.ref) if lookup
-          errors.add :line_not_found unless line
-
-          line
         end
 
         def chouette_models
@@ -752,30 +792,6 @@ module Import
             published_name: direction_name,
             stop_points: stop_points
           }.merge(chouette_attributes)
-        end
-
-        def wayback
-          if Chouette::Route.wayback.values.include?(direction_type)
-            direction_type
-          else
-            # Should be a warning
-            # errors.add :direction_type_not_found
-            :outbound
-          end
-        end
-
-        def direction
-          direction_id = direction_ref&.ref
-          return unless direction_id
-
-          direction = directions.find direction_id
-          errors.add :direction_not_found unless direction
-
-          direction
-        end
-
-        def direction_name
-          direction&.name
         end
 
         def stop_points
@@ -888,32 +904,39 @@ module Import
       end
 
       class Decorator < ResourceDecorator
+        include RouteDecoratorSupport
+
         attr_accessor :journey_patterns, :route_points, :directions, :destination_displays
 
-        def chouette_line
-          return @chouette_line if @chouette_line
-
-          line = lookup.lines.find(line_ref.ref) if lookup
-          errors.add :line_not_found unless line
-
-          @chouette_line = line
-        end
-
-        def chouette_models
+        def clusterized_decorators
           return [] unless chouette_line && clusterized_stops
 
-          @chouette_models ||= clusterized_stops.map.with_index do |stops_cluster, index|
+          @clusterized_decorators ||= clusterized_stops.map.with_index do |stops_cluster, index|
             decorate(
               __getobj__,
               RouteDecorator,
               lookup: lookup,
               stops_cluster: stops_cluster,
               chouette_line: chouette_line,
-              directions: directions,
+              wayback: wayback,
+              published_name: direction_name,
               destination_displays: destination_displays,
               index: index
-            ).chouette_model
+            )
           end
+        end
+
+        def valid?
+          result = super
+          clusterized_decorators.each do |route|
+            result &= route.valid?
+            errors.concat(route.errors)
+          end
+          result
+        end
+
+        def chouette_models
+          @chouette_models ||= clusterized_decorators.map(&:chouette_model)
         end
         alias chouette_model chouette_models # so that #validate works
 
@@ -972,7 +995,7 @@ module Import
 
           stop_sequence = sequence_merger.merge
           unless stop_sequence
-            errors.add :cannot_compute_stop_sequence, message_attributes: { route_id: id }
+            errors.add :cannot_compute_stop_sequence
             return nil
           end
           stop_sequence
@@ -1046,7 +1069,8 @@ module Import
         attr_accessor :routes_decorator,
                       :stops_cluster,
                       :chouette_line,
-                      :directions,
+                      :wayback,
+                      :published_name,
                       :destination_displays,
                       :index
 
@@ -1058,36 +1082,12 @@ module Import
           {
             name: chouette_name,
             wayback: wayback,
-            published_name: direction_name,
+            published_name: published_name,
             stop_points: stop_points,
             journey_patterns: journey_patterns
           }.merge(chouette_attributes).tap do |attrs|
             attrs.delete(:objectid) unless index.zero?
           end
-        end
-
-        def wayback
-          if Chouette::Route.wayback.values.include?(direction_type)
-            direction_type
-          else
-            # Should be a warning
-            # errors.add :direction_type_not_found
-            :outbound
-          end
-        end
-
-        def direction
-          direction_id = direction_ref&.ref
-          return unless direction_id
-
-          direction = directions.find direction_id
-          errors.add :direction_not_found unless direction
-
-          direction
-        end
-
-        def direction_name
-          direction&.name
         end
 
         def stop_points

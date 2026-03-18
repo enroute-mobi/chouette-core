@@ -29,20 +29,14 @@ class OperationRunFacade
     link_to_if(condition, label, url)
   end
 
-  def message_table_params(options = {})
-    criticity = TableBuilderHelper::Column.new(
-      key: :criticity,
-      attribute: ->(m) { criticity_span(m.criticity) },
-      sortable: false
-    )
-
+  def message_table_params
     columns = [
       TableBuilderHelper::Column.new(key: :message, attribute: :full_message, sortable: false)
     ]
 
-    columns.concat(import_columns) if options[:include_import_columns]
-    columns << source_column if options.fetch(:include_source_column, true)
-    columns.unshift(criticity) if options[:include_criticity]
+    columns.concat(import_columns) if self.resource.is_a?(::Import::Base)
+    columns << source_column if self.resource.is_a?(::Control::List::Run) || self.resource.is_a?(::Macro::List::Run)
+    columns << criticity_column if self.resource.is_a?(::Macro::List::Run)
 
     [columns, { cls: 'table' }]
   end
@@ -67,6 +61,15 @@ class OperationRunFacade
     ]
   end
 
+  def criticity_column
+    TableBuilderHelper::Column.new(
+      key: :criticity,
+      attribute: ->(m) { criticity_span(m.criticity) },
+    sortable: false
+    )
+  end
+
+
   def source_column
     TableBuilderHelper::Column.new(
       key: :source,
@@ -89,7 +92,6 @@ class OperationRunFacade
 
   def display_referential_links?
     return @display_referential_links if defined?(@display_referential_links)
-
     @display_referential_links = current_workbench && \
                                  (!resource.referential || current_workbench.find_referential(resource.referential.id))
   end

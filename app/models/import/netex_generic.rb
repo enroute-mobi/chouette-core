@@ -1135,9 +1135,10 @@ module Import
         def netex_journey_pattern_ordered_points
           @netex_journey_pattern_ordered_points ||= journey_patterns.filter_map do |netex_journey_pattern|
             ordered_points = netex_journey_pattern.points_in_sequence.sort_by { |sp| sp.order.to_i }.map do |sp_in_jp|
-              scheduled_stop_point = stop_point_in_journey_pattern_scheduled_stop_point(
-                netex_journey_pattern, sp_in_jp
-              )
+              scheduled_stop_point = stop_point_in_journey_pattern_scheduled_stop_point(netex_journey_pattern, sp_in_jp)
+
+              # if we do not find the scheduled stop point, the journey pattern is invalid, we break this loop and
+              # continue with the next journey pattern
               break nil unless scheduled_stop_point
 
               {
@@ -1146,6 +1147,8 @@ module Import
                 stop_area_id: scheduled_stop_point.stop_area_id
               }
             end
+
+            # if some scheduled stop point is missing in this journey pattern, we continue with the next journey pattern
             next nil unless ordered_points
 
             [netex_journey_pattern, ordered_points]

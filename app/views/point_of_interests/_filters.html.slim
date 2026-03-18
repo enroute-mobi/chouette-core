@@ -2,8 +2,8 @@
   = f.row
     = f.name
   = f.row
-    = f.input :zip_code, width: 1
-    = f.input :city_name, width: 1
+    = f.input :zip_code
+    = f.input :city_name
     = f.input :category, as: :tom_select, collection: @search.candidate_categories.map { |l| {id: l.id, text: l.name } }, width: 2
     = f.input :shape_provider_id, as: :autocomplete_select, collection: @search.candidate_shape_providers, width: 2
 

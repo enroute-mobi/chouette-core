@@ -66,8 +66,7 @@ GIT
 
 GIT
   remote: https://bitbucket.org/enroute-mobi/netex.git
-  revision: c911695eeee130d5054356a521a42b896dd6d738
-  branch: DATA-101-prevent-crash-when-an-invalid-date-time-or-float-is-parsed
+  revision: 0e4af195c91b6942d070a853c700f142441ae568
   specs:
     netex (0.1.2)
       activesupport

@@ -48,6 +48,7 @@ fr:
     journey_pattern_less_than_2_stop_points: "Le Journey Pattern NeTEx '%{resource_id}' ne définit pas les 2 StopPoints minimum"
     journey_pattern_without_scheduled_stop_point: "Le Journey Pattern NeTEx '%{journey_pattern_id}' définit un StopPoint sans ScheduledStopPoint"
     journey_pattern_unknown_scheduled_stop_point: "Le Journey Pattern NeTEx '%{journey_pattern_id}' définit un StopPoint avec un ScheduledStopPoint inconnu"
+    route_without_journey_pattern: "La Route NeTEx '%{resource_id}' n'a pas de Journey Pattern associé"
     gtfs:
       agencies:
         imported: "%{count} agence(s) importée(s)"

@@ -1014,6 +1014,12 @@ module Import
 
         attr_accessor :journey_patterns, :route_points, :directions, :destination_displays
 
+        def validate
+          super
+
+          errors.add :route_without_journey_pattern unless journey_patterns.any?
+        end
+
         def clusterized_decorators
           return [] unless chouette_line && clusterized_stops
 

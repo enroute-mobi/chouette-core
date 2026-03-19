@@ -1810,8 +1810,10 @@ RSpec.describe Import::NetexGeneric::VehicleJourneys::Decorator do
       context 'when day_types contains a ref to an unknown day type' do
         let(:service_journey_day_types) { %w[day-type-1 day-type-x] }
 
-        it 'builds time table vehicle journeys with time table ids' do
-          expect { subject }.to change(decorator, :errors).from(be_empty).to(include(:time_table_not_found))
+        it 'reports error' do
+          expect { subject }.to(
+            change(decorator, :errors).from(be_empty).to(include(have_attributes(message_key: :time_table_not_found)))
+          )
         end
       end
     end

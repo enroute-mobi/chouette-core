@@ -59,6 +59,14 @@ en:
     operating_period_without_to_date: "The NeTEx %{resource_class} '%{resource_id}' has no ToDate"
     uic_operating_period_without_valid_day_bits: "The NeTEx UicOperatingPeriod '%{resource_id}' has no ValidDayBits"
     day_type_assignment_unknown_day_type: "The NeTEx DayTypeAssignment '%{resource_id}' is associated to an unkwown DayType '%{day_type_ref}'"
+    service_journey_without_day_type: "The NeTEx ServiceJourney '%{resource_id}' has no DayType"
+    time_table_not_found: "The NeTEx ServiceJourney '%{resource_id}' is associated to an unknown DayType '%{day_type_id}'"
+    service_journey_without_journey_pattern: "The NeTEx ServiceJourney '%{resource_id}' has no NeTEx JourneyPattern"
+    journey_pattern_not_found: "The NeTEx ServiceJourney '%{resource_id}' is associated to an unknown JourneyPattern '%{journey_pattern_id}'"
+    number_passing_times_incoherent: "The NeTEx ServiceJourney '%{resource_id}' defines %{passing_times_count} passing time(s) instead of %{stop_points_count} in the associated JourneyPattern"
+    passing_time_without_arrival_time: "The NeTEx ServiceJourney '%{resource_id}' contains a passing time without ArrivalTime"
+    passing_time_without_departure_time: "The NeTEx ServiceJourney '%{resource_id}' contains a passing time without DepatureTime"
+    passing_times_non_chronological: "The NeTEx ServiceJourney '%{resource_id}' contains non chronological passing times"
     gtfs:
       agencies:
         imported: "%{count} agency(ies) imported"

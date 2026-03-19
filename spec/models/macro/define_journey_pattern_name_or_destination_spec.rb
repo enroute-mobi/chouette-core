@@ -33,7 +33,7 @@ RSpec.describe Macro::DefineJourneyPatternNameOrDestination::Run do
 
       referential do
         route stop_areas: %i[first middle last] do
-          journey_pattern :journey_pattern
+          journey_pattern :journey_pattern, name: 'Default'
         end
       end
     end

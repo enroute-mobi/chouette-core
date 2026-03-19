@@ -38,7 +38,7 @@ module Macro
       end
 
       def journey_patterns
-        @journey_patterns ||= Query.new(scope).journey_patterns_with_departure_and_arrival_names
+        @journey_patterns ||= Query.new(scope, target_attribute).journey_patterns_with_departure_and_arrival_names
       end
 
       protected
@@ -80,10 +80,11 @@ module Macro
       end      
 
       class Query
-        def initialize(scope)
+        def initialize(scope, attribute)
           @scope = scope
+          @attribute = attribute
         end
-        attr_reader :scope
+        attr_reader :scope, :attribute
 
         def journey_patterns_with_departure_and_arrival_names
           scope.journey_patterns.select(*selected_fields).from("(#{base_query.to_sql}) journey_patterns")
@@ -99,12 +100,22 @@ module Macro
         def base_query
           journey_patterns
             .joins(:stop_areas)
+            .where(attribute => blank_values)
             .group('journey_patterns.id')
             .select('journey_patterns.*', 'ARRAY_AGG(stop_areas.name ORDER BY stop_points.position) AS stop_area_names')
         end
 
         def journey_patterns
           @journey_patterns ||= scope.journey_patterns
+        end
+
+        def blank_values
+          @blank_values = [nil, ''].tap do |values|
+            if attribute == 'name'
+              values << ::Import::NetexGeneric::ResourceDecorator::DEFAULT_NAME
+              values.concat(::Chouette::Route.wayback.values.map(&:capitalize))
+            end
+          end
         end
       end
     end

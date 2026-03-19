@@ -52,6 +52,13 @@ en:
     journey_pattern_without_scheduled_stop_point: "The NeTEx Journey Pattern '%{journey_pattern_id}' provides a StopPoint without ScheduledStopPoint"
     journey_pattern_unknown_scheduled_stop_point: "The NeTEx Journey Pattern '%{journey_pattern_id}' provides a StopPoint with an unknown ScheduledStopPoint"
     route_without_journey_pattern: "The NeTEx Route '%{resource_id}' has no associated Journey Pattern"
+    day_type_assignment_without_date_or_operation_period: "The NeTEx DayTypeAssignment '%{resource_id}' has neither Date or OperatingPeriod"
+    day_type_assignment_unknown_operation_period: "The NeTEx DayTypeAssignment '%{resource_id}' is associated to an unknown OperatingPeriod '%{operating_period_id}'"
+    day_type_assignment_invalid_date: "The NeTEx DayTypeAssignment '%{resource_id}' provides an invalid Date '%{value}'"
+    operating_period_without_from_date: "The NeTEx %{resource_class} '%{resource_id}' has no FromDate"
+    operating_period_without_to_date: "The NeTEx %{resource_class} '%{resource_id}' has no ToDate"
+    uic_operating_period_without_valid_day_bits: "The NeTEx UicOperatingPeriod '%{resource_id}' has no ValidDayBits"
+    day_type_assignment_unknown_day_type: "The NeTEx DayTypeAssignment '%{resource_id}' is associated to an unkwown DayType '%{day_type_ref}'"
     gtfs:
       agencies:
         imported: "%{count} agency(ies) imported"

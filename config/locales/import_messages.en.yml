@@ -32,7 +32,10 @@ en:
     shapefile_geometry_parsing_error: "Shape parsing failed for the object at index #%{shape_index}"
     invalid_model_attribute: "The attribute %{attribute_name} can't have value '%{attribute_value}'"
     unreasonable_shape: 'The Shape %{shape_id} is ignored due to its huge point count'
-    stop_area_not_found: "Unknown Stop Area: '%{code}'"
+    stop_area_code_empty: "The NeTEx %{resource_class} '%{resource_id}' has no Quay/StopPlace"
+    stop_area_not_found: "The NeTEx %{resource_class} '%{resource_id}' references an unknown StopArea '%{code}'"
+    scheduled_stop_point_alreay_associated: "The NeTEx %{resource_class} '%{resource_id}' associates a StopArea to the ScheduledStopPoint '%{scheduled_stop_point_id}' already associated"
+    scheduled_stop_point_without_assignment: "The NeTEx ScheduledStopPoint '%{resource_id}' isn't associated to a StopArea"
     overlaping_period_for_timetable: "The DayType with identifier %{timetable_objectid} contains DayTypeAssignment with interesecting OperatingPeriod."
     several_datasets: "The NeTex file can’t define several datasets"
     inverted_route_not_found: "The Route '%{route_code}' can’t be associated to an inverse route '%{opposite_route_code}'"

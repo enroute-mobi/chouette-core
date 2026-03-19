@@ -32,7 +32,10 @@ fr:
     shapefile_geometry_parsing_error: "Impossible de parser le tracé de l'objet situé à l'index #%{shape_index} de votre fichier"
     invalid_model_attribute: "L'attribut %{attribute_name} ne peut avoir la valeur '%{attribute_value}'"
     unreasonable_shape: 'Le tracé %{shape_id} est ignoré à cause de son trop grand nombre de points'
-    stop_area_not_found: "Arrêt inconnu: '%{code}'"
+    stop_area_code_empty: "Le NeTEx %{resource_class} '%{resource_id}' n'a pas de Quay/StopPlace"
+    stop_area_not_found: "Le NeTEx %{resource_class} '%{resource_id}' référence un Arrêt '%{code}' inconnu"
+    scheduled_stop_point_alreay_associated: "Le NeTEx %{resource_class} '%{resource_id}' associe un arrêt au ScheduledStopPoint '%{scheduled_stop_point_id}' déjà associé"
+    scheduled_stop_point_without_assignment: "Le NeTEx ScheduledStopPoint '%{resource_id}' n'est pas associé à un arrêt"
     overlaping_period_for_timetable: "L'objet DayType d'identifiant %{timetable_objectid} contient des DayTypeAssignment avec des OperatingPeriod se chevauchant."
     several_datasets: "Le fichier NeTEx ne peut pas définir plusieurs jeux de données"
     inverted_route_not_found: "L'itinéraire '%{route_code}' ne peut pas être associé à un itinéraire opposé '%{opposite_route_code}'"

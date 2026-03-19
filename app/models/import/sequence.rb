@@ -282,7 +282,7 @@ module Import
         end
         attr_reader :object, :steps
 
-        delegate :[], :size, to: :steps
+        delegate :[], :empty?, :size, to: :steps
 
         def step(object, attributes = {})
           step = Step.new(object, attributes)
@@ -384,6 +384,8 @@ module Import
       # Returns a sequence of steps in the given solution that match the sequence of steps of the given pattern.
       # If we cannot find this sequence, then the given solution cannot represent the pattern and nil is returned.
       def steps_for_pattern_in_solution(solution, pattern)
+        return [] if pattern.empty?
+
         pattern_steps = []
 
         solution.steps.each do |solution_step|

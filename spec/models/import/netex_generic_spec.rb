@@ -1958,7 +1958,8 @@ RSpec.describe Import::NetexGeneric::RouteJourneyPatterns::Decorator do
       code_space: code_space,
       journey_patterns: netex_journey_patterns,
       scheduled_stop_points: scheduled_stop_points,
-      destination_displays: destination_displays
+      destination_displays: destination_displays,
+      lookup: lookup
     )
   end
 
@@ -1990,6 +1991,12 @@ RSpec.describe Import::NetexGeneric::RouteJourneyPatterns::Decorator do
     }
   end
   let(:destination_displays) { instance_double(Netex::Source::Tagger::Line::Collection, find: nil) }
+  let(:lookup) do
+    instance_double(
+      Import::Lookup::Default,
+      booking_arrangements: instance_double(Import::Lookup::ExternalCollection, find_id: nil)
+    )
+  end
 
   describe '#valid?' do
     context 'when there is no line' do
@@ -2067,28 +2074,11 @@ RSpec.describe Import::NetexGeneric::RouteJourneyPatterns::Decorator do
       context 'with missing scheduled_stop_points' do
         let(:scheduled_stop_points) { super().except('ssp-2') }
 
-        it { is_expected.to be_nil }
+        it { is_expected.to be_a(Import::Sequence::Merger) }
 
-        it 'adds stop_area_not_found_in_scheduled_stop_points error' do
-          expect { subject }.to change(decorator, :errors).from(be_empty).to(
-            include(have_attributes(message_key: :stop_area_not_found_in_scheduled_stop_points))
-          )
-        end
-      end
-
-      context 'with scheduled_stop_point without stop_area_id' do
-        let(:scheduled_stop_points) do
-          {
-            'ssp-1' => Import::NetexGeneric::ScheduledStopPoint.new(id: 'ssp-1', stop_area_id: 41),
-            'ssp-2' => Import::NetexGeneric::ScheduledStopPoint.new(id: 'ssp-2', stop_area_id: nil)
-          }
-        end
-
-        it { is_expected.to be_nil }
-
-        it 'adds stop_area_not_found_in_scheduled_stop_points error' do
-          expect { subject }.to change(decorator, :errors).from(be_empty).to(
-            include(have_attributes(message_key: :stop_area_not_found_in_scheduled_stop_points))
+        it 'adds journey_pattern_unknown_scheduled_stop_point in journey_pattern_errors' do
+          expect { subject }.to change(decorator, :journey_pattern_errors).from(be_empty).to(
+            include(have_attributes(message_key: :journey_pattern_unknown_scheduled_stop_point))
           )
         end
       end
@@ -2098,20 +2088,12 @@ RSpec.describe Import::NetexGeneric::RouteJourneyPatterns::Decorator do
   describe '#sequence_cluster' do
     subject { decorator.sequence_cluster }
 
-    context 'without journey_patterns' do
-      let(:netex_journey_patterns) { [] }
+    it { is_expected.to be_a(Import::Sequence::Cluster) }
 
-      it { is_expected.to be_a(Import::Sequence::Cluster) }
-    end
+    context 'when #stop_sequence is nil' do
+      before { allow(decorator).to receive(:stop_sequence).and_return(nil) }
 
-    context 'with journey_patterns' do
-      it { is_expected.to be_a(Import::Sequence::Cluster) }
-
-      context 'with missing scheduled_stop_points' do
-        let(:scheduled_stop_points) { super().except('ssp-2') }
-
-        it { is_expected.to be_nil }
-      end
+      it { is_expected.to be_nil }
     end
   end
 

@@ -42,6 +42,12 @@ en:
     route_with_line_unknown: "The NeTEx Route '%{resource_id}' references an unknown NeTEx Line '%{line_ref}'"
     route_with_direction_type_unsupported: "The NeTEx Route '%{resource_id}' uses an unsupported DirectionType '%{direction_type}'"
     route_with_direction_unknown: "The NeTEx Route '%{resource_id}' references an unknown Direction '%{direction_id}'"
+    journey_pattern_without_id: "The NeTEx Journey Pattern has no identifier"
+    journey_pattern_without_route_ref: "The NeTEx Journey Pattern '%{resource_id}' has no Route"
+    journey_pattern_with_unknown_route_ref: "The NeTEx Journey Pattern '%{resource_id}' references an unknown NeTEx Route '%{route_id}'"
+    journey_pattern_less_than_2_stop_points: "The NeTEx Journey Pattern '%{resource_id}' doesn't provide the 2 minimal StopPoints"
+    journey_pattern_without_scheduled_stop_point: "The NeTEx Journey Pattern '%{journey_pattern_id}' provides a StopPoint without ScheduledStopPoint"
+    journey_pattern_unknown_scheduled_stop_point: "The NeTEx Journey Pattern '%{journey_pattern_id}' provides a StopPoint with an unknown ScheduledStopPoint"
     gtfs:
       agencies:
         imported: "%{count} agency(ies) imported"

@@ -30,13 +30,12 @@ class OperationRunFacade
   end
 
   def message_table_params
-    columns = [
-      TableBuilderHelper::Column.new(key: :message, attribute: :full_message, sortable: false)
-    ]
-
-    columns.concat(import_columns) if self.resource.is_a?(::Import::Base)
-    columns << source_column if self.resource.is_a?(::Control::List::Run) || self.resource.is_a?(::Macro::List::Run)
-    columns << criticity_column if self.resource.is_a?(::Macro::List::Run) || self.resource.is_a?(::Import::Base)
+    columns = [].tap do |columns|
+      columns << criticity_column if self.resource.is_a?(::Macro::List::Run) || self.resource.is_a?(::Import::Base)
+      columns << TableBuilderHelper::Column.new(key: :message, attribute: :full_message, sortable: false)
+      columns.concat(import_columns) if self.resource.is_a?(::Import::Base)
+      columns << source_column if self.resource.is_a?(::Control::List::Run) || self.resource.is_a?(::Macro::List::Run)
+    end
 
     [columns, { cls: 'table' }]
   end

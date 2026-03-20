@@ -53,9 +53,7 @@ module Search
     private
 
     def flag(value)
-      (value || [])
-        .map { |v| ActiveModel::Type::Boolean.new.cast(v) }
-        .compact
+      ActiveModel::Type::Boolean.new.cast(value)
     end
 
     class Order < ::Search::Order

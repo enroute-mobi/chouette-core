@@ -1,21 +1,9 @@
-= simple_form_for @search, url: request.path, method: "GET", html: { class: 'form form-filter' }  do |f|
-  .ffg-row
-    .input-group.search_bar
-      = f.input :name, label: false, class: 'form-control', placeholder: I18n.t('control_list_run.filters.name'), wrapper_html: {class: 'mb-0'}
-      span.input-group-btn
-        button.btn.btn-default#search_btn type='submit'
-          span.fa.fa-search
-
-  .ffg-row
-    .form-group.togglable
-      = f.label :statuses, required: false, class: 'control-label'
-      = f.input :statuses, as: :check_boxes, collection: @search.candidate_statuses.map(&:slug), label: false, label_method: lambda{|slug| ("<span>" + operation_status(slug, verbose: true) + "</span>").html_safe}, wrapper_html: { class: "checkbox_list"}
-    = f.input :referential_name
-    = f.input :start_date, as: :date_picker
-    = f.input :end_date, as: :date_picker
-
-  .actions
-    .flex
-      = render partial: 'shared/per_page', locals: {f:f}
-    = link_to t('actions.erase'), workbench_control_list_runs_path(@workbench), class: 'btn btn-link'
-    = f.submit t('actions.filter'), class: 'btn btn-default'
+= simple_search_for @search, workbench_control_list_runs_path(@workbench) do |f|
+  = f.row
+    = f.input :name, label: false, width: 2, placeholder: I18n.t('control_list_run.filters.name')
+  = f.row
+    = f.input :statuses, as: :autocomplete_select, collection: @search.candidate_statuses.map(&:slug), label_method: lambda{|slug| operation_status(slug, verbose: true) }, input_html: { multiple: true, style: 'width: 100%' }, width: 2
+    = f.input :referential_name, width: 2
+  = f.row
+    = f.input :start_date, as: :date_picker, width: 2
+    = f.input :end_date, as: :date_picker, width: 2

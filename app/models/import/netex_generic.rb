@@ -2060,6 +2060,8 @@ module Import
                :stop_area_provider, :event_handler, :lookup, to: :import
 
       def import!
+        return unless line_provider
+
         netex_source.routing_constraint_zones.each do |zone|
           decorator = decorate(zone)
 

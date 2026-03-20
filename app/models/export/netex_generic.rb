@@ -1576,7 +1576,7 @@ class Export::NetexGeneric < Export::Base
       end
 
       def netex_name
-        name.presence || published_name
+        name
       end
 
       def direction_id

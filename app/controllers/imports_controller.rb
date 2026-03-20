@@ -9,6 +9,7 @@ class ImportsController < Chouette::WorkbenchController
   # rubocop:disable Rails/LexicallyScopedActionFilter
   skip_before_action :authenticate_user!, only: [:internal_download]
   before_action :authorize_resource, except: %i[new create index show download internal_download messages]
+  before_action :init_facade, only: %i[show messages]
   # rubocop:enable Rails/LexicallyScopedActionFilter
 
   respond_to :json, :html
@@ -135,4 +136,14 @@ class ImportsController < Chouette::WorkbenchController
   end
 
   helper_method :workgroup_context?
+
+  private
+
+  def init_facade
+    @facade ||= OperationRunFacade.new(resource, current_workbench)
+  end
+
+  alias facade init_facade
+
+  helper_method :facade
 end

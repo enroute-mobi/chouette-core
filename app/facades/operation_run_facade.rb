@@ -30,27 +30,54 @@ class OperationRunFacade
   end
 
   def message_table_params
-    criticity = TableBuilderHelper::Column.new(
-      key: :criticity,
-      attribute: ->(m) { criticity_span(m.criticity) },
-      sortable: false
-    )
+    columns = [].tap do |columns|
+      columns << criticity_column if self.resource.is_a?(::Macro::List::Run) || self.resource.is_a?(::Import::Base)
+      columns << TableBuilderHelper::Column.new(key: :message, attribute: :full_message, sortable: false)
+      columns.concat(import_columns) if self.resource.is_a?(::Import::Base)
+      columns << source_column if self.resource.is_a?(::Control::List::Run) || self.resource.is_a?(::Macro::List::Run)
+    end
 
-    columns = [
-      TableBuilderHelper::Column.new(key: :message, attribute: :full_message, sortable: false),
+    [columns, { cls: 'table' }]
+  end
+
+  def import_columns
+    [
       TableBuilderHelper::Column.new(
-        key: :source,
-        attribute: lambda do |message|
-          source_link = source_link(message)
-          link_to_if_table(source_link.present?, '<span class="fa fa-link"></span>'.html_safe, source_link)
-        end,
+        key: :filename,
+        attribute: ->(message) { message.resource_attributes&.dig('filename') || '-' },
+        sortable: false
+      ),
+      TableBuilderHelper::Column.new(
+        key: :line,
+        attribute: ->(message) { message.resource_attributes&.dig('line_number') || '-' },
+        sortable: false
+      ),
+      TableBuilderHelper::Column.new(
+        key: :column,
+        attribute: ->(message) { message.resource_attributes&.dig('column_number') || '-' },
         sortable: false
       )
     ]
+  end
 
-    columns.unshift(criticity) if resource.is_a?(Macro::List::Run)
+  def criticity_column
+    TableBuilderHelper::Column.new(
+      key: :criticity,
+      attribute: ->(m) { criticity_span(m.criticity) },
+    sortable: false
+    )
+  end
 
-    [columns, { cls: 'table' }]
+
+  def source_column
+    TableBuilderHelper::Column.new(
+      key: :source,
+      attribute: lambda do |message|
+        source_link = source_link(message)
+        link_to_if_table(source_link.present?, '<span class="fa fa-link"></span>'.html_safe, source_link)
+      end,
+      sortable: false
+    )
   end
 
   def source_link(message)
@@ -64,7 +91,6 @@ class OperationRunFacade
 
   def display_referential_links?
     return @display_referential_links if defined?(@display_referential_links)
-
     @display_referential_links = current_workbench && \
                                  (!resource.referential || current_workbench.find_referential(resource.referential.id))
   end

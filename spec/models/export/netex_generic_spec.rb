@@ -210,7 +210,7 @@ RSpec.describe Export::NetexGeneric do
     describe '#stop_areas' do
       let(:original_export_scope) do
         # Creates a fake scope which only contains an initial StopArea
-        double 'Export::Scope', stop_areas: context.referential.stop_areas.where(id: stop_area)
+        double 'Export::Scope', non_flexible_stop_areas: context.referential.stop_areas.where(id: stop_area)
       end
       let(:export) do
         Export::NetexGeneric.new(

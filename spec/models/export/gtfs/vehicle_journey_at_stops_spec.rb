@@ -16,14 +16,14 @@ RSpec.describe Export::Gtfs::VehicleJourneyAtStops do
       end
     end
 
-    let(:export_scope) { double stop_areas: context.stop_area_referential.stop_areas }
+    let(:export_scope) { double non_flexible_stop_areas: context.stop_area_referential.stop_areas }
 
     context 'when no scoped StopAreas has a timezone' do
       it { is_expected.to be_truthy }
     end
 
     context 'when one of the StopAreas has a timezone' do
-      before { export_scope.stop_areas.sample.update time_zone: 'Europe/London' }
+      before { export_scope.non_flexible_stop_areas.sample.update time_zone: 'Europe/London' }
 
       it { is_expected.to be_falsy }
     end

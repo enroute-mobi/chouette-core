@@ -135,6 +135,40 @@ module Export
       end
 
       delegate :scope, to: :builder
+
+      def build_scope
+        base = [
+          ::Scope::Referential.new(referential),
+          ::Scope::LineReferential.new(referential.line_referential),
+          ::Scope::StopAreaReferential.new(referential.stop_area_referential),
+          ::Scope::ShapeReferential.new(referential.workgroup.shape_referential),
+          ::Scope::FareReferential.new(referential.workgroup.fare_referential)
+        ]
+        contracts = [
+          ::Scope::Workgroup.new(referential.workgroup)
+        ]
+
+        base << ::Scope::FromLines.new
+        base << ::Scope::FromStopAreas.new
+        base << ::Scope::FromFareProducts.new
+        contracts << ::Scope::FromLines.new
+
+        base << ::Scope::VehicleJourney::ByLines.new(line_ids) if line_ids
+
+        if date_range
+          base << ::Scope::TimeTable::DateRange.new(date_range)
+          base << ::Scope::VehicleJourney::FromTimeTables.new
+        end
+        base << ::Scope::FromVehicleJourneys.new(time_tables: !date_range)
+
+        if stateful
+          base << ::Scope::Export::Stateful.new(export_id)
+        else
+          Rails.logger.debug 'Disable stateful scope'
+        end
+
+        ::Scope::Composer.new(base, contracts: contracts)
+      end
     end
 
     class All
@@ -174,6 +208,7 @@ module Export
       def stop_areas
         (workbench || stop_area_referential).stop_areas
       end
+      alias non_flexible_stop_areas stop_areas
 
       def flexible_stop_areas
         stop_areas.where(area_type: Chouette::AreaType::FLEXIBLE_STOP_PLACE)
@@ -285,6 +320,7 @@ module Export
           where(Chouette::StopArea.arel_table[:id].in(stop_area_ids)).
           where.not(area_type: Chouette::AreaType::FLEXIBLE_STOP_PLACE)
       end
+      alias non_flexible_stop_areas stop_areas
 
       def flexible_stop_areas
         current_scope.

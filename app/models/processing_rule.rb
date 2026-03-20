@@ -28,6 +28,10 @@ module ProcessingRule
       processable_type == Control::List.name
     end
 
+    def after_import?
+      operation_step == :after_import
+    end
+
     def control_list_id
       processable_id if use_control_list?
     end

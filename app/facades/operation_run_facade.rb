@@ -36,7 +36,7 @@ class OperationRunFacade
 
     columns.concat(import_columns) if self.resource.is_a?(::Import::Base)
     columns << source_column if self.resource.is_a?(::Control::List::Run) || self.resource.is_a?(::Macro::List::Run)
-    columns << criticity_column if self.resource.is_a?(::Macro::List::Run)
+    columns << criticity_column if self.resource.is_a?(::Macro::List::Run) || self.resource.is_a?(::Import::Base)
 
     [columns, { cls: 'table' }]
   end

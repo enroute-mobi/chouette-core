@@ -499,6 +499,8 @@ RSpec.describe Referential::Schema do
       referential.switch do
         ActiveRecord::Base.connection.execute("DELETE FROM schema_migrations WHERE version > '20251013075038'")
       end
+      # do not actually run the migrations as some of them cannot be re-executed without a crash
+      allow_any_instance_of(ActiveRecord::Migration).to receive(:migrate).and_return(nil)
     end
 
     it do

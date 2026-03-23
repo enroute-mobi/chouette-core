@@ -348,7 +348,16 @@ module Import
               criticity: (error.criticity || :error),
               message_key: error.message_key,
               message_attributes: error.message_attributes,
-              resource_attributes: error.resource.tags
+              resource_attributes: error.resource.tags.transform_keys do |k|
+                case k
+                when :line
+                  'line_number'
+                when :column
+                  'column_number'
+                else
+                  k.to_s
+                end
+              end
             }
           else
             message_key = message_key_or_error

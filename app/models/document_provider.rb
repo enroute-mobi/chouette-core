@@ -1,7 +1,7 @@
 class DocumentProvider < ActiveRecord::Base
   belongs_to :workbench # CHOUETTE-3247 required: true
 
-  has_many :documents
+  has_many :documents, dependent: :destroy
 
   before_destroy :can_destroy?, prepend: true
 

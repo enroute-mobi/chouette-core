@@ -271,7 +271,7 @@ module Chouette
     end
 
     def update_has_and_belongs_to_many_from_state item
-      ['time_tables', 'footnotes', 'line_notices'].each do |assos|
+      ['time_tables', 'footnotes'].each do |assos|
         next unless item[assos]
 
         saved = self.send(assos).map(&:id)
@@ -289,6 +289,16 @@ module Chouette
       end
     end
 
+    def update_has_array_of_from_state item
+      ['line_notices'].each do |assos|
+        next unless item.key?(assos)
+
+        state_ids = item[assos].map{|t| t['id']}
+
+        self.send("#{assos.singularize}_ids=", state_ids)
+      end
+    end
+
     def self.state_update route, state
       objects = []
       transaction do
@@ -301,6 +311,7 @@ module Chouette
           vj.update_vjas_from_state(item['vehicle_journey_at_stops'])
           vj.update(state_permited_attributes(item))
           vj.update_has_and_belongs_to_many_from_state(item)
+          vj.update_has_array_of_from_state(item)
           vj.manage_referential_codes_from_state(item)
           vj.update_checksum!
           item['errors']   = vj.errors.full_messages.uniq if vj.errors.any?

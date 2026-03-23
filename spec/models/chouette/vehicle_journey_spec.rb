@@ -479,13 +479,31 @@ describe Chouette::VehicleJourney, type: :model do
     context 'with line_notices' do
       let(:line_notices){ true }
 
-      it 'should update vj line_notices association from state' do
-        2.times{state['line_notices'] << create(:line_notice).slice('id')}
-        vehicle_journey.update_has_and_belongs_to_many_from_state(state)
+      before do
+        2.times{ state['line_notices'] << create(:line_notice).slice('id') }
+        vehicle_journey.update_has_array_of_from_state(state)
         vehicle_journey.save
-        expected = state['line_notices'].map{|tt| tt['id']}
-        actual   = vehicle_journey.reload.line_notices.map(&:id)
-        expect(actual).to match_array(expected)
+      end
+
+      context 'when a line notice is added' do
+        it 'should update vj line_notices association from state' do
+          expected = state['line_notices'].map{|tt| tt['id']}
+          actual   = vehicle_journey.reload.line_notices.map(&:id)
+
+          expect(actual).to match_array(expected)
+        end
+      end
+
+      context 'when a line notice is removed' do
+        it do
+          removed_id = state['line_notices'].pop['id']
+          retained_id = state['line_notices'].last['id']
+          vehicle_journey.update_has_array_of_from_state(state)
+          vehicle_journey.save
+          actual = vehicle_journey.reload.line_notices.map(&:id)
+
+          expect(actual).to match_array([retained_id])
+        end
       end
     end
 
@@ -1204,6 +1222,5 @@ describe Chouette::VehicleJourney, type: :model do
 
 
   end
-
 
 end

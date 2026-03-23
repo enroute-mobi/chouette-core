@@ -141,14 +141,12 @@ RSpec.describe ReferentialDecorator, type: %i[helper decorator] do
               expect_action_link_elements(action).to match_array(
                 [
                   'Consulter',
-                  'Courses quotidiennes',
                   'Supprimer ce jeu de données'
                 ]
               )
               expect_action_link_hrefs(action).to match_array(
                 [
                   [current_workbench, object],
-                  workbench_referential_service_counts_path(current_workbench, object),
                   [current_workbench, object]
                 ]
               )
@@ -161,13 +159,11 @@ RSpec.describe ReferentialDecorator, type: %i[helper decorator] do
             it 'has corresponding actions' do
               expect_action_link_elements(action).to match_array(
                 [
-                  'Courses quotidiennes',
                   'Supprimer ce jeu de données'
                 ]
               )
               expect_action_link_hrefs(action).to match_array(
                 [
-                  workbench_referential_service_counts_path(current_workbench, object),
                   [current_workbench, object]
                 ]
               )

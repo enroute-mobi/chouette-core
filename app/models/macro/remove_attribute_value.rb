@@ -111,10 +111,12 @@ module Macro
           # Chouette::Route
           select Chouette::Route, :published_name
           select Chouette::Route, :opposite_route
+          select Chouette::Route, :name
 
           # Chouette::JourneyPattern
           select Chouette::JourneyPattern, :published_name
           select Chouette::JourneyPattern, :shape
+          select Chouette::JourneyPattern, :name
 
           # Chouette::VehicleJourney
           select Chouette::VehicleJourney, :published_journey_name
@@ -155,9 +157,10 @@ module Macro
       def run
         candidate_models.in_batches(of: 10000) do |batch|
           updated_models = batch.to_a
+          previous_names = updated_models.map { |m| [m.id, m.name] }.to_h
 
           if batch.update_all(updated_attributes.merge(updated_at: Time.zone.now)).positive?
-            updated_models.each { |model| messages.create(source: model) }
+            updated_models.each { |model| messages.create(source: model, name: previous_names[model.id]) }
           end
         end
       end
@@ -174,6 +177,10 @@ module Macro
           { secondary_company_ids: nil }
         when ['StopArea', 'coordinates']
           { latitude: nil, longitude: nil }
+        when ['JourneyPattern', 'name']
+          { name: 'Default' }
+        when ['Route', 'name']
+          { name: 'Default' }
         else
           { target_attribute => default_attribute_value }
         end
@@ -191,6 +198,14 @@ module Macro
 
       def models
         @models ||= scope.send(model_collection)
+      end
+
+      protected
+
+      def messages_options
+        {
+          resource_name_key: nil
+        }
       end
     end
   end

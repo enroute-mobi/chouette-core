@@ -1,5 +1,5 @@
 - breadcrumb :"#{documentable.class.name.demodulize.underscore}_document_memberships", @workbench, documentable
-.page_content
+.page_content x-data="{ saveSearchPanel: false }"
   .container-fluid
     - if @document_memberships.any?
       .row

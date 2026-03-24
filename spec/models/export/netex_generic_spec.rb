@@ -53,11 +53,6 @@ RSpec.describe Export::NetexGeneric do
       it { is_expected.to be_instance_of(Netex::Profile::European) }
     end
 
-    context 'when profile "idfm/publication/legacy" is selected' do
-      let(:export) { Export::NetexGeneric.new(setup: { profile: 'idfm/publication/legacy' }) }
-      it { is_expected.to be_instance_of(Netex::Profile::IDFM::Publication::Legacy) }
-    end
-
     context 'when profile "idm/publication" is selected' do
       let(:export) { Export::NetexGeneric.new(setup: { profile: 'idfm/publication' }) }
       it { is_expected.to be_instance_of(Netex::Profile::IDFM::Publication) }

@@ -1,10 +1,10 @@
 - breadcrumb :fare_zones, @workbench
 
-.page_content
+.page_content x-data="{ saveSearchPanel: false }"
   .container-fluid
     .row
       .col-lg-12
-        / = render 'filters'
+        = render 'filters'
     - if @fare_zones.any?
       .row
         .col-lg-12

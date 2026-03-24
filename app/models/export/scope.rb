@@ -134,7 +134,15 @@ module Export
         end
       end
 
-      delegate :scope, to: :builder
+      delegate :legacy_scope?, to: :setup, allow_nil: true
+
+      def scope
+        if legacy_scope?
+          builder.scope
+        else
+          build_scope
+        end
+      end
 
       def build_scope
         base = [
@@ -167,7 +175,17 @@ module Export
           Rails.logger.debug 'Disable stateful scope'
         end
 
-        ::Scope::Composer.new(base, contracts: contracts)
+        stacks = { contracts: contracts }
+        if setup&.scope_setup&.lines.is_a?(Export::Setup::Scope::Lines::All)
+          stacks[:lines] = [::Scope::Workgroup.new(referential.workgroup)]
+          stacks[:lines] << ::Scope::Line::Enabled.new if setup.scope_setup.lines.ignore_disabled
+        end
+        if setup&.scope_setup&.stop_areas.is_a?(Export::Setup::Scope::StopAreas::All)
+          stacks[:stop_areas] = [::Scope::Workgroup.new(referential.workgroup)]
+          stacks[:stop_areas] << ::Scope::StopArea::Enabled.new if setup.scope_setup.stop_areas.ignore_disabled
+        end
+
+        ::Scope::Composer.new(base, **stacks)
       end
     end
 

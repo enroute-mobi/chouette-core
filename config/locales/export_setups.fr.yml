@@ -19,11 +19,15 @@ fr:
         prefer_referent_stop_areas: "Préférer les arrêts Référents"
         ignore_parent_stop_areas: "Ignorer les arrêts Parents"
         ignore_referent_stop_areas: "Ignorer les zones d'arrêt référentes"
+      export/setup/scope/stop_areas/all:
+        ignore_disabled: "Ignorer les arrêts désactivés"
       export/setup/scope/lines/base:
         type: "Lignes sélectionnées"
       export/setup/scope/lines/scheduled:
         prefer_referent_lines: "Préférer les lignes Référentes"
         prefer_referent_companies: "Préférer les transporteurs Référents"
+      export/setup/scope/lines/all:
+        ignore_disabled: "Ignorer les lignes désactivées"
       export/setup/scope/vehicle_journeys:
         included_lines: "Lignes exportées"
         period: "Période exportée"
@@ -47,10 +51,12 @@ fr:
       export/setup/scope/line_selector/line_providers: "Associées aux fournisseurs de lignes"
       export/setup/scope/line_selector/line_groups: "Associées aux groupes de lignes"
       export/setup/scope/line_selector/all: "Toutes les lignes"
-      export/setup/scope/lines/scheduled: "Associées aux courses sélectionnées"
       export/setup/scope/lines/none: "Aucune ligne"
-      export/setup/scope/stop_areas/scheduled: "Associés aux courses sélectionnées"
+      export/setup/scope/lines/scheduled: "Associées aux courses sélectionnées"
+      export/setup/scope/lines/all: "Toutes les lignes du groupe de travail"
       export/setup/scope/stop_areas/none: "Aucun arrêt"
+      export/setup/scope/stop_areas/scheduled: "Associés aux courses sélectionnées"
+      export/setup/scope/stop_areas/all: "Tous les arrêts du groupe de travail"
     errors:
       export/setup/scope/period_selector/static:
         from:

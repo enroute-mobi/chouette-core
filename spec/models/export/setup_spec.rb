@@ -720,6 +720,8 @@ RSpec.describe Export::Setup::Scope::PublishedReferential do
 end
 
 RSpec.describe Export::Setup::Base do
+  subject(:export_setup) { described_class.new(scope_setup: Export::Setup::Scope::Setup.new) }
+
   describe 'validations' do
     describe '#code_space_id' do
       let(:code_space_ids) { [1, 2, 3] }
@@ -737,6 +739,24 @@ RSpec.describe Export::Setup::Base do
       it { is_expected.to allow_value(2).for(:code_space_id) }
       it { is_expected.to allow_value('2').for(:code_space_id) }
       it { is_expected.not_to allow_value(4).for(:code_space_id) }
+    end
+  end
+
+  describe '#legacy_scope?' do
+    subject { export_setup.legacy_scope? }
+
+    it { is_expected.to be(true) }
+
+    context 'when scope_setup.stop_areas is a Export::Setup::Scope::StopAreas::All' do
+      before { export_setup.scope_setup.stop_areas = Export::Setup::Scope::StopAreas::All.new }
+
+      it { is_expected.to be(false) }
+    end
+
+    context 'when scope_setup.lines is a Export::Setup::Scope::Lines::All' do
+      before { export_setup.scope_setup.lines = Export::Setup::Scope::Lines::All.new }
+
+      it { is_expected.to be(false) }
     end
   end
 end

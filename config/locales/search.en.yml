@@ -12,9 +12,11 @@ en:
   activemodel:
     attributes:
       search:
+        rule_type: Action
         saved_name: Saved Search Name
         saved_description: Description
         statuses: Status
+        operation_statuses: Operation status(es)
         workbench_ids: Workbench
         workbench_id: Workbench
         workbench: Workbench

@@ -9,12 +9,17 @@ module Search
     attribute :notification_type
     attribute :rule_type
     attribute :operation_statuses
-    attribute :period
+    attribute :start_date, type: Date
+    attribute :end_date, type: Date
     attribute :lines
+
+    period :period, :start_date, :end_date
 
     enumerize :notification_type, in: ::NotificationRule.notification_type.values
     enumerize :rule_type, in: ::NotificationRule.rule_type.values, multiple: true
     enumerize :operation_statuses, in: ::NotificationRule.operation_statuses.values, multiple: true
+
+    attr_accessor :workbench
 
     alias_method :line_ids, :lines
 
@@ -36,10 +41,12 @@ module Search
       Rabl::Renderer.new('autocomplete/lines', Chouette::Line.where(id: lines), format: :hash, view_path: 'app/views').render
     end
 
-    def period
-      ActiveRecord::ConnectionAdapters::PostgreSQL::OID::Range
-        .new(ActiveRecord::ConnectionAdapters::PostgreSQL::OID::Date.new)
-        .cast_value(super.presence)
+    def candidate_operation_statuses
+      ::NotificationRule.operation_statuses.values
+    end
+
+    def candidate_lines
+      workbench.lines
     end
 
     class Order < ::Search::Order

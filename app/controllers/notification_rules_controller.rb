@@ -21,7 +21,7 @@ class NotificationRulesController < Chouette::WorkbenchController
   end
 
   def search
-    @search ||= Search::NotificationRule.from_params(params)
+    @search ||= Search::NotificationRule.from_params(params, workbench: workbench)
   end
 
   def collection

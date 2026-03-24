@@ -1,29 +1,10 @@
-= simple_form_for @search, url: request.path, html: { method: :get, class: 'form form-filter' } do |f|
-  = f.simple_fields_for :order, @search.order, defaults: { wrapper: false } do |form_order|
-    - form_order.object.attributes.keys.each do |attribute|
-      = form_order.input attribute, as: :hidden
-  .ffg-row
-    .input-group.search_bar
-      = f.input :email, label: false, class: 'form-control', placeholder: 'Email'
-      span.input-group-btn
-        button.btn.btn-default#search_btn type='submit'
-          span.fa.fa-search
-
-  .ffg-row
-    .form-group.togglable
-      = f.label NotificationRule.tmf(:rule_type), required: false, class: 'control-label'
-      = f.input :rule_type, as: :check_boxes, label: false, label_method: lambda { |w| ("<span>#{w.first}</span>").html_safe }, include_hidden: false, wrapper_html: { class: 'checkbox_list' }
-
-    .form-group.togglable
-      = f.label NotificationRule.tmf(:operation_statuses), required: false, class: 'control-label'
-      = f.input :operation_statuses, as: :check_boxes, collection: operation_statuses_options, label: false, value_method: Proc.new { |w| w[:id] }, label_method: lambda { |w| ("<span>#{w[:text]}</span>").html_safe }, include_hidden: false, wrapper_html: { class: 'checkbox_list' }
-
-    .form-group
-      = render 'line_ids_field', form: f
-
-    .form-group
-      = render 'period_fields', form: f, is_filter: true
-
-  .actions
-    = link_to t('actions.erase'), workbench_notification_rules_path(@workbench), class: 'btn btn-link'
-    = f.submit t('actions.filter'), class: 'btn btn-default', id: 'notification_rule_filter_btn'
+= simple_search_for @search, workbench_notification_rules_path(@workbench) do |f|
+  = f.row
+    = f.input :email, label: false, width: 2, placeholder: 'Email'
+  = f.row
+    = f.input :rule_type, as: :autocomplete_select, label: NotificationRule.tmf(:rule_type)
+    = f.input :operation_statuses, as: :autocomplete_select, collection: @search.candidate_operation_statuses, label_method: lambda{|slug| operation_status(slug, verbose: true) }, value_method: lambda{|slug| slug }, input_html: { multiple: true, style: 'width: 100%' }
+  = f.row
+    = f.input :lines, as: :autocomplete_select, collection: @search.candidate_lines, label_method: :display_name, input_html: { multiple: true, style: 'width: 100%' }
+    = f.input :start_date, as: :date_picker
+    = f.input :end_date, as: :date_picker

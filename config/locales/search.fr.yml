@@ -12,9 +12,11 @@ fr:
   activemodel:
     attributes:
       search:
+        rule_type: Action
         saved_name: Nom de la Recherche sauvegardée
         saved_description: Description
         statuses: État
+        operation_statuses: État(s) des opérations
         workbench_ids: Espaces de travail
         workbench_id: Espace de travail
         workbench: Espace de travail

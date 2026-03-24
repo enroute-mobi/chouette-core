@@ -2,7 +2,7 @@
   = f.row
     = f.name
   = f.row
-    = f.input :document_type, as: :tom_select, collection: @search.candidate_document_types.map { |l| {id: l.id, text: l.name } }, width: 2
-    = f.input :document_provider_id, as: :autocomplete_select, collection: @search.candidate_document_providers, selected: @workbench.default_document_provider&.id, width: 2
+    = f.input :document_type, as: :tom_select, collection: @search.candidate_document_types.map { |l| {id: l.id, text: l.name } }
+    = f.input :document_provider_id, as: :autocomplete_select, collection: @search.candidate_document_providers, selected: @workbench.default_document_provider&.id
     = f.input :valid_before_date, as: :date_picker
     = f.input :valid_after_date, as: :date_picker

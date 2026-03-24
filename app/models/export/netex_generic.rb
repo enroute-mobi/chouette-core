@@ -51,20 +51,90 @@ class Export::NetexGeneric < Export::Base
   delegate :stop_area_referential, :line_referential, to: :workgroup
 
   class Scope < Export::Base::Scope
-    def stop_areas
-      @stop_areas ||=
-        ::Query::StopArea.new(stop_area_referential.stop_areas).
-          send(stop_area_query, current_scope.stop_areas)
+    module StopAreas
+      class Base
+        def initialize(export_scope)
+          @export_scope = export_scope
+        end
+
+        attr_reader :export_scope
+        delegate :stop_area_referential, :current_scope, to: :export_scope
+
+        def all_stop_areas
+          stop_area_referential.stop_areas
+        end
+
+        def original_scoped_stop_areas
+          current_scope.stop_areas
+        end
+      end
+
+      class Default < Base
+        def stop_areas_and_referents
+          ::Query::StopArea.new(all_stop_areas).send(stop_area_query, original_scoped_stop_areas)
+        end
+
+        def stop_area_query
+          return :self_and_ancestors if ignore_referent_stop_areas?
+
+          :self_referents_and_ancestors
+        end
+
+        def ignore_referent_stop_areas?
+          export_scope.ignore_referent_stop_areas?
+        end
+
+        alias stop_areas stop_areas_and_referents
+      end
+
+      class PreferReferents < Base
+        def stop_areas_or_referents
+          ::Query::StopArea.new(all_stop_areas).send(stop_area_query, all_stop_areas.where(id: stop_areas_or_referent_ids))
+        end
+
+        alias stop_areas stop_areas_or_referents
+
+        def stop_area_query
+          return :self_and_ancestors if ignore_referent_stop_areas?
+
+          :self_referents_and_ancestors
+        end
+
+        def ignore_referent_stop_areas?
+          export_scope.ignore_referent_stop_areas?
+        end
+
+        def stop_areas_or_referent_ids
+          [
+            original_scoped_stop_areas.without_referent,
+            all_stop_areas.where(id: original_scoped_stop_areas.with_referent.select(:referent_id))
+          ].flat_map { |relation| relation.pluck(:id) }.uniq
+        end
+      end
     end
 
-    def stop_area_query
-      return :self_and_ancestors if ignore_referent_stop_areas?
+    def prefer_referent_stop_areas?
+      export.setup.scope_setup.stop_areas.try(:prefer_referent_stop_areas)
+    end
 
-      :self_referents_and_ancestors
+    def stop_areas_class
+      prefer_referent_stop_areas? ? StopAreas::PreferReferents : StopAreas::Default
+    end
+
+    def stop_areas
+      @stop_areas ||= stop_areas_class.new(self).stop_areas
     end
 
     def ignore_referent_stop_areas?
       export.setup.scope_setup.stop_areas.try(:ignore_referent_stop_areas)
+    end
+
+    def referenced_stop_areas
+      if prefer_referent_stop_areas?
+        current_scope.stop_areas.particulars.with_referent
+      else
+        Chouette::StopArea.none
+      end
     end
 
     def entrances
@@ -468,7 +538,13 @@ class Export::NetexGeneric < Export::Base
   end
 
   class StopAreas < Part
+    delegate :referenced_stop_areas, to: :export_scope
+
     def perform
+      referenced_stop_areas.pluck(:id, :referent_id).each do |stop_area_id, referent_id|
+        code_provider.stop_areas.alias(stop_area_id, as: referent_id)
+      end
+
       stop_areas.each_instance do |stop_area|
         resource = decorate(stop_area, with: Decorator).netex_resource
         target << resource
@@ -753,7 +829,7 @@ class Export::NetexGeneric < Export::Base
       end
 
       def parent_code
-        code_provider.stop_areas.code(stop_area.id)
+        code_provider.stop_areas.code(stop_area.quay? ? stop_area.parent_id : stop_area.id)
       end
 
       def raw_xml

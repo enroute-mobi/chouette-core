@@ -122,7 +122,7 @@ module Export
         end
 
         class Scheduled < Base
-          attribute :prefer_referent_stop_areas, :boolean, default: false # TODO: Gtfs only
+          attribute :prefer_referent_stop_areas, :boolean, default: false # TODO: Gtfs and Netex only
           attribute :ignore_parent_stop_areas, :boolean, default: false # TODO: Gtfs only
           attribute :ignore_referent_stop_areas, :boolean, default: false # TODO: Netex only
         end

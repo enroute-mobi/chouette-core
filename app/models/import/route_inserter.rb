@@ -5,7 +5,7 @@ module Import
   class RouteInserter < Inserter
     def insert(route)
       referential_inserter.routes.insert route, before_copy: before_copy
-      return unless route.valid?
+      return unless valid?(route)
 
       route.stop_points.each do |stop_point|
         stop_point.route = route
@@ -28,7 +28,7 @@ module Import
   class JourneyPatternInserter < Inserter
     def insert(journey_pattern)
       referential_inserter.journey_patterns.insert journey_pattern, before_copy: before_copy
-      return unless journey_pattern.valid?
+      return unless valid?(journey_pattern)
 
       journey_pattern.journey_pattern_stop_points.each do |journey_pattern_stop_point|
         journey_pattern_stop_point.journey_pattern = journey_pattern

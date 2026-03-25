@@ -1622,7 +1622,6 @@ ActiveRecord::Schema[7.2].define(version: 2026_03_24_165302) do
     t.index ["parent_id"], name: "index_stop_areas_on_parent_id"
     t.index ["referent_id"], name: "index_stop_areas_on_referent_id"
     t.index ["stop_area_provider_id", "registration_number"], name: "idx_on_stop_area_provider_id_registration_number_5d900b1543", unique: true
-    t.index ["stop_area_provider_id"], name: "index_stop_areas_on_stop_area_provider_id"
     t.index ["stop_area_referential_id"], name: "index_stop_areas_on_stop_area_referential_id"
   end
 

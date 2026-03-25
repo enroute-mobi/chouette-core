@@ -13,6 +13,7 @@ class ImproveStopAreasIndexes < ActiveRecord::Migration[7.2]
       change_table :stop_areas do |t|
         t.index %i[referent_id]
         t.index %i[stop_area_provider_id registration_number], unique: true
+        t.remove_index name: 'index_stop_areas_on_stop_area_provider_id'
         t.remove_index name: 'index_stop_areas_on_referential_id_and_registration_number'
       end
     end
@@ -23,6 +24,7 @@ class ImproveStopAreasIndexes < ActiveRecord::Migration[7.2]
       change_table :stop_areas do |t|
         t.remove_index %i[referent_id]
         t.remove_index %i[stop_area_provider_id registration_number], unique: true
+        t.index %i[stop_area_provider_id], name: 'index_stop_areas_on_stop_area_provider_id'
         t.index %i[stop_area_referential_id registration_number],
                 name: 'index_stop_areas_on_referential_id_and_registration_number'
       end

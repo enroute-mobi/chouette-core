@@ -180,6 +180,7 @@ module Export
         end
 
         def model_with_registration_number?
+          return false if model_class == Chouette::JourneyPattern # See CHOUETTE-5371
           model_class.column_names.include?('registration_number')
         end
 

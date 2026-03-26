@@ -193,7 +193,7 @@ GEM
       execjs (~> 2)
     awesome_print (1.9.2)
     base64 (0.3.0)
-    bcrypt (3.1.21)
+    bcrypt (3.1.22)
     bcrypt_pbkdf (1.1.2)
     benchmark (0.5.0)
     benchmark-ips (2.14.0)
@@ -516,7 +516,7 @@ GEM
       thor (>= 0.14, < 2.0)
     jquery-ui-rails (8.0.0)
       railties (>= 3.2.16)
-    json (2.18.1)
+    json (2.19.3)
     jwt (3.1.2)
       base64
     kramdown (2.5.2)

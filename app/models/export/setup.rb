@@ -125,6 +125,16 @@ module Export
           attribute :prefer_referent_stop_areas, :boolean, default: false # TODO: Gtfs and Netex only
           attribute :ignore_parent_stop_areas, :boolean, default: false # TODO: Gtfs only
           attribute :ignore_referent_stop_areas, :boolean, default: false # TODO: Netex only
+
+          validate :exclusive_referent_options
+
+          private
+
+          def exclusive_referent_options
+            if prefer_referent_stop_areas && ignore_referent_stop_areas
+              errors.add(:ignore_referent_stop_areas)
+            end
+          end
         end
 
         class All < Scheduled # TODO: unused for now

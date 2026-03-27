@@ -67,41 +67,28 @@ class Export::NetexGeneric < Export::Base
         def original_scoped_stop_areas
           current_scope.stop_areas
         end
-      end
-
-      class Default < Base
-        def stop_areas_and_referents
-          ::Query::StopArea.new(all_stop_areas).send(stop_area_query, original_scoped_stop_areas)
-        end
 
         def stop_area_query
-          return :self_and_ancestors if ignore_referent_stop_areas?
-
           :self_referents_and_ancestors
         end
 
-        def ignore_referent_stop_areas?
-          export_scope.ignore_referent_stop_areas?
+        def stop_areas
+          ::Query::StopArea.new(all_stop_areas).send(stop_area_query, original_scoped_stop_areas)
         end
+      end
 
-        alias stop_areas stop_areas_and_referents
+      class Default < Base; end
+
+      class IgnoreReferents < Base
+        def stop_area_query
+          :self_and_ancestors
+        end
       end
 
       class PreferReferents < Base
-        def stop_areas_or_referents
-          ::Query::StopArea.new(all_stop_areas).send(stop_area_query, all_stop_areas.where(id: stop_areas_or_referent_ids))
-        end
-
-        alias stop_areas stop_areas_or_referents
-
-        def stop_area_query
-          return :self_and_ancestors if ignore_referent_stop_areas?
-
-          :self_referents_and_ancestors
-        end
-
-        def ignore_referent_stop_areas?
-          export_scope.ignore_referent_stop_areas?
+        def stop_areas
+          ::Query::StopArea.new(all_stop_areas)
+                           .send(stop_area_query, all_stop_areas.where(id: stop_areas_or_referent_ids))
         end
 
         def stop_areas_or_referent_ids
@@ -113,12 +100,14 @@ class Export::NetexGeneric < Export::Base
       end
     end
 
-    def prefer_referent_stop_areas?
-      export.setup.scope_setup.stop_areas.try(:prefer_referent_stop_areas)
-    end
-
     def stop_areas_class
-      prefer_referent_stop_areas? ? StopAreas::PreferReferents : StopAreas::Default
+      if prefer_referent_stop_areas?
+        StopAreas::PreferReferents
+      elsif ignore_referent_stop_areas?
+        StopAreas::IgnoreReferents
+      else
+        StopAreas::Default
+      end
     end
 
     def stop_areas
@@ -127,6 +116,10 @@ class Export::NetexGeneric < Export::Base
 
     def ignore_referent_stop_areas?
       export.setup.scope_setup.stop_areas.try(:ignore_referent_stop_areas)
+    end
+
+    def prefer_referent_stop_areas?
+      export.setup.scope_setup.stop_areas.try(:prefer_referent_stop_areas)
     end
 
     def referenced_stop_areas

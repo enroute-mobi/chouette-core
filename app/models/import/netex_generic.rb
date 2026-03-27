@@ -2223,7 +2223,16 @@ module Import
                   attribute_name: attribute,
                   attribute_value: error[:value]
                 },
-                resource_attributes: event.resource.tags
+                resource_attributes: event.resource.tags.transform_keys do |k|
+                  case k
+                  when :line
+                    'line_number'
+                  when :column
+                    'column_number'
+                  else
+                    k.to_s
+                  end
+                end
               )
             end
           end

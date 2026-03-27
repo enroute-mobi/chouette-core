@@ -1,24 +1,11 @@
-= simple_form_for @search, url: request.path, method: "GET", html: { class: 'flex items-center tailwind-filters bg-grey relative' }, wrapper: :filters_form_tailwind  do |f|
-  = f.simple_fields_for :order, @search.order, defaults: { wrapper: false } do |form_order|
-    - form_order.object.attributes.keys.each do |attribute|
-      = form_order.input attribute, as: :hidden
-
-  .flex.flex-col.w-full
-    .flex.items-center.border-r.border-white
-      = f.input :text, label: false, wrapper_html: {class: "w-2/5"}, placeholder: I18n.t('simple_form.placeholders.search.text')
-    .flex.items-center.border-t.border-r.border-white
-      = f.input :line, placeholder: I18n.t('simple_form.placeholders.search.line_id'), as: :tom_select, collection: @search.candidate_lines.map { |l| {id: l.id, text: l.display_name } }, wrapper_html: {class: "w-2/5"}
-      = f.input :statuses, as: :autocomplete_select, wrapper_html: {class: "w-1/5"}, input_html: { multiple: true, style: 'width: 100%' }
-      - unless @single_workbench
-        = f.input :workbench_ids, as: :autocomplete_select, collection: @search.candidate_workbenches, placeholder: I18n.t('simple_form.placeholders.search.workbench_id'), input_html: { multiple: true, style: 'width: 100%' }, wrapper_html: {class: "w-2/5"}
-
-    .flex.items-center.border-t.border-r.border-white
-      = f.input :valid_before_date, as: :date_picker
-      = f.input :valid_after_date, as: :date_picker
-
-  .flex.flex-col.justify-center.items-center.actions.ml-auto.w-56
-    .flex.items-center.mb-2.ml-3
-      = render partial: 'shared/per_page', locals: {f:f}
-    .flex.items-center
-      = link_to t('actions.erase'), @workbench, class: 'btn btn-link'
-      = f.submit t('actions.filter'), class: 'btn btn-default'
+= simple_search_for @search, workbench_path(@workbench) do |f|
+  = f.row
+    = f.text
+  = f.row
+    = f.input :line, as: :autocomplete_select, collection: @search.candidate_lines, label_method: :display_name, input_html: { style: 'width: 100%' }, width: 2
+    = f.input :statuses, as: :autocomplete_select, input_html: { multiple: true, style: 'width: 100%' }
+    - unless @single_workbench
+      = f.input :workbench_ids, as: :autocomplete_select, collection: @search.candidate_workbenches || [], input_html: { multiple: true, style: 'width: 100%' }
+  = f.row
+    = f.input :valid_before_date, as: :date_picker
+    = f.input :valid_after_date, as: :date_picker

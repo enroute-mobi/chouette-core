@@ -66,6 +66,7 @@ fr:
     number_passing_times_incoherent: "Le NeTEx ServiceJourney '%{resource_id}' définit %{passing_times_count} passage(s) au lieu de %{stop_points_count} dans le JourneyPattern associé"
     passing_time_without_arrival_time: "Le NeTEx ServiceJourney '%{resource_id}' contient un passage sans ArrivalTime"
     passing_time_without_departure_time: "Le NeTEx ServiceJourney '%{resource_id}' contient un passage sans DepatureTime"
+    passing_time_both_flexible_and_non_flexible: "Le NeTEx ServiceJourney '%{resource_id}' contient un passage avec des horaires TAD et non-TAD"
     passing_times_non_chronological: "Le NeTEx ServiceJourney '%{resource_id}' contient des passages non chronologiques"
     search_no_results_for_filter: "Aucun message trouvé pour ce filtre"
     gtfs:

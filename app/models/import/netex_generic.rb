@@ -1783,55 +1783,59 @@ module Import
           def arrival_time_of_day
             return @arrival_time_of_day if defined?(@arrival_time_of_day)
 
-            @arrival_time_of_day = build_arrival_time_of_day
-          end
-
-          def build_arrival_time_of_day
-            arrival_time_of_day = if arrival_time
-                                    time_of_day(arrival_time, arrival_day_offset)
-                                  else
-                                    departure_time_of_day
-                                  end
-            if !first && arrival_time_of_day.nil?
-              errors.add(
-                :passing_time_without_arrival_time,
-                message_attributes: { resource_id: netex_service_journey_id }
-              )
-              return nil
-            end
-
-            arrival_time_of_day
+            @arrival_time_of_day = if arrival_time
+                                     time_of_day(arrival_time, arrival_day_offset)
+                                   else
+                                     departure_time_of_day
+                                   end
           end
 
           def departure_time_of_day
             return @departure_time_of_day if defined?(@departure_time_of_day)
 
-            @departure_time_of_day = build_departure_time_of_day
+            @departure_time_of_day = time_of_day(departure_time, departure_day_offset)
           end
 
-          def build_departure_time_of_day
-            departure_time_of_day = time_of_day(departure_time, departure_day_offset)
-            if !last && departure_time_of_day.nil?
+          def latest_arrival_time_of_day
+            return @latest_arrival_time_of_day if defined?(@latest_arrival_time_of_day)
+
+            @latest_arrival_time_of_day = time_of_day(latest_arrival_time, latest_arrival_day_offset)&.second_offset
+          end
+
+          def earliest_departure_time_of_day
+            return @earliest_departure_time_of_day if defined?(@earliest_departure_time_of_day)
+
+            @earliest_departure_time_of_day = time_of_day(earliest_departure_time, earliest_departure_day_offset)&.second_offset # rubocop:disable Layout/LineLength
+          end
+
+          def chouette_model
+            return @chouette_model if @chouette_model
+
+            arrival = arrival_time_of_day || latest_arrival_time_of_day
+            if !first && arrival.nil?
+              errors.add(
+                :passing_time_without_arrival_time,
+                message_attributes: { resource_id: netex_service_journey_id }
+              )
+            end
+
+            departure = departure_time_of_day || earliest_departure_time_of_day
+            if !last && departure.nil?
               errors.add(
                 :passing_time_without_departure_time,
                 message_attributes: { resource_id: netex_service_journey_id }
               )
-              return nil
             end
 
-            departure_time_of_day
-          end
+            if (arrival_time_of_day && earliest_departure_time_of_day) ||
+                (departure_time_of_day && latest_arrival_time_of_day)
+              errors.add(
+                :passing_time_both_flexible_and_non_flexible,
+                message_attributes: { resource_id: netex_service_journey_id }
+              )
+            end
 
-          def latest_arrival_time_of_day
-            time_of_day(latest_arrival_time, latest_arrival_day_offset)&.second_offset
-          end
-
-          def earliest_departure_time_of_day
-            time_of_day(earliest_departure_time, earliest_departure_day_offset)&.second_offset
-          end
-
-          def chouette_model
-            @chouette_model ||= Chouette::VehicleJourneyAtStop.new(
+            @chouette_model = Chouette::VehicleJourneyAtStop.new(
               stop_point_id: stop_point_id,
               arrival_time_of_day: arrival_time_of_day,
               departure_time_of_day: departure_time_of_day,

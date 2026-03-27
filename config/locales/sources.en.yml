@@ -49,7 +49,7 @@ en:
         downloader_option_password: Password
         downloader_option_raw_authorization: Authorization header
         downloader_option_custom_header_name: Header name
-        use_standard_authorization_header: Use standard Authorization header
+        downloader_option_use_standard_authorization_header: Use standard Authorization header
         checksum: "Checksum"
         import_options: "Import options"
         import_option_automatic_merge: Automatic merge

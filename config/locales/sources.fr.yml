@@ -47,7 +47,7 @@ fr:
         downloader_options: "Options de téléchargement"
         downloader_option_raw_authorization: Autorisation brute
         downloader_option_custom_header_name: Nom d'en-tête
-        use_standard_authorization_header: "Utiliser l'en-tête Authorization standard"
+        downloader_option_use_standard_authorization_header: "Utiliser l'en-tête Authorization standard"
         downloader_option_username: Nom d'utilisateur
         downloader_option_password: Mot de passe
         checksum: "Signature métier"

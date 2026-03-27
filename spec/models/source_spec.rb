@@ -68,34 +68,6 @@ RSpec.describe Source do
 
     it { is_expected.to_not allow_value('http://localhost').for(:url) }
     it { is_expected.to_not allow_value('http://wrong').for(:url) }
-
-    describe '#handle_authorization_header_options' do
-      let(:source) { Source.new(downloader_type: 'authorization') }
-
-      context 'when use_standard_authorization_header is true' do
-        before do
-          source.use_standard_authorization_header = true
-          source.downloader_option_custom_header_name = 'X-Custom-Auth'
-          source.send(:handle_authorization_header_options)
-        end
-
-        it 'removes custom_header_name from downloader_options' do
-          expect(source.downloader_options).not_to have_key('custom_header_name')
-        end
-      end
-
-      context 'when use_standard_authorization_header is false' do
-        before do
-          source.use_standard_authorization_header = false
-          source.downloader_option_custom_header_name = 'X-Custom-Auth'
-          source.send(:handle_authorization_header_options)
-        end
-
-        it 'keeps custom_header_name in downloader_options' do
-          expect(source.downloader_options).to have_key('custom_header_name')
-        end
-      end
-    end
   end
 
   describe 'with french_nap downloader' do

@@ -41,6 +41,7 @@ class Source < ApplicationModel
 
   before_validation :clean, on: :update
   before_validation :handle_authorization_header_options
+  after_initialize :set_default_authorization_header
 
   attribute :retrieval_time_of_day, TimeOfDay::Type::TimeWithoutZone.new
   attribute :retrieval_days_of_week, Cuckoo::DaysOfWeek::Type.new
@@ -163,9 +164,24 @@ class Source < ApplicationModel
     end
   end
 
+  def downloader_option_use_standard_authorization_header?
+    downloader_options['use_standard_authorization_header'] != 'false'
+  end
+
+  def downloader_option_use_standard_authorization_header
+    downloader_options['use_standard_authorization_header'] != 'false'
+  end
+
+  def set_default_authorization_header
+    return unless downloader_type_authorization?
+    return if downloader_options.key?('use_standard_authorization_header')
+    
+    self.downloader_options = downloader_options.merge('use_standard_authorization_header' => true)
+  end
+
   def handle_authorization_header_options
     if downloader_type_authorization?
-      if use_standard_authorization_header?
+      if downloader_option_use_standard_authorization_header?
         self.downloader_options = self.downloader_options.except("custom_header_name")
       end
     end
@@ -208,8 +224,12 @@ class Source < ApplicationModel
       import_options[$1] == 'true'
     when /^import_option_(.*)$/
       import_options[$1]
-    when /^downloader_option_(.*)=/
+    when /^downloader_option_use_standard_authorization_header\?$/
+      downloader_options['use_standard_authorization_header'] == 'true'
+    when /^downloader_option_(.*)=$/
       downloader_options[$1] = args.first
+    when /^downloader_option_(.*)\?$/
+      downloader_options[$1] == 'true'
     when /^downloader_option_(.*)$/
       downloader_options[$1]
     else

@@ -1,16 +1,16 @@
-= simple_form_for [@workbench, @source], html: { class: 'tailwind-form', id: 'source_form', 'x-data': "{downloader_type: '#{@source.downloader_type}', use_standard_authorization_header: #{@source.use_standard_authorization_header?} }" }, wrapper: :horizontal_form_tailwind do |f|
+= simple_form_for [@workbench, @source], html: { class: 'tailwind-form', id: 'source_form', 'x-data': "{downloader_type: '#{@source.downloader_type}', use_standard_authorization_header: #{@source.downloader_option_use_standard_authorization_header?}}" }, wrapper: :horizontal_form_tailwind do |f|
   .row
     .col-lg-12
       = f.input :name
       = f.input :url
       = f.input :downloader_type, as: :select, include_blank: false, input_html: { 'x-model': 'downloader_type' }
-      template[x-if="downloader_type == 'authorization'"]
+      template[x-if="downloader_type == 'authorization'" x-init="use_standard_authorization_header = $el.querySelector('input[type=checkbox]').checked"]
         div
-          = f.input :use_standard_authorization_header, as: :switchable_checkbox, input_html: { 'x-bind:checked': 'use_standard_authorization_header', 'x-on:click': 'use_standard_authorization_header = !use_standard_authorization_header' }
+          = f.input :downloader_option_use_standard_authorization_header, as: :switchable_checkbox, input_html: { 'x-on:click': 'use_standard_authorization_header = !use_standard_authorization_header' }
           = f.input :downloader_option_raw_authorization, as: :toggable_password, input_html: { value: f.object.downloader_option_raw_authorization }
-      template[x-if="!use_standard_authorization_header"]
-        div
-          = f.input :downloader_option_custom_header_name, as: :string
+          template[x-if="!use_standard_authorization_header"]
+            div
+              = f.input :downloader_option_custom_header_name, as: :string
       template[x-if="['direct','ftp','sftp'].includes(downloader_type)"]
         div
           = f.input :downloader_option_username, as: :string

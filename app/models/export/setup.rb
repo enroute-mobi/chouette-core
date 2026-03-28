@@ -132,7 +132,7 @@ module Export
 
           def exclusive_referent_options
             if prefer_referent_stop_areas && ignore_referent_stop_areas
-              errors.add(:ignore_referent_stop_areas)
+              errors.add(:ignore_referent_stop_areas, :mutually_exclusive)
             end
           end
         end

@@ -311,6 +311,32 @@ RSpec.describe Export::Setup::Scope::StopAreas::Scheduled do
 
     it { is_expected.to have_attributes(stop_areas_scheduled.attributes) }
   end
+
+  describe 'validations' do
+    it 'is valid with default attributes' do
+      expect(subject).to be_valid
+    end
+
+    it 'is valid when only prefer_referent_stop_areas is true' do
+      subject.prefer_referent_stop_areas = true
+      subject.ignore_referent_stop_areas = false
+      expect(subject).to be_valid
+    end
+
+    it 'is valid when only ignore_referent_stop_areas is true' do
+      subject.prefer_referent_stop_areas = false
+      subject.ignore_referent_stop_areas = true
+      expect(subject).to be_valid
+    end
+
+    it 'is invalid when both prefer and ignore referent stop areas are true' do
+      subject.prefer_referent_stop_areas = true
+      subject.ignore_referent_stop_areas = true
+
+      expect(subject).not_to be_valid
+      expect(subject.errors.added?(:ignore_referent_stop_areas, :mutually_exclusive)).to be true
+    end
+  end
 end
 
 RSpec.describe Export::Setup::Scope::Lines::Scheduled do

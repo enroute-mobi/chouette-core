@@ -20,4 +20,3 @@
           .span.fa.fa-caret-up.mx-1 x-show="!showMessages"
 
   .import_messages x-show="showMessages" x-transition.delay.50ms=""
-    = render 'imports/import_resource_messages', messages: import_resource.messages.order(:id).paginate(page: 1, per_page: 15), facade: facade

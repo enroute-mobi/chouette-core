@@ -111,11 +111,7 @@ class WorkgroupImportsController < Chouette::WorkgroupController
 
   private
 
-  def init_facade
+  def facade
     @facade ||= OperationRunFacade.new(resource, default_workbench)
   end
-
-  alias facade init_facade
-
-  helper_method :facade
 end

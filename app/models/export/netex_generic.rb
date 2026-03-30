@@ -87,10 +87,6 @@ class Export::NetexGeneric < Export::Base
         def stop_areas
           ::Query::StopArea.new(all_stop_areas).send(stop_area_query, original_scoped_stop_areas.referents_or_self)
         end
-
-        def stop_area_query
-          :self_referents_and_ancestors
-        end
       end
     end
 

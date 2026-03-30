@@ -29,7 +29,7 @@
       .dl-head
         = t('imports.show.imported_resources')
     - @imported_resources.each do |import_resource|
-      = render 'imports/import_resource', import_resource: import_resource, messages_base_url: workbench_import_import_resource_import_messages_path(@workbench, @import, import_resource)
+      = render 'imports/import_resource', import_resource: import_resource, messages_base_url: workgroup_context? ? workgroup_import_import_resource_import_messages_path(@workgroup, @import, import_resource) : workbench_import_import_resource_import_messages_path(@workbench, @import, import_resource)
 
 - if @macro_list_runs.present?
   .col-lg-12

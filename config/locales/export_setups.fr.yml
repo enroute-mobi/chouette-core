@@ -57,6 +57,11 @@ fr:
           invalid: "période non valide"
         to:
           invalid: "période non valide"
+      models:
+        export/setup/scope/stop_areas/scheduled:
+          attributes:
+            ignore_referent_stop_areas:
+              mutually_exclusive: "Ne peut pas être activé quand Préférer les arrêts Référents est sélectionné"
   simple_form:
     placeholders:
       scope_setup:

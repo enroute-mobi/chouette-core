@@ -51,20 +51,73 @@ class Export::NetexGeneric < Export::Base
   delegate :stop_area_referential, :line_referential, to: :workgroup
 
   class Scope < Export::Base::Scope
-    def stop_areas
-      @stop_areas ||=
-        ::Query::StopArea.new(stop_area_referential.stop_areas).
-          send(stop_area_query, current_scope.stop_areas)
+    module StopAreas
+      class Base
+        def initialize(export_scope)
+          @export_scope = export_scope
+        end
+
+        attr_reader :export_scope
+        delegate :stop_area_referential, :current_scope, to: :export_scope
+
+        def all_stop_areas
+          stop_area_referential.stop_areas
+        end
+
+        def original_scoped_stop_areas
+          current_scope.stop_areas
+        end
+
+        def stop_area_query
+          :self_referents_and_ancestors
+        end
+
+        def stop_areas
+          ::Query::StopArea.new(all_stop_areas).send(stop_area_query, original_scoped_stop_areas)
+        end
+      end
+
+      class IgnoreReferents < Base
+        def stop_area_query
+          :self_and_ancestors
+        end
+      end
+
+      class PreferReferents < Base
+        def stop_areas
+          ::Query::StopArea.new(all_stop_areas).send(stop_area_query, original_scoped_stop_areas.referents_or_self)
+        end
+      end
     end
 
-    def stop_area_query
-      return :self_and_ancestors if ignore_referent_stop_areas?
+    def stop_areas_class
+      if prefer_referent_stop_areas?
+        StopAreas::PreferReferents
+      elsif ignore_referent_stop_areas?
+        StopAreas::IgnoreReferents
+      else
+        StopAreas::Base
+      end
+    end
 
-      :self_referents_and_ancestors
+    def stop_areas
+      @stop_areas ||= stop_areas_class.new(self).stop_areas
     end
 
     def ignore_referent_stop_areas?
       export.setup.scope_setup.stop_areas.try(:ignore_referent_stop_areas)
+    end
+
+    def prefer_referent_stop_areas?
+      export.setup.scope_setup.stop_areas.try(:prefer_referent_stop_areas)
+    end
+
+    def referenced_stop_areas
+      if prefer_referent_stop_areas?
+        current_scope.stop_areas.particulars.with_referent
+      else
+        Chouette::StopArea.none
+      end
     end
 
     def entrances
@@ -468,7 +521,13 @@ class Export::NetexGeneric < Export::Base
   end
 
   class StopAreas < Part
+    delegate :referenced_stop_areas, to: :export_scope
+
     def perform
+      referenced_stop_areas.pluck(:id, :referent_id).each do |stop_area_id, referent_id|
+        code_provider.stop_areas.alias(stop_area_id, as: referent_id)
+      end
+
       stop_areas.each_instance do |stop_area|
         resource = decorate(stop_area, with: Decorator).netex_resource
         target << resource
@@ -753,7 +812,7 @@ class Export::NetexGeneric < Export::Base
       end
 
       def parent_code
-        code_provider.stop_areas.code(stop_area.id)
+        code_provider.stop_areas.code(stop_area.quay? ? stop_area.parent_id : stop_area.id)
       end
 
       def raw_xml

@@ -77,8 +77,6 @@ class Export::NetexGeneric < Export::Base
         end
       end
 
-      class Default < Base; end
-
       class IgnoreReferents < Base
         def stop_area_query
           :self_and_ancestors
@@ -87,15 +85,11 @@ class Export::NetexGeneric < Export::Base
 
       class PreferReferents < Base
         def stop_areas
-          ::Query::StopArea.new(all_stop_areas)
-                           .send(stop_area_query, all_stop_areas.where(id: stop_areas_or_referent_ids))
+          ::Query::StopArea.new(all_stop_areas).send(stop_area_query, original_scoped_stop_areas.referents_or_self)
         end
 
-        def stop_areas_or_referent_ids
-          [
-            original_scoped_stop_areas.without_referent,
-            all_stop_areas.where(id: original_scoped_stop_areas.with_referent.select(:referent_id))
-          ].flat_map { |relation| relation.pluck(:id) }.uniq
+        def stop_area_query
+          :self_referents_and_ancestors
         end
       end
     end
@@ -106,7 +100,7 @@ class Export::NetexGeneric < Export::Base
       elsif ignore_referent_stop_areas?
         StopAreas::IgnoreReferents
       else
-        StopAreas::Default
+        StopAreas::Base
       end
     end
 

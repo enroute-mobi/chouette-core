@@ -633,15 +633,7 @@ RSpec.describe Control::FindQuaysAssociatedParent::Run::StopNameClustering do
         service = described_class.new(names, threshold: threshold)
         clusters = service.perform
 
-        expect(clusters.size).to eq(2)
-
-        nord_cluster = clusters.find { |c| c.include?('Paris Gare du Nord') }
-        expect(nord_cluster).to include('Gare du Nord')
-        expect(nord_cluster).not_to include('Paris Gare de Lyon')
-
-        lyon_cluster = clusters.find { |c| c.include?('Paris Gare de Lyon') }
-        expect(lyon_cluster).to include('Gare de Lyon')
-        expect(lyon_cluster).not_to include('Paris Gare du Nord')
+        expect(clusters).to eq([["Paris Gare du Nord", "Gare du Nord"], ["Paris Gare de Lyon", "Gare de Lyon"]])
       end
     end
 
@@ -659,7 +651,7 @@ RSpec.describe Control::FindQuaysAssociatedParent::Run::StopNameClustering do
         clusters = service.perform
 
         # The unique city names should lower the ROUGE-SU score below 0.5
-        expect(clusters.size).to eq(3)
+        expect(clusters).to eq([['Gare de Bordeaux Saint-Jean'],['Gare de Strasbourg'],['Gare de Lille Flandres']])
       end
     end
 
@@ -669,8 +661,8 @@ RSpec.describe Control::FindQuaysAssociatedParent::Run::StopNameClustering do
       it 'clusters variations of the same regional station' do
         service = described_class.new(names, threshold: 0.25)
         clusters = service.perform
-        
-        expect(clusters.size).to eq(1)
+
+        expect(clusters).to eq([['Lyon Part-Dieu', 'Lyon P. Dieu', 'Gare de la Part-Dieu']])
       end
     end
 
@@ -682,8 +674,10 @@ RSpec.describe Control::FindQuaysAssociatedParent::Run::StopNameClustering do
       it 'return only one cluster when threshold is 0' do
         names = ['First', 'Second']
         service = described_class.new(names, threshold: 0)
-        expect(service.perform.size).to eq(1)
-      end 
+        clusters = service.perform
+
+        expect(clusters).to eq([['First', 'Second']])
+      end
     end
   end
 end

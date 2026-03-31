@@ -51,7 +51,7 @@ RSpec.describe Export::Gtfs::Scope do
       let(:child) { context.stop_area :child }
       let(:parent) { context.stop_area :parent }
 
-      let(:initial_scope) { double stop_areas: Chouette::StopArea.where(id: child) }
+      let(:initial_scope) { double non_flexible_stop_areas: Chouette::StopArea.where(id: child) }
 
       context 'when ignore_parent_stop_areas? is enabled' do
         before { allow(scope).to receive(:ignore_parent_stop_areas?).and_return(true) }
@@ -161,7 +161,7 @@ RSpec.describe Export::Gtfs::Scope do
         end
 
         let(:particular) { context.stop_area :particular }
-        let(:initial_scope) { double stop_areas: Chouette::StopArea.where(id: particular) }
+        let(:initial_scope) { double non_flexible_stop_areas: Chouette::StopArea.where(id: particular) }
 
         it { is_expected.to include(particular) }
       end

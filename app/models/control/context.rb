@@ -70,7 +70,7 @@ module Control
       delegate :validity_period, to: :referential, allow_nil: true
 
       def context
-        referential || Scope::Workbench.new(workbench)
+        referential || LegacyScope::Workbench.new(workbench)
       end
 
       def run

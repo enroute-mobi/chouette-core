@@ -46,7 +46,7 @@ module LocalExportSupport
     Chouette::Benchmark.measure "export_#{export_type}", export: id do
       referential.switch
 
-      if self.class.skip_empty_exports && export_scope.empty?
+      if self.class.skip_empty_exports && export_scope.vehicle_journeys.empty?
         self.update status: :failed, ended_at: Time.now
         vals = {}
         vals[:criticity] = :info

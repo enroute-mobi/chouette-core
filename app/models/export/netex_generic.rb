@@ -65,7 +65,7 @@ class Export::NetexGeneric < Export::Base
         end
 
         def original_scoped_stop_areas
-          current_scope.stop_areas
+          current_scope.non_flexible_stop_areas
         end
 
         def stop_area_query
@@ -114,7 +114,7 @@ class Export::NetexGeneric < Export::Base
 
     def referenced_stop_areas
       if prefer_referent_stop_areas?
-        current_scope.stop_areas.particulars.with_referent
+        current_scope.non_flexible_stop_areas.particulars.with_referent
       else
         Chouette::StopArea.none
       end

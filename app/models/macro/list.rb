@@ -152,14 +152,14 @@ module Macro
 
       def base_scope
         if referential
-          Scope::Referential.new(workbench, referential)
+          LegacyScope::Referential.new(workbench, referential)
         else
-          Scope::Workbench.new(workbench)
+          LegacyScope::Workbench.new(workbench)
         end
       end
 
       def owned_scope
-        Scope::Owned.new(base_scope, workbench)
+        LegacyScope::Owned.new(base_scope, workbench)
       end
 
       def scope

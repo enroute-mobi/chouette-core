@@ -145,7 +145,7 @@ module Search
       end
     end
 
-    class Scope < ::Scope::Search
+    class Scope < ::LegacyScope::Search
       search_on :stop_areas
     end
   end

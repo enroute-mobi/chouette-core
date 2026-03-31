@@ -197,9 +197,9 @@ module Export
 
         def scoped_stop_areas
           if ignore_parent_stop_areas?
-            current_scope.stop_areas
+            current_scope.non_flexible_stop_areas
           else
-            current_scope.stop_areas.self_and_parents
+            current_scope.non_flexible_stop_areas.self_and_parents
           end
         end
       end

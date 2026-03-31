@@ -80,7 +80,7 @@ module Search
     	attribute :network, joins: :network, column: 'networks.name'
     end
 
-    class Scope < ::Scope::Search
+    class Scope < ::LegacyScope::Search
       search_on :lines
     end
   end

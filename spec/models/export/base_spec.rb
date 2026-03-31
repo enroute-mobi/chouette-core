@@ -172,6 +172,8 @@ RSpec.describe Export::Base, type: :model do
     let(:workgroup) { Chouette.create { workgroup }.workgroup }
     let(:export) { Export::Base.new(workgroup: workgroup) }
 
+    before { allow(export).to receive(:code_provider).and_return(nil) }
+
     context 'when cache_prefix is nil' do
       before { export.cache_prefix = nil }
 

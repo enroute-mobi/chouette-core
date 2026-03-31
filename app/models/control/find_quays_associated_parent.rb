@@ -24,19 +24,19 @@ module Control
         return unless referential
 
         anomalies.each do |anomaly|
-          # Step 1: Cluster names and keep only groups with > 1 element
-          valid_clusters = build_sub_clusters(anomaly).select { |c| c.size > 1 }
+          build_sub_clusters(anomaly).each_with_index do |stop_areas, i|
+            # Cluster names and keep only groups with > 1 element
+            next unless stop_areas.size > 1
 
-          # Step 2: Process only stop_areas that belong to these valid clusters
-          anomaly.grouped_stop_areas.each do |stop_area|
-            sub_index = find_cluster_index(valid_clusters, stop_area['name'])
-
-            # Skip this stop_area if it doesn't belong to any valid sub-cluster
-            next if sub_index.nil?
-
-            create_message(anomaly, stop_area, sub_index)
+            stop_areas.each do |stop_area|
+              create_message(anomaly, stop_area, i)
+            end
           end
         end
+      end
+
+      def build_sub_clusters(anomaly)
+        StopNameClustering.new(anomaly.grouped_stop_areas, threshold: threshold).perform
       end
 
       def create_message(anomaly, stop_area, sub_index)
@@ -50,18 +50,6 @@ module Control
         end
       end
 
-      def build_sub_clusters(anomaly)
-        stop_names = anomaly.grouped_stop_areas.map { |s| s['name'] }
-        # return only one sub cluster if threshold is 0
-        return [stop_names] if threshold.zero?
-
-        StopNameClustering.new(stop_names, threshold: threshold).perform
-      end
-
-      def find_cluster_index(clusters, name)
-        clusters.index { |cluster| cluster.include?(name) }
-      end
-
       def format_objectid(objectid)
         Chouette::ObjectidFormatter::Netex.new.get_objectid(objectid).short_id
       end
@@ -71,20 +59,21 @@ module Control
       end
 
       class StopNameClustering
-        def initialize(strings, threshold: 0.5, window_size: 4)
-          @strings = strings
+        def initialize(stop_areas, threshold: 0.5, window_size: 4)
+          @stop_areas = stop_areas
           @threshold = threshold
           @calculator = RougeSU.new(window_size: window_size)
-          @n = strings.size
+          @n = stop_areas.size
         end
 
         def perform
-          return [] if @strings.empty?
+          return [] if @stop_areas.empty?
+          return [@stop_areas] if @threshold.zero?
 
           visited = Array.new(@n, false)
           clusters = []
 
-          (0...@n).each do |i|
+          @n.times do |i|
             next if visited[i]
 
             # Start a new cluster (Initial: ci = {vi})
@@ -94,19 +83,18 @@ module Control
 
             while queue.any?
               u = queue.shift
-              current_cluster << @strings[u]
+              current_cluster << @stop_areas[u]
 
               # "Pull" elements from other groups
               (0...@n).each do |v|
-                if !visited[v]
-                  # Calculate ROUGE-SU similarity
-                  score = @calculator.similarity(@strings[u], @strings[v])
+                next if visited[v]
 
-                  if score >= @threshold
-                    visited[v] = true
-                    queue << v # v can now pull other strings into this cluster
-                  end
-                end
+                # Calculate ROUGE-SU similarity
+                score = @calculator.similarity(@stop_areas[u]['name'], @stop_areas[v]['name'])
+                next if score < @threshold
+
+                visited[v] = true
+                queue << v # v can now pull other strings into this cluster
               end
             end
             clusters << current_cluster

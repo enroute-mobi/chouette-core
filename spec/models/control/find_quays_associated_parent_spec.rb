@@ -59,7 +59,7 @@ RSpec.describe Control::FindQuaysAssociatedParent do
                                             'short_id' => first_in_route1.get_objectid.short_id
                                           }
                                         }),
-            an_object_having_attributes({
+              an_object_having_attributes({
                                           source: first_in_route2,
                                           criticity: 'warning',
                                           message_attributes: {
@@ -619,50 +619,73 @@ RSpec.describe Control::FindQuaysAssociatedParent::Run::StopNameClustering do
     let(:threshold) { 0.5 }
 
     context 'when processing Paris major stations' do
-      let(:names) do
+      let(:stop_areas) do
         [
-          'Paris Gare du Nord',
-          'Gare du Nord',
-
-          'Paris Gare de Lyon',
-          'Gare de Lyon',
+          {'name' => 'Paris Gare du Nord'},
+          {'name' => 'Gare du Nord'},
+          {'name' => 'Paris Gare de Lyon'},
+          {'name' => 'Gare de Lyon'}
         ]
       end
 
       it "separates 'Nord' and 'Lyon' into two distinct clusters" do
-        service = described_class.new(names, threshold: threshold)
+        service = described_class.new(stop_areas, threshold: threshold)
         clusters = service.perform
 
-        expect(clusters).to eq([["Paris Gare du Nord", "Gare du Nord"], ["Paris Gare de Lyon", "Gare de Lyon"]])
+        expect(clusters).to eq([
+          [
+            {'name' => 'Paris Gare du Nord'},
+            {'name' => 'Gare du Nord'}
+          ],
+          [
+            {'name' => 'Paris Gare de Lyon'},
+            {'name' => 'Gare de Lyon'}
+          ]])
       end
     end
 
     context 'with similar prefixes but different cities' do
-      let(:names) do
+      let(:stop_areas) do
         [
-          'Gare de Bordeaux Saint-Jean',
-          'Gare de Strasbourg',
-          'Gare de Lille Flandres'
+          {'name' => 'Gare de Bordeaux Saint-Jean'},
+          {'name' => 'Gare de Strasbourg'},
+          {'name' => 'Gare de Lille Flandres'}
         ]
       end
 
       it "does not cluster them despite sharing 'Gare de'" do
-        service = described_class.new(names, threshold: threshold)
+        service = described_class.new(stop_areas, threshold: threshold)
         clusters = service.perform
 
         # The unique city names should lower the ROUGE-SU score below 0.5
-        expect(clusters).to eq([['Gare de Bordeaux Saint-Jean'],['Gare de Strasbourg'],['Gare de Lille Flandres']])
+        expect(clusters).to eq([
+          [ {'name' => 'Gare de Bordeaux Saint-Jean'} ],
+          [ {'name' => 'Gare de Strasbourg'} ],
+          [ {'name' => 'Gare de Lille Flandres'} ]
+        ])
       end
     end
 
     context 'handling regional variations' do
-      let(:names) { ['Lyon Part-Dieu', 'Lyon P. Dieu', 'Gare de la Part-Dieu'] }
+      let(:stop_areas) {
+        [
+          {'name' => 'Lyon Part-Dieu'},
+          {'name' => 'Lyon P. Dieu'},
+          {'name' => 'Gare de la Part-Dieu'}
+
+        ] }
 
       it 'clusters variations of the same regional station' do
-        service = described_class.new(names, threshold: 0.25)
+        service = described_class.new(stop_areas, threshold: 0.25)
         clusters = service.perform
 
-        expect(clusters).to eq([['Lyon Part-Dieu', 'Lyon P. Dieu', 'Gare de la Part-Dieu']])
+        expect(clusters).to eq([
+          [
+            {'name' => 'Lyon Part-Dieu'},
+            {'name' => 'Lyon P. Dieu'},
+            {'name' => 'Gare de la Part-Dieu'}
+          ]
+        ])
       end
     end
 
@@ -672,11 +695,16 @@ RSpec.describe Control::FindQuaysAssociatedParent::Run::StopNameClustering do
       end
 
       it 'return only one cluster when threshold is 0' do
-        names = ['First', 'Second']
-        service = described_class.new(names, threshold: 0)
+        stop_areas = [
+            {'name' => 'First'},
+            {'name' => 'Second'}
+          ]
+        service = described_class.new(stop_areas, threshold: 0)
         clusters = service.perform
 
-        expect(clusters).to eq([['First', 'Second']])
+        expect(clusters).to eq([
+          [{'name' => 'First'}, {'name' => 'Second'}]
+        ])
       end
     end
   end

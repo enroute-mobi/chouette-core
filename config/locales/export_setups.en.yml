@@ -19,11 +19,15 @@ en:
         prefer_referent_stop_areas: "Prefer Referent Stop Areas"
         ignore_parent_stop_areas: "Ignore parent Stop Places"
         ignore_referent_stop_areas: "Ignore referent Stop Areas"
+      export/setup/scope/stop_areas/all:
+        ignore_disabled: "Ignore disabled Stop Areas"
       export/setup/scope/lines/base:
         type: "Scoped lines"
       export/setup/scope/lines/scheduled:
         prefer_referent_lines: "Prefer Referent Lines"
         prefer_referent_companies: "Prefer Referent Companies"
+      export/setup/scope/lines/all:
+        ignore_disabled: "Ignore disabled Lines"
       export/setup/scope/vehicle_journeys:
         included_lines: "Exported lines"
         period: "Exported periods"
@@ -47,10 +51,12 @@ en:
       export/setup/scope/line_selector/line_providers: "Associated line providers"
       export/setup/scope/line_selector/line_groups: "Associated line groups"
       export/setup/scope/line_selector/all: "All available lines"
-      export/setup/scope/lines/scheduled: "Associated to the scoped Vehicle Journeys"
       export/setup/scope/lines/none: "No line"
-      export/setup/scope/stop_areas/scheduled: "Associated to the scoped Vehicle Journeys"
+      export/setup/scope/lines/scheduled: "Associated to the scoped Vehicle Journeys"
+      export/setup/scope/lines/all: "All lines in the Workgroup"
       export/setup/scope/stop_areas/none: "No stop area"
+      export/setup/scope/stop_areas/scheduled: "Associated to the scoped Vehicle Journeys"
+      export/setup/scope/stop_areas/all: "All stop areas in the Workgroup"
     errors:
       export/setup/scope/period_selector/static:
         from:

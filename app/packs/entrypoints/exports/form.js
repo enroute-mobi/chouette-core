@@ -1,5 +1,5 @@
 import Alpine from 'alpinejs'
-import { tap } from 'lodash'
+import { camelCase, tap } from 'lodash'
 
 Alpine.data('exportForm', state => ({
   type: state.type,
@@ -15,16 +15,54 @@ Alpine.data('exportForm', state => ({
 
     this.$watch('type', () => this.updateScopeStopAreasType())
     this.$watch('type', () => this.updateScopeLinesType())
+
+    this.associatedModelOptions = {
+      ignore_disabled_stop_areas: {
+        scopeStopAreasType: ['Export::Setup::Scope::StopAreas::All'],
+        type: ['Export::Gtfs', 'Export::NetexGeneric']
+      },
+      prefer_referent_stop_areas: {
+        scopeStopAreasType: ['Export::Setup::Scope::StopAreas::Scheduled', 'Export::Setup::Scope::StopAreas::All'],
+        type: ['Export::Gtfs', 'Export::NetexGeneric']
+      },
+      ignore_parent_stop_areas: {
+        scopeStopAreasType: ['Export::Setup::Scope::StopAreas::Scheduled', 'Export::Setup::Scope::StopAreas::All'],
+        type: ['Export::Gtfs']
+      },
+      ignore_referent_stop_areas: {
+        scopeStopAreasType: ['Export::Setup::Scope::StopAreas::Scheduled', 'Export::Setup::Scope::StopAreas::All'],
+        type: ['Export::NetexGeneric']
+      },
+      ignore_disabled_lines: {
+        scopeLinesType: ['Export::Setup::Scope::Lines::All'],
+        type: ['Export::Gtfs', 'Export::NetexGeneric']
+      },
+      prefer_referent_companies: {
+        scopeLinesType: ['Export::Setup::Scope::Lines::Scheduled', 'Export::Setup::Scope::Lines::All'],
+        type: ['Export::Gtfs']
+      },
+      prefer_referent_lines: {
+        scopeLinesType: ['Export::Setup::Scope::Lines::Scheduled', 'Export::Setup::Scope::Lines::All'],
+        type: ['Export::Gtfs', 'Export::NetexGeneric']
+      }
+    }
+  },
+
+  varPrefixFromType() {
+    return camelCase(this.type.substring('Export::'.length))
   },
 
   updateScopeStopAreasType() {
-    const scopeStopAreasTypeRef = (this.type === 'Export::NetexGeneric') ? 'netexScopeStopAreasType' : 'scopeStopAreasType'
-    this.scopeStopAreasType = this.$refs[scopeStopAreasTypeRef].value
+    this.scopeStopAreasType = this.$refs[`${this.varPrefixFromType()}ScopeStopAreasType`].value
   },
 
   updateScopeLinesType() {
-    const scopeLinesTypeRef = (this.type === 'Export::NetexGeneric') ? 'netexScopeLinesType' : 'scopeLinesType'
-    this.scopeLinesType = this.$refs[scopeLinesTypeRef].value
+    this.scopeLinesType = this.$refs[`${this.varPrefixFromType()}ScopeLinesType`].value
+  },
+
+  isAssociatedModelOptionVisible(option) {
+    const restrictions = this.associatedModelOptions[option] || {}
+    return Object.entries(restrictions).every(([k, v]) => v.includes(this[k]))
   },
 
   setExportedLinesSelectURLs() {

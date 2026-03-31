@@ -116,6 +116,10 @@ module Export
           def with_scope_setup(_scope_setup)
             dup
           end
+
+          def legacy_scope?
+            true
+          end
         end
 
         class None < Base # TODO: unused for now
@@ -137,8 +141,12 @@ module Export
           end
         end
 
-        class All < Scheduled # TODO: unused for now
-          attribute :ignore_disabled_stop_areas, :boolean # TODO: unused for now
+        class All < Scheduled
+          attribute :ignore_disabled, :boolean
+
+          def legacy_scope?
+            false
+          end
         end
       end
 
@@ -146,6 +154,10 @@ module Export
         class Base < ApplicationStoreModel
           def with_scope_setup(_scope_setup)
             dup
+          end
+
+          def legacy_scope?
+            true
           end
         end
 
@@ -157,7 +169,12 @@ module Export
           attribute :prefer_referent_companies, :boolean, default: false # TODO: Gtfs only
         end
 
-        class All < Scheduled # TODO: unused for now
+        class All < Scheduled
+          attribute :ignore_disabled, :boolean
+
+          def legacy_scope?
+            false
+          end
         end
       end
 
@@ -197,6 +214,10 @@ module Export
         attribute :point_of_interests, PointOfInterests.to_type, default: -> { PointOfInterests.new }
 
         validates :stop_areas, :lines, :shapes, :point_of_interests, store_model: true
+
+        def legacy_scope?
+          stop_areas.legacy_scope? && lines.legacy_scope?
+        end
       end
 
       class AbstractReferential < Setup
@@ -294,6 +315,8 @@ module Export
       def stateful?
         true
       end
+
+      delegate :legacy_scope?, to: :scope_setup
 
       private
 

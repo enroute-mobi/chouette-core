@@ -12,13 +12,26 @@ module Import
     attr_reader :referential_inserter
 
     def valid?(model)
-      if model.valid?(:inserter)
-        true
-      else
-        Rails.logger.debug { "Invalid model: #{model.inspect} #{model.errors.inspect}" }
-        @invalid_handler&.call model
-        false
+      with_validation_cache(model) do |model|
+        if model.valid?(:inserter)
+          true
+        else
+          Rails.logger.debug { "Invalid model: #{model.inspect} #{model.errors.inspect}" }
+          @invalid_handler&.call model
+          false
+        end
       end
+    end
+
+    def with_validation_cache(model, &block)
+      cache_key = [model.class, model.id]
+      return validation_cache[cache_key] if validation_cache.key?(cache_key)
+
+      validation_cache[cache_key] = block.call model
+    end
+
+    def validation_cache
+      @validation_cache ||= {}
     end
 
     def saved(model)

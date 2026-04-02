@@ -18,7 +18,7 @@
     .col-lg-12
       h2.mb-lg= t("lines.form.sections.hierarchy")
       = f.input :company_id, as: :select, :collection => @line_referential.companies.order(Arel.sql('lower(name) asc')), include_blank: true
-      = f.input :secondary_company_ids, :collection => @line_referential.companies.order(Arel.sql('lower(name) asc')), include_blank: false, input_html: { multiple: true, 'data-select2ed': true }, label: Chouette::Line.tmf(:secondary_companies)
+      = f.input :secondary_company_ids, as: :autocomplete_select, collection: @line_referential.companies.order(Arel.sql('lower(name) asc')), label_method: :name, input_html: { multiple: true }, label: Chouette::Line.human_attribute_name(:secondary_companies)
       = f.input :network_id, as: :select, :collection => @line_referential.networks.order(Arel.sql('lower(name) asc')), include_blank: true
 
   .separator.section_separator
@@ -26,7 +26,7 @@
     .col-lg-12 x-data="{ isReferentActivated: #{@line.is_referent} }"
       h2.mb-lg= t("stop_areas.form.sections.referent")
       = f.input :is_referent, as: :switchable_checkbox, input_html: { checked: @line.is_referent, 'x-on:click': 'isReferentActivated = !isReferentActivated' }
-      = f.input :referent_id, as: :select, collection: [f.object.referent_id], input_html: { style: 'width: 100%', 'x-bind:disabled': "isReferentActivated", data: { select2ed_placeholder: Chouette::StopArea.tmf('referent'), select2ed_allow_clear: true, select2_ajax: true, url: (autocomplete_workbench_line_referential_lines_path(@workbench, exclude: @line.id)), initvalue: {id: f.object.referent_id, text: f.object.referent.try(:name)}}}, wrapper_html: { id: 'referent_input', class: 'inline-form', 'x-bind:class': "{ 'disabled': isReferentActivated }" }
+      = f.input :referent_id, as: :ajax_select, collection: [f.object.referent].compact, label_method: :name, placeholder: Chouette::StopArea.human_attribute_name('referent'), input_html: { style: 'width: 100%', 'x-bind:disabled' => 'r = isReferentActivated; if ($el.tomselect) { if (r) { $el.tomselect.disable() } else { $el.tomselect.enable() } }; r', 'data-url': (autocomplete_workbench_line_referential_lines_path(@workbench, exclude: @line.id))}, wrapper_html: { id: 'referent_input', class: 'inline-form', 'x-bind:class': "{ 'disabled': isReferentActivated }" }
 
   .separator.section_separator
   .row

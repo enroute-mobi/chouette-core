@@ -5,7 +5,7 @@
       = f.input :stop_area_provider_id, as: :hidden
       = f.input :name
       = f.input :short_name
-      = f.association :stop_area, as: :select, collection: [f.object.stop_area_id], input_html: { data: { select2_ajax: 'true', url: autocomplete_workbench_stop_area_referential_stop_areas_path(@workbench), initvalue: {id: f.object.stop_area_id, text: f.object.stop_area.try(:formatted_selection_details)}}}
+      = f.association :stop_area, as: :ajax_select, collection: [f.object.stop_area].compact, label_method: :formatted_selection_details, input_html: { 'data-url': autocomplete_workbench_stop_area_referential_stop_areas_path(@workbench) }
       = f.association :stop_area_provider, as: :select, collection: @workbench.stop_area_providers, include_blank: false, label: StopAreaProvider.model_name.human
       = f.input :entry_flag, as: :switchable_checkbox
       = f.input :exit_flag, as: :switchable_checkbox

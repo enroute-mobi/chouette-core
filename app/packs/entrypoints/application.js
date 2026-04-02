@@ -37,6 +37,7 @@ document.addEventListener("DOMContentLoaded", function(event) {
 //---------------------------
 
 import 'entrypoints/inputs/ajax_select'
+import 'entrypoints/inputs/bind_tomselect'
 import "src/flash_messages"
 import "src/chartkick"
 import "src/main_menu"

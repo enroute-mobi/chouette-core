@@ -4,6 +4,8 @@ module Delayed
   # Inspect memory after each job and stop the worker if needed
   class AutoKillPlugin < Plugin
     mattr_accessor :maximum_idle_workers, default: 0
+    mattr_accessor :startup_time, default: Time.zone.now
+    mattr_accessor :startup_cooldown, default: 0
 
     callbacks do |lifecycle|
       lifecycle.after(:perform) do |worker, _|
@@ -21,13 +23,15 @@ module Delayed
 
     class Status
       def must_stop?
-        memory_exceeded? || memory_maps_exceeded? || worker_idle?
+        startup_cooldown_achieved? &&
+          (memory_exceeded? || memory_maps_exceeded? || worker_idle?)
       end
 
       def description
         [
           "#{memory_used}M",
           "#{memory_maps_used} maps",
+          "#{started_since} seconds",
           "#{worker_count} workers / #{worker_count_expected} expected"
         ].join(', ')
       end
@@ -42,6 +46,10 @@ module Delayed
 
       def worker_idle?
         worker_count > worker_count_expected
+      end
+
+      def startup_cooldown_achieved?
+        started_since >= Delayed::AutoKillPlugin.startup_cooldown
       end
 
       def memory_used
@@ -60,6 +68,10 @@ module Delayed
       MAX_MAPS = 1024
       def memory_maps_limit
         MAX_MAPS
+      end
+
+      def started_since
+        @started_since ||= (Time.zone.now - Delayed::AutoKillPlugin.startup_time).to_i
       end
 
       def worker_count

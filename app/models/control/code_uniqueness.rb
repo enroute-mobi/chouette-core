@@ -283,10 +283,6 @@ module Control
                 AND (workgroups.id = #{context.workgroup.id})
             SQL
           end
-
-          def models
-            context.workgroup.send(model_collection)
-          end
         end
 
         class WorkgroupWithoutProvider < Workgroup

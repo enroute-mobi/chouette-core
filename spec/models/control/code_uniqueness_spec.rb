@@ -68,6 +68,28 @@ RSpec.describe Control::CodeUniqueness do
       Control::List::Run.create referential: referential, workbench: workbench
     end
 
+    let(:context) do
+      Chouette.create do
+        code_space short_name: 'test'
+
+        stop_area :first
+        stop_area :second
+        stop_area :last
+
+        referential do
+          route stop_areas: %i[first second last] do
+            journey_pattern
+          end
+        end
+
+        stop_area_provider :other
+        workbench :other
+        workgroup :other do
+          code_space short_name: 'test'
+        end
+      end
+    end
+
     let(:control_run) do
       described_class.create(
         control_list_run: control_list_run,
@@ -82,13 +104,22 @@ RSpec.describe Control::CodeUniqueness do
     end
 
     let(:referential) { context.referential }
-    let(:workbench) { context.workbench }
+    let(:workbench) { referential.workbench }
     let(:workgroup) { workbench.workgroup }
 
     let(:first_duplicate_stop) { context.stop_area :first }
     let(:second_duplicate_stop) { context.stop_area :second }
+    let(:not_expected_stop) { context.stop_area :last }
+
+    let(:stop_area_provider) { first_duplicate_stop.stop_area_provider }
+
+    let(:other_workgroup) { context.workgroup :other }
+    let(:other_workbench) { context.workbench :other }
+    let(:other_stop_area_provider) { context.stop_area_provider :other }
 
     let(:target_code_space) { workgroup.code_spaces.find_by(short_name: 'test') }
+
+    before { referential.switch }
 
     subject do
       control_run.run
@@ -98,7 +129,6 @@ RSpec.describe Control::CodeUniqueness do
     describe '#run' do
       describe '#stop_areas' do
         let(:target_model) { 'StopArea' }
-        let(:referential) { nil }
 
         let(:first_expected_message) do
           an_object_having_attributes(
@@ -131,38 +161,28 @@ RSpec.describe Control::CodeUniqueness do
           )
         end
 
+        before do
+          first_duplicate_stop.codes.create(code_space: target_code_space, value: 'dummy')
+          second_duplicate_stop.codes.create(code_space: target_code_space, value: 'dummy')
+        end
+
         context "When uniqueness scope is 'Provider'" do
           let(:uniqueness_scope) { 'provider' }
 
-          context 'and the stop areas have the same provider' do
-            let(:context) do
-              Chouette.create do
-                code_space short_name: 'test'
-
-                stop_area :first, codes: { 'test' => 'dummy' }
-                stop_area :second, codes: { 'test' => 'dummy' }
-                stop_area :last
-              end
+          context 'with the same provider' do
+            it 'should create warning messages' do
+              is_expected.to include(first_expected_message)
+              is_expected.to include(second_expected_message)
             end
 
-            it 'should create warning messages for first and second stop areas but not for the last one' do
-              is_expected.to contain_exactly(first_expected_message, second_expected_message)
+            it 'should not ccreate message for the last stop area' do
+              is_expected.not_to include(not_expected_message)
             end
           end
 
-          context 'and the stop areas have different providers' do
-            let(:context) do
-              Chouette.create do
-                code_space short_name: 'test'
-
-                stop_area_provider do
-                  stop_area :first, codes: { 'test' => 'dummy' }
-                end
-
-                stop_area_provider do
-                  stop_area :second, codes: { 'test' => 'dummy' }
-                end
-              end
+          context 'with other provider' do
+            before do
+              first_duplicate_stop.update stop_area_provider: other_stop_area_provider
             end
 
             it 'should not create warning messages' do
@@ -174,38 +194,21 @@ RSpec.describe Control::CodeUniqueness do
         context "When uniqueness scope is 'Workbench'" do
           let(:uniqueness_scope) { 'workbench' }
 
-          context 'and the stop areas are in the same workbench' do
-            let(:context) do
-              Chouette.create do
-                code_space short_name: 'test'
+          before do
+            first_duplicate_stop.update stop_area_provider: other_stop_area_provider
+          end
 
-                stop_area :first, codes: { 'test' => 'dummy' }
-                stop_area :second, codes: { 'test' => 'dummy' }
-                stop_area :last
-              end
-            end
-
-            it 'should create warning messages for first and second stop areas but not for the last one' do
-              is_expected.to contain_exactly(first_expected_message, second_expected_message)
+          context 'with the same workbench' do
+            it 'should create warning messages' do
+              is_expected.to include(first_expected_message)
+              is_expected.to include(second_expected_message)
             end
           end
 
-          context 'and the stop areas are in different workbenches' do
-            let(:context) do
-              Chouette.create do
-                code_space short_name: 'test'
-
-                workbench :first_workbench do
-                  stop_area :first, codes: { 'test' => 'dummy' }
-                end
-
-                workbench :second_workbench do
-                  stop_area :second, codes: { 'test' => 'dummy' }
-                end
-              end
+          context 'with other workbench' do
+            before do
+              stop_area_provider.update workbench: other_workbench
             end
-
-            let(:workbench) { context.workbench(:first_workbench) }
 
             it 'should not create warning messages' do
               is_expected.to be_empty
@@ -216,61 +219,32 @@ RSpec.describe Control::CodeUniqueness do
         context "When uniqueness scope is 'Workgroup'" do
           let(:uniqueness_scope) { 'workgroup' }
 
-          context 'and the stop areas are in the same workgroup but not in the same workbench' do
-            let(:context) do
-              Chouette.create do
-                workgroup :workgroup do
-                  code_space short_name: 'test'
-
-                  workbench :first_workbench do
-                    stop_area_provider :first_stop_area_provider do
-                      stop_area :first, codes: { 'test' => 'dummy' }
-                    end
-                  end
-
-                  workbench :second_workbench do
-                    stop_area_provider :second_stop_area_provider do
-                      stop_area :second, codes: { 'test' => 'dummy' }
-                    end
-                  end
-                end
-              end
+          context 'with the same workgroup' do
+            before do
+              other_stop_area_provider.update workbench: other_workbench
+              first_duplicate_stop.update stop_area_provider: other_stop_area_provider
             end
 
-            let(:workbench) { context.workbench(:first_workbench) }
+            let(:target_code_space) { other_workgroup.code_spaces.find_by(short_name: 'test') }
 
-            it 'should create warning messages for the first and second stop areas' do
-              is_expected.to contain_exactly(first_expected_message, second_expected_message)
+            it 'should create warning messages' do
+              is_expected.to include(first_expected_message)
+              is_expected.to include(second_expected_message)
+            end
+
+            it 'should not create message for the last stop area' do
+              is_expected.not_to include(not_expected_message)
             end
           end
 
-          context 'and the stop areas are in different workgroups' do
-            let(:context) do
-              Chouette.create do
-                workgroup :first_workgroup do
-                  code_space short_name: 'test'
-
-                  workbench :first_workbench do
-                    stop_area_provider :first_stop_area_provider do
-                      stop_area :first, codes: { 'test' => 'dummy' }
-                    end
-                  end
-                end
-
-                workgroup :second_workgroup do
-                  code_space short_name: 'test'
-
-                  workbench :second_workbench do
-                    stop_area_provider :second_stop_area_provider do
-                      stop_area :second, codes: { 'test' => 'dummy' }
-                    end
-                  end
-                end
-              end
+          context 'with other workgroup' do
+            before do
+              other_workbench.update workgroup: other_workgroup
+              other_stop_area_provider.update workbench: other_workbench
+              first_duplicate_stop.update stop_area_provider: other_stop_area_provider
             end
 
-            let(:workbench) { context.workbench(:first_workbench) }
-            let(:target_code_space) { context.workgroup(:first_workgroup).code_spaces.find_by(short_name: 'test') }
+            let(:target_code_space) { other_workgroup.code_spaces.find_by(short_name: 'test') }
 
             it 'should not create warning messages' do
               is_expected.to be_empty

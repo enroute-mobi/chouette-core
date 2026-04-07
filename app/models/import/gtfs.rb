@@ -1136,7 +1136,7 @@ class Import::Gtfs < Import::Base
       end
 
       attr_reader :route_decorator
-      delegate :name, :shapes, to: :route_decorator
+      delegate :shapes, to: :route_decorator
 
       def journey_pattern
         Chouette::JourneyPattern.new(journey_pattern_attributes).with_transient(signature: journey_pattern_signature)
@@ -1149,6 +1149,10 @@ class Import::Gtfs < Import::Base
           journey_pattern_stop_points: journey_pattern_stop_points,
           shape_id: chouette_shape_id
         }
+      end
+
+      def name
+        published_name.presence || 'Default'
       end
 
       def published_name

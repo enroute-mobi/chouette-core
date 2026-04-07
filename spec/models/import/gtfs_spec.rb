@@ -1214,15 +1214,15 @@ RSpec.describe Import::Gtfs do
         :name, :published_name
       ]
       expected_attributes = [
-        ["to Bullfrog", "to Bullfrog"],
-        ["to Airport", "to Airport"],
-        ["Inbound", nil],
-        ["Outbound", nil],
-        ["Shuttle", "Shuttle"],
-        ["to Furnace Creek Resort", "to Furnace Creek Resort"],
-        ["to Bullfrog", "to Bullfrog"],
-        ["to Amargosa Valley", "to Amargosa Valley"],
-        ["to Airport", "to Airport"],
+        ['to Bullfrog', 'to Bullfrog'],
+        ['to Airport', 'to Airport'],
+        ['Default', nil],
+        ['Default', nil],
+        ['Shuttle', 'Shuttle'],
+        ['to Furnace Creek Resort', 'to Furnace Creek Resort'],
+        ['to Bullfrog', 'to Bullfrog'],
+        ['to Amargosa Valley', 'to Amargosa Valley'],
+        ['to Airport', 'to Airport']
       ]
       expect(import.referential.journey_patterns.pluck(*defined_attributes)).to match_array(expected_attributes)
     end

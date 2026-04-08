@@ -1,10 +1,7 @@
 module Query
   class FareZone < Base
     def name(value)
-      change_scope(if: value.present?) do |scope|
-        table = scope.arel_table
-        scope.where(table[:name].matches("%#{value}%"))
-      end
+      where(value, :matches, :name)
     end
 
     def fare_provider_id(value)

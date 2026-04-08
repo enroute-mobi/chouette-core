@@ -22,8 +22,10 @@ module Delayed
   end
 end
 
-# Restart worker when too much memory is used
+# Restart worker when too much memory is used / no job is waiting
 Delayed::AutoKillPlugin.maximum_idle_workers = ENV['DELAYED_JOB_MAXIMUM_IDLE_WORKERS'].to_i
+Delayed::AutoKillPlugin.startup_cooldown = ENV['DELAYED_JOB_STARTUP_COOLDOWN'].to_i
+
 Delayed::Worker.plugins << Delayed::AutoKillPlugin
 
 # Enable metrics report

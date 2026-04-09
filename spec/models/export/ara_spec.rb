@@ -287,37 +287,6 @@ RSpec.describe Export::Ara do
         end
       end
 
-      describe '#line_uuids' do
-        subject { decorator.line_uuids }
-
-        context 'when StopArea is not associated to a Line' do
-          it { is_expected.to be_empty }
-        end
-
-        context "when StopArea is associated to a Line identified by 'chouette:Line:uuid:LOC'" do
-          let(:context) do
-            Chouette.create do
-              line :line1, objectid: 'export:Line:uuid1:LOC'
-              line :line2, objectid: 'export:Line:uuid2:LOC'
-              line :line3, objectid: 'non_export:Line:uuid3:LOC'
-
-              stop_area :stop_area
-              stop_area :other_stop_area
-
-              referential lines: %i[line1 line2 line3] do
-                route line: :line1, stop_areas: %i[stop_area other_stop_area]
-                route line: :line3, stop_areas: %i[stop_area other_stop_area]
-              end
-            end
-          end
-          let(:export_scope_lines) { context.workbench.lines.where('objectid ILIKE ?', 'export:%') }
-
-          before { context.referential.switch }
-
-          it { is_expected.to match_array(%w[uuid1]) }
-        end
-      end
-
       describe '#ara_attributes' do
         subject { decorator.ara_attributes }
 
@@ -348,65 +317,136 @@ RSpec.describe Export::Ara do
       end
     end
 
+    subject(:part) { Export::Ara::Stops.new(export_scope: scope, target: target, context: export_context) }
+
     let(:export_context) { double stop_area_referential: context.stop_area_referential }
     let(:target) { [] }
-    subject(:part) do
-      Export::Ara::Stops.new export_scope: scope, target: target, context: export_context
-    end
-
+    let(:scope_lines) { Chouette::Line.none }
     let(:scope) do
       double(
         stop_areas: context.stop_area_referential.stop_areas,
         codes: context.workgroup.codes,
-        lines: Chouette::Line.none
+        lines: scope_lines
       )
     end
 
-    context 'when two Stop Areas are exported' do
-      let(:context) do
-        Chouette.create do
-          stop_area(:first)
-          stop_area(:other)
+    describe 'export!' do
+      subject do
+        part.export!
+        target
+      end
+
+      context 'when two Stop Areas are exported' do
+        let(:context) do
+          Chouette.create do
+            code_space :test, short_name: 'test'
+
+            stop_area(:first)
+            stop_area(:other)
+          end
+        end
+
+        let(:code_space) { context.code_space(:test) }
+        let(:stop_area) { context.stop_area(:first) }
+        let(:other_stop_area) { context.stop_area(:other) }
+
+        describe 'the Ara File target' do
+          it { is_expected.to match_array([an_instance_of(Ara::File::StopArea)] * 2) }
+
+          context "when one of the Stop Area has a registration number 'dummy'" do
+            before { stop_area.update registration_number: 'dummy' }
+
+            it { is_expected.to include(an_object_having_attributes(codes: { 'external' => 'dummy' })) }
+          end
+
+          context "when one of the Stop Area has a code 'test': 'dummy" do
+            before { stop_area.codes.create!(code_space: code_space, value: 'dummy') }
+
+            it do
+              is_expected.to include(
+                an_object_having_attributes(
+                  codes: { 'test' => 'dummy', 'external' => stop_area.objectid }
+                )
+              )
+            end
+          end
+
+          context "when all Stop Areas has a code 'test':'dummy" do
+            before do
+              scope.stop_areas.each do |stop_area|
+                stop_area.codes.create! code_space: code_space, value: 'dummy'
+              end
+            end
+
+            it { is_expected.to_not include(an_object_having_attributes(codes: { 'test' => 'dummy' })) }
+          end
         end
       end
 
-      let(:stop_area) { context.stop_area(:first) }
-      let(:other_stop_area) { context.stop_area(:other) }
+      describe '#line_ids' do
+        let(:scope_lines) { context.referential.lines }
 
-      let(:code_space) { context.workgroup.code_spaces.create! short_name: 'test' }
+        context 'when StopArea is not associated to a Line' do
+          let(:context) do
+            Chouette.create do
+              stop_area :stop_area1, name: 'Stop Area 1'
+              stop_area :stop_area2, name: 'Stop Area 2'
 
-      describe 'the Ara File target' do
-        subject do
-          part.export!
-          target
-        end
-
-        it { is_expected.to match_array([an_instance_of(Ara::File::StopArea)] * 2) }
-
-        context "when one of the Stop Area has a registration number 'dummy'" do
-          before { stop_area.update registration_number: 'dummy' }
-          it { is_expected.to include(an_object_having_attributes(codes: { 'external' => 'dummy' })) }
-        end
-
-        context "when one of the Stop Area has a code 'test': 'dummy" do
-          before { stop_area.codes.create!(code_space: code_space, value: 'dummy') }
+              referential
+            end
+          end
 
           it do
-            is_expected.to include(
-              an_object_having_attributes(
-                codes: { 'test' => 'dummy', 'external' => stop_area.objectid }
-              )
+            is_expected.to contain_exactly(
+              have_attributes(name: 'Stop Area 1', line_ids: []),
+              have_attributes(name: 'Stop Area 2', line_ids: [])
             )
           end
         end
 
-        context "when all Stop Areas has a code 'test':'dummy" do
-          before do
-            scope.stop_areas.each do |stop_area|
-              stop_area.codes.create! code_space: code_space, value: 'dummy'
+        context "when StopArea is associated to a Line identified by 'chouette:Line:uuid:LOC'" do
+          let(:context) do
+            Chouette.create do
+              line :line0, objectid: 'export:Line:uuid0:LOC'
+              line :line1, objectid: 'export:Line:uuid1:LOC'
+              line :line2, objectid: 'export:Line:uuid2:LOC'
+              line :line3, objectid: 'non_export:Line:uuid3:LOC'
+              line :line4, objectid: 'export:Line:uuid4:LOC'
+
+              stop_area :stop_area1, name: 'Stop Area 1'
+              stop_area :stop_area2, name: 'Stop Area 2'
+
+              referential lines: %i[line0 line1 line2 line3 line4] do
+                route line: :line0, stop_areas: %i[stop_area1 stop_area2]
+                route line: :line0, stop_areas: %i[stop_area1 stop_area2]
+                route line: :line1, stop_areas: %i[stop_area1]
+                route line: :line2, stop_areas: %i[stop_area2]
+                route line: :line3, stop_areas: %i[stop_area1 stop_area2]
+              end
             end
           end
-          it { is_expected.to_not include(an_object_having_attributes(codes: { 'test' => 'dummy' })) }
+
+          before { context.referential.switch }
+
+          context 'when all lines can be exported' do
+            it do
+              is_expected.to include(
+                have_attributes(name: 'Stop Area 1', line_ids: match_array(%w[uuid0 uuid1 uuid3])),
+                have_attributes(name: 'Stop Area 2', line_ids: match_array(%w[uuid0 uuid2 uuid3]))
+              )
+            end
+          end
+
+          context 'when not all lines can be exported' do
+            let(:scope_lines) { context.workbench.lines.where('objectid ILIKE ?', 'export:%') }
+
+            it do
+              is_expected.to include(
+                have_attributes(name: 'Stop Area 1', line_ids: match_array(%w[uuid0 uuid1])),
+                have_attributes(name: 'Stop Area 2', line_ids: match_array(%w[uuid0 uuid2]))
+              )
+            end
+          end
         end
       end
     end

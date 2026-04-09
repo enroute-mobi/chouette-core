@@ -323,8 +323,20 @@ class Export::Ara < Export::Base
     delegate :stop_areas, to: :export_scope
 
     def export!
-      stop_areas.includes(:parent, :referent, :lines, codes: :code_space).find_each do |stop_area|
-        target << Decorator.new(stop_area, code_provider: code_provider, export_scope: export_scope).ara_model
+      stop_areas.includes(:parent, :referent, codes: :code_space).find_in_batches do |batch|
+        # preload only lines in #export_scope
+        ::ActiveRecord::Associations::Preloader::ThroughAssociation.new(
+          Chouette::Line,
+          batch,
+          Chouette::StopArea.reflect_on_association(:lines),
+          nil,
+          Chouette::Line.where(id: export_scope.lines).distinct,
+          true
+        ).run
+
+        batch.each do |stop_area|
+          target << Decorator.new(stop_area, code_provider: code_provider, export_scope: export_scope).ara_model
+        end
       end
     end
 
@@ -363,7 +375,7 @@ class Export::Ara < Export::Base
       end
 
       def line_uuids
-        export_scope.lines.where(id: line_ids).map { |line| line.get_objectid&.local_id }
+        lines.map { |line| line.get_objectid&.local_id }.sort
       end
 
       def parent_uuid

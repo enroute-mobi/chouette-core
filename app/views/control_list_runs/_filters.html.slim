@@ -1,9 +1,2 @@
 = simple_search_for @search, workbench_control_list_runs_path(@workbench) do |f|
-  = f.row
-    = f.input :name, label: false, width: 2, placeholder: I18n.t('control_list_run.filters.name')
-  = f.row
-    = f.input :statuses, as: :autocomplete_select, collection: @search.candidate_statuses.map(&:slug), label_method: lambda{|slug| operation_status(slug, verbose: true) }, input_html: { multiple: true, style: 'width: 100%' }, width: 2
-    = f.input :referential_name, width: 2
-  = f.row
-    = f.input :start_date, as: :date_picker, width: 2
-    = f.input :end_date, as: :date_picker, width: 2
+  = render 'control_list_runs/control_list_run_filters', f: f

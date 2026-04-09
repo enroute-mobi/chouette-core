@@ -67,6 +67,7 @@ module Control
       store :options, coder: JSON
 
       delegate :referential, :workbench, to: :control_list_run
+      delegate :workgroup, to: :workbench, allow_nil: true
       delegate :validity_period, to: :referential, allow_nil: true
 
       def context

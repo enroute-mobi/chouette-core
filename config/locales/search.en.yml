@@ -12,7 +12,6 @@ en:
   activemodel:
     attributes:
       search:
-        rule_type: Action
         saved_name: Saved Search Name
         saved_description: Description
         statuses: Status
@@ -76,6 +75,7 @@ en:
         export_type: "Export Type"
         file: "Filename"
         criticity: "Criticity"
+        rule_type: Action
         chart:
           group_by_attribute:
             sub_type:

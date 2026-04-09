@@ -375,7 +375,7 @@ class Export::Ara < Export::Base
       end
 
       def line_uuids
-        lines.map { |line| line.get_objectid&.local_id }.sort
+        lines.map { |line| line.get_objectid&.local_id }
       end
 
       def parent_uuid
@@ -570,7 +570,7 @@ class Export::Ara < Export::Base
     delegate :lines, to: :export_scope
 
     def export!
-      lines.includes(codes: :code_space).find_each do |line|
+      lines.includes(:referent, codes: :code_space).find_each do |line|
         target << Decorator.new(line, code_provider: code_provider).ara_model
       end
     end

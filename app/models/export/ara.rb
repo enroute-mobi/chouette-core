@@ -50,10 +50,10 @@ class Export::Ara < Export::Base
       daily_scope = DailyScope.new self, day
 
       Rails.logger.tagged(day) do
-        target.model_name(day) do |model_name|
+        target.model_date(day) do |model_date|
           # For each day, each kind of model is exported
           parts.each do |part|
-            part.new(context: Context.new(self), export_scope: daily_scope, target: model_name).export
+            part.new(context: Context.new(self), export_scope: daily_scope, target: model_date).export
           end
         end
       end
@@ -733,7 +733,7 @@ class Export::Ara < Export::Base
           codes: ara_codes,
           line_id: line.get_objectid.local_id,
           direction_type: route.wayback,
-          attributes: {
+          raw_attributes: {
             "VehicleMode": line.transport_mode
           },
           aimed_stop_visit_count: aimed_stop_visit_count

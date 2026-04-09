@@ -1,6 +1,6 @@
 GIT
   remote: https://bitbucket.org/enroute-mobi/ara-ruby.git
-  revision: 5117614f12525eb9dce9f9b6fda748d7d4cd0427
+  revision: 8dcf72b189ec2cd894f3f21ceeba843ad9144c8c
   specs:
     ara (3.5.5)
       faraday

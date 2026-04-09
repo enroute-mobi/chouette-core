@@ -773,7 +773,7 @@ RSpec.describe Export::Ara do
         end
 
         it 'contains a Vehicle journey having a VehicleMode attribute' do
-          expect(subject.first.attributes).to eq({ 'VehicleMode': 'bus' })
+          expect(subject.first.raw_attributes).to eq({ 'VehicleMode': 'bus' })
         end
       end
     end

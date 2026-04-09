@@ -14,6 +14,16 @@ describe Chouette::JourneyPattern, type: :model do
 
   before { referential.switch }
 
+  describe 'checksum_attributes' do
+    subject { journey_pattern.checksum_attributes }
+
+    context 'when a Booking Arragnement 42 is associated' do
+      before { journey_pattern.booking_arrangement_id = 42 }
+
+      it { is_expected.to satisfy("have a last attribute 'b42'") { |attributes| attributes.last == "b42" } }
+    end
+  end
+
   describe 'checksum' do
     it_behaves_like 'checksum support'
 

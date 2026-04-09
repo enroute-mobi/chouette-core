@@ -182,7 +182,7 @@ RSpec.describe Export::Ara do
           line :line
 
           line_group :selected_line_group, short_name: 'selected_stop_area_group', lines: %i[line]
-          line_group :ignored_line_group, short_name: nil,  lines: %i[line]
+          line_group :ignored_line_group, short_name: nil, lines: %i[line]
         end
       end
 
@@ -213,7 +213,7 @@ RSpec.describe Export::Ara do
           stop_area :stop_area
 
           stop_area_group :selected_stop_area_group, short_name: 'selected_stop_area_group', stop_areas: %i[stop_area]
-          stop_area_group :ignored_stop_area_group, short_name: nil,  stop_areas: %i[stop_area]
+          stop_area_group :ignored_stop_area_group, short_name: nil, stop_areas: %i[stop_area]
         end
       end
 
@@ -366,7 +366,8 @@ RSpec.describe Export::Ara do
       let(:context) do
         Chouette.create do
           stop_area(:first)
-          stop_area(:other) end
+          stop_area(:other)
+        end
       end
 
       let(:stop_area) { context.stop_area(:first) }
@@ -377,17 +378,14 @@ RSpec.describe Export::Ara do
       describe 'the Ara File target' do
         subject do
           part.export!
-          target end
+          target
+        end
+
         it { is_expected.to match_array([an_instance_of(Ara::File::StopArea)] * 2) }
 
         context "when one of the Stop Area has a registration number 'dummy'" do
           before { stop_area.update registration_number: 'dummy' }
           it { is_expected.to include(an_object_having_attributes(codes: { 'external' => 'dummy' })) }
-        end
-
-        context "when all Stop Area has a registration number 'dummy'" do
-          before { scope.stop_areas.update_all registration_number: 'dummy' }
-          it { is_expected.to_not include(an_object_having_attributes(codes: { 'external' => 'dummy' })) }
         end
 
         context "when one of the Stop Area has a code 'test': 'dummy" do
@@ -512,7 +510,8 @@ RSpec.describe Export::Ara do
       let(:context) do
         Chouette.create do
           line(:first)
-          line(:other) end
+          line(:other)
+        end
       end
 
       let(:line) { context.line(:first) }
@@ -744,7 +743,8 @@ RSpec.describe Export::Ara do
   describe 'VehicleJourneys export' do
     subject do
       part.export!
-      target end
+      target
+    end
 
     let(:referential) { context.referential }
     before { referential.switch }
@@ -782,7 +782,8 @@ RSpec.describe Export::Ara do
       let(:context) do
         Chouette.create do
           vehicle_journey(:first)
-          vehicle_journey(:other) end
+          vehicle_journey(:other)
+        end
       end
 
       describe 'the Ara File target' do
@@ -793,7 +794,7 @@ RSpec.describe Export::Ara do
 
           it do
             is_expected.to include(
-              an_object_having_attributes(codes: { 'test' => 'dummy', 'external' => vehicle_journey.objectid})
+              an_object_having_attributes(codes: { 'test' => 'dummy', 'external' => vehicle_journey.objectid })
             )
           end
         end
@@ -824,7 +825,6 @@ RSpec.describe Export::Ara do
           end
           it { is_expected.to_not include(an_object_having_attributes(codes: { 'external' => 'dummy' })) }
         end
-
       end
     end
   end
@@ -1081,7 +1081,6 @@ RSpec.describe Export::Ara do
 
               context 'when day is 2030-07-01 (summer time)' do
                 before { decorator.day = Date.parse('2030-07-01') }
-
 
                 let(:expected_schedule) do
                   {

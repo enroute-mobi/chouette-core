@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Chouette
   class ActiveRecord < ::ApplicationModel
     include NilIfBlank
@@ -20,6 +22,8 @@ module Chouette
     def self.model_name
       ActiveModel::Name.new self, Chouette, self.name.demodulize
     end
+
+    DEFAULT_NAME = 'Default'
 
     # TODO: Can we remove this?
     # class << self

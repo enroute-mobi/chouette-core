@@ -30,6 +30,10 @@ module Chouette
 
     enumerize :wayback, in: [OUTBOUND, INBOUND], default: OUTBOUND, scope: true
 
+    def self.default_names
+      @default_names ||= [DEFAULT_NAME, *wayback.values.map(&:capitalize)]
+    end
+
     def self.nullable_attributes
       [:published_name, :name, :wayback]
     end

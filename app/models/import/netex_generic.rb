@@ -245,8 +245,6 @@ module Import
     class ResourceDecorator < Import::Decorator
       include Decorate
 
-      DEFAULT_NAME = 'Default'
-
       attr_accessor :code_builder, :scheduled_stop_points,
                     :override_internal_identifiers,
                     :line_provider, :stop_area_provider # TODO: waiting for lookup whole integration
@@ -254,7 +252,7 @@ module Import
       alias override_internal_identifiers? override_internal_identifiers
 
       def default_name
-        DEFAULT_NAME
+        ::Chouette::ActiveRecord::DEFAULT_NAME
       end
 
       def chouette_name

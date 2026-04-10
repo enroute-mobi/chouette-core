@@ -137,10 +137,7 @@ module Macro
 
         def blank_values
           @blank_values = [nil, ''].tap do |values|
-            if attribute == 'name'
-              values << ::Import::NetexGeneric::ResourceDecorator::DEFAULT_NAME
-              values.concat(::Chouette::Route.wayback.values.map(&:capitalize))
-            end
+            values.concat(::Chouette::Route.default_names) if attribute == 'name'
           end
         end
       end

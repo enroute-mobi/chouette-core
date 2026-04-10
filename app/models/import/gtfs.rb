@@ -931,9 +931,19 @@ class Import::Gtfs < Import::Base
       shape = journey_pattern.shape
       return unless shape
 
-      shape.name = journey_pattern.name if shape.name.blank?
+      shape.name = compute_shape_name(journey_pattern) if shape.name.blank?
       shape.waypoints = journey_pattern.waypoints unless shape.waypoints.any?
       shape.save
+    end
+
+    def compute_shape_name(journey_pattern)
+      if journey_pattern.name.present? && journey_pattern.name != ::Chouette::JourneyPattern::DEFAULT_NAME
+        journey_pattern.name
+      elsif journey_pattern.route.name.present? && !::Chouette::Route.default_names.include?(journey_pattern.route.name)
+        "#{journey_pattern.route.name} #{journey_pattern.route.wayback.capitalize}"
+      else
+        "#{journey_pattern.route.line.name} #{journey_pattern.route.wayback.capitalize}"
+      end
     end
 
     def import!
@@ -1152,7 +1162,7 @@ class Import::Gtfs < Import::Base
       end
 
       def name
-        published_name.presence || 'Default'
+        published_name.presence || ::Chouette::JourneyPattern::DEFAULT_NAME
       end
 
       def published_name

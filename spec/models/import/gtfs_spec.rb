@@ -1896,6 +1896,185 @@ RSpec.describe Import::Gtfs do
   end
 end
 
+RSpec.describe Import::Gtfs::RouteJourneyPatterns do
+  subject(:part) { described_class.new(import) }
+
+  describe '#improve_shape' do
+    subject { part.improve_shape(journey_pattern) }
+
+    let(:import) { instance_double(Import::Gtfs) }
+    let(:journey_pattern) { context.journey_pattern }
+
+    context 'when journey pattern has no shape' do
+      let(:context) do
+        Chouette.create do
+          journey_pattern name: 'Some Journey Pattern'
+        end
+      end
+
+      it { expect { subject }.not_to raise_error }
+    end
+
+    context 'when journey pattern has a shape' do
+      let(:shape) { context.shape(:shape) }
+
+      context 'when shape has no name' do
+        context 'when journey pattern has a non-default name' do
+          let(:context) do
+            Chouette.create do
+              shape :shape, name: nil
+              journey_pattern name: 'Some Journey Pattern', shape: :shape
+            end
+          end
+
+          it { expect { subject }.to change { shape.reload.name }.from(be_nil).to('Some Journey Pattern') }
+
+          context 'when shape has already been changed by import' do
+            before { part.improved_shape_ids << shape.id }
+
+            it { expect { subject }.not_to change { shape.reload.name }.from(be_nil) }
+          end
+        end
+
+        context 'when journey pattern has a default name' do
+          context 'when route has a non-default name' do
+            %i[inbound outbound].each do |wayback|
+              context "when route is #{wayback}" do
+                let(:context) do
+                  Chouette.create do
+                    shape :shape, name: nil
+                    route name: 'Some Route', wayback: wayback do
+                      journey_pattern name: 'Default', shape: :shape
+                    end
+                  end
+                end
+
+                it do
+                  expect { subject }.to change { shape.reload.name }.from(be_nil).to("Some Route #{wayback.capitalize}")
+                end
+              end
+            end
+          end
+
+          context 'when route has a default name' do
+            %i[inbound outbound].each do |wayback|
+              context "when route is #{wayback}" do
+                let(:context) do
+                  Chouette.create do
+                    line :line, name: 'Some Line'
+                    shape :shape, name: nil
+                    referential lines: %i[line] do
+                      route line: :line, name: wayback.capitalize, wayback: wayback do
+                        journey_pattern name: 'Default', shape: :shape
+                      end
+                    end
+                  end
+                end
+
+                it do
+                  expect { subject }.to change { shape.reload.name }.from(be_nil).to("Some Line #{wayback.capitalize}")
+                end
+              end
+            end
+          end
+        end
+      end
+
+      context 'when shape already has a name' do
+        let(:context) do
+          Chouette.create do
+            shape :shape, name: 'Some Shape'
+            journey_pattern name: 'Some Journey Pattern', shape: :shape
+          end
+        end
+
+        it { expect { subject }.not_to change { shape.reload.name }.from('Some Shape') }
+      end
+
+      context 'with waypoints' do
+        context 'when shape has no waypoints' do
+          let(:context) do
+            Chouette.create do
+              stop_area :stop_area1, name: 'Stop Area 1', longitude: 0.0, latitude: 47.0
+              stop_area :stop_area2, name: 'Stop Area 2', longitude: 1.0, latitude: 48.0
+              shape :shape
+
+              route with_stops: false do
+                stop_point stop_area: :stop_area1
+                stop_point stop_area: :stop_area2
+                journey_pattern shape: :shape
+              end
+            end
+          end
+
+          it do
+            expect { subject }.to change { shape.reload.waypoints }.from(be_empty).to(
+              match(
+                [
+                  have_attributes(
+                    name: 'Stop Area 1',
+                    position: 0,
+                    waypoint_type: 'waypoint',
+                    coordinates: [0.0, 47.0],
+                    stop_area: context.stop_area(:stop_area1)
+                  ),
+                  have_attributes(
+                    name: 'Stop Area 2',
+                    position: 1,
+                    waypoint_type: 'waypoint',
+                    coordinates: [1.0, 48.0],
+                    stop_area: context.stop_area(:stop_area2)
+                  )
+                ]
+              )
+            )
+          end
+        end
+
+        context 'when shape already has waypoints' do
+          let(:context) do
+            Chouette.create do
+              stop_area :stop_area1, name: 'Stop Area 1', longitude: 0.0, latitude: 47.0
+              stop_area :stop_area2, name: 'Stop Area 2', longitude: 1.0, latitude: 48.0
+              shape :shape
+
+              route with_stops: false do
+                stop_point stop_area: :stop_area1
+                stop_point stop_area: :stop_area2
+                journey_pattern shape: :shape
+              end
+            end.tap do |context|
+              context.shape(:shape).waypoints.create!(
+                name: 'Shape waypoint',
+                position: 0,
+                waypoint_type: 'waypoint',
+                coordinates: [42.0, 42.0],
+                stop_area: context.stop_area(:stop_area2)
+              )
+            end
+          end
+
+          it do
+            expect { subject }.not_to change { shape.reload.waypoints.map(&:attributes) }.from(
+              match(
+                [
+                  include(
+                    'name' => 'Shape waypoint',
+                    'position' => 0,
+                    'waypoint_type' => 'waypoint',
+                    'coordinates' => [42.0, 42.0],
+                    'stop_area_id' => context.stop_area(:stop_area2).id
+                  )
+                ]
+              )
+            )
+          end
+        end
+      end
+    end
+  end
+end
+
 RSpec.describe Import::Gtfs::RouteJourneyPatterns::RouteDecorator do
   subject(:route_decorator) do
     described_class.new(route_description, journey_pattern_descriptions, lookup: lookup)

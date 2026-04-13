@@ -253,8 +253,12 @@ module Import
 
       alias override_internal_identifiers? override_internal_identifiers
 
+      def default_name
+        DEFAULT_NAME
+      end
+
       def chouette_name
-        name || DEFAULT_NAME
+        name || default_name
       end
 
       def chouette_attributes
@@ -777,6 +781,15 @@ module Import
           errors.add :route_without_id unless id.present?
         end
 
+        def default_name
+          case direction_type
+          when *::Chouette::Route.wayback.values
+            direction_type.capitalize
+          else
+            super
+          end
+        end
+
         def chouette_line
           return @chouette_line if defined?(@chouette_line)
 
@@ -1041,6 +1054,7 @@ module Import
               lookup: lookup,
               stops_cluster: stops_cluster,
               chouette_line: chouette_line,
+              name: chouette_name,
               wayback: wayback,
               published_name: direction_name,
               destination_displays: destination_displays,
@@ -1179,6 +1193,7 @@ module Import
         attr_accessor :routes_decorator,
                       :stops_cluster,
                       :chouette_line,
+                      :name,
                       :wayback,
                       :published_name,
                       :destination_displays,
@@ -1190,7 +1205,7 @@ module Import
 
         def route_attributes
           {
-            name: chouette_name,
+            name: name,
             wayback: wayback,
             published_name: published_name,
             stop_points: stop_points,

@@ -4,7 +4,7 @@ module Export
   class Part < Operation::Part
     alias export operation
 
-    delegate :target, :export_scope, :workgroup, :code_provider, :cache_key_provider, to: :export
+    delegate :target, :export_scope, :workgroup, :code_provider, :cache_key_provider, :has_feature?, to: :export
 
     def decorate(model, **attributes)
       decorator_class = attributes.delete(:with) || default_decorator_class

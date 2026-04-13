@@ -21,3 +21,28 @@ RSpec.describe ReverseGeocode::Config do
     end
   end
 end
+
+RSpec.describe ReverseGeocode::Resolver::Cache do
+  subject(:cache_resolver) { described_class.new(next_instance) }
+  let(:next_instance) { nil }
+
+  describe '#cache' do
+    subject { cache_resolver.cache }
+
+    context 'when next_instance is TomTom' do
+      let(:next_instance) { ReverseGeocode::Resolver::TomTom.new }
+
+      it 'uses a tomtom specific namespace' do
+        expect(subject.namespace).to eq('reverse-geocode-tom_tom')
+      end
+    end
+
+    context 'when next_instance is FrenchBAN' do
+      let(:next_instance) { ReverseGeocode::Resolver::FrenchBAN.new }
+
+      it 'uses a french_ban specific namespace' do
+        expect(subject.namespace).to eq('reverse-geocode-french_ban')
+      end
+    end
+  end
+end

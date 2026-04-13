@@ -134,7 +134,10 @@ module ReverseGeocode
       mattr_accessor :time_to_live, default: 30.days
 
       def cache
-        @cache ||= WithNamespace.new Rails.cache, 'reverse-geocode'
+        @cache ||= begin
+          namespace = "reverse-geocode-#{@next_instance.class.name.demodulize.underscore}"
+          WithNamespace.new Rails.cache, namespace
+        end
       end
 
       # Adds a namespace to read/write method invocations

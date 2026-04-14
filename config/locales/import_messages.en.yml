@@ -69,6 +69,7 @@ en:
     passing_time_both_flexible_and_non_flexible: "The NeTEx ServiceJourney '%{resource_id}' contains a passing time with both flexible and non-flexible times"
     passing_times_non_chronological: "The NeTEx ServiceJourney '%{resource_id}' contains non chronological passing times"
     search_no_results_for_filter: "No messages found for this filter"
+    invalid_vehicle_journey_stop_assignment: "The NeTEx VehicleJourneyStopAssignment '%{resource_id}' is invalid"
     gtfs:
       agencies:
         imported: "%{count} agency(ies) imported"

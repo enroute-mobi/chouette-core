@@ -1897,7 +1897,9 @@ module Import
           decorated_assignment = decorate(stop_assignment, referential: referential)
 
           unless decorated_assignment.valid?
-            Rails.logger.info { "Invalid VehicleJourneyStopAssignment: #{decorated_assignment.inspect} "}
+            Rails.logger.info do
+              "Invalid VehicleJourneyStopAssignment: #{decorated_assignment.inspect} scheduled_stop_point exists: #{decorated_assignment.scheduled_stop_point.present?}, stop_area exists: #{decorated_assignment.stop_area.present?}"
+            end
             create_message :ancestor_associated_route_not_found
 
             next
@@ -1942,34 +1944,6 @@ module Import
           referential.vehicle_journey_at_stops.joins(:vehicle_journey)
             .merge(referential.vehicle_journeys.by_code(code_space, vehicle_journey_codes))
             .where(stop_point_id: scheduled_stop_point.stop_point_ids)
-        end
-
-        def manage_netex_notice_assignments
-          return if @line_notice_ids && @vehicle_journey_footnote_relationships
-
-          line_notice_ids = []
-          vehicle_journey_footnote_relationships = []
-          notice_refs.each do |notice_ref|
-            ref = notice_ref.ref
-            next unless ref
-
-            footnote_id = index_footnotes[ref]
-            if footnote_id
-              vehicle_journey_footnote_relationships << Chouette::VehicleJourneyFootnoteRelationship.new(
-                footnote_id: footnote_id
-              )
-            else
-              line_notice = lookup.line_notices.find(ref) if lookup
-              if line_notice
-                line_notice_ids << line_notice.id
-              else
-                errors.add :notice_not_found
-              end
-            end
-          end
-
-          @line_notice_ids = line_notice_ids
-          @vehicle_journey_footnote_relationships = vehicle_journey_footnote_relationships
         end
       end
     end

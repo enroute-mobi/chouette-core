@@ -1614,9 +1614,19 @@ class Export::NetexGeneric < Export::Base
       end
     end
 
+    def decorator_attributes
+      { deprecated_netex_route_name: deprecated_netex_route_name? }
+    end
+
+    def deprecated_netex_route_name?
+      has_feature?('deprecated_netex_route_name')
+    end
+
     class Decorator < ModelDecorator
 
       delegate :line_routing_constraint_zones, to: :line
+
+      attr_accessor :deprecated_netex_route_name
 
       def netex_attributes
         super.merge(
@@ -1635,6 +1645,11 @@ class Export::NetexGeneric < Export::Base
       end
 
       def netex_name
+        # Deprecated logic by CHOUETTE-5351
+        if deprecated_netex_route_name
+          return published_name.presence || name
+        end
+
         name
       end
 

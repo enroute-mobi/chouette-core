@@ -251,6 +251,54 @@ RSpec.describe Control::CodeUniqueness do
             end
           end
         end
+
+        context "when context is a Saved Search" do
+          let(:saved_search) do
+            workbench.saved_searches.create!(
+              name: 'Wrong',
+              search_attributes: { text: 'Wrong' },
+              search_type: 'Search::StopArea'
+            )
+          end
+
+          let(:saved_search_context_run) do
+            Control::Context::SavedSearch::Run.new(
+              options: { saved_search_id: saved_search.id },
+              control_list_run: control_list_run,
+              name: 'Context'
+            )
+          end
+
+          before do
+            allow(control_run).to receive(:context).and_return(saved_search_context_run)
+            first_duplicate_stop.update!(name: 'Wrong 1')
+            second_duplicate_stop.update!(name: 'Wrong 2')
+          end
+
+          context 'with Provider uniqueness scope' do
+            let(:uniqueness_scope) { 'provider' }
+
+            it 'should create warning messages' do
+              is_expected.to contain_exactly(first_expected_message, second_expected_message)
+            end
+          end
+
+          context 'with Workbench uniqueness scope' do
+            let(:uniqueness_scope) { 'workbench' }
+
+            it 'should create warning messages' do
+              is_expected.to contain_exactly(first_expected_message, second_expected_message)
+            end
+          end
+
+          context 'with Workgroup uniqueness scope' do
+            let(:uniqueness_scope) { 'workgroup' }
+
+            it 'should create warning messages' do
+              is_expected.to contain_exactly(first_expected_message, second_expected_message)
+            end
+          end
+        end
       end
     end
   end

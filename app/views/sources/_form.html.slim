@@ -4,7 +4,7 @@
       = f.input :name
       = f.input :url
       = f.input :downloader_type, as: :select, include_blank: false, input_html: { 'x-model': 'downloader_type' }
-      template[x-if="downloader_type == 'authorization'" x-init="use_standard_authorization_header = $el.querySelector('input[type=checkbox]').checked"]
+      template[x-if="downloader_type == 'authorization'"]
         div
           = f.input :downloader_option_use_standard_authorization_header, as: :switchable_checkbox, input_html: { 'x-on:click': 'use_standard_authorization_header = !use_standard_authorization_header' }
           = f.input :downloader_option_raw_authorization, as: :toggable_password, input_html: { value: f.object.downloader_option_raw_authorization }

@@ -791,23 +791,29 @@ RSpec.describe Export::NetexGeneric do
       describe '#netex_name' do
         subject { decorator.netex_name }
 
-        context 'when Route name is "dummy"' do
-          before { route.name = 'dummy' }
+        context 'when Route name is "Route Name"' do
+          before { route.name = 'Route Name' }
 
           it { is_expected.to eq(route.name) }
+
+          context 'when Route published name is defined' do
+            before { route.published_name = 'other' }
+
+            it { is_expected.to eq(route.name) }
+          end
         end
 
         context 'when Decorator uses deprecated_netex_route_name' do
           before { decorator.deprecated_netex_route_name = true }
 
-          context 'when Route published name is "dummy"' do
-            before { route.published_name = 'dummy' }
+          context 'when Route published name is "Route Direction Name"' do
+            before { route.published_name = 'Route Direction Name' }
 
             it { is_expected.to eq(route.published_name) }
           end
 
-          context 'when Route published_name is not present and name is "dummy"' do
-            before { route.name = 'dummy' }
+          context 'when Route published_name is not present and name is "Route Name"' do
+            before { route.name = 'Route Name' }
 
             it { is_expected.to eq(route.name) }
           end

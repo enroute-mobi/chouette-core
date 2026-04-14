@@ -83,7 +83,7 @@ class ZipService
   def open_new_output entry_key
     @current_key    = entry_key
     # First piece of the solution, use internal way to create a Zip::OutputStream
-    @current_output   = Zip::OutputStream.new(StringIO.new(''), true, nil)
+    @current_output   = Zip::OutputStream.new(StringIO.new(''), stream: true)
     @current_spurious = Set.new
     @foreign_lines    = []
     @current_calendar_is_missing = true

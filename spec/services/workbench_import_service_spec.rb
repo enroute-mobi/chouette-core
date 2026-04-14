@@ -74,7 +74,7 @@ RSpec.describe WorkbenchImportService, type: [:request] do
   end
 
   context 'with corrupt zip file' do
-    let(:downloaded_zip_data) { '' }
+    let(:downloaded_zip_data) { 'CORRUPT' }
 
     it 'should make the import failed and write message key corrupt_zip_file' do
       expect{ worker.perform(workbench_import.id) }.to change{ workbench_import.messages.count }.by(1)

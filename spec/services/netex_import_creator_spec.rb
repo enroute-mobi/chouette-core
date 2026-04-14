@@ -39,7 +39,7 @@ RSpec.describe NetexImportCreator do
     XML
 
     file = Tempfile.new(['netex-idfm', '.zip'])
-    Zip::File.open(file, Zip::File::CREATE) do |zipfile|
+    Zip::File.open(file, create: true) do |zipfile|
       zipfile.get_output_stream(File.join(directory_name, "calendriers.xml")) do |f|
         f.write calendars_xml
       end

@@ -23,13 +23,14 @@ GIT
 
 GIT
   remote: https://bitbucket.org/enroute-mobi/gtfs.git
-  revision: 3e7ca67508ab50b530c1edbd8f8e55bb38facfac
+  revision: 36633e6bd1fdb3879a44bc2dd03c52cff24cfc57
+  branch: CHOUETTE-5412-use-a-lazy-enumerator-before-using-offline-sorter
   specs:
     gtfs (0.3.6)
       csv
       msgpack
       offline-sort
-      rubyzip (< 3)
+      rubyzip (>= 3)
 
 GIT
   remote: https://bitbucket.org/enroute-mobi/has_array_of.git
@@ -436,13 +437,13 @@ GEM
       googleauth (~> 1.9)
       mini_mime (~> 1.0)
     google-logging-utils (0.2.0)
+    google-protobuf (4.33.4)
+      bigdecimal
+      rake (>= 13)
     google-protobuf (4.33.4-arm64-darwin)
       bigdecimal
       rake (>= 13)
     google-protobuf (4.33.4-x86_64-darwin)
-      bigdecimal
-      rake (>= 13)
-    google-protobuf (4.33.4)
       bigdecimal
       rake (>= 13)
     google-protobuf (4.33.4-x86_64-linux-gnu)
@@ -860,7 +861,7 @@ GEM
     ruby-statistics (4.1.0)
     ruby-xxHash (0.4.0.2)
     ruby2_keywords (0.0.5)
-    rubyzip (2.4.1)
+    rubyzip (3.2.2)
     rugged (1.9.0)
     sassc (2.4.0)
       ffi (~> 1.9)

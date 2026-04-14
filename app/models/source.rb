@@ -157,10 +157,17 @@ class Source < ApplicationModel
   end
 
   def clean
-    unless downloader_type == "authorization"
-      self.downloader_options = self.downloader_options.except("raw_authorization")
-    end
+    except = []
+    except << 'raw_authorization' if !downloader_type_authorization?
+    except << 'custom_header_name' if !downloader_type_authorization? || downloader_option_use_standard_authorization_header?
+    self.downloader_options = self.downloader_options.except(*except) if except.any?
   end
+
+  def downloader_option_use_standard_authorization_header
+    downloader_options['use_standard_authorization_header'] != 'false'
+  end
+
+  alias downloader_option_use_standard_authorization_header? downloader_option_use_standard_authorization_header
 
   def import_option_line_provider
     candidate_line_providers.find_by(id: import_option_line_provider_id) || workbench.default_line_provider
@@ -199,7 +206,7 @@ class Source < ApplicationModel
       import_options[$1] == 'true'
     when /^import_option_(.*)$/
       import_options[$1]
-    when /^downloader_option_(.*)=/
+    when /^downloader_option_(.*)=$/
       downloader_options[$1] = args.first
     when /^downloader_option_(.*)$/
       downloader_options[$1]
@@ -345,7 +352,7 @@ class Source < ApplicationModel
     end
 
     class Authorization < URL
-      attr_accessor :raw_authorization
+      attr_accessor :raw_authorization, :custom_header_name
       #validates_presence_of :raw_authorization
 
       def download(path)
@@ -357,7 +364,8 @@ class Source < ApplicationModel
       def headers
         return {} unless raw_authorization
 
-        { 'Authorization' => raw_authorization }
+        header_name = custom_header_name.present? ? custom_header_name : 'Authorization'
+        { header_name => raw_authorization }
       end
     end
   end

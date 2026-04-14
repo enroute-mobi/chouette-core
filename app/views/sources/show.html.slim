@@ -13,6 +13,8 @@
           - case @source.downloader_type
           - when 'authorization'
             = d.attribute :downloader_option_raw_authorization, value: @source.downloader_option_raw_authorization.present? ? '•••••' : ''
+            = d.attribute :downloader_option_use_standard_authorization_header, as: :boolean
+            = d.attribute :downloader_option_custom_header_name
           - when 'french_nap'
           - else
             = d.attribute :downloader_option_username

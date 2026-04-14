@@ -221,6 +221,38 @@ RSpec.describe Source do
   end
 end
 
+RSpec.describe Source::Downloader::Authorization do
+  let(:url) { 'https://example.com/data' }
+  let(:authorization_value) { 'Bearer token123' }
+
+  describe '#headers' do
+    context 'with standard authorization header' do
+      let(:downloader) { described_class.new(url, raw_authorization: authorization_value) }
+
+      it 'returns Authorization header with the provided value' do
+        expect(downloader.send(:headers)).to eq({ 'Authorization' => authorization_value })
+      end
+    end
+
+    context 'with custom header name' do
+      let(:custom_header_name) { 'X-API-Key' }
+      let(:downloader) { described_class.new(url, raw_authorization: authorization_value, custom_header_name: custom_header_name) }
+
+      it 'returns custom header with the provided value' do
+        expect(downloader.send(:headers)).to eq({ custom_header_name => authorization_value })
+      end
+    end
+
+    context 'without raw_authorization' do
+      let(:downloader) { described_class.new(url) }
+
+      it 'returns empty hash' do
+        expect(downloader.send(:headers)).to eq({})
+      end
+    end
+  end
+end
+
 RSpec.describe Source::Retrieval do
   let(:source) { Source.new }
   subject(:retrieval) { Source::Retrieval.new source: source }

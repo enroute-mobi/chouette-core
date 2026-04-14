@@ -48,6 +48,8 @@ en:
         downloader_option_username: Username
         downloader_option_password: Password
         downloader_option_raw_authorization: Authorization header
+        downloader_option_custom_header_name: Header name
+        downloader_option_use_standard_authorization_header: Use standard Authorization header
         checksum: "Checksum"
         import_options: "Import options"
         import_option_automatic_merge: Automatic merge
@@ -81,3 +83,7 @@ en:
         message_key: Message
         duration: Duration
         import: Import
+  simple_form:
+    hints:
+      source:
+        downloader_option_custom_header_name: "Header name (e.g., \"apiKey\", \"X-API-Key\")"

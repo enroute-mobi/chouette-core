@@ -1900,7 +1900,7 @@ module Import
             Rails.logger.info do
               "Invalid VehicleJourneyStopAssignment: #{decorated_assignment.inspect} scheduled_stop_point exists: #{decorated_assignment.scheduled_stop_point.present?}, stop_area exists: #{decorated_assignment.stop_area.present?}"
             end
-            create_message :ancestor_associated_route_not_found
+            create_message Import::Decorator::Error.new(:invalid_vehicle_journey_stop_assignment, resource: stop_assignment)
 
             next
           end

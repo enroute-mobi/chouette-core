@@ -18,8 +18,6 @@ class StopAreaProvider < ActiveRecord::Base
 
   delegate :workgroup, to: :stop_area_referential
 
-  before_destroy :can_destroy?, prepend: true
-
   validates :name, presence: true
 
   def used?
@@ -30,12 +28,5 @@ class StopAreaProvider < ActiveRecord::Base
 
   def define_stop_area_referential
     self.stop_area_referential ||= workbench&.stop_area_referential
-  end
-
-  def can_destroy?
-    if used?
-      self.errors.add(:base, "Can't be destroy because it has at least one stop area")
-      throw :abort
-    end
   end
 end

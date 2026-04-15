@@ -263,7 +263,10 @@ class Source < ApplicationModel
 
       def initialize(url, options = {})
         @url = url
-        options.each { |k,v| send "#{k}=", v }
+        options.each do |k,v|
+          accessor = :"#{k}="
+          send(accessor, v) if respond_to?(accessor)
+        end
       end
 
       def create_error(message_key)

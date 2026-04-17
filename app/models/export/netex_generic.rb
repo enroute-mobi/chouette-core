@@ -1615,7 +1615,7 @@ class Export::NetexGeneric < Export::Base
     end
 
     def decorator_attributes
-      { deprecated_netex_route_name: deprecated_netex_route_name? }
+      super.merge deprecated_netex_route_name: deprecated_netex_route_name?
     end
 
     def deprecated_netex_route_name?

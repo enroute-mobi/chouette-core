@@ -782,6 +782,8 @@ RSpec.describe Export::NetexGeneric do
 
         it { is_expected.to(include(deprecated_netex_route_name: true)) }
       end
+
+      it { is_expected.to have_key(:alternate_identifiers_extractor) }
     end
 
     describe Export::NetexGeneric::Routes::Decorator do

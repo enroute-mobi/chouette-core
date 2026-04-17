@@ -23,9 +23,10 @@ RSpec.describe Export::CodeProvider do
 
   describe Export::CodeProvider::Indexer do
     describe '.create' do
-      subject { described_class.create(collection, code_provider: code_provider, code_space: code_space) }
+      subject { described_class.create(collection, code_provider: code_provider, code_space: code_space, klass: klass) }
 
       let(:code_space) { Chouette.create { code_space }.code_space }
+      let(:klass) { nil }
 
       context 'with a stop area collection' do
         let(:collection) { Chouette::StopArea.none }
@@ -100,14 +101,30 @@ RSpec.describe Export::CodeProvider do
       context 'with a time table collection' do
         let(:collection) { Chouette::TimeTable.none }
 
-        context 'with code space' do
-          it { is_expected.to be_a(Export::CodeProvider::Indexer::Older) }
+        context 'with klass' do
+          let(:klass) { Export::CodeProvider::Indexer::CodeUuid }
+
+          context 'with code space' do
+            it { is_expected.to be_a(Export::CodeProvider::Indexer::CodeUuid) }
+          end
+
+          context 'without code space' do
+            let(:code_space) { nil }
+
+            it { is_expected.to be_a(Export::CodeProvider::Indexer::Default) }
+          end
         end
 
-        context 'without code space' do
-          let(:code_space) { nil }
+        context 'without klass' do
+          context 'with code space' do
+            it { is_expected.to be_a(Export::CodeProvider::Indexer::Older) }
+          end
 
-          it { is_expected.to be_a(Export::CodeProvider::Indexer::Default) }
+          context 'without code space' do
+            let(:code_space) { nil }
+
+            it { is_expected.to be_a(Export::CodeProvider::Indexer::Default) }
+          end
         end
       end
     end
@@ -270,6 +287,51 @@ RSpec.describe Export::CodeProvider do
           }
 
           is_expected.to eq(expected_codes)
+        end
+      end
+    end
+  end
+
+  describe Export::CodeProvider::Indexer::CodeUuid do
+    context 'when model class is Chouette::StopArea' do
+      subject(:model_code_provider) { described_class.new Chouette::StopArea.none }
+
+      describe '#index' do
+        subject { described_class.new(context.stop_area_referential.stop_areas, code_space: code_space).index }
+
+        let(:context) do
+          Chouette.create do
+            code_space short_name: 'test'
+            code_space :other, short_name: 'other'
+
+            stop_area :first, codes: { test: 'first' }
+            stop_area :second, codes: { test: 'second', other: 'second' }
+            stop_area :third, objectid: 'chouette:StopArea:third:LOC', codes: { other: 'value' }
+            stop_area :fourth, objectid: 'chouette:StopArea:fourth:LOC', codes: { test: %w[fourth1 fourth2] }
+            stop_area :last, objectid: 'chouette:StopArea:last:LOC', codes: { test: 'first' }
+            stop_area :non_match, objectid: 'NOPE'
+          end
+        end
+
+        let(:code_space) { context.code_space }
+        let(:first) { context.stop_area(:first) }
+        let(:second) { context.stop_area(:second) }
+        let(:third) { context.stop_area(:third) }
+        let(:fourth) { context.stop_area(:fourth) }
+        let(:last) { context.stop_area(:last) }
+        let(:non_match) { context.stop_area(:non_match) }
+
+        it do
+          expected_codes = {
+            first.id => 'first',
+            second.id => 'second',
+            third.id => 'third',
+            fourth.id => 'fourth',
+            last.id => 'first-last',
+            non_match.id => 'NOPE'
+          }
+
+          is_expected.to eq expected_codes
         end
       end
     end

@@ -80,6 +80,14 @@ module Export
       @code_space ||= super || workgroup.code_spaces.default
     end
 
+    def code_provider_options
+      options = super
+      if setup.include_objectid_in_duplicated_time_table_codes
+        options[:indexers] = { time_tables: Export::CodeProvider::Indexer::CodeUuid }
+      end
+      options
+    end
+
     delegate :shape_referential, :line_referential, :stop_area_referential, :fare_referential, to: :workgroup
 
     def export_scope=(export_scope)

@@ -56,7 +56,7 @@ RSpec.describe Api::V1::PublicationApi::DocumentsController, type: :controller d
 
     context 'when several lines are associated to the registration number' do
       before do
-        other_line = line.line_provider.lines.create! name: "Other"
+        other_line = line.line_provider.lines.create! name: 'Other'
         # Use the same registration number for other line (validation is skipped for #update_attribute)
         other_line.update_attribute :registration_number, line.registration_number
 
@@ -64,7 +64,10 @@ RSpec.describe Api::V1::PublicationApi::DocumentsController, type: :controller d
         referential.metadatas.create! line_ids: [other_line.id], periodes: [Period.from(:now).during(1.month)]
       end
 
-      it { expect { subject }.to raise_error(ActiveRecord::SoleRecordExceeded) }
+      it 'returns a 409 conflict' do
+        subject
+        expect(response).to have_http_status(:conflict)
+      end
     end
 
     context 'no document is associated to the line' do

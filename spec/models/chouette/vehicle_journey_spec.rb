@@ -43,6 +43,45 @@ RSpec.describe Chouette::VehicleJourney do
 
       it { is_expected.to contain_exactly(vehicle_journey) }
     end
+
+    context 'when the vehicle journey has a time table that contains multiple dates' do
+      let(:context) do
+        Chouette.create do
+          time_table :first
+          vehicle_journey time_tables: %i[first]
+        end
+      end
+
+      let(:date) { Date.parse('2030-01-15') }
+      let(:time_table) { referential.time_tables.first }
+
+      before do
+        time_table.periods.create!(range: Period.parse('2030-01-01..2030-01-30'))
+        time_table.dates.create!(
+          [
+            { date: Date.parse('2030-01-15'), in_out: first_in_out },
+            { date: Date.parse('2030-01-16'), in_out: second_in_out }
+          ]
+        )
+      end
+      context 'and in_out is false for all dates' do
+        let(:first_in_out) { false }
+        let(:second_in_out) { false }
+
+        it 'should not select the vehicle journey' do
+          is_expected.to be_empty
+        end
+      end
+
+      context 'and in_out is true for one date' do
+        let(:first_in_out) { true }
+        let(:second_in_out) { false }
+
+        it 'should select the vehicle journey' do
+          is_expected.to include(vehicle_journey)
+        end
+      end
+    end
   end
 
   describe '#validate_passing_times_chronology' do

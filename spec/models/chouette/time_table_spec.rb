@@ -32,6 +32,40 @@ RSpec.describe Chouette::TimeTable, type: :model do
           before { time_table.dates.create! date: date, in_out: false }
           it { is_expected.to_not include(time_table) }
         end
+
+        context 'when it has multiple dates' do
+          let(:other_date) { Date.parse('2030-01-16') }
+
+          context 'and in_out is false for all dates' do
+            before do
+              time_table.dates.create!(
+                [
+                  { date: date, in_out: false },
+                  { date: other_date, in_out: false }
+                ]
+              )
+            end
+
+            it 'correctly excludes the Time Table in scheduled_on' do
+              is_expected.not_to include(time_table)
+            end
+          end
+
+          context 'and in_out is true for one date' do
+            before do
+              time_table.dates.create!(
+                [
+                  { date: date, in_out: true },
+                  { date: other_date, in_out: false }
+                ]
+              )
+            end
+
+            it 'correctly includes the Time Table in scheduled_on' do
+              is_expected.to include(time_table)
+            end
+          end
+        end
       end
 
       context 'when a Time Table includes the 2030-01-15' do

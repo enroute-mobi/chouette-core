@@ -204,7 +204,7 @@ module Export
                    end as code
             from (#{unique_collection.select(:id, "REGEXP_REPLACE(#{model_class.table_name}.objectid,'chouette:.*:(.*):LOC','\\1') as uuid").to_sql}) id_with_uuid
             left join (
-              select id, code, ROW_NUMBER () OVER (PARTITION BY code) AS only_code_if_1 from (#{code_query.to_sql}) id_with_code
+              select id, code, ROW_NUMBER () OVER (PARTITION BY code ORDER BY created_at) AS only_code_if_1 from (#{code_query.select("#{model_class.table_name}.created_at").to_sql}) id_with_code
             ) id_with_notuniq_code
             on id_with_notuniq_code.id = id_with_uuid.id
           SQL

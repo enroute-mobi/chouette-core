@@ -241,6 +241,7 @@ module Chouette
         attr_accessor :earliest_departure_time_of_day, :latest_arrival_time_of_day
         attr_accessor :checksum, :checksum_source
         attr_accessor :time_zone, :position
+        attr_accessor :occupancy_level, :occupancy_percentage
 
         def initialize(attributes = {})
           self.attributes = attributes
@@ -261,6 +262,8 @@ module Chouette
           @earliest_departure_time_of_day_seconds = attributes['earliest_departure_time_of_day']
           @latest_arrival_time_of_day_seconds = attributes['latest_arrival_time_of_day']
           @position = attributes["position"]
+          @occupancy_level = attributes['occupancy_level']
+          @occupancy_percentage = attributes['occupancy_percentage']
 
           @attributes = attributes
         end

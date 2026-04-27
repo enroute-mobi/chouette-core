@@ -1717,6 +1717,18 @@ module Import
           public_code || id
         end
 
+        def netex_occupancy
+          @netex_occupancy ||= occupancies&.first
+        end
+
+        def occupancy_level
+          netex_occupancy&.occupancy_level
+        end
+
+        def occupancy_percentage
+          netex_occupancy&.occupancy_percentage
+        end
+
         def vehicle_journey_attributes
           {
             route_id: route_id,
@@ -1726,7 +1738,9 @@ module Import
             published_journey_identifier: published_journey_identifier,
             vehicle_journey_at_stops: vehicle_journey_at_stops,
             vehicle_journey_time_table_relationships: vehicle_journey_time_table_relationships,
-            vehicle_journey_footnote_relationships: vehicle_journey_footnote_relationships
+            vehicle_journey_footnote_relationships: vehicle_journey_footnote_relationships,
+            occupancy_level: occupancy_level,
+            occupancy_percentage: occupancy_percentage
           }.merge(chouette_attributes)
         end
 
@@ -1795,6 +1809,18 @@ module Import
         class PassingTimeDecorator < ResourceDecorator
           attr_accessor :netex_service_journey_id, :stop_point_id, :first, :last
 
+          def netex_occupancy
+            @netex_occupancy ||= occupancies&.first
+          end
+
+          def occupancy_level
+            netex_occupancy&.occupancy_level
+          end
+
+          def occupancy_percentage
+            netex_occupancy&.occupancy_percentage
+          end
+
           def arrival_time_of_day
             return @arrival_time_of_day if defined?(@arrival_time_of_day)
 
@@ -1855,7 +1881,9 @@ module Import
               arrival_time_of_day: arrival_time_of_day,
               departure_time_of_day: departure_time_of_day,
               latest_arrival_time_of_day: latest_arrival_time_of_day,
-              earliest_departure_time_of_day: earliest_departure_time_of_day
+              earliest_departure_time_of_day: earliest_departure_time_of_day,
+              occupancy_level: occupancy_level,
+              occupancy_percentage: occupancy_percentage
             ).skipping_presence_of(:stop_point)
           end
 

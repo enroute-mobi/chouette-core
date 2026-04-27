@@ -1551,6 +1551,12 @@ RSpec.describe Import::NetexGeneric do
 
           <ServiceJourney id="service-journey">
             <Name>Vehicle Journey Sample</Name>
+            <occupancies>
+              <OccupancyView id="occ">
+                <OccupancyLevel>fewSeatsAvailable</OccupancyLevel>
+                <OccupancyPercentage>80</OccupancyPercentage>
+              </OccupancyView>
+            </occupancies>
             <dayTypes>
               <DayTypeRef ref="timetable"/>
             </dayTypes>
@@ -1558,6 +1564,12 @@ RSpec.describe Import::NetexGeneric do
             <passingTimes>
               <TimetabledPassingTime>
                 <DepartureTime>23:50:00</DepartureTime>
+                <occupancies>
+                  <OccupancyView id="occ1">
+                    <OccupancyLevel>standingRoomOnly</OccupancyLevel>
+                    <OccupancyPercentage>95</OccupancyPercentage>
+                  </OccupancyView>
+                </occupancies>
               </TimetabledPassingTime>
               <TimetabledPassingTime>
                 <ArrivalTime>23:55:00</ArrivalTime>
@@ -1618,6 +1630,11 @@ RSpec.describe Import::NetexGeneric do
       end
 
       it { is_expected.to an_object_having_attributes(expected_attributes) }
+
+      it 'should have occupancy attributes' do
+        expect(subject.occupancy_level).to eq('fewSeatsAvailable')
+        expect(subject.occupancy_percentage).to eq(80)
+      end
     end
 
     describe '#journey_pattern' do
@@ -1657,6 +1674,12 @@ RSpec.describe Import::NetexGeneric do
       end
 
       it { is_expected.to match_array expected_attributes }
+
+      it 'should have occupancy attributes' do
+        at_stop = vehicle_journey.vehicle_journey_at_stops.first
+        expect(at_stop.occupancy_level).to eq('standingRoomOnly')
+        expect(at_stop.occupancy_percentage).to eq(95)
+      end
     end
   end
 

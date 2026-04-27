@@ -1,6 +1,6 @@
 object @vehicle_journey
 
-[:objectid, :published_journey_name, :published_journey_identifier, :company_id, :accessibility_assessment_id, :comment, :checksum].each do |attr|
+[:objectid, :published_journey_name, :published_journey_identifier, :company_id, :accessibility_assessment_id, :comment, :checksum, :occupancy_level, :occupancy_percentage].each do |attr|
   attributes attr, :unless => lambda { |m| m.send( attr).nil?}
 end
 

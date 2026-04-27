@@ -70,6 +70,7 @@ en:
     passing_times_non_chronological: "The NeTEx ServiceJourney '%{resource_id}' contains non chronological passing times"
     search_no_results_for_filter: "No messages found for this filter"
     invalid_vehicle_journey_stop_assignment: "The NeTEx VehicleJourneyStopAssignment '%{resource_id}' is invalid"
+    not_owned_line: "The import can't provide Dataset information associated to the Line '%{code}' not owned by this Workbench"
     gtfs:
       agencies:
         imported: "%{count} agency(ies) imported"

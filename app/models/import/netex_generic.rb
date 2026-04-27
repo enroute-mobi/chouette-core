@@ -82,8 +82,12 @@ module Import
 
     def within_referential(&block)
       unless referential_metadata_builder.valid?
-        referential_metadata_builder.errors.each do |message_key|
-          messages.build criticity: :error, message_key: message_key
+        referential_metadata_builder.errors.each do |error|
+          messages.build(
+            criticity: error.criticity,
+            message_key: error.message_key,
+            message_attributes: error.message_attributes
+          )
         end
       end
 
@@ -124,10 +128,20 @@ module Import
       def initialize(source, lookup)
         @source = source
         @lookup = lookup.on_response(on: :lines) do |response|
-          errors << :not_owned_line if response.source == :workgroup
+          errors << Error.new(:not_owned_line, code: response.code) if response.source == :workgroup
         end
       end
       attr_reader :source, :lookup
+
+      class Error
+        attr_reader :message_key, :criticity, :message_attributes
+
+        def initialize(message_key, criticity: :error, **message_attributes)
+          @message_key = message_key
+          @criticity = criticity
+          @message_attributes = message_attributes
+        end
+      end
 
       def errors
         @errors ||= []

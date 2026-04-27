@@ -21,7 +21,7 @@
           = t('imports.show.overlapping_tips')
 .col-lg-12
   .error_messages
-    - messages = @import.messages + @import.resources.flat_map(&:messages)
+    - messages = @import.messages + @import.resources.flat_map(&:messages) + (@import.children.first&.messages || [])
     = render 'shared/iev_interfaces/messages', messages: messages
 
 - if @imported_resources.present?

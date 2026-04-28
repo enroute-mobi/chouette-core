@@ -82,7 +82,7 @@ module Export
 
     def code_provider_options
       options = super
-      if setup.include_objectid_in_duplicated_time_table_codes
+      if setup.include_uuid_in_code
         options[:indexers] = { time_tables: Export::CodeProvider::Indexer::CodeUuid }
       end
       options

@@ -373,7 +373,7 @@ module Import
           end
 
         import_resource.messages.build attributes
-        import_resource.status = attributes[:criticity].upcase
+        update_resource_status(attributes[:criticity])
       end
 
       def add_resource_error(netex_resource, message_key, **attributes)
@@ -382,6 +382,16 @@ module Import
 
       def import_resource_name
         @import_resource_name ||= self.class.name.demodulize
+      end
+
+      CRITICITY_PRIORITY = { 'OK' => 0, 'WARNING' => 1, 'ERROR' => 2 }.freeze
+
+      def update_resource_status(criticity)
+        new_status = criticity.to_s.upcase
+        current_priority = CRITICITY_PRIORITY[import_resource.status] || 0
+        new_priority = CRITICITY_PRIORITY[new_status] || 0
+
+        import_resource.status = new_status if new_priority >= current_priority
       end
 
       def import_resource

@@ -2415,3 +2415,70 @@ RSpec.describe Import::NetexGeneric::VehicleJourneys::Decorator::PassingTimeDeco
     end
   end
 end
+
+RSpec.describe Import::NetexGeneric::WithResourcePart do
+  let(:context) do
+    Chouette.create do
+      workbench
+      code_space
+    end
+  end
+  let(:workbench) { context.workbench }
+  let(:import) { Import::NetexGeneric.new(workbench: workbench, creator: 'test', name: 'test') }
+
+  # Create a minimal concrete subclass for testing
+  let(:part) do
+    Class.new(described_class) do
+      def self.name; "TestPart"; end
+    end.new(import)
+  end
+
+  describe "#create_message" do
+    subject { part.import_resource.status }
+
+    context "when initial status is OK" do
+      before { part.import_resource.status = "OK" }
+
+      it "upgrades status to ERROR when an error message is created" do
+        part.create_message(:some_error)
+        expect(subject).to eq("ERROR")
+      end
+
+      it "upgrades status to WARNING when a warning message is created" do
+        message = Import::Decorator::Error.new(:some_warning, criticity: :warning, resource: Netex::StopPlace.new(id: '1'))
+        part.create_message(message)
+        expect(subject).to eq("WARNING")
+      end
+    end
+
+    context "when initial status is WARNING" do
+      before { part.import_resource.status = "WARNING" }
+
+      it "upgrades status to ERROR when an error message is created" do
+        part.create_message(:some_error)
+        expect(subject).to eq("ERROR")
+      end
+
+      it "keeps status as WARNING when another warning message is created" do
+        message = Import::Decorator::Error.new(:another_warning, criticity: :warning, resource: Netex::StopPlace.new(id: '1'))
+        part.create_message(message)
+        expect(subject).to eq("WARNING")
+      end
+    end
+
+    context "when initial status is ERROR" do
+      before { part.import_resource.status = "ERROR" }
+
+      it "keeps status as ERROR even if a warning message is created" do
+        message = Import::Decorator::Error.new(:some_warning, criticity: :warning, resource: Netex::StopPlace.new(id: '1'))
+        part.create_message(message)
+        expect(subject).to eq("ERROR")
+      end
+
+      it "keeps status as ERROR when another error message is created" do
+        part.create_message(:another_error)
+        expect(subject).to eq("ERROR")
+      end
+    end
+  end
+end

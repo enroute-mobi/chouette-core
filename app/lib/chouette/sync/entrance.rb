@@ -23,10 +23,6 @@ module Chouette::Sync
           resolve :stop_area, tag(:parent_id)
         end
 
-        def stop_area_provider_id
-          resolve :stop_area_provider, data_source_ref
-        end
-
         def position
           "#{latitude} #{longitude}"
         end
@@ -66,15 +62,8 @@ module Chouette::Sync
             entry_flag: is_entry,
             exit_flag: is_exit,
             raw_import_attributes: { content: raw_xml },
-            stop_area_id: stop_area_id,
-            stop_area_provider_id: stop_area_provider_id
+            stop_area_id: stop_area_id
           }
-        end
-
-        private
-
-        def data_source_ref
-          source.stop_places.first&.data_source_ref
         end
       end
     end

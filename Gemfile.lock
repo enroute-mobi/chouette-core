@@ -23,8 +23,7 @@ GIT
 
 GIT
   remote: https://bitbucket.org/enroute-mobi/gtfs.git
-  revision: 36633e6bd1fdb3879a44bc2dd03c52cff24cfc57
-  branch: CHOUETTE-5412-use-a-lazy-enumerator-before-using-offline-sorter
+  revision: e23d7dd93cf34c9cb7891bb97630568c91c4c13f
   specs:
     gtfs (0.3.6)
       csv

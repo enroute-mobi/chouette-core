@@ -3,3 +3,4 @@
 = form.simple_fields_for(export_setup_attribute, export_setup) do |sub_form|
   = sub_form.input :ignore_extended_route_types, as: :switchable_checkbox
   = sub_form.input :stop_sequence_from_one, as: :switchable_checkbox
+  = sub_form.input :include_uuid_in_code, as: :switchable_checkbox

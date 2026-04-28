@@ -330,6 +330,7 @@ module Export
     class Gtfs < Base
       attribute :ignore_extended_route_types, :boolean, default: false
       attribute :stop_sequence_from_one, :boolean, default: false
+      attribute :include_uuid_in_code, default: false
     end
 
     class Netex < Base

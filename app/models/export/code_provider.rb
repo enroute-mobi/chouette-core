@@ -3,12 +3,13 @@
 module Export
   # Manage all unique codes for a given Export::Scope
   class CodeProvider
-    def initialize(export_scope, code_space: nil)
+    def initialize(export_scope, code_space: nil, indexers: {})
       @export_scope = export_scope
       @code_space = code_space
+      @indexers = indexers
     end
 
-    attr_reader :export_scope, :code_space
+    attr_reader :export_scope, :code_space, :indexers
 
     COLLECTIONS = %w[
       stop_areas flexible_stop_areas point_of_interests vehicle_journeys lines companies entrances contracts
@@ -36,7 +37,8 @@ module Export
         Indexer.create(
           scope_collection,
           code_space: code_space,
-          code_provider: self
+          code_provider: self,
+          klass: indexers[name.to_sym]
         )
       )
       instance_variable_set("@#{name}", model)
@@ -64,8 +66,10 @@ module Export
 
     module Indexer
       class << self
-        def create(collection, code_provider:, code_space: nil)
-          if code_space && collection.model == Chouette::StopPoint
+        def create(collection, code_provider:, code_space: nil, klass: nil)
+          if code_space && klass
+            klass.new(collection, code_space: code_space)
+          elsif code_space && collection.model == Chouette::StopPoint
             StopPoints.new(collection, code_provider: code_provider)
           elsif collection.model == Chouette::Footnote
             Footnotes.new(collection, code_space: code_space, code_provider: code_provider)
@@ -186,6 +190,24 @@ module Export
 
         def default_code_space?
           code_space&.default?
+        end
+      end
+
+      class CodeUuid < Default
+        def query_with_code
+          <<~SQL
+            select id_with_uuid.id,
+                   case
+                     when code is not null and only_code_if_1 = 1 then code
+                     when code is not null then concat(code,'-',uuid)
+                     else uuid
+                   end as code
+            from (#{unique_collection.select(:id, "REGEXP_REPLACE(#{model_class.table_name}.objectid,'chouette:.*:(.*):LOC','\\1') as uuid").to_sql}) id_with_uuid
+            left join (
+              select id, code, ROW_NUMBER () OVER (PARTITION BY code ORDER BY created_at) AS only_code_if_1 from (#{code_query.select("#{model_class.table_name}.created_at").to_sql}) id_with_code
+            ) id_with_notuniq_code
+            on id_with_notuniq_code.id = id_with_uuid.id
+          SQL
         end
       end
 

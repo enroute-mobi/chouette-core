@@ -38,6 +38,7 @@ fr:
       export/setup/gtfs:
         ignore_extended_route_types: "Ignorer les types de route étendus"
         stop_sequence_from_one: "Utiliser la séquence d’arrêt à partir de 1"
+        include_uuid_in_code: "Inclure l'identifiant Chouette dans les codes de calendriers dupliqués (expérimental)"
       export/setup/netex:
         profile: "Profil NeTEx"
         profile_options: "Paramètres du profil NeTEx "

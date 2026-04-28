@@ -38,6 +38,7 @@ en:
       export/setup/gtfs:
         ignore_extended_route_types: "Ignore extended route types"
         stop_sequence_from_one: "Use Stop Sequence from 1"
+        include_uuid_in_code: "Include Chouette ID in duplicated Timetable codes (experimental)"
       export/setup/netex:
         profile: "NeTEx Profile"
         profile_options: "NeTEx Profile Settings"

@@ -1,3 +1,5 @@
+# !! Deprecated !!
+# => Should use AutocompleteSelectInput or AjaxSelectInput
 class TomSelectInput < SimpleForm::Inputs::CollectionSelectInput
   enable :placeholder
 
@@ -29,5 +31,5 @@ class TomSelectInput < SimpleForm::Inputs::CollectionSelectInput
       merged_input_options
     )
   end
-  
+
 end

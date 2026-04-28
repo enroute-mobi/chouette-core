@@ -3,7 +3,6 @@ import actions from '../actions'
 import CreateModal from '../components/CreateModal'
 
 const mapStateToProps = (state) => {
-
   return {
     editMode: state.editMode,
     status: state.status,
@@ -21,7 +20,7 @@ const mapDispatchToProps = (dispatch) => {
     onAddJourneyPattern: (data) =>{
       dispatch(actions.addJourneyPattern(data))
     },
-    onOpenCreateModal: () =>{
+    onOpenCreateModal: () =>{      
       dispatch(actions.openCreateModal())
     },
     onSelectShape: selectedShape => {
@@ -29,6 +28,15 @@ const mapDispatchToProps = (dispatch) => {
     },
     onUnselectShape: () => {
       dispatch(actions.unselectShape())
+    },
+    onAddCode: (index, code) => {
+      dispatch(actions.addCode(index, code))
+    },
+    onUpdateCode: (index, code) => {
+      dispatch(actions.updateCode(index, code))
+    },
+    onDeleteCode: (index, codeIndex) => {
+      dispatch(actions.deleteCode(index, codeIndex))
     }
   }
 }

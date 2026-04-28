@@ -3,13 +3,40 @@ import PropTypes from 'prop-types'
 import actions from '../actions'
 import ShapeSelector from './ShapeSelector'
 import ShapeMap from './ShapeMap'
+import CodesList from './CodesList'
 import _ from 'lodash'
 
 export default class CreateModal extends Component {
+  constructor(props) {
+    super(props)
+    this.handleAddCode = this.handleAddCode.bind(this)
+    this.handleUpdateCode = this.handleUpdateCode.bind(this)
+    this.handleDeleteCode = this.handleDeleteCode.bind(this)
+  }
+
+  handleAddCode(code) {
+    this.props.onAddCode(null, code)
+  }
+
+  handleUpdateCode(code) {
+    this.props.onUpdateCode(null, code)
+  }
+
+  handleDeleteCode(index) {
+    this.props.onDeleteCode(null, index)
+  }
+
+  updateValue(attribute, e) {
+    actions.resetValidation(e.currentTarget)
+    this.props.journeyPattern[attribute] = e.target.value
+    this.forceUpdate()
+  }
+
   handleSubmit() {
     if(actions.validateFields(this.refs) == true) {
       this.props.onAddJourneyPattern(_.assign({}, this.refs, {
-        shape: this.props?.journeyPattern?.shape ? { id: this.props.journeyPattern.shape.id, name: this.props.journeyPattern.shape.name, uuid: this.props.journeyPattern.shape.uuid } : undefined
+        shape: this.props?.journeyPattern?.shape ? { id: this.props.journeyPattern.shape.id, name: this.props.journeyPattern.shape.name, uuid: this.props.journeyPattern.shape.uuid } : undefined,
+        code_values: this.props.journeyPattern?.code_values || []
        }
      ))
       this.props.onModalClose()
@@ -62,6 +89,8 @@ export default class CreateModal extends Component {
                                 type='text'
                                 ref='name'
                                 className='form-control'
+                                value={journeyPattern.name}
+                                onChange={(e) => this.updateValue('name', e)}
                                 onKeyDown={(e) => actions.resetValidation(e.currentTarget)}
                                 required
                                 />
@@ -76,6 +105,8 @@ export default class CreateModal extends Component {
                                 type='text'
                                 ref='published_name'
                                 className='form-control'
+                                value={journeyPattern.published_name}
+                                onChange={(e) => this.updateValue('published_name', e)}
                                 onKeyDown={(e) => actions.resetValidation(e.currentTarget)}
                                 />
                             </div>
@@ -87,6 +118,8 @@ export default class CreateModal extends Component {
                                 type='text'
                                 ref='registration_number'
                                 className='form-control'
+                                value={journeyPattern.registration_number}
+                                onChange={(e) => this.updateValue('registration_number', e)}
                                 onKeyDown={(e) => actions.resetValidation(e.currentTarget)}
                                 />
                             </div>
@@ -134,13 +167,44 @@ export default class CreateModal extends Component {
                                       ref='booking_arrangement_id'
                                       className='form-control'
                                       disabled={!editMode}
-                                      onChange={(e) => actions.resetValidation(e.currentTarget)}
+                                      value={journeyPattern.booking_arrangement_id || ''}
+                                      onChange={(e) => this.updateValue('booking_arrangement_id', e)}
                                     >
                                       <option value=''>{I18n.t('journey_patterns.form.booking_arrangement_placeholder')}</option>
                                       {
                                         window.bookingArrangements.map(ba => <option value={ba.id}>{ba.name}</option>)
                                       }
                                     </select>
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+
+                        <div className='row'>
+                          <div className='col-xs-12'>
+                            <div className='subform'>
+                              <div className='nested-head'>
+                                <div className='wrapper'>
+                                  <div>
+                                    <div className='form-group'>
+                                      <label className='control-label'>{I18n.t('activerecord.attributes.journey_pattern.codes')}</label>
+                                    </div>
+                                  </div>
+                                  <div></div>
+                                </div>
+                              </div>
+                              <div className='nested-fields'>
+                                <div className='wrapper'>
+                                  <div className='form-group'>
+                                    <CodesList
+                                      editMode={editMode}
+                                      codeValues={journeyPattern?.code_values || []}
+                                      onAddCode={this.handleAddCode}
+                                      onUpdateCode={this.handleUpdateCode}
+                                      onDeleteCode={this.handleDeleteCode}
+                                    />
                                   </div>
                                 </div>
                               </div>

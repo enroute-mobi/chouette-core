@@ -4,11 +4,27 @@ import PropTypes from 'prop-types'
 import actions from '../actions'
 import ShapeSelector from './ShapeSelector'
 import ShapeMap from './ShapeMap'
+import CodesList from './CodesList'
 
 export default class EditModal extends Component {
   constructor(props) {
     super(props)
     this.updateValue = this.updateValue.bind(this)
+    this.handleAddCode = this.handleAddCode.bind(this)
+    this.handleUpdateCode = this.handleUpdateCode.bind(this)
+    this.handleDeleteCode = this.handleDeleteCode.bind(this)
+  }
+
+  handleAddCode(code) {
+    this.props.onAddCode(this.props.index, code)
+  }
+
+  handleUpdateCode(code) {
+    this.props.onUpdateCode(this.props.index, code)
+  }
+
+  handleDeleteCode(index) {
+    this.props.onDeleteCode(this.props.index, index)
   }
 
   handleSubmit() {
@@ -161,8 +177,10 @@ export default class EditModal extends Component {
                         </div>
                       </div>
                     </div>
-                    <div>
-                      <label className='control-label'>{I18n.attribute_name('journey_pattern', 'checksum')}</label>
+                    <div className='row'>
+                      <div className='col-xs-12'>
+                        <div className='form-group'>
+                        <label className='control-label'>{I18n.attribute_name('journey_pattern', 'checksum')}</label>
                         <input
                         type='text'
                         ref='checksum'
@@ -170,7 +188,17 @@ export default class EditModal extends Component {
                         readOnly={true}
                         value={journeyPattern.checksum}
                         />
+                        </div>
+                      </div>
                     </div>
+
+                    <CodesList
+                      editMode={editMode}
+                      codeValues={journeyPattern?.code_values || []}
+                      onAddCode={this.handleAddCode}
+                      onUpdateCode={this.handleUpdateCode}
+                      onDeleteCode={this.handleDeleteCode}
+                    />
                   </div>
                   {
                     editMode &&
@@ -206,5 +234,9 @@ EditModal.propTypes = {
   index: PropTypes.number,
   modal: PropTypes.object,
   onModalClose: PropTypes.func.isRequired,
-  saveModal: PropTypes.func.isRequired
+  saveModal: PropTypes.func.isRequired,
+  onAddCode: PropTypes.func.isRequired,
+  onUpdateCode: PropTypes.func.isRequired,
+  onDeleteCode: PropTypes.func.isRequired,
+  journeyPattern: PropTypes.object
 }

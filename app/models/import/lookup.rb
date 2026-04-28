@@ -70,28 +70,44 @@ module Import
 
       def internal_stop_areas
         @internal_stop_areas ||= Collection.new.tap do |collection|
-          collection.add(finder_class.new(stop_area_provider.stop_areas, source: :provider)) if stop_area_provider
+          if stop_area_provider
+            collection.add(finder_class.new(stop_area_provider.stop_areas, source: :provider))
+          else
+            collection.add(finder_class.new(workbench.stop_areas, source: :workbench))
+          end
           collection.add(finder_class.new(stop_area_referential.stop_areas, source: :workgroup))
         end
       end
 
       def internal_lines
         @internal_lines ||= Collection.new.tap do |collection|
-          collection.add(finder_class.new(line_provider.lines, source: :provider)) if line_provider
+          if line_provider
+            collection.add(finder_class.new(line_provider.lines, source: :provider))
+          else
+            collection.add(finder_class.new(workbench.lines, source: :workbench))
+          end
           collection.add(finder_class.new(line_referential.lines, source: :workgroup))
         end
       end
 
       def internal_companies
         @internal_companies ||= Collection.new.tap do |collection|
-          collection.add(finder_class.new(line_provider.companies, source: :provider)) if line_provider
+          if line_provider
+            collection.add(finder_class.new(line_provider.companies, source: :provider))
+          else
+            collection.add(finder_class.new(workbench.companies, source: :workbench))
+          end
           collection.add(finder_class.new(line_referential.companies, source: :workgroup))
         end
       end
 
       def internal_line_notices
         @internal_line_notices ||= Collection.new.tap do |collection|
-          collection.add(finder_class.new(line_provider.line_notices, source: :provider)) if line_provider
+          if line_provider
+            collection.add(finder_class.new(line_provider.line_notices, source: :provider))
+          else
+            collection.add(finder_class.new(workbench.line_notices, source: :workbench))
+          end
           collection.add(finder_class.new(line_referential.line_notices, source: :workgroup))
         end
       end

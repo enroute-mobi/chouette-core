@@ -81,6 +81,16 @@ module Import
     end
 
     def within_referential(&block)
+      unless referential_metadata_builder.valid?
+        referential_metadata_builder.errors.each do |error|
+          messages.build(
+            criticity: error.criticity,
+            message_key: error.message_key,
+            message_attributes: error.message_attributes
+          )
+        end
+      end
+
       return unless referential_metadata
 
       referential_builder.create do |referential|
@@ -106,16 +116,46 @@ module Import
       self.overlapping_referential_ids = referential_builder.overlapping_referential_ids
     end
 
+    def referential_metadata_builder
+      @referential_metadata ||= ReferentialMetadataBuilder.new(netex_source, lookup)
+    end
+
     def referential_metadata
-      @referential_metadata ||= ReferentialMetadataBuilder.new(netex_source, lookup).referential_metadata
+      referential_metadata_builder.referential_metadata
     end
 
     class ReferentialMetadataBuilder
       def initialize(source, lookup)
         @source = source
-        @lookup = lookup
+        @lookup = lookup.on_response(on: :lines) do |response|
+          errors << Error.new(:not_owned_line, code: response.code) if response.source == :workgroup
+        end
       end
       attr_reader :source, :lookup
+
+      class Error
+        attr_reader :message_key, :criticity, :message_attributes
+
+        def initialize(message_key, criticity: :error, **message_attributes)
+          @message_key = message_key
+          @criticity = criticity
+          @message_attributes = message_attributes
+        end
+      end
+
+      def errors
+        @errors ||= []
+      end
+
+      def validate
+        route_line_ids
+      end
+
+      def valid?
+        errors.clear
+        validate
+        errors.empty?
+      end
 
       def source_decorator
         @source_decorator ||= SourceDecorator.new(source)
@@ -143,6 +183,7 @@ module Import
       end
 
       def referential_metadata
+        return unless valid?
         return unless [route_line_ids, validity_period].all?(&:present?)
 
         @referential_metadata ||=

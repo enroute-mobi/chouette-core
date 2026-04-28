@@ -70,6 +70,7 @@ fr:
     passing_times_non_chronological: "Le NeTEx ServiceJourney '%{resource_id}' contient des passages non chronologiques"
     search_no_results_for_filter: "Aucun message trouvé pour ce filtre"
     invalid_vehicle_journey_stop_assignment: "Le VehicleJourneyStopAssignment NeTEx '%{resource_id}' est invalide"
+    not_owned_line: "L'import ne peut contenir des donnés d'offre sur la Ligne '%{code}' qui n'appartient pas à cet Espace de Travail"
     gtfs:
       agencies:
         imported: "%{count} agence(s) importée(s)"

@@ -65,4 +65,10 @@ class WorkgroupControlListRunsController < Chouette::WorkgroupController
   alias facade init_facade
 
   helper_method :facade
+
+  def workgroup_context?
+    true
+  end
+
+  helper_method :workgroup_context?
 end

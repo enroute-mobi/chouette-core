@@ -123,4 +123,10 @@ class ControlListRunsController < Chouette::WorkbenchController
       .with_defaults(creator: current_user.name)
       .delete_if { |_, v| v.blank? }
   end
+
+  def workgroup_context?
+    false
+  end
+
+  helper_method :workgroup_context?
 end

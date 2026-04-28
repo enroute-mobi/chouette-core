@@ -5,7 +5,11 @@ class Api::V1::PublicationApi::DocumentsController < Api::V1::PublicationApi::Ba
   include Downloadable
 
   rescue_from Date::Error do
-    render status: :not_acceptable, plain: "Invalid valid_on parameter"
+    render status: :not_acceptable, plain: 'Invalid valid_on parameter'
+  end
+
+  rescue_from ActiveRecord::SoleRecordExceeded do |exception|
+    render status: :conflict, plain: exception.message
   end
 
   before_action :find_document!, only: %i[show]

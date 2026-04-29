@@ -1,20 +1,13 @@
 # frozen_string_literal: true
 
 RSpec.describe ImportDecorator, type: %i[helper decorator] do
-  let(:context) do
-    organisation = self.organisation
+  let(:context_context) do
     Chouette.create do
-      workgroup owner: organisation do
-        workbench organisation: organisation do
-          referential
-        end
-      end
+      workbench
     end
   end
-  let(:user) { build_stubbed(:user) }
-
-  let(:referential) { context.referential }
-  let(:workbench) { referential.workbench }
+  let(:workbench) { context_context.workbench }
+  let(:context) { { parent: workbench } }
 
   let(:file) { fixture_file_upload('google-sample-feed.zip') }
   let(:import) do

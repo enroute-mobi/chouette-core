@@ -1722,7 +1722,10 @@ module Import
         end
 
         def occupancy_level
-          netex_occupancy&.occupancy_level
+          val = netex_occupancy&.occupancy_level
+          return nil unless val.present?
+
+          val.underscore
         end
 
         def occupancy_percentage
@@ -1814,7 +1817,10 @@ module Import
           end
 
           def occupancy_level
-            netex_occupancy&.occupancy_level
+            val = netex_occupancy&.occupancy_level
+            return nil unless val.present?
+
+            val.underscore
           end
 
           def occupancy_percentage

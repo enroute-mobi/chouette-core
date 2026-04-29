@@ -2077,9 +2077,12 @@ class Export::NetexGeneric < Export::Base
       def netex_occupancies
         return [] if occupancy_level.blank? && occupancy_percentage.blank?
 
+        netex_level = occupancy_level.present? ? occupancy_level.camelcase(:lower) : nil
+
         [
           Netex::OccupancyView.new(
-            occupancy_level: occupancy_level,
+            id: "#{netex_identifier}:#{netex_level}",
+            occupancy_level: netex_level,
             occupancy_percentage: occupancy_percentage
           )
         ]
@@ -2278,9 +2281,12 @@ class Export::NetexGeneric < Export::Base
       def netex_occupancies
         return [] if occupancy_level.blank? && occupancy_percentage.blank?
 
+        netex_level = occupancy_level.present? ? occupancy_level.camelcase(:lower) : nil
+
         [
           Netex::OccupancyView.new(
-            occupancy_level: occupancy_level,
+            id: "#{netex_identifier}:#{netex_level}",
+            occupancy_level: netex_level,
             occupancy_percentage: occupancy_percentage
           )
         ]

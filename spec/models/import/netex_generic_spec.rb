@@ -1632,7 +1632,7 @@ RSpec.describe Import::NetexGeneric do
       it { is_expected.to an_object_having_attributes(expected_attributes) }
 
       it 'should have occupancy attributes' do
-        expect(subject.occupancy_level).to eq('fewSeatsAvailable')
+        expect(subject.occupancy_level).to eq('few_seats_available')
         expect(subject.occupancy_percentage).to eq(80)
       end
     end
@@ -1677,7 +1677,7 @@ RSpec.describe Import::NetexGeneric do
 
       it 'should have occupancy attributes' do
         at_stop = vehicle_journey.vehicle_journey_at_stops.first
-        expect(at_stop.occupancy_level).to eq('standingRoomOnly')
+        expect(at_stop.occupancy_level).to eq('standing_room_only')
         expect(at_stop.occupancy_percentage).to eq(95)
       end
     end

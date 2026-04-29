@@ -12,6 +12,8 @@ module Chouette
       [:transport_mode, :published_journey_name, :published_journey_identifier]
     end
 
+    enumerize :occupancy_level, in: %w[unknown empty many_seats_available few_seats_available standing_room_only crushed_standing_room_only full not_accepting_passengers seats_available standing_available]
+
     belongs_to :company, optional: true # CHOUETTE-3247 failing specs
     belongs_to :accessibility_assessment, class_name: '::AccessibilityAssessment', optional: true # CHOUETTE-3247 optional: true
     belongs_to :company_light, -> {select(:id, :objectid, :line_referential_id)}, class_name: "Chouette::Company", foreign_key: :company_id, optional: true # CHOUETTE-3247 failing specs

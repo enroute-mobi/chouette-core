@@ -12,6 +12,8 @@ module Chouette
     @@day_offset_max = DAY_OFFSET_MAX
     mattr_accessor :day_offset_max
 
+    enumerize :occupancy_level, in: %w[unknown empty many_seats_available few_seats_available standing_room_only crushed_standing_room_only full not_accepting_passengers seats_available standing_available]
+
     belongs_to :stop_area, optional: true # CHOUETTE-3247
     belongs_to :stop_point, skippable: true
     belongs_to :vehicle_journey, inverse_of: :vehicle_journey_at_stops # TODO: CHOUETTE-3247 optional: true?

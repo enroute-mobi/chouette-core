@@ -280,10 +280,6 @@ GEM
       libddwaf (~> 1.30.0.0.0)
       logger
       msgpack
-    datadog-ci (1.27.0)
-      datadog (~> 2.4)
-      drb
-      msgpack
     datadog-ruby_core_source (3.5.2)
     date (3.5.1)
     dbf (4.3.2)
@@ -436,9 +432,6 @@ GEM
       googleauth (~> 1.9)
       mini_mime (~> 1.0)
     google-logging-utils (0.2.0)
-    google-protobuf (4.33.4)
-      bigdecimal
-      rake (>= 13)
     google-protobuf (4.33.4-arm64-darwin)
       bigdecimal
       rake (>= 13)
@@ -535,8 +528,6 @@ GEM
       rexml
     libdatadog (25.0.0.1.0)
     libdatadog (25.0.0.1.0-x86_64-linux)
-    libddwaf (1.30.0.0.0)
-      ffi (~> 1.0)
     libddwaf (1.30.0.0.0-arm64-darwin)
       ffi (~> 1.0)
     libddwaf (1.30.0.0.0-x86_64-darwin)
@@ -1025,7 +1016,6 @@ DEPENDENCIES
   curb
   database_cleaner
   datadog
-  datadog-ci
   deep_cloneable
   delayed_cron_job
   delayed_job_active_record

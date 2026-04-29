@@ -1,6 +1,10 @@
 # frozen_string_literal: true
 
 class ImportMessagesController < Chouette::WorkbenchController
+  defaults resource_class: Import::Message, collection_name: 'messages'
+
+  belongs_to :import
+
   before_action :init_facade
 
   respond_to :html, :json
@@ -8,7 +12,6 @@ class ImportMessagesController < Chouette::WorkbenchController
   helper_method :facade
 
   def index
-    @parent = current_workbench
     @messages = decorate_collection(collection)
     
     respond_to do |format|
@@ -22,12 +25,8 @@ class ImportMessagesController < Chouette::WorkbenchController
 
   private
 
-  def resource
-    @import ||= current_workbench.imports.find(params[:import_id])
-  end
-
   def search
-    @search ||= Search::ImportMessage.from_params(params, import: resource)
+    @search ||= Search::ImportMessage.from_params(params, import: parent)
   end
 
   def collection
@@ -35,24 +34,24 @@ class ImportMessagesController < Chouette::WorkbenchController
   end
 
   def scope
-    direct_messages = resource.messages
-    resource_messages = Import::Message.where(resource_id: resource.resources.select(:id))
+    direct_messages = parent.messages
+    import_messages = Import::Message.where(resource_id: parent.resources.select(:id))
     
-    Import::Message.where(id: direct_messages).or(Import::Message.where(id: resource_messages)).includes(:resource)
+    Import::Message.where(id: direct_messages).or(Import::Message.where(id: import_messages)).includes(:resource)
   end
 
   def decorate_collection(messages)
     Import::MessageDecorator.decorate(
       messages,
       context: {
-        import: resource,
+        import: parent,
         workbench: workbench
       }
     )
   end
 
   def init_facade
-    @facade ||= OperationRunFacade.new(resource, current_workbench)
+    @facade ||= OperationRunFacade.new(parent, current_workbench)
   end
 
   alias facade init_facade

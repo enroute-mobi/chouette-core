@@ -48,7 +48,7 @@ class ImportDecorator < Af83::Decorator
       l.target :blank
     end
 
-    instance_decorator.action_link secondary: :show do |l|
+    instance_decorator.action_link secondary: :show, if: -> { context[:parent].is_a?(Workbench) } do |l|
       l.content { I18n.t('imports.show.all_messages') }
       l.href { h.workbench_import_messages_path(scope, object.children.first) }
       l.disabled { object.children.blank? }

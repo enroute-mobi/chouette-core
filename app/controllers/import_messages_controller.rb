@@ -1,7 +1,6 @@
 # frozen_string_literal: true
 
 class ImportMessagesController < Chouette::WorkbenchController
-  before_action :authorize_resource, except: %i[index]
   before_action :init_facade
 
   respond_to :html, :json
@@ -9,6 +8,7 @@ class ImportMessagesController < Chouette::WorkbenchController
   helper_method :facade
 
   def index
+    @parent = current_workbench
     @messages = decorate_collection(collection)
     
     respond_to do |format|
@@ -22,12 +22,8 @@ class ImportMessagesController < Chouette::WorkbenchController
 
   private
 
-  def parent
-    @parent ||= workbench
-  end
-
   def resource
-    @import ||= parent.imports.find(params[:import_id])
+    @import ||= current_workbench.imports.find(params[:import_id])
   end
 
   def search
@@ -39,11 +35,10 @@ class ImportMessagesController < Chouette::WorkbenchController
   end
 
   def scope
-    direct_message_ids = resource.messages.pluck(:id)
-    resource_message_ids = Import::Message.where(resource_id: resource.resources.select(:id)).pluck(:id)
-    all_message_ids = (direct_message_ids + resource_message_ids).uniq
+    direct_messages = resource.messages
+    resource_messages = Import::Message.where(resource_id: resource.resources.select(:id))
     
-    Import::Message.where(id: all_message_ids).includes(:resource)
+    Import::Message.where(id: direct_messages).or(Import::Message.where(id: resource_messages)).includes(:resource)
   end
 
   def decorate_collection(messages)

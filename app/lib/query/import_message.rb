@@ -14,13 +14,9 @@ module Query
     end
 
     def criticity(value)
-      change_scope(if: value.present?) do |scope|
-        criticities = Array(value).reject(&:blank?)
-        if criticities.any?
-          scope.where(criticity: criticities)
-        else
-          scope
-        end
+      criticities = Array(value).reject(&:blank?)
+      change_scope(if: criticities.any?) do |scope|
+        scope.where(criticity: criticities)
       end
     end
 

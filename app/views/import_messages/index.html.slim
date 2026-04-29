@@ -1,7 +1,7 @@
 - breadcrumb :import_messages, @workbench, @import
 - content_for :page_header_title, t('import_messages.index.title'), flush: true
 
-.page_content
+.page_content x-data="{ saveSearchPanel: false }"
   .container-fluid
     .row
       .col-lg-12

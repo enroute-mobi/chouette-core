@@ -185,7 +185,6 @@ group :test do
   gem 'rspec_junit_formatter'
   gem 'simplecov', require: false
   gem 'simplecov-cobertura', require: false
-  gem 'datadog-ci', require: false
 end
 
 group :test, :development do

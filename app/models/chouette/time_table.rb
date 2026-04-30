@@ -45,17 +45,15 @@ module Chouette
 
     def self.scheduled_on(date)
       day_order = date.wday == 0 ? 8 : date.wday + 1
-      query = <<~SQL
-        (int_day_types >> :day_order & 1 = 1
-          AND :date between period_start and period_end
-          AND (
-            time_table_dates.id is null OR
-            (NOT (date = :date AND in_out = false))
-          )
-        ) OR (date = :date AND in_out = true)
-      SQL
+      base = left_joins(:periods)
+        .joins("LEFT OUTER JOIN time_table_dates time_table_dates
+          ON time_table_dates.time_table_id = time_tables.id AND time_table_dates.date = '#{date.to_fs(:db)}'")
 
-      left_joins(:periods, :dates).where(query, date: date, day_order: day_order)
+      base.where('time_table_dates.in_out = true').or(
+        base.where('time_table_dates.in_out IS NULL')
+            .where(':date between period_start and period_end', date: date)
+            .where('int_day_types >> :day_order & 1 = 1', day_order: day_order)
+      )
     end
 
     def self.shared_by_several_lines?

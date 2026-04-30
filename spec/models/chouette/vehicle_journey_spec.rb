@@ -43,6 +43,7 @@ RSpec.describe Chouette::VehicleJourney do
 
       it { is_expected.to contain_exactly(vehicle_journey) }
     end
+
   end
 
   describe '#validate_passing_times_chronology' do

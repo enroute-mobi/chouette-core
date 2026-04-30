@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-if ENV['DD_AGENT_HOST']
+if ENV['DD_AGENT_HOST'] || ENV['DD_TRACE_AGENT_URL']
   require 'datadog'
   Datadog.configure do |c| # rubocop:disable Metrics/BlockLength(RuboCop)
     app_name = ENV.fetch('DD_AGENT_APP', 'chouette-core')
@@ -37,12 +37,17 @@ if ENV['DD_AGENT_HOST']
 
     # TODO: in the future, the Datadog.statsd instance should provided
     # by a more generic component (to be used by other metrics)
-    require 'datadog/statsd'
-    statsd_tags = { service: c.service, env: c.env, version: c.version, app: app_name }
-    Delayed::Metrics::Publisher::Datadog.statsd = Datadog::Statsd.new(ENV['DD_AGENT_HOST'], tags: statsd_tags)
+    if ENV['DD_DOGSTATSD_AGENT_SOCKET']
+      require 'datadog/statsd'
+      statsd_tags = { service: c.service, env: c.env, version: c.version, app: app_name }
+      Delayed::Metrics::Publisher::Datadog.statsd = Datadog::Statsd.new(
+        socket_path: ENV['DD_DOGSTATSD_AGENT_SOCKET'],
+        tags: statsd_tags
+      )
 
-    # Delayed::Job metrics must be assocatied to the worker service even if they computed into another service
-    Delayed::Metrics::Publisher::Datadog.service_name = "#{app_name}-worker"
+      # Delayed::Job metrics must be assocatied to the worker service even if they computed into another service
+      Delayed::Metrics::Publisher::Datadog.service_name = "#{app_name}-worker"
+    end
   end
 
   if (ENV['DD_PROFILING_ENABLED'] = 'true')

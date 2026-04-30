@@ -66,7 +66,7 @@ GIT
 
 GIT
   remote: https://bitbucket.org/enroute-mobi/netex.git
-  revision: 9b8a4d346edf68d88f872fb936476408e7dbab29
+  revision: 0e7bf255332592d770397b5527ad3a2002b822fd
   branch: DATA-136-improve-occupancies-netex
   specs:
     netex (0.1.2)

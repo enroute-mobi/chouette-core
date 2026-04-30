@@ -1,6 +1,8 @@
 ---
 en:
   import_messages:
+    warning: Warning
+    error: Error
     corrupt_zip_file: "The zip file %{source_filename} is corrupted and cannot be read"
     foreign_lines_in_referential: "The referential contains lines out of the scope %{foreign_lines}"
     inconsistent_zip_file: "The zip file %{source_filename} contains unexpected directories: %{spurious_dirs}, which are ignored"
@@ -71,6 +73,9 @@ en:
     search_no_results_for_filter: "No messages found for this filter"
     invalid_vehicle_journey_stop_assignment: "The NeTEx VehicleJourneyStopAssignment '%{resource_id}' is invalid"
     not_owned_line: "The import can't provide Dataset information associated to the Line '%{code}' not owned by this Workbench"
+    title: "Import Messages - %{import_name}"
+    index:
+      title: "Import Messages"
     gtfs:
       agencies:
         imported: "%{count} agency(ies) imported"

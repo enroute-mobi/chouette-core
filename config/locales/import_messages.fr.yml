@@ -1,6 +1,8 @@
 ---
 fr:
   import_messages:
+    warning: Avertissement
+    error: Erreur
     corrupt_zip_file: "Le fichier zip est corrompu, et ne peut être lu"
     foreign_lines_in_referential: "Le référentiel contient des lignes hors périmètre %{foreign_lines}"
     inconsistent_zip_file: "Le fichier zip contient des repertoires non prévus : %{spurious_dirs} qui seront ignorés"
@@ -71,6 +73,9 @@ fr:
     search_no_results_for_filter: "Aucun message trouvé pour ce filtre"
     invalid_vehicle_journey_stop_assignment: "Le VehicleJourneyStopAssignment NeTEx '%{resource_id}' est invalide"
     not_owned_line: "L'import ne peut contenir des donnés d'offre sur la Ligne '%{code}' qui n'appartient pas à cet Espace de Travail"
+    title: "Messages d'import - %{import_name}"
+    index:
+      title: "Messages d'import"
     gtfs:
       agencies:
         imported: "%{count} agence(s) importée(s)"

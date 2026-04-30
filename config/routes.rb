@@ -262,6 +262,7 @@ Rails.application.routes.draw do # rubocop:disable Metrics/BlockLength
     resources :imports do
       get :download, on: :member
       get :internal_download, on: :member
+      resources :messages, only: [:index], controller: :import_messages
     end
 
     get 'imports/:id/import_resources/:import_resource_id/messages',

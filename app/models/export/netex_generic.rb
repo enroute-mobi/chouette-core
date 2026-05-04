@@ -85,7 +85,7 @@ class Export::NetexGeneric < Export::Base
 
       class PreferReferents < Base
         def stop_areas
-          ::Query::StopArea.new(all_stop_areas).send(stop_area_query, original_scoped_stop_areas.referents_or_self)
+          super.referents_or_self
         end
       end
     end

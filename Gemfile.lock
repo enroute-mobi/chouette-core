@@ -66,8 +66,7 @@ GIT
 
 GIT
   remote: https://bitbucket.org/enroute-mobi/netex.git
-  revision: 0e7bf255332592d770397b5527ad3a2002b822fd
-  branch: DATA-136-improve-occupancies-netex
+  revision: 20ed3fc2f7627c008b4382c1c46b3127b98a9c1e
   specs:
     netex (0.1.2)
       activesupport
@@ -784,12 +783,12 @@ GEM
     reverse_markdown (3.0.2)
       nokogiri
     rexml (3.4.4)
-    rgeo (3.0.1)
+    rgeo (3.1.0)
     rgeo-activerecord (8.0.0)
       activerecord (>= 7.0)
       rgeo (>= 3.0)
-    rgeo-proj4 (4.0.0)
-      rgeo (~> 3.0.0)
+    rgeo-proj4 (5.0.0)
+      rgeo (~> 3.1.0)
     rgeo-shapefile (3.1.0)
       dbf (~> 4.0)
       rgeo (>= 1.0)

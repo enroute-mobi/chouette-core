@@ -217,6 +217,8 @@ module Delayed
             Rails.logger.debug { "[statsd] chouette.#{metric.name}=#{metric.value} tags: #{tags.inspect}" }
             statsd.gauge("chouette.#{metric.name}", metric.value, tags: tags)
           end
+
+          statsd.flush(sync: true)
         end
       end
 

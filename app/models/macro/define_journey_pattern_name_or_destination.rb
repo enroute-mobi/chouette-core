@@ -112,7 +112,8 @@ module Macro
         def blank_values
           @blank_values = [nil, ''].tap do |values|
             if attribute == 'name'
-              values << ::Import::NetexGeneric::ResourceDecorator::DEFAULT_NAME
+              values << ::Chouette::JourneyPattern::DEFAULT_NAME
+              # some old journey patterns names are copied from their route names
               values.concat(::Chouette::Route.wayback.values.map(&:capitalize))
             end
           end

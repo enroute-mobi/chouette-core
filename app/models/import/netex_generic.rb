@@ -1717,19 +1717,12 @@ module Import
           public_code || id
         end
 
-        def netex_occupancy
-          @netex_occupancy ||= occupancies&.first
-        end
-
         def occupancy_level
-          val = netex_occupancy&.occupancy_level
-          return nil unless val.present?
-
-          val.underscore
+          occupancy&.level&.underscore
         end
 
         def occupancy_percentage
-          netex_occupancy&.occupancy_percentage
+          occupancy&.percentage
         end
 
         def vehicle_journey_attributes

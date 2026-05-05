@@ -1230,7 +1230,7 @@ RSpec.describe Import::Gtfs do
     it "should create a VehicleJourney for each trip" do
       import.import_stop_times
       defined_attributes = ->(v) {
-        [v.published_journey_name, v.time_tables.first&.comment]
+        [v.published_journey_identifier, v.time_tables.first&.comment]
       }
       expected_attributes = [
         ["CITY2", "FULLW"],
@@ -1314,7 +1314,7 @@ RSpec.describe Import::Gtfs do
         import.import_stop_times
         defined_attributes = ->(v) {
           [
-            v.published_journey_name,
+            v.published_journey_identifier,
             v.service_facility_sets.map{ |s| s.associated_services.map(&:code) }.flatten
           ]
         }
@@ -1340,7 +1340,7 @@ RSpec.describe Import::Gtfs do
       it "should create a VehicleJourney for each trip" do
         import.import_stop_times
         defined_attributes = ->(v) {
-          [v.published_journey_name, v.accessibility_assessment&.name]
+          [v.published_journey_identifier, v.accessibility_assessment&.name]
         }
         expected_attributes = [
           ["CITY2", "GTFS - Mobility reduced passenger not suitable"],

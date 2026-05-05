@@ -227,7 +227,7 @@ module Import
       end
 
       def published_journey_name
-        short_name.presence || id
+        short_name.presence
       end
 
       def published_journey_identifier

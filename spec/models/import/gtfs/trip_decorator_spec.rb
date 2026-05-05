@@ -319,7 +319,7 @@ RSpec.describe Import::Gtfs::TripDecorator do
     context 'when Trip short_name is undefined and Trip id "AAMV1"' do
       before { trip.short_name = nil }
 
-      it { is_expected.to be(trip.id) }
+      it { is_expected.to be_nil }
     end
   end
 

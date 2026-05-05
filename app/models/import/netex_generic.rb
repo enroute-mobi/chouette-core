@@ -89,6 +89,7 @@ module Import
             message_attributes: error.message_attributes
           )
         end
+        return 
       end
 
       return unless referential_metadata
@@ -152,9 +153,11 @@ module Import
       end
 
       def valid?
+        return @valid unless @valid.nil?
+        
         errors.clear
         validate
-        errors.empty?
+        @valid = errors.empty?
       end
 
       def source_decorator

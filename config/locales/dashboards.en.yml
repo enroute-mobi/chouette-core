@@ -29,9 +29,6 @@ en:
     widgets:
       title: "Widgets"
       description: "Configure your widgets"
-      name: "Name"
-      type: "Type"
-      content: "Markdown Content"
       content_placeholder: "Enter your Markdown content here..."
       unknown_type: "Unknown widget type: %{widget_type}"
       options: "Options"
@@ -41,23 +38,27 @@ en:
       actions:
         add: "Add widget"
         remove: "Remove"
-      types:
-        image: "Image"
-        chart: "Chart"
-        counter: "Counter"
-        list: "List"
-        numbers: "Numbers"
-        static_text: "Static text"
-        table: "Table"
     search_no_results: "No dashboards found"
-  activemodel:
-    models:
-      dashboard:
-        one: "Dashboard"
-        other: "Dashboards"
   activerecord:
     models:
       dashboard:
         zero: Dashboard
         one: Dashboard
         other: Dashboards
+    attributes:
+      dashboard:
+        name: "Name"
+        description: "Description"
+      widget:
+        name: "Name"
+        type: "Type"
+  activemodel:
+    attributes:
+      widget/static_text:
+        content: "Markdown Content"
+  enumerize:
+    widget:
+      widget_type:
+        image: "Image"
+        search: "Saved search"
+        static_text: "Static text"

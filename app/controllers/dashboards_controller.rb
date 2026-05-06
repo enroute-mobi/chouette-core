@@ -48,7 +48,7 @@ class DashboardsController < Chouette::WorkbenchController
         :width,
         :height,
         :_destroy,
-        { options: {} }
+        { setup: {} }
       ]
     )
   end

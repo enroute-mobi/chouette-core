@@ -1,2 +1,2 @@
 .markdown-content
-  = raw Kramdown::Document.new(widget.options['content'] || '').to_html
+  = raw Kramdown::Document.new(widget.setup.content).to_html

@@ -537,10 +537,8 @@ class Export::NetexGeneric < Export::Base
 
     def perform
       referenced_stop_areas.pluck(:id, :referent_id).each do |stop_area_id, referent_id|
-        puts "alias #{stop_area_id} : #{referent_id}"
         code_provider.stop_areas.alias(stop_area_id, as: referent_id)
       end
-      puts "fin alias"
 
       stop_areas.each_instance do |stop_area|
         resource = decorate(stop_area, with: Decorator).netex_resource
@@ -595,7 +593,6 @@ class Export::NetexGeneric < Export::Base
             tariff_zones: tariff_zones
           }.tap do |attributes|
             unless netex_quay?
-              puts "netex_quay"
               attributes[:parent_site_ref] = parent_site_ref
               attributes[:place_types] = place_types
             end
@@ -619,11 +616,6 @@ class Export::NetexGeneric < Export::Base
       end
 
       def parent_objectid
-        puts name.inspect
-        puts code_provider.inspect
-        puts parent_id.inspect
-        puts code_provider.stop_areas.inspect
-        puts code_provider.stop_areas.code(parent_id).inspect
         @parent_objectid ||= code_provider.stop_areas.code(parent_id)
       end
 

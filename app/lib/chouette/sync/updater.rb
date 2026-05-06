@@ -544,11 +544,36 @@ module Chouette
 
         def update
           pending_referents.update_all is_referent: true
-          super
+
+          pendings.each do |resource_id, reference|
+            child = find_model resource_id
+            next unless child
+
+            referenced = find_model reference
+            unless referenced
+              referenced = find_model reference, base_scope: base_referents
+            end
+            next unless referenced
+
+            unless child.update_attribute attribute, referenced
+              Rails.logger.warn "Can't update #{child.class} #{child.id} #{attribute} with #{referenced.id}"
+            end
+          end
         end
 
         def pending_referents
-          find_models pendings.values
+          find_models pendings.values, base_scope: base_referents
+        end
+
+        private
+
+        # It can be :stop_areas, :companies or :lines
+        def collection_name
+          scope.proxy_association.reflection.name
+        end
+
+        def base_referents
+          workgroup.send(collection_name)
         end
       end
     end

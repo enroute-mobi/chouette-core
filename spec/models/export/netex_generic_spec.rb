@@ -210,128 +210,58 @@ RSpec.describe Export::NetexGeneric do
     describe '#stop_areas' do
       let(:original_export_scope) do
         # Creates a fake scope which only contains an initial StopArea
-        double 'Export::Scope', non_flexible_stop_areas: context.referential.stop_areas.where(id: stop_area)
+        double 'Export::Scope', non_flexible_stop_areas: context.workbench.stop_areas.where(id: context.stop_area(:quay))
       end
+
       let(:export) do
         Export::NetexGeneric.new(
-          export_scope: original_export_scope,
           workgroup: context.workgroup,
           setup: { scope_setup: { type: 'Export::Setup::Scope::Referential' } }
         )
       end
 
+      let(:context) do
+        Chouette.create do
+          stop_area :group_of_stop_places, area_type: 'gdl'
+          stop_area :stop_place, area_type: 'lda', parent: :group_of_stop_places
+          stop_area :monomodal_stop_place, area_type: 'zdlp', parent: :stop_place
+          stop_area :referent_parent, area_type: 'zdlp', is_referent: true
+          stop_area :referent, parent: :referent_parent, is_referent: true
+          stop_area :quay, referent: :referent, parent: :monomodal_stop_place
+        end
+      end
+
+      before do
+        allow(export).to receive(:build_export_scope).and_return(original_export_scope)
+      end
+
       subject { export.export_scope.stop_areas }
 
-      context 'when the Export scope contains a StopArea without parent' do
-        let(:context) do
-          Chouette.create do
-            stop_area
-            referential
-          end
-        end
-
-        let(:stop_area) { context.stop_area }
-
-        it 'includes this StopArea' do
-          is_expected.to include(context.stop_area)
+      context 'when prefer_referent_stop_areas and ignore_referent_stop_areas are false' do
+        it 'includes all stop areas' do
+          is_expected.to match_array([context.stop_area(:quay), context.stop_area(:monomodal_stop_place),
+            context.stop_area(:stop_place), context.stop_area(:group_of_stop_places),
+            context.stop_area(:referent_parent), context.stop_area(:referent)])
         end
       end
 
-      context 'when the Export scope contains a StopArea with a parent' do
-        let(:context) do
-          Chouette.create do
-            stop_area :parent, area_type: 'zdlp'
-            stop_area :child, parent: :parent
-            referential
-          end
-        end
 
-        let(:parent) { context.stop_area :parent }
-        let(:stop_area) { context.stop_area :child }
+      context 'when prefer_referent_stop_areas is true' do
+        it 'includes all stop areas without particulars' do
+          allow(export.export_scope).to receive(:prefer_referent_stop_areas?).and_return(true)
 
-        it 'includes this StopArea and its parent' do
-          is_expected.to include(parent, stop_area)
+          is_expected.to match_array( [context.stop_area(:monomodal_stop_place),
+            context.stop_area(:stop_place), context.stop_area(:group_of_stop_places),
+            context.stop_area(:referent_parent), context.stop_area(:referent)])
         end
       end
 
-      context 'when the Export scope contains a StopArea with parents' do
-        let(:context) do
-          Chouette.create do
-            stop_area :group_of_stop_places, area_type: 'gdl'
-            stop_area :stop_place, area_type: 'lda', parent: :group_of_stop_places
-            stop_area :monomodal_stop_place, area_type: 'zdlp', parent: :stop_place
-            stop_area :quay, parent: :monomodal_stop_place
-            referential
-          end
-        end
+      context 'when ignore_referent_stop_areas is true' do
+        it 'includes all stop areas without referent' do
+          allow(export.export_scope).to receive(:ignore_referent_stop_areas?).and_return(true)
 
-        let(:group_of_stop_places) { context.stop_area :group_of_stop_places }
-        let(:stop_place) { context.stop_area :stop_place }
-        let(:monomodal_stop_place) { context.stop_area :monomodal_stop_place }
-        let(:stop_area) { context.stop_area :quay }
-
-        it 'includes the (Quay) StopArea' do
-          is_expected.to include(stop_area)
-        end
-
-        it 'includes its Monomodal Stop Place parent' do
-          is_expected.to include(monomodal_stop_place)
-        end
-
-        it 'includes its Stop Place parent' do
-          is_expected.to include(stop_place)
-        end
-
-        it 'includes its Group Of Stop Places parent' do
-          is_expected.to include(group_of_stop_places)
-        end
-      end
-
-      context 'when the Export scope contains a StopArea with a referent' do
-        let(:context) do
-          Chouette.create do
-            stop_area :referent, is_referent: true
-            stop_area :child, referent: :referent
-            referential
-          end
-        end
-
-        let(:referent) { context.stop_area :referent }
-        let(:stop_area) { context.stop_area :child }
-
-        it 'includes this StopArea and its referent' do
-          is_expected.to include(referent, stop_area)
-        end
-      end
-
-      context 'when the Export scope contains a StopArea with a referent and their parents' do
-        let(:context) do
-          Chouette.create do
-            stop_area :referent_parent, area_type: 'zdlp', is_referent: true
-            stop_area :referent, parent: :referent_parent, is_referent: true
-
-            stop_area :parent, area_type: 'zdlp'
-            stop_area :child, referent: :referent, parent: :parent
-            referential
-          end
-        end
-
-        let(:referent_parent) { context.stop_area :referent_parent }
-        let(:referent) { context.stop_area :referent }
-
-        let(:parent) { context.stop_area :parent }
-        let(:stop_area) { context.stop_area :child }
-
-        it 'includes this StopArea and its referent' do
-          is_expected.to include(referent, stop_area)
-        end
-
-        it 'includes this StopArea parent' do
-          is_expected.to include(parent)
-        end
-
-        it 'includes this referent parent' do
-          is_expected.to include(referent_parent)
+          is_expected.to match_array([context.stop_area(:quay), context.stop_area(:monomodal_stop_place),
+            context.stop_area(:stop_place), context.stop_area(:group_of_stop_places)])
         end
       end
     end

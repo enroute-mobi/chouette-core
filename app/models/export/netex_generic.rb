@@ -68,24 +68,32 @@ class Export::NetexGeneric < Export::Base
           current_scope.non_flexible_stop_areas
         end
 
-        def stop_area_query
-          :self_referents_and_ancestors
+        def candidate_stop_areas
+          ::Query::StopArea.new(all_stop_areas).self_referents_and_ancestors(original_scoped_stop_areas)
         end
 
         def stop_areas
-          ::Query::StopArea.new(all_stop_areas).send(stop_area_query, original_scoped_stop_areas)
+          candidate_stop_areas
+        end
+
+        def referenced_stop_areas
+          Chouette::StopArea.none
         end
       end
 
       class IgnoreReferents < Base
-        def stop_area_query
-          :self_and_ancestors
+        def stop_areas
+          candidate_stop_areas.particulars
         end
       end
 
       class PreferReferents < Base
         def stop_areas
-          super.referents_or_self
+          candidate_stop_areas.without_referent
+        end
+
+        def referenced_stop_areas
+          candidate_stop_areas.with_referent
         end
       end
     end
@@ -104,20 +112,16 @@ class Export::NetexGeneric < Export::Base
       @stop_areas ||= stop_areas_class.new(self).stop_areas
     end
 
+    def referenced_stop_areas
+      @referenced_stop_areas ||= stop_areas_class.new(self).referenced_stop_areas
+    end
+
     def ignore_referent_stop_areas?
       export.setup.scope_setup.stop_areas.try(:ignore_referent_stop_areas)
     end
 
     def prefer_referent_stop_areas?
       export.setup.scope_setup.stop_areas.try(:prefer_referent_stop_areas)
-    end
-
-    def referenced_stop_areas
-      if prefer_referent_stop_areas?
-        current_scope.non_flexible_stop_areas.particulars.with_referent
-      else
-        Chouette::StopArea.none
-      end
     end
 
     def entrances

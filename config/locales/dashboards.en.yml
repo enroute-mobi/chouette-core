@@ -54,6 +54,8 @@ en:
         type: "Type"
   activemodel:
     attributes:
+      widget/search:
+        saved_search: "Saved search"
       widget/static_text:
         content: "Markdown Content"
   enumerize:

@@ -8,6 +8,8 @@ module Search
     validates :name, presence: true, uniqueness: { scope: %i[parent_type parent_id search_type] }
     validates :search_type, presence: true
 
+    scope :by_text, ->(text) { text.blank? ? all : where('lower(name) LIKE :t', t: "%#{text.downcase}%") }
+
     class << self
       # rubocop:disable Naming/MemoizedInstanceVariableName
       def model_name

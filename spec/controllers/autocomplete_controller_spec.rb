@@ -373,4 +373,104 @@ RSpec.describe AutocompleteController, type: :controller do
       expect(response).to be_successful
     end
   end
+
+  describe 'GET #searches' do
+    context 'for a workgroup' do
+      let(:context) do
+        organisation = self.organisation
+        Chouette.create do
+          workgroup :workgroup1, owner: organisation do
+            workbench organisation: organisation
+          end
+          workgroup :workgroup2, owner: organisation do
+            workbench organisation: organisation
+          end
+        end
+      end
+      let(:workgroup1) { context.workgroup(:workgroup1) }
+      let(:workgroup2) { context.workgroup(:workgroup2) }
+
+      let!(:workgroup1_search1) do
+        workgroup1.saved_searches.create!(
+          name: 'StopArea 1 by name',
+          search_type: 'Search::StopArea',
+          search_attributes: { 'text' => 'by name' }
+        )
+      end
+      let!(:workgroup1_search2) do
+        workgroup1.saved_searches.create!(
+          name: 'Line by name',
+          search_type: 'Search::Line',
+          search_attributes: { 'text' => 'by name' }
+        )
+      end
+      let!(:workgroup2_search1) do
+        workgroup2.saved_searches.create!(
+          name: 'StopArea 2 by name',
+          search_type: 'Search::StopArea',
+          search_attributes: { 'text' => 'by name' }
+        )
+      end
+
+      it 'returns the complete list when the search parameter is empty' do
+        get :searches, params: { workgroup_id: workgroup1.id }, format: 'json'
+        expect(assigns(:searches)).to contain_exactly(workgroup1_search1, workgroup1_search2)
+        expect(response).to be_successful
+      end
+
+      it 'returns only the list of matching searches when the search parameter is set' do
+        get :searches, params: { workgroup_id: workgroup1.id, q: 'StopArea' }, format: 'json'
+        expect(assigns(:searches)).to contain_exactly(workgroup1_search1)
+        expect(response).to be_successful
+      end
+    end
+
+    context 'for a workbench' do
+      let(:context) do
+        organisation = self.organisation
+        Chouette.create do
+          workgroup owner: organisation do
+            workbench :workbench1, organisation: organisation
+            workbench :workbench2, organisation: organisation
+          end
+        end
+      end
+      let(:workbench1) { context.workbench(:workbench1) }
+      let(:workbench2) { context.workbench(:workbench2) }
+
+      let!(:workbench1_search1) do
+        workbench1.saved_searches.create!(
+          name: 'StopArea 1 by name',
+          search_type: 'Search::StopArea',
+          search_attributes: { 'text' => 'by name' }
+        )
+      end
+      let!(:workbench1_search2) do
+        workbench1.saved_searches.create!(
+          name: 'Line by name',
+          search_type: 'Search::Line',
+          search_attributes: { 'text' => 'by name' }
+        )
+      end
+      let!(:workbench2_search1) do
+        workbench2.saved_searches.create!(
+          name: 'StopArea 2 by name',
+          search_type: 'Search::StopArea',
+          search_attributes: { 'text' => 'by name' }
+        )
+      end
+
+      it 'returns the workbench list when the search parameter is empty' do
+        get :searches, params: { workbench_id: workbench1.id }, format: 'json'
+        expect(assigns(:searches)).to contain_exactly(workbench1_search1, workbench1_search2)
+        expect(response).to be_successful
+      end
+
+      it 'returns only the list of matching searches when the search parameter is set' do
+        get :searches, params: { workbench_id: workbench1.id, q: 'StopArea' }, format: 'json'
+        expect(assigns(:searches)).to contain_exactly(workbench1_search1)
+        expect(response).to be_successful
+      end
+    end
+  end
 end

@@ -78,6 +78,10 @@ class AutocompleteController < Chouette::UserController
     @stop_area_providers = stop_area_scope.stop_area_providers.order(:name).by_text(text).limit(50)
   end
 
+  def searches
+    @searches = (workbench || current_workgroup).saved_searches.order(:name).by_text(text).limit(50)
+  end
+
   protected
 
   def text

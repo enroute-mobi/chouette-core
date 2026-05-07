@@ -7,7 +7,6 @@ Rails.application.routes.draw do # rubocop:disable Metrics/BlockLength
   resource :subscriptions, only: :create
 
   resources :workbenches, only: %i[show] do # rubocop:disable Metrics/BlockLength
-    resources :searches, only: %i[index show create update destroy], path: ':parent_resources/searches'
     resources :api_keys
 
     resources :autocomplete, only: [] do
@@ -23,7 +22,10 @@ Rails.application.routes.draw do # rubocop:disable Metrics/BlockLength
       get :macro_lists, on: :collection, defaults: { format: 'json' }
       get :control_lists, on: :collection, defaults: { format: 'json' }
       get :calendars, on: :collection, defaults: { format: 'json' }
+      get :searches, on: :collection, defaults: { format: 'json' }
     end
+
+    resources :searches, only: %i[index show create update destroy], path: ':parent_resources/searches'
 
     resource :output, controller: :workbench_outputs
     resources :merges do
@@ -330,6 +332,7 @@ Rails.application.routes.draw do # rubocop:disable Metrics/BlockLength
       get :parent_stop_areas, on: :collection, defaults: { format: 'json' }
       get :stop_area_providers, on: :collection, defaults: { format: 'json' }
       get :shapes, on: :collection, defaults: { format: 'json' }
+      get :searches, on: :collection, defaults: { format: 'json' }
     end
 
     resources :imports, only: %i[index show], controller: :workgroup_imports do

@@ -1,4 +1,4 @@
-.nested-fields.widgets.mb-4.border.rounded-r-lg.overflow-hidden[x-data="{ widget_type: #{f.object.widget_type.to_json} }" :class="#{widget_colors_alpine_class}"]
+.nested-fields.widgets.mb-4.border.rounded-r-lg[x-data="{ widget_type: #{f.object.widget_type.to_json} }" :class="#{widget_colors_alpine_class}"]
   .px-4.py-3.border-b
     .flex.justify-between.items-center
       .flex.items-center.space-x-2
@@ -16,6 +16,13 @@
     .grid.grid-cols-1.md:grid-cols-2.gap-4
       = f.input :name, wrapper_html: { class: 'mb-4' }
       = f.input :widget_type, include_blank: false, disabled: f.object.persisted?, wrapper_html: { class: 'mb-4' }, input_html: { 'x-model': 'widget_type' }
+
+    - if f.object.widget_type == 'search' || local_assigns[:dynamic]
+      - search_setup = f.object.widget_type == 'search' ? f.object.setup : Widget::Search.new
+      template[x-if="widget_type === 'search'"]
+        = f.simple_fields_for(:setup, search_setup) do |setup_form|
+          div[x-init="addAjaxSelectToForm($el)"]
+            = setup_form.association :saved_search, as: :ajax_select, collection: [setup_form.object.saved_search].compact, label_method: :name, input_html: { 'data-url': searches_workbench_autocomplete_index_path(current_workbench, format: :json), class: 'w-full' }, wrapper_html: { class: 'mb-4' }
 
     - if f.object.widget_type == 'static_text' || local_assigns[:dynamic]
       - static_text_setup = f.object.widget_type == 'static_text' ? f.object.setup : Widget::StaticText.new

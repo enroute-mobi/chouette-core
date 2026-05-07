@@ -64,16 +64,12 @@ class Export::NetexGeneric < Export::Base
           stop_area_referential.stop_areas
         end
 
-        def candidate_stop_areas
-          ::Query::StopArea.new(all_stop_areas).self_referents_and_ancestors(original_scoped_stop_areas)
-        end
-
         def original_scoped_stop_areas
           current_scope.non_flexible_stop_areas
         end
 
-        def stop_area_query
-          :self_referents_and_ancestors
+        def candidate_stop_areas
+          ::Query::StopArea.new(all_stop_areas).self_referents_and_ancestors(original_scoped_stop_areas)
         end
 
         def stop_areas
@@ -88,10 +84,6 @@ class Export::NetexGeneric < Export::Base
       class IgnoreReferents < Base
         def stop_areas
           candidate_stop_areas.particulars
-        end
-
-        def stop_area_query
-          :self_and_ancestors
         end
       end
 

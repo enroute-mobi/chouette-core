@@ -835,6 +835,7 @@ module Search
                     transform_data(data)
                   end
       end
+      attr_writer :data
 
       def empty?
         if subgroup_by_attribute

@@ -1,8 +1,15 @@
 - if widget.setup.graphical?
-  = widget.setup.chart.to_chartkick(self, height: '100%')
+  - chart = widget.setup.chart
+  - if chart
+    = widget.setup.chart.to_chartkick(self, height: '100%')
+  - else
+    = render 'dashboards/widgets/error'
 - else
   - count = widget.setup.count
-  - digits = count.zero? ? 1 : Math.log10(count).to_i + 1
-  svg[width="100%" height="100%" viewBox="0 0 #{(digits * 9.25).to_i} 18"]
-    text[x="0" y="15"]
-      = count
+  - if count
+    - digits = count.zero? ? 1 : Math.log10(count).to_i + 1
+    svg[width="100%" height="100%" viewBox="0 0 #{(digits * 9.25).to_i} 18"]
+      text[x="0" y="15"]
+        = count
+  - else
+    = render 'dashboards/widgets/error'

@@ -11,4 +11,7 @@
         .widget-drag-handle
           h3= widget.name
         .widget-content
-          = render "dashboards/widgets/#{widget.widget_type}", widget: widget
+          - if widget.data_available?
+            = render "dashboards/widgets/#{widget.widget_type}", widget: widget
+          - else
+            = render 'dashboards/widgets/error'

@@ -29,12 +29,14 @@ fr:
     widgets:
       title: "Widgets"
       description: "Configurez les widgets de votre tableau de bord"
-      content_placeholder: "Entrez votre contenu en Markdown ici..."
+      content_placeholder: "Entrez votre contenu en Markdown ici…"
       unknown_type: "Type de widget non reconnu : %{widget_type}"
       options: "Options"
       new_widget: "Nouveau widget"
       no_widgets: "Aucun widget pour le moment"
       get_started: "Commencez par ajouter votre premier widget"
+      error:
+        description: "Les données ne sont pas disponibles pour l'instant. Elles seront calculées d'ici quelques minutes…"
       actions:
         add: "Ajouter un widget"
         remove: "Supprimer"

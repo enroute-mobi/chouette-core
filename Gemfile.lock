@@ -66,7 +66,7 @@ GIT
 
 GIT
   remote: https://bitbucket.org/enroute-mobi/netex.git
-  revision: d0bef0b4afe2fbfc30aa20bba77bb0ccdb0a894b
+  revision: 2790a6c27bd7e7f4c03a96cad0f3ed2983f75b0f
   branch: DATA-139-add-occupancy-method-to-service
   specs:
     netex (0.1.2)
@@ -638,7 +638,7 @@ GEM
     orm_adapter (0.5.0)
     os (1.1.4)
     ostruct (0.6.3)
-    ox (2.14.25)
+    ox (2.14.26)
       bigdecimal (>= 3.0)
     parallel (1.27.0)
     parallel_tests (5.6.0)

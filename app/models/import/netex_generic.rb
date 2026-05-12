@@ -1805,19 +1805,12 @@ module Import
         class PassingTimeDecorator < ResourceDecorator
           attr_accessor :netex_service_journey_id, :stop_point_id, :first, :last
 
-          def netex_occupancy
-            @netex_occupancy ||= occupancies&.first
-          end
-
           def occupancy_level
-            val = netex_occupancy&.occupancy_level
-            return nil unless val.present?
-
-            val.underscore
+            occupancy&.level&.underscore
           end
 
           def occupancy_percentage
-            netex_occupancy&.occupancy_percentage
+            occupancy&.percentage
           end
 
           def arrival_time_of_day

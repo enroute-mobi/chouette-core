@@ -65,7 +65,11 @@ class StopAreaProvidersController < Chouette::StopAreaReferentialController
 
     fields = [
       :name,
-      {stop_area_ids: []}
+      :short_name,
+      {
+        allowed_stop_area_types: [],
+        stop_area_ids: []
+      }
     ]
     @stop_area_provider_params = params.require(:stop_area_provider).permit(fields)
   end

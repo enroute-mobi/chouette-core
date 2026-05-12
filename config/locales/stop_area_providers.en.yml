@@ -21,5 +21,13 @@ en:
     attributes:
       stop_area_provider:
         name: Name
+        short_name: Short name
+        allowed_stop_area_types: Allowed Stop Area types
         stop_area_ids: Stop Areas
         workbench: Workbench
+    errors:
+      models:
+        stop_area_provider:
+          attributes:
+            allowed_stop_area_types:
+              incompatible_with_stop_areas: "is incompatible with Stop Area \"%{name}\" (%{area_type})"

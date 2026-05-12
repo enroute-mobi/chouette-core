@@ -236,6 +236,8 @@ en:
               not_allowed_for_flexible: "Flexible stop places cannot have a parent"
               children_not_allowed_for_flexible: "Flexible stop places cannot have children"
               must_be_absent: A non commercial Stop Area cannot have a parent
+            stop_area_provider_id:
+              invalid_for_area_type: "does not allow this Stop Area type"
   chart:
     values:
       stop_area:

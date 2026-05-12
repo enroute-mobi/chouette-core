@@ -3,6 +3,7 @@
     .col-lg-12
       = f.input :name
       = f.input :short_name
+      = f.input :allowed_stop_area_types, as: :select, collection: Chouette::AreaType.options(:all), selected: @stop_area_provider.effective_allowed_stop_area_types, include_blank: false, input_html: { multiple: true, 'data-select2ed': true, style: 'width: 100%' }
   .separator
 
   = f.button :submit, t('actions.submit'), class: 'formSubmitr', form: 'stop_area_provider_form'

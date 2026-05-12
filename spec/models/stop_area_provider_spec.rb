@@ -1,4 +1,45 @@
 RSpec.describe StopAreaProvider, type: :model do
+  describe "#allowed_stop_area_types" do
+    subject(:stop_area_provider) do
+      create(:stop_area_provider, allowed_stop_area_types: %w[zdep zdlp])
+    end
+
+    it "normalizes blank and duplicate values" do
+      stop_area_provider.allowed_stop_area_types = ["zdep", "", "zdep", :zdlp]
+
+      expect(stop_area_provider.allowed_stop_area_types).to eq(%w[zdep zdlp])
+    end
+
+    it "keeps nil as all allowed types" do
+      stop_area_provider.allowed_stop_area_types = nil
+
+      expect(stop_area_provider.allowed_stop_area_types).to be_nil
+      expect(stop_area_provider.effective_allowed_stop_area_types).to eq(Chouette::AreaType::ALL.map(&:to_s))
+    end
+
+    it "stores all selected types as nil" do
+      stop_area_provider.allowed_stop_area_types = Chouette::AreaType::ALL.reverse
+
+      expect(stop_area_provider.allowed_stop_area_types).to be_nil
+    end
+
+    it "rejects unknown area types" do
+      stop_area_provider.allowed_stop_area_types = %w[zdep unknown]
+
+      expect(stop_area_provider).not_to be_valid
+      expect(stop_area_provider.errors).to have_key(:allowed_stop_area_types)
+    end
+
+    it "is invalid when an existing Stop Area uses a disallowed type" do
+      create(:stop_area, :zdep, stop_area_provider: stop_area_provider)
+
+      stop_area_provider.allowed_stop_area_types = %w[zdlp]
+
+      expect(stop_area_provider).not_to be_valid
+      expect(stop_area_provider.errors).to have_key(:allowed_stop_area_types)
+    end
+  end
+
   describe "#used?" do
     subject { stop_area_provider.used? }
 

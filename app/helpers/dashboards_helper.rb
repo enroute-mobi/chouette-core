@@ -1,10 +1,6 @@
 # frozen_string_literal: true
 
 module DashboardsHelper
-  def render_widget(widget)
-    render "dashboards/widgets/#{widget.widget_type}", widget: widget
-  end
-
   WIDGET_COLORS_BASE_CLASSES = 'shadow-sm hover:shadow transition-shadow duration-200 rounded-r-lg border-l-4'
 
   WIDGET_COLORS = {

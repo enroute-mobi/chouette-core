@@ -1,13 +1,6 @@
 .grid-stack data-dashboard-id=@dashboard.id data-workbench-id=@dashboard.workbench_id
   - if @dashboard.widgets.any?
-    - @dashboard.widgets.each do |widget|
-      .grid-stack-item data-widget-id=widget.id gs-x=widget.x gs-y=widget.y gs-w=widget.width gs-h=widget.height
-        .grid-stack-item-content
-          .content-container
-            .widget-drag-handle
-              h3= widget.name
-            .widget-content
-              = render_widget(widget)
+    = render 'widgets'
   - else
     .col-span-full.text-center.py-12
       .bg-gray-50.p-8.rounded-lg

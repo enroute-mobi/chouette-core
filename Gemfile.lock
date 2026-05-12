@@ -66,8 +66,7 @@ GIT
 
 GIT
   remote: https://bitbucket.org/enroute-mobi/netex.git
-  revision: 2790a6c27bd7e7f4c03a96cad0f3ed2983f75b0f
-  branch: DATA-139-add-occupancy-method-to-service
+  revision: c9b5b3a24e355dd4132767094fb2483d282f9628
   specs:
     netex (0.1.2)
       activesupport

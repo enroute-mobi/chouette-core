@@ -13,6 +13,10 @@ fr:
       title: "Editer %{name}"
     update:
       title: "Editer %{name}"
+    form:
+      placeholders:
+      sections:
+        permission_restrictions: "Restrictions de permission"
   activerecord:
     models:
       stop_area_provider:

@@ -136,6 +136,8 @@ class Widget < ActiveRecord::Base
 
   before_save :set_setup_data_cache, if: :set_setup_data_cache?
 
+  scope :setup_data_cache_computable, -> { where(widget_type: 'search') }
+
   delegate :workbench, to: :dashboard
   delegate :data_available?, to: :setup
 
@@ -150,6 +152,11 @@ class Widget < ActiveRecord::Base
   def setup=(*args)
     @setup = nil
     send(:options=, *args)
+  end
+
+  def update_setup_data_cache!
+    set_setup_data_cache
+    save!
   end
 
   # debug

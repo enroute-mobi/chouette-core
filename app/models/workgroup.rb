@@ -38,6 +38,8 @@ class Workgroup < ApplicationModel
   has_many :workbench_processing_rules, through: :workbenches, source: :processing_rules
   has_many :contracts, through: :workbenches
   has_many :tags, through: :workbenches
+  has_many :dashboards, through: :workbenches
+  has_many :widgets, through: :dashboards
   has_many :aggregate_schedulings, dependent: :destroy
   has_many :saved_searches, class_name: 'Search::Save', as: :parent, dependent: :destroy
   has_many :line_providers, through: :line_referential

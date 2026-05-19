@@ -55,8 +55,9 @@ module Import
           stop_areas: stop_areas,
           lines: lines,
           companies: companies,
-          shapes: shapes,
-          booking_arrangements: booking_arrangements
+          line_notices: line_notices,
+          booking_arrangements: booking_arrangements,
+          shapes: shapes
         }
       end
 
@@ -171,15 +172,15 @@ module Import
 
     # Returns a Lookup which uses the given (External) Collections
     class Composite
-      def initialize(stop_areas:, lines:, companies:, shapes:, booking_arrangements:)
+      def initialize(stop_areas:, lines:, companies:, line_notices:, booking_arrangements:, shapes:)
         @stop_areas = stop_areas
         @lines = lines
         @companies = companies
-        @shapes = shapes
+        @line_notices = line_notices
         @booking_arrangements = booking_arrangements
+        @shapes = shapes
       end
-
-      attr_reader :stop_areas, :lines, :companies, :shapes, :booking_arrangements
+      attr_reader :stop_areas, :lines, :companies, :line_notices, :booking_arrangements, :shapes
     end
 
     # Returns identifier or model instead of internal Response

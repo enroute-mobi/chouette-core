@@ -13,7 +13,10 @@ module Merge::Referential
     def referential_inserter
       @referential_inserter ||= ReferentialInserter.new(new) do |config|
         config.add IdMapInserter, strict: false
+
+        config.add LegacyObjectidLoaderInserter
         config.add ObjectidInserter
+
         config.add CopyInserter
       end
     end
@@ -69,6 +72,9 @@ module Merge::Referential
           vehicle_journey = vehicle_journey_merge.vehicle_journey
 
           if vehicle_journey_merge.existing_objectid?
+            # To help LegacyObjectidLoaderInserter
+            vehicle_journey.with_transient(line_id: vehicle_journey_merge.line_id)
+
             vehicle_journey.objectid = nil
           end
 
@@ -92,7 +98,7 @@ module Merge::Referential
           @vehicle_journey = vehicle_journey
         end
 
-        attr_accessor :vehicle_journey, :existing_objectid, :existing_journey_pattern_id, :existing_route_id
+        attr_accessor :vehicle_journey, :existing_objectid, :existing_journey_pattern_id, :existing_route_id, :line_id
         alias existing_objectid? existing_objectid
 
       end
@@ -104,7 +110,7 @@ module Merge::Referential
         def route_and_journey_patterns
           @route_and_journey_patterns ||= RouteAndJourneyPatterns.new(self)
         end
-        delegate :existing_route_id, :existing_journey_pattern_id, to: :route_and_journey_patterns
+        delegate :existing_route_id, :existing_journey_pattern_id, :line_id, to: :route_and_journey_patterns
 
         def object_ids
           @duplicated_object_ids ||= ExistingObjectIDs.new(self)
@@ -122,6 +128,9 @@ module Merge::Referential
             end
             merge.existing_journey_pattern_id = existing_journey_pattern_id(vehicle_journey.journey_pattern_id)
 
+            # To help LegacyObjectidLoaderInserter
+            merge.line_id = line_id(vehicle_journey.route_id)
+
             yield merge
           end
         end
@@ -138,16 +147,17 @@ module Merge::Referential
           source.journey_patterns.joins(:route).
             joins("LEFT OUTER JOIN \"#{new.slug}\".routes as existing_routes ON routes.checksum = existing_routes.checksum AND routes.line_id = existing_routes.line_id").
             joins("LEFT OUTER JOIN \"#{new.slug}\".journey_patterns as existing_journey_patterns ON journey_patterns.checksum = existing_journey_patterns.checksum AND existing_routes.id = existing_journey_patterns.route_id").
-            where(id: journey_pattern_ids).pluck(:id, "routes.id", "existing_journey_patterns.id", "existing_routes.id")
+            where(id: journey_pattern_ids).pluck(:id, "routes.id", "existing_journey_patterns.id", "existing_routes.id", "routes.line_id")
         end
 
         def load
           return if @loaded
           @loaded = true
-          rows.each do |journey_pattern_id, route_id, existing_journey_pattern_id, existing_route_id|
+          rows.each do |journey_pattern_id, route_id, existing_journey_pattern_id, existing_route_id, line_id|
             unless existing_journey_pattern_id && existing_route_id
               raise "Missing existing_journey_pattern_id or existing_journey_pattern_id (#{journey_pattern_id}, #{route_id}, #{existing_journey_pattern_id}, #{existing_route_id}) in referential #{source.id}"
             end
+            line_ids[route_id] = line_id
             existing_route_ids[route_id] = existing_route_id
             existing_journey_pattern_ids[journey_pattern_id] = existing_journey_pattern_id
           end
@@ -157,9 +167,18 @@ module Merge::Referential
           vehicle_journeys.map(&:journey_pattern_id).uniq
         end
 
+        def line_ids
+          load
+          @line_ids ||= {}
+        end
+
         def existing_route_ids
           load
           @existing_route_ids ||= {}
+        end
+
+        def line_id(vehicle_journey_route_id)
+          line_ids.fetch vehicle_journey_route_id
         end
 
         def existing_route_id(vehicle_journey_id)

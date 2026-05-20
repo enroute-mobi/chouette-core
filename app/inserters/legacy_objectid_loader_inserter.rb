@@ -11,6 +11,7 @@ class LegacyObjectidLoaderInserter
   def insert(model, _options = {})
     # Ignore models without objectid support
     return unless model.respond_to?(:objectid)
+    return if model.objectid.present?
 
     model.with_transient(referential_id: referential.id)
     model.with_transient(referential_prefix: referential.prefix)
@@ -29,6 +30,9 @@ class LegacyObjectidLoaderInserter
   def line_id(model)
     return model.line_id if model.respond_to?(:line_id)
 
+    transient_line_id = model.transient(:line_id)
+    return transient_line_id if transient_line_id
+
     line_ids_by_route_id[model.route_id] ||= model.route&.line_id
   end
 
@@ -38,7 +42,7 @@ class LegacyObjectidLoaderInserter
 
     line_codes_by_line_id[line_id] ||=
       begin
-        line = model.try(:line) || model.route&.line
+        line = model.try(:line) || model.route&.line || referential.lines.find_by(id: line_id)
         line&.get_objectid&.local_id
       end
   end

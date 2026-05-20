@@ -446,6 +446,67 @@ describe Merge do
                 expect(Chouette::VehicleJourney.find_by(checksum: merge_context.source_vehicle_journey.checksum)).to be_present
               end
             end
+
+            context 'with StifNetex formatter, when the VehicleJourneys have the same objectids' do
+              let(:merge_context) do
+                MergeContext.new(merge_method: merge_method) do
+                  workbench objectid_format: 'stif_netex' do
+                    line :line
+                    line :alternative_line
+
+                    stop_area :first
+                    stop_area :second
+                    stop_area :third
+
+                    referential :source, objectid_format: 'stif_netex', lines: [:line] do
+                      time_table :source_time_table
+                      route :offset_id_route, line: :line, with_stops: false do
+                        stop_point stop_area: :first
+                        stop_point stop_area: :second
+                        stop_point stop_area: :third
+                      end
+                      route :source_route, line: :line, with_stops: false do
+                        stop_point stop_area: :first
+                        stop_point stop_area: :second
+                        stop_point stop_area: :third
+                        journey_pattern :source_journey_pattern do
+                          vehicle_journey :source_vehicle_journey, time_tables: [:source_time_table], objectid: 'some_objectid'
+                        end
+                      end
+                    end
+
+                    referential :new, objectid_format: 'stif_netex', lines: %i[line alternative_line], archived_at: Time.zone.now do
+                      time_table :existing_time_table
+                      route :existing_route, line: :line, with_stops: false do
+                        stop_point stop_area: :first
+                        stop_point stop_area: :second
+                        stop_point stop_area: :third
+                        journey_pattern :existing_journey_pattern do
+                          vehicle_journey :existing_vehicle_journey, time_tables: [:existing_time_table], objectid: 'some_objectid'
+                        end
+                      end
+                    end
+                  end
+                end
+              end
+
+              before do
+                source.switch do
+                  merge_context.offset_id_route.destroy
+                end
+              end
+
+              it 'creates a VehicleJourney in the merged data set with a new objectid' do
+                existing_vehicle_journey = merge_context.existing_vehicle_journey
+                merge.merge!
+
+                merge.new.switch do
+                  expect(existing_vehicle_journey).to_not exist_in_database
+                  expect(Chouette::VehicleJourney.find_by(checksum: merge_context.source_vehicle_journey.checksum)).to be_present
+                  expect(Chouette::VehicleJourney.first.raw_objectid).to be_present.and not_include('some_objectid')
+                end
+              end
+            end
           end
 
           context "when the Route doesn't have the same checksum" do

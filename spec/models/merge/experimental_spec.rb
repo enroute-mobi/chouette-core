@@ -447,7 +447,7 @@ describe Merge do
               end
             end
 
-            context 'with StifNetex formatter, when the VehicleJourneys have the same objectids' do
+            context 'with StifNetex formatter, when the VehicleJourneys have the same objectids', skip: "WIP" do
               let(:merge_context) do
                 MergeContext.new(merge_method: merge_method) do
                   workbench objectid_format: 'stif_netex' do

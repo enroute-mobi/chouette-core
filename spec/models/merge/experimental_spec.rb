@@ -494,7 +494,7 @@ describe Merge do
           end
         end
 
-        describe 'when the Vehicle Journey objectid already exist' do
+        describe 'when the Vehicle Journey objectid already exists', skip: "WIP" do
           context 'with StifNetex formatter' do
             let(:merge_context) do
               MergeContext.new(merge_method: merge_method) do

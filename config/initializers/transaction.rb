@@ -73,7 +73,7 @@ module LongTransactionDetector
   end
 end
 
-if ENV.key?('CHOUETTE_LOG_LONG_TRANSACTIONS')
+if ENV['CHOUETTE_LOG_LONG_TRANSACTIONS'].present?
   Rails.logger.debug "Enable log for transactions longer than #{ENV.fetch('CHOUETTE_LOG_LONG_TRANSACTIONS')}s"
   module ActiveRecord
     class Base

@@ -38,9 +38,6 @@ class Widget < ActiveRecord::Base
     end
   end
 
-  class Image < Setup
-  end
-
   class Search < Setup
     CACHE_VERSION = '2026-05-12'
 
@@ -129,7 +126,7 @@ class Widget < ActiveRecord::Base
 
   attribute :setup, :json
 
-  enumerize :widget_type, in: %w[image search static_text]
+  enumerize :widget_type, in: %w[search static_text], default: 'search'
 
   validates :name, :widget_type, presence: true
   validates :setup, store_model: true

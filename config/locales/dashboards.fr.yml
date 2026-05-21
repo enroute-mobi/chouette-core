@@ -63,6 +63,5 @@ fr:
   enumerize:
     widget:
       widget_type:
-        image: "Image"
         search: "Recherche sauvegardée"
         static_text: "Texte statique"

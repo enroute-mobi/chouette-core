@@ -2073,7 +2073,23 @@ class Export::NetexGeneric < Export::Base
             attributes[:latest_arrival_time] = latest_arrival_passing_time
             attributes[:latest_arrival_day_offset] = latest_arrival_local_time_of_day.day_offset
           end
+
+          attributes[:occupancies] = netex_occupancies
         end
+      end
+
+      def netex_occupancies
+        return [] if occupancy_level.blank? && occupancy_percentage.blank?
+
+        netex_level = occupancy_level.present? ? occupancy_level.camelcase(:lower) : nil
+
+        [
+          Netex::OccupancyView.new(
+            id: "#{netex_identifier}:#{netex_level}",
+            occupancy_level: netex_level,
+            occupancy_percentage: occupancy_percentage
+          )
+        ]
       end
 
       def arrival_passing_time
@@ -2261,8 +2277,23 @@ class Export::NetexGeneric < Export::Base
           public_code: published_journey_identifier,
           day_types: day_types,
           key_list: netex_alternate_identifiers,
-          notice_assignments: notice_assignments
+          notice_assignments: notice_assignments,
+          occupancies: netex_occupancies
         )
+      end
+
+      def netex_occupancies
+        return [] if occupancy_level.blank? && occupancy_percentage.blank?
+
+        netex_level = occupancy_level.present? ? occupancy_level.camelcase(:lower) : nil
+
+        [
+          Netex::OccupancyView.new(
+            id: "#{netex_identifier}:#{netex_level}",
+            occupancy_level: netex_level,
+            occupancy_percentage: occupancy_percentage
+          )
+        ]
       end
 
       def netex_resource

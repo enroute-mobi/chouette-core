@@ -547,6 +547,7 @@ RSpec.describe Referential::Schema::Table do
         object_version transport_mode published_journey_name custom_field_values
         created_at updated_at checksum checksum_source data_source_ref metadata
         line_notice_ids accessibility_assessment_id service_facility_set_ids
+        occupancy_level occupancy_percentage
       ]
 
       expect(table.columns).to match_array(expected)

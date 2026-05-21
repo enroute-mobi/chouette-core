@@ -12,6 +12,8 @@ module Chouette
     @@day_offset_max = DAY_OFFSET_MAX
     mattr_accessor :day_offset_max
 
+    enumerize :occupancy_level, in: %w[unknown empty many_seats_available few_seats_available standing_room_only crushed_standing_room_only full not_accepting_passengers seats_available standing_available]
+
     belongs_to :stop_area, optional: true # CHOUETTE-3247
     belongs_to :stop_point, skippable: true
     belongs_to :vehicle_journey, inverse_of: :vehicle_journey_at_stops # TODO: CHOUETTE-3247 optional: true?
@@ -241,6 +243,7 @@ module Chouette
         attr_accessor :earliest_departure_time_of_day, :latest_arrival_time_of_day
         attr_accessor :checksum, :checksum_source
         attr_accessor :time_zone, :position
+        attr_accessor :occupancy_level, :occupancy_percentage
 
         def initialize(attributes = {})
           self.attributes = attributes
@@ -261,6 +264,8 @@ module Chouette
           @earliest_departure_time_of_day_seconds = attributes['earliest_departure_time_of_day']
           @latest_arrival_time_of_day_seconds = attributes['latest_arrival_time_of_day']
           @position = attributes["position"]
+          @occupancy_level = attributes['occupancy_level']
+          @occupancy_percentage = attributes['occupancy_percentage']
 
           @attributes = attributes
         end

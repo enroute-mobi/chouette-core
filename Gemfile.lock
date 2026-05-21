@@ -66,7 +66,7 @@ GIT
 
 GIT
   remote: https://bitbucket.org/enroute-mobi/netex.git
-  revision: 0e4af195c91b6942d070a853c700f142441ae568
+  revision: c9b5b3a24e355dd4132767094fb2483d282f9628
   specs:
     netex (0.1.2)
       activesupport
@@ -432,6 +432,9 @@ GEM
       googleauth (~> 1.9)
       mini_mime (~> 1.0)
     google-logging-utils (0.2.0)
+    google-protobuf (4.33.4)
+      bigdecimal
+      rake (>= 13)
     google-protobuf (4.33.4-arm64-darwin)
       bigdecimal
       rake (>= 13)
@@ -628,7 +631,7 @@ GEM
     orm_adapter (0.5.0)
     os (1.1.4)
     ostruct (0.6.3)
-    ox (2.14.23)
+    ox (2.14.26)
       bigdecimal (>= 3.0)
     parallel (1.27.0)
     parallel_tests (5.6.0)
@@ -774,12 +777,12 @@ GEM
     reverse_markdown (3.0.2)
       nokogiri
     rexml (3.4.4)
-    rgeo (3.0.1)
+    rgeo (3.1.0)
     rgeo-activerecord (8.0.0)
       activerecord (>= 7.0)
       rgeo (>= 3.0)
-    rgeo-proj4 (4.0.0)
-      rgeo (~> 3.0.0)
+    rgeo-proj4 (5.0.0)
+      rgeo (~> 3.1.0)
     rgeo-shapefile (3.1.0)
       dbf (~> 4.0)
       rgeo (>= 1.0)

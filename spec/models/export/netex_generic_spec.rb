@@ -1735,6 +1735,18 @@ RSpec.describe Export::NetexGeneric do
           before { vehicle_journey.published_journey_identifier = 'dummy' }
           it { is_expected.to include(public_code: 'dummy') }
         end
+
+        context 'when occupancy_level is "fewSeatsAvailable" and occupancy_percentage is 80' do
+          before do
+            allow(vehicle_journey).to receive(:occupancy_level).and_return('fewSeatsAvailable')
+            allow(vehicle_journey).to receive(:occupancy_percentage).and_return(80)
+          end
+          it 'includes occupancies' do
+            expect(subject[:occupancies]).to contain_exactly(an_instance_of(Netex::OccupancyView))
+            expect(subject[:occupancies].first.occupancy_level).to eq('fewSeatsAvailable')
+            expect(subject[:occupancies].first.occupancy_percentage).to eq(80)
+          end
+        end
       end
     end
   end

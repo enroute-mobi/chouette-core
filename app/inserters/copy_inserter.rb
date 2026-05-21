@@ -101,7 +101,7 @@ class CopyInserter < ByClassInserter
     # 1,1,1,,,12:00:00,12:01:00,normal,normal,0,0,b1c0ac4b48e0db6883d4cf8d89bfc0c9968284314445f95569204626db9c22e8,12:01|12:00|0|0,,,,
 
     def csv_headers
-      %w{id vehicle_journey_id stop_point_id arrival_time departure_time departure_day_offset arrival_day_offset checksum checksum_source stop_area_id earliest_departure_time_of_day latest_arrival_time_of_day}
+      %w{id vehicle_journey_id stop_point_id arrival_time departure_time departure_day_offset arrival_day_offset checksum checksum_source stop_area_id earliest_departure_time_of_day latest_arrival_time_of_day occupancy_level occupancy_percentage}
     end
 
     def model_class
@@ -109,7 +109,7 @@ class CopyInserter < ByClassInserter
     end
 
     def csv_values(v)
-      "#{v.id},#{v.vehicle_journey_id},#{v.stop_point_id},#{type_cast_time(v.arrival_time)},#{type_cast_time(v.departure_time)},#{v.departure_day_offset},#{v.arrival_day_offset},#{v.checksum},#{v.checksum_source},#{v.stop_area_id},#{type_cast_time_of_day(v.earliest_departure_time_of_day)},#{type_cast_time_of_day(v.latest_arrival_time_of_day)}"
+      "#{v.id},#{v.vehicle_journey_id},#{v.stop_point_id},#{type_cast_time(v.arrival_time)},#{type_cast_time(v.departure_time)},#{v.departure_day_offset},#{v.arrival_day_offset},#{v.checksum},#{v.checksum_source},#{v.stop_area_id},#{type_cast_time_of_day(v.earliest_departure_time_of_day)},#{type_cast_time_of_day(v.latest_arrival_time_of_day)},#{v.occupancy_level},#{v.occupancy_percentage}"
     end
 
     TIME_FORMAT = "%H:%M:%S"

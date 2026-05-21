@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2026_03_24_165302) do
+ActiveRecord::Schema[7.2].define(version: 2026_04_24_075800) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "btree_gin"
   enable_extension "hstore"
@@ -1775,6 +1775,8 @@ ActiveRecord::Schema[7.2].define(version: 2026_03_24_165302) do
     t.bigint "stop_area_id"
     t.integer "earliest_departure_time_of_day"
     t.integer "latest_arrival_time_of_day"
+    t.string "occupancy_level"
+    t.integer "occupancy_percentage"
     t.index ["stop_area_id"], name: "index_vehicle_journey_at_stops_on_stop_area_id"
     t.index ["stop_point_id"], name: "index_vehicle_journey_at_stops_on_stop_pointid"
     t.index ["vehicle_journey_id", "stop_area_id"], name: "index_vjas_on_vehicle_journey_id_and_stop_area_id"
@@ -1799,6 +1801,8 @@ ActiveRecord::Schema[7.2].define(version: 2026_03_24_165302) do
     t.bigint "line_notice_ids", default: [], array: true
     t.bigint "accessibility_assessment_id"
     t.bigint "service_facility_set_ids", default: [], array: true
+    t.string "occupancy_level"
+    t.integer "occupancy_percentage"
     t.index ["checksum"], name: "index_vehicle_journeys_on_checksum"
     t.index ["custom_field_values"], name: "index_vehicle_journeys_on_custom_field_values", using: :gin
     t.index ["journey_pattern_id"], name: "index_vehicle_journeys_on_journey_pattern_id"

@@ -13,7 +13,7 @@ export default function StopPoint(props) {
   return (
     <div className={classNames('nested-fields', { 'flexible-stop-point': isFlexible })}>
       <div className='wrapper'>
-        <div style={{width: 40}}>
+        <div style={{width: 100}}>
           <div className="form-group">
             {isFlexible && <i className="fa fa-phone"></i>}
           </div>

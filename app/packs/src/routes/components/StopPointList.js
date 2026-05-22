@@ -14,7 +14,7 @@ export default function StopPointList({ stopPoints, onDeleteClick, onMoveUpClick
       ) }
       <div className='nested-head'>
         <div className="wrapper">
-          <div style={{width: 40}}>
+          <div style={{width: 100}}>
             <div className="form-group">
               <label className="control-label">{I18n.t('simple_form.labels.stop_point.flexible')}</label>
             </div>

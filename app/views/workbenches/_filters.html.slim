@@ -5,7 +5,7 @@
     = f.input :line, as: :autocomplete_select, collection: @search.candidate_lines, label_method: :display_name, input_html: { style: 'width: 100%' }, width: 2
     = f.input :statuses, as: :autocomplete_select, input_html: { multiple: true, style: 'width: 100%' }
     - unless @single_workbench
-      = f.input :workbench_ids, as: :autocomplete_select, collection: @search.candidate_workbenches || [], input_html: { multiple: true, style: 'width: 100%' }
+      = f.input :workbench_ids, as: :autocomplete_select, collection: @search.candidate_workbenches, input_html: { multiple: true, style: 'width: 100%' }
   = f.row
     = f.input :valid_before_date, as: :date_picker
     = f.input :valid_after_date, as: :date_picker

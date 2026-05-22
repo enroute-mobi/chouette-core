@@ -14,7 +14,6 @@ RSpec.describe StopAreaProvider, type: :model do
       stop_area_provider.allowed_stop_area_types = nil
 
       expect(stop_area_provider.allowed_stop_area_types).to be_nil
-      expect(stop_area_provider.effective_allowed_stop_area_types).to eq(Chouette::AreaType::ALL.map(&:to_s))
     end
 
     it "stores all selected types as nil" do
@@ -37,6 +36,18 @@ RSpec.describe StopAreaProvider, type: :model do
 
       expect(stop_area_provider).not_to be_valid
       expect(stop_area_provider.errors).to have_key(:allowed_stop_area_types)
+    end
+  end
+
+  describe "#effective_allowed_stop_area_types" do
+    subject(:stop_area_provider) do
+      build(:stop_area_provider, allowed_stop_area_types: allowed_stop_area_types)
+    end
+
+    let(:allowed_stop_area_types) { nil }
+
+    it "returns all area types when allowed stop area types are nil" do
+      expect(stop_area_provider.effective_allowed_stop_area_types).to eq(Chouette::AreaType::ALL.map(&:to_s))
     end
   end
 

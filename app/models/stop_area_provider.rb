@@ -19,7 +19,12 @@ class StopAreaProvider < ActiveRecord::Base
   delegate :workgroup, to: :stop_area_referential
 
   validates :name, presence: true
-  validate :stop_areas_must_match_allowed_types
+  validate :allowed_stop_area_types_must_be_known
+  validate :stop_areas_must_match_allowed_types, if: :allowed_stop_area_types_changed_on_update?
+
+  def allowed_stop_area_types=(values)
+    super normalized_allowed_stop_area_types(values)
+  end
 
   def effective_allowed_stop_area_types
     allowed_stop_area_types || all_stop_area_types
@@ -39,9 +44,27 @@ class StopAreaProvider < ActiveRecord::Base
     self.stop_area_referential ||= workbench&.stop_area_referential
   end
 
-  def stop_areas_must_match_allowed_types
-    return if allowed_stop_area_types.nil?
+  def normalized_allowed_stop_area_types(values)
+    return if values.nil?
 
+    values = Array(values).reject(&:blank?).map(&:to_s).uniq
+    return if values.empty? || values.sort == all_stop_area_types.sort
+
+    values
+  end
+
+  def allowed_stop_area_types_must_be_known
+    unknown_area_types = allowed_stop_area_types.to_a - all_stop_area_types
+    return if unknown_area_types.empty?
+
+    errors.add(:allowed_stop_area_types, :inclusion, value: unknown_area_types.to_sentence)
+  end
+
+  def allowed_stop_area_types_changed_on_update?
+    persisted? && !allowed_stop_area_types.nil? && will_save_change_to_allowed_stop_area_types?
+  end
+
+  def stop_areas_must_match_allowed_types
     invalid_stop_area = stop_areas.where.not(area_type: allowed_stop_area_types).first
     return unless invalid_stop_area
 
@@ -49,7 +72,7 @@ class StopAreaProvider < ActiveRecord::Base
       :allowed_stop_area_types,
       :incompatible_with_stop_areas,
       name: invalid_stop_area.name,
-      area_type: Chouette::AreaType.find(invalid_stop_area.area_type)&.label || invalid_stop_area.area_type
+      area_type: Chouette::AreaType.find(invalid_stop_area.area_type).label
     )
   end
 end

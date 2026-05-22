@@ -9,6 +9,6 @@
   .row
     .col-lg-12
       h2.mb-lg= t("stop_area_providers.form.sections.permission_restrictions")
-      = f.input :allowed_stop_area_types, as: :select, collection: Chouette::AreaType.options(:all), selected: @stop_area_provider.allowed_stop_area_types, include_blank: false, input_html: { multiple: true, 'data-select2ed': true, style: 'width: 100%' }
+      = f.input :allowed_stop_area_types, as: :autocomplete_select, collection: Chouette::AreaType.options(:all), label_method: :first, input_html: { multiple: true }
 
   = f.button :submit, t('actions.submit'), class: 'formSubmitr', form: 'stop_area_provider_form'

@@ -22,13 +22,6 @@ RSpec.describe StopAreaProvider, type: :model do
       expect(stop_area_provider.allowed_stop_area_types).to be_nil
     end
 
-    it "rejects unknown area types" do
-      stop_area_provider.allowed_stop_area_types = %w[zdep unknown]
-
-      expect(stop_area_provider).not_to be_valid
-      expect(stop_area_provider.errors).to have_key(:allowed_stop_area_types)
-    end
-
     it "is invalid when an existing Stop Area uses a disallowed type" do
       create(:stop_area, :zdep, stop_area_provider: stop_area_provider)
 
@@ -36,6 +29,31 @@ RSpec.describe StopAreaProvider, type: :model do
 
       expect(stop_area_provider).not_to be_valid
       expect(stop_area_provider.errors).to have_key(:allowed_stop_area_types)
+    end
+  end
+
+  describe "#allowed_stop_area_types_must_be_known" do
+    subject(:stop_area_provider) do
+      build(:stop_area_provider, allowed_stop_area_types: allowed_stop_area_types)
+    end
+
+    context "when all allowed stop area types are known" do
+      let(:allowed_stop_area_types) { %w[zdep zdlp] }
+
+      it "does not add an error" do
+        stop_area_provider.valid?
+
+        expect(stop_area_provider.errors).not_to have_key(:allowed_stop_area_types)
+      end
+    end
+
+    context "when an allowed stop area type is unknown" do
+      let(:allowed_stop_area_types) { %w[zdep unknown] }
+
+      it "adds an error" do
+        expect(stop_area_provider).not_to be_valid
+        expect(stop_area_provider.errors).to have_key(:allowed_stop_area_types)
+      end
     end
   end
 

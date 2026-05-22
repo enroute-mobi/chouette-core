@@ -62,10 +62,20 @@ RSpec.describe StopAreaProvider, type: :model do
       build(:stop_area_provider, allowed_stop_area_types: allowed_stop_area_types)
     end
 
-    let(:allowed_stop_area_types) { nil }
+    context 'when allowed stop area types are nil' do
+      let(:allowed_stop_area_types) { nil }
 
-    it "returns all area types when allowed stop area types are nil" do
-      expect(stop_area_provider.effective_allowed_stop_area_types).to eq(Chouette::AreaType::ALL.map(&:to_s))
+      it "returns all area types when allowed stop area types are nil" do
+        expect(stop_area_provider.effective_allowed_stop_area_types).to eq(Chouette::AreaType::ALL.map(&:to_s))
+      end
+    end
+
+    context 'when allowed stop area types are specified' do
+      let(:allowed_stop_area_types) { %w[zdep zdlp] }
+
+      it "returns the specified allowed stop area types" do
+        expect(stop_area_provider.effective_allowed_stop_area_types).to eq(allowed_stop_area_types)
+      end
     end
   end
 

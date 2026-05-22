@@ -20,7 +20,7 @@ class StopAreaProvider < ActiveRecord::Base
 
   validates :name, presence: true
   validate :allowed_stop_area_types_must_be_known
-  validate :stop_areas_must_match_allowed_types, if: :allowed_stop_area_types_changed_on_update?
+  validate :stop_areas_must_match_allowed_types, if: :allowed_stop_area_types_changed_on_update?, on: :update
 
   def allowed_stop_area_types=(values)
     super normalized_allowed_stop_area_types(values)
@@ -61,7 +61,7 @@ class StopAreaProvider < ActiveRecord::Base
   end
 
   def allowed_stop_area_types_changed_on_update?
-    persisted? && !allowed_stop_area_types.nil? && will_save_change_to_allowed_stop_area_types?
+    !allowed_stop_area_types.nil? && will_save_change_to_allowed_stop_area_types?
   end
 
   def stop_areas_must_match_allowed_types

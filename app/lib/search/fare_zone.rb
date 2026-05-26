@@ -19,7 +19,7 @@ module Search
     end
 
     def candidate_fare_providers
-      workbench.fare_providers.order(:name)
+      workbench.fare_providers.order(:short_name)
     end
 
     class Order < ::Search::Order

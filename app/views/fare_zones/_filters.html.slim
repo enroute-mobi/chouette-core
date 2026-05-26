@@ -2,5 +2,4 @@
   = f.row
     = f.name
   = f.row
-    = f.input :fare_provider_id, as: :autocomplete_select, collection: @search.candidate_fare_providers, label_method: :name, value_method: :id, width: 2
-
+    = f.input :fare_provider_id, as: :autocomplete_select, collection: @search.candidate_fare_providers, label_method: :short_name, width: 2

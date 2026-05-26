@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2026_04_24_075800) do
+ActiveRecord::Schema[7.2].define(version: 2026_05_12_120000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "btree_gin"
   enable_extension "hstore"
@@ -1537,6 +1537,7 @@ ActiveRecord::Schema[7.2].define(version: 2026_04_24_075800) do
     t.datetime "updated_at", precision: nil, null: false
     t.bigint "workbench_id"
     t.string "short_name"
+    t.string "allowed_stop_area_types", array: true
     t.index ["workbench_id"], name: "index_stop_area_providers_on_workbench_id"
   end
 

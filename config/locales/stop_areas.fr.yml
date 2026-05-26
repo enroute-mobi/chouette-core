@@ -238,6 +238,8 @@ fr:
               not_allowed_for_flexible: "Les lieux d'arrêt à la demande ne peuvent pas avoir de parent"
               children_not_allowed_for_flexible: "Les lieux d'arrêt à la demande ne peuvent pas avoir d'enfants"
               must_be_absent: Un parent ne peut être sélectionné pour un Arrêt non commercial
+            stop_area_provider_id:
+              invalid_for_area_type: "n'autorise pas ce type d'Arrêt"
   chart:
     values:
       stop_area:

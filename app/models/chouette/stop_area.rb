@@ -95,6 +95,7 @@ module Chouette
     validate :parent_area_type_must_be_greater
     validate :parent_kind_must_be_the_same
     validate :area_type_of_right_kind
+    validate :area_type_allowed_by_stop_area_provider
     validate :registration_number_is_set
     validate :validate_no_parent_when_flexible
     validate :validate_parent_is_not_flexible
@@ -155,6 +156,13 @@ module Chouette
       unless has_valid_area_type?
         errors.add(:area_type, I18n.t('stop_areas.errors.incorrect_kind_area_type'))
       end
+    end
+
+    def area_type_allowed_by_stop_area_provider
+      return unless stop_area_provider && area_type
+      return if stop_area_provider.effective_allowed_stop_area_types.include?(area_type.to_s)
+
+      errors.add(:stop_area_provider_id, :invalid_for_area_type)
     end
 
     def registration_number_is_set

@@ -13,6 +13,10 @@ fr:
       title: "Editer %{name}"
     update:
       title: "Editer %{name}"
+    form:
+      placeholders:
+      sections:
+        permission_restrictions: "Restrictions de permission"
   activerecord:
     models:
       stop_area_provider:
@@ -21,5 +25,13 @@ fr:
     attributes:
       stop_area_provider:
         name: Nom
+        short_name: Nom court
+        allowed_stop_area_types: Types d'arrêts autorisés
         stop_area_ids: Arrêts
         workbench: Espace de travail
+    errors:
+      models:
+        stop_area_provider:
+          attributes:
+            allowed_stop_area_types:
+              incompatible_with_stop_areas: "est incompatible avec l'arrêt \"%{name}\" (%{area_type})"

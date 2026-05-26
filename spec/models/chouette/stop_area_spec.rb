@@ -239,6 +239,27 @@ describe Chouette::StopArea, :type => :model do
     end
   end
 
+  describe "#stop_area_provider" do
+    let(:stop_area_provider) { create(:stop_area_provider, allowed_stop_area_types: %w[zdlp]) }
+
+    it "is invalid when the provider doesn't allow the Stop Area type" do
+      subject.stop_area_provider = stop_area_provider
+      subject.kind = :commercial
+      subject.area_type = :zdep
+
+      expect(subject).not_to be_valid
+      expect(subject.errors).to have_key(:stop_area_provider_id)
+    end
+
+    it "is valid when the provider allows the Stop Area type" do
+      subject.stop_area_provider = stop_area_provider
+      subject.kind = :commercial
+      subject.area_type = :zdlp
+
+      expect(subject).to be_valid
+    end
+  end
+
   describe "#objectid" do
     it "should be uniq in a StopAreaReferential" do
       subject

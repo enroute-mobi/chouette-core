@@ -175,6 +175,10 @@ const actions = {
     type : 'SELECT_SPECIFIC_STOP_MODAL',
     vehicleJourney
   }),
+  openSelectOccupancyModal : (vehicleJourney) => ({
+    type : 'SELECT_OCCUPANCY_MODAL',
+    vehicleJourney
+  }),
   openDuplicateModal : () => ({
     type : 'DUPLICATE_VEHICLEJOURNEY_MODAL'
   }),
@@ -238,6 +242,10 @@ const actions = {
   selectSpecificStop : (specific_stop_area_map) => ({
     type: 'SELECT_SPECIFIC_STOP',
     specific_stop_area_map
+  }),
+  selectOccupancy : (occupancyData) => ({
+    type: 'SELECT_OCCUPANCY',
+    occupancyData
   }),
   duplicateVehicleJourney : (addtionalTime, duplicateNumber, departureDelta) => ({
     type: 'DUPLICATE_VEHICLEJOURNEY',

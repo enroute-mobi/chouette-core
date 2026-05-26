@@ -62,6 +62,7 @@ fr:
       hint_info: Informations
       hint_calendars: Calendriers
       hint_specific_stops: Arrêts spécifiques
+      hint_occupancy: Affluence
       hint_add_vj: Ajouter
       hint_duplicate: Dupliquer
       hint_shift_vj: Décaller
@@ -76,6 +77,7 @@ fr:
       slide_departure: "horaire de départ au 1° arrêt à"
       slide_title: "Décaler l'ensemble des horaires de la course : %{id}"
       specific_stops_title: "Arrêts spécifiques à la course : %{id}"
+      occupancy_title: "Affluence pour la course : %{id}"
       slide: "Décaler"
       slide_delta: "Avec un décalage de"
       starting_stop: "Origine"
@@ -90,6 +92,10 @@ fr:
       to_arrivals: "Copie départs vers arrivées"
       to_departures: "Copie arrivées vers départs"
       to: "à"
+      default_occupancy: "Affluence par défaut"
+      occupancy_per_passing_time: "Affluence par temps de passage"
+      select_occupancy_level: "Sélectionner le niveau d'affluence"
+      occupancy_percentage: "Pourcentage d'affluence"
     timeless:
       title: "Courses sans horaire"
       vehicle_journeys: "Courses ayant des horaires"

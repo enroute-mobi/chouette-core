@@ -62,6 +62,7 @@ en:
       hint_info: Informations
       hint_calendars: Calendars
       hint_specific_stops: Specific stops
+      hint_occupancy: Occupancy
       hint_add_vj: Add
       hint_duplicate: Duplicate
       hint_shift_vj: Shift passing times
@@ -76,6 +77,7 @@ en:
       slide_departure: "departure time at first stop"
       slide_title: "Shift all the vehicle journey passing times : %{id}"
       specific_stops_title: "Specific stop areas for vehicle journey : %{id}"
+      occupancy_title: "Occupancy for vehicle journey : %{id}"
       slide: "Shift"
       slide_delta: "Shift of"
       starting_stop: "Departure"
@@ -89,6 +91,10 @@ en:
       to_arrivals: "Copy departures to arrivals"
       to_departures: "Copy arrivals to departures"
       to: "at"
+      default_occupancy: "Default Occupancy"
+      occupancy_per_passing_time: "Occupancy per Passing Time"
+      select_occupancy_level: "Select occupancy level"
+      occupancy_percentage: "Occupancy percentage"
     timeless:
       title: "Timeless vehicle journeys"
       vehicle_journeys: "Vehicle journeys with times at stop"

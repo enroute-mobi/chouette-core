@@ -151,6 +151,20 @@ const vehicleJourney= (state = {}, action, keep) => {
         return vjas
       })
       return _.assign({}, state, {vehicle_journey_at_stops: vjasList})
+    case 'SELECT_OCCUPANCY':
+      let occupancyData = action.occupancyData
+      let updatedVJ = _.assign({}, state, {
+        occupancy_level: occupancyData.default_occupancy_level,
+        occupancy_percentage: occupancyData.default_occupancy_percentage
+      })
+      let occupancyVjasList = updatedVJ.vehicle_journey_at_stops.map((vjas, i) => {
+        if (Object.keys(occupancyData.occupancies).includes(vjas.stop_point_id.toString())) {
+          vjas.occupancy_level = occupancyData.occupancies[vjas.stop_point_id].occupancy_level
+          vjas.occupancy_percentage = occupancyData.occupancies[vjas.stop_point_id].occupancy_percentage
+        }
+        return vjas
+      })
+      return _.assign({}, updatedVJ, {vehicle_journey_at_stops: occupancyVjasList})
     case 'UPDATE_TIME':
       let vj, vjas, vjasArray, newSchedule
       let val = action.val
@@ -271,6 +285,14 @@ export default function vehicleJourneys(state = [], action) {
         }
       })
     case 'SELECT_SPECIFIC_STOP':
+      return state.map((vj, i) => {
+        if (vj.selected){
+          return vehicleJourney(vj, action, true)
+        }else{
+          return vj
+        }
+      })
+    case 'SELECT_OCCUPANCY':
       return state.map((vj, i) => {
         if (vj.selected){
           return vehicleJourney(vj, action, true)

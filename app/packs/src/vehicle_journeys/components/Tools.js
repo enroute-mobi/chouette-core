@@ -8,6 +8,7 @@ import CopyButton from '../containers/tools/CopyButton'
 import PasteButton from '../containers/tools/PasteButton'
 import ShiftVehicleJourney from '../containers/tools/ShiftVehicleJourney'
 import SelectSpecificStop from '../containers/tools/SelectSpecificStop'
+import SelectOccupancy from '../containers/tools/SelectOccupancy'
 import DuplicateVehicleJourney from '../containers/tools/DuplicateVehicleJourney'
 import EditVehicleJourney from '../containers/tools/EditVehicleJourney'
 import NotesEditVehicleJourney from '../containers/tools/NotesEditVehicleJourney'
@@ -44,6 +45,7 @@ export default class Tools extends Component {
           { !selectionMode && <DuplicateVehicleJourney disabled={!hasPolicy("create") || !hasPolicy("update") || !editMode || hasDeletedVJ()}/> }
           { !selectionMode && <ShiftVehicleJourney disabled={!hasPolicy("update") || !editMode || hasDeletedVJ()}/> }
           { !selectionMode && <SelectSpecificStop disabled={hasDeletedVJ()}/> }
+          { !selectionMode && <SelectOccupancy disabled={hasDeletedVJ()}/> }
           { !selectionMode && <EditVehicleJourney disabled={hasDeletedVJ()}/> }
 
           { !selectionMode && <TimetablesEditVehicleJourney disabled={hasDeletedVJ()}/> }

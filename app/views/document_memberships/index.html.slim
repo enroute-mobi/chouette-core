@@ -1,28 +1,21 @@
 - breadcrumb :"#{documentable.class.name.demodulize.underscore}_document_memberships", @workbench, documentable
-.page_content
-	.container-fluid
-		- if @document_memberships.any?
-			.row
-				.col-lg-12.document_memberships
-				  = render 'document_memberships'
+.page_content x-data="{ saveSearchPanel: false }"
+  .container-fluid
+    - if @document_memberships.any?
+      .row
+        .col-lg-12.document_memberships
+          = render 'document_memberships'
 
-		- else
-			.row.mt-xs
-				.col-lg-12
-					= replacement_msg t('documents.search_no_results')
+    - else
+      .row.mt-xs
+        .col-lg-12
+          = replacement_msg t('documents.search_no_results')
 
-		h2 = I18n.t('documentable.actions.associate_other_documents')
-		.row
-			= simple_form_for @search, url: request.path, method: "GET", remote: true, html: { class: 'form form-filter' }  do |f|
-				.ffg-row
-					.input-group.search_bar
-						= f.input :name, label: false, class: 'form-control'
-						span.input-group-btn
-							button.btn.btn-default#search_btn type='submit'
-								span.fa.fa-search
-				.actions
-					= link_to t('actions.erase'), request.path, class: 'btn btn-link', remote: true
-					= f.submit t('actions.filter'), class: 'btn btn-default'
+    h2 = I18n.t('documentable.actions.associate_other_documents')
+    .row
+      = simple_search_for @search, request.path, save_search: false do |f|
+        = f.row
+          = f.name
 
-		.unassociated_documents
-		  = render 'unassociated_documents'
+    .unassociated_documents
+      = render 'unassociated_documents'

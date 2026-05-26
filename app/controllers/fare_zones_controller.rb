@@ -23,6 +23,10 @@ class FareZonesController < Chouette::FareReferentialController
   alias fare_zone resource
   alias workbench parent
 
+  def end_of_association_chain
+    workbench.fare_referential.fare_zones
+  end
+
   def resource
     get_resource_ivar || set_resource_ivar(super.decorate(context: { workbench: workbench }))
   end

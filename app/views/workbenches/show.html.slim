@@ -11,7 +11,7 @@
         = link_to t('actions.new'), new_workbench_referential_path(@workbench), class: 'btn btn-primary'
       = link_to t('workbenches.actions.show_output'), workbench_output_path(@workbench), class: 'btn btn-primary'
 
-.page_content
+.page_content x-data="{ saveSearchPanel: false }"
   .container-fluid
     .row
       .col-lg-12

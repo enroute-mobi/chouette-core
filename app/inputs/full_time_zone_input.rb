@@ -44,8 +44,8 @@ class FullTimeZoneInput < SimpleForm::Inputs::CollectionSelectInput
       sortField: [{field:'$order'},{field:'$score'}]
     }
 
-    # Vérifier s'il y a une option vide
-    if collection.any? { |option| option.last.nil? || option.last == "" }
+    # Check if there is an empty option
+    if collection.any? { |option| option.last.blank? }
       config[:allowEmptyOption] = true
     end
 

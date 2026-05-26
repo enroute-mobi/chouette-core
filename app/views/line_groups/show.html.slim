@@ -10,6 +10,8 @@
           = d.attribute :short_name
           = d.attribute :description
           = d.attribute :line_ids, as: :associations, value: @line_group.lines.sort_by(&:name), link: ->(line) { workbench_line_referential_line_path(@workbench, line) }
+          - if @line_group.network
+            = d.attribute :network, as: :association, value: @line_group.network, link: workbench_line_referential_network_path(@workbench, @line_group.network)
 
         = simple_block_for @line_group, title: t('line_groups.form.sections.internal') do |d|
           = d.attribute :line_provider, as: :association, link: workbench_line_referential_line_provider_path(@workbench, @line_group.line_provider)

@@ -857,8 +857,10 @@ ActiveRecord::Schema[7.2].define(version: 2026_05_12_120000) do
     t.datetime "updated_at", precision: nil, null: false
     t.string "short_name"
     t.uuid "uuid", default: -> { "gen_random_uuid()" }, null: false
+    t.bigint "network_id"
     t.index ["line_provider_id"], name: "index_line_groups_on_line_provider_id"
     t.index ["line_referential_id"], name: "index_line_groups_on_line_referential_id"
+    t.index ["network_id"], name: "index_line_groups_on_network_id"
   end
 
   create_table "line_notices", force: :cascade do |t|

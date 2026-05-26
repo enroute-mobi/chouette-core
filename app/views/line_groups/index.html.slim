@@ -21,6 +21,14 @@
                     line_group \
                   ) \
                 end \
+              ),
+              TableBuilderHelper::Column.new( \
+                key: :network, \
+                attribute: Proc.new { |line_group| line_group.network&.name }, \
+                sortable: false, \
+                link_to: lambda do |line_group| \
+                  line_group.network ? workbench_line_referential_network_path(@workbench, line_group.network) : nil \
+                end \
               ), \
               TableBuilderHelper::Column.new( \
                 key: :description, \

@@ -28,6 +28,10 @@ module ProcessingRule
       processable_type == Control::List.name
     end
 
+    def after_import?
+      operation_step == :after_import
+    end
+
     def control_list_id
       processable_id if use_control_list?
     end
@@ -114,7 +118,8 @@ module ProcessingRule
                                scope: :shallow,
                                i18n_scope: 'enumerize.processing_rule/base.operation_step'
 
-    validates :operation_step, uniqueness: { scope: %i[processable_type workbench] }
+    validates :operation_step, uniqueness: { scope: %i[processable_type workbench] }, unless: :after_import?
+    validates :operation_step, uniqueness: { scope: %i[processable_type processable_id workbench] }, if: :after_import?
 
     def use_macro_list?
       processable_type == Macro::List.name
@@ -157,7 +162,8 @@ module ProcessingRule
                                scope: :shallow,
                                i18n_scope: 'enumerize.processing_rule/base.operation_step'
 
-    validates :operation_step, uniqueness: { scope: %i[processable_type workgroup] }
+    validates :operation_step, uniqueness: { scope: %i[processable_type workgroup] }, unless: :after_import?
+    validates :operation_step, uniqueness: { scope: %i[processable_type processable_id workgroup] }, if: :after_import?
 
     validate :exclusive_workbenches
 

@@ -2068,9 +2068,11 @@ module Import
         def chouette_model
           return unless scheduled_stop_point
 
-          if scheduled_stop_points.key?(scheduled_stop_point.id)
+          current_scheduled_stop_point = scheduled_stop_points[scheduled_stop_point.id]
+          if current_scheduled_stop_point
             errors.add(
               :scheduled_stop_point_alreay_associated,
+              criticity: current_scheduled_stop_point.stop_area_id == stop_area_id ? :warning : :error,
               message_attributes: { scheduled_stop_point_id: scheduled_stop_point.id }
             )
             return

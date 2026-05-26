@@ -1,24 +1,2 @@
-= simple_form_for @search, url: request.path, method: "GET", html: { class: 'form form-filter' }  do |f|
-  .ffg-row
-    .input-group.search_bar
-      = f.input :name, label: false, class: 'form-control', placeholder: I18n.t('control_list_run.filters.name'), wrapper_html: {class: 'mb-0'}
-      span.input-group-btn
-        button.btn.btn-default#search_btn type='submit'
-          span.fa.fa-search
-
-  .ffg-row
-    .form-group.togglable
-      = f.label :statuses, required: false, class: 'control-label'
-      = f.input :statuses, as: :check_boxes, collection: @search.candidate_statuses.map(&:slug), label: false, label_method: lambda{|slug| ("<span>" + operation_status(slug, verbose: true) + "</span>").html_safe}, wrapper_html: { class: "checkbox_list"}
-    .form-group.togglable
-      = f.label :workbench_ids, class: 'control-label'
-      = f.input :workbench_ids, as: :check_boxes, collection: @search.candidate_workbenches.order('name'), label: false, label_method: lambda{|workbench| ("<span>" + workbench.name + "</span>").html_safe}, value_method: lambda{|workbench| workbench.id.to_s}, wrapper_html: { class: "checkbox_list"}
-    = f.input :referential_name
-    = f.input :start_date, as: :date_picker
-    = f.input :end_date, as: :date_picker
-
-  .actions
-    .flex
-      = render partial: 'shared/per_page', locals: {f:f}
-    = link_to t('actions.erase'), workgroup_control_list_runs_path(@workgroup), class: 'btn btn-link'
-    = f.submit t('actions.filter'), class: 'btn btn-default'
+= simple_search_for @search, workgroup_control_list_runs_path(@workgroup) do |f|
+  = render 'control_list_runs/control_list_run_filters', f: f

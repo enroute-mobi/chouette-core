@@ -780,7 +780,7 @@ class Import::Gtfs < Import::Base
 
   def import_transfers
     with_warning_lookup = lookup.on_response(on: :stop_areas) do |response, arguments|
-      if response.source == :workgroup
+      if response.source != :none && response.source != :provider
         resource = arguments[:resource]
         code = response.code
 
@@ -1242,7 +1242,7 @@ class Import::Gtfs < Import::Base
   def find_stop_parent_or_create_message(stop_area_name, parent_station, resource)
     # Ugly, but this code should be into a dedicated Part :-/
     @with_warning_parent_lookup ||= lookup.on_response(on: :stop_areas) do |response, arguments|
-      if response.source == :workgroup
+      if response.source != :none && response.source != :provider
         resource = arguments[:resource]
         code = response.code
 

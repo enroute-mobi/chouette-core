@@ -109,7 +109,7 @@ fr:
         empty_service: Le service %{service_id} est vide
       transfers:
         missing_stop_id: "L'arrêt %{stop_id} est introuvable"
-        stop_id_from_stop_area_referential: "L'Arrêt %{stop_id} provient du groupe de travail"
+        stop_id_from_stop_area_referential: "L'Arrêt %{stop_id} provient d'un autre fournisseur d'arrêt"
         replacing_duration: "Une nouvelle valeur a été définie pour la durée de transit pour la correspondance %{from_id} => %{to_id}"
         same_arrival_and_departure: "Les deux arrêts doivent être distincts"
     1_netexstif_2: "Le fichier %{source_filename} ne respecte pas la syntaxe XML ou la XSD NeTEx : erreur '%{error_value}' rencontré"

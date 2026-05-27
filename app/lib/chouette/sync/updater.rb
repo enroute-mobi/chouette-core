@@ -177,7 +177,12 @@ module Chouette
         end
 
         def create(resource)
-          return if ignore_particulars? && resource.particular?
+          if ignore_particulars? && resource.particular?
+            if resource.respond_to?(:derived_from_object_ref) && resource.derived_from_object_ref.present?
+              updater.pending_referent(resource.id, resource.derived_from_object_ref)
+            end
+            return
+          end
 
           attributes = prepare_attributes(resource)
           model = scope.build attributes

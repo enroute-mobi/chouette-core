@@ -13,6 +13,10 @@ module Chouette::Sync
         super options
       end
 
+      def after_synchronisation
+        updater.update_pending_referents
+      end
+
       class Decorator < Chouette::Sync::Netex::Decorator
 
         delegate :house_number, :address_line_1, :address_line_2, :street, :town,
@@ -26,6 +30,14 @@ module Chouette::Sync
 
         def company_default_contact_more
           contact_details&.further_details
+        end
+
+        def company_referent_id
+          return unless particular?
+
+          pending_referent id, derived_from_object_ref
+
+          nil
         end
 
         def model_attributes
@@ -46,8 +58,11 @@ module Chouette::Sync
             default_contact_email: default_contact_email,
             default_contact_url: default_contact_url,
             default_contact_more: company_default_contact_more,
+            referent_id: company_referent_id,
             import_xml: raw_xml
-          }
+          }.tap do |attributes|
+            attributes[:is_referent] = false if particular?
+          end
         end
 
       end

@@ -1,10 +1,10 @@
 - breadcrumb :fare_zones, @workbench
 
-.page_content
+.page_content x-data="{ saveSearchPanel: false }"
   .container-fluid
     .row
       .col-lg-12
-        / = render 'filters'
+        = render 'filters'
     - if @fare_zones.any?
       .row
         .col-lg-12
@@ -28,7 +28,7 @@
             ].compact,
             cls: 'table has-filter has-search'
 
-          / = new_pagination @fare_zones, 'pull-right'
+          = new_pagination @fare_zones, 'pull-right'
 
     - unless @fare_zones.any?
       .row.mt-xs

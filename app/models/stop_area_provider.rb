@@ -27,7 +27,7 @@ class StopAreaProvider < ActiveRecord::Base
   end
 
   def effective_allowed_stop_area_types
-    allowed_stop_area_types || all_stop_area_types
+    allowed_stop_area_types.presence || all_stop_area_types
   end
 
   def all_stop_area_types
@@ -45,10 +45,10 @@ class StopAreaProvider < ActiveRecord::Base
   end
 
   def normalized_allowed_stop_area_types(values)
-    return if values.nil?
+    return [] if values.blank?
 
     values = Array(values).reject(&:blank?).map(&:to_s).uniq
-    return if values.empty? || values.sort == all_stop_area_types.sort
+    return [] if values.empty? || values.sort == all_stop_area_types.sort
 
     values
   end
@@ -61,7 +61,7 @@ class StopAreaProvider < ActiveRecord::Base
   end
 
   def allowed_stop_area_types_changed_on_update?
-    !allowed_stop_area_types.nil? && will_save_change_to_allowed_stop_area_types?
+    allowed_stop_area_types.present? && will_save_change_to_allowed_stop_area_types?
   end
 
   def stop_areas_must_match_allowed_types

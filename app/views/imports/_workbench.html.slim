@@ -23,7 +23,8 @@
 .row
   .col-lg-12
     .error_messages
-      - messages = @import.messages + @import.resources.flat_map(&:messages) + (@import.children.first&.messages || [])
+      / Import::Netex messages may have both #import_id and #resource_id at the same time, therefore we have to filter out the import messages associated to a resource
+      - messages = @import.messages + @import.resources.flat_map(&:messages) + (@import.children.first&.messages.where(resource_id: nil) || [])
       = render 'shared/iev_interfaces/messages', messages: messages
 
 - if @imported_resources.present?

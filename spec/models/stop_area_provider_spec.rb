@@ -10,16 +10,16 @@ RSpec.describe StopAreaProvider, type: :model do
       expect(stop_area_provider.allowed_stop_area_types).to eq(%w[zdep zdlp])
     end
 
-    it "keeps nil as all allowed types" do
-      stop_area_provider.allowed_stop_area_types = nil
+    it "keeps empty as all allowed types" do
+      stop_area_provider.allowed_stop_area_types = []
 
-      expect(stop_area_provider.allowed_stop_area_types).to be_nil
+      expect(stop_area_provider.allowed_stop_area_types).to eq([])
     end
 
-    it "stores all selected types as nil" do
+    it "stores all selected types as empty" do
       stop_area_provider.allowed_stop_area_types = Chouette::AreaType::ALL.reverse
 
-      expect(stop_area_provider.allowed_stop_area_types).to be_nil
+      expect(stop_area_provider.allowed_stop_area_types).to eq([])
     end
 
     it "is invalid when an existing Stop Area uses a disallowed type" do
@@ -62,10 +62,10 @@ RSpec.describe StopAreaProvider, type: :model do
       build(:stop_area_provider, allowed_stop_area_types: allowed_stop_area_types)
     end
 
-    context 'when allowed stop area types are nil' do
-      let(:allowed_stop_area_types) { nil }
+    context 'when allowed stop area types are empty' do
+      let(:allowed_stop_area_types) { [] }
 
-      it "returns all area types when allowed stop area types are nil" do
+      it "returns all area types when allowed stop area types" do
         expect(stop_area_provider.effective_allowed_stop_area_types).to eq(Chouette::AreaType::ALL.map(&:to_s))
       end
     end

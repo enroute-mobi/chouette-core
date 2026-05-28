@@ -84,7 +84,7 @@ RSpec.describe Query::NotificationRule do
     let(:expected_scope) { context.notification_rules(:in_period) }
 
     it 'should return the notification rule with the overlapping period' do
-      scope = query.in_period(Time.zone.today..Time.zone.today).scope
+      scope = query.in_period(Period.new(from: Time.zone.today, to: Time.zone.today)).scope
 			expect(scope).to match_array(expected_scope)
     end
   end

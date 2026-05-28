@@ -21,7 +21,7 @@ module Query
 
 		def in_period(period)
 			change_scope(if: period.present?) do |scope|
-				scope.where('period::daterange && daterange(:begin, :end)', begin: period.min, end: period.max + 1.day) #Need to add one day because of PostgreSQL behaviour with daterange (exclusvive end)
+				scope.where('period::daterange && ?', period.to_postgresql_daterange)
 			end
 		end
 

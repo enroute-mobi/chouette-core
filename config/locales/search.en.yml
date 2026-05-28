@@ -15,6 +15,7 @@ en:
         saved_name: Saved Search Name
         saved_description: Description
         statuses: Status
+        operation_statuses: Operation status(es)
         workbench_ids: Workbench
         workbench_id: Workbench
         workbench: Workbench
@@ -74,6 +75,7 @@ en:
         export_type: "Export Type"
         file: "Filename"
         criticity: "Criticity"
+        rule_type: Action
         chart:
           group_by_attribute:
             sub_type:

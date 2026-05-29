@@ -26,6 +26,11 @@
                 end \
               ), \
               TableBuilderHelper::Column.new( \
+                key: :short_name, \
+                attribute: :short_name, \
+                sortable: false, \
+              ), \
+              TableBuilderHelper::Column.new( \
                 key: :workbench, \
                 attribute: Proc.new { |provider| provider.workbench.name }, \
               ), \

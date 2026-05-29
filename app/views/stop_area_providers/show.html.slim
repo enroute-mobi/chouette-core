@@ -10,6 +10,7 @@
           {  \
             t('id_reflex') => @stop_area_provider.get_objectid.short_id,
             StopAreaProvider.tmf('name') => @stop_area_provider.name,
+            StopAreaProvider.tmf('short_name') => @stop_area_provider.short_name,
             StopAreaProvider.tmf('workbench') => @stop_area_provider.workbench.name,
             StopAreaProvider.tmf('allowed_stop_area_types') => @stop_area_provider.allowed_stop_area_types.map { |area_type| Chouette::AreaType.find(area_type).label }.join(', ').presence || t('all.masculine'),
             Chouette::StopArea.model_name.human_plural => "#{@stop_area_provider.stop_areas.count} #{Chouette::StopArea.t}" \

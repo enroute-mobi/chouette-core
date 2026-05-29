@@ -29,21 +29,10 @@ RSpec.describe Chouette::ObjectidFormatter::StifCodifligne do
       it { is_expected_to_not change(model, :raw_objectid) }
     end
 
-    context 'when model has not primary key value' do
-      let(:pending_id) { 'pending_id' }
-
-      before { allow(formatter).to receive(:pending_id).and_return(pending_id) }
-
-      it { is_expected_to change(model, :raw_objectid).from(nil).to(pending_id) }
-    end
-
-    context 'when model has a primary key value' do
+    context 'when model has no objectid' do
       let(:generated_id) { 'generated_id' }
 
-      before do
-        model.id = 42
-        allow(formatter).to receive(:objectid).and_return(generated_id)
-      end
+      before { allow(formatter).to receive(:objectid).and_return(generated_id) }
 
       it { is_expected_to change(model, :raw_objectid).from(nil).to(generated_id) }
     end
@@ -52,41 +41,7 @@ RSpec.describe Chouette::ObjectidFormatter::StifCodifligne do
   describe '#after_commit' do
     subject { formatter.after_commit(model) }
 
-    let(:persisted) { true }
-    let(:objectid) { '__pending_id__test' }
-
-    before do
-      allow(model).to receive(:persisted?).and_return(persisted)
-      model.id = 42
-      model.objectid = objectid
-    end
-
-    context 'when model is not persisted' do
-      let(:persisted) { false }
-
-      it { is_expected_to_not change(model, :raw_objectid) }
-    end
-
-    context 'when model is persisted' do
-      context 'when model has not a pending objectid' do
-        before { model.objectid = 'dummy' }
-
-        it { is_expected_to_not change(model, :raw_objectid) }
-      end
-
-      context 'when model has a pending objectid' do
-        before { allow(formatter).to receive(:objectid).and_return(generated_id) }
-
-        let(:generated_id) do
-          Chouette::Objectid::StifCodifligne.new(provider_id: 'test', object_type: 'type', local_id: 'local_id')
-        end
-
-        it do
-          expect(model).to receive(:update_column).with(:objectid, generated_id.to_s)
-          subject
-        end
-      end
-    end
+    it { is_expected_to_not change(model, :raw_objectid) }
   end
 
   describe '#objectid' do

@@ -3,24 +3,14 @@
 module Chouette
   module ObjectidFormatter
     class StifCodifligne < Base
-      PENDING_PATTERN = '__pending_id__'
-
       def before_validation(model)
         return if model.raw_objectid
 
-        model.objectid = model.id ? objectid(model).to_s : pending_id
-      end
-
-      def pending_id
-        "#{PENDING_PATTERN}#{SecureRandom.uuid}"
+        model.objectid = objectid(model).to_s
       end
 
       def after_commit(model)
-        return unless model.persisted?
-        return unless model.raw_objectid&.starts_with?(PENDING_PATTERN)
-
-        oid = objectid(model)
-        model.update_column(:objectid, oid.to_s) if oid.valid? # rubocop:disable Rails/SkipsModelValidations
+        # # unused method in this context
       end
 
       def objectid(model)

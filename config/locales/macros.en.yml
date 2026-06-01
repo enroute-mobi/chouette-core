@@ -58,6 +58,8 @@ en:
         one: Force attribute value
       macro/define_route_name:
         one: Define route name or direction
+      macro/define_vehicle_journey_name:
+        one: Define Vehicle Journey name
       macro/associate_stop_area_with_fare_zone:
         one: Associate Stop areas with Fare Zones
       macro/create_codes_from_particulars:
@@ -109,6 +111,8 @@ en:
         expected_value: Expected value
       macro/define_route_name:
         target_model: Target Model
+        target_format: Format
+      macro/define_vehicle_journey_name:
         target_format: Format
       macro/associate_stop_area_with_fare_zone:
         target_attribute: Attribute

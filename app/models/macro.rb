@@ -26,6 +26,7 @@ module Macro
       Macro::DefineStopAreaTransportMode,
       Macro::ForceAttributeValue,
       Macro::DefineRouteName,
+      Macro::DefineVehicleJourneyName,
       Macro::AssociateStopAreaWithFareZone,
       Macro::CreateCodesFromParticulars,
       Macro::AdjustPeriods,

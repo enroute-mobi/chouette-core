@@ -58,6 +58,8 @@ fr:
         one: Forcer la valeur de l'attribut
       macro/define_route_name:
         one: Définir le nom ou le nom de la direction de l'Itinéraire
+      macro/define_vehicle_journey_name:
+        one: Définir le nom des Courses à partir du code public
       macro/associate_stop_area_with_fare_zone:
         one: Associer les arrêts avec les zones tarifaires
       macro/create_codes_from_particulars:
@@ -109,6 +111,8 @@ fr:
         expected_value: Valeur attendue
       macro/define_route_name:
         target_attribute: Attribut
+        target_format: Format
+      macro/define_vehicle_journey_name:
         target_format: Format
       macro/associate_stop_area_with_fare_zone:
         target_attribute: Attribut

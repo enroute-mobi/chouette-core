@@ -23,10 +23,10 @@ RSpec.describe Control::JourneyPatternSpeed do
 
     let(:context) do
       Chouette.create do
-        stop_area :first, id: 1000, name: 'first'
-        stop_area :second, id: 2000, name: 'second'
-        stop_area :third, id: 3000, name: 'third'
-        stop_area :last, id: 4000, name: 'last'
+        stop_area :first, name: 'first'
+        stop_area :second, name: 'second'
+        stop_area :third, name: 'third'
+        stop_area :last, name: 'last'
 
         referential do
           route stop_areas: %i[first second third last] do
@@ -42,10 +42,11 @@ RSpec.describe Control::JourneyPatternSpeed do
 
     before do
       referential.switch
+      puts context.stop_area(:first).id
       journey_pattern.update costs: {
-        '1000-2000' => { 'time' => 10, 'distance' => 2160 },
-        '2000-3000' => { 'time' => 30, 'distance' => 12_000_000 },
-        '3000-4000' => { 'time' => 20, 'distance' => 100 }
+        "#{context.stop_area(:first).id}-#{context.stop_area(:second).id}" => { 'time' => 10, 'distance' => 2160 },
+        "#{context.stop_area(:second).id}-#{context.stop_area(:third).id}" => { 'time' => 30, 'distance' => 12_000_000 },
+        "#{context.stop_area(:third).id}-#{context.stop_area(:last).id}" => { 'time' => 20, 'distance' => 100 }
       }
     end
 

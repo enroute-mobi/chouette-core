@@ -494,11 +494,11 @@ describe Merge do
           end
         end
 
-        describe 'when the Vehicle Journey objectid already exists', skip: "WIP" do
+        describe 'when the Vehicle Journey objectid already exists' do
           context 'with StifNetex formatter' do
             let(:merge_context) do
               MergeContext.new(merge_method: merge_method) do
-                workbench objectid_format: 'stif_netex' do
+                workbench objectid_format: 'stif_netex', prefix: 'prefix' do
                   line :line
                   line :existing_line
 
@@ -506,7 +506,7 @@ describe Merge do
                     time_table :source_time_table
                     route :source_route, line: :line do
                       journey_pattern :source_journey_pattern do
-                        vehicle_journey :source_vehicle_journey, published_journey_name: 'new', time_tables: [:source_time_table], objectid: 'some_objectid'
+                        vehicle_journey :source_vehicle_journey, published_journey_name: 'new', time_tables: [:source_time_table], objectid: 'some_objectid:::LOC'
                       end
                     end
                   end
@@ -515,7 +515,7 @@ describe Merge do
                     time_table :existing_time_table
                     route :existing_route, line: :existing_line do
                       journey_pattern :existing_journey_pattern do
-                        vehicle_journey :existing_vehicle_journey, published_journey_name: 'existing', time_tables: [:existing_time_table], objectid: 'some_objectid'
+                        vehicle_journey :existing_vehicle_journey, published_journey_name: 'existing', time_tables: [:existing_time_table], objectid: 'some_objectid:::LOC'
                       end
                     end
                   end
@@ -535,7 +535,7 @@ describe Merge do
 
             it 'creates the existing VehicleJourney keeps its objectid' do
               merge.new.switch do
-                expect(Chouette::VehicleJourney.find_by(published_journey_name: 'existing')).to have_attributes(raw_objectid: 'some_objectid')
+                expect(Chouette::VehicleJourney.find_by(published_journey_name: 'existing')).to have_attributes(raw_objectid: 'some_objectid:::LOC')
               end
             end
           end

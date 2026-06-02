@@ -8,8 +8,7 @@ class ChouetteCountryInput < SimpleForm::Inputs::CollectionSelectInput
 
     config = {
       plugins: plugin_list,
-      openOnFocus: true,
-      sortField: [{field:'$order'},{field:'$score'}]
+      openOnFocus: true
     }
 
     collection_to_use = options.delete(:collection) || country_options

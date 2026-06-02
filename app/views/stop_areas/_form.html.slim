@@ -58,7 +58,7 @@
     .col-lg-12 x-data="{ isReferentActivated: #{@stop_area.is_referent} }"
       h2.mb-lg= t("stop_areas.form.sections.referent")
       = f.input :is_referent, as: :switchable_checkbox, input_html: { checked: @stop_area.is_referent, 'x-on:click': 'isReferentActivated = !isReferentActivated' }
-      = f.input :referent_id, as: :ajax_select, collection: [f.object.referent].compact, label_method: :formatted_selection_details, placeholder: Chouette::StopArea.human_attribute_name('referent'), input_html: { style: 'width: 100%', 'x-bind:disabled' => 'r = isReferentActivated; if ($el.tomselect) { if (r) { $el.tomselect.disable() } else { $el.tomselect.enable() } }; r', 'data-url': autocomplete_workbench_stop_area_referential_stop_areas_path(@workbench)}, wrapper_html: { id: 'referent_input', class: 'inline-form', 'x-bind:class': "{ 'disabled': isReferentActivated }" }
+      = f.input :referent_id, as: :ajax_select, collection: [f.object.referent].compact, label_method: :formatted_selection_details, placeholder: Chouette::StopArea.human_attribute_name('referent'), input_html: { style: 'width: 100%', 'x-bind:disabled' => 'r = isReferentActivated; if ($el.tomselect) { if (r) { $el.tomselect.disable() } else { $el.tomselect.enable() } }; r', 'data-url': autocomplete_workbench_stop_area_referential_stop_areas_path(@workbench, referent_only: true, exclude: @stop_area.id)}, wrapper_html: { id: 'referent_input', class: 'inline-form', 'x-bind:class': "{ 'disabled': isReferentActivated }" }
 
   .separator.section_separator
 

@@ -540,6 +540,9 @@ module Chouette
 
           pendings.each do |resource_id, reference|
             particular = find_model resource_id
+            unless particular
+              particular = find_model resource_id, base_scope: base_scope
+            end
             next unless particular
 
             referenced = find_model reference

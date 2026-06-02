@@ -39,7 +39,7 @@ function addAjaxSelectToForm(dom_part) {
           return '<div>' + data.text + '</div>';
         },
         item: function(data) {
-          return data.text
+          return '<div>' + data.text + '</div>';
         }
       }
     }

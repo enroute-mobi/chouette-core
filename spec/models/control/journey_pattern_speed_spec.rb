@@ -42,7 +42,6 @@ RSpec.describe Control::JourneyPatternSpeed do
 
     before do
       referential.switch
-      puts context.stop_area(:first).id
       journey_pattern.update costs: {
         "#{context.stop_area(:first).id}-#{context.stop_area(:second).id}" => { 'time' => 10, 'distance' => 2160 },
         "#{context.stop_area(:second).id}-#{context.stop_area(:third).id}" => { 'time' => 30, 'distance' => 12_000_000 },

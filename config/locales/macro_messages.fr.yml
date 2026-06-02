@@ -118,6 +118,10 @@ fr:
   macro/remove_attribute_value/run:
     messages:
       default: "L’attribut '%{target_attribute}' %{source|of_model_name} '%{name}' a été retiré"
+  macro/define_vehicle_journey_name/run:
+    messages:
+      default: "La Course %{vehicle_journey_id} est renommée en '%{attribute_value_after_change}'"
+      error: "La Course %{vehicle_journey_id} n’a pas pu être renommée"
   macro_messages:
     search_no_results_for_filter: "Aucun messages"
     no_address: "Aucune adresse"

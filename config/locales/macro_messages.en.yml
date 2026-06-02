@@ -118,6 +118,10 @@ en:
     messages:
       default: "The Journey Pattern '%{journey_pattern_name}' is renamed to '%{attribute_value_after_change}'"
       error: "The Journey Pattern '%{journey_pattern_name}' cannot be renamed"
+  macro/define_vehicle_journey_name/run:
+    messages:
+      default: "The Vehicle Journey %{vehicle_journey_id} is renamed to '%{attribute_value_after_change}'"
+      error: "The Vehicle Journey %{vehicle_journey_id} cannot be renamed"
   macro_messages:
     search_no_results_for_filter: "No messages found"
     no_address: "No address"

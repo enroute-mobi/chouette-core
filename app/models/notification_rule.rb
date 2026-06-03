@@ -5,7 +5,7 @@ class NotificationRule < ApplicationModel
 
   enumerize :notification_type, in: %w[import merge aggregate source_retrieval publication], default: :import
   enumerize :target_type, in: %w[workbench user external_email], default: :workbench, predicates: true
-  enumerize :rule_type, in: %w[block notify], default: :block
+  enumerize :rule_type, in: %w[notify block], default: :notify
   enumerize :operation_statuses, in: %w[successful warning failed], multiple: true
 
   # Associations

@@ -79,7 +79,15 @@ class AutocompleteController < Chouette::UserController
   end
 
   def searches
-    @searches = (workbench || current_workgroup).saved_searches.order(:name).by_text(text).limit(50)
+    searches = (workbench || current_workgroup).saved_searches.order(:name).by_text(text).limit(50)
+    if params.key?('graphical')
+      searches = if params['graphical'] == 'true'
+                   searches.graphical
+                 else
+                   searches.non_graphical
+                 end
+    end
+    @searches = searches
   end
 
   protected

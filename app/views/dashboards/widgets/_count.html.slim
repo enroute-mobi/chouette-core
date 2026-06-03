@@ -1,0 +1,8 @@
+- count = widget.setup.count
+- if count
+  - digits = count.zero? ? 1 : Math.log10(count).to_i + 1
+  svg[width="100%" height="100%" viewBox="0 0 #{(digits * 9.25).to_i} 18"]
+    text[x="0" y="15"]
+      = count
+- else
+  = render 'dashboards/widgets/error'

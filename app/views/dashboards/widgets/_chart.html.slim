@@ -1,0 +1,5 @@
+- chart = widget.setup.chart
+- if chart
+  = chart.to_chartkick(self, height: '100%')
+- else
+  = render 'dashboards/widgets/error'

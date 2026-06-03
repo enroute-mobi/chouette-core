@@ -2,12 +2,15 @@
   .px-4.py-3.border-b
     .flex.justify-between.items-center
       .flex.items-center.space-x-2
-        - if f.object.widget_type.blank?
+        - if f.object.new_record?
           i.fa.fa-question-circle.text-gray-500.text-xl.mr-2
         - else
           = widget_icon(f.object.widget_type)
         h3.text-sm.font-bold.text-gray-700.my-0
-          = f.object.widget_type&.text || t('dashboards.widgets.new_widget')
+          - if f.object.new_record?
+            = t('dashboards.widgets.new_widget')
+          - else
+            = f.object.widget_type.text
       .flex.items-center.space-x-2
         = link_to_remove_association f, class: 'text-red-600 hover:text-red-800 ml-2' do
           i.fa.fa-trash
@@ -17,12 +20,19 @@
       = f.input :name, wrapper_html: { class: 'mb-4' }
       = f.input :widget_type, include_blank: false, disabled: f.object.persisted?, wrapper_html: { class: 'mb-4' }, input_html: { 'x-model': 'widget_type' }
 
-    - if f.object.widget_type == 'search' || local_assigns[:dynamic]
-      - search_setup = f.object.widget_type == 'search' ? f.object.setup : Widget::Search.new
-      template[x-if="widget_type === 'search'"]
-        = f.simple_fields_for(:setup, search_setup) do |setup_form|
+    - if f.object.widget_type == 'count' || local_assigns[:dynamic]
+      - count = f.object.widget_type == 'count' ? f.object.setup : Widget::Count.new
+      template[x-if="widget_type === 'count'"]
+        = f.simple_fields_for(:setup, count) do |setup_form|
           div[x-init="addAjaxSelectToForm($el)"]
-            = setup_form.association :saved_search, as: :ajax_select, collection: [setup_form.object.saved_search].compact, label_method: :name, input_html: { 'data-url': searches_workbench_autocomplete_index_path(current_workbench, format: :json), class: 'w-full' }, wrapper_html: { class: 'mb-4' }
+            = setup_form.association :saved_search, as: :ajax_select, collection: [setup_form.object.saved_search].compact, label_method: :name, input_html: { 'data-url': searches_workbench_autocomplete_index_path(current_workbench, 'graphical' => 'false', format: :json), class: 'w-full' }, wrapper_html: { class: 'mb-4' }
+
+    - if f.object.widget_type == 'chart' || local_assigns[:dynamic]
+      - chart_setup = f.object.widget_type == 'chart' ? f.object.setup : Widget::Chart.new
+      template[x-if="widget_type === 'chart'"]
+        = f.simple_fields_for(:setup, chart_setup) do |setup_form|
+          div[x-init="addAjaxSelectToForm($el)"]
+            = setup_form.association :saved_search, as: :ajax_select, collection: [setup_form.object.saved_search].compact, label_method: :name, input_html: { 'data-url': searches_workbench_autocomplete_index_path(current_workbench, 'graphical' => 'true', format: :json), class: 'w-full' }, wrapper_html: { class: 'mb-4' }
 
     - if f.object.widget_type == 'static_text' || local_assigns[:dynamic]
       - static_text_setup = f.object.widget_type == 'static_text' ? f.object.setup : Widget::StaticText.new

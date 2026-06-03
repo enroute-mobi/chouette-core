@@ -18,6 +18,8 @@ class Widget < ActiveRecord::Base
     end
 
     def compute_setup_data_cache
+      return nil unless valid?
+
       { 'data' => compute_data_cache, 'version' => self.class::CACHE_VERSION }
     end
 
@@ -39,14 +41,10 @@ class Widget < ActiveRecord::Base
   end
 
   class Search < Setup
-    CACHE_VERSION = '2026-05-12'
-
     belongs_to :saved_search, class_name: 'Search::Save'
 
     validates :saved_search_id, inclusion: { in: ->(r) { r.candidate_searches.pluck(:id) } },
                                 if: :saved_search_id.to_proc
-
-    delegate :graphical?, to: :search
 
     def candidate_searches
       workbench.saved_searches
@@ -59,11 +57,33 @@ class Widget < ActiveRecord::Base
     def scope
       workbench.send(saved_search.resource_name)
     end
+  end
+
+  class Count < Search
+    CACHE_VERSION = '2026-05-12'
+
+    def candidate_searches
+      super.non_graphical
+    end
 
     def count
       retrieving_data_cache do |data|
         data
       end
+    end
+
+    protected
+
+    def compute_data_cache
+      search.search(scope).count
+    end
+  end
+
+  class Chart < Search
+    CACHE_VERSION = '2026-05-12'
+
+    def candidate_searches
+      super.graphical
     end
 
     def chart
@@ -86,18 +106,14 @@ class Widget < ActiveRecord::Base
     protected
 
     def compute_data_cache
-      if search.graphical?
-        if search_chart.subgroup_by_attribute
-          search_chart.data.map do |series_data|
-            series_data.stringify_keys.tap do |d|
-              d['data'] = chart_data_to_data_cache(d['data'])
-            end
+      if search_chart.subgroup_by_attribute
+        search_chart.data.map do |series_data|
+          series_data.stringify_keys.tap do |d|
+            d['data'] = chart_data_to_data_cache(d['data'])
           end
-        else
-          chart_data_to_data_cache(search_chart.data)
         end
       else
-        search.search(scope).count
+        chart_data_to_data_cache(search_chart.data)
       end
     end
 
@@ -126,14 +142,14 @@ class Widget < ActiveRecord::Base
 
   attribute :setup, :json
 
-  enumerize :widget_type, in: %w[search static_text], default: 'search'
+  enumerize :widget_type, in: %w[count chart static_text], default: 'count'
 
   validates :name, :widget_type, presence: true
   validates :setup, store_model: true
 
   before_save :set_setup_data_cache, if: :set_setup_data_cache?
 
-  scope :setup_data_cache_computable, -> { where(widget_type: 'search') }
+  scope :setup_data_cache_computable, -> { where(widget_type: %w[count chart]) }
 
   delegate :workbench, to: :dashboard
   delegate :data_available?, to: :setup

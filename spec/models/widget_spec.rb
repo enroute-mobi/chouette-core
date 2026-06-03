@@ -1,6 +1,81 @@
 # frozen_string_literal: true
 
-RSpec.describe Widget::Search do
+RSpec.describe Widget::Setup do
+  subject(:widget_setup) { widget_class.new }
+
+  let(:widget_class) { Class.new(described_class) }
+  let(:setup_data_cache_version) { '2026-06-03' }
+  let(:setup_data_cache) { { 'data' => 'whatever', 'version' => setup_data_cache_version } }
+  let(:widget) { Widget.new(name: 'Test', setup_data_cache: setup_data_cache) }
+
+  before { widget_setup.parent = widget }
+
+  describe '#setup_data_cache?' do
+    subject { widget_setup.setup_data_cache? }
+
+    context 'when CACHE_VERSION is not defined' do
+      it { is_expected.to be(false) }
+    end
+
+    context 'when CACHE_VERSION is defined' do
+      before { widget_class::CACHE_VERSION = '2026-06-03' }
+
+      it { is_expected.to be(true) }
+    end
+  end
+
+  describe '#data_available?' do
+    subject { widget_setup.data_available? }
+
+    context 'when #setup_data_cache? is false' do
+      it { is_expected.to be(true) }
+    end
+
+    context 'when #setup_data_cache? is true' do
+      before { widget_class::CACHE_VERSION = '2026-06-03' }
+
+      context 'without data in cache' do
+        let(:setup_data_cache) { nil }
+
+        it { is_expected.to be(false) }
+      end
+
+      context 'with data in cache' do
+        it { is_expected.to be(true) }
+
+        context 'with a different cache version' do
+          let(:setup_data_cache_version) { '2026-06-02' }
+
+          it { is_expected.to be(false) }
+        end
+      end
+    end
+  end
+
+  describe '#compute_setup_data_cache' do
+    subject { widget_setup.compute_setup_data_cache }
+
+    let(:valid) { true }
+
+    before do
+      widget_class::CACHE_VERSION = '2026-06-03'
+      allow(widget_setup).to receive(:valid?).and_return(valid)
+      allow(widget_setup).to receive(:compute_data_cache).and_return('whatever')
+    end
+
+    context 'when widget is invalid' do
+      let(:valid) { false }
+
+      it { is_expected.to be_nil }
+    end
+
+    context 'when widget is valid' do
+      it { is_expected.to eq({ 'data' => 'whatever', 'version' => '2026-06-03' }) }
+    end
+  end
+end
+
+RSpec.describe Widget::Count do
   subject(:widget_setup) { widget.setup }
 
   let(:context) do
@@ -10,17 +85,28 @@ RSpec.describe Widget::Search do
   end
   let(:workbench) { context.workbench(:workbench) }
   let(:dashboard) { workbench.dashboards.create!(name: 'Test') }
-  let(:widget_options) { {} }
-  let(:setup_data_cache_data) { 'whatever' }
-  let(:setup_data_cache_version) { described_class::CACHE_VERSION }
-  let(:setup_data_cache) { { 'data' => setup_data_cache_data, 'version' => setup_data_cache_version } }
+  let(:saved_search) { nil }
+  let(:setup_data_cache) { { 'data' => 42, 'version' => described_class::CACHE_VERSION } }
   let(:widget) do
     dashboard.widgets.new(
       name: 'Test',
-      widget_type: 'search',
-      options: widget_options,
+      widget_type: 'count',
+      options: { saved_search_id: saved_search&.id },
       setup_data_cache: setup_data_cache
     )
+  end
+
+  describe 'validations' do
+    let(:candidate_search_ids) { [1, 42, 152] }
+    let(:candidate_searches) do
+      double('candidate_searches').tap do |candidate_searches|
+        allow(candidate_searches).to receive(:pluck).with(:id).and_return(candidate_search_ids)
+      end
+    end
+
+    before { allow(widget_setup).to receive(:candidate_searches).and_return(candidate_searches) }
+
+    it { is_expected.to validate_inclusion_of(:saved_search_id).in_array(candidate_search_ids) }
   end
 
   describe '#candidate_searches' do
@@ -33,21 +119,28 @@ RSpec.describe Widget::Search do
       end
     end
 
-    let!(:workbench_search1) do
+    let!(:workbench_count_search1) do
       workbench.saved_searches.create!(
         name: 'StopArea 1 by name',
         search_type: 'Search::StopArea',
         search_attributes: { 'text' => 'by name' }
       )
     end
-    let!(:workbench_search2) do
+    let!(:workbench_count_search2) do
       workbench.saved_searches.create!(
         name: 'Line by name',
         search_type: 'Search::Line',
         search_attributes: { 'text' => 'by name' }
       )
     end
-    let!(:other_workbench_search1) do
+    let!(:workbench_chart_search) do
+      workbench.saved_searches.create!(
+        name: 'StopArea chart',
+        search_type: 'Search::StopArea',
+        search_attributes: { 'chart_type' => 'column', 'group_by_attribute' => 'zip_code' }
+      )
+    end
+    let!(:other_workbench_count_search) do
       context.workbench(:other_workbench).saved_searches.create!(
         name: 'StopArea 2 by name',
         search_type: 'Search::StopArea',
@@ -55,29 +148,15 @@ RSpec.describe Widget::Search do
       )
     end
 
-    it 'returns only searches of the widget workbench' do
-      is_expected.to contain_exactly(workbench_search1, workbench_search2)
+    it 'returns only count searches of the widget workbench' do
+      is_expected.to contain_exactly(workbench_count_search1, workbench_count_search2)
     end
   end
 
-  describe '#data_available?' do
-    subject { widget_setup.data_available? }
+  describe '#setup_data_cache?' do
+    subject { widget_setup.setup_data_cache? }
 
-    context 'without data in cache' do
-      let(:setup_data_cache) { nil }
-
-      it { is_expected.to be(false) }
-    end
-
-    context 'with data in cache' do
-      it { is_expected.to be(true) }
-
-      context 'with a different cache version' do
-        let(:setup_data_cache_version) { "#{described_class::CACHE_VERSION}-00" }
-
-        it { is_expected.to be(false) }
-      end
-    end
+    it { is_expected.to be(true) }
   end
 
   describe '#scope' do
@@ -106,7 +185,6 @@ RSpec.describe Widget::Search do
           search_attributes: { 'text' => 'found' }
         )
       end
-      let(:widget_options) { { saved_search_id: saved_search.id } }
 
       it 'returns only stop areas of the workbench' do
         is_expected.to match_array(%i[stop_area1 stop_area2].map { |i| context.stop_area(i) })
@@ -141,7 +219,6 @@ RSpec.describe Widget::Search do
           search_attributes: { 'text' => 'found' }
         )
       end
-      let(:widget_options) { { saved_search_id: saved_search.id } }
       let(:setup_data_cache_data) { 42 }
 
       it 'returns the data in cache' do
@@ -179,6 +256,125 @@ RSpec.describe Widget::Search do
       end
     end
   end
+end
+
+RSpec.describe Widget::Chart do
+  subject(:widget_setup) { widget.setup }
+
+  let(:context) do
+    Chouette.create do
+      workbench :workbench
+    end
+  end
+  let(:workbench) { context.workbench(:workbench) }
+  let(:dashboard) { workbench.dashboards.create!(name: 'Test') }
+  let(:saved_search) { nil }
+  let(:setup_data_cache_data) { 'whatever' }
+  let(:setup_data_cache) { { 'data' => setup_data_cache_data, 'version' => described_class::CACHE_VERSION } }
+  let(:widget) do
+    dashboard.widgets.new(
+      name: 'Test',
+      widget_type: 'chart',
+      options: { saved_search_id: saved_search&.id },
+      setup_data_cache: setup_data_cache
+    )
+  end
+
+  describe 'validations' do
+    let(:candidate_search_ids) { [1, 42, 152] }
+    let(:candidate_searches) do
+      double('candidate_searches').tap do |candidate_searches|
+        allow(candidate_searches).to receive(:pluck).with(:id).and_return(candidate_search_ids)
+      end
+    end
+
+    before { allow(widget_setup).to receive(:candidate_searches).and_return(candidate_searches) }
+
+    it { is_expected.to validate_inclusion_of(:saved_search_id).in_array(candidate_search_ids) }
+  end
+
+  describe '#candidate_searches' do
+    subject { widget_setup.candidate_searches }
+
+    let(:context) do
+      Chouette.create do
+        workbench :workbench
+        workbench :other_workbench
+      end
+    end
+
+    let!(:workbench_chart_search1) do
+      workbench.saved_searches.create!(
+        name: 'StopArea chart 1',
+        search_type: 'Search::StopArea',
+        search_attributes: { 'chart_type' => 'column', 'group_by_attribute' => 'zipcode' }
+      )
+    end
+    let!(:workbench_chart_search2) do
+      workbench.saved_searches.create!(
+        name: 'Import chart',
+        search_type: 'Search::Import',
+        search_attributes: { 'chart_type' => 'column', 'group_by_attribute' => 'status' }
+      )
+    end
+    let!(:workbench_count_search) do
+      workbench.saved_searches.create!(
+        name: 'StopArea by name',
+        search_type: 'Search::StopArea',
+        search_attributes: { 'text' => 'by name' }
+      )
+    end
+    let!(:other_workbench_chart_search) do
+      context.workbench(:other_workbench).saved_searches.create!(
+        name: 'StopArea chart 2',
+        search_type: 'Search::StopArea',
+        search_attributes: { 'chart_type' => 'column', 'group_by_attribute' => 'zipcode' }
+      )
+    end
+
+    it 'returns only chart searches of the widget workbench' do
+      is_expected.to contain_exactly(workbench_chart_search1, workbench_chart_search2)
+    end
+  end
+
+  describe '#setup_data_cache?' do
+    subject { widget_setup.setup_data_cache? }
+
+    it { is_expected.to be(true) }
+  end
+
+  describe '#scope' do
+    subject { widget_setup.scope }
+
+    context 'on stop areas' do
+      let(:context) do
+        Chouette.create do
+          workgroup do
+            workbench :workbench do
+              stop_area :stop_area1
+              stop_area :stop_area2
+            end
+          end
+          workgroup do
+            workbench :other_workbench do
+              stop_area
+            end
+          end
+        end
+      end
+      let(:saved_search) do
+        workbench.saved_searches.create!(
+          name: 'StopArea',
+          search_type: 'Search::StopArea',
+          search_attributes: { 'text' => 'found' }
+        )
+      end
+
+      it 'returns only stop areas of the workbench' do
+        is_expected.to match_array(%i[stop_area1 stop_area2].map { |i| context.stop_area(i) })
+      end
+    end
+  end
 
   describe '#chart' do
     subject { widget_setup.chart }
@@ -196,7 +392,6 @@ RSpec.describe Widget::Search do
           end
         end
       end
-      let(:widget_options) { { saved_search_id: saved_search.id } }
 
       context 'with xaxis' do
         let(:saved_search) do
@@ -345,14 +540,13 @@ RSpec.describe Widget::StaticText do
   let(:workbench) { context.workbench(:workbench) }
   let(:dashboard) { workbench.dashboards.create!(name: 'Test') }
   let(:content) { 'Content' }
-  let(:widget_options) { { content: content } }
-  let(:widget) { dashboard.widgets.new(name: 'Test', widget_type: 'static_text', options: widget_options) }
+  let(:widget) { dashboard.widgets.new(name: 'Test', widget_type: 'static_text', options: { content: content }) }
 
   it { is_expected.to validate_presence_of(:content) }
 
-  describe '#data_available?' do
-    subject { widget_setup.data_available? }
+  describe '#setup_data_cache?' do
+    subject { widget_setup.setup_data_cache? }
 
-    it { is_expected.to be(true) }
+    it { is_expected.to be(false) }
   end
 end

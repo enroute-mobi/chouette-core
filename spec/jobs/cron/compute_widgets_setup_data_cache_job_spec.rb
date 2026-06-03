@@ -35,7 +35,7 @@ RSpec.describe Cron::ComputeWidgetsSetupDataCacheJob do
     let!(:count_widget1111) do
       dashboard111.widgets.create!(
         name: 'Wg1-Wb1-D1-W1',
-        widget_type: 'search',
+        widget_type: 'count',
         options: { saved_search_id: saved_search_count11.id }
       )
     end
@@ -49,7 +49,7 @@ RSpec.describe Cron::ComputeWidgetsSetupDataCacheJob do
     let!(:chart_widget1112) do
       dashboard111.widgets.create!(
         name: 'Wg1-Wb1-D1-W1',
-        widget_type: 'search',
+        widget_type: 'chart',
         options: { saved_search_id: saved_search_chart12.id }
       )
     end
@@ -63,7 +63,7 @@ RSpec.describe Cron::ComputeWidgetsSetupDataCacheJob do
     let!(:count_widget1121) do
       dashboard112.widgets.create!(
         name: 'Wg1-Wb1-D2-W1',
-        widget_type: 'search',
+        widget_type: 'count',
         options: { saved_search_id: saved_search_count11.id }
       )
     end
@@ -73,7 +73,7 @@ RSpec.describe Cron::ComputeWidgetsSetupDataCacheJob do
     let!(:count_widget1211) do
       dashboard121.widgets.create!(
         name: 'Wg1-Wb2-D1-W1',
-        widget_type: 'search',
+        widget_type: 'count',
         options: { saved_search_id: saved_search_count12.id }
       )
     end
@@ -83,7 +83,7 @@ RSpec.describe Cron::ComputeWidgetsSetupDataCacheJob do
     let!(:count_widget2111) do
       dashboard211.widgets.create!(
         name: 'Wg2-Wb1-D1-W1',
-        widget_type: 'search',
+        widget_type: 'count',
         options: { saved_search_id: saved_search_count21.id }
       )
     end

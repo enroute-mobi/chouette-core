@@ -4,7 +4,8 @@ module DashboardsHelper
   WIDGET_COLORS_BASE_CLASSES = 'shadow-sm hover:shadow transition-shadow duration-200 rounded-r-lg border-l-4'
 
   WIDGET_COLORS = {
-    'search' => "#{WIDGET_COLORS_BASE_CLASSES} bg-gradient-to-r from-blue-50 to-white border-blue-400",
+    'chart' => "#{WIDGET_COLORS_BASE_CLASSES} bg-gradient-to-r from-blue-50 to-white border-blue-400",
+    'count' => "#{WIDGET_COLORS_BASE_CLASSES} bg-gradient-to-r from-green-50 to-white border-green-400",
     'static_text' => "#{WIDGET_COLORS_BASE_CLASSES} bg-gradient-to-r from-pink-50 to-white border-pink-400",
     nil => WIDGET_COLORS_BASE_CLASSES
   }.freeze
@@ -14,7 +15,8 @@ module DashboardsHelper
   end
 
   ICONS = {
-    'search' => 'fa-chart-line text-blue-500',
+    'chart' => 'fa-chart-line text-blue-500',
+    'count' => 'fa-hashtag text-green-500',
     'static_text' => 'fa-paragraph text-pink-500'
   }.freeze
 

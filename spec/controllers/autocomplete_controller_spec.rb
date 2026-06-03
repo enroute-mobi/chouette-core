@@ -438,21 +438,35 @@ RSpec.describe AutocompleteController, type: :controller do
       let(:workbench1) { context.workbench(:workbench1) }
       let(:workbench2) { context.workbench(:workbench2) }
 
-      let!(:workbench1_search1) do
+      let!(:workbench1_count_search1) do
         workbench1.saved_searches.create!(
           name: 'StopArea 1 by name',
           search_type: 'Search::StopArea',
           search_attributes: { 'text' => 'by name' }
         )
       end
-      let!(:workbench1_search2) do
+      let!(:workbench1_count_search2) do
         workbench1.saved_searches.create!(
           name: 'Line by name',
           search_type: 'Search::Line',
           search_attributes: { 'text' => 'by name' }
         )
       end
-      let!(:workbench2_search1) do
+      let!(:workbench1_chart_search1) do
+        workbench1.saved_searches.create!(
+          name: 'StopArea chart 1',
+          search_type: 'Search::StopArea',
+          search_attributes: { 'chart_type' => 'column', 'group_by_attribute' => 'zipcode' }
+        )
+      end
+      let!(:workbench1_chart_search2) do
+        workbench1.saved_searches.create!(
+          name: 'Import chart',
+          search_type: 'Search::Import',
+          search_attributes: { 'chart_type' => 'column', 'group_by_attribute' => 'status' }
+        )
+      end
+      let!(:workbench2_count_search1) do
         workbench2.saved_searches.create!(
           name: 'StopArea 2 by name',
           search_type: 'Search::StopArea',
@@ -462,13 +476,27 @@ RSpec.describe AutocompleteController, type: :controller do
 
       it 'returns the workbench list when the search parameter is empty' do
         get :searches, params: { workbench_id: workbench1.id }, format: 'json'
-        expect(assigns(:searches)).to contain_exactly(workbench1_search1, workbench1_search2)
+        expect(assigns(:searches)).to contain_exactly(
+          workbench1_count_search1, workbench1_count_search2, workbench1_chart_search1, workbench1_chart_search2
+        )
         expect(response).to be_successful
       end
 
       it 'returns only the list of matching searches when the search parameter is set' do
         get :searches, params: { workbench_id: workbench1.id, q: 'StopArea' }, format: 'json'
-        expect(assigns(:searches)).to contain_exactly(workbench1_search1)
+        expect(assigns(:searches)).to contain_exactly(workbench1_count_search1, workbench1_chart_search1)
+        expect(response).to be_successful
+      end
+
+      it 'returns only non-graphical searches when graphical is "false"' do
+        get :searches, params: { workbench_id: workbench1.id, graphical: 'false' }, format: 'json'
+        expect(assigns(:searches)).to contain_exactly(workbench1_count_search1, workbench1_count_search2)
+        expect(response).to be_successful
+      end
+
+      it 'returns only graphical searches when graphical is "true"' do
+        get :searches, params: { workbench_id: workbench1.id, graphical: 'true' }, format: 'json'
+        expect(assigns(:searches)).to contain_exactly(workbench1_chart_search1, workbench1_chart_search2)
         expect(response).to be_successful
       end
     end

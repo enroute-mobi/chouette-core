@@ -63,5 +63,6 @@ en:
   enumerize:
     widget:
       widget_type:
-        search: "Saved search"
+        chart: "Chart"
+        count: "Count"
         static_text: "Static text"

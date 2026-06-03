@@ -63,5 +63,6 @@ fr:
   enumerize:
     widget:
       widget_type:
-        search: "Recherche sauvegardée"
+        chart: "Graphe"
+        count: "Compteur"
         static_text: "Texte statique"

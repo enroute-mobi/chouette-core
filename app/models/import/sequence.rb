@@ -84,29 +84,28 @@
 
 module Import
   class Sequence
-    def self.create(*elements)
+    def self.create(elements)
       links = []
-      elements.flatten.each_cons(2) do |from, to|
+      elements.each_cons(2) do |from, to|
         links << Link.new(from, to)
       end
-      new links, raw_elements: elements
+      new links
     end
 
-    def initialize(links = [], raw_elements: [])
-      @raw_elements = raw_elements
+    def initialize(links = [])
       @links = links
       @last = links.last
       freeze
     end
-    attr_reader :links, :last, :raw_elements
+    attr_reader :links, :last
 
     delegate :empty?, to: :links
 
-    def add(link, raw_elements)
+    def add(link)
       if empty?
-        Sequence.new([link], raw_elements: raw_elements)
+        Sequence.new([link])
       elsif link.from?(last.to)
-        Sequence.new(links + [link], raw_elements: raw_elements)
+        Sequence.new(links + [link])
       end
     end
 
@@ -169,9 +168,9 @@ module Import
       end
 
       def add(sequence)
-        sequence = Sequence.create(sequence)
+        raw_elements.add(sequence)
 
-        raw_elements.merge sequence.raw_elements
+        sequence = Sequence.create(sequence)
         @merge = nil
         links.merge sequence.links
       end
@@ -182,7 +181,7 @@ module Import
       end
 
       def build_solution
-        solution = Path.new(Sequence.new(raw_elements: raw_elements.to_a), links.dup).complete&.sequence&.to_a
+        solution = Path.new(Sequence.new, links.dup).complete&.sequence&.to_a
         return nil unless valid_solution?(solution)
 
         solution
@@ -211,8 +210,6 @@ module Import
         end
         attr_reader :sequence, :pending_links
 
-        delegate :raw_elements, to: :sequence
-
         def completed?
           unsolved_links.empty?
         end
@@ -233,7 +230,7 @@ module Import
         # Next possible sequences by following unsolved links
         def next_sequences
           unsolved_links.map do |link|
-            sequence.add(link, raw_elements)
+            sequence.add(link)
           end.compact
         end
 

@@ -10,11 +10,9 @@ module Stif
     end
 
     def stop_areas_scope(initial_scope)
-      stop_areas_provider_objectids = parse_stop_areas_providers
-      return initial_scope.none unless stop_areas_provider_objectids
+      return initial_scope.none if stop_area_provider_ids.empty?
 
-      ids = initial_scope.joins(:stop_area_provider)
-                         .where(::StopAreaProvider.quoted_table_name => { objectid: stop_areas_provider_objectids })
+      ids = initial_scope.where(stop_area_provider_id: stop_area_provider_ids)
                          .select('stop_areas.id')
                          .to_sql
       initial_scope.where("stop_areas.id IN (#{ids})")
@@ -36,6 +34,16 @@ module Stif
 
     def sso_attributes
       @sso_attributes ||= workbench.organisation.sso_attributes
+    end
+
+    def stop_area_provider_ids
+      return @stop_area_provider_ids if @stop_area_provider_ids
+
+      stop_areas_provider_objectids = parse_stop_areas_providers
+      @stop_area_provider_ids = (
+        workbench.stop_area_provider_ids +
+          workbench.stop_area_referential.stop_area_providers.where(objectid: stop_areas_provider_objectids).pluck(:id)
+      ).uniq
     end
 
     def parse_functional_scope

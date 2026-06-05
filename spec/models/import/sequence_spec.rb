@@ -1,5 +1,205 @@
 # frozen_string_literal: true
 
+RSpec.describe Import::Sequence2::Merger do
+  subject(:merger) { described_class.new }
+
+  describe '#merge' do
+    subject { merger.merge }
+
+    context 'when empty' do
+      it { is_expected.to eq([]) }
+    end
+
+    context 'old example' do
+      before do
+        merger << %w[A B C]
+        merger << %w[A B C]
+        merger << %w[A B]
+      end
+    end
+
+    context 'with an empty sequence' do
+      before do
+        merger << %w[A B]
+        merger << %w[]
+      end
+
+      it 'ignores empty sequence' do
+        is_expected.to eq(%w[A B])
+      end
+    end
+
+    context 'with a sequence of 1 element' do
+      before do
+        merger << %w[A B]
+        merger << %w[A]
+      end
+
+      it 'ignores sequence of 1 element' do
+        is_expected.to eq(%w[A B])
+      end
+    end
+
+    context 'with a sequence of 1 completely different element' do
+      before do
+        merger << %w[A B]
+        merger << %w[C]
+      end
+
+      it 'still ignores sequence of 1 element' do
+        is_expected.to eq(%w[A B])
+      end
+    end
+
+    # examples from CHOUETTE-5268
+    context 'example 1' do
+      before do
+        merger << %w[A B]
+        merger << %w[B C]
+      end
+
+      it { is_expected.to eq(%w[A B C]) }
+    end
+
+    context 'example 2' do
+      before do
+        merger << %w[A B]
+        merger << %w[B C]
+      end
+
+      it { is_expected.to eq(%w[A B C]) }
+    end
+
+    context 'example 3' do
+      before do
+        merger << %w[A B A B C]
+        merger << %w[A B A]
+        merger << %w[A B C]
+      end
+
+      it { is_expected.to eq(%w[A B A B C]) }
+    end
+
+    context 'example (loop)' do
+      before do
+        merger << %w[A B C]
+        merger << %w[C A]
+      end
+
+      # there must be a loop in solution but there is no loop in sequences, therefore no solution
+      it { is_expected.to be_nil }
+    end
+
+    context 'example without solution' do
+      before do
+        merger << %w[A B C]
+        merger << %w[A B D]
+      end
+
+      it { is_expected.to be_nil }
+    end
+
+    # examples from CHOUETTE-5514
+    context 'loop example #1' do
+      before do
+        merger << %w[A B A B C]
+        merger << %w[A B A]
+        merger << %w[A B C]
+      end
+
+      it { is_expected.to eq(%w[A B A B C]) }
+    end
+
+    context 'loop example #2' do
+      before do
+        merger << %w[A B]
+        merger << %w[A B]
+        merger << %w[A B A B]
+      end
+
+      it { is_expected.to eq(%w[A B A B]) }
+    end
+
+    context 'loop example #3' do
+      before do
+        merger << %w[A B]
+        merger << %w[A C]
+        merger << %w[A B A C]
+      end
+
+      it { is_expected.to eq(%w[A B A C]) }
+    end
+
+    context 'loop example #4' do
+      before do
+        merger << %w[A B C B C A]
+        merger << %w[A B C]
+        merger << %w[A B A]
+        merger << %w[C C]
+      end
+
+      it { is_expected.to eq(%w[A B C B C A]) }
+    end
+
+    context 'no loop in solution' do
+      before do
+        merger << %w[A B C D E]
+        merger << %w[C E A B]
+      end
+
+      it { is_expected.to be_nil }
+    end
+
+    context 'no loop in solution (reverse)' do
+      before do
+        merger << %w[C E A B]
+        merger << %w[A B C D E]
+      end
+
+      it { is_expected.to be_nil }
+    end
+
+    context 'loop in solution' do
+      before do
+        merger << %w[A B A C]
+        merger << %w[A D B]
+        merger << %w[A E C]
+      end
+
+      it { is_expected.to eq(%w[A D B A E C]) }
+    end
+
+    context 'loop in solution (reverse)' do
+      before do
+        merger << %w[A D B]
+        merger << %w[A E C]
+        merger << %w[A B A C]
+      end
+
+      it { is_expected.to eq(%w[A D B A E C]) }
+    end
+
+    context 'different first links' do
+      before do
+        merger << %w[A C B D]
+        merger << %w[B C B D]
+        merger << %w[A B B D]
+      end
+
+      it { is_expected.to eq(%w[A B C B D]) }
+    end
+
+    context 'counter given by another sequence' do
+      before do
+        merger << %w[B C A]
+        merger << %w[A B A]
+      end
+
+      it { is_expected.to eq(%w[A B C A]) }
+    end
+  end
+end
+
 RSpec.describe Import::Sequence::Merger do
   subject(:merger) { described_class.new }
 
@@ -314,6 +514,95 @@ RSpec.describe Import::Sequence::Cluster do
               patterns: {
                 'JP1' => [0, 1, 2],
                 'JP2' => [3, 4]
+              }
+            }
+          ]
+        )
+      end
+    end
+
+    # from CHOUETTE-5514
+    context 'loop example #1' do
+      let(:sequence) { %w[A B A B C] }
+      let(:patterns) do
+        [
+          described_class::Pattern.new('JP1').step('A').step('B', prop: 'x').step('A'),
+          described_class::Pattern.new('JP2').step('A').step('B', prop: 'y').step('C')
+        ]
+      end
+
+      it do
+        is_expected_to_match_result(
+          [
+            {
+              steps: [
+                have_attributes(object: 'A', attributes: {}),
+                have_attributes(object: 'B', attributes: { prop: 'x' }),
+                have_attributes(object: 'A', attributes: {}),
+                have_attributes(object: 'B', attributes: { prop: 'y' }),
+                have_attributes(object: 'C', attributes: {})
+              ],
+              patterns: {
+                'JP1' => [0, 1, 2],
+                'JP2' => [0, 3, 4]
+              }
+            }
+          ]
+        )
+      end
+    end
+
+    context 'loop example #2' do
+      let(:sequence) { %w[A B A B] }
+      let(:patterns) do
+        [
+          described_class::Pattern.new('JP1').step('A').step('B', prop: 'x'),
+          described_class::Pattern.new('JP2').step('A').step('B', prop: 'y')
+        ]
+      end
+
+      it do
+        is_expected_to_match_result(
+          [
+            {
+              steps: [
+                have_attributes(object: 'A', attributes: {}),
+                have_attributes(object: 'B', attributes: { prop: 'x' }),
+                have_attributes(object: 'A', attributes: {}),
+                have_attributes(object: 'B', attributes: { prop: 'y' })
+              ],
+              patterns: {
+                'JP1' => [0, 1],
+                'JP2' => [0, 3]
+              }
+            }
+          ]
+        )
+      end
+    end
+
+    context 'loop example #3' do
+      let(:sequence) { %w[A B A C] }
+      let(:patterns) do
+        [
+          described_class::Pattern.new('JP1').step('A').step('B'),
+          described_class::Pattern.new('JP2').step('A').step('C')
+        ]
+      end
+
+      it do
+        is_expected_to_match_result(
+          [
+            {
+              steps: [
+                have_attributes(object: 'A', attributes: {}),
+                have_attributes(object: 'B', attributes: {}),
+                have_attributes(object: 'A', attributes: {}),
+                have_attributes(object: 'C', attributes: {})
+              ],
+              patterns: {
+                'JP1' => [0, 1],
+                'JP2' => [0, 3]
               }
             }
           ]

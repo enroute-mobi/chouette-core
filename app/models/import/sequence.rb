@@ -4,6 +4,10 @@
 #
 # Tries to compute a sequence of objects that includes all the sequences of a given set.
 #
+# The algorithm build the solution iteratively. It picks the first link of a sequence and adds it to the current
+# solution, if possible. It then removes the first link of all other sequences if is included in the current solution.
+# If no link can be picked, the solution is invalid. If all sequences are empty, then the solution is valid.
+#
 # Usage:
 #   merger = Import::Sequence::Merge.new
 #   merger << [1, 2, 3]
@@ -18,6 +22,7 @@
 #   merger << [1, 2, 4]
 #   merger.merge
 #   => nil
+# It also returns nil if there is more than one possible solution.
 #
 #
 ## Import::Sequence::Cluster
@@ -83,6 +88,263 @@
 # returns nil.
 
 module Import
+  # Converts an sequence of elements to a array of links (from, to).
+  class Sequence2 < Array
+    def initialize(elements)
+      super(elements.each_cons(2).map { |from, to| Link.new(from: from, to: to) })
+    end
+
+    Link = Data.define(:from, :to) do
+      def inspect
+        "#{from.inspect} → #{to.inspect}"
+      end
+    end
+
+    # Aggregates a list of sequences and builds a solution.
+    class Merger
+      def initialize
+        @sequences = []
+        @counters = {} # the maximum number of times each element appear in a sequence
+      end
+      attr_reader :sequences, :counters
+
+      def add(array_of_elements)
+        @merge = nil
+
+        sequences << Sequence2.new(array_of_elements).freeze
+
+        array_of_elements.tally.each do |element, count|
+          current_count = @counters[element]
+          @counters[element] = count if current_count.nil? || current_count < count
+        end
+      end
+      alias << add
+
+      def merge
+        @merge ||= build_solution
+      end
+
+      # The merge algorithm uses a stack a states to build the solution. A State represents a solution being built. The
+      # aim of each state is to built the next state which the exact same state, but with a link added from a sequence.
+      # Therefore, each state can build many different states. That's the goal of the stack: when a state builds a new
+      # state, this new state is added to the stack. If this state is invalid, then its is removed from the stack and we
+      # return back to its parent. This parent will build the next state from the first link of following sequence. If
+      # that link cannot be taken, then the parent cannot build any new state and is removed from the stack. If the
+      # stack is empty without finding a valid solution, then no solution can be built.
+      def build_solution
+        stack = [State.new(sequences, @counters.dup.freeze)]
+
+        while stack.any?
+          state = stack.last
+          return state.solution.solution if state.solved?
+
+          next_state = state.next
+          if next_state
+            stack << next_state
+          else
+            stack.pop
+          end
+        end
+
+        nil
+      end
+
+      class State
+        # A State::Sequence is a view of a merger Sequence. When the states are built, links are taken from the
+        # sequences. Rather than copying the full sequence and removing the links one by one, it is more efficient to
+        # increment a cursor on the original sequence. That is what this class represents. Since we need to check if a
+        # new link in the state is included in that sequence, we need to have a cursor on the solution of the state to
+        # know from which element to check the presence of the link.
+        class Sequence
+          def initialize(original_sequence)
+            @original_sequence = original_sequence
+            @cursor = 0
+            @solution_cursor = 0
+          end
+          attr_reader :original_sequence, :cursor, :solution_cursor
+
+          # debug only
+          def sequence
+            @original_sequence[@cursor..]
+          end
+
+          def first_link
+            @original_sequence[@cursor]
+          end
+
+          # When the sequence cursor is at the end of the sequence, then this sequence is fully present in the solution.
+          def solved?
+            @cursor == @original_sequence.size
+          end
+
+          # A new link is added to the solution. We want to known if the solution + this new link contains a path of
+          # links from the "from" of the first link to the "to" of the first link.
+          def advance_solution_cursor_for_new_link?(solution, new_link)
+            # no path in solution for first link if sequence is already solved or the first link and the new solution
+            # ends with a different element
+            return false unless first_link && first_link.to == new_link.to
+
+            # search for the position of the "from" of the first link in the solution
+            new_solution_cursor = next_occourrence_in_solution(solution, first_link.from)
+            return false unless new_solution_cursor
+
+            # we found the "from" of the first link, we advance in the solution
+            @solution_cursor = new_solution_cursor + 1
+
+            true
+          end
+
+          def remove_first_link
+            @cursor += 1
+          end
+
+          def inspect
+            "S#{sequence.inspect}S"
+          end
+
+          private
+
+          def next_occourrence_in_solution(solution, element)
+            solution_cursor = @solution_cursor
+
+            while solution_cursor < solution.size
+              return solution_cursor if solution[solution_cursor] == element
+
+              solution_cursor += 1
+            end
+
+            nil
+          end
+        end
+
+        # A State::Solution is the solution currently being built. It takes a parameter merger_counters which represents
+        # the maximum number of times each element appears in a sequence. A solution has its own counter that counts
+        # the number of times each element appears in the solution.
+        class Solution
+          def initialize(merger_counters)
+            @solution = []
+            @counters = {}
+            @merger_counters = merger_counters
+          end
+          attr_reader :solution, :counters, :merger_counters
+
+          delegate :[], :empty?, :size, to: :@solution
+
+          # If we can add the given link to the current solution.
+          def accept_link?(link)
+            # if the link does not exist, we refuse
+            return false if link.nil?
+
+            # if the solution is empty, we accept any link
+            return true if @solution.empty?
+
+            # if the last element of the solution is different than the first element of the link, we refuse
+            return false unless @solution.last == link.from
+
+            solution_counter = @counters[link.to]
+            # if there is no occurrence of the last element of the link (the new element) in the solution, we accept
+            return true if solution_counter.nil?
+
+            # if there are occurrences of the last element in the solution, then we check that it will not be greater
+            # than its maximum possible value
+            merger_counter = @merger_counters[link.to]
+            solution_counter < merger_counter
+          end
+
+          def add(element)
+            @solution << element
+
+            @counters[element] ||= 0
+            @counters[element] += 1
+          end
+
+          private
+
+          def initialize_copy(_source)
+            @solution = @solution.dup
+            @counters = @counters.dup
+            super
+          end
+        end
+
+        def initialize(sequences, counters)
+          @sequences = sequences.map { |s| Sequence.new(s) }
+          # the cursor on sequences
+          # once this value equals sequences.length, the state has built all possible next states
+          @current = 0
+          @solution = Solution.new(counters)
+        end
+        attr_reader :sequences, :current, :solution
+
+        # Builds and returns the next state by picking a new link in a sequence.
+        def next
+          while @current < @sequences.size
+            if @solution.accept_link?(@sequences[@current].first_link)
+              # we can build a new state from this link: we duplicate ourself and picks the new link
+              next_state = dup
+              next_state.next!
+            end
+            @current += 1
+
+            return next_state if next_state
+          end
+
+          nil
+        end
+
+        # Next state constructor that picks the first link of the current sequence.
+        def next!
+          new_link = @sequences[@current].first_link
+
+          # if we are on the very first link of the solution, we also add the first element of the link
+          @solution.add(new_link.from) if @solution.empty?
+
+          # for each sequence, we remove the first link if it is included in the solution
+          @sequences.each.with_index do |sequence, i|
+            # if the new link comes from the current sequence, we must remove it
+            # if we first link a the sequence is found in the solution, we must remove it
+            next unless (i == @current) || sequence.advance_solution_cursor_for_new_link?(solution, new_link)
+
+            sequence.remove_first_link
+          end
+
+          @solution.add(new_link.to) # we add the last element of the link
+
+          @current = 0 # we reset the sequences cursor to 0 to build new states from this state
+        end
+
+        # A State represents a valid solution when all sequences are solved.
+        def solved?
+          @sequences.all?(&:solved?)
+        end
+
+        private
+
+        def initialize_copy(_source)
+          @sequences = @sequences.map(&:dup)
+          @solution = @solution.dup
+          super
+        end
+      end
+
+      # Some computed solutions are actually not valid. We need to check that the solution covers all given sequences.
+      def valid_solution?(solution)
+        return false unless solution
+
+        raw_elements.all? do |sequence|
+          solution_i = 0
+          sequence.all? do |object|
+            while (solution_i < solution.size) && (solution[solution_i] != object)
+              solution_i += 1
+            end
+
+            solution_i < solution.size
+          end
+        end
+      end
+    end
+  end
+
   class Sequence
     def self.create(elements)
       links = []

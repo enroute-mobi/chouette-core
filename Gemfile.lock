@@ -674,7 +674,7 @@ GEM
       date
       stringio
     public_suffix (6.0.2)
-    puma (7.2.0)
+    puma (7.2.1)
       nio4r (~> 2.0)
     raabro (1.4.0)
     rabl (0.17.0)

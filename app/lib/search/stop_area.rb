@@ -81,7 +81,7 @@ module Search
     class Order < ::Search::Order
       attribute :name, default: :asc
       attribute :registration_number
-      attribute :status
+      attribute :status, column: %w[deleted_at confirmed_at]
       attribute :zip_code
       attribute :city_name
       attribute :area_type

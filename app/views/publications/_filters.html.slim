@@ -1,6 +1,6 @@
 = simple_search_for @search, workgroup_publications_path(@workgroup), graph_panel: :button do |f|
   = f.row
-    = f.creator
+    = f.text
   = f.row
     = f.input :statuses, collection: @search.candidate_statuses.map(&:slug), label_method: lambda{|slug| ("<span>" + operation_status(slug, verbose: true) + "</span>").html_safe}, wrapper_html: { class: "checkbox_list"}
     = f.input :start_date, as: :date_picker

@@ -106,6 +106,7 @@ module Import
       def initialize
         @sequences = Set.new
         @counters = {} # the maximum number of times each element appear in a sequence
+        @search_path = Set.new # already explored solutions
       end
       attr_reader :sequences, :counters
 
@@ -148,8 +149,7 @@ module Import
             new_solution = state.solution.solution
             if solution
               # we have already found another solution, so the merge cannot respond with a single solution
-              # however, maybe this new solution is completely the same as the previous one
-              return nil unless solution == new_solution
+              return nil
             else
               # we store this unique solution for now
               solution = new_solution
@@ -158,7 +158,8 @@ module Import
 
           next_state = state.next
           if next_state
-            stack << next_state
+            # if we already explored this solution, no need to use this new state
+            stack << next_state if add_in_search_path?(next_state.solution.solution)
           else
             stack.pop
           end
@@ -184,6 +185,12 @@ module Import
             found
           end
         end
+      end
+
+      private
+
+      def add_in_search_path?(solution)
+        @search_path.add?(solution)
       end
 
       class State

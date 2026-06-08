@@ -138,7 +138,7 @@ module Import
       # that link cannot be taken, then the parent cannot build any new state and is removed from the stack. If the
       # stack is empty without finding a valid solution, then no solution can be built.
       def build_solution
-        stack = [State.new(sequences, @counters.dup.freeze)]
+        stack = [State.new(sequences.sort_by(&:size).reverse, @counters.dup.freeze)]
         solution = nil
 
         while stack.any?

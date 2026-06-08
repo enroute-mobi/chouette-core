@@ -196,9 +196,9 @@ RSpec.describe Import::Sequence2::Merger do
 
     context 'different first links' do
       before do
-        merger << %w[A C B D]
-        merger << %w[B C B D]
         merger << %w[A B B D]
+        merger << %w[B C B D]
+        merger << %w[A C B D]
       end
 
       it { is_expected.to eq(%w[A B C B D]) }

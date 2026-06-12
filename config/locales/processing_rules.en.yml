@@ -86,11 +86,11 @@ en:
         "Macro::List": "Macro List"
         "Control::List": Control List
       operation_step:
-        before_import: Before import
-        after_import: After import
-        before_merge: Before merge
-        after_merge: After merge
-        after_aggregate: After aggregate
+        before_import: Import - Before
+        after_import: Import - After
+        before_merge: Merge - Before
+        after_merge: Merge - After
+        after_aggregate: Aggregate - After
 
   simple_form:
     hints:

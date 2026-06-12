@@ -4,7 +4,6 @@ FactoryBot.define do
     operation_statuses { [] }
     association :workbench
     priority { 10 }
-    period { (Date.today...Date.today + 10.days) }
 
     lines { [] }
   end

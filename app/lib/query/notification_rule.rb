@@ -19,12 +19,6 @@ module Query
 			end
 		end
 
-		def in_period(period)
-			change_scope(if: period.present?) do |scope|
-				scope.where('period::daterange && ?', period.to_postgresql_daterange)
-			end
-		end
-
 		def notification_type(value)
 			change_scope(if: value.present?) do |scope|
 				scope.where('ARRAY[?]::text[] @> ARRAY[notification_rules.notification_type]::text[]', value)

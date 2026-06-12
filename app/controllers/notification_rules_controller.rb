@@ -41,10 +41,6 @@ class NotificationRulesController < Chouette::WorkbenchController
   private
 
   def notification_rule_params
-    # TODO This horrible hack is made to avoid errors when PostgreSQL read empty string for period
-    if params['notification_rule'] && params['notification_rule']['period'].blank?
-      params['notification_rule']['period'] = nil
-    end
     params
       .require(:notification_rule)
       .permit(
@@ -53,7 +49,6 @@ class NotificationRulesController < Chouette::WorkbenchController
         :rule_type,
         :target_type,
         :external_email,
-        :period,
         users: [],
         operation_statuses: [],
         lines: []

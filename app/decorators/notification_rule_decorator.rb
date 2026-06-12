@@ -21,15 +21,7 @@ class NotificationRuleDecorator < Af83::Decorator
   end
 
   define_instance_method :name do
-    notification_type = object.notification_type.text
-
-    if object.period
-      NotificationRule.tmf('name', notification_type: notification_type,
-                                   from: I18n.l(period.begin),
-                                   to: I18n.l(period.end))
-    else
-      notification_type
-    end
+    object.notification_type.text
   end
 
   define_instance_method :user_items do
@@ -46,12 +38,6 @@ class NotificationRuleDecorator < Af83::Decorator
 
   define_instance_method :operation_statuses_items do
     object.operation_statuses.map { |s| { id: s, text: s } }
-  end
-
-  define_instance_method :display_period do
-    return 'always'.t unless object.period
-
-    I18n.t('bounding_dates', debut: l(object.period.min), end: l(object.period.max))
   end
 
   define_instance_method :display_lines do

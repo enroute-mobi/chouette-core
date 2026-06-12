@@ -6,5 +6,3 @@
     = f.input :operation_statuses, as: :autocomplete_select, collection: @search.candidate_operation_statuses, label_method: lambda{|slug| operation_status(slug, verbose: true) }, value_method: lambda{|slug| slug }, input_html: { multiple: true, style: 'width: 100%' }
   = f.row
     = f.input :lines, as: :autocomplete_select, collection: @search.candidate_lines, label_method: :display_name, input_html: { multiple: true, style: 'width: 100%' }
-    = f.input :start_date, as: :date_picker
-    = f.input :end_date, as: :date_picker

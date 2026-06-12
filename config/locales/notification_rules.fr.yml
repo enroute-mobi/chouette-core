@@ -21,8 +21,6 @@ fr:
     form:
       target: Destinataire
       conditions: Conditions
-    errors:
-      period: "Invalid period"
   activerecord:
     models:
       notification_rule:
@@ -31,13 +29,9 @@ fr:
         other: "règles de notification"
     attributes:
       notification_rule:
-        period: Période
-        period_start: Début
-        period_end: Fin
         notification_type: Type de notification
         lines: Lignes associées
         users: Utilisateur(s)
-        name: "%{notification_type} du %{from} au %{to}"
         priority: Priorité
         target_type: Destinataire(s) des notifications
         rule_type: Action

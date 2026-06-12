@@ -133,10 +133,22 @@ module Import
       # stack is empty without finding a valid solution, then no solution can be built.
       def build_solution
         stack = [State.new(sequences, @counters.dup.freeze)]
+        solution = nil
 
         while stack.any?
           state = stack.last
-          return state.solution.solution if state.solved?
+          if state.solved?
+            # we have found a solution! now, we need to check that we did not have already found another solution
+            new_solution = state.solution.solution
+            if solution
+              # we have already found another solution, so the merge cannot respond with a single solution
+              # however, maybe this new solution is completely the same as the previous one
+              return nil unless solution == new_solution
+            else
+              # we store this unique solution for now
+              solution = new_solution
+            end
+          end
 
           next_state = state.next
           if next_state
@@ -146,7 +158,7 @@ module Import
           end
         end
 
-        nil
+        solution # we return the found solution if any
       end
 
       class State

@@ -197,6 +197,16 @@ RSpec.describe Import::Sequence2::Merger do
 
       it { is_expected.to eq(%w[A B C A]) }
     end
+
+    context '2 possible solutions' do
+      before do
+        merger << %w[A B A]
+        merger << %w[A A A]
+      end
+
+      # both %w[A B A A] and %w[A A B A] are valid solutions
+      it { is_expected.to be_nil }
+    end
   end
 end
 

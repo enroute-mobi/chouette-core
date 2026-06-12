@@ -208,6 +208,38 @@ RSpec.describe Import::Sequence2::Merger do
       it { is_expected.to be_nil }
     end
   end
+
+  describe '#valid_solution?' do
+    context 'case 1' do
+      before do
+        merger << %w[A B A]
+        merger << %w[A A A]
+      end
+
+      it { expect(merger.valid_solution?(%w[A B A A])).to be(true) }
+
+      it { expect(merger.valid_solution?(%w[A A B A])).to be(true) }
+
+      it { expect(merger.valid_solution?(%w[B A A A])).to be(false) }
+
+      it { expect(merger.valid_solution?(%w[A A A B])).to be(false) }
+    end
+
+    context 'case 2' do
+      before do
+        merger << %w[A B A]
+        merger << %w[A A B]
+      end
+
+      it { expect(merger.valid_solution?(%w[A B A A])).to be(false) }
+
+      it { expect(merger.valid_solution?(%w[A A B A])).to be(true) }
+
+      it { expect(merger.valid_solution?(%w[B A A A])).to be(false) }
+
+      it { expect(merger.valid_solution?(%w[A A A B])).to be(false) }
+    end
+  end
 end
 
 RSpec.describe Import::Sequence::Merger do

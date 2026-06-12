@@ -161,6 +161,25 @@ module Import
         solution # we return the found solution if any
       end
 
+      def valid_solution?(solution)
+        return false unless solution
+
+        sequences.all? do |sequence|
+          elements = [sequence.first.from, *sequence.map(&:to)]
+          solution_i = 0
+
+          elements.all? do |element|
+            found = false
+            while !found && (solution_i < solution.size)
+              found = solution[solution_i] == element
+              solution_i += 1
+            end
+
+            found
+          end
+        end
+      end
+
       class State
         # A State::Sequence is a view of a merger Sequence. When the states are built, links are taken from the
         # sequences. Rather than copying the full sequence and removing the links one by one, it is more efficient to
@@ -336,22 +355,6 @@ module Import
           @sequences = @sequences.map(&:dup)
           @solution = @solution.dup
           super
-        end
-      end
-
-      # Some computed solutions are actually not valid. We need to check that the solution covers all given sequences.
-      def valid_solution?(solution)
-        return false unless solution
-
-        raw_elements.all? do |sequence|
-          solution_i = 0
-          sequence.all? do |object|
-            while (solution_i < solution.size) && (solution[solution_i] != object)
-              solution_i += 1
-            end
-
-            solution_i < solution.size
-          end
         end
       end
     end

@@ -13,6 +13,7 @@ RSpec.describe Search::Base, type: :model do
     class Order < ::Search::Order
       attribute :name, default: :asc
       attribute :joined_column, column: 'others.column', joins: :others
+      attribute :multi_column, column: %w[type_column id_column]
 
       attr_accessor :context
     end
@@ -279,7 +280,7 @@ RSpec.describe Search::Base, type: :model do
       it 'is ordered on a joined column' do
         search.order.attributes = { joined_column: :desc }
 
-        expect(scope).to receive(:joins).with(:others).and_return(scope)
+        expect(scope).to receive(:left_outer_joins).with(:others).and_return(scope)
         expect(scope).to receive(:order).with({ 'others.column' => :desc }).and_return(scope)
 
         subject
@@ -688,7 +689,8 @@ RSpec.describe Search::Base, type: :model do
         is_expected.to(
           contain_exactly(
             an_object_having_attributes(name: :name, default: :asc),
-            an_object_having_attributes(name: :joined_column, column: 'others.column')
+            an_object_having_attributes(name: :joined_column, column: 'others.column'),
+            an_object_having_attributes(name: :multi_column, column: %w[type_column id_column])
           )
         )
       end
@@ -715,6 +717,11 @@ RSpec.describe Search::Base, type: :model do
       context 'when attribute joined_column is :asc' do
         before { order.joined_column = :asc }
         it { is_expected.to eq('others.column' => :asc) }
+      end
+
+      context 'when attribute is defined on several columns' do
+        before { order.multi_column = :desc }
+        it { is_expected.to eq('type_column' => :desc, 'id_column' => :desc) }
       end
     end
 
@@ -743,10 +750,10 @@ RSpec.describe Search::Base, type: :model do
           with_string_join: :asc
         }
 
-        expect(scope).to receive(:joins).with(:simple).and_return(scope)
-        expect(scope).to receive(:joins).with(%i[table1 table2]).and_return(scope)
-        expect(scope).to receive(:joins).with({ table_a: { table_b: :table_c }, table_d: {} }).and_return(scope)
-        expect(scope).to receive(:joins).with('INNER JOIN table_x ON table_x.column_id = base.id').and_return(scope)
+        expect(scope).to receive(:left_outer_joins).with(:simple).and_return(scope)
+        expect(scope).to receive(:left_outer_joins).with(%i[table1 table2]).and_return(scope)
+        expect(scope).to receive(:left_outer_joins).with({ table_a: { table_b: :table_c }, table_d: {} }).and_return(scope)
+        expect(scope).to receive(:left_outer_joins).with('INNER JOIN table_x ON table_x.column_id = base.id').and_return(scope)
         expect(scope).to receive(:order)
 
         subject

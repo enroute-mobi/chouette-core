@@ -35,7 +35,8 @@
               ), \
               TableBuilderHelper::Column.new( \
                 key: :status, \
-                attribute: Proc.new { |s| stop_area_status(s.status) } \
+                attribute: Proc.new { |s| stop_area_status(s.status) }, \
+                sortable: false \
               ), \
               TableBuilderHelper::Column.new( \
                 key: :stop_area_provider, \

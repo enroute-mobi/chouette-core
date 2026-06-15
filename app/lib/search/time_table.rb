@@ -14,6 +14,9 @@ module Search
 
     class Order < ::Search::Order
       attribute :comment, default: :asc
+      attribute :color
+      attribute :calendar, joins: :calendar, column: 'calendars.name'
+      attribute :updated_at
     end
   end
 end

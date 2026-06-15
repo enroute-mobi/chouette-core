@@ -100,6 +100,11 @@ class ExportsController < Chouette::WorkbenchController
     def query_class
       Query::Export
     end
+
+    class Order < ::Search::Operation::Order
+      attribute :type
+      attribute :referential, joins: :referential, column: 'referentials.name'
+    end
   end
 
   def load_referentials

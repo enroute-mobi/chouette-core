@@ -103,6 +103,20 @@ RSpec.describe Query::Export do
         it("excludes the export") { is_expected.to_not include(export) }
       end
     end
+
+    context "when export creator is 'John Doe'" do
+      before { export.update_column :creator, 'John Doe' }
+
+      context "when queried text matches the creator" do
+        let(:queried_text) { 'John' }
+        it("includes the export") { is_expected.to include(export) }
+      end
+
+      context "when queried text matches neither name nor creator" do
+        let(:queried_text) { 'Dummy' }
+        it("excludes the export") { is_expected.to_not include(export) }
+      end
+    end
   end
 
 end

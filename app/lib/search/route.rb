@@ -16,6 +16,7 @@ module Search
 
     class Order < ::Search::Order
       attribute :name, default: :asc
+      attribute :published_name
       attribute :wayback
     end
   end

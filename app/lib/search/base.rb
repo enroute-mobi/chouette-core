@@ -1489,7 +1489,7 @@ module Search
         next s unless attribute.joins
         next s unless send(attribute.name)
 
-        s.joins(attribute.joins)
+        s.left_outer_joins(attribute.joins)
       end
       scope.order(order_hash)
     end

@@ -63,6 +63,6 @@ fr:
   enumerize:
     widget:
       widget_type:
-        chart: "Graphe"
+        chart: "Graphique"
         count: "Compteur"
         static_text: "Texte statique"

@@ -3,6 +3,65 @@
 class ApplicationStoreModel
   include StoreModel::Model
   include ActiveModel::Naming
+  include ActiveRecord::Reflection
+
+  module Associations
+    class Reflection
+      def initialize(model, name, options)
+        @model = model
+        @name = name
+        @options = options
+      end
+      attr_reader :model, :name, :options
+
+      def foreign_key
+        @foreign_key ||= options[:foreign_key] || :"#{name}_id"
+      end
+
+      def required?
+        options.fetch(:required) { !options.fetch(:optional, false) }
+      end
+
+      def klass
+        return @klass if @klass
+
+        class_name = options[:class_name] ||= name.to_s.classify
+        @klass = class_name.constantize
+      end
+
+      def parent_reflection
+        nil
+      end
+
+      def define_validations!; end
+
+      def define_accessors!; end
+    end
+
+    class BelongsToReflection < Reflection
+      def macro
+        :belongs_to
+      end
+
+      def define_validations!
+        super
+
+        model.validates_presence_of(name, message: :required) if required?
+      end
+
+      def define_accessors!
+        model.attribute foreign_key, :integer
+
+        model.class_eval <<-CODE, __FILE__, __LINE__ + 1
+          def #{name}
+            return @#{name} if defined?(@#{name})
+
+            @#{name} = self.class.reflect_on_association(:#{name}).klass.where(id: #{foreign_key}).first
+          end
+        CODE
+      end
+    end
+  end
 
   class << self
     attr_accessor :abstract_class
@@ -12,6 +71,13 @@ class ApplicationStoreModel
       attribute :type, :string unless abstract_class? || attribute_names.include?('type')
 
       super
+    end
+
+    def belongs_to(name, **options)
+      reflection = Associations::BelongsToReflection.new(self, name, options)
+      reflection.define_validations!
+      reflection.define_accessors!
+      ::ActiveRecord::Reflection.add_reflection(self, name, reflection)
     end
 
     def one_of_descendants

@@ -1,3 +1,5 @@
-.widget-chart
-  .chart-container[data-controller="chart" data-chart-options-value=widget.options.to_json]
-    canvas[data-chart-target="canvas"]
+- chart = widget.setup.chart
+- if chart
+  = chart.to_chartkick(self, height: '100%')
+- else
+  = render 'dashboards/widgets/error'

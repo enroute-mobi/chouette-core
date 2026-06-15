@@ -18,19 +18,6 @@
     .grid-stack[
       data-dashboard-path=workbench_dashboard_path(@workbench, @dashboard)
     ]
-      - @dashboard.widgets.each do |widget|
-        .grid-stack-item[
-          gs-x=widget.x
-          gs-y=widget.y
-          gs-w=widget.width
-          gs-h=widget.height
-          data-widget-id=widget.id
-        ]
-          .grid-stack-item-content
-            .content-container
-              .widget-drag-handle
-                h3= widget.name
-              .widget-content
-                = render_widget(widget)
+      = render 'widgets'
 
 - javascript_additional_packs 'dashboards/edit'

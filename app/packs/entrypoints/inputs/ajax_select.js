@@ -23,8 +23,10 @@ function addAjaxSelectToForm(dom_part) {
       sortField: [{field:'$order'},{field:'$score'}],
       // fetch remote data
       load: function (query, callback) {
-        var url = el.dataset.url + '?q=' + encodeURIComponent(query);
-        fetch(url)
+        var url = new URL(el.dataset.url, window.location.origin)
+        url.searchParams.append("q", query)
+
+        fetch(url.toString())
           .then(response => response.json())
           .then(callback)
           .catch(() => {

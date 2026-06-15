@@ -87,6 +87,7 @@ class Workbench < ApplicationModel
 
   has_many :sequences, dependent: :destroy
   has_many :dashboards, dependent: :destroy
+  has_many :widgets, through: :dashboards
 
   before_validation :create_dependencies, on: :create
   before_validation :create_default_prefix

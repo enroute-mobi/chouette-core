@@ -1837,6 +1837,8 @@ ActiveRecord::Schema[7.2].define(version: 2026_05_27_072808) do
     t.integer "y", default: 0, null: false
     t.integer "width", default: 1, null: false
     t.integer "height", default: 2, null: false
+    t.jsonb "setup_data_cache"
+    t.datetime "setup_data_cache_updated_at"
     t.index ["dashboard_id"], name: "index_widgets_on_dashboard_id"
   end
 

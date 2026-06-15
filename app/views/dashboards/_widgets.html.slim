@@ -1,0 +1,17 @@
+- @dashboard.widgets.each do |widget|
+  .grid-stack-item[
+    gs-x=widget.x
+    gs-y=widget.y
+    gs-w=widget.width
+    gs-h=widget.height
+    data-widget-id=widget.id
+  ]
+    .grid-stack-item-content
+      .content-container
+        .widget-drag-handle
+          h3= widget.name
+        .widget-content
+          - if widget.data_available?
+            = render "dashboards/widgets/#{widget.widget_type}", widget: widget
+          - else
+            = render 'dashboards/widgets/error'

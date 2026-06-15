@@ -8,6 +8,10 @@ module Search
     validates :name, presence: true, uniqueness: { scope: %i[parent_type parent_id search_type] }
     validates :search_type, presence: true
 
+    scope :by_text, ->(text) { text.blank? ? all : where('lower(name) LIKE :t', t: "%#{text.downcase}%") }
+    scope :graphical, -> { where(%(#{quoted_table_name}."search_attributes" ->> 'chart_type' IS NOT NULL)) }
+    scope :non_graphical, -> { where(%(#{quoted_table_name}."search_attributes" ->> 'chart_type' IS NULL)) }
+
     class << self
       # rubocop:disable Naming/MemoizedInstanceVariableName
       def model_name

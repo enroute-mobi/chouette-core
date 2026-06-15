@@ -135,7 +135,7 @@ en:
         actions:
           add_period: 'Add a period'
         placeholders:
-          select_lines: 'Selection of lignes'
+          select_lines: 'Selection of Lines'
   notice:
     referentials:
       deleted: "Datasets has been successfully destroyed"

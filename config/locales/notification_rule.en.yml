@@ -18,6 +18,9 @@ en:
       edit: Add notification rule
     create:
       <<: *notification_rule_new
+    form:
+      target: Target
+      conditions: Conditions
     errors:
       period: "Invalid period"
   activerecord:

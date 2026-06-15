@@ -18,7 +18,7 @@ RSpec.describe NotificationRule, type: :model do
       .with_default(:import)
   end
   it { is_expected.to enumerize(:target_type).in(:user, :workbench, :external_email).with_default(:workbench) }
-  it { is_expected.to enumerize(:rule_type).in(:notify, :block).with_default(:block) }
+  it { is_expected.to enumerize(:rule_type).in(:notify, :block).with_default(:notify) }
   it { is_expected.to enumerize(:operation_statuses).in(:successful, :warning, :failed).with_multiple(true) }
 
   describe '#users' do

@@ -58,7 +58,8 @@ class NotificationRulesController < Chouette::WorkbenchController
         operation_statuses: [],
         lines: []
       )
-      .with_defaults(workbench_id: workbench.id, users: [], external_email: nil) # CHOUETTE-1713
+      .with_defaults(workbench_id: workbench.id, users: [], external_email: nil, lines: []) # CHOUETTE-1713
     # (depending on the chosen target_type, some inputs are disabled, we then need to ensure default values)
+    # (lines is only shown for import/merge notification types, so we reset it when the input is hidden)
   end
 end

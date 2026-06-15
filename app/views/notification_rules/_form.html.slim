@@ -1,14 +1,18 @@
 = simple_form_for [@workbench, @notification_rule], html: {class: 'form-horizontal', id: 'notification_rule_form'}, wrapper: :horizontal_form do |f|
-  .row
-    .col-lg-12
-      = f.input :notification_type, include_blank: false
-      = f.input :priority, type: :integer
+  div[x-data="{ notificationType: '#{@notification_rule.notification_type}', targetType: '#{@notification_rule.target_type}' }"]
+    .row
+      .col-lg-12
+        = f.input :notification_type, include_blank: false, input_html: { 'x-model': 'notificationType' }
+        = f.input :priority, type: :integer
 
-      .form-group
-        = f.label NotificationRule.tmf(:rule_type), class: 'col-sm-4 col-xs-5 control-label'
-        = f.input :rule_type, as: :radio_buttons, label: false, wrapper_html: { class: 'date smart_date col-sm-8 col-xs-7', style: 'margin-right: 0px; margin-left: 0px' }
+        .form-group
+          = f.label NotificationRule.tmf(:rule_type), class: 'col-sm-4 col-xs-5 control-label'
+          = f.input :rule_type, as: :radio_buttons, label: false, wrapper_html: { class: 'date smart_date col-sm-8 col-xs-7', style: 'margin-right: 0px; margin-left: 0px' }
 
-      div[x-data="{ targetType: '#{@notification_rule.target_type}' }"]
+    .separator.section_separator
+    .row
+      .col-lg-12
+        h3.mb-lg= t('notification_rules.form.target')
         .form-group
           = f.label NotificationRule.tmf(:target_type), class: 'col-sm-4 col-xs-5 control-label'
           = f.input :target_type,
@@ -33,17 +37,21 @@
               required: true,
               input_html: { ':disabled': "targetType != 'external_email'" }
 
-  h3 = 'Conditions'
-  .separator
-    .form-group
-      = render 'period_fields', form: f
+    .separator.section_separator
+    .row
+      .col-lg-12
+        h3.mb-lg= t('notification_rules.form.conditions')
+        .form-group
+          / = render 'period_fields', form: f
 
-    = f.input :operation_statuses,
-      as: :tom_select,
-      collection: operation_statuses_options,
-      config: { hidePlaceholder: true }
+        = f.input :operation_statuses,
+          as: :tom_select,
+          collection: operation_statuses_options,
+          config: { hidePlaceholder: true }
 
-    = render 'line_ids_field', form: f
+        template[x-if="['import', 'merge'].includes(notificationType)"]
+          div
+            = render 'line_ids_field', form: f
 
     = cancel_button
     = f.button :submit, t('actions.submit'), class: 'formSubmitr', form: 'notification_rule_form'

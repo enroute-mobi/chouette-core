@@ -2,8 +2,29 @@
 
 = simple_form_for [@workbench, @processing_rule], as: 'processing_rule', html: { class: 'tailwind-form', id: 'processing_rule_form' }, wrapper: :horizontal_form_tailwind  do |f|
   .row
-    .col-lg-12 x-data="{ processable_type: '#{@processing_rule.processable_type}', isShowing: true }"
-      = f.input :operation_step, input_html: { 'x-on:change': 'isShowing = $event.target.value' }
+    .col-lg-12 x-data="{ processable_type: '#{@processing_rule.processable_type}', operation_step: '#{@processing_rule.operation_step || @processing_rule.class.operation_step.values.first}' }"
+      h2.my-16
+        = t('processing_rule/workbenches.form.sections.trigger_conditions')
+
+      = f.input :operation_step, include_blank: false, input_html: { 'x-on:change': 'operation_step = $event.target.value' }
+
+      div x-show="operation_step == 'after_import'"
+        = f.input :required_tag_ids,
+          as: :tom_select,
+          collection: candidate_tags,
+          input_html: { multiple: true },
+          allow_blank: false
+
+        = f.input :excluded_tag_ids,
+          as: :tom_select,
+          collection: candidate_tags,
+          input_html: { multiple: true },
+          allow_blank: false
+
+      .separator.section_separator
+
+      h2.my-16
+        = t('processing_rule/workbenches.form.sections.processing_selection')
 
       .flex.items-center.mb-10
         ul.w-full
@@ -12,23 +33,11 @@
               = f.radio_button :processable_type, "Control::List", { "x-model" => "processable_type" }
               = f.label :processable_type_controllist, Control::List.model_name.human, class: 'ml-4 mb-0'
             = f.input :control_list_id, as: :select, label: false, wrapper: false, collection: @processing_rule.candidate_control_lists.order(:name), input_html: { "x-bind:disabled" => "processable_type != 'Control::List'" }
-          li.flex.justify-end.mb-10 x-show="isShowing != 'after_merge'"
+          li.flex.justify-end.mb-10 x-show="operation_step != 'after_merge'"
             .flex.items-center.justify-end.mr-4.w-2/6
               = f.radio_button :processable_type, "Macro::List", { "x-model" => "processable_type" }
               = f.label :processable_type_macrolist, Macro::List.model_name.human, class: 'ml-4 mb-0'
-            = f.input :macro_list_id, as: :select, label: false, wrapper: false, collection: @processing_rule.candidate_macro_lists.order(:name), input_html: { "x-bind:disabled" => "processable_type != 'Macro::List' || isShowing == 'after_merge'" }
-
-          = f.input :required_tag_ids,
-            as: :tom_select,
-            collection: candidate_tags,
-            input_html: { multiple: true },
-            allow_blank: false
-
-          = f.input :excluded_tag_ids,
-            as: :tom_select,
-            collection: candidate_tags,
-            input_html: { multiple: true },
-            allow_blank: false
+            = f.input :macro_list_id, as: :select, label: false, wrapper: false, collection: @processing_rule.candidate_macro_lists.order(:name), input_html: { "x-bind:disabled" => "processable_type != 'Macro::List' || operation_step == 'after_merge'" }
 
   = cancel_button
   = f.button :submit, t('actions.submit'), class: 'formSubmitr', form: 'processing_rule_form'

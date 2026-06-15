@@ -8,6 +8,10 @@ en:
       title: "Create a Processing Rule"
     edit:
       title: "Edit %{name}"
+    form:
+      sections:
+        trigger_conditions: Trigger Conditions
+        processing_selection: Processing Selection
     search_no_results: "No processing rule matches your search"
     actions:
       show: "Show this Processing Rule"
@@ -26,6 +30,10 @@ en:
       title: "Create a Processing Rule"
     edit:
       title: "Edit %{name}"
+    form:
+      sections:
+        trigger_conditions: Trigger Conditions
+        processing_selection: Processing Selection
     search_no_results: "No processing rule matches your search"
     actions:
       show: "Show this Processing Rule"
@@ -51,8 +59,8 @@ en:
       processing_rule/base:
         processable_type: Processing Type
         processable_id: Processing
-        operation_step: Operation Step
-      processing/workbench:
+        operation_step: Triggered by
+      processing_rule/workbench:
         required_tag_ids: Required tags
         required_tags: Required tags
         excluded_tag_ids: Excluded tags
@@ -78,11 +86,11 @@ en:
         "Macro::List": "Macro List"
         "Control::List": Control List
       operation_step:
-        before_import: Before import
-        after_import: After import
-        before_merge: Before merge
-        after_merge: After merge
-        after_aggregate: After aggregate
+        before_import: Import - Before
+        after_import: Import - After
+        before_merge: Merge - Before
+        after_merge: Merge - After
+        after_aggregate: Aggregate - After
 
   simple_form:
     hints:

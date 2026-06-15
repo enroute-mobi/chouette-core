@@ -8,6 +8,10 @@ fr:
       title: "Créer une Règle de traitement"
     edit:
       title: "Editer %{name}"
+    form:
+      sections:
+        trigger_conditions: Conditions de déclenchement
+        processing_selection: Sélection du traitement
     search_no_results: "Aucune Règle de traitement ne correspond à votre recherche"
     actions:
       show: "Afficher cette Règle de traitement"
@@ -26,6 +30,10 @@ fr:
       title: "Créer une Règle de traitement"
     edit:
       title: "Editer %{name}"
+    form:
+      sections:
+        trigger_conditions: Conditions de déclenchement
+        processing_selection: Sélection du traitement
     search_no_results: "Aucune Règle de traitement ne correspond à votre recherche"
     actions:
       show: "Afficher cette Règle de traitement"
@@ -51,7 +59,7 @@ fr:
       processing_rule/base:
         processable_type: Type de traitement
         processable_id: Traitement
-        operation_step: Étape
+        operation_step: Déclenché par
       processing_rule/workbench:
         required_tag_ids: Tags requis
         required_tags: Tags requis
@@ -78,11 +86,11 @@ fr:
         "Macro::List": "Jeu d'instructions"
         "Control::List": Jeu de contrôles
       operation_step:
-        before_import: Avant import
-        after_import: Après import
-        before_merge: Avant finalisation
-        after_merge: Après finalisation
-        after_aggregate: Après agrégation
+        before_import: Import - Avant
+        after_import: Import - Après
+        before_merge: Finalisation - Avant
+        after_merge: Finalisation - Après
+        after_aggregate: Agrégation- Après
 
   simple_form:
     hints:

@@ -9,7 +9,8 @@ const mapStateToProps = (state) => {
     selectionMode: state.selection.active,
     filters: state.filters,
     selection: state.selection,
-    toggleArrivals: state.filters.toggleArrivals
+    toggleArrivals: state.filters.toggleArrivals,
+    modal: state.modal
   }
 }
 

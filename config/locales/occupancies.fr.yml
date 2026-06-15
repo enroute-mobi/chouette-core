@@ -1,0 +1,12 @@
+fr:
+  occupancies:
+    unknown: "Inconnu"
+    empty: "Vide"
+    many_seats_available: "Beaucoup de places disponibles"
+    few_seats_available: "Peu de places disponibles"
+    standing_room_only: "Places debout uniquement"
+    crushed_standing_room_only: "Places debout tassées"
+    full: "Plein"
+    not_accepting_passengers: "N'accepte plus de passagers"
+    seats_available: "Places assises disponibles"
+    standing_available: "Places debout disponibles"

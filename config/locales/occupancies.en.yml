@@ -1,0 +1,12 @@
+en:
+  occupancies:
+    unknown: "Unknown"
+    empty: "Empty"
+    many_seats_available: "Many Seats Available"
+    few_seats_available: "Few Seats Available"
+    standing_room_only: "Standing Room Only"
+    crushed_standing_room_only: "Crushed Standing Room Only"
+    full: "Full"
+    not_accepting_passengers: "Not Accepting Passengers"
+    seats_available: "Seats Available"
+    standing_available: "Standing Available"

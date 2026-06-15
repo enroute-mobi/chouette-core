@@ -249,6 +249,8 @@ module Chouette
         end
 
         params[:stop_area_id] = vjas['specific_stop_area_id']
+        params[:occupancy_level] = vjas['occupancy_level'] if vjas['occupancy_level'].present?
+        params[:occupancy_percentage] = vjas['occupancy_percentage'].to_i if vjas['occupancy_percentage'].present?
         stop = create_or_find_vjas_from_state(vjas)
         stop.update(params)
         vjas.delete('errors')
@@ -356,8 +358,13 @@ module Chouette
         'published_journey_name',
         'journey_pattern_id',
         'company_id',
-        'accessibility_assessment_id'
+        'accessibility_assessment_id',
+        'occupancy_level',
+        'occupancy_percentage'
       ).to_hash
+
+      # Convert occupancy_percentage to integer if present
+      attrs['occupancy_percentage'] = attrs['occupancy_percentage'].to_i if attrs['occupancy_percentage'].present?
 
       if item['journey_pattern']
         attrs['journey_pattern_id'] = item['journey_pattern']['id']

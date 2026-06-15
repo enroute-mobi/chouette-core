@@ -96,5 +96,9 @@ child(:vehicle_journey_at_stops_matrix, :object_root => false) do |vehicle_stops
         vs.send("#{att}_local_time_of_day")&.as_json&.slice('hour', 'minute')
       end
     end
+
+    node(:occupancy_level) { |vs| vs.occupancy_level }
+    node(:occupancy_percentage) { |vs| vs.occupancy_percentage }
+    node(:stop_point_id) { |vs| vs.stop_point_id }
   end
 end

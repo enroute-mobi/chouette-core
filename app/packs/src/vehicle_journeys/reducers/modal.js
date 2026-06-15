@@ -237,6 +237,15 @@ export default function modal(state = {}, action) {
       },
       confirmModal: {}
     }
+    case 'SELECT_OCCUPANCY_MODAL':
+    return {
+      type: 'select_occupancy',
+      modalProps: {
+        // Prevent unwanted modification triggered by shallow copy
+        vehicleJourney: _.cloneDeep(action.vehicleJourney)
+      },
+      confirmModal: {}
+    }
     case 'DUPLICATE_VEHICLEJOURNEY_MODAL':
       return {
         type: 'duplicate',

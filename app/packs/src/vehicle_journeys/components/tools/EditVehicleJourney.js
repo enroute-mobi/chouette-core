@@ -174,30 +174,6 @@ export default class EditVehicleJourney extends Component {
                               onUnselect2AccessibilityAssessment = {() => this.props.onUnselect2AccessibilityAssessment()}
                             />
                         </div>
-                        <div className='row'>
-                          <div className='col-lg-6 col-md-6 col-sm-6 col-xs-12'>
-                            <div className='form-group'>
-                              <label className='control-label'>{I18n.attribute_name('vehicle_journey', 'occupancy_level')}</label>
-                              <input
-                                type='text'
-                                className='form-control'
-                                value={this.props.modal.modalProps.vehicleJourney.occupancy_level ? this.props.modal.modalProps.vehicleJourney.occupancy_level : '-'}
-                                disabled={true}
-                              />
-                            </div>
-                          </div>
-                          <div className='col-lg-6 col-md-6 col-sm-6 col-xs-12'>
-                            <div className='form-group'>
-                              <label className='control-label'>{I18n.attribute_name('vehicle_journey', 'occupancy_percentage')}</label>
-                              <input
-                                type='text'
-                                className='form-control'
-                                value={this.props.modal.modalProps.vehicleJourney.occupancy_percentage !== null && this.props.modal.modalProps.vehicleJourney.occupancy_percentage !== undefined ? this.props.modal.modalProps.vehicleJourney.occupancy_percentage : '-'}
-                                disabled={true}
-                              />
-                            </div>
-                          </div>
-                        </div>
                         { !(_.isEmpty(window.available_code_spaces)) &&
                           <React.Fragment>
                             <div className='row'>

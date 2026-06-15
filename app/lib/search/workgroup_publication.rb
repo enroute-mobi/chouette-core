@@ -3,7 +3,6 @@
 module Search
   class WorkgroupPublication < ::Search::Operation
     attribute :text
-    attribute :creator
     attribute :publication_setup_id
     attribute :export_type
     attr_accessor :workgroup
@@ -15,7 +14,6 @@ module Search
     def query(scope)
       super(scope)
         .publication_setup_id(publication_setup_id)
-        .creator(creator)
         .export_type(export_type)
         .text(text)
     end

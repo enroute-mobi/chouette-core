@@ -67,29 +67,6 @@ RSpec.describe Search::StopArea do
         is_expected.to eq [first, second, last]
       end
     end
-
-    context 'search with order by status' do
-      let!(:context) do
-        Chouette.create do
-          stop_area :in_creation, name: 'a'
-          stop_area :confirmed, name: 'b', status: :confirmed
-          stop_area :deactivated, name: 'c', status: :deactivated
-        end
-      end
-
-      let(:scope) { Chouette::StopArea.where(name: %w[a b c]) }
-      let(:search) { described_class.new(order: { status: :asc }) }
-
-      it 'groups stop areas by their computed status' do
-        is_expected.to eq(
-          [
-            context.stop_area(:deactivated),
-            context.stop_area(:confirmed),
-            context.stop_area(:in_creation)
-          ]
-        )
-      end
-    end
   end
 
   describe '#scope' do

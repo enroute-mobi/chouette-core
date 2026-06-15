@@ -1475,14 +1475,12 @@ module Search
     end
 
     def order_hash
-      self.class.attributes.each_with_object({}) do |attribute, hash|
+      self.class.attributes.filter_map do |attribute|
         attribute_value = send(attribute.name)
-        next unless attribute_value
+        next nil unless attribute_value
 
-        # An attribute can be ordered on several columns (e.g. a polymorphic
-        # association) or on a raw SQL expression wrapped in Arel.sql.
-        Array(attribute.column).each { |column| hash[column] = attribute_value }
-      end
+        [attribute.column, attribute_value]
+      end.to_h
     end
 
     def order(scope)

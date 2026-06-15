@@ -13,7 +13,6 @@ RSpec.describe Search::Base, type: :model do
     class Order < ::Search::Order
       attribute :name, default: :asc
       attribute :joined_column, column: 'others.column', joins: :others
-      attribute :multi_column, column: %w[type_column id_column]
 
       attr_accessor :context
     end
@@ -689,8 +688,7 @@ RSpec.describe Search::Base, type: :model do
         is_expected.to(
           contain_exactly(
             an_object_having_attributes(name: :name, default: :asc),
-            an_object_having_attributes(name: :joined_column, column: 'others.column'),
-            an_object_having_attributes(name: :multi_column, column: %w[type_column id_column])
+            an_object_having_attributes(name: :joined_column, column: 'others.column')
           )
         )
       end
@@ -717,11 +715,6 @@ RSpec.describe Search::Base, type: :model do
       context 'when attribute joined_column is :asc' do
         before { order.joined_column = :asc }
         it { is_expected.to eq('others.column' => :asc) }
-      end
-
-      context 'when attribute is defined on several columns' do
-        before { order.multi_column = :desc }
-        it { is_expected.to eq('type_column' => :desc, 'id_column' => :desc) }
       end
     end
 

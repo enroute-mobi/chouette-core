@@ -27,6 +27,7 @@
                 attribute: Proc.new do |publication| \
                   publication.parent ? link_to("#{publication.parent.class.ts} #{publication.parent.name}", [@workgroup, publication.publication_setup, publication]) : '-' \
                 end, \
+                sortable: false \
               ), \
               TableBuilderHelper::Column.new( \
                 key: :export_type, \

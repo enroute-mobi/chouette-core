@@ -34,7 +34,6 @@ module Search
       attributes.delete_if { |attribute| attribute.name == :status }
       attribute :status, column: 'user_status'
       attribute :publication_setup, joins: :publication_setup, column: 'publication_setups.name'
-      attribute :parent, column: %w[parent_type parent_id]
       attribute :export_type,
                 joins: :publication_setup,
                 column: Arel.sql("publication_setups.export_setup->>'type'")

@@ -90,7 +90,7 @@ fr:
         after_import: Import - Après
         before_merge: Finalisation - Avant
         after_merge: Finalisation - Après
-        after_aggregate: Agrégation- Après
+        after_aggregate: Agrégation - Après
 
   simple_form:
     hints:

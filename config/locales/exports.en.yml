@@ -5,6 +5,15 @@ en:
       referential: "Select data set..."
       name_or_creator_cont: "Select an export or creator name..."
       error_period_filter: "End date must be greater or equal than begin date"
+    status:
+      new:        New
+      pending:    Pending
+      successful: Successful
+      warning:    Warning
+      failed:     Failed
+      running:    Running
+      aborted:    Aborted
+      canceled:   Canceled
     actions:
       new: "New export"
       create: "New export"

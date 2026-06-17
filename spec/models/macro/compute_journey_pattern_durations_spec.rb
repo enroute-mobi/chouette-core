@@ -74,5 +74,17 @@ RSpec.describe Macro::ComputeJourneyPatternDurations do
         )
       end
     end
+
+    describe Macro::ComputeJourneyPatternDurations::Run::Query do
+      describe '#durations' do
+        context 'when journey_patterns is empty' do
+          subject { described_class.new([]).durations }
+
+          it 'returns an empty array without raising a SQL error' do
+            expect(subject).to eq([])
+          end
+        end
+      end
+    end
   end
 end

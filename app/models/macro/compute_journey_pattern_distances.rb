@@ -111,6 +111,8 @@ module Macro
         end
 
         def distances
+          return [] if journey_patterns.empty?
+
           ActiveRecord::Base.connection.select_rows(query)
         end
 

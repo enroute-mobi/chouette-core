@@ -89,6 +89,18 @@ RSpec.describe Macro::ComputeJourneyPatternDistances do
     end
   end
 
+  describe Macro::ComputeJourneyPatternDistances::Run::Query do
+    describe '#distances' do
+      context 'when journey_patterns is empty' do
+        subject { described_class.new([]).distances }
+
+        it 'returns an empty array without raising a SQL error' do
+          expect(subject).to eq([])
+        end
+      end
+    end
+  end
+
   describe Macro::ComputeJourneyPatternDistances::Run::Batch do
     subject { JSON.parse batch.query.distances.to_h[second_journey_pattern.id] }
 

@@ -219,7 +219,7 @@ module Chouette
     end
 
     def time_tables
-      ids = vehicle_journeys.joins(:time_tables).pluck('time_tables.id').uniq
+      ids = vehicle_journeys.joins(:time_tables).select('time_tables.id').distinct
       Chouette::TimeTable.where(id: ids)
     end
 

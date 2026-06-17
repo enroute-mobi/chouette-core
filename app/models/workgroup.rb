@@ -256,7 +256,7 @@ class Workgroup < ApplicationModel
     name = params[:name] || organisation.name
 
     Workgroup.transaction do
-      workgroup = Workgroup.create!(name: name) do |workgroup|
+      workgroup = Workgroup.create!(name: name, **params.slice(:description)) do |workgroup|
         workgroup.owner = organisation
         workgroup.export_types = DEFAULT_EXPORT_TYPES
 

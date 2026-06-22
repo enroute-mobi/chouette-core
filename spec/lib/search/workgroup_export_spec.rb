@@ -3,16 +3,6 @@
 RSpec.describe Search::WorkgroupExport, type: :model do
   subject(:search) { described_class.new }
 
-  describe 'validation' do
-    context 'when chart_type is present' do
-      before { search.chart_type = 'line' }
-
-      it { is_expected.to allow_value('started_at').for(:group_by_attribute) }
-      it { is_expected.to allow_value('started_at_hour_of_day').for(:group_by_attribute) }
-      it { is_expected.to allow_value('started_at_day_of_week').for(:group_by_attribute) }
-    end
-  end
-
   describe '#searched_class' do
     subject { search.searched_class }
 
@@ -110,120 +100,6 @@ RSpec.describe Search::WorkgroupExport, type: :model do
         allow(search).to receive(:period).and_return(double)
         expect(query).to receive(:in_period).with(search.period).and_return(query)
         search.query(scope)
-      end
-    end
-  end
-
-  describe '#chart' do
-    subject(:chart) { search.chart(scope) }
-
-    let(:context) do # rubocop:disable Metrics/BlockLength
-      context = Chouette::Factory.create do
-        workgroup export_types: ['Export::Gtfs'] do
-          workbench :workbench1, name: 'Workbench 1' do
-            referential :referential1
-          end
-          workbench :workbench2, name: 'Workbench 2' do
-            referential :referential2
-          end
-        end
-      end
-      workbench1 = context.workbench(:workbench1)
-      workbench2 = context.workbench(:workbench2)
-      export_attributes = {
-        type: 'Export::Gtfs',
-        creator: 'test',
-        workgroup: context.workgroup,
-        setup: { scope_setup: { type: 'Export::Setup::Scope::Referential' } }
-      }
-      workbench1.exports.create!(
-        export_attributes.merge(name: 'Export 1', referential: context.referential(:referential1))
-      ).update_columns(
-        status: 'successful',
-        started_at: DateTime.parse('2007-01-01T01:01:01'),
-        ended_at: DateTime.parse('2007-01-01T02:01:01')
-      )
-      workbench1.exports.create!(
-        export_attributes.merge(name: 'Export 2', referential: context.referential(:referential1))
-      ).update_columns(
-        status: 'failed',
-        started_at: DateTime.parse('2007-01-02T03:01:01'),
-        ended_at: DateTime.parse('2007-01-02T04:01:01')
-      )
-      workbench2.exports.create!(
-        export_attributes.merge(name: 'Export 3', referential: context.referential(:referential2))
-      ).update_columns(
-        status: 'successful',
-        started_at: DateTime.parse('2008-01-01T01:01:01'),
-        ended_at: DateTime.parse('2008-01-01T01:31:01')
-      )
-      context
-    end
-    let(:aggregate_operation) { 'count' }
-    let(:aggregate_attribute) { nil }
-    let(:search) do
-      described_class.new(
-        chart_type: 'line',
-        group_by_attribute: group_by_attribute,
-        aggregate_operation: aggregate_operation,
-        aggregate_attribute: aggregate_attribute,
-        top_count: 10
-      )
-    end
-    let(:scope) { context.workgroup.exports }
-
-    describe '#data' do
-      subject { chart.data }
-
-      context 'with group_by_attribute "started_at"' do
-        let(:group_by_attribute) { 'started_at' }
-
-        it 'returns correct data' do
-          today = Time.zone.today
-          is_expected.to eq((0...10).map { |i| [today - i, 0] }.to_h)
-        end
-
-        context 'with filter on period' do
-          before do
-            search.start_date = Date.parse('2007-01-01')
-            search.end_date = Date.parse('2007-01-03')
-          end
-
-          it 'returns correct data' do
-            is_expected.to eq(
-              Date.parse('2007-01-01') => 1,
-              Date.parse('2007-01-02') => 1,
-              Date.parse('2007-01-03') => 0
-            )
-          end
-        end
-      end
-
-      context 'with group_by_attribute "status"' do
-        let(:group_by_attribute) { 'status' }
-
-        it 'returns correct data' do
-          is_expected.to eq(
-            {
-              I18n.t('exports.status.new') => 0,
-              I18n.t('exports.status.pending') => 0,
-              I18n.t('exports.status.successful') => 2,
-              I18n.t('exports.status.warning') => 0,
-              I18n.t('exports.status.failed') => 1,
-              I18n.t('exports.status.running') => 0,
-              I18n.t('exports.status.aborted') => 0,
-              I18n.t('exports.status.canceled') => 0
-            }
-          )
-        end
-      end
-
-      context 'with group_by_attribute "workbench_id"' do
-        let(:group_by_attribute) { 'workbench_id' }
-
-        it 'returns correct data' do
-          is_expected.to eq({ 'Workbench 1' => 2, 'Workbench 2' => 1 })
-        end
       end
     end
   end

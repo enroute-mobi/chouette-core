@@ -396,6 +396,7 @@ en:
       zdlr: ZDLr
       lda: "Stop Place"
       gdl: "Group of Stop Places"
+      flexible_stop_place: "Flexible Stop Place"
       deposit: Deposit
       border: Border
       service_area: Service Area

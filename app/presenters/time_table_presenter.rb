@@ -16,13 +16,13 @@ class TimeTablePresenter
   def composition_info
     return if @time_table.bounding_dates.empty?
     if @time_table.dates.empty?
-      I18n.t('time_tables.time_table.periods_count', :count => @time_table.periods.count)
+      I18n.t('time_tables.time_table.periods_count', :count => @time_table.periods.size)
     elsif @time_table.periods.empty?
-      I18n.t('time_tables.time_table.dates_count', :count => @time_table.dates.count)
+      I18n.t('time_tables.time_table.dates_count', :count => @time_table.dates.size)
     else
       I18n.t('time_tables.time_table.periods_dates_count',
-        :dates_count => @time_table.dates.count,
-        :periods_count => @time_table.periods.count)
+        dates_count: @time_table.dates.size,
+        periods_count: @time_table.periods.size)
     end
   end
 

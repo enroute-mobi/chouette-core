@@ -25,6 +25,8 @@ en:
         source_retrieval: Source Retrieval
         import: Import
         publication: Publication
+        control: Control
+        macro: Macro
       operation_statuses:
         all: All
         successful: Success

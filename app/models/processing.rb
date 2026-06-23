@@ -6,8 +6,9 @@ class Processing < ApplicationModel
   belongs_to :workgroup, optional: true # CHOUETTE-3247
   belongs_to :workbench, optional: true # CHOUETTE-3247
 
-  # Import, Merge, Aggregate
-  belongs_to :operation, polymorphic: true # CHOUETTE-3247 optional: false
+  # Import, Merge, Aggregate. Optional: a scheduled ProcessingRule (see ProcessingRule::Scheduling)
+  # performs without any triggering operation.
+  belongs_to :operation, polymorphic: true, optional: true # CHOUETTE-3247
 
   # Associated Macro::List::Run / Control::List:Run
   belongs_to :processed, polymorphic: true, dependent: :destroy # CHOUETTE-3247 optional: false

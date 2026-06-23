@@ -41,5 +41,15 @@
           = f.input :processable_id, as: :select, collection: @processing_rule.candidate_flamingo_validation_setups, label: Flamingo::ValidationSetup.model_name.human
 
 
+      .separator.section_separator
+
+      h2.mb-lg= t('processing_rule/workgroups.form.sections.scheduling')
+
+      = f.simple_fields_for(:schedulings, defaults: { wrapper: :horizontal_form }) do |schedulings_form|
+        = render 'processing_rules/scheduling_fields', f: schedulings_form
+
+      .links.nested-linker
+        = link_to_add_association t('processing_rule/workgroups.form.add_scheduling'), f, :schedulings, class: 'btn btn-primary'
+
   = cancel_button
   = f.button :submit, t('actions.submit'), class: 'formSubmitr', form: 'processing_rule_form'

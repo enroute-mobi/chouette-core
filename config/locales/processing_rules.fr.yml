@@ -12,6 +12,8 @@ fr:
       sections:
         trigger_conditions: Conditions de déclenchement
         processing_selection: Sélection du traitement
+        scheduling: Planification
+      add_scheduling: Ajouter une planification
     search_no_results: "Aucune Règle de traitement ne correspond à votre recherche"
     actions:
       show: "Afficher cette Règle de traitement"
@@ -34,6 +36,8 @@ fr:
       sections:
         trigger_conditions: Conditions de déclenchement
         processing_selection: Sélection du traitement
+        scheduling: Planification
+      add_scheduling: Ajouter une planification
     search_no_results: "Aucune Règle de traitement ne correspond à votre recherche"
     actions:
       show: "Afficher cette Règle de traitement"
@@ -55,6 +59,10 @@ fr:
         zero: Règle de traitement
         one: Règle de traitement
         other: Règles de traitement
+      processing_rule/scheduling:
+        zero: Planification
+        one: Planification
+        other: Planifications
     attributes:
       processing_rule/base:
         processable_type: Type de traitement
@@ -71,6 +79,10 @@ fr:
         workgroup: Groupe de travail
         target_workbenches: Espace(s) de travail cible(s)
         excluded_workbenches: Espace(s) de travail exclu(s)
+      processing_rule/scheduling:
+        scheduled_time: Heure
+        scheduled_days: Jours
+        target: Cible
     errors:
       models:
         processing_rule/workbench:
@@ -91,6 +103,10 @@ fr:
         before_merge: Finalisation - Avant
         after_merge: Finalisation - Après
         after_aggregate: Agrégation - Après
+    processing_rule/scheduling:
+      target:
+        none: Aucun référentiel
+        current: Offre courante
 
   simple_form:
     hints:

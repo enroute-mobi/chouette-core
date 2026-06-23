@@ -12,6 +12,13 @@ module ProcessingRule
     belongs_to :processable, polymorphic: true, optional: true
     has_many :processings, foreign_key: 'processing_rule_id'
 
+    # Periodic execution of this rule, see ProcessingRule::Scheduling
+    has_many :schedulings,
+             class_name: 'ProcessingRule::Scheduling',
+             foreign_key: 'processing_rule_id',
+             dependent: :destroy
+    accepts_nested_attributes_for :schedulings, allow_destroy: true, reject_if: :all_blank
+
     has_tags :required_tags
     has_tags :excluded_tags
 
@@ -42,6 +49,16 @@ module ProcessingRule
 
     def perform(**options)
       processable.create_processing(self, **options).perform
+    end
+
+    # Workbench/Workgroup specific. Workbench where scheduled Control/Macro runs are executed.
+    def scheduling_workbench
+      raise NotImplementedError
+    end
+
+    # Workbench/Workgroup specific. Output current Referential used by scheduled runs (target: current).
+    def output_current_referential
+      raise NotImplementedError
     end
 
     def candidate_operation_steps
@@ -149,6 +166,14 @@ module ProcessingRule
 
       workbench.tags
     end
+
+    def scheduling_workbench
+      workbench
+    end
+
+    def output_current_referential
+      workbench.output.current
+    end
   end
 
   # Workgroup ProcessingRule managed as Workgroup#processing_rules
@@ -181,6 +206,14 @@ module ProcessingRule
 
     def candidate_tags
       workgroup.tags
+    end
+
+    def scheduling_workbench
+      workgroup.owner_workbench
+    end
+
+    def output_current_referential
+      workgroup.output.current
     end
 
     def self.accept_workbench(workbench)

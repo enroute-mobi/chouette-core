@@ -25,6 +25,8 @@ fr:
         source_retrieval: Récupération de données
         import: Import
         publication: Publication
+        control: Contrôle
+        macro: Instruction
       operation_statuses:
         all: Tous
         successful: Succès

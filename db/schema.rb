@@ -1198,6 +1198,18 @@ ActiveRecord::Schema[7.2].define(version: 2026_07_28_094718) do
     t.index ["shape_referential_id"], name: "index_point_of_interests_on_shape_referential_id"
   end
 
+  create_table "processing_rule_schedulings", force: :cascade do |t|
+    t.bigint "processing_rule_id", null: false
+    t.time "scheduled_time", default: "2000-01-01 00:00:00", null: false
+    t.bit "scheduled_days", limit: 7, default: "1111111", null: false
+    t.string "target", default: "none", null: false
+    t.bigint "scheduled_job_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["processing_rule_id"], name: "index_processing_rule_schedulings_on_processing_rule_id"
+    t.index ["scheduled_job_id"], name: "index_processing_rule_schedulings_on_scheduled_job_id"
+  end
+
   create_table "processing_rules", force: :cascade do |t|
     t.bigint "workgroup_id"
     t.bigint "workbench_id"
@@ -1950,6 +1962,8 @@ ActiveRecord::Schema[7.2].define(version: 2026_07_28_094718) do
   add_foreign_key "macro_runs", "macro_context_runs"
   add_foreign_key "macros", "macro_contexts"
   add_foreign_key "point_of_interest_categories", "point_of_interest_categories", column: "parent_id"
+  add_foreign_key "processing_rule_schedulings", "delayed_jobs", column: "scheduled_job_id"
+  add_foreign_key "processing_rule_schedulings", "processing_rules"
   add_foreign_key "publications", "referentials"
   add_foreign_key "referentials", "referential_suites"
   add_foreign_key "routes", "routes", column: "opposite_route_id", name: "route_opposite_route_fkey"

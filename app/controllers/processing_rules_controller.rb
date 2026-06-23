@@ -46,7 +46,8 @@ class ProcessingRulesController < Chouette::WorkbenchController
       :macro_list_id,
       :operation_step,
       required_tag_ids: [],
-      excluded_tag_ids: []
+      excluded_tag_ids: [],
+      schedulings_attributes: %i[id scheduled_time scheduled_days target _destroy]
     )
   end
 end

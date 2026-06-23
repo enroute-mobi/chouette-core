@@ -46,7 +46,8 @@ class WorkgroupProcessingRulesController < Chouette::WorkgroupController
       :processable_id,
       :operation_step,
       target_workbenches: [],
-      excluded_workbenches: []
+      excluded_workbenches: [],
+      schedulings_attributes: %i[id scheduled_time scheduled_days target _destroy]
     )
   end
 end

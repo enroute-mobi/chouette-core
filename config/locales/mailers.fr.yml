@@ -39,6 +39,20 @@ fr:
           Vous avez lancé la finalisation <strong>"%{merge_name}"</strong>.<br/>
           Elle est maintenant terminée.<br/>
           Le statut de l'opération est : <strong>%{status}</strong>.
+    control_list_run_mailer:
+      button: Voir les contrôles
+      finished:
+        subject: Les contrôles sont terminés
+        body: |
+          Les contrôles planifiés <strong>"%{name}"</strong> sont terminés.<br/>
+          Le statut de l'opération est : <strong>%{status}</strong>.
+    macro_list_run_mailer:
+      button: Voir les instructions
+      finished:
+        subject: Les instructions sont terminées
+        body: |
+          Les instructions planifiées <strong>"%{name}"</strong> sont terminées.<br/>
+          Le statut de l'opération est : <strong>%{status}</strong>.
     subscription_mailer:
       created:
         subject: Un nouvel utilisateur s'est inscrit

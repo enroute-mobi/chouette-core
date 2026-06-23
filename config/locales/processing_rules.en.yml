@@ -12,6 +12,8 @@ en:
       sections:
         trigger_conditions: Trigger Conditions
         processing_selection: Processing Selection
+        scheduling: Scheduling
+      add_scheduling: Add a scheduling
     search_no_results: "No processing rule matches your search"
     actions:
       show: "Show this Processing Rule"
@@ -34,6 +36,8 @@ en:
       sections:
         trigger_conditions: Trigger Conditions
         processing_selection: Processing Selection
+        scheduling: Scheduling
+      add_scheduling: Add a scheduling
     search_no_results: "No processing rule matches your search"
     actions:
       show: "Show this Processing Rule"
@@ -55,6 +59,10 @@ en:
         zero: Processing rule
         one: Processing rule
         other: Processing rules
+      processing_rule/scheduling:
+        zero: Scheduling
+        one: Scheduling
+        other: Schedulings
     attributes:
       processing_rule/base:
         processable_type: Processing Type
@@ -71,6 +79,10 @@ en:
         workgroup: Workgroup
         target_workbenches: Target workbench(es)
         excluded_workbenches: Excluded workbench(es)
+      processing_rule/scheduling:
+        scheduled_time: Time
+        scheduled_days: Days
+        target: Target
     errors:
       models:
         processing_rule/workbench:
@@ -91,6 +103,10 @@ en:
         before_merge: Merge - Before
         after_merge: Merge - After
         after_aggregate: Aggregate - After
+    processing_rule/scheduling:
+      target:
+        none: No referential
+        current: Output current
 
   simple_form:
     hints:

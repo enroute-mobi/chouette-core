@@ -98,6 +98,8 @@ module Macro
         end
 
         def durations
+          return [] if journey_patterns.empty?
+
           ActiveRecord::Base.connection.select_rows(query)
         end
 

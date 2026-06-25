@@ -15,11 +15,6 @@ RSpec.describe Query::NotificationRule do
 				end
 			end
 
-			workbench :period do
-				notification_rule :in_period, period: Period.from(:yesterday).until(:tomorrow)
-				notification_rule :out_of_period, period: Period.before(:today).during(10.days)
-			end
-
 			workbench :rule_type do
 				notification_rule :block, rule_type: 'block'
 				notification_rule :notify, rule_type: 'notify'
@@ -77,16 +72,6 @@ RSpec.describe Query::NotificationRule do
 				expect(scope).to match_array(expected_scope)
 			end
 		end
-  end
-
-  describe '#period' do
-    let(:workbench) { context.workbench(:period) }
-    let(:expected_scope) { context.notification_rules(:in_period) }
-
-    it 'should return the notification rule with the overlapping period' do
-      scope = query.in_period(Period.new(from: Time.zone.today, to: Time.zone.today)).scope
-			expect(scope).to match_array(expected_scope)
-    end
   end
 
   describe '#rule_type' do

@@ -13,21 +13,19 @@ class NotificationCenter
 
   def notify(operation)
     Rails.logger.debug "Start notification processing for #{operation.class}##{operation.id}"
-    Notification.for(operation).new(operation, rules: rules.active.for_operation(operation)).deliver
+    Notification.for(operation).new(operation, rules: rules.for_operation(operation)).deliver
   end
 
-  def recipients(notification_type, line_ids: nil, period: nil, base_recipients: [])
+  def recipients(notification_type, line_ids: nil, base_recipients: [])
     rules_scope = rules.where(notification_type: notification_type)
 
     rules_scope = rules_scope.for_lines(line_ids) if line_ids.present?
 
-    rules_scope = rules_scope.covering(period) if period
-
     rules_scope.recipients(base_recipients)
   end
 
-  def has_recipients?(notification_type, line_ids: nil, period: nil, base_recipients: [])
-    recipients(notification_type, line_ids: line_ids, period: period, base_recipients: base_recipients).present?
+  def has_recipients?(notification_type, line_ids: nil, base_recipients: [])
+    recipients(notification_type, line_ids: line_ids, base_recipients: base_recipients).present?
   end
 
   # Manage notification for a given Operation

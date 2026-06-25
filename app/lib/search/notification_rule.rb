@@ -9,11 +9,7 @@ module Search
     attribute :notification_type
     attribute :rule_type
     attribute :operation_statuses
-    attribute :start_date, type: Date
-    attribute :end_date, type: Date
     attribute :lines
-
-    period :period, :start_date, :end_date
 
     enumerize :notification_type, in: ::NotificationRule.notification_type.values
     enumerize :rule_type, in: ::NotificationRule.rule_type.values, multiple: true
@@ -30,7 +26,6 @@ module Search
     def query(scope)
       Query::NotificationRule.new(scope)
         .email(email)
-        .in_period(period)
         .notification_type(notification_type)
         .rule_type(rule_type)
         .operation_statuses(operation_statuses)

@@ -95,10 +95,17 @@ class Export::Ara < Export::Base
     end
 
     def stop_areas
-      @stop_areas ||=
-        stop_area_referential.stop_areas.where(id: stop_area_groups.joins(:stop_areas).select('stop_areas.id'))
-          .or(::Query::StopArea.new(stop_area_referential.stop_areas)
-                          .self_referents_and_ancestors(current_scope.stop_areas))
+      @stop_areas ||= ::Query::StopArea.new(stop_area_referential.stop_areas)
+                       .self_referents_and_ancestors(scoped_and_grouped_stop_areas)
+    end
+
+    def scoped_and_grouped_stop_areas
+      stop_area_referential.stop_areas.where(id: current_scope.stop_areas.select(:id))
+                           .or(stop_area_referential.stop_areas.where(id: stop_area_group_stop_area_ids))
+    end
+
+    def stop_area_group_stop_area_ids
+      stop_area_groups.joins(:stop_areas).select('stop_areas.id')
     end
 
     def lines

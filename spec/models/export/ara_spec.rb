@@ -147,6 +147,37 @@ RSpec.describe Export::Ara do
           is_expected.to include(stop_area, parent, referent)
         end
       end
+
+      context 'when a Stop Area Group member has a Parent and a Referent' do
+        let(:context) do
+          Chouette.create do
+            stop_area :scoped_stop_area
+
+            stop_area :parent, area_type: Chouette::AreaType::STOP_PLACE.to_s
+            stop_area :referent, is_referent: true
+            stop_area :member, parent: :parent, referent: :referent
+
+            stop_area_group :stop_area_group, short_name: 'sample', stop_areas: %i[member]
+          end
+        end
+
+        before do
+          allow(export).to receive(:stop_area_referential) { context.stop_area_referential }
+          allow(export).to receive(:workbench) { context.workbench }
+          allow(original_scope).to receive(:stop_areas) do
+            context.stop_area_referential.stop_areas.where(id: scoped_stop_area.id)
+          end
+        end
+
+        let(:scoped_stop_area) { context.stop_area(:scoped_stop_area) }
+        let(:member) { context.stop_area(:member) }
+        let(:parent) { member.parent }
+        let(:referent) { member.referent }
+
+        it 'includes the group member with its parent and referent' do
+          is_expected.to include(member, parent, referent)
+        end
+      end
     end
 
     describe '#lines' do

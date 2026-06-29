@@ -43,7 +43,8 @@ module Search
     end
 
     def candidate_stop_areas
-      workbench.stop_area_referential.stop_areas.limit(50)
+      scope = workbench.stop_area_referential.stop_areas
+      stop_area_id.present? ? scope.where(id: stop_area_id) : scope.none
     end
 
     def stop_area_provider_options

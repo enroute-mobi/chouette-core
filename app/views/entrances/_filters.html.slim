@@ -3,7 +3,7 @@
     = f.text
   = f.row
     = f.input :stop_area_id,
-        as: :autocomplete_select,
+        as: :ajax_select,
         collection: @search.candidate_stop_areas,
         label_method: :display_name,
         input_html: { 'data-url': stop_areas_workgroup_autocomplete_index_path(@workbench.workgroup, format: :json) }

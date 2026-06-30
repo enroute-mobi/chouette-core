@@ -11,8 +11,8 @@ module Search
     attribute :city
     attribute :stop_area_provider
     attribute :entrance_type
-    attribute :entry_flag
-    attribute :exit_flag
+    attribute :entry_flag, type: Boolean
+    attribute :exit_flag, type: Boolean
 
     enumerize :entrance_type, in: ::Entrance.entrance_type.values
 
@@ -34,14 +34,6 @@ module Search
                      .exit_flag(exit_flag)
     end
 
-    def entry_flag
-      flag(super)
-    end
-
-    def exit_flag
-      flag(super)
-    end
-
     def candidate_stop_areas
       scope = workbench.stop_area_referential.stop_areas
       stop_area_id.present? ? scope.where(id: stop_area_id) : scope.none
@@ -49,12 +41,6 @@ module Search
 
     def stop_area_provider_options
       workbench.stop_area_referential.stop_area_providers.pluck(:name, :id)
-    end
-
-    private
-
-    def flag(value)
-      ActiveModel::Type::Boolean.new.cast(value)
     end
 
     class Order < ::Search::Order

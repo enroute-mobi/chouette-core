@@ -7,10 +7,10 @@
         collection: @search.candidate_stop_areas,
         label_method: :display_name,
         input_html: { 'data-url': stop_areas_workgroup_autocomplete_index_path(@workbench.workgroup, format: :json) }
-    = f.input :zip_code, label: Entrance.tmf(:zip_code)
-    = f.input :city, label: Entrance.tmf(:city_name)
-    = f.input :stop_area_provider, as: :autocomplete_select, collection: @search.stop_area_provider_options, include_blank: Entrance.tmf(:stop_area_provider)
+    = f.input :zip_code, label: Entrance.human_attribute_name(:zip_code)
+    = f.input :city, label: Entrance.human_attribute_name(:city_name)
+    = f.input :stop_area_provider, as: :autocomplete_select, collection: @search.stop_area_provider_options, label: Entrance.human_attribute_name(:stop_area_provider)
   = f.row
-    = f.input :entrance_type, as: :autocomplete_select, label: false, include_blank: Entrance.tmf(:entrance_type)
-    = f.input :entry_flag, as: :autocomplete_select, label: Entrance.tmf(:entry_flag)
-    = f.input :exit_flag, as: :autocomplete_select, label: Entrance.tmf(:exit_flag)
+    = f.input :entrance_type, as: :autocomplete_select, label: Entrance.human_attribute_name(:entrance_type)
+    = f.input :entry_flag, as: :autocomplete_select, label: Entrance.human_attribute_name(:entry_flag)
+    = f.input :exit_flag, as: :autocomplete_select, label: Entrance.human_attribute_name(:exit_flag)

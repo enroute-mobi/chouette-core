@@ -47,7 +47,7 @@ class Widget < ActiveRecord::Base
                                 if: :saved_search_id.to_proc
 
     def candidate_searches
-      workbench.saved_searches
+      workbench.saved_searches.where.not(search_type: "Search::ServiceCount")
     end
 
     def search

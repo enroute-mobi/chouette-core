@@ -101,11 +101,11 @@ class Export::Ara < Export::Base
 
     def scoped_and_grouped_stop_areas
       stop_area_referential.stop_areas.where(id: current_scope.stop_areas.select(:id))
-                           .or(stop_area_referential.stop_areas.where(id: stop_area_group_stop_area_ids))
+                           .or(stop_area_referential.stop_areas.where(id: member_ids))
     end
 
-    def stop_area_group_stop_area_ids
-      stop_area_groups.joins(:stop_areas).select('stop_areas.id')
+    def member_ids
+      stop_area_groups.joins(:stop_areas).select('stop_areas.id').distinct
     end
 
     def lines

@@ -1971,6 +1971,34 @@ RSpec.describe Import::NetexGeneric::ReferentialNotices::Decorator do
   end
 end
 
+RSpec.describe Import::NetexGeneric::RouteJourneyPatterns do
+  subject(:part) { described_class.new(import) }
+
+  describe '#merger2?' do
+    subject { part.merger2? }
+
+    let(:features) { [] }
+    let(:context) do
+      features = self.features
+      Chouette.create do
+        organisation :organisation, features: features
+        workbench organisation: :organisation
+      end
+    end
+    let(:import) { Import::NetexGeneric.new(workbench: context.workbench, creator: 'test', name: 'test') }
+
+    context 'without import_netex_merger2 feature' do
+      it { is_expected.to be(false) }
+    end
+
+    context 'with import_netex_merger2 feature' do
+      let(:features) { %w[import_netex_merger2] }
+
+      it { is_expected.to be(true) }
+    end
+  end
+end
+
 RSpec.describe Import::NetexGeneric::RouteJourneyPatterns::Decorator do
   subject(:decorator) do
     described_class.new(
@@ -1978,6 +2006,7 @@ RSpec.describe Import::NetexGeneric::RouteJourneyPatterns::Decorator do
       override_internal_identifiers: override_internal_identifiers,
       code_space: code_space,
       journey_patterns: netex_journey_patterns,
+      merger2: merger2,
       scheduled_stop_points: scheduled_stop_points,
       destination_displays: destination_displays,
       lookup: lookup
@@ -2005,6 +2034,7 @@ RSpec.describe Import::NetexGeneric::RouteJourneyPatterns::Decorator do
       )
     ]
   end
+  let(:merger2) { false }
   let(:scheduled_stop_points) do
     {
       'ssp-1' => Import::NetexGeneric::ScheduledStopPoint.new(id: 'ssp-1', stop_area_id: 41),
@@ -2101,6 +2131,20 @@ RSpec.describe Import::NetexGeneric::RouteJourneyPatterns::Decorator do
           )
         end
       end
+    end
+  end
+
+  describe '#sequence_merger_class' do
+    subject { decorator.sequence_merger_class }
+
+    context 'when #merger2 is false' do
+      it { is_expected.to eq(Import::Sequence::Merger) }
+    end
+
+    context 'when #merger2 is true' do
+      let(:merger2) { true }
+
+      it { is_expected.to eq(Import::Sequence2::Merger) }
     end
   end
 

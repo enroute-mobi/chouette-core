@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-## Import::Sequence::Merger
+## Import::Sequence2::Merger
 #
 # Tries to compute a sequence of objects that includes all the sequences of a given set.
 #
@@ -9,7 +9,7 @@
 # If no link can be picked, the solution is invalid. If all sequences are empty, then the solution is valid.
 #
 # Usage:
-#   merger = Import::Sequence::Merge.new
+#   merger = Import::Sequence2::Merge.new
 #   merger << [1, 2, 3]
 #   merger << [2, 3, 4]
 #   merger << [1, 4]
@@ -17,7 +17,7 @@
 #   => [1, 2, 3, 4]
 #
 # If it cannot find a solution, returns nil.
-#   merger = Import::Sequence::Merge.new
+#   merger = Import::Sequence2::Merge.new
 #   merger << [1, 2, 3]
 #   merger << [1, 2, 4]
 #   merger.merge
@@ -89,6 +89,7 @@
 
 module Import
   # Converts an sequence of elements to a array of links (from, to).
+  # Will be renamed as Import::Sequence in the future.
   class Sequence2 < Array
     def initialize(elements)
       super(elements.each_cons(2).map { |from, to| Link.new(from: from, to: to) })
@@ -360,6 +361,7 @@ module Import
     end
   end
 
+  # Legacy sequence merger
   class Sequence
     def self.create(elements)
       links = []

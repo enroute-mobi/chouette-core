@@ -9,6 +9,36 @@ RSpec.describe Calendar, type: :model do
 
   it { is_expected.to validate_presence_of(:name) }
 
+  describe '.by_text' do
+    let(:context) do
+      Chouette.create do
+        workgroup do
+          workbench do
+            calendar :calendar1, name: 'Found calendar 1'
+            calendar :calendar2, name: 'Found calendar 2'
+            calendar :other_calendar, name: 'Other calendar'
+          end
+        end
+      end
+    end
+
+    it 'returns only calendars with matching name' do
+      expect(described_class.by_text('Found')).to match_array(%i[calendar1 calendar2].map { |i| context.calendar(i) })
+    end
+
+    it 'can be called from workbench' do
+      expect(context.workbench.calendars.by_text('Found')).to(
+        match_array(%i[calendar1 calendar2].map { |i| context.calendar(i) })
+      )
+    end
+
+    it 'can be called from workgroup' do
+      expect(context.workgroup.calendars.by_text('Found')).to(
+        match_array(%i[calendar1 calendar2].map { |i| context.calendar(i) })
+      )
+    end
+  end
+
   describe '#to_time_table' do
     let(:calendar) { create(:calendar, int_day_types: Calendar::MONDAY | Calendar::SUNDAY, date_ranges: [Date.today...(Date.today + 1.month)]) }
 
